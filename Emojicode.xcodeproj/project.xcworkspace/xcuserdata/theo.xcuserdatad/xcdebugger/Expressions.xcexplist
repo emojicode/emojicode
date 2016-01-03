@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "safeParse:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "until:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "tokenTypeCheck:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "JSONGetValue:JSON.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "(char)c">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "main:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "parseIdentifier:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "error:Stack.c">
+      </ContextState>
+      <ContextState
+         contextName = "parse:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "releaseIfPossible:OO.c">
+      </ContextState>
+      <ContextState
+         contextName = "consumeToken:lexer.c">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

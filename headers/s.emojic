@@ -1,0 +1,288 @@
+🔮 1 0
+
+🌮 The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings) 🌮
+🐇 🔡 🍇🍉
+🌮
+  The 🍨 class represents an ordered mutable collection. [Read more in the
+  language reference.](../../reference/the-s-package.html#-lists)
+🌮
+🐇 🍨🐚Element ⚪️ 🍇🍉
+🌮
+  A 🚨 instance represents an error. Many methods interacting with the operating
+  system will return an error on a failure.
+🌮
+🐇 🚨 🍇🍉
+🌮 📇 is an abstract interface to binary data. 🌮
+🐇 📇 🍇🍉
+🌮
+  🍡 is an class whose subclasses can enumerate other objects. The 🍡 itself is
+  never initiated.
+
+  To get the items from an iterator call the 🔽 method on it until it returns
+  ✨, which indicates that there are no more items.
+
+  Enumerators conform [🔂](Enumerateable.html) and return themselves in the 🍡
+  method.
+🌮
+🐇 🍡🐚Element ⚪️ 🍇🍉
+🌮
+  The 🍯 class represents a dictionary. [Read more in the
+  language reference.](../../reference/the-s-package.html#-dictionaries)
+🌮
+🐇 🍯🐚Element ⚪️ 🍇🍉
+🐇 🌶 🍇🍉
+🐇 🍇 🍇🍉
+
+🌮
+  A class whose instances shall be enumerateable using the 🔂 loop must
+  implement this protocol.
+
+  The class must return an instance of a subclass of [🍡](Enumerator.html)
+  which will be used by the 🔂 loop to enumerate the object.
+🌮
+🐊 🔂 🍇
+  🌮
+    This method must return an enumerator which can be used to enumerate
+    the instance.
+  🌮
+  🐖 🍡 ➡️ 🍡🐚⚪️
+🍉
+
+🐋 🔡 🍇
+  🌮 Prompts the user for input. (via the standard input/output) 🌮
+  🐈 😯 prompt 🔡 📻
+
+  🌮 Creates a string from the given list of symbols. 🌮
+  🐈 🎙 symbolList 🍨🐚🔣 📻
+
+  🌮 Creates a string from the given symbol. 🌮
+  🐈 🔣 symbol 🔣 📻
+
+  🌮
+    Creates a string by joining all elements into a string sepearted
+    by *separator*.
+  🌮
+  🐈 🍨 list 🍨🐚🔡 separator 🔡 📻
+
+  🌮 Creates a string representation of the given integer. 🌮
+  🐈 🚂 integer 🚂 base 🚂 📻
+
+  🌮
+    Creates a string from the given 📇 object representing the bytes of a UTF8
+    encoded text.
+
+    Nothingness is returned if the given 📇 object does not represent a valid
+    UTF8 sequence.
+  🌮
+  🍬🐈 📇 utf8 📇 📻
+
+  🌮 Puts this string to the standard output. 🌮
+  🐖 😀 📻
+
+  🌮 Returns 👍 if this string is equal to b. 🌮
+  🐖 😛 b 🔡 ➡️ 👌📻
+
+  🌮
+    Returns the characters in a string beginning at the specified location
+    through the specified number of characters.
+
+    from: Location at which to begin extracting characters. If a negative number
+    is given, it is treated as strLength + start where strLength = to the length
+    of the string (for example, if start is -3 it is treated as strLength - 3.)
+  🌮
+  🐖 🔪 from 🚂 length 🚂 ➡️ 🔡 📻
+
+  🌮
+    Finds the first occurrences of a string in this string. Search is done from
+    left to right.
+  🌮
+  🐖 🔍 searchValue 🔡 ➡️ 🍬🚂 📻
+
+  🌮 Whether this strings begins with another string. 🌮
+  🐖 🎼 testString 🔡 ➡️ 👌 📻
+
+  🌮 Whether this strings ends with another string. 🌮
+  🐖 ⛳️ testString 🔡 ➡️ 👌 📻
+
+  🌮
+    The 🔧 method returns a new string, on which whitespace has been removed
+    from both ends of a string.
+  🌮
+  🐖 🔧 ➡️ 🔡 📻
+
+  🌮
+    This string is split up into substring at each place *seperator* is found.
+    *seperator* itself is removed from the string.
+  🌮
+  🐖 🔫 separator 🔡 ➡️ 🍨🐚🔡 📻
+
+  🌮
+    This string is split up into substring at each place *seperator* is found.
+    *seperator* itself is removed from the string.
+
+    Prefer this method over `🔫` if the separator is just a single character.
+  🌮
+  🐖 💣 separator 🔣 ➡️ 🍨🐚🔡 📻
+
+  🌮
+    This method returns the number of Unicode code points of this string. This
+    is possibly not the number of bytes needed to write the string to a file,
+    since Emojicode encodes everything into UTF8.
+  🌮
+  🐖 📏 ➡️ 🚂 📻
+
+  🌮
+    Returns the number of bytes needed to encode this string into proper UTF8.
+  🌮
+  🐖 📐 ➡️ 🚂 📻
+
+  🌮 Creates a new string by appending *symbol*. 🌮
+  🐖 📝 symbol 🔣 ➡️ 🔡 📻
+
+  🌮 Gets a symbol by its index. 🌮
+  🐖 🔬 index 🚂 ➡️ 🍬🔣 📻
+
+  🌮 Converts the string to data encoded as UTF8. 🌮
+  🐖 📇 ➡️ 📇 📻
+
+  🌮 Returns an array with the symbols from this string. 🌮
+  🐖 🎶 ➡️ 🍨🐚🔣 📻
+
+  🌮 Parses the JSON represented by this string. 🌮
+  🐖 🗞 ➡️ ⚪️ 📻
+🍉
+
+🐋 🍨 🍇
+  🌮 Creates an empty list. 🌮
+  🐈 🐸 📻
+
+  🌮 Returns a shallow copy of this list. 🌮
+  🐖 🐮 ➡️ 🍨🐚Element 📻
+
+  🌮 Appends *item* to the end of the list in O(1). 🌮
+  🐖 🐻 item Element 📻
+
+  🌮
+    Gets the item at *index* in O(1). If the index is invalid ✨ is returned.
+  🌮
+  🐖 🐽 index 🚂 ➡️ 🍬Element 📻
+
+  🌮
+    Removes the item at *index* and shifts all following items to the left in
+    O(length - index).
+  🌮
+  🐖 🐨 index 🚂 📻
+
+  🌮
+    Shifts all items beginning from *index* to the right and inserts *item* at
+    *index* in O(length - index).
+  🌮
+  🐖 🐵 index 🚂 item Element 📻
+
+  🌮 Returns the number of items in the list. 🌮
+  🐖 🐔 ➡️ 🚂 📻
+
+  🌮
+    Removes the last item from the list and returns it in O(1).
+    If the list is empty ✨ is returned.
+  🌮
+  🐖 🐼 ➡️ 🍬Element 📻
+
+  🌮
+    Shuffles the list in place using the Fisher Yates algorithm. The shuffle can
+    be considered secure on any BSD or Linux system.
+  🌮
+  🐖 🐹 📻
+🍉
+
+🐋 📇 🍇
+  🌮 Returns 👍 if this is equal to b. 🌮
+  🐖 😛 b 📇 ➡️ 👌 📻
+  🌮 Returns the number of bytes represented by this instance. 🌮
+  🐖 📏 ➡️ 🚂 📻
+🍉
+
+🐋 🍡 🍇
+  🐊 🔂
+  🌮
+    Returns the next object or ✨ if there are no elements left.
+
+    >!N You should not rely on the return of Nothingness to indicate there are
+    >!N no more objects to enumerate. Nothigness could be an ordinary element of
+    >!N the enumerated object. Use ❓ instead to determine whether there are
+    >!N elements left.
+
+    The default implementation always returns ✨.
+
+    Subclasses of this class are encouraged to declare a more specific return
+    type.
+  🌮
+  🐖 🔽 ➡️ ⚪ 🍇
+    🍎 ⚡️
+  🍉
+  🌮
+    Whether the enumerator has more elements to provide.
+  🌮
+  🐖 ❓ ➡️ 👌 🍇
+    🍎 👎
+  🍉
+  🐖 🍡 ➡️ 🍡🐚Element 🍇
+    🍎 🐕
+  🍉
+🍉
+
+🐋 🚨 🍇
+  🌮 Create an error. 🌮
+  🐈 😮 message 🔡 code 🚂 📻
+  🌮
+    Returns the message associated with the error.
+    This is maybe an empty string.
+  🌮
+  🐖 😤 ➡️ 🔡 📻
+  🌮 Returns the code associated with the error. 🌮
+  🐖 😴 ➡️ 🚂 📻
+🍉
+
+🐋 🍯 🍇
+  🌮 Creates an empty dictionary. 🌮
+  🐈 🐸 📻
+  🌮
+    Returns the value assigned to *key*. If key is not in the dictionary ✨ is
+    returned.
+  🌮
+  🐖 🐽 key 🔡 ➡️ 🍬Element 📻
+  🌮
+    Removes *key* and its assigned value from the 🍯. No action is performed if
+    *key* is not in the 🍯.
+  🌮
+  🐖 🐨 key 🔡 📻
+  🌮 Adds a key-value pair. 🌮
+  🐖 🐷 key 🔡 object Element 📻
+🍉
+
+🌮
+  💻 provides several class methods that can be used to interact with the
+  operating system. It cannot be instantiated.
+🌮
+🐇 💻 🍇
+  🌮
+    Gets an environment variable by its name. If the variable cannot be found
+    ✨ is returned.
+  🌮
+  🐇🐖 🌳 variableName 🔡 ➡️ 🍬🔡 📻
+
+  🌮
+    Immediately exits the program with the given status code. The code may
+    not be larger than 255 on most operating systems.
+  🌮
+  🐇🐖 🚪 status 🚂 📻
+
+  🌮 Returns the current working directory. 🌮
+  🐇🐖 🌍 ➡️ 🔡 📻
+
+  🌮
+    Suspends the calling thread from execution for at least the number of
+    seconds specified by the arguments *seconds*.
+  🌮
+  🐇🐖 🕰 seconds 🚂 📻
+🍉

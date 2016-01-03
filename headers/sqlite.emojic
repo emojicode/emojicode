@@ -1,0 +1,44 @@
+🔮 0 1
+
+🌮
+    An instance of 📚 represents a database.
+
+    Databases are automatically closed once the object is released. There is no other way to close a database.
+🌮
+🐇 📚 🍇
+    🌮 Opens the database at the given path. 🌮
+	🐈 📂 path 🔶🔴🔡 📻
+	
+	🌮 Returns the last error or ✨ if no error occurred. 🌮
+	🐖 🚨 ➡️ 🍬🔶🔴🚨 📻
+	🌮 Returns the ID of the most recent inserted row or 0 if no row has been inserted. 🌮
+	🐖 🔑 ➡️ 🔶🔴🚂 📻
+🍉
+
+🌮 A query belonging to a database. 🌮
+🐇 💬 🍇
+    🌮 
+	    *database* must be an open 📚 instance which will run the query on execution.
+
+        *query* must be a valid, SQLite 3 compatible SQL query. You should use `?` in prepared statements. 
+    🌮
+	🐈 👋 database 📚 query 🔶🔴🔡 📻
+    🌮
+        This method binds a given value to the data placeholder number *placeholder#* in a prepared statement.
+        
+        Be aware of that placeholder indexes start with 1.
+        
+        *value* must be one of the *bindable types*:
+        
+        - 🔡
+        - 🚂
+        - 🚀
+        - 📇
+        - ✨ (inserts `NULL`)
+        
+        If the method fails for any reason an error is returned.
+    🌮
+	🐖 📍 placeholder# 🔶🔴🚂 value 🍬🔶🔴🔵 ➡️ 🍬🔶🔴🚨 📻
+	🌮 Executes the query and returns and array of dictionary. Each dictionary represents one row. 🌮
+	🐖 🔽 ➡️ 🍬🔶🔴🍨🐚🍯🐚⚪️ 📻
+🍉

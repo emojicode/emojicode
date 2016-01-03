@@ -1,0 +1,474 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E4097EF21AA8B4D500CB7355 /* ClassParser.c in Sources */ = {isa = PBXBuildFile; fileRef = E4097EF01AA8B4D500CB7355 /* ClassParser.c */; };
+		E4097EF51AA8B96300CB7355 /* StaticAnalyzer.c in Sources */ = {isa = PBXBuildFile; fileRef = E4097EF31AA8B96200CB7355 /* StaticAnalyzer.c */; };
+		E444EC701BB81F32006939BC /* Dictionary.c in Sources */ = {isa = PBXBuildFile; fileRef = E444EC6F1BB81F32006939BC /* Dictionary.c */; };
+		E4478C671B7B8CB400291BD9 /* Type.c in Sources */ = {isa = PBXBuildFile; fileRef = E4478C661B7B8CB400291BD9 /* Type.c */; };
+		E44E14E41BED2B2F00ACC112 /* Reporter.c in Sources */ = {isa = PBXBuildFile; fileRef = E44E14E31BED2B2F00ACC112 /* Reporter.c */; };
+		E455BC701B62BB16002411C8 /* List.c in Sources */ = {isa = PBXBuildFile; fileRef = E455BC6F1B62BB16002411C8 /* List.c */; };
+		E45FA2F61AA0D24200F032A8 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E45FA2F51AA0D24200F032A8 /* main.c */; };
+		E45FA2FA1AA0DD5C00F032A8 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E4041B1A5B2E8F00034386 /* utf8.c */; };
+		E46EF9F11B773AED0080DAFF /* EmojicodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = E48A0DD21A6BDC3400EDF60B /* EmojicodeList.c */; };
+		E49712881B63CB1400EF80C3 /* EmojicodeDictionary.c in Sources */ = {isa = PBXBuildFile; fileRef = E415383F1AE41C6C00025753 /* EmojicodeDictionary.c */; };
+		E4CAF31A1B6E68D7005B6834 /* standard.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E404231A5B322700034386 /* standard.c */; };
+		E4CAF31B1B6E68EC005B6834 /* EmojicodeString.c in Sources */ = {isa = PBXBuildFile; fileRef = E4F048331A7FB03D005BB2C1 /* EmojicodeString.c */; };
+		E4CC8DC11B6E1DFA003D7821 /* Stack.c in Sources */ = {isa = PBXBuildFile; fileRef = E4CC8DC01B6E1DFA003D7821 /* Stack.c */; };
+		E4CDA0531C21AA3E00B4D6CD /* JSON.c in Sources */ = {isa = PBXBuildFile; fileRef = E4CDA0521C21AA3E00B4D6CD /* JSON.c */; };
+		E4E4041E1A5B2E8F00034386 /* Emojicode.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E404131A5B2E8F00034386 /* Emojicode.c */; };
+		E4E404221A5B2E8F00034386 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E4041B1A5B2E8F00034386 /* utf8.c */; };
+		E4EB362B1AA2254700675B52 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EB36291AA2254700675B52 /* Lexer.c */; };
+		E4EB4A871AA315ED00FF4CED /* Writer.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EB4A851AA315ED00FF4CED /* Writer.c */; };
+		E4EB4A8B1AA3295300FF4CED /* Object.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EB4A891AA3295300FF4CED /* Object.c */; };
+		E4EB4A8D1AA32A5700FF4CED /* CompilerScope.c in Sources */ = {isa = PBXBuildFile; fileRef = E4F49AB41A5C365900A5FD48 /* CompilerScope.c */; };
+		E4EB4A901AA3383000FF4CED /* Reader.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EB4A8E1AA3383000FF4CED /* Reader.c */; };
+		E4F9D4011AC6CEE3005A1DD6 /* Class.c in Sources */ = {isa = PBXBuildFile; fileRef = E4F9D4001AC6CEE3005A1DD6 /* Class.c */; };
+		E4F9D4021AC6D041005A1DD6 /* Class.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E404261A5B363F00034386 /* Class.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E45FA2F11AA0D24200F032A8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		E4E404051A5B2E4300034386 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		E4097EF01AA8B4D500CB7355 /* ClassParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = ClassParser.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4097EF11AA8B4D500CB7355 /* ClassParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ClassParser.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		E4097EF31AA8B96200CB7355 /* StaticAnalyzer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = StaticAnalyzer.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4097EF41AA8B96300CB7355 /* StaticAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticAnalyzer.h; sourceTree = "<group>"; };
+		E415383F1AE41C6C00025753 /* EmojicodeDictionary.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = EmojicodeDictionary.c; sourceTree = "<group>"; };
+		E41538401AE41C6C00025753 /* EmojicodeDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeDictionary.h; path = ../EmojicodeDictionary.h; sourceTree = "<group>"; };
+		E425EE9F1A6433A700F3A62B /* EmojicodeAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EmojicodeAPI.h; sourceTree = SOURCE_ROOT; };
+		E4442C6B1C31C74A00151317 /* Emojis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Emojis.h; sourceTree = "<group>"; };
+		E4442C6C1C327D0C00151317 /* Type.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Type.h; sourceTree = "<group>"; };
+		E444EC6F1BB81F32006939BC /* Dictionary.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Dictionary.c; sourceTree = "<group>"; };
+		E4478C661B7B8CB400291BD9 /* Type.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Type.c; sourceTree = "<group>"; };
+		E44E14E31BED2B2F00ACC112 /* Reporter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Reporter.c; sourceTree = "<group>"; };
+		E455BC671B5BEB82002411C8 /* EmojicodeShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeShared.h; sourceTree = "<group>"; };
+		E455BC6F1B62BB16002411C8 /* List.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = List.c; sourceTree = "<group>"; };
+		E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EmojicodeCompiler; sourceTree = BUILT_PRODUCTS_DIR; };
+		E45FA2F51AA0D24200F032A8 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = main.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E48A0DD21A6BDC3400EDF60B /* EmojicodeList.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = EmojicodeList.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E48A0DD31A6BDC3400EDF60B /* EmojicodeList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeList.h; path = ../EmojicodeList.h; sourceTree = "<group>"; };
+		E4CC8DC01B6E1DFA003D7821 /* Stack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Stack.c; sourceTree = "<group>"; };
+		E4CDA0521C21AA3E00B4D6CD /* JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = JSON.c; sourceTree = "<group>"; };
+		E4E404071A5B2E4300034386 /* Emojicode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Emojicode; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4E404131A5B2E8F00034386 /* Emojicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = Emojicode.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4E404141A5B2E8F00034386 /* Emojicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Emojicode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		E4E4041B1A5B2E8F00034386 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
+		E4E4041C1A5B2E8F00034386 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		E4E404231A5B322700034386 /* standard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = standard.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4E404261A5B363F00034386 /* Class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = Class.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4EB36291AA2254700675B52 /* Lexer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = Lexer.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4EB4A851AA315ED00FF4CED /* Writer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = Writer.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4EB4A861AA315ED00FF4CED /* Writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Writer.h; sourceTree = "<group>"; };
+		E4EB4A881AA3166400FF4CED /* EmojicodeCompiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeCompiler.h; sourceTree = "<group>"; };
+		E4EB4A891AA3295300FF4CED /* Object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Object.c; sourceTree = "<group>"; };
+		E4EB4A8E1AA3383000FF4CED /* Reader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = Reader.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4F048331A7FB03D005BB2C1 /* EmojicodeString.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = EmojicodeString.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4F048341A7FB03D005BB2C1 /* EmojicodeString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = EmojicodeString.h; path = ../EmojicodeString.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		E4F49AB41A5C365900A5FD48 /* CompilerScope.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = CompilerScope.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E4F49AB51A5C365A00A5FD48 /* CompilerScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CompilerScope.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		E4F9D4001AC6CEE3005A1DD6 /* Class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = Class.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E45FA2F01AA0D24200F032A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4E404041A5B2E4300034386 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E45FA2F41AA0D24200F032A8 /* EmojicodeCompiler */ = {
+			isa = PBXGroup;
+			children = (
+				E4442C6B1C31C74A00151317 /* Emojis.h */,
+				E4EB4A881AA3166400FF4CED /* EmojicodeCompiler.h */,
+				E4442C6C1C327D0C00151317 /* Type.h */,
+				E4478C661B7B8CB400291BD9 /* Type.c */,
+				E45FA2F51AA0D24200F032A8 /* main.c */,
+				E44E14E31BED2B2F00ACC112 /* Reporter.c */,
+				E4F9D4001AC6CEE3005A1DD6 /* Class.c */,
+				E455BC6F1B62BB16002411C8 /* List.c */,
+				E444EC6F1BB81F32006939BC /* Dictionary.c */,
+				E4EB36291AA2254700675B52 /* Lexer.c */,
+				E4F49AB51A5C365A00A5FD48 /* CompilerScope.h */,
+				E4F49AB41A5C365900A5FD48 /* CompilerScope.c */,
+				E4097EF11AA8B4D500CB7355 /* ClassParser.h */,
+				E4097EF01AA8B4D500CB7355 /* ClassParser.c */,
+				E4097EF41AA8B96300CB7355 /* StaticAnalyzer.h */,
+				E4097EF31AA8B96200CB7355 /* StaticAnalyzer.c */,
+				E4EB4A861AA315ED00FF4CED /* Writer.h */,
+				E4EB4A851AA315ED00FF4CED /* Writer.c */,
+			);
+			path = EmojicodeCompiler;
+			sourceTree = "<group>";
+		};
+		E45FA2FD1AA0E11300F032A8 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				E455BC671B5BEB82002411C8 /* EmojicodeShared.h */,
+				E4F49AB31A5C22DE00A5FD48 /* Third Party */,
+			);
+			name = Shared;
+			sourceTree = "<group>";
+		};
+		E4E403FE1A5B2E4200034386 = {
+			isa = PBXGroup;
+			children = (
+				E45FA2FD1AA0E11300F032A8 /* Shared */,
+				E4E404091A5B2E4300034386 /* Emojicode Real-Time Engine */,
+				E45FA2F41AA0D24200F032A8 /* EmojicodeCompiler */,
+				E4E404081A5B2E4300034386 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E4E404081A5B2E4300034386 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E4E404071A5B2E4300034386 /* Emojicode */,
+				E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E4E404091A5B2E4300034386 /* Emojicode Real-Time Engine */ = {
+			isa = PBXGroup;
+			children = (
+				E425EE9F1A6433A700F3A62B /* EmojicodeAPI.h */,
+				E4E404141A5B2E8F00034386 /* Emojicode.h */,
+				E4E404131A5B2E8F00034386 /* Emojicode.c */,
+				E4EB4A891AA3295300FF4CED /* Object.c */,
+				E4CC8DC01B6E1DFA003D7821 /* Stack.c */,
+				E4E404261A5B363F00034386 /* Class.c */,
+				E4EB4A8E1AA3383000FF4CED /* Reader.c */,
+				E4F048361A7FB0D7005BB2C1 /* standard Package */,
+			);
+			name = "Emojicode Real-Time Engine";
+			path = Emojicode;
+			sourceTree = "<group>";
+		};
+		E4F048361A7FB0D7005BB2C1 /* standard Package */ = {
+			isa = PBXGroup;
+			children = (
+				E4E404231A5B322700034386 /* standard.c */,
+				E48A0DD31A6BDC3400EDF60B /* EmojicodeList.h */,
+				E48A0DD21A6BDC3400EDF60B /* EmojicodeList.c */,
+				E41538401AE41C6C00025753 /* EmojicodeDictionary.h */,
+				E415383F1AE41C6C00025753 /* EmojicodeDictionary.c */,
+				E4F048341A7FB03D005BB2C1 /* EmojicodeString.h */,
+				E4F048331A7FB03D005BB2C1 /* EmojicodeString.c */,
+				E4CDA0521C21AA3E00B4D6CD /* JSON.c */,
+			);
+			name = "standard Package";
+			sourceTree = "<group>";
+		};
+		E4F49AB31A5C22DE00A5FD48 /* Third Party */ = {
+			isa = PBXGroup;
+			children = (
+				E4E4041C1A5B2E8F00034386 /* utf8.h */,
+				E4E4041B1A5B2E8F00034386 /* utf8.c */,
+			);
+			name = "Third Party";
+			path = Emojicode;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E45FA2F21AA0D24200F032A8 /* EmojicodeCompiler */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E45FA2F91AA0D24300F032A8 /* Build configuration list for PBXNativeTarget "EmojicodeCompiler" */;
+			buildPhases = (
+				E45FA2EF1AA0D24200F032A8 /* Sources */,
+				E45FA2F01AA0D24200F032A8 /* Frameworks */,
+				E45FA2F11AA0D24200F032A8 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EmojicodeCompiler;
+			productName = EmojicodeCompiler;
+			productReference = E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */;
+			productType = "com.apple.product-type.tool";
+		};
+		E4E404061A5B2E4300034386 /* Emojicode */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E4E4040E1A5B2E4400034386 /* Build configuration list for PBXNativeTarget "Emojicode" */;
+			buildPhases = (
+				E4E404031A5B2E4300034386 /* Sources */,
+				E4E404041A5B2E4300034386 /* Frameworks */,
+				E4E404051A5B2E4300034386 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Emojicode;
+			productName = Emojicode;
+			productReference = E4E404071A5B2E4300034386 /* Emojicode */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E4E403FF1A5B2E4300034386 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = "Theo Weidmann";
+				TargetAttributes = {
+					E45FA2F21AA0D24200F032A8 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					E4E404061A5B2E4300034386 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = E4E404021A5B2E4300034386 /* Build configuration list for PBXProject "Emojicode" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E4E403FE1A5B2E4200034386;
+			productRefGroup = E4E404081A5B2E4300034386 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E4E404061A5B2E4300034386 /* Emojicode */,
+				E45FA2F21AA0D24200F032A8 /* EmojicodeCompiler */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E45FA2EF1AA0D24200F032A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4EB362B1AA2254700675B52 /* Lexer.c in Sources */,
+				E4097EF21AA8B4D500CB7355 /* ClassParser.c in Sources */,
+				E4F9D4011AC6CEE3005A1DD6 /* Class.c in Sources */,
+				E4478C671B7B8CB400291BD9 /* Type.c in Sources */,
+				E45FA2FA1AA0DD5C00F032A8 /* utf8.c in Sources */,
+				E4EB4A8D1AA32A5700FF4CED /* CompilerScope.c in Sources */,
+				E455BC701B62BB16002411C8 /* List.c in Sources */,
+				E444EC701BB81F32006939BC /* Dictionary.c in Sources */,
+				E4EB4A871AA315ED00FF4CED /* Writer.c in Sources */,
+				E45FA2F61AA0D24200F032A8 /* main.c in Sources */,
+				E44E14E41BED2B2F00ACC112 /* Reporter.c in Sources */,
+				E4097EF51AA8B96300CB7355 /* StaticAnalyzer.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4E404031A5B2E4300034386 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E49712881B63CB1400EF80C3 /* EmojicodeDictionary.c in Sources */,
+				E46EF9F11B773AED0080DAFF /* EmojicodeList.c in Sources */,
+				E4E4041E1A5B2E8F00034386 /* Emojicode.c in Sources */,
+				E4CAF31A1B6E68D7005B6834 /* standard.c in Sources */,
+				E4CAF31B1B6E68EC005B6834 /* EmojicodeString.c in Sources */,
+				E4F9D4021AC6D041005A1DD6 /* Class.c in Sources */,
+				E4CDA0531C21AA3E00B4D6CD /* JSON.c in Sources */,
+				E4EB4A901AA3383000FF4CED /* Reader.c in Sources */,
+				E4EB4A8B1AA3295300FF4CED /* Object.c in Sources */,
+				E4CC8DC11B6E1DFA003D7821 /* Stack.c in Sources */,
+				E4E404221A5B2E8F00034386 /* utf8.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E45FA2F71AA0D24200F032A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_DEBUG_INFORMATION_LEVEL = default;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E45FA2F81AA0D24200F032A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_DEBUG_INFORMATION_LEVEL = default;
+				COPY_PHASE_STRIP = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		E4E4040C1A5B2E4400034386 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = PRIVATE_EMOJICODE;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E4E4040D1A5B2E4400034386 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_LOCATION = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PREPROCESSOR_DEFINITIONS = PRIVATE_EMOJICODE;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E4E4040F1A5B2E4400034386 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E4E404101A5B2E4400034386 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E45FA2F91AA0D24300F032A8 /* Build configuration list for PBXNativeTarget "EmojicodeCompiler" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E45FA2F71AA0D24200F032A8 /* Debug */,
+				E45FA2F81AA0D24200F032A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E4E404021A5B2E4300034386 /* Build configuration list for PBXProject "Emojicode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4E4040C1A5B2E4400034386 /* Debug */,
+				E4E4040D1A5B2E4400034386 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E4E4040E1A5B2E4400034386 /* Build configuration list for PBXNativeTarget "Emojicode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4E4040F1A5B2E4400034386 /* Debug */,
+				E4E404101A5B2E4400034386 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E4E403FF1A5B2E4300034386 /* Project object */;
+}
