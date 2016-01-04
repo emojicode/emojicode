@@ -7,6 +7,7 @@
 //
 
 #include "EmojicodeCompiler.h"
+#include "Procedure.h"
 #include <string.h>
 
 typedef enum {
@@ -20,23 +21,24 @@ void reportDocumentation(Token *documentationToken) {
         return;
     }
     
-    String string = (String){.characters = documentationToken->value, .length = documentationToken->valueLength};
+    const char *d = documentationToken->value.utf8CString();
     printf("\"documentation\":");
-    printJSONStringToFile(stringToChar(&string), stdout);
+    printJSONStringToFile(d, stdout);
     putc(',', stdout);
+    delete d;
 }
 
-void reportType(char *key, Type type, bool last){
-    char *returnTypeName = typeToString(type, typeNothingness, false);
+void reportType(const char *key, Type type, bool last){
+    const char *returnTypeName = type.toString(typeNothingness, false);
     
     if (key) {
-        printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s},", key, typePackage(type), returnTypeName, type.optional ? "true" : "false");
+        printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s},", key, type.typePackage(), returnTypeName, type.optional ? "true" : "false");
     }
     else {
-        printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s", typePackage(type), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
+        printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s", type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
     }
     
-    free(returnTypeName);
+    delete returnTypeName;
 }
 
 void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last){
@@ -55,16 +57,18 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last){
     reportDocumentation(p->documentationToken);
     
     printf("\"arguments\": [");
-    for (int i = 0; i < p->arguments.count; i++) {
+    for (int i = 0; i < p->arguments.size(); i++) {
         printf("{");
-        Variable variable = p->arguments.variables[i];
+        Variable variable = p->arguments[i];
         
-        String string = (String){.characters = variable.name->value, .length = variable.name->valueLength};
+        const char *varname = variable.name->value.utf8CString();
         
         reportType("type", variable.type, false);
         printf("\"name\":");
-        printJSONStringToFile(stringToChar(&string), stdout);
-        printf("}%s", i + 1 == p->arguments.count ? "" : ",");
+        printJSONStringToFile(varname, stdout);
+        printf("}%s", i + 1 == p->arguments.size() ? "" : ",");
+        
+        delete varname;
     }
     printf("]");
     
@@ -75,9 +79,7 @@ void report(const char *packageName){
     bool printedClass = false;
     printf("{");
     printf("\"classes\": [");
-    for(size_t i = 0; i < classes->count; i++){
-        Class *eclass = getList(classes, i);
-        
+    for(auto eclass : classes){
         if (strcmp(eclass->package->name, packageName) != 0) {
             continue;
         }

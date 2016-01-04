@@ -10,6 +10,7 @@
 #define __Emojicode__Writer__
 
 #include "EmojicodeCompiler.h"
+#include "Procedure.h"
 
 uint32_t writtenCoins;
 

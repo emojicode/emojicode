@@ -68,7 +68,7 @@ size_t u8_charlen(uint32_t ch)
     return 0;
 }
 
-size_t u8_codingsize(uint32_t *wcstr, size_t n)
+size_t u8_codingsize(const uint32_t *wcstr, size_t n)
 {
     size_t i, c=0;
 

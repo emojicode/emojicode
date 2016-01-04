@@ -16,6 +16,17 @@
 #include "ClassParser.h"
 #include "StaticAnalyzer.h"
 
+char* EmojicodeString::utf8CString() const {
+    //Size needed for UTF8 representation
+    size_t ds = u8_codingsize(c_str(), size());
+    //Allocate space for the UTF8 string
+    char *utf8str = new char[ds + 1];
+    //Convert
+    size_t written = u8_toutf8(utf8str, ds, c_str(), size());
+    utf8str[written] = 0;
+    return utf8str;
+}
+
 Token* currentToken;
 Token* consumeToken(){
     currentToken = currentToken->nextToken;
@@ -24,17 +35,6 @@ Token* consumeToken(){
 
 static bool outputJSON = false;
 static bool gaveWarning = false;
-
-char* stringToChar(String *str){
-    //Size needed for UTF8 representation
-    size_t ds = u8_codingsize(str->characters, str->length);
-    //Allocate space for the UTF8 string
-    char *utf8str = malloc(ds + 1);
-    //Convert
-    size_t written = u8_toutf8(utf8str, ds, str->characters, str->length);
-    utf8str[written] = 0;
-    return utf8str;
-}
 
 void printJSONStringToFile(const char *string, FILE *f){
     char c;
@@ -195,7 +195,7 @@ void loadStandard(){
 
 int main(int argc, char * argv[]) {
     const char *reportPackage = NULL;
-    char *outPath = NULL;
+    std::string outPath(0);
     
     //Parse options
     char ch;
@@ -232,29 +232,24 @@ int main(int argc, char * argv[]) {
         compilerWarning(NULL, "No input files provided.");
         return 1;
     }
-    if(outPath == NULL){
-        size_t pathLength = strlen(argv[0]);
-        outPath = malloc(pathLength + 1);
-        strcpy(outPath, argv[0]);
-        outPath[pathLength - 1] = 'b';
+    
+    if(outPath.size() == 0){
+        outPath = std::string(argv[0]);
+        outPath[-1] = 'b';
     }
     
     foundStartingFlag = false;
     
-    initTypes();
     loadStandard();
     
-    Package *pkg = malloc(sizeof(Package));
-    pkg->version = (PackageVersion){1, 0};
-    pkg->name = "_";
-    pkg->requiresNativeBinary = false;
+    Package *pkg = new Package("_", (PackageVersion){1, 0}, false);
     
     packages.push_back(pkg);
     for (int i = 0; i < argc; i++) {
         parseFile(argv[i], pkg, false, globalNamespace);
     }
     
-    FILE *out = fopen(outPath, "wb");
+    FILE *out = fopen(outPath.c_str(), "wb");
     if(!out || ferror(out)){
         compilerError(NULL, "Couldn't write output file.");
         return 1;

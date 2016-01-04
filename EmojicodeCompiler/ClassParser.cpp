@@ -93,11 +93,9 @@ void parseArgumentList(Procedure &p){
         Token *variableToken = consumeToken();
         tokenTypeCheck(VARIABLE, variableToken);
         
-        Variable variable;
-        variable.name = variableToken;
-        variable.type = parseAndFetchType(p.eclass, p.enamespace, AllowGenericTypeVariables, NULL);
+        auto type = parseAndFetchType(p.eclass, p.enamespace, AllowGenericTypeVariables, NULL);
         
-        p.arguments.push_back(variable);
+        p.arguments.push_back(Variable(Variable(variableToken, type)));
     }
 }
 
@@ -141,7 +139,7 @@ static void checkTypeValidity(EmojicodeChar name, EmojicodeChar enamespace, bool
     bool existent;
     Type type = fetchRawType(name, enamespace, optional, token, &existent);
     if (existent) {
-        char *str = typeToString(type, typeNothingness, true);
+        const char *str = type.toString(typeNothingness, true);
         compilerError(currentToken, "Type %s is already defined.", str);
     }
 }
@@ -161,6 +159,7 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, Token *documentatio
     
     auto protocol = new Protocol(name, enamespace, index);
     protocol->documentationToken = documentationToken;
+    //TODO: insert
     
     Token *token = consumeToken();
     tokenTypeCheck(IDENTIFIER, token);
@@ -190,17 +189,17 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, Token *documentatio
     }
 }
 
-void parseEnum(EmojicodeChar theNamespace, Package *pkg, Token *documentationToken){
+void parseEnum(EmojicodeChar theNamespace, Package &pkg, Token *documentationToken){
     EmojicodeChar name, enamespace;
     bool optional;
     Token *enumNameToken = parseTypeName(&name, &enamespace, &optional, theNamespace);
     
-    checkTypeValidity(name, enamespace, optional, enumNameToken);
+    checkTypeValidity(name, theNamespace, optional, enumNameToken);
     
-    Enum *eenum = newEnum(name, enamespace);
+    Enum *eenum = new Enum(name, pkg, documentationToken);
+    //TODO: insert
+    
     EmojicodeInteger v = 0;
-    eenum->package = pkg;
-    eenum->documentationToken = documentationToken;
     
     Token *token = consumeToken();
     tokenTypeCheck(IDENTIFIER, token);
@@ -286,11 +285,9 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                     compilerError(token, "You exceeded the limit of 65,535 instance variables.");
                 }
 
-                Variable variable;
-                variable.name = ivarName;
-                variable.type = parseAndFetchType(eclass, theNamespace, AllowGenericTypeVariables, NULL);
+                auto type = parseAndFetchType(eclass, theNamespace, AllowGenericTypeVariables, NULL);
                 
-                eclass->instanceVariables.push_back(variable);
+                eclass->instanceVariables.push_back(Variable(ivarName, type));
             }
             break;
             case E_CROCODILE: {
@@ -345,7 +342,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                         startingFlag.eclass = eclass;
                         startingFlag.method = classMethod;
                         
-                        if(!typesCompatible(classMethod->returnType, typeInteger, typeForClass(eclass))){
+                        if(!classMethod->returnType.compatibleTo(typeInteger, Type(eclass, false))){
                             compilerError(methodName, "🏁 method must return 🚂.");
                         }
                     }
@@ -390,8 +387,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 for (size_t i = 0; i < requiredInitializers->size(); i++) {
                     Initializer *c = (*requiredInitializers)[i];
                     if(c->name == initializer->name){
-                        requiredInitializers->
-                        listRemoveByIndex(requiredInitializers, i);
+                        requiredInitializers->erase(requiredInitializers->begin() + i);
                         break;
                     }
                 }
@@ -429,7 +425,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, Toke
     eclass->documentationToken = documentationToken;
     
     while (nextToken()->value[0] == E_SPIRAL_SHELL) {
-        Token *token = consumeToken();
+        consumeToken();
         
         Token *variable = consumeToken();
         tokenTypeCheck(VARIABLE, variable);
@@ -440,10 +436,10 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, Toke
         Type rType(TT_REFERENCE, false);
         rType.reference = eclass->ownGenericArgumentCount;
         
-        if (dictionaryLookup(eclass->ownGenericArgumentVariables, variable->value, variable->valueLength)) {
+        if (eclass->ownGenericArgumentVariables.count(variable->value)) {
             compilerError(variable, "A generic argument variable with the same name is already in use.");
         }
-        dictionarySet(eclass->ownGenericArgumentVariables, variable->value, variable->valueLength * sizeof(EmojicodeChar), rType);
+        eclass->ownGenericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable->value, rType));
         eclass->ownGenericArgumentCount++;
     }
     
@@ -462,30 +458,16 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, Toke
         
         eclass->superclass = type.eclass;
         eclass->genericArgumentCount = eclass->ownGenericArgumentCount + eclass->superclass->genericArgumentCount;
+        eclass->genericArgumentContraints.insert(eclass->genericArgumentContraints.begin(), eclass->superclass->genericArgumentContraints.begin(), eclass->superclass->genericArgumentContraints.end());
         
-        Type *genericArgumentContraints = malloc(sizeof(Type) * eclass->genericArgumentCount);
-        memcpy(genericArgumentContraints, eclass->superclass->genericArgumentContraints, eclass->superclass->genericArgumentCount * sizeof(Type));
-        memcpy(genericArgumentContraints + eclass->superclass->genericArgumentCount, eclass->genericArgumentContraints, eclass->ownGenericArgumentCount * sizeof(Type));
-        
-        eclass->genericArgumentContraints = genericArgumentContraints;
-        
-        if (eclass->ownGenericArgumentCount) {
-            for (size_t i = 0; i < eclass->ownGenericArgumentVariables->capacity; i++) {
-                if(eclass->ownGenericArgumentVariables->slots[i].key){
-                    Type *rType = eclass->ownGenericArgumentVariables->slots[i].value;
-                    rType->reference += eclass->superclass->genericArgumentCount;
-                }
-            }
-        }
-        
-        int offset = initializeAndCopySuperGenericArguments(&type);
+        int offset = type.initializeAndCopySuperGenericArguments();
         if (offset >= 0) {
             int i = 0;
             while(nextToken()->value[0] == 0x1F41A){
                 Token *token = consumeToken();
                 
                 Type ta = parseAndFetchType(eclass, theNamespace, AllowGenericTypeVariables, NULL);
-                validateGenericArgument(ta, i, type, token);
+                type.validateGenericArgument(ta, i, token);
                 type.genericArguments[offset + i] = ta;
                 
                 i++;
@@ -507,37 +489,26 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, Toke
         eclass->genericArgumentCount = eclass->ownGenericArgumentCount;
     }
     
-    EmojicodeChar ns[2] = {enamespace, className};
-    dictionarySet(classesRegister, &ns, sizeof(ns), eclass);
+    std::array<EmojicodeChar, 2> ns = {enamespace, className};
+    classesRegister[ns] = eclass;
     
-    List *requiredInitializers;
-    if(eclass->superclass == NULL){
-        requiredInitializers = newList();
-    }
-    else {
+    std::vector<Initializer *> requiredInitializers;
+    if (eclass->superclass != NULL) {
         //this list contains methods that must be implemented
-        requiredInitializers = listFromList(eclass->superclass->requiredInitializerList);
+        requiredInitializers = std::vector<Initializer *>(eclass->superclass->requiredInitializerList);
     }
     
-    //Allocate space for the instance variable
-    eclass->instanceVariables = malloc(5 * sizeof(Variable*));
-    eclass->instanceVariableCount = 0;
-    eclass->instanceVariablesSize = 5;
+    eclass->index = classes.size();
+    classes.push_back(eclass);
     
-    eclass->index = classes->count;
+    parseClassBody(eclass, &requiredInitializers, allowNative, theNamespace);
     
-    appendList(classes, eclass);
-    
-    parseClassBody(eclass, requiredInitializers, allowNative, theNamespace);
-    
-    //The eclass must be complete in its intial definition
-    if (requiredInitializers->count) {
-        Initializer *c = getList(requiredInitializers, 0);
-        ecCharToCharStack(c->pc.name, name);
+    //The class must be complete in its intial definition
+    if (requiredInitializers.size()) {
+        Initializer *c = requiredInitializers[0];
+        ecCharToCharStack(c->name, name);
         compilerError(eclass->classBegin, "Required initializer %s was not implemented.", name);
     }
-    
-    listRelease(requiredInitializers);
 }
 
 void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar theNamespace){
@@ -580,11 +551,11 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
             tokenTypeCheck(VARIABLE, nameToken);
             tokenTypeCheck(IDENTIFIER, namespaceToken);
             
-            size_t ds = u8_codingsize(nameToken->value, nameToken->valueLength);
+            size_t ds = u8_codingsize(nameToken->value.c_str(), nameToken->valueLength);
             //Allocate space for the UTF8 string
-            char *name = malloc(ds + 1);
+            char *name = new char[ds + 1];
             //Convert
-            size_t written = u8_toutf8(name, ds, nameToken->value, nameToken->valueLength);
+            size_t written = u8_toutf8(name, ds, nameToken->value.c_str(), nameToken->valueLength);
             name[written] = 0;
             
             packageRegisterHeaderNewest(name, namespaceToken->value[0]);
@@ -596,7 +567,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
             continue;
         }
         else if (theToken->value[0] == E_TURKEY) {
-            parseEnum(theNamespace, pkg, documentationToken);
+            parseEnum(theNamespace, *pkg, documentationToken);
             continue;
         }
         else if (theToken->value[0] == E_RADIO) {

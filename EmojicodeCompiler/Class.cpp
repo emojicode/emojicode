@@ -8,12 +8,12 @@
 
 #include "EmojicodeCompiler.h"
 
-std::map<EmojicodeChar[2], Class*> classesRegister;
-std::map<EmojicodeChar[2], Protocol*> protocolsRegister;
-std::map<EmojicodeChar[2], Enum*> enumsRegister;
+std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;
+std::map<std::array<EmojicodeChar, 2>, Protocol*> protocolsRegister;
+std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
 
 Class* getClass(EmojicodeChar name, EmojicodeChar enamespace){
-    EmojicodeChar ns[2] = {enamespace, name};
+    std::array<EmojicodeChar, 2> ns = {enamespace, name};
     Class *cl = classesRegister.find(ns)->second;
     return cl;
 }
@@ -79,40 +79,10 @@ void addProtocol(Class *c, Protocol *protocol){
 //MARK: Protocol
 
 Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace){
-    EmojicodeChar ns[2] = {enamespace, name};
+    std::array<EmojicodeChar, 2> ns = {enamespace, name};
     return protocolsRegister.find(ns)->second;
 }
 
 Method* protocolGetMethod(EmojicodeChar name, Protocol *protocol){
     return protocol->methods.find(name)->second;
-}
-
-
-//MARK: Enums
-
-Enum* newEnum(EmojicodeChar name, EmojicodeChar enamespace){
-    Enum *eenum = malloc(sizeof(Enum));
-    
-    eenum->name = name;
-    eenum->dictionary = newDictionary();
-    
-    EmojicodeChar ns[2] = {enamespace, name};
-    dictionarySet(enumsRegister, &ns, sizeof(ns), eenum);
-    
-    return eenum;
-}
-
-void enumAddValue(EmojicodeChar name, Enum *eenum, EmojicodeInteger value) {
-    EmojicodeInteger *im = malloc(sizeof(EmojicodeInteger));
-    *im = value;
-    dictionarySet(eenum->dictionary, &name, sizeof(name), im);
-}
-
-Enum* getEnum(EmojicodeChar name, EmojicodeChar enamespace){
-    EmojicodeChar ns[2] = {enamespace, name};
-    return dictionaryLookup(enumsRegister, &ns, sizeof(ns));
-}
-
-EmojicodeInteger* enumGetValue(EmojicodeChar name, Enum *eenum){
-    return dictionaryLookup(eenum->dictionary, &name, sizeof(name));
 }

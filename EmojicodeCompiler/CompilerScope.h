@@ -14,24 +14,24 @@
 ScopeWrapper *currentScopeWrapper;
 
 /** A variable scope */
-typedef struct Scope {
+struct Scope {
     /** 
      * This map contains the variables and values.
      * @warning Do not change directly. Use @c setVariable, and @c getVariable.
      * @private
      */
-    Dictionary *map;
+    std::map<EmojicodeString, CompilerVariable*> map;
     /** Whether the top scopes shall be accessable. */
     bool stop;
-} Scope;
+};
 
-typedef struct ScopeWrapper {
+struct ScopeWrapper {
     struct ScopeWrapper *topScope;
     Scope *scope;
-} ScopeWrapper;
+};
 
 
-/** Returns the base scope needed for every thread */
+/** Returns the base scope. */
 void initScope();
 
 /** Create a new subscope */

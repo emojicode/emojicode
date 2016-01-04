@@ -35,6 +35,9 @@ enum TypeType {
 struct Type {
 public:
     Type(TypeType t, bool o) : optional(o), type(t) {}
+    Type(TypeType t, bool o, uint16_t r) : optional(o), type(t), reference(r) {}
+    Type(Class *c, bool o);
+    Type(Class *c) : Type(c, false) {};
     Type(Protocol *p, bool o) : optional(o), protocol(p), type(TT_PROTOCOL) {}
     Type(Enum *e, bool o) : optional(o), eenum(e), type(TT_ENUM) {}
     
@@ -56,16 +59,22 @@ public:
     
     /** Whether the given type is a valid argument for the generic argument at index @c i. */
     void validateGenericArgument(Type type, uint16_t i, Token *token);
+    
+    /** Copies the super generic arguments and returns the offset from which on this class’s generic arguments come. */
+    int initializeAndCopySuperGenericArguments();
+    
+    const char* toString(Type parentType, bool includeNsAndOptional) const; 
 private:
+    void typeName(Type type, Type parentType, bool includeNsAndOptional, std::string *string) const;
     Type typeConstraintForReference(Class *c);
     Type resolveOnSuperArguments(Class *c, bool *resolved);
 };
 
-typedef enum {
+enum TypeDynamism {
     NoDynamism = 0,
     AllowGenericTypeVariables = 0b1,
     AllowDynamicClassType = 0b10
-} TypeDynamism;
+};
 
 #define typeInteger (Type(TT_INTEGER, false))
 #define typeBoolean (Type(TT_BOOLEAN, false))
@@ -76,20 +85,8 @@ typedef enum {
 #define typeNothingness (Type(TT_NOTHINGNESS, false))
 #define typeSomeobject (Type(TT_SOMEOBJECT, false))
 
-/** Wrapps a eclass into a Type */
-extern Type typeForClass(Class *eclass);
-
-/** Wrapps a eclass into an optional Type */
-extern Type typeForClassOptional(Class *eclass);
-
-/** Determines if the type is wrapping @c CL_NOTHINGNESS */
-extern bool typeIsNothingness(Type a);
-
-
-
 extern Type resolveTypeReferences(Type t, Type o);
 
-extern int initializeAndCopySuperGenericArguments(Type *type);
 extern void checkEnoughGenericArguments(uint16_t count, Type type, Token *token);
 
 /**

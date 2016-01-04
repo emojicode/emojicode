@@ -20,7 +20,7 @@
  */
 void analyzeClassesAndWrite(FILE *out);
 
-typedef struct {
+struct StaticInformation {
     /** This points to the Initializer if we are analyzing an initializer. Set to @c NULL in an initializer. */
     Initializer *initializer;
     
@@ -51,7 +51,7 @@ typedef struct {
     Type classTypeContext;
     
     EmojicodeChar currentNamespace;
-} StaticInformation;
+};
 
 /** Parses a token and returns the type expected at runtime */
 Type typeParse(Token *token, StaticInformation *);

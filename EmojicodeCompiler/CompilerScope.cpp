@@ -9,10 +9,9 @@
 #include "CompilerScope.h"
 
 Scope* newSubscope(bool stop){
-    Scope *ss = malloc(sizeof(Scope));
-    ss->map = newDictionary();
-    ss->stop = stop;
-    return ss;
+    Scope *s = new Scope;
+    s->stop = stop;
+    return s;
 }
 
 Scope* popScope(){
@@ -24,12 +23,11 @@ Scope* popScope(){
 }
 
 void releaseScope(Scope *s){
-    dictionaryFree(s->map, free);
-    free(s);
+    delete s;
 }
 
 void pushScope(Scope *scope){
-    ScopeWrapper *sw = malloc(sizeof(ScopeWrapper));
+    ScopeWrapper *sw = new ScopeWrapper;
     sw->topScope = currentScopeWrapper;
     sw->scope = scope;
     currentScopeWrapper = sw;
@@ -38,8 +36,8 @@ void pushScope(Scope *scope){
 void setVariable(Token *variable, CompilerVariable *value){
     //Search all scopes up
     for (ScopeWrapper *scopeWrapper = currentScopeWrapper; scopeWrapper != NULL; scopeWrapper = scopeWrapper->topScope) {
-        if(dictionaryLookup(scopeWrapper->scope->map, variable->value, variable->valueLength * sizeof(EmojicodeChar)) != NULL){
-            dictionarySet(scopeWrapper->scope->map, variable->value, variable->valueLength  * sizeof(EmojicodeChar), value);
+        if(scopeWrapper->scope->map.count(variable->value)){
+            setLocalVariable(variable, value, scopeWrapper->scope);
             return;
         }
         if (scopeWrapper->scope->stop) {
@@ -47,12 +45,11 @@ void setVariable(Token *variable, CompilerVariable *value){
         }
     }
 
-    //Current scope never must be NULL - otherwise a crash is legal
-    dictionarySet(currentScopeWrapper->scope->map, variable->value, variable->valueLength * sizeof(EmojicodeChar), value);
+    setLocalVariable(variable, value, currentScopeWrapper->scope);
 }
 
 void setLocalVariable(Token *variable, CompilerVariable *value, Scope *scope){
-    dictionarySet(scope->map, variable->value, variable->valueLength * sizeof(EmojicodeChar), value);
+    scope->map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(variable->value, value));
 }
 
 CompilerVariable* getVariable(Token *variable, uint8_t *scopesUp){
@@ -61,7 +58,7 @@ CompilerVariable* getVariable(Token *variable, uint8_t *scopesUp){
     CompilerVariable *value;
     ScopeWrapper *scopeWrapper = currentScopeWrapper;
     for (; scopeWrapper != NULL; scopeWrapper = scopeWrapper->topScope, (*scopesUp)++) {
-        if((value = dictionaryLookup(scopeWrapper->scope->map, variable->value, variable->valueLength * sizeof(EmojicodeChar))) != NULL){
+        if((value = getLocalVariable(variable, scopeWrapper->scope)) != NULL){
             return value;
         }
         if (scopeWrapper->scope->stop) {
@@ -73,6 +70,7 @@ CompilerVariable* getVariable(Token *variable, uint8_t *scopesUp){
 }
 
 CompilerVariable* getLocalVariable(Token *variable, Scope *scope){
-    return dictionaryLookup(scope->map, variable->value, variable->valueLength * sizeof(EmojicodeChar));
+    auto i = scope->map.find(variable->value);
+    return i == scope->map.end() ? NULL : i->second;
 }
 

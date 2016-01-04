@@ -46,7 +46,7 @@ size_t u8_seqlen(const char *s);
 size_t u8_charlen(uint32_t ch);
 
 /* computes the # of bytes needed to encode a WC string as UTF-8 */
-size_t u8_codingsize(uint32_t *wcstr, size_t n);
+size_t u8_codingsize(const uint32_t *wcstr, size_t n);
 
 char read_escape_control_char(char c);
 

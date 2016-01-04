@@ -10,6 +10,7 @@
 #define __Emojicode__ClassParser__
 
 #include "EmojicodeCompiler.h"
+#include "Procedure.h"
 
 /**
  * The eclass parsers reads the source code file that only consists of type definitions (eclass and protocols).

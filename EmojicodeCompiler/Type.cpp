@@ -48,6 +48,18 @@ Type Type::resolveOnSuperArguments(Class *c, bool *resolved){
     }
 }
 
+int Type::initializeAndCopySuperGenericArguments(){
+    if (this->type == TT_CLASS) {
+        this->genericArguments = std::vector<Type>(this->eclass->superGenericArguments);
+        int offset = this->eclass->genericArgumentCount - this->eclass->ownGenericArgumentCount;
+        
+        if (this->eclass->ownGenericArgumentCount){
+            return offset;
+        }
+    }
+    return -1;
+}
+
 /** Returns the name of a type */
 
 bool Type::compatibleTo(Type to, Type parentType){
@@ -106,9 +118,9 @@ bool Type::compatibleTo(Type to, Type parentType){
         return (to.optional || !this->optional) && this->compatibleTo(to.typeConstraintForReference(parentType.eclass), parentType);
     }
     else if(this->type == TT_CALLABLE && to.type == TT_CALLABLE) {
-        if (typesCompatible(this->genericArguments[0], to.genericArguments[0], parentType) && to.arguments == this->arguments) {
+        if (this->genericArguments[0].compatibleTo(to.genericArguments[0], parentType) && to.arguments == this->arguments) {
             for (int i = 1; i <= to.arguments; i++) {
-                if (!typesCompatible(to.genericArguments[i], this->genericArguments[i], parentType)) {
+                if (!to.genericArguments[i].compatibleTo(this->genericArguments[i], parentType)) {
                     return false;
                 }
             }
@@ -148,7 +160,7 @@ Type fetchRawType(EmojicodeChar name, EmojicodeChar enamespace, bool optional, T
     
     Class *eclass = getClass(name, enamespace);
     if (eclass) {
-        Type t = typeForClass(eclass);
+        Type t = Type(eclass, optional);
         t.optional = optional;
         return t;
     }
@@ -183,22 +195,6 @@ Type resolveTypeReferences(Type t, Type o){
 
 //MARK: Type Parsing Utility
 
-int initializeAndCopySuperGenericArguments(Type *type){
-    if (type->type == TT_CLASS) {
-        type->genericArguments = new Type[type->eclass->genericArgumentCount];
-        int offset = type->eclass->genericArgumentCount - type->eclass->ownGenericArgumentCount;
-        
-        if (type->eclass->superclass){
-            memcpy(type->genericArguments, type->eclass->superGenericArguments, offset * sizeof(Type));
-        }
-        
-        if (type->eclass->ownGenericArgumentCount){
-            return offset;
-        }
-    }
-    return -1;
-}
-
 void Type::validateGenericArgument(Type ta, uint16_t i, Token *token){
     if(this->eclass->superclass){
         i += this->eclass->superclass->genericArgumentCount;
@@ -210,7 +206,7 @@ void Type::validateGenericArgument(Type ta, uint16_t i, Token *token){
 
 void checkEnoughGenericArguments(uint16_t count, Type type, Token *token){
     if(count != type.eclass->ownGenericArgumentCount){
-        char *typeString = typeToString(type, typeNothingness, true);
+        const char *typeString = type.toString(typeNothingness, false);
         compilerError(token, "Type %s requires %d generic arguments, but %d were given.", typeString, type.eclass->ownGenericArgumentCount, count);
     }
 }
@@ -267,20 +263,16 @@ Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism d
             variableToken = consumeToken();
             optional = true;
         }
-        if (eclass->ownGenericArgumentVariables) {
-            Type *type = dictionaryLookup(eclass->ownGenericArgumentVariables, variableToken->value, variableToken->valueLength * sizeof(EmojicodeChar));
-            if (type){
-                type->optional = optional;
-                return *type;
-            }
-            else {
-                String string = {variableToken->valueLength, variableToken->value};
-                char *s = stringToChar(&string);
-                compilerError(variableToken, "No such generic type variable \"%s\".", s);
-            }
+
+        
+        auto it = eclass->ownGenericArgumentVariables.find(variableToken->value);
+        if (it != eclass->ownGenericArgumentVariables.end()){
+            Type type = it->second;
+            type.optional = optional;
+            return type;
         }
         else {
-            compilerError(variableToken, "Variable used as type outside generic context.");
+            compilerError(variableToken, "No such generic type variable \"%s\".", variableToken->value.utf8CString());
         }
     }
     else if (nextToken()->value[0] == E_RAT) {
@@ -293,7 +285,7 @@ Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism d
         if (dynamicType) {
             *dynamicType = true;
         }
-        return typeForClass(eclass);
+        return Type(eclass, false);
     }
     else if (nextToken()->value[0] == E_GRAPES || (nextToken()->value[0] == E_CANDY && nextToken()->nextToken->type == VARIABLE)) {
         bool optional = false;
@@ -339,14 +331,14 @@ Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism d
             compilerError(token, "Could not find type %s in enamespace %s.", nameString, namespaceString);
         }
         
-        int offset = initializeAndCopySuperGenericArguments(&type);
+        int offset = type.initializeAndCopySuperGenericArguments();
         if (offset >= 0) {
             int i = 0;
             while(nextToken()->value[0] == E_SPIRAL_SHELL){
                 Token *token = consumeToken();
                 
                 Type ta = parseAndFetchType(eclass, theNamespace, dynamism, NULL);
-                validateGenericArgument(ta, i, type, token);
+                ta.validateGenericArgument(ta, i, token);
                 type.genericArguments[offset + i] = ta;
                 
                 i++;
@@ -359,13 +351,13 @@ Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism d
 
 //MARK: Type Interferring
 
-void determineCommonType(Type t, Type *commonType, bool *firstTypeFound, Type parentType){
+void determineCommonType(Type t, Type *commonType, bool *firstTypeFound, Type contextType){
     if (!*firstTypeFound) {
         *commonType = t;
         *firstTypeFound = true;
     }
-    else if (!typesCompatible(t, *commonType, parentType)) {
-        if (typesCompatible(*commonType, t, parentType)) {
+    else if (!t.compatibleTo(*commonType, contextType)) {
+        if (commonType->compatibleTo(t, contextType)) {
             *commonType = t;
         }
         else if(t.type == TT_CLASS && commonType->type == TT_CLASS) {
@@ -384,46 +376,16 @@ void emitCommonTypeWarning(Type *commonType, bool *firstTypeFound, Token *token)
     }
 }
 
-//MARK: Initializers
-
-Type typeForClass(Class *eclass){
-    Type t(TT_CLASS, false);
-    t.eclass = eclass;
-    
-    for (int i = 0; i < eclass->genericArgumentCount; i++) {
-        t.genericArguments[i] = (Type){.type = TT_REFERENCE, .optional = false, .reference = i};
-    }
-    
-    return t;
-}
-
-Type typeForClassOptional(Class *eclass){
-    Type t(TT_CLASS, optional);
-    t.type = TT_CLASS;
-    t.optional = true;
-    t.eclass = eclass;
-    
-    for (int i = 0; i < eclass->genericArgumentCount; i++) {
-        t.genericArguments[i] = (Type){.type = TT_REFERENCE, .optional = false, .reference = i};
-    }
-    
-    return t;
-}
-
-bool typeIsNothingness(Type a){
-    return a.type == TT_NOTHINGNESS;
-}
-
 //MARK: Type Visulisation
 
-const char* typePackage(Type type){
-    switch (type.type) {
+const char* Type::typePackage(){
+    switch (this->type) {
         case TT_CLASS:
-            return type.eclass->package->name;
+            return this->eclass->package->name;
         case TT_PROTOCOL:
-            return type.protocol->package->name;
+            return this->protocol->package->name;
         case TT_ENUM:
-            return type.eenum->package.name;
+            return this->eenum->package.name;
         case TT_INTEGER:
         case TT_NOTHINGNESS:
         case TT_BOOLEAN:
@@ -437,106 +399,111 @@ const char* typePackage(Type type){
     }
 }
 
-void typeName(Type type, Type parentType, bool includeNsAndOptional, StringBuilder *sb){
+void stringAppendEc(EmojicodeChar c, std::string *string){
+    ecCharToCharStack(c, sc);
+    string->append(sc);
+}
+
+Type::Type(Class *c, bool o) : optional(o), eclass(c), type(TT_CLASS) {
+    for (int i = 0; i < eclass->genericArgumentCount; i++) {
+        genericArguments[i] = Type(TT_REFERENCE, false, i);
+    }
+}
+
+void Type::typeName(Type type, Type parentType, bool includeNsAndOptional, std::string *string) const {
     if (includeNsAndOptional) {
         if(type.optional){
-            stringBuilderAppend(E_CANDY, sb);
+            stringAppendEc(E_CANDY, string);
         }
         
         switch (type.type) {
             case TT_CLASS:
-                stringBuilderAppend(type.eclass->enamespace, sb);
+                stringAppendEc(type.eclass->enamespace, string);
                 break;
             case TT_PROTOCOL:
-                stringBuilderAppend(type.protocol->enamespace, sb);
+                stringAppendEc(type.protocol->enamespace, string);
                 break;
             case TT_CALLABLE:
             case TT_REFERENCE:
                 break;
             default:
-                stringBuilderAppend(E_LARGE_RED_CIRCLE, sb);
+                stringAppendEc(E_LARGE_RED_CIRCLE, string);
                 break;
         }
     }
     
     switch (type.type) {
-        case TT_CLASS:
-            stringBuilderAppend(type.eclass->name, sb);
+        case TT_CLASS: {
+            stringAppendEc(type.eclass->name, string);
             
             int offset = type.eclass->genericArgumentCount - type.eclass->ownGenericArgumentCount;
             for (int i = 0, l = type.eclass->ownGenericArgumentCount; i < l; i++) {
-                stringBuilderAppend(E_SPIRAL_SHELL, sb);
-                typeName(type.genericArguments[offset + i], parentType, includeNsAndOptional, sb);
+                stringAppendEc(E_SPIRAL_SHELL, string);
+                typeName(type.genericArguments[offset + i], parentType, includeNsAndOptional, string);
             }
             
             return;
+        }
         case TT_PROTOCOL:
-            stringBuilderAppend(type.protocol->name, sb);
+            stringAppendEc(type.protocol->name, string);
             return;
         case TT_ENUM:
-            stringBuilderAppend(type.eenum->name, sb);
+            stringAppendEc(type.eenum->name, string);
             return;
         case TT_INTEGER:
-            stringBuilderAppend(E_STEAM_LOCOMOTIVE, sb);
+            stringAppendEc(E_STEAM_LOCOMOTIVE, string);
             return;
         case TT_NOTHINGNESS:
-            stringBuilderAppend(E_SPARKLES, sb);
+            stringAppendEc(E_SPARKLES, string);
             return;
         case TT_BOOLEAN:
-            stringBuilderAppend(E_OK_HAND_SIGN, sb);
+            stringAppendEc(E_OK_HAND_SIGN, string);
             return;
         case TT_SYMBOL:
-            stringBuilderAppend(E_INPUT_SYMBOL_FOR_SYMBOLS, sb);
+            stringAppendEc(E_INPUT_SYMBOL_FOR_SYMBOLS, string);
             return;
         case TT_DOUBLE:
-            stringBuilderAppend(E_ROCKET, sb);
+            stringAppendEc(E_ROCKET, string);
             return;
         case TT_SOMETHING:
-            stringBuilderAppend(E_MEDIUM_WHITE_CIRCLE, sb);
+            stringAppendEc(E_MEDIUM_WHITE_CIRCLE, string);
             return;
         case TT_SOMEOBJECT:
-            stringBuilderAppend(E_LARGE_BLUE_CIRCLE, sb);
+            stringAppendEc(E_LARGE_BLUE_CIRCLE, string);
             return;
         case TT_CALLABLE:
-            stringBuilderAppend(E_GRAPES, sb);
+            stringAppendEc(E_GRAPES, string);
             
             for (int i = 1; i <= type.arguments; i++) {
-                typeName(type.genericArguments[i], parentType, includeNsAndOptional, sb);
+                typeName(type.genericArguments[i], parentType, includeNsAndOptional, string);
             }
             
-            stringBuilderAppend(E_RIGHTWARDS_ARROW, sb);
-            typeName(type.genericArguments[0], parentType, includeNsAndOptional, sb);
-            stringBuilderAppend(E_WATERMELON, sb);
+            stringAppendEc(E_RIGHTWARDS_ARROW, string);
+            typeName(type.genericArguments[0], parentType, includeNsAndOptional, string);
+            stringAppendEc(E_WATERMELON, string);
             return;
         case TT_REFERENCE: {
             if (parentType.type == TT_CLASS) {
                 Class *eclass = parentType.eclass;
                 do {
-                    Dictionary *dict = eclass->ownGenericArgumentVariables;
-                    for (size_t i = 0; i < dict->capacity; i++) {
-                        if(dict->slots[i].key){
-                            Type *gtype = dict->slots[i].value;
-                            if (gtype->reference == type.reference) {
-                                EmojicodeChar *key = dict->slots[i].key;
-                                for (size_t j = 0, kl = dict->slots[i].kl / sizeof(EmojicodeChar); j < kl; j++) {
-                                    stringBuilderAppend(key[j], sb);
-                                }
-                                return;
-                            }
+                    for (auto it : eclass->ownGenericArgumentVariables) {
+                        if (it.second.reference == type.reference) {
+                            string->append(it.first.utf8CString());
+                            return;
                         }
                     }
                 } while ((eclass = eclass->superclass));
             }
             
-            stringBuilderAppend('T', sb);
-            stringBuilderAppend('0' + type.reference, sb);
+            stringAppendEc('T', string);
+            stringAppendEc('0' + type.reference, string);
             return;
         }
     }
 }
 
-char* typeToString(Type type, Type parentType, bool includeNsAndOptional){
-    StringBuilder *sb = newStringBuilder();
-    typeName(type, parentType, includeNsAndOptional, sb);
-    return stringBuilderFinalize(sb);
+const char* Type::toString(Type parentType, bool includeNsAndOptional) const {
+    std::string string;
+    typeName(*this, parentType, includeNsAndOptional, &string);
+    return string.c_str(); //TODO: dädäd
 }

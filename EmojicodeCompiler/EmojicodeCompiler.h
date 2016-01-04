@@ -14,6 +14,7 @@
 
 #include "Emojis.h"
 
+#include <array>
 #include <vector>
 #include <map>
 #include <string>
@@ -22,29 +23,21 @@ class Class;
 class Method;
 class Initializer;
 class ClassMethod;
-typedef struct Protocol Protocol;
-typedef struct Enum Enum;
+class Protocol;
+class Enum;
 typedef struct Scope Scope;
 typedef struct ScopeWrapper ScopeWrapper;
-
-__attribute__((deprecated))
-typedef struct List List;
-__attribute__((deprecated))
-typedef struct Dictionary Dictionary;
 typedef struct Token Token;
 
+class EmojicodeString: public std::basic_string<EmojicodeChar>  {
+public:
+    char* utf8CString() const;
+};
 
 std::vector<Class *> classes;
 
 #include "Type.h"
 
-/** String */
-typedef struct String {
-    /** The number of code points in @c characters. Strings are not null terminated! */
-    uint_fast32_t length;
-    /** The characters of this string. Strings are not null terminated! */
-    EmojicodeChar *characters;
-} String;
 
 typedef struct {
     Class *eclass;
@@ -98,7 +91,7 @@ typedef struct {
  */
 struct Token {
     TokenType type;
-    std::basic_string<EmojicodeChar> value;
+    EmojicodeString value;
     uint32_t valueLength;
     SourcePosition position;
     struct Token *nextToken;
@@ -119,14 +112,16 @@ bool tokenValueEqual(Token *a, Token *b);
  */
 void tokenTypeCheck(TokenType type, Token *token);
 
-typedef struct Variable {
+struct Variable {
+    Variable(Token *n, Type t) : name(n), type(t) {}
+    
     /** The name of the variable */
     Token *name;
     /** The ID of the variable */
     uint8_t id;
     /** The type */
     Type type;
-} Variable;
+};
 
 /*
  * MARK: Classes
@@ -178,7 +173,7 @@ public:
     /** The arguments for the classes from which this eclass inherits. */
     std::vector<Type> superGenericArguments;
     /** Generic type arguments as variables */
-    std::map<EmojicodeChar*, Type> ownGenericArgumentVariables;
+    std::map<EmojicodeString, Type> ownGenericArgumentVariables;
     
     /** The package in which this eclass was defined. */
     Package *package;
@@ -207,7 +202,10 @@ extern Class* getClass(EmojicodeChar name, EmojicodeChar enamespace);
 
 //MARK: Protocols
 
-struct Enum {
+class Enum {
+public:
+    Enum(EmojicodeChar name, Package& package, Token *dt) : name(name), package(package), documentationToken(dt) {}
+    
     EmojicodeChar name;
     std::map<EmojicodeChar, EmojicodeInteger> *dictionary;
     /** The package in which this eclass was defined. */
@@ -244,73 +242,6 @@ public:
     Token *documentationToken;
 };
 
-class Procedure {
-public:
-    Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
-              EmojicodeChar theNamespace, Token *dToken, bool overriding, Token *documentationToken) :
-        name(name), access(level), eclass(eclass), enamespace(theNamespace), dToken(dToken), overriding(overriding), documentationToken(documentationToken), returnType(typeNothingness) {}
-    
-    /** The procedure name. A Unicode code point for an emoji */
-    EmojicodeChar name;
-   
-    std::vector<Variable> arguments;
-    
-    /** Whether the method is native */
-    bool native : 1;
-    
-    bool final : 1;
-    bool overriding : 1;
-    
-    AccessLevel access;
-    /** Class which defined this method */
-    Class *eclass;
-    
-    /** Token at which this method was defined */
-    Token *dToken;
-    Token *documentationToken;
-    
-    uint16_t vti;
-    
-    /** Return type of the method */
-    Type returnType;
-    
-    Token *firstToken;
-    
-    EmojicodeChar enamespace;
-    
-    template <typename T> void duplicateDeclarationCheck(std::map<EmojicodeChar, T> dict);
-    
-    /**
-     * Check whether this procedure is breaking promises.
-     */
-    void checkPromises(Procedure *superProcedure, Type parentType);
-private:
-    const char *on;
-};
-
-class Method: public Procedure {
-    using Procedure::Procedure;
-    
-    const char *on = "Method";
-};
-
-class ClassMethod: public Procedure {
-    using Procedure::Procedure;
-    
-    const char *on = "Class Method";
-};
-
-class Initializer: public Procedure {
-public:
-    Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, EmojicodeChar theNamespace,
-                Token *dToken, bool overriding, Token *documentationToken, bool r, bool crn) : Procedure(name, level, final, eclass, theNamespace, dToken, overriding, documentationToken), required(r), canReturnNothingness(crn) {}
-    
-    bool required : 1;
-    bool canReturnNothingness : 1;
-    const char *on = "Initializer";
-};
-
-
 void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace);
 
 extern Class *CL_STRING;
@@ -320,15 +251,17 @@ extern Class *CL_DATA;
 extern Class *CL_DICTIONARY;
 extern Class *CL_ENUMERATOR;
 
-extern std::map<EmojicodeChar[2], Class*> classesRegister;
-extern std::map<EmojicodeChar[2], Protocol*> protocolsRegister;
-extern std::map<EmojicodeChar[2], Enum*> enumsRegister;
+extern std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;
+extern std::map<std::array<EmojicodeChar, 2>, Protocol*> protocolsRegister;
+extern std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
 
 extern Protocol *PR_ENUMERATEABLE;
 
 //MARK: Static Analyzation
 
-typedef struct {
+struct CompilerVariable {
+public:
+    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen) : type(type), initialized(initd), id(id), frozen(frozen) {};
     /** The type of the variable. **/
     Type type;
     /** The ID of the variable. */
@@ -339,7 +272,12 @@ typedef struct {
     Variable *variable;
     /** Indicating whether variable was frozen. */
     bool frozen;
-} CompilerVariable;
+    
+    /** Throws an error if the variable is not initalized. */
+    void uninitalizedError(Token *variableToken) const;
+    /** Throws an error if the variable is frozen. */
+    void frozenError(Token *variableToken) const;
+};
 
 
 //MARK: Errors
@@ -356,12 +294,6 @@ _Noreturn void compilerError(Token *token, const char *err, ...);
  * @param token Used to determine the error location. If @c NULL the error origin is the beginning of the document.
  */
 void compilerWarning(Token *token, const char *err, ...);
-
-/**
- * Creates a deep representation of the given type. 
- * @returns A pointer to a string which must be free’d.
- */
-char* typeToString(Type type, Type parentType, bool includeNs);
 
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
