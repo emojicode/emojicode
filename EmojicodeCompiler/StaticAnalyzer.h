@@ -16,7 +16,7 @@
  */
 
 /** 
- * Analyzes all class
+ * Analyzes all eclass
  */
 void analyzeClassesAndWrite(FILE *out);
 
@@ -41,13 +41,13 @@ typedef struct {
     /** Whether 🐕 or an instance variable has been acessed. */
     bool usedSelf : 1;
     
-    /** Set to true when compiling a class method. */
+    /** Set to true when compiling a eclass method. */
     bool inClassContext : 1;
     
     /** Whether the superinitializer has been called. */
     bool calledSuper : 1;
     
-    /** The class type of the class which is compiled. */
+    /** The eclass type of the eclass which is compiled. */
     Type classTypeContext;
     
     EmojicodeChar currentNamespace;

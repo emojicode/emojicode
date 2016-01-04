@@ -76,9 +76,9 @@ void report(const char *packageName){
     printf("{");
     printf("\"classes\": [");
     for(size_t i = 0; i < classes->count; i++){
-        Class *class = getList(classes, i);
+        Class *eclass = getList(classes, i);
         
-        if (strcmp(class->package->name, packageName) != 0) {
+        if (strcmp(eclass->package->name, packageName) != 0) {
             continue;
         }
         
@@ -89,41 +89,41 @@ void report(const char *packageName){
         
         printf("{");
         
-        ecCharToCharStack(class->name, className);
+        ecCharToCharStack(eclass->name, className);
         printf("\"name\": \"%s\",", className);
         
-        reportDocumentation(class->documentationToken);
+        reportDocumentation(eclass->documentationToken);
         
-        if (class->superclass) {
-            ecCharToCharStack(class->superclass->name, superClassName);
-            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", class->superclass->package->name, superClassName);
+        if (eclass->superclass) {
+            ecCharToCharStack(eclass->superclass->name, superClassName);
+            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", eclass->superclass->package->name, superClassName);
         }
         
         printf("\"methods\": [");
-        for(size_t i = 0; i < class->methodList->count; i++){
-            Method *method = getList(class->methodList, i);
-            reportProcedureInformation((Procedure *)method, Return, i + 1 == class->methodList->count);
+        for(size_t i = 0; i < eclass->methodList->count; i++){
+            Method *method = getList(eclass->methodList, i);
+            reportProcedureInformation((Procedure *)method, Return, i + 1 == eclass->methodList->count);
         }
         printf("],");
         
         printf("\"initializers\": [");
-        for(size_t i = 0; i < class->initializerList->count; i++){
-            Initializer *initializer = getList(class->initializerList, i);
-            reportProcedureInformation((Procedure *)initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == class->initializerList->count);
+        for(size_t i = 0; i < eclass->initializerList->count; i++){
+            Initializer *initializer = getList(eclass->initializerList, i);
+            reportProcedureInformation((Procedure *)initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == eclass->initializerList->count);
         }
         printf("],");
         
         printf("\"classMethods\": [");
-        for(size_t i = 0; i < class->classMethodList->count; i++){
-            ClassMethod *classMethod = getList(class->classMethodList, i);
-            reportProcedureInformation((Procedure *)classMethod, Return, class->classMethodList->count == i + 1);
+        for(size_t i = 0; i < eclass->classMethodList->count; i++){
+            ClassMethod *classMethod = getList(eclass->classMethodList, i);
+            reportProcedureInformation((Procedure *)classMethod, Return, eclass->classMethodList->count == i + 1);
         }
         printf("],");
         
         printf("\"conformsTo\": [");
-        for(size_t i = 0; i < class->protocols->count; i++){
-            Protocol *protocol = getList(class->protocols, i);
-            reportType(NULL, typeForProtocol(protocol), i + 1 == class->protocols->count);
+        for(size_t i = 0; i < eclass->protocols->count; i++){
+            Protocol *protocol = getList(eclass->protocols, i);
+            reportType(NULL, typeForProtocol(protocol), i + 1 == eclass->protocols->count);
         }
         printf("]}");
     }
