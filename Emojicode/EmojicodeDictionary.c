@@ -37,7 +37,7 @@ void dictionaryInit(Thread *thread){
 #define hashString(keyString) fnv32((char*)characters(keyString), ((keyString)->length) * sizeof(EmojicodeChar))
 
 static size_t findSlot(EmojicodeDictionary *dict, Object *key){
-    size_t index = hashString((String *)key->value) % dict->capacity;
+    size_t index = 0;
     
     while (slots(dict)[index].key && !stringEqual(slots(dict)[index].key->value, key->value)) {
         index = (index + 1) % dict->capacity;
@@ -46,32 +46,34 @@ static size_t findSlot(EmojicodeDictionary *dict, Object *key){
     return index;
 }
 
+
+void expandDictionary(Object *dicto, Thread *thread){
+    EmojicodeDictionary *dict = dicto->value;
+    
+    size_t newCapacity = dict->capacity * 2;
+    Object *slotso = enlargeArray(dict->slots, newCapacity * sizeof(EmojicodeDictionaryKVP));
+    
+    dict = stackGetThis(thread)->value;
+    
+    dict->slots = slotso;
+    dict->capacity = newCapacity;
+
+}
+
+bool shouldExpandDictionary(EmojicodeDictionary *dict){
+    return dict->count > 2 * (dict->capacity / 3);
+}
+
 void dictionarySet(Object *dicto, Object *keyString, Something value, Thread *thread){
     EmojicodeDictionary *dict = dicto->value;
     
     size_t index = findSlot(dict, keyString);
     slots(dict)[index].key = keyString;
     slots(dict)[index].value = value;
+    ++dict->count;
 
-    if(++dict->count > 2 * (dict->capacity/3)){
-        size_t oldCapacity = dict->capacity;
-        EmojicodeDictionaryKVP *oldSlots = slots(dict);
-        
-        stackPush(dicto, 0, 0, thread);
-        Object *slotso = newArray(dict->capacity * 2 * sizeof(EmojicodeDictionaryKVP));
-        
-        EmojicodeDictionary *dict = stackGetThis(thread)->value;
-        stackPop(thread);
-        
-        dict->slots = slotso;
-        dict->capacity *= 2;
-        dict->count = 0;
-        
-        for (size_t i = 0; i < oldCapacity; i++) {
-            if(oldSlots[i].key){
-                dictionarySet(dicto, oldSlots[i].key, oldSlots[i].value, thread);
-            }
-        }
+    if(shouldExpandDictionary(dict)){
+        expandDictionary(dicto, thread);
     }
 }
 
