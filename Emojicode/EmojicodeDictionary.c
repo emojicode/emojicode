@@ -28,7 +28,10 @@ bool dictionaryKeyEqual(EmojicodeDictionary *dict, Something *key1, Something *k
     return stringEqual((String*) key1->object->value, (String*) key2->object->value);
 }
 void printNode(EmojicodeDictionaryNode *node){
-     printf("node: k=%s v=%s next=%p\n", stringToChar(node->key->object->value), stringToChar(node->value->object->value), node->next);
+    if(node->key->type == 0 && node->value->type == 0) // are strings
+        if(node->key->object && node->value->object)
+            if (node->key->object->value && node->value->object->value)
+                printf("node: k=%s v=%s next=%p\n", stringToChar(node->key->object->value), stringToChar(node->value->object->value), node->next);
 }
 void printDict(EmojicodeDictionary *dict){
     {
@@ -43,7 +46,7 @@ void printDict(EmojicodeDictionary *dict){
             do{
                 if(po){
                     p = (EmojicodeDictionaryNode*) po->value;
-                    DICT_DEBUG printNode((p =po->value));
+                    printNode((p =po->value));
                     if(p->next) printf("\t\t");
                 }else
                     printf("\n");
@@ -235,6 +238,7 @@ void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, S
 
 void dictionaryPut(EmojicodeDictionary *dict, Something *key, Something *value){
     dictionaryPutVal(dict, dictionaryHash(dict, key), key, value, false);
+    printDict(dict);
 }
 
 EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something *key){
@@ -308,10 +312,14 @@ void dictionaryMark(Object *object){
                 printNode((*eo)->value);
                 mark(eo);
                 e = (*eo)->value;
-                if(isRealObject(*(e->key)))
+                if(isRealObject(*(e->key))){
+                    printf("a");
                     mark(&(e->key->object));
-                if(isRealObject(*(e->value)))
+                }
+                if(isRealObject(*(e->value))){
+                    printf("b");
                     mark(&(e->value->object));
+                }
                 eo = &(e->next);
             } while (*eo != NULL);
         }
