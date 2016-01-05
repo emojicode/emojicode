@@ -30,8 +30,8 @@ typedef struct {
 } EmojicodeDictionaryNode;
 
 typedef struct {
-    Object *table;
-    size_t buckets;
+    Object *buckets;
+    size_t bucketsCounter;
     size_t size;
     float loadFactor;
     size_t nextThreshold;
