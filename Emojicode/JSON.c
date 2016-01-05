@@ -170,7 +170,7 @@ static Something JSONGetValue(const size_t length, size_t *i, Thread *thread){
             case JSON_OBJECT_VALUE: {
                 (*i)--;
                 Something s = JSONGetValue(length, i, thread);
-                dictionarySet(stackGetVariable(0, thread).object, stackGetVariable(1, thread).object, s, thread);
+                dictionarySet(stackGetVariable(0, thread).object, stackGetVariable(1, thread), s, thread);
                 state = JSON_OBJECT_NEXT;
                 continue;
             }

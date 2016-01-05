@@ -11,28 +11,43 @@
 
 #include "EmojicodeString.h"
 
-typedef struct {
-    Object *key;
-    Something value;
-} EmojicodeDictionaryKVP;
+// MUST be a power of two, default: 8
+#define DICTIONARY_DEFAULT_INITIAL_CAPACITY (1 << 3)
+// Factor for determining whether the dictionary should be resized
+#define DICTIONARY_DEFAULT_LOAD_FACTOR (0.75f)
+
+#define DICTIONARY_MAXIMUM_CAPACTIY (1 << 30)
+
+#define DICTIONARY_MAXIMUM_CAPACTIY_THRESHOLD (1 << 16)
+
+typedef uint64_t EmojicodeDictionaryHash;
 
 typedef struct {
-    Object *slots;
-    size_t capacity;
-    size_t count;
+    Something *key;
+    Something *value;
+    EmojicodeDictionaryHash hash;
+    Object *next;
+} EmojicodeDictionaryNode;
+
+typedef struct {
+    Object *table;
+    size_t buckets;
+    size_t size;
+    float loadFactor;
+    size_t nextThreshold;
 } EmojicodeDictionary;
 
 /**
  * Insert an item and use keyString as key 
  * @warning GC-invoking
  */
-void dictionarySet(Object *dicto, Object *keyString, Something value, Thread *thread);
+void dictionarySet(Object *dicto, Something key, Something value, Thread *thread);
 
 /** Remove an item by keyString as key */
-void dictionaryRemove(EmojicodeDictionary *dict, Object *keyString);
+void dictionaryRemove(EmojicodeDictionary *dict, Something key);
 
 /** Get an item by keyString as key */
-Something dictionaryLookup(EmojicodeDictionary *dict, Object *keyString);
+Something dictionaryLookup(EmojicodeDictionary *dict, Something key);
 
 void dictionaryMark(Object *dict);
 

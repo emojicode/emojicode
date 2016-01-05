@@ -537,7 +537,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             EmojicodeCoin *end = thread->tokenStream + consumeCoin(thread);
             while (thread->tokenStream < end){
-                Object *key = parse(consumeCoin(thread), thread).object;
+                Something key = parse(consumeCoin(thread), thread);
                 Something sth = parse(consumeCoin(thread), thread);
                 
                 dictionarySet(stackGetThis(thread), key, sth, thread);
