@@ -13,6 +13,26 @@
 
 extern ScopeWrapper *currentScopeWrapper;
 
+struct CompilerVariable {
+public:
+    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen) : type(type), initialized(initd), id(id), frozen(frozen) {};
+    /** The type of the variable. **/
+    Type type;
+    /** The ID of the variable. */
+    uint8_t id;
+    /** The variable is initialized if this field is greater than 0. */
+    int initialized;
+    /** Set for instance variables. */
+    Variable *variable;
+    /** Indicating whether variable was frozen. */
+    bool frozen;
+    
+    /** Throws an error if the variable is not initalized. */
+    void uninitalizedError(Token *variableToken) const;
+    /** Throws an error if the variable is frozen. */
+    void frozenError(Token *variableToken) const;
+};
+
 /** A variable scope */
 struct Scope {
 public:

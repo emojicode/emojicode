@@ -7,6 +7,7 @@
 //
 
 #include "CompilerScope.h"
+#include "Lexer.h"
 
 ScopeWrapper *currentScopeWrapper;
 

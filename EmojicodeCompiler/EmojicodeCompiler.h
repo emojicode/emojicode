@@ -10,8 +10,8 @@
 #define Emojicode_EmojicodeCompiler_h
 
 #define EmojicodeCompiler
-#include "EmojicodeShared.h"
 
+#include "EmojicodeShared.h"
 #include "Emojis.h"
 
 #include <array>
@@ -52,67 +52,11 @@ public:
     bool requiresNativeBinary;
 };
 
-typedef enum {
-    PUBLIC, PRIVATE, PROTECTED
-} AccessLevel;
-
-
-
-//MARK: Tokens
-
-enum TokenType {
-    NO_TYPE,
-    STRING,
-    COMMENT,
-    DOCUMENTATION_COMMENT,
-    INTEGER,
-    DOUBLE,
-    BOOLEAN_TRUE,
-    BOOLEAN_FALSE,
-    IDENTIFIER,
-    VARIABLE,
-    SYMBOL
-};
-
-typedef struct {
-    size_t line;
-    size_t character;
-    const char *file;
-} SourcePosition;
-
-/**
- * A Token
- * @warning NEVER RELEASE A TOKEN!
- */
-struct Token {
-    Token() {}
-    Token(Token *prevToken) {
-        if(prevToken)
-            prevToken->nextToken = this;
-    }
-    TokenType type = NO_TYPE;
-    EmojicodeString value;
-    SourcePosition position;
-    struct Token *nextToken = NULL;
-};
-
-/**
- * Returns a token description string
- */
-const char* tokenTypeToString(TokenType type);
-
-/**
- * If @c token is not of type @c type a compiler error is thrown.
- */
-void tokenTypeCheck(TokenType type, Token *token);
-
 struct Variable {
     Variable(Token *n, Type t) : name(n), type(t) {}
     
     /** The name of the variable */
     Token *name;
-    /** The ID of the variable */
-    uint8_t id;
     /** The type */
     Type type;
 };
@@ -263,28 +207,6 @@ extern std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
 extern std::vector<Class *> classes;
 extern std::vector<Package *> packages;
 
-//MARK: Static Analyzation
-
-struct CompilerVariable {
-public:
-    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen) : type(type), initialized(initd), id(id), frozen(frozen) {};
-    /** The type of the variable. **/
-    Type type;
-    /** The ID of the variable. */
-    uint8_t id;
-    /** The variable is initialized if this field is greater than 0. */
-    int initialized;
-    /** Set for instance variables. */
-    Variable *variable;
-    /** Indicating whether variable was frozen. */
-    bool frozen;
-    
-    /** Throws an error if the variable is not initalized. */
-    void uninitalizedError(Token *variableToken) const;
-    /** Throws an error if the variable is frozen. */
-    void frozenError(Token *variableToken) const;
-};
-
 
 //MARK: Errors
 
@@ -292,7 +214,7 @@ public:
  * Issues a compiler error and exits the compiler.
  * @param token Used to determine the error location. If @c NULL the error origin is the beginning of the document.
  */
-_Noreturn void compilerError(Token *token, const char *err, ...);
+_Noreturn void compilerError(const Token *token, const char *err, ...);
 
 /**
  * Issues a compiler warning. The compilation is continued afterwards.
@@ -305,11 +227,6 @@ void printJSONStringToFile(const char *string, FILE *f);
 
 
 //MARK: Lexer
-
-void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace);
-
-Token* lex(FILE *f, const char* fileName);
-
 
 extern Token* currentToken;
 extern Token* consumeToken();

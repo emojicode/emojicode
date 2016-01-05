@@ -74,22 +74,14 @@ public:
      * @param includeNsAndOptional Whether to include optional indicators and the namespaces.
      */
     std::string toString(Type contextType, bool includeNsAndOptional) const;
+    
+    /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
+    Type resolveOn(Type o);
 private:
     void typeName(Type type, Type parentType, bool includeNsAndOptional, std::string *string) const;
     Type typeConstraintForReference(Class *c);
     Type resolveOnSuperArguments(Class *c, bool *resolved);
 };
-
-#define typeInteger (Type(TT_INTEGER, false))
-#define typeBoolean (Type(TT_BOOLEAN, false))
-#define typeSymbol (Type(TT_SYMBOL, false))
-#define typeSomething (Type(TT_SOMETHING, false))
-#define typeLong (Type(TT_LONG, false))
-#define typeFloat (Type(TT_DOUBLE, false))
-#define typeNothingness (Type(TT_NOTHINGNESS, false))
-#define typeSomeobject (Type(TT_SOMEOBJECT, false))
-
-extern Type resolveTypeReferences(Type t, Type o);
 
 /**
  * Fetches a type by its name and enamespace or throws an error.
@@ -102,6 +94,15 @@ extern Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *op
 
 /** Reads a type name and stores it into the given pointers. */
 extern Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType);
+
+#define typeInteger (Type(TT_INTEGER, false))
+#define typeBoolean (Type(TT_BOOLEAN, false))
+#define typeSymbol (Type(TT_SYMBOL, false))
+#define typeSomething (Type(TT_SOMETHING, false))
+#define typeLong (Type(TT_LONG, false))
+#define typeFloat (Type(TT_DOUBLE, false))
+#define typeNothingness (Type(TT_NOTHINGNESS, false))
+#define typeSomeobject (Type(TT_SOMEOBJECT, false))
 
 struct CommonTypeFinder {
     /** Tells the common type finder about the type of another element in the collection/data structure. */

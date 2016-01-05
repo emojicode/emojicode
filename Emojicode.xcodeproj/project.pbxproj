@@ -67,6 +67,7 @@
 		E455BC671B5BEB82002411C8 /* EmojicodeShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeShared.h; sourceTree = "<group>"; };
 		E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EmojicodeCompiler; sourceTree = BUILT_PRODUCTS_DIR; };
 		E45FA2F51AA0D24200F032A8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = main.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		E46A072D1C3C243D003DE2CD /* Lexer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Lexer.h; sourceTree = "<group>"; };
 		E479370D1C3A5B3200536258 /* Procedure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Procedure.cpp; sourceTree = "<group>"; };
 		E47937221C3ACBEC00536258 /* Procedure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Procedure.h; sourceTree = "<group>"; };
 		E48A0DD21A6BDC3400EDF60B /* EmojicodeList.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = EmojicodeList.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
@@ -121,6 +122,7 @@
 				E45FA2F51AA0D24200F032A8 /* main.cpp */,
 				E44E14E31BED2B2F00ACC112 /* Reporter.cpp */,
 				E4F9D4001AC6CEE3005A1DD6 /* Class.cpp */,
+				E46A072D1C3C243D003DE2CD /* Lexer.h */,
 				E4EB36291AA2254700675B52 /* Lexer.cpp */,
 				E4F49AB51A5C365A00A5FD48 /* CompilerScope.h */,
 				E4F49AB41A5C365900A5FD48 /* CompilerScope.cpp */,

@@ -13,7 +13,7 @@
 #include "Procedure.h"
 
 /**
- * The eclass parsers reads the source code file that only consists of type definitions (eclass and protocols).
+ * The class parsers reads the source code file that only consists of type definitions (eclass and protocols).
  */
 
 /**
@@ -29,5 +29,7 @@ void saveBlock(Procedure *p, bool allowNative);
 Arguments parseArgumentList(Type ct, EmojicodeChar enamespace);
 
 Type parseReturnType(Type ct, EmojicodeChar theNamespace);
+
+void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace);
 
 #endif /* defined(__Emojicode__ClassParser__) */

@@ -8,6 +8,7 @@
 
 #include "EmojicodeCompiler.h"
 #include "utf8.h"
+#include "Lexer.h"
 #include <string.h>
 
 //MARK: Globals
@@ -167,7 +168,8 @@ Type fetchRawType(EmojicodeChar name, EmojicodeChar enamespace, bool optional, T
     return typeNothingness;
 }
 
-Type resolveTypeReferences(Type t, Type o){
+Type Type::resolveOn(Type o){
+    Type t = *this;
     bool optional = t.optional;
     while (t.type == TT_REFERENCE) {
         t = o.genericArguments[t.reference];
@@ -175,7 +177,7 @@ Type resolveTypeReferences(Type t, Type o){
     t.optional = optional;
     if (t.type == TT_CLASS) {
         for (int i = 0; i < t.eclass->genericArgumentCount; i++) {
-            t.genericArguments[i] = resolveTypeReferences(t.genericArguments[i], o);
+            t.genericArguments[i] = t.genericArguments[i].resolveOn(o);
         }
     }
     return t;
@@ -188,13 +190,13 @@ Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *o
     if (className->type == VARIABLE) {
         compilerError(className, "Not in a generic context.");
     }
-    tokenTypeCheck(IDENTIFIER, className);
+    className->forceType(IDENTIFIER);
     
     if(className->value[0] == E_CANDY){
         *optional = true;
         
         className = consumeToken();
-        tokenTypeCheck(IDENTIFIER, className);
+        className->forceType(IDENTIFIER);
     }
     else {
         *optional = false;
@@ -202,11 +204,11 @@ Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *o
     
     if(className->value[0] == E_ORANGE_TRIANGLE){
         Token *nsToken = consumeToken();
-        tokenTypeCheck(IDENTIFIER, nsToken);
+        nsToken->forceType(IDENTIFIER);
         *enamespace = nsToken->value[0];
         
         className = consumeToken();
-        tokenTypeCheck(IDENTIFIER, className);
+        className->forceType(IDENTIFIER);
     }
     else {
         *enamespace = currentNamespace;

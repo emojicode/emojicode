@@ -9,6 +9,7 @@
 #include <string.h>
 #include <limits.h>
 #include "utf8.h"
+#include "Lexer.h"
 #include "StaticAnalyzer.h"
 #include "EmojicodeCompiler.h"
 #include "Writer.h"
@@ -69,7 +70,7 @@ static void block(StaticInformation *SI){
     SI->flowControlDepth++;
     
     Token *token = consumeToken();
-    tokenTypeCheck(IDENTIFIER, token);
+    token->forceType(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
@@ -120,7 +121,7 @@ static void noReturnError(Token *errorToken, StaticInformation *SI){
 
 void checkArguments(Arguments arguments, Type calledType, Token *token, StaticInformation *SI){
     for (auto var : arguments) {
-        safeParseTypeConstraint(consumeToken(), token, resolveTypeReferences(var.type, calledType), SI);
+        safeParseTypeConstraint(consumeToken(), token, var.type.resolveOn(calledType), SI);
     }
 }
 
@@ -158,7 +159,7 @@ static void parseIfExpression(Token *token, StaticInformation *SI){
         writeCoin(0x3E, out);
         
         Token *varName = consumeToken();
-        tokenTypeCheck(VARIABLE, varName);
+        varName->forceType(VARIABLE);
         
         if(currentScopeWrapper->scope->getLocalVariable(varName) != NULL){
             compilerError(token, "Cannot redeclare variable.");
@@ -189,7 +190,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
     switch (token->value[0]) {
         case E_SHORTCAKE: {
             Token *varName = consumeToken();
-            tokenTypeCheck(VARIABLE, varName);
+            varName->forceType(VARIABLE);
             
             if (currentScopeWrapper->scope->getLocalVariable(varName) != NULL) {
                 compilerError(token, "Cannot redeclare variable.");
@@ -204,7 +205,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         }
         case E_CUSTARD: {
             Token *varName = consumeToken();
-            tokenTypeCheck(VARIABLE, varName);
+            varName->forceType(VARIABLE);
             
             uint8_t scopesUp;
             CompilerVariable *cv = getVariable(varName, &scopesUp);
@@ -236,7 +237,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         }
         case E_SOFT_ICE_CREAM: {
             Token *varName = consumeToken();
-            tokenTypeCheck(VARIABLE, varName);
+            varName->forceType(VARIABLE);
             
             if(currentScopeWrapper->scope->getLocalVariable(varName) != NULL){
                 compilerError(token, "Cannot redeclare variable.");
@@ -255,7 +256,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         case E_COOKING:
         case E_CHOCOLATE_BAR: {
             Token *varName = consumeToken();
-            tokenTypeCheck(VARIABLE, varName);
+            varName->forceType(VARIABLE);
             
             //Fetch the old value
             uint8_t scopesUp;
@@ -388,7 +389,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             //The destination variable
             Token *variableToken = consumeToken();
-            tokenTypeCheck(VARIABLE, variableToken);
+            variableToken->forceType(VARIABLE);
             
             if (currentScopeWrapper->scope->getLocalVariable(variableToken) != NULL) {
                 compilerError(variableToken, "Cannot redeclare variable.");
@@ -462,7 +463,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             }
             
             Token *name = consumeToken();
-            tokenTypeCheck(IDENTIFIER, name);
+            name->forceType(IDENTIFIER);
             
             auto v = type.eenum->getValueFor(name->value[0]);
             if (!v.first) {
@@ -502,7 +503,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             //The initializer name
             Token *consName = consumeToken();
-            tokenTypeCheck(IDENTIFIER, consName);
+            consName->forceType(IDENTIFIER);
             
             Initializer *initializer = type.eclass->getInitializer(consName->value[0]);
             
@@ -532,7 +533,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         case E_CLOUD: {
             writeCoin(0x2E, out);
             Token *t = consumeToken();
-            tokenTypeCheck(NO_TYPE, t);
+            t->forceType(NO_TYPE);
             typeParse(t, SI);
             return typeBoolean;
         }
@@ -569,7 +570,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             writeCoin(eclass->superclass->index, out);
             
             Token *initializerToken = consumeToken();
-            tokenTypeCheck(IDENTIFIER, initializerToken);
+            initializerToken->forceType(IDENTIFIER);
             
             Initializer *initializer = eclass->superclass->getInitializer(initializerToken->value[0]);
             
@@ -711,7 +712,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             writeCoin(0x2, out);
             
             Token *methodToken = consumeToken();
-            tokenTypeCheck(IDENTIFIER, methodToken);
+            methodToken->forceType(IDENTIFIER);
             
             Type type = parseAndFetchType(SI->classTypeContext.eclass, SI->currentNamespace, dynamismLevelFromSI(SI), NULL);
             
@@ -737,7 +738,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             checkAccess(method, token, "Class method", SI);
             checkArguments(method->arguments, type, token, SI);
             
-            return resolveTypeReferences(method->returnType, type);
+            return method->returnType.resolveOn(type);
         }
         case E_HOT_PEPPER: {
             Token *methodName = consumeToken();
@@ -999,7 +1000,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             checkAccess((Procedure *)method, token, "Method", SI);
             checkArguments(method->arguments, type, token, SI);
 
-            return resolveTypeReferences(method->returnType, type);
+            return method->returnType.resolveOn(type);
         }
     }
     return typeNothingness;

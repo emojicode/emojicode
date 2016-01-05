@@ -7,6 +7,7 @@
 //
 
 #include "EmojicodeCompiler.h"
+#include "Lexer.h"
 #include "utf8.h"
 
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
@@ -18,6 +19,43 @@ bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line){
         return true;
     }
     return isWhitespace(c);
+}
+
+const char* Token::stringName() const {
+    return stringNameForType(type);
+}
+
+const char* Token::stringNameForType(TokenType type) {
+    switch (type) {
+        case BOOLEAN_FALSE:
+            return "Boolean False";
+        case BOOLEAN_TRUE:
+            return "Boolean True";
+        case DOUBLE:
+            return "Float";
+        case INTEGER:
+            return "Integer";
+        case STRING:
+            return "String";
+        case SYMBOL:
+            return "Symbol";
+        case VARIABLE:
+            return "Variable";
+        case IDENTIFIER:
+            return "Identifier";
+        case DOCUMENTATION_COMMENT:
+            return "Documentation Comment";
+        default:
+            return "Mysterious unnamed token";
+            break;
+    }
+}
+
+/** When @c token is not of type @c type and compiler error is thrown. */
+void Token::forceType(TokenType type) const {
+    if (this->type != type){
+        compilerError(this, "Expected token %s but instead found %s.", stringNameForType(type), this->stringName());
+    }
 }
 
 Token* lex(FILE *f, const char *filename) {

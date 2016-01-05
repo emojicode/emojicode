@@ -8,6 +8,7 @@
 
 #include "EmojicodeCompiler.h"
 #include "utf8.h"
+#include "Lexer.h"
 #include "Procedure.h"
 #include <string.h>
 

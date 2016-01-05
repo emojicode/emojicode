@@ -7,6 +7,7 @@
 //
 
 #include "ClassParser.h"
+#include "Lexer.h"
 #include "utf8.h"
 
 #include <ctype.h>
@@ -63,7 +64,7 @@ void reservedEmojisWarning(Token *token, const char *place){
 
 static Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep){
     Token *token = consumeToken();
-    tokenTypeCheck(NO_TYPE, token);
+    token->forceType(NO_TYPE);
     
     if (token->type != IDENTIFIER) {
         return token;
@@ -90,10 +91,10 @@ Arguments parseArgumentList(Type ct, EmojicodeChar enamespace){
     Arguments arguments;
     
     //Until the grape is found we parse arguments
-    while (token = nextToken(), tokenTypeCheck(NO_TYPE, token), token->type == VARIABLE) { //grape
+    while ((token = nextToken()) && token->type == VARIABLE) { //grape
         //Get the variable in which to store the argument
         Token *variableToken = consumeToken();
-        tokenTypeCheck(VARIABLE, variableToken);
+        variableToken->forceType(VARIABLE);
         
         auto type = parseAndFetchType(ct, enamespace, AllowGenericTypeVariables, NULL);
         
@@ -128,7 +129,8 @@ void saveBlock(Procedure *p, bool allowNative){
     }
     
     Token *token = consumeToken();
-    tokenTypeCheck(IDENTIFIER, token);
+    
+    token->forceType(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], c);
         compilerError(token, "Expected 🍇 but found %s instead.", c);
@@ -172,7 +174,7 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, Token *documentatio
     protocolsRegister[ns] = protocol;
     
     Token *token = consumeToken();
-    tokenTypeCheck(IDENTIFIER, token);
+    token->forceType(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
@@ -191,7 +193,7 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, Token *documentatio
         
         //Get the method name
         Token *methodName = consumeToken();
-        tokenTypeCheck(IDENTIFIER, methodName);
+        methodName->forceType(IDENTIFIER);
         
         Type returnType = typeNothingness;
         auto method = new Method(methodName->value[0], PUBLIC, false, NULL, theNamespace, methodName, false, documentationToken);
@@ -215,13 +217,13 @@ void parseEnum(EmojicodeChar theNamespace, Package &pkg, Token *documentationTok
     enumsRegister[ns] = eenum;
     
     Token *token = consumeToken();
-    tokenTypeCheck(IDENTIFIER, token);
+    token->forceType(IDENTIFIER);
     if (token->value[0] != E_GRAPES) {
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
     }
     while (token = consumeToken(), !(token->type == IDENTIFIER && token->value[0] == E_WATERMELON)) {
-        tokenTypeCheck(IDENTIFIER, token);
+        token->forceType(IDENTIFIER);
         
         eenum->addValueFor(token->value[0]);
     }
@@ -237,7 +239,7 @@ static bool hasAttribute(EmojicodeChar attributeName, Token **token){
 
 static AccessLevel readAccessLevel(Token **token){
     AccessLevel access;
-    tokenTypeCheck(IDENTIFIER, *token);
+    (*token)->forceType(IDENTIFIER);
     switch ((*token)->value[0]) {
         case E_CLOSED_LOCK_WITH_KEY:
             *token = consumeToken();
@@ -263,7 +265,7 @@ static AccessLevel readAccessLevel(Token **token){
 void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializers, bool allowNative, EmojicodeChar theNamespace){
     //Until we find a melon process methods and initializers
     Token *token = consumeToken();
-    tokenTypeCheck(IDENTIFIER, token);
+    token->forceType(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
@@ -283,12 +285,12 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
         bool required = hasAttribute(E_KEY, &token);
         bool canReturnNothingness = hasAttribute(E_CANDY, &token);
 
-        tokenTypeCheck(IDENTIFIER, token);
+        token->forceType(IDENTIFIER);
         switch (token->value[0]) {
             case E_SHORTCAKE: {
                 //Get the variable name
                 Token *ivarName = consumeToken();
-                tokenTypeCheck(VARIABLE, ivarName);
+                ivarName->forceType(VARIABLE);
                 
                 if(staticOnType){
                     compilerError(ivarName, "Class variables are not supported yet.");
@@ -326,7 +328,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 
                 Token *methodName = consumeToken();
                 EmojicodeChar name = methodName->value[0];
-                tokenTypeCheck(IDENTIFIER, methodName);
+                methodName->forceType(IDENTIFIER);
                 
                 if(staticOnType){
                     bool isStartingFlag = false;
@@ -385,7 +387,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 }
                 
                 Token *initializerName = consumeToken();
-                tokenTypeCheck(IDENTIFIER, initializerName);
+                initializerName->forceType(IDENTIFIER);
                 EmojicodeChar name = initializerName->value[0];
                 
                 reservedEmojisWarning(initializerName, "initializer");
@@ -443,7 +445,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, Toke
         consumeToken();
         
         Token *variable = consumeToken();
-        tokenTypeCheck(VARIABLE, variable);
+        variable->forceType(VARIABLE);
         
         Type t = parseAndFetchType(eclass, theNamespace, AllowGenericTypeVariables, NULL);
         eclass->genericArgumentContraints.push_back(t);
@@ -544,7 +546,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
             theToken = consumeToken();
         }
         
-        tokenTypeCheck(IDENTIFIER, theToken);
+        theToken->forceType(IDENTIFIER);
         
         if (theToken->value[0] == E_PACKAGE) {
             if(definedClass){
@@ -554,8 +556,8 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
             Token *nameToken = consumeToken();
             Token *namespaceToken = consumeToken();
             
-            tokenTypeCheck(VARIABLE, nameToken);
-            tokenTypeCheck(IDENTIFIER, namespaceToken);
+            nameToken->forceType(VARIABLE);
+            namespaceToken->forceType(IDENTIFIER);
             
             size_t ds = u8_codingsize(nameToken->value.c_str(), nameToken->value.size());
             //Allocate space for the UTF8 string
@@ -589,9 +591,9 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
             }
             
             Token *major = consumeToken();
-            tokenTypeCheck(INTEGER, major);
+            major->forceType(INTEGER);
             Token *minor = consumeToken();
-            tokenTypeCheck(INTEGER, minor);
+            minor->forceType(INTEGER);
 
             const char *majorString = major->value.utf8CString();
             const char *minorString = minor->value.utf8CString();

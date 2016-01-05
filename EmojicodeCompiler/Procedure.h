@@ -13,6 +13,10 @@
 
 typedef std::vector<Variable> Arguments;
 
+enum AccessLevel {
+    PUBLIC, PRIVATE, PROTECTED
+};
+
 class Procedure {
 public:
     Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,

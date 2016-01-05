@@ -9,9 +9,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
-
+#include "Lexer.h"
 #include "utf8.h"
-
 #include "EmojicodeCompiler.h"
 #include "ClassParser.h"
 #include "StaticAnalyzer.h"
@@ -85,7 +84,7 @@ void printJSONStringToFile(const char *string, FILE *f){
 
 //MARK: Warnings
 
-void compilerError(Token *token, const char *err, ...){
+void compilerError(const Token *token, const char *err, ...){
     va_list list;
     va_start(list, err);
     
@@ -151,45 +150,6 @@ void compilerWarning(Token *token, const char *err, ...){
     gaveWarning = true;
     
     va_end(list);
-}
-
-const char* tokenTypeToString(TokenType type){
-    switch (type) {
-        case BOOLEAN_FALSE:
-            return "Boolean False";
-        case BOOLEAN_TRUE:
-            return "Boolean True";
-        case DOUBLE:
-            return "Float";
-        case INTEGER:
-            return "Integer";
-        case STRING:
-            return "String";
-        case SYMBOL:
-            return "Symbol";
-        case VARIABLE:
-            return "Variable";
-        case IDENTIFIER:
-            return "Identifier";
-        case DOCUMENTATION_COMMENT:
-            return "Documentation Comment";
-        default:
-            return "Mysterious unnamed token";
-            break;
-    }
-}
-
-/**
- * When @c token is not of type @c type and compiler error is thrown.
- */
-void tokenTypeCheck(TokenType type, Token *token){
-    if(token == NULL || token->type == NO_TYPE){
-        compilerError(token, "Expected token but found end of programm.");
-        return;
-    }
-    if (type != NO_TYPE && token->type != type){
-        compilerError(token, "Expected token %s but instead found %s.", tokenTypeToString(type), tokenTypeToString(token->type));
-    }
 }
 
 void loadStandard(){
