@@ -183,18 +183,6 @@ Type resolveTypeReferences(Type t, Type o){
 
 //MARK: Type Parsing Utility
 
-void Type::validateGenericArgument(Type ta, uint16_t i, Token *token){
-    if (this->type != TT_CLASS) {
-        compilerError(token, "The compiler encountered an internal inconsistency realted to generics.");
-    }
-    if(this->eclass->superclass){
-        i += this->eclass->superclass->genericArgumentCount;
-    }
-    if(!ta.compatibleTo(this->eclass->genericArgumentContraints[i], *this)){
-        compilerError(token, "Types not matching.");
-    }
-}
-
 Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional, EmojicodeChar currentNamespace){
     Token *className = consumeToken();
     if (className->type == VARIABLE) {
@@ -232,11 +220,11 @@ Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *o
 /**
  * Parses and fetches a type including generic type variables.
  */
-Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType){
+Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType){
     if (dynamicType) {
         *dynamicType = false;
     }
-    if (dynamism & AllowGenericTypeVariables && eclass && (nextToken()->type == VARIABLE || (nextToken()->value[0] == E_CANDY && nextToken()->nextToken->type == VARIABLE))) {
+    if (dynamism & AllowGenericTypeVariables && contextType.type == TT_CLASS && (nextToken()->type == VARIABLE || (nextToken()->value[0] == E_CANDY && nextToken()->nextToken->type == VARIABLE))) {
         if (dynamicType) {
             *dynamicType = true;
         }
@@ -249,8 +237,8 @@ Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism d
         }
 
         
-        auto it = eclass->ownGenericArgumentVariables.find(variableToken->value);
-        if (it != eclass->ownGenericArgumentVariables.end()){
+        auto it = contextType.eclass->ownGenericArgumentVariables.find(variableToken->value);
+        if (it != contextType.eclass->ownGenericArgumentVariables.end()){
             Type type = it->second;
             type.optional = optional;
             return type;
@@ -269,7 +257,7 @@ Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism d
         if (dynamicType) {
             *dynamicType = true;
         }
-        return Type(eclass, false);
+        return contextType;
     }
     else if (nextToken()->value[0] == E_GRAPES || (nextToken()->value[0] == E_CANDY && nextToken()->nextToken->type == VARIABLE)) {
         bool optional = false;
@@ -286,12 +274,12 @@ Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism d
         
         while (!(nextToken()->type == IDENTIFIER && (nextToken()->value[0] == E_WATERMELON || nextToken()->value[0] == E_RIGHTWARDS_ARROW))) {
             t.arguments++;
-            t.genericArguments.push_back(parseAndFetchType(eclass, theNamespace, dynamism, NULL));
+            t.genericArguments.push_back(parseAndFetchType(contextType, theNamespace, dynamism, NULL));
         }
         
         if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
             consumeToken();
-            t.genericArguments[0] = parseAndFetchType(eclass, theNamespace, dynamism, NULL);
+            t.genericArguments[0] = parseAndFetchType(contextType, theNamespace, dynamism, NULL);
         }
         
         Token *token = consumeToken();
@@ -314,13 +302,25 @@ Type parseAndFetchType(Class *eclass, EmojicodeChar theNamespace, TypeDynamism d
             compilerError(token, "Could not find type %s in enamespace %s.", nameString, namespaceString);
         }
         
-        type.parseGenericArguments(eclass, theNamespace, dynamism, token);
+        type.parseGenericArguments(contextType, theNamespace, dynamism, token);
         
         return type;
     }
 }
 
-void Type::parseGenericArguments(Class *eclass, EmojicodeChar theNamespace, TypeDynamism dynamism, Token *errorToken) {
+void Type::validateGenericArgument(Type ta, uint16_t i, Type contextType, Token *token){
+    if (this->type != TT_CLASS) {
+        compilerError(token, "The compiler encountered an internal inconsistency related to generics.");
+    }
+    if(this->eclass->superclass){
+        i += this->eclass->superclass->genericArgumentCount;
+    }
+    if(!ta.compatibleTo(this->eclass->genericArgumentContraints[i], contextType)){
+        compilerError(token, "Types not matching.");
+    }
+}
+
+void Type::parseGenericArguments(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, Token *errorToken) {
     if (this->type == TT_CLASS) {
         this->genericArguments = std::vector<Type>(this->eclass->superGenericArguments);
         if (this->eclass->ownGenericArgumentCount){
@@ -328,8 +328,8 @@ void Type::parseGenericArguments(Class *eclass, EmojicodeChar theNamespace, Type
             while(nextToken()->value[0] == E_SPIRAL_SHELL){
                 Token *token = consumeToken();
                 
-                Type ta = parseAndFetchType(eclass, theNamespace, dynamism, NULL);
-                validateGenericArgument(ta, count, token);
+                Type ta = parseAndFetchType(contextType, theNamespace, dynamism, NULL);
+                validateGenericArgument(ta, count, contextType, token);
                 genericArguments.push_back(ta);
                 
                 count++;

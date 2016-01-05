@@ -85,7 +85,7 @@ static Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep){
 /**
  * Parses an argument list from an initializer or method definition and saves it to the @c arguments object.
  */
-Arguments parseArgumentList(Class *eclass, EmojicodeChar enamespace){
+Arguments parseArgumentList(Type ct, EmojicodeChar enamespace){
     Token *token;
     Arguments arguments;
     
@@ -95,7 +95,7 @@ Arguments parseArgumentList(Class *eclass, EmojicodeChar enamespace){
         Token *variableToken = consumeToken();
         tokenTypeCheck(VARIABLE, variableToken);
         
-        auto type = parseAndFetchType(eclass, enamespace, AllowGenericTypeVariables, NULL);
+        auto type = parseAndFetchType(ct, enamespace, AllowGenericTypeVariables, NULL);
         
         arguments.push_back(Variable(Variable(variableToken, type)));
     }
@@ -107,10 +107,10 @@ Arguments parseArgumentList(Class *eclass, EmojicodeChar enamespace){
     return arguments;
 }
 
-Type parseReturnType(Class *eclass, EmojicodeChar theNamespace){
+Type parseReturnType(Type ct, EmojicodeChar theNamespace){
     if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
         consumeToken();
-        return parseAndFetchType(eclass, theNamespace, AllowGenericTypeVariables, NULL);
+        return parseAndFetchType(ct, theNamespace, AllowGenericTypeVariables, NULL);
     }
     else {
         return typeNothingness;
@@ -198,8 +198,8 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, Token *documentatio
         
         method->duplicateDeclarationCheck<Method *>(protocol->methods);
         
-        method->arguments = parseArgumentList(NULL, theNamespace);
-        method->returnType = parseReturnType(NULL, theNamespace);
+        method->arguments = parseArgumentList(typeNothingness, theNamespace);
+        method->returnType = parseReturnType(typeNothingness, theNamespace);
     }
 }
 
@@ -335,7 +335,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                         if(foundStartingFlag){
                             ecCharToCharStack(startingFlag.eclass->name, cl);
                             ecCharToCharStack(startingFlag.eclass->enamespace, clnm);
-                            compilerError(currentToken, "Duplicate 🏁 method. Previous method was defined in eclass %s %s.", clnm, cl);
+                            compilerError(currentToken, "Duplicate 🏁 method. Previous method was defined in class %s %s.", clnm, cl);
                         }
                         isStartingFlag = true;
                         foundStartingFlag = true;
@@ -469,7 +469,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, Toke
             compilerError(token, "Superclass type does not exist.");
         }
         if (type.type != TT_CLASS) {
-            compilerError(token, "The superclass must be a eclass.");
+            compilerError(token, "The superclass must be a class.");
         }
         
         eclass->superclass = type.eclass;
@@ -486,7 +486,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, Toke
             compilerError(classNameToken, "Please remove 🍬.");
         }
         if (type.type != TT_CLASS) {
-            compilerError(classNameToken, "The type given as superclass is not a eclass.");
+            compilerError(classNameToken, "The type given as superclass is not a class.");
         }
         
         eclass->superGenericArguments = type.genericArguments;
@@ -549,7 +549,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
         
         if (theToken->value[0] == E_PACKAGE) {
             if(definedClass){
-                compilerError(theToken, "📦 are only allowed before the first eclass declaration.");
+                compilerError(theToken, "📦 are only allowed before the first class declaration.");
             }
             
             Token *nameToken = consumeToken();

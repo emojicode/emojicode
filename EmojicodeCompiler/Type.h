@@ -64,10 +64,10 @@ public:
     const char* typePackage();
     
     /** Whether the given type is a valid argument for the generic argument at index @c i. */
-    void validateGenericArgument(Type type, uint16_t i, Token *token);
+    void validateGenericArgument(Type type, uint16_t i, Type contextType, Token *token);
 
     /** Called by @c parseAndFetchType and in the class parser. You usually should not call this method. */
-    void parseGenericArguments(Class *eclass, EmojicodeChar theNamespace, TypeDynamism dynamism, Token *errorToken);
+    void parseGenericArguments(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, Token *errorToken);
     
     /**
      * Returns a depp string representation of the given type.
@@ -101,7 +101,7 @@ extern Type fetchRawType(EmojicodeChar name, EmojicodeChar enamespace, bool opti
 extern Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional, EmojicodeChar currentNamespace);
 
 /** Reads a type name and stores it into the given pointers. */
-extern Type parseAndFetchType(Class *cl, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType);
+extern Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType);
 
 struct CommonTypeFinder {
     /** Tells the common type finder about the type of another element in the collection/data structure. */

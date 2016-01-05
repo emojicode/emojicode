@@ -26,8 +26,8 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar e
 
 void saveBlock(Procedure *p, bool allowNative);
 
-Arguments parseArgumentList(Class *eclass, EmojicodeChar enamespace);
+Arguments parseArgumentList(Type ct, EmojicodeChar enamespace);
 
-Type parseReturnType(Class *eclass, EmojicodeChar theNamespace);
+Type parseReturnType(Type ct, EmojicodeChar theNamespace);
 
 #endif /* defined(__Emojicode__ClassParser__) */

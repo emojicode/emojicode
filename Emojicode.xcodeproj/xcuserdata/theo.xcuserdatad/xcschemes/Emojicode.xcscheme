@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/theo/Documents/emojicode/testProject/tests/fileTest.emojib"
+            argument = "/Users/theo/Documents/emojicode/testProject/gct.emojib"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

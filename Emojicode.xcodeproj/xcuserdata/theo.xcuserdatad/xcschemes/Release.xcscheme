@@ -85,7 +85,7 @@
       </MacroExpansion>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = ""
+            argument = "/Users/theo/Documents/emojicode/testProject/gct.emojic"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
