@@ -518,9 +518,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         }
         case E_CLOUD: {
             writeCoin(0x2E, out);
-            Token *t = consumeToken();
-            t->forceType(NO_TYPE);
-            typeParse(t, SI);
+            safeParse(consumeToken(), token, SI);
             return typeBoolean;
         }
         case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE: {

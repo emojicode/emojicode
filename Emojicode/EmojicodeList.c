@@ -33,8 +33,7 @@ void listAppend(Object *lo, Something o, Thread *thread){
         expandListSize(thread);
     }
     list = stackGetThis(thread)->value;
-    items(list)[list->count] = o;
-    list->count++;
+    items(list)[list->count++] = o;
     stackPop(thread);
 }
 
@@ -51,10 +50,7 @@ bool listRemoveByIndex(List *list, size_t index){
     if (list->count <= index){
         return false;
     }
-    for (size_t i = index + 1; i < list->count; i++) {
-        items(list)[i - 1] = items(list)[i];
-    }
-    list->count--;
+    memmove(items(list) + index, items(list) + index + 1, sizeof(Something) * (--list->count - index));
     return true;
 }
 
@@ -68,7 +64,6 @@ Something listGet(List *list, size_t i){
 void expandListSize(Thread *thread){
 #define initialSize 7
     List *list = stackGetThis(thread)->value;
-    //Addition has currently no use, but it may be used in the future to optimize the new size
     if (list->capacity == 0) {
         Object *object = newArray(sizeof(Something) * initialSize);
         list = stackGetThis(thread)->value;
@@ -156,11 +151,8 @@ static Something listInsertBridge(Thread *thread){
     list = stackGetThis(thread)->value;
     EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
     
-    for (size_t i = list->count - 1; i >= index; i--) {
-        items(list)[i + 1] = items(list)[i];
-    }
+    memmove(items(list) + index + 1, items(list) + index, sizeof(Something) * (list->count++ - index));
     items(list)[index] = stackGetVariable(1, thread);
-    list->count++;
     
     return NOTHINGNESS;
 }

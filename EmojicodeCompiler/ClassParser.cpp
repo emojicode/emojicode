@@ -64,7 +64,6 @@ void reservedEmojisWarning(Token *token, const char *place){
 
 static Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep){
     Token *token = consumeToken();
-    token->forceType(NO_TYPE);
     
     if (token->type != IDENTIFIER) {
         return token;
