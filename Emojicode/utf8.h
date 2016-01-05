@@ -1,6 +1,10 @@
 #ifndef UTF8_H
 #define UTF8_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -46,7 +50,7 @@ size_t u8_seqlen(const char *s);
 size_t u8_charlen(uint32_t ch);
 
 /* computes the # of bytes needed to encode a WC string as UTF-8 */
-size_t u8_codingsize(uint32_t *wcstr, size_t n);
+size_t u8_codingsize(const uint32_t *wcstr, size_t n);
 
 char read_escape_control_char(char c);
 
@@ -115,5 +119,9 @@ int u8_isvalid(const char *str, size_t length);
 /* reverse a UTF-8 string. len is length in bytes. dest and src must both
    be allocated to at least len+1 bytes. returns 1 for error, 0 otherwise */
 int u8_reverse(char *dest, char *src, size_t len);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -8,7 +8,8 @@
 
 #include <string.h>
 #include <limits.h>
-
+#include "utf8.h"
+#include "Lexer.h"
 #include "StaticAnalyzer.h"
 #include "EmojicodeCompiler.h"
 #include "Writer.h"
@@ -16,49 +17,7 @@
 #include "CompilerScope.h"
 
 static FILE *out;
-static List *stringPool;
-
-//MARK: Compiler Variables
-
-static CompilerVariable* newCompilerVariableObject(Type type, uint8_t id, bool initd, bool frozen){
-    CompilerVariable *var = malloc(sizeof(CompilerVariable));
-    var->type = type;
-    var->id = id;
-    var->initialized = initd;
-    var->frozen = frozen;
-    return var;
-}
-
-static void uninitalizedVariableError(CompilerVariable *var, Token *variableToken){
-    if (var->initialized <= 0) {
-        String string = {variableToken->valueLength, variableToken->value};
-        char *variableName = stringToChar(&string);
-        compilerError(variableToken, "Variable \"%s\" is possibly not initialized.", variableName);
-    }
-}
-
-static void frozenVariableError(CompilerVariable *var, Token *variableToken){
-    if (var->frozen) {
-        String string = {variableToken->valueLength, variableToken->value};
-        char *variableName = stringToChar(&string);
-        compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableName);
-    }
-}
-
-/** Emits @c errorMessage if not all instance variable were initialized. @c errorMessage should include @c %s for the name of the variable. */
-static void initializerUnintializedInstanceVariablesCheck(Scope *instanceScope, Token *errorToken, const char *errorMessage){
-    Dictionary *dict = instanceScope->map;
-    for (size_t i = 0; i < dict->capacity; i++) {
-        if(dict->slots[i].key){
-            CompilerVariable *cv = dict->slots[i].value;
-            if (cv->initialized <= 0 && !cv->type.optional) {
-                String string = {cv->variable->name->valueLength, cv->variable->name->value};
-                char *variableName = stringToChar(&string);
-                compilerError(errorToken, errorMessage, variableName);
-            }
-        }
-    }
-}
+static std::vector<Token *> stringPool;
 
 #define noEffectWarning(token) compilerWarning(token, "Statement seems to have no effect whatsoever.");
 
@@ -76,10 +35,10 @@ Type safeParseTypeConstraint(Token *token, Token *parentToken, Type type, Static
         compilerError(parentToken, "Unexpected end of function body.");
     }
     Type v = typeParse(token, SI);
-    if(!typesCompatible(v, type, SI->classTypeContext)){
-        char *cn = typeToString(v, SI->classTypeContext, true);
-        char *tn = typeToString(type, SI->classTypeContext, true);
-        compilerError(token, "%s is not compatible to %s.", cn, tn);
+    if(!v.compatibleTo(type, SI->classTypeContext)){
+        auto cn = v.toString(SI->classTypeContext, true);
+        auto tn = type.toString(SI->classTypeContext, true);
+        compilerError(token, "%s is not compatible to %s.", cn.c_str(), tn.c_str());
     }
     return v;
 }
@@ -87,29 +46,17 @@ Type safeParseTypeConstraint(Token *token, Token *parentToken, Type type, Static
 
 //MARK: Block utilities
 
-static void changeScope(Scope *scope, int c){
-    Dictionary *dict = scope->map;
-    for (size_t i = 0; i < dict->capacity; i++) {
-        if(dict->slots[i].key){
-            CompilerVariable *cv = dict->slots[i].value;
-            if (cv->initialized > 0) {
-                cv->initialized += c;
-            }
-        }
-    }
-}
-
 /** Handles a complete block */
 static void block(StaticInformation *SI){
-    changeScope(currentScopeWrapper->scope, 1);
+    currentScopeWrapper->scope->changeInitializedBy(1);
     if (!SI->inClassContext) {
-        changeScope(currentScopeWrapper->topScope->scope, 1);
+        currentScopeWrapper->topScope->scope->changeInitializedBy(1);
     }
     
     SI->flowControlDepth++;
     
     Token *token = consumeToken();
-    tokenTypeCheck(IDENTIFIER, token);
+    token->forceType(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
@@ -133,9 +80,9 @@ static void block(StaticInformation *SI){
 }
 
 static void blockDepthDecrement(StaticInformation *SI){
-    changeScope(currentScopeWrapper->scope, -1);
+    currentScopeWrapper->scope->changeInitializedBy(-1);
     if (!SI->inClassContext) {
-        changeScope(currentScopeWrapper->topScope->scope, -1);
+        currentScopeWrapper->topScope->scope->changeInitializedBy(-1);
     }
     
     SI->flowControlDepth--;
@@ -151,7 +98,7 @@ static uint8_t nextVariableID(StaticInformation *SI){
 }
 
 static void noReturnError(Token *errorToken, StaticInformation *SI){
-    if (!typeIsNothingness(SI->returnType) && !SI->returned) {
+    if (SI->returnType.type != TT_NOTHINGNESS && !SI->returned) {
         compilerError(errorToken, "An explicit return is missing.");
     }
 }
@@ -159,20 +106,20 @@ static void noReturnError(Token *errorToken, StaticInformation *SI){
 //MARK: Low level parsing
 
 void checkArguments(Arguments arguments, Type calledType, Token *token, StaticInformation *SI){
-    for (int i = 0; i < arguments.count; i++) {
-        safeParseTypeConstraint(consumeToken(), token, resolveTypeReferences(arguments.variables[i].type, calledType), SI);
+    for (auto var : arguments) {
+        safeParseTypeConstraint(consumeToken(), token, var.type.resolveOn(calledType), SI);
     }
 }
 
 static void checkAccess(Procedure *p, Token *token, const char *type, StaticInformation *SI){
     if (p->access == PRIVATE) {
-        if (p->class != SI->classTypeContext.class) {
+        if (p->eclass != SI->classTypeContext.eclass) {
             ecCharToCharStack(p->name, nm);
             compilerError(token, "%s %s is 🔒.", type, nm);
         }
     }
     else if(p->access == PROTECTED) {
-        if (!inheritsFrom(SI->classTypeContext.class, p->class)) {
+        if (!SI->classTypeContext.eclass->inheritsFrom(p->eclass)) {
             ecCharToCharStack(p->name, nm);
             compilerError(token, "%s %s is 🔐.", type, nm);
         }
@@ -198,9 +145,9 @@ static void parseIfExpression(Token *token, StaticInformation *SI){
         writeCoin(0x3E, out);
         
         Token *varName = consumeToken();
-        tokenTypeCheck(VARIABLE, varName);
+        varName->forceType(VARIABLE);
         
-        if(getLocalVariable(varName, currentScopeWrapper->scope) != NULL){
+        if(currentScopeWrapper->scope->getLocalVariable(varName) != NULL){
             compilerError(token, "Cannot redeclare variable.");
         }
         
@@ -213,7 +160,7 @@ static void parseIfExpression(Token *token, StaticInformation *SI){
         }
         
         t.optional = false;
-        setLocalVariable(varName, newCompilerVariableObject(t, id, 1, true), currentScopeWrapper->scope);
+        currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, 1, true));
     }
     else {
         safeParseTypeConstraint(consumeToken(), token, typeBoolean, SI);
@@ -229,22 +176,22 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
     switch (token->value[0]) {
         case E_SHORTCAKE: {
             Token *varName = consumeToken();
-            tokenTypeCheck(VARIABLE, varName);
+            varName->forceType(VARIABLE);
             
-            if (getLocalVariable(varName, currentScopeWrapper->scope) != NULL) {
+            if (currentScopeWrapper->scope->getLocalVariable(varName) != NULL) {
                 compilerError(token, "Cannot redeclare variable.");
             }
             
-            Type t = parseAndFetchType(SI->classTypeContext.class, SI->currentNamespace, dynamismLevelFromSI(SI), NULL);
+            Type t = parseAndFetchType(SI->classTypeContext.eclass, SI->currentNamespace, dynamismLevelFromSI(SI), NULL);
             
             uint8_t id = nextVariableID(SI);
-            setLocalVariable(varName, newCompilerVariableObject(t, id, t.optional ? 1 : 0, false), currentScopeWrapper->scope);
+            currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false));
             
             return typeNothingness;
         }
         case E_CUSTARD: {
             Token *varName = consumeToken();
-            tokenTypeCheck(VARIABLE, varName);
+            varName->forceType(VARIABLE);
             
             uint8_t scopesUp;
             CompilerVariable *cv = getVariable(varName, &scopesUp);
@@ -258,14 +205,14 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 writeCoin(id, out);
                 
                 Type t = safeParse(consumeToken(), token, SI);
-                setLocalVariable(varName, newCompilerVariableObject(t, id, 1, false), currentScopeWrapper->scope);
+                currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, 1, false));
             }
             else {
                 if (cv->initialized <= 0) {
                     cv->initialized = 1;
                 }
                 
-                frozenVariableError(cv, varName);
+                cv->frozenError(varName);
                 
                 writeCoinForScopesUp(scopesUp, varName, 0x1B, 0x1D, SI);
                 writeCoin(cv->id, out);
@@ -276,9 +223,9 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         }
         case E_SOFT_ICE_CREAM: {
             Token *varName = consumeToken();
-            tokenTypeCheck(VARIABLE, varName);
+            varName->forceType(VARIABLE);
             
-            if(getLocalVariable(varName, currentScopeWrapper->scope) != NULL){
+            if(currentScopeWrapper->scope->getLocalVariable(varName) != NULL){
                 compilerError(token, "Cannot redeclare variable.");
             }
             
@@ -289,29 +236,27 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             writeCoin(id, out);
             
             Type t = safeParse(consumeToken(), token, SI);
-            setLocalVariable(varName, newCompilerVariableObject(t, id, 1, true), currentScopeWrapper->scope);
+            currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, 1, true));
             return typeNothingness;
         }
         case E_COOKING:
         case E_CHOCOLATE_BAR: {
             Token *varName = consumeToken();
-            tokenTypeCheck(VARIABLE, varName);
+            varName->forceType(VARIABLE);
             
             //Fetch the old value
             uint8_t scopesUp;
             CompilerVariable *cv = getVariable(varName, &scopesUp);
             
             if (!cv) {
-                String string = {token->valueLength, token->value};
-                char *variableName = stringToChar(&string);
-                compilerError(token, "Unknown variable \"%s\"", variableName);
+                compilerError(token, "Unknown variable \"%s\"", varName->value.utf8CString());
                 break;
             }
             
-            uninitalizedVariableError(cv, varName);
-            frozenVariableError(cv, varName);
+            cv->uninitalizedError(varName);
+            cv->frozenError(varName);
             
-            if (!typesCompatible(cv->type, typeInteger, SI->classTypeContext)) {
+            if (!cv->type.compatibleTo(typeInteger, SI->classTypeContext)) {
                 ecCharToCharStack(token->value[0], ls);
                 compilerError(token, "%s can only operate on 🚂 variables.", ls);
             }
@@ -333,16 +278,16 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             uint32_t n = 1;
             
-            safeParseTypeConstraint(consumeToken(), token, typeForClass(CL_STRING), SI);
+            safeParseTypeConstraint(consumeToken(), token, Type(CL_STRING), SI);
             
             Token *stringToken;
             while (stringToken = consumeToken(), !(stringToken->type == IDENTIFIER && stringToken->value[0] == E_COOKIE)) {
-                safeParseTypeConstraint(stringToken, token, typeForClass(CL_STRING), SI);
+                safeParseTypeConstraint(stringToken, token, Type(CL_STRING), SI);
                 n++;
             }
             
             writeCoinAtPlaceholder(pp, n, out);
-            return typeForClass(CL_STRING);
+            return Type(CL_STRING);
         }
         case E_ICE_CREAM: {
             writeCoin(0x51, out);
@@ -350,20 +295,18 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             uint32_t delta = writtenCoins;
             
-            bool firstTypeFound = false;
-            Type commonType;
+            CommonTypeFinder ct;
             
             Token *aToken;
             while (aToken = consumeToken(), !(aToken->type == IDENTIFIER && aToken->value[0] == E_AUBERGINE)) {
-                Type t = safeParse(aToken, token, SI);
-                determineCommonType(t, &commonType, &firstTypeFound, SI->classTypeContext);
+                ct.addType(safeParse(aToken, token, SI), SI->classTypeContext);
             }
             
-            emitCommonTypeWarning(&commonType, &firstTypeFound, token);
-            
             writeCoinAtPlaceholder(pp, writtenCoins - delta, out);
-            Type type = typeForClass(CL_LIST);
-            type.genericArguments[0] = commonType;
+            
+            Type type = Type(CL_LIST);
+            type.genericArguments[0] = ct.getCommonType(token);
+            
             return type;
         }
         case E_HONEY_POT: {
@@ -372,22 +315,19 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             uint32_t delta = writtenCoins;
             
-            bool firstTypeFound = false;
-            Type commonType = typeSomeobject;
+            CommonTypeFinder ct;
             
             Token *aToken;
             while (aToken = consumeToken(), !(aToken->type == IDENTIFIER && aToken->value[0] == E_AUBERGINE)) {
-                safeParseTypeConstraint(aToken, token, typeForClass(CL_STRING), SI);
-                Type t = safeParse(consumeToken(), token, SI);
-                determineCommonType(t, &commonType, &firstTypeFound, SI->classTypeContext);
+                safeParseTypeConstraint(aToken, token, Type(CL_STRING), SI);
+                ct.addType(safeParse(consumeToken(), token, SI), SI->classTypeContext);
             }
-            
-            emitCommonTypeWarning(&commonType, &firstTypeFound, token);
             
             writeCoinAtPlaceholder(pp, writtenCoins - delta, out);
             
-            Type type = typeForClass(CL_DICTIONARY);
-            type.genericArguments[0] = commonType;
+            Type type = Type(CL_DICTIONARY);
+            type.genericArguments[0] = ct.getCommonType(token);
+            
             return type;
         }
         case E_TANGERINE: { //MARK: If
@@ -435,9 +375,9 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             //The destination variable
             Token *variableToken = consumeToken();
-            tokenTypeCheck(VARIABLE, variableToken);
+            variableToken->forceType(VARIABLE);
             
-            if (getLocalVariable(variableToken, currentScopeWrapper->scope) != NULL) {
+            if (currentScopeWrapper->scope->getLocalVariable(variableToken) != NULL) {
                 compilerError(variableToken, "Cannot redeclare variable.");
             }
             
@@ -448,22 +388,22 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             Type iteratee = safeParseTypeConstraint(consumeToken(), token, typeSomeobject, SI);
             
-            if(iteratee.type == TT_CLASS && iteratee.class == CL_LIST) {
+            if(iteratee.type == TT_CLASS && iteratee.eclass == CL_LIST) {
                 //If the iteratee is a list, the Real-Time Engine has some special sugar
                 writeCoinAtPlaceholder(pp, 0x65, out);
-                setLocalVariable(variableToken, newCompilerVariableObject(iteratee.genericArguments[0], vID, true, false), currentScopeWrapper->scope);
+                currentScopeWrapper->scope->setLocalVariable(variableToken, new CompilerVariable(iteratee.genericArguments[0], vID, true, false));
             }
-            else if(typesCompatible(iteratee, typeForProtocol(PR_ENUMERATEABLE), SI->classTypeContext)) {
+            else if(iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), SI->classTypeContext)) {
                 writeCoinAtPlaceholder(pp, 0x64, out);
                 Type itemType = typeSomething;
-                if(iteratee.type == TT_CLASS && iteratee.class->ownGenericArgumentCount == 1) {
-                    itemType = iteratee.genericArguments[iteratee.class->ownGenericArgumentCount - iteratee.class->genericArgumentCount];
+                if(iteratee.type == TT_CLASS && iteratee.eclass->ownGenericArgumentCount == 1) {
+                    itemType = iteratee.genericArguments[iteratee.eclass->ownGenericArgumentCount - iteratee.eclass->genericArgumentCount];
                 }
-                setLocalVariable(variableToken, newCompilerVariableObject(itemType, vID, true, false), currentScopeWrapper->scope);
+                currentScopeWrapper->scope->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, false));
             }
             else {
-                char *iterateeString = typeToString(iteratee, SI->classTypeContext, true);
-                compilerError(token, "%s does not conform to 🔴🔂.", iterateeString);
+                auto iterateeString = SI->classTypeContext.toString(iteratee, true);
+                compilerError(token, "%s does not conform to 🔴🔂.", iterateeString.c_str());
             }
             
             block(SI);
@@ -483,7 +423,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         case E_DOG: {
             SI->usedSelf = true;
             writeCoin(0x3C, out);
-            if (SI->initializer && !SI->calledSuper && SI->initializer->pc.class->superclass) {
+            if (SI->initializer && !SI->calledSuper && SI->initializer->eclass->superclass) {
                 compilerError(token, "Attempt to use 🐕 before superinitializer call.");
             }
             
@@ -492,14 +432,14 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 break;
             }
             
-            initializerUnintializedInstanceVariablesCheck(currentScopeWrapper->topScope->scope, token, "Instance variable \"%s\" must be initialized before the use of 🐕.");
+            currentScopeWrapper->topScope->scope->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be initialized before the use of 🐕.");
 
             return SI->classTypeContext;
         }
         case E_UP_POINTING_RED_TRIANGLE: {
             writeCoin(0x13, out);
             
-            Type type = parseAndFetchType(SI->classTypeContext.class, SI->currentNamespace, dynamismLevelFromSI(SI), NULL);
+            Type type = parseAndFetchType(SI->classTypeContext.eclass, SI->currentNamespace, dynamismLevelFromSI(SI), NULL);
             
             if (type.type != TT_ENUM) {
                 compilerError(token, "The given type cannot be accessed.");
@@ -509,20 +449,20 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             }
             
             Token *name = consumeToken();
-            tokenTypeCheck(IDENTIFIER, name);
+            name->forceType(IDENTIFIER);
             
-            EmojicodeInteger *v = enumGetValue(name->value[0], type.eenum);
-            if (!v) {
+            auto v = type.eenum->getValueFor(name->value[0]);
+            if (!v.first) {
                 ecCharToCharStack(name->value[0], valueName);
                 ecCharToCharStack(type.eenum->name, enumName);
                 compilerError(name, "%s does not have a member named %s.", enumName, valueName);
             }
-            else if (*v > UINT32_MAX) {
-                writeCoin((*v >> 32), out);
-                writeCoin((EmojicodeCoin)*v, out);
+            else if (v.second > UINT32_MAX) {
+                writeCoin((v.second >> 32), out);
+                writeCoin((EmojicodeCoin)v.second, out);
             }
             else {
-                writeCoin((EmojicodeCoin)*v, out);
+                writeCoin((EmojicodeCoin)v.second, out);
             }
             
             return type;
@@ -531,7 +471,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             writeCoin(0x4, out);
             
             bool dynamic;
-            Type type = parseAndFetchType(SI->classTypeContext.class, SI->currentNamespace, dynamismLevelFromSI(SI), &dynamic);
+            Type type = parseAndFetchType(SI->classTypeContext.eclass, SI->currentNamespace, dynamismLevelFromSI(SI), &dynamic);
             
             if (type.type != TT_CLASS) {
                 compilerError(token, "The given type cannot be initiatied.");
@@ -544,28 +484,28 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 writeCoin(UINT32_MAX, out);
             }
             else {
-                writeCoin(type.class->index, out);
+                writeCoin(type.eclass->index, out);
             }
             
             //The initializer name
             Token *consName = consumeToken();
-            tokenTypeCheck(IDENTIFIER, consName);
+            consName->forceType(IDENTIFIER);
             
-            Initializer *initializer = getInitializer(consName->value[0], type.class);
+            Initializer *initializer = type.eclass->getInitializer(consName->value[0]);
             
             if (initializer == NULL) {
-                char *typeString = typeToString(type, SI->classTypeContext, true);
+                auto typeString = type.toString(SI->classTypeContext, true);
                 ecCharToCharStack(consName->value[0], initializerString);
-                compilerError(consName, "%s has no initializer %s.", typeString, initializerString);
+                compilerError(consName, "%s has no initializer %s.", typeString.c_str(), initializerString);
             }
             else if (dynamic && !initializer->required) {
                 compilerError(consName, "Only required initializers can be used with 🐀.");
             }
             
-            writeCoin(initializer->pc.vti, out);
+            writeCoin(initializer->vti, out);
             
-            checkAccess((Procedure *)initializer, token, "Initializer", SI);
-            checkArguments(initializer->pc.arguments, type, token, SI);
+            checkAccess(initializer, token, "Initializer", SI);
+            checkArguments(initializer->arguments, type, token, SI);
             
             if (initializer->canReturnNothingness) {
                 type.optional = true;
@@ -579,7 +519,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         case E_CLOUD: {
             writeCoin(0x2E, out);
             Token *t = consumeToken();
-            tokenTypeCheck(NO_TYPE, t);
+            t->forceType(NO_TYPE);
             typeParse(t, SI);
             return typeBoolean;
         }
@@ -596,8 +536,8 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 compilerError(token, "🐐 can only be used inside initializers.");
                 break;
             }
-            if (!SI->classTypeContext.class->superclass) {
-                compilerError(token, "🐐 can only be used if the class inherits from another.");
+            if (!SI->classTypeContext.eclass->superclass) {
+                compilerError(token, "🐐 can only be used if the eclass inherits from another.");
                 break;
             }
             if (SI->calledSuper) {
@@ -607,18 +547,18 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 compilerError(token, "You may not put a call to a superinitializer in a flow control structure.");
             }
             
-            initializerUnintializedInstanceVariablesCheck(currentScopeWrapper->topScope->scope, token, "Instance variable \"%s\" must be initialized before superinitializer.");
+            currentScopeWrapper->topScope->scope->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be initialized before superinitializer.");
             
             writeCoin(0x3D, out);
             
-            Class *class = SI->classTypeContext.class;
+            Class *eclass = SI->classTypeContext.eclass;
             
-            writeCoin(class->superclass->index, out);
+            writeCoin(eclass->superclass->index, out);
             
             Token *initializerToken = consumeToken();
-            tokenTypeCheck(IDENTIFIER, initializerToken);
+            initializerToken->forceType(IDENTIFIER);
             
-            Initializer *initializer = getInitializer(initializerToken->value[0], class->superclass);
+            Initializer *initializer = eclass->superclass->getInitializer(initializerToken->value[0]);
             
             if (initializer == NULL) {
                 ecCharToCharStack(initializerToken->value[0], initializerString);
@@ -626,10 +566,10 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 break;
             }
             
-            writeCoin(initializer->pc.vti, out);
+            writeCoin(initializer->vti, out);
             
-            checkAccess((Procedure *)initializer, token, "initializer", SI);
-            checkArguments(initializer->pc.arguments, SI->classTypeContext, token, SI);
+            checkAccess(initializer, token, "initializer", SI);
+            checkArguments(initializer->arguments, SI->classTypeContext, token, SI);
 
             SI->calledSuper = true;
             
@@ -663,27 +603,27 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             Type originalType = safeParseTypeConstraint(consumeToken(), token, typeSomething, SI);
             bool dynamic;
-            Type type = parseAndFetchType(SI->classTypeContext.class, SI->currentNamespace, dynamismLevelFromSI(SI), &dynamic);
+            Type type = parseAndFetchType(SI->classTypeContext.eclass, SI->currentNamespace, dynamismLevelFromSI(SI), &dynamic);
             
             if (dynamic) {
                 compilerError(token, "You cannot cast to dynamic types.");
             }
             
-            if (typesCompatible(originalType, type, SI->classTypeContext)) {
+            if (originalType.compatibleTo(type, SI->classTypeContext)) {
                 compilerWarning(token, "Superfluous cast.");
             }
             
             switch (type.type) {
                 case TT_CLASS:
-                    for (size_t i = 0; i < type.class->ownGenericArgumentCount; i++) {
-                        if(!typesCompatible(type.class->genericArgumentContraints[i], type.genericArguments[i], type) ||
-                           !typesCompatible(type.genericArguments[i], type.class->genericArgumentContraints[i], type)) {
+                    for (size_t i = 0; i < type.eclass->ownGenericArgumentCount; i++) {
+                        if(!type.eclass->genericArgumentContraints[i].compatibleTo(type.genericArguments[i], type) ||
+                           !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentContraints[i], type)) {
                             compilerError(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
                         }
                     }
 
                     writeCoinAtPlaceholder(pp, originalType.type == TT_SOMETHING || originalType.optional ? 0x44 : 0x40, out);
-                    writeCoin(type.class->index, out);
+                    writeCoin(type.eclass->index, out);
                     break;
                 case TT_PROTOCOL:
                     writeCoinAtPlaceholder(pp, originalType.type == TT_SOMETHING || originalType.optional ? 0x45 : 0x41, out);
@@ -702,8 +642,8 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                     writeCoinAtPlaceholder(pp, 0x47, out);
                     break;
                 default: {
-                    char *typeString = typeToString(type, SI->classTypeContext, true);
-                    compilerError(token, "You cannot cast to %s.", typeString);
+                    auto typeString = type.toString(SI->classTypeContext, true);
+                    compilerError(token, "You cannot cast to %s.", typeString.c_str());
                 }
             }
             
@@ -736,21 +676,21 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 compilerError(token, "🍻 may only be used on 🍬.");
             }
             
-            Method *method = getMethod(methodToken->value[0], type.class);
+            Method *method = type.eclass->getMethod(methodToken->value[0]);
             
             if(method == NULL){
-                char *class = typeToString(type, SI->classTypeContext, true);
+                auto eclass = type.toString(SI->classTypeContext, true);
                 ecCharToCharStack(methodToken->value[0], method);
-                compilerError(token, "%s has no method %s", class, method);
+                compilerError(token, "%s has no method %s", eclass.c_str(), method);
             }
             
-            writeCoin(method->pc.vti, out);
+            writeCoin(method->vti, out);
             writeCoinAtPlaceholder(pp, writtenCoins - delta, out);
             
-            checkAccess((Procedure *)method, token, "method", SI);
-            checkArguments(method->pc.arguments, type, token, SI);
+            checkAccess(method, token, "method", SI);
+            checkArguments(method->arguments, type, token, SI);
             
-            Type returnType = method->pc.returnType;
+            Type returnType = method->returnType;
             returnType.optional = true;
             return returnType;
         }
@@ -758,33 +698,33 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             writeCoin(0x2, out);
             
             Token *methodToken = consumeToken();
-            tokenTypeCheck(IDENTIFIER, methodToken);
+            methodToken->forceType(IDENTIFIER);
             
-            Type type = parseAndFetchType(SI->classTypeContext.class, SI->currentNamespace, dynamismLevelFromSI(SI), NULL);
+            Type type = parseAndFetchType(SI->classTypeContext.eclass, SI->currentNamespace, dynamismLevelFromSI(SI), NULL);
             
             if (type.optional) {
                 compilerWarning(token, "Please remove useless 🍬.");
             }
             if (type.type != TT_CLASS) {
-                compilerError(token, "The given type is not a class.");
+                compilerError(token, "The given type is not a eclass.");
             }
             
-            writeCoin(type.class->index, out);
+            writeCoin(type.eclass->index, out);
             
-            ClassMethod *method = getClassMethod(methodToken->value[0], type.class);
+            ClassMethod *method = type.eclass->getClassMethod(methodToken->value[0]);
             
             if (method == NULL) {
-                char *classString = typeToString(type, SI->classTypeContext, true);
+                auto classString = type.toString(SI->classTypeContext, true);
                 ecCharToCharStack(methodToken->value[0], methodString);
-                compilerError(token, "%s has no class method %s", classString, methodString);
+                compilerError(token, "%s has no eclass method %s", classString.c_str(), methodString);
             }
             
-            writeCoin(method->pc.vti, out);
+            writeCoin(method->vti, out);
             
-            checkAccess((Procedure *)method, token, "Class method", SI);
-            checkArguments(method->pc.arguments, type, token, SI);
+            checkAccess(method, token, "Class method", SI);
+            checkArguments(method->arguments, type, token, SI);
             
-            return resolveTypeReferences(method->pc.returnType, type);
+            return method->returnType.resolveOn(type);
         }
         case E_HOT_PEPPER: {
             Token *methodName = consumeToken();
@@ -795,47 +735,39 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             Method *method;
             if (type.type != TT_CLASS) {
-                compilerError(token, "Only class.");
+                compilerError(token, "You can only capture method calls on class instances.");
             }
-            method = getMethod(methodName->value[0], type.class);
+            method = type.eclass->getMethod(methodName->value[0]);
             
             if (!method) {
                 compilerError(token, "Method is non-existent.");
             }
             
-            writeCoin(method->pc.vti, out);
+            writeCoin(method->vti, out);
             
-            Type t;
+            Type t(TT_CALLABLE, false);
             t.type = TT_CALLABLE;
-            t.arguments = method->pc.arguments.count;
-            t.genericArguments = malloc(sizeof(Type) * (t.arguments + 1));
+            t.arguments = (uint8_t)method->arguments.size();
             
-            t.genericArguments[0] = method->pc.returnType;
-            for (int i = 0; i < method->pc.arguments.count; i++) {
-                t.genericArguments[i + 1] = method->pc.arguments.variables[i].type;
+            t.genericArguments.push_back(method->returnType);
+            for (size_t i = 0; i < method->arguments.size(); i++) {
+                t.genericArguments.push_back(method->arguments[i].type);
             }
             return t;
         }
         case E_GRAPES: {
             writeCoin(0x70, out);
             
-            Type t;
-            t.type = TT_CALLABLE;
+            Type t(TT_CALLABLE, false);
             
-            Procedure p;
-            p.class = NULL;
-            p.namespace = SI->currentNamespace;
-            parseArgumentList(&p);
+            auto arguments = parseArgumentList(SI->classTypeContext.eclass, SI->currentNamespace);
             
-            t.optional = false;
-            t.arguments = p.arguments.count;
-            t.genericArguments = malloc(sizeof(Type) * (t.arguments + 1));
+            t.arguments = (uint8_t)arguments.size();
             
-            for (int i = 0; i < p.arguments.count; i++) {
-                t.genericArguments[i + 1] = p.arguments.variables[i].type;
+            t.genericArguments.push_back(parseReturnType(SI->classTypeContext.eclass, SI->currentNamespace));
+            for (int i = 0; i < arguments.size(); i++) {
+                t.genericArguments.push_back(arguments[i].type);
             }
-            
-            parseReturnType(t.genericArguments, NULL, SI->currentNamespace);
             
             off_t variableCountPp = writePlaceholderCoin(out);
             off_t pp = writePlaceholderCoin(out);
@@ -855,7 +787,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 pushScope(currentScopeWrapper->topScope->scope);
             }
             
-            analyzeFunctionBodyFull(currentToken, p.arguments, SI, true, closingScope);
+            analyzeFunctionBodyFull(currentToken, arguments, SI, true, closingScope);
             noReturnError(token, SI);
             
             if (!SI->inClassContext) {
@@ -864,7 +796,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             writeCoinAtPlaceholder(variableCountPp, SI->variableCount, out);
             writeCoinAtPlaceholder(pp, writtenCoins - delta, out);
-            writeCoin((uint32_t)p.arguments.count | (SI->usedSelf ? 1 << 16 : 0), out);
+            writeCoin((uint32_t)arguments.size() | (SI->usedSelf ? 1 << 16 : 0), out);
             writeCoin(preVarID, out);
             
             SI->variableCount = preVarID;
@@ -893,8 +825,8 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
         case E_CHIPMUNK: {
             Token *nameToken = consumeToken();
             
-            Class *superclass = SI->classTypeContext.class->superclass;
-            Method *method = getMethod(nameToken->value[0], superclass);
+            Class *superclass = SI->classTypeContext.eclass->superclass;
+            Method *method = superclass->getMethod(nameToken->value[0]);
             
             if (!method) {
                 compilerError(token, "Method is non-existent.");
@@ -902,11 +834,11 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             writeCoin(0x5, out);
             writeCoin(superclass->index, out);
-            writeCoin(method->pc.vti, out);
+            writeCoin(method->vti, out);
             
-            checkArguments(method->pc.arguments, SI->classTypeContext, token, SI);
+            checkArguments(method->arguments, SI->classTypeContext, token, SI);
             
-            return method->pc.returnType;
+            return method->returnType;
         }
         default:
         {
@@ -922,10 +854,10 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             Method *method;
             if(type.type == TT_PROTOCOL){
-                method = protocolGetMethod(token->value[0], type.protocol);
+                method = type.protocol->getMethod(token->value[0]);
             }
             else if(type.type == TT_CLASS) {
-                method = getMethod(token->value[0], type.class);
+                method = type.eclass->getMethod(token->value[0]);
             }
             else {
                 if(type.type == TT_BOOLEAN){
@@ -1031,46 +963,33 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 }
                 
                 ecCharToCharStack(token->value[0], method);
-                char *typeString = typeToString(type, SI->classTypeContext, true);
-                compilerError(token, "Unknown primitive method %s for %s.", method, typeString);
+                auto typeString = type.toString(SI->classTypeContext, true);
+                compilerError(token, "Unknown primitive method %s for %s.", method, typeString.c_str());
             }
             
             if(method == NULL){
-                char *class = typeToString(type, SI->classTypeContext, true);
+                auto eclass = type.toString(SI->classTypeContext, true);
                 ecCharToCharStack(token->value[0], method);
-                compilerError(token, "%s has no method %s.", class, method);
-                break;
+                compilerError(token, "%s has no method %s.", eclass.c_str(), method);
             }
             
             if(type.type == TT_PROTOCOL){
                 writeCoinAtPlaceholder(pp, 0x3, out);
                 writeCoin(type.protocol->index, out);
-                writeCoin(method->pc.vti, out);
+                writeCoin(method->vti, out);
             }
             else if(type.type == TT_CLASS) {
                 writeCoinAtPlaceholder(pp, 0x1, out);
-                writeCoin(method->pc.vti, out);
+                writeCoin(method->vti, out);
             }
 
-            checkAccess((Procedure *)method, token, "Method", SI);
-            checkArguments(method->pc.arguments, type, token, SI);
+            checkAccess(method, token, "Method", SI);
+            checkArguments(method->arguments, type, token, SI);
 
-            return resolveTypeReferences(method->pc.returnType, type);
+            return method->returnType.resolveOn(type);
         }
     }
     return typeNothingness;
-}
-
-bool tokenValueEqual(Token *a, Token *b){
-    if(a->valueLength != b->valueLength){
-        return false;
-    }
-    
-    for (size_t i = 0; i < a->valueLength; i++)
-        if (a->value[i] != b->value[i])
-            return false;
-    
-    return true;
 }
 
 Type typeParse(Token *token, StaticInformation *SI){
@@ -1079,18 +998,18 @@ Type typeParse(Token *token, StaticInformation *SI){
             //Instruction to create a string
             writeCoin(0x10, out);
             
-            for (size_t i = 0; i < stringPool->count; i++) {
-                Token *a = getList(stringPool, i);
-                if (tokenValueEqual(a, token)) {
+            for (size_t i = 0; i < stringPool.size(); i++) {
+                Token *a = stringPool[i];
+                if (a->value.compare(token->value) == 0) {
                     writeCoin((EmojicodeCoin)i, out);
-                    return typeForClass(CL_STRING);
+                    return Type(CL_STRING);
                 }
             }
             
-            writeCoin((EmojicodeCoin)stringPool->count, out);
-            appendList(stringPool, token);
+            writeCoin((EmojicodeCoin)stringPool.size(), out);
+            stringPool.push_back(token);
             
-            return typeForClass(CL_STRING);
+            return Type(CL_STRING);
         } 
         case BOOLEAN_TRUE:
             writeCoin(0x11, out);
@@ -1100,13 +1019,10 @@ Type typeParse(Token *token, StaticInformation *SI){
             return typeBoolean;
         case INTEGER: {
             /* We know token->value only contains ints less than 255 */
-            char is[token->valueLength + 1];
-            for(uint32_t i = 0; i < token->valueLength; i++){
-                is[i] = token->value[i];
-            }
-            is[token->valueLength] = 0;
+            const char *string = token->value.utf8CString();
             
-            EmojicodeInteger l = strtoll(is, NULL, 0);
+            EmojicodeInteger l = strtoll(string, NULL, 0);
+            delete [] string;
             if (llabs(l) > INT32_MAX) {
                 writeCoin(0x14, out);
 
@@ -1124,13 +1040,11 @@ Type typeParse(Token *token, StaticInformation *SI){
         }
         case DOUBLE: {
             writeCoin(0x15, out);
-            char is[token->valueLength + 1];
-            for (uint32_t i = 0; i < token->valueLength; i++) {
-                is[i] = token->value[i];
-            }
-            is[token->valueLength] = 0;
             
-            double d = strtod(is, NULL);
+            const char *string = token->value.utf8CString();
+            
+            double d = strtod(string, NULL);
+            delete [] string;
             writeDouble(d, out);
             return typeFloat;
         }
@@ -1143,13 +1057,11 @@ Type typeParse(Token *token, StaticInformation *SI){
             CompilerVariable *cv = getVariable(token, &scopesUp);
             
             if(cv == NULL){
-                String string = {token->valueLength, token->value};
-                char *variableName = stringToChar(&string);
+                const char *variableName = token->value.utf8CString();
                 compilerError(token, "Variable \"%s\" not defined.", variableName);
-                break;
             }
 
-            uninitalizedVariableError(cv, token);
+            cv->uninitalizedError(token);
             
             writeCoinForScopesUp(scopesUp, token, 0x1A, 0x1C, SI);
             writeCoin(cv->id, out);
@@ -1179,28 +1091,19 @@ void analyzeFunctionBodyFull(Token *firstToken, Arguments arguments, StaticInfor
     SI->variableCount = 0;
 
     //Set the arguments to the method scope
-    Scope *methodScope = newSubscope(false);
-    for (uint8_t i = 0; i < arguments.count; i++) {
+    Scope methodScope(false);
+    for (auto variable : arguments) {
         uint8_t id = nextVariableID(SI);
-        CompilerVariable *varo = newCompilerVariableObject(arguments.variables[i].type, id, true, false);
+        CompilerVariable *varo = new CompilerVariable(variable.type, id, true, false);
         
-        setLocalVariable(arguments.variables[i].name, varo, methodScope);
-    }
-    if (copyScope) {
-        uint8_t offsetID = nextVariableID(SI);
-        size_t i = 0;
-        for (; i < copyScope->map->capacity; i++) {
-            if(copyScope->map->slots[i].key){
-                CompilerVariable *ovaro = copyScope->map->slots[i].value;
-                CompilerVariable *varo = newCompilerVariableObject(ovaro->type, offsetID + ovaro->id, ovaro->initialized, true);
-                
-                dictionarySet(methodScope->map, copyScope->map->slots[i].key, copyScope->map->slots[i].kl, varo);
-            }
-        }
-        SI->variableCount += i - 1;
+        methodScope.setLocalVariable(variable.name, varo);
     }
     
-    pushScope(methodScope);
+    if (copyScope) {
+        SI->variableCount += methodScope.copyFromScope(copyScope, nextVariableID(SI));
+    }
+    
+    pushScope(&methodScope);
     
     bool emittedDeadCodeWarning = false;
     
@@ -1223,15 +1126,6 @@ void analyzeFunctionBodyFull(Token *firstToken, Arguments arguments, StaticInfor
     }
     
     popScope();
-    releaseScope(methodScope);
-}
-
-StaticInformation* newStaticInformation(Class *class){
-    StaticInformation *si = malloc(sizeof(StaticInformation));
-    si->flowControlDepth = 0;
-    si->classTypeContext = typeForClass(class);
-    si->initializer = NULL;
-    return si;
 }
 
 void checkOverride(void *superWhatsit, bool override, EmojicodeChar name, Token *token){
@@ -1245,91 +1139,86 @@ void checkOverride(void *superWhatsit, bool override, EmojicodeChar name, Token 
     }
 }
 
-void analyzeClass(Class *class, Type classType){
-    writeEmojicodeChar(class->name, out);
-    if(class->superclass){
-        writeUInt16(class->superclass->index, out);
+void analyzeClass(Class *eclass, Type classType){
+    writeEmojicodeChar(eclass->name, out);
+    if(eclass->superclass){
+        writeUInt16(eclass->superclass->index, out);
     }
-    else { //If the class does not have a superclass the own index gets written
-        writeUInt16(class->index, out);
+    else { //If the eclass does not have a superclass the own index gets written
+        writeUInt16(eclass->index, out);
     }
     
-    Scope *objectScope = newSubscope(true);
+    Scope objectScope(true);
     
-    //Get the ID offset for this class by summing up all superclasses instance variable counts
-    class->IDOffset = 0;
-    for(Class *aClass = class->superclass; aClass != NULL; aClass = aClass->superclass){
-        class->IDOffset += aClass->instanceVariableCount;
+    //Get the ID offset for this eclass by summing up all superclasses instance variable counts
+    eclass->IDOffset = 0;
+    for(Class *aClass = eclass->superclass; aClass != NULL; aClass = aClass->superclass){
+        eclass->IDOffset += aClass->instanceVariables.size();
     }
-    writeUInt16(class->instanceVariableCount + class->IDOffset, out);
+    writeUInt16(eclass->instanceVariables.size() + eclass->IDOffset, out);
     
     //Number of methods inclusive superclass
-    writeUInt16(class->nextMethodVti, out);
-    //Number of class methods inclusive superclass
-    writeUInt16(class->nextClassMethodVti, out);
+    writeUInt16(eclass->nextMethodVti, out);
+    //Number of eclass methods inclusive superclass
+    writeUInt16(eclass->nextClassMethodVti, out);
     //Initializer inclusive superclass
-    fputc(class->inheritsContructors, out);
-    writeUInt16(class->nextInitializerVti, out);
+    fputc(eclass->inheritsContructors, out);
+    writeUInt16(eclass->nextInitializerVti, out);
     
     {
-        uint16_t offset = class->IDOffset;
-        for(Class *aClass = class; aClass != NULL; aClass = aClass->superclass){
-            if(aClass != class){
-                //If this is not the class we are going to analyze we subtract the number of
-                //the class being anaylzed to get the current classes offset
-                offset -= aClass->instanceVariableCount;
+        uint16_t offset = eclass->IDOffset;
+        for(Class *aClass = eclass; aClass != NULL; aClass = aClass->superclass){
+            if(aClass != eclass){
+                //If this is not the eclass we are going to analyze we subtract the number of
+                //the eclass being anaylzed to get the current classes offset
+                offset -= aClass->instanceVariables.size();
             }
         }
-        for (int i = 0; i < class->instanceVariableCount; i++) {
-            Variable *var = class->instanceVariables[i];
-            
-            CompilerVariable *cv = newCompilerVariableObject(var->type, offset++, 1, false);
+        for (auto var : eclass->instanceVariables) {
+            CompilerVariable *cv = new CompilerVariable(var->type, offset++, 1, false);
             cv->variable = var;
-            setLocalVariable(var->name, cv, objectScope);
+            objectScope.setLocalVariable(var->name, cv);
         }
     }
     
-    StaticInformation *SI = newStaticInformation(class);
+    StaticInformation *SI = new StaticInformation(eclass);
     SI->inClassContext = false;
     
-    pushScope(objectScope);
+    pushScope(&objectScope);
     
-    writeUInt16(class->methodList->count, out);
-    writeUInt16(class->initializerList->count, out);
-    writeUInt16(class->classMethodList->count, out);
+    writeUInt16(eclass->methodList.size(), out);
+    writeUInt16(eclass->initializerList.size(), out);
+    writeUInt16(eclass->classMethodList.size(), out);
     
-    for (uint16_t i = 0; i < class->methodList->count; i++) {
-        Method *method = getList(class->methodList, i);
-        
+    for (auto method : eclass->methodList) {
         off_t metaPosition;
-        if (writeProcedureHeading((Procedure *)method, out, &metaPosition)) continue;
+        if (writeProcedureHeading(method, out, &metaPosition)) continue;
         
-        SI->returnType = method->pc.returnType;
-        SI->currentNamespace = method->pc.namespace;
+        SI->returnType = method->returnType;
+        SI->currentNamespace = method->enamespace;
         
-        analyzeFunctionBody(method->pc.firstToken, method->pc.arguments, SI);
-        noReturnError(method->pc.dToken, SI);
+        analyzeFunctionBody(method->firstToken, method->arguments, SI);
+        noReturnError(method->dToken, SI);
         writeFunctionBlockMeta(metaPosition, writtenCoins, SI->variableCount, out);
     }
     
-    for (uint16_t i = 0; i < class->initializerList->count; i++) {
-        changeScope(currentScopeWrapper->scope, -1);
-        Initializer *initializer = getList(class->initializerList, i);
+    for (auto initializer : eclass->initializerList) {
+        currentScopeWrapper->scope->changeInitializedBy(-1);
 
         off_t metaPosition;
-        if (writeProcedureHeading((Procedure *)initializer, out, &metaPosition)) continue;
+        if (writeProcedureHeading(initializer, out, &metaPosition)) continue;
         
         SI->initializer = initializer;
-        SI->currentNamespace = initializer->pc.namespace;
+        SI->currentNamespace = initializer->enamespace;
         
-        analyzeFunctionBody(initializer->pc.firstToken, initializer->pc.arguments, SI);
+        analyzeFunctionBody(initializer->firstToken, initializer->arguments, SI);
         writeFunctionBlockMeta(metaPosition, writtenCoins, SI->variableCount, out);
         
-        initializerUnintializedInstanceVariablesCheck(currentScopeWrapper->scope, initializer->pc.dToken, "Instance variable \"%s\" must be initialized.");
+        currentScopeWrapper->scope->initializerUnintializedVariablesCheck(initializer->dToken, "Instance variable \"%s\" must be initialized.");
         
-        if (!SI->calledSuper && class->superclass) {
-            ecCharToCharStack(initializer->pc.name, initializerName);
-            compilerError(initializer->pc.dToken, "Missing call to superinitializer in initializer %s.", initializerName);
+        if (!SI->calledSuper && eclass->superclass) {
+            ecCharToCharStack(initializer->name, initializerName);
+            compilerError(initializer->dToken, "Missing call to superinitializer in initializer %s.", initializerName);
         }
     }
     
@@ -1338,30 +1227,27 @@ void analyzeClass(Class *class, Type classType){
     SI->initializer = NULL;
     SI->inClassContext = true;
     
-    for (uint16_t i = 0; i < class->classMethodList->count; i++) {
-        ClassMethod *classMethod = getList(class->classMethodList, i);
-        
+    for (auto classMethod : eclass->classMethodList) {
         off_t metaPosition;
-        if (writeProcedureHeading((Procedure *)classMethod, out, &metaPosition)) continue;
+        if (writeProcedureHeading(classMethod, out, &metaPosition)) continue;
         
-        SI->returnType = classMethod->pc.returnType;
-        SI->currentNamespace = classMethod->pc.namespace;
+        SI->returnType = classMethod->returnType;
+        SI->currentNamespace = classMethod->enamespace;
         
-        analyzeFunctionBody(classMethod->pc.firstToken, classMethod->pc.arguments, SI);
-        noReturnError(classMethod->pc.dToken, SI);
+        analyzeFunctionBody(classMethod->firstToken, classMethod->arguments, SI);
+        noReturnError(classMethod->dToken, SI);
         
         writeFunctionBlockMeta(metaPosition, writtenCoins, SI->variableCount, out);
     }
     
-    if (class->instanceVariableCount && !class->initializerList->count) {
-        ecCharToCharStack(class->name, className);
-        ecCharToCharStack(class->namespace, classNamespace);
-        compilerWarning(class->classBegin, "Class %s in %s defines %d instances variables but has no initializers.", className, classNamespace, class->instanceVariableCount);
+    if (eclass->instanceVariables.size() > 0 && eclass->initializerList.size() == 0) {
+        ecCharToCharStack(eclass->name, className);
+        ecCharToCharStack(eclass->enamespace, classNamespace);
+        compilerWarning(eclass->classBegin, "Class %s in %s defines %d instances variables but has no initializers.", className, classNamespace, eclass->instanceVariables.size());
     }
     
-    writeUInt16(class->protocols->count, out);
-    ecCharToCharStack(class->name, className);
-    if (class->protocols->count > 0) {
+    writeUInt16(eclass->protocols.size(), out);
+    if (eclass->protocols.size() > 0) {
         off_t position = ftello(out);
         writeUInt16(0, out);
         writeUInt16(0, out);
@@ -1369,8 +1255,7 @@ void analyzeClass(Class *class, Type classType){
         uint_fast16_t smallestProtocolIndex = UINT_FAST16_MAX;
         uint_fast16_t biggestProtocolIndex = 0;
         
-        for(size_t i = 0; i < class->protocols->count; i++){
-            Protocol *protocol = getList(class->protocols, i);
+        for(auto protocol : eclass->protocols){
             
             writeUInt16(protocol->index, out);
             
@@ -1381,22 +1266,20 @@ void analyzeClass(Class *class, Type classType){
                 smallestProtocolIndex = protocol->index;
             }
             
-            writeUInt16(protocol->methodList->count, out);
+            writeUInt16(protocol->methodList.size(), out);
             
-            for(size_t j = 0; j < protocol->methodList->count; j++){
-                Method *method = getList(protocol->methodList, j);
-                
-                Method *clm = getMethod(method->pc.name, class);
+            for(auto method : protocol->methodList){
+                Method *clm = eclass->getMethod(method->name);
                 
                 if(clm == NULL){
                     ecCharToCharStack(protocol->name, prs);
-                    ecCharToCharStack(class->name, cls);
-                    ecCharToCharStack(method->pc.name, ms);
-                    compilerError(class->classBegin, "Class %s does not agree to protocol %s: Method %s is missing.", cls, prs, ms);
+                    ecCharToCharStack(eclass->name, cls);
+                    ecCharToCharStack(method->name, ms);
+                    compilerError(eclass->classBegin, "Class %s does not agree to protocol %s: Method %s is missing.", cls, prs, ms);
                 }
                 
-                writeUInt16(clm->pc.vti, out);
-                checkPromises((Procedure *)clm, (Procedure *)method, "protocol definition of the method", SI->classTypeContext);
+                writeUInt16(clm->vti, out);
+                clm->checkPromises(method, "protocol definition of the method", SI->classTypeContext);
             }
         }
         
@@ -1407,90 +1290,78 @@ void analyzeClass(Class *class, Type classType){
         fseek(out, oldPosition, SEEK_SET);
     }
     
-    free(SI);
+    delete SI;
 }
 
 void analyzeClassesAndWrite(FILE *fout){
     out = fout;
-    stringPool = newList();
     
-    Token *token = newToken(NULL);
-    token->valueLength = 0;
-    appendList(stringPool, token);
+    stringPool.push_back(new Token(NULL));
     
     //Start the writing
     fputc(ByteCodeSpecificationVersion, out); //Version
     
     //Decide which classes inherit initializers, if they agree to protocols, and assign virtual table indexes before we analyze the classes!
-    for (size_t i = 0; i < classes->count; i++) {
-        Class *class = getList(classes, i);
-        
-        //decide whether this class is eligible for initializer inheritance
-        if(class->instanceVariableCount == 0 && class->initializerList->count == 0){
-            class->inheritsContructors = true;
-        }
-        //If there are no instance variables we don't need an array to hold them
-        if(class->instanceVariableCount == 0){
-            free(class->instanceVariables);
+    for (auto eclass : classes) {
+        //decide whether this eclass is eligible for initializer inheritance
+        if(eclass->instanceVariables.size() == 0 && eclass->initializerList.size() == 0){
+            eclass->inheritsContructors = true;
         }
         
-        if(class->superclass){
-            class->nextClassMethodVti = class->superclass->nextClassMethodVti;
-            class->nextInitializerVti = class->inheritsContructors ? class->superclass->nextInitializerVti : 0;
-            class->nextMethodVti = class->superclass->nextMethodVti;
+        if(eclass->superclass){
+            eclass->nextClassMethodVti = eclass->superclass->nextClassMethodVti;
+            eclass->nextInitializerVti = eclass->inheritsContructors ? eclass->superclass->nextInitializerVti : 0;
+            eclass->nextMethodVti = eclass->superclass->nextMethodVti;
         }
         else {
-            class->nextClassMethodVti = 0;
-            class->nextInitializerVti = 0;
-            class->nextMethodVti = 0;
+            eclass->nextClassMethodVti = 0;
+            eclass->nextInitializerVti = 0;
+            eclass->nextMethodVti = 0;
         }
         
-        Type classType = typeForClass(class);
+        Type classType = Type(eclass);
         
-        for(size_t i = 0; i < class->methodList->count; i++){
-            Method *method = getList(class->methodList, i);
-            Method *superMethod = getMethod(method->pc.name, class->superclass);
-            
-            checkOverride(superMethod, method->pc.overriding, method->pc.name, method->pc.dToken);
+        for(auto method : eclass->methodList){
+            Method *superMethod = eclass->superclass->getMethod(method->name);
+
+            checkOverride(superMethod, method->overriding, method->name, method->dToken);
             if (superMethod){
-                checkPromises((Procedure *)method, (Procedure *)superMethod, "super method", classType);
-                method->pc.vti = superMethod->pc.vti;
+                method->checkPromises(superMethod, "super method", classType);
+                method->vti = superMethod->vti;
             }
             else {
-                method->pc.vti = class->nextMethodVti++;
+                method->vti = eclass->nextMethodVti++;
             }
         }
-        for(size_t i = 0; i < class->classMethodList->count; i++){
-            ClassMethod *clMethod = getList(class->classMethodList, i);
-            ClassMethod *superMethod = getClassMethod(clMethod->pc.name, class->superclass);
+        for(auto clMethod : eclass->classMethodList){
+            ClassMethod *superMethod = eclass->superclass->getClassMethod(clMethod->name);
             
-            checkOverride(superMethod, clMethod->pc.overriding, clMethod->pc.name, clMethod->pc.dToken);
+            checkOverride(superMethod, clMethod->overriding, clMethod->name, clMethod->dToken);
             if (superMethod){
-                checkPromises((Procedure *)clMethod, (Procedure *)superMethod, "super classmethod", classType);
-                clMethod->pc.vti = superMethod->pc.vti;
+                clMethod->checkPromises(superMethod, "super classmethod", classType);
+                clMethod->vti = superMethod->vti;
             }
             else {
-                clMethod->pc.vti = class->nextClassMethodVti++;
+                clMethod->vti = eclass->nextClassMethodVti++;
             }
         }
-        for(size_t i = 0; i < class->initializerList->count; i++){ //TODO: heavily incorrect
-            Initializer *initializer = getList(class->initializerList, i);
-            Initializer *superConst = getInitializer(initializer->pc.name, class->superclass);
+        for(auto initializer : eclass->initializerList){ //TODO: heavily incorrect
+            Initializer *superConst = eclass->superclass->getInitializer(initializer->name);
             
-            checkOverride(superConst, initializer->pc.overriding, initializer->pc.name, initializer->pc.dToken);
+            checkOverride(superConst, initializer->overriding, initializer->name, initializer->dToken);
             if (superConst){
-                checkPromises((Procedure *)initializer, (Procedure *)superConst, "super classmethod", classType);
-                //if a class has a initializer it does not inherit other initializers, therefore inheriting the VTI could have fatal consequences
+                initializer->checkPromises(superConst, "super classmethod", classType);
+                //if a eclass has a initializer it does not inherit other initializers, therefore inheriting the VTI could have fatal consequences
             }
-            initializer->pc.vti = class->nextInitializerVti++;
+            initializer->vti = eclass->nextInitializerVti++;
         }
     }
     
     //Write Number of Classes
-    writeUInt16(classes->count, out);
+    writeUInt16(classes.size(), out);
     
-    uint8_t pkgCount = (uint8_t)packages->count;
-    //must be two s
+    uint8_t pkgCount = (uint8_t)packages.size();
+    //must be s and _
     if(pkgCount == 2){
         pkgCount = 1;
     }
@@ -1504,15 +1375,15 @@ void analyzeClassesAndWrite(FILE *fout){
     Package *pkg = NULL;
   
     //Analyze all classes
-    for (size_t i = 0; i < classes->count; i++) {
-        Class *class = getList(classes, i);
+    for (size_t i = 0; i < classes.size(); i++) {
+        Class *eclass = classes[i];
         
-        if((pkg != class->package && pkgCount > 1) || !pkg){ //pkgCount > 1: Ignore the second s
+        if((pkg != eclass->package && pkgCount > 1) || !pkg){ //pkgCount > 1: Ignore the second s
             if (i > 0){
                 fputc(0, out);
             }
-            pkg = class->package;
-            Package *pkg = getList(packages, pkgI++);
+            pkg = eclass->package;
+            Package *pkg = packages[pkgI++];
             
             uint16_t l = strlen(pkg->name) + 1;
             writeUInt16(l, out);
@@ -1528,21 +1399,19 @@ void analyzeClassesAndWrite(FILE *fout){
             fputc(1, out);
         }
         
-        analyzeClass(class, typeForClass(class));
+        analyzeClass(eclass, Type(eclass));
     }
     fputc(0, out);
     
-    writeUInt16(stringPool->count, out);
-    for (uint16_t i = 0; i < stringPool->count; i++) {
-        Token *token = getList(stringPool, i);
-        writeUInt16(token->valueLength, out);
+    writeUInt16(stringPool.size(), out);
+    for (auto token : stringPool) {
+        writeUInt16(token->value.size(), out);
         
-        for (uint16_t j = 0; j < token->valueLength; j++) {
-            writeEmojicodeChar(token->value[j], out);
+        for (auto c : token->value) {
+            writeEmojicodeChar(c, out);
         }
     }
     
-    writeUInt16(startingFlag.class->index, out);
-    uint16_t fvti = getClassMethod(E_CHEQUERED_FLAG, startingFlag.class)->pc.vti;
-    writeUInt16(fvti, out);
+    writeUInt16(startingFlag.eclass->index, out);
+    writeUInt16(startingFlag.eclass->getClassMethod(E_CHEQUERED_FLAG)->vti, out);
 }

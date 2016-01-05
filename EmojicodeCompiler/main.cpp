@@ -9,12 +9,33 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
-
+#include "Lexer.h"
 #include "utf8.h"
-
 #include "EmojicodeCompiler.h"
 #include "ClassParser.h"
 #include "StaticAnalyzer.h"
+
+StartingFlag startingFlag;
+bool foundStartingFlag;
+
+std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;
+std::map<std::array<EmojicodeChar, 2>, Protocol*> protocolsRegister;
+std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
+
+std::vector<Class *> classes;
+std::vector<Package *> packages;
+
+
+char* EmojicodeString::utf8CString() const {
+    //Size needed for UTF8 representation
+    size_t ds = u8_codingsize(c_str(), size());
+    //Allocate space for the UTF8 string
+    char *utf8str = new char[ds + 1];
+    //Convert
+    size_t written = u8_toutf8(utf8str, ds, c_str(), size());
+    utf8str[written] = 0;
+    return utf8str;
+}
 
 Token* currentToken;
 Token* consumeToken(){
@@ -24,17 +45,6 @@ Token* consumeToken(){
 
 static bool outputJSON = false;
 static bool gaveWarning = false;
-
-char* stringToChar(String *str){
-    //Size needed for UTF8 representation
-    size_t ds = u8_codingsize(str->characters, str->length);
-    //Allocate space for the UTF8 string
-    char *utf8str = malloc(ds + 1);
-    //Convert
-    size_t written = u8_toutf8(utf8str, ds, str->characters, str->length);
-    utf8str[written] = 0;
-    return utf8str;
-}
 
 void printJSONStringToFile(const char *string, FILE *f){
     char c;
@@ -74,7 +84,7 @@ void printJSONStringToFile(const char *string, FILE *f){
 
 //MARK: Warnings
 
-void compilerError(Token *token, const char *err, ...){
+void compilerError(const Token *token, const char *err, ...){
     va_list list;
     va_start(list, err);
     
@@ -101,7 +111,7 @@ void compilerError(Token *token, const char *err, ...){
         fprintf(stderr, "}\n]");
     }
     else {
-        fprintf(stderr, "🚨 line %lu col %lu %s: %s\n", line, col, file, error);
+        fprintf(stderr, "🚨 line %lu column %lu %s: %s\n", line, col, file, error);
     }
     
     va_end(list);
@@ -142,60 +152,21 @@ void compilerWarning(Token *token, const char *err, ...){
     va_end(list);
 }
 
-const char* tokenTypeToString(TokenType type){
-    switch (type) {
-        case BOOLEAN_FALSE:
-            return "Boolean False";
-        case BOOLEAN_TRUE:
-            return "Boolean True";
-        case DOUBLE:
-            return "Float";
-        case INTEGER:
-            return "Integer";
-        case STRING:
-            return "String";
-        case SYMBOL:
-            return "Symbol";
-        case VARIABLE:
-            return "Variable";
-        case IDENTIFIER:
-            return "Identifier";
-        case DOCUMENTATION_COMMENT:
-            return "Documentation Comment";
-        default:
-            return "Mysterious unnamed token";
-            break;
-    }
-}
-
-/**
- * When @c token is not of type @c type and compiler error is thrown.
- */
-void tokenTypeCheck(TokenType type, Token *token){
-    if(token == NULL || token->type == NO_TYPE){
-        compilerError(token, "Expected token but found end of programm.");
-        return;
-    }
-    if (type != NO_TYPE && token->type != type){
-        compilerError(token, "Expected token %s but instead found %s.", tokenTypeToString(type), tokenTypeToString(token->type));
-    }
-}
-
 void loadStandard(){
     packageRegisterHeaderNewest("s", globalNamespace);
     
-    CL_STRING = getList(classes, 0);
-    CL_LIST = getList(classes, 1);
-    CL_ERROR = getList(classes, 2);
-    CL_DATA = getList(classes, 3);
-    CL_ENUMERATOR = getList(classes, 4);
-    CL_DICTIONARY = getList(classes, 5);
+    CL_STRING = classes[0];
+    CL_LIST = classes[1];
+    CL_ERROR = classes[2];
+    CL_DATA = classes[3];
+    CL_ENUMERATOR = classes[4];
+    CL_DICTIONARY = classes[5];
     PR_ENUMERATEABLE = getProtocol(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY, globalNamespace);
 }
 
 int main(int argc, char * argv[]) {
-    char *reportPackage = NULL;
-    char *outPath = NULL;
+    const char *reportPackage = NULL;
+    std::string outPath;
     
     //Parse options
     char ch;
@@ -232,33 +203,24 @@ int main(int argc, char * argv[]) {
         compilerWarning(NULL, "No input files provided.");
         return 1;
     }
-    if(outPath == NULL){
-        size_t pathLength = strlen(argv[0]);
-        outPath = malloc(pathLength + 1);
-        strcpy(outPath, argv[0]);
-        outPath[pathLength - 1] = 'b';
+    
+    if(outPath.size() == 0){
+        outPath = std::string(argv[0]);
+        outPath[outPath.size() - 1] = 'b';
     }
     
     foundStartingFlag = false;
     
-    //Make a global list to store all classes
-    classes = newList();
-    packages = newList();
-    
-    initTypes();
     loadStandard();
     
-    Package *pkg = malloc(sizeof(Package));
-    pkg->version = (PackageVersion){1, 0};
-    pkg->name = "_";
-    pkg->requiresNativeBinary = false;
+    Package *pkg = new Package("_", (PackageVersion){1, 0}, false);
     
-    appendList(packages, pkg);
+    packages.push_back(pkg);
     for (int i = 0; i < argc; i++) {
         parseFile(argv[i], pkg, false, globalNamespace);
     }
     
-    FILE *out = fopen(outPath, "wb");
+    FILE *out = fopen(outPath.c_str(), "wb");
     if(!out || ferror(out)){
         compilerError(NULL, "Couldn't write output file.");
         return 1;
@@ -266,7 +228,7 @@ int main(int argc, char * argv[]) {
     
     //If we did not find a mouse method the programm has no start point
     if (!foundStartingFlag) {
-        compilerError(NULL, "No 🏁 class method was found.");
+        compilerError(NULL, "No 🏁 eclass method was found.");
     }
     
     //Now let us anaylze these classes and write them

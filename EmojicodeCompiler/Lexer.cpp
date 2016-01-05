@@ -7,35 +7,8 @@
 //
 
 #include "EmojicodeCompiler.h"
+#include "Lexer.h"
 #include "utf8.h"
-
-Token* newToken(Token *prevToken){
-    Token *t = malloc(sizeof(Token));
-    t->nextToken = NULL;
-    t->type = NO_TYPE;
-    t->valueSize = 0;
-    t->valueLength = 0;
-    if (prevToken)
-        prevToken->nextToken = t;
-    return t;
-}
-
-void tokenExpandValue(Token *token, int add){
-    token->value = malloc(add * sizeof(EmojicodeChar));
-    token->valueLength = 0;
-    token->valueSize = add;
-}
-
-void tokenValueAdd(Token *token, EmojicodeChar c){
-    /* Is there enough space left in the buffer? */
-    if(token->valueSize - token->valueLength == 0){
-        token->valueSize *= 2;
-        token->value = realloc(token->value, token->valueSize * sizeof(EmojicodeChar));
-    }
-    
-    token->value[token->valueLength] = c;
-    token->valueLength++;
-}
 
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
 
@@ -48,13 +21,50 @@ bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line){
     return isWhitespace(c);
 }
 
+const char* Token::stringName() const {
+    return stringNameForType(type);
+}
+
+const char* Token::stringNameForType(TokenType type) {
+    switch (type) {
+        case BOOLEAN_FALSE:
+            return "Boolean False";
+        case BOOLEAN_TRUE:
+            return "Boolean True";
+        case DOUBLE:
+            return "Float";
+        case INTEGER:
+            return "Integer";
+        case STRING:
+            return "String";
+        case SYMBOL:
+            return "Symbol";
+        case VARIABLE:
+            return "Variable";
+        case IDENTIFIER:
+            return "Identifier";
+        case DOCUMENTATION_COMMENT:
+            return "Documentation Comment";
+        default:
+            return "Mysterious unnamed token";
+            break;
+    }
+}
+
+/** When @c token is not of type @c type and compiler error is thrown. */
+void Token::forceType(TokenType type) const {
+    if (this->type != type){
+        compilerError(this, "Expected token %s but instead found %s.", stringNameForType(type), this->stringName());
+    }
+}
+
 Token* lex(FILE *f, const char *filename) {
     EmojicodeChar c;
     size_t line = 1, col = 0, i = 0;
     SourcePosition sourcePosition;
     
     Token *token, *firstToken;
-    token = firstToken = newToken(NULL);
+    token = firstToken = new Token();
     
     bool nextToken = false;
     bool oneLineComment = false;
@@ -64,7 +74,8 @@ Token* lex(FILE *f, const char *filename) {
     fseek(f, 0, SEEK_END);
     long length = ftell(f);
     fseek(f, 0, SEEK_SET);
-    char *stringBuffer = malloc(length + 1);
+    
+    auto stringBuffer = new char[length + 1];
     if (stringBuffer){
         fread(stringBuffer, 1, length, f);
         stringBuffer[length] = 0;
@@ -76,8 +87,9 @@ Token* lex(FILE *f, const char *filename) {
 #define isIdentifier() ((0x1F300 <= c && c <= 0x1F64F) || (0x1F680 <= c && c <= 0x1F6C5) || (0x2600 <= c && c <= 0x27BF) || (0x1F191 <= c && c <= 0x1F19A) || c == 0x231A || (0x1F910 <= c && c <= 0x1F9C0) || (0x2B00 <= c && c <= 0x2BFF) || (0x25A0 <= c && c <= 0x25FF) || (0x2300 <= c && c <= 0x23FF))
     
     while(i < length){
+        size_t delta = i;
         c = u8_nextchar(stringBuffer, &i);
-        col++;
+        col += i - delta;
         sourcePosition = (SourcePosition){line, col, filename};
         
         /* We already know this token’s type. */
@@ -103,7 +115,7 @@ Token* lex(FILE *f, const char *filename) {
                 nextToken = true;
             }
             else {
-                tokenValueAdd(token, c);
+                token->value.push_back(c);
             }
             continue;
         }
@@ -112,19 +124,19 @@ Token* lex(FILE *f, const char *filename) {
                 switch (c) {
                     case E_INPUT_SYMBOL_LATIN_LETTERS:
                     case E_CROSS_MARK:
-                        tokenValueAdd(token, c);
+                        token->value.push_back(c);
                         break;
                     case 'n':
-                        tokenValueAdd(token, '\n');
+                        token->value.push_back('\n');
                         break;
                     case 't':
-                        tokenValueAdd(token, '\t');
+                        token->value.push_back('\t');
                         break;
                     case 'r':
-                        tokenValueAdd(token, '\r');
+                        token->value.push_back('\r');
                         break;
                     case 'e':
-                        tokenValueAdd(token, '\e');
+                        token->value.push_back('\e');
                         break;
                     default: {
                         ecCharToCharStack(c, tc);
@@ -144,7 +156,7 @@ Token* lex(FILE *f, const char *filename) {
             }
             else {
                 detectWhitespace(c, &col, &line);
-                tokenValueAdd(token, c);
+                token->value.push_back(c);
             }
             continue;
         }
@@ -159,25 +171,25 @@ Token* lex(FILE *f, const char *filename) {
                 nextToken = true;
             }
             else {
-                tokenValueAdd(token, c);
+                token->value.push_back(c);
                 continue;
             }
         }
         else if (token->type == INTEGER){
             if((47 < c && c < 58) || (((64 < c && c < 71) || (96 < c && c < 103)) && isHex)) {
-                tokenValueAdd(token, c);
+                token->value.push_back(c);
                 continue;
             }
             else if(c == 46) {
                 /* A period. Seems to be a float */
                 token->type = DOUBLE;
-                tokenValueAdd(token, c);
+                token->value.push_back(c);
                 continue;
             }
-            else if((c == 'x' || c == 'X') && token->valueLength == 1 && token->value[0] == 48){ //Don't forget the 0
+            else if((c == 'x' || c == 'X') && token->value.size() == 1 && token->value[0] == 48){ //Don't forget the 0
                 //An X or x
                 isHex = true;
-                tokenValueAdd(token, c);
+                token->value.push_back(c);
                 continue;
             }
             else if(c == '_'){
@@ -191,7 +203,7 @@ Token* lex(FILE *f, const char *filename) {
         else if (token->type == DOUBLE){
             //Note: 46 is not required, we are just lexing the floating numbers
             if((47 < c && c < 58)) {
-                tokenValueAdd(token, c);
+                token->value.push_back(c);
                 continue;
             }
             else {
@@ -200,22 +212,20 @@ Token* lex(FILE *f, const char *filename) {
             }
         }
         else if(token->type == SYMBOL && !nextToken){
-            tokenValueAdd(token, c);
+            token->value.push_back(c);
             nextToken = true;
             continue;
         }
         
         /* Do we need a new token? */
         if (nextToken){
-            token = newToken(token);
+            token = new Token(token);
             nextToken = false;
         }
         
         if (c == E_INPUT_SYMBOL_LATIN_LETTERS){
             token->type = STRING;
             token->position = sourcePosition;
-            
-            tokenExpandValue(token, 50);
         }
         else if (c == E_OLDER_WOMAN || c == E_OLDER_MAN){
             token->type = COMMENT;
@@ -223,14 +233,12 @@ Token* lex(FILE *f, const char *filename) {
         }
         else if (c == E_TACO){
             token->type = DOCUMENTATION_COMMENT;
-            tokenExpandValue(token, 50);
         }
         else if ((47 < c && c < 58) || c == 45 || c == 43){
             /* We've found a number or a plus or minus sign. First assume it's an integer. */
             token->type = INTEGER;
             token->position = sourcePosition;
-            tokenExpandValue(token, 15);
-            tokenValueAdd(token, c);
+            token->value.push_back(c);
             
             isHex = false;
         }
@@ -242,7 +250,6 @@ Token* lex(FILE *f, const char *filename) {
         else if (c == E_KEYCAP_10){
             token->type = SYMBOL;
             token->position = sourcePosition;
-            tokenExpandValue(token, 1);
         }
         else if (detectWhitespace(c, &col, &line)){
             continue;
@@ -250,18 +257,16 @@ Token* lex(FILE *f, const char *filename) {
         else if (isIdentifier()){
             token->type = IDENTIFIER;
             token->position = sourcePosition;
-            tokenExpandValue(token, 1);
-            tokenValueAdd(token, c);
+            token->value.push_back(c);
             nextToken = true;
         }
         else {
             token->type = VARIABLE;
             token->position = sourcePosition;
-            tokenExpandValue(token, 30);
-            tokenValueAdd(token, c);
+            token->value.push_back(c);
         }
     }
-    free(stringBuffer);
+    delete [] stringBuffer;
     
     if (!nextToken && token->type == STRING){
         compilerError(token, "Excepted 🔤 but found end of file instead.");

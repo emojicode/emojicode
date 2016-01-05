@@ -183,8 +183,6 @@ void readPackage(FILE *in){
     do {
         EmojicodeChar name = readEmojicodeChar(in);
         
-        ecCharToCharStack(name, ns);
-        
         Class *class = malloc(sizeof(Class));
         classTable[classNextIndex++] = class;
         

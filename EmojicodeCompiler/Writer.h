@@ -10,8 +10,9 @@
 #define __Emojicode__Writer__
 
 #include "EmojicodeCompiler.h"
+#include "Procedure.h"
 
-uint32_t writtenCoins;
+extern uint32_t writtenCoins;
 
 /**
  * The writer finally writes all types to the byte file.

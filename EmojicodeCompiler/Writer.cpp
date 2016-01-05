@@ -9,6 +9,8 @@
 #include "Writer.h"
 #include <math.h>
 
+uint32_t writtenCoins;
+
 void writeUInt16(uint16_t value, FILE *out){
     fputc(value >> 8, out);
     fputc(value, out);
@@ -80,7 +82,7 @@ void writeFunctionBlockMeta(off_t placeholderPosition, uint32_t writtenCoins, ui
 bool writeProcedureHeading(Procedure *p, FILE *out, off_t *metaPosition){
     writeEmojicodeChar(p->name, out);
     writeUInt16(p->vti, out);
-    fputc(p->arguments.count, out);
+    fputc((uint8_t)p->arguments.size(), out);
     
     if(p->native){
         fputc(1, out);
