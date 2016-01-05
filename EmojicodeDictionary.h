@@ -14,7 +14,7 @@
 // MUST be a power of two, default: 8
 #define DICTIONARY_DEFAULT_INITIAL_CAPACITY (1 << 3)
 // Factor for determining whether the dictionary should be resized
-#define DICTIONARY_DEFAULT_LOAD_FACTOR (0.75f)
+#define DICTIONARY_DEFAULT_LOAD_FACTOR (0.9f)
 
 #define DICTIONARY_MAXIMUM_CAPACTIY (1 << 30)
 

@@ -35,7 +35,7 @@ void printNode(EmojicodeDictionaryNode *node){
 }
 void printDict(EmojicodeDictionary *dict){
     {
-        printf("Dictionary at %p buckets=%zu loadFactor=%.2f size=%zu nextThreshold=%zu table=%p\n", dict, dict->   buckets, dict->loadFactor, dict->size, dict->nextThreshold, dict->table);
+        printf("Dictionary at %p buckets=%zu loadFactor=%.2f size=%zu nextThreshold=%zu table=%p\n", dict, dict->buckets, dict->loadFactor, dict->size, dict->nextThreshold, dict->table);
         if(!dict->table) return;
         printf("\n[\n");
         Object **tabo = dict->table->value;
@@ -191,7 +191,7 @@ void dictionaryResize(EmojicodeDictionary *dict){
 }
 
 void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something key, Something value){
-    DICT_DEBUG printf("DictionaryPutVal hash=%llu key=%s value=%s\n", hash, stringToChar(key.object->value), stringToChar(value.object->value));
+    // DICT_DEBUG printf("DictionaryPutVal hash=%llu key=%s value=%s\n", hash, stringToChar(key.object->value), stringToChar(value.object->value));
     Object **tabo;
     Object *po;
     size_t n = 0, i = 0;
@@ -251,7 +251,7 @@ EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, Emojico
             if (p->hash == hash && (dictionaryKeyEqual(dict, key, p->key))){
                 node = p;
             } else if ((eo = p->next) != NULL){
-                EmojicodeDictionaryNode *e = eo->value;
+                EmojicodeDictionaryNode *e;
                 do {
                     e = eo->value;
                     if (e->hash == hash && dictionaryKeyEqual(dict, key, e->key)){
@@ -267,6 +267,7 @@ EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, Emojico
                 } else {
                     p->next = node->next;
                 }
+                dict->size--;
                 return node;
             }
         }
@@ -288,7 +289,7 @@ void dictionaryClear(EmojicodeDictionary *dict){
     }
 }
 
-#define DICT_DEBUG_MARK if(1) 
+#define DICT_DEBUG_MARK DICT_DEBUG
 void dictionaryMark(Object *object){
     EmojicodeDictionary *dict = object->value;
     Object *taboo = dict->table;
