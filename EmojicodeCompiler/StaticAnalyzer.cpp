@@ -19,20 +19,6 @@
 static FILE *out;
 static std::vector<Token *> stringPool;
 
-//MARK: Compiler Variables
-
-void CompilerVariable::uninitalizedError(Token *variableToken) const {
-    if (initialized <= 0) {
-        compilerError(variableToken, "Variable \"%s\" is possibly not initialized.", variableToken->value.utf8CString());
-    }
-}
-
-void CompilerVariable::frozenError(Token *variableToken) const {
-    if (frozen) {
-        compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableToken->value.utf8CString());
-    }
-}
-
 #define noEffectWarning(token) compilerWarning(token, "Statement seems to have no effect whatsoever.");
 
 //MARK: Type Checking and Safety
@@ -518,7 +504,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             writeCoin(initializer->vti, out);
             
-            checkAccess((Procedure *)initializer, token, "Initializer", SI);
+            checkAccess(initializer, token, "Initializer", SI);
             checkArguments(initializer->arguments, type, token, SI);
             
             if (initializer->canReturnNothingness) {
@@ -582,7 +568,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
             
             writeCoin(initializer->vti, out);
             
-            checkAccess((Procedure *)initializer, token, "initializer", SI);
+            checkAccess(initializer, token, "initializer", SI);
             checkArguments(initializer->arguments, SI->classTypeContext, token, SI);
 
             SI->calledSuper = true;
@@ -997,7 +983,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                 writeCoin(method->vti, out);
             }
 
-            checkAccess((Procedure *)method, token, "Method", SI);
+            checkAccess(method, token, "Method", SI);
             checkArguments(method->arguments, type, token, SI);
 
             return method->returnType.resolveOn(type);

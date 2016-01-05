@@ -12,11 +12,11 @@
 #include "Procedure.h"
 #include <string.h>
 
-typedef enum {
+enum ReturnManner {
     Return,
     NoReturn,
     CanReturnNothingness
-} ReturnManner;
+};
 
 void reportDocumentation(Token *documentationToken) {
     if(!documentationToken) {

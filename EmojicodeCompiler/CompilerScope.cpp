@@ -9,6 +9,21 @@
 #include "CompilerScope.h"
 #include "Lexer.h"
 
+
+//MARK: Compiler Variables
+
+void CompilerVariable::uninitalizedError(Token *variableToken) const {
+    if (initialized <= 0) {
+        compilerError(variableToken, "Variable \"%s\" is possibly not initialized.", variableToken->value.utf8CString());
+    }
+}
+
+void CompilerVariable::frozenError(Token *variableToken) const {
+    if (frozen) {
+        compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableToken->value.utf8CString());
+    }
+}
+
 ScopeWrapper *currentScopeWrapper;
 
 void Scope::changeInitializedBy(int c) {

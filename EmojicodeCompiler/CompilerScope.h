@@ -75,7 +75,7 @@ struct ScopeWrapper {
     Scope *scope;
 };
 
-/** Pops current scope and returns it */
+/** Pops current scope and returns it. */
 Scope* popScope();
 
 /** Push this scope to be the current scope. */

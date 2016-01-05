@@ -52,9 +52,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "57"
-            endingLineNumber = "57"
-            landmarkName = "lex()"
-            landmarkType = "7">
+            endingLineNumber = "57">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -69,7 +67,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "51"
             endingLineNumber = "51"
-            landmarkName = "lex()"
+            landmarkName = "stringNameForType()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -84,9 +82,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "53"
-            endingLineNumber = "53"
-            landmarkName = "lex()"
-            landmarkType = "7">
+            endingLineNumber = "53">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
