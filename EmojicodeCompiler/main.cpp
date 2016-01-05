@@ -112,7 +112,7 @@ void compilerError(Token *token, const char *err, ...){
         fprintf(stderr, "}\n]");
     }
     else {
-        fprintf(stderr, "🚨 line %lu col %lu %s: %s\n", line, col, file, error);
+        fprintf(stderr, "🚨 line %lu column %lu %s: %s\n", line, col, file, error);
     }
     
     va_end(list);

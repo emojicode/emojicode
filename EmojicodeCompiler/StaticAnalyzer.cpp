@@ -50,7 +50,7 @@ Type safeParseTypeConstraint(Token *token, Token *parentToken, Type type, Static
     Type v = typeParse(token, SI);
     if(!v.compatibleTo(type, SI->classTypeContext)){
         auto cn = v.toString(SI->classTypeContext, true);
-        auto tn = v.toString(SI->classTypeContext, true);
+        auto tn = type.toString(SI->classTypeContext, true);
         compilerError(token, "%s is not compatible to %s.", cn.c_str(), tn.c_str());
     }
     return v;
@@ -631,7 +631,7 @@ Type typeParseIdentifier(Token *token, StaticInformation *SI){
                     for (size_t i = 0; i < type.eclass->ownGenericArgumentCount; i++) {
                         if(!type.eclass->genericArgumentContraints[i].compatibleTo(type.genericArguments[i], type) ||
                            !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentContraints[i], type)) {
-                            compilerError(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the eclass for compatibility with future versions.");
+                            compilerError(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
                         }
                     }
 

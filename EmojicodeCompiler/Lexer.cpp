@@ -49,8 +49,9 @@ Token* lex(FILE *f, const char *filename) {
 #define isIdentifier() ((0x1F300 <= c && c <= 0x1F64F) || (0x1F680 <= c && c <= 0x1F6C5) || (0x2600 <= c && c <= 0x27BF) || (0x1F191 <= c && c <= 0x1F19A) || c == 0x231A || (0x1F910 <= c && c <= 0x1F9C0) || (0x2B00 <= c && c <= 0x2BFF) || (0x25A0 <= c && c <= 0x25FF) || (0x2300 <= c && c <= 0x23FF))
     
     while(i < length){
+        size_t delta = i;
         c = u8_nextchar(stringBuffer, &i);
-        col++;
+        col += i - delta;
         sourcePosition = (SourcePosition){line, col, filename};
         
         /* We already know this token’s type. */

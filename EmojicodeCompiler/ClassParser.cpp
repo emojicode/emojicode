@@ -211,9 +211,8 @@ void parseEnum(EmojicodeChar theNamespace, Package &pkg, Token *documentationTok
     checkTypeValidity(name, theNamespace, optional, enumNameToken);
     
     Enum *eenum = new Enum(name, pkg, documentationToken);
-    std::array<EmojicodeChar, 2> ns = {name, enamespace};
+    std::array<EmojicodeChar, 2> ns = {enamespace, name};
     enumsRegister[ns] = eenum;
-    
     
     Token *token = consumeToken();
     tokenTypeCheck(IDENTIFIER, token);
