@@ -22,21 +22,21 @@ Thread* allocateThread() {
 }
 
 Something* stackReserveFrame(void *this, uint8_t variableCount, Thread *thread){
-    StackFrame *sf = thread->futureStack - (sizeof(StackFrame) + sizeof(Something) * variableCount);
-    if ((void *)sf < thread->stackLimit) {
+    StackFrame *sf = (StackFrame *)(thread->futureStack - (sizeof(StackFrame) + sizeof(Something) * variableCount));
+    if ((Byte *)sf < thread->stackLimit) {
         error("Your program triggerd a stack overflow!");
     }
     
-    memset((void *)sf + sizeof(StackFrame), 0, sizeof(Something) * variableCount);
+    memset((Byte *)sf + sizeof(StackFrame), 0, sizeof(Something) * variableCount);
     
     sf->this = this;
     sf->variableCount = variableCount;
     sf->returnPointer = thread->stack;
     sf->returnFutureStack = thread->futureStack;
     
-    thread->futureStack = sf;
+    thread->futureStack = (Byte *)sf;
     
-    return ((void *)sf) + sizeof(StackFrame);
+    return (Something *)(((Byte *)sf) + sizeof(StackFrame));
 }
 
 void stackPushReservedFrame(Thread *thread){
@@ -71,7 +71,7 @@ void stackIncrementVariable(uint8_t index, Thread *thread){
 }
 
 void stackSetVariable(uint8_t index, Something value, Thread *thread){
-    Something *v = thread->stack + sizeof(StackFrame) + sizeof(Something) * index;
+    Something *v = (Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
     *v = value;
 }
 
@@ -84,9 +84,9 @@ Class* stackGetThisClass(Thread *thread){
 }
 
 void stackMark(Thread *thread){
-    for (StackFrame *stackFrame = thread->futureStack; (void *)stackFrame < thread->stackBottom; stackFrame = stackFrame->returnFutureStack) {
+    for (StackFrame *stackFrame = (StackFrame *)thread->futureStack; (Byte *)stackFrame < thread->stackBottom; stackFrame = stackFrame->returnFutureStack) {
         for (uint8_t i = 0; i < stackFrame->variableCount; i++) {
-            Something *s = ((void *)stackFrame) + sizeof(StackFrame) + sizeof(Something) * i;
+            Something *s = (Something *)(((Byte *)stackFrame) + sizeof(StackFrame) + sizeof(Something) * i);
             if (isRealObject(*s)) {
                 mark(&s->object);
             }

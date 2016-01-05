@@ -22,7 +22,7 @@ static void* emojicodeMalloc(size_t size){
         }
         gc(mainThread);
     }
-    void *block = currentHeap + memoryUse;
+    Byte *block = currentHeap + memoryUse;
     memoryUse += size;
     return block;
 }
@@ -44,26 +44,26 @@ static Object* newObjectWithSizeInternal(Class *class, size_t size){
     Object *object = emojicodeMalloc(fullSize);
     object->size = fullSize;
     object->class = class;
-    object->value = ((void *)object) + sizeof(Object) + class->instanceVariableCount * sizeof(Something);
+    object->value = ((Byte *)object) + sizeof(Object) + class->instanceVariableCount * sizeof(Something);
     
     return object;
 }
 
 Something objectGetVariable(Object *o, uint8_t index){
-    return *(Something *)(((void *)o) + sizeof(Object) + sizeof(Something) * index);
+    return *(Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
 }
 
 void objectSetVariable(Object *o, uint8_t index, Something value){
-    Something *v = ((void *)o) + sizeof(Object) + sizeof(Something) * index;
+    Something *v = (Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
     *v = value;
 }
 
 void objectDecrementVariable(Object *o, uint8_t index){
-    ((Something *)(((void *)o) + sizeof(Object) + sizeof(Something) * index))->raw--;
+    ((Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index))->raw--;
 }
 
 void objectIncrementVariable(Object *o, uint8_t index){
-    ((Something *)(((void *)o) + sizeof(Object) + sizeof(Something) * index))->raw++;
+    ((Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index))->raw++;
 }
 
 Object* newObject(Class *class){
@@ -78,7 +78,7 @@ Object* enlargeArray(Object *array, size_t size){
     size_t fullSize = sizeof(Object) + size;
     Object *object = emojicodeRealloc(array, array->size, fullSize);
     object->size = fullSize;
-    object->value = ((void *)object) + sizeof(Object);
+    object->value = ((Byte *)object) + sizeof(Object);
     return object;
 }
 
@@ -102,7 +102,7 @@ void mark(Object **oPointer){
     memcpy(o->newLocation, o, o->size);
     *oPointer = o->newLocation;
     
-    o->newLocation->value = ((void *)o->newLocation) + sizeof(Object) + o->class->instanceVariableCount * sizeof(Something);
+    o->newLocation->value = ((Byte *)o->newLocation) + sizeof(Object) + o->class->instanceVariableCount * sizeof(Something);
     
     //This class can lead the GC to other objects.
     if (o->class->mark) {
@@ -119,9 +119,9 @@ void gc(Thread *thread){
     }
     
     //Set new location of all objects to NULL
-    void *currentObjectPointer = currentHeap;
+    Byte *currentObjectPointer = currentHeap;
     while (currentObjectPointer < currentHeap + memoryUse - 1) {
-        Object *currentObject = currentObjectPointer;
+        Object *currentObject = (Object *)currentObjectPointer;
         currentObject->newLocation = NULL;
         currentObjectPointer += currentObject->size;
     }
@@ -142,7 +142,7 @@ void gc(Thread *thread){
     //Call the deinitializers
     currentObjectPointer = otherHeap;
     while (currentObjectPointer < otherHeap + oldMemoryUse) {
-        Object *currentObject = currentObjectPointer;
+        Object *currentObject = (Object *)currentObjectPointer;
         if(!currentObject->newLocation && currentObject->class->deconstruct){
             currentObject->class->deconstruct(currentObject->value);
         }
@@ -159,5 +159,5 @@ bool instanceof(Object *object, Class *class){
 }
 
 bool isPossibleObjectPointer(void *s){
-    return s < currentHeap + heapSize/2 && s >= currentHeap;
+    return (Byte *)s < currentHeap + heapSize/2 && s >= (void *)currentHeap;
 }

@@ -40,10 +40,10 @@ struct Thread {
     Something returnValue;
     bool returned;
     
-    void *stackLimit;
-    void *stackBottom;
-    void *stack;
-    void *futureStack;
+    Byte *stackLimit;
+    Byte *stackBottom;
+    Byte *stack;
+    Byte *futureStack;
 };
 
 Thread *mainThread;
@@ -51,8 +51,8 @@ Thread *mainThread;
 
 //MARK: VM
 
-void *currentHeap;
-void *otherHeap;
+Byte *currentHeap;
+Byte *otherHeap;
 void allocateHeap(void);
 #define heapSize (512 * 1000 * 1000) //512 MB
 
