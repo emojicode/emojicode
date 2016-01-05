@@ -92,9 +92,12 @@ bool dictionaryContainsKey(EmojicodeDictionary *dict, Something key){
     return dictionaryGetNode(dict, dictionaryHash(dict, key), key) != NULL;
 }
 
-Object* dictionaryNewNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something key, Something value, Object *next, Thread *thread){
+Object* dictionaryNewNode(Object *dicto, EmojicodeDictionaryHash hash, Something key, Something value, Object *next, Thread *thread){
+    stackPush(dicto, 0, 0, thread);
     Object *nodeo = newArray(sizeof(EmojicodeDictionaryNode));
     EmojicodeDictionaryNode *node = (EmojicodeDictionaryNode*) nodeo->value;
+    stackPop(thread);
+    
     node->hash = hash;
     node->key = key;
     node->value = value;
@@ -104,7 +107,8 @@ Object* dictionaryNewNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash has
     return nodeo;
 }
 
-void dictionaryResize(EmojicodeDictionary *dict, Thread *thread){
+void dictionaryResize(Object *dicto, Thread *thread){
+    EmojicodeDictionary *dict = dicto->value;
     DICT_DEBUG printf("Resizing ");
     DICT_DEBUG printDict(dict);
     Object *oldTaboo = dict->table;
@@ -117,12 +121,13 @@ void dictionaryResize(EmojicodeDictionary *dict, Thread *thread){
             return;
         }
         else if(newCap < DICTIONARY_MAXIMUM_CAPACTIY &&
-                oldCap >= DICTIONARY_DEFAULT_INITIAL_CAPACITY)
+                oldCap >= DICTIONARY_DEFAULT_INITIAL_CAPACITY){
             newThr = oldThr << 1; // double threshold
+        }
     }
-    else if (oldThr > 0) // initial capacity was placed in threshold
+    else if (oldThr > 0){ // initial capacity was placed in threshold
         newCap = oldThr;
-    else { // zero initial threshold signifies using defaults
+    } else { // zero initial threshold signifies using defaults
         newCap = DICTIONARY_DEFAULT_INITIAL_CAPACITY;
         newThr = (size_t) (DICTIONARY_DEFAULT_LOAD_FACTOR * DICTIONARY_DEFAULT_INITIAL_CAPACITY);
     }
@@ -131,10 +136,17 @@ void dictionaryResize(EmojicodeDictionary *dict, Thread *thread){
         newThr = (newCap < DICTIONARY_MAXIMUM_CAPACTIY && ft < (float) DICTIONARY_MAXIMUM_CAPACTIY ?
                   (size_t) ft : DICTIONARY_MAXIMUM_CAPACTIY_THRESHOLD);
     }
+    
+    stackPush(dicto, 0, 0, thread);
+    Object *newTaboo = newArray(newCap * sizeof(Object *));
+    dict = stackGetThis(thread)->value;
+    stackPop(thread);
+    
+    
+    dict->table = newTaboo;
     dict->nextThreshold = newThr;
     dict->buckets = newCap;
-    Object *newTaboo = newArray(newCap * sizeof(Object *));
-    dict->table = newTaboo;
+    
     Object **newTabo = newTaboo->value;
     if(oldTaboo != NULL){
         for (int j = 0; j < oldCap; ++j){
@@ -185,22 +197,24 @@ void dictionaryResize(EmojicodeDictionary *dict, Thread *thread){
             }
         }
     }
+    
     DICT_DEBUG printf("Resized dict at=%p\n", dict);
 }
 
-void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something key, Something value, Thread *thread){
+void dictionaryPutVal(Object *dicto, EmojicodeDictionaryHash hash, Something key, Something value, Thread *thread){
     // DICT_DEBUG printf("DictionaryPutVal hash=%llu key=%s value=%s\n", hash, stringToChar(key.object->value), stringToChar(value.object->value));
+    EmojicodeDictionary *dict = dicto->value;
     Object **tabo;
     Object *po;
     size_t n = 0, i = 0;
     if(dict->table == NULL || dict->buckets == 0){
-        dictionaryResize(dict, thread);
-        
+        dictionaryResize(dicto, thread);
+        dict = dicto->value;
     }
     tabo = dict->table->value;
     n = dict->buckets;
     if((po = tabo[i = (hash & (n - 1))]) == NULL)
-        tabo[i] = dictionaryNewNode(dict, hash, key, value, NULL, thread);
+        tabo[i] = dictionaryNewNode(dicto, hash, key, value, NULL, thread);
     else {
         EmojicodeDictionaryNode *p = po->value;
         Object *eo = NULL;
@@ -209,7 +223,7 @@ void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, S
         else {
             for(int binCount = 0; ; ++binCount){
                 if(p->next == NULL){
-                    p->next = dictionaryNewNode(dict, hash, key, value, NULL, thread);
+                    p->next = dictionaryNewNode(dicto, hash, key, value, NULL, thread);
                     break;
                 }
                 EmojicodeDictionaryNode *e = (EmojicodeDictionaryNode*) p->next->value;
@@ -227,13 +241,12 @@ void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, S
         }
     }
     if(++(dict->size) > dict->nextThreshold)
-        dictionaryResize(dict, thread);
-    return;
+        dictionaryResize(dicto, thread);
 }
 
-void dictionaryPut(EmojicodeDictionary *dict, Something key, Something value, Thread *thread){
-    dictionaryPutVal(dict, dictionaryHash(dict, key), key, value, thread);
-    DICT_DEBUG printDict(dict);
+void dictionaryPut(Object *dicto, Something key, Something value, Thread *thread){
+    dictionaryPutVal(dicto, dictionaryHash(dicto->value, key), key, value, thread);
+    DICT_DEBUG printDict(dicto->value);
 }
 
 EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something key, Thread *thread){
@@ -324,9 +337,7 @@ void dictionaryMark(Object *object){
 }
 
 void dictionarySet(Object *dicto, Something key, Something value, Thread *thread){
-    EmojicodeDictionary *dict = dicto->value;
-    
-    dictionaryPut(dict, key, value, thread);
+    dictionaryPut(dicto, key, value, thread);
 }
 
 void dictionaryInit(Thread *thread){
