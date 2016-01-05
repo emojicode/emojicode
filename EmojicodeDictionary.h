@@ -44,10 +44,10 @@ typedef struct {
 void dictionarySet(Object *dicto, Something key, Something value, Thread *thread);
 
 /** Remove an item by keyString as key */
-void dictionaryRemove(EmojicodeDictionary *dict, Something key);
+void dictionaryRemove(EmojicodeDictionary *dict, Something key, Thread *thread);
 
 /** Get an item by keyString as key */
-Something dictionaryLookup(EmojicodeDictionary *dict, Something key);
+Something dictionaryLookup(EmojicodeDictionary *dict, Something key, Thread *thread);
 
 void dictionaryMark(Object *dict);
 
