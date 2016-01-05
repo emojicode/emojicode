@@ -135,7 +135,7 @@ void dictionaryResize(EmojicodeDictionary *dict){
     }
     dict->nextThreshold = newThr;
     dict->buckets = newCap;
-    Object *newTaboo = newArray(newCap * sizeof(Object));
+    Object *newTaboo = newArray(newCap * sizeof(Object *));
     dict->table = newTaboo;
     Object **newTabo = newTaboo->value;
     if(oldTaboo != NULL){
