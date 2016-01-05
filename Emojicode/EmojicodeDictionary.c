@@ -24,14 +24,14 @@ uint32_t fnv32(const char *k, size_t length){
 }
 
 
-bool dictionaryKeyEqual(EmojicodeDictionary *dict, Something *key1, Something *key2){
-    return stringEqual((String*) key1->object->value, (String*) key2->object->value);
+bool dictionaryKeyEqual(EmojicodeDictionary *dict, Something key1, Something key2){
+    return stringEqual((String*) key1.object->value, (String*) key2.object->value);
 }
 void printNode(EmojicodeDictionaryNode *node){
-    if(node->key->type == 0 && node->value->type == 0) // are strings
-        if(node->key->object && node->value->object)
-            if (node->key->object->value && node->value->object->value)
-                printf("node: k=%s v=%s next=%p\n", stringToChar(node->key->object->value), stringToChar(node->value->object->value), node->next);
+    if(node->key.type == 0 && node->value.type == 0) // are strings
+        if(node->key.object && node->value.object)
+            if (node->key.object->value && node->value.object->value)
+                printf("node: k=%s v=%s next=%p\n", stringToChar(node->key.object->value), stringToChar(node->value.object->value), node->next);
 }
 void printDict(EmojicodeDictionary *dict){
     {
@@ -56,8 +56,8 @@ void printDict(EmojicodeDictionary *dict){
     }
 }
 
-EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something *key){
-    DICT_DEBUG printf("DictionaryGetNode hash=%llu key=%s\n", hash, stringToChar(key->object->value));
+EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something key){
+    DICT_DEBUG printf("DictionaryGetNode hash=%llu key=%s\n", hash, stringToChar(key.object->value));
     EmojicodeDictionaryNode *first, *e;
     Object** tabo;
     size_t n = 0;
@@ -84,13 +84,13 @@ EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeD
 }
 
 #define hashString(keyString) fnv32((char*)characters(keyString), ((keyString)->length) * sizeof(EmojicodeChar))
-EmojicodeDictionaryHash dictionaryHash(EmojicodeDictionary *dict, Something *key){
+EmojicodeDictionaryHash dictionaryHash(EmojicodeDictionary *dict, Something key){
     // TODO: Implement hash Callable
-    return hashString((String *) key->object->value);
+    return hashString((String *) key.object->value);
 }
 
 
-bool dictionaryContainsKey(EmojicodeDictionary *dict, Something *key){
+bool dictionaryContainsKey(EmojicodeDictionary *dict, Something key){
     return dictionaryGetNode(dict, dictionaryHash(dict, key), key) != NULL;
 }
 
@@ -98,8 +98,8 @@ Object* dictionaryNewNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash has
     Object *nodeo = newArray(sizeof(EmojicodeDictionaryNode));
     EmojicodeDictionaryNode *node = (EmojicodeDictionaryNode*) nodeo->value;
     node->hash = hash;
-    node->key = &key;
-    node->value = &value;
+    node->key = key;
+    node->value = value;
     node->next = next;
     DICT_DEBUG printf("Creating new node ");
     DICT_DEBUG printNode(node);
@@ -190,8 +190,8 @@ void dictionaryResize(EmojicodeDictionary *dict){
     DICT_DEBUG printf("Resized dict at=%p\n", dict);
 }
 
-void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something *key, Something *value, bool onlyIfAbsent){
-    DICT_DEBUG printf("DictionaryPutVal hash=%llu key=%s value=%s onlyIfAbsent=%d\n", hash, stringToChar(key->object->value), stringToChar(value->object->value), onlyIfAbsent);
+void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something key, Something value){
+    DICT_DEBUG printf("DictionaryPutVal hash=%llu key=%s value=%s\n", hash, stringToChar(key.object->value), stringToChar(value.object->value));
     Object **tabo;
     Object *po;
     size_t n = 0, i = 0;
@@ -202,7 +202,7 @@ void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, S
     tabo = dict->table->value;
     n = dict->buckets;
     if((po = tabo[i = (hash & (n - 1))]) == NULL)
-        tabo[i] = dictionaryNewNode(dict, hash, *key, *value, NULL);
+        tabo[i] = dictionaryNewNode(dict, hash, key, value, NULL);
     else {
         EmojicodeDictionaryNode *p = po->value;
         Object *eo = NULL;
@@ -211,7 +211,7 @@ void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, S
         else {
             for(int binCount = 0; ; ++binCount){
                 if(p->next == NULL){
-                    p->next = dictionaryNewNode(dict, hash, *key, *value, NULL);
+                    p->next = dictionaryNewNode(dict, hash, key, value, NULL);
                     break;
                 }
                 EmojicodeDictionaryNode *e = (EmojicodeDictionaryNode*) p->next->value;
@@ -224,10 +224,7 @@ void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, S
         }
         if(eo != NULL){ // existing mapping for key
             EmojicodeDictionaryNode *e = (EmojicodeDictionaryNode*) eo->value;
-            Something *oldValue = e->value;
-            if(!onlyIfAbsent || oldValue == NULL){
-                e->value = value;
-            }
+            e->value = value;
             return;
         }
     }
@@ -236,13 +233,13 @@ void dictionaryPutVal(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, S
     return;
 }
 
-void dictionaryPut(EmojicodeDictionary *dict, Something *key, Something *value){
-    dictionaryPutVal(dict, dictionaryHash(dict, key), key, value, false);
-    printDict(dict);
+void dictionaryPut(EmojicodeDictionary *dict, Something key, Something value){
+    dictionaryPutVal(dict, dictionaryHash(dict, key), key, value);
+    DICT_DEBUG printDict(dict);
 }
 
-EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something *key){
-    DICT_DEBUG printf("DictionaryRemoveNode hash=%llu key=%s\n", hash, stringToChar(key->object->value));
+EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Something key){
+    DICT_DEBUG printf("DictionaryRemoveNode hash=%llu key=%s\n", hash, stringToChar(key.object->value));
     size_t n = 0, index = 0;
     if (dict->table != NULL && (n = dict->buckets) > 0) {
         Object **tabo = dict->table->value;
@@ -278,7 +275,7 @@ EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, Emojico
 }
 
 void dictionaryRemove(EmojicodeDictionary *dict, Something key){
-    dictionaryRemoveNode(dict, dictionaryHash(dict, &key), &key);
+    dictionaryRemoveNode(dict, dictionaryHash(dict, key), key);
 }
 
 void dictionaryClear(EmojicodeDictionary *dict){
@@ -291,14 +288,15 @@ void dictionaryClear(EmojicodeDictionary *dict){
     }
 }
 
+#define DICT_DEBUG_MARK if(1) 
 void dictionaryMark(Object *object){
     EmojicodeDictionary *dict = object->value;
     Object *taboo = dict->table;
     if(taboo == NULL){
         return;
     }
-    printf("DictionaryMark ");
-    printDict(dict);
+    DICT_DEBUG_MARK printf("DictionaryMark ");
+    DICT_DEBUG_MARK printDict(dict);
     mark(&dict->table);
     Object **tabo = taboo->value;
     Object **eo;
@@ -308,17 +306,17 @@ void dictionaryMark(Object *object){
         eo = &tabo[i];
         if(*eo){
             do {
-                printf("Marking i=%zu ", i);
-                printNode((*eo)->value);
+                DICT_DEBUG_MARK printf("Marking i=%zu ", i);
+                DICT_DEBUG_MARK printNode((*eo)->value);
                 mark(eo);
                 e = (*eo)->value;
-                if(isRealObject(*(e->key))){
-                    printf("a");
-                    mark(&(e->key->object));
+                if(isRealObject(e->key)){
+                    DICT_DEBUG_MARK printf("a");
+                    mark(&(e->key.object));
                 }
-                if(isRealObject(*(e->value))){
-                    printf("b");
-                    mark(&(e->value->object));
+                if(isRealObject(e->value)){
+                    DICT_DEBUG_MARK printf("b");
+                    mark(&(e->value.object));
                 }
                 eo = &(e->next);
             } while (*eo != NULL);
@@ -329,7 +327,7 @@ void dictionaryMark(Object *object){
 void dictionarySet(Object *dicto, Something key, Something value, Thread *thread){
     EmojicodeDictionary *dict = dicto->value;
     
-    dictionaryPut(dict, &key, &value);
+    dictionaryPut(dict, key, value);
 }
 
 void dictionaryInit(Thread *thread){
@@ -341,11 +339,11 @@ void dictionaryInit(Thread *thread){
 }
 
 Something dictionaryLookup(EmojicodeDictionary *dict, Something key){
-    EmojicodeDictionaryNode* node = dictionaryGetNode(dict, dictionaryHash(dict, &key), &key);
+    EmojicodeDictionaryNode* node = dictionaryGetNode(dict, dictionaryHash(dict, key), key);
     if(node == NULL){ // node not found
         return NOTHINGNESS;
     } else {
-        return *node->value;
+        return node->value;
     }
 }
 

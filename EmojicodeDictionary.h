@@ -23,8 +23,8 @@
 typedef uint64_t EmojicodeDictionaryHash;
 
 typedef struct {
-    Something *key;
-    Something *value;
+    Something key;
+    Something value;
     EmojicodeDictionaryHash hash;
     Object *next;
 } EmojicodeDictionaryNode;
