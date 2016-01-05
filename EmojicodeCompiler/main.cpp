@@ -16,6 +16,17 @@
 #include "ClassParser.h"
 #include "StaticAnalyzer.h"
 
+StartingFlag startingFlag;
+bool foundStartingFlag;
+
+std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;
+std::map<std::array<EmojicodeChar, 2>, Protocol*> protocolsRegister;
+std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
+
+std::vector<Class *> classes;
+std::vector<Package *> packages;
+
+
 char* EmojicodeString::utf8CString() const {
     //Size needed for UTF8 representation
     size_t ds = u8_codingsize(c_str(), size());
@@ -195,7 +206,7 @@ void loadStandard(){
 
 int main(int argc, char * argv[]) {
     const char *reportPackage = NULL;
-    std::string outPath(0);
+    std::string outPath;
     
     //Parse options
     char ch;
@@ -235,7 +246,7 @@ int main(int argc, char * argv[]) {
     
     if(outPath.size() == 0){
         outPath = std::string(argv[0]);
-        outPath[-1] = 'b';
+        outPath[outPath.size() - 1] = 'b';
     }
     
     foundStartingFlag = false;

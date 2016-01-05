@@ -9,17 +9,6 @@
 #include "EmojicodeCompiler.h"
 #include "utf8.h"
 
-Token* newToken(Token *prevToken){
-    Token *t = new Token;
-    t->nextToken = NULL;
-    t->type = NO_TYPE;
-    t->valueSize = 0;
-    t->valueLength = 0;
-    if (prevToken)
-        prevToken->nextToken = t;
-    return t;
-}
-
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
 
 bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line){
@@ -37,7 +26,7 @@ Token* lex(FILE *f, const char *filename) {
     SourcePosition sourcePosition;
     
     Token *token, *firstToken;
-    token = firstToken = newToken(NULL);
+    token = firstToken = new Token();
     
     bool nextToken = false;
     bool oneLineComment = false;
@@ -158,7 +147,7 @@ Token* lex(FILE *f, const char *filename) {
                 token->value.push_back(c);
                 continue;
             }
-            else if((c == 'x' || c == 'X') && token->valueLength == 1 && token->value[0] == 48){ //Don't forget the 0
+            else if((c == 'x' || c == 'X') && token->value.size() == 1 && token->value[0] == 48){ //Don't forget the 0
                 //An X or x
                 isHex = true;
                 token->value.push_back(c);
@@ -191,7 +180,7 @@ Token* lex(FILE *f, const char *filename) {
         
         /* Do we need a new token? */
         if (nextToken){
-            token = newToken(token);
+            token = new Token(token);
             nextToken = false;
         }
         

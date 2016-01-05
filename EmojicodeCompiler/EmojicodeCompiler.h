@@ -25,26 +25,23 @@ class Initializer;
 class ClassMethod;
 class Protocol;
 class Enum;
-typedef struct Scope Scope;
-typedef struct ScopeWrapper ScopeWrapper;
-typedef struct Token Token;
+struct Scope;
+struct ScopeWrapper;
+struct Token;
+
+#include "Type.h"
 
 class EmojicodeString: public std::basic_string<EmojicodeChar>  {
 public:
     char* utf8CString() const;
 };
 
-std::vector<Class *> classes;
-
-#include "Type.h"
-
-
-typedef struct {
+struct StartingFlag {
     Class *eclass;
     ClassMethod *method;
-} StartingFlag;
-StartingFlag startingFlag;
-bool foundStartingFlag;
+};
+extern StartingFlag startingFlag;
+extern bool foundStartingFlag;
 
 class Package {
 public:
@@ -54,8 +51,6 @@ public:
     PackageVersion version;
     bool requiresNativeBinary;
 };
-
-std::vector<Package *> packages;
 
 typedef enum {
     PUBLIC, PRIVATE, PROTECTED
@@ -90,22 +85,21 @@ typedef struct {
  * @warning NEVER RELEASE A TOKEN!
  */
 struct Token {
-    TokenType type;
+    Token() {}
+    Token(Token *prevToken) {
+        if(prevToken)
+            prevToken->nextToken = this;
+    }
+    TokenType type = NO_TYPE;
     EmojicodeString value;
-    uint32_t valueLength;
     SourcePosition position;
-    struct Token *nextToken;
-    uint_fast32_t valueSize;
+    struct Token *nextToken = NULL;
 };
-
-Token* newToken(Token *prevToken);
 
 /**
  * Returns a token description string
  */
 const char* tokenTypeToString(TokenType type);
-
-bool tokenValueEqual(Token *a, Token *b);
 
 /**
  * If @c token is not of type @c type a compiler error is thrown.
@@ -130,6 +124,8 @@ struct Variable {
 /** Class */
 class Class {
 public:
+    Class() {}
+    
     /** Self explaining */
     EmojicodeChar name;
     /** Self explaining */
@@ -138,7 +134,7 @@ public:
     bool inheritsContructors;
     
     /** The eclass' superclass. NULL if the eclass has no superclass. */
-    struct Class *superclass;
+    Class *superclass = NULL;
     
     /** The offset for the instance variable IDs. The first instance variable will receive the value of this field. */
     uint16_t IDOffset;
@@ -146,7 +142,7 @@ public:
     uint16_t index;
     
     /** The variable names. */
-    std::vector<Variable> instanceVariables;
+    std::vector<Variable *> instanceVariables;
     /** Deinitializer for primitive types */
     void (*deconstruct)(void *);
     
@@ -207,17 +203,22 @@ public:
     Enum(EmojicodeChar name, Package& package, Token *dt) : name(name), package(package), documentationToken(dt) {}
     
     EmojicodeChar name;
-    std::map<EmojicodeChar, EmojicodeInteger> *dictionary;
+    std::map<EmojicodeChar, EmojicodeInteger> map;
     /** The package in which this eclass was defined. */
     Package& package;
     
     Token *documentationToken;
+    
+    std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
+    void addValueFor(EmojicodeChar c);
+private:
+    EmojicodeInteger valuesCounter = 0;
 };
 
-extern Enum* newEnum(EmojicodeChar name, EmojicodeChar enamespace);
-extern void enumAddValue(EmojicodeChar name, Enum *eenum, EmojicodeInteger value);
+/** Returns the protocol with name @c name in enamespace @c namepsace or @c NULL if the protocol cannot be found. */
 extern Enum* getEnum(EmojicodeChar name, EmojicodeChar enamespace);
-extern EmojicodeInteger* enumGetValue(EmojicodeChar name, Enum *eenum);
+
+//MARK: Protocol
 
 class Protocol {
 public:
@@ -240,9 +241,12 @@ public:
     Package *package;
     
     Token *documentationToken;
+    
+    Method* getMethod(EmojicodeChar c);
 };
 
-void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace);
+/** Returns the protocol with name @c name in enamespace @c namepsace or @c NULL if the protocol cannot be found. */
+extern Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace);
 
 extern Class *CL_STRING;
 extern Class *CL_LIST;
@@ -250,12 +254,14 @@ extern Class *CL_ERROR;
 extern Class *CL_DATA;
 extern Class *CL_DICTIONARY;
 extern Class *CL_ENUMERATOR;
+extern Protocol *PR_ENUMERATEABLE;
 
 extern std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;
 extern std::map<std::array<EmojicodeChar, 2>, Protocol*> protocolsRegister;
 extern std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
 
-extern Protocol *PR_ENUMERATEABLE;
+extern std::vector<Class *> classes;
+extern std::vector<Package *> packages;
 
 //MARK: Static Analyzation
 
@@ -283,14 +289,13 @@ public:
 //MARK: Errors
 
 /**
- * Throws a compiler error and exits the compiler.
+ * Issues a compiler error and exits the compiler.
  * @param token Used to determine the error location. If @c NULL the error origin is the beginning of the document.
  */
-
 _Noreturn void compilerError(Token *token, const char *err, ...);
 
 /**
- * Throws a compiler warning.
+ * Issues a compiler warning. The compilation is continued afterwards.
  * @param token Used to determine the error location. If @c NULL the error origin is the beginning of the document.
  */
 void compilerWarning(Token *token, const char *err, ...);
@@ -301,16 +306,10 @@ void printJSONStringToFile(const char *string, FILE *f);
 
 //MARK: Lexer
 
+void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace);
+
 Token* lex(FILE *f, const char* fileName);
 
-
-//MARK: Protocol
-
-/** Returns the protocol with name @c name in enamespace @c namepsace or @c NULL if the protocol cannot be found. */
-extern Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace);
-
-/** @warning Do not try to execute a method of a protocol! */
-extern Method* protocolGetMethod(EmojicodeChar name, Protocol *protocol);
 
 extern Token* currentToken;
 extern Token* consumeToken();

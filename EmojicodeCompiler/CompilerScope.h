@@ -11,18 +11,43 @@
 
 #include "EmojicodeCompiler.h"
 
-ScopeWrapper *currentScopeWrapper;
+extern ScopeWrapper *currentScopeWrapper;
 
 /** A variable scope */
 struct Scope {
-    /** 
+public:
+    Scope(bool stop) : stop(stop) {};
+    void changeInitializedBy(int c);
+    
+    /**
+     * Sets a variable directly to the scope. Make sure you really intend to use this function!
+     */
+    void setLocalVariable(Token *variable, CompilerVariable *value);
+    void setLocalVariable(EmojicodeString string, CompilerVariable *value);
+    
+    /**
+     * Retrieves a variable form the scope or returns @c NULL.
+     */
+    CompilerVariable* getLocalVariable(Token *variable);
+    
+    /** Emits @c errorMessage if not all instance variable were initialized. @c errorMessage should include @c %s for the name of the variable. */
+    void initializerUnintializedVariablesCheck(Token *errorToken, const char *errorMessage);
+    
+    /**
+     * Copies the variable from the given scope. @c offsetID will be added to all variable IDs before inserting them into the scope.
+     * @return The number of variables copied.
+     */
+    int copyFromScope(Scope *scope, uint8_t offsetID);
+    
+    /** Whether the top scopes shall be accessable. */
+    bool stop;
+private:
+    /**
      * This map contains the variables and values.
      * @warning Do not change directly. Use @c setVariable, and @c getVariable.
      * @private
      */
     std::map<EmojicodeString, CompilerVariable*> map;
-    /** Whether the top scopes shall be accessable. */
-    bool stop;
 };
 
 struct ScopeWrapper {
@@ -30,21 +55,11 @@ struct ScopeWrapper {
     Scope *scope;
 };
 
-
-/** Returns the base scope. */
-void initScope();
-
-/** Create a new subscope */
-Scope* newSubscope(bool stop);
-
 /** Pops current scope and returns it */
 Scope* popScope();
 
 /** Push this scope to be the current scope. */
 void pushScope(Scope *scope);
-
-/** Releases the scope and does garabge collecting. */
-void releaseScope(Scope *s);
 
 /**
  * Retrieves a variable.
@@ -52,19 +67,10 @@ void releaseScope(Scope *s);
 CompilerVariable* getVariable(Token *variable, uint8_t *scopesUp);
 
 /**
- * Retrieves a variable form the local scope or @c NULL.
- */
-CompilerVariable* getLocalVariable(Token *variable, Scope *scope);
-
-/**
  * Sets a variable.
  * All scopes will be searched, if the variable was set in a top scope before it will receive the new value. If the variable was not set before it will be set in the current scope.
  */
 void setVariable(Token *variable, CompilerVariable *value);
 
-/**
- * Sets a variable directly to the passed scope. Make sure you really intend to use this function!
- */
-void setLocalVariable(Token *variable, CompilerVariable *value, Scope *scope);
 
 #endif /* defined(__Emojicode__Scope__) */

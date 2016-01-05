@@ -8,14 +8,10 @@
 
 #include "EmojicodeCompiler.h"
 
-std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;
-std::map<std::array<EmojicodeChar, 2>, Protocol*> protocolsRegister;
-std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
-
 Class* getClass(EmojicodeChar name, EmojicodeChar enamespace){
     std::array<EmojicodeChar, 2> ns = {enamespace, name};
-    Class *cl = classesRegister.find(ns)->second;
-    return cl;
+    auto it = classesRegister.find(ns);
+    return it != classesRegister.end() ? it->second : NULL;
 }
 
 bool Class::conformsTo(Protocol *to){
@@ -30,7 +26,7 @@ bool Class::conformsTo(Protocol *to){
 }
 
 bool Class::inheritsFrom(Class *from){
-    for(Class *a = this->superclass; a != NULL; a = a->superclass){
+    for(Class *a = this; a != NULL; a = a->superclass){
         if(a == from) {
             return true;
         }
@@ -80,9 +76,33 @@ void addProtocol(Class *c, Protocol *protocol){
 
 Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace){
     std::array<EmojicodeChar, 2> ns = {enamespace, name};
-    return protocolsRegister.find(ns)->second;
+    auto it = protocolsRegister.find(ns);
+    return it != protocolsRegister.end() ? it->second : NULL;
 }
 
-Method* protocolGetMethod(EmojicodeChar name, Protocol *protocol){
-    return protocol->methods.find(name)->second;
+Method* Protocol::getMethod(EmojicodeChar name){
+    auto it = methods.find(name);
+    return it != methods.end() ? it->second : NULL;
+}
+
+//MARK: Enum
+
+Enum* getEnum(EmojicodeChar name, EmojicodeChar enamespace){
+    std::array<EmojicodeChar, 2> ns = {enamespace, name};
+    auto it = enumsRegister.find(ns);
+    return it != enumsRegister.end() ? it->second : NULL;
+}
+
+std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeChar c) const {
+    auto it = map.find(c);
+    if (it == map.end()) {
+        return std::pair<bool, EmojicodeInteger>(false, 0);
+    }
+    else {
+        return std::pair<bool, EmojicodeInteger>(true, it->second);
+    }
+}
+
+void Enum::addValueFor(EmojicodeChar c){
+    map[c] = valuesCounter++;
 }

@@ -9,6 +9,8 @@
 #include "Writer.h"
 #include <math.h>
 
+uint32_t writtenCoins;
+
 void writeUInt16(uint16_t value, FILE *out){
     fputc(value >> 8, out);
     fputc(value, out);

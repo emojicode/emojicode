@@ -7,26 +7,19 @@
 //
 
 #include "EmojicodeCompiler.h"
+#include "utf8.h"
 #include "Procedure.h"
 
-template <typename T>
-void Procedure::duplicateDeclarationCheck(std::map<EmojicodeChar, T> dict){
-    if (dict.count(name)) {
-        ecCharToCharStack(name, nameString);
-        compilerError(dToken, "%s %s is declared twice.", on, nameString);
-    }
-}
-
-void Procedure::checkPromises(Procedure *superProcedure, Type contextType){
+void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type contextType){
     if(superProcedure->final){
         ecCharToCharStack(this->name, mn);
         compilerError(this->dToken, "%s of %s was marked 🔏.", on, mn);
     }
     if (!this->returnType.compatibleTo(superProcedure->returnType, contextType)) {
         ecCharToCharStack(this->name, mn);
-        const char *supername = superProcedure->returnType.toString(contextType, true);
-        const char *thisname = this->returnType.toString(contextType, true);
-        compilerError(this->dToken, "Return type %s of %s is not compatible with the return type %s of its %s.", thisname, mn, supername, on);
+        auto supername = superProcedure->returnType.toString(contextType, true);
+        auto thisname = this->returnType.toString(contextType, true);
+        compilerError(this->dToken, "Return type %s of %s is not compatible with the return type %s of its %s.", thisname.c_str(), mn, supername.c_str(), on);
     }
     if (this->arguments.size() > 0) {
         ecCharToCharStack(this->name, mn);
@@ -39,9 +32,9 @@ void Procedure::checkPromises(Procedure *superProcedure, Type contextType){
     for (uint8_t i = 0; i < superProcedure->arguments.size(); i++) {
         //other way, because the method may define a more generic type
         if (!superProcedure->arguments[i].type.compatibleTo(this->arguments[i].type, contextType)) {
-            const char *supertype = superProcedure->arguments[i].type.toString(contextType, true);
-            const char *thisname = this->arguments[i].type.toString(contextType, true);
-            compilerError(superProcedure->dToken, "Type %s of argument %d is not compatible with its %s argument type %s.", thisname, i + 1, on, supertype);
+            auto supertype = superProcedure->arguments[i].type.toString(contextType, true);
+            auto thisname = this->arguments[i].type.toString(contextType, true);
+            compilerError(superProcedure->dToken, "Type %s of argument %d is not compatible with its %s argument type %s.", thisname.c_str(), i + 1, on, supertype.c_str());
         }
     }
 }

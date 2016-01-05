@@ -32,6 +32,12 @@ enum TypeType {
     TT_CALLABLE
 };
 
+enum TypeDynamism {
+    NoDynamism = 0,
+    AllowGenericTypeVariables = 0b1,
+    AllowDynamicClassType = 0b10
+};
+
 struct Type {
 public:
     Type(TypeType t, bool o) : optional(o), type(t) {}
@@ -59,21 +65,19 @@ public:
     
     /** Whether the given type is a valid argument for the generic argument at index @c i. */
     void validateGenericArgument(Type type, uint16_t i, Token *token);
+
+    /** Called by @c parseAndFetchType and in the class parser. You usually should not call this method. */
+    void parseGenericArguments(Class *eclass, EmojicodeChar theNamespace, TypeDynamism dynamism, Token *errorToken);
     
-    /** Copies the super generic arguments and returns the offset from which on this class’s generic arguments come. */
-    int initializeAndCopySuperGenericArguments();
-    
-    const char* toString(Type parentType, bool includeNsAndOptional) const; 
+    /**
+     * Returns a depp string representation of the given type.
+     * @param includeNsAndOptional Whether to include optional indicators and the namespaces.
+     */
+    std::string toString(Type contextType, bool includeNsAndOptional) const;
 private:
     void typeName(Type type, Type parentType, bool includeNsAndOptional, std::string *string) const;
     Type typeConstraintForReference(Class *c);
     Type resolveOnSuperArguments(Class *c, bool *resolved);
-};
-
-enum TypeDynamism {
-    NoDynamism = 0,
-    AllowGenericTypeVariables = 0b1,
-    AllowDynamicClassType = 0b10
 };
 
 #define typeInteger (Type(TT_INTEGER, false))
@@ -87,8 +91,6 @@ enum TypeDynamism {
 
 extern Type resolveTypeReferences(Type t, Type o);
 
-extern void checkEnoughGenericArguments(uint16_t count, Type type, Token *token);
-
 /**
  * Fetches a type by its name and enamespace or throws an error.
  * @param token The token is used when throwing an error.
@@ -101,8 +103,14 @@ extern Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *op
 /** Reads a type name and stores it into the given pointers. */
 extern Type parseAndFetchType(Class *cl, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType);
 
-extern void emitCommonTypeWarning(Type *commonType, bool *firstTypeFound, Token *token);
-
-extern void determineCommonType(Type t, Type *commonType, bool *firstTypeFound, Type parentType);
+struct CommonTypeFinder {
+    /** Tells the common type finder about the type of another element in the collection/data structure. */
+    void addType(Type t, Type contextType);
+    /** Returns the common type and issues a warning at @c warningToken if the common type is ambigious. */
+    Type getCommonType(Token *warningToken);
+private:
+    bool firstTypeFound = false;
+    Type commonType = typeSomething;
+};
 
 #endif /* Type_h */

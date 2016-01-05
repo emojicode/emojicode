@@ -7,6 +7,7 @@
 //
 
 #include "EmojicodeCompiler.h"
+#include "utf8.h"
 #include "Procedure.h"
 #include <string.h>
 
@@ -25,11 +26,11 @@ void reportDocumentation(Token *documentationToken) {
     printf("\"documentation\":");
     printJSONStringToFile(d, stdout);
     putc(',', stdout);
-    delete d;
+    delete [] d;
 }
 
 void reportType(const char *key, Type type, bool last){
-    const char *returnTypeName = type.toString(typeNothingness, false);
+    auto returnTypeName = type.toString(typeNothingness, false).c_str();
     
     if (key) {
         printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s},", key, type.typePackage(), returnTypeName, type.optional ? "true" : "false");
@@ -38,7 +39,7 @@ void reportType(const char *key, Type type, bool last){
         printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s", type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
     }
     
-    delete returnTypeName;
+    delete [] returnTypeName;
 }
 
 void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last){
@@ -68,7 +69,7 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last){
         printJSONStringToFile(varname, stdout);
         printf("}%s", i + 1 == p->arguments.size() ? "" : ",");
         
-        delete varname;
+        delete [] varname;
     }
     printf("]");
     
@@ -102,44 +103,40 @@ void report(const char *packageName){
         }
         
         printf("\"methods\": [");
-        for(size_t i = 0; i < eclass->methodList->count; i++){
-            Method *method = getList(eclass->methodList, i);
-            reportProcedureInformation((Procedure *)method, Return, i + 1 == eclass->methodList->count);
+        for(size_t i = 0; i < eclass->methodList.size(); i++){
+            Method *method = eclass->methodList[i];
+            reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size());
         }
         printf("],");
         
         printf("\"initializers\": [");
-        for(size_t i = 0; i < eclass->initializerList->count; i++){
-            Initializer *initializer = getList(eclass->initializerList, i);
-            reportProcedureInformation((Procedure *)initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == eclass->initializerList->count);
+        for(size_t i = 0; i < eclass->initializerList.size(); i++){
+            Initializer *initializer = eclass->initializerList[i];
+            reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == eclass->initializerList.size());
         }
         printf("],");
         
         printf("\"classMethods\": [");
-        for(size_t i = 0; i < eclass->classMethodList->count; i++){
-            ClassMethod *classMethod = getList(eclass->classMethodList, i);
-            reportProcedureInformation((Procedure *)classMethod, Return, eclass->classMethodList->count == i + 1);
+        for(size_t i = 0; i < eclass->classMethodList.size(); i++){
+            ClassMethod *classMethod = eclass->classMethodList[i];
+            reportProcedureInformation((Procedure *)classMethod, Return, eclass->classMethodList.size() == i + 1);
         }
         printf("],");
         
         printf("\"conformsTo\": [");
-        for(size_t i = 0; i < eclass->protocols->count; i++){
-            Protocol *protocol = getList(eclass->protocols, i);
-            reportType(NULL, typeForProtocol(protocol), i + 1 == eclass->protocols->count);
+        for(size_t i = 0; i < eclass->protocols.size(); i++){
+            Protocol *protocol = eclass->protocols[i];
+            reportType(NULL, Type(protocol, false), i + 1 == eclass->protocols.size());
         }
         printf("]}");
     }
     printf("],");
     printf("\"enums\": [");
     bool printedEnum = false;
-    for(size_t i = 0; i < enumsRegister->capacity; i++){
-        if (!enumsRegister->slots[i].key) {
-            continue;
-        }
+    for(auto it : enumsRegister){
+        Enum *eenum = it.second;
         
-        Enum *eenum = enumsRegister->slots[i].value;
-        
-        if (strcmp(eenum->package->name, packageName) != 0) {
+        if (strcmp(eenum->package.name, packageName) != 0) {
             continue;
         }
         if (printedEnum) {
@@ -156,27 +153,21 @@ void report(const char *packageName){
         
         bool printedValue = false;
         printf("\"values\": [");
-        for(size_t i = 0; i < eenum->dictionary->capacity; i++){
-            if (eenum->dictionary->slots[i].key) {
-                ecCharToCharStack(*(EmojicodeChar *)eenum->dictionary->slots[i].key, value);
-                if (printedValue){
-                    putchar(',');
-                }
-                printf("\"%s\"", value);
-                printedValue = true;
+        for(auto it : eenum->map){
+            ecCharToCharStack(it.first, value);
+            if (printedValue){
+                putchar(',');
             }
+            printf("\"%s\"", value);
+            printedValue = true;
         }
         printf("]}");
     }
     printf("],");
     printf("\"protocols\": [");
     bool printedProtocol = false;
-    for(size_t i = 0; i < protocolsRegister->capacity; i++){
-        if (!protocolsRegister->slots[i].key) {
-            continue;
-        }
-        
-        Protocol *protocol = protocolsRegister->slots[i].value;
+    for(auto it : protocolsRegister){
+        Protocol *protocol = it.second;
         
         if (strcmp(protocol->package->name, packageName) != 0) {
             continue;
@@ -193,9 +184,9 @@ void report(const char *packageName){
         reportDocumentation(protocol->documentationToken);
         
         printf("\"methods\": [");
-        for(size_t i = 0; i < protocol->methodList->count; i++){
-            Method *method = getList(protocol->methodList, i);
-            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methodList->count);
+        for(size_t i = 0; i < protocol->methodList.size(); i++){
+            Method *method = protocol->methodList[i];
+            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methodList.size());
         }
         printf("]}");
     }

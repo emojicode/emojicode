@@ -9,6 +9,8 @@
 #ifndef Procedure_h
 #define Procedure_h
 
+#include "utf8.h"
+
 typedef std::vector<Variable> Arguments;
 
 class Procedure {
@@ -46,12 +48,17 @@ public:
     EmojicodeChar enamespace;
     
     template <typename T>
-    void duplicateDeclarationCheck(std::map<EmojicodeChar, T> dict);
+    void duplicateDeclarationCheck(std::map<EmojicodeChar, T> dict) {
+        if (dict.count(name)) {
+            ecCharToCharStack(name, nameString);
+            compilerError(dToken, "%s %s is declared twice.", on, nameString);
+        }
+    }
     
     /**
      * Check whether this procedure is breaking promises.
      */
-    void checkPromises(Procedure *superProcedure, Type contextType);
+    void checkPromises(Procedure *superProcedure, const char *on, Type contextType);
 private:
     const char *on;
 };

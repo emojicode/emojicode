@@ -3,13 +3,19 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "safeParse:Emojicode.c">
+         contextName = "Type::compatibleTo(Type, Type):Type.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "main:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "parseIdentifier:Emojicode.c">
       </ContextState>
       <ContextState
          contextName = "until:Emojicode.c">
       </ContextState>
       <ContextState
-         contextName = "tokenTypeCheck:Emojicode.c">
+         contextName = "error:Stack.c">
       </ContextState>
       <ContextState
          contextName = "JSONGetValue:JSON.c">
@@ -20,22 +26,36 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "main:Emojicode.c">
-      </ContextState>
-      <ContextState
-         contextName = "parseIdentifier:Emojicode.c">
-      </ContextState>
-      <ContextState
-         contextName = "error:Stack.c">
-      </ContextState>
-      <ContextState
-         contextName = "parse:Emojicode.c">
+         contextName = "tokenTypeCheck:Emojicode.c">
       </ContextState>
       <ContextState
          contextName = "releaseIfPossible:OO.c">
       </ContextState>
       <ContextState
          contextName = "consumeToken:lexer.c">
+      </ContextState>
+      <ContextState
+         contextName = "safeParse:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "parse:Emojicode.c">
+      </ContextState>
+      <ContextState
+         contextName = "Type::typeConstraintForReference(Class*):Type.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "c-&gt;genericArgumentContraints">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Type::parseGenericArguments(Class*, unsigned int, TypeDynamism, Token*):Type.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "safeParseTypeConstraint(Token*, Token*, Type, StaticInformation*):StaticAnalyzer.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Type::validateGenericArgument(Type, unsigned short, Token*):Type.cpp">
       </ContextState>
    </ContextStates>
 </VariablesViewState>
