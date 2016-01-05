@@ -258,21 +258,23 @@ void dictionaryMark(Object *object){
     if(taboo == NULL){
         return;
     }
-    mark(&taboo);
+    mark(&dict->table);
     Object **tabo = taboo->value;
-    Object *eo;
+    Object **eo;
     EmojicodeDictionaryNode *e;
+    
     for (size_t i = 0; i < dict->buckets; i++) {
-        eo = tabo[i];
-        if(eo){
+        eo = &tabo[i];
+        if(*eo){
             do {
-                mark(&eo);
-                e = eo->value;
-                if(isRealObject(*e->key))
-                    mark(&e->key->object);
-                if(isRealObject(*e->value))
-                    mark(&e->value->object);
-            } while ((eo = e->next) != NULL);
+                mark(eo);
+                e = (*eo)->value;
+                if(isRealObject(*(e->key)))
+                    mark(&(e->key->object));
+                if(isRealObject(*(e->value)))
+                    mark(&(e->value->object));
+                eo = &(e->next);
+            } while (*eo != NULL);
         }
     }
 }
