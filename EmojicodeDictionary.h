@@ -11,9 +11,10 @@
 
 #include "EmojicodeString.h"
 
-// MUST be a power of two, default: 8
+/** Default initial capacity. MUST be a power of two, default: 8 */
 #define DICTIONARY_DEFAULT_INITIAL_CAPACITY (1 << 3)
-// Factor for determining whether the dictionary should be resized
+
+/** Factor for determining whether the dictionary should be resized. */
 #define DICTIONARY_DEFAULT_LOAD_FACTOR (0.75f)
 
 #define DICTIONARY_MAXIMUM_CAPACTIY (1 << 30)
@@ -22,18 +23,37 @@
 
 typedef uint64_t EmojicodeDictionaryHash;
 
+/** The datastructure with the key-value pair */
 typedef struct {
+    /** The user specified key. */
     Something key;
+    
+    /** The user specified value. */
     Something value;
+    
+    /** The cached hash for the key. Calculated on item addition. */
     EmojicodeDictionaryHash hash;
+    
+    /** EmojicodeDictionary stores a bucket's elements in a linked list. */
     Object *next;
+    
 } EmojicodeDictionaryNode;
 
+/** Structure for the Emojicode standard Dictionary. The implementation is similar to Java's Hashmap. */
 typedef struct {
+    /** An array with pointers to linked lists. Initializes when the first item is inserted. */
     Object *buckets;
+    
+    /** Length of buckets array. */
     size_t bucketsCounter;
+    
+    /** The number of items stored in this dictionary. Used for determining whether to resize. */
     size_t size;
+    
+    /** When size * loadFactor >= bucketsCounter the dictionary doubles the amount of buckets */
     float loadFactor;
+    
+    /** Stores the next threshold for resizing. Is 0 until first resize when item is inserted. */
     size_t nextThreshold;
 } EmojicodeDictionary;
 
