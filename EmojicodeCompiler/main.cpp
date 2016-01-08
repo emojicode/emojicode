@@ -9,11 +9,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
-#include "Lexer.h"
+#include "Lexer.hpp"
 #include "utf8.h"
-#include "EmojicodeCompiler.h"
-#include "ClassParser.h"
-#include "StaticAnalyzer.h"
+#include "EmojicodeCompiler.hpp"
+#include "ClassParser.hpp"
+#include "StaticAnalyzer.hpp"
 
 StartingFlag startingFlag;
 bool foundStartingFlag;
@@ -37,10 +37,9 @@ char* EmojicodeString::utf8CString() const {
     return utf8str;
 }
 
-Token* currentToken;
-Token* consumeToken(){
-    currentToken = currentToken->nextToken;
-    return currentToken;
+const Token* currentToken;
+const Token* consumeToken(){
+    return currentToken = currentToken->nextToken;
 }
 
 static bool outputJSON = false;
@@ -118,7 +117,7 @@ void compilerError(const Token *token, const char *err, ...){
     exit(1);
 }
 
-void compilerWarning(Token *token, const char *err, ...){
+void compilerWarning(const Token *token, const char *err, ...){
     va_list list;
     va_start(list, err);
     

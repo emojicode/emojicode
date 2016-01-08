@@ -6,9 +6,51 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.h"
+#include "EmojicodeCompiler.hpp"
 #include "utf8.h"
-#include "Procedure.h"
+#include "Procedure.hpp"
+#include "Lexer.hpp"
+
+void Callable::parseArgumentList(Type ct, EmojicodeChar enamespace){
+    const Token *token;
+    
+    //Until the grape is found we parse arguments
+    while ((token = nextToken()) && token->type == VARIABLE) { //grape
+        //Get the variable in which to store the argument
+        const Token *variableToken = consumeToken();
+        variableToken->forceType(VARIABLE);
+        
+        auto type = Type::parseAndFetchType(ct, enamespace, AllowGenericTypeVariables, NULL);
+        
+        arguments.push_back(Variable(Variable(variableToken, type)));
+    }
+    
+    if (arguments.size() > UINT8_MAX) {
+        compilerError(token, "A function cannot take more than 255 arguments.");
+    }
+}
+
+void Callable::parseReturnType(Type ct, EmojicodeChar theNamespace){
+    if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
+        consumeToken();
+        returnType = Type::parseAndFetchType(ct, theNamespace, AllowGenericTypeVariables, NULL);
+    }
+}
+
+//MARK: Closure
+
+Type Closure::type() {
+    Type t(TT_CALLABLE, false);
+    t.arguments = (uint8_t)arguments.size();
+    
+    t.genericArguments.push_back(returnType);
+    for (int i = 0; i < arguments.size(); i++) {
+        t.genericArguments.push_back(arguments[i].type);
+    }
+    return t;
+}
+
+//MARK: Procedure
 
 void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type contextType){
     if(superProcedure->final){
@@ -37,4 +79,39 @@ void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type co
             compilerError(superProcedure->dToken, "Type %s of argument %d is not compatible with its %s argument type %s.", thisname.c_str(), i + 1, on, supertype.c_str());
         }
     }
+}
+
+void Procedure::checkOverride(Procedure *superProcedure){
+    if(overriding && !superProcedure){
+        ecCharToCharStack(name, mn);
+        compilerError(dToken, "%s was declared ✒️ but does not override anything.", mn);
+    }
+    else if(!overriding && superProcedure){
+        ecCharToCharStack(name, mn);
+        compilerError(dToken, "If you want to override %s add ✒️.", mn);
+    }
+}
+
+Type Procedure::type() {
+    Type t(TT_CALLABLE, false);
+    t.type = TT_CALLABLE;
+    t.arguments = (uint8_t)arguments.size();
+    
+    t.genericArguments.push_back(returnType);
+    for (size_t i = 0; i < arguments.size(); i++) {
+        t.genericArguments.push_back(arguments[i].type);
+    }
+    return t;
+}
+
+Type Initializer::type() {
+    Type t(TT_CALLABLE, false);
+    t.type = TT_CALLABLE;
+    t.arguments = (uint8_t)arguments.size();
+    
+    t.genericArguments.push_back(Type(eclass, canReturnNothingness));
+    for (size_t i = 0; i < arguments.size(); i++) {
+        t.genericArguments.push_back(arguments[i].type);
+    }
+    return t;
 }

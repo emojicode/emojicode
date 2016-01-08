@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.h"
+#include "EmojicodeCompiler.hpp"
 
 Class* getClass(EmojicodeChar name, EmojicodeChar enamespace){
     std::array<EmojicodeChar, 2> ns = {enamespace, name};

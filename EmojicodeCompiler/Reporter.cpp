@@ -6,10 +6,10 @@
 //  Copyright © 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.h"
+#include "EmojicodeCompiler.hpp"
 #include "utf8.h"
-#include "Lexer.h"
-#include "Procedure.h"
+#include "Lexer.hpp"
+#include "Procedure.hpp"
 #include <string.h>
 
 enum ReturnManner {
@@ -18,7 +18,7 @@ enum ReturnManner {
     CanReturnNothingness
 };
 
-void reportDocumentation(Token *documentationToken) {
+void reportDocumentation(const Token *documentationToken) {
     if(!documentationToken) {
         return;
     }

@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.h"
-#include "Lexer.h"
+#include "EmojicodeCompiler.hpp"
+#include "Lexer.hpp"
 #include "utf8.h"
 
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
@@ -58,7 +58,7 @@ void Token::forceType(TokenType type) const {
     }
 }
 
-Token* lex(FILE *f, const char *filename) {
+const Token* lex(FILE *f, const char *filename) {
     EmojicodeChar c;
     size_t line = 1, col = 0, i = 0;
     SourcePosition sourcePosition;

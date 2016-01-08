@@ -9,8 +9,8 @@
 #ifndef __Emojicode__ClassParser__
 #define __Emojicode__ClassParser__
 
-#include "EmojicodeCompiler.h"
-#include "Procedure.h"
+#include "EmojicodeCompiler.hpp"
+#include "Procedure.hpp"
 
 /**
  * The class parsers reads the source code file that only consists of type definitions (eclass and protocols).
@@ -25,10 +25,6 @@
 void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar enamespace);
 
 void saveBlock(Procedure *p, bool allowNative);
-
-Arguments parseArgumentList(Type ct, EmojicodeChar enamespace);
-
-Type parseReturnType(Type ct, EmojicodeChar theNamespace);
 
 void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace);
 

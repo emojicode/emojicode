@@ -67,6 +67,8 @@ void readQualifiedTypeName(EmojicodeChar *name, EmojicodeChar *namespace, FILE *
 uint32_t readBlock(EmojicodeCoin **destination, uint8_t *variableCount, FILE *in){
     *variableCount = fgetc(in);
     uint32_t coinCount = readEmojicodeChar(in);
+    
+    printf("%d\n", coinCount);
 
     *destination = malloc(sizeof(EmojicodeCoin) * coinCount);
     for (uint32_t i = 0; i < coinCount; i++) {

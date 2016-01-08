@@ -6,19 +6,19 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "CompilerScope.h"
-#include "Lexer.h"
+#include "CompilerScope.hpp"
+#include "Lexer.hpp"
 
 
 //MARK: Compiler Variables
 
-void CompilerVariable::uninitalizedError(Token *variableToken) const {
+void CompilerVariable::uninitalizedError(const Token *variableToken) const {
     if (initialized <= 0) {
         compilerError(variableToken, "Variable \"%s\" is possibly not initialized.", variableToken->value.utf8CString());
     }
 }
 
-void CompilerVariable::frozenError(Token *variableToken) const {
+void CompilerVariable::frozenError(const Token *variableToken) const {
     if (frozen) {
         compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableToken->value.utf8CString());
     }
@@ -35,7 +35,7 @@ void Scope::changeInitializedBy(int c) {
     }
 }
 
-void Scope::setLocalVariable(Token *variable, CompilerVariable *value){
+void Scope::setLocalVariable(const Token *variable, CompilerVariable *value){
     map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(variable->value, value));
 }
 
@@ -43,13 +43,13 @@ void Scope::setLocalVariable(EmojicodeString string, CompilerVariable *value){
     map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(string, value));
 }
 
-CompilerVariable* Scope::getLocalVariable(Token *variable){
+CompilerVariable* Scope::getLocalVariable(const Token *variable){
     auto it = map.find(variable->value);
     return it == map.end() ? NULL : it->second;
 }
 
 /** Emits @c errorMessage if not all instance variable were initialized. @c errorMessage should include @c %s for the name of the variable. */
-void Scope::initializerUnintializedVariablesCheck(Token *errorToken, const char *errorMessage){
+void Scope::initializerUnintializedVariablesCheck(const Token *errorToken, const char *errorMessage){
     for (auto it : map) {
         CompilerVariable *cv = it.second;
         if (cv->initialized <= 0 && !cv->type.optional) {
@@ -82,7 +82,7 @@ void pushScope(Scope *scope){
     currentScopeWrapper = sw;
 }
 
-void setVariable(Token *variable, CompilerVariable *value){
+void setVariable(const Token *variable, CompilerVariable *value){
     //Search all scopes up
     for (ScopeWrapper *scopeWrapper = currentScopeWrapper; scopeWrapper != NULL; scopeWrapper = scopeWrapper->topScope) {
         if(scopeWrapper->scope->getLocalVariable(variable) != NULL){
@@ -97,7 +97,7 @@ void setVariable(Token *variable, CompilerVariable *value){
     currentScopeWrapper->scope->setLocalVariable(variable, value);
 }
 
-CompilerVariable* getVariable(Token *variable, uint8_t *scopesUp){
+CompilerVariable* getVariable(const Token *variable, uint8_t *scopesUp){
     *scopesUp = 0;
     
     CompilerVariable *value;

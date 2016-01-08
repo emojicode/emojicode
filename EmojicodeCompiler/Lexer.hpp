@@ -9,7 +9,7 @@
 #ifndef Lexer_h
 #define Lexer_h
 
-#include "EmojicodeCompiler.h"
+#include "EmojicodeCompiler.hpp"
 
 //MARK: Tokens
 
@@ -34,7 +34,7 @@ struct SourcePosition {
 };
 
 /**
- * A Token
+ * A const Token
  * @warning NEVER RELEASE A TOKEN!
  */
 struct Token {
@@ -58,6 +58,6 @@ struct Token {
     void forceType(TokenType type) const;
 };
 
-Token* lex(FILE *f, const char* fileName);
+const Token* lex(FILE *f, const char* fileName);
 
 #endif /* Lexer_h */

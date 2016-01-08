@@ -29,7 +29,7 @@ struct Scope;
 struct ScopeWrapper;
 struct Token;
 
-#include "Type.h"
+#include "Type.hpp"
 
 class EmojicodeString: public std::basic_string<EmojicodeChar>  {
 public:
@@ -53,10 +53,10 @@ public:
 };
 
 struct Variable {
-    Variable(Token *n, Type t) : name(n), type(t) {}
+    Variable(const Token *n, Type t) : name(n), type(t) {}
     
     /** The name of the variable */
-    Token *name;
+    const Token *name;
     /** The type */
     Type type;
 };
@@ -80,9 +80,6 @@ public:
     /** The eclass' superclass. NULL if the eclass has no superclass. */
     Class *superclass = NULL;
     
-    /** The offset for the instance variable IDs. The first instance variable will receive the value of this field. */
-    uint16_t IDOffset;
-    
     uint16_t index;
     
     /** The variable names. */
@@ -97,8 +94,8 @@ public:
     std::vector<Initializer *> requiredInitializerList;
     std::vector<Protocol *> protocols;
     
-    Token *classBegin;
-    Token *documentationToken;
+    const Token *classBegin;
+    const Token *documentationToken;
     
     uint16_t nextMethodVti;
     uint16_t nextClassMethodVti;
@@ -144,14 +141,14 @@ extern Class* getClass(EmojicodeChar name, EmojicodeChar enamespace);
 
 class Enum {
 public:
-    Enum(EmojicodeChar name, Package& package, Token *dt) : name(name), package(package), documentationToken(dt) {}
+    Enum(EmojicodeChar name, Package& package, const Token *dt) : name(name), package(package), documentationToken(dt) {}
     
     EmojicodeChar name;
     std::map<EmojicodeChar, EmojicodeInteger> map;
     /** The package in which this eclass was defined. */
     Package& package;
     
-    Token *documentationToken;
+    const Token *documentationToken;
     
     std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
     void addValueFor(EmojicodeChar c);
@@ -184,7 +181,7 @@ public:
     /** The package in which this eclass was defined. */
     Package *package;
     
-    Token *documentationToken;
+    const Token *documentationToken;
     
     Method* getMethod(EmojicodeChar c);
 };
@@ -220,7 +217,7 @@ _Noreturn void compilerError(const Token *token, const char *err, ...);
  * Issues a compiler warning. The compilation is continued afterwards.
  * @param token Used to determine the error location. If @c NULL the error origin is the beginning of the document.
  */
-void compilerWarning(Token *token, const char *err, ...);
+void compilerWarning(const Token *token, const char *err, ...);
 
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
@@ -228,8 +225,8 @@ void printJSONStringToFile(const char *string, FILE *f);
 
 //MARK: Lexer
 
-extern Token* currentToken;
-extern Token* consumeToken();
+extern const Token* currentToken;
+extern const Token* consumeToken();
 #define nextToken() (currentToken->nextToken)
 
 void report(const char *packageName);
