@@ -24,7 +24,9 @@ enum TokenType {
     BOOLEAN_FALSE,
     IDENTIFIER,
     VARIABLE,
-    SYMBOL
+    SYMBOL,
+    ARGUMENT_BRACKET_OPEN,
+    ARGUMENT_BRACKET_CLOSE
 };
 
 struct SourcePosition {

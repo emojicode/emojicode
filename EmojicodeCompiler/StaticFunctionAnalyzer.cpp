@@ -54,8 +54,16 @@ void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token *token, const
 }
 
 void StaticFunctionAnalyzer::checkArguments(Arguments arguments, Type calledType, const Token *token){
+    bool brackets = false;
+    if (nextToken()->type == ARGUMENT_BRACKET_OPEN) {
+        consumeToken();
+        brackets = true;
+    }
     for (auto var : arguments) {
         parse(consumeToken(), token, var.type.resolveOn(calledType));
+    }
+    if (brackets) {
+        consumeToken(ARGUMENT_BRACKET_CLOSE);
     }
 }
 
@@ -218,6 +226,10 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
             return unsafeParseIdentifier(token);
         case DOCUMENTATION_COMMENT:
             compilerError(token, "Misplaced documentation comment.");
+        case ARGUMENT_BRACKET_OPEN:
+            compilerError(token, "Unexpected 〖");
+        case ARGUMENT_BRACKET_CLOSE:
+            compilerError(token, "Unexpected 〗");
         case NO_TYPE:
         case COMMENT:
             break;
@@ -419,7 +431,6 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
             auto placeholder = writer.writeCoinPlaceholder();
             
-            //The destination variable
             const Token *variableToken = consumeToken(VARIABLE);
             
             if (currentScopeWrapper->scope->getLocalVariable(variableToken) != nullptr) {
@@ -847,8 +858,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             return method->returnType;
         }
-        default:
-        {
+        default: {
             auto placeholder = writer.writeCoinPlaceholder();
             
             const Token *tobject = consumeToken();

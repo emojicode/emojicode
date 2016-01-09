@@ -66,10 +66,15 @@ const char* Token::stringNameForType(TokenType type) {
             return "Identifier";
         case DOCUMENTATION_COMMENT:
             return "Documentation Comment";
-        default:
-            return "Mysterious unnamed token";
+        case ARGUMENT_BRACKET_CLOSE:
+            return "Argument Bracket Close";
+        case ARGUMENT_BRACKET_OPEN:
+            return "Argument Bracket Open";
+        case NO_TYPE:
+        case COMMENT:
             break;
     }
+    return "Mysterious unnamed token";
 }
 
 void Token::forceType(TokenType type) const {
@@ -186,7 +191,7 @@ const Token* lex(FILE *f, const char *filename) {
                 nextToken = true;
                 continue; //do not count the whitespace again
             }
-            else if(isIdentifier()){
+            else if(isIdentifier() || c == 0x3017 || c == 0x3016){
                 /* End of variable */
                 nextToken = true;
             }
@@ -270,6 +275,16 @@ const Token* lex(FILE *f, const char *filename) {
         else if (c == E_KEYCAP_10){
             token->type = SYMBOL;
             token->position = sourcePosition;
+        }
+        else if (c == 0x3016) { //〖
+            token->type = ARGUMENT_BRACKET_OPEN;
+            token->position = sourcePosition;
+            nextToken = true;
+        }
+        else if (c == 0x3017) { //〗
+            token->type = ARGUMENT_BRACKET_CLOSE;
+            token->position = sourcePosition;
+            nextToken = true;
         }
         else if (detectWhitespace(c, &col, &line)){
             continue;
