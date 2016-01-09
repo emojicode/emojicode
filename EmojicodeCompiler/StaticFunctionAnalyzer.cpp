@@ -84,8 +84,7 @@ void StaticFunctionAnalyzer::flowControlBlock(){
     
     flowControlDepth++;
     
-    const Token *token = consumeToken();
-    token->forceType(IDENTIFIER);
+    const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
@@ -115,9 +114,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token){
         consumeToken();
         writer.writeCoin(0x3E);
         
-        const Token *varName = consumeToken();
-        varName->forceType(VARIABLE);
-        
+        const Token *varName = consumeToken(VARIABLE);
         if(currentScopeWrapper->scope->getLocalVariable(varName) != nullptr){
             compilerError(token, "Cannot redeclare variable.");
         }
@@ -238,8 +235,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
 
     switch (token->value[0]) {
         case E_SHORTCAKE: {
-            const Token *varName = consumeToken();
-            varName->forceType(VARIABLE);
+            const Token *varName = consumeToken(VARIABLE);
             
             if (currentScopeWrapper->scope->getLocalVariable(varName) != nullptr) {
                 compilerError(token, "Cannot redeclare variable.");
@@ -253,8 +249,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             return typeNothingness;
         }
         case E_CUSTARD: {
-            const Token *varName = consumeToken();
-            varName->forceType(VARIABLE);
+            const Token *varName = consumeToken(VARIABLE);
             
             uint8_t scopesUp;
             CompilerVariable *cv = getVariable(varName, &scopesUp);
@@ -285,13 +280,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             return typeNothingness;
         }
         case E_SOFT_ICE_CREAM: {
-            const Token *varName = consumeToken();
-            varName->forceType(VARIABLE);
+            const Token *varName = consumeToken(VARIABLE);
             
             if(currentScopeWrapper->scope->getLocalVariable(varName) != nullptr){
                 compilerError(token, "Cannot redeclare variable.");
             }
-            
             
             writer.writeCoin(0x1B);
             
@@ -304,8 +297,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         }
         case E_COOKING:
         case E_CHOCOLATE_BAR: {
-            const Token *varName = consumeToken();
-            varName->forceType(VARIABLE);
+            const Token *varName = consumeToken(VARIABLE);
             
             //Fetch the old value
             uint8_t scopesUp;
@@ -428,8 +420,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             auto placeholder = writer.writeCoinPlaceholder();
             
             //The destination variable
-            const Token *variableToken = consumeToken();
-            variableToken->forceType(VARIABLE);
+            const Token *variableToken = consumeToken(VARIABLE);
             
             if (currentScopeWrapper->scope->getLocalVariable(variableToken) != nullptr) {
                 compilerError(variableToken, "Cannot redeclare variable.");
@@ -501,8 +492,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "Optionals cannot be accessed.");
             }
             
-            const Token *name = consumeToken();
-            name->forceType(IDENTIFIER);
+            auto name = consumeToken(IDENTIFIER);
             
             auto v = type.eenum->getValueFor(name->value[0]);
             if (!v.first) {
@@ -541,18 +531,17 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             }
             
             //The initializer name
-            const Token *consName = consumeToken();
-            consName->forceType(IDENTIFIER);
+            const Token *name = consumeToken(IDENTIFIER);
             
-            Initializer *initializer = type.eclass->getInitializer(consName->value[0]);
+            Initializer *initializer = type.eclass->getInitializer(name->value[0]);
             
             if (initializer == nullptr) {
                 auto typeString = type.toString(contextType, true);
-                ecCharToCharStack(consName->value[0], initializerString);
-                compilerError(consName, "%s has no initializer %s.", typeString.c_str(), initializerString);
+                ecCharToCharStack(name->value[0], initializerString);
+                compilerError(name, "%s has no initializer %s.", typeString.c_str(), initializerString);
             }
             else if (dynamic && !initializer->required) {
-                compilerError(consName, "Only required initializers can be used with 🐀.");
+                compilerError(name, "Only required initializers can be used with 🐀.");
             }
             
             writer.writeCoin(initializer->vti);
@@ -606,8 +595,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             writer.writeCoin(eclass->superclass->index);
             
-            const Token *initializerToken = consumeToken();
-            initializerToken->forceType(IDENTIFIER);
+            const Token *initializerToken = consumeToken(IDENTIFIER);
             
             Initializer *initializer = eclass->superclass->getInitializer(initializerToken->value[0]);
             
@@ -742,8 +730,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_DOUGHNUT: {
             writer.writeCoin(0x2);
             
-            const Token *methodToken = consumeToken();
-            methodToken->forceType(IDENTIFIER);
+            const Token *methodToken = consumeToken(IDENTIFIER);
             
             Type type = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), nullptr);
             

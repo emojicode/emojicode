@@ -10,6 +10,27 @@
 #include "Lexer.hpp"
 #include "utf8.h"
 
+const Token* currentToken;
+
+const Token* consumeToken(){
+    return currentToken = currentToken->nextToken;
+}
+
+const Token* consumeToken(TokenType type){
+    currentToken = currentToken->nextToken;
+    if (!currentToken) {
+        compilerError(nullptr, "Unexpected end of program.");
+    }
+    if (currentToken->type != type){
+        compilerError(currentToken, "Expected token %s but instead found %s.", Token::stringNameForType(type), currentToken->stringName());
+    }
+    return currentToken;
+}
+
+const Token* nextToken() {
+    return currentToken->nextToken;
+}
+
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
 
 bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line){
@@ -51,7 +72,6 @@ const char* Token::stringNameForType(TokenType type) {
     }
 }
 
-/** When @c token is not of type @c type and compiler error is thrown. */
 void Token::forceType(TokenType type) const {
     if (this->type != type){
         compilerError(this, "Expected token %s but instead found %s.", stringNameForType(type), this->stringName());

@@ -17,9 +17,7 @@ void Callable::parseArgumentList(Type ct, EmojicodeChar enamespace){
     //Until the grape is found we parse arguments
     while ((token = nextToken()) && token->type == VARIABLE) { //grape
         //Get the variable in which to store the argument
-        const Token *variableToken = consumeToken();
-        variableToken->forceType(VARIABLE);
-        
+        const Token *variableToken = consumeToken(VARIABLE);
         auto type = Type::parseAndFetchType(ct, enamespace, AllowGenericTypeVariables, nullptr);
         
         arguments.push_back(Variable(Variable(variableToken, type)));
@@ -74,7 +72,7 @@ static const Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep){
 
 void Procedure::parseBody(bool allowNative){
     if(nextToken()->value[0] == E_RADIO){
-        const Token *t = consumeToken();
+        const Token *t = consumeToken(IDENTIFIER);
         if(!allowNative){
             compilerError(t, "Native code is not allowed in this context.");
         }
@@ -82,9 +80,8 @@ void Procedure::parseBody(bool allowNative){
         return;
     }
     
-    const Token *token = consumeToken();
+    const Token *token = consumeToken(IDENTIFIER);
     
-    token->forceType(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], c);
         compilerError(token, "Expected 🍇 but found %s instead.", c);

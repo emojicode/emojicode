@@ -33,10 +33,6 @@ struct SourcePosition {
     const char *file;
 };
 
-/**
- * A const Token
- * @warning NEVER RELEASE A TOKEN!
- */
 class Token {
 public:
     Token() {}
@@ -55,10 +51,30 @@ public:
     /** Returns a string describing the token */
     static const char* stringNameForType(TokenType type);
     
-    /** If this token is not of type @c type a compiler error is thrown. */
+    /** 
+     * If this token is not of type @c type a compiler error is thrown.
+     * @hint You should prefer @c consumeToken(TokenType type) over this method.
+     * @see consumeToken(TokenType type)
+     */
     void forceType(TokenType type) const;
 };
 
 const Token* lex(FILE *f, const char* fileName);
+
+/** 
+ * Returns the next token or @c nullptr for the end of the stream.
+ * @warning You may not call this function after it returned @c nullptr.
+ */
+const Token* consumeToken();
+/**
+ * Returns the next token if it matches the given type. If it does not match an error is issued.
+ * It will never return @c nullptr.
+ */
+const Token* consumeToken(TokenType type);
+/**
+ * Returns the next token or @c nullptr for the end of the stream without consuming that token.
+ */
+const Token* nextToken();
+extern const Token* currentToken;
 
 #endif /* Lexer_h */

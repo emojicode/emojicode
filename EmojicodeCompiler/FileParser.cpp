@@ -111,8 +111,7 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *docume
     std::array<EmojicodeChar, 2> ns = {enamespace, name};
     protocolsRegister[ns] = protocol;
     
-    const Token *token = consumeToken();
-    token->forceType(IDENTIFIER);
+    const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES) {
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
@@ -129,8 +128,7 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *docume
             compilerError(token, "Only method declarations are allowed inside a protocol.");
         }
         
-        const Token *methodName = consumeToken();
-        methodName->forceType(IDENTIFIER);
+        const Token *methodName = consumeToken(IDENTIFIER);
         
         Type returnType = typeNothingness;
         auto method = new Method(methodName->value[0], PUBLIC, false, nullptr, theNamespace, methodName, false, documentationToken);
@@ -152,22 +150,19 @@ void parseEnum(EmojicodeChar theNamespace, Package &pkg, const Token *documentat
     std::array<EmojicodeChar, 2> ns = {enamespace, name};
     enumsRegister[ns] = eenum;
     
-    const Token *token = consumeToken();
-    token->forceType(IDENTIFIER);
+    const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES) {
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
     }
-    while (token = consumeToken(), !(token->type == IDENTIFIER && token->value[0] == E_WATERMELON)) {
-        token->forceType(IDENTIFIER);
-        
+    while (token = consumeToken(IDENTIFIER), token->value[0] != E_WATERMELON) {
         eenum->addValueFor(token->value[0]);
     }
 }
 
 static bool hasAttribute(EmojicodeChar attributeName, const Token **token){
-    if((*token)->type == IDENTIFIER && (*token)->value[0] == attributeName){
-        *token = consumeToken();
+    if((*token)->value[0] == attributeName){
+        *token = consumeToken(IDENTIFIER);
         return true;
     }
     return false;
@@ -175,18 +170,17 @@ static bool hasAttribute(EmojicodeChar attributeName, const Token **token){
 
 static AccessLevel readAccessLevel(const Token **token){
     AccessLevel access;
-    (*token)->forceType(IDENTIFIER);
     switch ((*token)->value[0]) {
         case E_CLOSED_LOCK_WITH_KEY:
-            *token = consumeToken();
+            *token = consumeToken(IDENTIFIER);
             access = PROTECTED;
             break;
         case E_LOCK:
-            *token = consumeToken();
+            *token = consumeToken(IDENTIFIER);
             access = PRIVATE;
             break;
         case E_OPEN_LOCK:
-            *token = consumeToken();
+            *token = consumeToken(IDENTIFIER);
         default:
             access = PUBLIC;
     }
@@ -200,8 +194,7 @@ static AccessLevel readAccessLevel(const Token **token){
  */
 void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializers, bool allowNative, EmojicodeChar theNamespace){
     //Until we find a melon process methods and initializers
-    const Token *token = consumeToken();
-    token->forceType(IDENTIFIER);
+    const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
@@ -212,6 +205,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
             documentationToken = token;
             token = consumeToken();
         }
+        token->forceType(IDENTIFIER);
         
         bool final = hasAttribute(E_LOCK_WITH_INK_PEN, &token);
         AccessLevel accessLevel = readAccessLevel(&token);
@@ -220,12 +214,10 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
         bool required = hasAttribute(E_KEY, &token);
         bool canReturnNothingness = hasAttribute(E_CANDY, &token);
 
-        token->forceType(IDENTIFIER);
         switch (token->value[0]) {
             case E_SHORTCAKE: {
                 //Get the variable name
-                const Token *ivarName = consumeToken();
-                ivarName->forceType(VARIABLE);
+                const Token *ivarName = consumeToken(VARIABLE);
                 
                 if(staticOnType){
                     compilerError(ivarName, "Class variables are not supported yet.");
@@ -262,9 +254,8 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                     compilerError(token, "Invalid modifier 🔑.");
                 }
                 
-                const Token *methodName = consumeToken();
+                const Token *methodName = consumeToken(IDENTIFIER);
                 EmojicodeChar name = methodName->value[0];
-                methodName->forceType(IDENTIFIER);
                 
                 if(staticOnType){
                     auto *classMethod = new ClassMethod(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken);
@@ -306,8 +297,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                     compilerError(token, "Invalid modifier 🐇.");
                 }
                 
-                const Token *initializerName = consumeToken();
-                initializerName->forceType(IDENTIFIER);
+                const Token *initializerName = consumeToken(IDENTIFIER);
                 EmojicodeChar name = initializerName->value[0];
                 
                 Initializer *initializer = new Initializer(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken, required, canReturnNothingness);
@@ -355,10 +345,9 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
     eclass->documentationToken = documentationToken;
     
     while (nextToken()->value[0] == E_SPIRAL_SHELL) {
-        consumeToken();
+        consumeToken(IDENTIFIER);
         
-        const Token *variable = consumeToken();
-        variable->forceType(VARIABLE);
+        const Token *variable = consumeToken(VARIABLE);
         
         Type t = Type::parseAndFetchType(eclass, theNamespace, NoDynamism, nullptr);
         eclass->genericArgumentContraints.push_back(t);
@@ -456,7 +445,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
         const Token *documentationToken = nullptr;
         if (theToken->type == DOCUMENTATION_COMMENT) {
             documentationToken = theToken;
-            theToken = consumeToken();
+            theToken = consumeToken(IDENTIFIER);
         }
         
         theToken->forceType(IDENTIFIER);
@@ -466,11 +455,8 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
                 compilerError(theToken, "📦 are only allowed before the first class declaration.");
             }
             
-            const Token *nameToken = consumeToken();
-            const Token *namespaceToken = consumeToken();
-            
-            nameToken->forceType(VARIABLE);
-            namespaceToken->forceType(IDENTIFIER);
+            const Token *nameToken = consumeToken(VARIABLE);
+            const Token *namespaceToken = consumeToken(IDENTIFIER);
             
             size_t ds = u8_codingsize(nameToken->value.c_str(), nameToken->value.size());
             //Allocate space for the UTF8 string
@@ -503,10 +489,8 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
                 compilerError(theToken, "Package version already declared.");
             }
             
-            const Token *major = consumeToken();
-            major->forceType(INTEGER);
-            const Token *minor = consumeToken();
-            minor->forceType(INTEGER);
+            const Token *major = consumeToken(INTEGER);
+            const Token *minor = consumeToken(INTEGER);
 
             const char *majorString = major->value.utf8CString();
             const char *minorString = minor->value.utf8CString();

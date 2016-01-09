@@ -116,13 +116,6 @@ void compilerWarning(const Token *token, const char *err, ...);
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
 
-
-//MARK: Lexer
-
-extern const Token* currentToken;
-extern const Token* consumeToken();
-#define nextToken() (currentToken->nextToken)
-
 void report(const char *packageName);
 
 #endif

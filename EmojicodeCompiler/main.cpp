@@ -38,11 +38,6 @@ char* EmojicodeString::utf8CString() const {
     return utf8str;
 }
 
-const Token* currentToken;
-const Token* consumeToken(){
-    return currentToken = currentToken->nextToken;
-}
-
 static bool outputJSON = false;
 static bool gaveWarning = false;
 

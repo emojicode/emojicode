@@ -187,29 +187,25 @@ Type Type::resolveOn(Type o){
 //MARK: Type Parsing Utility
 
 const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional, EmojicodeChar currentNamespace){
-    const Token *className = consumeToken();
-    if (className->type == VARIABLE) {
-        compilerError(className, "Not in a generic context.");
+    if (nextToken()->type == VARIABLE) {
+        compilerError(consumeToken(), "Not in a generic context.");
     }
-    className->forceType(IDENTIFIER);
+    auto *className = consumeToken(IDENTIFIER);
     
     if(className->value[0] == E_CANDY){
         *optional = true;
         
-        className = consumeToken();
-        className->forceType(IDENTIFIER);
+        className = consumeToken(IDENTIFIER);
     }
     else {
         *optional = false;
     }
     
     if(className->value[0] == E_ORANGE_TRIANGLE){
-        const Token *nsToken = consumeToken();
-        nsToken->forceType(IDENTIFIER);
+        const Token *nsToken = consumeToken(IDENTIFIER);
         *enamespace = nsToken->value[0];
         
-        className = consumeToken();
-        className->forceType(IDENTIFIER);
+        className = consumeToken(IDENTIFIER);
     }
     else {
         *enamespace = currentNamespace;
@@ -236,7 +232,6 @@ Type Type::parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeD
             optional = true;
         }
 
-        
         auto it = contextType.eclass->ownGenericArgumentVariables.find(variableToken->value);
         if (it != contextType.eclass->ownGenericArgumentVariables.end()){
             Type type = it->second;
@@ -282,8 +277,8 @@ Type Type::parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeD
             t.genericArguments[0] = parseAndFetchType(contextType, theNamespace, dynamism, nullptr);
         }
         
-        const Token *token = consumeToken();
-        if (token->type != IDENTIFIER || token->value[0] != E_WATERMELON) {
+        const Token *token = consumeToken(IDENTIFIER);
+        if (token->value[0] != E_WATERMELON) {
             compilerError(token, "Expected 🍉.");
         }
         
