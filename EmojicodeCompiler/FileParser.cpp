@@ -43,13 +43,26 @@ void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace){
  * Use this function to determine if the user has choosen a bad method/initializer name. It puts a warning if a reserved name is used.
  * @param place The place in code (like "method")
  */
-void reservedEmojisWarning(const Token *token, const char *place){
+void reservedEmojis(const Token *token, const char *place){
     EmojicodeChar name = token->value[0];
     switch (name) {
         case E_CUSTARD:
+        case E_DOUGHNUT:
         case E_SHORTCAKE:
         case E_CHOCOLATE_BAR:
         case E_COOKING:
+        case E_COOKIE:
+        case E_LOLLIPOP:
+        case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS:
+        case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY:
+        case E_RED_APPLE:
+        case E_BEER_MUG:
+        case E_CLINKING_BEER_MUGS:
+        case E_LEMON:
+        case E_GRAPES:
+        case E_STRAWBERRY:
+        case E_BLACK_SQUARE_BUTTON:
+        case E_LARGE_BLUE_DIAMOND:
         case E_DOG:
         case E_HIGH_VOLTAGE_SIGN:
         case E_CLOUD:
@@ -59,7 +72,7 @@ void reservedEmojisWarning(const Token *token, const char *place){
         case E_ICE_CREAM:
         case E_TANGERINE: {
             ecCharToCharStack(name, nameString);
-            compilerWarning(token, "Avoid using %s as %s name.", nameString, place);
+            compilerError(token, "%s is reserved and cannot be used as %s name.", nameString, place);
         }
     }
 }
@@ -194,7 +207,6 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
         compilerError(token, "Expected 🍇 but found %s instead.", s);
     }
     while (token = consumeToken(), !(token->type == IDENTIFIER && token->value[0] == E_WATERMELON)) {
-        
         const Token *documentationToken = nullptr;
         if (token->type == DOCUMENTATION_COMMENT) {
             documentationToken = token;
@@ -255,8 +267,6 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 methodName->forceType(IDENTIFIER);
                 
                 if(staticOnType){
-                    reservedEmojisWarning(methodName, "class method");
-                    
                     auto *classMethod = new ClassMethod(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken);
                     classMethod->parseArgumentList(eclass, theNamespace);
                     classMethod->parseReturnType(eclass, theNamespace);
@@ -280,7 +290,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                     eclass->addClassMethod(classMethod);
                 }
                 else {
-                    reservedEmojisWarning(methodName, "method");
+                    reservedEmojis(methodName, "method");
                     
                     auto *method = new Method(methodName->value[0], accessLevel, final, eclass, theNamespace, token, override, documentationToken);
                     method->parseArgumentList(eclass, theNamespace);
@@ -299,8 +309,6 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 const Token *initializerName = consumeToken();
                 initializerName->forceType(IDENTIFIER);
                 EmojicodeChar name = initializerName->value[0];
-                
-                reservedEmojisWarning(initializerName, "initializer");
                 
                 Initializer *initializer = new Initializer(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken, required, canReturnNothingness);
                 
@@ -336,7 +344,6 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
     const Token *classNameToken = Type::parseTypeName(&className, &enamespace, &optional, theNamespace);
     
     checkTypeValidity(className, enamespace, optional, theToken);
-    reservedEmojisWarning(classNameToken, "class");
     
     //Create the eclass
     Class *eclass = new Class;
