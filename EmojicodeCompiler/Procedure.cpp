@@ -20,7 +20,7 @@ void Callable::parseArgumentList(Type ct, EmojicodeChar enamespace){
         const Token *variableToken = consumeToken();
         variableToken->forceType(VARIABLE);
         
-        auto type = Type::parseAndFetchType(ct, enamespace, AllowGenericTypeVariables, NULL);
+        auto type = Type::parseAndFetchType(ct, enamespace, AllowGenericTypeVariables, nullptr);
         
         arguments.push_back(Variable(Variable(variableToken, type)));
     }
@@ -33,7 +33,7 @@ void Callable::parseArgumentList(Type ct, EmojicodeChar enamespace){
 void Callable::parseReturnType(Type ct, EmojicodeChar theNamespace){
     if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
         consumeToken();
-        returnType = Type::parseAndFetchType(ct, theNamespace, AllowGenericTypeVariables, NULL);
+        returnType = Type::parseAndFetchType(ct, theNamespace, AllowGenericTypeVariables, nullptr);
     }
 }
 
@@ -52,6 +52,50 @@ Type Closure::type() {
 
 //MARK: Procedure
 
+static const Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep){
+    const Token *token = consumeToken();
+    
+    if (token->type != IDENTIFIER) {
+        return token;
+    }
+    
+    if(token->value[0] == deeper){
+        (*deep)++;
+    }
+    else if(token->value[0] == end){
+        if (*deep == 0){
+            return nullptr;
+        }
+        (*deep)--;
+    }
+    
+    return token;
+}
+
+void Procedure::parseBody(bool allowNative){
+    if(nextToken()->value[0] == E_RADIO){
+        const Token *t = consumeToken();
+        if(!allowNative){
+            compilerError(t, "Native code is not allowed in this context.");
+        }
+        native = true;
+        return;
+    }
+    
+    const Token *token = consumeToken();
+    
+    token->forceType(IDENTIFIER);
+    if (token->value[0] != E_GRAPES){
+        ecCharToCharStack(token->value[0], c);
+        compilerError(token, "Expected 🍇 but found %s instead.", c);
+    }
+    
+    firstToken = currentToken;
+    
+    int d = 0;
+    while ((token = until(E_WATERMELON, E_GRAPES, &d)) != nullptr);
+}
+
 void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type contextType){
     if(superProcedure->final){
         ecCharToCharStack(this->name, mn);
@@ -62,10 +106,6 @@ void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type co
         auto supername = superProcedure->returnType.toString(contextType, true);
         auto thisname = this->returnType.toString(contextType, true);
         compilerError(this->dToken, "Return type %s of %s is not compatible with the return type %s of its %s.", thisname.c_str(), mn, supername.c_str(), on);
-    }
-    if (this->arguments.size() > 0) {
-        ecCharToCharStack(this->name, mn);
-        compilerError(this->dToken, "%s expects arguments but its %s doesn't.", mn, on);
     }
     if(superProcedure->arguments.size() != this->arguments.size()){
         ecCharToCharStack(this->name, mn);

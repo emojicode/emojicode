@@ -12,6 +12,8 @@
 #include "Writer.hpp"
 #include "Lexer.hpp"
 #include "CompilerScope.hpp"
+#include "Class.hpp"
+#include "utf8.h"
 #include <string.h>
 
 void analyzeClass(Type classType, Writer &writer){
@@ -29,7 +31,7 @@ void analyzeClass(Type classType, Writer &writer){
     
     //Get the ID offset for this eclass by summing up all superclasses instance variable counts
     uint16_t offset = 0;
-    for(Class *aClass = eclass->superclass; aClass != NULL; aClass = aClass->superclass){
+    for(Class *aClass = eclass->superclass; aClass != nullptr; aClass = aClass->superclass){
         offset += aClass->instanceVariables.size();
     }
     writer.writeUInt16(eclass->instanceVariables.size() + offset);
@@ -73,39 +75,39 @@ void analyzeClass(Type classType, Writer &writer){
         compilerWarning(eclass->classBegin, "Class %s defines %d instances variables but has no initializers.", str.c_str(), eclass->instanceVariables.size());
     }
     
-    writer.writeUInt16(eclass->protocols.size());
+    writer.writeUInt16(eclass->protocols().size());
     
-    if (eclass->protocols.size() > 0) {
+    if (eclass->protocols().size() > 0) {
         auto biggestPlaceholder = writer.writePlaceholder<uint16_t>();
         auto smallestPlaceholder = writer.writePlaceholder<uint16_t>();
 
         uint_fast16_t smallestProtocolIndex = UINT_FAST16_MAX;
         uint_fast16_t biggestProtocolIndex = 0;
         
-        for(auto protocol : eclass->protocols){
+        for (auto protocol : eclass->protocols()) {
             writer.writeUInt16(protocol->index);
             
-            if(protocol->index > biggestProtocolIndex){
+            if (protocol->index > biggestProtocolIndex) {
                 biggestProtocolIndex = protocol->index;
             }
-            if(protocol->index < smallestProtocolIndex){
+            if (protocol->index < smallestProtocolIndex) {
                 smallestProtocolIndex = protocol->index;
             }
             
-            writer.writeUInt16(protocol->methodList.size());
+            writer.writeUInt16(protocol->methods().size());
             
-            for(auto method : protocol->methodList){
+            for (auto method : protocol->methods()) {
                 Method *clm = eclass->getMethod(method->name);
                 
-                if(clm == NULL){
-                    ecCharToCharStack(protocol->name, prs);
-                    ecCharToCharStack(eclass->name, cls);
+                if (clm == nullptr) {
+                    auto className = classType.toString(typeNothingness, true);
+                    auto protocolName = Type(protocol, false).toString(typeNothingness, true);
                     ecCharToCharStack(method->name, ms);
-                    compilerError(eclass->classBegin, "Class %s does not agree to protocol %s: Method %s is missing.", cls, prs, ms);
+                    compilerError(eclass->classBegin, "Class %s does not agree to protocol %s: Method %s is missing.", className.c_str(), protocolName.c_str(), ms);
                 }
                 
                 writer.writeUInt16(clm->vti);
-                clm->checkPromises(method, "protocol definition of the method", classType);
+                clm->checkPromises(method, "protocol definition", classType);
             }
         }
         
@@ -185,13 +187,13 @@ void analyzeClassesAndWrite(FILE *fout){
         pkgCount = 1;
     }
     if(pkgCount > 253){
-        compilerError(NULL, "You exceeded the maximum of 253 packages.");
+        compilerError(nullptr, "You exceeded the maximum of 253 packages.");
     }
     writer.writeByte(pkgCount);
     
     size_t pkgI = 0;
     
-    Package *pkg = NULL;
+    Package *pkg = nullptr;
     Class *eclass;
     for (size_t i = 0; eclass = classes[i], i < classes.size(); i++) {
         if((pkg != eclass->package && pkgCount > 1) || !pkg){ //pkgCount > 1: Ignore the second s

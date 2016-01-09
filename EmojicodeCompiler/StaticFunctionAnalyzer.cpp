@@ -8,10 +8,11 @@
 
 #include "StaticFunctionAnalyzer.hpp"
 #include "CompilerScope.hpp"
-#include "ClassParser.hpp"
+#include "FileParser.hpp"
 #include "Lexer.hpp"
 #include "Type.hpp"
 #include "utf8.h"
+#include "Class.hpp"
 
 std::vector<const Token *> stringPool;
 
@@ -117,7 +118,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token){
         const Token *varName = consumeToken();
         varName->forceType(VARIABLE);
         
-        if(currentScopeWrapper->scope->getLocalVariable(varName) != NULL){
+        if(currentScopeWrapper->scope->getLocalVariable(varName) != nullptr){
             compilerError(token, "Cannot redeclare variable.");
         }
         
@@ -138,7 +139,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token){
 }
 
 Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken) {
-    if (token == NULL) {
+    if (token == nullptr) {
         compilerError(parentToken, "Unexpected end of function body.");
     }
     
@@ -169,7 +170,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
             /* We know token->value only contains ints less than 255 */
             const char *string = token->value.utf8CString();
             
-            EmojicodeInteger l = strtoll(string, NULL, 0);
+            EmojicodeInteger l = strtoll(string, nullptr, 0);
             delete [] string;
             if (llabs(l) > INT32_MAX) {
                 writer.writeCoin(0x14);
@@ -191,7 +192,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
             
             const char *string = token->value.utf8CString();
             
-            double d = strtod(string, NULL);
+            double d = strtod(string, nullptr);
             delete [] string;
             writer.writeDouble(d);
             return typeFloat;
@@ -204,7 +205,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
             uint8_t scopesUp;
             CompilerVariable *cv = getVariable(token, &scopesUp);
             
-            if(cv == NULL){
+            if(cv == nullptr){
                 const char *variableName = token->value.utf8CString();
                 compilerError(token, "Variable \"%s\" not defined.", variableName);
             }
@@ -240,11 +241,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             const Token *varName = consumeToken();
             varName->forceType(VARIABLE);
             
-            if (currentScopeWrapper->scope->getLocalVariable(varName) != NULL) {
+            if (currentScopeWrapper->scope->getLocalVariable(varName) != nullptr) {
                 compilerError(token, "Cannot redeclare variable.");
             }
             
-            Type t = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), NULL);
+            Type t = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), nullptr);
             
             uint8_t id = nextVariableID();
             currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false));
@@ -257,7 +258,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             uint8_t scopesUp;
             CompilerVariable *cv = getVariable(varName, &scopesUp);
-            if(cv == NULL){
+            if(cv == nullptr){
                 //Not declared, declaring as local variable
                 
                 writer.writeCoin(0x1B);
@@ -287,7 +288,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             const Token *varName = consumeToken();
             varName->forceType(VARIABLE);
             
-            if(currentScopeWrapper->scope->getLocalVariable(varName) != NULL){
+            if(currentScopeWrapper->scope->getLocalVariable(varName) != nullptr){
                 compilerError(token, "Cannot redeclare variable.");
             }
             
@@ -399,14 +400,14 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             flowControlBlock();
             
-            while ((token = nextToken()) != NULL && token->type == IDENTIFIER && token->value[0] == E_LEMON) {
+            while ((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_LEMON) {
                 writer.writeCoin(consumeToken()->value[0]);
                 
                 parseIfExpression(token);
                 flowControlBlock();
             }
             
-            if((token = nextToken()) != NULL && token->type == IDENTIFIER && token->value[0] == E_STRAWBERRY){
+            if((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_STRAWBERRY){
                 writer.writeCoin(consumeToken()->value[0]);
                 flowControlBlock();
             }
@@ -430,7 +431,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             const Token *variableToken = consumeToken();
             variableToken->forceType(VARIABLE);
             
-            if (currentScopeWrapper->scope->getLocalVariable(variableToken) != NULL) {
+            if (currentScopeWrapper->scope->getLocalVariable(variableToken) != nullptr) {
                 compilerError(variableToken, "Cannot redeclare variable.");
             }
             
@@ -491,7 +492,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_UP_POINTING_RED_TRIANGLE: {
             writer.writeCoin(0x13);
             
-            Type type = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), NULL);
+            Type type = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), nullptr);
             
             if (type.type != TT_ENUM) {
                 compilerError(token, "The given type cannot be accessed.");
@@ -545,7 +546,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Initializer *initializer = type.eclass->getInitializer(consName->value[0]);
             
-            if (initializer == NULL) {
+            if (initializer == nullptr) {
                 auto typeString = type.toString(contextType, true);
                 ecCharToCharStack(consName->value[0], initializerString);
                 compilerError(consName, "%s has no initializer %s.", typeString.c_str(), initializerString);
@@ -610,7 +611,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Initializer *initializer = eclass->superclass->getInitializer(initializerToken->value[0]);
             
-            if (initializer == NULL) {
+            if (initializer == nullptr) {
                 ecCharToCharStack(initializerToken->value[0], initializerString);
                 compilerError(initializerToken, "Cannot find superinitializer %s.", initializerString);
                 break;
@@ -652,7 +653,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             auto placeholder = writer.writeCoinPlaceholder();
             
             Type originalType = parse(consumeToken(), token, typeSomething);
-            Type type = Type::parseAndFetchType(contextType, currentNamespace, NoDynamism, NULL);
+            Type type = Type::parseAndFetchType(contextType, currentNamespace, NoDynamism, nullptr);
             
             if (originalType.compatibleTo(type, contextType)) {
                 compilerWarning(token, "Superfluous cast.");
@@ -722,7 +723,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Method *method = type.eclass->getMethod(methodToken->value[0]);
             
-            if(method == NULL){
+            if(method == nullptr){
                 auto eclass = type.toString(contextType, true);
                 ecCharToCharStack(methodToken->value[0], method);
                 compilerError(token, "%s has no method %s", eclass.c_str(), method);
@@ -744,7 +745,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             const Token *methodToken = consumeToken();
             methodToken->forceType(IDENTIFIER);
             
-            Type type = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), NULL);
+            Type type = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), nullptr);
             
             if (type.optional) {
                 compilerWarning(token, "Please remove useless 🍬.");
@@ -757,7 +758,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             ClassMethod *method = type.eclass->getClassMethod(methodToken->value[0]);
             
-            if (method == NULL) {
+            if (method == nullptr) {
                 auto classString = type.toString(contextType, true);
                 ecCharToCharStack(methodToken->value[0], methodString);
                 compilerError(token, "%s has no eclass method %s", classString.c_str(), methodString);
@@ -808,7 +809,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             function.firstToken = currentToken;
             
-            auto sca = StaticFunctionAnalyzer(function, currentNamespace, NULL, inClassContext, contextType, writer);
+            auto sca = StaticFunctionAnalyzer(function, currentNamespace, nullptr, inClassContext, contextType, writer);
             sca.analyze(true, closingScope);
             
             if (!inClassContext) {
@@ -986,7 +987,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "Unknown primitive method %s for %s.", method, typeString.c_str());
             }
             
-            if(method == NULL){
+            if(method == nullptr){
                 auto eclass = type.toString(contextType, true);
                 ecCharToCharStack(token->value[0], method);
                 compilerError(token, "%s has no method %s.", eclass.c_str(), method);
@@ -1087,7 +1088,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure &procedure, Writ
     auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
     
     auto sca = StaticFunctionAnalyzer(procedure, procedure.enamespace, i, inClassContext, classType, writer);
-    sca.analyze(false, NULL);
+    sca.analyze();
     
     variableCountPlaceholder.write(sca.localVariableCount());
     coinsCountPlaceholder.write();

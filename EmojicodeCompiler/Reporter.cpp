@@ -10,6 +10,7 @@
 #include "utf8.h"
 #include "Lexer.hpp"
 #include "Procedure.hpp"
+#include "Class.hpp"
 #include <string.h>
 
 enum ReturnManner {
@@ -125,9 +126,9 @@ void report(const char *packageName){
         printf("],");
         
         printf("\"conformsTo\": [");
-        for(size_t i = 0; i < eclass->protocols.size(); i++){
-            Protocol *protocol = eclass->protocols[i];
-            reportType(NULL, Type(protocol, false), i + 1 == eclass->protocols.size());
+        for(size_t i = 0; i < eclass->protocols().size(); i++){
+            Protocol *protocol = eclass->protocols()[i];
+            reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size());
         }
         printf("]}");
     }
@@ -185,9 +186,9 @@ void report(const char *packageName){
         reportDocumentation(protocol->documentationToken);
         
         printf("\"methods\": [");
-        for(size_t i = 0; i < protocol->methodList.size(); i++){
-            Method *method = protocol->methodList[i];
-            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methodList.size());
+        for(size_t i = 0; i < protocol->methods().size(); i++){
+            Method *method = protocol->methods()[i];
+            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methods().size());
         }
         printf("]}");
     }

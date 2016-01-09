@@ -37,7 +37,8 @@ struct SourcePosition {
  * A const Token
  * @warning NEVER RELEASE A TOKEN!
  */
-struct Token {
+class Token {
+public:
     Token() {}
     Token(Token *prevToken) {
         if(prevToken)
@@ -46,7 +47,7 @@ struct Token {
     TokenType type = NO_TYPE;
     EmojicodeString value;
     SourcePosition position;
-    struct Token *nextToken = NULL;
+    struct Token *nextToken = nullptr;
     
     /** Returns a string describing the token */
     const char* stringName() const;

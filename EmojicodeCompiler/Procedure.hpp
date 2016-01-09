@@ -9,7 +9,6 @@
 #ifndef Procedure_h
 #define Procedure_h
 
-#include "utf8.h"
 #include "Writer.hpp"
 
 typedef std::vector<Variable> Arguments;
@@ -53,57 +52,51 @@ class Procedure: public Callable {
 public:
     Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
               EmojicodeChar theNamespace, const Token *dToken, bool overriding, const Token *documentationToken) :
-    Callable(dToken),
-    name(name), access(level), eclass(eclass), enamespace(theNamespace), overriding(overriding), documentationToken(documentationToken) {}
+    Callable(dToken), name(name), access(level), eclass(eclass), enamespace(theNamespace), overriding(overriding), documentationToken(documentationToken) {}
     
     /** The procedure name. A Unicode code point for an emoji */
     EmojicodeChar name;
     
-    /** Whether the method is native */
+    /** Whether the method is native. */
     bool native = false;
-    
     bool final = false;
     bool overriding = false;
     
     AccessLevel access;
     
-    /** Class which defined this Procedure */
+    /** Class which defined this procedure. This can be @c nullptr if the procedure belongs to a protocol. */
     Class *eclass;
     
     const Token *documentationToken;
     
     uint16_t vti;
     
+    /** The namespace in which the procedure was defined. This does not necessarily match the class’s namespace. */
     EmojicodeChar enamespace;
     
-    template <typename T>
-    void duplicateDeclarationCheck(std::map<EmojicodeChar, T> dict) {
-        if (dict.count(name)) {
-            ecCharToCharStack(name, nameString);
-            compilerError(dToken, "%s %s is declared twice.", on, nameString);
-        }
-    }
     /**
-     * Check whether this procedure is breaking promises.
+     * Check whether this procedure is breaking promises of @c superProcedure.
      */
     void checkPromises(Procedure *superProcedure, const char *on, Type contextType);
     
     void checkOverride(Procedure *superProcedure);
     
+    void parseBody(bool allowNative);
+    
     virtual Type type();
-private:
+    
     const char *on;
 };
 
 class Method: public Procedure {
     using Procedure::Procedure;
-    
+public:
     const char *on = "Method";
 };
 
 class ClassMethod: public Procedure {
     using Procedure::Procedure;
-    
+public:
     const char *on = "Class Method";
 };
 

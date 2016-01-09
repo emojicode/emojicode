@@ -17,11 +17,11 @@ extern std::vector<const Token *> stringPool;
 
 class StaticFunctionAnalyzer {
 public:
-    static void writeAndAnalyzeProcedure(Procedure &procedure, Writer &writer, Type classType, bool inClassContext = false, Initializer *i = NULL);
+    static void writeAndAnalyzeProcedure(Procedure &procedure, Writer &writer, Type classType, bool inClassContext = false, Initializer *i = nullptr);
     StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, Type contextType, Writer &writer);
     
     /** Performs the analyziation. */
-    void analyze(bool compileDeadCode, Scope *copyScope);
+    void analyze(bool compileDeadCode = false, Scope *copyScope = nullptr);
     /** Whether self was used in the callable body. */
     bool usedSelfInBody() { return usedSelf; };
     /** The number of local variables created in the function. */
@@ -32,8 +32,8 @@ private:
     /** The writer used for writing the byte code. */
     Writer &writer;
     
-    /** This points to the Initializer if we are analyzing an initializer. Set to @c NULL in an initializer. */
-    Initializer *initializer = NULL;
+    /** This points to the Initializer if we are analyzing an initializer. Set to @c nullptr in an initializer. */
+    Initializer *initializer = nullptr;
     /** The flow control depth. */
     int flowControlDepth = 0;
     /** Counts the local varaibles and provides the next ID for a variable. */
@@ -55,13 +55,13 @@ private:
     
     /**
      * Safely trys to parse the given token, evaluate the associated command and returns the type of that command.
-     * @param token The token to evaluate. Can be @c NULL which leads to a compiler error.
+     * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
      */
     Type parse(const Token *token, const Token *parentToken);
     
     /**
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
-     * @param token The token to evaluate. Can be @c NULL which leads to a compiler error.
+     * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
      */
     Type parse(const Token *token, const Token *parentToken, Type type);
     

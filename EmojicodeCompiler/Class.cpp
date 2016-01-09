@@ -7,17 +7,20 @@
 //
 
 #include "EmojicodeCompiler.hpp"
+#include "Class.hpp"
+#include "Procedure.hpp"
+#include "utf8.h"
 
 Class* getClass(EmojicodeChar name, EmojicodeChar enamespace){
     std::array<EmojicodeChar, 2> ns = {enamespace, name};
     auto it = classesRegister.find(ns);
-    return it != classesRegister.end() ? it->second : NULL;
+    return it != classesRegister.end() ? it->second : nullptr;
 }
 
 bool Class::conformsTo(Protocol *to){
-    for(Class *a = this->superclass; a != NULL; a = a->superclass){
-        for(size_t i = 0; i < this->protocols.size(); i++){
-            if(a->protocols[i] == to) {
+    for(Class *a = this; a != nullptr; a = a->superclass){
+        for(size_t i = 0; i < this->protocols_.size(); i++){
+            if(a->protocols_[i] == to) {
                 return true;
             }
         }
@@ -26,7 +29,7 @@ bool Class::conformsTo(Protocol *to){
 }
 
 bool Class::inheritsFrom(Class *from){
-    for(Class *a = this; a != NULL; a = a->superclass){
+    for(Class *a = this; a != nullptr; a = a->superclass){
         if(a == from) {
             return true;
         }
@@ -35,7 +38,7 @@ bool Class::inheritsFrom(Class *from){
 }
 
 Initializer* Class::getInitializer(EmojicodeChar name){
-    for(auto eclass = this; eclass != NULL; eclass = eclass->superclass){
+    for(auto eclass = this; eclass != nullptr; eclass = eclass->superclass){
         auto pos = eclass->initializers.find(name);
         if(pos != eclass->initializers.end()){
             return pos->second;
@@ -44,45 +47,77 @@ Initializer* Class::getInitializer(EmojicodeChar name){
             break;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 Method* Class::getMethod(EmojicodeChar name){
-    for(auto eclass = this; eclass != NULL; eclass = eclass->superclass){
+    for(auto eclass = this; eclass != nullptr; eclass = eclass->superclass){
         auto pos = eclass->methods.find(name);
         if(pos != eclass->methods.end()){
             return pos->second;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 ClassMethod* Class::getClassMethod(EmojicodeChar name){
-    for(auto eclass = this; eclass != NULL; eclass = eclass->superclass){
+    for(auto eclass = this; eclass != nullptr; eclass = eclass->superclass){
         auto pos = eclass->classMethods.find(name);
         if(pos != eclass->classMethods.end()){
             return pos->second;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
-void addProtocol(Class *c, Protocol *protocol){
-    c->protocols.push_back(protocol);
+template <typename T>
+void duplicateDeclarationCheck(T p, std::map<EmojicodeChar, T> dict, const Token *errorToken) {
+    if (dict.count(p->name)) {
+        ecCharToCharStack(p->name, nameString);
+        compilerError(errorToken, "%s %s is declared twice.", p->on, nameString);
+    }
 }
 
+void Class::addClassMethod(ClassMethod *method){
+    duplicateDeclarationCheck(method, classMethods, method->dToken);
+    classMethods[method->name] = method;
+    classMethodList.push_back(method);
+}
+
+void Class::addMethod(Method *method){
+    duplicateDeclarationCheck(method, methods, method->dToken);
+    methods[method->name] = method;
+    methodList.push_back(method);
+}
+
+void Class::addInitializer(Initializer *init){
+    duplicateDeclarationCheck(init, initializers, init->dToken);
+    initializers[init->name] = init;
+    initializerList.push_back(init);
+}
+
+void Class::addProtocol(Protocol *protocol){
+    protocols_.push_back(protocol);
+}
 
 //MARK: Protocol
 
 Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace){
     std::array<EmojicodeChar, 2> ns = {enamespace, name};
     auto it = protocolsRegister.find(ns);
-    return it != protocolsRegister.end() ? it->second : NULL;
+    return it != protocolsRegister.end() ? it->second : nullptr;
 }
 
 Method* Protocol::getMethod(EmojicodeChar name){
-    auto it = methods.find(name);
-    return it != methods.end() ? it->second : NULL;
+    auto it = methods_.find(name);
+    return it != methods_.end() ? it->second : nullptr;
+}
+
+void Protocol::addMethod(Method *method){
+    duplicateDeclarationCheck(method, methods_, method->dToken);
+    method->vti = methodList_.size();
+    methods_[method->name] = method;
+    methodList_.push_back(method);
 }
 
 //MARK: Enum
@@ -90,7 +125,7 @@ Method* Protocol::getMethod(EmojicodeChar name){
 Enum* getEnum(EmojicodeChar name, EmojicodeChar enamespace){
     std::array<EmojicodeChar, 2> ns = {enamespace, name};
     auto it = enumsRegister.find(ns);
-    return it != enumsRegister.end() ? it->second : NULL;
+    return it != enumsRegister.end() ? it->second : nullptr;
 }
 
 std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeChar c) const {

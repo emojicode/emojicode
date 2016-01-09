@@ -9,6 +9,7 @@
 #include "EmojicodeCompiler.hpp"
 #include "utf8.h"
 #include "Lexer.hpp"
+#include "Class.hpp"
 #include <string.h>
 
 //MARK: Globals
@@ -273,12 +274,12 @@ Type Type::parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeD
         
         while (!(nextToken()->type == IDENTIFIER && (nextToken()->value[0] == E_WATERMELON || nextToken()->value[0] == E_RIGHTWARDS_ARROW))) {
             t.arguments++;
-            t.genericArguments.push_back(parseAndFetchType(contextType, theNamespace, dynamism, NULL));
+            t.genericArguments.push_back(parseAndFetchType(contextType, theNamespace, dynamism, nullptr));
         }
         
         if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
             consumeToken();
-            t.genericArguments[0] = parseAndFetchType(contextType, theNamespace, dynamism, NULL);
+            t.genericArguments[0] = parseAndFetchType(contextType, theNamespace, dynamism, nullptr);
         }
         
         const Token *token = consumeToken();
@@ -327,7 +328,7 @@ void Type::parseGenericArguments(Type contextType, EmojicodeChar theNamespace, T
             while(nextToken()->value[0] == E_SPIRAL_SHELL){
                 const Token *token = consumeToken();
                 
-                Type ta = parseAndFetchType(contextType, theNamespace, dynamism, NULL);
+                Type ta = parseAndFetchType(contextType, theNamespace, dynamism, nullptr);
                 validateGenericArgument(ta, count, contextType, token);
                 genericArguments.push_back(ta);
                 

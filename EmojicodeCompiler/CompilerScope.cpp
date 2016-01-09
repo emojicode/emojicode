@@ -51,7 +51,7 @@ void Scope::setLocalVariable(EmojicodeString string, CompilerVariable *value){
 
 CompilerVariable* Scope::getLocalVariable(const Token *variable){
     auto it = map.find(variable->value);
-    return it == map.end() ? NULL : it->second;
+    return it == map.end() ? nullptr : it->second;
 }
 
 /** Emits @c errorMessage if not all instance variable were initialized. @c errorMessage should include @c %s for the name of the variable. */
@@ -90,8 +90,8 @@ void pushScope(Scope *scope){
 
 void setVariable(const Token *variable, CompilerVariable *value){
     //Search all scopes up
-    for (ScopeWrapper *scopeWrapper = currentScopeWrapper; scopeWrapper != NULL; scopeWrapper = scopeWrapper->topScope) {
-        if(scopeWrapper->scope->getLocalVariable(variable) != NULL){
+    for (ScopeWrapper *scopeWrapper = currentScopeWrapper; scopeWrapper != nullptr; scopeWrapper = scopeWrapper->topScope) {
+        if(scopeWrapper->scope->getLocalVariable(variable) != nullptr){
             scopeWrapper->scope->setLocalVariable(variable, value);
             return;
         }
@@ -108,8 +108,8 @@ CompilerVariable* getVariable(const Token *variable, uint8_t *scopesUp){
     
     CompilerVariable *value;
     ScopeWrapper *scopeWrapper = currentScopeWrapper;
-    for (; scopeWrapper != NULL; scopeWrapper = scopeWrapper->topScope, (*scopesUp)++) {
-        if((value = scopeWrapper->scope->getLocalVariable(variable)) != NULL){
+    for (; scopeWrapper != nullptr; scopeWrapper = scopeWrapper->topScope, (*scopesUp)++) {
+        if((value = scopeWrapper->scope->getLocalVariable(variable)) != nullptr){
             return value;
         }
         if (scopeWrapper->scope->stop) {
@@ -117,7 +117,7 @@ CompilerVariable* getVariable(const Token *variable, uint8_t *scopesUp){
         }
     }
     
-    return NULL;
+    return nullptr;
 }
 
 

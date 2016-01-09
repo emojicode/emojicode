@@ -12,8 +12,9 @@
 #include "Lexer.hpp"
 #include "utf8.h"
 #include "EmojicodeCompiler.hpp"
-#include "ClassParser.hpp"
+#include "FileParser.hpp"
 #include "StaticAnalyzer.hpp"
+#include "Class.hpp"
 
 StartingFlag startingFlag;
 bool foundStartingFlag;
@@ -164,7 +165,7 @@ void loadStandard(){
 }
 
 int main(int argc, char * argv[]) {
-    const char *reportPackage = NULL;
+    const char *reportPackage = nullptr;
     std::string outPath;
     
     //Parse options
@@ -199,7 +200,7 @@ int main(int argc, char * argv[]) {
     }
     
     if(argc == 0){
-        compilerWarning(NULL, "No input files provided.");
+        compilerWarning(nullptr, "No input files provided.");
         return 1;
     }
     
@@ -221,13 +222,13 @@ int main(int argc, char * argv[]) {
     
     FILE *out = fopen(outPath.c_str(), "wb");
     if(!out || ferror(out)){
-        compilerError(NULL, "Couldn't write output file.");
+        compilerError(nullptr, "Couldn't write output file.");
         return 1;
     }
     
     //If we did not find a mouse method the programm has no start point
     if (!foundStartingFlag) {
-        compilerError(NULL, "No 🏁 eclass method was found.");
+        compilerError(nullptr, "No 🏁 eclass method was found.");
     }
     
     //Now let us anaylze these classes and write them
