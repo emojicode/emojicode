@@ -60,10 +60,10 @@ public:
     EmojicodeChar name;
     
     /** Whether the method is native */
-    bool native : 1;
+    bool native = false;
     
-    bool final : 1;
-    bool overriding : 1;
+    bool final = false;
+    bool overriding = false;
     
     AccessLevel access;
     

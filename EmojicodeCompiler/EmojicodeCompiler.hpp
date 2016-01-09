@@ -102,9 +102,9 @@ public:
     uint16_t nextInitializerVti;
     
     /** The number of generic arguments including those from a super eclass. */
-    uint16_t genericArgumentCount;
+    uint16_t genericArgumentCount = 0;
     /** The number of generic arguments this eclass takes. */
-    uint16_t ownGenericArgumentCount;
+    uint16_t ownGenericArgumentCount = 0;
     /** The types for the generic arguments. */
     std::vector<Type> genericArgumentContraints;
     /** The arguments for the classes from which this eclass inherits. */
@@ -211,7 +211,7 @@ extern std::vector<Package *> packages;
  * Issues a compiler error and exits the compiler.
  * @param token Used to determine the error location. If @c NULL the error origin is the beginning of the document.
  */
-_Noreturn void compilerError(const Token *token, const char *err, ...);
+[[noreturn]] void compilerError(const Token *token, const char *err, ...);
 
 /**
  * Issues a compiler warning. The compilation is continued afterwards.

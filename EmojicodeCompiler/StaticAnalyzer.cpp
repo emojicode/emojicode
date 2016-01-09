@@ -12,6 +12,7 @@
 #include "Writer.hpp"
 #include "Lexer.hpp"
 #include "CompilerScope.hpp"
+#include <string.h>
 
 void analyzeClass(Type classType, Writer &writer){
     auto eclass = classType.eclass;
@@ -223,7 +224,7 @@ void analyzeClassesAndWrite(FILE *fout){
         writer.writeUInt16(token->value.size());
         
         for (auto c : token->value) {
-            writer.writeUInt16(c);
+            writer.writeEmojicodeChar(c);
         }
     }
     

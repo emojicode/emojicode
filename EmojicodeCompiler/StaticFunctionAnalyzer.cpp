@@ -234,7 +234,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         //We need a chance to test whether the red apple’s return is used
         effect = true;
     }
-    
+
     switch (token->value[0]) {
         case E_SHORTCAKE: {
             const Token *varName = consumeToken();
@@ -806,6 +806,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 pushScope(currentScopeWrapper->topScope->scope);
             }
             
+            function.firstToken = currentToken;
+            
             auto sca = StaticFunctionAnalyzer(function, currentNamespace, NULL, inClassContext, contextType, writer);
             sca.analyze(true, closingScope);
             
@@ -838,7 +840,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_CHIPMUNK: {
             const Token *nameToken = consumeToken();
             
-            if (!inClassContext) {
+            if (inClassContext) {
                 compilerError(token, "Not within an object-context.");
             }
             
@@ -1084,7 +1086,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure &procedure, Writ
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
     auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
     
-    auto sca = StaticFunctionAnalyzer(procedure, procedure.enamespace, NULL, inClassContext, classType, writer);
+    auto sca = StaticFunctionAnalyzer(procedure, procedure.enamespace, i, inClassContext, classType, writer);
     sca.analyze(false, NULL);
     
     variableCountPlaceholder.write(sca.localVariableCount());

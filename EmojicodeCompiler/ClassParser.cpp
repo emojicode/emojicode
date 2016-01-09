@@ -402,7 +402,6 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
     eclass->enamespace = enamespace;
     eclass->classBegin = theToken;
     eclass->package = pkg;
-    eclass->ownGenericArgumentCount = 0;
     eclass->documentationToken = documentationToken;
     
     while (nextToken()->value[0] == E_SPIRAL_SHELL) {
@@ -411,7 +410,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
         const Token *variable = consumeToken();
         variable->forceType(VARIABLE);
         
-        Type t = Type::parseAndFetchType(eclass, theNamespace, AllowGenericTypeVariables, NULL);
+        Type t = Type::parseAndFetchType(eclass, theNamespace, NoDynamism, NULL);
         eclass->genericArgumentContraints.push_back(t);
         
         Type rType(TT_REFERENCE, false);
@@ -492,7 +491,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
         return;
     }
     
-    char *dot = strrchr(path, '.');
+    const char *dot = strrchr(path, '.');
     if (!dot || strcmp(dot, ".emojic")){
         compilerError(NULL, "Emojicode files must be suffixed with .emojic: %s", path);
     }

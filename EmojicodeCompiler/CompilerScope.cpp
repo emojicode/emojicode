@@ -35,6 +35,12 @@ void Scope::changeInitializedBy(int c) {
     }
 }
 
+Scope::~Scope() {
+    for (auto it : map) {
+        delete it.second;
+    }
+}
+
 void Scope::setLocalVariable(const Token *variable, CompilerVariable *value){
     map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(variable->value, value));
 }
@@ -71,7 +77,7 @@ Scope* popScope(){
     ScopeWrapper *sw = currentScopeWrapper;
     currentScopeWrapper = currentScopeWrapper->topScope;
     Scope *s = sw->scope;
-    free(sw);
+    delete sw;
     return s;
 }
 

@@ -37,6 +37,7 @@ public:
 struct Scope {
 public:
     Scope(bool stop) : stop(stop) {};
+    ~Scope();
     void changeInitializedBy(int c);
     
     /**
