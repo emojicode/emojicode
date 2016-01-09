@@ -6,9 +6,10 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.h"
+#include "EmojicodeCompiler.hpp"
 #include "utf8.h"
-#include "Lexer.h"
+#include "Lexer.hpp"
+#include "Class.hpp"
 #include <string.h>
 
 //MARK: Globals
@@ -123,7 +124,7 @@ bool Type::compatibleTo(Type to, Type contextType){
     return false;
 }
 
-Type fetchRawType(EmojicodeChar name, EmojicodeChar enamespace, bool optional, Token *token, bool *existent){
+Type Type::fetchRawType(EmojicodeChar name, EmojicodeChar enamespace, bool optional, const Token *token, bool *existent){
     *existent = true;
     if(enamespace == globalNamespace){
         switch (name) {
@@ -185,8 +186,8 @@ Type Type::resolveOn(Type o){
 
 //MARK: Type Parsing Utility
 
-Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional, EmojicodeChar currentNamespace){
-    Token *className = consumeToken();
+const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional, EmojicodeChar currentNamespace){
+    const Token *className = consumeToken();
     if (className->type == VARIABLE) {
         compilerError(className, "Not in a generic context.");
     }
@@ -203,7 +204,7 @@ Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *o
     }
     
     if(className->value[0] == E_ORANGE_TRIANGLE){
-        Token *nsToken = consumeToken();
+        const Token *nsToken = consumeToken();
         nsToken->forceType(IDENTIFIER);
         *enamespace = nsToken->value[0];
         
@@ -219,10 +220,7 @@ Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *o
     return className;
 }
 
-/**
- * Parses and fetches a type including generic type variables.
- */
-Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType){
+Type Type::parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType){
     if (dynamicType) {
         *dynamicType = false;
     }
@@ -232,7 +230,7 @@ Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamis
         }
         
         bool optional = false;
-        Token *variableToken = consumeToken();
+        const Token *variableToken = consumeToken();
         if (variableToken->value[0] == E_CANDY) {
             variableToken = consumeToken();
             optional = true;
@@ -250,7 +248,7 @@ Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamis
         }
     }
     else if (nextToken()->value[0] == E_RAT) {
-        Token *token = consumeToken();
+        const Token *token = consumeToken();
         
         if(!(dynamism & AllowDynamicClassType)){
             compilerError(token, "🐀 not allowed here.");
@@ -276,15 +274,15 @@ Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamis
         
         while (!(nextToken()->type == IDENTIFIER && (nextToken()->value[0] == E_WATERMELON || nextToken()->value[0] == E_RIGHTWARDS_ARROW))) {
             t.arguments++;
-            t.genericArguments.push_back(parseAndFetchType(contextType, theNamespace, dynamism, NULL));
+            t.genericArguments.push_back(parseAndFetchType(contextType, theNamespace, dynamism, nullptr));
         }
         
         if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
             consumeToken();
-            t.genericArguments[0] = parseAndFetchType(contextType, theNamespace, dynamism, NULL);
+            t.genericArguments[0] = parseAndFetchType(contextType, theNamespace, dynamism, nullptr);
         }
         
-        Token *token = consumeToken();
+        const Token *token = consumeToken();
         if (token->type != IDENTIFIER || token->value[0] != E_WATERMELON) {
             compilerError(token, "Expected 🍉.");
         }
@@ -294,7 +292,7 @@ Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamis
     else {
         EmojicodeChar typeName, typeNamespace;
         bool optional, existent;
-        Token *token = parseTypeName(&typeName, &typeNamespace, &optional, theNamespace);
+        const Token *token = parseTypeName(&typeName, &typeNamespace, &optional, theNamespace);
         
         Type type = fetchRawType(typeName, typeNamespace, optional, token, &existent);
         
@@ -310,7 +308,7 @@ Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamis
     }
 }
 
-void Type::validateGenericArgument(Type ta, uint16_t i, Type contextType, Token *token){
+void Type::validateGenericArgument(Type ta, uint16_t i, Type contextType, const Token *token){
     if (this->type != TT_CLASS) {
         compilerError(token, "The compiler encountered an internal inconsistency related to generics.");
     }
@@ -322,15 +320,15 @@ void Type::validateGenericArgument(Type ta, uint16_t i, Type contextType, Token 
     }
 }
 
-void Type::parseGenericArguments(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, Token *errorToken) {
+void Type::parseGenericArguments(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, const Token *errorToken) {
     if (this->type == TT_CLASS) {
         this->genericArguments = std::vector<Type>(this->eclass->superGenericArguments);
         if (this->eclass->ownGenericArgumentCount){
             int count = 0;
             while(nextToken()->value[0] == E_SPIRAL_SHELL){
-                Token *token = consumeToken();
+                const Token *token = consumeToken();
                 
-                Type ta = parseAndFetchType(contextType, theNamespace, dynamism, NULL);
+                Type ta = parseAndFetchType(contextType, theNamespace, dynamism, nullptr);
                 validateGenericArgument(ta, count, contextType, token);
                 genericArguments.push_back(ta);
                 
@@ -365,7 +363,7 @@ void CommonTypeFinder::addType(Type t, Type contextType){
     }
 }
 
-Type CommonTypeFinder::getCommonType(Token *warningToken){
+Type CommonTypeFinder::getCommonType(const Token *warningToken){
     if(!firstTypeFound){
         compilerWarning(warningToken, "Type is ambigious without more context.");
     }

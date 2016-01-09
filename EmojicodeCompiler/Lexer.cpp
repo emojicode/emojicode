@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.h"
-#include "Lexer.h"
+#include "EmojicodeCompiler.hpp"
+#include "Lexer.hpp"
 #include "utf8.h"
 
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
@@ -58,7 +58,7 @@ void Token::forceType(TokenType type) const {
     }
 }
 
-Token* lex(FILE *f, const char *filename) {
+const Token* lex(FILE *f, const char *filename) {
     EmojicodeChar c;
     size_t line = 1, col = 0, i = 0;
     SourcePosition sourcePosition;
@@ -81,7 +81,7 @@ Token* lex(FILE *f, const char *filename) {
         stringBuffer[length] = 0;
     }
     else {
-        compilerError(NULL, "Cannot allocate buffer for file %s. It is possibly to large.", filename);
+        compilerError(nullptr, "Cannot allocate buffer for file %s. It is possibly to large.", filename);
     }
 
 #define isIdentifier() ((0x1F300 <= c && c <= 0x1F64F) || (0x1F680 <= c && c <= 0x1F6C5) || (0x2600 <= c && c <= 0x27BF) || (0x1F191 <= c && c <= 0x1F19A) || c == 0x231A || (0x1F910 <= c && c <= 0x1F9C0) || (0x2B00 <= c && c <= 0x2BFF) || (0x25A0 <= c && c <= 0x25FF) || (0x2300 <= c && c <= 0x23FF))

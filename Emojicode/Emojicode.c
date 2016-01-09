@@ -623,7 +623,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return NOTHINGNESS;
         }
         case 0x62: { //MARK: If
-            EmojicodeCoin *ifEnd = thread->tokenStream + consumeCoin(thread);
+            EmojicodeCoin length = consumeCoin(thread);
+            EmojicodeCoin *ifEnd = thread->tokenStream + length;
             
             Something boolSth = parse(consumeCoin(thread), thread);
             bool b = unwrapBool(boolSth);

@@ -6,92 +6,63 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Writer.h"
+#include "Writer.hpp"
 #include <math.h>
 
-uint32_t writtenCoins;
-
-void writeUInt16(uint16_t value, FILE *out){
+void Writer::writeUInt16(uint16_t value){
     fputc(value >> 8, out);
     fputc(value, out);
 }
 
-void writeEmojicodeChar(EmojicodeChar c, FILE *out){
+void Writer::writeEmojicodeChar(EmojicodeChar c){
     fputc(c >> 24, out);
     fputc(c >> 16, out);
     fputc(c >> 8, out);
     fputc(c, out);
 }
 
-void writeCoin(EmojicodeCoin value, FILE *out){
+void Writer::writeCoin(EmojicodeCoin value){
     fputc(value >> 24, out);
     fputc(value >> 16, out);
     fputc(value >> 8, out);
     fputc(value, out);
     
     if(++writtenCoins == 4294967295) {
-        compilerError(NULL, "Congratulations, you exceeded the limit of 4294967295 allowed instructions in a method/initializer.");
+        compilerError(nullptr, "Congratulations, you exceeded the limit of 4294967295 allowed instructions in a procedure.");
     }
 }
 
-void writeDouble(double val, FILE *out) {
+void Writer::writeByte(unsigned char c){
+    fputc(c, out);
+}
+
+void Writer::writeBytes(const char *bytes, size_t count){
+    fwrite(bytes, sizeof(char), count, out);
+}
+
+void Writer::writeDouble(double val) {
     int exp = 0;
     double norm = frexp(val, &exp);
     int_least64_t scale = norm*PORTABLE_INTLEAST64_MAX;
     
-    writeCoin(scale >> 32, out);
-    writeCoin((EmojicodeCoin)scale, out);
-    writeCoin(exp, out);
+    writeCoin(scale >> 32);
+    writeCoin((EmojicodeCoin)scale);
+    writeCoin(exp);
 }
 
-off_t writePlaceholderCoin(FILE *out){
+
+WriterPlaceholder<EmojicodeCoin> Writer::writeCoinPlaceholder() {
     off_t position = ftello(out);
-    writeCoin(0, out);
-    return position;
+    writeCoin(0);
+    return WriterPlaceholder<EmojicodeCoin>(*this, position);
 }
 
-void writeCoinAtPlaceholder(off_t placeholderPosition, uint32_t coinsInBlock, FILE *out){
-    off_t oldPosition = ftello(out);
-    fseek(out, placeholderPosition, SEEK_SET);
-    
-    writtenCoins--;
-    writeCoin(coinsInBlock, out);
-    
-    fseek(out, oldPosition, SEEK_SET);
+WriterCoinsCountPlaceholder Writer::writeCoinsCountPlaceholderCoin(){
+    off_t position = ftello(out);
+    writeCoin(0);
+    return WriterCoinsCountPlaceholder(*this, position, writtenCoins);
 }
 
-off_t writeFunctionBlockMetaPlaceholder(FILE *out){
-    off_t countPosition = ftello(out);
-
-    fputc(0, out);
-    writeEmojicodeChar(0, out);
-    
-    return countPosition;
+void WriterCoinsCountPlaceholder::write() {
+    WriterPlaceholder<EmojicodeCoin>::write(writer.writtenCoins - oWrittenCoins);
 }
-
-void writeFunctionBlockMeta(off_t placeholderPosition, uint32_t writtenCoins, uint8_t variableCount, FILE *out){
-    off_t oldPosition = ftello(out);
-    fseek(out, placeholderPosition, SEEK_SET);
-    
-    fputc(variableCount, out);
-    writeEmojicodeChar(writtenCoins, out);
-    
-    fseek(out, oldPosition, SEEK_SET);
-}
-
-bool writeProcedureHeading(Procedure *p, FILE *out, off_t *metaPosition){
-    writeEmojicodeChar(p->name, out);
-    writeUInt16(p->vti, out);
-    fputc((uint8_t)p->arguments.size(), out);
-    
-    if(p->native){
-        fputc(1, out);
-        return true;
-    }
-    fputc(0, out);
-    
-    writtenCoins = 0;
-    *metaPosition = writeFunctionBlockMetaPlaceholder(out);
-    return false;
-}
-

@@ -2,14 +2,19 @@
 require 'fileutils'
 
 cc = 'gcc'
-flags = '-Ofast -iquote . -iquote Emojicode/ -iquote EmojicodeCompiler '\
-        '-std=gnu11 -Wno-unused-result -lm -ldl -g -rdynamic'
+ccpp = 'g++'
+eng_flags = '-Ofast -iquote . -iquote Emojicode/ -iquote EmojicodeCompiler '\
+            '-std=gnu11 -Wno-unused-result -lm -ldl -g '\
+            '-rdynamic'
+comp_flags = '-Ofast -iquote . -iquote Emojicode/ -iquote EmojicodeCompiler '\
+             '-std=c++11 -g'
 pkg_flags = '-O3 -iquote . -std=c11 -Wno-unused-result -shared -fPIC -g'
 
 pkg_flags += ' -undefined dynamic_lookup' if RUBY_PLATFORM.match(/darwin/)
 
-destination = "builds/#{`#{cc} #{flags} -dumpmachine`.strip}"
-FileUtils.mkdir_p destination
+destination = "builds/#{`#{cc} #{eng_flags} -dumpmachine`.strip}"
+object_dst = "#{destination}/o"
+FileUtils.mkdir_p object_dst
 
 task default: :build
 
@@ -30,13 +35,17 @@ task build: [:engine, :compiler, :files_pkg, :SDL_pkg, :sqlite_pkg]
 
 desc 'Builds the engine'
 task :engine do
-  sh "#{cc} Emojicode/*.c -o #{destination}/emojicode #{flags}"
+  sh "#{cc} Emojicode/*.c -o #{destination}/emojicode #{eng_flags}"
 end
 
 desc 'Builds the compiler'
 task :compiler do
-  sh "#{cc} Emojicode/utf8.c EmojicodeCompiler/*.c -o "\
-      "#{destination}/emojicodec #{flags}"
+  sh "#{ccpp} Emojicode/utf8.c EmojicodeCompiler/*.cpp -o "\
+      "#{destination}/emojicodec #{comp_flags}"
+end
+
+task :clean do
+  FileUtils.rm_r 'builds' if File.directory? 'builds'
 end
 
 desc 'Builds a package'
