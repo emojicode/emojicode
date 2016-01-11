@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
 
-if [[ $EUID -ne 0 ]]; then
-  echo "This script must be run as root." 1>&2
-  exit 1
-fi
-
 b=$(tput bold)
 n=$(tput sgr0)
+
+if [[ ! -w "/usr/local/" ]] ; then 
+	tput setaf 5
+	echo "${b}/usr/local/ is not writeable from this user. Carefully try using sudo."
+	tput sgr0
+	exit
+fi
+
+if [[ ! -w "/usr/local/bin" ]] ; then 
+	tput setaf 5
+	echo "${b}/usr/local/bin is not writeable from this user. Carefully try using sudo."
+	tput sgr0
+	exit
+fi
 
 echo "${b}Copying builds to /usr/local/bin/${n}"
 

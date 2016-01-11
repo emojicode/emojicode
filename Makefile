@@ -1,4 +1,4 @@
-VERSION=0.2-RC2
+VERSION = 0.2-RC2
 
 CC = gcc
 CXX = g++
@@ -19,7 +19,7 @@ ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.c)
 ENGINE_OBJECTS = $(ENGINE_SOURCES:%.c=%.o)
 ENGINE_BINARY = emojicode
 
-PACKAGE_CFLAGS = -O3 -iquote . -std=c11 -Wno-unused-result -g
+PACKAGE_CFLAGS = -O3 -iquote . -std=c11 -Wno-unused-result -g -fPIC
 PACKAGE_LDFLAGS = -shared -fPIC
 ifeq ($(shell uname), Darwin)
 PACKAGE_LDFLAGS += -undefined dynamic_lookup
@@ -29,6 +29,8 @@ PACKAGES_DIR=DefaultPackages
 PACKAGES=files SDL sqlite
 
 DIST=builds/Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
+
+.PHONY: builds
 
 all: builds $(COMPILER_BINARY) $(ENGINE_BINARY) $(addsuffix .so,$(PACKAGES)) dist
 
@@ -42,13 +44,17 @@ $(ENGINE_BINARY): $(ENGINE_OBJECTS)
 	$(CC) $(ENGINE_LDFLAGS) $^ -o $(DIST)/$(ENGINE_BINARY)
 
 $(ENGINE_OBJECTS): %.o: %.c
-	$(CC) $(ENGINE_CFLAGS) -c $< -o $@
+	$(CC) $(ENGINE_CFLAGS) -c $< -o $@ 
 
 define package
+PKG_$(1)_LDFLAGS = $$(PACKAGE_LDFLAGS)
+ifeq ($(1), SDL)
+PKG_$(1)_LDFLAGS += -lSDL2
+endif
 PKG_$(1)_SOURCES = $$(wildcard $$(PACKAGES_DIR)/$(1)/*.c)
 PKG_$(1)_OBJECTS = $$(PKG_$(1)_SOURCES:%.c=%.o)
 $(1).so: $$(PKG_$(1)_OBJECTS)
-	$$(CC) $$(PACKAGE_LDFLAGS) $$^ -o $(DIST)/$$@ -iquote $$(<D)
+	$$(CC) $$(PKG_$(1)_LDFLAGS) $$^ -o $(DIST)/$$@ -iquote $$(<D)
 $$(PKG_$(1)_OBJECTS): %.o: %.c
 	$$(CC) $$(PACKAGE_CFLAGS) -c $$< -o $$@
 endef
