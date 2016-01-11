@@ -387,8 +387,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
-					"-Wuninitialized",
 					"-Werror-pointer-arith",
+					"-Wall",
 				);
 			};
 			name = Debug;
@@ -429,8 +429,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
-					"-Wuninitialized",
 					"-Werror-pointer-arith",
+					"-Wall",
 				);
 			};
 			name = Release;

@@ -45,7 +45,7 @@ public:
     TokenType type = NO_TYPE;
     EmojicodeString value;
     SourcePosition position;
-    struct Token *nextToken = nullptr;
+    Token *nextToken = nullptr;
     
     /** Returns a string describing the token */
     const char* stringName() const;

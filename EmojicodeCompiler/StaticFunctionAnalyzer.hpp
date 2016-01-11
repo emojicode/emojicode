@@ -12,6 +12,7 @@
 #include "EmojicodeCompiler.hpp"
 #include "Procedure.hpp"
 #include "Writer.hpp"
+#include "CompilerScope.hpp"
 
 extern std::vector<const Token *> stringPool;
 

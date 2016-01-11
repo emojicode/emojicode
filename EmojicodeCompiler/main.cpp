@@ -165,7 +165,7 @@ int main(int argc, char * argv[]) {
     
     //Parse options
     char ch;
-    while ((ch = getopt(argc, argv, "vrjR:o:")) != EOF) {
+    while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {
         switch (ch) {
             case 'v':
                 puts("Emojicode Compiler 1.0.0alpha1. Emojicode 0.2. Built with 💚 by Theo Weidmann.");

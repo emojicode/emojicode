@@ -393,7 +393,7 @@ void stringAppendEc(EmojicodeChar c, std::string *string){
     string->append(sc);
 }
 
-Type::Type(Class *c, bool o) : optional(o), eclass(c), type(TT_CLASS) {
+Type::Type(Class *c, bool o) : optional(o), type(TT_CLASS), eclass(c) {
     for (int i = 0; i < eclass->genericArgumentCount; i++) {
         genericArguments.push_back(Type(TT_REFERENCE, false, i));
     }
