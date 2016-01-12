@@ -99,14 +99,14 @@ void compilerError(const Token *token, const char *err, ...){
     }
     
     if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %lu, \"character\": %lu, \"file\":", gaveWarning ? ",": "", line, col);
+        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":", gaveWarning ? ",": "", line, col);
         printJSONStringToFile(file, stderr);
         fprintf(stderr, ", \"message\":");
         printJSONStringToFile(error, stderr);
         fprintf(stderr, "}\n]");
     }
     else {
-        fprintf(stderr, "🚨 line %lu column %lu %s: %s\n", line, col, file, error);
+        fprintf(stderr, "🚨 line %zu column %zu %s: %s\n", line, col, file, error);
     }
     
     va_end(list);
@@ -133,14 +133,14 @@ void compilerWarning(const Token *token, const char *err, ...){
     }
     
     if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %lu, \"character\": %lu, \"file\":", gaveWarning ? ",": "", line, col);
+        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":", gaveWarning ? ",": "", line, col);
         printJSONStringToFile(file, stderr);
         fprintf(stderr, ", \"message\":");
         printJSONStringToFile(error, stderr);
         fprintf(stderr, "}\n");
     }
     else {
-        fprintf(stderr, "⚠️ line %lu col %lu %s: %s\n", line, col, file, error);
+        fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", line, col, file, error);
     }
     gaveWarning = true;
     

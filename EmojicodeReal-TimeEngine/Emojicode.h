@@ -9,6 +9,7 @@
 #ifndef __Emojicode__Emojicode__
 #define __Emojicode__Emojicode__
 
+#define _GNU_SOURCE
 #include "EmojicodeAPI.h"
 
 //MARK: Stack
