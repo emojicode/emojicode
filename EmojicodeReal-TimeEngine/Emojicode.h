@@ -55,7 +55,10 @@ Thread *mainThread;
 Byte *currentHeap;
 Byte *otherHeap;
 void allocateHeap(void);
+
+#ifndef heapSize
 #define heapSize (512 * 1000 * 1000) //512 MB
+#endif
 
 /** The class table */
 Class **classTable;
