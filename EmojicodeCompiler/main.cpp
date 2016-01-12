@@ -164,7 +164,7 @@ int main(int argc, char * argv[]) {
     std::string outPath;
     
     //Parse options
-    char ch;
+    signed char ch;
     while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {
         switch (ch) {
             case 'v':
