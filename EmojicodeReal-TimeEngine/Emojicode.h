@@ -9,6 +9,7 @@
 #ifndef __Emojicode__Emojicode__
 #define __Emojicode__Emojicode__
 
+#define _GNU_SOURCE
 #include "EmojicodeAPI.h"
 
 //MARK: Stack
@@ -54,7 +55,10 @@ Thread *mainThread;
 Byte *currentHeap;
 Byte *otherHeap;
 void allocateHeap(void);
+
+#ifndef heapSize
 #define heapSize (512 * 1000 * 1000) //512 MB
+#endif
 
 /** The class table */
 Class **classTable;

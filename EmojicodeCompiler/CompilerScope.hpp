@@ -11,11 +11,9 @@
 
 #include "EmojicodeCompiler.hpp"
 
-extern ScopeWrapper *currentScopeWrapper;
-
 class CompilerVariable {
 public:
-    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen) : type(type), initialized(initd), id(id), frozen(frozen) {};
+    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen) : type(type), id(id), initialized(initd), frozen(frozen) {};
     /** The type of the variable. **/
     Type type;
     /** The ID of the variable. */
@@ -68,9 +66,11 @@ private:
 };
 
 struct ScopeWrapper {
-    struct ScopeWrapper *topScope;
+    ScopeWrapper *topScope;
     Scope *scope;
 };
+
+extern ScopeWrapper *currentScopeWrapper;
 
 /** Pops current scope and returns it. */
 Scope* popScope();

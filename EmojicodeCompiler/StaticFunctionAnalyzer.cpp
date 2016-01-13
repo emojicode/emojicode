@@ -7,7 +7,6 @@
 //
 
 #include "StaticFunctionAnalyzer.hpp"
-#include "CompilerScope.hpp"
 #include "FileParser.hpp"
 #include "Lexer.hpp"
 #include "Type.hpp"
@@ -1010,7 +1009,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
 }
 
 StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, Type contextType, Writer &writer) :
-    callable(callable), contextType(contextType), currentNamespace(ns), writer(writer), initializer(i), inClassContext(inClassContext) {
+    callable(callable), writer(writer), initializer(i), inClassContext(inClassContext), contextType(contextType), currentNamespace(ns) {
     
 }
 

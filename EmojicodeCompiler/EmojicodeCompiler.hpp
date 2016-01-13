@@ -25,8 +25,6 @@ class Initializer;
 class ClassMethod;
 class Protocol;
 class Enum;
-class Scope;
-class ScopeWrapper;
 class Token;
 
 #include "Type.hpp"

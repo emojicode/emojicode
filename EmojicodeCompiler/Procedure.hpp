@@ -52,7 +52,7 @@ class Procedure: public Callable {
 public:
     Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
               EmojicodeChar theNamespace, const Token *dToken, bool overriding, const Token *documentationToken) :
-    Callable(dToken), name(name), access(level), eclass(eclass), enamespace(theNamespace), overriding(overriding), documentationToken(documentationToken) {}
+    Callable(dToken), name(name),  overriding(overriding), access(level), eclass(eclass), documentationToken(documentationToken), enamespace(theNamespace) {}
     
     /** The procedure name. A Unicode code point for an emoji */
     EmojicodeChar name;

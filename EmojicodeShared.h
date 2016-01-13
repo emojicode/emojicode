@@ -10,7 +10,6 @@
 #define Emojicode_EmojicodeSharedTypes_h
 
 #include <stdlib.h>
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>

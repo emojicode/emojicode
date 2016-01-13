@@ -56,8 +56,8 @@ public:
     Type(TypeType t, bool o, uint16_t r) : optional(o), type(t), reference(r) {}
     Type(Class *c, bool o);
     Type(Class *c) : Type(c, false) {};
-    Type(Protocol *p, bool o) : optional(o), protocol(p), type(TT_PROTOCOL) {}
-    Type(Enum *e, bool o) : optional(o), eenum(e), type(TT_ENUM) {}
+    Type(Protocol *p, bool o) : optional(o), type(TT_PROTOCOL), protocol(p) {}
+    Type(Enum *e, bool o) : optional(o), type(TT_ENUM), eenum(e) {}
     
     bool optional;
     TypeType type;
