@@ -1,4 +1,4 @@
-VERSION = 0.2-RC2
+VERSION = 0.2.0-beta.2
 
 CC = gcc
 CXX = g++
