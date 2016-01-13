@@ -28,7 +28,9 @@ endif
 PACKAGES_DIR=DefaultPackages
 PACKAGES=files SDL sqlite
 
-DIST=builds/Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
+DIST_NAME=Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
+DIST_BUILDS=builds
+DIST=$(DIST_BUILDS)/$(DIST_NAME)
 
 .PHONY: builds
 
@@ -70,4 +72,4 @@ builds:
 dist:
 	cp install.sh $(DIST)/install.sh
 	cp -r headers/ $(DIST)/headers
-	tar -czf $(DIST).tar.gz $(DIST)
+	tar -czf $(DIST).tar.gz -C $(DIST_BUILDS) $(DIST_NAME)
