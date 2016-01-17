@@ -312,6 +312,9 @@ void dictionaryMark(Object *object) {
     }
 }
 
+void dictionarySet(Object *dicto, Something key, Something value, Thread *thread){
+    dictionaryPutVal(dicto, key, value, thread);
+}
 
 //MARK: Bridges
 
