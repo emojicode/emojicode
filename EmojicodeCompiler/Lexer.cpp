@@ -221,7 +221,7 @@ const Token* lex(FILE *f, const char *filename) {
                 continue;
             }
             else {
-                //An unexcepted character, seems to be a new token
+                //An unexpected character, seems to be a new token
                 nextToken = true;
             }
         }
@@ -232,7 +232,7 @@ const Token* lex(FILE *f, const char *filename) {
                 continue;
             }
             else {
-                //An unexcepted character, seems to be a new token
+                //An unexpected character, seems to be a new token
                 nextToken = 1;
             }
         }
@@ -304,10 +304,10 @@ const Token* lex(FILE *f, const char *filename) {
     delete [] stringBuffer;
     
     if (!nextToken && token->type == STRING){
-        compilerError(token, "Excepted 🔤 but found end of file instead.");
+        compilerError(token, "Expected 🔤 but found end of file instead.");
     }
     if (!nextToken && token->type == COMMENT && !oneLineComment){
-        compilerError(token, "Excepted 👵 but found end of file instead.");
+        compilerError(token, "Expected 👵 but found end of file instead.");
     }
 
 #undef isIdentifier
