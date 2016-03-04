@@ -149,24 +149,19 @@ static Something stringSubstringBridge(Thread *thread){
 
 static Something stringSearchBridge(Thread *thread){
     String *string = stackGetThis(thread)->value;
-    String *searchValue = stackGetVariable(0, thread).object->value;
+    String *search = stackGetVariable(0, thread).object->value;
     
-    if (string->length < searchValue->length){
-        return NOTHINGNESS;
-    }
-    
-    for (EmojicodeInteger i = 0, isv = 0, start = 0; i < string->length - 1; i++){
-        
-        if (characters(string)[i] == characters(searchValue)[isv]) {
-            if (isv == 0)
-                start = i; //This is the location where the substring could start
-            if (isv == searchValue->length - 2) //The whole substring was found
-                return somethingInteger(start); //So return the start position
-            isv++;
+    for (EmojicodeInteger i = 0; i < string->length; ++i){
+        bool found = true;
+        for (EmojicodeInteger j = 0; j < search->length; ++j) {
+            if (characters(string)[i + j] != characters(search)[j]) {
+                found = false;
+                break;
+            }
         }
-        else if (isv > 0){ //They do not match but have had found the start
-            isv = 0;
-            i--; //we need to test this character again but with the beginning of the search string
+        
+        if (found) {
+            return somethingInteger(i);
         }
         
     }
