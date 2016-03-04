@@ -306,6 +306,9 @@ const Token* lex(FILE *f, const char *filename) {
     if (!nextToken && token->type == STRING){
         compilerError(token, "Excepted 🔤 but found end of file instead.");
     }
+    if (!nextToken && token->type == COMMENT && !oneLineComment){
+        compilerError(token, "Excepted 👵 but found end of file instead.");
+    }
 
 #undef isIdentifier
     

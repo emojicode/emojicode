@@ -17,8 +17,6 @@
 #include <string.h>
 #include <limits.h>
 
-bool definedClass = false;
-
 void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace){
     char *path;
     asprintf(&path, packageDirectory "%s/header.emojic", name);
@@ -451,7 +449,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
         theToken->forceType(IDENTIFIER);
         
         if (theToken->value[0] == E_PACKAGE) {
-            if(definedClass){
+            if(pkg->definedClass){
                 //TODO: find a way around this
                 compilerError(theToken, "At the moment 📦 are only allowed before the first class declaration. This is a beta limitation.");
             }
@@ -523,7 +521,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
             continue;
         }
         else if (theToken->value[0] == E_RABBIT) {
-            definedClass = true;
+            pkg->definedClass = true;
             parseClass(theNamespace, pkg, allowNative, documentationToken, theToken);
         }
         else {

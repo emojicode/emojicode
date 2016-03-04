@@ -48,6 +48,7 @@ public:
     const char *name;
     PackageVersion version;
     bool requiresNativeBinary;
+    bool definedClass = false;
 };
 
 struct Variable {
