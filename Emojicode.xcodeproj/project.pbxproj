@@ -14,6 +14,7 @@
 		E45FA2F61AA0D24200F032A8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45FA2F51AA0D24200F032A8 /* main.cpp */; };
 		E46A07301C3C79E5003DE2CD /* StaticFunctionAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E46A072E1C3C79E5003DE2CD /* StaticFunctionAnalyzer.cpp */; };
 		E479370E1C3A5B3200536258 /* Procedure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E479370D1C3A5B3200536258 /* Procedure.cpp */; };
+		E4E95F601C89CED20072ECEB /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
 		E4EB362B1AA2254700675B52 /* Lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EB36291AA2254700675B52 /* Lexer.cpp */; };
 		E4EB4A871AA315ED00FF4CED /* Writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EB4A851AA315ED00FF4CED /* Writer.cpp */; };
 		E4EB4A8D1AA32A5700FF4CED /* CompilerScope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4F49AB41A5C365900A5FD48 /* CompilerScope.cpp */; };
@@ -296,6 +297,7 @@
 				E46A07301C3C79E5003DE2CD /* StaticFunctionAnalyzer.cpp in Sources */,
 				E4478C671B7B8CB400291BD9 /* Type.cpp in Sources */,
 				E4EB4A8D1AA32A5700FF4CED /* CompilerScope.cpp in Sources */,
+				E4E95F601C89CED20072ECEB /* utf8.c in Sources */,
 				E4EB4A871AA315ED00FF4CED /* Writer.cpp in Sources */,
 				E45FA2F61AA0D24200F032A8 /* main.cpp in Sources */,
 				E479370E1C3A5B3200536258 /* Procedure.cpp in Sources */,
