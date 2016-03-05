@@ -48,7 +48,7 @@ $(ENGINE_BINARY): $(ENGINE_OBJECTS)
 	$(CC) $^ -o $(DIST)/$(ENGINE_BINARY) $(ENGINE_LDFLAGS)
 
 $(ENGINE_OBJECTS): %.o: %.c
-	$(CC) -c $< -o $@ $(ENGINE_CFLAGS) 
+	$(CC) -c $< -o $@ $(ENGINE_CFLAGS)
 
 define package
 PKG_$(1)_LDFLAGS = $$(PACKAGE_LDFLAGS)

@@ -3,7 +3,7 @@ compiler:
   - gcc
   - clang
 sudo: required
-script: make && sudo -E make install CC=$(CC) && make tests 
+script: make && sudo make install CC=$CC && make tests 
 dist: trusty
 before_install:
   - sudo apt-get install -y libsdl2-dev
