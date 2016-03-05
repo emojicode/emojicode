@@ -61,6 +61,7 @@ EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeD
     return NULL;
 }
 
+/** @warning GC-Invoking */
 Object* dictionaryNewNode(Object **dicto, EmojicodeDictionaryHash hash, Object *key, Something value, Object *next, Thread *thread){
     stackPush(*dicto, 0, 0, thread);
     Object *nodeo = newArray(sizeof(EmojicodeDictionaryNode));
@@ -75,7 +76,8 @@ Object* dictionaryNewNode(Object **dicto, EmojicodeDictionaryHash hash, Object *
     return nodeo;
 }
 
-void dictionaryResize(Object *dicto, Thread *thread) {
+/** @warning GC-Invoking */
+Object* dictionaryResize(Object *dicto, Thread *thread) {
     EmojicodeDictionary *dict = dicto->value;
 
     Object *oldBuckoo = dict->buckets;
@@ -86,7 +88,7 @@ void dictionaryResize(Object *dicto, Thread *thread) {
     if (oldCap > 0) {
         if (oldCap >= DICTIONARY_MAXIMUM_CAPACTIY) {
             dict->nextThreshold = DICTIONARY_MAXIMUM_CAPACTIY_THRESHOLD;
-            return;
+            return dicto;
         }
         else if (newCap < DICTIONARY_MAXIMUM_CAPACTIY && oldCap >= DICTIONARY_DEFAULT_INITIAL_CAPACITY) {
             newThr = oldThr << 1; // double threshold
@@ -107,7 +109,8 @@ void dictionaryResize(Object *dicto, Thread *thread) {
     
     stackPush(dicto, 0, 0, thread);
     Object *newBuckoo = newArray(newCap * sizeof(Object *));
-    dict = stackGetThis(thread)->value;
+    dicto = stackGetThis(thread);
+    dict = dicto->value;
     stackPop(thread);
     
     dict->buckets = newBuckoo;
@@ -168,6 +171,7 @@ void dictionaryResize(Object *dicto, Thread *thread) {
             }
         }
     }
+    return dicto;
 }
 
 void dictionaryPutVal(Object *dicto, Object *key, Something value, Thread *thread) {
@@ -176,7 +180,8 @@ void dictionaryPutVal(Object *dicto, Object *key, Something value, Thread *threa
     EmojicodeDictionary *dict = dicto->value;
     
     if (dict->buckets == NULL || dict->bucketsCounter == 0) {
-        dictionaryResize(dicto, thread);
+        dicto = dictionaryResize(dicto, thread);
+        dict = dicto->value;
     }
     
     Object **bucko;
@@ -218,7 +223,8 @@ void dictionaryPutVal(Object *dicto, Object *key, Something value, Thread *threa
         }
     }
     if(++(dict->size) > dict->nextThreshold) {
-        dictionaryResize(dicto, thread);
+        dicto = dictionaryResize(dicto, thread);
+        dict = dicto->value;
     }
 }
 
