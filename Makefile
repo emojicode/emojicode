@@ -34,7 +34,7 @@ DIST=$(DIST_BUILDS)/$(DIST_NAME)
 
 TESTS_DIR=tests
 
-.PHONY: builds tests
+.PHONY: builds tests install dist
 
 all: builds $(COMPILER_BINARY) $(ENGINE_BINARY) $(addsuffix .so,$(PACKAGES)) dist
 
@@ -75,6 +75,9 @@ define testFile
 $(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/testClass.emojic $(TESTS_DIR)/$(1).emojic
 $(DIST)/$(ENGINE_BINARY) $(TESTS_DIR)/$(1).emojib
 endef
+
+install: dist
+	cd $(DIST) && ./install.sh
 
 tests:
 	$(call testFile,stringTest)
