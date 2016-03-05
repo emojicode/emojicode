@@ -56,7 +56,8 @@ _Noreturn void error(char *err, ...){
 //MARK: Block utilities
 
 static void passBlock(Thread *thread){
-    thread->tokenStream += consumeCoin(thread); //This coin only contains the length of the block
+    EmojicodeCoin length = consumeCoin(thread);
+    thread->tokenStream += length; //This coin only contains the length of the block
 }
 
 /** 
