@@ -4,6 +4,5 @@ compiler:
   - clang
 sudo: required
 script: make && sudo make install && make tests 
-dist: trusty
 before_install:
   - sudo apt-get install libsdl2-dev
