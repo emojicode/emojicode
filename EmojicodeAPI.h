@@ -58,6 +58,7 @@ typedef struct Object {
 #define T_DOUBLE 4
 
 typedef uint_fast8_t Type;
+typedef unsigned char Byte;
 
 /** Either a object reference or a primitive value. */
 typedef struct {

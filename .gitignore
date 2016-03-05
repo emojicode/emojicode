@@ -1,6 +1,6 @@
 # Emojicode
 builds
-
+*.o
 
 # Xcode
 #

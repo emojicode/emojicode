@@ -10,7 +10,6 @@
 #define Emojicode_EmojicodeSharedTypes_h
 
 #include <stdlib.h>
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -43,8 +42,6 @@ typedef struct {
  * @param c The character to test
  */
 #define isWhitespace(c) ((0x9 <= c && c <= 0xD) || c == 0x20 || c == 0x85 || c == 0xA0 || c == 0x1680 || (0x2000 <= c && c <= 0x200A) || c == 0x2028 || c== 0x2029 || c == 0x2029 || c == 0x202F || c == 0x205F || c == 0x3000 || c == 0xFE0F)
-
-size_t u8_wc_toutf8(char *dest, uint32_t ch);
 
 #define ecCharToCharStack(ec, outVariable)\
 char outVariable[5] = {0, 0, 0, 0, 0};\
