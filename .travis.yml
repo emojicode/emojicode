@@ -6,3 +6,4 @@ sudo: required
 script: make && sudo make install CC=$(whereis $CC) && make tests 
 before_install:
   - sudo apt-get install -y libsdl2-dev
+dist: trusty
