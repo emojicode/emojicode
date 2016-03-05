@@ -62,10 +62,11 @@ EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeD
     return NULL;
 }
 
-Object* dictionaryNewNode(Object *dicto, EmojicodeDictionaryHash hash, Something key, Something value, Object *next, Thread *thread){
-    stackPush(dicto, 0, 0, thread);
+Object* dictionaryNewNode(Object **dicto, EmojicodeDictionaryHash hash, Something key, Something value, Object *next, Thread *thread){
+    stackPush(*dicto, 0, 0, thread);
     Object *nodeo = newArray(sizeof(EmojicodeDictionaryNode));
     EmojicodeDictionaryNode *node = (EmojicodeDictionaryNode *) nodeo->value;
+    *dicto = stackGetThis(thread);
     stackPop(thread);
     
     node->hash = hash;
@@ -187,7 +188,8 @@ void dictionaryPutVal(Object *dicto, Something key, Something value, Thread *thr
     Object *po;
     
     if ((po = bucko[i = (hash & (n - 1))]) == NULL) {
-        bucko[i] = dictionaryNewNode(dicto, hash, key, value, NULL, thread);
+        bucko[i] = dictionaryNewNode(&dicto, hash, key, value, NULL, thread);
+        dict = dicto->value;
     }
     else {
         EmojicodeDictionaryNode *p = po->value;
@@ -198,7 +200,7 @@ void dictionaryPutVal(Object *dicto, Something key, Something value, Thread *thr
         else {
             for (int binCount = 0; ; ++binCount) {
                 if (p->next == NULL) {
-                    p->next = dictionaryNewNode(dicto, hash, key, value, NULL, thread);
+                    p->next = dictionaryNewNode(&dicto, hash, key, value, NULL, thread);
                     dict = dicto->value;
                     break;
                 }
