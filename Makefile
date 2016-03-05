@@ -39,16 +39,16 @@ TESTS_DIR=tests
 all: builds $(COMPILER_BINARY) $(ENGINE_BINARY) $(addsuffix .so,$(PACKAGES)) dist
 
 $(COMPILER_BINARY): $(COMPILER_OBJECTS) EmojicodeReal-TimeEngine/utf8.o
-	$(CXX) $(COMPILER_LDFLAGS) $^ -o $(DIST)/$(COMPILER_BINARY)
+	$(CXX) $^ -o $(DIST)/$(COMPILER_BINARY) $(COMPILER_LDFLAGS) 
 
 $(COMPILER_OBJECTS): %.o: %.cpp
-	$(CXX) $(COMPILER_CFLAGS) -c $< -o $@
+	$(CXX) -c $< -o $@ $(COMPILER_CFLAGS)
 
 $(ENGINE_BINARY): $(ENGINE_OBJECTS)
-	$(CC) $(ENGINE_LDFLAGS) $^ -o $(DIST)/$(ENGINE_BINARY)
+	$(CC) $^ -o $(DIST)/$(ENGINE_BINARY) $(ENGINE_LDFLAGS)
 
 $(ENGINE_OBJECTS): %.o: %.c
-	$(CC) $(ENGINE_CFLAGS) -c $< -o $@ 
+	$(CC) -c $< -o $@ $(ENGINE_CFLAGS) 
 
 define package
 PKG_$(1)_LDFLAGS = $$(PACKAGE_LDFLAGS)
