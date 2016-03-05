@@ -1,4 +1,4 @@
-# Emojicode
+# Emojicode [![Build Status](https://travis-ci.org/emojicode/emojicode.svg?branch=master)](https://travis-ci.org/emojicode/emojicode)
 
 http://www.emojicode.org
 
