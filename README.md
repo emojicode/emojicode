@@ -5,14 +5,17 @@ http://www.emojicode.org
 Emojicode is an open source, high-level, multi-paradigm, object-oriented
 programming language consisting of emojis.
 
-Emojicode allows you to build fast cross-platform applications while having
-a lot of fun.
+## The Language
 
 **To learn more about the language Emojicode visit http://www.emojicode.org/docs.**
 
 ## Installing and Building
 
 Please refer to [Installing Emojicode in the Emojicode Documentation](http://www.emojicode.org/docs/guides/install.html).
+
+## Staying up to date
+
+You can follow [@idmean](https://twitter.com/idmean) (the creator of Emojicode) on Twitter to stay up to date.
 
 ## Contributions
 
