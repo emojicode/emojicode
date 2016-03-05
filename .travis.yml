@@ -1,4 +1,7 @@
 language: cpp
-compiler: clang
+compiler:
+  - gcc
+  - clang
 sudo: required
 script: make && sudo make install && make tests 
+dist: trusty
