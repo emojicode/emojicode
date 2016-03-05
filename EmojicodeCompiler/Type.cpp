@@ -73,7 +73,7 @@ bool Type::compatibleTo(Type to, Type contextType){
         }
         return false;
     }
-    else if(this->type == TT_PROTOCOL && this->type == TT_PROTOCOL){
+    else if(this->type == TT_PROTOCOL && to.type == TT_PROTOCOL){
         return (to.optional || !this->optional) && this->protocol == to.protocol;
     }
     else if(this->type == TT_CLASS && to.type == TT_PROTOCOL){
