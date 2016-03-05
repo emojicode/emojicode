@@ -2,7 +2,7 @@
 
 http://www.emojicode.org
 
-Emojicode is an open source, high-level, multi-paradigm, object orientated
+Emojicode is an open source, high-level, multi-paradigm, object-oriented
 programming language consisting of emojis.
 
 Emojicode allows you to build fast cross-platform applications while having
