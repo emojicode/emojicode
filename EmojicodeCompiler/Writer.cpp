@@ -7,7 +7,7 @@
 //
 
 #include "Writer.hpp"
-#include <math.h>
+#include <cmath>
 
 void Writer::writeUInt16(uint16_t value){
     fputc(value >> 8, out);
@@ -42,7 +42,7 @@ void Writer::writeBytes(const char *bytes, size_t count){
 
 void Writer::writeDouble(double val) {
     int exp = 0;
-    double norm = frexp(val, &exp);
+    double norm = std::frexp(val, &exp);
     int_least64_t scale = norm*PORTABLE_INTLEAST64_MAX;
     
     writeCoin(scale >> 32);

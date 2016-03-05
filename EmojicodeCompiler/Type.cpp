@@ -10,7 +10,7 @@
 #include "utf8.h"
 #include "Lexer.hpp"
 #include "Class.hpp"
-#include <string.h>
+#include <cstring>
 
 //MARK: Globals
 /* Very important one time declarations */

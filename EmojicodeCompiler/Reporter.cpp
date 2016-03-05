@@ -11,7 +11,7 @@
 #include "Lexer.hpp"
 #include "Procedure.hpp"
 #include "Class.hpp"
-#include <string.h>
+#include <cstring>
 
 enum ReturnManner {
     Return,
