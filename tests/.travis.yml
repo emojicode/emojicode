@@ -1,0 +1,4 @@
+language: cpp
+compiler: clang
+sudo: required
+script: make && sudo make install && make tests 
