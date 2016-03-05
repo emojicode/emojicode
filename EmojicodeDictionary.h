@@ -26,7 +26,7 @@ typedef uint64_t EmojicodeDictionaryHash;
 /** The datastructure with the key-value pair */
 typedef struct {
     /** The user specified key. */
-    Something key;
+    Object *key;
     
     /** The user specified value. */
     Something value;
@@ -61,13 +61,13 @@ typedef struct {
  * Insert an item and use keyString as key 
  * @warning GC-invoking
  */
-void dictionarySet(Object *dicto, Something key, Something value, Thread *thread);
+void dictionarySet(Object *dicto, Object *key, Something value, Thread *thread);
 
 /** Remove an item by keyString as key */
-void dictionaryRemove(EmojicodeDictionary *dict, Something key, Thread *thread);
+void dictionaryRemove(EmojicodeDictionary *dict, Object *key, Thread *thread);
 
 /** Get an item by keyString as key */
-Something dictionaryLookup(EmojicodeDictionary *dict, Something key, Thread *thread);
+Something dictionaryLookup(EmojicodeDictionary *dict, Object *key, Thread *thread);
 
 void dictionaryMark(Object *dict);
 
