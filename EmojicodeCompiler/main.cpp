@@ -5,9 +5,9 @@
 //  Created by Theo Weidmann on 27.02.15.
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
+
 #include <libgen.h>
-#include <string.h>
-#include <unistd.h>
+#include <cstring>
 #include <getopt.h>
 #include "Lexer.hpp"
 #include "utf8.h"

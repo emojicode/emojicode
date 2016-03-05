@@ -7,14 +7,14 @@ if [[ ! -w "/usr/local/" ]] ; then
 	tput setaf 5
 	echo "${b}/usr/local/ is not writeable from this user. Carefully try using sudo."
 	tput sgr0
-	exit
+	exit 1
 fi
 
 if [[ ! -w "/usr/local/bin" ]] ; then 
 	tput setaf 5
 	echo "${b}/usr/local/bin is not writeable from this user. Carefully try using sudo."
 	tput sgr0
-	exit
+	exit 1
 fi
 
 echo "${b}Copying builds to /usr/local/bin/${n}"

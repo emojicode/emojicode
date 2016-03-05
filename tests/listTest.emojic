@@ -1,0 +1,67 @@
+🐇 💯 👈 🍇
+  ✒️ 🐖 🏁 🍇
+    🍮 emptyList 🔷🍨🐚🔡🐸
+
+    ⛔️🐕 😛 🐔 emptyList 0 🔤Correct Length 0🔤
+
+    🐻 emptyList 🔤Hallo🔤
+    🐻 emptyList 🔤Josef🔤
+
+    ⛔️🐕 😛 🐔 emptyList 2 🔤Correct Length 2🔤
+
+    🐻 emptyList 🔤Grüß dich🔤
+    🐻 emptyList 🔤Sarah🔤
+    🐻 emptyList 🔤Hansl🔤
+
+    ⛔️🐕 😛 🐔 emptyList 5 🔤Correct Length 4🔤
+
+    🐼 emptyList
+
+    ⛔️🐕 😛 🐔 emptyList 4 🔤Correct Length 3🔤
+
+    ⛔️🐕 😛 🍺 🐽 emptyList 1 🔤Josef🔤 🔤Index 1 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 2 🔤Grüß dich🔤 🔤Index 2 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
+
+    🐨 emptyList 0
+
+    ⛔️🐕 😛 🐔 emptyList 3 🔤Correct Length 3🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 1 🔤Grüß dich🔤 🔤Index 1 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 2 🔤Sarah🔤 🔤Index 2 Value Correct🔤
+
+    🐵 emptyList 1 🔤Robert🔤
+
+    ⛔️🐕 😛 🐔 emptyList 4 🔤Correct Length 4🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 1 🔤Robert🔤 🔤Index 1 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 2 🔤Grüß dich🔤 🔤Index 2 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
+
+    🍮 copiedList 🐮 emptyList
+
+    ⛔️🐕 😛 🐔 emptyList 4 🔤Correct Length 4🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤
+
+    ⛔️🐕 😛 🐔 copiedList 4 🔤Copied List Correct Length 4🔤
+
+    ⛔️🐕 😛 🍺 🐽 copiedList 0 🔤Josef🔤 🔤Copied List Index 0 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 copiedList 1 🔤Robert🔤 🔤Copied List Index 1 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 copiedList 2 🔤Grüß dich🔤 🔤Copied List Index 2 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 copiedList 3 🔤Sarah🔤 🔤Copied List Index 3 Value Correct🔤
+
+    ⛔️🐕 😛 🍺 🐼 copiedList 🔤Sarah🔤 🔤🐼 Value Correct🔤
+    ⛔️🐕 😛 🐔 copiedList 3 🔤Correct Length 3🔤
+
+    🍮 literalList 🍨 🔤Götz🔤 🔤Bert🔤 🔤Igor🔤 🔤Hans🔤 🔤Franz🔤 🍆
+    ⛔️🐕 😛 🐔 literalList 5 🔤Correct Length 5🔤
+    ⛔️🐕 😛 🍺🐼 literalList 🔤Franz🔤 🔤Pop = Franz🔤
+    ⛔️🐕 😛 🐔 literalList 4 🔤Correct Length 4🔤
+  🍉
+
+  🐇🐖 🏁 ➡️ 🚂 🍇
+    🍦 tester 🔷💯🆕
+    🏁 tester
+    🍎 👔 tester
+  🍉
+🍉

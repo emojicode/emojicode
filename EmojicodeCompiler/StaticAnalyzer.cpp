@@ -14,7 +14,7 @@
 #include "CompilerScope.hpp"
 #include "Class.hpp"
 #include "utf8.h"
-#include <string.h>
+#include <cstring>
 
 void analyzeClass(Type classType, Writer &writer){
     auto eclass = classType.eclass;

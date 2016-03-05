@@ -1,8 +1,8 @@
-# Emojicode
+# Emojicode [![Build Status](https://travis-ci.org/emojicode/emojicode.svg?branch=master)](https://travis-ci.org/emojicode/emojicode) [![Join the chat at https://gitter.im/emojicode/emojicode](https://badges.gitter.im/emojicode/emojicode.svg)](https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 http://www.emojicode.org
 
-Emojicode is an open source, high-level, multi-paradigm, object orientated
+Emojicode is an open source, high-level, multi-paradigm, object-oriented
 programming language consisting of emojis.
 
 Emojicode allows you to build fast cross-platform applications while having

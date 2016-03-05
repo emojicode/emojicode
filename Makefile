@@ -1,7 +1,7 @@
 VERSION = 0.2.0-beta.2
 
-CC = gcc
-CXX = g++
+CC ?= gcc
+CXX ?= g++
 
 COMPILER_CFLAGS = -c -Wall -std=c++11 -g -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/
 COMPILER_LDFLAGS =
@@ -32,21 +32,23 @@ DIST_NAME=Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
 DIST_BUILDS=builds
 DIST=$(DIST_BUILDS)/$(DIST_NAME)
 
-.PHONY: builds
+TESTS_DIR=tests
+
+.PHONY: builds tests install dist
 
 all: builds $(COMPILER_BINARY) $(ENGINE_BINARY) $(addsuffix .so,$(PACKAGES)) dist
 
 $(COMPILER_BINARY): $(COMPILER_OBJECTS) EmojicodeReal-TimeEngine/utf8.o
-	$(CXX) $(COMPILER_LDFLAGS) $^ -o $(DIST)/$(COMPILER_BINARY)
+	$(CXX) $^ -o $(DIST)/$(COMPILER_BINARY) $(COMPILER_LDFLAGS) 
 
 $(COMPILER_OBJECTS): %.o: %.cpp
-	$(CXX) $(COMPILER_CFLAGS) -c $< -o $@
+	$(CXX) -c $< -o $@ $(COMPILER_CFLAGS)
 
 $(ENGINE_BINARY): $(ENGINE_OBJECTS)
-	$(CC) $(ENGINE_LDFLAGS) $^ -o $(DIST)/$(ENGINE_BINARY)
+	$(CC) $^ -o $(DIST)/$(ENGINE_BINARY) $(ENGINE_LDFLAGS)
 
 $(ENGINE_OBJECTS): %.o: %.c
-	$(CC) $(ENGINE_CFLAGS) -c $< -o $@ 
+	$(CC) -c $< -o $@ $(ENGINE_CFLAGS)
 
 define package
 PKG_$(1)_LDFLAGS = $$(PACKAGE_LDFLAGS)
@@ -68,6 +70,21 @@ clean:
 
 builds:
 	mkdir -p $(DIST)
+
+define testFile
+$(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/testClass.emojic $(TESTS_DIR)/$(1).emojic
+$(DIST)/$(ENGINE_BINARY) $(TESTS_DIR)/$(1).emojib
+endef
+
+install: dist
+	cd $(DIST) && ./install.sh
+
+tests:
+	$(call testFile,stringTest)
+	$(call testFile,primitiveMethodsTest)
+	$(call testFile,listTest)
+	$(call testFile,dictionaryTest)
+	$(call testFile,fileTest)
 
 dist:
 	cp install.sh $(DIST)/install.sh

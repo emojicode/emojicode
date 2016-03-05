@@ -12,10 +12,8 @@
 #include "utf8.h"
 #include "Class.hpp"
 
-#include <ctype.h>
-#include <libgen.h>
-#include <string.h>
-#include <limits.h>
+#include <cstring>
+#include <climits>
 
 void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace){
     char *path;
