@@ -41,7 +41,7 @@ enum TypeDynamism {
 struct Type {
 public:
     /**
-     * Trys to fetch a type by its name and namespace.
+     * Tries to fetch a type by its name and namespace.
      * @return The found type. If no type is found the return value is undefined and the value pointed to by @c existent will be set to false, otherwise to true.
      */
     static Type fetchRawType(EmojicodeChar name, EmojicodeChar enamespace, bool optional, const Token *token, bool *existent);

@@ -55,7 +55,7 @@ private:
     EmojicodeChar currentNamespace;
     
     /**
-     * Safely trys to parse the given token, evaluate the associated command and returns the type of that command.
+     * Safely tries to parse the given token, evaluate the associated command and returns the type of that command.
      * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
      */
     Type parse(const Token *token, const Token *parentToken);
