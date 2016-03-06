@@ -11,11 +11,7 @@ programming language consisting of emojis.
 
 ## Installing
 
-⬇️⬇️⬇️⬇️⬇️⬇️
-
-You can easily install Emojicode from our stable prebuilt binaries: http://www.emojicode.org/docs/guides/install.html.
-
-⬆️⬆️⬆️⬆️⬆️⬆️
+**You can easily install Emojicode from our stable prebuilt binaries: http://www.emojicode.org/docs/guides/install.html.**
 
 ## Building from source
 
