@@ -140,7 +140,7 @@ extern Object* newObject(Class *class);
 extern Object* newArray(size_t size);
 
 /**
- * Trys to enlarge the given array object to the given size.
+ * Tries to enlarge the given array object to the given size.
  * @param array An array object created by @c newArray.
  * @param size The new size.
  * @warning Do not use this method to shrink an array.
