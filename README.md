@@ -15,7 +15,7 @@ programming language consisting of emojis.
 
 ## Building from source
 
-If for some reason you want to build Emojicode from source you can of course also do this. 
+If you need to build Emojicode from source you can of course also do this. **We, however, recommend you to install Emojicode from the prebuilt binaries if possible.**
 
 Prerequisites:
 - clang and clang++ 3.4 or newer, or
