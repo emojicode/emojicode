@@ -291,7 +291,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
             }
             break;
             case E_CAT: {
-                if(staticOnType){
+                if (staticOnType) {
                     compilerError(token, "Invalid modifier 🐇.");
                 }
                 
@@ -314,6 +314,10 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 }
                 
                 eclass->addInitializer(initializer);
+                
+                if (required) {
+                    eclass->requiredInitializerList.push_back(initializer);
+                }
             }
             break;
             default: {

@@ -167,15 +167,26 @@ void analyzeClassesAndWrite(FILE *fout){
                 clMethod->vti = eclass->nextClassMethodVti++;
             }
         }
-        for(auto initializer : eclass->initializerList){ //TODO: heavily incorrect
-            Initializer *superConst = eclass->superclass->getInitializer(initializer->name);
+        
+        auto subRequiredInitializerNextVti = eclass->superclass ? eclass->superclass->requiredInitializerList.size() : 0;
+        eclass->nextInitializerVti += eclass->requiredInitializerList.size();
+        for(auto initializer : eclass->initializerList){
+            Initializer *superInit = eclass->superclass->getInitializer(initializer->name);
             
-            initializer->checkOverride(superConst);
-            if (superConst){
-                initializer->checkPromises(superConst, "super classmethod", classType);
-                //if a eclass has a initializer it does not inherit other initializers, therefore inheriting the VTI could have fatal consequences
+            initializer->checkOverride(superInit);
+            
+            if (initializer->required) {
+                if (superInit) {
+                    initializer->checkPromises(superInit, "super classmethod", classType);
+                    initializer->vti = superInit->vti;
+                }
+                else {
+                    initializer->vti = subRequiredInitializerNextVti++;
+                }
             }
-            initializer->vti = eclass->nextInitializerVti++;
+            else {
+                initializer->vti = eclass->nextInitializerVti++;
+            }
         }
     }
     
