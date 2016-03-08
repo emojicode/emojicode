@@ -6,8 +6,8 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#ifndef Class_h
-#define Class_h
+#ifndef Class_hpp
+#define Class_hpp
 
 class Class {
 public:
@@ -116,4 +116,4 @@ private:
 /** Returns the protocol with name @c name in enamespace @c namepsace or @c nullptr if the protocol cannot be found. */
 extern Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace);
 
-#endif /* Class_h */
+#endif /* Class_hpp */

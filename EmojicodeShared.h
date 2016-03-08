@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef Emojicode_EmojicodeSharedTypes_h
-#define Emojicode_EmojicodeSharedTypes_h
+#ifndef EmojicodeShared_h
+#define EmojicodeShared_h
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,4 +57,4 @@ uint32_t fnv32(const char *k, size_t length);
 
 #define PORTABLE_INTLEAST64_MAX ((int_least64_t)9223372036854775807)
 
-#endif
+#endif /* EmojicodeShared_h */

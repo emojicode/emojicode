@@ -6,8 +6,8 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#ifndef Procedure_h
-#define Procedure_h
+#ifndef Procedure_hpp
+#define Procedure_hpp
 
 #include "Writer.hpp"
 
@@ -112,4 +112,4 @@ public:
     Type type();
 };
 
-#endif /* Procedure_h */
+#endif /* Procedure_hpp */

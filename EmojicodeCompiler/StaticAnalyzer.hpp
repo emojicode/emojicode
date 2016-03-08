@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef __Emojicode__StaticAnalyzer__
-#define __Emojicode__StaticAnalyzer__
+#ifndef StaticAnalyzer_hpp
+#define StaticAnalyzer_hpp
 
 /**
  * The static analyzer analyses all method and initializer bodies.
@@ -18,4 +18,4 @@
  */
 void analyzeClassesAndWrite(FILE *out);
 
-#endif /* defined(__Emojicode__StaticAnalyzer__) */
+#endif /* _StaticAnalyzer_hpp */

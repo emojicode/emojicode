@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef __Emojicode__Emojicode__
-#define __Emojicode__Emojicode__
+#ifndef Emojicode_h
+#define Emojicode_h
 
 #define _GNU_SOURCE
 #include "EmojicodeAPI.h"
@@ -223,4 +223,4 @@ Marker markerPointerForClass(EmojicodeChar cl);
 Deinitializer deinitializerPointerForClass(EmojicodeChar cl);
 uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name);
 
-#endif /* defined(__Emojicode__Emojicode__) */
+#endif /* Emojicode_h */

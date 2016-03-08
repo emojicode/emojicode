@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef __Emojicode__ClassParser__
-#define __Emojicode__ClassParser__
+#ifndef ClassParser_hpp
+#define ClassParser_hpp
 
 #include "EmojicodeCompiler.hpp"
 
@@ -25,4 +25,4 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar e
 
 void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace);
 
-#endif /* defined(__Emojicode__ClassParser__) */
+#endif /* ClassParser_hpp */

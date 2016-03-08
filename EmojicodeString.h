@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef __Emojicode__String__
-#define __Emojicode__String__
+#ifndef EmojicodeString_h
+#define EmojicodeString_h
 
 #include "EmojicodeAPI.h"
 #include "EmojicodeList.h"
@@ -34,4 +34,4 @@ InitializerHandler stringInitializerForName(EmojicodeChar name);
 
 Something parseJSON(Thread *thread);
 
-#endif /* defined(__Emojicode__String__) */
+#endif /* EmojicodeString_h */
