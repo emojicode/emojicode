@@ -72,7 +72,7 @@ void expandListSize(Thread *thread){
     }
     else {
         size_t newSize = list->capacity + (list->capacity >> 1);
-        Object *object = enlargeArray(list->items, newSize * sizeof(Something));
+        Object *object = resizeArray(list->items, newSize * sizeof(Something));
         list = stackGetThis(thread)->value;
         list->items = object;
         list->capacity = newSize;

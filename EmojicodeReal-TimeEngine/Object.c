@@ -74,7 +74,7 @@ Object* newArray(size_t size){
     return newObjectWithSizeInternal(CL_ENUMERATOR, size);
 }
 
-Object* enlargeArray(Object *array, size_t size){
+Object* resizeArray(Object *array, size_t size){
     size_t fullSize = sizeof(Object) + size;
     Object *object = emojicodeRealloc(array, array->size, fullSize);
     object->size = fullSize;
