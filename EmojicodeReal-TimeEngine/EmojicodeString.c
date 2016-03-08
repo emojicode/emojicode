@@ -20,7 +20,7 @@ bool stringEqual(String *a, String *b){
         return false;
     }
     
-    return memcmp(a->characters->value, b->characters->value, a->length) == 0;
+    return memcmp(a->characters->value, b->characters->value, a->length * sizeof(EmojicodeChar)) == 0;
 }
 
 bool stringBeginsWith(String *a, String *with){
@@ -28,7 +28,7 @@ bool stringBeginsWith(String *a, String *with){
         return false;
     }
     
-    return memcmp(a->characters->value, with->characters->value, with->length) == 0;
+    return memcmp(a->characters->value, with->characters->value, with->length * sizeof(EmojicodeChar)) == 0;
 }
 
 bool stringEndsWith(String *a, String *end){
@@ -36,7 +36,7 @@ bool stringEndsWith(String *a, String *end){
         return false;
     }
     
-    return memcmp(((EmojicodeChar*)a->characters->value) + (a->length - end->length), end->characters->value, end->length) == 0;
+    return memcmp(((EmojicodeChar*)a->characters->value) + (a->length - end->length), end->characters->value, end->length * sizeof(EmojicodeChar)) == 0;
 }
 
 /** @warning GC-invoking */
