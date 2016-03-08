@@ -367,7 +367,7 @@ static void stringFromSymbolListBridge(Thread *thread){
     initStringFromSymbolList(stackGetThis(thread), stackGetVariable(0, thread).object->value);
 }
 
-static void stringFromStringList(Thread *thread){
+static void stringFromStringList(Thread *thread) {
     size_t stringSize = 0;
     size_t appendLocation = 0;
     
@@ -375,8 +375,12 @@ static void stringFromStringList(Thread *thread){
         List *list = stackGetVariable(0, thread).object->value;
         String *glue = stackGetVariable(1, thread).object->value;
         
-        for(size_t i = 0; i < list->count; i++){
-            stringSize += ((String *)listGet(list, i).object->value)->length - 1 + glue->length;
+        for (size_t i = 0; i < list->count; i++) {
+            stringSize += ((String *)listGet(list, i).object->value)->length;
+        }
+        
+        if (list->count > 0){
+            stringSize += glue->length * (list->count - 1);
         }
     }
         
@@ -390,13 +394,13 @@ static void stringFromStringList(Thread *thread){
         string->length = stringSize;
         string->characters = co;
         
-        for(size_t i = 0; i < list->count; i++){
+        for (size_t i = 0; i < list->count; i++) {
             String *aString = listGet(list, i).object->value;
-            memcpy(characters(string) + appendLocation, characters(aString), (aString->length - 1) * sizeof(EmojicodeChar));
-            appendLocation += aString->length - 1;
+            memcpy(characters(string) + appendLocation, characters(aString), aString->length * sizeof(EmojicodeChar));
+            appendLocation += aString->length;
             if(i + 1 < list->count){
-                memcpy(characters(string) + appendLocation, characters(glue), (glue->length - 1) * sizeof(EmojicodeChar));
-                appendLocation += glue->length - 1;
+                memcpy(characters(string) + appendLocation, characters(glue), glue->length * sizeof(EmojicodeChar));
+                appendLocation += glue->length;
             }
         }
     }
