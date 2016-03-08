@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef __Emojicode__Writer__
-#define __Emojicode__Writer__
+#ifndef Writer_hpp
+#define Writer_hpp
 
 #include "EmojicodeCompiler.hpp"
 #include "Procedure.hpp"
@@ -92,4 +92,4 @@ private:
     uint32_t oWrittenCoins;
 };
 
-#endif /* defined(__Emojicode__Writer__) */
+#endif /* Writer_hpp */

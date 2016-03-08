@@ -6,8 +6,8 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#ifndef Lexer_h
-#define Lexer_h
+#ifndef Lexer_hpp
+#define Lexer_hpp
 
 #include "EmojicodeCompiler.hpp"
 
@@ -79,4 +79,4 @@ const Token* consumeToken(TokenType type);
 const Token* nextToken();
 extern const Token* currentToken;
 
-#endif /* Lexer_h */
+#endif /* Lexer_hpp */

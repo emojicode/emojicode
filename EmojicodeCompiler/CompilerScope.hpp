@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef __Emojicode__CompilerScope__
-#define __Emojicode__CompilerScope__
+#ifndef CompilerScope_hpp
+#define CompilerScope_hpp
 
 #include "EmojicodeCompiler.hpp"
 
@@ -90,4 +90,4 @@ CompilerVariable* getVariable(const Token *variable, uint8_t *scopesUp);
 void setVariable(const Token *variable, CompilerVariable *value);
 
 
-#endif /* defined(__Emojicode__Scope__) */
+#endif /* CompilerScope_hpp */

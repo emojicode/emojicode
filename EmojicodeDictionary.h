@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef __Emojicode__EmojicodeDictionary__
-#define __Emojicode__EmojicodeDictionary__
+#ifndef EmojicodeDictionary_h
+#define EmojicodeDictionary_h
 
 #include "EmojicodeString.h"
 
@@ -78,4 +78,4 @@ void dictionaryInit(Thread *thread);
 
 MethodHandler dictionaryMethodForName(EmojicodeChar name);
 
-#endif /* defined(__Emojicode__EmojicodeDictionary__) */
+#endif /* EmojicodeDictionary_h */

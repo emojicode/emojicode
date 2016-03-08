@@ -13,8 +13,8 @@
  * Follow the Emojicode style guide.
  */
 
-#ifndef Emojicode_EmojicodeAPI_h
-#define Emojicode_EmojicodeAPI_h
+#ifndef EmojicodeAPI_h
+#define EmojicodeAPI_h
 
 #include "EmojicodeShared.h"
 
@@ -220,4 +220,4 @@ typedef void (*Deinitializer)(void *value);
  */
 extern EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max);
 
-#endif
+#endif /* EmojicodeAPI_h */

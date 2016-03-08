@@ -6,8 +6,8 @@
 //  Copyright © 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef Type_h
-#define Type_h
+#ifndef Type_hpp
+#define Type_hpp
 
 /** The Emoji representing the standard ("global") enamespace. */
 #define globalNamespace E_LARGE_RED_CIRCLE
@@ -115,4 +115,4 @@ private:
     Type commonType = typeSomething;
 };
 
-#endif /* Type_h */
+#endif /* Type_hpp */

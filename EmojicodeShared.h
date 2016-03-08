@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef Emojicode_EmojicodeSharedTypes_h
-#define Emojicode_EmojicodeSharedTypes_h
+#ifndef EmojicodeShared_h
+#define EmojicodeShared_h
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef Emojicode_EmojicodeCompiler_h
-#define Emojicode_EmojicodeCompiler_h
+#ifndef EmojicodeCompiler_hpp
+#define EmojicodeCompiler_hpp
 
 #define EmojicodeCompiler
 
@@ -117,4 +117,4 @@ void printJSONStringToFile(const char *string, FILE *f);
 
 void report(const char *packageName);
 
-#endif
+#endif /* EmojicodeCompiler_hpp */

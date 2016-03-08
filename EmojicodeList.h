@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#ifndef __Emojicode__List__
-#define __Emojicode__List__
+#ifndef EmojicodeList_h
+#define EmojicodeList_h
 
 #include "EmojicodeAPI.h"
 
@@ -61,4 +61,4 @@ void listMark(Object *self);
 MethodHandler listMethodForName(EmojicodeChar method);
 InitializerHandler listInitializerForName(EmojicodeChar method);
 
-#endif /* defined(__Emojicode__List__) */
+#endif /* EmojicodeList_h */
