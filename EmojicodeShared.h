@@ -57,4 +57,4 @@ uint32_t fnv32(const char *k, size_t length);
 
 #define PORTABLE_INTLEAST64_MAX ((int_least64_t)9223372036854775807)
 
-#endif
+#endif /* EmojicodeShared_h */
