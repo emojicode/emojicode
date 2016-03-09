@@ -3,7 +3,7 @@ VERSION = 0.2.0-beta.3
 CC ?= gcc
 CXX ?= g++
 
-COMPILER_CFLAGS = -c -Wall -std=c++11 -g -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/
+COMPILER_CFLAGS = -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/
 COMPILER_LDFLAGS =
 
 COMPILER_SRCDIR = EmojicodeCompiler
@@ -19,7 +19,7 @@ ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.c)
 ENGINE_OBJECTS = $(ENGINE_SOURCES:%.c=%.o)
 ENGINE_BINARY = emojicode
 
-PACKAGE_CFLAGS = -O3 -iquote . -std=c11 -Wno-unused-result -g -fPIC
+PACKAGE_CFLAGS = -O3 -iquote . -std=c11 -Wno-unused-result -fPIC
 PACKAGE_LDFLAGS = -shared -fPIC
 ifeq ($(shell uname), Darwin)
 PACKAGE_LDFLAGS += -undefined dynamic_lookup
