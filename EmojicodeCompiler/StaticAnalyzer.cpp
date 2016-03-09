@@ -50,8 +50,7 @@ void analyzeClass(Type classType, Writer &writer){
     writer.writeUInt16(eclass->classMethodList.size());
     
     for (auto var : eclass->instanceVariables) {
-        CompilerVariable *cv = new CompilerVariable(var->type, offset++, 1, false);
-        cv->variable = var;
+        CompilerVariable *cv = new CompilerVariable(var->type, offset++, 1, false, var->name);
         objectScope.setLocalVariable(var->name, cv);
     }
     

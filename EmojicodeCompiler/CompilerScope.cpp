@@ -17,10 +17,11 @@ void CompilerVariable::uninitalizedError(const Token *variableToken) const {
     }
 }
 
-void CompilerVariable::frozenError(const Token *variableToken) const {
-    if (frozen) {
+void CompilerVariable::mutate(const Token *variableToken) {
+    if (frozen()) {
         compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableToken->value.utf8CString());
     }
+    mutated_ = true;
 }
 
 void Scope::changeInitializedBy(int c) {
@@ -56,15 +57,25 @@ void Scope::initializerUnintializedVariablesCheck(const Token *errorToken, const
     for (auto it : map) {
         CompilerVariable *cv = it.second;
         if (cv->initialized <= 0 && !cv->type.optional) {
-            const char *variableName = cv->variable->name->value.utf8CString();
+            const char *variableName = cv->definitionToken->value.utf8CString();
             compilerError(errorToken, errorMessage, variableName);
+        }
+    }
+}
+
+void Scope::recommendFrozenVariables() {
+    for (auto it : map) {
+        CompilerVariable *cv = it.second;
+        if (!cv->frozen() && !cv->mutated()) {
+            const char *variableName = cv->definitionToken->value.utf8CString();
+            compilerWarning(cv->definitionToken, "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.", variableName);
         }
     }
 }
 
 int Scope::copyFromScope(Scope *copyScope, uint8_t offsetID) {
     for (auto it : copyScope->map) {
-        auto *var = new CompilerVariable(it.second->type, offsetID + it.second->id, it.second->initialized, true);
+        auto *var = new CompilerVariable(it.second->type, offsetID + it.second->id, it.second->initialized, true, it.second->definitionToken);
         setLocalVariable(it.first, var);
     }
     return (int)copyScope->map.size();

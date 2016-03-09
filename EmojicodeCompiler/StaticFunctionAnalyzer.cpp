@@ -135,7 +135,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token){
         }
         
         t.optional = false;
-        scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true));
+        scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true, varName));
     }
     else {
         parse(consumeToken(), token, typeBoolean);
@@ -255,7 +255,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             Type t = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), nullptr);
             
             uint8_t id = nextVariableID();
-            scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false));
+            scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false, varName));
             
             return typeNothingness;
         }
@@ -274,14 +274,14 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 writer.writeCoin(id);
                 
                 Type t = parse(consumeToken(), token);
-                scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, false));
+                scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, false, varName));
             }
             else {
                 if (cv->initialized <= 0) {
                     cv->initialized = 1;
                 }
                 
-                cv->frozenError(varName);
+                cv->mutate(varName);
                 
                 writeCoinForScopesUp(scopesUp, varName, 0x1B, 0x1D);
                 writer.writeCoin(cv->id);
@@ -303,7 +303,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             writer.writeCoin(id);
             
             Type t = parse(consumeToken(), token);
-            scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true));
+            scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true, varName));
             return typeNothingness;
         }
         case E_COOKING:
@@ -320,7 +320,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             }
             
             cv->uninitalizedError(varName);
-            cv->frozenError(varName);
+            cv->mutate(varName);
             
             if (!cv->type.compatibleTo(typeInteger, contextType)) {
                 ecCharToCharStack(token->value[0], ls);
@@ -446,7 +446,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             if(iteratee.type == TT_CLASS && iteratee.eclass == CL_LIST) {
                 //If the iteratee is a list, the Real-Time Engine has some special sugar
                 placeholder.write(0x65);
-                scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(iteratee.genericArguments[0], vID, true, false));
+                scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(iteratee.genericArguments[0], vID, true, true, variableToken));
             }
             else if(iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), contextType)) {
                 placeholder.write(0x64);
@@ -454,7 +454,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 if(iteratee.type == TT_CLASS && iteratee.eclass->ownGenericArgumentCount == 1) {
                     itemType = iteratee.genericArguments[iteratee.eclass->ownGenericArgumentCount - iteratee.eclass->genericArgumentCount];
                 }
-                scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, false));
+                scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, true, variableToken));
             }
             else {
                 auto iterateeString = iteratee.toString(contextType, true);
@@ -1024,7 +1024,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
     Scope methodScope(false);
     for (auto variable : callable.arguments) {
         uint8_t id = nextVariableID();
-        CompilerVariable *varo = new CompilerVariable(variable.type, id, true, false);
+        CompilerVariable *varo = new CompilerVariable(variable.type, id, true, true, callable.dToken);
         
         methodScope.setLocalVariable(variable.name, varo);
     }
@@ -1054,6 +1054,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
         }
     }
     
+    scoper.currentScope()->recommendFrozenVariables();
     scoper.popScope();
     noReturnError(callable.dToken);
     

@@ -14,22 +14,28 @@
 
 class CompilerVariable {
 public:
-    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen) : type(type), id(id), initialized(initd), frozen(frozen) {};
-    /** The type of the variable. **/
+    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen, const Token *token) : type(type), id(id), initialized(initd), definitionToken(token), frozen_(frozen) {};
+    /** The type of the variable. */
     Type type;
     /** The ID of the variable. */
     uint8_t id;
     /** The variable is initialized if this field is greater than 0. */
     int initialized;
-    /** Set for instance variables. */
-    Variable *variable;
-    /** Indicating whether variable was frozen. */
-    bool frozen;
+    /** The variable name token which defined this variable. */
+    const Token *definitionToken;
     
     /** Throws an error if the variable is not initalized. */
     void uninitalizedError(const Token *variableToken) const;
-    /** Throws an error if the variable is frozen. */
-    void frozenError(const Token *variableToken) const;
+    /** Marks the variable as mutated or issues an error if the variable is frozen. */
+    void mutate(const Token *variableToken);
+    
+    bool mutated() { return mutated_; }
+    bool frozen() { return frozen_; }
+private:
+    /** Indicating whether variable was frozen. */
+    bool frozen_;
+    /** Mutated */
+    bool mutated_ = false;
 };
 
 /** A variable scope */
@@ -53,6 +59,11 @@ public:
      * @params errorMessage The error message that will probably be issued. It should include @c %s for the name of the variable.
      */
     void initializerUnintializedVariablesCheck(const Token *errorToken, const char *errorMessage);
+    
+    /**
+     * Emits a warning for each non-frozen variable that has not been mutated.
+     */
+    void recommendFrozenVariables();
     
     /**
      * Copies the variable from the given scope. @c offsetID will be added to all variable IDs before inserting them into the scope.

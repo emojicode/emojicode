@@ -1,6 +1,6 @@
 🐇 💯 👈 🍇
   ✒️ 🐖 🏁 🍇
-    🍮 emptyList 🔷🍨🐚🔡🐸
+    🍦 emptyList 🔷🍨🐚🔡🐸
 
     ⛔️🐕 😛 🐔 emptyList 0 🔤Correct Length 0🔤
 
@@ -38,7 +38,7 @@
     ⛔️🐕 😛 🍺 🐽 emptyList 2 🔤Grüß dich🔤 🔤Index 2 Value Correct🔤
     ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
 
-    🍮 copiedList 🐮 emptyList
+    🍦 copiedList 🐮 emptyList
 
     ⛔️🐕 😛 🐔 emptyList 4 🔤Correct Length 4🔤
     ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤
@@ -53,7 +53,7 @@
     ⛔️🐕 😛 🍺 🐼 copiedList 🔤Sarah🔤 🔤🐼 Value Correct🔤
     ⛔️🐕 😛 🐔 copiedList 3 🔤Correct Length 3🔤
 
-    🍮 literalList 🍨 🔤Götz🔤 🔤Bert🔤 🔤Igor🔤 🔤Hans🔤 🔤Franz🔤 🍆
+    🍦 literalList 🍨 🔤Götz🔤 🔤Bert🔤 🔤Igor🔤 🔤Hans🔤 🔤Franz🔤 🍆
     ⛔️🐕 😛 🐔 literalList 5 🔤Correct Length 5🔤
     ⛔️🐕 😛 🍺🐼 literalList 🔤Franz🔤 🔤Pop = Franz🔤
     ⛔️🐕 😛 🐔 literalList 4 🔤Correct Length 4🔤
