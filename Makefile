@@ -11,7 +11,7 @@ COMPILER_SOURCES = $(wildcard $(COMPILER_SRCDIR)/*.cpp)
 COMPILER_OBJECTS = $(COMPILER_SOURCES:%.cpp=%.o)
 COMPILER_BINARY = emojicodec
 
-ENGINE_CFLAGS = -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler -std=gnu11 -Wall -Wno-unused-result -g $(if $(HEAP_SIZE),-DheapSize=$(HEAP_SIZE))
+ENGINE_CFLAGS = -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler -std=gnu11 -Wall -Wno-unused-result $(if $(HEAP_SIZE),-DheapSize=$(HEAP_SIZE))
 ENGINE_LDFLAGS = -lm -ldl -rdynamic
 
 ENGINE_SRCDIR = EmojicodeReal-TimeEngine
@@ -39,7 +39,7 @@ TESTS_DIR=tests
 all: builds $(COMPILER_BINARY) $(ENGINE_BINARY) $(addsuffix .so,$(PACKAGES)) dist
 
 $(COMPILER_BINARY): $(COMPILER_OBJECTS) EmojicodeReal-TimeEngine/utf8.o
-	$(CXX) $^ -o $(DIST)/$(COMPILER_BINARY) $(COMPILER_LDFLAGS) 
+	$(CXX) $^ -o $(DIST)/$(COMPILER_BINARY) $(COMPILER_LDFLAGS)
 
 $(COMPILER_OBJECTS): %.o: %.cpp
 	$(CXX) -c $< -o $@ $(COMPILER_CFLAGS)
