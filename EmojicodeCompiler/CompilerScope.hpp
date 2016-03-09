@@ -9,6 +9,7 @@
 #ifndef CompilerScope_hpp
 #define CompilerScope_hpp
 
+#include <forward_list>
 #include "EmojicodeCompiler.hpp"
 
 class CompilerVariable {
@@ -65,29 +66,29 @@ private:
     std::map<EmojicodeString, CompilerVariable*> map;
 };
 
-struct ScopeWrapper {
-    ScopeWrapper *topScope;
-    Scope *scope;
+class Scoper {
+public:
+    /**
+     * Retrieves a variable.
+     */
+    CompilerVariable* getVariable(const Token *variable, uint8_t *scopesUp);
+    
+    /**
+     * Sets a variable.
+     * All scopes will be searched, if the variable was set in a top scope before it will receive the new value. If the variable was not set before it will be set in the current scope.
+     */
+    void setVariable(const Token *variable, CompilerVariable *value);
+    
+    /** Returns the current scope */
+    Scope* currentScope();
+    
+    /** Returns the top scope of this scope. */
+    Scope* topScope();
+    
+    void popScope();
+    void pushScope(Scope *);
+private:
+    std::forward_list<Scope*> scopes;
 };
-
-extern ScopeWrapper *currentScopeWrapper;
-
-/** Pops current scope and returns it. */
-Scope* popScope();
-
-/** Push this scope to be the current scope. */
-void pushScope(Scope *scope);
-
-/**
- * Retrieves a variable.
- */
-CompilerVariable* getVariable(const Token *variable, uint8_t *scopesUp);
-
-/**
- * Sets a variable.
- * All scopes will be searched, if the variable was set in a top scope before it will receive the new value. If the variable was not set before it will be set in the current scope.
- */
-void setVariable(const Token *variable, CompilerVariable *value);
-
 
 #endif /* CompilerScope_hpp */

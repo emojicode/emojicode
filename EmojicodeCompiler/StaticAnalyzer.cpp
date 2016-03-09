@@ -27,6 +27,7 @@ void analyzeClass(Type classType, Writer &writer){
         writer.writeUInt16(eclass->index);
     }
     
+    Scoper scoper;
     Scope objectScope(true);
     
     //Get the ID offset for this eclass by summing up all superclasses instance variable counts
@@ -54,20 +55,20 @@ void analyzeClass(Type classType, Writer &writer){
         objectScope.setLocalVariable(var->name, cv);
     }
     
-    pushScope(&objectScope);
+    scoper.pushScope(&objectScope);
     
     for (auto method : eclass->methodList) {
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*method, writer, classType);
+        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*method, writer, classType, scoper);
     }
     
     for (auto initializer : eclass->initializerList) {
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*initializer, writer, classType, false, initializer);
+        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*initializer, writer, classType, scoper, false, initializer);
     }
     
-    popScope();
+    scoper.popScope();
     
     for (auto classMethod : eclass->classMethodList) {
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*classMethod, writer, classType, true);
+        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*classMethod, writer, classType, scoper, true);
     }
     
     if (eclass->instanceVariables.size() > 0 && eclass->initializerList.size() == 0) {

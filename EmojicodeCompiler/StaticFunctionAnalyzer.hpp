@@ -18,8 +18,8 @@ extern std::vector<const Token *> stringPool;
 
 class StaticFunctionAnalyzer {
 public:
-    static void writeAndAnalyzeProcedure(Procedure &procedure, Writer &writer, Type classType, bool inClassContext = false, Initializer *i = nullptr);
-    StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, Type contextType, Writer &writer);
+    static void writeAndAnalyzeProcedure(Procedure &procedure, Writer &writer, Type classType, Scoper &scoper, bool inClassContext = false, Initializer *i = nullptr);
+    StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, Type contextType, Writer &writer, Scoper &scoper);
     
     /** Performs the analyziation. */
     void analyze(bool compileDeadCode = false, Scope *copyScope = nullptr);
@@ -32,6 +32,8 @@ private:
     Callable &callable;
     /** The writer used for writing the byte code. */
     Writer &writer;
+    
+    Scoper &scoper;
     
     /** This points to the Initializer if we are analyzing an initializer. Set to @c nullptr in an initializer. */
     Initializer *initializer = nullptr;

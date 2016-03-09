@@ -84,9 +84,9 @@ uint8_t StaticFunctionAnalyzer::nextVariableID(){
 }
 
 void StaticFunctionAnalyzer::flowControlBlock(){
-    currentScopeWrapper->scope->changeInitializedBy(1);
+    scoper.currentScope()->changeInitializedBy(1);
     if (!inClassContext) {
-        currentScopeWrapper->topScope->scope->changeInitializedBy(1);
+        scoper.topScope()->changeInitializedBy(1);
     }
     
     flowControlDepth++;
@@ -107,9 +107,9 @@ void StaticFunctionAnalyzer::flowControlBlock(){
     
     effect = true;
     
-    currentScopeWrapper->scope->changeInitializedBy(-1);
+    scoper.currentScope()->changeInitializedBy(-1);
     if (!inClassContext) {
-        currentScopeWrapper->topScope->scope->changeInitializedBy(-1);
+        scoper.topScope()->changeInitializedBy(-1);
     }
     
     flowControlDepth--;
@@ -122,7 +122,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token){
         writer.writeCoin(0x3E);
         
         const Token *varName = consumeToken(VARIABLE);
-        if(currentScopeWrapper->scope->getLocalVariable(varName) != nullptr){
+        if(scoper.currentScope()->getLocalVariable(varName) != nullptr){
             compilerError(token, "Cannot redeclare variable.");
         }
         
@@ -135,7 +135,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token){
         }
         
         t.optional = false;
-        currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, 1, true));
+        scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true));
     }
     else {
         parse(consumeToken(), token, typeBoolean);
@@ -207,7 +207,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
             return typeSymbol;
         case VARIABLE: {
             uint8_t scopesUp;
-            CompilerVariable *cv = getVariable(token, &scopesUp);
+            CompilerVariable *cv = scoper.getVariable(token, &scopesUp);
             
             if(cv == nullptr){
                 const char *variableName = token->value.utf8CString();
@@ -248,14 +248,14 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_SHORTCAKE: {
             const Token *varName = consumeToken(VARIABLE);
             
-            if (currentScopeWrapper->scope->getLocalVariable(varName) != nullptr) {
+            if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
                 compilerError(token, "Cannot redeclare variable.");
             }
             
             Type t = Type::parseAndFetchType(contextType, currentNamespace, dynamismLevelFromSI(), nullptr);
             
             uint8_t id = nextVariableID();
-            currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false));
+            scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false));
             
             return typeNothingness;
         }
@@ -263,7 +263,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             const Token *varName = consumeToken(VARIABLE);
             
             uint8_t scopesUp;
-            CompilerVariable *cv = getVariable(varName, &scopesUp);
+            CompilerVariable *cv = scoper.getVariable(varName, &scopesUp);
             if(cv == nullptr){
                 //Not declared, declaring as local variable
                 
@@ -274,7 +274,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 writer.writeCoin(id);
                 
                 Type t = parse(consumeToken(), token);
-                currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, 1, false));
+                scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, false));
             }
             else {
                 if (cv->initialized <= 0) {
@@ -293,7 +293,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_SOFT_ICE_CREAM: {
             const Token *varName = consumeToken(VARIABLE);
             
-            if(currentScopeWrapper->scope->getLocalVariable(varName) != nullptr){
+            if(scoper.currentScope()->getLocalVariable(varName) != nullptr){
                 compilerError(token, "Cannot redeclare variable.");
             }
             
@@ -303,7 +303,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             writer.writeCoin(id);
             
             Type t = parse(consumeToken(), token);
-            currentScopeWrapper->scope->setLocalVariable(varName, new CompilerVariable(t, id, 1, true));
+            scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true));
             return typeNothingness;
         }
         case E_COOKING:
@@ -312,7 +312,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             //Fetch the old value
             uint8_t scopesUp;
-            CompilerVariable *cv = getVariable(varName, &scopesUp);
+            CompilerVariable *cv = scoper.getVariable(varName, &scopesUp);
             
             if (!cv) {
                 compilerError(token, "Unknown variable \"%s\"", varName->value.utf8CString());
@@ -432,7 +432,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             const Token *variableToken = consumeToken(VARIABLE);
             
-            if (currentScopeWrapper->scope->getLocalVariable(variableToken) != nullptr) {
+            if (scoper.currentScope()->getLocalVariable(variableToken) != nullptr) {
                 compilerError(variableToken, "Cannot redeclare variable.");
             }
             
@@ -446,7 +446,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             if(iteratee.type == TT_CLASS && iteratee.eclass == CL_LIST) {
                 //If the iteratee is a list, the Real-Time Engine has some special sugar
                 placeholder.write(0x65);
-                currentScopeWrapper->scope->setLocalVariable(variableToken, new CompilerVariable(iteratee.genericArguments[0], vID, true, false));
+                scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(iteratee.genericArguments[0], vID, true, false));
             }
             else if(iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), contextType)) {
                 placeholder.write(0x64);
@@ -454,7 +454,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 if(iteratee.type == TT_CLASS && iteratee.eclass->ownGenericArgumentCount == 1) {
                     itemType = iteratee.genericArguments[iteratee.eclass->ownGenericArgumentCount - iteratee.eclass->genericArgumentCount];
                 }
-                currentScopeWrapper->scope->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, false));
+                scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, false));
             }
             else {
                 auto iterateeString = iteratee.toString(contextType, true);
@@ -486,7 +486,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 break;
             }
             
-            currentScopeWrapper->topScope->scope->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be initialized before the use of 🐕.");
+            scoper.topScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be initialized before the use of 🐕.");
             
             return contextType;
         }
@@ -597,7 +597,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "You may not put a call to a superinitializer in a flow control structure.");
             }
             
-            currentScopeWrapper->topScope->scope->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be initialized before superinitializer.");
+            scoper.topScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be initialized before superinitializer.");
             
             writer.writeCoin(0x3D);
             
@@ -799,18 +799,18 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             auto variableCountPlaceholder = writer.writeCoinPlaceholder();
             auto coinCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
             
-            Scope *closingScope = currentScopeWrapper->scope;
+            Scope *closingScope = scoper.currentScope();
             if (!inClassContext) {
-                pushScope(currentScopeWrapper->topScope->scope);
+                scoper.pushScope(scoper.topScope()); //The object scope
             }
             
             function.firstToken = currentToken;
             
-            auto sca = StaticFunctionAnalyzer(function, currentNamespace, nullptr, inClassContext, contextType, writer);
+            auto sca = StaticFunctionAnalyzer(function, currentNamespace, nullptr, inClassContext, contextType, writer, scoper);
             sca.analyze(true, closingScope);
             
             if (!inClassContext) {
-                popScope();
+                scoper.popScope();
             }
             
             coinCountPlaceholder.write();
@@ -1008,8 +1008,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
     return typeNothingness;
 }
 
-StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, Type contextType, Writer &writer) :
-    callable(callable), writer(writer), initializer(i), inClassContext(inClassContext), contextType(contextType), currentNamespace(ns) {
+StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, Type contextType, Writer &writer, Scoper &scoper) :
+    callable(callable), writer(writer), scoper(scoper), initializer(i), inClassContext(inClassContext), contextType(contextType), currentNamespace(ns) {
     
 }
 
@@ -1017,7 +1017,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
     currentToken = callable.firstToken;
     
     if (initializer) {
-        currentScopeWrapper->scope->changeInitializedBy(-1);
+        scoper.currentScope()->changeInitializedBy(-1);
     }
     
     //Set the arguments to the method scope
@@ -1033,7 +1033,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
         variableCount += methodScope.copyFromScope(copyScope, nextVariableID());
     }
     
-    pushScope(&methodScope);
+    scoper.pushScope(&methodScope);
     
     bool emittedDeadCodeWarning = false;
     
@@ -1054,11 +1054,11 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
         }
     }
     
-    popScope();
+    scoper.popScope();
     noReturnError(callable.dToken);
     
     if (initializer) {
-        currentScopeWrapper->scope->initializerUnintializedVariablesCheck(initializer->dToken, "Instance variable \"%s\" must be initialized.");
+        scoper.currentScope()->initializerUnintializedVariablesCheck(initializer->dToken, "Instance variable \"%s\" must be initialized.");
         
         if (!calledSuper && contextType.eclass->superclass) {
             ecCharToCharStack(initializer->name, initializerName);
@@ -1067,7 +1067,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
     }
 }
 
-void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure &procedure, Writer &writer, Type classType, bool inClassContext, Initializer *i) {
+void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure &procedure, Writer &writer, Type classType, Scoper &scoper, bool inClassContext, Initializer *i) {
     writer.resetWrittenCoins();
     
     writer.writeEmojicodeChar(procedure.name);
@@ -1083,7 +1083,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure &procedure, Writ
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
     auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
     
-    auto sca = StaticFunctionAnalyzer(procedure, procedure.enamespace, i, inClassContext, classType, writer);
+    auto sca = StaticFunctionAnalyzer(procedure, procedure.enamespace, i, inClassContext, classType, writer, scoper);
     sca.analyze();
     
     variableCountPlaceholder.write(sca.localVariableCount());

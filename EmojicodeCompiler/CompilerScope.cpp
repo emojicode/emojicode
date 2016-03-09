@@ -9,7 +9,6 @@
 #include "CompilerScope.hpp"
 #include "Lexer.hpp"
 
-
 //MARK: Compiler Variables
 
 void CompilerVariable::uninitalizedError(const Token *variableToken) const {
@@ -23,8 +22,6 @@ void CompilerVariable::frozenError(const Token *variableToken) const {
         compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableToken->value.utf8CString());
     }
 }
-
-ScopeWrapper *currentScopeWrapper;
 
 void Scope::changeInitializedBy(int c) {
     for (auto it : map) {
@@ -41,21 +38,21 @@ Scope::~Scope() {
     }
 }
 
-void Scope::setLocalVariable(const Token *variable, CompilerVariable *value){
+void Scope::setLocalVariable(const Token *variable, CompilerVariable *value) {
     map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(variable->value, value));
 }
 
-void Scope::setLocalVariable(EmojicodeString string, CompilerVariable *value){
+void Scope::setLocalVariable(EmojicodeString string, CompilerVariable *value) {
     map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(string, value));
 }
 
-CompilerVariable* Scope::getLocalVariable(const Token *variable){
+CompilerVariable* Scope::getLocalVariable(const Token *variable) {
     auto it = map.find(variable->value);
     return it == map.end() ? nullptr : it->second;
 }
 
 /** Emits @c errorMessage if not all instance variable were initialized. @c errorMessage should include @c %s for the name of the variable. */
-void Scope::initializerUnintializedVariablesCheck(const Token *errorToken, const char *errorMessage){
+void Scope::initializerUnintializedVariablesCheck(const Token *errorToken, const char *errorMessage) {
     for (auto it : map) {
         CompilerVariable *cv = it.second;
         if (cv->initialized <= 0 && !cv->type.optional) {
@@ -65,7 +62,7 @@ void Scope::initializerUnintializedVariablesCheck(const Token *errorToken, const
     }
 }
 
-int Scope::copyFromScope(Scope *copyScope, uint8_t offsetID){
+int Scope::copyFromScope(Scope *copyScope, uint8_t offsetID) {
     for (auto it : copyScope->map) {
         auto *var = new CompilerVariable(it.second->type, offsetID + it.second->id, it.second->initialized, true);
         setLocalVariable(it.first, var);
@@ -73,52 +70,50 @@ int Scope::copyFromScope(Scope *copyScope, uint8_t offsetID){
     return (int)copyScope->map.size();
 }
 
-Scope* popScope(){
-    ScopeWrapper *sw = currentScopeWrapper;
-    currentScopeWrapper = currentScopeWrapper->topScope;
-    Scope *s = sw->scope;
-    delete sw;
-    return s;
-}
-
-void pushScope(Scope *scope){
-    ScopeWrapper *sw = new ScopeWrapper;
-    sw->topScope = currentScopeWrapper;
-    sw->scope = scope;
-    currentScopeWrapper = sw;
-}
-
-void setVariable(const Token *variable, CompilerVariable *value){
-    //Search all scopes up
-    for (ScopeWrapper *scopeWrapper = currentScopeWrapper; scopeWrapper != nullptr; scopeWrapper = scopeWrapper->topScope) {
-        if(scopeWrapper->scope->getLocalVariable(variable) != nullptr){
-            scopeWrapper->scope->setLocalVariable(variable, value);
+void Scoper::setVariable(const Token *variable, CompilerVariable *value) {
+    for (auto scope : scopes) {
+        if (scope->getLocalVariable(variable)) {
+            scope->setLocalVariable(variable, value);
             return;
         }
-        if (scopeWrapper->scope->stop) {
-            break;
+        if (scope->stop) {
+            return;
         }
     }
-
-    currentScopeWrapper->scope->setLocalVariable(variable, value);
+    
+    scopes.front()->setLocalVariable(variable, value);
 }
 
-CompilerVariable* getVariable(const Token *variable, uint8_t *scopesUp){
+CompilerVariable* Scoper::getVariable(const Token *variable, uint8_t *scopesUp) {
     *scopesUp = 0;
     
-    CompilerVariable *value;
-    ScopeWrapper *scopeWrapper = currentScopeWrapper;
-    for (; scopeWrapper != nullptr; scopeWrapper = scopeWrapper->topScope, (*scopesUp)++) {
-        if((value = scopeWrapper->scope->getLocalVariable(variable)) != nullptr){
-            return value;
+    CompilerVariable *cvar;
+    for (auto scope : scopes) {
+        if ((cvar = scope->getLocalVariable(variable)) != nullptr) {
+            return cvar;
         }
-        if (scopeWrapper->scope->stop) {
+        if (scope->stop) {
             break;
         }
+        (*scopesUp)++;
     }
     
     return nullptr;
 }
 
+Scope* Scoper::currentScope() {
+    return scopes.front();
+}
 
+Scope* Scoper::topScope() {
+    return *std::next(scopes.begin(), 1);
+}
+
+void Scoper::popScope() {
+    scopes.pop_front();
+}
+
+void Scoper::pushScope(Scope *scope) {
+    scopes.push_front(scope);
+}
 
