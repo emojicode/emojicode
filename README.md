@@ -34,7 +34,7 @@ Steps:
    cd emojicode
    ```
    
-    Beware of, that the master branch contains development code which probably contains bugs. If you want to build the latest stable release make sure to check it out first: `git checkout  v0.2-beta.3`
+    Beware of, that the master branch contains development code which probably contains bugs. If you want to build the latest stable release make sure to check it out first: `git checkout  v0.2.0-beta.3`
     
 2.  Then simply run
 
