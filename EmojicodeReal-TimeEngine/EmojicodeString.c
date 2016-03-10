@@ -354,7 +354,7 @@ static Something stringToCharacterList(Thread *thread){
     Object *list = newObject(CL_LIST);
     
     for (size_t i = 0; i < str->length; i++) {
-        listAppend(list->value, somethingSymbol(characters(str)[i]), thread);
+        listAppend(list, somethingSymbol(characters(str)[i]), thread);
     }
     return somethingObject(list);
 }
