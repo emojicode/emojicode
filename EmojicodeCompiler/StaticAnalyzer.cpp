@@ -206,7 +206,7 @@ void analyzeClassesAndWrite(FILE *fout){
     
     Package *pkg = nullptr;
     Class *eclass;
-    for (size_t i = 0; eclass = classes[i], i < classes.size(); i++) {
+    for (size_t i = 0; (i < classes.size()) && (eclass = classes[i]); i++) {
         if((pkg != eclass->package && pkgCount > 1) || !pkg){ //pkgCount > 1: Ignore the second s
             if (i > 0){
                 writer.writeByte(0);
