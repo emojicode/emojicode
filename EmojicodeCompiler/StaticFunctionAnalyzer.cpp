@@ -15,6 +15,8 @@
 
 std::vector<const Token *> stringPool;
 
+#define intelligentDynamismLevel() (inClassContext ? TypeDynamism(AllowDynamicClassType | AllowGenericTypeVariables) : AllowGenericTypeVariables)
+
 Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken, Type type) {
     auto returnType = parse(token, parentToken);
     if (!returnType.compatibleTo(type, typeContext)) {
@@ -58,7 +60,7 @@ std::vector<Type> StaticFunctionAnalyzer::checkGenericArguments(Procedure *p, co
     while (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_SPIRAL_SHELL) {
         consumeToken();
         
-        auto type = Type::parseAndFetchType(typeContext, currentNamespace, NoDynamism);
+        auto type = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel());
         k.push_back(type);
     }
     
@@ -253,8 +255,6 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
     compilerError(token, "Cannot determine expression’s return type.");
 }
 
-#define dynamismLevelFromSI() (inClassContext ? AllowDynamicClassType : NoDynamism)
-
 Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
     if(token->value[0] != E_RED_APPLE){
         //We need a chance to test whether the red apple’s return is used
@@ -269,7 +269,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "Cannot redeclare variable.");
             }
             
-            Type t = Type::parseAndFetchType(typeContext, currentNamespace, dynamismLevelFromSI(), nullptr);
+            Type t = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel(), nullptr);
             
             uint8_t id = nextVariableID();
             scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false, varName));
@@ -510,7 +510,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_UP_POINTING_RED_TRIANGLE: {
             writer.writeCoin(0x13);
             
-            Type type = Type::parseAndFetchType(typeContext, currentNamespace, dynamismLevelFromSI(), nullptr);
+            Type type = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel(), nullptr);
             
             if (type.type != TT_ENUM) {
                 compilerError(token, "The given type cannot be accessed.");
@@ -541,7 +541,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             writer.writeCoin(0x4);
             
             bool dynamic;
-            Type type = Type::parseAndFetchType(typeContext, currentNamespace, dynamismLevelFromSI(), &dynamic);
+            Type type = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel(), &dynamic);
             
             if (type.type != TT_CLASS) {
                 compilerError(token, "The given type cannot be initiatied.");
@@ -763,7 +763,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             const Token *methodToken = consumeToken(IDENTIFIER);
             
-            Type type = Type::parseAndFetchType(typeContext, currentNamespace, dynamismLevelFromSI(), nullptr);
+            Type type = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel(), nullptr);
             
             if (type.optional) {
                 compilerWarning(token, "Please remove useless 🍬.");

@@ -206,7 +206,7 @@ Type Type::resolveOn(TypeContext typeContext){
 
 const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional, EmojicodeChar currentNamespace){
     if (nextToken()->type == VARIABLE) {
-        compilerError(consumeToken(), "Not in a generic context.");
+        compilerError(consumeToken(), "Generic variables not allowed here.");
     }
     auto *className = consumeToken(IDENTIFIER);
     
