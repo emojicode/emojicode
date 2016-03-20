@@ -156,7 +156,7 @@ Something executeCallableExtern(Object *callable, Something *args, Thread *threa
         return ret;
     }
     else {
-        Closure *c = stackGetThis(thread)->value;
+        Closure *c = callable->value;
         
         Something *t = stackReserveFrame(c->this, c->variableCount, thread);
         memcpy(t, args, c->argumentCount * sizeof(Something));
@@ -744,13 +744,10 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             stackPush(stackGetThis(thread), 1, 0, thread);
             stackSetVariable(0, somethingObject(newObject(CL_CLOSURE)), thread);
             
-            uint8_t variableCount = consumeCoin(thread);
-            Object *capturedVariables = newArray(sizeof(Something) * variableCount);
-            
             Object *co = stackGetVariable(0, thread).object;
             Closure *c = co->value;
-            c->capturedVariables = capturedVariables;
             
+            c->variableCount = consumeCoin(thread);
             c->coinCount = consumeCoin(thread);
             c->tokenStream = thread->tokenStream;
             thread->tokenStream += c->coinCount;
@@ -760,8 +757,12 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             stackPop(thread);
             
-            Something *t = capturedVariables->value;
             c->capturedVariablesCount = consumeCoin(thread);
+            
+            Object *capturedVariables = newArray(sizeof(Something) * c->capturedVariablesCount);
+            c->capturedVariables = capturedVariables;
+            
+            Something *t = capturedVariables->value;
             for (uint_fast8_t i = 0; i < c->capturedVariablesCount; i++) {
                 t[i] = stackGetVariable(i, thread);
             }
@@ -789,12 +790,9 @@ Something parse(EmojicodeCoin coin, Thread *thread){
                 return performMethod(cmc->method, cmc->object, thread);
             }
             else {
-                {
-                    Closure *c = callable->value;
-                    
-                    stackPush(callable, c->variableCount, c->argumentCount, thread);
-                }
-                Closure *c = stackGetThis(thread)->value;
+                Closure *c = callable->value;
+                stackPush(callable, c->variableCount, c->argumentCount, thread);
+                
                 Something *cv = c->capturedVariables->value;
                 for (uint8_t i = 0; i < c->capturedVariablesCount; i++) {
                     stackSetVariable(c->argumentCount + i, cv[i], thread);

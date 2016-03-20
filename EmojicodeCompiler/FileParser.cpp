@@ -68,7 +68,8 @@ void reservedEmojis(const Token *token, const char *place){
         case E_HONEY_POT:
         case E_SOFT_ICE_CREAM:
         case E_ICE_CREAM:
-        case E_TANGERINE: {
+        case E_TANGERINE:
+        case E_SPIRAL_SHELL: {
             ecCharToCharStack(name, nameString);
             compilerError(token, "%s is reserved and cannot be used as %s name.", nameString, place);
         }
@@ -225,7 +226,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                     compilerError(token, "You exceeded the limit of 65,535 instance variables.");
                 }
 
-                auto type = Type::parseAndFetchType(eclass, theNamespace, AllowGenericTypeVariables, nullptr);
+                auto type = Type::parseAndFetchType(Type(eclass), theNamespace, AllowGenericTypeVariables, nullptr);
                 
                 eclass->instanceVariables.push_back(new Variable(ivarName, type));
             }
@@ -235,7 +236,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                     compilerError(token, "Invalid modifier 🐇.");
                 }
                 
-                Type type = Type::parseAndFetchType(eclass, theNamespace, NoDynamism, nullptr);
+                Type type = Type::parseAndFetchType(Type(eclass), theNamespace, NoDynamism, nullptr);
                 
                 if (type.optional) {
                     compilerError(token, "Please remove 🍬.");
@@ -257,8 +258,9 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 
                 if(staticOnType){
                     auto *classMethod = new ClassMethod(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken);
-                    classMethod->parseArgumentList(eclass, theNamespace);
-                    classMethod->parseReturnType(eclass, theNamespace);
+                    classMethod->parseGenericArguments(TypeContext(eclass, classMethod), theNamespace);
+                    classMethod->parseArgumentList(TypeContext(eclass, classMethod), theNamespace);
+                    classMethod->parseReturnType(TypeContext(eclass, classMethod), theNamespace);
                     classMethod->parseBody(allowNative);
                     
                     if(classMethod->name == E_CHEQUERED_FLAG){
@@ -282,8 +284,9 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                     reservedEmojis(methodName, "method");
                     
                     auto *method = new Method(methodName->value[0], accessLevel, final, eclass, theNamespace, token, override, documentationToken);
-                    method->parseArgumentList(eclass, theNamespace);
-                    method->parseReturnType(eclass, theNamespace);
+                    method->parseGenericArguments(TypeContext(eclass, method), theNamespace);
+                    method->parseArgumentList(TypeContext(eclass, method), theNamespace);
+                    method->parseReturnType(TypeContext(eclass, method), theNamespace);
                     method->parseBody(allowNative);
                     
                     eclass->addMethod(method);
@@ -299,8 +302,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 EmojicodeChar name = initializerName->value[0];
                 
                 Initializer *initializer = new Initializer(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken, required, canReturnNothingness);
-                
-                initializer->parseArgumentList(eclass, theNamespace);
+                initializer->parseArgumentList(TypeContext(eclass, initializer), theNamespace);
                 initializer->parseBody(allowNative);
                 
                 if (requiredInitializers) {
@@ -351,7 +353,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
         
         const Token *variable = consumeToken(VARIABLE);
         
-        Type t = Type::parseAndFetchType(eclass, theNamespace, NoDynamism, nullptr);
+        Type t = Type::parseAndFetchType(Type(eclass), theNamespace, NoDynamism, nullptr);
         eclass->genericArgumentContraints.push_back(t);
         
         Type rType(TT_REFERENCE, false);
@@ -385,7 +387,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
             iterator->second.reference += eclass->superclass->genericArgumentCount;
         }
         
-        type.parseGenericArguments(eclass, theNamespace, AllowGenericTypeVariables, token);
+        type.parseGenericArguments(Type(eclass), theNamespace, AllowGenericTypeVariables, token);
         
         if (type.optional){
             compilerError(classNameToken, "Please remove 🍬.");

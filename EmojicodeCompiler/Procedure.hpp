@@ -23,9 +23,9 @@ public:
     Callable(const Token *dToken) : dToken(dToken) {};
     
     /** Parses the arguments for this function. */
-    void parseArgumentList(Type ct, EmojicodeChar enamespace);
+    void parseArgumentList(TypeContext ct, EmojicodeChar enamespace);
     /** Parses the return type for this function if there is one specified. */
-    void parseReturnType(Type ct, EmojicodeChar theNamespace);
+    void parseReturnType(TypeContext ct, EmojicodeChar theNamespace);
     
     Arguments arguments;
     /** Return type of the method */
@@ -71,6 +71,11 @@ public:
     
     uint16_t vti;
     
+    /** The types for the generic arguments. */
+    std::vector<Type> genericArgumentContraints;
+    /** Generic type arguments as variables */
+    std::map<EmojicodeString, Type> genericArgumentVariables;
+    
     /** The namespace in which the procedure was defined. This does not necessarily match the class’s namespace. */
     EmojicodeChar enamespace;
     
@@ -81,6 +86,7 @@ public:
     
     void checkOverride(Procedure *superProcedure);
     
+    void parseGenericArguments(TypeContext ct, EmojicodeChar enamespace);
     void parseBody(bool allowNative);
     
     virtual Type type();

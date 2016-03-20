@@ -157,7 +157,7 @@ static Something listInsertBridge(Thread *thread){
     return NOTHINGNESS;
 }
 
-static Something listFromListBridge(Thread *thread){
+static Something listFromListBridge(Thread *thread){ //TODO: GC_Safe
     Object *listO = newObject(CL_LIST);
     List *list = listO->value;
     List *cpdList = stackGetThis(thread)->value;
@@ -173,6 +173,30 @@ static Something listFromListBridge(Thread *thread){
 static Something listShuffleInPlaceBridge(Thread *thread){
     listShuffleInPlace(stackGetThis(thread)->value);
     return NOTHINGNESS;
+}
+
+static Something listMapBridge(Thread *thread) {
+    Something somethingCallback = stackGetVariable(0, thread);
+    stackPush(stackGetThis(thread), 2, 0, thread);
+    stackSetVariable(1, somethingCallback, thread);
+    
+    List *list = stackGetThis(thread)->value;
+
+    Object *newListO = newObject(CL_LIST);
+    stackSetVariable(0, somethingObject(newListO), thread);
+    List *newList = newListO->value;
+    newList->capacity = list->capacity;
+    newList->items = newArray(sizeof(Something) * list->capacity);
+    
+    for (size_t i = 0; i < ((List *)stackGetThis(thread)->value)->count; i++) {
+        List *list = ((List *)stackGetThis(thread)->value);
+        Something sth = executeCallableExtern(stackGetVariable(1, thread).object, items(list) + i, thread);
+        listAppend(stackGetVariable(0, thread).object, sth, thread);
+    }
+
+    Something l = stackGetVariable(0, thread);
+    stackPop(thread);
+    return l;
 }
 
 MethodHandler listMethodForName(EmojicodeChar method){
@@ -193,6 +217,8 @@ MethodHandler listMethodForName(EmojicodeChar method){
             return listShuffleInPlaceBridge;
         case 0x1F42E: //🐮
             return listFromListBridge;
+        case 0x1F430: //🐰
+            return listMapBridge;
     }
     return NULL;
 }

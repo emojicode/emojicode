@@ -193,6 +193,13 @@
     be considered secure on any BSD or Linux system.
   🌮
   🐖 🐹 📻
+  🌮
+    Calls callback with each element in the list and appends the returned
+    value to the end of a new list.
+
+    Expect undefined behavior if you mutate the list from `callback`.
+  🌮
+  🐖 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 📻
 🍉
 
 🐋 📇 🍇

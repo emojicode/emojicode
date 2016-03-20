@@ -11,7 +11,7 @@
 #include "Procedure.hpp"
 #include "Lexer.hpp"
 
-void Callable::parseArgumentList(Type ct, EmojicodeChar enamespace){
+void Callable::parseArgumentList(TypeContext ct, EmojicodeChar enamespace){
     const Token *token;
     
     //Until the grape is found we parse arguments
@@ -28,7 +28,7 @@ void Callable::parseArgumentList(Type ct, EmojicodeChar enamespace){
     }
 }
 
-void Callable::parseReturnType(Type ct, EmojicodeChar theNamespace){
+void Callable::parseReturnType(TypeContext ct, EmojicodeChar theNamespace){
     if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
         consumeToken();
         returnType = Type::parseAndFetchType(ct, theNamespace, AllowGenericTypeVariables, nullptr);
@@ -50,7 +50,7 @@ Type Closure::type() {
 
 //MARK: Procedure
 
-static const Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep){
+static const Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep) {
     const Token *token = consumeToken();
     
     if (token->type != IDENTIFIER) {
@@ -70,7 +70,28 @@ static const Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep){
     return token;
 }
 
-void Procedure::parseBody(bool allowNative){
+void Procedure::parseGenericArguments(TypeContext ct, EmojicodeChar enamespace) {
+    const Token *token;
+    
+    //Until the grape is found we parse arguments
+    while ((token = nextToken()) && token->type == IDENTIFIER && token->value[0] == E_SPIRAL_SHELL) { //grape
+        consumeToken();
+        const Token *variable = consumeToken(VARIABLE);
+        
+        Type t = Type::parseAndFetchType(Type(eclass), enamespace, AllowGenericTypeVariables, nullptr);
+        genericArgumentContraints.push_back(t);
+        
+        Type rType(TT_LOCAL_REFERENCE, false);
+        rType.reference = genericArgumentVariables.size();
+        
+        if (genericArgumentVariables.count(variable->value)) {
+            compilerError(variable, "A generic argument variable with the same name is already in use.");
+        }
+        genericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable->value, rType));
+    }
+}
+
+void Procedure::parseBody(bool allowNative) {
     if(nextToken()->value[0] == E_RADIO){
         const Token *t = consumeToken(IDENTIFIER);
         if(!allowNative){
@@ -93,7 +114,7 @@ void Procedure::parseBody(bool allowNative){
     while ((token = until(E_WATERMELON, E_GRAPES, &d)) != nullptr);
 }
 
-void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type contextType){
+void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type contextType) {
     if(superProcedure->final){
         ecCharToCharStack(this->name, mn);
         compilerError(this->dToken, "%s of %s was marked 🔏.", on, mn);

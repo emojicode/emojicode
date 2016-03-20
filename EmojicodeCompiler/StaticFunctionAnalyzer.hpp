@@ -18,8 +18,8 @@ extern std::vector<const Token *> stringPool;
 
 class StaticFunctionAnalyzer {
 public:
-    static void writeAndAnalyzeProcedure(Procedure &procedure, Writer &writer, Type classType, Scoper &scoper, bool inClassContext = false, Initializer *i = nullptr);
-    StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, Type contextType, Writer &writer, Scoper &scoper);
+    static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, Scoper &scoper, bool inClassContext = false, Initializer *i = nullptr);
+    StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, TypeContext contextType, Writer &writer, Scoper &scoper);
     
     /** Performs the analyziation. */
     void analyze(bool compileDeadCode = false, Scope *copyScope = nullptr);
@@ -52,7 +52,7 @@ private:
     /** Whether the superinitializer has been called. */
     bool calledSuper = false;
     /** The class type of the eclass which is compiled. */
-    Type contextType;
+    TypeContext typeContext;
     
     EmojicodeChar currentNamespace;
     
@@ -78,11 +78,14 @@ private:
      * Checks that the given Procedure can be called from this context.
      */
     void checkAccess(Procedure *p, const Token *token, const char *type);
+    
+    std::vector<Type> checkGenericArguments(Procedure *p, const Token *token);
+    
     /**
      * Parses and validates the arguments for a function.
      * @param calledType The type on which the function is executed. Can be Nothingness.
      */
-    void checkArguments(Arguments arguments, Type calledType, const Token *token);
+    void checkArguments(Arguments arguments, TypeContext calledType, const Token *token);
     
     /** 
      * Writes a command to access a variable.

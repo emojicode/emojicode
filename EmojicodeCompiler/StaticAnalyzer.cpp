@@ -57,17 +57,17 @@ void analyzeClass(Type classType, Writer &writer){
     scoper.pushScope(&objectScope);
     
     for (auto method : eclass->methodList) {
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*method, writer, classType, scoper);
+        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(method, writer, classType, scoper);
     }
     
     for (auto initializer : eclass->initializerList) {
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*initializer, writer, classType, scoper, false, initializer);
+        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(initializer, writer, classType, scoper, false, initializer);
     }
     
     scoper.popScope();
     
     for (auto classMethod : eclass->classMethodList) {
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(*classMethod, writer, classType, scoper, true);
+        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(classMethod, writer, classType, scoper, true);
     }
     
     if (eclass->instanceVariables.size() > 0 && eclass->initializerList.size() == 0) {

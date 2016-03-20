@@ -29,6 +29,7 @@ enum TypeType {
     TT_SOMEOBJECT,
     /** Used with generics */
     TT_REFERENCE,
+    TT_LOCAL_REFERENCE,
     TT_CALLABLE
 };
 
@@ -37,6 +38,9 @@ enum TypeDynamism {
     AllowGenericTypeVariables = 0b1,
     AllowDynamicClassType = 0b10
 };
+
+struct TypeContext;
+class Procedure;
 
 struct Type {
 public:
@@ -50,7 +54,7 @@ public:
     static const Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional, EmojicodeChar currentNamespace);
     
     /** Reads a type name and stores it into the given pointers. */
-    static Type parseAndFetchType(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType);
+    static Type parseAndFetchType(TypeContext tc, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType = nullptr);
     
     Type(TypeType t, bool o) : optional(o), type(t) {}
     Type(TypeType t, bool o, uint16_t r) : optional(o), type(t), reference(r) {}
@@ -70,30 +74,42 @@ public:
     };
     std::vector<Type> genericArguments;
     
-    bool compatibleTo(Type to, Type contenxtType);
+    bool compatibleTo(Type to, TypeContext tc);
     
     /** Returns the name of the package to which this type belongs. */
     const char* typePackage();
     
     /** Whether the given type is a valid argument for the generic argument at index @c i. */
-    void validateGenericArgument(Type type, uint16_t i, Type contextType, const Token *token);
+    void validateGenericArgument(Type type, uint16_t i, TypeContext tc, const Token *token);
 
     /** Called by @c parseAndFetchType and in the class parser. You usually should not call this method. */
-    void parseGenericArguments(Type contextType, EmojicodeChar theNamespace, TypeDynamism dynamism, const Token *errorToken);
+    void parseGenericArguments(TypeContext tc, EmojicodeChar theNamespace, TypeDynamism dynamism, const Token *errorToken);
     
     /**
      * Returns a depp string representation of the given type.
      * @param contextType The contextType. Can be Nothingeness if the type is not in a context.
      * @param includeNsAndOptional Whether to include optional indicators and the namespaces.
      */
-    std::string toString(Type contextType, bool includeNsAndOptional) const;
+    std::string toString(TypeContext contextType, bool includeNsAndOptional) const;
     
     /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
-    Type resolveOn(Type o);
+    Type resolveOn(TypeContext contextType);
+    
+    Type typeConstraintForReference(TypeContext ct);
 private:
-    void typeName(Type type, Type parentType, bool includeNsAndOptional, std::string *string) const;
-    Type typeConstraintForReference(Class *c);
+    void typeName(Type type, TypeContext typeContext, bool includeNsAndOptional, std::string *string) const;
     Type resolveOnSuperArguments(Class *c, bool *resolved);
+};
+
+struct TypeContext {
+public:
+    TypeContext(Type nt) : normalType(nt) {};
+    TypeContext(Type nt, Procedure *p) : normalType(nt), p(p) {};
+    TypeContext(Type nt, Procedure *p, std::vector<Type> *args) : normalType(nt), p(p), procedureGenericArguments(args) {};
+    
+    Type normalType;
+    Procedure *p = nullptr;
+    std::vector<Type> *procedureGenericArguments = nullptr;
 };
 
 #define typeInteger (Type(TT_INTEGER, false))
@@ -107,7 +123,7 @@ private:
 
 struct CommonTypeFinder {
     /** Tells the common type finder about the type of another element in the collection/data structure. */
-    void addType(Type t, Type contextType);
+    void addType(Type t, TypeContext typeContext);
     /** Returns the common type and issues a warning at @c warningToken if the common type is ambigious. */
     Type getCommonType(const Token *warningToken);
 private:
