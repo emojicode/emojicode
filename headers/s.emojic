@@ -64,7 +64,13 @@
   🌮
   🐈 🍨 list 🍨🐚🔡 separator 🔡 📻
 
-  🌮 Creates a string representation of the given integer. 🌮
+  🌮
+    Creates a string representation of the given integer.
+
+    The digits used to represent the integer are 
+    `0123456789abcdefghijklmnopqrstuvxyz`. Therefore you shouldn't use a base
+    greater than 35.
+  🌮
   🐈 🚂 integer 🚂 base 🚂 📻
 
   🌮
@@ -135,7 +141,15 @@
     Returns the number of bytes needed to encode this string into proper UTF8.
   🌮
   🐖 📐 ➡️ 🚂 📻
+  🌮
+    >!N Available from 0.2 Beta 4 which is yet to be released
 
+    This methods tries to construct an integer from this string in the given 
+    base. It returns the integer or Nothingness if the string does not match the 
+    regeular expression `[+-]?[0-9a-zA-Z]+` or it does not represent a valid 
+    value in the given base.
+  🌮
+  🐖 🚂 base 🚂 ➡️ 🍬🚂 📻
   🌮 Creates a new string by appending *symbol*. 🌮
   🐖 📝 symbol 🔣 ➡️ 🔡 📻
 

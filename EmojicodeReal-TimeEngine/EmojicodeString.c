@@ -432,10 +432,54 @@ static void stringFromInteger(Thread *thread){
     
     EmojicodeChar *characters = characters(string) + d;
     do
-        *--characters = '0' + (int)(a % base);
+        *--characters =  "0123456789abcdefghijklmnopqrstuvxyz"[a % base % 35];
     while (a /= base);
     
     if (negative) characters[-1] = '-';
+}
+
+static Something stringToInteger(Thread *thread){
+    EmojicodeInteger base = stackGetVariable(0, thread).raw;
+    String *string = (String *)stackGetThis(thread)->value;
+    
+    if (string->length == 0) {
+        return NOTHINGNESS;
+    }
+    
+    EmojicodeChar *characters = characters(string);
+    
+    EmojicodeInteger x = 0;
+    for (size_t i = 0; i < string->length; i++) {
+        if (i == 0 && (characters[i] == '-' || characters[i] == '+')) {
+            if (string->length < 2) {
+                return NOTHINGNESS;
+            }
+            continue;
+        }
+        
+        EmojicodeInteger b = base;
+        if ('0' <= characters[i] && characters[i] <= '9') {
+            b = characters[i] - '0';
+        }
+        else if ('A' <= characters[i] && characters[i] <= 'Z') {
+            b = characters[i] - 'A' + 10;
+        }
+        else if ('a' <= characters[i] && characters[i] <= 'z') {
+            b = characters[i] - 'a' + 10;
+        }
+        
+        if (b >= base) {
+            return NOTHINGNESS;
+        }
+        
+        x *= base;
+        x += b;
+    }
+    
+    if (characters[0] == '-') {
+        x *= -1;
+    }
+    return somethingInteger(x);
 }
 
 static void stringFromData(Thread *thread){
@@ -497,6 +541,8 @@ MethodHandler stringMethodForName(EmojicodeChar name){
             return stringToData;
         case 0x1F5DE: //🗞
             return stringJSON;
+        case 0x1F682: //🚂
+            return stringToInteger;
     }
     return NULL;
 }
