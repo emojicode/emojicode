@@ -186,7 +186,11 @@ Type Type::resolveOn(TypeContext typeContext){
         t = (*typeContext.procedureGenericArguments)[t.reference];
     }
     while (t.type == TT_REFERENCE) {
-        t = typeContext.normalType.genericArguments[t.reference];
+        Type tn = typeContext.normalType.genericArguments[t.reference];
+        if (tn.type == TT_REFERENCE && tn.reference == t.reference) {
+            break;
+        }
+        t = tn;
     }
     t.optional = optional;
     if (t.type == TT_CLASS) {

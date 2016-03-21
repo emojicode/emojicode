@@ -125,11 +125,6 @@ static Something listAppendBridge(Thread *thread){
     return NOTHINGNESS;
 }
 
-static void constructEmptyListBridge(Thread *thread){
-    //Nothing to do
-    //The Real-Time Engine guarantees pre-nulled objects.
-}
-
 static Something listGetBridge(Thread *thread){
     return listGet(stackGetThis(thread)->value, unwrapInteger(stackGetVariable(0, thread)));
 }
@@ -175,28 +170,17 @@ static Something listShuffleInPlaceBridge(Thread *thread){
     return NOTHINGNESS;
 }
 
-static Something listMapBridge(Thread *thread) {
-    Something somethingCallback = stackGetVariable(0, thread);
-    stackPush(stackGetThis(thread), 2, 0, thread);
-    stackSetVariable(1, somethingCallback, thread);
-    
+static void initListEmptyBridge(Thread *thread){
+    //Nothing to do
+    //The Real-Time Engine guarantees pre-nulled objects.
+}
+
+static void initListWithCapacity(Thread *thread){
+    EmojicodeInteger capacity = stackGetVariable(0, thread).raw;
+    Object *n = newArray(sizeof(Something) * capacity);
     List *list = stackGetThis(thread)->value;
-
-    Object *newListO = newObject(CL_LIST);
-    stackSetVariable(0, somethingObject(newListO), thread);
-    List *newList = newListO->value;
-    newList->capacity = list->capacity;
-    newList->items = newArray(sizeof(Something) * list->capacity);
-    
-    for (size_t i = 0; i < ((List *)stackGetThis(thread)->value)->count; i++) {
-        List *list = ((List *)stackGetThis(thread)->value);
-        Something sth = executeCallableExtern(stackGetVariable(1, thread).object, items(list) + i, thread);
-        listAppend(stackGetVariable(0, thread).object, sth, thread);
-    }
-
-    Something l = stackGetVariable(0, thread);
-    stackPop(thread);
-    return l;
+    list->capacity = capacity;
+    list->items = n;
 }
 
 MethodHandler listMethodForName(EmojicodeChar method){
@@ -217,12 +201,17 @@ MethodHandler listMethodForName(EmojicodeChar method){
             return listShuffleInPlaceBridge;
         case 0x1F42E: //🐮
             return listFromListBridge;
-        case 0x1F430: //🐰
-            return listMapBridge;
     }
     return NULL;
 }
 
-InitializerHandler listInitializerForName(EmojicodeChar method){
-    return constructEmptyListBridge;
+InitializerHandler listInitializerForName(EmojicodeChar name){
+    switch (name) {
+        case 0x1F427: //🐧
+            return initListWithCapacity;
+            break;
+        default:
+            return initListEmptyBridge;
+            break;
+    }
 }
