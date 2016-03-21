@@ -41,6 +41,9 @@ struct StartingFlag {
 extern StartingFlag startingFlag;
 extern bool foundStartingFlag;
 
+#undef major
+#undef minor
+
 struct PackageVersion {
     PackageVersion(uint16_t major, uint16_t minor) : major(major), minor(minor) {}
     /** The major version */
