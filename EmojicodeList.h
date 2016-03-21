@@ -12,8 +12,14 @@
 #include "EmojicodeAPI.h"
 
 struct List {
+    /** The number of elements in the list. */
     size_t count;
+    /** The capacity of the list. */
     size_t capacity;
+    /**
+     * The array which stores the list items which has a size of @c capacity * sizeof(Something).
+     * Can be @c NULL if @c capacity is 0.
+     */
     Object *items;
 };
 
