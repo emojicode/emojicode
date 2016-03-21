@@ -194,6 +194,8 @@
   🌮
   🐖 🐹 📻
   🌮
+    >!N Available from 0.2 Beta 4
+
     Calls callback with each element in the list and appends the returned
     value to the end of a new list.
 

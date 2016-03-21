@@ -104,7 +104,7 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *docume
         compilerError(classNameToken, "You exceeded the limit of 65,535 protocols.");
     }
     
-    auto protocol = new Protocol(name, enamespace, index++);
+    auto protocol = new Protocol(name, enamespace, index++, pkg);
     protocol->documentationToken = documentationToken;
     
     std::array<EmojicodeChar, 2> ns = {enamespace, name};

@@ -31,32 +31,59 @@ void reportDocumentation(const Token *documentationToken) {
     delete [] d;
 }
 
-void reportType(const char *key, Type type, bool last){
-    auto returnTypeName = type.toString(typeNothingness, false).c_str();
+void reportType(const char *key, Type type, bool last, TypeContext tc){
+    auto returnTypeName = type.toString(tc, false).c_str();
     
     if (key) {
-        printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s},", key, type.typePackage(), returnTypeName, type.optional ? "true" : "false");
+        printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s", key, type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
     }
     else {
         printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s", type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
     }
-    
-    delete [] returnTypeName;
 }
 
-void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last){
+void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Type> constraints, size_t superCount, TypeContext tc) {
+    printf("\"genericArguments\": [");
+    
+    auto gans = std::vector<EmojicodeString>(map.size());
+    for (auto it : map) {
+        gans[it.second.reference - superCount] = it.first;
+    }
+    
+    auto reported = false;
+    
+    for (size_t i = 0; i < gans.size(); i++) {
+        auto gan = gans[i];
+        auto utf8 = gan.utf8CString();
+        if (reported) {
+            printf(",");
+        }
+        printf("{\"name\": ");
+        printJSONStringToFile(utf8, stdout);
+        printf(",");
+        reportType("constraint", constraints[i], true, tc);
+        printf("}%s", i + 1 == gans.size() ? "" : ",");
+        delete [] utf8;
+        reported = true;
+    }
+    
+    printf("],");
+}
+
+void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, TypeContext tc){
     ecCharToCharStack(p->name, nameString);
     
     printf("{");
     printf("\"name\": \"%s\",", nameString);
     
     if (returnm == Return) {
-        reportType("returnType", p->returnType, false);
+        reportType("returnType", p->returnType, false, tc);
     }
     else if (returnm == CanReturnNothingness) {
         printf("\"canReturnNothingness\": true,");
     }
     
+    reportGenericArguments(p->genericArgumentVariables, p->genericArgumentContraints, 0, tc);
     reportDocumentation(p->documentationToken);
     
     printf("\"arguments\": [");
@@ -66,7 +93,7 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last){
         
         const char *varname = variable.name->value.utf8CString();
         
-        reportType("type", variable.type, false);
+        reportType("type", variable.type, false, tc);
         printf("\"name\":");
         printJSONStringToFile(varname, stdout);
         printf("}%s", i + 1 == p->arguments.size() ? "" : ",");
@@ -96,7 +123,8 @@ void report(const char *packageName){
         
         ecCharToCharStack(eclass->name, className);
         printf("\"name\": \"%s\",", className);
-        
+
+        reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentContraints, eclass->superGenericArguments.size(), TypeContext(eclass));
         reportDocumentation(eclass->documentationToken);
         
         if (eclass->superclass) {
@@ -107,28 +135,28 @@ void report(const char *packageName){
         printf("\"methods\": [");
         for(size_t i = 0; i < eclass->methodList.size(); i++){
             Method *method = eclass->methodList[i];
-            reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size());
+            reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size(), TypeContext(eclass, method));
         }
         printf("],");
         
         printf("\"initializers\": [");
         for(size_t i = 0; i < eclass->initializerList.size(); i++){
             Initializer *initializer = eclass->initializerList[i];
-            reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == eclass->initializerList.size());
+            reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == eclass->initializerList.size(), TypeContext(eclass, initializer));
         }
         printf("],");
         
         printf("\"classMethods\": [");
         for(size_t i = 0; i < eclass->classMethodList.size(); i++){
             ClassMethod *classMethod = eclass->classMethodList[i];
-            reportProcedureInformation((Procedure *)classMethod, Return, eclass->classMethodList.size() == i + 1);
+            reportProcedureInformation((Procedure *)classMethod, Return, eclass->classMethodList.size() == i + 1, TypeContext(eclass, classMethod));
         }
         printf("],");
         
         printf("\"conformsTo\": [");
         for(size_t i = 0; i < eclass->protocols().size(); i++){
             Protocol *protocol = eclass->protocols()[i];
-            reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size());
+            reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size(), TypeContext(eclass));
         }
         printf("]}");
     }
@@ -188,7 +216,7 @@ void report(const char *packageName){
         printf("\"methods\": [");
         for(size_t i = 0; i < protocol->methods().size(); i++){
             Method *method = protocol->methods()[i];
-            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methods().size());
+            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methods().size(), TypeContext(Type(protocol, false)));
         }
         printf("]}");
     }

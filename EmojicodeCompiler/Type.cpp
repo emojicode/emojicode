@@ -498,6 +498,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
             }
             
             stringAppendEc(E_RIGHTWARDS_ARROW, string);
+            stringAppendEc(0xFE0F, string);
             typeName(type.genericArguments[0], typeContext, includeNsAndOptional, string);
             stringAppendEc(E_WATERMELON, string);
             return;
@@ -519,6 +520,15 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
             return;
         }
         case TT_LOCAL_REFERENCE:
+            if (typeContext.p) {
+                for (auto it : typeContext.p->genericArgumentVariables) {
+                    if (it.second.reference == type.reference) {
+                        string->append(it.first.utf8CString());
+                        return;
+                    }
+                }
+            }
+            
             stringAppendEc('L', string);
             stringAppendEc('0' + type.reference, string);
             return;

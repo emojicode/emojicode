@@ -89,7 +89,7 @@ extern Class* getClass(EmojicodeChar name, EmojicodeChar enamespace);
 
 class Protocol {
 public:
-    Protocol(EmojicodeChar n, EmojicodeChar ns, uint_fast16_t i) : name(n), enamespace(ns), index(i) {}
+    Protocol(EmojicodeChar n, EmojicodeChar ns, uint_fast16_t i, Package *pkg) : name(n), enamespace(ns), package(pkg), index(i) {}
     
     /** The name of the protocol. */
     EmojicodeChar name;
