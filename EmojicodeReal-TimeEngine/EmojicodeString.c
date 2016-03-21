@@ -277,7 +277,7 @@ static Something stringLengthBridge(Thread *thread){
 
 static Something stringUTF8LengthBridge(Thread *thread){
     String *str = stackGetThis(thread)->value;
-    return somethingInteger((EmojicodeInteger)u8_codingsize(str->characters->value, str->length - 1));
+    return somethingInteger((EmojicodeInteger)u8_codingsize(str->characters->value, str->length));
 }
 
 static Something stringByAppendingSymbolBridge(Thread *thread){
