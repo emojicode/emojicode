@@ -212,6 +212,14 @@ typedef void (*InitializerHandler)(Thread *thread);
 typedef void (*Marker)(Object *self);
 typedef void (*Deinitializer)(void *value);
 
+/** The version of a package. Must follow semantic versioning 2.0 http://semver.org */
+typedef struct {
+    /** The major version */
+    uint16_t major;
+    /** The minor version */
+    uint16_t minor;
+} PackageVersion;
+
 /**
  * Generates a secure random number. The integer is either generated using arc4random_uniform if available
  * or by reading from @c /dev/urandmon.

@@ -208,7 +208,7 @@ int main(int argc, char * argv[]) {
     
     loadStandard();
     
-    Package pkg = Package("_", (PackageVersion){1, 0}, false);
+    Package pkg = Package("_", PackageVersion(1, 0), false);
     
     packages.push_back(&pkg);
     for (int i = 0; i < argc; i++) {

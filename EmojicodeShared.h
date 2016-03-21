@@ -27,14 +27,6 @@ typedef uint32_t EmojicodeCoin;
 #define packageDirectory "/usr/local/EmojicodePackages/"
 #define ByteCodeSpecificationVersion 3
 
-/** The version of a package. Must follow semantic versioning 2.0 http://semver.org */
-typedef struct {
-    /** The major version */
-    uint16_t major;
-    /** The minor version */
-    uint16_t minor;
-} PackageVersion;
-
 /**
  * @defined(isWhitespace)
  * @discussion Inserts a test if @c c is a whitespace

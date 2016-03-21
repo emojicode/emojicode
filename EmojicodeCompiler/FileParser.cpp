@@ -19,7 +19,7 @@ void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace){
     char *path;
     asprintf(&path, packageDirectory "%s/header.emojic", name);
     
-    Package *pkg = new Package(name, (PackageVersion){0, 0}, false);
+    Package *pkg = new Package(name, PackageVersion(0, 0), false);
     
     parseFile(path, pkg, true, enamespace);
     
@@ -504,7 +504,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
             delete [] majorString;
             delete [] minorString;
             
-            pkg->version = (PackageVersion){majori, minori};
+            pkg->version = PackageVersion(majori, minori);
             continue;
         }
         else if (theToken->value[0] == E_WALE) {

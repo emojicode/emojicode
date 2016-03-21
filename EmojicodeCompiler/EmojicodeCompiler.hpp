@@ -41,6 +41,14 @@ struct StartingFlag {
 extern StartingFlag startingFlag;
 extern bool foundStartingFlag;
 
+struct PackageVersion {
+    PackageVersion(uint16_t major, uint16_t minor) : major(major), minor(minor) {}
+    /** The major version */
+    uint16_t major;
+    /** The minor version */
+    uint16_t minor;
+};
+
 class Package {
 public:
     Package(const char *n, PackageVersion v, bool r) : name(n), version(v), requiresNativeBinary(r) {}
