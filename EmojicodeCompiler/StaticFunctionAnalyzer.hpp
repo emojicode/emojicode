@@ -16,6 +16,13 @@
 
 extern std::vector<const Token *> stringPool;
 
+struct FlowControlReturn {
+    int branches = 0;
+    int branchReturns = 0;
+    
+    bool returned() { return branches == branchReturns; }
+};
+
 class StaticFunctionAnalyzer {
 public:
     static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, Scoper &scoper, bool inClassContext = false, Initializer *i = nullptr);
@@ -101,6 +108,8 @@ private:
     uint8_t nextVariableID();
     
     void flowControlBlock();
+    
+    void flowControlReturnEnd(FlowControlReturn &fcr);
 };
 
 #endif /* StaticFunctionAnalyzer_hpp */

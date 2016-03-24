@@ -132,7 +132,14 @@ void StaticFunctionAnalyzer::flowControlBlock(){
     }
     
     flowControlDepth--;
-    returned = false;
+}
+
+void StaticFunctionAnalyzer::flowControlReturnEnd(FlowControlReturn &fcr) {
+    if (returned) {
+        fcr.branchReturns++;
+        returned = false;
+    }
+    fcr.branches++;
 }
 
 void StaticFunctionAnalyzer::parseIfExpression(const Token *token){
@@ -415,24 +422,33 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             writer.writeCoin(0x62);
             
             auto placeholder = writer.writeCoinsCountPlaceholderCoin();
+            auto fcr = FlowControlReturn();
             
             parseIfExpression(token);
             
             flowControlBlock();
+            flowControlReturnEnd(fcr);
             
             while ((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_LEMON) {
                 writer.writeCoin(consumeToken()->value[0]);
                 
                 parseIfExpression(token);
                 flowControlBlock();
+                flowControlReturnEnd(fcr);
             }
             
-            if((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_STRAWBERRY){
+            if((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_STRAWBERRY) {
                 writer.writeCoin(consumeToken()->value[0]);
                 flowControlBlock();
+                flowControlReturnEnd(fcr);
+            }
+            else {
+                fcr.branches++; // The else branch always exists. Theoretically at least.
             }
             
             placeholder.write();
+            
+            returned = fcr.returned();
             
             return typeNothingness;
         }
@@ -441,6 +457,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             parse(consumeToken(), token, typeBoolean);
             flowControlBlock();
+            returned = false;
             
             return typeNothingness;
         }
@@ -479,6 +496,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             }
             
             flowControlBlock();
+            returned = false;
             
             return typeNothingness;
         }
