@@ -11,7 +11,7 @@
 
 #include <string.h>
 
-#define items(list) ((Something *)list->items->value)
+#define items(list) ((Something *)(list)->items->value)
 
 void expandListSize(Thread *thread);
 
@@ -152,6 +152,49 @@ static Something listInsertBridge(Thread *thread){
     return NOTHINGNESS;
 }
 
+static void listQSort(Thread *thread, size_t off, size_t n) {
+    if (n < 2)
+        return;
+    
+    Something *items = items((List *)stackGetThis(thread)->value) + off;
+    Something pivot = items[n / 2];
+    size_t i, j;
+    
+    for (i = 0, j = n - 1; ; i++, j--) {
+        while (true) {
+            Something args[2] = {items[i], pivot};
+            EmojicodeInteger c = executeCallableExtern(stackGetVariable(0, thread).object, args, thread).raw;
+            items = items((List *)stackGetThis(thread)->value) + off;
+            if (c >= 0) break;
+            i++;
+        }
+        
+        while (true) {
+            Something args[2] = {pivot, items[j]};
+            EmojicodeInteger c = executeCallableExtern(stackGetVariable(0, thread).object, args, thread).raw;
+            items = items((List *)stackGetThis(thread)->value) + off;
+            if (c >= 0) break;
+            j--;
+        }
+        
+        if (i >= j)
+            break;
+        
+        Something temp = items[i];
+        items[i] = items[j];
+        items[j] = temp;
+    }
+    
+    listQSort(thread, off, i);
+    listQSort(thread, off + i, n - i);
+}
+
+static Something listSort(Thread *thread){
+    List *list = stackGetThis(thread)->value;
+    listQSort(thread, 0, list->count);
+    return NOTHINGNESS;
+}
+
 static Something listFromListBridge(Thread *thread){ //TODO: GC_Safe
     Object *listO = newObject(CL_LIST);
     List *list = listO->value;
@@ -201,6 +244,8 @@ MethodHandler listMethodForName(EmojicodeChar method){
             return listShuffleInPlaceBridge;
         case 0x1F42E: //🐮
             return listFromListBridge;
+        case 0x1F981: //🦁
+            return listSort;
     }
     return NULL;
 }

@@ -209,6 +209,17 @@
   🐖 🐼 ➡️ 🍬Element 📻
 
   🌮
+    >!N Available from 0.2 Beta 4 which is yet to be released
+
+    Sorts this array in place using the quick sort algorithm.
+
+    `comparator` must return an integer less than, equal to, or greater than 0, 
+    if the first argument is considered respectively less than, equal to, or 
+    greater than the second.
+  🌮
+  🐖 🦁 comparator 🍇Element Element➡️🚂🍉 📻
+
+  🌮
     Shuffles the list in place using the Fisher Yates algorithm. The shuffle can
     be considered secure on any BSD or Linux system.
   🌮
@@ -254,6 +265,29 @@
       🍊 ❎ 🍭 callback element 🍇
         🍎 👎
       🍉
+    🍉
+    🍎 👍
+  🍉
+
+  🌮
+    >!N Available from 0.2 Beta 4 which is yet to be released
+
+    Tests whether this array and `other` are equal. Equality of two elements
+    is defined by `callback` which must return true if the first and the second
+    argument, which represent elements from this and the other array 
+    respectively, are equal. `callback` is not necessarily called at all.
+  🌮
+  🐖 🦄 🐚A⚪️ other 🍨🐚A callback 🍇Element A➡️👌🍉 ➡️ 👌 🍇
+    🍊 ❎ 😛 🐔 🐕 🐔 other 🍇
+      🍎 👎
+    🍉
+
+    🍮 i 0
+    🔁 ◀️ i 🐔 other 🍇
+      🍊 ❎ 🍭 callback 🍺🐽 🐕 i 🍺 🐽 other i 🍇
+        🍎 👎
+      🍉
+      🍫 i
     🍉
     🍎 👍
   🍉

@@ -53,6 +53,10 @@ Type Closure::type() {
 static const Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep) {
     const Token *token = consumeToken();
     
+    if (token == nullptr) {
+        compilerError(nullptr, "Unexpected end of program.");
+    }
+    
     if (token->type != IDENTIFIER) {
         return token;
     }
