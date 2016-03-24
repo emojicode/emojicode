@@ -69,7 +69,9 @@ void reservedEmojis(const Token *token, const char *place){
         case E_SOFT_ICE_CREAM:
         case E_ICE_CREAM:
         case E_TANGERINE:
-        case E_SPIRAL_SHELL: {
+        case E_SPIRAL_SHELL:
+        case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE:
+        case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
             ecCharToCharStack(name, nameString);
             compilerError(token, "%s is reserved and cannot be used as %s name.", nameString, place);
         }
