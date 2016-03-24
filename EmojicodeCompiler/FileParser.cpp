@@ -69,6 +69,8 @@ void reservedEmojis(const Token *token, const char *place){
         case E_SOFT_ICE_CREAM:
         case E_ICE_CREAM:
         case E_TANGERINE:
+        case E_WATERMELON:
+        case E_AUBERGINE:
         case E_SPIRAL_SHELL:
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE:
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
