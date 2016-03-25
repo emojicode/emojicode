@@ -384,3 +384,24 @@
   🌮
   🐇🐖 🕰 seconds 🚂 📻
 🍉
+
+🌮
+  Represents a range which per definition is an an immutable sequence of 
+  numbers.
+🌮
+🐇 ⏩ 🍇
+  🌮
+    Creates an range from start to stop.
+  🌮
+  🐈 ⏩ start 🚂 stop 🚂 📻
+  🌮 
+    Creates an range from start to stop with the given step.
+  🌮
+  🐈 ⏭ start 🚂 stop 🚂 step 🚂 📻
+  🌮 
+    Returns the `n`th element of the range. `n` is only valid if 
+    `start + step * n` is `>= start` and `< stop`. If `n` is invalid 
+    Nothingness is returned. 
+  🌮
+  🐖 🐽 n 🚂 ➡️ 🍬🚂 📻
+🍉

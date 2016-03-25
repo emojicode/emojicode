@@ -17,18 +17,13 @@
 /* Very important one time declarations */
 
 Class *CL_STRING;
-
 Class *CL_LIST;
-
 Class *CL_ERROR;
-
 Class *CL_DATA;
-
 Class *CL_DICTIONARY;
-
 Protocol *PR_ENUMERATEABLE;
-
 Class *CL_ENUMERATOR;
+Class *CL_RANGE;
 
 Type Type::typeConstraintForReference(TypeContext ct){
     Type t = *this;
@@ -363,7 +358,7 @@ void Type::parseGenericArguments(TypeContext ct, EmojicodeChar theNamespace, Typ
             }
             
             if(count != this->eclass->ownGenericArgumentCount){
-                auto str = this->toString(typeNothingness, false);
+                auto str = this->toString(typeNothingness, true);
                 compilerError(errorToken, "Type %s requires %d generic arguments, but %d were given.", str.c_str(), this->eclass->ownGenericArgumentCount, count);
             }
         }
@@ -458,6 +453,10 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
     switch (type.type) {
         case TT_CLASS: {
             stringAppendEc(type.eclass->name, string);
+            
+            if (typeContext.normalType.type == TT_NOTHINGNESS) {
+                return;
+            }
             
             int offset = type.eclass->genericArgumentCount - type.eclass->ownGenericArgumentCount;
             for (int i = 0, l = type.eclass->ownGenericArgumentCount; i < l; i++) {

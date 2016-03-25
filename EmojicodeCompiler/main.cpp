@@ -41,7 +41,7 @@ char* EmojicodeString::utf8CString() const {
 static bool outputJSON = false;
 static bool gaveWarning = false;
 
-void printJSONStringToFile(const char *string, FILE *f){
+void printJSONStringToFile(const char *string, FILE *f) {
     char c;
     fputc('"', f);
     while ((c = *(string++))) {
@@ -79,7 +79,7 @@ void printJSONStringToFile(const char *string, FILE *f){
 
 //MARK: Warnings
 
-void compilerError(const Token *token, const char *err, ...){
+void compilerError(const Token *token, const char *err, ...) {
     va_list list;
     va_start(list, err);
     
@@ -113,7 +113,7 @@ void compilerError(const Token *token, const char *err, ...){
     exit(1);
 }
 
-void compilerWarning(const Token *token, const char *err, ...){
+void compilerWarning(const Token *token, const char *err, ...) {
     va_list list;
     va_start(list, err);
     
@@ -147,15 +147,25 @@ void compilerWarning(const Token *token, const char *err, ...){
     va_end(list);
 }
 
-void loadStandard(){
+Class* getStandardClass(EmojicodeChar name) {
+    auto cl = getClass(name, globalNamespace);
+    if (cl == nullptr) {
+        ecCharToCharStack(name, nameString)
+        compilerError(nullptr, "s package class %s is missing.", nameString);
+    }
+    return cl;
+}
+
+void loadStandard() {
     packageRegisterHeaderNewest("s", globalNamespace);
     
-    CL_STRING = classes[0];
-    CL_LIST = classes[1];
-    CL_ERROR = classes[2];
-    CL_DATA = classes[3];
-    CL_ENUMERATOR = classes[4];
-    CL_DICTIONARY = classes[5];
+    CL_STRING = getStandardClass(0x1F521);
+    CL_LIST = getStandardClass(0x1F368);
+    CL_ERROR = getStandardClass(0x1F6A8);
+    CL_DATA = getStandardClass(0x1F4C7);
+    CL_ENUMERATOR = getStandardClass(0x1F361);
+    CL_DICTIONARY = getStandardClass(0x1F36F);
+    CL_RANGE = getStandardClass(0x23E9);
     PR_ENUMERATEABLE = getProtocol(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY, globalNamespace);
 }
 

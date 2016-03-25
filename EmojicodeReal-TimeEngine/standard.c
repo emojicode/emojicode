@@ -93,6 +93,28 @@ static Something errorGetCode(Thread *thread){
     return somethingInteger((EmojicodeInteger)error->code);
 }
 
+//MARK: Range
+
+static void initRangeStartStop(Thread *thread) {
+    EmojicodeRange *range = stackGetThis(thread)->value;
+    range->step = 1;
+    range->start = stackGetVariable(0, thread).raw;
+    range->stop = stackGetVariable(1, thread).raw;
+}
+
+static void initRangeStartStopStep(Thread *thread) {
+    EmojicodeRange *range = stackGetThis(thread)->value;
+    range->start = stackGetVariable(0, thread).raw;
+    range->stop = stackGetVariable(1, thread).raw;
+    range->step = stackGetVariable(2, thread).raw;
+}
+
+static Something rangeGet(Thread *thread) {
+    EmojicodeRange *range = stackGetThis(thread)->value;
+    EmojicodeInteger h = range->start + stackGetVariable(0, thread).raw * range->step;
+    return range->start <= h && h < range->stop ? somethingInteger(h) : NOTHINGNESS;
+}
+
 //MARK: Data
 
 static Something dataEqual(Thread *thread){
@@ -162,6 +184,9 @@ MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol) {
             }
         case 0x1F36F:
             return dictionaryMethodForName(symbol);
+        case 0x23E9:
+            // case 0x1F43D: //pig nose
+            return rangeGet;
     }
     return NULL;
 }
@@ -178,6 +203,13 @@ InitializerHandler handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar 
             return newErrorBridge;
         case 0x1F36F: //Only dictionary contstructor 0x1F438
             return bridgeDictionaryInit;
+        case 0x23E9:
+            switch (symbol) {
+                case 0x23E9:
+                    return initRangeStartStop;
+                case 0x23ED:
+                    return initRangeStartStopStep;
+            }
     }
     return NULL;
 }
@@ -210,6 +242,8 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
             return sizeof(Closure);
         case 0x1F336:
             return sizeof(CapturedMethodCall);
+        case 0x23E9:
+            return sizeof(EmojicodeRange);
     }
     return 0;
 }

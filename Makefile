@@ -84,6 +84,7 @@ tests:
 	$(call testFile,primitiveMethodsTest)
 	$(call testFile,listTest)
 	$(call testFile,dictionaryTest)
+	$(call testFile,rangeTest)
 	$(call testFile,fileTest)
 
 dist:

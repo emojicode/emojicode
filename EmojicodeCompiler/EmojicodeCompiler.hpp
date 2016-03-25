@@ -99,6 +99,7 @@ extern Class *CL_ERROR;
 extern Class *CL_DATA;
 extern Class *CL_DICTIONARY;
 extern Class *CL_ENUMERATOR;
+extern Class *CL_RANGE;
 extern Protocol *PR_ENUMERATEABLE;
 
 extern std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;

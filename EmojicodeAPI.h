@@ -34,6 +34,7 @@ extern Class *CL_DICTIONARY;
 extern Class *CL_ENUMERATOR;
 extern Class *CL_CAPTURED_METHOD_CALL;
 extern Class *CL_CLOSURE;
+extern Class *CL_RANGE;
 
 typedef struct Object {
     /** The object’s class. */
@@ -112,6 +113,12 @@ typedef struct {
     const char *message;
     EmojicodeInteger code;
 } EmojicodeError;
+
+typedef struct {
+    EmojicodeInteger start;
+    EmojicodeInteger stop;
+    EmojicodeInteger step;
+} EmojicodeRange;
 
 extern Object* newError(const char *message, int code);
 

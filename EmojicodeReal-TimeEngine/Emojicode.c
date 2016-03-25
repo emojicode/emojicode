@@ -27,6 +27,7 @@ Class *CL_ENUMERATOR;
 Class *CL_DICTIONARY;
 Class *CL_CAPTURED_METHOD_CALL;
 Class *CL_CLOSURE;
+Class *CL_RANGE;
 
 //MARK: Coins
 
@@ -606,6 +607,27 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             return sm;
         }
+        case 0x53: {
+            EmojicodeInteger start = parse(consumeCoin(thread), thread).raw;
+            EmojicodeInteger stop = parse(consumeCoin(thread), thread).raw;
+            Object *object = newObject(CL_RANGE);
+            EmojicodeRange *range = object->value;
+            range->start = start;
+            range->stop = stop;
+            range->step = 1;
+            return somethingObject(object);
+        }
+        case 0x54: {
+            EmojicodeInteger start = parse(consumeCoin(thread), thread).raw;
+            EmojicodeInteger stop = parse(consumeCoin(thread), thread).raw;
+            EmojicodeInteger step = parse(consumeCoin(thread), thread).raw;
+            Object *object = newObject(CL_RANGE);
+            EmojicodeRange *range = object->value;
+            range->start = start;
+            range->stop = stop;
+            range->step = step;
+            return somethingObject(object);
+        }
         //MARK: Flow Control
         case 0x60: { //Red apple - return
             thread->returnValue = parse(consumeCoin(thread), thread);
@@ -677,11 +699,11 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         case 0x64: { //MARK: foreach
             //The destination variable
             EmojicodeCoin variable = consumeCoin(thread);
-            EmojicodeCoin enumeratorVindex = consumeCoin(thread);
             
             Object *iteratee = parse(consumeCoin(thread), thread).object;
             
             Something enumerator = performMethod(iteratee->class->protocolsTable[0][0], iteratee, thread);
+            EmojicodeCoin enumeratorVindex = consumeCoin(thread);
             stackSetVariable(enumeratorVindex, enumerator, thread);
             
             Method *nextMethod = enumerator.object->class->methodsVtable[0];
@@ -704,11 +726,11 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         case 0x65: { //MARK: foreach for lists
             //The destination variable
             EmojicodeCoin variable = consumeCoin(thread);
-            EmojicodeCoin listObjectVariable = consumeCoin(thread);
             
             //Get the list
             Something losm = parse(consumeCoin(thread), thread);
             
+            EmojicodeCoin listObjectVariable = consumeCoin(thread);
             stackSetVariable(listObjectVariable, losm, thread);
             List *list = losm.object->value;
             
@@ -716,6 +738,22 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             for (size_t i = 0, l = list->count; i < l; i++) {
                 stackSetVariable(variable, listGet(stackGetVariable(listObjectVariable, thread).object->value, i), thread);
+                
+                if(runBlock(thread)){
+                    return NOTHINGNESS;
+                }
+                thread->tokenStream = begin;
+            }
+            passBlock(thread);
+            
+            return NOTHINGNESS;
+        }
+        case 0x66: {
+            EmojicodeCoin variable = consumeCoin(thread);
+            EmojicodeRange range = *(EmojicodeRange *)parse(consumeCoin(thread), thread).object->value;
+            EmojicodeCoin *begin = thread->tokenStream;
+            for (EmojicodeInteger i = range.start; i < range.stop; i += range.step) {
+                stackSetVariable(variable, somethingInteger(i), thread);
                 
                 if(runBlock(thread)){
                     return NOTHINGNESS;

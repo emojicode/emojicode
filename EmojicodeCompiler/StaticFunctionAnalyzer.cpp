@@ -418,6 +418,19 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             return type;
         }
+        case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE: {
+            writer.writeCoin(0x53);
+            parse(consumeToken(), token, typeInteger);
+            parse(consumeToken(), token, typeInteger);
+            return Type(CL_RANGE);
+        }
+        case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
+            writer.writeCoin(0x54);
+            parse(consumeToken(), token, typeInteger);
+            parse(consumeToken(), token, typeInteger);
+            parse(consumeToken(), token, typeInteger);
+            return Type(CL_RANGE);
+        }
         case E_TANGERINE: { //MARK: If
             writer.writeCoin(0x62);
             
@@ -472,18 +485,23 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             uint8_t vID = nextVariableID();
             writer.writeCoin(vID);
-            //Internally needed
-            writer.writeCoin(nextVariableID());
             
             Type iteratee = parse(consumeToken(), token, typeSomeobject);
             
             if(iteratee.type == TT_CLASS && iteratee.eclass == CL_LIST) {
                 //If the iteratee is a list, the Real-Time Engine has some special sugar
                 placeholder.write(0x65);
+                writer.writeCoin(nextVariableID()); //Internally needed
                 scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(iteratee.genericArguments[0], vID, true, true, variableToken));
+            }
+            else if(iteratee.type == TT_CLASS && iteratee.eclass == CL_RANGE) {
+                //If the iteratee is a range, the Real-Time Engine also has some special sugar
+                placeholder.write(0x66);
+                scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(typeInteger, vID, true, true, variableToken));
             }
             else if(iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), typeContext)) {
                 placeholder.write(0x64);
+                writer.writeCoin(nextVariableID()); //Internally needed
                 Type itemType = typeSomething;
                 if(iteratee.type == TT_CLASS && iteratee.eclass->ownGenericArgumentCount == 1) {
                     itemType = iteratee.genericArguments[iteratee.eclass->ownGenericArgumentCount - iteratee.eclass->genericArgumentCount];

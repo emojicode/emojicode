@@ -269,6 +269,7 @@ ClassMethod* readBytecode(FILE *in, Class **cl){
     CL_DICTIONARY = classTable[5];
     CL_CAPTURED_METHOD_CALL = classTable[6];
     CL_CLOSURE = classTable[7];
+    CL_RANGE = classTable[9];
     
     stringPoolCount = readUInt16(in);
     stringPool = malloc(sizeof(Object*) * stringPoolCount);
