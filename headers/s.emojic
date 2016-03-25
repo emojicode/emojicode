@@ -386,8 +386,10 @@
 🍉
 
 🌮
-  Represents a range which per definition is an an immutable sequence of 
+  Represents a range which per definition is an immutable sequence of 
   numbers.
+
+  >!N Available from 0.2 Beta 4 which is yet to be released
 🌮
 🐇 ⏩ 🍇
   🌮
