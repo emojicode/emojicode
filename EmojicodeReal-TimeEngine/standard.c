@@ -117,7 +117,7 @@ static Something rangeGet(Thread *thread) {
 
 //MARK: Data
 
-static Something dataEqual(Thread *thread){
+static Something dataEqual(Thread *thread) {
     Data *d = stackGetThis(thread)->value;
     Data *b = stackGetVariable(0, thread).object->value;
     
@@ -133,10 +133,34 @@ static Something dataEqual(Thread *thread){
     return EMOJICODE_TRUE;
 }
 
-static Something dataSize(Thread *thread){
+static Something dataSize(Thread *thread) {
     Data *d = stackGetThis(thread)->value;
     return somethingInteger((EmojicodeInteger)d->length);
 }
+
+static void dataMark(Object *o) {
+    Data *d = o->value;
+    if (d->bytesObject) {
+        mark(&d->bytesObject);
+        d->bytes = d->bytesObject->value;
+    }
+}
+
+static Something dataGetByte(Thread *thread) {
+    Data *d = stackGetThis(thread)->value;
+    
+    EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
+    if (index < 0) {
+        index += d->length;
+    }
+    if (index < 0 || d->length <= index){
+        return NOTHINGNESS;
+    }
+    
+    return somethingInteger(d->bytes[index]);
+}
+
+//MARK: Callable
 
 static void closureMark(Object *o){
     Closure *c = o->value;
@@ -181,6 +205,8 @@ MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol) {
                     return dataEqual;
                 case 0x1F4CF: //📏
                     return dataSize;
+                case 0x1F43D:
+                    return dataGetByte;
             }
         case 0x1F36F:
             return dictionaryMethodForName(symbol);
@@ -260,14 +286,12 @@ Marker markerPointerForClass(EmojicodeChar cl){
             return closureMark;
         case 0x1F336:
             return capturedMethodMark;
+        case 0x1F4C7:
+            return dataMark;
     }
     return NULL;
 }
 
 Deinitializer deinitializerPointerForClass(EmojicodeChar cl){
-    switch (cl) {
-//        case 0x1F4C7:
-//            return releaseData;
-    }
     return NULL;
 }

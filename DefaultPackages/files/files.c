@@ -140,23 +140,6 @@ Something filesSize(Thread *thread){
 
 //Shortcuts
 
-Something fileStringPut(Thread *thread){
-    char *s = stringToChar(stackGetVariable(0, thread).object->value);
-    FILE *file = fopen(s, "w");
-    free(s);
-    
-    handleNEP(file == NULL);
-    
-    s = stringToChar(stackGetVariable(1, thread).object->value);
-    fwrite(s, 1, strlen(s), file);
-    free(s);
-    
-    handleNEP(ferror(file));
-    
-    fclose(file);
-    return NOTHINGNESS;
-}
-
 Something fileDataPut(Thread *thread){
     char *s = stringToChar(stackGetVariable(0, thread).object->value);
     FILE *file = fopen(s, "wb");
@@ -176,45 +159,9 @@ Something fileDataPut(Thread *thread){
     return NOTHINGNESS;
 }
 
-Something fileStringGet(Thread *thread){
-    char *s = stringToChar(stackGetVariable(0, thread).object->value);
-    FILE *file = fopen(s, "r");
-    free(s);
-    
-    if(file == NULL){
-        return NOTHINGNESS;
-    }
-    
-    fseek(file, 0, SEEK_END);
-    
-    long length = ftell(file);
-    
-    fseek(file, 0, SEEK_SET);
-    
-    char *stringBuffer = malloc(length + 1);
-    if (stringBuffer){
-        fread(stringBuffer, 1, length, file);
-        if(ferror(file)){
-            fclose(file);
-            return NOTHINGNESS;
-        }
-    }
-    else {
-        fclose(file);
-        return NOTHINGNESS;
-    }
-    fclose(file);
-    stringBuffer[length] = 0;
-        
-    Object *string = stringFromChar(stringBuffer);
-    free(stringBuffer);
-    
-    return somethingObject(string);
-}
-
 Something fileDataGet(Thread *thread){
     char *s = stringToChar(stackGetVariable(0, thread).object->value);
-    FILE *file = fopen(s, "r");
+    FILE *file = fopen(s, "rb");
     free(s);
     
     if(file == NULL){
@@ -227,24 +174,23 @@ Something fileDataGet(Thread *thread){
     
     state = fseek(file, 0, SEEK_SET);
     
-    char *stringBuffer = malloc(length);
-    if (stringBuffer){
-        fread(stringBuffer, 1, length, file);
-        if(ferror(file)){
-            fclose(file);
-            return NOTHINGNESS;
-        }
-    }
-    else {
+    Object *bytesObject = newArray(length);
+    fread(bytesObject->value, 1, length, file);
+    if(ferror(file)){
         fclose(file);
         return NOTHINGNESS;
     }
     fclose(file);
     
+    stackPush(bytesObject, 0, 0, thread);
+    
     Object *obj = newObject(CL_DATA);
     Data *data = obj->value;
-    data->bytes = stringBuffer;
     data->length = length;
+    data->bytesObject = stackGetThis(thread);
+    data->bytes = data->bytesObject->value;
+    
+    stackPop(thread);
     
     return somethingObject(obj);
 }
@@ -310,18 +256,23 @@ Something fileReadData(Thread *thread){
     FILE *f = file(stackGetThis(thread));
     EmojicodeInteger n = unwrapInteger(stackGetVariable(0, thread));
     
-    char *bytes = malloc(n);
+    Object *bytesObject = newArray(n);
     
-    size_t read = fread(bytes, 1, n, f);
+    size_t read = fread(bytesObject->value, 1, n, f);
     
-    if(read == 0 || ferror(f)){
+    if(read != n || ferror(f)){
         return NOTHINGNESS;
     }
     
+    stackPush(bytesObject, 0, 0, thread);
+    
     Object *obj = newObject(CL_DATA);
     Data *data = obj->value;
-    data->bytes = bytes;
     data->length = n;
+    data->bytesObject = stackGetThis(thread);
+    data->bytes = data->bytesObject->value;
+    
+    stackPop(thread);
     
     return somethingObject(obj);
 }
@@ -371,10 +322,6 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
     }
     else { //0x1F4C4
         switch (symbol) {
-            case 0x1F4BE:
-                return fileStringPut;
-            case 0x1F4D6:
-                return fileStringGet;
             case 0x1F4FB:
                 return fileDataPut;
             case 0x1F4C7:

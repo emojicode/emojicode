@@ -107,6 +107,7 @@ typedef struct String {
 typedef struct {
     EmojicodeInteger length;
     char *bytes;
+    Object *bytesObject;
 } Data;
 
 typedef struct {

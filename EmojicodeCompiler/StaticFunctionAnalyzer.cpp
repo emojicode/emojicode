@@ -815,7 +815,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             if (method == nullptr) {
                 auto classString = type.toString(typeContext, true);
                 ecCharToCharStack(methodToken->value[0], methodString);
-                compilerError(token, "%s has no eclass method %s", classString.c_str(), methodString);
+                compilerError(token, "%s has no class method %s", classString.c_str(), methodString);
             }
             
             writer.writeCoin(method->vti);

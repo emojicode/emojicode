@@ -140,16 +140,20 @@ static Something bridgeSQLiteStep(Thread *thread){
                     if(data != NULL){
                         int length = sqlite3_column_bytes(goSqlite3_stmt(stackGetThis(thread)), i);
                         
-                        Object *datao = newObject(CL_DATA);
-                        Data *data = datao->value;
+                        Object *bytesObject = newArray(length);
+                        memcpy(bytesObject->value, data, length);
                         
-                        char* bytes = malloc(length);
-                        memcpy(bytes, data, length);
+                        stackPush(bytesObject, 0, 0, thread);
                         
-                        data->bytes = bytes;
+                        Object *obj = newObject(CL_DATA);
+                        Data *data = obj->value;
                         data->length = length;
+                        data->bytesObject = stackGetThis(thread);
+                        data->bytes = data->bytesObject->value;
                         
-                        sth = somethingObject(datao);
+                        stackPop(thread);
+
+                        sth = somethingObject(obj);
                     }
                     break;
                 }

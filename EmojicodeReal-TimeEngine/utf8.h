@@ -102,6 +102,9 @@ char *u8_memrchr(const char *s, uint32_t ch, size_t sz);
 /* count the number of characters in a UTF-8 string */
 size_t u8_strlen(const char *s);
 
+/* count the number of characters in a UTF-8 string with the given length */
+size_t u8_strlen_l(const char *s, size_t length);
+
 /* number of columns occupied by a string */
 size_t u8_strwidth(const char *s);
 

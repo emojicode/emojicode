@@ -302,6 +302,15 @@
   🐖 😛 b 📇 ➡️ 👌 📻
   🌮 Returns the number of bytes represented by this instance. 🌮
   🐖 📏 ➡️ 🚂 📻
+  🌮 
+    >!N Available from 0.2 Beta 4 which is yet to be released
+
+    Returns an integer representing the value of the byte at the given index
+    `index`. A negative index is assumed to be relative to the end of the data.
+
+    Nothingness is returned if the index is out of range.
+  🌮
+  🐖 🐽 index 🚂 ➡️ 🍬🚂 📻
 🍉
 
 🐋 🍡 🍇

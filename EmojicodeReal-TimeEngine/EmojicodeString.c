@@ -340,12 +340,25 @@ static Something stringSplitBySymbolBridge(Thread *thread){
 }
 
 static Something stringToData(Thread *thread){
-    char *s = stringToChar(stackGetThis(thread)->value);
+    String *str = stackGetThis(thread)->value;
+    
+    size_t ds = u8_codingsize(characters(str), str->length);
+    
+    Object *bytesObject = newArray(ds);
+    
+    str = stackGetThis(thread)->value;
+    u8_toutf8(bytesObject->value, ds, characters(str), str->length);
+    
+    stackPush(bytesObject, 0, 0, thread);
     
     Object *o = newObject(CL_DATA);
     Data *d = o->value;
-    d->length = strlen(s);
-    d->bytes = s;
+    d->length = ds;
+    d->bytesObject = stackGetThis(thread);
+    d->bytes = d->bytesObject->value;
+    
+    stackPop(thread);
+    
     return somethingObject(o);
 }
 
@@ -489,7 +502,7 @@ static void stringFromData(Thread *thread){
         return;
     }
     
-    EmojicodeInteger len = u8_strlen(data->bytes);
+    EmojicodeInteger len = u8_strlen_l(data->bytes, data->length);
     Object *characters = newArray(len * sizeof(EmojicodeChar));
     
     String *string = stackGetThis(thread)->value;

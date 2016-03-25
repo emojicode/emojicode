@@ -105,25 +105,15 @@
   🐖 🔛 position 🔶🔴🚂 📻
   
   🌮
-    This class method tries to write the string encoded as UTF8 to the given
-    path. If the file already exists, it will be overwritten.
-  🌮
-  🐇🐖 💾 path 🔶🔴🔡 string 🔶🔴🔡 ➡️ 🍬🔶🔴🚨 📻
-  
-  🌮
-    This method reads a whole file, assuming it is encoded into proper UTF8.
-  🌮
-  🐇🐖 📖 path 🔶🔴🔡 ➡️ 🍬🔶🔴🔡 📻
-  
-  🌮
     This class method tries to write the given 📇 to the given path. If the file
     already exists, it will be overwritten.
   🌮
   🐇🐖 📻 path 🔶🔴🔡 data 🔶🔴📇 ➡️ 🍬🔶🔴🚨 📻 
   
   🌮
-    Reads as many bytes as specified from the file pointer position. Keep in 
-    mind that a byte is not equal to one character!
+    This class method tries to read the file at given path `path` and returns
+    a 📇 object representing its content on success. On failure Nothingness
+    is returned.
   🌮
   🐇🐖 📇 path 🔶🔴🔡 ➡️ 🍬🔶🔴📇 📻
   

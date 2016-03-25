@@ -240,6 +240,22 @@ size_t u8_strlen(const char *s)
     return count;
 }
 
+size_t u8_strlen_l(const char *s, size_t length) {
+    size_t count = 0;
+    size_t i = 0, lasti;
+    
+    while (1) {
+        lasti = i;
+        while (i < length)
+            i++;
+        count += (i-lasti);
+        if (i++ == length) break;
+        (void)(isutf(s[++i]) || isutf(s[++i]) || ++i);
+        count++;
+    }
+    return count;
+}
+
 int wcwidth(wchar_t c);
 
 size_t u8_strwidth(const char *s)
