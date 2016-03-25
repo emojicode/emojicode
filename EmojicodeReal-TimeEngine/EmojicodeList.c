@@ -46,16 +46,22 @@ Something listPop(List *list){
     return o;
 }
 
-bool listRemoveByIndex(List *list, size_t index){
-    if (list->count <= index){
+bool listRemoveByIndex(List *list, EmojicodeInteger index){
+    if (index < 0) {
+        index += list->count;
+    }
+    if (index < 0 || list->count <= index){
         return false;
     }
     memmove(items(list) + index, items(list) + index + 1, sizeof(Something) * (--list->count - index));
     return true;
 }
 
-Something listGet(List *list, size_t i){
-    if (list->count <= i){
+Something listGet(List *list, EmojicodeInteger i){
+    if (i < 0) {
+        i += list->count;
+    }
+    if (i < 0 || list->count <= i){
         return NOTHINGNESS;
     }
     return items(list)[i];
@@ -138,13 +144,21 @@ static Something listPopBridge(Thread *thread){
 }
 
 static Something listInsertBridge(Thread *thread){
+    EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
     List *list = stackGetThis(thread)->value;
+    
+    if (index < 0) {
+        index += list->count;
+    }
+    if (index < 0 || list->count <= index){
+        return NOTHINGNESS;
+    }
+    
     if (list->capacity - list->count == 0) {
         expandListSize(thread);
     }
     
     list = stackGetThis(thread)->value;
-    EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
     
     memmove(items(list) + index + 1, items(list) + index, sizeof(Something) * (list->count++ - index));
     items(list)[index] = stackGetVariable(1, thread);

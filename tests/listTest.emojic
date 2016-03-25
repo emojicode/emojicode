@@ -22,8 +22,11 @@
     ⛔️🐕 😛 🍺 🐽 emptyList 1 🔤Josef🔤 🔤Index 1 Value Correct🔤
     ⛔️🐕 😛 🍺 🐽 emptyList 2 🔤Grüß dich🔤 🔤Index 2 Value Correct🔤
     ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList -1 🔤Sarah🔤 🔤Index -1 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList -2 🔤Grüß dich🔤 🔤Index -2 Value Correct🔤
 
-    🐨 emptyList 0
+    ⛔️🐕 🐨 emptyList 0 🔤Remove by index success🔤
+    ⛔️🐕 ❎ 🐨 emptyList 899 🔤Remove by index failure🔤
 
     ⛔️🐕 😛 🐔 emptyList 3 🔤Correct Length 3🔤
     ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤
@@ -39,6 +42,15 @@
     ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
 
     🍦 copiedList 🐮 emptyList
+
+    🐵 emptyList -1 🔤Peter🔤
+
+    ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Peter🔤 🔤Index 3 Value Correct🔤
+    ⛔️🐕 😛 🍺 🐽 emptyList 4 🔤Sarah🔤 🔤Index 3 Value Correct🔤
+
+    🐨 emptyList -2
+
+    ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
 
     ⛔️🐕 😛 🐔 emptyList 4 🔤Correct Length 4🔤
     ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤

@@ -190,12 +190,16 @@
   🌮
     Removes the item at *index* and shifts all following items to the left in
     O(length - index).
+
+    Returns 👍 unless the index is out of range.
   🌮
-  🐖 🐨 index 🚂 📻
+  🐖 🐨 index 🚂 ➡️ 👌 📻
 
   🌮
-    Shifts all items beginning from *index* to the right and inserts *item* at
-    *index* in O(length - index).
+    Inserts the given values before the element with the given index.
+
+    All items beginning from *index* are shifted to the right and *item* is 
+    then inserted at *index*. Complexity: O(length - index).
   🌮
   🐖 🐵 index 🚂 item Element 📻
 

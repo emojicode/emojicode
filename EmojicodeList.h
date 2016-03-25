@@ -33,15 +33,9 @@ void listAppend(Object *lo, Something o, Thread *thread);
 Something listPop(List *list);
 
 /**
- * Removes the element at @c index. O(n - index)
- * @return @c false if index is out of bounds, otherwise @c true.
- */
-bool listRemoveByIndex(List *list, size_t index);
-
-/**
  * Returns the item at @c i or @c NULL if @c i is out of bounds.
  */
-Something listGet(List *list, size_t i);
+Something listGet(List *list, EmojicodeInteger i);
 
 /**
  * Creates a list by copying all references from @c cpdList.
