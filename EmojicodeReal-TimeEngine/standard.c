@@ -112,7 +112,7 @@ static void initRangeStartStopStep(Thread *thread) {
 static Something rangeGet(Thread *thread) {
     EmojicodeRange *range = stackGetThis(thread)->value;
     EmojicodeInteger h = range->start + stackGetVariable(0, thread).raw * range->step;
-    return range->start <= h && h < range->stop ? somethingInteger(h) : NOTHINGNESS;
+    return (range->step > 0 ? range->start <= h && h < range->stop : range->stop < h && h <= range->start) ? somethingInteger(h) : NOTHINGNESS;
 }
 
 //MARK: Data

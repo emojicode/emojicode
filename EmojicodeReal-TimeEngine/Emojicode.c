@@ -752,7 +752,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeCoin variable = consumeCoin(thread);
             EmojicodeRange range = *(EmojicodeRange *)parse(consumeCoin(thread), thread).object->value;
             EmojicodeCoin *begin = thread->tokenStream;
-            for (EmojicodeInteger i = range.start; i < range.stop; i += range.step) {
+            for (EmojicodeInteger i = range.start; i != range.stop; i += range.step) {
                 stackSetVariable(variable, somethingInteger(i), thread);
                 
                 if(runBlock(thread)){
