@@ -736,8 +736,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             EmojicodeCoin *begin = thread->tokenStream;
             
-            for (size_t i = 0, l = list->count; i < l; i++) {
-                stackSetVariable(variable, listGet(stackGetVariable(listObjectVariable, thread).object->value, i), thread);
+            for (size_t i = 0; i < (list = stackGetVariable(listObjectVariable, thread).object->value)->count; i++) {
+                stackSetVariable(variable, listGet(list, i), thread);
                 
                 if(runBlock(thread)){
                     return NOTHINGNESS;
