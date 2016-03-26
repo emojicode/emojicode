@@ -203,36 +203,45 @@ static void listQSort(Thread *thread, size_t off, size_t n) {
     listQSort(thread, off + i, n - i);
 }
 
-static Something listSort(Thread *thread){
+static Something listSort(Thread *thread) {
     List *list = stackGetThis(thread)->value;
     listQSort(thread, 0, list->count);
     return NOTHINGNESS;
 }
 
-static Something listFromListBridge(Thread *thread){ //TODO: GC_Safe
+static Something listFromListBridge(Thread *thread) {
     Object *listO = newObject(CL_LIST);
+    stackPush(stackGetThis(thread), 1, 0, thread);
+    stackSetVariable(0, somethingObject(listO), thread);
+    
     List *list = listO->value;
     List *cpdList = stackGetThis(thread)->value;
     
     list->count = cpdList->count;
     list->capacity = cpdList->capacity;
-    list->items = newArray(sizeof(Something) * cpdList->capacity);
+    
+    Object *items = newArray(sizeof(Something) * cpdList->capacity);
+    listO = stackGetVariable(0, thread).object;
+    list = listO->value;
+    cpdList = stackGetThis(thread)->value;
+    list->items = items;
     
     memcpy(items(list), items(cpdList), cpdList->count * sizeof(Something));
+    stackPop(thread);
     return somethingObject(listO);
 }
 
-static Something listShuffleInPlaceBridge(Thread *thread){
+static Something listShuffleInPlaceBridge(Thread *thread) {
     listShuffleInPlace(stackGetThis(thread)->value);
     return NOTHINGNESS;
 }
 
-static void initListEmptyBridge(Thread *thread){
+static void initListEmptyBridge(Thread *thread) {
     //Nothing to do
     //The Real-Time Engine guarantees pre-nulled objects.
 }
 
-static void initListWithCapacity(Thread *thread){
+static void initListWithCapacity(Thread *thread) {
     EmojicodeInteger capacity = stackGetVariable(0, thread).raw;
     Object *n = newArray(sizeof(Something) * capacity);
     List *list = stackGetThis(thread)->value;
@@ -240,7 +249,7 @@ static void initListWithCapacity(Thread *thread){
     list->items = n;
 }
 
-MethodHandler listMethodForName(EmojicodeChar method){
+MethodHandler listMethodForName(EmojicodeChar method) {
     switch (method) {
         case 0x1F43B: //bear
             return listAppendBridge;
