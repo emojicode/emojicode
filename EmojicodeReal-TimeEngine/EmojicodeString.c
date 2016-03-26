@@ -163,7 +163,6 @@ static Something stringSearchBridge(Thread *thread){
         if (found) {
             return somethingInteger(i);
         }
-        
     }
     return NOTHINGNESS;
 }
@@ -183,38 +182,41 @@ static Something stringTrimBridge(Thread *thread){
     return somethingObject(stringSubstring(stackGetThis(thread), start, stop - start + 1, thread));
 }
 
-static void stringGetInput(Thread *thread){ //TODO: remove? or at least improve
+static void stringGetInput(Thread *thread) {
     String *prompt = stackGetVariable(0, thread).object->value;
     char *utf8str = stringToChar(prompt);
     printf("%s\n", utf8str);
     fflush(stdout);
     free(utf8str);
     
-    int bufferSize = 150, oldBufferSize = 0;
+    int bufferSize = 50, oldBufferSize = 0;
     char *buffer = malloc(bufferSize);
+    size_t bufferUsedSize = 0;
     
-    while(true){
+    while (true) {
         fgets(buffer + oldBufferSize, bufferSize - oldBufferSize, stdin);
         
-        size_t len = strlen(buffer);
+        bufferUsedSize = strlen(buffer);
         
-        if(len < bufferSize - 1){
-            buffer[len - 1] = 0;
+        if(bufferUsedSize < bufferSize){
             break;
         }
         
-        oldBufferSize = bufferSize - 1;
+        oldBufferSize = bufferSize;
         bufferSize *= 2;
         buffer = realloc(buffer, bufferSize);
     }
 
-    EmojicodeInteger len = u8_strlen(buffer);
+    EmojicodeInteger len = u8_strlen_l(buffer, bufferUsedSize);
     
     String *string = stackGetThis(thread)->value;
     string->length = len;
     
-    string->characters = newArray(len * sizeof(EmojicodeChar));
-    u8_toucs(characters(string), len, buffer, strlen(buffer));
+    Object *chars = newArray(len * sizeof(EmojicodeChar));
+    string = stackGetThis(thread)->value;
+    string->characters = chars;
+    
+    u8_toucs(characters(string), len, buffer, bufferUsedSize);
     
     free(buffer); 
 }
