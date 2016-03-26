@@ -246,10 +246,10 @@ size_t u8_strlen_l(const char *s, size_t length) {
     
     while (1) {
         lasti = i;
-        while (i < length)
+        while (i < length && s[i] > 0)
             i++;
         count += (i-lasti);
-        if (i++ == length) break;
+        if (i + 1 >= length || s[i++]==0) break;
         (void)(isutf(s[++i]) || isutf(s[++i]) || ++i);
         count++;
     }
