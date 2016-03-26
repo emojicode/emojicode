@@ -614,7 +614,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeRange *range = object->value;
             range->start = start;
             range->stop = stop;
-            range->step = 1;
+            rangeSetDefaultStep(range);
             return somethingObject(object);
         }
         case 0x54: {
@@ -626,6 +626,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             range->start = start;
             range->stop = stop;
             range->step = step;
+            if (range->step == 0) rangeSetDefaultStep(range);
             return somethingObject(object);
         }
         //MARK: Flow Control

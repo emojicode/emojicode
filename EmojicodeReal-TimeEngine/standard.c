@@ -95,11 +95,15 @@ static Something errorGetCode(Thread *thread){
 
 //MARK: Range
 
+void rangeSetDefaultStep(EmojicodeRange *range) {
+    range->step = range->start > range->stop ? -1 : 1;
+}
+
 static void initRangeStartStop(Thread *thread) {
     EmojicodeRange *range = stackGetThis(thread)->value;
-    range->step = 1;
     range->start = stackGetVariable(0, thread).raw;
     range->stop = stackGetVariable(1, thread).raw;
+    rangeSetDefaultStep(range);
 }
 
 static void initRangeStartStopStep(Thread *thread) {
@@ -107,6 +111,7 @@ static void initRangeStartStopStep(Thread *thread) {
     range->start = stackGetVariable(0, thread).raw;
     range->stop = stackGetVariable(1, thread).raw;
     range->step = stackGetVariable(2, thread).raw;
+    if (range->step == 0) rangeSetDefaultStep(range);
 }
 
 static Something rangeGet(Thread *thread) {
