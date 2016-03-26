@@ -400,7 +400,8 @@
 
 🌮
   Represents a range which per definition is an immutable sequence of 
-  numbers.
+  numbers. [Read more in the
+  language reference.](../../reference/the-s-package.html#-ranges)
 
   >!N Available from 0.2 Beta 4 which is yet to be released
 🌮
