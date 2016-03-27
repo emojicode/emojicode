@@ -2,7 +2,7 @@
   ✒️ 🐖 🏁 🍇
     🍦 data1 📇 🔤This is a string.🔤
     🍦 data2 📇 🔤This is a string.🔤
-    🍦 data3 📇 🔤This isn’t a string.🔤
+    🍦 data3 📇 🔤This is b string.🔤
 
     ⛔️🐕 😛 data1 data2 🔤Equality test🔤
     ⛔️🐕 ❎😛 data1 data3 🔤Equality test🔤

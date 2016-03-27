@@ -131,7 +131,7 @@ static Something dataEqual(Thread *thread) {
         return EMOJICODE_FALSE;
     }
     
-    return memcmp(d->bytes, d->bytes, d->length) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+    return memcmp(d->bytes, b->bytes, d->length) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
 static Something dataSize(Thread *thread) {
