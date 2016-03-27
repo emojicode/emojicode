@@ -131,12 +131,7 @@ static Something dataEqual(Thread *thread) {
         return EMOJICODE_FALSE;
     }
     
-    for(size_t i = 0; i < d->length; i++){
-        if(d->bytes[i] != b->bytes[i])
-            return EMOJICODE_FALSE;
-    }
-    
-    return EMOJICODE_TRUE;
+    return memcmp(d->bytes, d->bytes, d->length) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
 static Something dataSize(Thread *thread) {

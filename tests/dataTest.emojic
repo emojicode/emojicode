@@ -2,8 +2,10 @@
   ✒️ 🐖 🏁 🍇
     🍦 data1 📇 🔤This is a string.🔤
     🍦 data2 📇 🔤This is a string.🔤
+    🍦 data3 📇 🔤This isn’t a string.🔤
 
     ⛔️🐕 😛 data1 data2 🔤Equality test🔤
+    ⛔️🐕 ❎😛 data1 data3 🔤Equality test🔤
     ⛔️🐕 😛 📏 data1 17 🔤Length 17🔤
     ⛔️🐕 😛 🍺 🐽 data1 0 0x54 🔤Byte value index 0🔤
     ⛔️🐕 😛 🍺 🐽 data1 5 0x69 🔤Byte value index 5🔤
