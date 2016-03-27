@@ -423,7 +423,9 @@
 🍉
 
 🌮
-  🚄 provides mathematical utilities.
+  🚄 provides mathematical functions as class methods.
+
+  >!N Available from 0.2 Beta 4 which is yet to be released
 🌮
 🐇 🚄 🍇
   🌮
