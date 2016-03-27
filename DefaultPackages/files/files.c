@@ -151,8 +151,6 @@ Something fileDataPut(Thread *thread){
     
     fwrite(d->bytes, 1, d->length, file);
     
-    free(s);
-    
     handleNEP(ferror(file));
     
     fclose(file);

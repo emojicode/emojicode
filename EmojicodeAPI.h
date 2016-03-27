@@ -122,6 +122,7 @@ typedef struct {
 } EmojicodeRange;
 
 extern Object* newError(const char *message, int code);
+extern void rangeSetDefaultStep(EmojicodeRange *range);
 
 
 //MARK: Callables

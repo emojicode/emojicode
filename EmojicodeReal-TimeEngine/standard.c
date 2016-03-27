@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 #include <inttypes.h>
 #include "Emojicode.h"
 #include "EmojicodeString.h"
@@ -95,11 +96,15 @@ static Something errorGetCode(Thread *thread){
 
 //MARK: Range
 
+void rangeSetDefaultStep(EmojicodeRange *range) {
+    range->step = range->start > range->stop ? -1 : 1;
+}
+
 static void initRangeStartStop(Thread *thread) {
     EmojicodeRange *range = stackGetThis(thread)->value;
-    range->step = 1;
     range->start = stackGetVariable(0, thread).raw;
     range->stop = stackGetVariable(1, thread).raw;
+    rangeSetDefaultStep(range);
 }
 
 static void initRangeStartStopStep(Thread *thread) {
@@ -107,12 +112,13 @@ static void initRangeStartStopStep(Thread *thread) {
     range->start = stackGetVariable(0, thread).raw;
     range->stop = stackGetVariable(1, thread).raw;
     range->step = stackGetVariable(2, thread).raw;
+    if (range->step == 0) rangeSetDefaultStep(range);
 }
 
 static Something rangeGet(Thread *thread) {
     EmojicodeRange *range = stackGetThis(thread)->value;
     EmojicodeInteger h = range->start + stackGetVariable(0, thread).raw * range->step;
-    return range->start <= h && h < range->stop ? somethingInteger(h) : NOTHINGNESS;
+    return (range->step > 0 ? range->start <= h && h < range->stop : range->stop < h && h <= range->start) ? somethingInteger(h) : NOTHINGNESS;
 }
 
 //MARK: Data
@@ -159,6 +165,61 @@ static Something dataGetByte(Thread *thread) {
     
     return somethingInteger(d->bytes[index]);
 }
+
+//MARK: Math
+
+static Something mathSin(Thread *thread) {
+    return somethingDouble(sin(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathCos(Thread *thread) {
+    return somethingDouble(cos(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathTan(Thread *thread) {
+    return somethingDouble(tan(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathASin(Thread *thread) {
+    return somethingDouble(asin(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathACos(Thread *thread) {
+    return somethingDouble(acos(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathATan(Thread *thread) {
+    return somethingDouble(atan(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathPow(Thread *thread) {
+    return somethingDouble(pow(stackGetVariable(0, thread).doubl, stackGetVariable(1, thread).doubl));
+}
+
+static Something mathSqrt(Thread *thread) {
+    return somethingDouble(sqrt(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathRound(Thread *thread) {
+    return somethingInteger(round(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathCeil(Thread *thread) {
+    return somethingInteger(ceil(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathFloor(Thread *thread) {
+    return somethingInteger(floor(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathRandom(Thread *thread) {
+    return somethingInteger(secureRandomNumber(stackGetVariable(0, thread).raw, stackGetVariable(1, thread).raw));
+}
+
+static Something mathLog2(Thread *thread) {
+    return somethingDouble(log2(stackGetVariable(0, thread).doubl));
+}
+
 
 //MARK: Callable
 
@@ -241,15 +302,48 @@ InitializerHandler handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar 
 }
 
 ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
-    switch (symbol) {
-        case 0x1F6AA:
-            return systemExit;
-        case 0x1F333:
-            return systemGetEnv;
-        case 0x1F30D:
-            return systemCWD;
-        case 0x1F570:
-            return sleepThread;
+    switch (cl) {
+        case 0x1F4BB: //💻
+            switch (symbol) {
+                case 0x1F6AA:
+                    return systemExit;
+                case 0x1F333:
+                    return systemGetEnv;
+                case 0x1F30D:
+                    return systemCWD;
+                case 0x1F570:
+                    return sleepThread;
+            }
+            break;
+        case 0x1F684: //🚄
+            switch (symbol) {
+                case 0x1f4d3: //📓
+                    return mathSin;
+                case 0x1f4d8: //📘
+                    return mathTan;
+                case 0x1f4d5: //📕
+                    return mathCos;
+                case 0x1f4d4: //📔
+                    return mathASin;
+                case 0x1f4d9: //📙
+                    return mathACos;
+                case 0x1f4d7: //📗
+                    return mathATan;
+                case 0x1f3c2: //🏂
+                    return mathPow;
+                case 0x26f7: //⛷
+                    return mathSqrt;
+                case 0x1f6b4: //🚴
+                    return mathCeil;
+                case 0x1f6b5: //🚵
+                    return mathFloor;
+                case 0x1f3c7: //🏇
+                    return mathRound;
+                case 0x1f3b0: //🎰
+                    return mathRandom;
+                case 0x1f6a3: //🚣
+                    return mathLog2;
+            }
     }
     return NULL;
 }

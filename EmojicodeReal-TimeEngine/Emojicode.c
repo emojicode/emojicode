@@ -614,7 +614,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeRange *range = object->value;
             range->start = start;
             range->stop = stop;
-            range->step = 1;
+            rangeSetDefaultStep(range);
             return somethingObject(object);
         }
         case 0x54: {
@@ -626,6 +626,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             range->start = start;
             range->stop = stop;
             range->step = step;
+            if (range->step == 0) rangeSetDefaultStep(range);
             return somethingObject(object);
         }
         //MARK: Flow Control
@@ -752,7 +753,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeCoin variable = consumeCoin(thread);
             EmojicodeRange range = *(EmojicodeRange *)parse(consumeCoin(thread), thread).object->value;
             EmojicodeCoin *begin = thread->tokenStream;
-            for (EmojicodeInteger i = range.start; i < range.stop; i += range.step) {
+            for (EmojicodeInteger i = range.start; i != range.stop; i += range.step) {
                 stackSetVariable(variable, somethingInteger(i), thread);
                 
                 if(runBlock(thread)){
