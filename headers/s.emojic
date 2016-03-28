@@ -95,6 +95,7 @@
     >!N and is only meant for use with non-localized sorting. The results of
     >!N the sort will always be the same, but may not appear logical to human
     >!N beings.
+
   🌮
   🐖 ↔️ b 🔡 ➡️ 🚂 📻
 
@@ -373,6 +374,7 @@
     Returns a list consisting of all keys in this 🍯.
 
     >!N Note that the keys in the returned list are arbitrarily ordered.
+
   🌮
   🐖 🐙 ➡️ 🍨🐚🔡 📻
 
@@ -414,6 +416,11 @@
     seconds specified by the arguments *seconds*.
   🌮
   🐇🐖 🕰 seconds 🚂 📻
+
+  🌮
+    Returns the current time in seconds since the Epoch in Greenwich Mean Time.
+  🌮
+  🐇🐖 🕐 ➡️ 🚂📻
 🍉
 
 🌮
@@ -522,4 +529,7 @@
     Returns the base 2 logarithm of `x`.
   🌮
   🐇🐖 🚣 x 🚀 ➡️ 🚀 📻
+
+  🌮 Returns the natural (base e) logarithm of `x`. 🌮
+  🐇🐖 🏄 x 🚀 ➡️ 🚀 📻
 🍉

@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <inttypes.h>
+#include <time.h>
 #include "Emojicode.h"
 #include "EmojicodeString.h"
 #include "EmojicodeList.h"
@@ -64,6 +65,10 @@ static Something systemCWD(Thread *thread){
 static Something sleepThread(Thread *thread){
     sleep((unsigned int)stackGetVariable(0, thread).raw);
     return NOTHINGNESS;
+}
+
+static Something systemTime(Thread *thread) {
+    return somethingInteger(time(NULL));
 }
 
 //MARK: Error
@@ -215,6 +220,10 @@ static Something mathLog2(Thread *thread) {
     return somethingDouble(log2(stackGetVariable(0, thread).doubl));
 }
 
+static Something mathLn(Thread *thread) {
+    return somethingDouble(log(stackGetVariable(0, thread).doubl));
+}
+
 
 //MARK: Callable
 
@@ -308,6 +317,8 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                     return systemCWD;
                 case 0x1F570:
                     return sleepThread;
+                case 0x1f550: //🕐
+                    return systemTime;
             }
             break;
         case 0x1F684: //🚄
@@ -338,6 +349,8 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                     return mathRandom;
                 case 0x1f6a3: //🚣
                     return mathLog2;
+                case 0x1f3c4: //🏄
+                    return mathLn;
             }
     }
     return NULL;

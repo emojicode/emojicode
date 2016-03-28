@@ -88,6 +88,7 @@ tests:
 	$(call testFile,dataTest)
 	$(call testFile,mathTest)
 	$(call testFile,fileTest)
+	$(call testFile,systemTest)
 
 dist:
 	rm -f $(DIST)/install.sh
