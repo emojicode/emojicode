@@ -73,7 +73,7 @@ Something dictionaryLookup(EmojicodeDictionary *dict, Object *key, Thread *threa
 bool dictionaryContains(EmojicodeDictionary *dict, Object *key);
 
 /** Get all keys as a list */
-Object* dictionaryKeys(Object **dicto, Thread *thread);
+Something dictionaryKeys(Object *dicto, Thread *thread);
 
 void dictionaryMark(Object *dict);
 
