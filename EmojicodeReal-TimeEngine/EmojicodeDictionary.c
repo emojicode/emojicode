@@ -228,7 +228,7 @@ void dictionaryPutVal(Object *dicto, Object *key, Something value, Thread *threa
     }
 }
 
-EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Object *key, Thread *thread){
+EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Object *key, Thread *thread) {
     size_t n = 0, index = 0;
     if (dict->buckets != NULL && (n = dict->bucketsCounter) > 0) {
         Object **bucko = dict->buckets->value;
@@ -272,18 +272,57 @@ void dictionaryRemove(EmojicodeDictionary *dict, Object *key, Thread *thread) {
     dictionaryRemoveNode(dict, dictionaryHash(dict, key), key, thread);
 }
 
-bool dictionaryContainsKey(EmojicodeDictionary *dict, Object *key) {
+bool dictionaryContains(EmojicodeDictionary *dict, Object *key) {
     return dictionaryGetNode(dict, dictionaryHash(dict, key), key) != NULL;
 }
 
-void dictionaryClear(EmojicodeDictionary *dict) {
-    if (dict->buckets != NULL && dict->size > 0) {
-        EmojicodeDictionaryNode **buck = dict->buckets->value;
-        dict->size = 0;
-        for (int i = 0; i < dict->bucketsCounter; ++i) {
-            buck[i] = NULL;
+size_t dictionaryClear(EmojicodeDictionary *dict) {
+    size_t sizeBefore = dict->size;
+    dict->loadFactor = DICTIONARY_DEFAULT_LOAD_FACTOR;
+    dict->size = 0;
+    dict->buckets = NULL;
+    dict->nextThreshold = 0;
+    return sizeBefore;
+}
+
+Something dictionaryKeys(Object *dicto, Thread *thread) {
+    stackPush(dicto, 2, 0, thread);
+    
+    {
+        Object *listObject = newObject(CL_LIST);
+        stackSetVariable(0, somethingObject(listObject), thread);
+        
+        dicto = stackGetThis(thread);
+        EmojicodeDictionary *dict = dicto->value;
+        
+        List *newList = listObject->value;
+        newList->capacity = dict->size;
+        Object *items = newArray(sizeof(Something) * dict->size);
+        ((List *)stackGetVariable(0, thread).object->value)->items = items;
+    }
+    
+    dicto = stackGetThis(thread);
+    EmojicodeDictionary *dict = dicto->value;
+    
+    for (size_t i = 0; i < dict->bucketsCounter; i++) {
+        Object **bucko = (Object **)dict->buckets->value;
+        Object *nodeo = bucko[i];
+        while (nodeo) {
+            stackSetVariable(1, somethingObject(nodeo), thread);
+            
+            listAppend(stackGetVariable(0, thread).object, somethingObject(((EmojicodeDictionaryNode *) nodeo->value)->key), thread);
+
+            nodeo = ((EmojicodeDictionaryNode *) stackGetVariable(1, thread).object->value)->next;
+            
+            dicto = stackGetThis(thread);
+            dict = dicto->value;
         }
     }
+    
+    Something listSth = stackGetVariable(0, thread);
+    stackPop(thread);
+    
+    return listSth;
 }
 
 void dictionaryInit(Thread *thread) {
@@ -344,6 +383,23 @@ static Something bridgeDictionaryRemove(Thread *thread) {
     return NOTHINGNESS;
 }
 
+static Something bridgeDictionaryKeys(Thread *thread) {
+    return dictionaryKeys(stackGetThis(thread), thread);
+}
+
+static Something bridgeDictionaryClear(Thread *thread) {
+    return somethingInteger(dictionaryClear(stackGetThis(thread)->value));
+}
+
+static Something bridgeDictionaryContains(Thread *thread) {
+    Object *key = stackGetVariable(0, thread).object;
+    return somethingBoolean(dictionaryContains(stackGetThis(thread)->value, key));
+}
+
+static Something bridgeDictionarySize(Thread *thread) {
+    return somethingInteger(((EmojicodeDictionary *) stackGetThis(thread)->value)->size);
+}
+
 void bridgeDictionaryInit(Thread *thread) {
     dictionaryInit(thread);
 }
@@ -356,6 +412,14 @@ MethodHandler dictionaryMethodForName(EmojicodeChar name) {
             return bridgeDictionaryRemove;
         case 0x1F437: //🐷
             return bridgeDictionarySet;
+        case 0x1F419: //🐙
+            return bridgeDictionaryKeys;
+        case 0x1F417: //🐗
+            return bridgeDictionaryClear;
+        case 0x1F423: //🐣
+            return bridgeDictionaryContains;
+        case 0x1F414: //🐔
+            return bridgeDictionarySize;
     }
     return NULL;
 }

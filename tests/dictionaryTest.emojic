@@ -45,6 +45,33 @@
     ⛔️🐕 😛 🍺 🐽 literalDictionary 🔤Grapefruit🔤 34 🔤Grapefruit = 34🔤
     ⛔️🐕 😛 🍺 🐽 literalDictionary 🔤Birne🔤 24 🔤Birne = 24🔤
     ⛔️🐕 😛 🍺 🐽 literalDictionary 🔤Apfel🔤 111 🔤Apfel = 111🔤
+
+    🍦keysDictionary 🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆
+    🍦keys 🍨 🔤Grapefruit🔤 🔤Birne🔤 🔤Apfel🔤 🍆
+    🦁 keys 🍇 a 🔡 b 🔡 ➡️ 🚂
+      🍎 ↔️ a b
+    🍉
+    🍦dictKeys  🐙keysDictionary
+    🦁 dictKeys 🍇 a 🔡 b 🔡 ➡️ 🚂
+      🍎 ↔️ a b
+    🍉
+    ⛔️🐕 🦄 keys 🐚🔡 dictKeys 🍇 a 🔡 b 🔡 ➡️ 👌
+      🍎 😛 a b
+    🍉 🔤🍯 🐙 should be equal to its keys🔤
+
+    🍦clearDictionary 🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆
+    ⛔️🐕 😛 🐗clearDictionary 3 🔤Cleared Amount = 3🔤
+    ⛔️🐕 ☁️  🐽clearDictionary 🔤Grapefruit🔤 🔤Cleared Item not accessible🔤
+    ⛔️🐕 😛 🐔clearDictionary 0 🔤Cleared Dictionary Size = 0🔤
+
+    🍦containsDictionary 🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆
+    ⛔️🐕 🐣containsDictionary 🔤Birne🔤 🔤Dictionary contains Birne🔤
+    ⛔️🐕 🐣containsDictionary 🔤Apfel🔤 🔤Dictionary contains Apfel🔤
+    ⛔️🐕 ❎🐣containsDictionary 🔤42🔤 🔤Dictionary doesn't contain 42🔤
+
+    ⛔️🐕 😛 🐔containsDictionary 3 🔤Dictionary size = 3🔤
+    🐷containsDictionary 🔤42🔤 10
+    ⛔️🐕 😛 🐔containsDictionary 4 🔤Dictionary size = 4🔤
   🍉
 
   🐇🐖 🏁 ➡️ 🚂 🍇
