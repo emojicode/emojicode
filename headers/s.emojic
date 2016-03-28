@@ -1,6 +1,8 @@
 🔮 1 0
 
-🌮 The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings) 🌮
+🌮
+  The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings)
+🌮
 🐇 🔡 🍇🍉
 🌮
   The 🍨 class represents an ordered mutable collection. [Read more in the
@@ -15,13 +17,13 @@
 🌮 📇 is an abstract interface to binary data. 🌮
 🐇 📇 🍇🍉
 🌮
-  🍡 is an class whose subclasses can enumerate other objects. The 🍡 itself is
+  🍡 is a class whose subclasses can enumerate other objects. The 🍡 itself is
   never initiated.
 
-  To get the items from an iterator call the 🔽 method on it until it returns
-  ✨, which indicates that there are no more items.
+  To get the items from an iterator call the 🔽 method on it until ❓ returns
+  👎, which indicates that there are no more items.
 
-  Enumerators conform [🔂](Enumerateable.html) and return themselves in the 🍡
+  Enumerators conform [🔂](t5535756578.html) and return themselves in the 🍡
   method.
 🌮
 🐇 🍡🐚Element ⚪️ 🍇🍉
@@ -36,14 +38,11 @@
 🌮
   A class whose instances shall be enumerable using the 🔂 loop must
   implement this protocol.
-
-  The class must return an instance of a subclass of [🍡](Enumerator.html)
-  which will be used by the 🔂 loop to enumerate the object.
 🌮
 🐊 🔂 🍇
   🌮
-    This method must return an enumerator which can be used to enumerate
-    the instance.
+    This method must return an instance of a subclass of
+    [🍡](t5535657185.html) which can be used to enumerate this instance.
   🌮
   🐖 🍡 ➡️ 🍡🐚⚪️
 🍉
@@ -345,6 +344,10 @@
   🐖 ❓ ➡️ 👌 🍇
     🍎 👎
   🍉
+  🌮
+    This method is implemented in order to confrom to [🔂](t5535756578.html).
+    Enumerators should return themselves.
+  🌮
   🐖 🍡 ➡️ 🍡🐚Element 🍇
     🍎 🐕
   🍉
@@ -382,14 +385,13 @@
   🌮
     Returns a list consisting of all keys in this 🍯.
 
-    >!N Note the returned list can be in any order.
-    
+    >!N Note that the keys in the returned list are arbitrarily ordered.
   🌮
   🐖 🐙 ➡️ 🍨🐚🔡 📻
 
   🌮
-    Removes all key-value pairs in this 🍯.
-    Returns the number of deleted items (size before clearing).
+    Removes all key-value pairs in this 🍯 and returns the number of deleted
+    items.
   🌮
   🐖 🐗 ➡️ 🚂 📻
 
