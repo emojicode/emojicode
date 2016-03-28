@@ -90,6 +90,8 @@ tests:
 	$(call testFile,fileTest)
 
 dist:
+	rm $(DIST)/install.sh
+	rm -r $(DIST)/headers
 	cp install.sh $(DIST)/install.sh
 	cp -r headers/ $(DIST)/headers
 	tar -czf $(DIST).tar.gz -C $(DIST_BUILDS) $(DIST_NAME)
