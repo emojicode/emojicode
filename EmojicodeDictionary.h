@@ -72,8 +72,11 @@ Something dictionaryLookup(EmojicodeDictionary *dict, Object *key, Thread *threa
 /** Check whether a key is in the dictionary */
 bool dictionaryContains(EmojicodeDictionary *dict, Object *key);
 
-/** Get all keys as a list */
-Object* dictionaryKeys(Object **dicto, Thread *thread);
+/** 
+ * Get all keys as a list
+ * @warning GC-Invoking
+ */
+Object* dictionaryKeys(Object *dicto, Thread *thread);
 
 void dictionaryMark(Object *dict);
 

@@ -285,18 +285,17 @@ size_t dictionaryClear(EmojicodeDictionary *dict) {
     return sizeBefore;
 }
 
-Object* dictionaryKeys(Object **dicto, Thread *thread) {
-    stackPush(*dicto, 1, 0, thread);
-    
+Object* dictionaryKeys(Object *dicto, Thread *thread) {
+    stackPush(dicto, 1, 0, thread);
     
     Object *list0 = newObject(CL_LIST);
-    *dicto = stackGetThis(thread);
-    EmojicodeDictionary *dict = (*dicto)->value;
+    dicto = stackGetThis(thread);
+    EmojicodeDictionary *dict = dicto->value;
     List *newList = list0->value;
     newList->capacity = dict->size;
     newList->items = newArray(sizeof(Something) * dict->size);
-    *dicto = stackGetThis(thread);
-    dict = (*dicto)->value;
+    dicto = stackGetThis(thread);
+    dict = dicto->value;
     
     for (size_t i = 0; i < dict->bucketsCounter; ++i) {
         Object **bucko = (Object**) dict->buckets->value;
@@ -309,8 +308,8 @@ Object* dictionaryKeys(Object **dicto, Thread *thread) {
             stackPop(thread);
             nodeo = ((EmojicodeDictionaryNode *) stackGetThis(thread)->value)->next;
             stackPop(thread);
-            *dicto = stackGetThis(thread);
-            dict = (*dicto)->value;
+            dicto = stackGetThis(thread);
+            dict = dicto->value;
         }
     }
     stackPop(thread); // dicto
@@ -377,7 +376,7 @@ static Something bridgeDictionaryRemove(Thread *thread) {
 
 static Something bridgeDictionaryKeys(Thread *thread) {
     Object *dicto = stackGetThis(thread);
-    return somethingObject(dictionaryKeys(&dicto, thread));
+    return somethingObject(dictionaryKeys(dicto, thread));
 }
 
 static Something bridgeDictionaryClear(Thread *thread) {
