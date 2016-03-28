@@ -286,23 +286,29 @@ size_t dictionaryClear(EmojicodeDictionary *dict) {
 }
 
 Object* dictionaryKeys(Object *dicto, Thread *thread) {
-    stackPush(dicto, 1, 0, thread);
+    stackPush(dicto, 0, 0, thread);
     
     Object *list0 = newObject(CL_LIST);
     dicto = stackGetThis(thread);
     EmojicodeDictionary *dict = dicto->value;
+    
+    stackPush(list0, 0, 0, thread);
+    Object *newList0 = newArray(sizeof(Something) * dict->size);
+    list0 = stackGetThis(thread);
+    stackPop(thread);
+    
     List *newList = list0->value;
     newList->capacity = dict->size;
-    newList->items = newArray(sizeof(Something) * dict->size);
+    newList->items = newList0;
     dicto = stackGetThis(thread);
     dict = dicto->value;
     
-    for (size_t i = 0; i < dict->bucketsCounter; ++i) {
+    for (size_t i = 0; i < dict->bucketsCounter; i++) {
         Object **bucko = (Object**) dict->buckets->value;
         Object *nodeo = bucko[i];
         while (nodeo) {
-            stackPush(nodeo, 1, 0, thread);
-            stackPush(list0, 1, 0, thread);
+            stackPush(nodeo, 0, 0, thread);
+            stackPush(list0, 0, 0, thread);
             listAppend(list0, somethingObject(((EmojicodeDictionaryNode *) nodeo->value)->key), thread);
             list0 = stackGetThis(thread);
             stackPop(thread);
