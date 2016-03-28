@@ -379,7 +379,12 @@
   🌮 Adds a key-value pair. 🌮
   🐖 🐷 key 🔡 object Element 📻
 
-  🌮 Returns a list consisting of all keys in this 🍯. 🌮
+  🌮
+    Returns a list consisting of all keys in this 🍯.
+
+    >!N Note the returned list can be in any order.
+    
+  🌮
   🐖 🐙 ➡️ 🍨🐚🔡 📻
 
   🌮
