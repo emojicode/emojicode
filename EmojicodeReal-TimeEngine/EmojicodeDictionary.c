@@ -297,7 +297,7 @@ Something dictionaryKeys(Object *dicto, Thread *thread) {
         
         List *newList = listObject->value;
         newList->capacity = dict->size;
-        newList->items = newArray(sizeof(Something) * dict->size);
+        ((List *)stackGetVariable(0, thread).object->value)->items = newArray(sizeof(Something) * dict->size);
     }
     
     dicto = stackGetThis(thread);
