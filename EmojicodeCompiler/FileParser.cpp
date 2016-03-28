@@ -95,6 +95,33 @@ static void checkTypeValidity(EmojicodeChar name, EmojicodeChar enamespace, bool
     }
 }
 
+static bool hasAttribute(EmojicodeChar attributeName, const Token **token){
+    if((*token)->value[0] == attributeName){
+        *token = consumeToken(IDENTIFIER);
+        return true;
+    }
+    return false;
+}
+
+static AccessLevel readAccessLevel(const Token **token){
+    AccessLevel access;
+    switch ((*token)->value[0]) {
+        case E_CLOSED_LOCK_WITH_KEY:
+            *token = consumeToken(IDENTIFIER);
+            access = PROTECTED;
+            break;
+        case E_LOCK:
+            *token = consumeToken(IDENTIFIER);
+            access = PRIVATE;
+            break;
+        case E_OPEN_LOCK:
+            *token = consumeToken(IDENTIFIER);
+        default:
+            access = PUBLIC;
+    }
+    return access;
+}
+
 void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *documentationToken){
     static uint_fast16_t index = 0;
     
@@ -126,6 +153,9 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *docume
             documentationToken = token;
             token = consumeToken();
         }
+        token->forceType(IDENTIFIER);
+        
+        bool deprecated = hasAttribute(E_WARNING_SIGN, &token);
         
         if (token->value[0] != E_PIG) {
             compilerError(token, "Only method declarations are allowed inside a protocol.");
@@ -134,7 +164,7 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *docume
         const Token *methodName = consumeToken(IDENTIFIER);
         
         Type returnType = typeNothingness;
-        auto method = new Method(methodName->value[0], PUBLIC, false, nullptr, theNamespace, methodName, false, documentationToken);
+        auto method = new Method(methodName->value[0], PUBLIC, false, nullptr, theNamespace, methodName, false, documentationToken, deprecated);
         method->parseArgumentList(typeNothingness, theNamespace);
         method->parseReturnType(typeNothingness, theNamespace);
         
@@ -163,33 +193,6 @@ void parseEnum(EmojicodeChar theNamespace, Package &pkg, const Token *documentat
     }
 }
 
-static bool hasAttribute(EmojicodeChar attributeName, const Token **token){
-    if((*token)->value[0] == attributeName){
-        *token = consumeToken(IDENTIFIER);
-        return true;
-    }
-    return false;
-}
-
-static AccessLevel readAccessLevel(const Token **token){
-    AccessLevel access;
-    switch ((*token)->value[0]) {
-        case E_CLOSED_LOCK_WITH_KEY:
-            *token = consumeToken(IDENTIFIER);
-            access = PROTECTED;
-            break;
-        case E_LOCK:
-            *token = consumeToken(IDENTIFIER);
-            access = PRIVATE;
-            break;
-        case E_OPEN_LOCK:
-            *token = consumeToken(IDENTIFIER);
-        default:
-            access = PUBLIC;
-    }
-    return access;
-}
-
 /**
  * Parses a eclass’ body until a 🍆, which it consumes
  * @param eclass The eclass to which to append the methods.
@@ -210,6 +213,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
         }
         token->forceType(IDENTIFIER);
         
+        bool deprecated = hasAttribute(E_WARNING_SIGN, &token);
         bool final = hasAttribute(E_LOCK_WITH_INK_PEN, &token);
         AccessLevel accessLevel = readAccessLevel(&token);
         bool override = hasAttribute(E_BLACK_NIB, &token);
@@ -261,7 +265,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 EmojicodeChar name = methodName->value[0];
                 
                 if(staticOnType){
-                    auto *classMethod = new ClassMethod(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken);
+                    auto *classMethod = new ClassMethod(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken, deprecated);
                     classMethod->parseGenericArguments(TypeContext(eclass, classMethod), theNamespace);
                     classMethod->parseArgumentList(TypeContext(eclass, classMethod), theNamespace);
                     classMethod->parseReturnType(TypeContext(eclass, classMethod), theNamespace);
@@ -287,7 +291,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 else {
                     reservedEmojis(methodName, "method");
                     
-                    auto *method = new Method(methodName->value[0], accessLevel, final, eclass, theNamespace, token, override, documentationToken);
+                    auto *method = new Method(methodName->value[0], accessLevel, final, eclass, theNamespace, token, override, documentationToken, deprecated);
                     method->parseGenericArguments(TypeContext(eclass, method), theNamespace);
                     method->parseArgumentList(TypeContext(eclass, method), theNamespace);
                     method->parseReturnType(TypeContext(eclass, method), theNamespace);
@@ -305,7 +309,7 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 const Token *initializerName = consumeToken(IDENTIFIER);
                 EmojicodeChar name = initializerName->value[0];
                 
-                Initializer *initializer = new Initializer(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken, required, canReturnNothingness);
+                Initializer *initializer = new Initializer(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken, deprecated, required, canReturnNothingness);
                 initializer->parseArgumentList(TypeContext(eclass, initializer), theNamespace);
                 initializer->parseBody(allowNative);
                 

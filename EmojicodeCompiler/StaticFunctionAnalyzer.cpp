@@ -607,6 +607,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(name, "Only required initializers can be used with 🐀.");
             }
             
+            initializer->deprecatedWarning(name);
+            
             writer.writeCoin(initializer->vti);
             
             checkAccess(initializer, token, "Initializer");
@@ -667,6 +669,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(initializerToken, "Cannot find superinitializer %s.", initializerString);
                 break;
             }
+            
+            initializer->deprecatedWarning(initializerToken);
             
             writer.writeCoin(initializer->vti);
             
@@ -780,6 +784,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "%s has no method %s", eclass.c_str(), method);
             }
             
+            method->deprecatedWarning(methodToken);
+            
             writer.writeCoin(method->vti);
             
             auto genericArgs = checkGenericArguments(method, token);
@@ -818,6 +824,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "%s has no class method %s", classString.c_str(), methodString);
             }
             
+            method->deprecatedWarning(methodToken);
+            
             writer.writeCoin(method->vti);
             
             auto genericArgs = checkGenericArguments(method, token);
@@ -844,6 +852,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             if (!method) {
                 compilerError(token, "Method is non-existent.");
             }
+            
+            method->deprecatedWarning(methodName);
             
             writer.writeCoin(method->vti);
             
@@ -1061,6 +1071,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 placeholder.write(0x1);
                 writer.writeCoin(method->vti);
             }
+            
+            method->deprecatedWarning(token);
             
             auto genericArgs = checkGenericArguments(method, token);
             auto typeContext = TypeContext(type, method, &genericArgs);

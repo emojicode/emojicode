@@ -154,6 +154,20 @@ void Procedure::checkOverride(Procedure *superProcedure){
     }
 }
 
+void Procedure::deprecatedWarning(const Token *callToken) {
+    if (deprecated) {
+        ecCharToCharStack(name, mn);
+        if (documentationToken) {
+            char *documentation = documentationToken->value.utf8CString();
+            compilerWarning(callToken, "%s is deprecated. Please refer to the documentation for further information:\n%s", mn, documentation);
+            delete [] documentation;
+        }
+        else {
+            compilerWarning(callToken, "%s is deprecated.", mn);
+        }
+    }
+}
+
 Type Procedure::type() {
     Type t(TT_CALLABLE, false);
     t.type = TT_CALLABLE;

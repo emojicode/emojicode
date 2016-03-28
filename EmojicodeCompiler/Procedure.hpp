@@ -51,8 +51,8 @@ public:
 class Procedure: public Callable {
 public:
     Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
-              EmojicodeChar theNamespace, const Token *dToken, bool overriding, const Token *documentationToken) :
-    Callable(dToken), name(name),  overriding(overriding), access(level), eclass(eclass), documentationToken(documentationToken), enamespace(theNamespace) {}
+              EmojicodeChar theNamespace, const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated) :
+    Callable(dToken), name(name),  overriding(overriding), deprecated(deprecated), access(level), eclass(eclass), documentationToken(documentationToken), enamespace(theNamespace) {}
     
     /** The procedure name. A Unicode code point for an emoji */
     EmojicodeChar name;
@@ -61,6 +61,7 @@ public:
     bool native = false;
     bool final = false;
     bool overriding = false;
+    bool deprecated = false;
     
     AccessLevel access;
     
@@ -78,6 +79,9 @@ public:
     
     /** The namespace in which the procedure was defined. This does not necessarily match the class’s namespace. */
     EmojicodeChar enamespace;
+    
+    /** Issues a warning on at the given token if the procedure is deprecated. */
+    void deprecatedWarning(const Token *callToken);
     
     /**
      * Check whether this procedure is breaking promises of @c superProcedure.
@@ -109,7 +113,7 @@ public:
 class Initializer: public Procedure {
 public:
     Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, EmojicodeChar theNamespace,
-                const Token *dToken, bool overriding, const Token *documentationToken, bool r, bool crn) : Procedure(name, level, final, eclass, theNamespace, dToken, overriding, documentationToken), required(r), canReturnNothingness(crn) {}
+                const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated, bool r, bool crn) : Procedure(name, level, final, eclass, theNamespace, dToken, overriding, documentationToken, deprecated), required(r), canReturnNothingness(crn) {}
     
     bool required : 1;
     bool canReturnNothingness : 1;
