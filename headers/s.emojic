@@ -34,7 +34,7 @@
 🐇 🍇 🍇🍉
 
 🌮
-  A class whose instances shall be enumerateable using the 🔂 loop must
+  A class whose instances shall be enumerable using the 🔂 loop must
   implement this protocol.
 
   The class must return an instance of a subclass of [🍡](Enumerator.html)
@@ -67,7 +67,7 @@
   🌮
     Creates a string representation of the given integer.
 
-    The digits used to represent the integer are 
+    The digits used to represent the integer are
     `0123456789abcdefghijklmnopqrstuvxyz`. Therefore you shouldn't use a base
     greater than 35.
   🌮
@@ -82,11 +82,19 @@
   🌮
   🍬🐈 📇 utf8 📇 📻
 
-  🌮 Puts this string to the standard output. 🌮
+  🌮 Puts this 🔡 to the standard output. 🌮
   🐖 😀 📻
 
-  🌮 Returns 👍 if this string is equal to b. 🌮
+  🌮 Returns 👍 if this 🔡 is equal to b. 🌮
   🐖 😛 b 🔡 ➡️ 👌📻
+
+  🌮
+    Compares this 🔡 to *b*.
+
+    >!N Note this method compares by the byte value of the 🔣s and is only meant for use with sorting.
+
+  🌮
+  🐖 ↔️ b 🔡 ➡️ 🚂 📻
 
   🌮
     Returns the characters in a string beginning at the specified location
@@ -144,9 +152,9 @@
   🌮
     >!N Available from 0.2 Beta 4 which is yet to be released
 
-    This methods tries to construct an integer from this string in the given 
-    base. It returns the integer or Nothingness if the string does not match the 
-    regeular expression `[+-]?[0-9a-zA-Z]+` or it does not represent a valid 
+    This methods tries to construct an integer from this string in the given
+    base. It returns the integer or Nothingness if the string does not match the
+    regeular expression `[+-]?[0-9a-zA-Z]+` or it does not represent a valid
     value in the given base.
   🌮
   🐖 🚂 base 🚂 ➡️ 🍬🚂 📻
@@ -198,7 +206,7 @@
   🌮
     Inserts the given values before the element with the given index.
 
-    All items beginning from *index* are shifted to the right and *item* is 
+    All items beginning from *index* are shifted to the right and *item* is
     then inserted at *index*. Complexity: O(length - index).
   🌮
   🐖 🐵 index 🚂 item Element 📻
@@ -217,8 +225,8 @@
 
     Sorts this array in place using the quick sort algorithm.
 
-    `comparator` must return an integer less than, equal to, or greater than 0, 
-    if the first argument is considered respectively less than, equal to, or 
+    `comparator` must return an integer less than, equal to, or greater than 0,
+    if the first argument is considered respectively less than, equal to, or
     greater than the second.
   🌮
   🐖 🦁 comparator 🍇Element Element➡️🚂🍉 📻
@@ -259,7 +267,7 @@
   🌮
     >!N Available from 0.2 Beta 4 which is yet to be released
 
-    Tests whether all elements in the array pass the test implemented by 
+    Tests whether all elements in the array pass the test implemented by
     `callback`.
 
     The method immdiately returns 👎 if `callback` returned 👎 for one element.
@@ -278,7 +286,7 @@
 
     Tests whether this array and `other` are equal. Equality of two elements
     is defined by `callback` which must return true if the first and the second
-    argument, which represent elements from this and the other array 
+    argument, which represent elements from this and the other array
     respectively, are equal. `callback` is not necessarily called at all.
   🌮
   🐖 🦄 🐚A⚪️ other 🍨🐚A callback 🍇Element A➡️👌🍉 ➡️ 👌 🍇
@@ -302,7 +310,7 @@
   🐖 😛 b 📇 ➡️ 👌 📻
   🌮 Returns the number of bytes represented by this instance. 🌮
   🐖 📏 ➡️ 🚂 📻
-  🌮 
+  🌮
     >!N Available from 0.2 Beta 4 which is yet to be released
 
     Returns an integer representing the value of the byte at the given index
@@ -355,10 +363,10 @@
 🍉
 
 🐋 🍯 🍇
-  🌮 Creates an empty dictionary. 🌮
+  🌮 Creates an empty 🍯. 🌮
   🐈 🐸 📻
   🌮
-    Returns the value assigned to *key*. If key is not in the dictionary ✨ is
+    Returns the value assigned to *key*. If key is not in the 🍯 ✨ is
     returned.
   🌮
   🐖 🐽 key 🔡 ➡️ 🍬Element 📻
@@ -367,8 +375,24 @@
     *key* is not in the 🍯.
   🌮
   🐖 🐨 key 🔡 📻
+
   🌮 Adds a key-value pair. 🌮
   🐖 🐷 key 🔡 object Element 📻
+
+  🌮 Returns a list consisting of all keys in this 🍯. 🌮
+  🐖 🐙 ➡️ 🍨🐚🔡 📻
+
+  🌮
+    Removes all key-value pairs in this 🍯.
+    Returns the number of deleted items (size before clearing).
+  🌮
+  🐖 🐗 ➡️ 🚂 📻
+
+  🌮 Checks whether *key* is in this 🍯. 🌮
+  🐖 🐣 key 🔡 ➡️ 👌📻
+
+  🌮 Returns the number of items. 🌮
+  🐖 🐔 ➡️ 🚂📻
 🍉
 
 🌮
@@ -399,7 +423,7 @@
 🍉
 
 🌮
-  Represents a range which per definition is an immutable sequence of 
+  Represents a range which per definition is an immutable sequence of
   numbers. [Read more in the
   language reference.](../../reference/the-s-package.html#-ranges)
 
@@ -410,14 +434,14 @@
     Creates an range from start to stop.
   🌮
   🐈 ⏩ start 🚂 stop 🚂 📻
-  🌮 
+  🌮
     Creates an range from start to stop with the given step.
   🌮
   🐈 ⏭ start 🚂 stop 🚂 step 🚂 📻
-  🌮 
-    Returns the `n`th element of the range. `n` is only valid if 
-    `start + step * n` is `>= start` and `< stop`. If `n` is invalid 
-    Nothingness is returned. 
+  🌮
+    Returns the `n`th element of the range. `n` is only valid if
+    `start + step * n` is `>= start` and `< stop`. If `n` is invalid
+    Nothingness is returned.
   🌮
   🐖 🐽 n 🚂 ➡️ 🍬🚂 📻
 🍉
@@ -499,8 +523,8 @@
   🌮
     Returns the value of `x` rounded to the nearest integer.
 
-    If the fractional portion of number is 0.5 or greater, the argument is 
-    rounded to the next higher integer. If the fractional portion of number is 
+    If the fractional portion of number is 0.5 or greater, the argument is
+    rounded to the next higher integer. If the fractional portion of number is
     less than 0.5, the argument is rounded to the next lower integer.
   🌮
   🐇🐖 🏇 x 🚀 ➡️ 🚂 📻

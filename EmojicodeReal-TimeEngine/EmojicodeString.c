@@ -12,15 +12,19 @@
 #include "utf8.h"
 #include "EmojicodeList.h"
 
-bool stringEqual(String *a, String *b){
-    if(a == b){
-        return true;
+EmojicodeInteger stringCompare(String *a, String *b) {
+    if (a == b) {
+        return 0;
     }
-    if(a->length != b->length){
-        return false;
+    if (a->length != b->length) {
+        return a->length - b->length;
     }
     
-    return memcmp(a->characters->value, b->characters->value, a->length * sizeof(EmojicodeChar)) == 0;
+    return memcmp(a->characters->value, b->characters->value, a->length * sizeof(EmojicodeChar));
+}
+
+bool stringEqual(String *a, String *b){
+    return stringCompare(a, b) == 0;
 }
 
 bool stringBeginsWith(String *a, String *with){
@@ -514,6 +518,12 @@ static void stringFromData(Thread *thread){
     u8_toucs(characters(string), len, data->bytes, data->length);
 }
 
+static Something stringCompareBridge(Thread *thread) {
+    String *a = stackGetThis(thread)->value;
+    String *b = stackGetVariable(0, thread).object->value;
+    return somethingInteger(stringCompare(a, b));
+}
+
 void stringMark(Object *self){
     if(((String *)self->value)->characters){
         mark(&((String *)self->value)->characters);
@@ -556,6 +566,8 @@ MethodHandler stringMethodForName(EmojicodeChar name){
             return stringJSON;
         case 0x1F682: //🚂
             return stringToInteger;
+        case 0x2194: //↔️
+            return stringCompareBridge;
     }
     return NULL;
 }
