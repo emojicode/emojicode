@@ -88,10 +88,13 @@
   🐖 😛 b 🔡 ➡️ 👌📻
 
   🌮
-    Compares this 🔡 to *b*.
+    Compares this string to `b` and returns -1, 0, or 1 depending on whether
+    this string is less than, equal to, or greater than `b`.
 
-    >!N Note this method compares by the byte value of the 🔣s and is only meant for use with sorting.
-
+    >!N Note that this method compares the strings byte per byte
+    >!N and is only meant for use with non-localized sorting. The results of
+    >!N the sort will always be the same, but may not appear logical to human
+    >!N beings.
   🌮
   🐖 ↔️ b 🔡 ➡️ 🚂 📻
 
@@ -149,8 +152,6 @@
   🌮
   🐖 📐 ➡️ 🚂 📻
   🌮
-    >!N Available from 0.2 Beta 4 which is yet to be released
-
     This methods tries to construct an integer from this string in the given
     base. It returns the integer or Nothingness if the string does not match the
     regeular expression `[+-]?[0-9a-zA-Z]+` or it does not represent a valid
@@ -177,8 +178,6 @@
   🌮 Creates an empty list. 🌮
   🐈 🐸 📻
   🌮
-    >!N Available from 0.2 Beta 4 which is yet to be released
-
     Creates an empty list with the given initial capacity.
   🌮
   🐈 🐧 capacity 🚂 📻
@@ -220,8 +219,6 @@
   🐖 🐼 ➡️ 🍬Element 📻
 
   🌮
-    >!N Available from 0.2 Beta 4 which is yet to be released
-
     Sorts this array in place using the quick sort algorithm.
 
     `comparator` must return an integer less than, equal to, or greater than 0,
@@ -236,8 +233,6 @@
   🌮
   🐖 🐹 📻
   🌮
-    >!N Available from 0.2 Beta 4 which is yet to be released
-
     Calls callback with each element in the list and appends the returned
     value to the end of a new list.
   🌮
@@ -249,8 +244,6 @@
     🍎 g
   🍉
   🌮
-    >!N Available from 0.2 Beta 4 which is yet to be released
-
     Returns a new array with all elements that pass the test implemented by
     `callback`.
   🌮
@@ -264,8 +257,6 @@
     🍎 g
   🍉
   🌮
-    >!N Available from 0.2 Beta 4 which is yet to be released
-
     Tests whether all elements in the array pass the test implemented by
     `callback`.
 
@@ -281,8 +272,6 @@
   🍉
 
   🌮
-    >!N Available from 0.2 Beta 4 which is yet to be released
-
     Tests whether this array and `other` are equal. Equality of two elements
     is defined by `callback` which must return true if the first and the second
     argument, which represent elements from this and the other array
@@ -310,8 +299,6 @@
   🌮 Returns the number of bytes represented by this instance. 🌮
   🐖 📏 ➡️ 🚂 📻
   🌮
-    >!N Available from 0.2 Beta 4 which is yet to be released
-
     Returns an integer representing the value of the byte at the given index
     `index`. A negative index is assumed to be relative to the end of the data.
 
@@ -433,8 +420,6 @@
   Represents a range which per definition is an immutable sequence of
   numbers. [Read more in the
   language reference.](../../reference/the-s-package.html#-ranges)
-
-  >!N Available from 0.2 Beta 4 which is yet to be released
 🌮
 🐇 ⏩ 🍇
   🌮
@@ -455,8 +440,6 @@
 
 🌮
   🚄 provides mathematical functions as class methods.
-
-  >!N Available from 0.2 Beta 4 which is yet to be released
 🌮
 🐇 🚄 🍇
   🌮
