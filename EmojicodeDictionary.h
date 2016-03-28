@@ -76,7 +76,7 @@ bool dictionaryContains(EmojicodeDictionary *dict, Object *key);
  * Get all keys as a list
  * @warning GC-Invoking
  */
-Object* dictionaryKeys(Object *dicto, Thread *thread);
+Something dictionaryKeys(Object *dicto, Thread *thread);
 
 void dictionaryMark(Object *dict);
 
