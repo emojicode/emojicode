@@ -415,12 +415,12 @@
     Suspends the calling thread from execution for at least the number of
     seconds specified by the arguments *seconds*.
   🌮
-  🐇🐖 🕰 seconds 🚂 📻
+  🐇🐖 ⏳ seconds 🚂 📻
 
   🌮
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
   🌮
-  🐇🐖 🕐 ➡️ 🚂📻
+  🐇🐖 🕰 ➡️ 🚂📻
 🍉
 
 🌮

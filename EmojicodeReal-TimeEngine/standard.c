@@ -315,9 +315,9 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                     return systemGetEnv;
                 case 0x1F30D:
                     return systemCWD;
-                case 0x1F570:
+                case 0x23f3: //⏳
                     return sleepThread;
-                case 0x1f550: //🕐
+                case 0x1f570: //🕰
                     return systemTime;
             }
             break;
