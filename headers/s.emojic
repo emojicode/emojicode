@@ -235,15 +235,19 @@
 
     >!N Not available in 0.2 Beta 4
   🌮
-  🐖 🐗 ➡️ 🍬Element 📻
+  🐖 🐗 📻
 
   🌮
-    Ensures that the list can store at least `capacity` elements.
+    Ensures that the list is large enoguh to store at least `capacity` elements.
+
+    You should use this method if you plan to heavily use 🐷 with large indices
+    in order to avoid automatic, useless allocations.
+
     Complexity: `O(1)`.
 
     >!N Not available in 0.2 Beta 4
   🌮
-  🐖 🐴 capacity 🚂 ➡️ 🍬Element 📻
+  🐖 🐴 capacity 🚂 📻
 
   🌮
     Sorts this array in place using the quick sort algorithm.
