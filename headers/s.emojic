@@ -199,6 +199,7 @@
     the list is resized to a capacity of `index + 1`. Complexity: `O(1)`.
 
     >!N Not available in 0.2 Beta 4
+
   🌮
   🐖 🐷 index 🚂 value Element 📻
 
@@ -234,6 +235,7 @@
     `O(count)`.
 
     >!N Not available in 0.2 Beta 4
+
   🌮
   🐖 🐗 📻
 
@@ -246,6 +248,7 @@
     Complexity: `O(1)`.
 
     >!N Not available in 0.2 Beta 4
+
   🌮
   🐖 🐴 capacity 🚂 📻
 
@@ -452,6 +455,9 @@
 
   🌮
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
+
+    >!N Not available in 0.2 Beta 4
+
   🌮
   🐇🐖 🕰 ➡️ 🚂📻
 🍉
@@ -563,6 +569,10 @@
   🌮
   🐇🐖 🚣 x 🚀 ➡️ 🚀 📻
 
-  🌮 Returns the natural (base e) logarithm of `x`. 🌮
+  🌮
+    Returns the natural (base e) logarithm of `x`.
+
+    >!N Not available in 0.2 Beta 4
+  🌮
   🐇🐖 🏄 x 🚀 ➡️ 🚀 📻
 🍉
