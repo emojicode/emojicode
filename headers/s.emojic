@@ -178,25 +178,33 @@
 🐋 🍨 🍇
   🌮 Creates an empty list. 🌮
   🐈 🐸 📻
-  🌮
-    Creates an empty list with the given initial capacity.
-  🌮
+
+  🌮 Creates an empty list with the given initial capacity. 🌮
   🐈 🐧 capacity 🚂 📻
 
   🌮 Returns a shallow copy of this list. 🌮
   🐖 🐮 ➡️ 🍨🐚Element 📻
 
-  🌮 Appends *item* to the end of the list in O(1). 🌮
+  🌮 Appends `item` to the end of the list in `O(1)`. 🌮
   🐖 🐻 item Element 📻
 
   🌮
-    Gets the item at *index* in O(1). If the index is invalid ✨ is returned.
+    Gets the item at `index` in `O(1)`. If the index is invalid Nothingness is
+    returned.
   🌮
   🐖 🐽 index 🚂 ➡️ 🍬Element 📻
 
   🌮
-    Removes the item at *index* and shifts all following items to the left in
-    O(length - index).
+    Sets `value` at `index`. If `index` is bigger than the capacity of the list,
+    the list is resized to a capacity of `index + 1`. Complexity: `O(1)`.
+
+    >!N Not available in 0.2 Beta 4
+  🌮
+  🐖 🐷 index 🚂 value Element 📻
+
+  🌮
+    Removes the item at `index` and shifts all following items to the left in
+    `O(count - index)`.
 
     Returns 👍 unless the index is out of range.
   🌮
@@ -205,8 +213,8 @@
   🌮
     Inserts the given values before the element with the given index.
 
-    All items beginning from *index* are shifted to the right and *item* is
-    then inserted at *index*. Complexity: O(length - index).
+    All items beginning from `index` are shifted to the right and `item` is
+    then inserted at `index`. Complexity: `O(count - index)`.
   🌮
   🐖 🐵 index 🚂 item Element 📻
 
@@ -214,10 +222,28 @@
   🐖 🐔 ➡️ 🚂 📻
 
   🌮
-    Removes the last item from the list and returns it in O(1).
+    Removes the last item from the list and returns it in `O(1)`.
     If the list is empty ✨ is returned.
   🌮
   🐖 🐼 ➡️ 🍬Element 📻
+
+  🌮
+    Removes all elements from the list but keeps the list’s capacity.
+
+    This can be much more efficient than using a new list. Complexity:
+    `O(count)`.
+
+    >!N Not available in 0.2 Beta 4
+  🌮
+  🐖 🐗 ➡️ 🍬Element 📻
+
+  🌮
+    Ensures that the list can store at least `capacity` elements.
+    Complexity: `O(1)`.
+
+    >!N Not available in 0.2 Beta 4
+  🌮
+  🐖 🐴 capacity 🚂 ➡️ 🍬Element 📻
 
   🌮
     Sorts this array in place using the quick sort algorithm.
@@ -233,6 +259,7 @@
     be considered secure on any BSD or Linux system.
   🌮
   🐖 🐹 📻
+
   🌮
     Calls callback with each element in the list and appends the returned
     value to the end of a new list.
@@ -244,6 +271,7 @@
     🍉
     🍎 g
   🍉
+
   🌮
     Returns a new array with all elements that pass the test implemented by
     `callback`.
@@ -257,6 +285,7 @@
     🍉
     🍎 g
   🍉
+
   🌮
     Tests whether all elements in the array pass the test implemented by
     `callback`.

@@ -119,6 +119,48 @@
     ⛔️🐕 🦄 g4 🐚🚂 🍨-7 -6 -5 -4 10 11 12🍆 🍇 a 🚂 b 🚂 ➡️ 👌
       🍎 😛 a b
     🍉 🔤Array Sort🔤
+
+    🍦 getList 🔷🍨🐚🚂🐸
+
+    🐷 getList 5 99
+    🐷 getList 3 77
+
+    ⛔️🐕 😛 🐔 getList 6 🔤Correct Length 6🔤
+    ⛔️🐕 😛 🍺 🐽 getList 5 99 🔤Correct Value 5🔤
+    ⛔️🐕 😛 🍺 🐽 getList 3 77 🔤Correct Value 3🔤
+    ⛔️🐕 ☁️ 🐽 getList 1 🔤Correct Value Nothingness🔤
+    ⛔️🐕 ☁️ 🐽 getList 0 🔤Correct Value Nothingness🔤
+    ⛔️🐕 ☁️ 🐽 getList 88 🔤Correct Value Nothingness🔤
+
+    🐼 getList
+
+    ⛔️🐕 😛 🐔 getList 5 🔤Correct Length 5🔤
+
+    🐷 getList 7 22
+
+    ⛔️🐕 😛 🐔 getList 8 🔤Correct Length 8🔤
+    ⛔️🐕 😛 🍺 🐽 getList 7 22 🔤Correct Value 5🔤
+    ⛔️🐕 😛 🍺 🐽 getList 3 77 🔤Correct Value 3🔤
+    ⛔️🐕 ☁️ 🐽 getList 5 🔤Correct Value Nothingness🔤
+
+    🐨 getList 3
+    🐷 getList 9 17
+
+    ⛔️🐕 ☁️ 🐽 getList 7 🔤Correct Value Nothingness🔤
+
+    🐗 getList
+
+    ⛔️🐕 😛 🐔 getList 0 🔤Correct Length 0🔤
+
+    🐷 getList 5 99
+    🐷 getList 3 77
+
+    ⛔️🐕 😛 🐔 getList 6 🔤Correct Length 6🔤
+    ⛔️🐕 😛 🍺 🐽 getList 5 99 🔤Correct Value 5🔤
+    ⛔️🐕 😛 🍺 🐽 getList 3 77 🔤Correct Value 3🔤
+    ⛔️🐕 ☁️ 🐽 getList 1 🔤Correct Value Nothingness🔤
+    ⛔️🐕 ☁️ 🐽 getList 0 🔤Correct Value Nothingness🔤
+    ⛔️🐕 ☁️ 🐽 getList 88 🔤Correct Value Nothingness🔤
   🍉
 
   🐇🐖 🏁 ➡️ 🚂 🍇
