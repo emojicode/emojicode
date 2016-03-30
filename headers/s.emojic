@@ -450,6 +450,8 @@
   🌮
     Suspends the calling thread from execution for at least the number of
     seconds specified by the arguments *seconds*.
+
+    >!N This method is named 🕰 in 0.2 Beta 4!
   🌮
   🐇🐖 ⏳ seconds 🚂 📻
 
@@ -457,7 +459,6 @@
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
 
     >!N Not available in 0.2 Beta 4
-
   🌮
   🐇🐖 🕰 ➡️ 🚂📻
 🍉
