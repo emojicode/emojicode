@@ -100,7 +100,7 @@ const Token* lex(FILE *f, const char *filename) {
     long length = ftell(f);
     fseek(f, 0, SEEK_SET);
     
-    auto stringBuffer = new char[length + 1];
+    auto stringBuffer = new(std::nothrow) char[length + 1];
     if (stringBuffer){
         fread(stringBuffer, 1, length, f);
         stringBuffer[length] = 0;
