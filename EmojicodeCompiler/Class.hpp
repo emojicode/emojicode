@@ -9,7 +9,9 @@
 #ifndef Class_hpp
 #define Class_hpp
 
-class Class {
+#include "Package.hpp"
+
+class Class : public TypeDefinition {
 public:
     Class() {}
     
@@ -83,11 +85,7 @@ private:
     std::vector<Protocol *> protocols_;
 };
 
-/** Fetch a class by its name and enamespace. Returns nullptr if the class cannot be found. */
-extern Class* getClass(EmojicodeChar name, EmojicodeChar enamespace);
-
-
-class Protocol {
+class Protocol : public TypeDefinition {
 public:
     Protocol(EmojicodeChar n, EmojicodeChar ns, uint_fast16_t i, Package *pkg) : name(n), enamespace(ns), package(pkg), index(i) {}
     
@@ -113,7 +111,21 @@ private:
     std::map<EmojicodeChar, Method*> methods_;
 };
 
-/** Returns the protocol with name @c name in enamespace @c namepsace or @c nullptr if the protocol cannot be found. */
-extern Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace);
+class Enum : public TypeDefinition {
+public:
+    Enum(EmojicodeChar name, Package *package, const Token *dt) : name(name), package(package), documentationToken(dt) {}
+    
+    EmojicodeChar name;
+    std::map<EmojicodeChar, EmojicodeInteger> map;
+    /** The package in which this eclass was defined. */
+    Package *package;
+    
+    const Token *documentationToken;
+    
+    std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
+    void addValueFor(EmojicodeChar c);
+private:
+    EmojicodeInteger valuesCounter = 0;
+};
 
 #endif /* Class_hpp */

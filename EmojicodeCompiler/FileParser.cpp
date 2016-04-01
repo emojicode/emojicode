@@ -11,29 +11,10 @@
 #include "Lexer.hpp"
 #include "utf8.h"
 #include "Class.hpp"
+#include <libgen.h>
 
 #include <cstring>
 #include <climits>
-
-void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace){
-    char *path;
-    asprintf(&path, packageDirectory "%s/header.emojic", name);
-    
-    Package *pkg = new Package(name, PackageVersion(0, 0), false);
-    
-    parseFile(path, pkg, true, enamespace);
-    
-    if(pkg->version.major == 0 && pkg->version.minor == 0){
-        compilerError(nullptr, "Package %s does not provide a valid version.", name);
-    }
-    
-    if(packages.size() > 0){
-        packages.insert(packages.begin() + packages.size() - 1, pkg);
-    }
-    else {
-        packages.push_back(pkg);
-    }
-}
 
 //MARK: Tips
 
@@ -80,27 +61,33 @@ void reservedEmojis(const Token *token, const char *place){
     }
 }
 
-
 //MARK: Utilities
 
-static void checkTypeValidity(EmojicodeChar name, EmojicodeChar enamespace, bool optional, const Token *token){
+static void checkTypeValidity(EmojicodeChar name, EmojicodeChar enamespace, bool optional, const Token *token, Package *package){
     if(optional){
         compilerError(token, "🍬 cannot be declared as type.");
     }
     bool existent;
-    Type type = Type::fetchRawType(name, enamespace, optional, token, &existent);
+    auto type = package->fetchRawType(name, enamespace, optional, token, &existent);
     if (existent) {
         auto str = type.toString(typeNothingness, true);
         compilerError(currentToken, "Type %s is already defined.", str.c_str());
     }
 }
 
-static bool hasAttribute(EmojicodeChar attributeName, const Token **token){
+static bool hasAttribute(EmojicodeChar attributeName, const Token **token) {
     if((*token)->value[0] == attributeName){
         *token = consumeToken(IDENTIFIER);
         return true;
     }
     return false;
+}
+
+static void invalidAttribute(bool set, EmojicodeChar attributeName, const Token *token) {
+    if (set) {
+        ecCharToCharStack(attributeName, es)
+        compilerError(token, "Inapplicable attribute %s.", es);
+    }
 }
 
 static AccessLevel readAccessLevel(const Token **token){
@@ -122,14 +109,14 @@ static AccessLevel readAccessLevel(const Token **token){
     return access;
 }
 
-void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *documentationToken){
+void parseProtocol(Package *pkg, const Token *documentationToken, bool exported){
     static uint_fast16_t index = 0;
     
     EmojicodeChar name, enamespace;
     bool optional;
-    const Token *classNameToken = Type::parseTypeName(&name, &enamespace, &optional, theNamespace);
+    const Token *classNameToken = Type::parseTypeName(&name, &enamespace, &optional);
     
-    checkTypeValidity(name, enamespace, optional, classNameToken);
+    checkTypeValidity(name, enamespace, optional, classNameToken, pkg);
     
     if(index == UINT16_MAX){
         compilerError(classNameToken, "You exceeded the limit of 65,535 protocols.");
@@ -138,8 +125,10 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *docume
     auto protocol = new Protocol(name, enamespace, index++, pkg);
     protocol->documentationToken = documentationToken;
     
-    std::array<EmojicodeChar, 2> ns = {enamespace, name};
-    protocolsRegister[ns] = protocol;
+    pkg->registerType(Type(protocol, false), name, enamespace);
+    if (exported) {
+        pkg->exportType(Type(protocol, false), name);
+    }
     
     const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES) {
@@ -164,24 +153,27 @@ void parseProtocol(EmojicodeChar theNamespace, Package *pkg, const Token *docume
         const Token *methodName = consumeToken(IDENTIFIER);
         
         Type returnType = typeNothingness;
-        auto method = new Method(methodName->value[0], PUBLIC, false, nullptr, theNamespace, methodName, false, documentationToken, deprecated);
-        method->parseArgumentList(typeNothingness, theNamespace);
-        method->parseReturnType(typeNothingness, theNamespace);
+        auto method = new Method(methodName->value[0], PUBLIC, false, nullptr, pkg, methodName, false, documentationToken, deprecated);
+        method->parseArgumentList(typeNothingness, pkg);
+        method->parseReturnType(typeNothingness, pkg);
         
         protocol->addMethod(method);
     }
 }
 
-void parseEnum(EmojicodeChar theNamespace, Package &pkg, const Token *documentationToken){
+void parseEnum(Package *pkg, const Token *documentationToken, bool exported){
     EmojicodeChar name, enamespace;
     bool optional;
-    const Token *enumNameToken = Type::parseTypeName(&name, &enamespace, &optional, theNamespace);
+    const Token *enumNameToken = Type::parseTypeName(&name, &enamespace, &optional);
     
-    checkTypeValidity(name, theNamespace, optional, enumNameToken);
+    checkTypeValidity(name, enamespace, optional, enumNameToken, pkg);
     
     Enum *eenum = new Enum(name, pkg, documentationToken);
-    std::array<EmojicodeChar, 2> ns = {enamespace, name};
-    enumsRegister[ns] = eenum;
+
+    pkg->registerType(Type(eenum, false), name, enamespace);
+    if (exported) {
+        pkg->exportType(Type(eenum, false), name);
+    }
     
     const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES) {
@@ -198,7 +190,7 @@ void parseEnum(EmojicodeChar theNamespace, Package &pkg, const Token *documentat
  * @param eclass The eclass to which to append the methods.
  * @param requiredInitializers Either a list of required initializers or @c nullptr (for extensions).
  */
-void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializers, bool allowNative, EmojicodeChar theNamespace){
+void parseClassBody(Class *eclass, Package *pkg, std::vector<Initializer *> *requiredInitializers, bool allowNative){
     //Until we find a melon process methods and initializers
     const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
@@ -223,6 +215,13 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
 
         switch (token->value[0]) {
             case E_SHORTCAKE: {
+                invalidAttribute(staticOnType, E_RABBIT, token);
+                invalidAttribute(override, E_LOCK_WITH_INK_PEN, token);
+                invalidAttribute(final, E_BLACK_NIB, token);
+                invalidAttribute(required, E_KEY, token);
+                invalidAttribute(canReturnNothingness, E_CANDY, token);
+                invalidAttribute(deprecated, E_WARNING_SIGN, token);
+                
                 //Get the variable name
                 const Token *ivarName = consumeToken(VARIABLE);
                 
@@ -234,17 +233,20 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                     compilerError(token, "You exceeded the limit of 65,535 instance variables.");
                 }
 
-                auto type = Type::parseAndFetchType(Type(eclass), theNamespace, AllowGenericTypeVariables, nullptr);
+                auto type = Type::parseAndFetchType(Type(eclass), AllowGenericTypeVariables, pkg, nullptr);
                 
                 eclass->instanceVariables.push_back(new Variable(ivarName, type));
             }
             break;
             case E_CROCODILE: {
-                if(staticOnType){
-                    compilerError(token, "Invalid modifier 🐇.");
-                }
+                invalidAttribute(staticOnType, E_RABBIT, token);
+                invalidAttribute(override, E_LOCK_WITH_INK_PEN, token);
+                invalidAttribute(final, E_BLACK_NIB, token);
+                invalidAttribute(required, E_KEY, token);
+                invalidAttribute(canReturnNothingness, E_CANDY, token);
+                invalidAttribute(deprecated, E_WARNING_SIGN, token);
                 
-                Type type = Type::parseAndFetchType(Type(eclass), theNamespace, NoDynamism, nullptr);
+                Type type = Type::parseAndFetchType(Type(eclass), NoDynamism, pkg, nullptr);
                 
                 if (type.optional) {
                     compilerError(token, "Please remove 🍬.");
@@ -257,18 +259,17 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
             }
             break;
             case E_PIG: {
-                if(required){
-                    compilerError(token, "Invalid modifier 🔑.");
-                }
+                invalidAttribute(required, E_KEY, token);
+                invalidAttribute(canReturnNothingness, E_CANDY, token);
                 
                 const Token *methodName = consumeToken(IDENTIFIER);
                 EmojicodeChar name = methodName->value[0];
                 
                 if(staticOnType){
-                    auto *classMethod = new ClassMethod(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken, deprecated);
-                    classMethod->parseGenericArguments(TypeContext(eclass, classMethod), theNamespace);
-                    classMethod->parseArgumentList(TypeContext(eclass, classMethod), theNamespace);
-                    classMethod->parseReturnType(TypeContext(eclass, classMethod), theNamespace);
+                    auto *classMethod = new ClassMethod(name, accessLevel, final, eclass, pkg, token, override, documentationToken, deprecated);
+                    classMethod->parseGenericArguments(TypeContext(eclass, classMethod), pkg);
+                    classMethod->parseArgumentList(TypeContext(eclass, classMethod), pkg);
+                    classMethod->parseReturnType(TypeContext(eclass, classMethod), pkg);
                     classMethod->parseBody(allowNative);
                     
                     if(classMethod->name == E_CHEQUERED_FLAG){
@@ -291,10 +292,10 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
                 else {
                     reservedEmojis(methodName, "method");
                     
-                    auto *method = new Method(methodName->value[0], accessLevel, final, eclass, theNamespace, token, override, documentationToken, deprecated);
-                    method->parseGenericArguments(TypeContext(eclass, method), theNamespace);
-                    method->parseArgumentList(TypeContext(eclass, method), theNamespace);
-                    method->parseReturnType(TypeContext(eclass, method), theNamespace);
+                    auto *method = new Method(methodName->value[0], accessLevel, final, eclass, pkg, token, override, documentationToken, deprecated);
+                    method->parseGenericArguments(TypeContext(eclass, method), pkg);
+                    method->parseArgumentList(TypeContext(eclass, method), pkg);
+                    method->parseReturnType(TypeContext(eclass, method), pkg);
                     method->parseBody(allowNative);
                     
                     eclass->addMethod(method);
@@ -302,15 +303,13 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
             }
             break;
             case E_CAT: {
-                if (staticOnType) {
-                    compilerError(token, "Invalid modifier 🐇.");
-                }
+                invalidAttribute(staticOnType, E_RABBIT, token);
                 
                 const Token *initializerName = consumeToken(IDENTIFIER);
                 EmojicodeChar name = initializerName->value[0];
                 
-                Initializer *initializer = new Initializer(name, accessLevel, final, eclass, theNamespace, token, override, documentationToken, deprecated, required, canReturnNothingness);
-                initializer->parseArgumentList(TypeContext(eclass, initializer), theNamespace);
+                Initializer *initializer = new Initializer(name, accessLevel, final, eclass, pkg, token, override, documentationToken, deprecated, required, canReturnNothingness);
+                initializer->parseArgumentList(TypeContext(eclass, initializer), pkg);
                 initializer->parseBody(allowNative);
                 
                 if (requiredInitializers) {
@@ -340,14 +339,13 @@ void parseClassBody(Class *eclass, std::vector<Initializer *> *requiredInitializ
     }
 }
 
-void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, const Token *documentationToken, const Token *theToken){
+void parseClass(Package *pkg, bool allowNative, const Token *documentationToken, const Token *theToken, bool exported){
     EmojicodeChar className, enamespace;
     bool optional;
-    const Token *classNameToken = Type::parseTypeName(&className, &enamespace, &optional, theNamespace);
+    const Token *classNameToken = Type::parseTypeName(&className, &enamespace, &optional);
     
-    checkTypeValidity(className, enamespace, optional, theToken);
+    checkTypeValidity(className, enamespace, optional, theToken, pkg);
     
-    //Create the eclass
     Class *eclass = new Class;
     eclass->name = className;
     eclass->inheritsContructors = false;
@@ -361,7 +359,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
         
         const Token *variable = consumeToken(VARIABLE);
         
-        Type t = Type::parseAndFetchType(Type(eclass), theNamespace, NoDynamism, nullptr);
+        Type t = Type::parseAndFetchType(Type(eclass), NoDynamism, pkg, nullptr);
         eclass->genericArgumentConstraints.push_back(t);
         
         Type rType(TT_REFERENCE, false);
@@ -377,8 +375,8 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
     if (nextToken()->value[0] != E_GRAPES) { //Grape
         EmojicodeChar typeName, typeNamespace;
         bool optional, existent;
-        const Token *token = Type::parseTypeName(&typeName, &typeNamespace, &optional, theNamespace);
-        Type type = Type::fetchRawType(typeName, theNamespace, optional, token, &existent);
+        const Token *token = Type::parseTypeName(&typeName, &typeNamespace, &optional);
+        Type type = pkg->fetchRawType(typeName, typeNamespace, optional, token, &existent);
         
         if (!existent) {
             compilerError(token, "Superclass type does not exist.");
@@ -395,7 +393,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
             genericArg.second.reference += eclass->superclass->genericArgumentCount;
         }
         
-        type.parseGenericArguments(Type(eclass), theNamespace, AllowGenericTypeVariables, token);
+        type.parseGenericArguments(Type(eclass), AllowGenericTypeVariables, pkg, token);
         
         if (type.optional){
             compilerError(classNameToken, "Please remove 🍬.");
@@ -411,8 +409,11 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
         eclass->genericArgumentCount = eclass->ownGenericArgumentCount;
     }
     
-    std::array<EmojicodeChar, 2> ns = {enamespace, className};
-    classesRegister[ns] = eclass;
+    pkg->registerType(eclass, className, enamespace);
+    pkg->registerClass(eclass);
+    if (exported) {
+        pkg->exportType(eclass, className);
+    }
     
     std::vector<Initializer *> requiredInitializers;
     if (eclass->superclass != nullptr) {
@@ -423,7 +424,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
     eclass->index = classes.size();
     classes.push_back(eclass);
     
-    parseClassBody(eclass, &requiredInitializers, allowNative, theNamespace);
+    parseClassBody(eclass, pkg, &requiredInitializers, allowNative);
     
     //The class must be complete in its intial definition
     if (requiredInitializers.size()) {
@@ -433,7 +434,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
     }
 }
 
-void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar theNamespace){
+void parseFile(const char *path, Package *pkg, bool allowNative){
     const Token *oldCurrentToken = currentToken;
     
     FILE *in = fopen(path, "rb");
@@ -460,87 +461,112 @@ void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar t
         
         theToken->forceType(IDENTIFIER);
         
-        if (theToken->value[0] == E_PACKAGE) {
-            if(pkg->definedClass){
-                //TODO: find a way around this
-                compilerError(theToken, "At the moment 📦 are only allowed before the first class declaration. This is a beta limitation.");
-            }
-            
-            const Token *nameToken = consumeToken(VARIABLE);
-            const Token *namespaceToken = consumeToken(IDENTIFIER);
-            
-            size_t ds = u8_codingsize(nameToken->value.c_str(), nameToken->value.size());
-            //Allocate space for the UTF8 string
-            char *name = new char[ds + 1];
-            //Convert
-            size_t written = u8_toutf8(name, ds, nameToken->value.c_str(), nameToken->value.size());
-            name[written] = 0;
-            
-            packageRegisterHeaderNewest(name, namespaceToken->value[0]);
-
-            continue;
-        }
-        else if (theToken->value[0] == E_CROCODILE) {
-            parseProtocol(theNamespace, pkg, documentationToken);
-            continue;
-        }
-        else if (theToken->value[0] == E_TURKEY) {
-            parseEnum(theNamespace, *pkg, documentationToken);
-            continue;
-        }
-        else if (theToken->value[0] == E_RADIO) {
-            pkg->requiresNativeBinary = true;
-            if (strcmp(pkg->name, "s") == 0 || strcmp(pkg->name, "_") == 0) {
-                compilerError(theToken, "You may not set 📻 for the _ package.");
-            }
-            continue;
-        }
-        else if (theToken->value[0] == E_CRYSTAL_BALL) {
-            if(pkg->version.minor && pkg->version.major){
-                compilerError(theToken, "Package version already declared.");
-            }
-            
-            const Token *major = consumeToken(INTEGER);
-            const Token *minor = consumeToken(INTEGER);
-
-            const char *majorString = major->value.utf8CString();
-            const char *minorString = minor->value.utf8CString();
-            
-            uint16_t majori = strtol(majorString, nullptr, 0);
-            uint16_t minori = strtol(minorString, nullptr, 0);
-            
-            delete [] majorString;
-            delete [] minorString;
-            
-            pkg->version = PackageVersion(majori, minori);
-            continue;
-        }
-        else if (theToken->value[0] == E_WALE) {
-            EmojicodeChar className, enamespace;
-            bool optional;
-            const Token *classNameToken = Type::parseTypeName(&className, &enamespace, &optional, theNamespace);
-            
-            if (optional) {
-                compilerError(classNameToken, "Optional types are not extendable.");
-            }
-            Class *eclass = getClass(className, enamespace);
-            if (eclass == nullptr) {
-                compilerError(classNameToken, "Class does not exist.");
-            }
-            
-            //Native extensions are allowed if the eclass was defined in this package.
-            parseClassBody(eclass, nullptr, eclass->package == pkg, theNamespace);
-            continue;
-        }
-        else if (theToken->value[0] == E_RABBIT) {
-            pkg->definedClass = true;
-            parseClass(theNamespace, pkg, allowNative, documentationToken, theToken);
-        }
-        else {
-            ecCharToCharStack(theToken->value[0], f);
-            compilerError(theToken, "Unexpected identifier %s", f);
-        }
+        bool exported = hasAttribute(E_EARTH_GLOBE_EUROPE_AFRICA, &theToken);
         
+        switch (theToken->value[0]) {
+            case E_PACKAGE: {
+                invalidAttribute(exported, E_EARTH_GLOBE_EUROPE_AFRICA, theToken);
+                
+                const Token *nameToken = consumeToken(VARIABLE);
+                const Token *namespaceToken = consumeToken(IDENTIFIER);
+                
+                size_t ds = u8_codingsize(nameToken->value.c_str(), nameToken->value.size());
+                //Allocate space for the UTF8 string
+                char *name = new char[ds + 1];
+                //Convert
+                size_t written = u8_toutf8(name, ds, nameToken->value.c_str(), nameToken->value.size());
+                name[written] = 0;
+                
+                pkg->loadPackage(name, namespaceToken->value[0], theToken);
+                
+                continue;
+            }
+            case E_CROCODILE:
+                parseProtocol(pkg, documentationToken, exported);
+                continue;
+            case E_TURKEY:
+                parseEnum(pkg, documentationToken, exported);
+                continue;
+            case E_RADIO:
+                invalidAttribute(exported, E_EARTH_GLOBE_EUROPE_AFRICA, theToken);
+                pkg->setRequiresBinary();
+                if (strcmp(pkg->name(), "s") == 0 || strcmp(pkg->name(), "_") == 0) {
+                    compilerError(theToken, "You may not set 📻 for the _ package.");
+                }
+                continue;
+            case E_CRYSTAL_BALL: {
+                invalidAttribute(exported, E_EARTH_GLOBE_EUROPE_AFRICA, theToken);
+                if(pkg->version().minor && pkg->version().major){
+                    compilerError(theToken, "Package version already declared.");
+                }
+                
+                const Token *major = consumeToken(INTEGER);
+                const Token *minor = consumeToken(INTEGER);
+                
+                const char *majorString = major->value.utf8CString();
+                const char *minorString = minor->value.utf8CString();
+                
+                uint16_t majori = strtol(majorString, nullptr, 0);
+                uint16_t minori = strtol(minorString, nullptr, 0);
+                
+                delete [] majorString;
+                delete [] minorString;
+                
+                pkg->setPackageVersion(PackageVersion(majori, minori));
+                continue;
+            }
+            case E_WALE: {
+                invalidAttribute(exported, E_EARTH_GLOBE_EUROPE_AFRICA, theToken);
+                EmojicodeChar className, enamespace;
+                bool optional;
+                const Token *classNameToken = Type::parseTypeName(&className, &enamespace, &optional);
+                
+                if (optional) {
+                    compilerError(classNameToken, "Optional types are not extendable.");
+                }
+                
+                bool existent;
+                Type type = pkg->fetchRawType(className, enamespace, optional, theToken, &existent);
+                
+                if (!existent) {
+                    compilerError(classNameToken, "Class does not exist.");
+                }
+                if (type.type != TT_CLASS) {
+                    compilerError(classNameToken, "Only classes are extendable.");
+                }
+                
+                auto eclass = type.eclass;
+                
+                //Native extensions are allowed if the eclass was defined in this package.
+                parseClassBody(eclass, pkg, nullptr, eclass->package == pkg);
+                continue;
+            }
+            case E_RABBIT:
+                parseClass(pkg, allowNative, documentationToken, theToken, exported);
+                continue;
+            case E_SCROLL: {
+                invalidAttribute(exported, E_EARTH_GLOBE_EUROPE_AFRICA, theToken);
+                const Token *pathString = consumeToken(STRING);
+                
+                auto fileString = pathString->value.utf8CString();
+                
+                const char *lastSlash = strrchr(path, '/');
+                const char *directory = strndup(path, lastSlash - path);
+            
+                char *str;
+                asprintf(&str, "%s/%s", directory, fileString);
+                
+                parseFile(str, pkg, allowNative);
+                
+                delete [] fileString;
+                continue;
+            }
+            default:
+                ecCharToCharStack(theToken->value[0], f);
+                compilerError(theToken, "Unexpected identifier %s", f);
+                break;
+                
+        }
     }
     currentToken = oldCurrentToken;
 }

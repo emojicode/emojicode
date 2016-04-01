@@ -106,120 +106,120 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
 }
 
 void report(const char *packageName){
-    bool printedClass = false;
-    printf("{");
-    printf("\"classes\": [");
-    for(auto eclass : classes){
-        if (strcmp(eclass->package->name, packageName) != 0) {
-            continue;
-        }
-        
-        if (printedClass) {
-            putchar(',');
-        }
-        printedClass = true;
-        
-        printf("{");
-        
-        ecCharToCharStack(eclass->name, className);
-        printf("\"name\": \"%s\",", className);
-
-        reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentConstraints, eclass->superGenericArguments.size(), TypeContext(eclass));
-        reportDocumentation(eclass->documentationToken);
-        
-        if (eclass->superclass) {
-            ecCharToCharStack(eclass->superclass->name, superClassName);
-            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", eclass->superclass->package->name, superClassName);
-        }
-        
-        printf("\"methods\": [");
-        for(size_t i = 0; i < eclass->methodList.size(); i++){
-            Method *method = eclass->methodList[i];
-            reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size(), TypeContext(eclass, method));
-        }
-        printf("],");
-        
-        printf("\"initializers\": [");
-        for(size_t i = 0; i < eclass->initializerList.size(); i++){
-            Initializer *initializer = eclass->initializerList[i];
-            reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == eclass->initializerList.size(), TypeContext(eclass, initializer));
-        }
-        printf("],");
-        
-        printf("\"classMethods\": [");
-        for(size_t i = 0; i < eclass->classMethodList.size(); i++){
-            ClassMethod *classMethod = eclass->classMethodList[i];
-            reportProcedureInformation((Procedure *)classMethod, Return, eclass->classMethodList.size() == i + 1, TypeContext(eclass, classMethod));
-        }
-        printf("],");
-        
-        printf("\"conformsTo\": [");
-        for(size_t i = 0; i < eclass->protocols().size(); i++){
-            Protocol *protocol = eclass->protocols()[i];
-            reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size(), TypeContext(eclass));
-        }
-        printf("]}");
-    }
-    printf("],");
-    printf("\"enums\": [");
-    bool printedEnum = false;
-    for(auto it : enumsRegister){
-        Enum *eenum = it.second;
-        
-        if (strcmp(eenum->package.name, packageName) != 0) {
-            continue;
-        }
-        if (printedEnum) {
-            putchar(',');
-        }
-        printf("{");
-        
-        printedEnum = true;
-        
-        ecCharToCharStack(eenum->name, enumName);
-        printf("\"name\": \"%s\",", enumName);
-        
-        reportDocumentation(eenum->documentationToken);
-        
-        bool printedValue = false;
-        printf("\"values\": [");
-        for(auto it : eenum->map){
-            ecCharToCharStack(it.first, value);
-            if (printedValue){
-                putchar(',');
-            }
-            printf("\"%s\"", value);
-            printedValue = true;
-        }
-        printf("]}");
-    }
-    printf("],");
-    printf("\"protocols\": [");
-    bool printedProtocol = false;
-    for(auto it : protocolsRegister){
-        Protocol *protocol = it.second;
-        
-        if (strcmp(protocol->package->name, packageName) != 0) {
-            continue;
-        }
-        if (printedProtocol) {
-            putchar(',');
-        }
-        printedProtocol = true;
-        printf("{");
-        
-        ecCharToCharStack(protocol->name, protocolName);
-        printf("\"name\": \"%s\",", protocolName);
-        
-        reportDocumentation(protocol->documentationToken);
-        
-        printf("\"methods\": [");
-        for(size_t i = 0; i < protocol->methods().size(); i++){
-            Method *method = protocol->methods()[i];
-            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methods().size(), TypeContext(Type(protocol, false)));
-        }
-        printf("]}");
-    }
-    printf("]");
-    printf("}");
+//    bool printedClass = false;
+//    printf("{");
+//    printf("\"classes\": [");
+//    for(auto eclass : classes){
+//        if (strcmp(eclass->package->name(), packageName) != 0) {
+//            continue;
+//        }
+//        
+//        if (printedClass) {
+//            putchar(',');
+//        }
+//        printedClass = true;
+//        
+//        printf("{");
+//        
+//        ecCharToCharStack(eclass->name, className);
+//        printf("\"name\": \"%s\",", className);
+//
+//        reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentContraints, eclass->superGenericArguments.size(), TypeContext(eclass));
+//        reportDocumentation(eclass->documentationToken);
+//        
+//        if (eclass->superclass) {
+//            ecCharToCharStack(eclass->superclass->name, superClassName);
+//            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", eclass->superclass->package->name(), superClassName);
+//        }
+//        
+//        printf("\"methods\": [");
+//        for(size_t i = 0; i < eclass->methodList.size(); i++){
+//            Method *method = eclass->methodList[i];
+//            reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size(), TypeContext(eclass, method));
+//        }
+//        printf("],");
+//        
+//        printf("\"initializers\": [");
+//        for(size_t i = 0; i < eclass->initializerList.size(); i++){
+//            Initializer *initializer = eclass->initializerList[i];
+//            reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == eclass->initializerList.size(), TypeContext(eclass, initializer));
+//        }
+//        printf("],");
+//        
+//        printf("\"classMethods\": [");
+//        for(size_t i = 0; i < eclass->classMethodList.size(); i++){
+//            ClassMethod *classMethod = eclass->classMethodList[i];
+//            reportProcedureInformation((Procedure *)classMethod, Return, eclass->classMethodList.size() == i + 1, TypeContext(eclass, classMethod));
+//        }
+//        printf("],");
+//        
+//        printf("\"conformsTo\": [");
+//        for(size_t i = 0; i < eclass->protocols().size(); i++){
+//            Protocol *protocol = eclass->protocols()[i];
+//            reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size(), TypeContext(eclass));
+//        }
+//        printf("]}");
+//    }
+//    printf("],");
+//    printf("\"enums\": [");
+//    bool printedEnum = false;
+//    for(auto it : enumsRegister){
+//        Enum *eenum = it.second;
+//        
+//        if (strcmp(eenum->package->name(), packageName) != 0) {
+//            continue;
+//        }
+//        if (printedEnum) {
+//            putchar(',');
+//        }
+//        printf("{");
+//        
+//        printedEnum = true;
+//        
+//        ecCharToCharStack(eenum->name, enumName);
+//        printf("\"name\": \"%s\",", enumName);
+//        
+//        reportDocumentation(eenum->documentationToken);
+//        
+//        bool printedValue = false;
+//        printf("\"values\": [");
+//        for(auto it : eenum->map){
+//            ecCharToCharStack(it.first, value);
+//            if (printedValue){
+//                putchar(',');
+//            }
+//            printf("\"%s\"", value);
+//            printedValue = true;
+//        }
+//        printf("]}");
+//    }
+//    printf("],");
+//    printf("\"protocols\": [");
+//    bool printedProtocol = false;
+//    for(auto it : protocolsRegister){
+//        Protocol *protocol = it.second;
+//        
+//        if (strcmp(protocol->package->name(), packageName) != 0) {
+//            continue;
+//        }
+//        if (printedProtocol) {
+//            putchar(',');
+//        }
+//        printedProtocol = true;
+//        printf("{");
+//        
+//        ecCharToCharStack(protocol->name, protocolName);
+//        printf("\"name\": \"%s\",", protocolName);
+//        
+//        reportDocumentation(protocol->documentationToken);
+//        
+//        printf("\"methods\": [");
+//        for(size_t i = 0; i < protocol->methods().size(); i++){
+//            Method *method = protocol->methods()[i];
+//            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methods().size(), TypeContext(Type(protocol, false)));
+//        }
+//        printf("]}");
+//    }
+//    printf("]");
+//    printf("}");
 }

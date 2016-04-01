@@ -192,45 +192,39 @@ void analyzeClassesAndWrite(FILE *fout){
     
     writer.writeUInt16(classes.size());
     
-    uint8_t pkgCount = (uint8_t)packages.size();
-    //must be s and _
-    if(pkgCount == 2){
-        pkgCount = 1;
-    }
+    auto pkgCount = Package::packagesInOrder().size();
+    
+    //TODO: only s and _
+    
     if(pkgCount > 253){
         compilerError(nullptr, "You exceeded the maximum of 253 packages.");
     }
     writer.writeByte(pkgCount);
     
-    size_t pkgI = 0;
-    
-    Package *pkg = nullptr;
-    Class *eclass;
-    for (size_t i = 0; (i < classes.size()) && (eclass = classes[i]); i++) {
-        if((pkg != eclass->package && pkgCount > 1) || !pkg){ //pkgCount > 1: Ignore the second s
-            if (i > 0){
-                writer.writeByte(0);
-            }
-            pkg = eclass->package;
-            Package *pkg = packages[pkgI++];
-            
-            uint16_t l = strlen(pkg->name) + 1;
-            writer.writeUInt16(l);
-            
-            writer.writeBytes(pkg->name, l);
-            
-            writer.writeUInt16(pkg->version.major);
-            writer.writeUInt16(pkg->version.minor);
+    for (auto pkg : Package::packagesInOrder()) {
+        auto classWritten = false;
 
-            writer.writeByte(pkg->requiresNativeBinary ? 1 : 0);
-        }
-        else if (i > 0){
-            writer.writeByte(1);
+        uint16_t l = strlen(pkg->name()) + 1;
+        writer.writeUInt16(l);
+        
+        writer.writeBytes(pkg->name(), l);
+        
+        writer.writeUInt16(pkg->version().major);
+        writer.writeUInt16(pkg->version().minor);
+        
+        writer.writeByte(pkg->requiresNativeBinary() ? 1 : 0);
+        
+        for (auto cl : pkg->classes()) {
+            if (classWritten) {
+                writer.writeByte(1);
+            }
+            
+            analyzeClass(Type(cl), writer);
+            classWritten = true;
         }
         
-        analyzeClass(Type(eclass), writer);
+         writer.writeByte(0);
     }
-    writer.writeByte(0);
     
     writer.writeUInt16(stringPool.size());
     for (auto token : stringPool) {

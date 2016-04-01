@@ -3,19 +3,19 @@
 🌮
   The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings)
 🌮
-🐇 🔡 🍇🍉
+🌍 🐇 🔡 🍇🍉
 🌮
   The 🍨 class represents an ordered mutable collection. [Read more in the
   language reference.](../../reference/the-s-package.html#-lists)
 🌮
-🐇 🍨🐚Element ⚪️ 🍇🍉
+🌍 🐇 🍨🐚Element ⚪️ 🍇🍉
 🌮
   A 🚨 instance represents an error. Many methods interacting with the operating
   system will return an error on a failure.
 🌮
-🐇 🚨 🍇🍉
+🌍 🐇 🚨 🍇🍉
 🌮 📇 is an abstract interface to binary data. 🌮
-🐇 📇 🍇🍉
+🌍 🐇 📇 🍇🍉
 🌮
   🍡 is a class whose subclasses can enumerate other objects. The 🍡 itself is
   never initiated.
@@ -26,20 +26,20 @@
   Enumerators conform [🔂](t5535756578.html) and return themselves in the 🍡
   method.
 🌮
-🐇 🍡🐚Element ⚪️ 🍇🍉
+🌍 🐇 🍡🐚Element ⚪️ 🍇🍉
 🌮
   The 🍯 class represents a dictionary. [Read more in the
   language reference.](../../reference/the-s-package.html#-dictionaries)
 🌮
-🐇 🍯🐚Element ⚪️ 🍇🍉
-🐇 🌶 🍇🍉
-🐇 🍇 🍇🍉
+🌍 🐇 🍯🐚Element ⚪️ 🍇🍉
+🌍 🐇 🌶 🍇🍉
+🌍 🐇 🍇 🍇🍉
 
 🌮
   A class whose instances shall be enumerable using the 🔂 loop must
   implement this protocol.
 🌮
-🐊 🔂 🍇
+🌍 🐊 🔂 🍇
   🌮
     This method must return an instance of a subclass of
     [🍡](t5535657185.html) which can be used to enumerate this instance.
@@ -431,7 +431,7 @@
   💻 provides several class methods that can be used to interact with the
   operating system. It cannot be instantiated.
 🌮
-🐇 💻 🍇
+🌍 🐇 💻 🍇
   🌮
     Gets an environment variable by its name. If the variable cannot be found
     ✨ is returned.
@@ -468,7 +468,7 @@
   numbers. [Read more in the
   language reference.](../../reference/the-s-package.html#-ranges)
 🌮
-🐇 ⏩ 🍇
+🌍 🐇 ⏩ 🍇
   🌮
     Creates an range from start to stop.
   🌮
@@ -488,7 +488,7 @@
 🌮
   🚄 provides mathematical functions as class methods.
 🌮
-🐇 🚄 🍇
+🌍 🐇 🚄 🍇
   🌮
     Returns a crypthographically secure random number within the given range.
   🌮

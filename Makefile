@@ -72,7 +72,7 @@ builds:
 	mkdir -p $(DIST)
 
 define testFile
-$(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/testClass.emojic $(TESTS_DIR)/$(1).emojic
+$(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/$(1).emojic
 $(DIST)/$(ENGINE_BINARY) $(TESTS_DIR)/$(1).emojib
 endef
 

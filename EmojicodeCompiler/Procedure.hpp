@@ -23,9 +23,9 @@ public:
     Callable(const Token *dToken) : dToken(dToken) {};
     
     /** Parses the arguments for this function. */
-    void parseArgumentList(TypeContext ct, EmojicodeChar enamespace);
+    void parseArgumentList(TypeContext ct, Package *package);
     /** Parses the return type for this function if there is one specified. */
-    void parseReturnType(TypeContext ct, EmojicodeChar theNamespace);
+    void parseReturnType(TypeContext ct, Package *package);
     
     Arguments arguments;
     /** Return type of the method */
@@ -51,8 +51,8 @@ public:
 class Procedure: public Callable {
 public:
     Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
-              EmojicodeChar theNamespace, const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated) :
-    Callable(dToken), name(name),  overriding(overriding), deprecated(deprecated), access(level), eclass(eclass), documentationToken(documentationToken), enamespace(theNamespace) {}
+              Package *package, const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated) :
+    Callable(dToken), name(name),  overriding(overriding), deprecated(deprecated), access(level), eclass(eclass), documentationToken(documentationToken), package(package) {}
     
     /** The procedure name. A Unicode code point for an emoji */
     EmojicodeChar name;
@@ -78,7 +78,7 @@ public:
     std::map<EmojicodeString, Type> genericArgumentVariables;
     
     /** The namespace in which the procedure was defined. This does not necessarily match the class’s namespace. */
-    EmojicodeChar enamespace;
+    Package *package;
     
     /** Issues a warning on at the given token if the procedure is deprecated. */
     void deprecatedWarning(const Token *callToken);
@@ -90,7 +90,7 @@ public:
     
     void checkOverride(Procedure *superProcedure);
     
-    void parseGenericArguments(TypeContext ct, EmojicodeChar enamespace);
+    void parseGenericArguments(TypeContext ct, Package *package);
     void parseBody(bool allowNative);
     
     virtual Type type();
@@ -112,8 +112,8 @@ public:
 
 class Initializer: public Procedure {
 public:
-    Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, EmojicodeChar theNamespace,
-                const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated, bool r, bool crn) : Procedure(name, level, final, eclass, theNamespace, dToken, overriding, documentationToken, deprecated), required(r), canReturnNothingness(crn) {}
+    Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, Package *package,
+                const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated, bool r, bool crn) : Procedure(name, level, final, eclass, package, dToken, overriding, documentationToken, deprecated), required(r), canReturnNothingness(crn) {}
     
     bool required : 1;
     bool canReturnNothingness : 1;
