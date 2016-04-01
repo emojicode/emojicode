@@ -388,8 +388,6 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return somethingBoolean(parse(consumeCoin(thread), thread).raw <= parse(consumeCoin(thread), thread).raw);
         case 0x2C:
             return somethingBoolean(parse(consumeCoin(thread), thread).raw >= parse(consumeCoin(thread), thread).raw);
-        case 0x3F:
-            return somethingDouble((double) parse(consumeCoin(thread), thread).raw);
         //MARK: General Comparisons
         case 0x2D:
             return somethingBoolean(parse(consumeCoin(thread), thread).object == parse(consumeCoin(thread), thread).object);
@@ -465,6 +463,9 @@ Something parse(EmojicodeCoin coin, Thread *thread){
                 return EMOJICODE_TRUE;
             }
         }
+        //MARK: Int To Double
+        case 0x3F:
+            return somethingDouble((double) parse(consumeCoin(thread), thread).raw);
         //MARK: Casts
         case 0x40: {
             Something sth = parse(consumeCoin(thread), thread);
