@@ -1002,6 +1002,9 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                             placeholder.write(0x25);
                             parse(consumeToken(), token, typeInteger);
                             return typeInteger;
+                        case E_ROCKET:
+                            placeholder.write(0x3F);
+                            return typeFloat;
                     }
                 }
                 else if (type.type == TT_DOUBLE) {
