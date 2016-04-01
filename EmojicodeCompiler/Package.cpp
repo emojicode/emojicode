@@ -9,6 +9,7 @@
 #include "Package.hpp"
 #include "FileParser.hpp"
 #include "utf8.h"
+#include <string.h>
 
 std::list<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
