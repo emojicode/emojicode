@@ -463,6 +463,9 @@ Something parse(EmojicodeCoin coin, Thread *thread){
                 return EMOJICODE_TRUE;
             }
         }
+        //MARK: Int To Double
+        case 0x3F:
+            return somethingDouble((double) parse(consumeCoin(thread), thread).raw);
         //MARK: Casts
         case 0x40: {
             Something sth = parse(consumeCoin(thread), thread);
