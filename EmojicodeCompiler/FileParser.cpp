@@ -362,8 +362,7 @@ void parseClass(Package *pkg, bool allowNative, const Token *documentationToken,
         Type t = Type::parseAndFetchType(Type(eclass), NoDynamism, pkg, nullptr);
         eclass->genericArgumentConstraints.push_back(t);
         
-        Type rType(TT_REFERENCE, false);
-        rType.reference = eclass->ownGenericArgumentCount;
+        Type rType(TT_REFERENCE, false, eclass->ownGenericArgumentCount, eclass);
         
         if (eclass->ownGenericArgumentVariables.count(variable->value)) {
             compilerError(variable, "A generic argument variable with the same name is already in use.");

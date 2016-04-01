@@ -57,7 +57,7 @@ public:
     static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism, Package *package, bool *dynamicType = nullptr);
     
     Type(TypeType t, bool o) : optional(o), type(t) {}
-    Type(TypeType t, bool o, uint16_t r) : optional(o), type(t), reference(r) {}
+    Type(TypeType t, bool o, uint16_t r, Class *c) : optional(o), type(t), reference(r), referenceClass(c) {}
     Type(Class *c, bool o);
     Type(Class *c) : Type(c, false) {};
     Type(Protocol *p, bool o) : optional(o), type(TT_PROTOCOL), protocol(p) {}
@@ -69,7 +69,10 @@ public:
         Class *eclass;
         Protocol *protocol;
         Enum *eenum;
-        uint16_t reference;
+        struct {
+            uint16_t reference;
+            Class *referenceClass;
+        };
         uint32_t arguments;
     };
     std::vector<Type> genericArguments;

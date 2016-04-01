@@ -135,14 +135,18 @@ Type Type::resolveOn(TypeContext typeContext){
     while (t.type == TT_LOCAL_REFERENCE) {
         t = (*typeContext.procedureGenericArguments)[t.reference];
     }
-    while (t.type == TT_REFERENCE) {
-        Type tn = typeContext.normalType.genericArguments[t.reference];
-        if (tn.type == TT_REFERENCE && tn.reference == t.reference) {
-            break;
+    
+    if (typeContext.normalType.type == TT_CLASS) {
+        while (t.type == TT_REFERENCE && t.referenceClass == typeContext.normalType.eclass) {
+            Type tn = typeContext.normalType.genericArguments[t.reference];
+            if (tn.type == TT_REFERENCE && tn.reference == t.reference) {
+                break;
+            }
+            t = tn;
         }
-        t = tn;
     }
     t.optional = optional;
+    
     if (t.type == TT_CLASS) {
         for (int i = 0; i < t.eclass->genericArgumentCount; i++) {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
@@ -153,6 +157,7 @@ Type Type::resolveOn(TypeContext typeContext){
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
         }
     }
+    
     return t;
 }
 
@@ -378,7 +383,7 @@ void stringAppendEc(EmojicodeChar c, std::string *string){
 
 Type::Type(Class *c, bool o) : optional(o), type(TT_CLASS), eclass(c) {
     for (int i = 0; i < eclass->genericArgumentCount; i++) {
-        genericArguments.push_back(Type(TT_REFERENCE, false, i));
+        genericArguments.push_back(Type(TT_REFERENCE, false, i, c));
     }
 }
 
