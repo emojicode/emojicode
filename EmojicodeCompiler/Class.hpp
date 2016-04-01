@@ -46,7 +46,7 @@ public:
     /** The number of generic arguments this eclass takes. */
     uint16_t ownGenericArgumentCount = 0;
     /** The types for the generic arguments. */
-    std::vector<Type> genericArgumentContraints;
+    std::vector<Type> genericArgumentConstraints;
     /** The arguments for the classes from which this eclass inherits. */
     std::vector<Type> superGenericArguments;
     /** Generic type arguments as variables */

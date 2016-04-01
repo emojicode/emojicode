@@ -29,10 +29,10 @@ Type Type::typeConstraintForReference(TypeContext ct){
     Type t = *this;
     bool optional = t.optional;
     while (t.type == TT_LOCAL_REFERENCE) {
-        t = ct.p->genericArgumentContraints[t.reference];
+        t = ct.p->genericArgumentConstraints[t.reference];
     }
     while (t.type == TT_REFERENCE) {
-        t = ct.normalType.eclass->genericArgumentContraints[t.reference];
+        t = ct.normalType.eclass->genericArgumentConstraints[t.reference];
     }
     t.optional = optional;
     return t;
@@ -337,7 +337,7 @@ void Type::validateGenericArgument(Type ta, uint16_t i, TypeContext ct, const To
     if (this->eclass->superclass) {
         i += this->eclass->superclass->genericArgumentCount;
     }
-    if (!ta.compatibleTo(this->eclass->genericArgumentContraints[i], ct)) {
+    if (!ta.compatibleTo(this->eclass->genericArgumentConstraints[i], ct)) {
         compilerError(token, "Types not matching.");
     }
 }

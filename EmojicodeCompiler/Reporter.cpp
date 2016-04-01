@@ -83,7 +83,7 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
         printf("\"canReturnNothingness\": true,");
     }
     
-    reportGenericArguments(p->genericArgumentVariables, p->genericArgumentContraints, 0, tc);
+    reportGenericArguments(p->genericArgumentVariables, p->genericArgumentConstraints, 0, tc);
     reportDocumentation(p->documentationToken);
     
     printf("\"arguments\": [");
@@ -124,7 +124,7 @@ void report(const char *packageName){
         ecCharToCharStack(eclass->name, className);
         printf("\"name\": \"%s\",", className);
 
-        reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentContraints, eclass->superGenericArguments.size(), TypeContext(eclass));
+        reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentConstraints, eclass->superGenericArguments.size(), TypeContext(eclass));
         reportDocumentation(eclass->documentationToken);
         
         if (eclass->superclass) {

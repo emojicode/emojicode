@@ -362,7 +362,7 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
         const Token *variable = consumeToken(VARIABLE);
         
         Type t = Type::parseAndFetchType(Type(eclass), theNamespace, NoDynamism, nullptr);
-        eclass->genericArgumentContraints.push_back(t);
+        eclass->genericArgumentConstraints.push_back(t);
         
         Type rType(TT_REFERENCE, false);
         rType.reference = eclass->ownGenericArgumentCount;
@@ -389,10 +389,10 @@ void parseClass(EmojicodeChar theNamespace, Package *pkg, bool allowNative, cons
         
         eclass->superclass = type.eclass;
         eclass->genericArgumentCount = eclass->ownGenericArgumentCount + eclass->superclass->genericArgumentCount;
-        eclass->genericArgumentContraints.insert(eclass->genericArgumentContraints.begin(), eclass->superclass->genericArgumentContraints.begin(), eclass->superclass->genericArgumentContraints.end());
+        eclass->genericArgumentConstraints.insert(eclass->genericArgumentConstraints.begin(), eclass->superclass->genericArgumentConstraints.begin(), eclass->superclass->genericArgumentConstraints.end());
         
-        for (auto iterator = eclass->ownGenericArgumentVariables.begin(); iterator != eclass->ownGenericArgumentVariables.end(); iterator++) {
-            iterator->second.reference += eclass->superclass->genericArgumentCount;
+        for (auto &genericArg : eclass->ownGenericArgumentVariables) {
+            genericArg.second.reference += eclass->superclass->genericArgumentCount;
         }
         
         type.parseGenericArguments(Type(eclass), theNamespace, AllowGenericTypeVariables, token);

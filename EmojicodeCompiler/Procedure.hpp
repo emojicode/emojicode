@@ -73,7 +73,7 @@ public:
     uint16_t vti;
     
     /** The types for the generic arguments. */
-    std::vector<Type> genericArgumentContraints;
+    std::vector<Type> genericArgumentConstraints;
     /** Generic type arguments as variables */
     std::map<EmojicodeString, Type> genericArgumentVariables;
     

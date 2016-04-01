@@ -83,7 +83,7 @@ void Procedure::parseGenericArguments(TypeContext ct, EmojicodeChar enamespace) 
         const Token *variable = consumeToken(VARIABLE);
         
         Type t = Type::parseAndFetchType(Type(eclass), enamespace, AllowGenericTypeVariables, nullptr);
-        genericArgumentContraints.push_back(t);
+        genericArgumentConstraints.push_back(t);
         
         Type rType(TT_LOCAL_REFERENCE, false);
         rType.reference = genericArgumentVariables.size();

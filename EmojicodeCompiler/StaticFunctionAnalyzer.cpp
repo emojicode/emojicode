@@ -717,8 +717,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             switch (type.type) {
                 case TT_CLASS:
                     for (size_t i = 0; i < type.eclass->ownGenericArgumentCount; i++) {
-                        if(!type.eclass->genericArgumentContraints[i].compatibleTo(type.genericArguments[i], type) ||
-                           !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentContraints[i], type)) {
+                        if(!type.eclass->genericArgumentConstraints[i].compatibleTo(type.genericArguments[i], type) ||
+                           !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentConstraints[i], type)) {
                             compilerError(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
                         }
                     }
