@@ -55,6 +55,7 @@ public:
     void registerType(Type t, EmojicodeChar name, EmojicodeChar ns);
     
     const std::list<Class *>& classes() const { return classes_; };
+    const std::list<ExportedType>& exportedTypes() const { return exportedTypes_; };
     
     /**
      * Tries to fetch a type by its name and namespace.
@@ -63,6 +64,7 @@ public:
     Type fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, const Token *token, bool *existent);
     
     static const std::list<Package *>& packagesInOrder() { return packagesLoadingOrder_; };
+    static Package* findPackage(const char *name);
 private:
     void loadInto(Package *destinationPackage, EmojicodeChar ns, const Token *errorToken) const;
     

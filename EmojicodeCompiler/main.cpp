@@ -247,9 +247,14 @@ int main(int argc, char * argv[]) {
         fprintf(stderr, "]");
     }
     
-    //Print a report on request
-    if(reportPackage){
-        report(reportPackage);
+    if(reportPackage) {
+        auto package = Package::findPackage(reportPackage);
+        if (package) {
+            report(package);
+        }
+        else {
+            compilerWarning(nullptr, "Report for package %s failed as it was not loaded.", reportPackage);
+        }
     }
     
     return 0;

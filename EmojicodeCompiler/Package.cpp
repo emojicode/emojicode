@@ -15,12 +15,9 @@ std::list<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
 void Package::loadPackage(const char *name, EmojicodeChar ns, const Token *errorToken) {
-    Package *package;
+    Package *package = findPackage(name);
     
-    auto it = packages_.find(name);
-    if (it != packages_.end()) {
-        package = it->second;
-        
+    if (package) {
         if (!package->finishedLoading()) {
             compilerError(errorToken, "Circular depdency detected: %s tried to load a package which intiatiated %s’s own loading.", name);
         }
@@ -52,6 +49,11 @@ void Package::parse(const char *path, const Token *errorToken) {
     packagesLoadingOrder_.push_back(this);
     
     finishedLoading_ = true;
+}
+
+Package* Package::findPackage(const char *name) {
+    auto it = packages_.find(name);
+    return it != packages_.end() ? it->second : nullptr;
 }
 
 Type Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, const Token *token, bool *existent) {

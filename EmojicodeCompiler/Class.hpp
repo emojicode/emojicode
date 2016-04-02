@@ -76,7 +76,7 @@ public:
     
     void addProtocol(Protocol *protocol);
     
-    const std::vector<Protocol*>& protocols() { return protocols_; };
+    const std::vector<Protocol*>& protocols() const { return protocols_; };
 private:
     std::map<EmojicodeChar, Method *> methods;
     std::map<EmojicodeChar, ClassMethod *> classMethods;

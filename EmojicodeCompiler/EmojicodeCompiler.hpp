@@ -80,6 +80,6 @@ void compilerWarning(const Token *token, const char *err, ...);
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
 
-void report(const char *packageName);
+void report(Package *package);
 
 #endif /* EmojicodeCompiler_hpp */
