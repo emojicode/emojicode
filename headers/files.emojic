@@ -50,6 +50,14 @@
     or any other error occurs the method returns -1.
   🌮
   🐇🐖 📏 path 🔡 ➡️ 🚂 📻
+  🌮
+    Returns an absolute pathname derived from `path` that
+    resolves to the same directory entry, whose resolution does not involve `.`,
+    `..`, or symbolic links. On failure Nothingness is returned.
+
+    >!N Not available in 0.2 Beta 4
+  🌮
+  🐇🐖 ⛓ path 🔡 ➡️ 🍬🔡 📻
 🍉
 
 🌮

@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <ftw.h>
 
 PackageVersion getVersion(){
@@ -109,9 +110,6 @@ Something filesRecursiveRmdir(Thread *thread){
     int state = nftw(s, filesRecursiveRmdirHelper, 64, FTW_DEPTH | FTW_PHYS);
     handleNEP(state != 0);
     
-    state = rmdir(s);
-    handleNEP(state != 0);
-    
     free(s);
     return NOTHINGNESS;
 }
@@ -135,6 +133,18 @@ Something filesSize(Thread *thread){
     return somethingInteger((EmojicodeInteger)length);
 }
 
+Something filesRealpath(Thread *thread) {
+    char path[PATH_MAX];
+    char *s = stringToChar(stackGetVariable(0, thread).object->value);
+    char *x = realpath(s, path);
+    
+    free(s);
+    
+    if (!x) {
+        return NOTHINGNESS;
+    }
+    return somethingObject(stringFromChar(path));
+}
 
 //MARK: file
 
@@ -316,6 +326,8 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                 return filesRecursiveRmdir;
             case 0x1F4CF:
                 return filesSize;
+            case 0x26d3: //⛓
+                return filesRealpath;
         }
     }
     else { //0x1F4C4
