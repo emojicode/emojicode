@@ -100,7 +100,7 @@ public:
     
     Type typeConstraintForReference(TypeContext ct);
 private:
-    void typeName(Type type, TypeContext typeContext, bool includeNsAndOptional, std::string *string) const;
+    void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     Type resolveOnSuperArguments(Class *c, bool *resolved);
 };
 

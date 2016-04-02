@@ -122,7 +122,7 @@ void parseProtocol(Package *pkg, const Token *documentationToken, bool exported)
         compilerError(classNameToken, "You exceeded the limit of 65,535 protocols.");
     }
     
-    auto protocol = new Protocol(name, enamespace, index++, pkg);
+    auto protocol = new Protocol(name, index++, pkg);
     protocol->documentationToken = documentationToken;
     
     pkg->registerType(Type(protocol, false), name, enamespace);
@@ -346,14 +346,8 @@ void parseClass(Package *pkg, bool allowNative, const Token *documentationToken,
     
     checkTypeValidity(className, enamespace, optional, theToken, pkg);
     
-    Class *eclass = new Class;
-    eclass->name = className;
-    eclass->inheritsContructors = false;
-    eclass->enamespace = enamespace;
-    eclass->classBegin = theToken;
-    eclass->package = pkg;
-    eclass->documentationToken = documentationToken;
-    
+    Class *eclass = new Class(className, theToken, pkg, documentationToken);
+
     while (nextToken()->value[0] == E_SPIRAL_SHELL) {
         consumeToken(IDENTIFIER);
         

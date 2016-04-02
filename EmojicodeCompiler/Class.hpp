@@ -13,12 +13,11 @@
 
 class Class : public TypeDefinition {
 public:
-    Class() {}
+    Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken)
+        : name(name), classBegin(classBegin), package(pkg), documentationToken(dToken) {}
     
     /** Self explaining */
     EmojicodeChar name;
-    /** Self explaining */
-    EmojicodeChar enamespace;
     /** Whether this eclass eligible for initializer inheritance. */
     bool inheritsContructors = false;
     
@@ -87,12 +86,10 @@ private:
 
 class Protocol : public TypeDefinition {
 public:
-    Protocol(EmojicodeChar n, EmojicodeChar ns, uint_fast16_t i, Package *pkg) : name(n), enamespace(ns), package(pkg), index(i) {}
+    Protocol(EmojicodeChar n, uint_fast16_t i, Package *pkg) : name(n), package(pkg), index(i) {}
     
     /** The name of the protocol. */
     EmojicodeChar name;
-    /** The namespace to which this protocol belongs. */
-    EmojicodeChar enamespace;
     /** The package in which this protocol was defined. */
     Package *package;
     

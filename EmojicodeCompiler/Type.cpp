@@ -376,9 +376,9 @@ const char* Type::typePackage(){
     }
 }
 
-void stringAppendEc(EmojicodeChar c, std::string *string){
+void stringAppendEc(EmojicodeChar c, std::string &string){
     ecCharToCharStack(c, sc);
-    string->append(sc);
+    string.append(sc);
 }
 
 Type::Type(Class *c, bool o) : optional(o), type(TT_CLASS), eclass(c) {
@@ -387,27 +387,13 @@ Type::Type(Class *c, bool o) : optional(o), type(TT_CLASS), eclass(c) {
     }
 }
 
-void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptional, std::string *string) const {
-    if (includeNsAndOptional) {
+void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const {
+    if (includePackageAndOptional) {
         if(type.optional){
             stringAppendEc(E_CANDY, string);
         }
         
-        switch (type.type) {
-            case TT_CLASS:
-                stringAppendEc(type.eclass->enamespace, string);
-                break;
-            case TT_PROTOCOL:
-                stringAppendEc(type.protocol->enamespace, string);
-                break;
-            case TT_CALLABLE:
-            case TT_LOCAL_REFERENCE:
-            case TT_REFERENCE:
-                break;
-            default:
-                stringAppendEc(E_LARGE_RED_CIRCLE, string);
-                break;
-        }
+        string.append(type.typePackage());
     }
     
     switch (type.type) {
@@ -421,7 +407,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
             int offset = type.eclass->genericArgumentCount - type.eclass->ownGenericArgumentCount;
             for (int i = 0, l = type.eclass->ownGenericArgumentCount; i < l; i++) {
                 stringAppendEc(E_SPIRAL_SHELL, string);
-                typeName(type.genericArguments[offset + i], typeContext, includeNsAndOptional, string);
+                typeName(type.genericArguments[offset + i], typeContext, includePackageAndOptional, string);
             }
             
             return;
@@ -457,12 +443,12 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
             stringAppendEc(E_GRAPES, string);
             
             for (int i = 1; i <= type.arguments; i++) {
-                typeName(type.genericArguments[i], typeContext, includeNsAndOptional, string);
+                typeName(type.genericArguments[i], typeContext, includePackageAndOptional, string);
             }
             
             stringAppendEc(E_RIGHTWARDS_ARROW, string);
             stringAppendEc(0xFE0F, string);
-            typeName(type.genericArguments[0], typeContext, includeNsAndOptional, string);
+            typeName(type.genericArguments[0], typeContext, includePackageAndOptional, string);
             stringAppendEc(E_WATERMELON, string);
             return;
         case TT_REFERENCE: {
@@ -471,7 +457,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables) {
                         if (it.second.reference == type.reference) {
-                            string->append(it.first.utf8CString());
+                            string.append(it.first.utf8CString());
                             return;
                         }
                     }
@@ -486,7 +472,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
             if (typeContext.p) {
                 for (auto it : typeContext.p->genericArgumentVariables) {
                     if (it.second.reference == type.reference) {
-                        string->append(it.first.utf8CString());
+                        string.append(it.first.utf8CString());
                         return;
                     }
                 }
@@ -500,6 +486,6 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
 
 std::string Type::toString(TypeContext typeContext, bool includeNsAndOptional) const {
     std::string string;
-    typeName(*this, typeContext, includeNsAndOptional, &string);
+    typeName(*this, typeContext, includeNsAndOptional, string);
     return string;
 }
