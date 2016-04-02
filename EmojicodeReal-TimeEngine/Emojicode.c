@@ -771,20 +771,6 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             return NOTHINGNESS;
         }
-        case 0x67: { //MARK: guard
-            Something value = parse(consumeCoin(thread), thread);
-            
-            if (isNothingness(value)) {
-                if (runBlock(thread)) {
-                    return NOTHINGNESS;
-                }
-            }
-            else {
-                passBlock(thread);
-            }
-            
-            return NOTHINGNESS;
-        }
         case 0x70: {
             stackPush(stackGetThis(thread), 1, 0, thread);
             stackSetVariable(0, somethingObject(newObject(CL_CLOSURE)), thread);
