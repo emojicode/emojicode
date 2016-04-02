@@ -444,6 +444,14 @@
   🌮
   🐇🐖 🚪 status 🚂 📻
 
+  🌮
+    Returns a list of the arguments passed to the programm. Calling this method
+    is rather expensive.
+
+    >!N Not available in 0.2 Beta 4
+  🌮
+  🐇🐖 🎞 ➡️ 🍨🐚🔡 📻
+
   🌮 Returns the current working directory. 🌮
   🐇🐖 🌍 ➡️ 🔡 📻
 
@@ -571,7 +579,7 @@
   🐇🐖 🚣 x 🚀 ➡️ 🚀 📻
 
   🌮
-    Returns the natural (base e) logarithm of `x`.
+    Returns the natural (base ℇ) logarithm of `x`.
 
     >!N Not available in 0.2 Beta 4
   🌮

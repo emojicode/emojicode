@@ -29,6 +29,9 @@ Class *CL_CAPTURED_METHOD_CALL;
 Class *CL_CLOSURE;
 Class *CL_RANGE;
 
+char **cliArguments;
+int cliArgumentCount;
+
 //MARK: Coins
 
 EmojicodeCoin consumeCoin(Thread *thread){
@@ -855,8 +858,11 @@ Something parse(EmojicodeCoin coin, Thread *thread){
 }
 
 int main(int argc, char *argv[]) {
+    cliArgumentCount = argc;
+    cliArguments = argv;
+    
     setlocale(LC_CTYPE, "de_DE.UTF-8");
-    if (argc != 2){
+    if (argc < 2){
        error("No file provided.");
     }
     

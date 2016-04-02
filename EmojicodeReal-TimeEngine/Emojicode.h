@@ -69,6 +69,9 @@ Object **stringPool;
 /** Whether the given pointer points into the heap. */
 extern bool isPossibleObjectPointer(void *);
 
+extern char **cliArguments;
+extern int cliArgumentCount;
+
 //MARK: Classes
 
 struct Class {

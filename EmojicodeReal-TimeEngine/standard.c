@@ -71,6 +71,28 @@ static Something systemTime(Thread *thread) {
     return somethingInteger(time(NULL));
 }
 
+static Something systemArgs(Thread *thread) {
+    stackPush(NULL, 1, 0, thread);
+    
+    Object *listObject = newObject(CL_LIST);
+    stackSetVariable(0, somethingObject(listObject), thread);
+    
+    List *newList = listObject->value;
+    newList->capacity = cliArgumentCount;
+    Object *items = newArray(sizeof(Something) * cliArgumentCount);
+    
+    listObject = stackGetVariable(0, thread).object;
+    
+    ((List *)listObject->value)->items = items;
+    
+    for (int i = 0; i < cliArgumentCount; i++) {
+        listAppend(listObject, somethingObject(stringFromChar(cliArguments[i])), thread);
+    }
+    
+    stackPop(thread);
+    return somethingObject(listObject);
+}
+
 //MARK: Error
 
 Object* newError(const char *message, int code){
@@ -319,6 +341,8 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                     return sleepThread;
                 case 0x1f570: //🕰
                     return systemTime;
+                case 0x1f39e: //🎞
+                    return systemArgs;
             }
             break;
         case 0x1F684: //🚄
