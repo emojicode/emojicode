@@ -19,7 +19,7 @@ void Package::loadPackage(const char *name, EmojicodeChar ns, const Token *error
     
     if (package) {
         if (!package->finishedLoading()) {
-            compilerError(errorToken, "Circular depdency detected: %s tried to load a package which intiatiated %s’s own loading.", name);
+            compilerError(errorToken, "Circular dependency detected: %s tried to load a package which intiatiated %s’s own loading.", name, name);
         }
     }
     else {
