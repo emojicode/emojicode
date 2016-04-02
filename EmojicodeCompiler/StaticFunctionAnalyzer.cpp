@@ -1002,6 +1002,21 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                             placeholder.write(0x25);
                             parse(consumeToken(), token, typeInteger);
                             return typeInteger;
+                        case E_HEAVY_LARGE_CIRCLE:
+                            placeholder.write(0x5A);
+                            parse(consumeToken(), token, typeInteger);
+                            return typeInteger;
+                        case E_ANGER_SYMBOL:
+                            placeholder.write(0x5B);
+                            parse(consumeToken(), token, typeInteger);
+                            return typeInteger;
+                        case E_CROSS_MARK:
+                            placeholder.write(0x5C);
+                            parse(consumeToken(), token, typeInteger);
+                            return typeInteger;
+                        case E_NO_ENTRY_SIGN:
+                            placeholder.write(0x5D);
+                            return typeInteger;
                         case E_ROCKET:
                             placeholder.write(0x3F);
                             return typeFloat;

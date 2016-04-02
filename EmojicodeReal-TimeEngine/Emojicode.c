@@ -635,6 +635,15 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             if (range->step == 0) rangeSetDefaultStep(range);
             return somethingObject(object);
         }
+        //MARK: Binary Operations
+        case 0x5A:
+            return somethingInteger(parse(consumeCoin(thread), thread).raw & parse(consumeCoin(thread), thread).raw);
+        case 0x5B:
+            return somethingInteger(parse(consumeCoin(thread), thread).raw | parse(consumeCoin(thread), thread).raw);
+        case 0x5C:
+            return somethingInteger(parse(consumeCoin(thread), thread).raw ^ parse(consumeCoin(thread), thread).raw);
+        case 0x5D:
+            return somethingInteger(~parse(consumeCoin(thread), thread).raw);
         //MARK: Flow Control
         case 0x60: { //Red apple - return
             thread->returnValue = parse(consumeCoin(thread), thread);
