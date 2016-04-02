@@ -162,7 +162,7 @@ Protocol* getStandardProtocol(EmojicodeChar name, Package *_) {
 }
 
 void loadStandard(Package *_) {
-    _->loadPackage("s", globalNamespace, nullptr);
+    auto package = _->loadPackage("s", globalNamespace, nullptr);
     
     CL_STRING = getStandardClass(0x1F521, _);
     CL_LIST = getStandardClass(0x1F368, _);
@@ -173,6 +173,8 @@ void loadStandard(Package *_) {
     CL_RANGE = getStandardClass(0x23E9, _);
     
     PR_ENUMERATEABLE = getStandardProtocol(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY, _);
+    
+    package->setRequiresBinary(false);
 }
 
 int main(int argc, char * argv[]) {

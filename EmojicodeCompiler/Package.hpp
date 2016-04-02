@@ -38,7 +38,7 @@ public:
      * circular dependencies.
      * @param name The name of the package to load.
      */
-    void loadPackage(const char *name, EmojicodeChar ns, const Token *errorToken);
+    Package* loadPackage(const char *name, EmojicodeChar ns, const Token *errorToken);
     
     Package(const char *n) : name_(n) {}
     void parse(const char *path, const Token *errorToken);
@@ -46,8 +46,8 @@ public:
     bool finishedLoading() const { return finishedLoading_; }
     PackageVersion version() const { return version_; }
     void setPackageVersion(PackageVersion v) { version_ = v; }
-    bool requiresNativeBinary() const { return requiresNativeBinary_; }
-    void setRequiresBinary() { requiresNativeBinary_ = true; }
+    bool requiresBinary() const { return requiresNativeBinary_; }
+    void setRequiresBinary(bool b = true) { requiresNativeBinary_ = b; }
     const char* name() const { return name_; }
     
     void exportType(Type t, EmojicodeChar name);

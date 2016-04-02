@@ -125,7 +125,7 @@ void writePackageHeader(Package *pkg, Writer &writer) {
     writer.writeUInt16(pkg->version().major);
     writer.writeUInt16(pkg->version().minor);
     
-    writer.writeByte(pkg->requiresNativeBinary() ? 1 : 0);
+    writer.writeByte(pkg->requiresBinary() ? 1 : 0);
 }
 
 void analyzeClassesAndWrite(FILE *fout){

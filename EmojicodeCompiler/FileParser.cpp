@@ -185,13 +185,9 @@ void parseEnum(Package *pkg, const Token *documentationToken, bool exported){
     }
 }
 
-/**
- * Parses a eclass’ body until a 🍆, which it consumes
- * @param eclass The eclass to which to append the methods.
- * @param requiredInitializers Either a list of required initializers or @c nullptr (for extensions).
- */
 void parseClassBody(Class *eclass, Package *pkg, std::vector<Initializer *> *requiredInitializers, bool allowNative){
-    //Until we find a melon process methods and initializers
+    allowNative = allowNative && pkg->requiresBinary();
+    
     const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES){
         ecCharToCharStack(token->value[0], s);
@@ -339,7 +335,7 @@ void parseClassBody(Class *eclass, Package *pkg, std::vector<Initializer *> *req
     }
 }
 
-void parseClass(Package *pkg, bool allowNative, const Token *documentationToken, const Token *theToken, bool exported){
+void parseClass(Package *pkg, const Token *documentationToken, const Token *theToken, bool exported){
     EmojicodeChar className, enamespace;
     bool optional;
     const Token *classNameToken = Type::parseTypeName(&className, &enamespace, &optional);
@@ -417,7 +413,7 @@ void parseClass(Package *pkg, bool allowNative, const Token *documentationToken,
     eclass->index = classes.size();
     classes.push_back(eclass);
     
-    parseClassBody(eclass, pkg, &requiredInitializers, allowNative);
+    parseClassBody(eclass, pkg, &requiredInitializers, true);
     
     //The class must be complete in its intial definition
     if (requiredInitializers.size()) {
@@ -427,7 +423,7 @@ void parseClass(Package *pkg, bool allowNative, const Token *documentationToken,
     }
 }
 
-void parseFile(const char *path, Package *pkg, bool allowNative){
+void parseFile(const char *path, Package *pkg){
     const Token *oldCurrentToken = currentToken;
     
     FILE *in = fopen(path, "rb");
@@ -483,7 +479,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative){
             case E_RADIO:
                 invalidAttribute(exported, E_EARTH_GLOBE_EUROPE_AFRICA, theToken);
                 pkg->setRequiresBinary();
-                if (strcmp(pkg->name(), "s") == 0 || strcmp(pkg->name(), "_") == 0) {
+                if (strcmp(pkg->name(), "_") == 0) {
                     compilerError(theToken, "You may not set 📻 for the _ package.");
                 }
                 continue;
@@ -535,7 +531,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative){
                 continue;
             }
             case E_RABBIT:
-                parseClass(pkg, allowNative, documentationToken, theToken, exported);
+                parseClass(pkg, documentationToken, theToken, exported);
                 continue;
             case E_SCROLL: {
                 invalidAttribute(exported, E_EARTH_GLOBE_EUROPE_AFRICA, theToken);
@@ -549,7 +545,7 @@ void parseFile(const char *path, Package *pkg, bool allowNative){
                 char *str;
                 asprintf(&str, "%s/%s", directory, fileString);
                 
-                parseFile(str, pkg, allowNative);
+                parseFile(str, pkg);
                 
                 delete [] fileString;
                 continue;

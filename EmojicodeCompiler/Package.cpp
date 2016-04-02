@@ -14,7 +14,7 @@
 std::list<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
-void Package::loadPackage(const char *name, EmojicodeChar ns, const Token *errorToken) {
+Package* Package::loadPackage(const char *name, EmojicodeChar ns, const Token *errorToken) {
     Package *package = findPackage(name);
     
     if (package) {
@@ -35,12 +35,13 @@ void Package::loadPackage(const char *name, EmojicodeChar ns, const Token *error
     }
     
     package->loadInto(this, ns, errorToken);
+    return package;
 }
 
 void Package::parse(const char *path, const Token *errorToken) {
     packages_.emplace(name(), this);
     
-    parseFile(path, this, true);
+    parseFile(path, this);
     
     if(version().major == 0 && version().minor == 0){
         compilerError(errorToken, "Package %s does not provide a valid version.", name());
