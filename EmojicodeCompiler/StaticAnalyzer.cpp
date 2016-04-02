@@ -116,6 +116,18 @@ void analyzeClass(Type classType, Writer &writer){
     }
 }
 
+void writePackageHeader(Package *pkg, Writer &writer) {
+    uint16_t l = strlen(pkg->name()) + 1;
+    writer.writeUInt16(l);
+    
+    writer.writeBytes(pkg->name(), l);
+    
+    writer.writeUInt16(pkg->version().major);
+    writer.writeUInt16(pkg->version().minor);
+    
+    writer.writeByte(pkg->requiresNativeBinary() ? 1 : 0);
+}
+
 void analyzeClassesAndWrite(FILE *fout){
     Writer writer(fout);
     
@@ -194,27 +206,24 @@ void analyzeClassesAndWrite(FILE *fout){
     
     auto pkgCount = Package::packagesInOrder().size();
     
-    //TODO: only s and _
-    
-    if(pkgCount > 253){
-        compilerError(nullptr, "You exceeded the maximum of 253 packages.");
-    }
-    writer.writeByte(pkgCount);
-    
-    for (auto pkg : Package::packagesInOrder()) {
+    if (pkgCount == 2) {
+        writer.writeByte(1);
+        
+        auto pkgs = Package::packagesInOrder();
+        
+        writePackageHeader(pkgs.front(), writer);
+        
         auto classWritten = false;
-
-        uint16_t l = strlen(pkg->name()) + 1;
-        writer.writeUInt16(l);
         
-        writer.writeBytes(pkg->name(), l);
-        
-        writer.writeUInt16(pkg->version().major);
-        writer.writeUInt16(pkg->version().minor);
-        
-        writer.writeByte(pkg->requiresNativeBinary() ? 1 : 0);
-        
-        for (auto cl : pkg->classes()) {
+        for (auto cl : pkgs.front()->classes()) {
+            if (classWritten) {
+                writer.writeByte(1);
+            }
+            
+            analyzeClass(Type(cl), writer);
+            classWritten = true;
+        }
+        for (auto cl : (*std::next(pkgs.begin(), 1))->classes()) {
             if (classWritten) {
                 writer.writeByte(1);
             }
@@ -223,9 +232,33 @@ void analyzeClassesAndWrite(FILE *fout){
             classWritten = true;
         }
         
-         writer.writeByte(0);
+        writer.writeByte(0);
     }
-    
+    else {
+        if(pkgCount > 253){
+            compilerError(nullptr, "You exceeded the maximum of 253 packages.");
+        }
+        
+        writer.writeByte(pkgCount);
+        
+        for (auto pkg : Package::packagesInOrder()) {
+            auto classWritten = false;
+            
+            writePackageHeader(pkg, writer);
+            
+            for (auto cl : pkg->classes()) {
+                if (classWritten) {
+                    writer.writeByte(1);
+                }
+                
+                analyzeClass(Type(cl), writer);
+                classWritten = true;
+            }
+            
+            writer.writeByte(0);
+        }
+    }
+        
     writer.writeUInt16(stringPool.size());
     for (auto token : stringPool) {
         writer.writeUInt16(token->value.size());
