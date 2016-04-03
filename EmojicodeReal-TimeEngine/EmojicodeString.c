@@ -167,7 +167,6 @@ static Something stringSearchBridge(Thread *thread){
         if (found) {
             return somethingInteger(i);
         }
-        
     }
     return NOTHINGNESS;
 }
@@ -187,43 +186,47 @@ static Something stringTrimBridge(Thread *thread){
     return somethingObject(stringSubstring(stackGetThis(thread), start, stop - start + 1, thread));
 }
 
-static void stringGetInput(Thread *thread){ //TODO: remove? or at least improve
+static void stringGetInput(Thread *thread) {
     String *prompt = stackGetVariable(0, thread).object->value;
     char *utf8str = stringToChar(prompt);
     printf("%s\n", utf8str);
     fflush(stdout);
     free(utf8str);
     
-    int bufferSize = 150, oldBufferSize = 0;
-    char *buffer = malloc(bufferSize);
+    int bufferSize = 50, oldBufferSize = 0;
+    Object *buffer = newArray(bufferSize);
+    size_t bufferUsedSize = 0;
     
-    while(true){
-        fgets(buffer + oldBufferSize, bufferSize - oldBufferSize, stdin);
+    while (true) {
+        fgets((char *)buffer->value + oldBufferSize, bufferSize - oldBufferSize + 1, stdin);
         
-        size_t len = strlen(buffer);
+        bufferUsedSize = strlen(buffer->value);
         
-        if(len < bufferSize - 1){
-            buffer[len - 1] = 0;
+        if(bufferUsedSize < bufferSize){
+            if (((char *)buffer->value)[bufferUsedSize - 1] == '\n') {
+                bufferUsedSize -= 1;
+            }
             break;
         }
         
-        oldBufferSize = bufferSize - 1;
+        oldBufferSize = bufferSize;
         bufferSize *= 2;
-        buffer = realloc(buffer, bufferSize);
+        buffer = resizeArray(buffer, bufferSize);
     }
 
-    EmojicodeInteger len = u8_strlen(buffer);
+    EmojicodeInteger len = u8_strlen_l(buffer->value, bufferUsedSize);
     
     String *string = stackGetThis(thread)->value;
     string->length = len;
     
-    string->characters = newArray(len * sizeof(EmojicodeChar));
-    u8_toucs(characters(string), len, buffer, strlen(buffer));
+    Object *chars = newArray(len * sizeof(EmojicodeChar));
+    string = stackGetThis(thread)->value;
+    string->characters = chars;
     
-    free(buffer); 
+    u8_toucs(characters(string), len, buffer->value, bufferUsedSize);
 }
 
-static Something stringSplitByStringBridge(Thread *thread){
+static Something stringSplitByStringBridge(Thread *thread) {
     Something sp = stackGetVariable(0, thread);
     
     stackPush(stackGetThis(thread), 2, 0, thread);
