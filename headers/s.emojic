@@ -172,7 +172,11 @@
   🌮 Returns an array with the symbols from this string. 🌮
   🐖 🎶 ➡️ 🍨🐚🔣 📻
 
-  🌮 Parses the JSON represented by this string. 🌮
+  🌮
+    Tries to parse this string as JSON. If the string represents invalid JSON
+    Nothigness is returned. The depth is limited to 256 levels. `\uXXXX`
+    escape sequences are not supported.
+  🌮
   🐖 🗞 ➡️ ⚪️ 📻
 🍉
 
