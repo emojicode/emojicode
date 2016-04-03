@@ -29,6 +29,9 @@ Class *CL_CAPTURED_METHOD_CALL;
 Class *CL_CLOSURE;
 Class *CL_RANGE;
 
+char **cliArguments;
+int cliArgumentCount;
+
 //MARK: Coins
 
 EmojicodeCoin consumeCoin(Thread *thread){
@@ -266,17 +269,13 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             Object *object = parse(consumeCoin(thread), thread).object;
             
             EmojicodeCoin vti = consumeCoin(thread);
-            Method *method = object->class->methodsVtable[vti];
-            
-            return performMethod(method, object, thread);
+            return performMethod(object->class->methodsVtable[vti], object, thread);
         }
         case 0x2: { //donut – class method
             Class *class = readClass(thread);
             
             EmojicodeCoin vti = consumeCoin(thread);
-            ClassMethod *method = class->classMethodsVtable[vti];
-            
-            return performClassMethod(method, class, thread);
+            return performClassMethod(class->classMethodsVtable[vti], class, thread);
         }
         case 0x3: {
             Object *object = parse(consumeCoin(thread), thread).object;
@@ -284,8 +283,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeCoin pti = consumeCoin(thread);
             EmojicodeCoin vti = consumeCoin(thread);
             
-            Method *method = object->class->protocolsTable[pti - object->class->protocolsOffset][vti];
-            return performMethod(method, object, thread);
+            return performMethod(object->class->protocolsTable[pti - object->class->protocolsOffset][vti], object, thread);
         }
         case 0x4: { //New Object
             Class *class = readClass(thread);
@@ -296,9 +294,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         case 0x5: {
             Class *class = readClass(thread);
             EmojicodeCoin vti = consumeCoin(thread);
-            Method *method = class->methodsVtable[vti];
-            
-            return performMethod(method, stackGetThis(thread), thread);
+        
+            return performMethod(class->methodsVtable[vti], stackGetThis(thread), thread);
         }
         case 0x10:
             return somethingObject(stringPool[consumeCoin(thread)]);
@@ -316,20 +313,14 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return somethingSymbol((EmojicodeChar)consumeCoin(thread));
         case 0x17:
             return NOTHINGNESS;
-        case 0x18: {
-            EmojicodeCoin index = consumeCoin(thread);
-            stackIncrementVariable(index, thread);
+        case 0x18:
+            stackIncrementVariable(consumeCoin(thread), thread);
             return NOTHINGNESS;
-        }
-        case 0x19: {
-            EmojicodeCoin index = consumeCoin(thread);
-            stackDecrementVariable(index, thread);
+        case 0x19:
+            stackDecrementVariable(consumeCoin(thread), thread);
             return NOTHINGNESS;
-        }
-        case 0x1A: {
-            EmojicodeCoin index = consumeCoin(thread);
-            return stackGetVariable(index, thread);
-        }
+        case 0x1A:
+            return stackGetVariable(consumeCoin(thread), thread);
         case 0x1B: {
             EmojicodeCoin index = consumeCoin(thread);
             stackSetVariable(index, parse(consumeCoin(thread), thread), thread);
@@ -463,6 +454,9 @@ Something parse(EmojicodeCoin coin, Thread *thread){
                 return EMOJICODE_TRUE;
             }
         }
+        //MARK: Int To Double
+        case 0x3F:
+            return somethingDouble((double) parse(consumeCoin(thread), thread).raw);
         //MARK: Casts
         case 0x40: {
             Something sth = parse(consumeCoin(thread), thread);
@@ -629,6 +623,15 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             if (range->step == 0) rangeSetDefaultStep(range);
             return somethingObject(object);
         }
+        //MARK: Binary Operations
+        case 0x5A:
+            return somethingInteger(parse(consumeCoin(thread), thread).raw & parse(consumeCoin(thread), thread).raw);
+        case 0x5B:
+            return somethingInteger(parse(consumeCoin(thread), thread).raw | parse(consumeCoin(thread), thread).raw);
+        case 0x5C:
+            return somethingInteger(parse(consumeCoin(thread), thread).raw ^ parse(consumeCoin(thread), thread).raw);
+        case 0x5D:
+            return somethingInteger(~parse(consumeCoin(thread), thread).raw);
         //MARK: Flow Control
         case 0x60: { //Red apple - return
             thread->returnValue = parse(consumeCoin(thread), thread);
@@ -765,20 +768,6 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             return NOTHINGNESS;
         }
-        case 0x67: { //MARK: guard
-            Something value = parse(consumeCoin(thread), thread);
-            
-            if (isNothingness(value)) {
-                if (runBlock(thread)) {
-                    return NOTHINGNESS;
-                }
-            }
-            else {
-                passBlock(thread);
-            }
-            
-            return NOTHINGNESS;
-        }
         case 0x70: {
             stackPush(stackGetThis(thread), 1, 0, thread);
             stackSetVariable(0, somethingObject(newObject(CL_CLOSURE)), thread);
@@ -852,8 +841,11 @@ Something parse(EmojicodeCoin coin, Thread *thread){
 }
 
 int main(int argc, char *argv[]) {
+    cliArgumentCount = argc;
+    cliArguments = argv;
+    
     setlocale(LC_CTYPE, "de_DE.UTF-8");
-    if (argc != 2){
+    if (argc < 2){
        error("No file provided.");
     }
     

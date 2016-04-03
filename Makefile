@@ -1,4 +1,4 @@
-VERSION = 0.2.0-beta.3
+VERSION = 0.2.0-beta.4
 
 CC ?= gcc
 CXX ?= g++
@@ -72,7 +72,7 @@ builds:
 	mkdir -p $(DIST)
 
 define testFile
-$(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/testClass.emojic $(TESTS_DIR)/$(1).emojic
+$(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/$(1).emojic
 $(DIST)/$(ENGINE_BINARY) $(TESTS_DIR)/$(1).emojib
 endef
 
@@ -88,8 +88,11 @@ tests:
 	$(call testFile,dataTest)
 	$(call testFile,mathTest)
 	$(call testFile,fileTest)
+	$(call testFile,systemTest)
 
 dist:
+	rm -f $(DIST)/install.sh
+	rm -rf $(DIST)/headers
 	cp install.sh $(DIST)/install.sh
 	cp -r headers/ $(DIST)/headers
 	tar -czf $(DIST).tar.gz -C $(DIST_BUILDS) $(DIST_NAME)

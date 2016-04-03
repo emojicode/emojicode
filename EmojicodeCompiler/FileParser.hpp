@@ -10,6 +10,7 @@
 #define ClassParser_hpp
 
 #include "EmojicodeCompiler.hpp"
+#include "Package.hpp"
 
 /**
  * The class parsers reads the source code file that only consists of type definitions (eclass and protocols).
@@ -19,10 +20,7 @@
  * Parses the given file.
  * @param path Path to the file.
  * @param pkg The name of the package being parsed.
- * @param allowNative Whether classes’s functions may be implemented using native code. Should be @c true when parsing a package file.
  */
-void parseFile(const char *path, Package *pkg, bool allowNative, EmojicodeChar enamespace);
-
-void packageRegisterHeaderNewest(const char *name, EmojicodeChar enamespace);
+void parseFile(const char *path, Package *pkg);
 
 #endif /* ClassParser_hpp */

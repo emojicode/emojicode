@@ -69,6 +69,15 @@ void dictionaryRemove(EmojicodeDictionary *dict, Object *key, Thread *thread);
 /** Get an item by keyString as key */
 Something dictionaryLookup(EmojicodeDictionary *dict, Object *key, Thread *thread);
 
+/** Check whether a key is in the dictionary */
+bool dictionaryContains(EmojicodeDictionary *dict, Object *key);
+
+/** 
+ * Get all keys as a list
+ * @warning GC-Invoking
+ */
+Something dictionaryKeys(Object *dicto, Thread *thread);
+
 void dictionaryMark(Object *dict);
 
 void bridgeDictionaryInit(Thread *thread);

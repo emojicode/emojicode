@@ -7,122 +7,130 @@
 
     See the 📄 class for reading and writing.
 🌮
-🐇 📑 🍇
+🌍 🐇 📑 🍇
   🌮
-    This method creates a directory at the given path. 
+    This method creates a directory at the given path.
     If the directory already exists an error is returned.
   🌮
-  🐇🐖 📁 path 🔶🔴🔡 ➡️ 🍬🔶🔴🚨 📻
+  🐇🐖 📁 path 🔡 ➡️ 🍬🚨 📻
   🌮
     This method deletes the file at the given path.
     >!N This method may not be used to delete directories.
   🌮
-  🐇🐖 🔫 path 🔶🔴🔡 ➡️ 🍬🔶🔴🚨 📻
+  🐇🐖 🔫 path 🔡 ➡️ 🍬🚨 📻
   🌮
-    This method deletes an *empty* directory at the given path. 
+    This method deletes an *empty* directory at the given path.
     If you need to delete a whole directory hierarchy use 💣.
   🌮
-  🐇🐖 🔥 path 🔶🔴🔡 ➡️ 🍬🔶🔴🚨 📻
-  🌮 
-    This method deletes an directory with its content. The method recursively 
-    descends the directory hierarchy and deletes every file or directory it 
+  🐇🐖 🔥 path 🔡 ➡️ 🍬🚨 📻
+  🌮
+    This method deletes an directory with its content. The method recursively
+    descends the directory hierarchy and deletes every file or directory it
     finds. Once finished, it deletes the directory itself.
   🌮
-  🐇🐖 💣 path 🔶🔴🔡 ➡️ 🍬🔶🔴🚨 📻
+  🐇🐖 💣 path 🔡 ➡️ 🍬🚨 📻
   🌮 This method creates a symbolic link to another. 🌮
-  🐇🐖 🔗 originalFile 🔶🔴🔡 destination 🔶🔴🔡 ➡️ 🍬🔶🔴🚨 📻
+  🐇🐖 🔗 originalFile 🔡 destination 🔡 ➡️ 🍬🚨 📻
   🌮 Determines whether a file exists at the given path. 🌮
-  🐇🐖 📃 path 🔶🔴🔡 ➡️ 🔶🔴👌 📻
-  🌮 
+  🐇🐖 📃 path 🔡 ➡️ 👌 📻
+  🌮
     Determines whether a file exists and the given path and if it is readable.
   🌮
-  🐇🐖 📜 path 🔶🔴🔡 ➡️ 🔶🔴👌 📻
+  🐇🐖 📜 path 🔡 ➡️ 👌 📻
   🌮
     Determines whether a file exists and the given path and if it is writeable.
   🌮
-  🐇🐖 📝 path 🔶🔴🔡 ➡️ 🔶🔴👌 📻
+  🐇🐖 📝 path 🔡 ➡️ 👌 📻
   🌮
     Determines whether a file exists and the given path and if it is executable.
   🌮
-  🐇🐖 👟 path 🔶🔴🔡 ➡️ 🔶🔴👌 📻
-  🌮 
-    Determines the size of a file at a given path. If the file cannot be found 
-    or any other error occurs the method returns -1. 
+  🐇🐖 👟 path 🔡 ➡️ 👌 📻
   🌮
-  🐇🐖 📏 path 🔶🔴🔡 ➡️ 🔶🔴🚂 📻
+    Determines the size of a file at a given path. If the file cannot be found
+    or any other error occurs the method returns -1.
+  🌮
+  🐇🐖 📏 path 🔡 ➡️ 🚂 📻
+  🌮
+    Returns an absolute pathname derived from `path` that
+    resolves to the same directory entry, whose resolution does not involve `.`,
+    `..`, or symbolic links. On failure Nothingness is returned.
+
+    >!N Not available in 0.2 Beta 4
+  🌮
+  🐇🐖 ⛓ path 🔡 ➡️ 🍬🔡 📻
 🍉
 
-🌮 
+🌮
     The 📄 class allows you to read and write to files.
-  
-    It provides several class methods which are shortcuts to reading and 
-    writing. They operate always on the whole file and reading can be very 
+
+    It provides several class methods which are shortcuts to reading and
+    writing. They operate always on the whole file and reading can be very
     inefficient using these shortcuts when working with big files, because they
     will read the whole file into memory.
 🌮
-🐇 📄 🍇
+🌍 🐇 📄 🍇
   🌮
     Opens the file at the given path for writing. The file pointer is set to the
     beginning of the file and the file is truncated to zero length or created.
-  
-    This initializer returns nothingness if the file can not be opened for some 
-    reason. In many cases this occurs when you don’t have the permission to 
+
+    This initializer returns nothingness if the file can not be opened for some
+    reason. In many cases this occurs when you don’t have the permission to
     create or open the file.
-  
+
     You cannot read from a file opened with this initializer.
   🌮
-  🍬 🐈 📝 message 🔶🔴🔡 📻
+  🍬 🐈 📝 message 🔡 📻
   🌮
     Opens the file at the given path for reading. The file pointer is set to the
     beginning of the file.
-  
+
     This initializer returns nothingness if the file can not be opened for some
     reason. In many cases this occurs when you don’t have the permission to open
     the file or when it does not exist.
-  
+
     You cannot write to a file opened with this initializer.
   🌮
-  🍬 🐈 📜 message 🔶🔴🔡 📻
-  
+  🍬 🐈 📜 message 🔡 📻
+
   🌮 Write the data at the current file pointer position. 🌮
-  🐖 ✏️ data 🔶🔴📇 ➡️ 🍬🔶🔴🚨 📻
-  
+  🐖 ✏️ data 📇 ➡️ 🍬🚨 📻
+
   🌮
     Reads as many bytes as specified from the file pointer position.
-    
-    Keep in mind that a byte is not equal to one character! 
+
+    Keep in mind that a byte is not equal to one character!
   🌮
-  🐖 📓 bytesToRead 🔶🔴🚂 ➡️ 🍬🔶🔴📇 📻
+  🐖 📓 bytesToRead 🚂 ➡️ 🍬📇 📻
   🌮
-    Trys to read one line. If the end of the stream has been reached 
+    Trys to read one line. If the end of the stream has been reached
     Nothingness is returned.
   🌮
-  🐖 🗡 ➡️ 🍬🔶🔴📇 📻
-  
+  🐖 🗡 ➡️ 🍬📇 📻
+
   🌮 Seeks the file pointer to the end of the file. 🌮
   🐖 🔚 📻
   🌮 Seeks the file pointer to the given position. 🌮
-  🐖 🔛 position 🔶🔴🚂 📻
-  
+  🐖 🔛 position 🚂 📻
+
   🌮
     This class method tries to write the given 📇 to the given path. If the file
     already exists, it will be overwritten.
   🌮
-  🐇🐖 📻 path 🔶🔴🔡 data 🔶🔴📇 ➡️ 🍬🔶🔴🚨 📻 
-  
+  🐇🐖 📻 path 🔡 data 📇 ➡️ 🍬🚨 📻
+
   🌮
     This class method tries to read the file at given path `path` and returns
     a 📇 object representing its content on success. On failure Nothingness
     is returned.
   🌮
-  🐇🐖 📇 path 🔶🔴🔡 ➡️ 🍬🔶🔴📇 📻
-  
+  🐇🐖 📇 path 🔡 ➡️ 🍬📇 📻
+
   🌮 Returns a 📄 object representing the **standard output**. 🌮
   🐇🐖 📤 ➡️ 📄 📻
 
   🌮 Returns a 📄 object representing the **standard input**. 🌮
   🐇🐖 📥 ➡️ 📄 📻
-  
+
   🌮 Returns a 📄 object representing the **standard error**. 🌮
   🐇🐖 📯 ➡️ 📄 📻
 🍉

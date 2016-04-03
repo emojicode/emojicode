@@ -11,12 +11,6 @@
 #include "Procedure.hpp"
 #include "utf8.h"
 
-Class* getClass(EmojicodeChar name, EmojicodeChar enamespace){
-    std::array<EmojicodeChar, 2> ns = {enamespace, name};
-    auto it = classesRegister.find(ns);
-    return it != classesRegister.end() ? it->second : nullptr;
-}
-
 bool Class::conformsTo(Protocol *to){
     for(Class *a = this; a != nullptr; a = a->superclass){
         for(size_t i = 0; i < this->protocols_.size(); i++){
@@ -102,12 +96,6 @@ void Class::addProtocol(Protocol *protocol){
 
 //MARK: Protocol
 
-Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace){
-    std::array<EmojicodeChar, 2> ns = {enamespace, name};
-    auto it = protocolsRegister.find(ns);
-    return it != protocolsRegister.end() ? it->second : nullptr;
-}
-
 Method* Protocol::getMethod(EmojicodeChar name){
     auto it = methods_.find(name);
     return it != methods_.end() ? it->second : nullptr;
@@ -121,12 +109,6 @@ void Protocol::addMethod(Method *method){
 }
 
 //MARK: Enum
-
-Enum* getEnum(EmojicodeChar name, EmojicodeChar enamespace){
-    std::array<EmojicodeChar, 2> ns = {enamespace, name};
-    auto it = enumsRegister.find(ns);
-    return it != enumsRegister.end() ? it->second : nullptr;
-}
 
 std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeChar c) const {
     auto it = map.find(c);

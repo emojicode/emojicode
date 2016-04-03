@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <inttypes.h>
+#include <time.h>
 #include "Emojicode.h"
 #include "EmojicodeString.h"
 #include "EmojicodeList.h"
@@ -64,6 +65,32 @@ static Something systemCWD(Thread *thread){
 static Something sleepThread(Thread *thread){
     sleep((unsigned int)stackGetVariable(0, thread).raw);
     return NOTHINGNESS;
+}
+
+static Something systemTime(Thread *thread) {
+    return somethingInteger(time(NULL));
+}
+
+static Something systemArgs(Thread *thread) {
+    stackPush(NULL, 1, 0, thread);
+    
+    Object *listObject = newObject(CL_LIST);
+    stackSetVariable(0, somethingObject(listObject), thread);
+    
+    List *newList = listObject->value;
+    newList->capacity = cliArgumentCount;
+    Object *items = newArray(sizeof(Something) * cliArgumentCount);
+    
+    listObject = stackGetVariable(0, thread).object;
+    
+    ((List *)listObject->value)->items = items;
+    
+    for (int i = 0; i < cliArgumentCount; i++) {
+        listAppend(listObject, somethingObject(stringFromChar(cliArguments[i])), thread);
+    }
+    
+    stackPop(thread);
+    return somethingObject(listObject);
 }
 
 //MARK: Error
@@ -131,12 +158,7 @@ static Something dataEqual(Thread *thread) {
         return EMOJICODE_FALSE;
     }
     
-    for(size_t i = 0; i < d->length; i++){
-        if(d->bytes[i] != b->bytes[i])
-            return EMOJICODE_FALSE;
-    }
-    
-    return EMOJICODE_TRUE;
+    return memcmp(d->bytes, b->bytes, d->length) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
 static Something dataSize(Thread *thread) {
@@ -218,6 +240,10 @@ static Something mathRandom(Thread *thread) {
 
 static Something mathLog2(Thread *thread) {
     return somethingDouble(log2(stackGetVariable(0, thread).doubl));
+}
+
+static Something mathLn(Thread *thread) {
+    return somethingDouble(log(stackGetVariable(0, thread).doubl));
 }
 
 
@@ -311,8 +337,12 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                     return systemGetEnv;
                 case 0x1F30D:
                     return systemCWD;
-                case 0x1F570:
+                case 0x23f3: //⏳
                     return sleepThread;
+                case 0x1f570: //🕰
+                    return systemTime;
+                case 0x1f39e: //🎞
+                    return systemArgs;
             }
             break;
         case 0x1F684: //🚄
@@ -343,6 +373,8 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                     return mathRandom;
                 case 0x1f6a3: //🚣
                     return mathLog2;
+                case 0x1f3c4: //🏄
+                    return mathLn;
             }
     }
     return NULL;

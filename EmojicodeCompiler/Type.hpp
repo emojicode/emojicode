@@ -12,6 +12,8 @@
 /** The Emoji representing the standard ("global") enamespace. */
 #define globalNamespace E_LARGE_RED_CIRCLE
 
+class Package;
+
 enum TypeType {
     /** The type is of the class provided. */
     TT_CLASS = 0,
@@ -42,22 +44,20 @@ enum TypeDynamism {
 struct TypeContext;
 class Procedure;
 
+class TypeDefinition {
+    
+};
+
 struct Type {
 public:
-    /**
-     * Tries to fetch a type by its name and namespace.
-     * @return The found type. If no type is found the return value is undefined and the value pointed to by @c existent will be set to false, otherwise to true.
-     */
-    static Type fetchRawType(EmojicodeChar name, EmojicodeChar enamespace, bool optional, const Token *token, bool *existent);
+    /** Reads a type name and stores it into the given pointers. */
+    static const Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional);
     
     /** Reads a type name and stores it into the given pointers. */
-    static const Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional, EmojicodeChar currentNamespace);
-    
-    /** Reads a type name and stores it into the given pointers. */
-    static Type parseAndFetchType(TypeContext tc, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType = nullptr);
+    static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism, Package *package, bool *dynamicType = nullptr);
     
     Type(TypeType t, bool o) : optional(o), type(t) {}
-    Type(TypeType t, bool o, uint16_t r) : optional(o), type(t), reference(r) {}
+    Type(TypeType t, bool o, uint16_t r, Class *c) : optional(o), type(t), reference(r), referenceClass(c) {}
     Type(Class *c, bool o);
     Type(Class *c) : Type(c, false) {};
     Type(Protocol *p, bool o) : optional(o), type(TT_PROTOCOL), protocol(p) {}
@@ -69,7 +69,10 @@ public:
         Class *eclass;
         Protocol *protocol;
         Enum *eenum;
-        uint16_t reference;
+        struct {
+            uint16_t reference;
+            Class *referenceClass;
+        };
         uint32_t arguments;
     };
     std::vector<Type> genericArguments;
@@ -83,7 +86,7 @@ public:
     void validateGenericArgument(Type type, uint16_t i, TypeContext tc, const Token *token);
 
     /** Called by @c parseAndFetchType and in the class parser. You usually should not call this method. */
-    void parseGenericArguments(TypeContext tc, EmojicodeChar theNamespace, TypeDynamism dynamism, const Token *errorToken);
+    void parseGenericArguments(TypeContext tc, TypeDynamism dynamism, Package *package, const Token *errorToken);
     
     /**
      * Returns a depp string representation of the given type.
@@ -97,7 +100,7 @@ public:
     
     Type typeConstraintForReference(TypeContext ct);
 private:
-    void typeName(Type type, TypeContext typeContext, bool includeNsAndOptional, std::string *string) const;
+    void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     Type resolveOnSuperArguments(Class *c, bool *resolved);
 };
 

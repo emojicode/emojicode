@@ -13,7 +13,40 @@
 
 #define items(list) ((Something *)(list)->items->value)
 
-void expandListSize(Thread *thread);
+void expandListSize(Thread *thread){
+#define initialSize 7
+    List *list = stackGetThis(thread)->value;
+    if (list->capacity == 0) {
+        Object *object = newArray(sizeof(Something) * initialSize);
+        list = stackGetThis(thread)->value;
+        list->items = object;
+        list->capacity = initialSize;
+    }
+    else {
+        size_t newSize = list->capacity + (list->capacity >> 1);
+        Object *object = resizeArray(list->items, newSize * sizeof(Something));
+        list = stackGetThis(thread)->value;
+        list->items = object;
+        list->capacity = newSize;
+    }
+#undef initialSize
+}
+
+void listEnsureCapacity(Thread *thread, size_t size) {
+    List *list = stackGetThis(thread)->value;
+    if (list->capacity < size) {
+        Object *object;
+        if (list->capacity == 0) {
+            object = newArray(sizeof(Something) * size);
+        }
+        else {
+            object = resizeArray(list->items, size * sizeof(Something));
+        }
+        list = stackGetThis(thread)->value;
+        list->items = object;
+        list->capacity = size;
+    }
+}
 
 void listMark(Object *self){
     List *list = self->value;
@@ -41,9 +74,10 @@ Something listPop(List *list){
     if(list->count == 0){
         return NOTHINGNESS;
     }
-    Something o = items(list)[list->count - 1];
-    list->count--;
-    return o;
+    size_t index = --list->count;
+    Something v = items(list)[index];
+    items(list)[index] = NOTHINGNESS;
+    return v;
 }
 
 bool listRemoveByIndex(List *list, EmojicodeInteger index){
@@ -53,7 +87,8 @@ bool listRemoveByIndex(List *list, EmojicodeInteger index){
     if (index < 0 || list->count <= index){
         return false;
     }
-    memmove(items(list) + index, items(list) + index + 1, sizeof(Something) * (--list->count - index));
+    memmove(items(list) + index, items(list) + index + 1, sizeof(Something) * (list->count - index - 1));
+    items(list)[--list->count] = NOTHINGNESS;
     return true;
 }
 
@@ -67,44 +102,17 @@ Something listGet(List *list, EmojicodeInteger i){
     return items(list)[i];
 }
 
-void expandListSize(Thread *thread){
-#define initialSize 7
+Something listSet(EmojicodeInteger index, Something value, Thread *thread) {
     List *list = stackGetThis(thread)->value;
-    if (list->capacity == 0) {
-        Object *object = newArray(sizeof(Something) * initialSize);
-        list = stackGetThis(thread)->value;
-        list->items = object;
-        list->capacity = initialSize;
-    }
-    else {
-        size_t newSize = list->capacity + (list->capacity >> 1);
-        Object *object = resizeArray(list->items, newSize * sizeof(Something));
-        list = stackGetThis(thread)->value;
-        list->items = object;
-        list->capacity = newSize;
-    }
-#undef initialSize
-}
-
-bool listRemove(List *list, Something x){
-    if(x.type != T_OBJECT){
-        for(size_t i = 0; i < list->count; i++){
-            if(items(list)[i].type == x.type && items(list)[i].raw == x.raw){
-                listRemoveByIndex(list, i);
-                return true;
-            }
-        }
-    }
-    else {
-        for(size_t i = 0; i < list->count; i++){
-            if(items(list)[i].type == T_OBJECT && items(list)[i].object == x.object){
-                listRemoveByIndex(list, i);
-                return true;
-            }
-        }
-    }
     
-    return false;
+    listEnsureCapacity(thread, index + 1);
+    list = stackGetThis(thread)->value;
+    
+    if (list->count <= index)
+        list->count = index + 1;
+    
+    items(list)[index] = value;
+    return NOTHINGNESS;
 }
 
 void listShuffleInPlace(List *list) {
@@ -118,7 +126,6 @@ void listShuffleInPlace(List *list) {
         items(list)[i] = tmp;
     }
 }
-
 
 /* MARK: Emoji bridges */
 
@@ -231,8 +238,24 @@ static Something listFromListBridge(Thread *thread) {
     return somethingObject(listO);
 }
 
+static Something listRemoveAllBridge(Thread *thread) {
+    List *list = stackGetThis(thread)->value;
+    memset(items(list), 0, list->count);
+    list->count = 0;
+    return NOTHINGNESS;
+}
+
+static Something listSetBridge(Thread *thread) {
+    return listSet(stackGetVariable(0, thread).raw, stackGetVariable(1, thread), thread);
+}
+
 static Something listShuffleInPlaceBridge(Thread *thread) {
     listShuffleInPlace(stackGetThis(thread)->value);
+    return NOTHINGNESS;
+}
+
+static Something listEnsureCapacityBridge(Thread *thread) {
+    listEnsureCapacity(thread, stackGetVariable(0, thread).raw);
     return NOTHINGNESS;
 }
 
@@ -269,6 +292,12 @@ MethodHandler listMethodForName(EmojicodeChar method) {
             return listFromListBridge;
         case 0x1F981: //🦁
             return listSort;
+        case 0x1f417: //🐗
+            return listRemoveAllBridge;
+        case 0x1f437: //🐷
+            return listSetBridge;
+        case 0x1f434: //🐴
+            return listEnsureCapacityBridge;
     }
     return NULL;
 }

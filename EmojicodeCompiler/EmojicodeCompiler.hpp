@@ -19,13 +19,15 @@
 #include <map>
 #include <string>
 
+class TypeDefinition;
 class Class;
-class Method;
-class Initializer;
-class ClassMethod;
 class Protocol;
 class Enum;
 class Token;
+
+class Method;
+class Initializer;
+class ClassMethod;
 
 #include "Type.hpp"
 
@@ -41,27 +43,6 @@ struct StartingFlag {
 extern StartingFlag startingFlag;
 extern bool foundStartingFlag;
 
-#undef major
-#undef minor
-
-struct PackageVersion {
-    PackageVersion(uint16_t major, uint16_t minor) : major(major), minor(minor) {}
-    /** The major version */
-    uint16_t major;
-    /** The minor version */
-    uint16_t minor;
-};
-
-class Package {
-public:
-    Package(const char *n, PackageVersion v, bool r) : name(n), version(v), requiresNativeBinary(r) {}
-    
-    const char *name;
-    PackageVersion version;
-    bool requiresNativeBinary;
-    bool definedClass = false;
-};
-
 struct Variable {
     Variable(const Token *n, Type t) : name(n), type(t) {}
     
@@ -70,28 +51,6 @@ struct Variable {
     /** The type */
     Type type;
 };
-
-//MARK: Protocols
-
-class Enum {
-public:
-    Enum(EmojicodeChar name, Package& package, const Token *dt) : name(name), package(package), documentationToken(dt) {}
-    
-    EmojicodeChar name;
-    std::map<EmojicodeChar, EmojicodeInteger> map;
-    /** The package in which this eclass was defined. */
-    Package& package;
-    
-    const Token *documentationToken;
-    
-    std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
-    void addValueFor(EmojicodeChar c);
-private:
-    EmojicodeInteger valuesCounter = 0;
-};
-
-/** Returns the protocol with name @c name in enamespace @c namepsace or @c nullptr if the protocol cannot be found. */
-extern Enum* getEnum(EmojicodeChar name, EmojicodeChar enamespace);
 
 extern Class *CL_STRING;
 extern Class *CL_LIST;
@@ -102,13 +61,7 @@ extern Class *CL_ENUMERATOR;
 extern Class *CL_RANGE;
 extern Protocol *PR_ENUMERATEABLE;
 
-extern std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;
-extern std::map<std::array<EmojicodeChar, 2>, Protocol*> protocolsRegister;
-extern std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
-
 extern std::vector<Class *> classes;
-extern std::vector<Package *> packages;
-
 
 //MARK: Errors
 
@@ -127,6 +80,6 @@ void compilerWarning(const Token *token, const char *err, ...);
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
 
-void report(const char *packageName);
+void report(Package *package);
 
 #endif /* EmojicodeCompiler_hpp */

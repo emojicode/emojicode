@@ -1,3 +1,5 @@
+📜 🔤testsHelper.emojic🔤
+
 🐇 💯 👈 🍇
   ✒️  🐖 🏁 🍇
     ⛔️🐕 😛 🔤Hallo🔤 🔤Hallo🔤 🔤Equal Hallo🔤
@@ -88,6 +90,12 @@
 
     ⛔️🐕 😛 🐔🎶🔤a🔤 1 🔤Split String to Symbols🔤
     ⛔️🐕 😛 🐔🎶🔤42🔤 2 🔤Split String to Symbols🔤
+
+    ⛔️🐕 😛↔️ 🔤abcdefg🔤 🔤abcdefg🔤 0 🔤String Compare🔤
+    ⛔️🐕 ❎😛↔️ 🔤abcdef🔤 🔤abcdefg🔤 0 🔤String Compare🔤
+    ⛔️🐕 ❎😛↔️ 🔤abcdefg🔤 🔤abcdef🔤 0 🔤String Compare🔤
+    ⛔️🐕 ❎😛↔️ 🔤abcdefg🔤 🔤abcdeff🔤 0 🔤String Compare🔤
+    ⛔️🐕 ◀️ ✖️ ↔️ 🔤abcdeff🔤 🔤abcdefg🔤 ↔️ 🔤abcdefg🔤 🔤abcdeff🔤 0 🔤String Compare Direction Different🔤
   🍉
 
   🐇🐖 🏁 ➡️ 🚂 🍇

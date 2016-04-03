@@ -28,14 +28,14 @@ Prerequisites:
 Steps:
 
 1. Clone Emojicode (or download the source code and extract it) and navigate into it:
-   
+
    ```
    git clone https://github.com/emojicode/emojicode
    cd emojicode
    ```
-   
-    Beware of, that the master branch contains development code which probably contains bugs. If you want to build the latest stable release make sure to check it out first: `git checkout  v0.2.0-beta.3`
-    
+
+    Beware of, that the master branch contains development code which probably contains bugs. If you want to build the latest stable release make sure to check it out first: `git checkout v0.2.0-beta.4`
+
 2.  Then simply run
 
   ```
@@ -58,15 +58,15 @@ Steps:
    ```
    [sudo] make install && make tests
    ```
-   
+
    or package the binaries for distribution:
-   
+
    ```
    make dist
    ```
-   
+
   After the command is done you will find a directory and a tarfile
-in `builds` named after your platform, e.g. `Emojicode-0.2.0-beta.3-x86_64-linux-gnu`.
+in `builds` named after your platform, e.g. `Emojicode-0.2.0-beta.4-x86_64-linux-gnu`.
 
 ## Staying up to date
 

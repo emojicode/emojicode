@@ -11,14 +11,14 @@
 #include "Procedure.hpp"
 #include "Lexer.hpp"
 
-void Callable::parseArgumentList(TypeContext ct, EmojicodeChar enamespace){
+void Callable::parseArgumentList(TypeContext ct, Package *package){
     const Token *token;
     
     //Until the grape is found we parse arguments
     while ((token = nextToken()) && token->type == VARIABLE) { //grape
         //Get the variable in which to store the argument
         const Token *variableToken = consumeToken(VARIABLE);
-        auto type = Type::parseAndFetchType(ct, enamespace, AllowGenericTypeVariables, nullptr);
+        auto type = Type::parseAndFetchType(ct, AllowGenericTypeVariables, package);
         
         arguments.push_back(Variable(Variable(variableToken, type)));
     }
@@ -28,10 +28,10 @@ void Callable::parseArgumentList(TypeContext ct, EmojicodeChar enamespace){
     }
 }
 
-void Callable::parseReturnType(TypeContext ct, EmojicodeChar theNamespace){
+void Callable::parseReturnType(TypeContext ct, Package *package){
     if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
         consumeToken();
-        returnType = Type::parseAndFetchType(ct, theNamespace, AllowGenericTypeVariables, nullptr);
+        returnType = Type::parseAndFetchType(ct, AllowGenericTypeVariables, package);
     }
 }
 
@@ -74,7 +74,7 @@ static const Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep) {
     return token;
 }
 
-void Procedure::parseGenericArguments(TypeContext ct, EmojicodeChar enamespace) {
+void Procedure::parseGenericArguments(TypeContext ct, Package *package) {
     const Token *token;
     
     //Until the grape is found we parse arguments
@@ -82,8 +82,8 @@ void Procedure::parseGenericArguments(TypeContext ct, EmojicodeChar enamespace) 
         consumeToken();
         const Token *variable = consumeToken(VARIABLE);
         
-        Type t = Type::parseAndFetchType(Type(eclass), enamespace, AllowGenericTypeVariables, nullptr);
-        genericArgumentContraints.push_back(t);
+        Type t = Type::parseAndFetchType(Type(eclass), AllowGenericTypeVariables, package, nullptr);
+        genericArgumentConstraints.push_back(t);
         
         Type rType(TT_LOCAL_REFERENCE, false);
         rType.reference = genericArgumentVariables.size();
@@ -151,6 +151,20 @@ void Procedure::checkOverride(Procedure *superProcedure){
     else if(!overriding && superProcedure){
         ecCharToCharStack(name, mn);
         compilerError(dToken, "If you want to override %s add ✒️.", mn);
+    }
+}
+
+void Procedure::deprecatedWarning(const Token *callToken) {
+    if (deprecated) {
+        ecCharToCharStack(name, mn);
+        if (documentationToken) {
+            char *documentation = documentationToken->value.utf8CString();
+            compilerWarning(callToken, "%s is deprecated. Please refer to the documentation for further information:\n%s", mn, documentation);
+            delete [] documentation;
+        }
+        else {
+            compilerWarning(callToken, "%s is deprecated.", mn);
+        }
     }
 }
 

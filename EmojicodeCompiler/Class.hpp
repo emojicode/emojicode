@@ -9,14 +9,15 @@
 #ifndef Class_hpp
 #define Class_hpp
 
-class Class {
+#include "Package.hpp"
+
+class Class : public TypeDefinition {
 public:
-    Class() {}
+    Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken)
+        : name(name), classBegin(classBegin), package(pkg), documentationToken(dToken) {}
     
     /** Self explaining */
     EmojicodeChar name;
-    /** Self explaining */
-    EmojicodeChar enamespace;
     /** Whether this eclass eligible for initializer inheritance. */
     bool inheritsContructors = false;
     
@@ -46,7 +47,7 @@ public:
     /** The number of generic arguments this eclass takes. */
     uint16_t ownGenericArgumentCount = 0;
     /** The types for the generic arguments. */
-    std::vector<Type> genericArgumentContraints;
+    std::vector<Type> genericArgumentConstraints;
     /** The arguments for the classes from which this eclass inherits. */
     std::vector<Type> superGenericArguments;
     /** Generic type arguments as variables */
@@ -74,7 +75,7 @@ public:
     
     void addProtocol(Protocol *protocol);
     
-    const std::vector<Protocol*>& protocols() { return protocols_; };
+    const std::vector<Protocol*>& protocols() const { return protocols_; };
 private:
     std::map<EmojicodeChar, Method *> methods;
     std::map<EmojicodeChar, ClassMethod *> classMethods;
@@ -83,18 +84,12 @@ private:
     std::vector<Protocol *> protocols_;
 };
 
-/** Fetch a class by its name and enamespace. Returns nullptr if the class cannot be found. */
-extern Class* getClass(EmojicodeChar name, EmojicodeChar enamespace);
-
-
-class Protocol {
+class Protocol : public TypeDefinition {
 public:
-    Protocol(EmojicodeChar n, EmojicodeChar ns, uint_fast16_t i, Package *pkg) : name(n), enamespace(ns), package(pkg), index(i) {}
+    Protocol(EmojicodeChar n, uint_fast16_t i, Package *pkg) : name(n), package(pkg), index(i) {}
     
     /** The name of the protocol. */
     EmojicodeChar name;
-    /** The namespace to which this protocol belongs. */
-    EmojicodeChar enamespace;
     /** The package in which this protocol was defined. */
     Package *package;
     
@@ -113,7 +108,21 @@ private:
     std::map<EmojicodeChar, Method*> methods_;
 };
 
-/** Returns the protocol with name @c name in enamespace @c namepsace or @c nullptr if the protocol cannot be found. */
-extern Protocol* getProtocol(EmojicodeChar name, EmojicodeChar enamespace);
+class Enum : public TypeDefinition {
+public:
+    Enum(EmojicodeChar name, Package *package, const Token *dt) : name(name), package(package), documentationToken(dt) {}
+    
+    EmojicodeChar name;
+    std::map<EmojicodeChar, EmojicodeInteger> map;
+    /** The package in which this eclass was defined. */
+    Package *package;
+    
+    const Token *documentationToken;
+    
+    std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
+    void addValueFor(EmojicodeChar c);
+private:
+    EmojicodeInteger valuesCounter = 0;
+};
 
 #endif /* Class_hpp */

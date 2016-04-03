@@ -83,7 +83,7 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
         printf("\"canReturnNothingness\": true,");
     }
     
-    reportGenericArguments(p->genericArgumentVariables, p->genericArgumentContraints, 0, tc);
+    reportGenericArguments(p->genericArgumentVariables, p->genericArgumentConstraints, 0, tc);
     reportDocumentation(p->documentationToken);
     
     printf("\"arguments\": [");
@@ -105,15 +105,31 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
     printf("}%s", last ? "" : ",");
 }
 
-void report(const char *packageName){
+void report(Package *package){
+    std::list<Enum *> enums;
+    std::list<Class *> classes;
+    std::list<Protocol *> protocols;
+    
+    for (auto exported : package->exportedTypes()) {
+        switch (exported.type.type) {
+            case TT_CLASS:
+                classes.push_back(exported.type.eclass);
+                break;
+            case TT_ENUM:
+                enums.push_back(exported.type.eenum);
+                break;
+            case TT_PROTOCOL:
+                protocols.push_back(exported.type.protocol);
+                break;
+            default:
+                break;
+        }
+    }
+    
     bool printedClass = false;
     printf("{");
     printf("\"classes\": [");
     for(auto eclass : classes){
-        if (strcmp(eclass->package->name, packageName) != 0) {
-            continue;
-        }
-        
         if (printedClass) {
             putchar(',');
         }
@@ -124,12 +140,12 @@ void report(const char *packageName){
         ecCharToCharStack(eclass->name, className);
         printf("\"name\": \"%s\",", className);
 
-        reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentContraints, eclass->superGenericArguments.size(), TypeContext(eclass));
+        reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentConstraints, eclass->superGenericArguments.size(), TypeContext(eclass));
         reportDocumentation(eclass->documentationToken);
         
         if (eclass->superclass) {
             ecCharToCharStack(eclass->superclass->name, superClassName);
-            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", eclass->superclass->package->name, superClassName);
+            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", eclass->superclass->package->name(), superClassName);
         }
         
         printf("\"methods\": [");
@@ -161,14 +177,10 @@ void report(const char *packageName){
         printf("]}");
     }
     printf("],");
+    
     printf("\"enums\": [");
     bool printedEnum = false;
-    for(auto it : enumsRegister){
-        Enum *eenum = it.second;
-        
-        if (strcmp(eenum->package.name, packageName) != 0) {
-            continue;
-        }
+    for(auto eenum : enums){
         if (printedEnum) {
             putchar(',');
         }
@@ -194,14 +206,10 @@ void report(const char *packageName){
         printf("]}");
     }
     printf("],");
+    
     printf("\"protocols\": [");
     bool printedProtocol = false;
-    for(auto it : protocolsRegister){
-        Protocol *protocol = it.second;
-        
-        if (strcmp(protocol->package->name, packageName) != 0) {
-            continue;
-        }
+    for(auto protocol : protocols){
         if (printedProtocol) {
             putchar(',');
         }

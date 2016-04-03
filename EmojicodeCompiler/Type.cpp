@@ -29,10 +29,10 @@ Type Type::typeConstraintForReference(TypeContext ct){
     Type t = *this;
     bool optional = t.optional;
     while (t.type == TT_LOCAL_REFERENCE) {
-        t = ct.p->genericArgumentContraints[t.reference];
+        t = ct.p->genericArgumentConstraints[t.reference];
     }
     while (t.type == TT_REFERENCE) {
-        t = ct.normalType.eclass->genericArgumentContraints[t.reference];
+        t = ct.normalType.eclass->genericArgumentConstraints[t.reference];
     }
     t.optional = optional;
     return t;
@@ -129,65 +129,24 @@ bool Type::compatibleTo(Type to, TypeContext ct){
     return false;
 }
 
-Type Type::fetchRawType(EmojicodeChar name, EmojicodeChar enamespace, bool optional, const Token *token, bool *existent){
-    *existent = true;
-    if(enamespace == globalNamespace){
-        switch (name) {
-            case E_OK_HAND_SIGN:
-                return Type(TT_BOOLEAN, optional);
-            case E_INPUT_SYMBOL_FOR_SYMBOLS:
-                return Type(TT_SYMBOL, optional);
-            case E_STEAM_LOCOMOTIVE:
-                return Type(TT_INTEGER, optional);
-            case E_ROCKET:
-                return Type(TT_DOUBLE, optional);
-            case E_MEDIUM_WHITE_CIRCLE:
-                if (optional) {
-                    compilerWarning(token, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
-                }
-                return Type(TT_SOMETHING, false);
-            case E_LARGE_BLUE_CIRCLE:
-                return Type(TT_SOMEOBJECT, optional);
-            case E_SPARKLES:
-                compilerError(token, "The Nothingness type may not be referenced to.");
-        }
-    }
-    
-    Class *eclass = getClass(name, enamespace);
-    if (eclass) {
-        Type t = Type(eclass, optional);
-        t.optional = optional;
-        return t;
-    }
-    
-    Protocol *protocol = getProtocol(name, enamespace);
-    if(protocol){
-        return Type(protocol, optional);
-    }
-    
-    Enum *eenum = getEnum(name, enamespace);
-    if(eenum){
-        return Type(eenum, optional);
-    }
-    
-    *existent = false;
-    return typeNothingness;
-}
-
 Type Type::resolveOn(TypeContext typeContext){
     Type t = *this;
     bool optional = t.optional;
     while (t.type == TT_LOCAL_REFERENCE) {
         t = (*typeContext.procedureGenericArguments)[t.reference];
     }
-    while (t.type == TT_REFERENCE) {
-        Type tn = typeContext.normalType.genericArguments[t.reference];
-        if (tn.type == TT_REFERENCE && tn.reference == t.reference) {
-            break;
+    
+    if (typeContext.normalType.type == TT_CLASS) {
+        while (t.type == TT_REFERENCE && t.referenceClass == typeContext.normalType.eclass) {
+            Type tn = typeContext.normalType.genericArguments[t.reference];
+            if (tn.type == TT_REFERENCE && tn.reference == t.reference) {
+                break;
+            }
+            t = tn;
         }
-        t = tn;
     }
     t.optional = optional;
+    
     if (t.type == TT_CLASS) {
         for (int i = 0; i < t.eclass->genericArgumentCount; i++) {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
@@ -198,12 +157,13 @@ Type Type::resolveOn(TypeContext typeContext){
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
         }
     }
+    
     return t;
 }
 
 //MARK: Type Parsing Utility
 
-const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional, EmojicodeChar currentNamespace){
+const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional){
     if (nextToken()->type == VARIABLE) {
         compilerError(consumeToken(), "Generic variables not allowed here.");
     }
@@ -225,7 +185,7 @@ const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamesp
         className = consumeToken(IDENTIFIER);
     }
     else {
-        *enamespace = currentNamespace;
+        *enamespace = globalNamespace;
     }
     
     *typeName = className->value[0];
@@ -233,7 +193,7 @@ const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamesp
     return className;
 }
 
-Type Type::parseAndFetchType(TypeContext ct, EmojicodeChar theNamespace, TypeDynamism dynamism, bool *dynamicType){
+Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *package, bool *dynamicType){
     if (dynamicType) {
         *dynamicType = false;
     }
@@ -296,12 +256,12 @@ Type Type::parseAndFetchType(TypeContext ct, EmojicodeChar theNamespace, TypeDyn
         
         while (!(nextToken()->type == IDENTIFIER && (nextToken()->value[0] == E_WATERMELON || nextToken()->value[0] == E_RIGHTWARDS_ARROW))) {
             t.arguments++;
-            t.genericArguments.push_back(parseAndFetchType(ct, theNamespace, dynamism, nullptr));
+            t.genericArguments.push_back(parseAndFetchType(ct, dynamism, package));
         }
         
         if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
             consumeToken();
-            t.genericArguments[0] = parseAndFetchType(ct, theNamespace, dynamism, nullptr);
+            t.genericArguments[0] = parseAndFetchType(ct, dynamism, package);
         }
         
         const Token *token = consumeToken(IDENTIFIER);
@@ -314,9 +274,9 @@ Type Type::parseAndFetchType(TypeContext ct, EmojicodeChar theNamespace, TypeDyn
     else {
         EmojicodeChar typeName, typeNamespace;
         bool optional, existent;
-        const Token *token = parseTypeName(&typeName, &typeNamespace, &optional, theNamespace);
+        const Token *token = parseTypeName(&typeName, &typeNamespace, &optional);
         
-        Type type = fetchRawType(typeName, typeNamespace, optional, token, &existent);
+        auto type = package->fetchRawType(typeName, typeNamespace, optional, token, &existent);
         
         if (!existent) {
             ecCharToCharStack(typeName, nameString);
@@ -324,7 +284,7 @@ Type Type::parseAndFetchType(TypeContext ct, EmojicodeChar theNamespace, TypeDyn
             compilerError(token, "Could not find type %s in enamespace %s.", nameString, namespaceString);
         }
         
-        type.parseGenericArguments(ct, theNamespace, dynamism, token);
+        type.parseGenericArguments(ct, dynamism, package, token);
         
         return type;
     }
@@ -337,12 +297,12 @@ void Type::validateGenericArgument(Type ta, uint16_t i, TypeContext ct, const To
     if (this->eclass->superclass) {
         i += this->eclass->superclass->genericArgumentCount;
     }
-    if (!ta.compatibleTo(this->eclass->genericArgumentContraints[i], ct)) {
+    if (!ta.compatibleTo(this->eclass->genericArgumentConstraints[i], ct)) {
         compilerError(token, "Types not matching.");
     }
 }
 
-void Type::parseGenericArguments(TypeContext ct, EmojicodeChar theNamespace, TypeDynamism dynamism, const Token *errorToken) {
+void Type::parseGenericArguments(TypeContext ct, TypeDynamism dynamism, Package *package, const Token *errorToken) {
     if (this->type == TT_CLASS) {
         this->genericArguments = std::vector<Type>(this->eclass->superGenericArguments);
         if (this->eclass->ownGenericArgumentCount){
@@ -350,7 +310,7 @@ void Type::parseGenericArguments(TypeContext ct, EmojicodeChar theNamespace, Typ
             while(nextToken()->value[0] == E_SPIRAL_SHELL){
                 const Token *token = consumeToken();
                 
-                Type ta = parseAndFetchType(ct, theNamespace, dynamism, nullptr);
+                Type ta = parseAndFetchType(ct, dynamism, package, nullptr);
                 validateGenericArgument(ta, count, ct, token);
                 genericArguments.push_back(ta);
                 
@@ -397,11 +357,11 @@ Type CommonTypeFinder::getCommonType(const Token *warningToken){
 const char* Type::typePackage(){
     switch (this->type) {
         case TT_CLASS:
-            return this->eclass->package->name;
+            return this->eclass->package->name();
         case TT_PROTOCOL:
-            return this->protocol->package->name;
+            return this->protocol->package->name();
         case TT_ENUM:
-            return this->eenum->package.name;
+            return this->eenum->package->name();
         case TT_INTEGER:
         case TT_NOTHINGNESS:
         case TT_BOOLEAN:
@@ -416,38 +376,24 @@ const char* Type::typePackage(){
     }
 }
 
-void stringAppendEc(EmojicodeChar c, std::string *string){
+void stringAppendEc(EmojicodeChar c, std::string &string){
     ecCharToCharStack(c, sc);
-    string->append(sc);
+    string.append(sc);
 }
 
 Type::Type(Class *c, bool o) : optional(o), type(TT_CLASS), eclass(c) {
     for (int i = 0; i < eclass->genericArgumentCount; i++) {
-        genericArguments.push_back(Type(TT_REFERENCE, false, i));
+        genericArguments.push_back(Type(TT_REFERENCE, false, i, c));
     }
 }
 
-void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptional, std::string *string) const {
-    if (includeNsAndOptional) {
+void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const {
+    if (includePackageAndOptional) {
         if(type.optional){
             stringAppendEc(E_CANDY, string);
         }
         
-        switch (type.type) {
-            case TT_CLASS:
-                stringAppendEc(type.eclass->enamespace, string);
-                break;
-            case TT_PROTOCOL:
-                stringAppendEc(type.protocol->enamespace, string);
-                break;
-            case TT_CALLABLE:
-            case TT_LOCAL_REFERENCE:
-            case TT_REFERENCE:
-                break;
-            default:
-                stringAppendEc(E_LARGE_RED_CIRCLE, string);
-                break;
-        }
+        string.append(type.typePackage());
     }
     
     switch (type.type) {
@@ -461,7 +407,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
             int offset = type.eclass->genericArgumentCount - type.eclass->ownGenericArgumentCount;
             for (int i = 0, l = type.eclass->ownGenericArgumentCount; i < l; i++) {
                 stringAppendEc(E_SPIRAL_SHELL, string);
-                typeName(type.genericArguments[offset + i], typeContext, includeNsAndOptional, string);
+                typeName(type.genericArguments[offset + i], typeContext, includePackageAndOptional, string);
             }
             
             return;
@@ -497,12 +443,12 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
             stringAppendEc(E_GRAPES, string);
             
             for (int i = 1; i <= type.arguments; i++) {
-                typeName(type.genericArguments[i], typeContext, includeNsAndOptional, string);
+                typeName(type.genericArguments[i], typeContext, includePackageAndOptional, string);
             }
             
             stringAppendEc(E_RIGHTWARDS_ARROW, string);
             stringAppendEc(0xFE0F, string);
-            typeName(type.genericArguments[0], typeContext, includeNsAndOptional, string);
+            typeName(type.genericArguments[0], typeContext, includePackageAndOptional, string);
             stringAppendEc(E_WATERMELON, string);
             return;
         case TT_REFERENCE: {
@@ -511,7 +457,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables) {
                         if (it.second.reference == type.reference) {
-                            string->append(it.first.utf8CString());
+                            string.append(it.first.utf8CString());
                             return;
                         }
                     }
@@ -526,7 +472,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
             if (typeContext.p) {
                 for (auto it : typeContext.p->genericArgumentVariables) {
                     if (it.second.reference == type.reference) {
-                        string->append(it.first.utf8CString());
+                        string.append(it.first.utf8CString());
                         return;
                     }
                 }
@@ -540,6 +486,6 @@ void Type::typeName(Type type, TypeContext typeContext, bool includeNsAndOptiona
 
 std::string Type::toString(TypeContext typeContext, bool includeNsAndOptional) const {
     std::string string;
-    typeName(*this, typeContext, includeNsAndOptional, &string);
+    typeName(*this, typeContext, includeNsAndOptional, string);
     return string;
 }

@@ -26,7 +26,7 @@ struct FlowControlReturn {
 class StaticFunctionAnalyzer {
 public:
     static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, Scoper &scoper, bool inClassContext = false, Initializer *i = nullptr);
-    StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, TypeContext contextType, Writer &writer, Scoper &scoper);
+    StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext, TypeContext typeContext, Writer &writer, Scoper &scoper);
     
     /** Performs the analyziation. */
     void analyze(bool compileDeadCode = false, Scope *copyScope = nullptr);
@@ -61,7 +61,7 @@ private:
     /** The class type of the eclass which is compiled. */
     TypeContext typeContext;
     
-    EmojicodeChar currentNamespace;
+    Package *package;
     
     /**
      * Safely tries to parse the given token, evaluate the associated command and returns the type of that command.

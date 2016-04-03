@@ -60,7 +60,7 @@ std::vector<Type> StaticFunctionAnalyzer::checkGenericArguments(Procedure *p, co
     while (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_SPIRAL_SHELL) {
         consumeToken();
         
-        auto type = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel());
+        auto type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package);
         k.push_back(type);
     }
     
@@ -276,7 +276,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "Cannot redeclare variable.");
             }
             
-            Type t = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel(), nullptr);
+            Type t = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package);
             
             uint8_t id = nextVariableID();
             scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false, varName));
@@ -546,7 +546,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_UP_POINTING_RED_TRIANGLE: {
             writer.writeCoin(0x13);
             
-            Type type = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel(), nullptr);
+            Type type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package);
             
             if (type.type != TT_ENUM) {
                 compilerError(token, "The given type cannot be accessed.");
@@ -577,7 +577,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             writer.writeCoin(0x4);
             
             bool dynamic;
-            Type type = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel(), &dynamic);
+            Type type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package, &dynamic);
             
             if (type.type != TT_CLASS) {
                 compilerError(token, "The given type cannot be initiatied.");
@@ -606,6 +606,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             else if (dynamic && !initializer->required) {
                 compilerError(name, "Only required initializers can be used with 🐀.");
             }
+            
+            initializer->deprecatedWarning(name);
             
             writer.writeCoin(initializer->vti);
             
@@ -668,6 +670,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 break;
             }
             
+            initializer->deprecatedWarning(initializerToken);
+            
             writer.writeCoin(initializer->vti);
             
             checkAccess(initializer, token, "initializer");
@@ -704,7 +708,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             auto placeholder = writer.writeCoinPlaceholder();
             
             Type originalType = parse(consumeToken(), token, typeSomething);
-            Type type = Type::parseAndFetchType(typeContext, currentNamespace, NoDynamism, nullptr);
+            Type type = Type::parseAndFetchType(typeContext, NoDynamism, package, nullptr);
             
             if (originalType.compatibleTo(type, typeContext)) {
                 compilerWarning(token, "Superfluous cast.");
@@ -713,8 +717,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             switch (type.type) {
                 case TT_CLASS:
                     for (size_t i = 0; i < type.eclass->ownGenericArgumentCount; i++) {
-                        if(!type.eclass->genericArgumentContraints[i].compatibleTo(type.genericArguments[i], type) ||
-                           !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentContraints[i], type)) {
+                        if(!type.eclass->genericArgumentConstraints[i].compatibleTo(type.genericArguments[i], type) ||
+                           !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentConstraints[i], type)) {
                             compilerError(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
                         }
                     }
@@ -780,6 +784,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "%s has no method %s", eclass.c_str(), method);
             }
             
+            method->deprecatedWarning(methodToken);
+            
             writer.writeCoin(method->vti);
             
             auto genericArgs = checkGenericArguments(method, token);
@@ -799,7 +805,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             const Token *methodToken = consumeToken(IDENTIFIER);
             
-            Type type = Type::parseAndFetchType(typeContext, currentNamespace, intelligentDynamismLevel(), nullptr);
+            Type type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package, nullptr);
             
             if (type.optional) {
                 compilerWarning(token, "Please remove useless 🍬.");
@@ -817,6 +823,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 ecCharToCharStack(methodToken->value[0], methodString);
                 compilerError(token, "%s has no class method %s", classString.c_str(), methodString);
             }
+            
+            method->deprecatedWarning(methodToken);
             
             writer.writeCoin(method->vti);
             
@@ -845,6 +853,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "Method is non-existent.");
             }
             
+            method->deprecatedWarning(methodName);
+            
             writer.writeCoin(method->vti);
             
             return method->type();
@@ -853,8 +863,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             writer.writeCoin(0x70);
             
             auto function = Closure(token);
-            function.parseArgumentList(typeContext, currentNamespace);
-            function.parseReturnType(typeContext, currentNamespace);
+            function.parseArgumentList(typeContext, package);
+            function.parseReturnType(typeContext, package);
             
             auto variableCountPlaceholder = writer.writeCoinPlaceholder();
             auto coinCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
@@ -866,7 +876,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             function.firstToken = currentToken;
             
-            auto sca = StaticFunctionAnalyzer(function, currentNamespace, nullptr, inClassContext, typeContext, writer, scoper);
+            auto sca = StaticFunctionAnalyzer(function, package, nullptr, inClassContext, typeContext, writer, scoper);
             sca.analyze(true, closingScope);
             
             if (!inClassContext) {
@@ -992,6 +1002,24 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                             placeholder.write(0x25);
                             parse(consumeToken(), token, typeInteger);
                             return typeInteger;
+                        case E_HEAVY_LARGE_CIRCLE:
+                            placeholder.write(0x5A);
+                            parse(consumeToken(), token, typeInteger);
+                            return typeInteger;
+                        case E_ANGER_SYMBOL:
+                            placeholder.write(0x5B);
+                            parse(consumeToken(), token, typeInteger);
+                            return typeInteger;
+                        case E_CROSS_MARK:
+                            placeholder.write(0x5C);
+                            parse(consumeToken(), token, typeInteger);
+                            return typeInteger;
+                        case E_NO_ENTRY_SIGN:
+                            placeholder.write(0x5D);
+                            return typeInteger;
+                        case E_ROCKET:
+                            placeholder.write(0x3F);
+                            return typeFloat;
                     }
                 }
                 else if (type.type == TT_DOUBLE) {
@@ -1062,6 +1090,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 writer.writeCoin(method->vti);
             }
             
+            method->deprecatedWarning(token);
+            
             auto genericArgs = checkGenericArguments(method, token);
             auto typeContext = TypeContext(type, method, &genericArgs);
             
@@ -1074,8 +1104,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
     return typeNothingness;
 }
 
-StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, EmojicodeChar ns, Initializer *i, bool inClassContext, TypeContext typeContext, Writer &writer, Scoper &scoper) :
-    callable(callable), writer(writer), scoper(scoper), initializer(i), inClassContext(inClassContext), typeContext(typeContext), currentNamespace(ns) {
+StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext, TypeContext typeContext, Writer &writer, Scoper &scoper) :
+    callable(callable), writer(writer), scoper(scoper), initializer(i), inClassContext(inClassContext), typeContext(typeContext), package(p) {
     
 }
 
@@ -1150,7 +1180,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writ
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
     auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
     
-    auto sca = StaticFunctionAnalyzer(*procedure, procedure->enamespace, i, inClassContext, TypeContext(classType, procedure), writer, scoper);
+    auto sca = StaticFunctionAnalyzer(*procedure, procedure->package, i, inClassContext, TypeContext(classType, procedure), writer, scoper);
     sca.analyze();
     
     variableCountPlaceholder.write(sca.localVariableCount());

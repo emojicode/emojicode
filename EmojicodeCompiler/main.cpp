@@ -19,13 +19,7 @@
 StartingFlag startingFlag;
 bool foundStartingFlag;
 
-std::map<std::array<EmojicodeChar, 2>, Class*> classesRegister;
-std::map<std::array<EmojicodeChar, 2>, Protocol*> protocolsRegister;
-std::map<std::array<EmojicodeChar, 2>, Enum*> enumsRegister;
-
 std::vector<Class *> classes;
-std::vector<Package *> packages;
-
 
 char* EmojicodeString::utf8CString() const {
     //Size needed for UTF8 representation
@@ -147,26 +141,40 @@ void compilerWarning(const Token *token, const char *err, ...) {
     va_end(list);
 }
 
-Class* getStandardClass(EmojicodeChar name) {
-    auto cl = getClass(name, globalNamespace);
-    if (cl == nullptr) {
+Class* getStandardClass(EmojicodeChar name, Package *_) {
+    bool existent;
+    auto type = _->fetchRawType(name, globalNamespace, false, nullptr, &existent);
+    if (type.type != TT_CLASS) {
         ecCharToCharStack(name, nameString)
         compilerError(nullptr, "s package class %s is missing.", nameString);
     }
-    return cl;
+    return type.eclass;
 }
 
-void loadStandard() {
-    packageRegisterHeaderNewest("s", globalNamespace);
+Protocol* getStandardProtocol(EmojicodeChar name, Package *_) {
+    bool existent;
+    auto type = _->fetchRawType(name, globalNamespace, false, nullptr, &existent);
+    if (type.type != TT_PROTOCOL) {
+        ecCharToCharStack(name, nameString)
+        compilerError(nullptr, "s package protocol %s is missing.", nameString);
+    }
+    return type.protocol;
+}
+
+void loadStandard(Package *_) {
+    auto package = _->loadPackage("s", globalNamespace, nullptr);
     
-    CL_STRING = getStandardClass(0x1F521);
-    CL_LIST = getStandardClass(0x1F368);
-    CL_ERROR = getStandardClass(0x1F6A8);
-    CL_DATA = getStandardClass(0x1F4C7);
-    CL_ENUMERATOR = getStandardClass(0x1F361);
-    CL_DICTIONARY = getStandardClass(0x1F36F);
-    CL_RANGE = getStandardClass(0x23E9);
-    PR_ENUMERATEABLE = getProtocol(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY, globalNamespace);
+    CL_STRING = getStandardClass(0x1F521, _);
+    CL_LIST = getStandardClass(0x1F368, _);
+    CL_ERROR = getStandardClass(0x1F6A8, _);
+    CL_DATA = getStandardClass(0x1F4C7, _);
+    CL_ENUMERATOR = getStandardClass(0x1F361, _);
+    CL_DICTIONARY = getStandardClass(0x1F36F, _);
+    CL_RANGE = getStandardClass(0x23E9, _);
+    
+    PR_ENUMERATEABLE = getStandardProtocol(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY, _);
+    
+    package->setRequiresBinary(false);
 }
 
 int main(int argc, char * argv[]) {
@@ -216,14 +224,12 @@ int main(int argc, char * argv[]) {
     
     foundStartingFlag = false;
     
-    loadStandard();
+    Package pkg = Package("_");
+    pkg.setPackageVersion(PackageVersion(1, 0));
     
-    Package pkg = Package("_", PackageVersion(1, 0), false);
+    loadStandard(&pkg);
     
-    packages.push_back(&pkg);
-    for (int i = 0; i < argc; i++) {
-        parseFile(argv[i], &pkg, false, globalNamespace);
-    }
+    pkg.parse(argv[0], nullptr);
     
     FILE *out = fopen(outPath.c_str(), "wb");
     if(!out || ferror(out)){
@@ -243,9 +249,14 @@ int main(int argc, char * argv[]) {
         fprintf(stderr, "]");
     }
     
-    //Print a report on request
-    if(reportPackage){
-        report(reportPackage);
+    if(reportPackage) {
+        auto package = Package::findPackage(reportPackage);
+        if (package) {
+            report(package);
+        }
+        else {
+            compilerWarning(nullptr, "Report for package %s failed as it was not loaded.", reportPackage);
+        }
     }
     
     return 0;
