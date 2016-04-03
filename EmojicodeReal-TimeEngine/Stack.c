@@ -71,8 +71,7 @@ void stackIncrementVariable(uint8_t index, Thread *thread){
 }
 
 void stackSetVariable(uint8_t index, Something value, Thread *thread){
-    Something *v = (Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
-    *v = value;
+    *(Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index) = value;
 }
 
 Object* stackGetThis(Thread *thread){
