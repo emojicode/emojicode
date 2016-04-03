@@ -194,24 +194,27 @@ static void stringGetInput(Thread *thread) {
     free(utf8str);
     
     int bufferSize = 50, oldBufferSize = 0;
-    char *buffer = malloc(bufferSize);
+    Object *buffer = newArray(bufferSize);
     size_t bufferUsedSize = 0;
     
     while (true) {
-        fgets(buffer + oldBufferSize, bufferSize - oldBufferSize, stdin);
+        fgets((char *)buffer->value + oldBufferSize, bufferSize - oldBufferSize + 1, stdin);
         
-        bufferUsedSize = strlen(buffer);
+        bufferUsedSize = strlen(buffer->value);
         
         if(bufferUsedSize < bufferSize){
+            if (((char *)buffer->value)[bufferUsedSize - 1] == '\n') {
+                bufferUsedSize -= 1;
+            }
             break;
         }
         
         oldBufferSize = bufferSize;
         bufferSize *= 2;
-        buffer = realloc(buffer, bufferSize);
+        buffer = resizeArray(buffer, bufferSize);
     }
 
-    EmojicodeInteger len = u8_strlen_l(buffer, bufferUsedSize);
+    EmojicodeInteger len = u8_strlen_l(buffer->value, bufferUsedSize);
     
     String *string = stackGetThis(thread)->value;
     string->length = len;
@@ -220,12 +223,10 @@ static void stringGetInput(Thread *thread) {
     string = stackGetThis(thread)->value;
     string->characters = chars;
     
-    u8_toucs(characters(string), len, buffer, bufferUsedSize);
-    
-    free(buffer); 
+    u8_toucs(characters(string), len, buffer->value, bufferUsedSize);
 }
 
-static Something stringSplitByStringBridge(Thread *thread){
+static Something stringSplitByStringBridge(Thread *thread) {
     Something sp = stackGetVariable(0, thread);
     
     stackPush(stackGetThis(thread), 2, 0, thread);
