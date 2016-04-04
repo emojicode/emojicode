@@ -328,9 +328,6 @@ Something dictionaryKeys(Object *dicto, Thread *thread) {
 void dictionaryInit(Thread *thread) {
     EmojicodeDictionary *dict = stackGetThis(thread)->value;
     dict->loadFactor = DICTIONARY_DEFAULT_LOAD_FACTOR;
-    dict->size = 0;
-    dict->buckets = NULL;
-    dict->nextThreshold = 0;
 }
 
 void dictionaryMark(Object *object) {

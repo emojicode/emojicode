@@ -25,6 +25,7 @@ typedef struct Initializer Initializer;
 typedef struct List List;
 typedef struct Thread Thread;
 typedef struct StackFrame StackFrame;
+typedef struct StackState StackState;
 
 extern Class *CL_STRING;
 extern Class *CL_LIST;
@@ -205,6 +206,9 @@ void stackIncrementVariable(uint8_t index, Thread *thread);
 Something* stackReserveFrame(void *t, uint8_t variableCount, Thread *thread);
 
 void stackPushReservedFrame(Thread *thread);
+
+StackState storeStackState(Thread *thread);
+void restoreStackState(StackState s, Thread *thread);
 
 /** Returns the object on which the method was called. */
 Object* stackGetThis(Thread *);

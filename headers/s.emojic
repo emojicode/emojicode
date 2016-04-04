@@ -173,11 +173,12 @@
   🐖 🎶 ➡️ 🍨🐚🔣 📻
 
   🌮
-    Tries to parse this string as JSON. If the string represents invalid JSON
-    Nothigness is returned. The depth is limited to 256 levels. `\uXXXX`
-    escape sequences are not supported.
+    Tries to parse this string as JSON. If the string doesn’t represent valid
+    JSON Nothigness is returned. The depth is limited to 256 levels.
+
+    >!N This method was named 🗞 in 0.2 Beta 4!
   🌮
-  🐖 🗞 ➡️ ⚪️ 📻
+  🐖 📰 ➡️ ⚪️ 📻
 🍉
 
 🐋 🍨 🍇
@@ -464,7 +465,7 @@
     Suspends the calling thread from execution for at least the number of
     seconds specified by the arguments *seconds*.
 
-    >!N This method is named 🕰 in 0.2 Beta 4!
+    >!N This method was named 🕰 in 0.2 Beta 4!
   🌮
   🐇🐖 ⏳ seconds 🚂 📻
 

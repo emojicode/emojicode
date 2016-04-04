@@ -24,6 +24,11 @@ struct StackFrame {
     void *returnFutureStack;
 };
 
+struct StackState {
+    Byte *futureStack;
+    Byte *stack;
+};
+
 /** Try to allocate a thread and a stack. */
 Thread* allocateThread(void);
 

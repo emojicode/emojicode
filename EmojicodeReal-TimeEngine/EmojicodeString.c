@@ -565,7 +565,7 @@ MethodHandler stringMethodForName(EmojicodeChar name){
             return stringToCharacterList;
         case 0x1F4C7: //📇
             return stringToData;
-        case 0x1F5DE: //🗞
+        case 0x1f4f0: //📰
             return stringJSON;
         case 0x1F682: //🚂
             return stringToInteger;

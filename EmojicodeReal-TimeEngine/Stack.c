@@ -53,9 +53,19 @@ void stackPush(void *this, uint8_t variableCount, uint8_t argCount, Thread *thre
     stackPushReservedFrame(thread);
 }
 
-void stackPop(Thread *thread){
+void stackPop(Thread *thread) {
     thread->futureStack = ((StackFrame *)thread->stack)->returnFutureStack;
     thread->stack = ((StackFrame *)thread->stack)->returnPointer;
+}
+
+StackState storeStackState(Thread *thread) {
+    StackState s = {thread->futureStack, thread->stack};
+    return s;
+}
+
+void restoreStackState(StackState s, Thread *thread) {
+    thread->futureStack = s.futureStack;
+    thread->stack = s.stack;
 }
 
 Something stackGetVariable(uint8_t index, Thread *thread){
