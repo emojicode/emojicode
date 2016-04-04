@@ -198,18 +198,18 @@ static void stringGetInput(Thread *thread) {
     size_t bufferUsedSize = 0;
     
     while (true) {
-        fgets((char *)buffer->value + oldBufferSize, bufferSize - oldBufferSize + 1, stdin);
+        fgets((char *)buffer->value + oldBufferSize, bufferSize - oldBufferSize, stdin);
         
         bufferUsedSize = strlen(buffer->value);
         
-        if(bufferUsedSize < bufferSize){
+        if(bufferUsedSize < bufferSize - 1){
             if (((char *)buffer->value)[bufferUsedSize - 1] == '\n') {
                 bufferUsedSize -= 1;
             }
             break;
         }
         
-        oldBufferSize = bufferSize;
+        oldBufferSize = bufferSize - 1;
         bufferSize *= 2;
         buffer = resizeArray(buffer, bufferSize);
     }

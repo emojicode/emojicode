@@ -93,6 +93,46 @@ static Something systemArgs(Thread *thread) {
     return somethingObject(listObject);
 }
 
+static Something systemSystem(Thread *thread) {
+    char *command = stringToChar(stackGetVariable(0, thread).object->value);
+    FILE *f = popen(command, "r");
+    free(command);
+    
+    if (!f) {
+        return NOTHINGNESS;
+    }
+    
+    size_t bufferUsedSize = 0;
+    int bufferSize = 50;
+    Object *buffer = newArray(bufferSize);
+    
+    while (fgets((char *)buffer->value + bufferUsedSize, bufferSize - (int)bufferUsedSize, f) != NULL) {
+        bufferUsedSize = strlen(buffer->value);
+        
+        if (bufferSize - bufferUsedSize < 2) {
+            bufferSize *= 2;
+            buffer = resizeArray(buffer, bufferSize);
+        }
+    }
+    
+    bufferUsedSize = strlen(buffer->value);
+    
+    EmojicodeInteger len = u8_strlen_l(buffer->value, bufferUsedSize);
+    
+    Object *so = newObject(CL_STRING);
+    stackSetVariable(0, somethingObject(so), thread);
+    String *string = so->value;
+    string->length = len;
+    
+    Object *chars = newArray(len * sizeof(EmojicodeChar));
+    string = stackGetVariable(0, thread).object->value;
+    string->characters = chars;
+    
+    u8_toucs(characters(string), len, buffer->value, bufferUsedSize);
+    
+    return stackGetVariable(0, thread);
+}
+
 //MARK: Error
 
 Object* newError(const char *message, int code){
@@ -343,6 +383,8 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                     return systemTime;
                 case 0x1f39e: //🎞
                     return systemArgs;
+                case 0x1f574: //🕴
+                    return systemSystem;
             }
             break;
         case 0x1F684: //🚄

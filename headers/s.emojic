@@ -439,6 +439,12 @@
 🌮
 🌍 🐇 💻 🍇
   🌮
+    Returns a list of the arguments passed to the programm. Calling this method
+    is rather expensive.
+  🌮
+  🐇🐖 🎞 ➡️ 🍨🐚🔡 📻
+
+  🌮
     Gets an environment variable by its name. If the variable cannot be found
     ✨ is returned.
   🌮
@@ -451,12 +457,9 @@
   🐇🐖 🚪 status 🚂 📻
 
   🌮
-    Returns a list of the arguments passed to the programm. Calling this method
-    is rather expensive.
-
-    >!N Not available in 0.2 Beta 4
+    Returns the standard output of running `command` in a subshell.
   🌮
-  🐇🐖 🎞 ➡️ 🍨🐚🔡 📻
+  🐇🐖 🕴 command 🔡 ➡️ 🍬🔡 📻
 
   🌮 Returns the current working directory. 🌮
   🐇🐖 🌍 ➡️ 🔡 📻
@@ -471,8 +474,6 @@
 
   🌮
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
-
-    >!N Not available in 0.2 Beta 4
   🌮
   🐇🐖 🕰 ➡️ 🚂📻
 🍉
