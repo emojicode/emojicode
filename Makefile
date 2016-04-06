@@ -12,7 +12,7 @@ COMPILER_OBJECTS = $(COMPILER_SOURCES:%.cpp=%.o)
 COMPILER_BINARY = emojicodec
 
 ENGINE_CFLAGS = -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler -std=gnu11 -Wall -Wno-unused-result $(if $(HEAP_SIZE),-DheapSize=$(HEAP_SIZE))
-ENGINE_LDFLAGS = -lm -ldl -rdynamic
+ENGINE_LDFLAGS = -lm -ldl -lpthread -rdynamic
 
 ENGINE_SRCDIR = EmojicodeReal-TimeEngine
 ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.c)
