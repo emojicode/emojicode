@@ -28,7 +28,7 @@ static void* emojicodeMalloc(size_t size){
     pauseForGC(&allocationMutex);
     if (memoryUse + size > gcThreshold) {
         if (size > gcThreshold) {
-            error("Allocation of %ld bytes is too big. Try to enlarge the heap. (Heap size: %ld)", size, heapSize);
+            error("Allocation of %zu bytes is too big. Try to enlarge the heap. (Heap size: %zu)", size, heapSize);
         }
         
         pauseThreads = true;
@@ -97,6 +97,14 @@ void objectIncrementVariable(Object *o, uint8_t index){
 
 Object* newObject(Class *class){
     return newObjectWithSizeInternal(class, class->size);
+}
+
+size_t sizeCalculationWithOverflowProtection(size_t items, size_t itemSize) {
+    size_t r = items * itemSize;
+    if (r / items != itemSize) {
+        error("Integer overflow while allocating memory. It’s not possible to allocate objects of this size due to hardware limitations.");
+    }
+    return r;
 }
 
 Object* newArray(size_t size){

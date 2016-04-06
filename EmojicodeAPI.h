@@ -143,6 +143,12 @@ extern Something executeCallableExtern(Object *callable, Something *args, Thread
  */
 extern Object* newObject(Class *class);
 
+/**
+ * Multiplies @c items by @c itemSize and terminates the program with an error if an integer
+ * overflow occured.
+ */
+extern size_t sizeCalculationWithOverflowProtection(size_t items, size_t itemSize);
+
 /** 
  * Allocates an object with an value area with the size given.
  * @param size The size of the value area.

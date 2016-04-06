@@ -24,7 +24,7 @@ void expandListSize(Thread *thread){
     }
     else {
         size_t newSize = list->capacity + (list->capacity >> 1);
-        Object *object = resizeArray(list->items, newSize * sizeof(Something));
+        Object *object = resizeArray(list->items, sizeCalculationWithOverflowProtection(newSize, sizeof(Something)));
         list = stackGetThis(thread)->value;
         list->items = object;
         list->capacity = newSize;
@@ -37,10 +37,10 @@ void listEnsureCapacity(Thread *thread, size_t size) {
     if (list->capacity < size) {
         Object *object;
         if (list->capacity == 0) {
-            object = newArray(sizeof(Something) * size);
+            object = newArray(sizeCalculationWithOverflowProtection(size, sizeof(Something)));
         }
         else {
-            object = resizeArray(list->items, size * sizeof(Something));
+            object = resizeArray(list->items, sizeCalculationWithOverflowProtection(size, sizeof(Something)));
         }
         list = stackGetThis(thread)->value;
         list->items = object;
@@ -266,7 +266,7 @@ static void initListEmptyBridge(Thread *thread) {
 
 static void initListWithCapacity(Thread *thread) {
     EmojicodeInteger capacity = stackGetVariable(0, thread).raw;
-    Object *n = newArray(sizeof(Something) * capacity);
+    Object *n = newArray(sizeCalculationWithOverflowProtection(capacity, sizeof(Something)));
     List *list = stackGetThis(thread)->value;
     list->capacity = capacity;
     list->items = n;
