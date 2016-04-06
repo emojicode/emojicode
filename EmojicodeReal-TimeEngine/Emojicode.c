@@ -76,6 +76,8 @@ static bool runBlock(Thread *thread){
     while (thread->tokenStream < end) {
         parse(consumeCoin(thread), thread);
         
+        pauseForGC(NULL);
+        
         if(thread->returned){
             return true;
         }
@@ -90,6 +92,8 @@ static Something runFunctionBlock(Thread *thread, uint32_t length){
         EmojicodeCoin c = consumeCoin(thread);
 
         parse(c, thread);
+        
+        pauseForGC(NULL);
         
         if(thread->returned){
             Something ret = thread->returnValue;
@@ -854,7 +858,7 @@ int main(int argc, char *argv[]) {
        error("File couldn't be opened.");
     }
     
-    mainThread = allocateThread();
+    Thread *mainThread = allocateThread();
     
     allocateHeap();
     

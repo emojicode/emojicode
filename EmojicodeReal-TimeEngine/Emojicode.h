@@ -32,6 +32,9 @@ struct StackState {
 /** Try to allocate a thread and a stack. */
 Thread* allocateThread(void);
 
+/** Removes the thread from the linked list. */
+void removeThread(Thread *);
+
 /** Marks all variables on the stack */
 void stackMark(Thread *);
 
@@ -39,7 +42,7 @@ void stackMark(Thread *);
  * The garbage collector.
  * Not thread-safe!
  */
-void gc(Thread *thread);
+void gc();
 
 struct Thread {
     EmojicodeCoin *tokenStream;
@@ -50,10 +53,13 @@ struct Thread {
     Byte *stackBottom;
     Byte *stack;
     Byte *futureStack;
+    
+    Thread *threadBefore;
+    Thread *threadAfter;
 };
 
-Thread *mainThread;
-
+extern Thread *lastThread;
+extern int threads;
 
 //MARK: VM
 

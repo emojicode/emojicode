@@ -9,18 +9,6 @@
 #include "Emojicode.h"
 #include <string.h>
 
-Thread* allocateThread() {
-#define stackSize (sizeof(StackFrame) + 4 * sizeof(Something)) * 10000 //ca. 400 KB
-    Thread *thread = malloc(sizeof(Thread));
-    thread->stackLimit = malloc(stackSize);
-    thread->returned = false;
-    if (!thread->stackLimit) {
-        error("Could not allocate stack!");
-    }
-    thread->futureStack = thread->stack = thread->stackBottom = thread->stackLimit + stackSize - 1;
-    return thread;
-}
-
 Something* stackReserveFrame(void *this, uint8_t variableCount, Thread *thread){
     StackFrame *sf = (StackFrame *)(thread->futureStack - (sizeof(StackFrame) + sizeof(Something) * variableCount));
     if ((Byte *)sf < thread->stackLimit) {

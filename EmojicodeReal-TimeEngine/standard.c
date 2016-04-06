@@ -11,6 +11,7 @@
 #include <math.h>
 #include <inttypes.h>
 #include <time.h>
+#include <pthread.h>
 #include "Emojicode.h"
 #include "EmojicodeString.h"
 #include "EmojicodeList.h"
@@ -60,11 +61,6 @@ static Something systemCWD(Thread *thread){
     getcwd(path, sizeof(path));
     
     return somethingObject(stringFromChar(path));
-}
-
-static Something sleepThread(Thread *thread){
-    sleep((unsigned int)stackGetVariable(0, thread).raw);
-    return NOTHINGNESS;
 }
 
 static Something systemTime(Thread *thread) {
@@ -131,6 +127,59 @@ static Something systemSystem(Thread *thread) {
     u8_toucs(characters(string), len, buffer->value, bufferUsedSize);
     
     return stackGetVariable(0, thread);
+}
+
+//MARK: Threads
+
+void* threadStarter(void *threadv) {
+    Thread *thread = threadv;
+    Object *callable = stackGetThis(thread);
+    stackPop(thread);
+    executeCallableExtern(callable, NULL, thread);
+    removeThread(thread);
+    return NULL;
+}
+
+static Something threadJoin(Thread *thread) {
+    allowGC();
+    bool l = pthread_join(*(pthread_t *)((Object *)stackGetThis(thread))->value, NULL) == 0;
+    disallowGCAndPauseIfNeeded();
+    return l ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+}
+
+static Something threadSleep(Thread *thread){
+    sleep((unsigned int)stackGetVariable(0, thread).raw);
+    return NOTHINGNESS;
+}
+
+static void initThread(Thread *thread) {
+    Thread *t = allocateThread();
+    stackPush(stackGetVariable(0, thread).object, 0, 0, t);
+    pthread_create((pthread_t *)((Object *)stackGetThis(thread))->value, NULL, threadStarter, t);
+}
+
+static void initMutex(Thread *thread) {
+    pthread_mutex_init(((Object *)stackGetThis(thread))->value, NULL);
+}
+
+static Something mutexLock(Thread *thread) {
+    while (pthread_mutex_trylock(((Object *)stackGetThis(thread))->value) != 0) {
+        //TODO: Obviously stupid, but this is the only safe way. If pthread_mutex_lock was used,
+        //the thread would be block, and the GC could cause a deadlock. allowGC, however, would
+        //allow moving this mutex – obviously not a good idea either when using pthread_mutex_lock.
+        pauseForGC(NULL);
+        usleep(10);
+    }
+    return NOTHINGNESS;
+}
+
+static Something mutexUnlock(Thread *thread) {
+    pthread_mutex_unlock(((Object *)stackGetThis(thread))->value);
+    return NOTHINGNESS;
+}
+
+static Something mutexTryLock(Thread *thread) {
+    return pthread_mutex_trylock(((Object *)stackGetThis(thread))->value) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
 //MARK: Error
@@ -340,6 +389,17 @@ MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol) {
         case 0x23E9:
             // case 0x1F43D: //pig nose
             return rangeGet;
+        case 0x1f488: //💈
+            return threadJoin;
+        case 0x1f510: //🔐
+            switch (symbol) {
+                case 0x1f512: //🔒
+                    return mutexLock;
+                case 0x1f513: //🔓
+                    return mutexUnlock;
+                case 0x1f510: //🔐
+                    return mutexTryLock;
+            }
     }
     return NULL;
 }
@@ -356,6 +416,10 @@ InitializerHandler handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar 
             return newErrorBridge;
         case 0x1F36F: //Only dictionary contstructor 0x1F438
             return bridgeDictionaryInit;
+        case 0x1f488: //💈
+            return initThread;
+        case 0x1f510: //🔐
+            return initMutex;
         case 0x23E9:
             switch (symbol) {
                 case 0x23E9:
@@ -377,8 +441,6 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                     return systemGetEnv;
                 case 0x1F30D:
                     return systemCWD;
-                case 0x23f3: //⏳
-                    return sleepThread;
                 case 0x1f570: //🕰
                     return systemTime;
                 case 0x1f39e: //🎞
@@ -418,6 +480,9 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
                 case 0x1f3c4: //🏄
                     return mathLn;
             }
+        case 0x1f488: //💈
+            //case 0x23f3: //⏳
+            return threadSleep;
     }
     return NULL;
 }
@@ -438,6 +503,10 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
             return sizeof(CapturedMethodCall);
         case 0x23E9:
             return sizeof(EmojicodeRange);
+        case 0x1f488: //💈
+            return sizeof(pthread_t);
+        case 0x1f510: //🔐
+            return sizeof(pthread_mutex_t);
     }
     return 0;
 }

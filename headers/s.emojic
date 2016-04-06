@@ -465,14 +465,6 @@
   🐇🐖 🌍 ➡️ 🔡 📻
 
   🌮
-    Suspends the calling thread from execution for at least the number of
-    seconds specified by the arguments *seconds*.
-
-    >!N This method was named 🕰 in 0.2 Beta 4!
-  🌮
-  🐇🐖 ⏳ seconds 🚂 📻
-
-  🌮
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
   🌮
   🐇🐖 🕰 ➡️ 🚂📻
@@ -591,4 +583,49 @@
     >!N Not available in 0.2 Beta 4
   🌮
   🐇🐖 🏄 x 🚀 ➡️ 🚀 📻
+🍉
+
+🌮
+  Represents an execution thread of the program.
+🌮
+🌍 🐇 💈 🍇
+  🌮
+    Creates an new thread and calls the given callable `callable` on the newly
+    created thread.
+  🌮
+  🐈 🆕 callable 🍇🍉 📻
+  🌮
+    Blocks the calling thread until this thread has finished work.
+  🌮
+  🐖 🛂 📻
+  🌮
+    Suspends the calling thread from execution for at least the number of
+    seconds specified by the arguments *seconds*.
+  🌮
+  🐇🐖 ⏳ seconds 🚂 📻
+🍉
+
+🌮
+  🔐 represents a mutex. A mutex is a simple semaphore that can be used to
+  coordinate access to shared data from multiple concurrent threads.
+🌮
+🌍 🐇 🔐 🍇
+  🌮
+    Creates an new mutex.
+  🌮
+  🐈 🆕 📻
+  🌮
+    Attempts to lock the mutex and waits until it becomes available if it is
+    already locked.
+  🌮
+  🐖 🔒 📻
+  🌮
+    Unlocks the mutex.
+  🌮
+  🐖 🔓 📻
+  🌮
+    Attempts to lock the mutex and returns immediately. Returns 👍 if the mutex
+    could be locked.
+  🌮
+  🐖 🔐 ➡️ 👌 📻
 🍉
