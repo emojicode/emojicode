@@ -99,6 +99,8 @@ enum Emojis {
     E_NO_ENTRY_SIGN = 0x1F6AB,
     E_HEAVY_LARGE_CIRCLE = 0x2B55,
     E_ANGER_SYMBOL = 0x1F4A2,
+    E_DANGO = 0x1F361,
+    E_DOWN_POINTING_SMALL_RED_TRIANGLE = 0x1F53D,
 };
 
 #endif /* Emojis_h */

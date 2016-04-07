@@ -502,10 +502,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             else if(iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), typeContext)) {
                 placeholder.write(0x64);
                 writer.writeCoin(nextVariableID()); //Internally needed
-                Type itemType = typeSomething;
-                if(iteratee.type == TT_CLASS && iteratee.eclass->ownGenericArgumentCount == 1) {
-                    itemType = iteratee.genericArguments[iteratee.eclass->ownGenericArgumentCount - iteratee.eclass->genericArgumentCount];
-                }
+                Type iterator = iteratee.eclass->getMethod(E_DANGO)->returnType.resolveOn(iteratee);
+                Type itemType = iterator.eclass->getMethod(E_DOWN_POINTING_SMALL_RED_TRIANGLE)->returnType.resolveOn(iterator);
                 scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, true, variableToken));
             }
             else {
