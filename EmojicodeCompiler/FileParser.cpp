@@ -539,16 +539,13 @@ void parseFile(const char *path, Package *pkg){
                 
                 auto fileString = pathString->value.utf8CString();
                 
-                char *str;
+                char *str = fileString;
                 const char *lastSlash = strrchr(path, '/');
-                if (lastSlash == nullptr) {
-                    asprintf(&str, "%s", fileString);
-                }
-                else {
+                if (lastSlash != nullptr) {
                     const char *directory = strndup(path, lastSlash - path);
                     asprintf(&str, "%s/%s", directory, fileString);
+                    delete [] fileString;
                 }
-                delete [] fileString;
                 
                 parseFile(str, pkg);
 
