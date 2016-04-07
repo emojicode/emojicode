@@ -53,6 +53,7 @@ const char* Token::stringNameForType(TokenType type) {
         case BOOLEAN_TRUE:
             return "Boolean True";
         case DOUBLE:
+            return "Double";
         case INTEGER:
             return "Integer";
         case STRING:
