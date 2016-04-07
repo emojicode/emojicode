@@ -59,6 +59,9 @@ public:
      * @see consumeToken(TokenType type)
      */
     void forceType(TokenType type) const;
+    
+    void validateInteger(bool hex) const;
+    void validateDouble() const;
 };
 
 const Token* lex(FILE *f, const char* fileName);

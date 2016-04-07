@@ -53,7 +53,6 @@ const char* Token::stringNameForType(TokenType type) {
         case BOOLEAN_TRUE:
             return "Boolean True";
         case DOUBLE:
-            return "Float";
         case INTEGER:
             return "Integer";
         case STRING:
@@ -80,6 +79,18 @@ const char* Token::stringNameForType(TokenType type) {
 void Token::forceType(TokenType type) const {
     if (this->type != type){
         compilerError(this, "Expected token %s but instead found %s.", stringNameForType(type), this->stringName());
+    }
+}
+
+void Token::validateInteger(bool isHex) const {
+    if (isHex && value.size() < 3) {
+        compilerError(this, "Expected a digit after integer literal prefix.");
+    }
+}
+
+void Token::validateDouble() const {
+    if (value.back() == '.') {
+        compilerError(this, "Expected a digit after decimal seperator.");
     }
 }
 
@@ -211,8 +222,7 @@ const Token* lex(FILE *f, const char *filename) {
                 token->value.push_back(c);
                 continue;
             }
-            else if((c == 'x' || c == 'X') && token->value.size() == 1 && token->value[0] == 48){ //Don't forget the 0
-                //An X or x
+            else if((c == 'x' || c == 'X') && token->value.size() == 1 && token->value[0] == '0'){
                 isHex = true;
                 token->value.push_back(c);
                 continue;
@@ -221,6 +231,7 @@ const Token* lex(FILE *f, const char *filename) {
                 continue;
             }
             else {
+                token->validateInteger(isHex);
                 //An unexpected character, seems to be a new token
                 nextToken = true;
             }
@@ -232,8 +243,9 @@ const Token* lex(FILE *f, const char *filename) {
                 continue;
             }
             else {
+                token->validateDouble();
                 //An unexpected character, seems to be a new token
-                nextToken = 1;
+                nextToken = true;
             }
         }
         else if(token->type == SYMBOL && !nextToken){
@@ -242,7 +254,6 @@ const Token* lex(FILE *f, const char *filename) {
             continue;
         }
         
-        /* Do we need a new token? */
         if (nextToken){
             token = new Token(token);
             nextToken = false;
@@ -260,7 +271,6 @@ const Token* lex(FILE *f, const char *filename) {
             token->type = DOCUMENTATION_COMMENT;
         }
         else if ((47 < c && c < 58) || c == 45 || c == 43){
-            /* We've found a number or a plus or minus sign. First assume it's an integer. */
             token->type = INTEGER;
             token->position = sourcePosition;
             token->value.push_back(c);
@@ -308,6 +318,12 @@ const Token* lex(FILE *f, const char *filename) {
     }
     if (!nextToken && token->type == COMMENT && !oneLineComment){
         compilerError(token, "Expected 👵 but found end of file instead.");
+    }
+    if (token->type == INTEGER) {
+        token->validateInteger(isHex);
+    }
+    else if(token->type == DOUBLE) {
+        token->validateDouble();
     }
 
 #undef isIdentifier
