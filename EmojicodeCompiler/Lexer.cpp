@@ -323,7 +323,7 @@ const Token* lex(FILE *f, const char *filename) {
     if (token->type == INTEGER) {
         token->validateInteger(isHex);
     }
-    else if(token->type == DOUBLE) {
+    else if(token->type == DOUBLE) {
         token->validateDouble();
     }
 
