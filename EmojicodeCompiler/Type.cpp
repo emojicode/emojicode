@@ -34,7 +34,9 @@ Type Type::typeConstraintForReference(TypeContext ct){
     while (t.type == TT_REFERENCE) {
         t = ct.normalType.eclass->genericArgumentConstraints[t.reference];
     }
-    t.optional = optional;
+    if (optional) {
+        t.optional = true;
+    }
     return t;
 }
 
@@ -145,7 +147,10 @@ Type Type::resolveOn(TypeContext typeContext){
             t = tn;
         }
     }
-    t.optional = optional;
+    
+    if (optional) {
+        t.optional = true;
+    }
     
     if (t.type == TT_CLASS) {
         for (int i = 0; i < t.eclass->genericArgumentCount; i++) {
