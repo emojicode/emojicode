@@ -47,7 +47,7 @@ void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token *token, const
         }
     }
     else if (p->access == PROTECTED) {
-        if (typeContext.normalType.type != TT_CLASS || typeContext.normalType.eclass->inheritsFrom(p->eclass)) {
+        if (typeContext.normalType.type != TT_CLASS || !typeContext.normalType.eclass->inheritsFrom(p->eclass)) {
             ecCharToCharStack(p->name, nm);
             compilerError(token, "%s %s is 🔐.", type, nm);
         }
