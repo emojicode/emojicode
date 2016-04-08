@@ -27,7 +27,7 @@
   Enumerators conform [🔂](t5535756578.html) and return themselves in the 🍡
   method.
 🌮
-🌍 🐇 🍡🐚Element ⚪️ 🍇🍉
+🌍 🐇 🍡 🍇🍉
 🌮
   The 🍯 class represents a dictionary. [Read more in the
   language reference.](../../reference/the-s-package.html#-dictionaries)
@@ -45,7 +45,7 @@
     This method must return an instance of a subclass of
     [🍡](t5535657185.html) which can be used to enumerate this instance.
   🌮
-  🐖 🍡 ➡️ 🍡🐚⚪️
+  🐖 🍡 ➡️ 🍡
 🍉
 
 🐋 🔡 🍇
@@ -369,7 +369,7 @@
     This method is implemented in order to confrom to [🔂](t5535756578.html).
     Enumerators should return themselves.
   🌮
-  🐖 🍡 ➡️ 🍡🐚Element 🍇
+  🐖 🍡 ➡️ 🍡 🍇
     🍎 🐕
   🍉
 🍉

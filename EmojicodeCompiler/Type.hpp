@@ -79,6 +79,8 @@ public:
     
     bool compatibleTo(Type to, TypeContext tc);
     
+    bool identicalTo(Type to);
+    
     /** Returns the name of the package to which this type belongs. */
     const char* typePackage();
     

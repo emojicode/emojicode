@@ -65,7 +65,7 @@ bool Type::compatibleTo(Type to, TypeContext ct){
         if ((to.optional || !this->optional) && this->eclass->inheritsFrom(to.eclass)) {
             if (to.eclass->ownGenericArgumentCount) {
                 for (int l = to.eclass->ownGenericArgumentCount, i = to.eclass->genericArgumentCount - l; i < l; i++) {
-                    if (!this->genericArguments[i].compatibleTo(to.genericArguments[i], ct)) {
+                    if (!this->genericArguments[i].identicalTo(to.genericArguments[i])) {
                         return false;
                     }
                 }
@@ -127,6 +127,51 @@ bool Type::compatibleTo(Type to, TypeContext ct){
     }
     else {
         return (to.optional || !this->optional) && this->type == to.type;
+    }
+    return false;
+}
+
+bool Type::identicalTo(Type to) {
+    if (type == to.type) {
+        switch (type) {
+            case TT_CLASS:
+                if (eclass == to.eclass) {
+                    if (to.eclass->ownGenericArgumentCount) {
+                        for (int l = to.eclass->ownGenericArgumentCount, i = to.eclass->genericArgumentCount - l; i < l; i++) {
+                            if (!this->genericArguments[i].identicalTo(to.genericArguments[i])) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            case TT_CALLABLE:
+                if (this->genericArguments[0].identicalTo(to.genericArguments[0]) && to.arguments == this->arguments) {
+                    for (int i = 1; i <= to.arguments; i++) {
+                        if (!to.genericArguments[i].identicalTo(this->genericArguments[i])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            case TT_ENUM:
+                return eenum == to.eenum;
+            case TT_PROTOCOL:
+                return protocol == to.protocol;
+            case TT_REFERENCE:
+            case TT_LOCAL_REFERENCE:
+                return reference == to.reference;
+            case TT_DOUBLE:
+            case TT_INTEGER:
+            case TT_SYMBOL:
+            case TT_SOMETHING:
+            case TT_BOOLEAN:
+            case TT_SOMEOBJECT:
+            case TT_NOTHINGNESS:
+                return true;
+        }
     }
     return false;
 }
