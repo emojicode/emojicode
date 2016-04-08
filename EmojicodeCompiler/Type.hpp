@@ -44,10 +44,6 @@ enum TypeDynamism {
 struct TypeContext;
 class Procedure;
 
-class TypeDefinition {
-    
-};
-
 struct Type {
 public:
     /** Reads a type name and stores it into the given pointers. */

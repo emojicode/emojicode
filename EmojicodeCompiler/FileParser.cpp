@@ -122,8 +122,7 @@ void parseProtocol(Package *pkg, const Token *documentationToken, bool exported)
         compilerError(classNameToken, "You exceeded the limit of 65,535 protocols.");
     }
     
-    auto protocol = new Protocol(name, index++, pkg);
-    protocol->documentationToken = documentationToken;
+    auto protocol = new Protocol(name, index++, pkg, documentationToken);
     
     pkg->registerType(Type(protocol, false), name, enamespace);
     if (exported) {
@@ -419,7 +418,7 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
     if (requiredInitializers.size()) {
         Initializer *c = requiredInitializers[0];
         ecCharToCharStack(c->name, name);
-        compilerError(eclass->classBegin, "Required initializer %s was not implemented.", name);
+        compilerError(eclass->classBeginToken(), "Required initializer %s was not implemented.", name);
     }
 }
 
@@ -527,7 +526,7 @@ void parseFile(const char *path, Package *pkg){
                 auto eclass = type.eclass;
                 
                 //Native extensions are allowed if the eclass was defined in this package.
-                parseClassBody(eclass, pkg, nullptr, eclass->package == pkg);
+                parseClassBody(eclass, pkg, nullptr, eclass->package() == pkg);
                 continue;
             }
             case E_RABBIT:

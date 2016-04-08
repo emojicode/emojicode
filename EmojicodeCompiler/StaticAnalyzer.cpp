@@ -19,7 +19,7 @@
 void analyzeClass(Type classType, Writer &writer){
     auto eclass = classType.eclass;
     
-    writer.writeEmojicodeChar(eclass->name);
+    writer.writeEmojicodeChar(eclass->name());
     if(eclass->superclass){
         writer.writeUInt16(eclass->superclass->index);
     }
@@ -72,7 +72,7 @@ void analyzeClass(Type classType, Writer &writer){
     
     if (eclass->instanceVariables.size() > 0 && eclass->initializerList.size() == 0) {
         auto str = classType.toString(typeNothingness, true);
-        compilerWarning(eclass->classBegin, "Class %s defines %d instances variables but has no initializers.", str.c_str(), eclass->instanceVariables.size());
+        compilerWarning(eclass->classBeginToken(), "Class %s defines %d instances variables but has no initializers.", str.c_str(), eclass->instanceVariables.size());
     }
     
     writer.writeUInt16(eclass->protocols().size());
@@ -97,13 +97,13 @@ void analyzeClass(Type classType, Writer &writer){
             writer.writeUInt16(protocol->methods().size());
             
             for (auto method : protocol->methods()) {
-                Method *clm = eclass->getMethod(method->name);
+                Method *clm = eclass->lookupMethod(method->name);
                 
                 if (clm == nullptr) {
                     auto className = classType.toString(typeNothingness, true);
                     auto protocolName = Type(protocol, false).toString(typeNothingness, true);
                     ecCharToCharStack(method->name, ms);
-                    compilerError(eclass->classBegin, "Class %s does not agree to protocol %s: Method %s is missing.", className.c_str(), protocolName.c_str(), ms);
+                    compilerError(eclass->classBeginToken(), "Class %s does not agree to protocol %s: Method %s is missing.", className.c_str(), protocolName.c_str(), ms);
                 }
                 
                 writer.writeUInt16(clm->vti);
@@ -156,7 +156,7 @@ void analyzeClassesAndWrite(FILE *fout){
         Type classType = Type(eclass);
         
         for(auto method : eclass->methodList){
-            Method *superMethod = eclass->superclass->getMethod(method->name);
+            Method *superMethod = eclass->superclass->lookupMethod(method->name);
 
             method->checkOverride(superMethod);
             if (superMethod){
@@ -168,7 +168,7 @@ void analyzeClassesAndWrite(FILE *fout){
             }
         }
         for(auto clMethod : eclass->classMethodList){
-            ClassMethod *superMethod = eclass->superclass->getClassMethod(clMethod->name);
+            ClassMethod *superMethod = eclass->superclass->lookupClassMethod(clMethod->name);
             
             clMethod->checkOverride(superMethod);
             if (superMethod){
@@ -183,7 +183,7 @@ void analyzeClassesAndWrite(FILE *fout){
         auto subRequiredInitializerNextVti = eclass->superclass ? eclass->superclass->requiredInitializerList.size() : 0;
         eclass->nextInitializerVti += eclass->requiredInitializerList.size();
         for(auto initializer : eclass->initializerList){
-            Initializer *superInit = eclass->superclass->getInitializer(initializer->name);
+            Initializer *superInit = eclass->superclass->lookupInitializer(initializer->name);
             
             initializer->checkOverride(superInit);
             
@@ -269,5 +269,5 @@ void analyzeClassesAndWrite(FILE *fout){
     }
     
     writer.writeUInt16(startingFlag.eclass->index);
-    writer.writeUInt16(startingFlag.eclass->getClassMethod(E_CHEQUERED_FLAG)->vti);
+    writer.writeUInt16(startingFlag.eclass->lookupClassMethod(E_CHEQUERED_FLAG)->vti);
 }

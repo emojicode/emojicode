@@ -11,13 +11,26 @@
 
 #include "Package.hpp"
 
+class TypeDefinition {
+public:
+    /** Returns a documentation token documenting this type definition or @c nullptr. */
+    const Token* documentationToken() const { return documentationToken_; }
+    /** Returns the name of the type definition. */
+    EmojicodeChar name() const { return name_; }
+    /** Returns the package in which this type was defined. */
+    Package* package() const { return package_; }
+protected:
+    TypeDefinition(EmojicodeChar name, Package *p, const Token *dToken) : name_(name), package_(p), documentationToken_(dToken) {}
+    const Token *documentationToken_;
+    EmojicodeChar name_;
+    Package *package_;
+};
+
 class Class : public TypeDefinition {
 public:
     Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken)
-        : name(name), classBegin(classBegin), package(pkg), documentationToken(dToken) {}
+        : classBeginToken_(classBegin), TypeDefinition(name, pkg, dToken) {}
     
-    /** Self explaining */
-    EmojicodeChar name;
     /** Whether this eclass eligible for initializer inheritance. */
     bool inheritsContructors = false;
     
@@ -25,6 +38,8 @@ public:
     Class *superclass = nullptr;
     
     uint16_t index;
+    
+    const Token* classBeginToken() const { return classBeginToken_; }
     
     /** The variable names. */
     std::vector<Variable *> instanceVariables;
@@ -34,9 +49,6 @@ public:
     std::vector<Initializer *> initializerList;
     std::vector<ClassMethod *> classMethodList;
     std::vector<Initializer *> requiredInitializerList;
-    
-    const Token *classBegin;
-    const Token *documentationToken;
     
     uint16_t nextMethodVti;
     uint16_t nextClassMethodVti;
@@ -53,21 +65,25 @@ public:
     /** Generic type arguments as variables */
     std::map<EmojicodeString, Type> ownGenericArgumentVariables;
     
-    /** The package in which this eclass was defined. */
-    Package *package;
-    
     /** Returns true if @c a or a superclass of @c a conforms to @c to. */
     bool conformsTo(Protocol *to);
     
     /** Returns true if @c a inherits from eclass @c from */
     bool inheritsFrom(Class *from);
     
-    /** Returns a method of object by name */
-    Method* getMethod(EmojicodeChar name);
-    /** Gets a initializer by its name returns @c nullptr if the eclass does not have an initializer with this name */
-    Initializer* getInitializer(EmojicodeChar name);
-    /** Returns a method of object by name */
-    ClassMethod* getClassMethod(EmojicodeChar name);
+    /** Returns a method by the given identifier token or issues an error if the method does not exist. */
+    Method* getMethod(const Token *token, Type type, TypeContext typeContext);
+    /** Returns an initializer by the given identifier token or issues an error if the initializer does not exist. */
+    Initializer* getInitializer(const Token *token, Type type, TypeContext typeContext);
+    /** Returns a method by the given identifier token or issues an error if the method does not exist. */
+    ClassMethod* getClassMethod(const Token *token, Type type, TypeContext typeContext);
+    
+    /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
+    Method* lookupMethod(EmojicodeChar name);
+    /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
+    Initializer* lookupInitializer(EmojicodeChar name);
+    /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
+    ClassMethod* lookupClassMethod(EmojicodeChar name);
     
     void addMethod(Method *method);
     void addInitializer(Initializer *method);
@@ -82,20 +98,16 @@ private:
     std::map<EmojicodeChar, Initializer *> initializers;
     
     std::vector<Protocol *> protocols_;
+    
+    const Token *classBeginToken_;
 };
 
 class Protocol : public TypeDefinition {
 public:
-    Protocol(EmojicodeChar n, uint_fast16_t i, Package *pkg) : name(n), package(pkg), index(i) {}
-    
-    /** The name of the protocol. */
-    EmojicodeChar name;
-    /** The package in which this protocol was defined. */
-    Package *package;
+    Protocol(EmojicodeChar name, uint_fast16_t i, Package *pkg, const Token *dt)
+        : index(i), TypeDefinition(name, pkg, dt) {}
     
     uint_fast16_t index;
-    
-    const Token *documentationToken;
     
     Method* getMethod(EmojicodeChar c);
     void addMethod(Method *method);
@@ -110,14 +122,10 @@ private:
 
 class Enum : public TypeDefinition {
 public:
-    Enum(EmojicodeChar name, Package *package, const Token *dt) : name(name), package(package), documentationToken(dt) {}
+    Enum(EmojicodeChar name, Package *package, const Token *dt)
+        : TypeDefinition(name, package, dt) {}
     
-    EmojicodeChar name;
     std::map<EmojicodeChar, EmojicodeInteger> map;
-    /** The package in which this eclass was defined. */
-    Package *package;
-    
-    const Token *documentationToken;
     
     std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
     void addValueFor(EmojicodeChar c);

@@ -10,10 +10,11 @@
 #include "Class.hpp"
 #include "Procedure.hpp"
 #include "utf8.h"
+#include "Lexer.hpp"
 
-bool Class::conformsTo(Protocol *to){
-    for(Class *a = this; a != nullptr; a = a->superclass){
-        for(size_t i = 0; i < this->protocols_.size(); i++){
+bool Class::conformsTo(Protocol *to) {
+    for(Class *a = this; a != nullptr; a = a->superclass) {
+        for(size_t i = 0; i < this->protocols_.size(); i++) {
             if(a->protocols_[i] == to) {
                 return true;
             }
@@ -22,8 +23,8 @@ bool Class::conformsTo(Protocol *to){
     return false;
 }
 
-bool Class::inheritsFrom(Class *from){
-    for(Class *a = this; a != nullptr; a = a->superclass){
+bool Class::inheritsFrom(Class *from) {
+    for(Class *a = this; a != nullptr; a = a->superclass) {
         if(a == from) {
             return true;
         }
@@ -31,20 +32,30 @@ bool Class::inheritsFrom(Class *from){
     return false;
 }
 
-Initializer* Class::getInitializer(EmojicodeChar name){
-    for(auto eclass = this; eclass != nullptr; eclass = eclass->superclass){
+Initializer* Class::lookupInitializer(EmojicodeChar name) {
+    for(auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
         auto pos = eclass->initializers.find(name);
-        if(pos != eclass->initializers.end()){
+        if(pos != eclass->initializers.end()) {
             return pos->second;
         }
-        if(!eclass->inheritsContructors){ //Does this eclass inherit initializers?
+        if(!eclass->inheritsContructors) { //Does this eclass inherit initializers?
             break;
         }
     }
     return nullptr;
 }
 
-Method* Class::getMethod(EmojicodeChar name){
+Initializer* Class::getInitializer(const Token *token, Type type, TypeContext typeContext) {
+    auto initializer = lookupInitializer(token->value[0]);
+    if (initializer == nullptr) {
+        auto typeString = type.toString(typeContext, true);
+        ecCharToCharStack(token->value[0], initializerString);
+        compilerError(token, "%s has no initializer %s.", typeString.c_str(), initializerString);
+    }
+    return initializer;
+}
+
+Method* Class::lookupMethod(EmojicodeChar name){
     for(auto eclass = this; eclass != nullptr; eclass = eclass->superclass){
         auto pos = eclass->methods.find(name);
         if(pos != eclass->methods.end()){
@@ -54,7 +65,17 @@ Method* Class::getMethod(EmojicodeChar name){
     return nullptr;
 }
 
-ClassMethod* Class::getClassMethod(EmojicodeChar name){
+Method* Class::getMethod(const Token *token, Type type, TypeContext typeContext) {
+    auto method = lookupMethod(token->value[0]);
+    if (method == nullptr){
+        auto eclass = type.toString(typeContext, true);
+        ecCharToCharStack(token->value[0], method);
+        compilerError(token, "%s has no method %s", eclass.c_str(), method);
+    }
+    return method;
+}
+
+ClassMethod* Class::lookupClassMethod(EmojicodeChar name){
     for(auto eclass = this; eclass != nullptr; eclass = eclass->superclass){
         auto pos = eclass->classMethods.find(name);
         if(pos != eclass->classMethods.end()){
@@ -62,6 +83,16 @@ ClassMethod* Class::getClassMethod(EmojicodeChar name){
         }
     }
     return nullptr;
+}
+
+ClassMethod* Class::getClassMethod(const Token *token, Type type, TypeContext typeContext) {
+    auto method = lookupClassMethod(token->value[0]);
+    if (method == nullptr){
+        auto eclass = type.toString(typeContext, true);
+        ecCharToCharStack(token->value[0], method);
+        compilerError(token, "%s has no class method %s", eclass.c_str(), method);
+    }
+    return method;
 }
 
 template <typename T>

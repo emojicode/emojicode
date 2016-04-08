@@ -413,11 +413,11 @@ Type CommonTypeFinder::getCommonType(const Token *warningToken){
 const char* Type::typePackage(){
     switch (this->type) {
         case TT_CLASS:
-            return this->eclass->package->name();
+            return this->eclass->package()->name();
         case TT_PROTOCOL:
-            return this->protocol->package->name();
+            return this->protocol->package()->name();
         case TT_ENUM:
-            return this->eenum->package->name();
+            return this->eenum->package()->name();
         case TT_INTEGER:
         case TT_NOTHINGNESS:
         case TT_BOOLEAN:
@@ -454,7 +454,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
     
     switch (type.type) {
         case TT_CLASS: {
-            stringAppendEc(type.eclass->name, string);
+            stringAppendEc(type.eclass->name(), string);
             
             if (typeContext.normalType.type == TT_NOTHINGNESS) {
                 return;
@@ -469,10 +469,10 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             return;
         }
         case TT_PROTOCOL:
-            stringAppendEc(type.protocol->name, string);
+            stringAppendEc(type.protocol->name(), string);
             return;
         case TT_ENUM:
-            stringAppendEc(type.eenum->name, string);
+            stringAppendEc(type.eenum->name(), string);
             return;
         case TT_INTEGER:
             stringAppendEc(E_STEAM_LOCOMOTIVE, string);

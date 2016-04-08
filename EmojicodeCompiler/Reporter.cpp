@@ -137,15 +137,15 @@ void report(Package *package){
         
         printf("{");
         
-        ecCharToCharStack(eclass->name, className);
+        ecCharToCharStack(eclass->name(), className);
         printf("\"name\": \"%s\",", className);
 
         reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentConstraints, eclass->superGenericArguments.size(), TypeContext(eclass));
-        reportDocumentation(eclass->documentationToken);
+        reportDocumentation(eclass->documentationToken());
         
         if (eclass->superclass) {
-            ecCharToCharStack(eclass->superclass->name, superClassName);
-            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", eclass->superclass->package->name(), superClassName);
+            ecCharToCharStack(eclass->superclass->name(), superClassName);
+            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", eclass->superclass->package()->name(), superClassName);
         }
         
         printf("\"methods\": [");
@@ -188,10 +188,10 @@ void report(Package *package){
         
         printedEnum = true;
         
-        ecCharToCharStack(eenum->name, enumName);
+        ecCharToCharStack(eenum->name(), enumName);
         printf("\"name\": \"%s\",", enumName);
         
-        reportDocumentation(eenum->documentationToken);
+        reportDocumentation(eenum->documentationToken());
         
         bool printedValue = false;
         printf("\"values\": [");
@@ -216,10 +216,10 @@ void report(Package *package){
         printedProtocol = true;
         printf("{");
         
-        ecCharToCharStack(protocol->name, protocolName);
+        ecCharToCharStack(protocol->name(), protocolName);
         printf("\"name\": \"%s\",", protocolName);
         
-        reportDocumentation(protocol->documentationToken);
+        reportDocumentation(protocol->documentationToken());
         
         printf("\"methods\": [");
         for(size_t i = 0; i < protocol->methods().size(); i++){

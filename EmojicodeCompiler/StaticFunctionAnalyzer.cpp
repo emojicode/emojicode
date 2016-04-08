@@ -502,8 +502,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             else if(iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), typeContext)) {
                 placeholder.write(0x64);
                 writer.writeCoin(nextVariableID()); //Internally needed
-                Type iterator = iteratee.eclass->getMethod(E_DANGO)->returnType.resolveOn(iteratee);
-                Type itemType = iterator.eclass->getMethod(E_DOWN_POINTING_SMALL_RED_TRIANGLE)->returnType.resolveOn(iterator);
+                Type iterator = iteratee.eclass->lookupMethod(E_DANGO)->returnType.resolveOn(iteratee);
+                Type itemType = iterator.eclass->lookupMethod(E_DOWN_POINTING_SMALL_RED_TRIANGLE)->returnType.resolveOn(iterator);
                 scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, true, variableToken));
             }
             else {
@@ -558,7 +558,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             auto v = type.eenum->getValueFor(name->value[0]);
             if (!v.first) {
                 ecCharToCharStack(name->value[0], valueName);
-                ecCharToCharStack(type.eenum->name, enumName);
+                ecCharToCharStack(type.eenum->name(), enumName);
                 compilerError(name, "%s does not have a member named %s.", enumName, valueName);
             }
             else if (v.second > UINT32_MAX) {
@@ -594,14 +594,9 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             //The initializer name
             const Token *name = consumeToken(IDENTIFIER);
             
-            Initializer *initializer = type.eclass->getInitializer(name->value[0]);
+            Initializer *initializer = type.eclass->getInitializer(name, type, typeContext);
             
-            if (initializer == nullptr) {
-                auto typeString = type.toString(typeContext, true);
-                ecCharToCharStack(name->value[0], initializerString);
-                compilerError(name, "%s has no initializer %s.", typeString.c_str(), initializerString);
-            }
-            else if (dynamic && !initializer->required) {
+            if (dynamic && !initializer->required) {
                 compilerError(name, "Only required initializers can be used with 🐀.");
             }
             
@@ -660,14 +655,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             const Token *initializerToken = consumeToken(IDENTIFIER);
             
-            Initializer *initializer = eclass->superclass->getInitializer(initializerToken->value[0]);
-            
-            if (initializer == nullptr) {
-                ecCharToCharStack(initializerToken->value[0], initializerString);
-                compilerError(initializerToken, "Cannot find superinitializer %s.", initializerString);
-                break;
-            }
-            
+            auto initializer = eclass->superclass->getInitializer(initializerToken, eclass, typeContext);
             initializer->deprecatedWarning(initializerToken);
             
             writer.writeCoin(initializer->vti);
@@ -774,14 +762,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "🍻 may only be used on 🍬.");
             }
             
-            Method *method = type.eclass->getMethod(methodToken->value[0]);
-            
-            if(method == nullptr){
-                auto eclass = type.toString(typeContext, true);
-                ecCharToCharStack(methodToken->value[0], method);
-                compilerError(token, "%s has no method %s", eclass.c_str(), method);
-            }
-            
+            auto method = type.eclass->getMethod(methodToken, type, typeContext);
             method->deprecatedWarning(methodToken);
             
             writer.writeCoin(method->vti);
@@ -814,14 +795,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             writer.writeCoin(type.eclass->index);
             
-            ClassMethod *method = type.eclass->getClassMethod(methodToken->value[0]);
-            
-            if (method == nullptr) {
-                auto classString = type.toString(typeContext, true);
-                ecCharToCharStack(methodToken->value[0], methodString);
-                compilerError(token, "%s has no class method %s", classString.c_str(), methodString);
-            }
-            
+            auto method = type.eclass->getClassMethod(methodToken, type, typeContext);
             method->deprecatedWarning(methodToken);
             
             writer.writeCoin(method->vti);
@@ -841,16 +815,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Type type = parse(consumeToken(), token);
             
-            Method *method;
             if (type.type != TT_CLASS) {
                 compilerError(token, "You can only capture method calls on class instances.");
             }
-            method = type.eclass->getMethod(methodName->value[0]);
             
-            if (!method) {
-                compilerError(token, "Method is non-existent.");
-            }
-            
+            auto method = type.eclass->getMethod(methodName, type, typeContext);
             method->deprecatedWarning(methodName);
             
             writer.writeCoin(method->vti);
@@ -911,11 +880,12 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             }
             
             Class *superclass = typeContext.normalType.eclass->superclass;
-            Method *method = superclass->getMethod(nameToken->value[0]);
             
-            if (!method) {
-                compilerError(token, "Method is non-existent.");
+            if (superclass == nullptr) {
+                compilerError(token, "Class has no superclass.");
             }
+            
+            Method *method = superclass->getMethod(nameToken, superclass, typeContext);
             
             writer.writeCoin(0x5);
             writer.writeCoin(superclass->index);
@@ -944,7 +914,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 method = type.protocol->getMethod(token->value[0]);
             }
             else if(type.type == TT_CLASS) {
-                method = type.eclass->getMethod(token->value[0]);
+                method = type.eclass->getMethod(token, type, typeContext);
             }
             else {
                 if(type.type == TT_BOOLEAN){
@@ -1070,12 +1040,6 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 ecCharToCharStack(token->value[0], method);
                 auto typeString = type.toString(typeContext, true);
                 compilerError(token, "Unknown primitive method %s for %s.", method, typeString.c_str());
-            }
-            
-            if(method == nullptr){
-                auto eclass = type.toString(typeContext, true);
-                ecCharToCharStack(token->value[0], method);
-                compilerError(token, "%s has no method %s.", eclass.c_str(), method);
             }
             
             if(type.type == TT_PROTOCOL){
