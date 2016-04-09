@@ -28,7 +28,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken,
 }
 
 void StaticFunctionAnalyzer::noReturnError(const Token *errorToken) {
-    if (callable.returnType.type != TT_NOTHINGNESS && !returned) {
+    if (callable.returnType.type() != TT_NOTHINGNESS && !returned) {
         compilerError(errorToken, "An explicit return is missing.");
     }
 }
@@ -39,15 +39,15 @@ void StaticFunctionAnalyzer::noEffectWarning(const Token *warningToken) {
     }
 }
 
-void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token *token, const char *type){
+void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token *token, const char *type) {
     if (p->access == PRIVATE) {
-        if (typeContext.normalType.type != TT_CLASS || p->eclass != typeContext.normalType.eclass) {
+        if (typeContext.normalType.type() != TT_CLASS || p->eclass != typeContext.normalType.eclass) {
             ecCharToCharStack(p->name, nm);
             compilerError(token, "%s %s is 🔒.", type, nm);
         }
     }
     else if (p->access == PROTECTED) {
-        if (typeContext.normalType.type != TT_CLASS || !typeContext.normalType.eclass->inheritsFrom(p->eclass)) {
+        if (typeContext.normalType.type() != TT_CLASS || !typeContext.normalType.eclass->inheritsFrom(p->eclass)) {
             ecCharToCharStack(p->name, nm);
             compilerError(token, "%s %s is 🔐.", type, nm);
         }
@@ -85,11 +85,11 @@ void StaticFunctionAnalyzer::checkArguments(Arguments arguments, TypeContext cal
     }
 }
 
-void StaticFunctionAnalyzer::writeCoinForScopesUp(uint8_t scopesUp, const Token *varName, EmojicodeCoin stack, EmojicodeCoin object){
-    if(scopesUp == 0){
+void StaticFunctionAnalyzer::writeCoinForScopesUp(uint8_t scopesUp, const Token *varName, EmojicodeCoin stack, EmojicodeCoin object) {
+    if (scopesUp == 0) {
         writer.writeCoin(stack);
     }
-    else if(scopesUp == 1){
+    else if (scopesUp == 1) {
         writer.writeCoin(object);
         usedSelf = true;
     }
@@ -98,11 +98,11 @@ void StaticFunctionAnalyzer::writeCoinForScopesUp(uint8_t scopesUp, const Token 
     }
 }
 
-uint8_t StaticFunctionAnalyzer::nextVariableID(){
+uint8_t StaticFunctionAnalyzer::nextVariableID() {
     return variableCount++;
 }
 
-void StaticFunctionAnalyzer::flowControlBlock(){
+void StaticFunctionAnalyzer::flowControlBlock() {
     scoper.currentScope()->changeInitializedBy(1);
     if (!inClassContext) {
         scoper.topScope()->changeInitializedBy(1);
@@ -111,7 +111,7 @@ void StaticFunctionAnalyzer::flowControlBlock(){
     flowControlDepth++;
     
     const Token *token = consumeToken(IDENTIFIER);
-    if (token->value[0] != E_GRAPES){
+    if (token->value[0] != E_GRAPES) {
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
     }
@@ -142,13 +142,13 @@ void StaticFunctionAnalyzer::flowControlReturnEnd(FlowControlReturn &fcr) {
     fcr.branches++;
 }
 
-void StaticFunctionAnalyzer::parseIfExpression(const Token *token){
+void StaticFunctionAnalyzer::parseIfExpression(const Token *token) {
     if (nextToken()->value[0] == E_SOFT_ICE_CREAM) {
         consumeToken();
         writer.writeCoin(0x3E);
         
         const Token *varName = consumeToken(VARIABLE);
-        if(scoper.currentScope()->getLocalVariable(varName) != nullptr){
+        if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
             compilerError(token, "Cannot redeclare variable.");
         }
         
@@ -173,7 +173,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
         compilerError(parentToken, "Unexpected end of function body.");
     }
     
-    switch(token->type){
+    switch (token->type) {
         case STRING: {
             writer.writeCoin(0x10);
             
@@ -235,7 +235,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
             uint8_t scopesUp;
             CompilerVariable *cv = scoper.getVariable(token, &scopesUp);
             
-            if(cv == nullptr){
+            if (cv == nullptr) {
                 const char *variableName = token->value.utf8CString();
                 compilerError(token, "Variable \"%s\" not defined.", variableName);
             }
@@ -262,9 +262,9 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
     compilerError(token, "Cannot determine expression’s return type.");
 }
 
-Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
-    if(token->value[0] != E_RED_APPLE){
-        //We need a chance to test whether the red apple’s return is used
+Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
+    if (token->value[0] != E_RED_APPLE) {
+        // We need a chance to test whether the red apple’s return is used
         effect = true;
     }
 
@@ -279,7 +279,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             Type t = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package);
             
             uint8_t id = nextVariableID();
-            scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, t.optional ? 1 : 0, false, varName));
+            scoper.currentScope()->setLocalVariable(varName,
+                                                    new CompilerVariable(t, id, t.optional ? 1 : 0, false, varName));
             
             return typeNothingness;
         }
@@ -288,9 +289,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             uint8_t scopesUp;
             CompilerVariable *cv = scoper.getVariable(varName, &scopesUp);
-            if(cv == nullptr){
-                //Not declared, declaring as local variable
-                
+            if (cv == nullptr) {
+                // Not declared, declaring as local variable
                 writer.writeCoin(0x1B);
                 
                 uint8_t id = nextVariableID();
@@ -317,7 +317,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_SOFT_ICE_CREAM: {
             const Token *varName = consumeToken(VARIABLE);
             
-            if(scoper.currentScope()->getLocalVariable(varName) != nullptr){
+            if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
                 compilerError(token, "Cannot redeclare variable.");
             }
             
@@ -334,7 +334,6 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
         case E_CHOCOLATE_BAR: {
             const Token *varName = consumeToken(VARIABLE);
             
-            //Fetch the old value
             uint8_t scopesUp;
             CompilerVariable *cv = scoper.getVariable(varName, &scopesUp);
             
@@ -351,7 +350,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "%s can only operate on 🚂 variables.", ls);
             }
             
-            if (token->value[0] == E_COOKING) { //decrement
+            if (token->value[0] == E_COOKING) {
                 writeCoinForScopesUp(scopesUp, varName, 0x19, 0x1F);
             }
             else {
@@ -431,7 +430,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             parse(consumeToken(), token, typeInteger);
             return Type(CL_RANGE);
         }
-        case E_TANGERINE: { //MARK: If
+        case E_TANGERINE: {
             writer.writeCoin(0x62);
             
             auto placeholder = writer.writeCoinsCountPlaceholderCoin();
@@ -450,13 +449,13 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 flowControlReturnEnd(fcr);
             }
             
-            if((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_STRAWBERRY) {
+            if ((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_STRAWBERRY) {
                 writer.writeCoin(consumeToken()->value[0]);
                 flowControlBlock();
                 flowControlReturnEnd(fcr);
             }
             else {
-                fcr.branches++; // The else branch always exists. Theoretically at least.
+                fcr.branches++;  // The else branch always exists. Theoretically at least.
             }
             
             placeholder.write();
@@ -488,20 +487,20 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Type iteratee = parse(consumeToken(), token, typeSomeobject);
             
-            if(iteratee.type == TT_CLASS && iteratee.eclass == CL_LIST) {
-                //If the iteratee is a list, the Real-Time Engine has some special sugar
+            if (iteratee.type() == TT_CLASS && iteratee.eclass == CL_LIST) {
+                // If the iteratee is a list, the Real-Time Engine has some special sugar
                 placeholder.write(0x65);
-                writer.writeCoin(nextVariableID()); //Internally needed
+                writer.writeCoin(nextVariableID());  //Internally needed
                 scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(iteratee.genericArguments[0], vID, true, true, variableToken));
             }
-            else if(iteratee.type == TT_CLASS && iteratee.eclass == CL_RANGE) {
-                //If the iteratee is a range, the Real-Time Engine also has some special sugar
+            else if (iteratee.type() == TT_CLASS && iteratee.eclass == CL_RANGE) {
+                // If the iteratee is a range, the Real-Time Engine also has some special sugar
                 placeholder.write(0x66);
                 scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(typeInteger, vID, true, true, variableToken));
             }
-            else if(iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), typeContext)) {
+            else if (iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), typeContext)) {
                 placeholder.write(0x64);
-                writer.writeCoin(nextVariableID()); //Internally needed
+                writer.writeCoin(nextVariableID());  //Internally needed
                 Type iterator = iteratee.eclass->lookupMethod(E_DANGO)->returnType.resolveOn(iteratee);
                 Type itemType = iterator.eclass->lookupMethod(E_DOWN_POINTING_SMALL_RED_TRIANGLE)->returnType.resolveOn(iterator);
                 scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, true, variableToken));
@@ -537,7 +536,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 break;
             }
             
-            scoper.topScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be initialized before the use of 🐕.");
+            scoper.topScope()->initializerUnintializedVariablesCheck(token,
+                                                "Instance variable \"%s\" must be initialized before the use of 🐕.");
             
             return typeContext.normalType;
         }
@@ -546,7 +546,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Type type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package);
             
-            if (type.type != TT_ENUM) {
+            if (type.type() != TT_ENUM) {
                 compilerError(token, "The given type cannot be accessed.");
             }
             else if (type.optional) {
@@ -577,7 +577,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             bool dynamic;
             Type type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package, &dynamic);
             
-            if (type.type != TT_CLASS) {
+            if (type.type() != TT_CLASS) {
                 compilerError(token, "The given type cannot be initiatied.");
             }
             else if (type.optional) {
@@ -591,16 +591,15 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 writer.writeCoin(type.eclass->index);
             }
             
-            //The initializer name
-            const Token *name = consumeToken(IDENTIFIER);
+            auto initializerName = consumeToken(IDENTIFIER);
             
-            Initializer *initializer = type.eclass->getInitializer(name, type, typeContext);
+            Initializer *initializer = type.eclass->getInitializer(initializerName, type, typeContext);
             
             if (dynamic && !initializer->required) {
-                compilerError(name, "Only required initializers can be used with 🐀.");
+                compilerError(initializerName, "Only required initializers can be used with 🐀.");
             }
             
-            initializer->deprecatedWarning(name);
+            initializer->deprecatedWarning(initializerName);
             
             writer.writeCoin(initializer->vti);
             
@@ -645,7 +644,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "You may not put a call to a superinitializer in a flow control structure.");
             }
             
-            scoper.topScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be initialized before superinitializer.");
+            scoper.topScope()->initializerUnintializedVariablesCheck(token,
+                                            "Instance variable \"%s\" must be initialized before superinitializer.");
             
             writer.writeCoin(0x3D);
             
@@ -668,15 +668,15 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             return typeNothingness;
         }
         case E_RED_APPLE: {
-            if(effect){
-                //effect is true, so apple is called as subcommand
+            if (effect) {
+                // Effect is true, so apple is called as subcommand
                 compilerError(token, "🍎’s return may not be used as an argument.");
             }
             effect = true;
             
             writer.writeCoin(0x60);
             
-            if(initializer){
+            if (initializer) {
                 if (initializer->canReturnNothingness) {
                     parse(consumeToken(), token, typeNothingness);
                     return typeNothingness;
@@ -700,7 +700,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerWarning(token, "Superfluous cast.");
             }
             
-            switch (type.type) {
+            switch (type.type()) {
                 case TT_CLASS: {
                     auto offset = type.eclass->numberOfGenericArgumentsWithSuperArguments() - type.eclass->numberOfOwnGenericArguments();
                     for (size_t i = 0; i < type.eclass->numberOfOwnGenericArguments(); i++) {
@@ -710,12 +710,12 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                         }
                     }
                     
-                    placeholder.write(originalType.type == TT_SOMETHING || originalType.optional ? 0x44 : 0x40);
+                    placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional ? 0x44 : 0x40);
                     writer.writeCoin(type.eclass->index);
                     break;
                 }
                 case TT_PROTOCOL:
-                    placeholder.write(originalType.type == TT_SOMETHING || originalType.optional ? 0x45 : 0x41);
+                    placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional ? 0x45 : 0x41);
                     writer.writeCoin(type.protocol->index);
                     break;
                 case TT_BOOLEAN:
@@ -760,7 +760,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             const Token *methodToken = consumeToken();
             
             Type type = parse(consumeToken(), token);
-            if(!type.optional){
+            if (!type.optional) {
                 compilerError(token, "🍻 may only be used on 🍬.");
             }
             
@@ -791,7 +791,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             if (type.optional) {
                 compilerWarning(token, "Please remove useless 🍬.");
             }
-            if (type.type != TT_CLASS) {
+            if (type.type() != TT_CLASS) {
                 compilerError(token, "The given type is not a class.");
             }
             
@@ -817,7 +817,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Type type = parse(consumeToken(), token);
             
-            if (type.type != TT_CLASS) {
+            if (type.type() != TT_CLASS) {
                 compilerError(token, "You can only capture method calls on class instances.");
             }
             
@@ -840,7 +840,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Scope *closingScope = scoper.currentScope();
             if (!inClassContext) {
-                scoper.pushScope(scoper.topScope()); //The object scope
+                scoper.pushScope(scoper.topScope());  // The object scope
             }
             
             function.firstToken = currentToken;
@@ -864,7 +864,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Type type = parse(consumeToken(), token);
             
-            if (type.type != TT_CALLABLE) {
+            if (type.type() != TT_CALLABLE) {
                 compilerError(token, "Given value is not callable.");
             }
             
@@ -912,14 +912,14 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             }
             
             Method *method;
-            if(type.type == TT_PROTOCOL){
+            if (type.type() == TT_PROTOCOL) {
                 method = type.protocol->getMethod(token, type, typeContext);
             }
-            else if(type.type == TT_CLASS) {
+            else if (type.type() == TT_CLASS) {
                 method = type.eclass->getMethod(token, type, typeContext);
             }
             else {
-                if(type.type == TT_BOOLEAN){
+                if (type.type() == TT_BOOLEAN) {
                     switch (token->value[0]) {
                         case E_NEGATIVE_SQUARED_CROSS_MARK:
                             placeholder.write(0x26);
@@ -934,7 +934,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                             return typeBoolean;
                     }
                 }
-                else if (type.type == TT_INTEGER) {
+                else if (type.type() == TT_INTEGER) {
                     switch (token->value[0]) {
                         case E_HEAVY_MINUS_SIGN:
                             placeholder.write(0x21);
@@ -992,7 +992,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                             return typeFloat;
                     }
                 }
-                else if (type.type == TT_DOUBLE) {
+                else if (type.type() == TT_DOUBLE) {
                     switch (token->value[0]) {
                         case E_FACE_WITH_STUCK_OUT_TONGUE:
                             placeholder.write(0x2F);
@@ -1033,8 +1033,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                     }
                 }
                 
-                if(token->value[0] == E_FACE_WITH_STUCK_OUT_TONGUE){
-                    parse(consumeToken(), token, type); //Must be of the same type as the callee
+                if (token->value[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
+                    parse(consumeToken(), token, type);  // Must be of the same type as the callee
                     placeholder.write(0x20);
                     return typeBoolean;
                 }
@@ -1044,12 +1044,12 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                 compilerError(token, "Unknown primitive method %s for %s.", method, typeString.c_str());
             }
             
-            if(type.type == TT_PROTOCOL){
+            if (type.type() == TT_PROTOCOL) {
                 placeholder.write(0x3);
                 writer.writeCoin(type.protocol->index);
                 writer.writeCoin(method->vti);
             }
-            else if(type.type == TT_CLASS) {
+            else if (type.type() == TT_CLASS) {
                 placeholder.write(0x1);
                 writer.writeCoin(method->vti);
             }
@@ -1068,19 +1068,24 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
     return typeNothingness;
 }
 
-StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext, TypeContext typeContext, Writer &writer, Scoper &scoper) :
-    callable(callable), writer(writer), scoper(scoper), initializer(i), inClassContext(inClassContext), typeContext(typeContext), package(p) {
-    
-}
+StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext,
+                                               TypeContext typeContext, Writer &writer, Scoper &scoper)
+        : callable(callable),
+          writer(writer),
+          scoper(scoper),
+          initializer(i),
+          inClassContext(inClassContext),
+          typeContext(typeContext),
+          package(p) {}
 
-void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
+void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope) {
     currentToken = callable.firstToken;
     
     if (initializer) {
         scoper.currentScope()->changeInitializedBy(-1);
     }
     
-    //Set the arguments to the method scope
+    // Set the arguments to the method scope
     Scope methodScope(false);
     for (auto variable : callable.arguments) {
         uint8_t id = nextVariableID();
@@ -1105,7 +1110,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
         
         noEffectWarning(token);
        
-        if(!emittedDeadCodeWarning && returned && nextToken()->value[0] != E_WATERMELON && token->type == IDENTIFIER){
+        if (!emittedDeadCodeWarning && returned && nextToken()->value[0] != E_WATERMELON && token->type == IDENTIFIER) {
             compilerWarning(consumeToken(), "Dead code.");
             emittedDeadCodeWarning = true;
             if (!compileDeadCode) {
@@ -1119,7 +1124,8 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
     noReturnError(callable.dToken);
     
     if (initializer) {
-        scoper.currentScope()->initializerUnintializedVariablesCheck(initializer->dToken, "Instance variable \"%s\" must be initialized.");
+        scoper.currentScope()->initializerUnintializedVariablesCheck(initializer->dToken,
+                                                                     "Instance variable \"%s\" must be initialized.");
         
         if (!calledSuper && typeContext.normalType.eclass->superclass) {
             ecCharToCharStack(initializer->name, initializerName);
@@ -1128,14 +1134,15 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope){
     }
 }
 
-void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, Scoper &scoper, bool inClassContext, Initializer *i) {
+void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType,
+                                                      Scoper &scoper, bool inClassContext, Initializer *i) {
     writer.resetWrittenCoins();
     
     writer.writeEmojicodeChar(procedure->name);
     writer.writeUInt16(procedure->vti);
     writer.writeByte((uint8_t)procedure->arguments.size());
     
-    if(procedure->native){
+    if (procedure->native) {
         writer.writeByte(1);
         return;
     }
@@ -1144,7 +1151,8 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writ
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
     auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
     
-    auto sca = StaticFunctionAnalyzer(*procedure, procedure->package, i, inClassContext, TypeContext(classType, procedure), writer, scoper);
+    auto sca = StaticFunctionAnalyzer(*procedure, procedure->package, i, inClassContext,
+                                      TypeContext(classType, procedure), writer, scoper);
     sca.analyze();
     
     variableCountPlaceholder.write(sca.localVariableCount());

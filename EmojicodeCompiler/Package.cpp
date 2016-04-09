@@ -6,10 +6,13 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include <cstring>
+#include <list>
+#include <string>
+#include <map>
 #include "Package.hpp"
 #include "FileParser.hpp"
 #include "utf8.h"
-#include <string.h>
 
 std::list<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
@@ -43,7 +46,7 @@ void Package::parse(const char *path, const Token *errorToken) {
     
     parseFile(path, this);
     
-    if(version().major == 0 && version().minor == 0){
+    if (version().major == 0 && version().minor == 0) {
         compilerError(errorToken, "Package %s does not provide a valid version.", name());
     }
     
@@ -59,7 +62,7 @@ Package* Package::findPackage(const char *name) {
 
 Type Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, const Token *token, bool *existent) {
     *existent = true;
-    if(ns == globalNamespace){
+    if (ns == globalNamespace) {
         switch (name) {
             case E_OK_HAND_SIGN:
                 return Type(TT_BOOLEAN, optional);

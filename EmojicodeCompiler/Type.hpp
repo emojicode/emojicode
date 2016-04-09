@@ -15,8 +15,7 @@
 class Package;
 
 enum TypeType {
-    /** The type is of the class provided. */
-    TT_CLASS = 0,
+    TT_CLASS,
     TT_PROTOCOL,
     TT_ENUM,
     
@@ -44,7 +43,7 @@ enum TypeDynamism {
 struct TypeContext;
 class Procedure;
 
-struct Type {
+class Type {
 public:
     /** Reads a type name and stores it into the given pointers. */
     static const Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional);
@@ -52,15 +51,17 @@ public:
     /** Reads a type name and stores it into the given pointers. */
     static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism, Package *package, bool *dynamicType = nullptr);
     
-    Type(TypeType t, bool o) : optional(o), type(t) {}
-    Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c) : optional(o), type(t), reference(r), resolutionConstraint(c) {}
+    Type(TypeType t, bool o) : optional(o), type_(t) {}
+    Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c) : optional(o), type_(t), reference(r), resolutionConstraint(c) {}
     Type(Class *c, bool o);
     Type(Class *c) : Type(c, false) {};
-    Type(Protocol *p, bool o) : optional(o), type(TT_PROTOCOL), protocol(p) {}
-    Type(Enum *e, bool o) : optional(o), type(TT_ENUM), eenum(e) {}
+    Type(Protocol *p, bool o) : optional(o), type_(TT_PROTOCOL), protocol(p) {}
+    Type(Enum *e, bool o) : optional(o), type_(TT_ENUM), eenum(e) {}
     
     bool optional;
-    TypeType type;
+    
+    TypeType type() const { return type_; }
+    
     union {
         Class *eclass;
         Protocol *protocol;
@@ -73,31 +74,31 @@ public:
     };
     std::vector<Type> genericArguments;
     
+    /** If this type is compatible to the given other type. */
     bool compatibleTo(Type to, TypeContext tc) const;
-    
+    /** 
+     * Whether this type is considered indentical to the other type. 
+     * Mainly used to determine compatibility of generics.
+     */
     bool identicalTo(Type to) const;
-    
     /** Returns the name of the package to which this type belongs. */
     const char* typePackage();
-    
     /** Whether the given type is a valid argument for the generic argument at index @c i. */
     void validateGenericArgument(Type type, uint16_t i, TypeContext tc, const Token *token);
-
     /** Called by @c parseAndFetchType and in the class parser. You usually should not call this method. */
     void parseGenericArguments(TypeContext tc, TypeDynamism dynamism, Package *package, const Token *errorToken);
-    
     /**
      * Returns a depp string representation of the given type.
      * @param contextType The contextType. Can be Nothingeness if the type is not in a context.
      * @param includeNsAndOptional Whether to include optional indicators and the namespaces.
      */
     std::string toString(TypeContext contextType, bool includeNsAndOptional) const;
-    
     /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
     Type resolveOn(TypeContext contextType);
     
     Type typeConstraintForReference(TypeContext ct) const;
 private:
+    TypeType type_;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     Type resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved) const;
 };

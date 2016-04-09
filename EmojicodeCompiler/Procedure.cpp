@@ -6,18 +6,17 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.hpp"
+#include <map>
 #include "utf8.h"
 #include "Procedure.hpp"
 #include "Lexer.hpp"
+#include "EmojicodeCompiler.hpp"
 
-void Callable::parseArgumentList(TypeContext ct, Package *package){
+void Callable::parseArgumentList(TypeContext ct, Package *package) {
     const Token *token;
     
-    //Until the grape is found we parse arguments
-    while ((token = nextToken()) && token->type == VARIABLE) { //grape
-        //Get the variable in which to store the argument
-        const Token *variableToken = consumeToken(VARIABLE);
+    while ((token = nextToken()) && token->type == VARIABLE) {
+        auto variableToken = consumeToken(VARIABLE);
         auto type = Type::parseAndFetchType(ct, AllowGenericTypeVariables, package);
         
         arguments.push_back(Variable(Variable(variableToken, type)));
@@ -28,8 +27,8 @@ void Callable::parseArgumentList(TypeContext ct, Package *package){
     }
 }
 
-void Callable::parseReturnType(TypeContext ct, Package *package){
-    if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
+void Callable::parseReturnType(TypeContext ct, Package *package) {
+    if (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW) {
         consumeToken();
         returnType = Type::parseAndFetchType(ct, AllowGenericTypeVariables, package);
     }
@@ -61,11 +60,11 @@ static const Token* until(EmojicodeChar end, EmojicodeChar deeper, int *deep) {
         return token;
     }
     
-    if(token->value[0] == deeper){
+    if (token->value[0] == deeper) {
         (*deep)++;
     }
-    else if(token->value[0] == end){
-        if (*deep == 0){
+    else if (token->value[0] == end) {
+        if (*deep == 0) {
             return nullptr;
         }
         (*deep)--;
@@ -78,7 +77,7 @@ void Procedure::parseGenericArguments(TypeContext ct, Package *package) {
     const Token *token;
     
     //Until the grape is found we parse arguments
-    while ((token = nextToken()) && token->type == IDENTIFIER && token->value[0] == E_SPIRAL_SHELL) { //grape
+    while ((token = nextToken()) && token->type == IDENTIFIER && token->value[0] == E_SPIRAL_SHELL) {
         consumeToken();
         const Token *variable = consumeToken(VARIABLE);
         
@@ -96,9 +95,9 @@ void Procedure::parseGenericArguments(TypeContext ct, Package *package) {
 }
 
 void Procedure::parseBody(bool allowNative) {
-    if(nextToken()->value[0] == E_RADIO){
+    if (nextToken()->value[0] == E_RADIO) {
         const Token *t = consumeToken(IDENTIFIER);
-        if(!allowNative){
+        if (!allowNative) {
             compilerError(t, "Native code is not allowed in this context.");
         }
         native = true;
@@ -107,7 +106,7 @@ void Procedure::parseBody(bool allowNative) {
     
     const Token *token = consumeToken(IDENTIFIER);
     
-    if (token->value[0] != E_GRAPES){
+    if (token->value[0] != E_GRAPES) {
         ecCharToCharStack(token->value[0], c);
         compilerError(token, "Expected 🍇 but found %s instead.", c);
     }
@@ -115,40 +114,45 @@ void Procedure::parseBody(bool allowNative) {
     firstToken = currentToken;
     
     int d = 0;
-    while ((token = until(E_WATERMELON, E_GRAPES, &d)) != nullptr);
+    while ((token = until(E_WATERMELON, E_GRAPES, &d)) != nullptr) continue;
 }
 
 void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type contextType) {
-    if(superProcedure->final){
+    if (superProcedure->final) {
         ecCharToCharStack(this->name, mn);
         compilerError(this->dToken, "%s of %s was marked 🔏.", on, mn);
     }
     if (!this->returnType.compatibleTo(superProcedure->returnType, contextType)) {
+        // The return type may be defined more precisely
         ecCharToCharStack(this->name, mn);
         auto supername = superProcedure->returnType.toString(contextType, true);
         auto thisname = this->returnType.toString(contextType, true);
-        compilerError(this->dToken, "Return type %s of %s is not compatible with the return type %s of its %s.", thisname.c_str(), mn, supername.c_str(), on);
+        compilerError(this->dToken, "Return type %s of %s is not compatible with the return type %s of its %s.",
+                      thisname.c_str(), mn, supername.c_str(), on);
     }
-    if(superProcedure->arguments.size() != this->arguments.size()){
+    if (superProcedure->arguments.size() != this->arguments.size()) {
         ecCharToCharStack(this->name, mn);
-        compilerError(this->dToken, "%s expects %s arguments than its %s.", mn, (superProcedure->arguments.size() < this->arguments.size()) ? "more" : "less", on);
+        compilerError(this->dToken, "%s expects %s arguments than its %s.", mn,
+                      (superProcedure->arguments.size() < this->arguments.size()) ? "more" : "less", on);
     }
     for (uint8_t i = 0; i < superProcedure->arguments.size(); i++) {
-        //other way, because the method may define a more generic type
+        // Other way, because the procedure may take more general arguments
         if (!superProcedure->arguments[i].type.compatibleTo(this->arguments[i].type, contextType)) {
             auto supertype = superProcedure->arguments[i].type.toString(contextType, true);
             auto thisname = this->arguments[i].type.toString(contextType, true);
-            compilerError(superProcedure->dToken, "Type %s of argument %d is not compatible with its %s argument type %s.", thisname.c_str(), i + 1, on, supertype.c_str());
+            compilerError(superProcedure->dToken,
+                          "Type %s of argument %d is not compatible with its %s argument type %s.",
+                          thisname.c_str(), i + 1, on, supertype.c_str());
         }
     }
 }
 
-void Procedure::checkOverride(Procedure *superProcedure){
-    if(overriding && !superProcedure){
+void Procedure::checkOverride(Procedure *superProcedure) {
+    if (overriding && !superProcedure) {
         ecCharToCharStack(name, mn);
         compilerError(dToken, "%s was declared ✒️ but does not override anything.", mn);
     }
-    else if(!overriding && superProcedure){
+    else if (!overriding && superProcedure) {
         ecCharToCharStack(name, mn);
         compilerError(dToken, "If you want to override %s add ✒️.", mn);
     }
@@ -159,7 +163,9 @@ void Procedure::deprecatedWarning(const Token *callToken) {
         ecCharToCharStack(name, mn);
         if (documentationToken) {
             char *documentation = documentationToken->value.utf8CString();
-            compilerWarning(callToken, "%s is deprecated. Please refer to the documentation for further information:\n%s", mn, documentation);
+            compilerWarning(callToken,
+                            "%s is deprecated. Please refer to the documentation for further information:\n%s",
+                            mn, documentation);
             delete [] documentation;
         }
         else {
@@ -169,8 +175,7 @@ void Procedure::deprecatedWarning(const Token *callToken) {
 }
 
 Type Procedure::type() {
-    Type t(TT_CALLABLE, false);
-    t.type = TT_CALLABLE;
+    Type t = Type(TT_CALLABLE, false);
     t.arguments = (uint8_t)arguments.size();
     
     t.genericArguments.push_back(returnType);
@@ -181,8 +186,7 @@ Type Procedure::type() {
 }
 
 Type Initializer::type() {
-    Type t(TT_CALLABLE, false);
-    t.type = TT_CALLABLE;
+    Type t = Type(TT_CALLABLE, false);
     t.arguments = (uint8_t)arguments.size();
     
     t.genericArguments.push_back(Type(eclass, canReturnNothingness));

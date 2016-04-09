@@ -7,14 +7,15 @@
 //
 
 #include <libgen.h>
-#include <cstring>
 #include <getopt.h>
+#include <cstring>
+#include <vector>
 #include "Lexer.hpp"
 #include "utf8.h"
-#include "EmojicodeCompiler.hpp"
 #include "FileParser.hpp"
 #include "StaticAnalyzer.hpp"
 #include "Class.hpp"
+#include "EmojicodeCompiler.hpp"
 
 StartingFlag startingFlag;
 bool foundStartingFlag;
@@ -22,11 +23,9 @@ bool foundStartingFlag;
 std::vector<Class *> classes;
 
 char* EmojicodeString::utf8CString() const {
-    //Size needed for UTF8 representation
+    // Size needed for UTF8 representation
     size_t ds = u8_codingsize(c_str(), size());
-    //Allocate space for the UTF8 string
     char *utf8str = new char[ds + 1];
-    //Convert
     size_t written = u8_toutf8(utf8str, ds, c_str(), size());
     utf8str[written] = 0;
     return utf8str;
@@ -93,7 +92,8 @@ void compilerError(const Token *token, const char *err, ...) {
     }
     
     if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":", gaveWarning ? ",": "", line, col);
+        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":", gaveWarning ? ",": "",
+                line, col);
         printJSONStringToFile(file, stderr);
         fprintf(stderr, ", \"message\":");
         printJSONStringToFile(error, stderr);
@@ -127,7 +127,8 @@ void compilerWarning(const Token *token, const char *err, ...) {
     }
     
     if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":", gaveWarning ? ",": "", line, col);
+        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":", gaveWarning ? ",": "",
+                line, col);
         printJSONStringToFile(file, stderr);
         fprintf(stderr, ", \"message\":");
         printJSONStringToFile(error, stderr);
@@ -144,7 +145,7 @@ void compilerWarning(const Token *token, const char *err, ...) {
 Class* getStandardClass(EmojicodeChar name, Package *_) {
     bool existent;
     auto type = _->fetchRawType(name, globalNamespace, false, nullptr, &existent);
-    if (type.type != TT_CLASS) {
+    if (type.type() != TT_CLASS) {
         ecCharToCharStack(name, nameString)
         compilerError(nullptr, "s package class %s is missing.", nameString);
     }
@@ -154,7 +155,7 @@ Class* getStandardClass(EmojicodeChar name, Package *_) {
 Protocol* getStandardProtocol(EmojicodeChar name, Package *_) {
     bool existent;
     auto type = _->fetchRawType(name, globalNamespace, false, nullptr, &existent);
-    if (type.type != TT_PROTOCOL) {
+    if (type.type() != TT_PROTOCOL) {
         ecCharToCharStack(name, nameString)
         compilerError(nullptr, "s package protocol %s is missing.", nameString);
     }
@@ -179,9 +180,8 @@ void loadStandard(Package *_) {
 
 int main(int argc, char * argv[]) {
     const char *reportPackage = nullptr;
-    std::string outPath;
+    char *outPath = nullptr;
     
-    //Parse options
     signed char ch;
     while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {
         switch (ch) {
@@ -208,18 +208,18 @@ int main(int argc, char * argv[]) {
     argc -= optind;
     argv += optind;
     
-    if (outputJSON){
+    if (outputJSON) {
         fprintf(stderr, "[");
     }
     
-    if(argc == 0){
+    if (argc == 0) {
         compilerWarning(nullptr, "No input files provided.");
         return 1;
     }
     
-    if(outPath.size() == 0){
-        outPath = std::string(argv[0]);
-        outPath[outPath.size() - 1] = 'b';
+    if (outPath == nullptr) {
+        outPath = strdup(argv[0]);
+        outPath[strlen(outPath) - 1] = 'b';
     }
     
     foundStartingFlag = false;
@@ -231,27 +231,24 @@ int main(int argc, char * argv[]) {
     
     pkg.parse(argv[0], nullptr);
     
-    FILE *out = fopen(outPath.c_str(), "wb");
-    if(!out || ferror(out)){
+    FILE *out = fopen(outPath, "wb");
+    if (!out || ferror(out)) {
         compilerError(nullptr, "Couldn't write output file.");
         return 1;
     }
     
-    //If we did not find a mouse method the programm has no start point
     if (!foundStartingFlag) {
         compilerError(nullptr, "No 🏁 eclass method was found.");
     }
     
-    //Now let us anaylze these classes and write them
     analyzeClassesAndWrite(out);
     
-    if (outputJSON){
+    if (outputJSON) {
         fprintf(stderr, "]");
     }
     
-    if(reportPackage) {
-        auto package = Package::findPackage(reportPackage);
-        if (package) {
+    if (reportPackage) {
+        if (auto package = Package::findPackage(reportPackage)) {
             report(package);
         }
         else {

@@ -6,12 +6,13 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.hpp"
+#include <cstring>
+#include <vector>
 #include "utf8.h"
 #include "Lexer.hpp"
 #include "Class.hpp"
 #include "Procedure.hpp"
-#include <cstring>
+#include "EmojicodeCompiler.hpp"
 
 //MARK: Globals
 /* Very important one time declarations */
@@ -28,10 +29,10 @@ Class *CL_RANGE;
 Type Type::typeConstraintForReference(TypeContext ct) const {
     Type t = *this;
     bool optional = t.optional;
-    while (t.type == TT_LOCAL_REFERENCE) {
+    while (t.type() == TT_LOCAL_REFERENCE) {
         t = ct.p->genericArgumentConstraints[t.reference];
     }
-    while (t.type == TT_REFERENCE) {
+    while (t.type() == TT_REFERENCE) {
         t = ct.normalType.eclass->genericArgumentConstraints()[t.reference];
     }
     if (optional) {
@@ -44,7 +45,7 @@ Type Type::resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved
     Type t = *this;
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
     while (true) {
-        if (t.type != TT_REFERENCE || t.reference >= maxReferenceForSuper) {
+        if (t.type() != TT_REFERENCE || t.reference >= maxReferenceForSuper) {
             return t;
         }
         *resolved = true;
@@ -56,13 +57,14 @@ Type Type::resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved
 
 bool Type::compatibleTo(Type to, TypeContext ct) const {
     //(to.optional || !a.optional): Either `to` accepts optionals, or if `to` does not accept optionals `a` mustn't be one.
-    if (to.type == TT_SOMETHING) {
+    if (to.type() == TT_SOMETHING) {
         return true;
     }
-    else if (to.type == TT_SOMEOBJECT && (this->type == TT_CLASS || this->type == TT_PROTOCOL || this->type == TT_SOMEOBJECT)){
+    else if (to.type() == TT_SOMEOBJECT && (this->type() == TT_CLASS ||
+                                            this->type() == TT_PROTOCOL || this->type() == TT_SOMEOBJECT)) {
         return to.optional || !this->optional;
     }
-    else if (this->type == TT_CLASS && to.type == TT_CLASS){
+    else if (this->type() == TT_CLASS && to.type() == TT_CLASS) {
         if ((to.optional || !this->optional) && this->eclass->inheritsFrom(to.eclass)) {
             if (to.eclass->numberOfOwnGenericArguments()) {
                 for (int l = to.eclass->numberOfOwnGenericArguments(), i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
@@ -75,47 +77,49 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
         }
         return false;
     }
-    else if (this->type == TT_PROTOCOL && to.type == TT_PROTOCOL) {
+    else if (this->type() == TT_PROTOCOL && to.type() == TT_PROTOCOL) {
         return (to.optional || !this->optional) && this->protocol == to.protocol;
     }
-    else if (this->type == TT_CLASS && to.type == TT_PROTOCOL) {
+    else if (this->type() == TT_CLASS && to.type() == TT_PROTOCOL) {
         return (to.optional || !this->optional) && this->eclass->conformsTo(to.protocol);
     }
-    else if (this->type == TT_NOTHINGNESS) {
-        return to.optional || to.type == TT_NOTHINGNESS;
+    else if (this->type() == TT_NOTHINGNESS) {
+        return to.optional || to.type() == TT_NOTHINGNESS;
     }
-    else if (this->type == TT_ENUM && to.type == TT_ENUM) {
+    else if (this->type() == TT_ENUM && to.type() == TT_ENUM) {
         return (to.optional || !this->optional) && this->eenum == to.eenum;
     }
-    else if ((this->type == TT_REFERENCE && to.type == TT_REFERENCE) || (this->type == TT_LOCAL_REFERENCE && to.type == TT_LOCAL_REFERENCE)) {
-        if((to.optional || !this->optional) && this->reference == to.reference) {
+    else if ((this->type() == TT_REFERENCE && to.type() == TT_REFERENCE) ||
+             (this->type() == TT_LOCAL_REFERENCE && to.type() == TT_LOCAL_REFERENCE)) {
+        if ((to.optional || !this->optional) && this->reference == to.reference) {
             return true;
         }
-        return (to.optional || !this->optional) && this->typeConstraintForReference(ct).compatibleTo(to.typeConstraintForReference(ct), ct);
+        return (to.optional || !this->optional)
+        && this->typeConstraintForReference(ct).compatibleTo(to.typeConstraintForReference(ct), ct);
     }
-    else if (this->type == TT_REFERENCE) {
+    else if (this->type() == TT_REFERENCE) {
         bool resolved = false;
         Type rt = this->resolveOnSuperArguments(ct.normalType.eclass, &resolved);
-        if(resolved && (to.optional || !this->optional) && rt.compatibleTo(to, ct)) {
+        if (resolved && (to.optional || !this->optional) && rt.compatibleTo(to, ct)) {
             return true;
         }
         return (to.optional || !this->optional) && this->typeConstraintForReference(ct).compatibleTo(to, ct);
     }
-    else if (to.type == TT_REFERENCE) {
+    else if (to.type() == TT_REFERENCE) {
         bool resolved = false;
         Type rt = to.resolveOnSuperArguments(ct.normalType.eclass, &resolved);
-        if(resolved && (to.optional || !this->optional) && this->compatibleTo(rt, ct)) {
+        if (resolved && (to.optional || !this->optional) && this->compatibleTo(rt, ct)) {
             return true;
         }
         return (to.optional || !this->optional) && this->compatibleTo(to.typeConstraintForReference(ct), ct);
     }
-    else if (this->type == TT_LOCAL_REFERENCE) {
+    else if (this->type() == TT_LOCAL_REFERENCE) {
         return (to.optional || !this->optional) && this->typeConstraintForReference(ct).compatibleTo(to, ct);
     }
-    else if (to.type == TT_LOCAL_REFERENCE) {
+    else if (to.type() == TT_LOCAL_REFERENCE) {
         return (to.optional || !this->optional) && this->compatibleTo(to.typeConstraintForReference(ct), ct);
     }
-    else if (this->type == TT_CALLABLE && to.type == TT_CALLABLE) {
+    else if (this->type() == TT_CALLABLE && to.type() == TT_CALLABLE) {
         if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct) && to.arguments == this->arguments) {
             for (int i = 1; i <= to.arguments; i++) {
                 if (!to.genericArguments[i].compatibleTo(this->genericArguments[i], ct)) {
@@ -127,14 +131,14 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
         return false;
     }
     else {
-        return (to.optional || !this->optional) && this->type == to.type;
+        return (to.optional || !this->optional) && this->type() == to.type();
     }
     return false;
 }
 
 bool Type::identicalTo(Type to) const {
-    if (type == to.type) {
-        switch (type) {
+    if (type() == to.type()) {
+        switch (type()) {
             case TT_CLASS:
                 if (eclass == to.eclass) {
                     if (to.eclass->numberOfOwnGenericArguments()) {
@@ -177,17 +181,17 @@ bool Type::identicalTo(Type to) const {
     return false;
 }
 
-Type Type::resolveOn(TypeContext typeContext){
+Type Type::resolveOn(TypeContext typeContext) {
     Type t = *this;
     bool optional = t.optional;
-    while (t.type == TT_LOCAL_REFERENCE) {
+    while (t.type() == TT_LOCAL_REFERENCE) {
         t = (*typeContext.procedureGenericArguments)[t.reference];
     }
     
-    if (typeContext.normalType.type == TT_CLASS) {
-        while (t.type == TT_REFERENCE && typeContext.normalType.eclass->canBeUsedToResolve(t.resolutionConstraint)) {
+    if (typeContext.normalType.type() == TT_CLASS) {
+        while (t.type() == TT_REFERENCE && typeContext.normalType.eclass->canBeUsedToResolve(t.resolutionConstraint)) {
             Type tn = typeContext.normalType.genericArguments[t.reference];
-            if (tn.type == TT_REFERENCE && tn.reference == t.reference) {
+            if (tn.type() == TT_REFERENCE && tn.reference == t.reference) {
                 break;
             }
             t = tn;
@@ -198,12 +202,12 @@ Type Type::resolveOn(TypeContext typeContext){
         t.optional = true;
     }
     
-    if (t.type == TT_CLASS) {
+    if (t.type() == TT_CLASS) {
         for (int i = 0; i < t.eclass->numberOfGenericArgumentsWithSuperArguments(); i++) {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
         }
     }
-    else if (t.type == TT_CALLABLE) {
+    else if (t.type() == TT_CALLABLE) {
         for (int i = 0; i < t.arguments + 1; i++) {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
         }
@@ -214,13 +218,13 @@ Type Type::resolveOn(TypeContext typeContext){
 
 //MARK: Type Parsing Utility
 
-const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional){
+const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional) {
     if (nextToken()->type == VARIABLE) {
         compilerError(consumeToken(), "Generic variables not allowed here.");
     }
     auto *className = consumeToken(IDENTIFIER);
     
-    if(className->value[0] == E_CANDY){
+    if (className->value[0] == E_CANDY) {
         *optional = true;
         
         className = consumeToken(IDENTIFIER);
@@ -229,7 +233,7 @@ const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamesp
         *optional = false;
     }
     
-    if(className->value[0] == E_ORANGE_TRIANGLE){
+    if (className->value[0] == E_ORANGE_TRIANGLE) {
         const Token *nsToken = consumeToken(IDENTIFIER);
         *enamespace = nsToken->value[0];
         
@@ -244,12 +248,13 @@ const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamesp
     return className;
 }
 
-Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *package, bool *dynamicType){
+Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *package, bool *dynamicType) {
     if (dynamicType) {
         *dynamicType = false;
     }
-    if (dynamism & AllowGenericTypeVariables && (ct.normalType.type == TT_CLASS || ct.p)
-        && (nextToken()->type == VARIABLE || (nextToken()->value[0] == E_CANDY && nextToken()->nextToken->type == VARIABLE))) {
+    if (dynamism & AllowGenericTypeVariables && (ct.normalType.type() == TT_CLASS || ct.p) &&
+        (nextToken()->type == VARIABLE
+         || (nextToken()->value[0] == E_CANDY && nextToken()->nextToken->type == VARIABLE))) {
         if (dynamicType) {
             *dynamicType = true;
         }
@@ -263,13 +268,13 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
         
         if (ct.p) {
             auto it = ct.p->genericArgumentVariables.find(variableToken->value);
-            if (it != ct.p->genericArgumentVariables.end()){
+            if (it != ct.p->genericArgumentVariables.end()) {
                 Type type = it->second;
                 type.optional = optional;
                 return type;
             }
         }
-        if (ct.normalType.type == TT_CLASS) {
+        if (ct.normalType.type() == TT_CLASS) {
             Type type = typeNothingness;
             if (ct.normalType.eclass->fetchVariable(variableToken->value, optional, &type)) {
                 return type;
@@ -281,7 +286,7 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
     else if (nextToken()->value[0] == E_RAT) {
         const Token *token = consumeToken();
         
-        if(!(dynamism & AllowDynamicClassType)){
+        if (!(dynamism & AllowDynamicClassType)) {
             compilerError(token, "🐀 not allowed here.");
         }
         
@@ -308,7 +313,7 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
             t.genericArguments.push_back(parseAndFetchType(ct, dynamism, package));
         }
         
-        if(nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW){
+        if (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW) {
             consumeToken();
             t.genericArguments[0] = parseAndFetchType(ct, dynamism, package);
         }
@@ -339,8 +344,8 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
     }
 }
 
-void Type::validateGenericArgument(Type ta, uint16_t i, TypeContext ct, const Token *token){
-    if (this->type != TT_CLASS) {
+void Type::validateGenericArgument(Type ta, uint16_t i, TypeContext ct, const Token *token) {
+    if (this->type() != TT_CLASS) {
         compilerError(token, "The compiler encountered an internal inconsistency related to generics.");
     }
     if (this->eclass->superclass) {
@@ -353,16 +358,17 @@ void Type::validateGenericArgument(Type ta, uint16_t i, TypeContext ct, const To
     if (!ta.compatibleTo(this->eclass->genericArgumentConstraints()[i], ct)) {
         auto thisName = this->eclass->genericArgumentConstraints()[i].toString(ct, true);
         auto thatName = ta.toString(ct, true);
-        compilerError(token, "Generic argument %s is not compatible to constraint %s.", thatName.c_str(), thisName.c_str());
+        compilerError(token, "Generic argument %s is not compatible to constraint %s.",
+                      thatName.c_str(), thisName.c_str());
     }
 }
 
 void Type::parseGenericArguments(TypeContext ct, TypeDynamism dynamism, Package *package, const Token *errorToken) {
-    if (this->type == TT_CLASS) {
+    if (this->type() == TT_CLASS) {
         this->genericArguments = std::vector<Type>(this->eclass->superGenericArguments());
-        if (this->eclass->numberOfOwnGenericArguments()){
+        if (this->eclass->numberOfOwnGenericArguments()) {
             int count = 0;
-            while(nextToken()->value[0] == E_SPIRAL_SHELL){
+            while (nextToken()->value[0] == E_SPIRAL_SHELL) {
                 const Token *token = consumeToken();
                 
                 Type ta = parseAndFetchType(ct, dynamism, package, nullptr);
@@ -372,9 +378,10 @@ void Type::parseGenericArguments(TypeContext ct, TypeDynamism dynamism, Package 
                 count++;
             }
             
-            if(count != this->eclass->numberOfOwnGenericArguments()){
+            if (count != this->eclass->numberOfOwnGenericArguments()) {
                 auto str = this->toString(typeNothingness, true);
-                compilerError(errorToken, "Type %s requires %d generic arguments, but %d were given.", str.c_str(), this->eclass->numberOfOwnGenericArguments(), count);
+                compilerError(errorToken, "Type %s requires %d generic arguments, but %d were given.",
+                              str.c_str(), this->eclass->numberOfOwnGenericArguments(), count);
             }
         }
     }
@@ -382,7 +389,7 @@ void Type::parseGenericArguments(TypeContext ct, TypeDynamism dynamism, Package 
 
 //MARK: Type Interferring
 
-void CommonTypeFinder::addType(Type t, TypeContext typeContext){
+void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
     if (!firstTypeFound) {
         commonType = t;
         firstTypeFound = true;
@@ -391,7 +398,7 @@ void CommonTypeFinder::addType(Type t, TypeContext typeContext){
         if (commonType.compatibleTo(t, typeContext)) {
             commonType = t;
         }
-        else if(t.type == TT_CLASS && commonType.type == TT_CLASS) {
+        else if (t.type() == TT_CLASS && commonType.type() == TT_CLASS) {
             commonType = typeSomeobject;
         }
         else {
@@ -400,8 +407,8 @@ void CommonTypeFinder::addType(Type t, TypeContext typeContext){
     }
 }
 
-Type CommonTypeFinder::getCommonType(const Token *warningToken){
-    if(!firstTypeFound){
+Type CommonTypeFinder::getCommonType(const Token *warningToken) {
+    if (!firstTypeFound) {
         compilerWarning(warningToken, "Type is ambigious without more context.");
     }
     return commonType;
@@ -409,8 +416,8 @@ Type CommonTypeFinder::getCommonType(const Token *warningToken){
 
 //MARK: Type Visulisation
 
-const char* Type::typePackage(){
-    switch (this->type) {
+const char* Type::typePackage() {
+    switch (this->type()) {
         case TT_CLASS:
             return this->eclass->package()->name();
         case TT_PROTOCOL:
@@ -431,12 +438,12 @@ const char* Type::typePackage(){
     }
 }
 
-void stringAppendEc(EmojicodeChar c, std::string &string){
+void stringAppendEc(EmojicodeChar c, std::string &string) {
     ecCharToCharStack(c, sc);
     string.append(sc);
 }
 
-Type::Type(Class *c, bool o) : optional(o), type(TT_CLASS), eclass(c) {
+Type::Type(Class *c, bool o) : optional(o), type_(TT_CLASS), eclass(c) {
     for (int i = 0; i < eclass->numberOfGenericArgumentsWithSuperArguments(); i++) {
         genericArguments.push_back(Type(TT_REFERENCE, false, i, c));
     }
@@ -444,18 +451,18 @@ Type::Type(Class *c, bool o) : optional(o), type(TT_CLASS), eclass(c) {
 
 void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const {
     if (includePackageAndOptional) {
-        if(type.optional){
+        if (type.optional) {
             stringAppendEc(E_CANDY, string);
         }
         
         string.append(type.typePackage());
     }
     
-    switch (type.type) {
+    switch (type.type()) {
         case TT_CLASS: {
             stringAppendEc(type.eclass->name(), string);
             
-            if (typeContext.normalType.type == TT_NOTHINGNESS) {
+            if (typeContext.normalType.type() == TT_NOTHINGNESS) {
                 return;
             }
             
@@ -507,7 +514,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             stringAppendEc(E_WATERMELON, string);
             return;
         case TT_REFERENCE: {
-            if (typeContext.normalType.type == TT_CLASS) {
+            if (typeContext.normalType.type() == TT_CLASS) {
                 Class *eclass = typeContext.normalType.eclass;
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables()) {

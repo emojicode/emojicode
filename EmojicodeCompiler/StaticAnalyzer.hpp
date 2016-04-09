@@ -9,6 +9,8 @@
 #ifndef StaticAnalyzer_hpp
 #define StaticAnalyzer_hpp
 
+#include <stdio.h>
+
 /**
  * The static analyzer analyses all method and initializer bodies.
  */

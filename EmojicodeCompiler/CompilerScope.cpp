@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
+#include <string>
+#include <map>
 #include "CompilerScope.hpp"
 #include "Lexer.hpp"
 
@@ -13,7 +15,8 @@
 
 void CompilerVariable::uninitalizedError(const Token *variableToken) const {
     if (initialized <= 0) {
-        compilerError(variableToken, "Variable \"%s\" is possibly not initialized.", variableToken->value.utf8CString());
+        compilerError(variableToken,
+                      "Variable \"%s\" is possibly not initialized.", variableToken->value.utf8CString());
     }
 }
 
@@ -52,7 +55,6 @@ CompilerVariable* Scope::getLocalVariable(const Token *variable) {
     return it == map.end() ? nullptr : it->second;
 }
 
-/** Emits @c errorMessage if not all instance variable were initialized. @c errorMessage should include @c %s for the name of the variable. */
 void Scope::initializerUnintializedVariablesCheck(const Token *errorToken, const char *errorMessage) {
     for (auto it : map) {
         CompilerVariable *cv = it.second;
@@ -68,7 +70,9 @@ void Scope::recommendFrozenVariables() {
         CompilerVariable *cv = it.second;
         if (!cv->frozen() && !cv->mutated()) {
             const char *variableName = cv->definitionToken->value.utf8CString();
-            compilerWarning(cv->definitionToken, "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.", variableName);
+            compilerWarning(cv->definitionToken,
+                            "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.",
+                            variableName);
         }
     }
 }

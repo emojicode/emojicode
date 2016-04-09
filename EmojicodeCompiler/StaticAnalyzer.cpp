@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.hpp"
+#include <cstring>
 #include "StaticAnalyzer.hpp"
 #include "StaticFunctionAnalyzer.hpp"
 #include "Writer.hpp"
@@ -14,34 +14,35 @@
 #include "CompilerScope.hpp"
 #include "Class.hpp"
 #include "utf8.h"
-#include <cstring>
+#include "EmojicodeCompiler.hpp"
 
-void analyzeClass(Type classType, Writer &writer){
+void analyzeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass;
     
     writer.writeEmojicodeChar(eclass->name());
-    if(eclass->superclass){
+    if (eclass->superclass) {
         writer.writeUInt16(eclass->superclass->index);
     }
-    else { //If the eclass does not have a superclass the own index gets written
+    else {
+        // If the class does not have a superclass the own index is written.
         writer.writeUInt16(eclass->index);
     }
     
     Scoper scoper;
     Scope objectScope(true);
     
-    //Get the ID offset for this eclass by summing up all superclasses instance variable counts
+    // Get the ID offset for this eclass by summing up all superclasses instance variable counts
     uint16_t offset = 0;
-    for(Class *aClass = eclass->superclass; aClass != nullptr; aClass = aClass->superclass){
+    for (Class *aClass = eclass->superclass; aClass != nullptr; aClass = aClass->superclass) {
         offset += aClass->instanceVariables.size();
     }
     writer.writeUInt16(eclass->instanceVariables.size() + offset);
     
-    //Number of methods inclusive superclass
+    // Number of methods inclusive superclass
     writer.writeUInt16(eclass->nextMethodVti);
-    //Number of eclass methods inclusive superclass
+    // Number of eclass methods inclusive superclass
     writer.writeUInt16(eclass->nextClassMethodVti);
-    //Initializer inclusive superclass
+    // Initializer inclusive superclass
     writer.writeByte(eclass->inheritsContructors ? 1 : 0);
     writer.writeUInt16(eclass->nextInitializerVti);
     
@@ -72,7 +73,8 @@ void analyzeClass(Type classType, Writer &writer){
     
     if (eclass->instanceVariables.size() > 0 && eclass->initializerList.size() == 0) {
         auto str = classType.toString(typeNothingness, true);
-        compilerWarning(eclass->classBeginToken(), "Class %s defines %d instances variables but has no initializers.", str.c_str(), eclass->instanceVariables.size());
+        compilerWarning(eclass->classBeginToken(), "Class %s defines %d instances variables but has no initializers.",
+                        str.c_str(), eclass->instanceVariables.size());
     }
     
     writer.writeUInt16(eclass->protocols().size());
@@ -103,7 +105,9 @@ void analyzeClass(Type classType, Writer &writer){
                     auto className = classType.toString(typeNothingness, true);
                     auto protocolName = Type(protocol, false).toString(typeNothingness, true);
                     ecCharToCharStack(method->name, ms);
-                    compilerError(eclass->classBeginToken(), "Class %s does not agree to protocol %s: Method %s is missing.", className.c_str(), protocolName.c_str(), ms);
+                    compilerError(eclass->classBeginToken(),
+                                  "Class %s does not agree to protocol %s: Method %s is missing.",
+                                  className.c_str(), protocolName.c_str(), ms);
                 }
                 
                 writer.writeUInt16(clm->vti);
@@ -128,21 +132,22 @@ void writePackageHeader(Package *pkg, Writer &writer) {
     writer.writeByte(pkg->requiresBinary() ? 1 : 0);
 }
 
-void analyzeClassesAndWrite(FILE *fout){
+void analyzeClassesAndWrite(FILE *fout) {
     Writer writer(fout);
     
     stringPool.push_back(new Token());
     
     writer.writeByte(ByteCodeSpecificationVersion);
     
-    //Decide which classes inherit initializers, if they agree to protocols, and assign virtual table indexes before we analyze the classes!
+    // Decide which classes inherit initializers, whether they agree to protocols,
+    // and assign virtual table indexes before we analyze the classes!
     for (auto eclass : classes) {
-        //decide whether this eclass is eligible for initializer inheritance
-        if(eclass->instanceVariables.size() == 0 && eclass->initializerList.size() == 0){
+        // Decide whether this eclass is eligible for initializer inheritance
+        if (eclass->instanceVariables.size() == 0 && eclass->initializerList.size() == 0) {
             eclass->inheritsContructors = true;
         }
         
-        if(eclass->superclass){
+        if (eclass->superclass) {
             eclass->nextClassMethodVti = eclass->superclass->nextClassMethodVti;
             eclass->nextInitializerVti = eclass->inheritsContructors ? eclass->superclass->nextInitializerVti : 0;
             eclass->nextMethodVti = eclass->superclass->nextMethodVti;
@@ -155,11 +160,11 @@ void analyzeClassesAndWrite(FILE *fout){
         
         Type classType = Type(eclass);
         
-        for(auto method : eclass->methodList){
+        for (auto method : eclass->methodList) {
             Method *superMethod = eclass->superclass->lookupMethod(method->name);
 
             method->checkOverride(superMethod);
-            if (superMethod){
+            if (superMethod) {
                 method->checkPromises(superMethod, "super method", classType);
                 method->vti = superMethod->vti;
             }
@@ -167,11 +172,11 @@ void analyzeClassesAndWrite(FILE *fout){
                 method->vti = eclass->nextMethodVti++;
             }
         }
-        for(auto clMethod : eclass->classMethodList){
+        for (auto clMethod : eclass->classMethodList) {
             ClassMethod *superMethod = eclass->superclass->lookupClassMethod(clMethod->name);
             
             clMethod->checkOverride(superMethod);
-            if (superMethod){
+            if (superMethod) {
                 clMethod->checkPromises(superMethod, "super classmethod", classType);
                 clMethod->vti = superMethod->vti;
             }
@@ -182,7 +187,7 @@ void analyzeClassesAndWrite(FILE *fout){
         
         auto subRequiredInitializerNextVti = eclass->superclass ? eclass->superclass->requiredInitializerList.size() : 0;
         eclass->nextInitializerVti += eclass->requiredInitializerList.size();
-        for(auto initializer : eclass->initializerList){
+        for (auto initializer : eclass->initializerList) {
             Initializer *superInit = eclass->superclass->lookupInitializer(initializer->name);
             
             initializer->checkOverride(superInit);
@@ -235,7 +240,7 @@ void analyzeClassesAndWrite(FILE *fout){
         writer.writeByte(0);
     }
     else {
-        if(pkgCount > 253){
+        if (pkgCount > 253) {
             compilerError(nullptr, "You exceeded the maximum of 253 packages.");
         }
         

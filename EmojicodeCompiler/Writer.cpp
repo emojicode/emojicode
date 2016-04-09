@@ -9,34 +9,34 @@
 #include "Writer.hpp"
 #include <cmath>
 
-void Writer::writeUInt16(uint16_t value){
+void Writer::writeUInt16(uint16_t value) {
     fputc(value >> 8, out);
     fputc(value, out);
 }
 
-void Writer::writeEmojicodeChar(EmojicodeChar c){
+void Writer::writeEmojicodeChar(EmojicodeChar c) {
     fputc(c >> 24, out);
     fputc(c >> 16, out);
     fputc(c >> 8, out);
     fputc(c, out);
 }
 
-void Writer::writeCoin(EmojicodeCoin value){
+void Writer::writeCoin(EmojicodeCoin value) {
     fputc(value >> 24, out);
     fputc(value >> 16, out);
     fputc(value >> 8, out);
     fputc(value, out);
     
-    if(++writtenCoins == 4294967295) {
-        compilerError(nullptr, "Congratulations, you exceeded the limit of 4294967295 allowed instructions in a procedure.");
+    if (++writtenCoins == 4294967295) {
+        compilerError(nullptr, "You exceeded the limit of 4294967295 allowed instructions in a procedure.");
     }
 }
 
-void Writer::writeByte(unsigned char c){
+void Writer::writeByte(unsigned char c) {
     fputc(c, out);
 }
 
-void Writer::writeBytes(const char *bytes, size_t count){
+void Writer::writeBytes(const char *bytes, size_t count) {
     fwrite(bytes, sizeof(char), count, out);
 }
 
@@ -57,7 +57,7 @@ WriterPlaceholder<EmojicodeCoin> Writer::writeCoinPlaceholder() {
     return WriterPlaceholder<EmojicodeCoin>(*this, position);
 }
 
-WriterCoinsCountPlaceholder Writer::writeCoinsCountPlaceholderCoin(){
+WriterCoinsCountPlaceholder Writer::writeCoinsCountPlaceholderCoin() {
     off_t position = ftello(out);
     writeCoin(0);
     return WriterCoinsCountPlaceholder(*this, position, writtenCoins);

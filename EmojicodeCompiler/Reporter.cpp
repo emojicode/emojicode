@@ -6,12 +6,15 @@
 //  Copyright © 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.hpp"
+#include <cstring>
+#include <vector>
+#include <list>
+#include <map>
 #include "utf8.h"
 #include "Lexer.hpp"
 #include "Procedure.hpp"
 #include "Class.hpp"
-#include <cstring>
+#include "EmojicodeCompiler.hpp"
 
 enum ReturnManner {
     Return,
@@ -20,7 +23,7 @@ enum ReturnManner {
 };
 
 void reportDocumentation(const Token *documentationToken) {
-    if(!documentationToken) {
+    if (!documentationToken) {
         return;
     }
     
@@ -31,18 +34,21 @@ void reportDocumentation(const Token *documentationToken) {
     delete [] d;
 }
 
-void reportType(const char *key, Type type, bool last, TypeContext tc){
+void reportType(const char *key, Type type, bool last, TypeContext tc) {
     auto returnTypeName = type.toString(tc, false).c_str();
     
     if (key) {
-        printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s", key, type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
+        printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s",
+               key, type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
     }
     else {
-        printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s", type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
+        printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s",
+               type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
     }
 }
 
-void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Type> constraints, size_t superCount, TypeContext tc) {
+void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Type> constraints,
+                            size_t superCount, TypeContext tc) {
     printf("\"genericArguments\": [");
     
     auto gans = std::vector<EmojicodeString>(map.size());
@@ -70,7 +76,7 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
     printf("],");
 }
 
-void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, TypeContext tc){
+void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, TypeContext tc) {
     ecCharToCharStack(p->name, nameString);
     
     printf("{");
@@ -105,13 +111,13 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
     printf("}%s", last ? "" : ",");
 }
 
-void report(Package *package){
+void report(Package *package) {
     std::list<Enum *> enums;
     std::list<Class *> classes;
     std::list<Protocol *> protocols;
     
     for (auto exported : package->exportedTypes()) {
-        switch (exported.type.type) {
+        switch (exported.type.type()) {
             case TT_CLASS:
                 classes.push_back(exported.type.eclass);
                 break;
@@ -129,7 +135,7 @@ void report(Package *package){
     bool printedClass = false;
     printf("{");
     printf("\"classes\": [");
-    for(auto eclass : classes){
+    for (auto eclass : classes) {
         if (printedClass) {
             putchar(',');
         }
@@ -140,37 +146,41 @@ void report(Package *package){
         ecCharToCharStack(eclass->name(), className);
         printf("\"name\": \"%s\",", className);
 
-        reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(), eclass->superGenericArguments().size(), TypeContext(eclass));
+        reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(),
+                               eclass->superGenericArguments().size(), TypeContext(eclass));
         reportDocumentation(eclass->documentationToken());
         
         if (eclass->superclass) {
             ecCharToCharStack(eclass->superclass->name(), superClassName);
-            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},", eclass->superclass->package()->name(), superClassName);
+            printf("\"superclass\": {\"package\": \"%s\", \"name\": \"%s\"},",
+                   eclass->superclass->package()->name(), superClassName);
         }
         
         printf("\"methods\": [");
-        for(size_t i = 0; i < eclass->methodList.size(); i++){
+        for (size_t i = 0; i < eclass->methodList.size(); i++) {
             Method *method = eclass->methodList[i];
             reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size(), TypeContext(eclass, method));
         }
         printf("],");
         
         printf("\"initializers\": [");
-        for(size_t i = 0; i < eclass->initializerList.size(); i++){
+        for (size_t i = 0; i < eclass->initializerList.size(); i++) {
             Initializer *initializer = eclass->initializerList[i];
-            reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn, i + 1 == eclass->initializerList.size(), TypeContext(eclass, initializer));
+            reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
+                                       i + 1 == eclass->initializerList.size(), TypeContext(eclass, initializer));
         }
         printf("],");
         
         printf("\"classMethods\": [");
-        for(size_t i = 0; i < eclass->classMethodList.size(); i++){
+        for (size_t i = 0; i < eclass->classMethodList.size(); i++) {
             ClassMethod *classMethod = eclass->classMethodList[i];
-            reportProcedureInformation((Procedure *)classMethod, Return, eclass->classMethodList.size() == i + 1, TypeContext(eclass, classMethod));
+            reportProcedureInformation(classMethod, Return, eclass->classMethodList.size() == i + 1,
+                                       TypeContext(eclass, classMethod));
         }
         printf("],");
         
         printf("\"conformsTo\": [");
-        for(size_t i = 0; i < eclass->protocols().size(); i++){
+        for (size_t i = 0; i < eclass->protocols().size(); i++) {
             Protocol *protocol = eclass->protocols()[i];
             reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size(), TypeContext(eclass));
         }
@@ -180,7 +190,7 @@ void report(Package *package){
     
     printf("\"enums\": [");
     bool printedEnum = false;
-    for(auto eenum : enums){
+    for (auto eenum : enums) {
         if (printedEnum) {
             putchar(',');
         }
@@ -195,9 +205,9 @@ void report(Package *package){
         
         bool printedValue = false;
         printf("\"values\": [");
-        for(auto it : eenum->map){
+        for (auto it : eenum->map) {
             ecCharToCharStack(it.first, value);
-            if (printedValue){
+            if (printedValue) {
                 putchar(',');
             }
             printf("\"%s\"", value);
@@ -209,7 +219,7 @@ void report(Package *package){
     
     printf("\"protocols\": [");
     bool printedProtocol = false;
-    for(auto protocol : protocols){
+    for (auto protocol : protocols) {
         if (printedProtocol) {
             putchar(',');
         }
@@ -222,9 +232,10 @@ void report(Package *package){
         reportDocumentation(protocol->documentationToken());
         
         printf("\"methods\": [");
-        for(size_t i = 0; i < protocol->methods().size(); i++){
+        for (size_t i = 0; i < protocol->methods().size(); i++) {
             Method *method = protocol->methods()[i];
-            reportProcedureInformation((Procedure *)method, Return, i + 1 == protocol->methods().size(), TypeContext(Type(protocol, false)));
+            reportProcedureInformation(method, Return, i + 1 == protocol->methods().size(),
+                                       TypeContext(Type(protocol, false)));
         }
         printf("]}");
     }

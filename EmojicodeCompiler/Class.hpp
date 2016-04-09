@@ -20,7 +20,8 @@ public:
     /** Returns the package in which this type was defined. */
     Package* package() const { return package_; }
 protected:
-    TypeDefinition(EmojicodeChar name, Package *p, const Token *dToken) : name_(name), package_(p), documentationToken_(dToken) {}
+    TypeDefinition(EmojicodeChar name, Package *p, const Token *dToken)
+        : name_(name), package_(p), documentationToken_(dToken) {}
 private:
     const Token *documentationToken_;
     EmojicodeChar name_;
