@@ -81,6 +81,15 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
     
     printf("{");
     printf("\"name\": \"%s\",", nameString);
+    if (p->access == PRIVATE) {
+        printf("\"access\": \"🔒\",");
+    }
+    else if (p->access == PROTECTED) {
+        printf("\"access\": \"🔐\",");
+    }
+    else {
+        printf("\"access\": \"🔓\",");
+    }
     
     if (returnm == Return) {
         reportType("returnType", p->returnType, false, tc);
