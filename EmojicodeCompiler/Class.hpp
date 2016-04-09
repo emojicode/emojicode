@@ -21,15 +21,59 @@ public:
     Package* package() const { return package_; }
 protected:
     TypeDefinition(EmojicodeChar name, Package *p, const Token *dToken) : name_(name), package_(p), documentationToken_(dToken) {}
+private:
     const Token *documentationToken_;
     EmojicodeChar name_;
     Package *package_;
 };
 
-class Class : public TypeDefinition {
+class TypeDefinitionWithGenerics : public TypeDefinition {
+public:
+    void addGenericArgument(const Token *variable, Type constraint);
+    void setSuperTypeDef(TypeDefinitionWithGenerics *superTypeDef);
+    void setSuperGenericArguments(std::vector<Type> superGenericArguments);
+    void finalizeGenericArguments();
+    
+    /** Returns the number of generic arguments this type takes when referenced to in Emojicode source code. */
+    uint16_t numberOfOwnGenericArguments() const { return ownGenericArgumentCount_; }
+    /** 
+     * Returns the number of generic arguments a type of this type definition stores when initialized.
+     * This therefore also includes all arguments to supertypedefinitions of this type.
+     */
+    uint16_t numberOfGenericArgumentsWithSuperArguments() const { return genericArgumentCount_; }
+    /** 
+     * Tries to fetch the type reference type for the given generic variable name and stores it into @c type.
+     * @returns Whether the variable could be found or not. @c type is untouched if @c false was returned.
+     */
+    bool fetchVariable(EmojicodeString name, bool optional, Type *type);
+    /*
+     * Determines whether the given type reference resolution constraint allows the type to be
+     * resolved on this type definition.
+     */
+    virtual bool canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint) = 0;
+    
+    const std::map<EmojicodeString, Type>& ownGenericArgumentVariables() const { return ownGenericArgumentVariables_; }
+    const std::vector<Type>& superGenericArguments() const { return superGenericArguments_; }
+    const std::vector<Type>& genericArgumentConstraints() const { return genericArgumentConstraints_; }
+protected:
+    TypeDefinitionWithGenerics(EmojicodeChar name, Package *p, const Token *dToken) : TypeDefinition(name, p, dToken) {}
+private:
+    /** The number of generic arguments including those from a super eclass. */
+    uint16_t genericArgumentCount_ = 0;
+    /** The number of generic arguments this eclass takes. */
+    uint16_t ownGenericArgumentCount_ = 0;
+    /** The types for the generic arguments. */
+    std::vector<Type> genericArgumentConstraints_;
+    /** The arguments for the classes from which this eclass inherits. */
+    std::vector<Type> superGenericArguments_;
+    /** Generic type arguments as variables */
+    std::map<EmojicodeString, Type> ownGenericArgumentVariables_;
+};
+
+class Class : public TypeDefinitionWithGenerics {
 public:
     Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken)
-        : classBeginToken_(classBegin), TypeDefinition(name, pkg, dToken) {}
+        : classBeginToken_(classBegin), TypeDefinitionWithGenerics(name, pkg, dToken) {}
     
     /** Whether this eclass eligible for initializer inheritance. */
     bool inheritsContructors = false;
@@ -40,6 +84,8 @@ public:
     uint16_t index;
     
     const Token* classBeginToken() const { return classBeginToken_; }
+    
+    bool canBeUsedToResolve(TypeDefinitionWithGenerics *a);
     
     /** The variable names. */
     std::vector<Variable *> instanceVariables;
@@ -53,17 +99,6 @@ public:
     uint16_t nextMethodVti;
     uint16_t nextClassMethodVti;
     uint16_t nextInitializerVti;
-    
-    /** The number of generic arguments including those from a super eclass. */
-    uint16_t genericArgumentCount = 0;
-    /** The number of generic arguments this eclass takes. */
-    uint16_t ownGenericArgumentCount = 0;
-    /** The types for the generic arguments. */
-    std::vector<Type> genericArgumentConstraints;
-    /** The arguments for the classes from which this eclass inherits. */
-    std::vector<Type> superGenericArguments;
-    /** Generic type arguments as variables */
-    std::map<EmojicodeString, Type> ownGenericArgumentVariables;
     
     /** Returns true if @c a or a superclass of @c a conforms to @c to. */
     bool conformsTo(Protocol *to);

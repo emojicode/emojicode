@@ -140,7 +140,7 @@ void report(Package *package){
         ecCharToCharStack(eclass->name(), className);
         printf("\"name\": \"%s\",", className);
 
-        reportGenericArguments(eclass->ownGenericArgumentVariables, eclass->genericArgumentConstraints, eclass->superGenericArguments.size(), TypeContext(eclass));
+        reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(), eclass->superGenericArguments().size(), TypeContext(eclass));
         reportDocumentation(eclass->documentationToken());
         
         if (eclass->superclass) {

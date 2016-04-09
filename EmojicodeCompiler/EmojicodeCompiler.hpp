@@ -20,6 +20,7 @@
 #include <string>
 
 class TypeDefinition;
+class TypeDefinitionWithGenerics;
 class Class;
 class Protocol;
 class Enum;

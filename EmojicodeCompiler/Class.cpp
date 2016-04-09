@@ -12,6 +12,55 @@
 #include "utf8.h"
 #include "Lexer.hpp"
 
+void TypeDefinitionWithGenerics::addGenericArgument(const Token *variable, Type constraint) {
+    genericArgumentConstraints_.push_back(constraint);
+    
+    Type referenceType = Type(TT_REFERENCE, false, ownGenericArgumentCount_, this);
+    
+    if (ownGenericArgumentVariables_.count(variable->value)) {
+        compilerError(variable, "A generic argument variable with the same name is already in use.");
+    }
+    ownGenericArgumentVariables_.insert(std::map<EmojicodeString, Type>::value_type(variable->value, referenceType));
+    ownGenericArgumentCount_++;
+}
+
+void TypeDefinitionWithGenerics::setSuperTypeDef(TypeDefinitionWithGenerics *superTypeDef) {
+    genericArgumentCount_ = ownGenericArgumentCount_ + superTypeDef->genericArgumentCount_;
+    genericArgumentConstraints_.insert(genericArgumentConstraints_.begin(), superTypeDef->genericArgumentConstraints_.begin(), superTypeDef->genericArgumentConstraints_.end());
+    
+    for (auto &genericArg : ownGenericArgumentVariables_) {
+        genericArg.second.reference += superTypeDef->genericArgumentCount_;
+    }
+}
+
+void TypeDefinitionWithGenerics::setSuperGenericArguments(std::vector<Type> superGenericArguments) {
+    superGenericArguments_ = superGenericArguments;
+}
+
+void TypeDefinitionWithGenerics::finalizeGenericArguments() {
+    genericArgumentCount_ = ownGenericArgumentCount_;
+}
+
+bool TypeDefinitionWithGenerics::fetchVariable(EmojicodeString name, bool optional, Type *destType) {
+    auto it = ownGenericArgumentVariables_.find(name);
+    if (it != ownGenericArgumentVariables_.end()){
+        Type type = it->second;
+        if (optional) {
+            type.optional = true;
+        }
+        *destType = type;
+        return true;
+    }
+    return false;
+}
+
+bool Class::canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint) {
+    if (Class *cl = dynamic_cast<Class *>(resolutionConstraint)) {
+        return inheritsFrom(cl);
+    }
+    return false;
+}
+
 bool Class::conformsTo(Protocol *to) {
     for(Class *a = this; a != nullptr; a = a->superclass) {
         for(size_t i = 0; i < this->protocols_.size(); i++) {

@@ -701,10 +701,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             }
             
             switch (type.type) {
-                case TT_CLASS:
-                    for (size_t i = 0; i < type.eclass->ownGenericArgumentCount; i++) {
-                        if(!type.eclass->genericArgumentConstraints[i].compatibleTo(type.genericArguments[i], type) ||
-                           !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentConstraints[i], type)) {
+                case TT_CLASS: {
+                    auto offset = type.eclass->numberOfGenericArgumentsWithSuperArguments() - type.eclass->numberOfOwnGenericArguments();
+                    for (size_t i = 0; i < type.eclass->numberOfOwnGenericArguments(); i++) {
+                        if(!type.eclass->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments[i], type) ||
+                           !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentConstraints()[offset + i], type)) {
                             compilerError(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
                         }
                     }
@@ -712,6 +713,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
                     placeholder.write(originalType.type == TT_SOMETHING || originalType.optional ? 0x44 : 0x40);
                     writer.writeCoin(type.eclass->index);
                     break;
+                }
                 case TT_PROTOCOL:
                     placeholder.write(originalType.type == TT_SOMETHING || originalType.optional ? 0x45 : 0x41);
                     writer.writeCoin(type.protocol->index);

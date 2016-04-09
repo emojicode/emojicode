@@ -25,14 +25,14 @@ Protocol *PR_ENUMERATEABLE;
 Class *CL_ENUMERATOR;
 Class *CL_RANGE;
 
-Type Type::typeConstraintForReference(TypeContext ct){
+Type Type::typeConstraintForReference(TypeContext ct) const {
     Type t = *this;
     bool optional = t.optional;
     while (t.type == TT_LOCAL_REFERENCE) {
         t = ct.p->genericArgumentConstraints[t.reference];
     }
     while (t.type == TT_REFERENCE) {
-        t = ct.normalType.eclass->genericArgumentConstraints[t.reference];
+        t = ct.normalType.eclass->genericArgumentConstraints()[t.reference];
     }
     if (optional) {
         t.optional = true;
@@ -40,20 +40,21 @@ Type Type::typeConstraintForReference(TypeContext ct){
     return t;
 }
 
-Type Type::resolveOnSuperArguments(Class *c, bool *resolved){
+Type Type::resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved) const {
     Type t = *this;
+    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
     while (true) {
-        if (t.type != TT_REFERENCE || !c->superclass || t.reference >= c->superclass->genericArgumentCount) {
+        if (t.type != TT_REFERENCE || t.reference >= maxReferenceForSuper) {
             return t;
         }
         *resolved = true;
-        t = c->superGenericArguments[t.reference];
+        t = c->superGenericArguments()[t.reference];
     }
 }
 
 /** Returns the name of a type */
 
-bool Type::compatibleTo(Type to, TypeContext ct){
+bool Type::compatibleTo(Type to, TypeContext ct) const {
     //(to.optional || !a.optional): Either `to` accepts optionals, or if `to` does not accept optionals `a` mustn't be one.
     if (to.type == TT_SOMETHING) {
         return true;
@@ -63,8 +64,8 @@ bool Type::compatibleTo(Type to, TypeContext ct){
     }
     else if (this->type == TT_CLASS && to.type == TT_CLASS){
         if ((to.optional || !this->optional) && this->eclass->inheritsFrom(to.eclass)) {
-            if (to.eclass->ownGenericArgumentCount) {
-                for (int l = to.eclass->ownGenericArgumentCount, i = to.eclass->genericArgumentCount - l; i < l; i++) {
+            if (to.eclass->numberOfOwnGenericArguments()) {
+                for (int l = to.eclass->numberOfOwnGenericArguments(), i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
                     if (!this->genericArguments[i].identicalTo(to.genericArguments[i])) {
                         return false;
                     }
@@ -131,13 +132,13 @@ bool Type::compatibleTo(Type to, TypeContext ct){
     return false;
 }
 
-bool Type::identicalTo(Type to) {
+bool Type::identicalTo(Type to) const {
     if (type == to.type) {
         switch (type) {
             case TT_CLASS:
                 if (eclass == to.eclass) {
-                    if (to.eclass->ownGenericArgumentCount) {
-                        for (int l = to.eclass->ownGenericArgumentCount, i = to.eclass->genericArgumentCount - l; i < l; i++) {
+                    if (to.eclass->numberOfOwnGenericArguments()) {
+                        for (int l = to.eclass->numberOfOwnGenericArguments(), i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
                             if (!this->genericArguments[i].identicalTo(to.genericArguments[i])) {
                                 return false;
                             }
@@ -184,7 +185,7 @@ Type Type::resolveOn(TypeContext typeContext){
     }
     
     if (typeContext.normalType.type == TT_CLASS) {
-        while (t.type == TT_REFERENCE && t.referenceClass == typeContext.normalType.eclass) {
+        while (t.type == TT_REFERENCE && typeContext.normalType.eclass->canBeUsedToResolve(t.resolutionConstraint)) {
             Type tn = typeContext.normalType.genericArguments[t.reference];
             if (tn.type == TT_REFERENCE && tn.reference == t.reference) {
                 break;
@@ -198,7 +199,7 @@ Type Type::resolveOn(TypeContext typeContext){
     }
     
     if (t.type == TT_CLASS) {
-        for (int i = 0; i < t.eclass->genericArgumentCount; i++) {
+        for (int i = 0; i < t.eclass->numberOfGenericArgumentsWithSuperArguments(); i++) {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
         }
     }
@@ -269,10 +270,8 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
             }
         }
         if (ct.normalType.type == TT_CLASS) {
-            auto it = ct.normalType.eclass->ownGenericArgumentVariables.find(variableToken->value);
-            if (it != ct.normalType.eclass->ownGenericArgumentVariables.end()){
-                Type type = it->second;
-                type.optional = optional;
+            Type type = typeNothingness;
+            if (ct.normalType.eclass->fetchVariable(variableToken->value, optional, &type)) {
                 return type;
             }
         }
@@ -345,14 +344,14 @@ void Type::validateGenericArgument(Type ta, uint16_t i, TypeContext ct, const To
         compilerError(token, "The compiler encountered an internal inconsistency related to generics.");
     }
     if (this->eclass->superclass) {
-        i += this->eclass->superclass->genericArgumentCount;
+        i += this->eclass->superclass->numberOfGenericArgumentsWithSuperArguments();
     }
-    if (this->eclass->genericArgumentConstraints.size() <= i) {
+    if (this->eclass->numberOfGenericArgumentsWithSuperArguments() <= i) {
         auto name = toString(ct, true);
         compilerError(token, "Too many generic arguments provided for %s.", name.c_str());
     }
-    if (!ta.compatibleTo(this->eclass->genericArgumentConstraints[i], ct)) {
-        auto thisName = this->eclass->genericArgumentConstraints[i].toString(ct, true);
+    if (!ta.compatibleTo(this->eclass->genericArgumentConstraints()[i], ct)) {
+        auto thisName = this->eclass->genericArgumentConstraints()[i].toString(ct, true);
         auto thatName = ta.toString(ct, true);
         compilerError(token, "Generic argument %s is not compatible to constraint %s.", thatName.c_str(), thisName.c_str());
     }
@@ -360,8 +359,8 @@ void Type::validateGenericArgument(Type ta, uint16_t i, TypeContext ct, const To
 
 void Type::parseGenericArguments(TypeContext ct, TypeDynamism dynamism, Package *package, const Token *errorToken) {
     if (this->type == TT_CLASS) {
-        this->genericArguments = std::vector<Type>(this->eclass->superGenericArguments);
-        if (this->eclass->ownGenericArgumentCount){
+        this->genericArguments = std::vector<Type>(this->eclass->superGenericArguments());
+        if (this->eclass->numberOfOwnGenericArguments()){
             int count = 0;
             while(nextToken()->value[0] == E_SPIRAL_SHELL){
                 const Token *token = consumeToken();
@@ -373,9 +372,9 @@ void Type::parseGenericArguments(TypeContext ct, TypeDynamism dynamism, Package 
                 count++;
             }
             
-            if(count != this->eclass->ownGenericArgumentCount){
+            if(count != this->eclass->numberOfOwnGenericArguments()){
                 auto str = this->toString(typeNothingness, true);
-                compilerError(errorToken, "Type %s requires %d generic arguments, but %d were given.", str.c_str(), this->eclass->ownGenericArgumentCount, count);
+                compilerError(errorToken, "Type %s requires %d generic arguments, but %d were given.", str.c_str(), this->eclass->numberOfOwnGenericArguments(), count);
             }
         }
     }
@@ -438,7 +437,7 @@ void stringAppendEc(EmojicodeChar c, std::string &string){
 }
 
 Type::Type(Class *c, bool o) : optional(o), type(TT_CLASS), eclass(c) {
-    for (int i = 0; i < eclass->genericArgumentCount; i++) {
+    for (int i = 0; i < eclass->numberOfGenericArgumentsWithSuperArguments(); i++) {
         genericArguments.push_back(Type(TT_REFERENCE, false, i, c));
     }
 }
@@ -460,8 +459,8 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
                 return;
             }
             
-            int offset = type.eclass->genericArgumentCount - type.eclass->ownGenericArgumentCount;
-            for (int i = 0, l = type.eclass->ownGenericArgumentCount; i < l; i++) {
+            int offset = type.eclass->numberOfGenericArgumentsWithSuperArguments() - type.eclass->numberOfOwnGenericArguments();
+            for (int i = 0, l = type.eclass->numberOfOwnGenericArguments(); i < l; i++) {
                 stringAppendEc(E_SPIRAL_SHELL, string);
                 typeName(type.genericArguments[offset + i], typeContext, includePackageAndOptional, string);
             }
@@ -511,7 +510,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             if (typeContext.normalType.type == TT_CLASS) {
                 Class *eclass = typeContext.normalType.eclass;
                 do {
-                    for (auto it : eclass->ownGenericArgumentVariables) {
+                    for (auto it : eclass->ownGenericArgumentVariables()) {
                         if (it.second.reference == type.reference) {
                             string.append(it.first.utf8CString());
                             return;

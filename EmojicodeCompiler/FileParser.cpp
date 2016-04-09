@@ -347,17 +347,8 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
         consumeToken(IDENTIFIER);
         
         const Token *variable = consumeToken(VARIABLE);
-        
-        Type t = Type::parseAndFetchType(Type(eclass), NoDynamism, pkg, nullptr);
-        eclass->genericArgumentConstraints.push_back(t);
-        
-        Type rType(TT_REFERENCE, false, eclass->ownGenericArgumentCount, eclass);
-        
-        if (eclass->ownGenericArgumentVariables.count(variable->value)) {
-            compilerError(variable, "A generic argument variable with the same name is already in use.");
-        }
-        eclass->ownGenericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable->value, rType));
-        eclass->ownGenericArgumentCount++;
+        auto constraintType = Type::parseAndFetchType(Type(eclass), NoDynamism, pkg, nullptr);
+        eclass->addGenericArgument(variable, constraintType);
     }
     
     if (nextToken()->value[0] != E_GRAPES) { //Grape
@@ -372,29 +363,19 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
         if (type.type != TT_CLASS) {
             compilerError(token, "The superclass must be a class.");
         }
+        if (type.optional) {
+            compilerError(classNameToken, "You cannot inherit from an 🍬.");
+        }
         
         eclass->superclass = type.eclass;
-        eclass->genericArgumentCount = eclass->ownGenericArgumentCount + eclass->superclass->genericArgumentCount;
-        eclass->genericArgumentConstraints.insert(eclass->genericArgumentConstraints.begin(), eclass->superclass->genericArgumentConstraints.begin(), eclass->superclass->genericArgumentConstraints.end());
         
-        for (auto &genericArg : eclass->ownGenericArgumentVariables) {
-            genericArg.second.reference += eclass->superclass->genericArgumentCount;
-        }
-        
+        eclass->setSuperTypeDef(eclass->superclass);
         type.parseGenericArguments(Type(eclass), AllowGenericTypeVariables, pkg, token);
-        
-        if (type.optional){
-            compilerError(classNameToken, "Please remove 🍬.");
-        }
-        if (type.type != TT_CLASS) {
-            compilerError(classNameToken, "The type given as superclass is not a class.");
-        }
-        
-        eclass->superGenericArguments = type.genericArguments;
+        eclass->setSuperGenericArguments(type.genericArguments);
     }
     else {
         eclass->superclass = nullptr;
-        eclass->genericArgumentCount = eclass->ownGenericArgumentCount;
+        eclass->finalizeGenericArguments();
     }
     
     pkg->registerType(eclass, className, enamespace);

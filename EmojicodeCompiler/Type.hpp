@@ -53,7 +53,7 @@ public:
     static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism, Package *package, bool *dynamicType = nullptr);
     
     Type(TypeType t, bool o) : optional(o), type(t) {}
-    Type(TypeType t, bool o, uint16_t r, Class *c) : optional(o), type(t), reference(r), referenceClass(c) {}
+    Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c) : optional(o), type(t), reference(r), resolutionConstraint(c) {}
     Type(Class *c, bool o);
     Type(Class *c) : Type(c, false) {};
     Type(Protocol *p, bool o) : optional(o), type(TT_PROTOCOL), protocol(p) {}
@@ -67,15 +67,15 @@ public:
         Enum *eenum;
         struct {
             uint16_t reference;
-            Class *referenceClass;
+            TypeDefinitionWithGenerics *resolutionConstraint;
         };
         uint32_t arguments;
     };
     std::vector<Type> genericArguments;
     
-    bool compatibleTo(Type to, TypeContext tc);
+    bool compatibleTo(Type to, TypeContext tc) const;
     
-    bool identicalTo(Type to);
+    bool identicalTo(Type to) const;
     
     /** Returns the name of the package to which this type belongs. */
     const char* typePackage();
@@ -96,10 +96,10 @@ public:
     /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
     Type resolveOn(TypeContext contextType);
     
-    Type typeConstraintForReference(TypeContext ct);
+    Type typeConstraintForReference(TypeContext ct) const;
 private:
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
-    Type resolveOnSuperArguments(Class *c, bool *resolved);
+    Type resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved) const;
 };
 
 struct TypeContext {
