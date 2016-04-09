@@ -143,8 +143,8 @@ void compilerWarning(const Token *token, const char *err, ...) {
 }
 
 Class* getStandardClass(EmojicodeChar name, Package *_) {
-    bool existent;
-    auto type = _->fetchRawType(name, globalNamespace, false, nullptr, &existent);
+    Type type = typeNothingness;
+    _->fetchRawType(name, globalNamespace, false, nullptr, &type);
     if (type.type() != TT_CLASS) {
         ecCharToCharStack(name, nameString)
         compilerError(nullptr, "s package class %s is missing.", nameString);
@@ -153,8 +153,8 @@ Class* getStandardClass(EmojicodeChar name, Package *_) {
 }
 
 Protocol* getStandardProtocol(EmojicodeChar name, Package *_) {
-    bool existent;
-    auto type = _->fetchRawType(name, globalNamespace, false, nullptr, &existent);
+    Type type = typeNothingness;
+    _->fetchRawType(name, globalNamespace, false, nullptr, &type);
     if (type.type() != TT_PROTOCOL) {
         ecCharToCharStack(name, nameString)
         compilerError(nullptr, "s package protocol %s is missing.", nameString);

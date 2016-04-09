@@ -77,7 +77,7 @@ private:
 
 class Class : public TypeDefinitionWithGenerics {
 public:
-    static const std::list<Class *>& classes() { return classes_; };
+    static const std::list<Class *>& classes() { return classes_; }
     
     Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken);
     

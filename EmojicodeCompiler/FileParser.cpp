@@ -64,17 +64,21 @@ void reservedEmojis(const Token *token, const char *place) {
 
 //MARK: Utilities
 
-static void checkTypeValidity(EmojicodeChar name, EmojicodeChar enamespace,
-                              bool optional, const Token *token, Package *package) {
+static const Token* parseAndValidateTypeName(EmojicodeChar *name, EmojicodeChar *ns, Package *package) {
+    bool optional;
+    const Token *nameToken = Type::parseTypeName(name, ns, &optional);
+    
     if (optional) {
-        compilerError(token, "🍬 cannot be declared as type.");
+        compilerError(nameToken, "🍬 cannot be declared as type.");
     }
-    bool existent;
-    auto type = package->fetchRawType(name, enamespace, optional, token, &existent);
-    if (existent) {
+    
+    Type type = typeNothingness;
+    if (package->fetchRawType(*name, *ns, optional, nameToken, &type)) {
         auto str = type.toString(typeNothingness, true);
         compilerError(currentToken, "Type %s is already defined.", str.c_str());
     }
+    
+    return nameToken;
 }
 
 static bool hasAttribute(EmojicodeChar attributeName, const Token **token) {
@@ -115,13 +119,10 @@ void parseProtocol(Package *pkg, const Token *documentationToken, bool exported)
     static uint_fast16_t index = 0;
     
     EmojicodeChar name, enamespace;
-    bool optional;
-    const Token *classNameToken = Type::parseTypeName(&name, &enamespace, &optional);
-    
-    checkTypeValidity(name, enamespace, optional, classNameToken, pkg);
+    auto nameToken = parseAndValidateTypeName(&name, &enamespace, pkg);
     
     if (index == UINT16_MAX) {
-        compilerError(classNameToken, "You exceeded the limit of 65,535 protocols.");
+        compilerError(nameToken, "You exceeded the limit of 65,535 protocols.");
     }
     
     auto protocol = new Protocol(name, index++, pkg, documentationToken);
@@ -162,10 +163,7 @@ void parseProtocol(Package *pkg, const Token *documentationToken, bool exported)
 
 void parseEnum(Package *pkg, const Token *documentationToken, bool exported) {
     EmojicodeChar name, enamespace;
-    bool optional;
-    const Token *enumNameToken = Type::parseTypeName(&name, &enamespace, &optional);
-    
-    checkTypeValidity(name, enamespace, optional, enumNameToken, pkg);
+    parseAndValidateTypeName(&name, &enamespace, pkg);
     
     Enum *eenum = new Enum(name, pkg, documentationToken);
 
@@ -323,13 +321,10 @@ void parseClassBody(Class *eclass, Package *pkg,
 }
 
 void parseClass(Package *pkg, const Token *documentationToken, const Token *theToken, bool exported) {
-    EmojicodeChar className, enamespace;
-    bool optional;
-    const Token *classNameToken = Type::parseTypeName(&className, &enamespace, &optional);
+    EmojicodeChar name, enamespace;
+    parseAndValidateTypeName(&name, &enamespace, pkg);
     
-    checkTypeValidity(className, enamespace, optional, theToken, pkg);
-    
-    Class *eclass = new Class(className, theToken, pkg, documentationToken);
+    Class *eclass = new Class(name, theToken, pkg, documentationToken);
 
     while (nextToken()->value[0] == E_SPIRAL_SHELL) {
         consumeToken(IDENTIFIER);
@@ -341,18 +336,18 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
     
     if (nextToken()->value[0] != E_GRAPES) {
         EmojicodeChar typeName, typeNamespace;
-        bool optional, existent;
+        bool optional;
         const Token *token = Type::parseTypeName(&typeName, &typeNamespace, &optional);
-        Type type = pkg->fetchRawType(typeName, typeNamespace, optional, token, &existent);
         
-        if (!existent) {
+        Type type = typeNothingness;
+        if (!pkg->fetchRawType(typeName, typeNamespace, optional, token, &type)) {
             compilerError(token, "Superclass type does not exist.");
         }
         if (type.type() != TT_CLASS) {
             compilerError(token, "The superclass must be a class.");
         }
         if (type.optional) {
-            compilerError(classNameToken, "You cannot inherit from an 🍬.");
+            compilerError(token, "You cannot inherit from an 🍬.");
         }
         
         eclass->superclass = type.eclass;
@@ -366,7 +361,7 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
         eclass->finalizeGenericArguments();
     }
     
-    pkg->registerType(eclass, className, enamespace, exported);
+    pkg->registerType(eclass, name, enamespace, exported);
     pkg->registerClass(eclass);
     
     std::set<EmojicodeChar> requiredInitializers;
@@ -469,10 +464,9 @@ void parseFile(const char *path, Package *pkg) {
                     compilerError(classNameToken, "Optional types are not extendable.");
                 }
                 
-                bool existent;
-                Type type = pkg->fetchRawType(className, enamespace, optional, theToken, &existent);
+                Type type = typeNothingness;
                 
-                if (!existent) {
+                if (!pkg->fetchRawType(className, enamespace, optional, theToken, &type)) {
                     compilerError(classNameToken, "Class does not exist.");
                 }
                 if (type.type() != TT_CLASS) {

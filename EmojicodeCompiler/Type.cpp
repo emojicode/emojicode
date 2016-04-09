@@ -327,12 +327,11 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
     }
     else {
         EmojicodeChar typeName, typeNamespace;
-        bool optional, existent;
+        bool optional;
         const Token *token = parseTypeName(&typeName, &typeNamespace, &optional);
         
-        auto type = package->fetchRawType(typeName, typeNamespace, optional, token, &existent);
-        
-        if (!existent) {
+        auto type = typeNothingness;
+        if (!package->fetchRawType(typeName, typeNamespace, optional, token, &type)) {
             ecCharToCharStack(typeName, nameString);
             ecCharToCharStack(typeNamespace, namespaceString);
             compilerError(token, "Could not find type %s in enamespace %s.", nameString, namespaceString);
