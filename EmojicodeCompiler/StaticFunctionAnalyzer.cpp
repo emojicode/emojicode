@@ -913,7 +913,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token){
             
             Method *method;
             if(type.type == TT_PROTOCOL){
-                method = type.protocol->getMethod(token->value[0]);
+                method = type.protocol->getMethod(token, type, typeContext);
             }
             else if(type.type == TT_CLASS) {
                 method = type.eclass->getMethod(token, type, typeContext);

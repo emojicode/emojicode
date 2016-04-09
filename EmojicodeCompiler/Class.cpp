@@ -176,9 +176,19 @@ void Class::addProtocol(Protocol *protocol){
 
 //MARK: Protocol
 
-Method* Protocol::getMethod(EmojicodeChar name){
+Method* Protocol::lookupMethod(EmojicodeChar name){
     auto it = methods_.find(name);
     return it != methods_.end() ? it->second : nullptr;
+}
+
+Method* Protocol::getMethod(const Token *token, Type type, TypeContext typeContext) {
+    auto method = lookupMethod(token->value[0]);
+    if (method == nullptr){
+        auto eclass = type.toString(typeContext, true);
+        ecCharToCharStack(token->value[0], method);
+        compilerError(token, "%s has no method %s", eclass.c_str(), method);
+    }
+    return method;
 }
 
 void Protocol::addMethod(Method *method){

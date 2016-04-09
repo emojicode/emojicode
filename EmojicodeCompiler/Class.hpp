@@ -144,7 +144,8 @@ public:
     
     uint_fast16_t index;
     
-    Method* getMethod(EmojicodeChar c);
+    Method* getMethod(const Token *token, Type type, TypeContext typeContext);
+    Method* lookupMethod(EmojicodeChar name);
     void addMethod(Method *method);
     const std::vector<Method*>& methods() { return methodList_; };
 private:
