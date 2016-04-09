@@ -68,7 +68,7 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
         printJSONStringToFile(utf8, stdout);
         printf(",");
         reportType("constraint", constraints[i], true, tc);
-        printf("}%s", i + 1 == gans.size() ? "" : ",");
+        printf("}");
         delete [] utf8;
         reported = true;
     }
