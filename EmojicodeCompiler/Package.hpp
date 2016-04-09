@@ -9,8 +9,9 @@
 #ifndef Package_hpp
 #define Package_hpp
 
-#include "EmojicodeCompiler.hpp"
 #include <list>
+#include <array>
+#include "EmojicodeCompiler.hpp"
 
 #undef major
 #undef minor
@@ -52,7 +53,7 @@ public:
     
     void exportType(Type t, EmojicodeChar name);
     void registerClass(Class *cl) { classes_.push_back(cl); }
-    void registerType(Type t, EmojicodeChar name, EmojicodeChar ns);
+    void registerType(Type t, EmojicodeChar name, EmojicodeChar ns, bool exportFromPackage);
     
     const std::list<Class *>& classes() const { return classes_; };
     const std::list<ExportedType>& exportedTypes() const { return exportedTypes_; };

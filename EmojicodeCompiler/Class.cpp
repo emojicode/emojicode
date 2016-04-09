@@ -15,6 +15,14 @@
 #include "utf8.h"
 #include "Lexer.hpp"
 
+std::list<Class *> Class::classes_;
+
+Class::Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken)
+    : classBeginToken_(classBegin), TypeDefinitionWithGenerics(name, pkg, dToken) {
+    index = classes_.size();
+    classes_.push_back(this);
+}
+
 void TypeDefinitionWithGenerics::addGenericArgument(const Token *variable, Type constraint) {
     genericArgumentConstraints_.push_back(constraint);
 
@@ -88,8 +96,8 @@ bool Class::inheritsFrom(Class *from) {
 
 Initializer* Class::lookupInitializer(EmojicodeChar name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
-        auto pos = eclass->initializers.find(name);
-        if (pos != eclass->initializers.end()) {
+        auto pos = eclass->initializers_.find(name);
+        if (pos != eclass->initializers_.end()) {
             return pos->second;
         }
         if (!eclass->inheritsContructors) {  // Does this eclass inherit initializers?
@@ -111,8 +119,8 @@ Initializer* Class::getInitializer(const Token *token, Type type, TypeContext ty
 
 Method* Class::lookupMethod(EmojicodeChar name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
-        auto pos = eclass->methods.find(name);
-        if (pos != eclass->methods.end()) {
+        auto pos = eclass->methods_.find(name);
+        if (pos != eclass->methods_.end()) {
             return pos->second;
         }
     }
@@ -131,8 +139,8 @@ Method* Class::getMethod(const Token *token, Type type, TypeContext typeContext)
 
 ClassMethod* Class::lookupClassMethod(EmojicodeChar name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
-        auto pos = eclass->classMethods.find(name);
-        if (pos != eclass->classMethods.end()) {
+        auto pos = eclass->classMethods_.find(name);
+        if (pos != eclass->classMethods_.end()) {
             return pos->second;
         }
     }
@@ -158,21 +166,25 @@ void duplicateDeclarationCheck(T p, std::map<EmojicodeChar, T> dict, const Token
 }
 
 void Class::addClassMethod(ClassMethod *method) {
-    duplicateDeclarationCheck(method, classMethods, method->dToken);
-    classMethods[method->name] = method;
+    duplicateDeclarationCheck(method, classMethods_, method->dToken);
+    classMethods_[method->name] = method;
     classMethodList.push_back(method);
 }
 
 void Class::addMethod(Method *method) {
-    duplicateDeclarationCheck(method, methods, method->dToken);
-    methods[method->name] = method;
+    duplicateDeclarationCheck(method, methods_, method->dToken);
+    methods_[method->name] = method;
     methodList.push_back(method);
 }
 
 void Class::addInitializer(Initializer *init) {
-    duplicateDeclarationCheck(init, initializers, init->dToken);
-    initializers[init->name] = init;
+    duplicateDeclarationCheck(init, initializers_, init->dToken);
+    initializers_[init->name] = init;
     initializerList.push_back(init);
+    
+    if (init->required) {
+        requiredInitializers_.insert(init->name);
+    }
 }
 
 void Class::addProtocol(Protocol *protocol) {

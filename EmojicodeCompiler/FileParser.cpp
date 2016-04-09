@@ -9,7 +9,7 @@
 #include <libgen.h>
 #include <cstring>
 #include <climits>
-#include <vector>
+#include <list>
 #include "FileParser.hpp"
 #include "Procedure.hpp"
 #include "Lexer.hpp"
@@ -126,10 +126,7 @@ void parseProtocol(Package *pkg, const Token *documentationToken, bool exported)
     
     auto protocol = new Protocol(name, index++, pkg, documentationToken);
     
-    pkg->registerType(Type(protocol, false), name, enamespace);
-    if (exported) {
-        pkg->exportType(Type(protocol, false), name);
-    }
+    pkg->registerType(Type(protocol, false), name, enamespace, exported);
     
     const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES) {
@@ -172,10 +169,7 @@ void parseEnum(Package *pkg, const Token *documentationToken, bool exported) {
     
     Enum *eenum = new Enum(name, pkg, documentationToken);
 
-    pkg->registerType(Type(eenum, false), name, enamespace);
-    if (exported) {
-        pkg->exportType(Type(eenum, false), name);
-    }
+    pkg->registerType(Type(eenum, false), name, enamespace, exported);
     
     const Token *token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES) {
@@ -187,7 +181,8 @@ void parseEnum(Package *pkg, const Token *documentationToken, bool exported) {
     }
 }
 
-void parseClassBody(Class *eclass, Package *pkg, std::vector<Initializer *> *requiredInitializers, bool allowNative) {
+void parseClassBody(Class *eclass, Package *pkg,
+                    std::set<EmojicodeChar> *requiredInitializers, bool allowNative) {
     allowNative = allowNative && pkg->requiresBinary();
     
     const Token *token = consumeToken(IDENTIFIER);
@@ -312,20 +307,10 @@ void parseClassBody(Class *eclass, Package *pkg, std::vector<Initializer *> *req
                 initializer->parseBody(allowNative);
                 
                 if (requiredInitializers) {
-                    for (size_t i = 0; i < requiredInitializers->size(); i++) {
-                        Initializer *c = (*requiredInitializers)[i];
-                        if (c->name == initializer->name) {
-                            requiredInitializers->erase(requiredInitializers->begin() + i);
-                            break;
-                        }
-                    }
+                    requiredInitializers->erase(name);
                 }
                 
                 eclass->addInitializer(initializer);
-                
-                if (required) {
-                    eclass->requiredInitializerList.push_back(initializer);
-                }
             }
             break;
             default: {
@@ -381,27 +366,20 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
         eclass->finalizeGenericArguments();
     }
     
-    pkg->registerType(eclass, className, enamespace);
+    pkg->registerType(eclass, className, enamespace, exported);
     pkg->registerClass(eclass);
-    if (exported) {
-        pkg->exportType(eclass, className);
-    }
     
-    std::vector<Initializer *> requiredInitializers;
+    std::set<EmojicodeChar> requiredInitializers;
     if (eclass->superclass != nullptr) {
         // This list contains methods that must be implemented.
         // If a method is implemented it gets removed from this list by parseClassBody.
-        requiredInitializers = std::vector<Initializer *>(eclass->superclass->requiredInitializerList);
+        requiredInitializers = std::set<EmojicodeChar>(eclass->superclass->requiredInitializers());
     }
-    
-    eclass->index = classes.size();
-    classes.push_back(eclass);
     
     parseClassBody(eclass, pkg, &requiredInitializers, true);
     
     if (requiredInitializers.size()) {
-        Initializer *c = requiredInitializers[0];
-        ecCharToCharStack(c->name, name);
+        ecCharToCharStack(*requiredInitializers.begin(), name);
         compilerError(eclass->classBeginToken(), "Required initializer %s was not implemented.", name);
     }
 }
@@ -501,10 +479,8 @@ void parseFile(const char *path, Package *pkg) {
                     compilerError(classNameToken, "Only classes are extendable.");
                 }
                 
-                auto eclass = type.eclass;
-                
                 // Native extensions are allowed if the class was defined in this package.
-                parseClassBody(eclass, pkg, nullptr, eclass->package() == pkg);
+                parseClassBody(type.eclass, pkg, nullptr, type.eclass->package() == pkg);
                 
                 continue;
             }

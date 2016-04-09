@@ -141,7 +141,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     
     // Decide which classes inherit initializers, whether they agree to protocols,
     // and assign virtual table indexes before we analyze the classes!
-    for (auto eclass : classes) {
+    for (auto eclass : Class::classes()) {
         // Decide whether this eclass is eligible for initializer inheritance
         if (eclass->instanceVariables.size() == 0 && eclass->initializerList.size() == 0) {
             eclass->inheritsContructors = true;
@@ -185,8 +185,8 @@ void analyzeClassesAndWrite(FILE *fout) {
             }
         }
         
-        auto subRequiredInitializerNextVti = eclass->superclass ? eclass->superclass->requiredInitializerList.size() : 0;
-        eclass->nextInitializerVti += eclass->requiredInitializerList.size();
+        auto subRequiredInitializerNextVti = eclass->superclass ? eclass->superclass->requiredInitializers().size() : 0;
+        eclass->nextInitializerVti += eclass->requiredInitializers().size();
         for (auto initializer : eclass->initializerList) {
             Initializer *superInit = eclass->superclass->lookupInitializer(initializer->name);
             
@@ -194,7 +194,7 @@ void analyzeClassesAndWrite(FILE *fout) {
             
             if (initializer->required) {
                 if (superInit) {
-                    initializer->checkPromises(superInit, "super classmethod", classType);
+                    initializer->checkPromises(superInit, "super initializer", classType);
                     initializer->vti = superInit->vti;
                 }
                 else {
@@ -207,7 +207,7 @@ void analyzeClassesAndWrite(FILE *fout) {
         }
     }
     
-    writer.writeUInt16(classes.size());
+    writer.writeUInt16(Class::classes().size());
     
     auto pkgCount = Package::packagesInOrder().size();
     

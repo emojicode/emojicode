@@ -9,6 +9,10 @@
 #ifndef Class_hpp
 #define Class_hpp
 
+#include <list>
+#include <vector>
+#include <map>
+#include <set>
 #include "Package.hpp"
 
 class TypeDefinition {
@@ -73,8 +77,9 @@ private:
 
 class Class : public TypeDefinitionWithGenerics {
 public:
-    Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken)
-        : classBeginToken_(classBegin), TypeDefinitionWithGenerics(name, pkg, dToken) {}
+    static const std::list<Class *>& classes() { return classes_; };
+    
+    Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken);
     
     /** Whether this eclass eligible for initializer inheritance. */
     bool inheritsContructors = false;
@@ -95,7 +100,7 @@ public:
     std::vector<Method *> methodList;
     std::vector<Initializer *> initializerList;
     std::vector<ClassMethod *> classMethodList;
-    std::vector<Initializer *> requiredInitializerList;
+    const std::set<EmojicodeChar>& requiredInitializers() const { return requiredInitializers_; }
     
     uint16_t nextMethodVti;
     uint16_t nextClassMethodVti;
@@ -129,11 +134,14 @@ public:
     
     const std::vector<Protocol*>& protocols() const { return protocols_; };
 private:
-    std::map<EmojicodeChar, Method *> methods;
-    std::map<EmojicodeChar, ClassMethod *> classMethods;
-    std::map<EmojicodeChar, Initializer *> initializers;
+    static std::list<Class *> classes_;
+    
+    std::map<EmojicodeChar, Method *> methods_;
+    std::map<EmojicodeChar, ClassMethod *> classMethods_;
+    std::map<EmojicodeChar, Initializer *> initializers_;
     
     std::vector<Protocol *> protocols_;
+    std::set<EmojicodeChar> requiredInitializers_;
     
     const Token *classBeginToken_;
 };

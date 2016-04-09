@@ -14,7 +14,6 @@
 #include "EmojicodeShared.h"
 #include "Emojis.h"
 
-#include <array>
 #include <vector>
 #include <map>
 #include <string>
@@ -61,8 +60,6 @@ extern Class *CL_DICTIONARY;
 extern Class *CL_ENUMERATOR;
 extern Class *CL_RANGE;
 extern Protocol *PR_ENUMERATEABLE;
-
-extern std::vector<Class *> classes;
 
 //MARK: Errors
 

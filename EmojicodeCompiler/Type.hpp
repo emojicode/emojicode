@@ -12,6 +12,8 @@
 /** The Emoji representing the standard ("global") enamespace. */
 #define globalNamespace E_LARGE_RED_CIRCLE
 
+#include <vector>
+
 class Package;
 
 enum TypeType {

@@ -105,9 +105,13 @@ void Package::exportType(Type t, EmojicodeChar name) {
     exportedTypes_.push_back(ExportedType(t, name));
 }
 
-void Package::registerType(Type t, EmojicodeChar name, EmojicodeChar ns) {
+void Package::registerType(Type t, EmojicodeChar name, EmojicodeChar ns, bool exportFromPackage) {
     std::array<EmojicodeChar, 2> key = {ns, name};
     types_.emplace(key, t);
+    
+    if (exportFromPackage) {
+        exportType(t, name);
+    }
 }
 
 void Package::loadInto(Package *destinationPackage, EmojicodeChar ns, const Token *errorToken) const {
@@ -120,6 +124,6 @@ void Package::loadInto(Package *destinationPackage, EmojicodeChar ns, const Toke
             compilerError(errorToken, "Package %s could not be loaded into namespace %s of package %s: %s collides with a type of the same name in the same namespace.", name(), nss, destinationPackage->name(), tname);
         }
         
-        destinationPackage->registerType(exported.type, exported.name, ns);
+        destinationPackage->registerType(exported.type, exported.name, ns, false);
     }
 }
