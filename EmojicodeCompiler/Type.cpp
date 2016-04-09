@@ -26,14 +26,19 @@ Protocol *PR_ENUMERATEABLE;
 Class *CL_ENUMERATOR;
 Class *CL_RANGE;
 
-Type Type::typeConstraintForReference(TypeContext ct) const {
+Type Type::typeConstraintForReference(TypeContext typeContext) const {
     Type t = *this;
+    
+    if (t.type() == TT_SELF) {
+        t = typeContext.normalType;
+    }
+    
     bool optional = t.optional;
     while (t.type() == TT_LOCAL_REFERENCE) {
-        t = ct.p->genericArgumentConstraints[t.reference];
+        t = typeContext.p->genericArgumentConstraints[t.reference];
     }
     while (t.type() == TT_REFERENCE) {
-        t = ct.normalType.eclass->genericArgumentConstraints()[t.reference];
+        t = typeContext.normalType.eclass->genericArgumentConstraints()[t.reference];
     }
     if (optional) {
         t.optional = true;
@@ -51,6 +56,46 @@ Type Type::resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved
         *resolved = true;
         t = c->superGenericArguments()[t.reference];
     }
+}
+
+Type Type::resolveOn(TypeContext typeContext) {
+    Type t = *this;
+    bool optional = t.optional;
+    
+    if (t.type() == TT_SELF) {
+        t = typeContext.normalType;
+    }
+    
+    while (t.type() == TT_LOCAL_REFERENCE) {
+        t = (*typeContext.procedureGenericArguments)[t.reference];
+    }
+    
+    if (typeContext.normalType.type() == TT_CLASS) {
+        while (t.type() == TT_REFERENCE && typeContext.normalType.eclass->canBeUsedToResolve(t.resolutionConstraint)) {
+            Type tn = typeContext.normalType.genericArguments[t.reference];
+            if (tn.type() == TT_REFERENCE && tn.reference == t.reference) {
+                break;
+            }
+            t = tn;
+        }
+    }
+    
+    if (optional) {
+        t.optional = true;
+    }
+    
+    if (t.type() == TT_CLASS) {
+        for (int i = 0; i < t.eclass->numberOfGenericArgumentsWithSuperArguments(); i++) {
+            t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
+        }
+    }
+    else if (t.type() == TT_CALLABLE) {
+        for (int i = 0; i < t.arguments + 1; i++) {
+            t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
+        }
+    }
+    
+    return t;
 }
 
 /** Returns the name of a type */
@@ -119,6 +164,12 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
     else if (to.type() == TT_LOCAL_REFERENCE) {
         return (to.optional || !this->optional) && this->compatibleTo(to.typeConstraintForReference(ct), ct);
     }
+    else if (to.type() == TT_SELF) {
+        return (to.optional || !this->optional) && this->compatibleTo(to.typeConstraintForReference(ct), ct);
+    }
+    else if (this->type() == TT_SELF) {
+        return (to.optional || !this->optional) && this->typeConstraintForReference(ct).compatibleTo(to, ct);
+    }
     else if (this->type() == TT_CALLABLE && to.type() == TT_CALLABLE) {
         if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct) && to.arguments == this->arguments) {
             for (int i = 1; i <= to.arguments; i++) {
@@ -168,6 +219,7 @@ bool Type::identicalTo(Type to) const {
             case TT_REFERENCE:
             case TT_LOCAL_REFERENCE:
                 return reference == to.reference;
+            case TT_SELF:
             case TT_DOUBLE:
             case TT_INTEGER:
             case TT_SYMBOL:
@@ -179,41 +231,6 @@ bool Type::identicalTo(Type to) const {
         }
     }
     return false;
-}
-
-Type Type::resolveOn(TypeContext typeContext) {
-    Type t = *this;
-    bool optional = t.optional;
-    while (t.type() == TT_LOCAL_REFERENCE) {
-        t = (*typeContext.procedureGenericArguments)[t.reference];
-    }
-    
-    if (typeContext.normalType.type() == TT_CLASS) {
-        while (t.type() == TT_REFERENCE && typeContext.normalType.eclass->canBeUsedToResolve(t.resolutionConstraint)) {
-            Type tn = typeContext.normalType.genericArguments[t.reference];
-            if (tn.type() == TT_REFERENCE && tn.reference == t.reference) {
-                break;
-            }
-            t = tn;
-        }
-    }
-    
-    if (optional) {
-        t.optional = true;
-    }
-    
-    if (t.type() == TT_CLASS) {
-        for (int i = 0; i < t.eclass->numberOfGenericArgumentsWithSuperArguments(); i++) {
-            t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
-        }
-    }
-    else if (t.type() == TT_CALLABLE) {
-        for (int i = 0; i < t.arguments + 1; i++) {
-            t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
-        }
-    }
-    
-    return t;
 }
 
 //MARK: Type Parsing Utility
@@ -248,23 +265,19 @@ const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamesp
     return className;
 }
 
-Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *package, bool *dynamicType) {
-    if (dynamicType) {
-        *dynamicType = false;
+Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *package, TypeDynamism *dynamicType) {
+    auto beforeCandy = currentToken;
+    bool optional = false;
+    if (nextToken()->value[0] == E_CANDY) {
+        consumeToken();
+        optional = true;
     }
-    if (dynamism & AllowGenericTypeVariables && (ct.normalType.type() == TT_CLASS || ct.p) &&
-        (nextToken()->type == VARIABLE
-         || (nextToken()->value[0] == E_CANDY && nextToken()->nextToken->type == VARIABLE))) {
-        if (dynamicType) {
-            *dynamicType = true;
-        }
+    
+    if (dynamism & GenericTypeVariables && (ct.normalType.type() == TT_CLASS || ct.p) &&
+        nextToken()->type == VARIABLE) {
+        if (dynamicType) *dynamicType = GenericTypeVariables;
         
-        bool optional = false;
-        const Token *variableToken = consumeToken();
-        if (variableToken->value[0] == E_CANDY) {
-            variableToken = consumeToken();
-            optional = true;
-        }
+        auto variableToken = consumeToken();
         
         if (ct.p) {
             auto it = ct.p->genericArgumentVariables.find(variableToken->value);
@@ -283,24 +296,14 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
             
         compilerError(variableToken, "No such generic type variable \"%s\".", variableToken->value.utf8CString());
     }
-    else if (nextToken()->value[0] == E_RAT) {
-        const Token *token = consumeToken();
-        
-        if (!(dynamism & AllowDynamicClassType)) {
-            compilerError(token, "🐀 not allowed here.");
-        }
-        
-        if (dynamicType) {
-            *dynamicType = true;
-        }
-        return ct.normalType;
+    else if (nextToken()->value[0] == E_ROOTSTER) {
+        auto ratToken = consumeToken();
+        if (!(dynamism & Self)) compilerError(ratToken, "🐓 not allowed here.");
+        if (dynamicType) *dynamicType = Self;
+        return Type(TT_SELF, optional);
     }
-    else if (nextToken()->value[0] == E_GRAPES || (nextToken()->value[0] == E_CANDY && nextToken()->nextToken->type == VARIABLE)) {
-        bool optional = false;
-        if (nextToken()->value[0] == E_CANDY) {
-            consumeToken();
-            optional = true;
-        }
+    else if (nextToken()->value[0] == E_GRAPES) {
+        if (dynamicType) *dynamicType = NoDynamism;
         consumeToken();
         
         Type t(TT_CALLABLE, optional);
@@ -326,6 +329,8 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
         return t;
     }
     else {
+        if (dynamicType) *dynamicType = NoDynamism;
+        currentToken = beforeCandy;
         EmojicodeChar typeName, typeNamespace;
         bool optional;
         const Token *token = parseTypeName(&typeName, &typeNamespace, &optional);
@@ -433,6 +438,7 @@ const char* Type::typePackage() {
         case TT_REFERENCE:
         case TT_LOCAL_REFERENCE:
         case TT_CALLABLE:
+        case TT_SELF:
             return "";
     }
 }
@@ -499,6 +505,9 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             return;
         case TT_SOMEOBJECT:
             stringAppendEc(E_LARGE_BLUE_CIRCLE, string);
+            return;
+        case TT_SELF:
+            stringAppendEc(E_ROOTSTER, string);
             return;
         case TT_CALLABLE:
             stringAppendEc(E_GRAPES, string);

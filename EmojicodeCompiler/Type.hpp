@@ -33,13 +33,20 @@ enum TypeType {
     /** Used with generics */
     TT_REFERENCE,
     TT_LOCAL_REFERENCE,
-    TT_CALLABLE
+    TT_CALLABLE,
+    
+    TT_SELF
 };
 
 enum TypeDynamism {
+    /** No dynamism is allowed or no dynamism was used. */
     NoDynamism = 0,
-    AllowGenericTypeVariables = 0b1,
-    AllowDynamicClassType = 0b10
+    /** No kind of dynamism is allowed. This value never comes from a call to @c parseAndFetchType . */
+    AllKindsOfDynamism = 0b11,
+    /** Generic Variables are allowed or were used. */
+    GenericTypeVariables = 0b1,
+    /** Self is allowed or was used. */
+    Self = 0b10
 };
 
 struct TypeContext;
@@ -51,7 +58,8 @@ public:
     static const Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional);
     
     /** Reads a type name and stores it into the given pointers. */
-    static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism, Package *package, bool *dynamicType = nullptr);
+    static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism,
+                                  Package *package, TypeDynamism *dynamicType = nullptr);
     
     Type(TypeType t, bool o) : optional(o), type_(t) {}
     Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c) : optional(o), type_(t), reference(r), resolutionConstraint(c) {}

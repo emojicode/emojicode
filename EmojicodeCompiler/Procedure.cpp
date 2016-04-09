@@ -17,7 +17,7 @@ void Callable::parseArgumentList(TypeContext ct, Package *package) {
     
     while ((token = nextToken()) && token->type == VARIABLE) {
         auto variableToken = consumeToken(VARIABLE);
-        auto type = Type::parseAndFetchType(ct, AllowGenericTypeVariables, package);
+        auto type = Type::parseAndFetchType(ct, AllKindsOfDynamism, package);
         
         arguments.push_back(Variable(Variable(variableToken, type)));
     }
@@ -30,7 +30,7 @@ void Callable::parseArgumentList(TypeContext ct, Package *package) {
 void Callable::parseReturnType(TypeContext ct, Package *package) {
     if (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW) {
         consumeToken();
-        returnType = Type::parseAndFetchType(ct, AllowGenericTypeVariables, package);
+        returnType = Type::parseAndFetchType(ct, AllKindsOfDynamism, package);
     }
 }
 
@@ -81,7 +81,7 @@ void Procedure::parseGenericArguments(TypeContext ct, Package *package) {
         consumeToken();
         const Token *variable = consumeToken(VARIABLE);
         
-        Type t = Type::parseAndFetchType(Type(eclass), AllowGenericTypeVariables, package, nullptr);
+        Type t = Type::parseAndFetchType(Type(eclass), GenericTypeVariables, package, nullptr);
         genericArgumentConstraints.push_back(t);
         
         Type rType(TT_LOCAL_REFERENCE, false);

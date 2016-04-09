@@ -219,7 +219,7 @@ void parseClassBody(Class *eclass, Package *pkg,
                     compilerError(token, "You exceeded the limit of 65,535 instance variables.");
                 }
 
-                auto type = Type::parseAndFetchType(Type(eclass), AllowGenericTypeVariables, pkg, nullptr);
+                auto type = Type::parseAndFetchType(Type(eclass), GenericTypeVariables, pkg, nullptr);
                 
                 eclass->instanceVariables.push_back(new Variable(variableName, type));
             }
@@ -353,7 +353,7 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
         eclass->superclass = type.eclass;
         
         eclass->setSuperTypeDef(eclass->superclass);
-        type.parseGenericArguments(Type(eclass), AllowGenericTypeVariables, pkg, token);
+        type.parseGenericArguments(Type(eclass), GenericTypeVariables, pkg, token);
         eclass->setSuperGenericArguments(type.genericArguments);
     }
     else {

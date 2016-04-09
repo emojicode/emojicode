@@ -12,7 +12,7 @@
 enum Emojis {
     E_LARGE_RED_CIRCLE = 0x1F534,
     E_GRAPES = 0x1F347,
-    E_RAT = 0x1F400,
+    E_ROOTSTER = 0x1F413,
     E_CANDY = 0x1F36C,
     E_ORANGE_TRIANGLE = 0x1F536,
     E_RED_APPLE = 0x1F34E,

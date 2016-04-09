@@ -15,8 +15,6 @@
 
 std::vector<const Token *> stringPool;
 
-#define intelligentDynamismLevel() (inClassContext ? TypeDynamism(AllowDynamicClassType | AllowGenericTypeVariables) : AllowGenericTypeVariables)
-
 Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken, Type type) {
     auto returnType = parse(token, parentToken);
     if (!returnType.compatibleTo(type, typeContext)) {
@@ -60,7 +58,7 @@ std::vector<Type> StaticFunctionAnalyzer::checkGenericArguments(Procedure *p, co
     while (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_SPIRAL_SHELL) {
         consumeToken();
         
-        auto type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package);
+        auto type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package);
         k.push_back(type);
     }
     
@@ -276,7 +274,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 compilerError(token, "Cannot redeclare variable.");
             }
             
-            Type t = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package);
+            Type t = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package);
             
             uint8_t id = nextVariableID();
             scoper.currentScope()->setLocalVariable(varName,
@@ -519,7 +517,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_STRAWBERRY:
         case E_WATERMELON:
         case E_AUBERGINE:
-        case E_RAT: {
+        case E_ROOTSTER: {
             ecCharToCharStack(token->value[0], identifier);
             compilerError(token, "Unexpected identifier %s.", identifier);
             return typeNothingness;
@@ -544,7 +542,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_UP_POINTING_RED_TRIANGLE: {
             writer.writeCoin(0x13);
             
-            Type type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package);
+            Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package);
             
             if (type.type() != TT_ENUM) {
                 compilerError(token, "The given type cannot be accessed.");
@@ -569,46 +567,6 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 writer.writeCoin((EmojicodeCoin)v.second);
             }
             
-            return type;
-        }
-        case E_LARGE_BLUE_DIAMOND: {
-            writer.writeCoin(0x4);
-            
-            bool dynamic;
-            Type type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package, &dynamic);
-            
-            if (type.type() != TT_CLASS) {
-                compilerError(token, "The given type cannot be initiatied.");
-            }
-            else if (type.optional) {
-                compilerError(token, "Optionals cannot be initiatied.");
-            }
-            
-            if (dynamic) {
-                writer.writeCoin(UINT32_MAX);
-            }
-            else {
-                writer.writeCoin(type.eclass->index);
-            }
-            
-            auto initializerName = consumeToken(IDENTIFIER);
-            
-            Initializer *initializer = type.eclass->getInitializer(initializerName, type, typeContext);
-            
-            if (dynamic && !initializer->required) {
-                compilerError(initializerName, "Only required initializers can be used with 🐀.");
-            }
-            
-            initializer->deprecatedWarning(initializerName);
-            
-            writer.writeCoin(initializer->vti);
-            
-            checkAccess(initializer, token, "Initializer");
-            checkArguments(initializer->arguments, type, token);
-            
-            if (initializer->canReturnNothingness) {
-                type.optional = true;
-            }
             return type;
         }
         case E_HIGH_VOLTAGE_SIGN: {
@@ -781,35 +739,6 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             returnType.optional = true;
             return returnType.resolveOn(typeContext);
         }
-        case E_DOUGHNUT: {
-            writer.writeCoin(0x2);
-            
-            const Token *methodToken = consumeToken(IDENTIFIER);
-            
-            Type type = Type::parseAndFetchType(typeContext, intelligentDynamismLevel(), package, nullptr);
-            
-            if (type.optional) {
-                compilerWarning(token, "Please remove useless 🍬.");
-            }
-            if (type.type() != TT_CLASS) {
-                compilerError(token, "The given type is not a class.");
-            }
-            
-            writer.writeCoin(type.eclass->index);
-            
-            auto method = type.eclass->getClassMethod(methodToken, type, typeContext);
-            method->deprecatedWarning(methodToken);
-            
-            writer.writeCoin(method->vti);
-            
-            auto genericArgs = checkGenericArguments(method, token);
-            auto typeContext = TypeContext(type, method, &genericArgs);
-            
-            checkAccess(method, token, "Class method");
-            checkArguments(method->arguments, typeContext, token);
-            
-            return method->returnType.resolveOn(typeContext);
-        }
         case E_HOT_PEPPER: {
             const Token *methodName = consumeToken();
             
@@ -899,6 +828,84 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             checkArguments(method->arguments, tc, token);
             
             return method->returnType.resolveOn(tc);
+        }
+        case E_LARGE_BLUE_DIAMOND: {
+            writer.writeCoin(0x4);
+            
+            TypeDynamism dynamism;
+            Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package, &dynamism)
+            .typeConstraintForReference(typeContext);
+            
+            if (type.type() != TT_CLASS) {
+                compilerError(token, "The given type cannot be initiatied.");
+            }
+            else if (type.optional) {
+                compilerError(token, "Optionals cannot be initiatied.");
+            }
+            
+            if (dynamism) {
+                writer.writeCoin(UINT32_MAX);
+            }
+            else {
+                writer.writeCoin(type.eclass->index);
+            }
+            
+            auto initializerName = consumeToken(IDENTIFIER);
+            
+            Initializer *initializer = type.eclass->getInitializer(initializerName, type, typeContext);
+            
+            if (dynamism == Self && !initializer->required) {
+                compilerError(initializerName, "Only required initializers can be used with dynamic types.");
+            }
+            else if (dynamism == GenericTypeVariables) {
+                compilerError(initializerName, "You cannot instantiate generic types yet.");
+            }
+            
+            initializer->deprecatedWarning(initializerName);
+            
+            writer.writeCoin(initializer->vti);
+            
+            checkAccess(initializer, token, "Initializer");
+            checkArguments(initializer->arguments, type, token);
+            
+            if (initializer->canReturnNothingness) {
+                type.optional = true;
+            }
+            return type;
+        }
+        case E_DOUGHNUT: {
+            writer.writeCoin(0x2);
+            
+            const Token *methodToken = consumeToken(IDENTIFIER);
+            
+            TypeDynamism dynamism;
+            Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package, &dynamism)
+                            .typeConstraintForReference(typeContext);
+            
+            if (type.optional) {
+                compilerWarning(token, "Please remove useless 🍬.");
+            }
+            if (type.type() != TT_CLASS) {
+                compilerError(token, "The given type is not a class.");
+            }
+            if (dynamism == GenericTypeVariables) {
+                compilerError(token, "You cannot call methods generic types yet.");
+            }
+            
+            writer.writeCoin(type.eclass->index);
+            
+            auto method = type.eclass->getClassMethod(methodToken, type, typeContext);
+            method->deprecatedWarning(methodToken);
+            
+            writer.writeCoin(method->vti);
+            
+            auto genericArgs = checkGenericArguments(method, token);
+            auto typeContext = TypeContext(type, method, &genericArgs);
+            
+            checkAccess(method, token, "Class method");
+            checkArguments(method->arguments, typeContext, token);
+            
+            return method->returnType.resolveOn(typeContext);
         }
         default: {
             auto placeholder = writer.writeCoinPlaceholder();
