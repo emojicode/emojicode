@@ -25,8 +25,10 @@ struct FlowControlReturn {
 
 class StaticFunctionAnalyzer {
 public:
-    static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, Scoper &scoper, bool inClassContext = false, Initializer *i = nullptr);
-    StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext, TypeContext typeContext, Writer &writer, Scoper &scoper);
+    static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, Scoper &scoper,
+                                         bool inClassContext = false, Initializer *i = nullptr);
+    StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext,
+                           TypeContext typeContext, Writer &writer, Scoper &scoper);
     
     /** Performs the analyziation. */
     void analyze(bool compileDeadCode = false, Scope *copyScope = nullptr);

@@ -58,9 +58,7 @@ bool TypeDefinitionWithGenerics::fetchVariable(EmojicodeString name, bool option
     auto it = ownGenericArgumentVariables_.find(name);
     if (it != ownGenericArgumentVariables_.end()) {
         Type type = it->second;
-        if (optional) {
-            type.optional = true;
-        }
+        if (optional) type.setOptional();
         *destType = type;
         return true;
     }
@@ -76,8 +74,8 @@ bool Class::canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint)
 
 bool Class::conformsTo(Protocol *to) {
     for (Class *a = this; a != nullptr; a = a->superclass) {
-        for (size_t i = 0; i < this->protocols_.size(); i++) {
-            if (a->protocols_[i] == to) {
+        for (auto protocol : this->protocols()) {
+            if (protocol.protocol == to) {
                 return true;
             }
         }
@@ -187,11 +185,21 @@ void Class::addInitializer(Initializer *init) {
     }
 }
 
-void Class::addProtocol(Protocol *protocol) {
+bool Class::addProtocol(Type protocol) {
     protocols_.push_back(protocol);
+    return true;
 }
 
 //MARK: Protocol
+
+uint_fast16_t Protocol::nextIndex = 0;
+
+Protocol::Protocol(EmojicodeChar name, Package *pkg, const Token *dt) : TypeDefinitionWithGenerics(name, pkg, dt) {
+    if (index == UINT16_MAX) {
+        compilerError(nullptr, "You exceeded the limit of 65,535 protocols.");
+    }
+    index = nextIndex++;
+}
 
 Method* Protocol::lookupMethod(EmojicodeChar name) {
     auto it = methods_.find(name);
@@ -215,11 +223,15 @@ void Protocol::addMethod(Method *method) {
     methodList_.push_back(method);
 }
 
+bool Protocol::canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint) {
+    return resolutionConstraint == this;
+}
+
 //MARK: Enum
 
 std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeChar c) const {
-    auto it = map.find(c);
-    if (it == map.end()) {
+    auto it = map_.find(c);
+    if (it == map_.end()) {
         return std::pair<bool, EmojicodeInteger>(false, 0);
     }
     else {
@@ -228,5 +240,5 @@ std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeChar c) const {
 }
 
 void Enum::addValueFor(EmojicodeChar c) {
-    map[c] = valuesCounter++;
+    map_[c] = valuesCounter++;
 }

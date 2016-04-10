@@ -87,23 +87,22 @@ void analyzeClass(Type classType, Writer &writer) {
         uint_fast16_t biggestProtocolIndex = 0;
         
         for (auto protocol : eclass->protocols()) {
-            writer.writeUInt16(protocol->index);
+            writer.writeUInt16(protocol.protocol->index);
             
-            if (protocol->index > biggestProtocolIndex) {
-                biggestProtocolIndex = protocol->index;
+            if (protocol.protocol->index > biggestProtocolIndex) {
+                biggestProtocolIndex = protocol.protocol->index;
             }
-            if (protocol->index < smallestProtocolIndex) {
-                smallestProtocolIndex = protocol->index;
+            if (protocol.protocol->index < smallestProtocolIndex) {
+                smallestProtocolIndex = protocol.protocol->index;
             }
             
-            writer.writeUInt16(protocol->methods().size());
+            writer.writeUInt16(protocol.protocol->methods().size());
             
-            for (auto method : protocol->methods()) {
+            for (auto method : protocol.protocol->methods()) {
                 Method *clm = eclass->lookupMethod(method->name);
-                
                 if (clm == nullptr) {
                     auto className = classType.toString(typeNothingness, true);
-                    auto protocolName = Type(protocol, false).toString(typeNothingness, true);
+                    auto protocolName = protocol.toString(typeNothingness, true);
                     ecCharToCharStack(method->name, ms);
                     compilerError(eclass->classBeginToken(),
                                   "Class %s does not agree to protocol %s: Method %s is missing.",
@@ -111,7 +110,15 @@ void analyzeClass(Type classType, Writer &writer) {
                 }
                 
                 writer.writeUInt16(clm->vti);
-                clm->checkPromises(method, "protocol definition", classType);
+                Procedure::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
+                                              method->name, clm->dToken, "protocol definition", classType);
+                Procedure::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
+                                              clm->dToken, "protocol definition", classType);
+                for (int i = 0; i < method->arguments.size(); i++) {
+                    Procedure::checkArgument(clm->arguments[i].type,
+                                             method->arguments[i].type.resolveOn(protocol, false), i,
+                                             clm->dToken, "protocol definition", classType);
+                }
             }
         }
         

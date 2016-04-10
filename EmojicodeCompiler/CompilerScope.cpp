@@ -58,7 +58,7 @@ CompilerVariable* Scope::getLocalVariable(const Token *variable) {
 void Scope::initializerUnintializedVariablesCheck(const Token *errorToken, const char *errorMessage) {
     for (auto it : map) {
         CompilerVariable *cv = it.second;
-        if (cv->initialized <= 0 && !cv->type.optional) {
+        if (cv->initialized <= 0 && !cv->type.optional()) {
             const char *variableName = cv->definitionToken->value.utf8CString();
             compilerError(errorToken, errorMessage, variableName);
         }

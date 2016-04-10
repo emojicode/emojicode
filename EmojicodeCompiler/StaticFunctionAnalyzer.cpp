@@ -154,11 +154,12 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token) {
         writer.writeCoin(id);
         
         Type t = parse(consumeToken(), token);
-        if (!t.optional) {
+        if (!t.optional()) {
             compilerError(token, "🍊🍦 can only be used with optionals.");
         }
         
-        t.optional = false;
+        t = t.copyWithoutOptional();
+        
         scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true, varName));
     }
     else {
@@ -278,7 +279,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             uint8_t id = nextVariableID();
             scoper.currentScope()->setLocalVariable(varName,
-                                                    new CompilerVariable(t, id, t.optional ? 1 : 0, false, varName));
+                                                    new CompilerVariable(t, id, t.optional() ? 1 : 0, false, varName));
             
             return typeNothingness;
         }
@@ -547,7 +548,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             if (type.type() != TT_ENUM) {
                 compilerError(token, "The given type cannot be accessed.");
             }
-            else if (type.optional) {
+            else if (type.optional()) {
                 compilerError(token, "Optionals cannot be accessed.");
             }
             
@@ -668,12 +669,12 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                         }
                     }
                     
-                    placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional ? 0x44 : 0x40);
+                    placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional() ? 0x44 : 0x40);
                     writer.writeCoin(type.eclass->index);
                     break;
                 }
                 case TT_PROTOCOL:
-                    placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional ? 0x45 : 0x41);
+                    placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional() ? 0x45 : 0x41);
                     writer.writeCoin(type.protocol->index);
                     break;
                 case TT_BOOLEAN:
@@ -694,7 +695,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 }
             }
             
-            type.optional = true;
+            type.setOptional();
             return type;
         }
         case E_BEER_MUG: {
@@ -702,13 +703,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             Type t = parse(consumeToken(), token);
             
-            if (!t.optional) {
+            if (!t.optional()) {
                 compilerError(token, "🍺 can only be used with optionals.");
             }
             
-            t.optional = false;
-            
-            return t;
+            return t.copyWithoutOptional();
         }
         case E_CLINKING_BEER_MUGS: {
             writer.writeCoin(0x3B);
@@ -718,7 +717,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             const Token *methodToken = consumeToken();
             
             Type type = parse(consumeToken(), token);
-            if (!type.optional) {
+            if (!type.optional()) {
                 compilerError(token, "🍻 may only be used on 🍬.");
             }
             
@@ -736,7 +735,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             placeholder.write();
             
             Type returnType = method->returnType;
-            returnType.optional = true;
+            returnType.setOptional();
             return returnType.resolveOn(typeContext);
         }
         case E_HOT_PEPPER: {
@@ -839,7 +838,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             if (type.type() != TT_CLASS) {
                 compilerError(token, "The given type cannot be initiatied.");
             }
-            else if (type.optional) {
+            else if (type.optional()) {
                 compilerError(token, "Optionals cannot be initiatied.");
             }
             
@@ -869,7 +868,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             checkArguments(initializer->arguments, type, token);
             
             if (initializer->canReturnNothingness) {
-                type.optional = true;
+                type.setOptional();
             }
             return type;
         }
@@ -882,7 +881,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package, &dynamism)
                             .typeConstraintForReference(typeContext);
             
-            if (type.optional) {
+            if (type.optional()) {
                 compilerWarning(token, "Please remove useless 🍬.");
             }
             if (type.type() != TT_CLASS) {
@@ -914,7 +913,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             Type type = parse(tobject, token).typeConstraintForReference(typeContext);
             
-            if (type.optional) {
+            if (type.optional()) {
                 compilerError(tobject, "You cannot call methods on optionals.");
             }
             

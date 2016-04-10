@@ -14,7 +14,8 @@
 
 class CompilerVariable {
 public:
-    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen, const Token *token) : type(type), id(id), initialized(initd), definitionToken(token), frozen_(frozen) {};
+    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen, const Token *token)
+        : type(type), id(id), initialized(initd), definitionToken(token), frozen_(frozen) {};
     /** The type of the variable. */
     Type type;
     /** The ID of the variable. */

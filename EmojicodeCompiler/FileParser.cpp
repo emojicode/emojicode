@@ -81,6 +81,16 @@ static const Token* parseAndValidateTypeName(EmojicodeChar *name, EmojicodeChar 
     return nameToken;
 }
 
+static void parseGenericArgumentList(TypeDefinitionWithGenerics *typeDef, TypeContext tc, Package *package) {
+    while (nextToken()->value[0] == E_SPIRAL_SHELL) {
+        consumeToken(IDENTIFIER);
+        
+        const Token *variable = consumeToken(VARIABLE);
+        auto constraintType = Type::parseAndFetchType(tc, NoDynamism, package, nullptr);
+        typeDef->addGenericArgument(variable, constraintType);
+    }
+}
+
 static bool hasAttribute(EmojicodeChar attributeName, const Token **token) {
     if ((*token)->value[0] == attributeName) {
         *token = consumeToken(IDENTIFIER);
@@ -116,24 +126,22 @@ static AccessLevel readAccessLevel(const Token **token) {
 }
 
 void parseProtocol(Package *pkg, const Token *documentationToken, bool exported) {
-    static uint_fast16_t index = 0;
-    
     EmojicodeChar name, enamespace;
-    auto nameToken = parseAndValidateTypeName(&name, &enamespace, pkg);
+    parseAndValidateTypeName(&name, &enamespace, pkg);
     
-    if (index == UINT16_MAX) {
-        compilerError(nameToken, "You exceeded the limit of 65,535 protocols.");
-    }
+    auto protocol = new Protocol(name, pkg, documentationToken);
     
-    auto protocol = new Protocol(name, index++, pkg, documentationToken);
+    parseGenericArgumentList(protocol, Type(protocol, false), pkg);
+    protocol->finalizeGenericArguments();
     
-    pkg->registerType(Type(protocol, false), name, enamespace, exported);
-    
-    const Token *token = consumeToken(IDENTIFIER);
+    auto token = consumeToken(IDENTIFIER);
     if (token->value[0] != E_GRAPES) {
         ecCharToCharStack(token->value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
     }
+    
+    auto protocolType = Type(protocol, false);
+    pkg->registerType(protocolType, name, enamespace, exported);
     
     while (token = consumeToken(), !(token->type == IDENTIFIER && token->value[0] == E_WATERMELON)) {
         const Token *documentationToken = nullptr;
@@ -149,13 +157,12 @@ void parseProtocol(Package *pkg, const Token *documentationToken, bool exported)
             compilerError(token, "Only method declarations are allowed inside a protocol.");
         }
         
-        const Token *methodName = consumeToken(IDENTIFIER);
+        auto methodName = consumeToken(IDENTIFIER);
         
-        Type returnType = typeNothingness;
         auto method = new Method(methodName->value[0], PUBLIC, false, nullptr, pkg, methodName,
                                  false, documentationToken, deprecated);
-        method->parseArgumentList(typeNothingness, pkg);
-        method->parseReturnType(typeNothingness, pkg);
+        method->parseArgumentList(protocolType, pkg);
+        method->parseReturnType(protocolType, pkg);
         
         protocol->addMethod(method);
     }
@@ -232,16 +239,16 @@ void parseClassBody(Class *eclass, Package *pkg,
                 invalidAttribute(canReturnNothingness, E_CANDY, token);
                 invalidAttribute(deprecated, E_WARNING_SIGN, token);
                 
-                Type type = Type::parseAndFetchType(Type(eclass), NoDynamism, pkg, nullptr);
+                Type type = Type::parseAndFetchType(Type(eclass), GenericTypeVariables, pkg, nullptr);
                 
-                if (type.optional) {
-                    compilerError(token, "Please remove 🍬.");
+                if (type.optional()) {
+                    compilerError(token, "A class cannot conform to an 🍬 protocol.");
                 }
                 if (type.type() != TT_PROTOCOL) {
                     compilerError(token, "The given type is not a protocol.");
                 }
 
-                eclass->addProtocol(type.protocol);
+                eclass->addProtocol(type);
             }
             break;
             case E_PIG: {
@@ -324,15 +331,9 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
     EmojicodeChar name, enamespace;
     parseAndValidateTypeName(&name, &enamespace, pkg);
     
-    Class *eclass = new Class(name, theToken, pkg, documentationToken);
-
-    while (nextToken()->value[0] == E_SPIRAL_SHELL) {
-        consumeToken(IDENTIFIER);
-        
-        const Token *variable = consumeToken(VARIABLE);
-        auto constraintType = Type::parseAndFetchType(Type(eclass), NoDynamism, pkg, nullptr);
-        eclass->addGenericArgument(variable, constraintType);
-    }
+    auto eclass = new Class(name, theToken, pkg, documentationToken);
+    
+    parseGenericArgumentList(eclass, Type(eclass), pkg);
     
     if (nextToken()->value[0] != E_GRAPES) {
         EmojicodeChar typeName, typeNamespace;
@@ -346,7 +347,7 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
         if (type.type() != TT_CLASS) {
             compilerError(token, "The superclass must be a class.");
         }
-        if (type.optional) {
+        if (type.optional()) {
             compilerError(token, "You cannot inherit from an 🍬.");
         }
         
@@ -366,7 +367,7 @@ void parseClass(Package *pkg, const Token *documentationToken, const Token *theT
     
     std::set<EmojicodeChar> requiredInitializers;
     if (eclass->superclass != nullptr) {
-        // This list contains methods that must be implemented.
+        // This set contains methods that must be implemented.
         // If a method is implemented it gets removed from this list by parseClassBody.
         requiredInitializers = std::set<EmojicodeChar>(eclass->superclass->requiredInitializers());
     }

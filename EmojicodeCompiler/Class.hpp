@@ -130,9 +130,10 @@ public:
     void addInitializer(Initializer *method);
     void addClassMethod(ClassMethod *method);
     
-    void addProtocol(Protocol *protocol);
-    
-    const std::vector<Protocol*>& protocols() const { return protocols_; };
+    /** Declares that this class agrees to the given protocol. */
+    bool addProtocol(Type type);
+    /** Returns a list of all protocols to which this class conforms. */
+    const std::list<Type>& protocols() const { return protocols_; };
 private:
     static std::list<Class *> classes_;
     
@@ -140,24 +141,27 @@ private:
     std::map<EmojicodeChar, ClassMethod *> classMethods_;
     std::map<EmojicodeChar, Initializer *> initializers_;
     
-    std::vector<Protocol *> protocols_;
+    std::list<Type> protocols_;
     std::set<EmojicodeChar> requiredInitializers_;
     
     const Token *classBeginToken_;
 };
 
-class Protocol : public TypeDefinition {
+class Protocol : public TypeDefinitionWithGenerics {
 public:
-    Protocol(EmojicodeChar name, uint_fast16_t i, Package *pkg, const Token *dt)
-        : index(i), TypeDefinition(name, pkg, dt) {}
+    Protocol(EmojicodeChar name, Package *pkg, const Token *dt);
     
     uint_fast16_t index;
+    
+    bool canBeUsedToResolve(TypeDefinitionWithGenerics *a);
     
     Method* getMethod(const Token *token, Type type, TypeContext typeContext);
     Method* lookupMethod(EmojicodeChar name);
     void addMethod(Method *method);
     const std::vector<Method*>& methods() { return methodList_; };
 private:
+    static uint_fast16_t nextIndex;
+    
     /** List of all methods. */
     std::vector<Method *> methodList_;
     
@@ -170,11 +174,12 @@ public:
     Enum(EmojicodeChar name, Package *package, const Token *dt)
         : TypeDefinition(name, package, dt) {}
     
-    std::map<EmojicodeChar, EmojicodeInteger> map;
-    
     std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
     void addValueFor(EmojicodeChar c);
+    
+    const std::map<EmojicodeChar, EmojicodeInteger>& values() const { return map_; }
 private:
+    std::map<EmojicodeChar, EmojicodeInteger> map_;
     EmojicodeInteger valuesCounter = 0;
 };
 

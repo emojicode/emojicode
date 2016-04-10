@@ -94,7 +94,7 @@ bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, 
     
     if (it != types_.end()) {
         auto xtype = it->second;
-        xtype.optional = optional;
+        if (optional) xtype.setOptional();
         *type = xtype;
         return true;
     }

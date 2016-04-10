@@ -56,21 +56,25 @@ class Type {
 public:
     /** Reads a type name and stores it into the given pointers. */
     static const Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional);
-    
     /** Reads a type name and stores it into the given pointers. */
     static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism,
                                   Package *package, TypeDynamism *dynamicType = nullptr);
     
-    Type(TypeType t, bool o) : optional(o), type_(t) {}
-    Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c) : optional(o), type_(t), reference(r), resolutionConstraint(c) {}
+    Type(TypeType t, bool o) : optional_(o), type_(t) {}
+    Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c)
+        : optional_(o), type_(t), reference(r), resolutionConstraint(c) {}
     Type(Class *c, bool o);
     Type(Class *c) : Type(c, false) {};
-    Type(Protocol *p, bool o) : optional(o), type_(TT_PROTOCOL), protocol(p) {}
-    Type(Enum *e, bool o) : optional(o), type_(TT_ENUM), eenum(e) {}
+    Type(Protocol *p, bool o) : optional_(o), type_(TT_PROTOCOL), protocol(p) {}
+    Type(Enum *e, bool o) : optional_(o), type_(TT_ENUM), eenum(e) {}
     
-    bool optional;
     
+    /** Returns the type of this type. Whether it’s an integer, class, etc. */
     TypeType type() const { return type_; }
+    /** Whether this type of type could have generic arguments. */
+    bool canHaveGenericArguments() const;
+    /** Returns the represented TypeDefinitonWithGenerics by using a cast. */
+    TypeDefinitionWithGenerics* typeDefinitionWithGenerics() const;
     
     union {
         Class *eclass;
@@ -84,6 +88,13 @@ public:
     };
     std::vector<Type> genericArguments;
     
+    /** Whether the type is an optional. */
+    bool optional() const { return optional_; }
+    /** Marks this type as optional. You can never make an optional type un-optional. */
+    void setOptional() { optional_ = true; }
+    /** Returns a copy of this type but with @c optional set to @c false. */
+    Type copyWithoutOptional() const;
+    
     /** If this type is compatible to the given other type. */
     bool compatibleTo(Type to, TypeContext tc) const;
     /** 
@@ -91,24 +102,24 @@ public:
      * Mainly used to determine compatibility of generics.
      */
     bool identicalTo(Type to) const;
-    /** Returns the name of the package to which this type belongs. */
-    const char* typePackage();
-    /** Whether the given type is a valid argument for the generic argument at index @c i. */
-    void validateGenericArgument(Type type, uint16_t i, TypeContext tc, const Token *token);
+    
     /** Called by @c parseAndFetchType and in the class parser. You usually should not call this method. */
     void parseGenericArguments(TypeContext tc, TypeDynamism dynamism, Package *package, const Token *errorToken);
+    /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
+    Type resolveOn(TypeContext contextType, bool resolveSelf = true) const;
+    Type typeConstraintForReference(TypeContext ct, bool resolveSelf = true) const;
+    
+    /** Returns the name of the package to which this type belongs. */
+    const char* typePackage();
     /**
      * Returns a depp string representation of the given type.
      * @param contextType The contextType. Can be Nothingeness if the type is not in a context.
      * @param includeNsAndOptional Whether to include optional indicators and the namespaces.
      */
     std::string toString(TypeContext contextType, bool includeNsAndOptional) const;
-    /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
-    Type resolveOn(TypeContext contextType);
-    
-    Type typeConstraintForReference(TypeContext ct) const;
 private:
     TypeType type_;
+    bool optional_;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     Type resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved) const;
 };

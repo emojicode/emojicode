@@ -38,7 +38,7 @@ public:
     const Token *dToken;
     
     /** The type of this callable when used as value. */
-    virtual Type type() { return typeNothingness; };
+    virtual Type type() = 0;
 };
 
 class Closure: public Callable {
@@ -50,9 +50,23 @@ public:
 /** Procedures are callables that belong to a class as either method, class method or initialiser. */
 class Procedure: public Callable {
 public:
+    static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, const Token *errorToken,
+                                   const char *on, Type contextType);
+    static void checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeChar name, const Token *errorToken,
+                                   const char *on, Type contextType);
+    static void checkArgument(Type thisArgument, Type superArgument, int index, const Token *errorToken,
+                              const char *on, Type contextType);
+    
     Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
-              Package *package, const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated) :
-    Callable(dToken), name(name),  overriding(overriding), deprecated(deprecated), access(level), eclass(eclass), documentationToken(documentationToken), package(package) {}
+              Package *package, const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated)
+        : Callable(dToken),
+          name(name),
+          overriding(overriding),
+          deprecated(deprecated),
+          access(level),
+          eclass(eclass),
+          documentationToken(documentationToken),
+          package(package) {}
     
     /** The procedure name. A Unicode code point for an emoji */
     EmojicodeChar name;
@@ -112,8 +126,11 @@ public:
 
 class Initializer: public Procedure {
 public:
-    Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, Package *package,
-                const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated, bool r, bool crn) : Procedure(name, level, final, eclass, package, dToken, overriding, documentationToken, deprecated), required(r), canReturnNothingness(crn) {}
+    Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, Package *package, const Token *dToken,
+                bool overriding, const Token *documentationToken, bool deprecated, bool r, bool crn)
+        : Procedure(name, level, final, eclass, package, dToken, overriding, documentationToken, deprecated),
+          required(r),
+          canReturnNothingness(crn) {}
     
     bool required : 1;
     bool canReturnNothingness : 1;

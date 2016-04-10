@@ -39,11 +39,11 @@ void reportType(const char *key, Type type, bool last, TypeContext tc) {
     
     if (key) {
         printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s",
-               key, type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
+               key, type.typePackage(), returnTypeName, type.optional() ? "true" : "false", last ? "" : ",");
     }
     else {
         printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s",
-               type.typePackage(), returnTypeName, type.optional ? "true" : "false", last ? "" : ",");
+               type.typePackage(), returnTypeName, type.optional() ? "true" : "false", last ? "" : ",");
     }
 }
 
@@ -188,12 +188,12 @@ void report(Package *package) {
         }
         printf("],");
         
-        printf("\"conformsTo\": [");
-        for (size_t i = 0; i < eclass->protocols().size(); i++) {
-            Protocol *protocol = eclass->protocols()[i];
-            reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size(), TypeContext(eclass));
-        }
-        printf("]}");
+//        printf("\"conformsTo\": [");
+//        for (size_t i = 0; i < eclass->protocols().size(); i++) {
+//            Protocol *protocol = eclass->protocols()[i];
+//            reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size(), TypeContext(eclass));
+//        }
+//        printf("]}");
     }
     printf("],");
     
@@ -214,7 +214,7 @@ void report(Package *package) {
         
         bool printedValue = false;
         printf("\"values\": [");
-        for (auto it : eenum->map) {
+        for (auto it : eenum->values()) {
             ecCharToCharStack(it.first, value);
             if (printedValue) {
                 putchar(',');

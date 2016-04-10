@@ -88,7 +88,8 @@ class WriterCoinsCountPlaceholder: private WriterPlaceholder<EmojicodeCoin> {
 public:
     void write();
 private:
-    WriterCoinsCountPlaceholder(Writer &w, off_t position, uint32_t writtenCoins) : WriterPlaceholder(w, position), oWrittenCoins(writtenCoins) {};
+    WriterCoinsCountPlaceholder(Writer &w, off_t position, uint32_t writtenCoins)
+        : WriterPlaceholder(w, position), oWrittenCoins(writtenCoins) {};
     uint32_t oWrittenCoins;
 };
 
