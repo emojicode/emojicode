@@ -34,17 +34,24 @@ void reportDocumentation(const Token *documentationToken) {
     delete [] d;
 }
 
-void reportType(const char *key, Type type, bool last, TypeContext tc) {
+void reportType(const char *key, Type type, TypeContext tc) {
     auto returnTypeName = type.toString(tc, false).c_str();
     
     if (key) {
-        printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s",
-               key, type.typePackage(), returnTypeName, type.optional() ? "true" : "false", last ? "" : ",");
+        printf("\"%s\": {\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}",
+               key, type.typePackage(), returnTypeName, type.optional() ? "true" : "false");
     }
     else {
-        printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}%s",
-               type.typePackage(), returnTypeName, type.optional() ? "true" : "false", last ? "" : ",");
+        printf("{\"package\": \"%s\", \"name\": \"%s\", \"optional\": %s}",
+               type.typePackage(), returnTypeName, type.optional() ? "true" : "false");
     }
+}
+
+void commaPrinter(bool *b) {
+    if (*b) {
+        putc(',', stdout);
+    }
+    *b = true;
 }
 
 void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Type> constraints,
@@ -61,16 +68,13 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
     for (size_t i = 0; i < gans.size(); i++) {
         auto gan = gans[i];
         auto utf8 = gan.utf8CString();
-        if (reported) {
-            printf(",");
-        }
+        commaPrinter(&reported);
         printf("{\"name\": ");
         printJSONStringToFile(utf8, stdout);
         printf(",");
-        reportType("constraint", constraints[i], true, tc);
+        reportType("constraint", constraints[i], tc);
         printf("}");
         delete [] utf8;
-        reported = true;
     }
     
     printf("],");
@@ -92,7 +96,8 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
     }
     
     if (returnm == Return) {
-        reportType("returnType", p->returnType, false, tc);
+        reportType("returnType", p->returnType, tc);
+        putc(',', stdout);
     }
     else if (returnm == CanReturnNothingness) {
         printf("\"canReturnNothingness\": true,");
@@ -108,8 +113,8 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
         
         const char *varname = variable.name->value.utf8CString();
         
-        reportType("type", variable.type, false, tc);
-        printf("\"name\":");
+        reportType("type", variable.type, tc);
+        printf(",\"name\":");
         printJSONStringToFile(varname, stdout);
         printf("}%s", i + 1 == p->arguments.size() ? "" : ",");
         
@@ -188,12 +193,13 @@ void report(Package *package) {
         }
         printf("],");
         
-//        printf("\"conformsTo\": [");
-//        for (size_t i = 0; i < eclass->protocols().size(); i++) {
-//            Protocol *protocol = eclass->protocols()[i];
-//            reportType(nullptr, Type(protocol, false), i + 1 == eclass->protocols().size(), TypeContext(eclass));
-//        }
-//        printf("]}");
+        printf("\"conformsTo\": [");
+        bool printedProtocol = false;
+        for (auto protocol : eclass->protocols()) {
+            commaPrinter(&printedProtocol);
+            reportType(nullptr, protocol, TypeContext(eclass));
+        }
+        printf("]}");
     }
     printf("],");
     
@@ -238,6 +244,8 @@ void report(Package *package) {
         ecCharToCharStack(protocol->name(), protocolName);
         printf("\"name\": \"%s\",", protocolName);
         
+        reportGenericArguments(protocol->ownGenericArgumentVariables(), protocol->genericArgumentConstraints(),
+                               protocol->superGenericArguments().size(), Type(protocol, false));
         reportDocumentation(protocol->documentationToken());
         
         printf("\"methods\": [");

@@ -37,6 +37,20 @@ void StaticFunctionAnalyzer::noEffectWarning(const Token *warningToken) {
     }
 }
 
+bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
+    if (type.type() == TT_CLASS && !type.optional()) {
+        for (Class *a = type.eclass; a != nullptr; a = a->superclass) {
+            for (auto protocol : a->protocols()) {
+                if (protocol.protocol == PR_ENUMERATEABLE) {
+                    *elementType = protocol.resolveOn(type).genericArguments[0];
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token *token, const char *type) {
     if (p->access == PRIVATE) {
         if (typeContext.normalType.type() != TT_CLASS || p->eclass != typeContext.normalType.eclass) {
@@ -486,6 +500,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             Type iteratee = parse(consumeToken(), token, typeSomeobject);
             
+            Type itemType = typeNothingness;
+            
             if (iteratee.type() == TT_CLASS && iteratee.eclass == CL_LIST) {
                 // If the iteratee is a list, the Real-Time Engine has some special sugar
                 placeholder.write(0x65);
@@ -497,16 +513,14 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 placeholder.write(0x66);
                 scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(typeInteger, vID, true, true, variableToken));
             }
-            else if (iteratee.compatibleTo(Type(PR_ENUMERATEABLE, false), typeContext)) {
+            else if (typeIsEnumerable(iteratee, &itemType)) {
                 placeholder.write(0x64);
                 writer.writeCoin(nextVariableID());  //Internally needed
-                Type iterator = iteratee.eclass->lookupMethod(E_DANGO)->returnType.resolveOn(iteratee);
-                Type itemType = iterator.eclass->lookupMethod(E_DOWN_POINTING_SMALL_RED_TRIANGLE)->returnType.resolveOn(iterator);
                 scoper.currentScope()->setLocalVariable(variableToken, new CompilerVariable(itemType, vID, true, true, variableToken));
             }
             else {
                 auto iterateeString = iteratee.toString(typeContext, true);
-                compilerError(token, "%s does not conform to 🔴🔂.", iterateeString.c_str());
+                compilerError(token, "%s does not conform to s🔂.", iterateeString.c_str());
             }
             
             flowControlBlock();

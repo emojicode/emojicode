@@ -271,6 +271,7 @@ const Token* lex(FILE *f, const char *filename) {
         }
         else if (c == E_TACO) {
             token->type = DOCUMENTATION_COMMENT;
+            token->position = sourcePosition;
         }
         else if ((47 < c && c < 58) || c == 45 || c == 43) {
             token->type = INTEGER;

@@ -23,7 +23,7 @@ Class *CL_ERROR;
 Class *CL_DATA;
 Class *CL_DICTIONARY;
 Protocol *PR_ENUMERATEABLE;
-Class *CL_ENUMERATOR;
+Protocol *PR_ENUMERATOR;
 Class *CL_RANGE;
 
 bool Type::canHaveGenericArguments() const {
@@ -148,7 +148,14 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
         return false;
     }
     else if (this->type() == TT_CLASS && to.type() == TT_PROTOCOL) {
-        return (to.optional() || !this->optional()) && this->eclass->conformsTo(to.protocol);
+        if (to.optional() || !this->optional()) {
+            for (Class *a = this->eclass; a != nullptr; a = a->superclass) {
+                for (auto protocol : a->protocols()) {
+                    if (protocol.resolveOn(*this).compatibleTo(to, ct)) return true;
+                }
+            }
+        }
+        return false;
     }
     else if (this->type() == TT_NOTHINGNESS) {
         return to.optional() || to.type() == TT_NOTHINGNESS;
@@ -482,24 +489,12 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
     }
     
     switch (type.type()) {
-        case TT_CLASS: {
+        case TT_CLASS:
             stringAppendEc(type.eclass->name(), string);
-            
-            if (typeContext.normalType.type() == TT_NOTHINGNESS) {
-                return;
-            }
-            
-            int offset = type.eclass->numberOfGenericArgumentsWithSuperArguments() - type.eclass->numberOfOwnGenericArguments();
-            for (int i = 0, l = type.eclass->numberOfOwnGenericArguments(); i < l; i++) {
-                stringAppendEc(E_SPIRAL_SHELL, string);
-                typeName(type.genericArguments[offset + i], typeContext, includePackageAndOptional, string);
-            }
-            
-            return;
-        }
+            break;
         case TT_PROTOCOL:
             stringAppendEc(type.protocol->name(), string);
-            return;
+            break;
         case TT_ENUM:
             stringAppendEc(type.eenum->name(), string);
             return;
@@ -551,6 +546,14 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
                     }
                 } while ((eclass = eclass->superclass));
             }
+            else if (typeContext.normalType.canHaveGenericArguments()) {
+                for (auto it : typeContext.normalType.typeDefinitionWithGenerics()->ownGenericArgumentVariables()) {
+                    if (it.second.reference == type.reference) {
+                        string.append(it.first.utf8CString());
+                        return;
+                    }
+                }
+            }
             
             stringAppendEc('T', string);
             stringAppendEc('0' + type.reference, string);
@@ -569,6 +572,15 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             stringAppendEc('L', string);
             stringAppendEc('0' + type.reference, string);
             return;
+    }
+    
+    if (typeContext.normalType.type() != TT_NOTHINGNESS && type.canHaveGenericArguments()) {
+        auto typeDef = type.typeDefinitionWithGenerics();
+        int offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->numberOfOwnGenericArguments();
+        for (int i = 0, l = typeDef->numberOfOwnGenericArguments(); i < l; i++) {
+            stringAppendEc(E_SPIRAL_SHELL, string);
+            typeName(type.genericArguments[offset + i], typeContext, includePackageAndOptional, string);
+        }
     }
 }
 

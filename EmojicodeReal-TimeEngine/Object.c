@@ -108,7 +108,13 @@ size_t sizeCalculationWithOverflowProtection(size_t items, size_t itemSize) {
 }
 
 Object* newArray(size_t size){
-    return newObjectWithSizeInternal(CL_ENUMERATOR, size);
+    size_t fullSize = sizeof(Object) + size;
+    Object *object = emojicodeMalloc(fullSize);
+    object->size = fullSize;
+    object->class = CL_STRING;  // Has no marker and no deconstructor.
+    object->value = ((Byte *)object) + sizeof(Object);
+    
+    return object;
 }
 
 Object* resizeArray(Object *array, size_t size){

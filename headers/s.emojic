@@ -18,17 +18,6 @@
 🌮 📇 is an abstract interface to binary data. 🌮
 🌍 🐇 📇 🍇🍉
 🌮
-  🍡 is a class whose subclasses can enumerate other objects. The 🍡 itself is
-  never initiated.
-
-  To get the items from an iterator call the 🔽 method on it until ❓ returns
-  👎, which indicates that there are no more items.
-
-  Enumerators conform [🔂](t5535756578.html) and return themselves in the 🍡
-  method.
-🌮
-🌍 🐇 🍡 🍇🍉
-🌮
   The 🍯 class represents a dictionary. [Read more in the
   language reference.](../../reference/the-s-package.html#-dictionaries)
 🌮
@@ -37,18 +26,84 @@
 🌍 🐇 🍇 🍇🍉
 
 🌮
+  🍡 can enumerate a collection and generates elements from the object it
+  enumerates.
+
+  To get the items from an iterator call the 🔽 method on it, until ❓ returns
+  👎 which indicates that there are no more items.
+🌮
+🌍 🐊 🍡🐚Element ⚪️ 🍇
+  🌮
+    Returns the next object. Expect undefined behavior if you call this method
+    when ❓ previously returned 👎.
+  🌮
+  🐖 🔽 ➡️ Element
+  🌮
+    Whether the enumerator has more elements to provide.
+  🌮
+  🐖 ❓ ➡️ 👌
+🍉
+
+🌮
   A class whose instances shall be enumerable using the 🔂 loop must
   implement this protocol.
 🌮
-🌍 🐊 🔂 🍇
+🌍 🐊 🔂🐚Element⚪️ 🍇
   🌮
-    This method must return an instance of a subclass of
-    [🍡](t5535657185.html) which can be used to enumerate this instance.
+    This method must return an instance of a class that conforms to
+    [🍡](t5535657185.html) which will be used to enumerate this instance.
   🌮
-  🐖 🍡 ➡️ 🍡
+  🐖 🍡 ➡️ 🍡🐚Element
+🍉
+
+🌮
+  Represents a range which per definition is an immutable sequence of
+  numbers. [Read more in the
+  language reference.](../../reference/the-s-package.html#-ranges)
+🌮
+🌍 🐇 ⏩ 🍇
+  🌮
+    Creates an range from start to stop.
+  🌮
+  🐈 ⏩ start 🚂 stop 🚂 📻
+  🌮
+    Creates an range from start to stop with the given step.
+  🌮
+  🐈 ⏭ start 🚂 stop 🚂 step 🚂 📻
+  🌮
+    Returns the `n`th element of the range. `n` is only valid if
+    `start + step * n` is `>= start` and `< stop`. If `n` is invalid
+    Nothingness is returned.
+  🌮
+  🐖 🐽 n 🚂 ➡️ 🍬🚂 📻
+🍉
+
+🌮 Iterator over a 🔡. 🌮
+🐇 📴 🍇
+  🐊 🍡🐚🔣
+
+  🍰 string 🔡
+  🍰 index 🚂
+
+  🐈 🆕 @string 🔡 🍇
+    🍮 string @string
+    🍮 index 0
+  🍉
+
+  🐖 🔽 ➡️ 🔣 🍇
+    🍦 sy 🍺 🔬 string index
+    🍫 index
+    🍎 sy
+  🍉
+
+  🐖 ❓ ➡️ 👌 🍇
+    🍎 ◀️ index 📏 string
+  🍉
 🍉
 
 🐋 🔡 🍇
+  🐊 🔂🐚🔣
+
   🌮 Prompts the user for input. (via the standard input/output) 🌮
   🐈 😯 prompt 🔡 📻
 
@@ -179,6 +234,11 @@
     >!N This method was named 🗞 in 0.2 Beta 4!
   🌮
   🐖 📰 ➡️ ⚪️ 📻
+
+  🌮 Returns an iterator to iterate over the symbols of this string. 🌮
+  🐖 🍡 ➡️ 📴 🍇
+    🍎 🔷📴🆕 🐕
+  🍉
 🍉
 
 🐋 🍨 🍇
@@ -341,39 +401,6 @@
   🐖 🐽 index 🚂 ➡️ 🍬🚂 📻
 🍉
 
-🐋 🍡 🍇
-  🐊 🔂
-  🌮
-    Returns the next object or ✨ if there are no elements left.
-
-    >!N You should not rely on the return of Nothingness to indicate there are
-    >!N no more objects to enumerate. Nothigness could be an ordinary element of
-    >!N the enumerated object. Use ❓ instead to determine whether there are
-    >!N elements left.
-
-    The default implementation always returns ✨.
-
-    Subclasses of this class are encouraged to declare a more specific return
-    type.
-  🌮
-  🐖 🔽 ➡️ ⚪ 🍇
-    🍎 ⚡️
-  🍉
-  🌮
-    Whether the enumerator has more elements to provide.
-  🌮
-  🐖 ❓ ➡️ 👌 🍇
-    🍎 👎
-  🍉
-  🌮
-    This method is implemented in order to confrom to [🔂](t5535756578.html).
-    Enumerators should return themselves.
-  🌮
-  🐖 🍡 ➡️ 🍡 🍇
-    🍎 🐕
-  🍉
-🍉
-
 🐋 🚨 🍇
   🌮 Create an error. 🌮
   🐈 😮 message 🔡 code 🚂 📻
@@ -459,28 +486,6 @@
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
   🌮
   🐇🐖 🕰 ➡️ 🚂📻
-🍉
-
-🌮
-  Represents a range which per definition is an immutable sequence of
-  numbers. [Read more in the
-  language reference.](../../reference/the-s-package.html#-ranges)
-🌮
-🌍 🐇 ⏩ 🍇
-  🌮
-    Creates an range from start to stop.
-  🌮
-  🐈 ⏩ start 🚂 stop 🚂 📻
-  🌮
-    Creates an range from start to stop with the given step.
-  🌮
-  🐈 ⏭ start 🚂 stop 🚂 step 🚂 📻
-  🌮
-    Returns the `n`th element of the range. `n` is only valid if
-    `start + step * n` is `>= start` and `< stop`. If `n` is invalid
-    Nothingness is returned.
-  🌮
-  🐖 🐽 n 🚂 ➡️ 🍬🚂 📻
 🍉
 
 🌮

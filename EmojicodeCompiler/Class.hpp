@@ -105,10 +105,7 @@ public:
     uint16_t nextMethodVti;
     uint16_t nextClassMethodVti;
     uint16_t nextInitializerVti;
-    
-    /** Returns true if @c a or a superclass of @c a conforms to @c to. */
-    bool conformsTo(Protocol *to);
-    
+
     /** Returns true if @c a inherits from eclass @c from */
     bool inheritsFrom(Class *from);
     

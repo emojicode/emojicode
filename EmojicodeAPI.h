@@ -33,7 +33,6 @@ extern Class *CL_LIST;
 extern Class *CL_ERROR;
 extern Class *CL_DATA;
 extern Class *CL_DICTIONARY;
-extern Class *CL_ENUMERATOR;
 extern Class *CL_CAPTURED_METHOD_CALL;
 extern Class *CL_CLOSURE;
 extern Class *CL_RANGE;

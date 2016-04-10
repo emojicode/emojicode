@@ -72,17 +72,6 @@ bool Class::canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint)
     return false;
 }
 
-bool Class::conformsTo(Protocol *to) {
-    for (Class *a = this; a != nullptr; a = a->superclass) {
-        for (auto protocol : this->protocols()) {
-            if (protocol.protocol == to) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 bool Class::inheritsFrom(Class *from) {
     for (Class *a = this; a != nullptr; a = a->superclass) {
         if (a == from) {

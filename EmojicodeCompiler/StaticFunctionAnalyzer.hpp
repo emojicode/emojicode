@@ -96,6 +96,8 @@ private:
      */
     void checkArguments(Arguments arguments, TypeContext calledType, const Token *token);
     
+    bool typeIsEnumerable(Type type, Type *elementType);
+    
     /** 
      * Writes a command to access a variable.
      * @param stack The command to access the variable if it is on the stack.

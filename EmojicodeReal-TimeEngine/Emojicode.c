@@ -23,7 +23,6 @@ Class *CL_STRING;
 Class *CL_LIST;
 Class *CL_ERROR;
 Class *CL_DATA;
-Class *CL_ENUMERATOR;
 Class *CL_DICTIONARY;
 Class *CL_CAPTURED_METHOD_CALL;
 Class *CL_CLOSURE;
@@ -710,12 +709,12 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             Object *iteratee = parse(consumeCoin(thread), thread).object;
             
-            Something enumerator = performMethod(iteratee->class->protocolsTable[0][0], iteratee, thread);
+            Something enumerator = performMethod(iteratee->class->protocolsTable[1 - iteratee->class->protocolsOffset][0], iteratee, thread);
             EmojicodeCoin enumeratorVindex = consumeCoin(thread);
             stackSetVariable(enumeratorVindex, enumerator, thread);
             
-            Method *nextMethod = enumerator.object->class->methodsVtable[0];
-            Method *moreComing = enumerator.object->class->methodsVtable[1];
+            Method *nextMethod = enumerator.object->class->protocolsTable[0][0];
+            Method *moreComing = enumerator.object->class->protocolsTable[0][1];
             
             EmojicodeCoin *begin = thread->tokenStream;
             

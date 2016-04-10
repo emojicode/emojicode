@@ -169,10 +169,10 @@ void loadStandard(Package *_) {
     CL_LIST = getStandardClass(0x1F368, _);
     CL_ERROR = getStandardClass(0x1F6A8, _);
     CL_DATA = getStandardClass(0x1F4C7, _);
-    CL_ENUMERATOR = getStandardClass(0x1F361, _);
     CL_DICTIONARY = getStandardClass(0x1F36F, _);
     CL_RANGE = getStandardClass(0x23E9, _);
     
+    PR_ENUMERATOR = getStandardProtocol(0x1F361, _);
     PR_ENUMERATEABLE = getStandardProtocol(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY, _);
     
     package->setRequiresBinary(false);
