@@ -672,6 +672,10 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             if (originalType.compatibleTo(type, typeContext)) {
                 compilerWarning(token, "Superfluous cast.");
             }
+            else if (!type.compatibleTo(originalType, typeContext)) {
+                auto typeString = type.toString(typeContext, true);
+                compilerWarning(token, "Cast to unrelated type %s will always fail.", typeString.c_str());
+            }
             
             switch (type.type()) {
                 case TT_CLASS: {
