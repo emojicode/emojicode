@@ -12,26 +12,39 @@
 #include "Lexer.hpp"
 #include "EmojicodeCompiler.hpp"
 
-void Callable::parseArgumentList(TypeContext ct, Package *package) {
+bool Callable::parseArgumentList(TypeContext ct, Package *package) {
     const Token *token;
+    bool usedSelf = false;
     
     while ((token = nextToken()) && token->type == VARIABLE) {
+        TypeDynamism dynamism;
         auto variableToken = consumeToken(VARIABLE);
-        auto type = Type::parseAndFetchType(ct, AllKindsOfDynamism, package);
+        auto type = Type::parseAndFetchType(ct, AllKindsOfDynamism, package, &dynamism);
         
         arguments.push_back(Variable(Variable(variableToken, type)));
+        
+        if (dynamism == Self) {
+            usedSelf = true;
+        }
     }
     
     if (arguments.size() > UINT8_MAX) {
         compilerError(token, "A function cannot take more than 255 arguments.");
     }
+    return usedSelf;
 }
 
-void Callable::parseReturnType(TypeContext ct, Package *package) {
+bool Callable::parseReturnType(TypeContext ct, Package *package) {
+    bool usedSelf = false;
     if (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW) {
         consumeToken();
-        returnType = Type::parseAndFetchType(ct, AllKindsOfDynamism, package);
+        TypeDynamism dynamism;
+        returnType = Type::parseAndFetchType(ct, AllKindsOfDynamism, package, &dynamism);
+        if (dynamism == Self) {
+            usedSelf = true;
+        }
     }
+    return usedSelf;
 }
 
 //MARK: Closure
@@ -81,7 +94,7 @@ void Procedure::parseGenericArguments(TypeContext ct, Package *package) {
         consumeToken();
         const Token *variable = consumeToken(VARIABLE);
         
-        Type t = Type::parseAndFetchType(Type(eclass), GenericTypeVariables, package, nullptr);
+        Type t = Type::parseAndFetchType(Type(eclass), GenericTypeVariables, package, nullptr, true);
         genericArgumentConstraints.push_back(t);
         
         Type rType(TT_LOCAL_REFERENCE, false);

@@ -57,8 +57,8 @@ public:
     /** Reads a type name and stores it into the given pointers. */
     static const Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional);
     /** Reads a type name and stores it into the given pointers. */
-    static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism,
-                                  Package *package, TypeDynamism *dynamicType = nullptr);
+    static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism, Package *package,
+                                  TypeDynamism *dynamicType = nullptr, bool allowProtocolsUsingSelf = false);
     
     Type(TypeType t, bool o) : optional_(o), type_(t) {}
     Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c)

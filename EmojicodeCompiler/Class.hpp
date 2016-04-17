@@ -156,11 +156,16 @@ public:
     Method* lookupMethod(EmojicodeChar name);
     void addMethod(Method *method);
     const std::vector<Method*>& methods() { return methodList_; };
+    
+    bool usesSelf() const { return usesSelf_; }
+    void setUsesSelf() { usesSelf_ = true; }
 private:
     static uint_fast16_t nextIndex;
     
     /** List of all methods. */
     std::vector<Method *> methodList_;
+    
+    bool usesSelf_ = false;
     
     /** Hashmap holding methods. @warning Don't access it directly, use the correct functions. */
     std::map<EmojicodeChar, Method*> methods_;

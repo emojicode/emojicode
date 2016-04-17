@@ -86,7 +86,7 @@ static void parseGenericArgumentList(TypeDefinitionWithGenerics *typeDef, TypeCo
         consumeToken(IDENTIFIER);
         
         const Token *variable = consumeToken(VARIABLE);
-        auto constraintType = Type::parseAndFetchType(tc, NoDynamism, package, nullptr);
+        auto constraintType = Type::parseAndFetchType(tc, NoDynamism, package, nullptr, true);
         typeDef->addGenericArgument(variable, constraintType);
     }
 }
@@ -161,8 +161,11 @@ void parseProtocol(Package *pkg, const Token *documentationToken, bool exported)
         
         auto method = new Method(methodName->value[0], PUBLIC, false, nullptr, pkg, methodName,
                                  false, documentationToken, deprecated);
-        method->parseArgumentList(protocolType, pkg);
-        method->parseReturnType(protocolType, pkg);
+        auto a = method->parseArgumentList(protocolType, pkg);
+        auto b = method->parseReturnType(protocolType, pkg);
+        if (a || b) {
+            protocol->setUsesSelf();
+        }
         
         protocol->addMethod(method);
     }
@@ -239,7 +242,7 @@ void parseClassBody(Class *eclass, Package *pkg,
                 invalidAttribute(canReturnNothingness, E_CANDY, token);
                 invalidAttribute(deprecated, E_WARNING_SIGN, token);
                 
-                Type type = Type::parseAndFetchType(Type(eclass), GenericTypeVariables, pkg, nullptr);
+                Type type = Type::parseAndFetchType(Type(eclass), GenericTypeVariables, pkg, nullptr, true);
                 
                 if (type.optional()) {
                     compilerError(token, "A class cannot conform to an 🍬 protocol.");

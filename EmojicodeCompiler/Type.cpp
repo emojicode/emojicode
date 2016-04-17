@@ -294,7 +294,8 @@ const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamesp
     return className;
 }
 
-Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *package, TypeDynamism *dynamicType) {
+Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *package, TypeDynamism *dynamicType,
+                             bool allowProtocolsUsingSelf) {
     auto beforeCandy = currentToken;
     bool optional = false;
     if (nextToken()->value[0] == E_CANDY) {
@@ -340,7 +341,8 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
         
         t.genericArguments.push_back(typeNothingness);
         
-        while (!(nextToken()->type == IDENTIFIER && (nextToken()->value[0] == E_WATERMELON || nextToken()->value[0] == E_RIGHTWARDS_ARROW))) {
+        while (!(nextToken()->type == IDENTIFIER && (nextToken()->value[0] == E_WATERMELON ||
+                                                     nextToken()->value[0] == E_RIGHTWARDS_ARROW))) {
             t.arguments++;
             t.genericArguments.push_back(parseAndFetchType(ct, dynamism, package));
         }
@@ -372,6 +374,12 @@ Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *pac
         }
         
         type.parseGenericArguments(ct, dynamism, package, token);
+        
+        if (!allowProtocolsUsingSelf && type.type() == TT_PROTOCOL && type.protocol->usesSelf()) {
+            auto typeStr = type.toString(ct, true);
+            compilerError(token, "Protocol %s can only be used as a generic constraint because it uses 🐓.",
+                          typeStr.c_str());
+        }
         
         return type;
     }

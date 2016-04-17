@@ -22,10 +22,16 @@ class Callable {
 public:
     Callable(const Token *dToken) : dToken(dToken) {};
     
-    /** Parses the arguments for this function. */
-    void parseArgumentList(TypeContext ct, Package *package);
-    /** Parses the return type for this function if there is one specified. */
-    void parseReturnType(TypeContext ct, Package *package);
+    /** 
+     * Parses the arguments for this function. 
+     * @return Whether self was used.
+     */
+    bool parseArgumentList(TypeContext ct, Package *package);
+    /**
+     * Parses the return type for this function if there is one specified. 
+     * @return Whether self was used.
+     */
+    bool parseReturnType(TypeContext ct, Package *package);
     
     Arguments arguments;
     /** Return type of the method */
