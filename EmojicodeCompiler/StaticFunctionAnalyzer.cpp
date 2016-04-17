@@ -294,7 +294,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             uint8_t id = nextVariableID();
             scoper.currentScope()->setLocalVariable(varName,
                                                     new CompilerVariable(t, id, t.optional() ? 1 : 0, false, varName));
-            
+            if (t.optional()) {
+                writer.writeCoin(0x1B);
+                writer.writeCoin(id);
+                writer.writeCoin(0x17);
+            }
             return typeNothingness;
         }
         case E_CUSTARD: {
