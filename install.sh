@@ -3,14 +3,14 @@
 b=$(tput bold)
 n=$(tput sgr0)
 
-if [[ ! -w "/usr/local/" ]] ; then 
+if [[ ! -w "/usr/local/" ]] ; then
 	tput setaf 5
 	echo "${b}/usr/local/ is not writeable from this user. Carefully try using sudo."
 	tput sgr0
 	exit 1
 fi
 
-if [[ ! -w "/usr/local/bin" ]] ; then 
+if [[ ! -w "/usr/local/bin" ]] ; then
 	tput setaf 5
 	echo "${b}/usr/local/bin is not writeable from this user. Carefully try using sudo."
 	tput sgr0
@@ -45,7 +45,6 @@ function copyPackage {
 }
 
 copyPackage files 0
-copyPackage sqlite 0
 copyPackage SDL 0
 
 chmod -R 755 /usr/local/EmojicodePackages

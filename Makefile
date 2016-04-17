@@ -26,7 +26,7 @@ PACKAGE_LDFLAGS += -undefined dynamic_lookup
 endif
 
 PACKAGES_DIR=DefaultPackages
-PACKAGES=files SDL sqlite
+PACKAGES=files SDL
 
 DIST_NAME=Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
 DIST_BUILDS=builds
