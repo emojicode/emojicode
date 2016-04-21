@@ -482,13 +482,13 @@ static void stringFromDouble(Thread *thread) {
     EmojicodeChar *characters = characters(string) + length;
     
     for (size_t i = precision; i > 0; i--) {
-        *--characters =  "0123456789"[(unsigned char) (absD * pow(10, i)) % 10];
+        *--characters =  "0123456789"[(unsigned char) (fmod(absD * pow(10, i), 10.0)) % 10];
     }
     
     *--characters = '.';
     
     for (size_t i = 0; i < iLength; i++) {
-        *--characters =  "0123456789"[(unsigned char) (absD / pow(10, i)) % 10];
+        *--characters =  "0123456789"[(unsigned char) (fmod(absD / pow(10, i), 10.0)) % 10];
     }
     
     if (negative) characters[-1] = '-';
