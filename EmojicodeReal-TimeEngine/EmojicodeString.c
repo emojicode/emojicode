@@ -459,20 +459,14 @@ static void stringFromInteger(Thread *thread){
     if (negative) characters[-1] = '-';
 }
 
-static Something stringToInteger(Thread *thread){
-    EmojicodeInteger base = stackGetVariable(0, thread).raw;
-    String *string = (String *)stackGetThis(thread)->value;
-    
-    if (string->length == 0) {
+static Something charactersToInteger(EmojicodeChar *characters, EmojicodeInteger base, EmojicodeInteger length) {
+    if (length == 0) {
         return NOTHINGNESS;
     }
-    
-    EmojicodeChar *characters = characters(string);
-    
     EmojicodeInteger x = 0;
-    for (size_t i = 0; i < string->length; i++) {
+    for (size_t i = 0; i < length; i++) {
         if (i == 0 && (characters[i] == '-' || characters[i] == '+')) {
-            if (string->length < 2) {
+            if (length < 2) {
                 return NOTHINGNESS;
             }
             continue;
@@ -501,6 +495,13 @@ static Something stringToInteger(Thread *thread){
         x *= -1;
     }
     return somethingInteger(x);
+}
+
+static Something stringToInteger(Thread *thread){
+    EmojicodeInteger base = stackGetVariable(0, thread).raw;
+    String *string = (String *)stackGetThis(thread)->value;
+    
+    return charactersToInteger(characters(string), base, string->length);
 }
 
 
@@ -534,6 +535,15 @@ static Something stringToDouble(Thread *thread){
                 foundSeparator = true;
                 continue;
             }
+        }
+        if (characters[i] == 'e' || characters[i] == 'E') {
+            Something exponent = charactersToInteger(characters + i + 1, 10, string->length - i - 1);
+            if (isNothingness(exponent)) {
+                return NOTHINGNESS;
+            } else {
+                d *= pow(10, exponent.raw);
+            }
+            break;
         }
         if ('0' <= characters[i] && characters[i] <= '9') {
             d *= 10;

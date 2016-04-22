@@ -217,9 +217,9 @@
   🐖 🚂 base 🚂 ➡️ 🍬🚂 📻
 
   🌮
-    This methods tries to construct a 🚀 from this 🔡. It returns the 🚀, or ✨ if the 🔡 does not match the
-    regular expression `[+-]?[0-9]*(\.[0-9]*)?` or if it does not represent a valid
-    🚀.
+    This methods tries to construct a 🚀 from this 🔡. It returns the 🚀, or ✨ if
+    the 🔡 does not match the regular expression `[+-]?[0-9]*(\.[0-9]*)?(e[+-]?[0-9]*)?`
+    or if it does not represent a valid 🚀.
   🌮
   🐖 🚀 ➡️ 🍬🚀 📻
 
