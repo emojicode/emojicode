@@ -494,20 +494,14 @@ static void stringFromDouble(Thread *thread) {
     if (negative) characters[-1] = '-';
 }
 
-static Something stringToInteger(Thread *thread){
-    EmojicodeInteger base = stackGetVariable(0, thread).raw;
-    String *string = (String *)stackGetThis(thread)->value;
-    
-    if (string->length == 0) {
+static Something charactersToInteger(EmojicodeChar *characters, EmojicodeInteger base, EmojicodeInteger length) {
+    if (length == 0) {
         return NOTHINGNESS;
     }
-    
-    EmojicodeChar *characters = characters(string);
-    
     EmojicodeInteger x = 0;
-    for (size_t i = 0; i < string->length; i++) {
+    for (size_t i = 0; i < length; i++) {
         if (i == 0 && (characters[i] == '-' || characters[i] == '+')) {
-            if (string->length < 2) {
+            if (length < 2) {
                 return NOTHINGNESS;
             }
             continue;
@@ -536,6 +530,78 @@ static Something stringToInteger(Thread *thread){
         x *= -1;
     }
     return somethingInteger(x);
+}
+
+static Something stringToInteger(Thread *thread){
+    EmojicodeInteger base = stackGetVariable(0, thread).raw;
+    String *string = (String *)stackGetThis(thread)->value;
+    
+    return charactersToInteger(characters(string), base, string->length);
+}
+
+
+static Something stringToDouble(Thread *thread){
+    String *string = (String *)stackGetThis(thread)->value;
+    
+    if (string->length == 0) {
+        return NOTHINGNESS;
+    }
+    
+    EmojicodeChar *characters = characters(string);
+    
+    double d = 0.0;
+    bool sign = true;
+    bool foundSeparator = false;
+    bool foundDigit = false;
+    size_t i = 0, decimalPlace = 0;
+    
+    if (characters[0] == '-') {
+        sign = false;
+        i++;
+    } else if (characters[0] == '+') {
+        i++;
+    }
+    
+    for (; i < string->length; i++) {
+        if (characters[i] == '.') {
+            if (foundSeparator) {
+                return NOTHINGNESS;
+            } else {
+                foundSeparator = true;
+                continue;
+            }
+        }
+        if (characters[i] == 'e' || characters[i] == 'E') {
+            Something exponent = charactersToInteger(characters + i + 1, 10, string->length - i - 1);
+            if (isNothingness(exponent)) {
+                return NOTHINGNESS;
+            } else {
+                d *= pow(10, exponent.raw);
+            }
+            break;
+        }
+        if ('0' <= characters[i] && characters[i] <= '9') {
+            d *= 10;
+            d += characters[i] - '0';
+            if (foundSeparator) {
+                decimalPlace++;
+            }
+            foundDigit = true;
+        } else {
+            return NOTHINGNESS;
+        }
+    }
+    
+    if (!foundDigit) {
+        return NOTHINGNESS;
+    }
+    
+    d /= pow(10, decimalPlace);
+    
+    if (!sign) {
+        d *= -1;
+    }
+    return somethingDouble(d);
 }
 
 static void stringFromData(Thread *thread){
@@ -605,6 +671,8 @@ MethodHandler stringMethodForName(EmojicodeChar name){
             return stringJSON;
         case 0x1F682: //🚂
             return stringToInteger;
+        case 0x1F680: //🚀
+            return stringToDouble;
         case 0x2194: //↔️
             return stringCompareBridge;
     }
