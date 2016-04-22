@@ -406,6 +406,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return somethingBoolean(parse(consumeCoin(thread), thread).doubl <= parse(consumeCoin(thread), thread).doubl);
         case 0x37:
             return somethingBoolean(parse(consumeCoin(thread), thread).doubl >= parse(consumeCoin(thread), thread).doubl);
+        case 0x38:
+            return somethingDouble(fmod(parse(consumeCoin(thread), thread).doubl, parse(consumeCoin(thread), thread).doubl));
         //MARK: Optionals
         case 0x3A: {
             Something sth = parse(consumeCoin(thread), thread);
