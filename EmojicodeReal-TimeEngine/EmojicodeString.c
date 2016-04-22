@@ -9,6 +9,7 @@
 #include "EmojicodeString.h"
 
 #include <string.h>
+#include <math.h>
 #include "utf8.h"
 #include "EmojicodeList.h"
 
@@ -502,6 +503,62 @@ static Something stringToInteger(Thread *thread){
     return somethingInteger(x);
 }
 
+
+static Something stringToDouble(Thread *thread){
+    String *string = (String *)stackGetThis(thread)->value;
+    
+    if (string->length == 0) {
+        return NOTHINGNESS;
+    }
+    
+    EmojicodeChar *characters = characters(string);
+    
+    double d = 0.0;
+    bool sign = true;
+    bool foundSeparator = false;
+    bool foundDigit = false;
+    size_t i = 0, decimalPlace = 0;
+    
+    if (characters[0] == '-') {
+        sign = false;
+        i++;
+    } else if (characters[0] == '+') {
+        i++;
+    }
+    
+    for (; i < string->length; i++) {
+        if (characters[i] == '.') {
+            if (foundSeparator) {
+                return NOTHINGNESS;
+            } else {
+                foundSeparator = true;
+                continue;
+            }
+        }
+        if ('0' <= characters[i] && characters[i] <= '9') {
+            d *= 10;
+            d += characters[i] - '0';
+            if (foundSeparator) {
+                decimalPlace++;
+            }
+            foundDigit = true;
+        } else {
+            return NOTHINGNESS;
+        }
+    }
+    
+    if (!foundDigit) {
+        return NOTHINGNESS;
+    }
+    
+    d /= pow(10, decimalPlace);
+    
+    if (!sign) {
+        d *= -1;
+    }
+    return somethingDouble(d);
+}
+
 static void stringFromData(Thread *thread){
     Data *data = stackGetVariable(0, thread).object->value;
     if (!u8_isvalid(data->bytes, data->length)) {
@@ -569,6 +626,8 @@ MethodHandler stringMethodForName(EmojicodeChar name){
             return stringJSON;
         case 0x1F682: //🚂
             return stringToInteger;
+        case 0x1F680: //🚀
+            return stringToDouble;
         case 0x2194: //↔️
             return stringCompareBridge;
     }
