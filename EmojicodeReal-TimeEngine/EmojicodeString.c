@@ -466,7 +466,10 @@ static void stringFromDouble(Thread *thread) {
     
     bool negative = d < 0;
     
-    EmojicodeInteger length = negative ? 2 : 1;
+    EmojicodeInteger length = negative ? 1 : 0;
+    if (precision != 0) {
+        length++;
+    }
     length += precision;
     EmojicodeInteger iLength = 1;
     for (size_t i = 1; pow(10, i) < absD; i++) {
@@ -485,7 +488,9 @@ static void stringFromDouble(Thread *thread) {
         *--characters =  (unsigned char) (fmod(absD * pow(10, i), 10.0)) % 10 + '0';
     }
     
-    *--characters = '.';
+    if (precision != 0) {
+        *--characters = '.';
+    }
     
     for (size_t i = 0; i < iLength; i++) {
         *--characters =  (unsigned char) (fmod(absD / pow(10, i), 10.0)) % 10 + '0';
