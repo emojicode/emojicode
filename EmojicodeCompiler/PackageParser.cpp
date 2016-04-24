@@ -9,6 +9,7 @@
 #include "PackageParser.hpp"
 #include "Class.hpp"
 #include "Procedure.hpp"
+#include <cstring>
 
 void PackageParser::reservedEmojis(const Token *token, const char *place) const {
     EmojicodeChar name = token->value[0];
