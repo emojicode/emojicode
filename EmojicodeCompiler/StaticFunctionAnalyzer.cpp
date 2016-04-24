@@ -7,7 +7,6 @@
 //
 
 #include "StaticFunctionAnalyzer.hpp"
-#include "FileParser.hpp"
 #include "Lexer.hpp"
 #include "Type.hpp"
 #include "utf8.h"

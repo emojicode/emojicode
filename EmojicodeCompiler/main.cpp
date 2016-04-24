@@ -12,7 +12,6 @@
 #include <vector>
 #include "Lexer.hpp"
 #include "utf8.h"
-#include "FileParser.hpp"
 #include "StaticAnalyzer.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"

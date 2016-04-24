@@ -11,7 +11,7 @@
 #include <string>
 #include <map>
 #include "Package.hpp"
-#include "FileParser.hpp"
+#include "PackageParser.hpp"
 #include "utf8.h"
 
 std::list<Package *> Package::packagesLoadingOrder_;
@@ -44,7 +44,7 @@ Package* Package::loadPackage(const char *name, EmojicodeChar ns, const Token *e
 void Package::parse(const char *path, const Token *errorToken) {
     packages_.emplace(name(), this);
     
-    parseFile(path, this);
+    PackageParser(this).parse(path);
     
     if (version().major == 0 && version().minor == 0) {
         compilerError(errorToken, "Package %s does not provide a valid version.", name());
