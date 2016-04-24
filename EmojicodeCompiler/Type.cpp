@@ -40,14 +40,20 @@ Type Type::copyWithoutOptional() const {
     return type;
 }
 
-Type Type::typeConstraintForReference(TypeContext typeContext, bool resolveSelf) const {
+Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool resolveSelf) const {
+    TypeDefinitionWithGenerics *c = typeContext.normalType.typeDefinitionWithGenerics();
     Type t = *this;
+    bool optional = t.optional();
     
     if (resolveSelf && t.type() == TT_SELF) {
         t = typeContext.normalType;
     }
     
-    bool optional = t.optional();
+    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
+    // Try to resolve on the generic arguments to the superclass.
+    while (t.type() == TT_REFERENCE && t.reference < maxReferenceForSuper) {
+        t = c->superGenericArguments()[t.reference];
+    }
     while (t.type() == TT_LOCAL_REFERENCE) {
         t = typeContext.p->genericArgumentConstraints[t.reference];
     }
@@ -57,18 +63,6 @@ Type Type::typeConstraintForReference(TypeContext typeContext, bool resolveSelf)
     
     if (optional) t.setOptional();
     return t;
-}
-
-Type Type::resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved) const {
-    Type t = *this;
-    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
-    while (true) {
-        if (t.type() != TT_REFERENCE || t.reference >= maxReferenceForSuper) {
-            return t;
-        }
-        *resolved = true;
-        t = c->superGenericArguments()[t.reference];
-    }
 }
 
 Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
@@ -169,35 +163,25 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
             return true;
         }
         return (to.optional() || !this->optional())
-        && this->typeConstraintForReference(ct).compatibleTo(to.typeConstraintForReference(ct), ct);
+        && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct);
     }
     else if (this->type() == TT_REFERENCE) {
-        bool resolved = false;
-        Type rt = this->resolveOnSuperArguments(ct.normalType.eclass, &resolved);
-        if (resolved && (to.optional() || !this->optional()) && rt.compatibleTo(to, ct)) {
-            return true;
-        }
-        return (to.optional() || !this->optional()) && this->typeConstraintForReference(ct).compatibleTo(to, ct);
+        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct);
     }
     else if (to.type() == TT_REFERENCE) {
-        bool resolved = false;
-        Type rt = to.resolveOnSuperArguments(ct.normalType.eclass, &resolved);
-        if (resolved && (to.optional() || !this->optional()) && this->compatibleTo(rt, ct)) {
-            return true;
-        }
-        return (to.optional() || !this->optional()) && this->compatibleTo(to.typeConstraintForReference(ct), ct);
+        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct);
     }
     else if (this->type() == TT_LOCAL_REFERENCE) {
-        return (to.optional() || !this->optional()) && this->typeConstraintForReference(ct).compatibleTo(to, ct);
+        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct);
     }
     else if (to.type() == TT_LOCAL_REFERENCE) {
-        return (to.optional() || !this->optional()) && this->compatibleTo(to.typeConstraintForReference(ct), ct);
+        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct);
     }
     else if (to.type() == TT_SELF) {
-        return (to.optional() || !this->optional()) && this->compatibleTo(to.typeConstraintForReference(ct), ct);
+        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct);
     }
     else if (this->type() == TT_SELF) {
-        return (to.optional() || !this->optional()) && this->typeConstraintForReference(ct).compatibleTo(to, ct);
+        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct);
     }
     else if (this->type() == TT_CALLABLE && to.type() == TT_CALLABLE) {
         if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct) && to.arguments == this->arguments) {

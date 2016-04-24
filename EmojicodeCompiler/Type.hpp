@@ -107,7 +107,7 @@ public:
     void parseGenericArguments(TypeContext tc, TypeDynamism dynamism, Package *package, const Token *errorToken);
     /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
     Type resolveOn(TypeContext contextType, bool resolveSelf = true) const;
-    Type typeConstraintForReference(TypeContext ct, bool resolveSelf = true) const;
+    Type resolveOnSuperArgumentsAndConstraints(TypeContext ct, bool resolveSelf = true) const;
     
     /** Returns the name of the package to which this type belongs. */
     const char* typePackage();
@@ -121,7 +121,6 @@ private:
     TypeType type_;
     bool optional_;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
-    Type resolveOnSuperArguments(TypeDefinitionWithGenerics *c, bool *resolved) const;
 };
 
 struct TypeContext {

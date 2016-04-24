@@ -855,7 +855,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             TypeDynamism dynamism;
             Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package, &dynamism)
-            .typeConstraintForReference(typeContext);
+            .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.type() != TT_CLASS) {
                 compilerError(token, "The given type cannot be initiatied.");
@@ -901,7 +901,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             TypeDynamism dynamism;
             Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package, &dynamism)
-                            .typeConstraintForReference(typeContext);
+                            .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {
                 compilerWarning(token, "Please remove useless 🍬.");
@@ -933,7 +933,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             const Token *tobject = consumeToken();
             
-            Type type = parse(tobject, token).typeConstraintForReference(typeContext);
+            Type type = parse(tobject, token).resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {
                 compilerError(tobject, "You cannot call methods on optionals.");
