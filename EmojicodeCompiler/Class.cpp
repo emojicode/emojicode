@@ -184,8 +184,8 @@ bool Class::addProtocol(Type protocol) {
 uint_fast16_t Protocol::nextIndex = 0;
 
 Protocol::Protocol(EmojicodeChar name, Package *pkg, const Token *dt) : TypeDefinitionWithGenerics(name, pkg, dt) {
-    if (index == UINT16_MAX) {
-        compilerError(nullptr, "You exceeded the limit of 65,535 protocols.");
+    if (nextIndex == UINT16_MAX) {
+        compilerError(nullptr, "You exceeded the limit of 65,536 protocols.");
     }
     index = nextIndex++;
 }

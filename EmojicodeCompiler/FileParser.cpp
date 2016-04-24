@@ -225,8 +225,8 @@ void parseClassBody(Class *eclass, Package *pkg,
                 
                 const Token *variableName = consumeToken(VARIABLE);
                 
-                if (eclass->instanceVariables.size() == 65535) {
-                    compilerError(token, "You exceeded the limit of 65,535 instance variables.");
+                if (eclass->instanceVariables.size() == 65536) {
+                    compilerError(token, "You exceeded the limit of 65,536 instance variables.");
                 }
 
                 auto type = Type::parseAndFetchType(Type(eclass), GenericTypeVariables, pkg, nullptr);
