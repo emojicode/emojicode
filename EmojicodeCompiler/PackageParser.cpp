@@ -410,7 +410,7 @@ void PackageParser::parse(const char *path) {
                 continue;
             case E_CRYSTAL_BALL: {
                 exported.disallow();
-                if (package_->version().minor && package_->version().major) {
+                if (package_->validVersion()) {
                     compilerError(theToken, "Package version already declared.");
                 }
                 
@@ -427,6 +427,10 @@ void PackageParser::parse(const char *path) {
                 delete [] minorString;
                 
                 package_->setPackageVersion(PackageVersion(majori, minori));
+                if (!package_->validVersion()) {
+                    compilerError(theToken, "The provided package version is not valid.");
+                }
+                
                 continue;
             }
             case E_WALE: {

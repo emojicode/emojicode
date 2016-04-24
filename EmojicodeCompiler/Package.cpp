@@ -46,7 +46,7 @@ void Package::parse(const char *path, const Token *errorToken) {
     
     PackageParser(this).parse(path);
     
-    if (version().major == 0 && version().minor == 0) {
+    if (!validVersion()) {
         compilerError(errorToken, "Package %s does not provide a valid version.", name());
     }
     

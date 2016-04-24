@@ -46,6 +46,8 @@ public:
     
     bool finishedLoading() const { return finishedLoading_; }
     PackageVersion version() const { return version_; }
+    /** Whether this package has declared a valid package version. */
+    bool validVersion() const { return version().minor > 0 || version().major > 0; }
     void setPackageVersion(PackageVersion v) { version_ = v; }
     bool requiresBinary() const { return requiresNativeBinary_; }
     void setRequiresBinary(bool b = true) { requiresNativeBinary_ = b; }
