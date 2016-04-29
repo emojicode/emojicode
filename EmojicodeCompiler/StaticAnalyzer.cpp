@@ -35,9 +35,10 @@ void analyzeClass(Type classType, Writer &writer) {
     // Get the ID offset for this eclass by summing up all superclasses instance variable counts
     uint16_t offset = 0;
     for (Class *aClass = eclass->superclass; aClass != nullptr; aClass = aClass->superclass) {
-        offset += aClass->instanceVariables.size();
+        offset += aClass->instanceVariables().size();
     }
-    writer.writeUInt16(eclass->instanceVariables.size() + offset);
+    auto instanceVariableCount = eclass->instanceVariables().size() + offset;
+    writer.writeUInt16(instanceVariableCount);
     
     // Number of methods inclusive superclass
     writer.writeUInt16(eclass->nextMethodVti);
@@ -51,7 +52,7 @@ void analyzeClass(Type classType, Writer &writer) {
     writer.writeUInt16(eclass->initializerList.size());
     writer.writeUInt16(eclass->classMethodList.size());
     
-    for (auto &var : eclass->instanceVariables) {
+    for (auto &var : eclass->instanceVariables()) {
         CompilerVariable *cv = new CompilerVariable(var.type, offset++, 1, false, var.name);
         objectScope.setLocalVariable(var.name, cv);
     }
@@ -72,10 +73,10 @@ void analyzeClass(Type classType, Writer &writer) {
         StaticFunctionAnalyzer::writeAndAnalyzeProcedure(classMethod, writer, classType, scoper, true);
     }
     
-    if (eclass->instanceVariables.size() > 0 && eclass->initializerList.size() == 0) {
+    if (eclass->instanceVariables().size() > 0 && eclass->initializerList.size() == 0) {
         auto str = classType.toString(typeNothingness, true);
         compilerWarning(eclass->position(), "Class %s defines %d instances variables but has no initializers.",
-                        str.c_str(), eclass->instanceVariables.size());
+                        str.c_str(), eclass->instanceVariables().size());
     }
     
     writer.writeUInt16(eclass->protocols().size());
@@ -152,7 +153,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     // and assign virtual table indexes before we analyze the classes!
     for (auto eclass : Class::classes()) {
         // Decide whether this eclass is eligible for initializer inheritance
-        if (eclass->instanceVariables.size() == 0 && eclass->initializerList.size() == 0) {
+        if (eclass->instanceVariables().size() == 0 && eclass->initializerList.size() == 0) {
             eclass->inheritsContructors = true;
         }
         

@@ -297,14 +297,8 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                 deprecated.disallow();
 
                 auto &variableName = stream_.consumeToken(VARIABLE);
-                
-                if (eclass->instanceVariables.size() == 65536) {
-                    compilerError(token, "You exceeded the limit of 65,536 instance variables.");
-                }
-                
-                auto type = parseAndFetchType(Type(eclass), GenericTypeVariables, nullptr);
-                
-                eclass->instanceVariables.push_back(Variable(variableName, type));
+                auto type = parseAndFetchType(Type(eclass), GenericTypeVariables);
+                eclass->addInstanceVariable(Variable(variableName, type));
             }
                 break;
             case E_CROCODILE: {

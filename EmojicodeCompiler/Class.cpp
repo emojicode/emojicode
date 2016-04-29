@@ -39,6 +39,10 @@ bool Class::inheritsFrom(Class *from) {
     return false;
 }
 
+void Class::addInstanceVariable(const Variable &variable) {
+    instanceVariables_.push_back(variable);
+}
+
 Initializer* Class::lookupInitializer(EmojicodeChar name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
         auto pos = eclass->initializers_.find(name);
