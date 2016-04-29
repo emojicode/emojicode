@@ -17,52 +17,10 @@
 
 std::list<Class *> Class::classes_;
 
-Class::Class(EmojicodeChar name, const Token *classBegin, Package *pkg, const Token *dToken)
-    : classBeginToken_(classBegin), TypeDefinitionWithGenerics(name, pkg, dToken) {
+Class::Class(EmojicodeChar name, SourcePosition p, Package *pkg, const EmojicodeString &documentation)
+    : TypeDefinitionWithGenerics(name, pkg, documentation), position_(p) {
     index = classes_.size();
     classes_.push_back(this);
-}
-
-void TypeDefinitionWithGenerics::addGenericArgument(const Token *variable, Type constraint) {
-    genericArgumentConstraints_.push_back(constraint);
-
-    Type referenceType = Type(TT_REFERENCE, false, ownGenericArgumentCount_, this);
-    
-    if (ownGenericArgumentVariables_.count(variable->value)) {
-        compilerError(variable, "A generic argument variable with the same name is already in use.");
-    }
-    ownGenericArgumentVariables_.insert(std::map<EmojicodeString, Type>::value_type(variable->value, referenceType));
-    ownGenericArgumentCount_++;
-}
-
-void TypeDefinitionWithGenerics::setSuperTypeDef(TypeDefinitionWithGenerics *superTypeDef) {
-    genericArgumentCount_ = ownGenericArgumentCount_ + superTypeDef->genericArgumentCount_;
-    genericArgumentConstraints_.insert(genericArgumentConstraints_.begin(),
-                                       superTypeDef->genericArgumentConstraints_.begin(),
-                                       superTypeDef->genericArgumentConstraints_.end());
-    
-    for (auto &genericArg : ownGenericArgumentVariables_) {
-        genericArg.second.reference += superTypeDef->genericArgumentCount_;
-    }
-}
-
-void TypeDefinitionWithGenerics::setSuperGenericArguments(std::vector<Type> superGenericArguments) {
-    superGenericArguments_ = superGenericArguments;
-}
-
-void TypeDefinitionWithGenerics::finalizeGenericArguments() {
-    genericArgumentCount_ = ownGenericArgumentCount_;
-}
-
-bool TypeDefinitionWithGenerics::fetchVariable(EmojicodeString name, bool optional, Type *destType) {
-    auto it = ownGenericArgumentVariables_.find(name);
-    if (it != ownGenericArgumentVariables_.end()) {
-        Type type = it->second;
-        if (optional) type.setOptional();
-        *destType = type;
-        return true;
-    }
-    return false;
 }
 
 bool Class::canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint) {
@@ -94,11 +52,11 @@ Initializer* Class::lookupInitializer(EmojicodeChar name) {
     return nullptr;
 }
 
-Initializer* Class::getInitializer(const Token *token, Type type, TypeContext typeContext) {
-    auto initializer = lookupInitializer(token->value[0]);
+Initializer* Class::getInitializer(const Token &token, Type type, TypeContext typeContext) {
+    auto initializer = lookupInitializer(token.value[0]);
     if (initializer == nullptr) {
         auto typeString = type.toString(typeContext, true);
-        ecCharToCharStack(token->value[0], initializerString);
+        ecCharToCharStack(token.value[0], initializerString);
         compilerError(token, "%s has no initializer %s.", typeString.c_str(), initializerString);
     }
     return initializer;
@@ -114,11 +72,11 @@ Method* Class::lookupMethod(EmojicodeChar name) {
     return nullptr;
 }
 
-Method* Class::getMethod(const Token *token, Type type, TypeContext typeContext) {
-    auto method = lookupMethod(token->value[0]);
+Method* Class::getMethod(const Token &token, Type type, TypeContext typeContext) {
+    auto method = lookupMethod(token.value[0]);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        ecCharToCharStack(token->value[0], method);
+        ecCharToCharStack(token.value[0], method);
         compilerError(token, "%s has no method %s", eclass.c_str(), method);
     }
     return method;
@@ -134,38 +92,30 @@ ClassMethod* Class::lookupClassMethod(EmojicodeChar name) {
     return nullptr;
 }
 
-ClassMethod* Class::getClassMethod(const Token *token, Type type, TypeContext typeContext) {
-    auto method = lookupClassMethod(token->value[0]);
+ClassMethod* Class::getClassMethod(const Token &token, Type type, TypeContext typeContext) {
+    auto method = lookupClassMethod(token.value[0]);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        ecCharToCharStack(token->value[0], method);
+        ecCharToCharStack(token.value[0], method);
         compilerError(token, "%s has no class method %s", eclass.c_str(), method);
     }
     return method;
 }
 
-template <typename T>
-void duplicateDeclarationCheck(T p, std::map<EmojicodeChar, T> dict, const Token *errorToken) {
-    if (dict.count(p->name)) {
-        ecCharToCharStack(p->name, nameString);
-        compilerError(errorToken, "%s %s is declared twice.", p->on, nameString);
-    }
-}
-
 void Class::addClassMethod(ClassMethod *method) {
-    duplicateDeclarationCheck(method, classMethods_, method->dToken);
+    duplicateDeclarationCheck(method, classMethods_, method->position());
     classMethods_[method->name] = method;
     classMethodList.push_back(method);
 }
 
 void Class::addMethod(Method *method) {
-    duplicateDeclarationCheck(method, methods_, method->dToken);
+    duplicateDeclarationCheck(method, methods_, method->position());
     methods_[method->name] = method;
     methodList.push_back(method);
 }
 
 void Class::addInitializer(Initializer *init) {
-    duplicateDeclarationCheck(init, initializers_, init->dToken);
+    duplicateDeclarationCheck(init, initializers_, init->position());
     initializers_[init->name] = init;
     initializerList.push_back(init);
     
@@ -177,57 +127,4 @@ void Class::addInitializer(Initializer *init) {
 bool Class::addProtocol(Type protocol) {
     protocols_.push_back(protocol);
     return true;
-}
-
-//MARK: Protocol
-
-uint_fast16_t Protocol::nextIndex = 0;
-
-Protocol::Protocol(EmojicodeChar name, Package *pkg, const Token *dt) : TypeDefinitionWithGenerics(name, pkg, dt) {
-    if (nextIndex == UINT16_MAX) {
-        compilerError(nullptr, "You exceeded the limit of 65,536 protocols.");
-    }
-    index = nextIndex++;
-}
-
-Method* Protocol::lookupMethod(EmojicodeChar name) {
-    auto it = methods_.find(name);
-    return it != methods_.end() ? it->second : nullptr;
-}
-
-Method* Protocol::getMethod(const Token *token, Type type, TypeContext typeContext) {
-    auto method = lookupMethod(token->value[0]);
-    if (method == nullptr) {
-        auto eclass = type.toString(typeContext, true);
-        ecCharToCharStack(token->value[0], method);
-        compilerError(token, "%s has no method %s", eclass.c_str(), method);
-    }
-    return method;
-}
-
-void Protocol::addMethod(Method *method) {
-    duplicateDeclarationCheck(method, methods_, method->dToken);
-    method->vti = methodList_.size();
-    methods_[method->name] = method;
-    methodList_.push_back(method);
-}
-
-bool Protocol::canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint) {
-    return resolutionConstraint == this;
-}
-
-//MARK: Enum
-
-std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeChar c) const {
-    auto it = map_.find(c);
-    if (it == map_.end()) {
-        return std::pair<bool, EmojicodeInteger>(false, 0);
-    }
-    else {
-        return std::pair<bool, EmojicodeInteger>(true, it->second);
-    }
-}
-
-void Enum::addValueFor(EmojicodeChar c) {
-    map_[c] = valuesCounter++;
 }

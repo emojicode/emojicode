@@ -13,8 +13,13 @@
 #define globalNamespace E_LARGE_RED_CIRCLE
 
 #include <vector>
+#include <string>
 
+class Enum;
+class Class;
+class Protocol;
 class Package;
+class TypeDefinitionWithGenerics;
 
 enum TypeType {
     TT_CLASS,
@@ -54,19 +59,13 @@ class Procedure;
 
 class Type {
 public:
-    /** Reads a type name and stores it into the given pointers. */
-    static const Token* parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional);
-    /** Reads a type name and stores it into the given pointers. */
-    static Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism, Package *package,
-                                  TypeDynamism *dynamicType = nullptr, bool allowProtocolsUsingSelf = false);
-    
-    Type(TypeType t, bool o) : optional_(o), type_(t) {}
+    Type(TypeType t, bool o) : type_(t), optional_(o) {}
     Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c)
-        : optional_(o), type_(t), reference(r), resolutionConstraint(c) {}
+        : reference(r), resolutionConstraint(c), type_(t), optional_(o) {}
     Type(Class *c, bool o);
     Type(Class *c) : Type(c, false) {};
-    Type(Protocol *p, bool o) : optional_(o), type_(TT_PROTOCOL), protocol(p) {}
-    Type(Enum *e, bool o) : optional_(o), type_(TT_ENUM), eenum(e) {}
+    Type(Protocol *p, bool o) : protocol(p), type_(TT_PROTOCOL), optional_(o)  {}
+    Type(Enum *e, bool o) : eenum(e), type_(TT_ENUM), optional_(o) {}
     
     
     /** Returns the type of this type. Whether it’s an integer, class, etc. */
@@ -103,8 +102,6 @@ public:
      */
     bool identicalTo(Type to) const;
     
-    /** Called by @c parseAndFetchType and in the class parser. You usually should not call this method. */
-    void parseGenericArguments(TypeContext tc, TypeDynamism dynamism, Package *package, const Token *errorToken);
     /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
     Type resolveOn(TypeContext contextType, bool resolveSelf = true) const;
     Type resolveOnSuperArgumentsAndConstraints(TypeContext ct, bool resolveSelf = true) const;
@@ -142,15 +139,5 @@ public:
 #define typeFloat (Type(TT_DOUBLE, false))
 #define typeNothingness (Type(TT_NOTHINGNESS, false))
 #define typeSomeobject (Type(TT_SOMEOBJECT, false))
-
-struct CommonTypeFinder {
-    /** Tells the common type finder about the type of another element in the collection/data structure. */
-    void addType(Type t, TypeContext typeContext);
-    /** Returns the common type and issues a warning at @c warningToken if the common type is ambigious. */
-    Type getCommonType(const Token *warningToken);
-private:
-    bool firstTypeFound = false;
-    Type commonType = typeSomething;
-};
 
 #endif /* Type_hpp */

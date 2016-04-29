@@ -13,16 +13,16 @@
 
 //MARK: Compiler Variables
 
-void CompilerVariable::uninitalizedError(const Token *variableToken) const {
+void CompilerVariable::uninitalizedError(const Token &variableToken) const {
     if (initialized <= 0) {
         compilerError(variableToken,
-                      "Variable \"%s\" is possibly not initialized.", variableToken->value.utf8CString());
+                      "Variable \"%s\" is possibly not initialized.", variableToken.value.utf8CString());
     }
 }
 
-void CompilerVariable::mutate(const Token *variableToken) {
+void CompilerVariable::mutate(const Token &variableToken) {
     if (frozen()) {
-        compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableToken->value.utf8CString());
+        compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableToken.value.utf8CString());
     }
     mutated_ = true;
 }
@@ -42,24 +42,24 @@ Scope::~Scope() {
     }
 }
 
-void Scope::setLocalVariable(const Token *variable, CompilerVariable *value) {
-    map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(variable->value, value));
+void Scope::setLocalVariable(const Token &variable, CompilerVariable *value) {
+    map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(variable.value, value));
 }
 
 void Scope::setLocalVariable(EmojicodeString string, CompilerVariable *value) {
     map.insert(std::map<EmojicodeString, CompilerVariable*>::value_type(string, value));
 }
 
-CompilerVariable* Scope::getLocalVariable(const Token *variable) {
-    auto it = map.find(variable->value);
+CompilerVariable* Scope::getLocalVariable(const Token &variable) {
+    auto it = map.find(variable.value);
     return it == map.end() ? nullptr : it->second;
 }
 
-void Scope::initializerUnintializedVariablesCheck(const Token *errorToken, const char *errorMessage) {
+void Scope::initializerUnintializedVariablesCheck(const Token &errorToken, const char *errorMessage) {
     for (auto it : map) {
         CompilerVariable *cv = it.second;
         if (cv->initialized <= 0 && !cv->type.optional()) {
-            const char *variableName = cv->definitionToken->value.utf8CString();
+            const char *variableName = cv->definitionToken.value.utf8CString();
             compilerError(errorToken, errorMessage, variableName);
         }
     }
@@ -69,7 +69,7 @@ void Scope::recommendFrozenVariables() {
     for (auto it : map) {
         CompilerVariable *cv = it.second;
         if (!cv->frozen() && !cv->mutated()) {
-            const char *variableName = cv->definitionToken->value.utf8CString();
+            const char *variableName = cv->definitionToken.value.utf8CString();
             compilerWarning(cv->definitionToken,
                             "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.",
                             variableName);
@@ -85,7 +85,7 @@ int Scope::copyFromScope(Scope *copyScope, uint8_t offsetID) {
     return (int)copyScope->map.size();
 }
 
-void Scoper::setVariable(const Token *variable, CompilerVariable *value) {
+void Scoper::setVariable(const Token &variable, CompilerVariable *value) {
     for (auto scope : scopes) {
         if (scope->getLocalVariable(variable)) {
             scope->setLocalVariable(variable, value);
@@ -99,7 +99,7 @@ void Scoper::setVariable(const Token *variable, CompilerVariable *value) {
     scopes.front()->setLocalVariable(variable, value);
 }
 
-CompilerVariable* Scoper::getVariable(const Token *variable, uint8_t *scopesUp) {
+CompilerVariable* Scoper::getVariable(const Token &variable, uint8_t *scopesUp) {
     *scopesUp = 0;
     
     CompilerVariable *cvar;

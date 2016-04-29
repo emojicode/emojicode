@@ -7,15 +7,17 @@
 //
 
 #include "StaticFunctionAnalyzer.hpp"
-#include "Lexer.hpp"
 #include "Type.hpp"
 #include "utf8.h"
 #include "Class.hpp"
+#include "Enum.hpp"
+#include "Protocol.hpp"
+#include "Procedure.hpp"
+#include "CommonTypeFinder.hpp"
+#include "StringPool.hpp"
 
-std::vector<const Token *> stringPool;
-
-Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken, Type type) {
-    auto returnType = parse(token, parentToken);
+Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken, Type type) {
+    auto returnType = parse(token);
     if (!returnType.compatibleTo(type, typeContext)) {
         auto cn = returnType.toString(typeContext, true);
         auto tn = type.toString(typeContext, true);
@@ -24,13 +26,13 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken,
     return returnType;
 }
 
-void StaticFunctionAnalyzer::noReturnError(const Token *errorToken) {
+void StaticFunctionAnalyzer::noReturnError(SourcePosition p) {
     if (callable.returnType.type() != TT_NOTHINGNESS && !returned) {
-        compilerError(errorToken, "An explicit return is missing.");
+        compilerError(p, "An explicit return is missing.");
     }
 }
 
-void StaticFunctionAnalyzer::noEffectWarning(const Token *warningToken) {
+void StaticFunctionAnalyzer::noEffectWarning(const Token &warningToken) {
     if (!effect) {
         compilerWarning(warningToken, "Statement seems to have no effect whatsoever.");
     }
@@ -50,7 +52,7 @@ bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
     return false;
 }
 
-void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token *token, const char *type) {
+void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token &token, const char *type) {
     if (p->access == PRIVATE) {
         if (typeContext.normalType.type() != TT_CLASS || p->eclass != typeContext.normalType.eclass) {
             ecCharToCharStack(p->name, nm);
@@ -65,13 +67,13 @@ void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token *token, const
     }
 }
 
-std::vector<Type> StaticFunctionAnalyzer::checkGenericArguments(Procedure *p, const Token *token) {
+std::vector<Type> StaticFunctionAnalyzer::checkGenericArguments(Procedure *p, const Token &token) {
     std::vector<Type> k;
     
-    while (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_SPIRAL_SHELL) {
-        consumeToken();
+    while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
+        stream_.consumeToken(IDENTIFIER);
         
-        auto type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package);
+        auto type = parseAndFetchType(typeContext, AllKindsOfDynamism);
         k.push_back(type);
     }
     
@@ -82,21 +84,23 @@ std::vector<Type> StaticFunctionAnalyzer::checkGenericArguments(Procedure *p, co
     return k;
 }
 
-void StaticFunctionAnalyzer::checkArguments(Arguments arguments, TypeContext calledType, const Token *token) {
+void StaticFunctionAnalyzer::checkArguments(std::vector<Variable> arguments, TypeContext calledType,
+                                            const Token &token) {
     bool brackets = false;
-    if (nextToken()->type == ARGUMENT_BRACKET_OPEN) {
-        consumeToken();
+    if (stream_.nextTokenIs(ARGUMENT_BRACKET_OPEN)) {
+        stream_.consumeToken(ARGUMENT_BRACKET_OPEN);
         brackets = true;
     }
     for (auto var : arguments) {
-        parse(consumeToken(), token, var.type.resolveOn(calledType));
+        parse(stream_.consumeToken(), token, var.type.resolveOn(calledType));
     }
     if (brackets) {
-        consumeToken(ARGUMENT_BRACKET_CLOSE);
+        stream_.consumeToken(ARGUMENT_BRACKET_CLOSE);
     }
 }
 
-void StaticFunctionAnalyzer::writeCoinForScopesUp(uint8_t scopesUp, const Token *varName, EmojicodeCoin stack, EmojicodeCoin object) {
+void StaticFunctionAnalyzer::writeCoinForScopesUp(uint8_t scopesUp, const Token &varName, EmojicodeCoin stack,
+                                                  EmojicodeCoin object) {
     if (scopesUp == 0) {
         writer.writeCoin(stack);
     }
@@ -121,18 +125,20 @@ void StaticFunctionAnalyzer::flowControlBlock() {
     
     flowControlDepth++;
     
-    const Token *token = consumeToken(IDENTIFIER);
-    if (token->value[0] != E_GRAPES) {
-        ecCharToCharStack(token->value[0], s);
+    auto &token = stream_.consumeToken(IDENTIFIER);
+    if (token.value[0] != E_GRAPES) {
+        ecCharToCharStack(token.value[0], s);
         compilerError(token, "Expected 🍇 but found %s instead.", s);
     }
     
     auto placeholder = writer.writeCoinsCountPlaceholderCoin();
-    while (token = consumeToken(), !(token->type == IDENTIFIER && token->value[0] == E_WATERMELON)) {
+    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         effect = false;
-        parse(token, token);
+        auto &token = stream_.consumeToken();
+        parse(token);
         noEffectWarning(token);
     }
+    stream_.consumeToken();
     placeholder.write();
     
     effect = true;
@@ -153,12 +159,12 @@ void StaticFunctionAnalyzer::flowControlReturnEnd(FlowControlReturn &fcr) {
     fcr.branches++;
 }
 
-void StaticFunctionAnalyzer::parseIfExpression(const Token *token) {
-    if (nextToken()->value[0] == E_SOFT_ICE_CREAM) {
-        consumeToken();
+void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
+    if (stream_.nextTokenIs(E_SOFT_ICE_CREAM)) {
+        stream_.consumeToken(IDENTIFIER);
         writer.writeCoin(0x3E);
         
-        const Token *varName = consumeToken(VARIABLE);
+        auto &varName = stream_.consumeToken(VARIABLE);
         if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
             compilerError(token, "Cannot redeclare variable.");
         }
@@ -166,7 +172,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token) {
         uint8_t id = nextVariableID();
         writer.writeCoin(id);
         
-        Type t = parse(consumeToken(), token);
+        Type t = parse(stream_.consumeToken());
         if (!t.optional()) {
             compilerError(token, "🍊🍦 can only be used with optionals.");
         }
@@ -176,30 +182,15 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token *token) {
         scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true, varName));
     }
     else {
-        parse(consumeToken(), token, typeBoolean);
+        parse(stream_.consumeToken(NO_TYPE), token, typeBoolean);
     }
 }
 
-Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken) {
-    if (token == nullptr) {
-        compilerError(parentToken, "Unexpected end of function body.");
-    }
-    
-    switch (token->type) {
+Type StaticFunctionAnalyzer::parse(const Token &token) {
+    switch (token.type()) {
         case STRING: {
             writer.writeCoin(0x10);
-            
-            for (size_t i = 0; i < stringPool.size(); i++) {
-                const Token *a = stringPool[i];
-                if (a->value.compare(token->value) == 0) {
-                    writer.writeCoin((EmojicodeCoin)i);
-                    return Type(CL_STRING);
-                }
-            }
-            
-            writer.writeCoin((EmojicodeCoin)stringPool.size());
-            stringPool.push_back(token);
-            
+            writer.writeCoin(StringPool::theStringPool().poolString(token.value));
             return Type(CL_STRING);
         }
         case BOOLEAN_TRUE:
@@ -210,7 +201,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
             return typeBoolean;
         case INTEGER: {
             /* We know token->value only contains ints less than 255 */
-            const char *string = token->value.utf8CString();
+            const char *string = token.value.utf8CString();
             
             EmojicodeInteger l = strtoll(string, nullptr, 0);
             delete [] string;
@@ -232,7 +223,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
         case DOUBLE: {
             writer.writeCoin(0x15);
             
-            const char *string = token->value.utf8CString();
+            const char *string = token.value.utf8CString();
             
             double d = strtod(string, nullptr);
             delete [] string;
@@ -241,14 +232,14 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
         }
         case SYMBOL:
             writer.writeCoin(0x16);
-            writer.writeCoin(token->value[0]);
+            writer.writeCoin(token.value[0]);
             return typeSymbol;
         case VARIABLE: {
             uint8_t scopesUp;
             CompilerVariable *cv = scoper.getVariable(token, &scopesUp);
             
             if (cv == nullptr) {
-                const char *variableName = token->value.utf8CString();
+                const char *variableName = token.value.utf8CString();
                 compilerError(token, "Variable \"%s\" not defined.", variableName);
             }
             
@@ -260,7 +251,7 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
             return cv->type;
         }
         case IDENTIFIER:
-            return unsafeParseIdentifier(token);
+            return parseIdentifier(token);
         case DOCUMENTATION_COMMENT:
             compilerError(token, "Misplaced documentation comment.");
         case ARGUMENT_BRACKET_OPEN:
@@ -274,21 +265,21 @@ Type StaticFunctionAnalyzer::parse(const Token *token, const Token *parentToken)
     compilerError(token, "Cannot determine expression’s return type.");
 }
 
-Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
-    if (token->value[0] != E_RED_APPLE) {
+Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
+    if (token.value[0] != E_RED_APPLE) {
         // We need a chance to test whether the red apple’s return is used
         effect = true;
     }
 
-    switch (token->value[0]) {
+    switch (token.value[0]) {
         case E_SHORTCAKE: {
-            const Token *varName = consumeToken(VARIABLE);
+            auto &varName = stream_.consumeToken(VARIABLE);
             
             if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
                 compilerError(token, "Cannot redeclare variable.");
             }
             
-            Type t = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package);
+            Type t = parseAndFetchType(typeContext, AllKindsOfDynamism);
             
             uint8_t id = nextVariableID();
             scoper.currentScope()->setLocalVariable(varName,
@@ -301,7 +292,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             return typeNothingness;
         }
         case E_CUSTARD: {
-            const Token *varName = consumeToken(VARIABLE);
+            auto &varName = stream_.consumeToken(VARIABLE);
             
             uint8_t scopesUp;
             CompilerVariable *cv = scoper.getVariable(varName, &scopesUp);
@@ -313,7 +304,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 
                 writer.writeCoin(id);
                 
-                Type t = parse(consumeToken(), token);
+                Type t = parse(stream_.consumeToken());
                 scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, false, varName));
             }
             else {
@@ -326,12 +317,12 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 writeCoinForScopesUp(scopesUp, varName, 0x1B, 0x1D);
                 writer.writeCoin(cv->id);
                 
-                parse(consumeToken(), token, cv->type);
+                parse(stream_.consumeToken(), token, cv->type);
             }
             return typeNothingness;
         }
         case E_SOFT_ICE_CREAM: {
-            const Token *varName = consumeToken(VARIABLE);
+            auto &varName = stream_.consumeToken(VARIABLE);
             
             if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
                 compilerError(token, "Cannot redeclare variable.");
@@ -342,19 +333,19 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             uint8_t id = nextVariableID();
             writer.writeCoin(id);
             
-            Type t = parse(consumeToken(), token);
+            Type t = parse(stream_.consumeToken());
             scoper.currentScope()->setLocalVariable(varName, new CompilerVariable(t, id, 1, true, varName));
             return typeNothingness;
         }
         case E_COOKING:
         case E_CHOCOLATE_BAR: {
-            const Token *varName = consumeToken(VARIABLE);
+            auto &varName = stream_.consumeToken(VARIABLE);
             
             uint8_t scopesUp;
             CompilerVariable *cv = scoper.getVariable(varName, &scopesUp);
             
             if (!cv) {
-                compilerError(token, "Unknown variable \"%s\"", varName->value.utf8CString());
+                compilerError(token, "Unknown variable \"%s\"", varName.value.utf8CString());
                 break;
             }
             
@@ -362,11 +353,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             cv->mutate(varName);
             
             if (!cv->type.compatibleTo(typeInteger, typeContext)) {
-                ecCharToCharStack(token->value[0], ls);
+                ecCharToCharStack(token.value[0], ls);
                 compilerError(token, "%s can only operate on 🚂 variables.", ls);
             }
             
-            if (token->value[0] == E_COOKING) {
+            if (token.value[0] == E_COOKING) {
                 writeCoinForScopesUp(scopesUp, varName, 0x19, 0x1F);
             }
             else {
@@ -381,14 +372,16 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             writer.writeCoin(0x52);
             auto placeholder = writer.writeCoinPlaceholder();
             
-            uint32_t stringCount = 1;
+            int stringCount = 0;
             
-            parse(consumeToken(), token, Type(CL_STRING));
-            
-            const Token *stringToken;
-            while (stringToken = consumeToken(), !(stringToken->type == IDENTIFIER && stringToken->value[0] == E_COOKIE)) {
-                parse(stringToken, token, Type(CL_STRING));
+            while (stream_.nextTokenIsEverythingBut(E_COOKIE)) {
+                parse(stream_.consumeToken(), token, Type(CL_STRING));
                 stringCount++;
+            }
+            stream_.consumeToken(IDENTIFIER);
+            
+            if (stringCount == 0) {
+                compilerError(token, "An empty 🍪 is invalid.");
             }
             
             placeholder.write(stringCount);
@@ -401,10 +394,10 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             CommonTypeFinder ct;
             
-            const Token *aToken;
-            while (aToken = consumeToken(), !(aToken->type == IDENTIFIER && aToken->value[0] == E_AUBERGINE)) {
-                ct.addType(parse(aToken, token), typeContext);
+            while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                ct.addType(parse(stream_.consumeToken()), typeContext);
             }
+            stream_.consumeToken(IDENTIFIER);
             
             placeholder.write();
             
@@ -420,11 +413,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             CommonTypeFinder ct;
             
-            const Token *aToken;
-            while (aToken = consumeToken(), !(aToken->type == IDENTIFIER && aToken->value[0] == E_AUBERGINE)) {
-                parse(aToken, token, Type(CL_STRING));
-                ct.addType(parse(consumeToken(), token), typeContext);
+            while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                parse(stream_.consumeToken(), token, Type(CL_STRING));
+                ct.addType(parse(stream_.consumeToken()), typeContext);
             }
+            stream_.consumeToken(IDENTIFIER);
             
             placeholder.write();
             
@@ -435,15 +428,15 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         }
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE: {
             writer.writeCoin(0x53);
-            parse(consumeToken(), token, typeInteger);
-            parse(consumeToken(), token, typeInteger);
+            parse(stream_.consumeToken(), token, typeInteger);
+            parse(stream_.consumeToken(), token, typeInteger);
             return Type(CL_RANGE);
         }
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
             writer.writeCoin(0x54);
-            parse(consumeToken(), token, typeInteger);
-            parse(consumeToken(), token, typeInteger);
-            parse(consumeToken(), token, typeInteger);
+            parse(stream_.consumeToken(), token, typeInteger);
+            parse(stream_.consumeToken(), token, typeInteger);
+            parse(stream_.consumeToken(), token, typeInteger);
             return Type(CL_RANGE);
         }
         case E_TANGERINE: {
@@ -457,16 +450,16 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             flowControlBlock();
             flowControlReturnEnd(fcr);
             
-            while ((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_LEMON) {
-                writer.writeCoin(consumeToken()->value[0]);
+            while (stream_.nextTokenIs(E_LEMON)) {
+                writer.writeCoin(stream_.consumeToken().value[0]);
                 
                 parseIfExpression(token);
                 flowControlBlock();
                 flowControlReturnEnd(fcr);
             }
             
-            if ((token = nextToken()) != nullptr && token->type == IDENTIFIER && token->value[0] == E_STRAWBERRY) {
-                writer.writeCoin(consumeToken()->value[0]);
+            if (stream_.nextTokenIs(E_STRAWBERRY)) {
+                writer.writeCoin(stream_.consumeToken().value[0]);
                 flowControlBlock();
                 flowControlReturnEnd(fcr);
             }
@@ -483,7 +476,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
             writer.writeCoin(0x61);
             
-            parse(consumeToken(), token, typeBoolean);
+            parse(stream_.consumeToken(), token, typeBoolean);
             flowControlBlock();
             returned = false;
             
@@ -492,7 +485,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
             auto placeholder = writer.writeCoinPlaceholder();
             
-            const Token *variableToken = consumeToken(VARIABLE);
+            auto &variableToken = stream_.consumeToken(VARIABLE);
             
             if (scoper.currentScope()->getLocalVariable(variableToken) != nullptr) {
                 compilerError(variableToken, "Cannot redeclare variable.");
@@ -501,7 +494,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             uint8_t vID = nextVariableID();
             writer.writeCoin(vID);
             
-            Type iteratee = parse(consumeToken(), token, typeSomeobject);
+            Type iteratee = parse(stream_.consumeToken(), token, typeSomeobject);
             
             Type itemType = typeNothingness;
             
@@ -536,7 +529,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_WATERMELON:
         case E_AUBERGINE:
         case E_ROOTSTER: {
-            ecCharToCharStack(token->value[0], identifier);
+            ecCharToCharStack(token.value[0], identifier);
             compilerError(token, "Unexpected identifier %s.", identifier);
             return typeNothingness;
         }
@@ -548,7 +541,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             }
             
             if (inClassContext) {
-                compilerError(token, "Illegal use of 🐕.", token->value[0]);
+                compilerError(token, "Illegal use of 🐕.");
                 break;
             }
             
@@ -560,7 +553,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_UP_POINTING_RED_TRIANGLE: {
             writer.writeCoin(0x13);
             
-            Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package);
+            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism);
             
             if (type.type() != TT_ENUM) {
                 compilerError(token, "The given type cannot be accessed.");
@@ -569,11 +562,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 compilerError(token, "Optionals cannot be accessed.");
             }
             
-            auto name = consumeToken(IDENTIFIER);
+            auto name = stream_.consumeToken(IDENTIFIER);
             
-            auto v = type.eenum->getValueFor(name->value[0]);
+            auto v = type.eenum->getValueFor(name.value[0]);
             if (!v.first) {
-                ecCharToCharStack(name->value[0], valueName);
+                ecCharToCharStack(name.value[0], valueName);
                 ecCharToCharStack(type.eenum->name(), enumName);
                 compilerError(name, "%s does not have a member named %s.", enumName, valueName);
             }
@@ -593,14 +586,14 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         }
         case E_CLOUD: {
             writer.writeCoin(0x2E);
-            parse(consumeToken(), token);
+            parse(stream_.consumeToken());
             return typeBoolean;
         }
         case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE: {
             writer.writeCoin(0x2D);
             
-            parse(consumeToken(), token, typeSomeobject);
-            parse(consumeToken(), token, typeSomeobject);
+            parse(stream_.consumeToken(), token, typeSomeobject);
+            parse(stream_.consumeToken(), token, typeSomeobject);
             
             return typeBoolean;
         }
@@ -629,7 +622,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             writer.writeCoin(eclass->superclass->index);
             
-            const Token *initializerToken = consumeToken(IDENTIFIER);
+            auto &initializerToken = stream_.consumeToken(IDENTIFIER);
             
             auto initializer = eclass->superclass->getInitializer(initializerToken, eclass, typeContext);
             initializer->deprecatedWarning(initializerToken);
@@ -654,7 +647,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             if (initializer) {
                 if (initializer->canReturnNothingness) {
-                    parse(consumeToken(), token, typeNothingness);
+                    parse(stream_.consumeToken(), token, typeNothingness);
                     return typeNothingness;
                 }
                 else {
@@ -662,15 +655,15 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 }
             }
             
-            parse(consumeToken(), token, callable.returnType);
+            parse(stream_.consumeToken(), token, callable.returnType);
             returned = true;
             return typeNothingness;
         }
         case E_BLACK_SQUARE_BUTTON: {
             auto placeholder = writer.writeCoinPlaceholder();
             
-            Type originalType = parse(consumeToken(), token, typeSomething);
-            Type type = Type::parseAndFetchType(typeContext, NoDynamism, package, nullptr);
+            Type originalType = parse(stream_.consumeToken(), token, typeSomething);
+            Type type = parseAndFetchType(typeContext, NoDynamism, nullptr);
             
             if (originalType.compatibleTo(type, typeContext)) {
                 compilerWarning(token, "Superfluous cast.");
@@ -722,7 +715,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_BEER_MUG: {
             writer.writeCoin(0x3A);
             
-            Type t = parse(consumeToken(), token);
+            Type t = parse(stream_.consumeToken());
             
             if (!t.optional()) {
                 compilerError(token, "🍺 can only be used with optionals.");
@@ -735,9 +728,9 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             
             auto placeholder = writer.writeCoinsCountPlaceholderCoin();
             
-            const Token *methodToken = consumeToken();
+            auto &methodToken = stream_.consumeToken();
             
-            Type type = parse(consumeToken(), token);
+            Type type = parse(stream_.consumeToken());
             if (!type.optional()) {
                 compilerError(token, "🍻 may only be used on 🍬.");
             }
@@ -760,11 +753,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             return returnType.resolveOn(typeContext);
         }
         case E_HOT_PEPPER: {
-            const Token *methodName = consumeToken();
+            auto &methodName = stream_.consumeToken();
             
             writer.writeCoin(0x71);
             
-            Type type = parse(consumeToken(), token);
+            Type type = parse(stream_.consumeToken());
             
             if (type.type() != TT_CLASS) {
                 compilerError(token, "You can only capture method calls on class instances.");
@@ -780,9 +773,10 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_GRAPES: {
             writer.writeCoin(0x70);
             
-            auto function = Closure(token);
-            function.parseArgumentList(typeContext, package);
-            function.parseReturnType(typeContext, package);
+            auto function = Closure(token.position());
+            parseArgumentList(&function, typeContext);
+            parseReturnType(&function, typeContext);
+            parseBody(&function);
             
             auto variableCountPlaceholder = writer.writeCoinPlaceholder();
             auto coinCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
@@ -791,10 +785,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             if (!inClassContext) {
                 scoper.pushScope(scoper.topScope());  // The object scope
             }
-            
-            function.firstToken = currentToken;
-            
-            auto sca = StaticFunctionAnalyzer(function, package, nullptr, inClassContext, typeContext, writer, scoper);
+
+            auto sca = StaticFunctionAnalyzer(function, package_, nullptr, inClassContext, typeContext, writer, scoper);
             sca.analyze(true, closingScope);
             
             if (!inClassContext) {
@@ -811,20 +803,20 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_LOLLIPOP: {
             writer.writeCoin(0x72);
             
-            Type type = parse(consumeToken(), token);
+            Type type = parse(stream_.consumeToken());
             
             if (type.type() != TT_CALLABLE) {
                 compilerError(token, "Given value is not callable.");
             }
             
             for (int i = 1; i <= type.arguments; i++) {
-                parse(consumeToken(), token, type.genericArguments[i]);
+                parse(stream_.consumeToken(), token, type.genericArguments[i]);
             }
             
             return type.genericArguments[0];
         }
         case E_CHIPMUNK: {
-            const Token *nameToken = consumeToken();
+            auto &nameToken = stream_.consumeToken();
             
             if (inClassContext) {
                 compilerError(token, "Not within an object-context.");
@@ -853,8 +845,8 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             writer.writeCoin(0x4);
             
             TypeDynamism dynamism;
-            Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package, &dynamism)
-            .resolveOnSuperArgumentsAndConstraints(typeContext);
+            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, &dynamism)
+                        .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.type() != TT_CLASS) {
                 compilerError(token, "The given type cannot be initiatied.");
@@ -870,7 +862,7 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                 writer.writeCoin(type.eclass->index);
             }
             
-            auto initializerName = consumeToken(IDENTIFIER);
+            auto initializerName = stream_.consumeToken(IDENTIFIER);
             
             Initializer *initializer = type.eclass->getInitializer(initializerName, type, typeContext);
             
@@ -896,11 +888,11 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         case E_DOUGHNUT: {
             writer.writeCoin(0x2);
             
-            const Token *methodToken = consumeToken(IDENTIFIER);
+            auto &methodToken = stream_.consumeToken(IDENTIFIER);
             
             TypeDynamism dynamism;
-            Type type = Type::parseAndFetchType(typeContext, AllKindsOfDynamism, package, &dynamism)
-                            .resolveOnSuperArgumentsAndConstraints(typeContext);
+            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, &dynamism)
+                        .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {
                 compilerWarning(token, "Please remove useless 🍬.");
@@ -930,9 +922,9 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
         default: {
             auto placeholder = writer.writeCoinPlaceholder();
             
-            const Token *tobject = consumeToken();
+            auto &tobject = stream_.consumeToken();
             
-            Type type = parse(tobject, token).resolveOnSuperArgumentsAndConstraints(typeContext);
+            Type type = parse(tobject).resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {
                 compilerError(tobject, "You cannot call methods on optionals.");
@@ -947,69 +939,69 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
             }
             else {
                 if (type.type() == TT_BOOLEAN) {
-                    switch (token->value[0]) {
+                    switch (token.value[0]) {
                         case E_NEGATIVE_SQUARED_CROSS_MARK:
                             placeholder.write(0x26);
                             return typeBoolean;
                         case E_PARTY_POPPER:
                             placeholder.write(0x27);
-                            parse(consumeToken(), token, typeBoolean);
+                            parse(stream_.consumeToken(), token, typeBoolean);
                             return typeBoolean;
                         case E_CONFETTI_BALL:
                             placeholder.write(0x28);
-                            parse(consumeToken(), token, typeBoolean);
+                            parse(stream_.consumeToken(), token, typeBoolean);
                             return typeBoolean;
                     }
                 }
                 else if (type.type() == TT_INTEGER) {
-                    switch (token->value[0]) {
+                    switch (token.value[0]) {
                         case E_HEAVY_MINUS_SIGN:
                             placeholder.write(0x21);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeInteger;
                         case E_HEAVY_PLUS_SIGN:
                             placeholder.write(0x22);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeInteger;
                         case E_HEAVY_DIVISION_SIGN:
                             placeholder.write(0x24);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeInteger;
                         case E_HEAVY_MULTIPLICATION_SIGN:
                             placeholder.write(0x23);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeInteger;
                         case E_LEFT_POINTING_TRIANGLE:
                             placeholder.write(0x29);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeBoolean;
                         case E_RIGHT_POINTING_TRIANGLE:
                             placeholder.write(0x2A);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeBoolean;
                         case E_LEFTWARDS_ARROW:
                             placeholder.write(0x2B);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeBoolean;
                         case E_RIGHTWARDS_ARROW:
                             placeholder.write(0x2C);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeBoolean;
                         case E_PUT_LITTER_IN_ITS_SPACE:
                             placeholder.write(0x25);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeInteger;
                         case E_HEAVY_LARGE_CIRCLE:
                             placeholder.write(0x5A);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeInteger;
                         case E_ANGER_SYMBOL:
                             placeholder.write(0x5B);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeInteger;
                         case E_CROSS_MARK:
                             placeholder.write(0x5C);
-                            parse(consumeToken(), token, typeInteger);
+                            parse(stream_.consumeToken(), token, typeInteger);
                             return typeInteger;
                         case E_NO_ENTRY_SIGN:
                             placeholder.write(0x5D);
@@ -1020,53 +1012,53 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
                     }
                 }
                 else if (type.type() == TT_DOUBLE) {
-                    switch (token->value[0]) {
+                    switch (token.value[0]) {
                         case E_FACE_WITH_STUCK_OUT_TONGUE:
                             placeholder.write(0x2F);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeBoolean;
                         case E_HEAVY_MINUS_SIGN:
                             placeholder.write(0x30);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeFloat;
                         case E_HEAVY_PLUS_SIGN:
                             placeholder.write(0x31);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeFloat;
                         case E_HEAVY_DIVISION_SIGN:
                             placeholder.write(0x33);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeFloat;
                         case E_HEAVY_MULTIPLICATION_SIGN:
                             placeholder.write(0x32);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeFloat;
                         case E_LEFT_POINTING_TRIANGLE:
                             placeholder.write(0x34);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeBoolean;
                         case E_RIGHT_POINTING_TRIANGLE:
                             placeholder.write(0x35);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeBoolean;
                         case E_LEFTWARDS_ARROW:
                             placeholder.write(0x36);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeBoolean;
                         case E_RIGHTWARDS_ARROW:
                             placeholder.write(0x37);
-                            parse(consumeToken(), token, typeFloat);
+                            parse(stream_.consumeToken(), token, typeFloat);
                             return typeBoolean;
                     }
                 }
                 
-                if (token->value[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
-                    parse(consumeToken(), token, type);  // Must be of the same type as the callee
+                if (token.value[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
+                    parse(stream_.consumeToken(), token, type);  // Must be of the same type as the callee
                     placeholder.write(0x20);
                     return typeBoolean;
                 }
                 
-                ecCharToCharStack(token->value[0], method);
+                ecCharToCharStack(token.value[0], method);
                 auto typeString = type.toString(typeContext, true);
                 compilerError(token, "Unknown primitive method %s for %s.", method, typeString.c_str());
             }
@@ -1097,17 +1089,15 @@ Type StaticFunctionAnalyzer::unsafeParseIdentifier(const Token *token) {
 
 StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext,
                                                TypeContext typeContext, Writer &writer, Scoper &scoper)
-        : callable(callable),
+        : AbstractParser(p, callable.tokenStream()),
+          callable(callable),
           writer(writer),
           scoper(scoper),
           initializer(i),
           inClassContext(inClassContext),
-          typeContext(typeContext),
-          package(p) {}
+          typeContext(typeContext) {}
 
 void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope) {
-    currentToken = callable.firstToken;
-    
     if (initializer) {
         scoper.currentScope()->changeInitializedBy(-1);
     }
@@ -1116,7 +1106,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope) {
     Scope methodScope(false);
     for (auto variable : callable.arguments) {
         uint8_t id = nextVariableID();
-        CompilerVariable *varo = new CompilerVariable(variable.type, id, true, true, callable.dToken);
+        CompilerVariable *varo = new CompilerVariable(variable.type, id, true, true, variable.name);
         
         methodScope.setLocalVariable(variable.name, varo);
     }
@@ -1129,16 +1119,15 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope) {
     
     bool emittedDeadCodeWarning = false;
     
-    const Token *token;
-    while (token = consumeToken(), !(token->type == IDENTIFIER && token->value[0] == E_WATERMELON)) {
+    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         effect = false;
         
-        parse(token, callable.dToken);
-        
+        auto &token = stream_.consumeToken();
+        parse(token);
         noEffectWarning(token);
        
-        if (!emittedDeadCodeWarning && returned && nextToken()->value[0] != E_WATERMELON && token->type == IDENTIFIER) {
-            compilerWarning(consumeToken(), "Dead code.");
+        if (!emittedDeadCodeWarning && returned && !stream_.nextTokenIs(E_WATERMELON)) {
+            compilerWarning(stream_.consumeToken(), "Dead code.");
             emittedDeadCodeWarning = true;
             if (!compileDeadCode) {
                 break;
@@ -1148,15 +1137,16 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope) {
     
     scoper.currentScope()->recommendFrozenVariables();
     scoper.popScope();
-    noReturnError(callable.dToken);
+    noReturnError(callable.position());
     
     if (initializer) {
-        scoper.currentScope()->initializerUnintializedVariablesCheck(initializer->dToken,
+        scoper.currentScope()->initializerUnintializedVariablesCheck(initializer->position(),
                                                                      "Instance variable \"%s\" must be initialized.");
         
         if (!calledSuper && typeContext.normalType.eclass->superclass) {
             ecCharToCharStack(initializer->name, initializerName);
-            compilerError(initializer->dToken, "Missing call to superinitializer in initializer %s.", initializerName);
+            compilerError(initializer->position(),
+                          "Missing call to superinitializer in initializer %s.", initializerName);
         }
     }
 }
@@ -1167,7 +1157,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writ
     
     writer.writeEmojicodeChar(procedure->name);
     writer.writeUInt16(procedure->vti);
-    writer.writeByte((uint8_t)procedure->arguments.size());
+    writer.writeByte(static_cast<uint8_t>(procedure->arguments.size()));
     
     if (procedure->native) {
         writer.writeByte(1);

@@ -28,7 +28,7 @@ void Writer::writeCoin(EmojicodeCoin value) {
     fputc(value, out);
     
     if (++writtenCoins == 4294967295) {
-        compilerError(nullptr, "You exceeded the limit of 4294967295 allowed instructions in a procedure.");
+        //TODO: compilerError(nullptr, "You exceeded the limit of 4294967295 allowed instructions in a procedure.");
     }
 }
 

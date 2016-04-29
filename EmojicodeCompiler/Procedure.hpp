@@ -9,63 +9,67 @@
 #ifndef Procedure_hpp
 #define Procedure_hpp
 
+#include <vector>
+#include <map>
 #include "Writer.hpp"
-
-typedef std::vector<Variable> Arguments;
+#include "Token.hpp"
+#include "TokenStream.hpp"
+#include "Type.hpp"
 
 enum AccessLevel {
     PUBLIC, PRIVATE, PROTECTED
 };
 
-/** A callable object. */
+struct Variable {
+    Variable(const Token &n, Type t) : name(n), type(t) {}
+    
+    /** The name of the variable */
+    const Token &name;
+    /** The type */
+    Type type;
+};
+
 class Callable {
 public:
-    Callable(const Token *dToken) : dToken(dToken) {};
+    Callable(SourcePosition p) : position_(p) {};
     
-    /** 
-     * Parses the arguments for this function. 
-     * @return Whether self was used.
-     */
-    bool parseArgumentList(TypeContext ct, Package *package);
-    /**
-     * Parses the return type for this function if there is one specified. 
-     * @return Whether self was used.
-     */
-    bool parseReturnType(TypeContext ct, Package *package);
-    
-    Arguments arguments;
+    std::vector<Variable> arguments;
     /** Return type of the method */
     Type returnType = typeNothingness;
     
-    /** The first token of this callable. */
-    const Token *firstToken;
+    /** Returns the position at which this callable was defined. */
+    const SourcePosition& position() const { return position_; }
     
-    /** const Token at which this function was defined */
-    const Token *dToken;
+    /** Returns a copy of the token stream intended to be used to parse this callable. */
+    TokenStream tokenStream() const { return tokenStream_; }
+    void setTokenStream(TokenStream ts) { tokenStream_ = ts; }
     
     /** The type of this callable when used as value. */
     virtual Type type() = 0;
+private:
+    TokenStream tokenStream_;
+    SourcePosition position_;
 };
 
 class Closure: public Callable {
 public:
-    Closure(const Token *dToken) : Callable(dToken) {};
+    Closure(SourcePosition p) : Callable(p) {};
     Type type();
 };
 
 /** Procedures are callables that belong to a class as either method, class method or initialiser. */
 class Procedure: public Callable {
 public:
-    static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, const Token *errorToken,
+    static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
                                    const char *on, Type contextType);
-    static void checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeChar name, const Token *errorToken,
+    static void checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeChar name, SourcePosition position,
                                    const char *on, Type contextType);
-    static void checkArgument(Type thisArgument, Type superArgument, int index, const Token *errorToken,
+    static void checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
                               const char *on, Type contextType);
     
     Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
-              Package *package, const Token *dToken, bool overriding, const Token *documentationToken, bool deprecated)
-        : Callable(dToken),
+              Package *package, SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated)
+        : Callable(p),
           name(name),
           overriding(overriding),
           deprecated(deprecated),
@@ -88,7 +92,7 @@ public:
     /** Class which defined this procedure. This can be @c nullptr if the procedure belongs to a protocol. */
     Class *eclass;
     
-    const Token *documentationToken;
+    EmojicodeString documentationToken;
     
     uint16_t vti;
     
@@ -101,7 +105,7 @@ public:
     Package *package;
     
     /** Issues a warning on at the given token if the procedure is deprecated. */
-    void deprecatedWarning(const Token *callToken);
+    void deprecatedWarning(const Token &callToken);
     
     /**
      * Check whether this procedure is breaking promises of @c superProcedure.
@@ -109,9 +113,6 @@ public:
     void checkPromises(Procedure *superProcedure, const char *on, Type contextType);
     
     void checkOverride(Procedure *superProcedure);
-    
-    void parseGenericArguments(TypeContext ct, Package *package);
-    void parseBody(bool allowNative);
     
     virtual Type type();
     
@@ -129,12 +130,12 @@ class ClassMethod: public Procedure {
 public:
     const char *on = "Class Method";
 };
-
+ 
 class Initializer: public Procedure {
 public:
-    Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, Package *package, const Token *dToken,
-                bool overriding, const Token *documentationToken, bool deprecated, bool r, bool crn)
-        : Procedure(name, level, final, eclass, package, dToken, overriding, documentationToken, deprecated),
+    Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, Package *package, SourcePosition p,
+                bool overriding, EmojicodeString documentationToken, bool deprecated, bool r, bool crn)
+        : Procedure(name, level, final, eclass, package, p, overriding, documentationToken, deprecated),
           required(r),
           canReturnNothingness(crn) {}
     

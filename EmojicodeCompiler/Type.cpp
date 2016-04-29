@@ -9,10 +9,11 @@
 #include <cstring>
 #include <vector>
 #include "utf8.h"
-#include "Lexer.hpp"
 #include "Class.hpp"
 #include "Procedure.hpp"
 #include "EmojicodeCompiler.hpp"
+#include "Enum.hpp"
+#include "Protocol.hpp"
 
 //MARK: Globals
 /* Very important one time declarations */
@@ -246,195 +247,6 @@ bool Type::identicalTo(Type to) const {
     return false;
 }
 
-//MARK: Type Parsing Utility
-
-const Token* Type::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional) {
-    if (nextToken()->type == VARIABLE) {
-        compilerError(consumeToken(), "Generic variables not allowed here.");
-    }
-    auto *className = consumeToken(IDENTIFIER);
-    
-    if (className->value[0] == E_CANDY) {
-        *optional = true;
-        
-        className = consumeToken(IDENTIFIER);
-    }
-    else {
-        *optional = false;
-    }
-    
-    if (className->value[0] == E_ORANGE_TRIANGLE) {
-        const Token *nsToken = consumeToken(IDENTIFIER);
-        *enamespace = nsToken->value[0];
-        
-        className = consumeToken(IDENTIFIER);
-    }
-    else {
-        *enamespace = globalNamespace;
-    }
-    
-    *typeName = className->value[0];
-    
-    return className;
-}
-
-Type Type::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Package *package, TypeDynamism *dynamicType,
-                             bool allowProtocolsUsingSelf) {
-    auto beforeCandy = currentToken;
-    bool optional = false;
-    if (nextToken()->value[0] == E_CANDY) {
-        consumeToken();
-        optional = true;
-    }
-    
-    if (dynamism & GenericTypeVariables && (ct.normalType.canHaveGenericArguments()|| ct.p) &&
-        nextToken()->type == VARIABLE) {
-        if (dynamicType) *dynamicType = GenericTypeVariables;
-        
-        auto variableToken = consumeToken();
-        
-        if (ct.p) {
-            auto it = ct.p->genericArgumentVariables.find(variableToken->value);
-            if (it != ct.p->genericArgumentVariables.end()) {
-                Type type = it->second;
-                if (optional) type.setOptional();
-                return type;
-            }
-        }
-        if (ct.normalType.canHaveGenericArguments()) {
-            Type type = typeNothingness;
-            if (ct.normalType.typeDefinitionWithGenerics()->fetchVariable(variableToken->value, optional, &type)) {
-                return type;
-            }
-        }
-            
-        compilerError(variableToken, "No such generic type variable \"%s\".", variableToken->value.utf8CString());
-    }
-    else if (nextToken()->value[0] == E_ROOTSTER) {
-        auto ratToken = consumeToken();
-        if (!(dynamism & Self)) compilerError(ratToken, "🐓 not allowed here.");
-        if (dynamicType) *dynamicType = Self;
-        return Type(TT_SELF, optional);
-    }
-    else if (nextToken()->value[0] == E_GRAPES) {
-        if (dynamicType) *dynamicType = NoDynamism;
-        consumeToken();
-        
-        Type t(TT_CALLABLE, optional);
-        t.arguments = 0;
-        
-        t.genericArguments.push_back(typeNothingness);
-        
-        while (!(nextToken()->type == IDENTIFIER && (nextToken()->value[0] == E_WATERMELON ||
-                                                     nextToken()->value[0] == E_RIGHTWARDS_ARROW))) {
-            t.arguments++;
-            t.genericArguments.push_back(parseAndFetchType(ct, dynamism, package));
-        }
-        
-        if (nextToken()->type == IDENTIFIER && nextToken()->value[0] == E_RIGHTWARDS_ARROW) {
-            consumeToken();
-            t.genericArguments[0] = parseAndFetchType(ct, dynamism, package);
-        }
-        
-        const Token *token = consumeToken(IDENTIFIER);
-        if (token->value[0] != E_WATERMELON) {
-            compilerError(token, "Expected 🍉.");
-        }
-        
-        return t;
-    }
-    else {
-        if (dynamicType) *dynamicType = NoDynamism;
-        currentToken = beforeCandy;
-        EmojicodeChar typeName, typeNamespace;
-        bool optional;
-        const Token *token = parseTypeName(&typeName, &typeNamespace, &optional);
-        
-        auto type = typeNothingness;
-        if (!package->fetchRawType(typeName, typeNamespace, optional, token, &type)) {
-            ecCharToCharStack(typeName, nameString);
-            ecCharToCharStack(typeNamespace, namespaceString);
-            compilerError(token, "Could not find type %s in enamespace %s.", nameString, namespaceString);
-        }
-        
-        type.parseGenericArguments(ct, dynamism, package, token);
-        
-        if (!allowProtocolsUsingSelf && type.type() == TT_PROTOCOL && type.protocol->usesSelf()) {
-            auto typeStr = type.toString(ct, true);
-            compilerError(token, "Protocol %s can only be used as a generic constraint because it uses 🐓.",
-                          typeStr.c_str());
-        }
-        
-        return type;
-    }
-}
-
-void Type::parseGenericArguments(TypeContext ct, TypeDynamism dynamism, Package *package, const Token *errorToken) {
-    if (canHaveGenericArguments()) {
-        auto typeDef = typeDefinitionWithGenerics();
-        auto offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->numberOfOwnGenericArguments();
-        genericArguments = std::vector<Type>(typeDef->superGenericArguments());
-        
-        if (typeDef->numberOfOwnGenericArguments()) {
-            int count = 0;
-            while (nextToken()->value[0] == E_SPIRAL_SHELL) {
-                auto token = consumeToken();
-                
-                Type ta = parseAndFetchType(ct, dynamism, package, nullptr);
-                
-                auto i = count + offset;
-                if (typeDef->numberOfGenericArgumentsWithSuperArguments() <= i) {
-                    auto name = toString(ct, true);
-                    compilerError(token, "Too many generic arguments provided for %s.", name.c_str());
-                }
-                if (!ta.compatibleTo(typeDef->genericArgumentConstraints()[i], ct)) {
-                    auto thisName = typeDef->genericArgumentConstraints()[i].toString(ct, true);
-                    auto thatName = ta.toString(ct, true);
-                    compilerError(token, "Generic argument %s is not compatible to constraint %s.",
-                                  thatName.c_str(), thisName.c_str());
-                }
-                
-                genericArguments.push_back(ta);
-                
-                count++;
-            }
-            
-            if (count != typeDef->numberOfOwnGenericArguments()) {
-                auto str = toString(typeNothingness, true);
-                compilerError(errorToken, "Type %s requires %d generic arguments, but %d were given.",
-                              str.c_str(), typeDef->numberOfOwnGenericArguments(), count);
-            }
-        }
-    }
-}
-
-//MARK: Type Interferring
-
-void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
-    if (!firstTypeFound) {
-        commonType = t;
-        firstTypeFound = true;
-    }
-    else if (!t.compatibleTo(commonType, typeContext)) {
-        if (commonType.compatibleTo(t, typeContext)) {
-            commonType = t;
-        }
-        else if (t.type() == TT_CLASS && commonType.type() == TT_CLASS) {
-            commonType = typeSomeobject;
-        }
-        else {
-            commonType = typeSomething;
-        }
-    }
-}
-
-Type CommonTypeFinder::getCommonType(const Token *warningToken) {
-    if (!firstTypeFound) {
-        compilerWarning(warningToken, "Type is ambigious without more context.");
-    }
-    return commonType;
-}
-
 //MARK: Type Visulisation
 
 const char* Type::typePackage() {
@@ -465,7 +277,7 @@ void stringAppendEc(EmojicodeChar c, std::string &string) {
     string.append(sc);
 }
 
-Type::Type(Class *c, bool o) : optional_(o), type_(TT_CLASS), eclass(c) {
+Type::Type(Class *c, bool o) : eclass(c), type_(TT_CLASS), optional_(o) {
     for (int i = 0; i < eclass->numberOfGenericArgumentsWithSuperArguments(); i++) {
         genericArguments.push_back(Type(TT_REFERENCE, false, i, c));
     }

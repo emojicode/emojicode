@@ -1,0 +1,34 @@
+//
+//  CommonTypeFinder.cpp
+//  Emojicode
+//
+//  Created by Theo Weidmann on 28/04/16.
+//  Copyright © 2016 Theo Weidmann. All rights reserved.
+//
+
+#include "CommonTypeFinder.hpp"
+
+void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
+    if (!firstTypeFound) {
+        commonType = t;
+        firstTypeFound = true;
+    }
+    else if (!t.compatibleTo(commonType, typeContext)) {
+        if (commonType.compatibleTo(t, typeContext)) {
+            commonType = t;
+        }
+        else if (t.type() == TT_CLASS && commonType.type() == TT_CLASS) {
+            commonType = typeSomeobject;
+        }
+        else {
+            commonType = typeSomething;
+        }
+    }
+}
+
+Type CommonTypeFinder::getCommonType(const Token &warningToken) {
+    if (!firstTypeFound) {
+        compilerWarning(warningToken, "Type is ambigious without more context.");
+    }
+    return commonType;
+}

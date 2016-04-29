@@ -13,8 +13,7 @@
 #include "Procedure.hpp"
 #include "Writer.hpp"
 #include "CompilerScope.hpp"
-
-extern std::vector<const Token *> stringPool;
+#include "AbstractParser.hpp"
 
 struct FlowControlReturn {
     int branches = 0;
@@ -23,7 +22,7 @@ struct FlowControlReturn {
     bool returned() { return branches == branchReturns; }
 };
 
-class StaticFunctionAnalyzer {
+class StaticFunctionAnalyzer : AbstractParser {
 public:
     static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, Scoper &scoper,
                                          bool inClassContext = false, Initializer *i = nullptr);
@@ -63,38 +62,37 @@ private:
     /** The class type of the eclass which is compiled. */
     TypeContext typeContext;
     
-    Package *package;
-    
     /**
      * Safely tries to parse the given token, evaluate the associated command and returns the type of that command.
      * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
      */
-    Type parse(const Token *token, const Token *parentToken);
+    Type parse(const Token &token);
     
     /**
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
      * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
      */
-    Type parse(const Token *token, const Token *parentToken, Type type);
+    Type parse(const Token &token, const Token &parentToken, Type type);
     
-    /** Unsafely parses. */
-    Type unsafeParseIdentifier(const Token *token);
+    Type parseIdentifier(const Token &token);
+    /** Parses the expression for an if statement. */
+    void parseIfExpression(const Token &token);
     
-    void noReturnError(const Token *errorToken);
-    void noEffectWarning(const Token *warningToken);
+    void noReturnError(SourcePosition p);
+    void noEffectWarning(const Token &warningToken);
     
     /**
      * Checks that the given Procedure can be called from this context.
      */
-    void checkAccess(Procedure *p, const Token *token, const char *type);
+    void checkAccess(Procedure *p, const Token &token, const char *type);
     
-    std::vector<Type> checkGenericArguments(Procedure *p, const Token *token);
+    std::vector<Type> checkGenericArguments(Procedure *p, const Token &token);
     
     /**
      * Parses and validates the arguments for a function.
      * @param calledType The type on which the function is executed. Can be Nothingness.
      */
-    void checkArguments(Arguments arguments, TypeContext calledType, const Token *token);
+    void checkArguments(std::vector<Variable> arguments, TypeContext calledType, const Token &token);
     
     bool typeIsEnumerable(Type type, Type *elementType);
     
@@ -103,10 +101,7 @@ private:
      * @param stack The command to access the variable if it is on the stack.
      * @param object The command to access the variable it it is an instance variable.
      */
-    void writeCoinForScopesUp(uint8_t scopesUp, const Token *varName, EmojicodeCoin stack, EmojicodeCoin object);
-    
-    /** Parses the expression for an if statement. */
-    void parseIfExpression(const Token *token);
+    void writeCoinForScopesUp(uint8_t scopesUp, const Token &varName, EmojicodeCoin stack, EmojicodeCoin object);
     
     /** Returns the next variable ID or issues an error if the limit of variables has been exceeded. */
     uint8_t nextVariableID();

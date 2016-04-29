@@ -10,11 +10,12 @@
 #include "StaticAnalyzer.hpp"
 #include "StaticFunctionAnalyzer.hpp"
 #include "Writer.hpp"
-#include "Lexer.hpp"
+#include "Protocol.hpp"
 #include "CompilerScope.hpp"
 #include "Class.hpp"
 #include "utf8.h"
 #include "EmojicodeCompiler.hpp"
+#include "StringPool.hpp"
 
 void analyzeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass;
@@ -50,9 +51,9 @@ void analyzeClass(Type classType, Writer &writer) {
     writer.writeUInt16(eclass->initializerList.size());
     writer.writeUInt16(eclass->classMethodList.size());
     
-    for (auto var : eclass->instanceVariables) {
-        CompilerVariable *cv = new CompilerVariable(var->type, offset++, 1, false, var->name);
-        objectScope.setLocalVariable(var->name, cv);
+    for (auto &var : eclass->instanceVariables) {
+        CompilerVariable *cv = new CompilerVariable(var.type, offset++, 1, false, var.name);
+        objectScope.setLocalVariable(var.name, cv);
     }
     
     scoper.pushScope(&objectScope);
@@ -73,7 +74,7 @@ void analyzeClass(Type classType, Writer &writer) {
     
     if (eclass->instanceVariables.size() > 0 && eclass->initializerList.size() == 0) {
         auto str = classType.toString(typeNothingness, true);
-        compilerWarning(eclass->classBeginToken(), "Class %s defines %d instances variables but has no initializers.",
+        compilerWarning(eclass->position(), "Class %s defines %d instances variables but has no initializers.",
                         str.c_str(), eclass->instanceVariables.size());
     }
     
@@ -104,20 +105,20 @@ void analyzeClass(Type classType, Writer &writer) {
                     auto className = classType.toString(typeNothingness, true);
                     auto protocolName = protocol.toString(typeNothingness, true);
                     ecCharToCharStack(method->name, ms);
-                    compilerError(eclass->classBeginToken(),
+                    compilerError(eclass->position(),
                                   "Class %s does not agree to protocol %s: Method %s is missing.",
                                   className.c_str(), protocolName.c_str(), ms);
                 }
                 
                 writer.writeUInt16(clm->vti);
                 Procedure::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
-                                              method->name, clm->dToken, "protocol definition", classType);
+                                              method->name, clm->position(), "protocol definition", classType);
                 Procedure::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
-                                              clm->dToken, "protocol definition", classType);
+                                              clm->position(), "protocol definition", classType);
                 for (int i = 0; i < method->arguments.size(); i++) {
                     Procedure::checkArgument(clm->arguments[i].type,
                                              method->arguments[i].type.resolveOn(protocol, false), i,
-                                             clm->dToken, "protocol definition", classType);
+                                             clm->position(), "protocol definition", classType);
                 }
             }
         }
@@ -142,7 +143,8 @@ void writePackageHeader(Package *pkg, Writer &writer) {
 void analyzeClassesAndWrite(FILE *fout) {
     Writer writer(fout);
     
-    stringPool.push_back(new Token());
+    auto &theStringPool = StringPool::theStringPool();
+    theStringPool.poolString(EmojicodeString());
     
     writer.writeByte(ByteCodeSpecificationVersion);
     
@@ -248,7 +250,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     }
     else {
         if (pkgCount > 253) {
-            compilerError(nullptr, "You exceeded the maximum of 253 packages.");
+            compilerError(SourcePosition(0, 0, ""), "You exceeded the maximum of 253 packages."); //TODO: ob
         }
         
         writer.writeByte(pkgCount);
@@ -270,12 +272,12 @@ void analyzeClassesAndWrite(FILE *fout) {
             writer.writeByte(0);
         }
     }
+    
+    writer.writeUInt16(theStringPool.strings().size());
+    for (auto string : theStringPool.strings()) {
+        writer.writeUInt16(string.size());
         
-    writer.writeUInt16(stringPool.size());
-    for (auto token : stringPool) {
-        writer.writeUInt16(token->value.size());
-        
-        for (auto c : token->value) {
+        for (auto c : string) {
             writer.writeEmojicodeChar(c);
         }
     }

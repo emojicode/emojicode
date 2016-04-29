@@ -17,7 +17,7 @@
 std::list<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
-Package* Package::loadPackage(const char *name, EmojicodeChar ns, const Token *errorToken) {
+Package* Package::loadPackage(const char *name, EmojicodeChar ns, const Token &errorToken) {
     Package *package = findPackage(name);
     
     if (package) {
@@ -34,20 +34,20 @@ Package* Package::loadPackage(const char *name, EmojicodeChar ns, const Token *e
         if (strcmp("s", name) != 0) {
             package->loadPackage("s", globalNamespace, errorToken);
         }
-        package->parse(path, errorToken);
+        package->parse(path);
     }
     
     package->loadInto(this, ns, errorToken);
     return package;
 }
 
-void Package::parse(const char *path, const Token *errorToken) {
+void Package::parse(const char *path) {
     packages_.emplace(name(), this);
     
-    PackageParser(this).parse(path);
+    PackageParser(this, lex(path)).parse();
     
     if (!validVersion()) {
-        compilerError(errorToken, "Package %s does not provide a valid version.", name());
+        compilerError(SourcePosition(0, 0, path), "Package %s does not provide a valid version.", name());
     }
     
     packagesLoadingOrder_.push_back(this);
@@ -60,7 +60,7 @@ Package* Package::findPackage(const char *name) {
     return it != packages_.end() ? it->second : nullptr;
 }
 
-bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, const Token *token, Type *type) {
+bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, SourcePosition ep, Type *type) {
     if (ns == globalNamespace) {
         switch (name) {
             case E_OK_HAND_SIGN:
@@ -77,7 +77,7 @@ bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, 
                 return true;
             case E_MEDIUM_WHITE_CIRCLE:
                 if (optional) {
-                    compilerWarning(token, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
+                    compilerWarning(ep, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
                 }
                 *type = Type(TT_SOMETHING, false);
                 return true;
@@ -85,7 +85,7 @@ bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, 
                 *type = Type(TT_SOMEOBJECT, optional);
                 return true;
             case E_SPARKLES:
-                compilerError(token, "The Nothingness type may not be referenced to.");
+                compilerError(ep, "The Nothingness type may not be referenced to.");
         }
     }
     
@@ -119,10 +119,10 @@ void Package::registerType(Type t, EmojicodeChar name, EmojicodeChar ns, bool ex
     }
 }
 
-void Package::loadInto(Package *destinationPackage, EmojicodeChar ns, const Token *errorToken) const {
+void Package::loadInto(Package *destinationPackage, EmojicodeChar ns, const Token &errorToken) const {
     for (auto exported : exportedTypes_) {
         Type type = typeNothingness;
-        if (destinationPackage->fetchRawType(exported.name, ns, false, nullptr, &type)) {
+        if (destinationPackage->fetchRawType(exported.name, ns, false, errorToken, &type)) {
             ecCharToCharStack(ns, nss);
             ecCharToCharStack(exported.name, tname);
             compilerError(errorToken, "Package %s could not be loaded into namespace %s of package %s: %s collides with a type of the same name in the same namespace.", name(), nss, destinationPackage->name(), tname);

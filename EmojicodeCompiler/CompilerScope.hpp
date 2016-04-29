@@ -10,11 +10,12 @@
 #define CompilerScope_hpp
 
 #include <forward_list>
+#include "Type.hpp"
 #include "EmojicodeCompiler.hpp"
 
 class CompilerVariable {
 public:
-    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen, const Token *token)
+    CompilerVariable(Type type, uint8_t id, bool initd, bool frozen, const Token &token)
         : type(type), id(id), initialized(initd), definitionToken(token), frozen_(frozen) {};
     /** The type of the variable. */
     Type type;
@@ -23,12 +24,12 @@ public:
     /** The variable is initialized if this field is greater than 0. */
     int initialized;
     /** The variable name token which defined this variable. */
-    const Token *definitionToken;
+    const Token &definitionToken;
     
     /** Throws an error if the variable is not initalized. */
-    void uninitalizedError(const Token *variableToken) const;
+    void uninitalizedError(const Token &variableToken) const;
     /** Marks the variable as mutated or issues an error if the variable is frozen. */
-    void mutate(const Token *variableToken);
+    void mutate(const Token &variableToken);
     
     bool mutated() { return mutated_; }
     bool frozen() { return frozen_; }
@@ -47,19 +48,19 @@ public:
     void changeInitializedBy(int c);
     
     /** Sets a variable in this scope. */
-    void setLocalVariable(const Token *variable, CompilerVariable *value);
+    void setLocalVariable(const Token &variable, CompilerVariable *value);
     void setLocalVariable(EmojicodeString string, CompilerVariable *value);
     
     /**
      * Retrieves a variable form the scope or returns @c nullptr.
      */
-    CompilerVariable* getLocalVariable(const Token *variable);
+    CompilerVariable* getLocalVariable(const Token &variable);
     
     /** 
      * Emits @c errorMessage if not all instance variable were initialized.
      * @params errorMessage The error message that will probably be issued. It should include @c %s for the name of the variable.
      */
-    void initializerUnintializedVariablesCheck(const Token *errorToken, const char *errorMessage);
+    void initializerUnintializedVariablesCheck(const Token &errorToken, const char *errorMessage);
     
     /**
      * Emits a warning for each non-frozen variable that has not been mutated.
@@ -83,13 +84,13 @@ public:
     /**
      * Retrieves a variable.
      */
-    CompilerVariable* getVariable(const Token *variable, uint8_t *scopesUp);
+    CompilerVariable* getVariable(const Token &variable, uint8_t *scopesUp);
     
     /**
      * Sets a variable.
      * All scopes will be searched, if the variable was set in a top scope before it will receive the new value. If the variable was not set before it will be set in the current scope.
      */
-    void setVariable(const Token *variable, CompilerVariable *value);
+    void setVariable(const Token &variable, CompilerVariable *value);
     
     /** Returns the current scope */
     Scope* currentScope();

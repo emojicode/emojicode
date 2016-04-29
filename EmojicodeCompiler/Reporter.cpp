@@ -15,6 +15,8 @@
 #include "Procedure.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
+#include "Enum.hpp"
+#include "Protocol.hpp"
 
 enum ReturnManner {
     Return,
@@ -22,12 +24,12 @@ enum ReturnManner {
     CanReturnNothingness
 };
 
-void reportDocumentation(const Token *documentationToken) {
-    if (!documentationToken) {
+void reportDocumentation(const EmojicodeString &documentation) {
+    if (documentation.size() == 0) {
         return;
     }
     
-    const char *d = documentationToken->value.utf8CString();
+    const char *d = documentation.utf8CString();
     printf("\"documentation\":");
     printJSONStringToFile(d, stdout);
     putc(',', stdout);
@@ -111,7 +113,7 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
         printf("{");
         Variable variable = p->arguments[i];
         
-        const char *varname = variable.name->value.utf8CString();
+        const char *varname = variable.name.value.utf8CString();
         
         reportType("type", variable.type, tc);
         printf(",\"name\":");
@@ -162,7 +164,7 @@ void report(Package *package) {
 
         reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(),
                                eclass->superGenericArguments().size(), TypeContext(eclass));
-        reportDocumentation(eclass->documentationToken());
+        reportDocumentation(eclass->documentation());
         
         if (eclass->superclass) {
             ecCharToCharStack(eclass->superclass->name(), superClassName);
@@ -216,7 +218,7 @@ void report(Package *package) {
         ecCharToCharStack(eenum->name(), enumName);
         printf("\"name\": \"%s\",", enumName);
         
-        reportDocumentation(eenum->documentationToken());
+        reportDocumentation(eenum->documentation());
         
         bool printedValue = false;
         printf("\"values\": [");
@@ -246,7 +248,7 @@ void report(Package *package) {
         
         reportGenericArguments(protocol->ownGenericArgumentVariables(), protocol->genericArgumentConstraints(),
                                protocol->superGenericArguments().size(), Type(protocol, false));
-        reportDocumentation(protocol->documentationToken());
+        reportDocumentation(protocol->documentation());
         
         printf("\"methods\": [");
         for (size_t i = 0; i < protocol->methods().size(); i++) {
