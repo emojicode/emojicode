@@ -15,7 +15,7 @@ uint_fast16_t Protocol::nextIndex = 0;
 Protocol::Protocol(EmojicodeChar name, Package *pkg, const EmojicodeString &string)
     : TypeDefinitionWithGenerics(name, pkg, string) {
     if (nextIndex == UINT16_MAX) {
-        compilerError(SourcePosition(0, 0, "blalblalb"), "You exceeded the limit of 65,536 protocols."); //TODO: ob
+        throw CompilerErrorException(SourcePosition(0, 0, "blalblalb"), "You exceeded the limit of 65,536 protocols."); //TODO: ob
     }
     index = nextIndex++;
 }
@@ -30,7 +30,7 @@ Method* Protocol::getMethod(const Token &token, Type type, TypeContext typeConte
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
         ecCharToCharStack(token.value[0], method);
-        compilerError(token, "%s has no method %s", eclass.c_str(), method);
+        throw CompilerErrorException(token, "%s has no method %s", eclass.c_str(), method);
     }
     return method;
 }

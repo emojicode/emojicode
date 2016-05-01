@@ -10,6 +10,7 @@
 #include <map>
 #include <utility>
 #include "EmojicodeCompiler.hpp"
+#include "CompilerErrorException.hpp"
 #include "Class.hpp"
 #include "Procedure.hpp"
 #include "utf8.h"
@@ -61,7 +62,7 @@ Initializer* Class::getInitializer(const Token &token, Type type, TypeContext ty
     if (initializer == nullptr) {
         auto typeString = type.toString(typeContext, true);
         ecCharToCharStack(token.value[0], initializerString);
-        compilerError(token, "%s has no initializer %s.", typeString.c_str(), initializerString);
+        throw CompilerErrorException(token, "%s has no initializer %s.", typeString.c_str(), initializerString);
     }
     return initializer;
 }
@@ -81,7 +82,7 @@ Method* Class::getMethod(const Token &token, Type type, TypeContext typeContext)
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
         ecCharToCharStack(token.value[0], method);
-        compilerError(token, "%s has no method %s", eclass.c_str(), method);
+        throw CompilerErrorException(token, "%s has no method %s", eclass.c_str(), method);
     }
     return method;
 }
@@ -101,7 +102,7 @@ ClassMethod* Class::getClassMethod(const Token &token, Type type, TypeContext ty
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
         ecCharToCharStack(token.value[0], method);
-        compilerError(token, "%s has no class method %s", eclass.c_str(), method);
+        throw CompilerErrorException(token, "%s has no class method %s", eclass.c_str(), method);
     }
     return method;
 }

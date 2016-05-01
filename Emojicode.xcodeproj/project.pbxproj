@@ -16,6 +16,7 @@
 		E45DB8141CB44D7500AE6FBE /* Thread.c in Sources */ = {isa = PBXBuildFile; fileRef = E45DB8131CB44D7500AE6FBE /* Thread.c */; };
 		E45FA2F61AA0D24200F032A8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45FA2F51AA0D24200F032A8 /* main.cpp */; };
 		E46395241CAEB49D001461C1 /* Package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E46395221CAEB49D001461C1 /* Package.cpp */; };
+		E469A5821CD512A10012D60E /* CompilerErrorException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E469A5801CD512A10012D60E /* CompilerErrorException.cpp */; };
 		E46A07301C3C79E5003DE2CD /* StaticFunctionAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E46A072E1C3C79E5003DE2CD /* StaticFunctionAnalyzer.cpp */; };
 		E479370E1C3A5B3200536258 /* Procedure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E479370D1C3A5B3200536258 /* Procedure.cpp */; };
 		E4805DC81CD2729200B1282B /* CommonTypeFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */; };
@@ -85,6 +86,8 @@
 		E45FA2F51AA0D24200F032A8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = main.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		E46395221CAEB49D001461C1 /* Package.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cpp; sourceTree = "<group>"; };
 		E46395231CAEB49D001461C1 /* Package.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Package.hpp; sourceTree = "<group>"; };
+		E469A5801CD512A10012D60E /* CompilerErrorException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompilerErrorException.cpp; sourceTree = "<group>"; };
+		E469A5811CD512A10012D60E /* CompilerErrorException.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CompilerErrorException.hpp; sourceTree = "<group>"; };
 		E46A072D1C3C243D003DE2CD /* Lexer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Lexer.hpp; sourceTree = "<group>"; };
 		E46A072E1C3C79E5003DE2CD /* StaticFunctionAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = StaticFunctionAnalyzer.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E46A072F1C3C79E5003DE2CD /* StaticFunctionAnalyzer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StaticFunctionAnalyzer.hpp; sourceTree = "<group>"; };
@@ -155,6 +158,8 @@
 				E4EB4A881AA3166400FF4CED /* EmojicodeCompiler.hpp */,
 				E45FA2F51AA0D24200F032A8 /* main.cpp */,
 				E44E14E31BED2B2F00ACC112 /* Reporter.cpp */,
+				E469A5811CD512A10012D60E /* CompilerErrorException.hpp */,
+				E469A5801CD512A10012D60E /* CompilerErrorException.cpp */,
 				E4805DC51CD1330E00B1282B /* Tokenization */,
 				E4805DC91CD272D500B1282B /* Types */,
 				E4BB24CE1CD0F9ED003CC098 /* Type Definitions */,
@@ -398,6 +403,7 @@
 				E404F6801CCFF39900589659 /* TokenStream.cpp in Sources */,
 				E44E14E41BED2B2F00ACC112 /* Reporter.cpp in Sources */,
 				E4097EF51AA8B96300CB7355 /* StaticAnalyzer.cpp in Sources */,
+				E469A5821CD512A10012D60E /* CompilerErrorException.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

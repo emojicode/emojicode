@@ -7,6 +7,7 @@
 //
 
 #include "TypeDefinitionWithGenerics.hpp"
+#include "CompilerErrorException.hpp"
 #include "Token.hpp"
 #include "Type.hpp"
 
@@ -16,7 +17,7 @@ void TypeDefinitionWithGenerics::addGenericArgument(const Token &variableName, T
     Type referenceType = Type(TT_REFERENCE, false, ownGenericArgumentCount_, this);
     
     if (ownGenericArgumentVariables_.count(variableName.value)) {
-        compilerError(variableName, "A generic argument variable with the same name is already in use.");
+        throw CompilerErrorException(variableName, "A generic argument variable with the same name is already in use.");
     }
     ownGenericArgumentVariables_.insert(std::map<EmojicodeString, Type>::value_type(variableName.value, referenceType));
     ownGenericArgumentCount_++;

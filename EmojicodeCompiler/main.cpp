@@ -8,12 +8,14 @@
 
 #include <libgen.h>
 #include <getopt.h>
+#include <unistd.h>
 #include <cstring>
 #include <vector>
 #include "utf8.h"
 #include "StaticAnalyzer.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
+#include "CompilerErrorException.hpp"
 
 StartingFlag startingFlag;
 bool foundStartingFlag;
@@ -30,7 +32,8 @@ char* EmojicodeString::utf8CString() const {
 }
 
 static bool outputJSON = false;
-static bool gaveWarning = false;
+static bool printedErrorOrWarning = false;
+static bool hasError = false;
 
 void printJSONStringToFile(const char *string, FILE *f) {
     char c;
@@ -70,27 +73,21 @@ void printJSONStringToFile(const char *string, FILE *f) {
 
 //MARK: Warnings
 
-void compilerError(SourcePosition p, const char *err, ...) {
-    va_list list;
-    va_start(list, err);
-    
-    char error[450];
-    vsprintf(error, err, list);
-    
+void printError(const CompilerErrorException &ce) {
+    hasError = true;
     if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":", gaveWarning ? ",": "",
-                p.line, p.character);
-        printJSONStringToFile(p.file, stderr);
+        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":", printedErrorOrWarning ? ",": "",
+                ce.position().line, ce.position().character);
+        printJSONStringToFile(ce.position().file, stderr);
         fprintf(stderr, ", \"message\":");
-        printJSONStringToFile(error, stderr);
-        fprintf(stderr, "}\n]");
+        printJSONStringToFile(ce.error(), stderr);
+        fprintf(stderr, "}\n");
     }
     else {
-        fprintf(stderr, "🚨 line %zu column %zu %s: %s\n", p.line, p.character, p.file, error);
+        fprintf(stderr, "🚨 line %zu column %zu %s: %s\n", ce.position().line, ce.position().character,
+                ce.position().file, ce.error());
     }
-    
-    va_end(list);
-    exit(1);
+    printedErrorOrWarning = true;
 }
 
 void compilerWarning(SourcePosition p, const char *err, ...) {
@@ -101,7 +98,7 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
     vsprintf(error, err, list);
     
     if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":", gaveWarning ? ",": "",
+        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":", printedErrorOrWarning ? ",": "",
                 p.line, p.character);
         printJSONStringToFile(p.file, stderr);
         fprintf(stderr, ", \"message\":");
@@ -111,7 +108,7 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
     else {
         fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", p.line, p.character, p.file, error);
     }
-    gaveWarning = true;
+    printedErrorOrWarning = true;
     
     va_end(list);
 }
@@ -121,7 +118,7 @@ Class* getStandardClass(EmojicodeChar name, Package *_, SourcePosition errorPosi
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TT_CLASS) {
         ecCharToCharStack(name, nameString)
-        compilerError(errorPosition, "s package class %s is missing.", nameString);
+        throw CompilerErrorException(errorPosition, "s package class %s is missing.", nameString);
     }
     return type.eclass;
 }
@@ -131,7 +128,7 @@ Protocol* getStandardProtocol(EmojicodeChar name, Package *_, SourcePosition err
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TT_PROTOCOL) {
         ecCharToCharStack(name, nameString)
-        compilerError(errorPosition, "s package protocol %s is missing.", nameString);
+        throw CompilerErrorException(errorPosition, "s package protocol %s is missing.", nameString);
     }
     return type.protocol;
 }
@@ -203,24 +200,36 @@ int main(int argc, char * argv[]) {
     
     auto errorPosition = SourcePosition(0, 0, argv[0]);
     
-    loadStandard(&pkg, errorPosition);
-    
-    pkg.parse(argv[0]);
-    
     FILE *out = fopen(outPath, "wb");
-    if (!out || ferror(out)) {
-        compilerError(errorPosition, "Couldn't write output file.");
-        return 1;
+    
+    try {
+        loadStandard(&pkg, errorPosition);
+        
+        pkg.parse(argv[0]);
+        
+        if (!out || ferror(out)) {
+            throw CompilerErrorException(errorPosition, "Couldn't write output file.");
+            return 1;
+        }
+        
+        if (!foundStartingFlag) {
+            throw CompilerErrorException(errorPosition, "No 🏁 eclass method was found.");
+        }
+        
+        analyzeClassesAndWrite(out);
+    }
+    catch (CompilerErrorException &ce) {
+        printError(ce);
     }
     
-    if (!foundStartingFlag) {
-        compilerError(errorPosition, "No 🏁 eclass method was found.");
-    }
-    
-    analyzeClassesAndWrite(out);
+    fclose(out);
     
     if (outputJSON) {
         fprintf(stderr, "]");
+    }
+    
+    if (hasError) {
+        unlink(outPath);
     }
     
     if (reportPackage) {

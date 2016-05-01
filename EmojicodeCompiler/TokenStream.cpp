@@ -7,14 +7,15 @@
 //
 
 #include "TokenStream.hpp"
+#include "CompilerErrorException.hpp"
 
 const Token& TokenStream::consumeToken(TokenType type) {
     if (!hasMoreTokens()) {
-        compilerError(currentToken_->position(), "Unexpected end of program.");
+        throw CompilerErrorException(currentToken_->position(), "Unexpected end of program.");
     }
     currentToken_ = currentToken_->nextToken_;
     if (type != NO_TYPE && currentToken_->type() != type) {
-        compilerError(currentToken_->position(), "Expected token %s but instead found %s.",
+        throw CompilerErrorException(currentToken_->position(), "Expected token %s but instead found %s.",
                       Token::stringNameForType(type), currentToken_->stringName());
     }
     return *currentToken_;

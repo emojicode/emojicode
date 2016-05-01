@@ -29,7 +29,6 @@ void analyzeClass(Type classType, Writer &writer) {
         writer.writeUInt16(eclass->index);
     }
     
-    Scoper scoper;
     Scope objectScope(true);
     
     // Get the ID offset for this eclass by summing up all superclasses instance variable counts
@@ -57,19 +56,19 @@ void analyzeClass(Type classType, Writer &writer) {
         objectScope.setLocalVariable(var.name, cv);
     }
     
-    scoper.pushScope(&objectScope);
-    
     for (auto method : eclass->methodList) {
+        auto scoper = Scoper(&objectScope);
         StaticFunctionAnalyzer::writeAndAnalyzeProcedure(method, writer, classType, scoper);
     }
     
     for (auto initializer : eclass->initializerList) {
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(initializer, writer, classType, scoper, false, initializer);
+        auto scoper = Scoper(&objectScope);
+        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(initializer, writer, classType, scoper, false,
+                                                         initializer);
     }
     
-    scoper.popScope();
-    
     for (auto classMethod : eclass->classMethodList) {
+        auto scoper = Scoper();
         StaticFunctionAnalyzer::writeAndAnalyzeProcedure(classMethod, writer, classType, scoper, true);
     }
     
@@ -101,25 +100,30 @@ void analyzeClass(Type classType, Writer &writer) {
             writer.writeUInt16(protocol.protocol->methods().size());
             
             for (auto method : protocol.protocol->methods()) {
-                Method *clm = eclass->lookupMethod(method->name);
-                if (clm == nullptr) {
-                    auto className = classType.toString(typeNothingness, true);
-                    auto protocolName = protocol.toString(typeNothingness, true);
-                    ecCharToCharStack(method->name, ms);
-                    compilerError(eclass->position(),
-                                  "Class %s does not agree to protocol %s: Method %s is missing.",
-                                  className.c_str(), protocolName.c_str(), ms);
+                try {
+                    Method *clm = eclass->lookupMethod(method->name);
+                    if (clm == nullptr) {
+                        auto className = classType.toString(typeNothingness, true);
+                        auto protocolName = protocol.toString(typeNothingness, true);
+                        ecCharToCharStack(method->name, ms);
+                        throw CompilerErrorException(eclass->position(),
+                                      "Class %s does not agree to protocol %s: Method %s is missing.",
+                                      className.c_str(), protocolName.c_str(), ms);
+                    }
+                    
+                    writer.writeUInt16(clm->vti);
+                    Procedure::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
+                                                  method->name, clm->position(), "protocol definition", classType);
+                    Procedure::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
+                                                  clm->position(), "protocol definition", classType);
+                    for (int i = 0; i < method->arguments.size(); i++) {
+                        Procedure::checkArgument(clm->arguments[i].type,
+                                                 method->arguments[i].type.resolveOn(protocol, false), i,
+                                                 clm->position(), "protocol definition", classType);
+                    }
                 }
-                
-                writer.writeUInt16(clm->vti);
-                Procedure::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
-                                              method->name, clm->position(), "protocol definition", classType);
-                Procedure::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
-                                              clm->position(), "protocol definition", classType);
-                for (int i = 0; i < method->arguments.size(); i++) {
-                    Procedure::checkArgument(clm->arguments[i].type,
-                                             method->arguments[i].type.resolveOn(protocol, false), i,
-                                             clm->position(), "protocol definition", classType);
+                catch (CompilerErrorException &ce) {
+                    printError(ce);
                 }
             }
         }
@@ -251,7 +255,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     }
     else {
         if (pkgCount > 253) {
-            compilerError(SourcePosition(0, 0, ""), "You exceeded the maximum of 253 packages."); //TODO: ob
+            throw CompilerErrorException(SourcePosition(0, 0, ""), "You exceeded the maximum of 253 packages."); //TODO: ob
         }
         
         writer.writeByte(pkgCount);

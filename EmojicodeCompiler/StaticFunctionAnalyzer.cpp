@@ -21,14 +21,14 @@ Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken,
     if (!returnType.compatibleTo(type, typeContext)) {
         auto cn = returnType.toString(typeContext, true);
         auto tn = type.toString(typeContext, true);
-        compilerError(token, "%s is not compatible to %s.", cn.c_str(), tn.c_str());
+        throw CompilerErrorException(token, "%s is not compatible to %s.", cn.c_str(), tn.c_str());
     }
     return returnType;
 }
 
 void StaticFunctionAnalyzer::noReturnError(SourcePosition p) {
     if (callable.returnType.type() != TT_NOTHINGNESS && !returned) {
-        compilerError(p, "An explicit return is missing.");
+        throw CompilerErrorException(p, "An explicit return is missing.");
     }
 }
 
@@ -56,13 +56,13 @@ void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token &token, const
     if (p->access == PRIVATE) {
         if (typeContext.normalType.type() != TT_CLASS || p->eclass != typeContext.normalType.eclass) {
             ecCharToCharStack(p->name, nm);
-            compilerError(token, "%s %s is 🔒.", type, nm);
+            throw CompilerErrorException(token, "%s %s is 🔒.", type, nm);
         }
     }
     else if (p->access == PROTECTED) {
         if (typeContext.normalType.type() != TT_CLASS || !typeContext.normalType.eclass->inheritsFrom(p->eclass)) {
             ecCharToCharStack(p->name, nm);
-            compilerError(token, "%s %s is 🔐.", type, nm);
+            throw CompilerErrorException(token, "%s %s is 🔐.", type, nm);
         }
     }
 }
@@ -78,7 +78,7 @@ std::vector<Type> StaticFunctionAnalyzer::checkGenericArguments(Procedure *p, co
     }
     
     if (k.size() != p->genericArgumentVariables.size()) {
-        compilerError(token, "Too few generic arguments provided.");
+        throw CompilerErrorException(token, "Too few generic arguments provided.");
     }
     
     return k;
@@ -109,7 +109,7 @@ void StaticFunctionAnalyzer::writeCoinForScopesUp(uint8_t scopesUp, const Token 
         usedSelf = true;
     }
     else {
-        compilerError(varName, "The variable cannot be resolved correctly.");
+        throw CompilerErrorException(varName, "The variable cannot be resolved correctly.");
     }
 }
 
@@ -128,7 +128,7 @@ void StaticFunctionAnalyzer::flowControlBlock() {
     auto &token = stream_.consumeToken(IDENTIFIER);
     if (token.value[0] != E_GRAPES) {
         ecCharToCharStack(token.value[0], s);
-        compilerError(token, "Expected 🍇 but found %s instead.", s);
+        throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
     }
     
     auto placeholder = writer.writeCoinsCountPlaceholderCoin();
@@ -166,7 +166,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
         
         auto &varName = stream_.consumeToken(VARIABLE);
         if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
-            compilerError(token, "Cannot redeclare variable.");
+            throw CompilerErrorException(token, "Cannot redeclare variable.");
         }
         
         uint8_t id = nextVariableID();
@@ -174,7 +174,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
         
         Type t = parse(stream_.consumeToken());
         if (!t.optional()) {
-            compilerError(token, "🍊🍦 can only be used with optionals.");
+            throw CompilerErrorException(token, "🍊🍦 can only be used with optionals.");
         }
         
         t = t.copyWithoutOptional();
@@ -240,7 +240,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token) {
             
             if (cv == nullptr) {
                 const char *variableName = token.value.utf8CString();
-                compilerError(token, "Variable \"%s\" not defined.", variableName);
+                throw CompilerErrorException(token, "Variable \"%s\" not defined.", variableName);
             }
             
             cv->uninitalizedError(token);
@@ -253,16 +253,16 @@ Type StaticFunctionAnalyzer::parse(const Token &token) {
         case IDENTIFIER:
             return parseIdentifier(token);
         case DOCUMENTATION_COMMENT:
-            compilerError(token, "Misplaced documentation comment.");
+            throw CompilerErrorException(token, "Misplaced documentation comment.");
         case ARGUMENT_BRACKET_OPEN:
-            compilerError(token, "Unexpected 〖");
+            throw CompilerErrorException(token, "Unexpected 〖");
         case ARGUMENT_BRACKET_CLOSE:
-            compilerError(token, "Unexpected 〗");
+            throw CompilerErrorException(token, "Unexpected 〗");
         case NO_TYPE:
         case COMMENT:
             break;
     }
-    compilerError(token, "Cannot determine expression’s return type.");
+    throw CompilerErrorException(token, "Cannot determine expression’s return type.");
 }
 
 Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
@@ -276,7 +276,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             auto &varName = stream_.consumeToken(VARIABLE);
             
             if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
-                compilerError(token, "Cannot redeclare variable.");
+                throw CompilerErrorException(token, "Cannot redeclare variable.");
             }
             
             Type t = parseAndFetchType(typeContext, AllKindsOfDynamism);
@@ -325,7 +325,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             auto &varName = stream_.consumeToken(VARIABLE);
             
             if (scoper.currentScope()->getLocalVariable(varName) != nullptr) {
-                compilerError(token, "Cannot redeclare variable.");
+                throw CompilerErrorException(token, "Cannot redeclare variable.");
             }
             
             writer.writeCoin(0x1B);
@@ -345,7 +345,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             CompilerVariable *cv = scoper.getVariable(varName, &scopesUp);
             
             if (!cv) {
-                compilerError(token, "Unknown variable \"%s\"", varName.value.utf8CString());
+                throw CompilerErrorException(token, "Unknown variable \"%s\"", varName.value.utf8CString());
                 break;
             }
             
@@ -354,7 +354,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             if (!cv->type.compatibleTo(typeInteger, typeContext)) {
                 ecCharToCharStack(token.value[0], ls);
-                compilerError(token, "%s can only operate on 🚂 variables.", ls);
+                throw CompilerErrorException(token, "%s can only operate on 🚂 variables.", ls);
             }
             
             if (token.value[0] == E_COOKING) {
@@ -381,7 +381,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             stream_.consumeToken(IDENTIFIER);
             
             if (stringCount == 0) {
-                compilerError(token, "An empty 🍪 is invalid.");
+                throw CompilerErrorException(token, "An empty 🍪 is invalid.");
             }
             
             placeholder.write(stringCount);
@@ -488,7 +488,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             auto &variableToken = stream_.consumeToken(VARIABLE);
             
             if (scoper.currentScope()->getLocalVariable(variableToken) != nullptr) {
-                compilerError(variableToken, "Cannot redeclare variable.");
+                throw CompilerErrorException(variableToken, "Cannot redeclare variable.");
             }
             
             uint8_t vID = nextVariableID();
@@ -516,7 +516,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             else {
                 auto iterateeString = iteratee.toString(typeContext, true);
-                compilerError(token, "%s does not conform to s🔂.", iterateeString.c_str());
+                throw CompilerErrorException(token, "%s does not conform to s🔂.", iterateeString.c_str());
             }
             
             flowControlBlock();
@@ -530,18 +530,18 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
         case E_AUBERGINE:
         case E_ROOTSTER: {
             ecCharToCharStack(token.value[0], identifier);
-            compilerError(token, "Unexpected identifier %s.", identifier);
+            throw CompilerErrorException(token, "Unexpected identifier %s.", identifier);
             return typeNothingness;
         }
         case E_DOG: {
             usedSelf = true;
             writer.writeCoin(0x3C);
             if (initializer && !calledSuper && initializer->eclass->superclass) {
-                compilerError(token, "Attempt to use 🐕 before superinitializer call.");
+                throw CompilerErrorException(token, "Attempt to use 🐕 before superinitializer call.");
             }
             
             if (inClassContext) {
-                compilerError(token, "Illegal use of 🐕.");
+                throw CompilerErrorException(token, "Illegal use of 🐕.");
                 break;
             }
             
@@ -556,10 +556,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             Type type = parseAndFetchType(typeContext, AllKindsOfDynamism);
             
             if (type.type() != TT_ENUM) {
-                compilerError(token, "The given type cannot be accessed.");
+                throw CompilerErrorException(token, "The given type cannot be accessed.");
             }
             else if (type.optional()) {
-                compilerError(token, "Optionals cannot be accessed.");
+                throw CompilerErrorException(token, "Optionals cannot be accessed.");
             }
             
             auto name = stream_.consumeToken(IDENTIFIER);
@@ -568,7 +568,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             if (!v.first) {
                 ecCharToCharStack(name.value[0], valueName);
                 ecCharToCharStack(type.eenum->name(), enumName);
-                compilerError(name, "%s does not have a member named %s.", enumName, valueName);
+                throw CompilerErrorException(name, "%s does not have a member named %s.", enumName, valueName);
             }
             else if (v.second > UINT32_MAX) {
                 writer.writeCoin(v.second >> 32);
@@ -599,18 +599,18 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
         }
         case E_GOAT: {
             if (!initializer) {
-                compilerError(token, "🐐 can only be used inside initializers.");
+                throw CompilerErrorException(token, "🐐 can only be used inside initializers.");
                 break;
             }
             if (!typeContext.normalType.eclass->superclass) {
-                compilerError(token, "🐐 can only be used if the eclass inherits from another.");
+                throw CompilerErrorException(token, "🐐 can only be used if the eclass inherits from another.");
                 break;
             }
             if (calledSuper) {
-                compilerError(token, "You may not call more than one superinitializer.");
+                throw CompilerErrorException(token, "You may not call more than one superinitializer.");
             }
             if (flowControlDepth) {
-                compilerError(token, "You may not put a call to a superinitializer in a flow control structure.");
+                throw CompilerErrorException(token, "You may not put a call to a superinitializer in a flow control structure.");
             }
             
             scoper.topScope()->initializerUnintializedVariablesCheck(token,
@@ -639,7 +639,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
         case E_RED_APPLE: {
             if (effect) {
                 // Effect is true, so apple is called as subcommand
-                compilerError(token, "🍎’s return may not be used as an argument.");
+                throw CompilerErrorException(token, "🍎’s return may not be used as an argument.");
             }
             effect = true;
             
@@ -651,7 +651,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                     return typeNothingness;
                 }
                 else {
-                    compilerError(token, "🍎 cannot be used inside a initializer.");
+                    throw CompilerErrorException(token, "🍎 cannot be used inside a initializer.");
                 }
             }
             
@@ -679,7 +679,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                     for (size_t i = 0; i < type.eclass->numberOfOwnGenericArguments(); i++) {
                         if(!type.eclass->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments[i], type) ||
                            !type.genericArguments[i].compatibleTo(type.eclass->genericArgumentConstraints()[offset + i], type)) {
-                            compilerError(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
+                            throw CompilerErrorException(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
                         }
                     }
                     
@@ -705,7 +705,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                     break;
                 default: {
                     auto typeString = type.toString(typeContext, true);
-                    compilerError(token, "You cannot cast to %s.", typeString.c_str());
+                    throw CompilerErrorException(token, "You cannot cast to %s.", typeString.c_str());
                 }
             }
             
@@ -718,7 +718,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             Type t = parse(stream_.consumeToken());
             
             if (!t.optional()) {
-                compilerError(token, "🍺 can only be used with optionals.");
+                throw CompilerErrorException(token, "🍺 can only be used with optionals.");
             }
             
             return t.copyWithoutOptional();
@@ -732,7 +732,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             Type type = parse(stream_.consumeToken());
             if (!type.optional()) {
-                compilerError(token, "🍻 may only be used on 🍬.");
+                throw CompilerErrorException(token, "🍻 may only be used on 🍬.");
             }
             
             auto method = type.eclass->getMethod(methodToken, type, typeContext);
@@ -760,7 +760,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             Type type = parse(stream_.consumeToken());
             
             if (type.type() != TT_CLASS) {
-                compilerError(token, "You can only capture method calls on class instances.");
+                throw CompilerErrorException(token, "You can only capture method calls on class instances.");
             }
             
             auto method = type.eclass->getMethod(methodName, type, typeContext);
@@ -806,7 +806,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             Type type = parse(stream_.consumeToken());
             
             if (type.type() != TT_CALLABLE) {
-                compilerError(token, "Given value is not callable.");
+                throw CompilerErrorException(token, "Given value is not callable.");
             }
             
             for (int i = 1; i <= type.arguments; i++) {
@@ -819,13 +819,13 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             auto &nameToken = stream_.consumeToken();
             
             if (inClassContext) {
-                compilerError(token, "Not within an object-context.");
+                throw CompilerErrorException(token, "Not within an object-context.");
             }
             
             Class *superclass = typeContext.normalType.eclass->superclass;
             
             if (superclass == nullptr) {
-                compilerError(token, "Class has no superclass.");
+                throw CompilerErrorException(token, "Class has no superclass.");
             }
             
             Method *method = superclass->getMethod(nameToken, superclass, typeContext);
@@ -849,10 +849,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                         .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.type() != TT_CLASS) {
-                compilerError(token, "The given type cannot be initiatied.");
+                throw CompilerErrorException(token, "The given type cannot be initiatied.");
             }
             else if (type.optional()) {
-                compilerError(token, "Optionals cannot be initiatied.");
+                throw CompilerErrorException(token, "Optionals cannot be initiatied.");
             }
             
             if (dynamism) {
@@ -867,10 +867,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             Initializer *initializer = type.eclass->getInitializer(initializerName, type, typeContext);
             
             if (dynamism == Self && !initializer->required) {
-                compilerError(initializerName, "Only required initializers can be used with dynamic types.");
+                throw CompilerErrorException(initializerName, "Only required initializers can be used with dynamic types.");
             }
             else if (dynamism == GenericTypeVariables) {
-                compilerError(initializerName, "You cannot instantiate generic types yet.");
+                throw CompilerErrorException(initializerName, "You cannot instantiate generic types yet.");
             }
             
             initializer->deprecatedWarning(initializerName);
@@ -898,10 +898,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 compilerWarning(token, "Please remove useless 🍬.");
             }
             if (type.type() != TT_CLASS) {
-                compilerError(token, "The given type is not a class.");
+                throw CompilerErrorException(token, "The given type is not a class.");
             }
             if (dynamism == GenericTypeVariables) {
-                compilerError(token, "You cannot call methods generic types yet.");
+                throw CompilerErrorException(token, "You cannot call methods generic types yet.");
             }
             
             writer.writeCoin(type.eclass->index);
@@ -927,7 +927,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             Type type = parse(tobject).resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {
-                compilerError(tobject, "You cannot call methods on optionals.");
+                throw CompilerErrorException(tobject, "You cannot call methods on optionals.");
             }
             
             Method *method;
@@ -1060,7 +1060,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 
                 ecCharToCharStack(token.value[0], method);
                 auto typeString = type.toString(typeContext, true);
-                compilerError(token, "Unknown primitive method %s for %s.", method, typeString.c_str());
+                throw CompilerErrorException(token, "Unknown primitive method %s for %s.", method, typeString.c_str());
             }
             
             if (type.type() == TT_PROTOCOL) {
@@ -1101,53 +1101,57 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode, Scope *copyScope) {
     if (initializer) {
         scoper.currentScope()->changeInitializedBy(-1);
     }
-    
-    // Set the arguments to the method scope
-    Scope methodScope(false);
-    for (auto variable : callable.arguments) {
-        uint8_t id = nextVariableID();
-        CompilerVariable *varo = new CompilerVariable(variable.type, id, true, true, variable.name);
+    try {
+        // Set the arguments to the method scope
+        Scope methodScope(false);
+        for (auto variable : callable.arguments) {
+            uint8_t id = nextVariableID();
+            CompilerVariable *varo = new CompilerVariable(variable.type, id, true, true, variable.name);
+            
+            methodScope.setLocalVariable(variable.name, varo);
+        }
         
-        methodScope.setLocalVariable(variable.name, varo);
-    }
-    
-    if (copyScope) {
-        variableCount += methodScope.copyFromScope(copyScope, nextVariableID());
-    }
-    
-    scoper.pushScope(&methodScope);
-    
-    bool emittedDeadCodeWarning = false;
-    
-    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        effect = false;
+        if (copyScope) {
+            variableCount += methodScope.copyFromScope(copyScope, nextVariableID());
+        }
         
-        auto &token = stream_.consumeToken();
-        parse(token);
-        noEffectWarning(token);
-       
-        if (!emittedDeadCodeWarning && returned && !stream_.nextTokenIs(E_WATERMELON)) {
-            compilerWarning(stream_.consumeToken(), "Dead code.");
-            emittedDeadCodeWarning = true;
-            if (!compileDeadCode) {
-                break;
+        scoper.pushScope(&methodScope);
+        
+        bool emittedDeadCodeWarning = false;
+        
+        while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
+            effect = false;
+            
+            auto &token = stream_.consumeToken();
+            parse(token);
+            noEffectWarning(token);
+           
+            if (!emittedDeadCodeWarning && returned && !stream_.nextTokenIs(E_WATERMELON)) {
+                compilerWarning(stream_.consumeToken(), "Dead code.");
+                emittedDeadCodeWarning = true;
+                if (!compileDeadCode) {
+                    break;
+                }
+            }
+        }
+        
+        scoper.currentScope()->recommendFrozenVariables();
+        scoper.popScope();
+        noReturnError(callable.position());
+        
+        if (initializer) {
+            scoper.currentScope()->initializerUnintializedVariablesCheck(initializer->position(),
+                                                                         "Instance variable \"%s\" must be initialized.");
+            
+            if (!calledSuper && typeContext.normalType.eclass->superclass) {
+                ecCharToCharStack(initializer->name, initializerName);
+                throw CompilerErrorException(initializer->position(),
+                              "Missing call to superinitializer in initializer %s.", initializerName);
             }
         }
     }
-    
-    scoper.currentScope()->recommendFrozenVariables();
-    scoper.popScope();
-    noReturnError(callable.position());
-    
-    if (initializer) {
-        scoper.currentScope()->initializerUnintializedVariablesCheck(initializer->position(),
-                                                                     "Instance variable \"%s\" must be initialized.");
-        
-        if (!calledSuper && typeContext.normalType.eclass->superclass) {
-            ecCharToCharStack(initializer->name, initializerName);
-            compilerError(initializer->position(),
-                          "Missing call to superinitializer in initializer %s.", initializerName);
-        }
+    catch (CompilerErrorException &ce) {
+        printError(ce);
     }
 }
 

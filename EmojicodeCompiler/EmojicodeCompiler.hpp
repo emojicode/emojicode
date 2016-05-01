@@ -24,6 +24,7 @@ class Enum;
 class Token;
 class Type;
 class Package;
+class CompilerErrorException;
 
 class Method;
 class Initializer;
@@ -55,14 +56,11 @@ extern Protocol *PR_ENUMERATEABLE;
 //MARK: Errors
 
 /**
- * Issues a compiler error and exits the compiler.
- */
-[[noreturn]] void compilerError(SourcePosition p, const char *err, ...);
-
-/**
  * Issues a compiler warning. The compilation is continued afterwards.
  */
 void compilerWarning(SourcePosition p, const char *err, ...);
+
+void printError(const CompilerErrorException &ce);
 
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);

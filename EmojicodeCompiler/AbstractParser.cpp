@@ -13,7 +13,7 @@
 
 const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional) {
     if (stream_.nextTokenIs(VARIABLE)) {
-        compilerError(stream_.consumeToken(VARIABLE), "Generic variables not allowed here.");
+        throw CompilerErrorException(stream_.consumeToken(VARIABLE), "Generic variables not allowed here.");
     }
     
     *optional = stream_.nextTokenIs(E_CANDY) ? stream_.consumeToken(IDENTIFIER), true : false;
@@ -59,11 +59,11 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
             }
         }
         
-        compilerError(variableToken, "No such generic type variable \"%s\".", variableToken.value.utf8CString());
+        throw CompilerErrorException(variableToken, "No such generic type variable \"%s\".", variableToken.value.utf8CString());
     }
     else if (stream_.nextTokenIs(E_ROOTSTER)) {
         auto &ratToken = stream_.consumeToken(IDENTIFIER);
-        if (!(dynamism & Self)) compilerError(ratToken, "🐓 not allowed here.");
+        if (!(dynamism & Self)) throw CompilerErrorException(ratToken, "🐓 not allowed here.");
         if (dynamicType) *dynamicType = Self;
         return Type(TT_SELF, optional);
     }
@@ -87,7 +87,7 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         
         auto &token = stream_.consumeToken(IDENTIFIER);
         if (token.value[0] != E_WATERMELON) {
-            compilerError(token, "Expected 🍉.");
+            throw CompilerErrorException(token, "Expected 🍉.");
         }
         
         return t;
@@ -102,14 +102,14 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         if (!package_->fetchRawType(typeName, typeNamespace, optional, token, &type)) {
             ecCharToCharStack(typeName, nameString);
             ecCharToCharStack(typeNamespace, namespaceString);
-            compilerError(token, "Could not find type %s in enamespace %s.", nameString, namespaceString);
+            throw CompilerErrorException(token, "Could not find type %s in enamespace %s.", nameString, namespaceString);
         }
         
         parseGenericArgumentsForType(&type, ct, dynamism, token);
         
         if (!allowProtocolsUsingSelf && type.type() == TT_PROTOCOL && type.protocol->usesSelf()) {
             auto typeStr = type.toString(ct, true);
-            compilerError(token, "Protocol %s can only be used as a generic constraint because it uses 🐓.",
+            throw CompilerErrorException(token, "Protocol %s can only be used as a generic constraint because it uses 🐓.",
                           typeStr.c_str());
         }
         
@@ -134,12 +134,12 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
                 auto i = count + offset;
                 if (typeDef->numberOfGenericArgumentsWithSuperArguments() <= i) {
                     auto name = type->toString(ct, true);
-                    compilerError(token, "Too many generic arguments provided for %s.", name.c_str());
+                    throw CompilerErrorException(token, "Too many generic arguments provided for %s.", name.c_str());
                 }
                 if (!ta.compatibleTo(typeDef->genericArgumentConstraints()[i], ct)) {
                     auto thisName = typeDef->genericArgumentConstraints()[i].toString(ct, true);
                     auto thatName = ta.toString(ct, true);
-                    compilerError(token, "Generic argument %s is not compatible to constraint %s.",
+                    throw CompilerErrorException(token, "Generic argument %s is not compatible to constraint %s.",
                                   thatName.c_str(), thisName.c_str());
                 }
                 
@@ -150,7 +150,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
             
             if (count != typeDef->numberOfOwnGenericArguments()) {
                 auto str = type->toString(typeNothingness, true);
-                compilerError(errorToken, "Type %s requires %d generic arguments, but %d were given.",
+                throw CompilerErrorException(errorToken, "Type %s requires %d generic arguments, but %d were given.",
                               str.c_str(), typeDef->numberOfOwnGenericArguments(), count);
             }
         }
@@ -173,7 +173,7 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct) {
     }
     
     if (c->arguments.size() > UINT8_MAX) {
-        compilerError(c->position(), "A function cannot take more than 255 arguments.");
+        throw CompilerErrorException(c->position(), "A function cannot take more than 255 arguments.");
     }
     return usedSelf;
 }
@@ -203,7 +203,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Procedure *p, TypeContext
         rType.reference = p->genericArgumentVariables.size();
         
         if (p->genericArgumentVariables.count(variable.value)) {
-            compilerError(variable, "A generic argument variable with the same name is already in use.");
+            throw CompilerErrorException(variable, "A generic argument variable with the same name is already in use.");
         }
         p->genericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable.value, rType));
     }
@@ -213,7 +213,7 @@ void AbstractParser::parseBody(Procedure *p, bool allowNative) {
     if (stream_.nextTokenIs(E_RADIO)) {
         auto &radio = stream_.consumeToken(IDENTIFIER);
         if (!allowNative) {
-            compilerError(radio, "Native code is not allowed in this context.");
+            throw CompilerErrorException(radio, "Native code is not allowed in this context.");
         }
         p->native = true;
     }
@@ -222,7 +222,7 @@ void AbstractParser::parseBody(Procedure *p, bool allowNative) {
         
         if (token.value[0] != E_GRAPES) {
             ecCharToCharStack(token.value[0], c);
-            compilerError(token, "Expected 🍇 but found %s instead.", c);
+            throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", c);
         }
         parseBody(p);
     }

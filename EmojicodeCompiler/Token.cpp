@@ -7,6 +7,7 @@
 //
 
 #include "Token.hpp"
+#include "CompilerErrorException.hpp"
 
 SourcePosition::SourcePosition(const Token &token) : SourcePosition(token.position()) {
     
@@ -49,12 +50,12 @@ const char* Token::stringNameForType(TokenType type) {
 
 void Token::validateInteger(bool isHex) const {
     if (isHex && value.size() < 3) {
-        compilerError(position(), "Expected a digit after integer literal prefix.");
+        throw CompilerErrorException(position(), "Expected a digit after integer literal prefix.");
     }
 }
 
 void Token::validateDouble() const {
     if (value.back() == '.') {
-        compilerError(position(), "Expected a digit after decimal seperator.");
+        throw CompilerErrorException(position(), "Expected a digit after decimal seperator.");
     }
 }

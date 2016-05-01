@@ -81,6 +81,9 @@ private:
 
 class Scoper {
 public:
+    Scoper(Scope *scope);
+    Scoper() {};
+    
     /**
      * Retrieves a variable.
      */

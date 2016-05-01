@@ -11,6 +11,7 @@
 
 #include <map>
 #include "EmojicodeCompiler.hpp"
+#include "CompilerErrorException.hpp"
 #include "Token.hpp"
 #include "utf8.h"
 
@@ -31,7 +32,7 @@ protected:
     void duplicateDeclarationCheck(T p, std::map<EmojicodeChar, T> dict, SourcePosition position) {
         if (dict.count(p->name)) {
             ecCharToCharStack(p->name, nameString);
-            compilerError(position, "%s %s is declared twice.", p->on, nameString);
+            throw CompilerErrorException(position, "%s %s is declared twice.", p->on, nameString);
         }
     }
 private:

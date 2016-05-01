@@ -10,19 +10,20 @@
 #include <map>
 #include "CompilerScope.hpp"
 #include "Lexer.hpp"
+#include "CompilerErrorException.hpp"
 
 //MARK: Compiler Variables
 
 void CompilerVariable::uninitalizedError(const Token &variableToken) const {
     if (initialized <= 0) {
-        compilerError(variableToken,
+        throw CompilerErrorException(variableToken,
                       "Variable \"%s\" is possibly not initialized.", variableToken.value.utf8CString());
     }
 }
 
 void CompilerVariable::mutate(const Token &variableToken) {
     if (frozen()) {
-        compilerError(variableToken, "Cannot modify frozen variable \"%s\".", variableToken.value.utf8CString());
+        throw CompilerErrorException(variableToken, "Cannot modify frozen variable \"%s\".", variableToken.value.utf8CString());
     }
     mutated_ = true;
 }
@@ -60,7 +61,7 @@ void Scope::initializerUnintializedVariablesCheck(const Token &errorToken, const
         CompilerVariable *cv = it.second;
         if (cv->initialized <= 0 && !cv->type.optional()) {
             const char *variableName = cv->definitionToken.value.utf8CString();
-            compilerError(errorToken, errorMessage, variableName);
+            throw CompilerErrorException(errorToken, errorMessage, variableName);
         }
     }
 }
@@ -132,3 +133,6 @@ void Scoper::pushScope(Scope *scope) {
     scopes.push_front(scope);
 }
 
+Scoper::Scoper(Scope *scope) {
+    scopes.push_front(scope);
+}

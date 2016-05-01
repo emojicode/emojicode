@@ -9,6 +9,7 @@
 #include <cstring>
 #include "Lexer.hpp"
 #include "utf8.h"
+#include "CompilerErrorException.hpp"
 
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
 
@@ -24,12 +25,12 @@ bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line) {
 TokenStream lex(const char *path) {
     FILE *f = fopen(path, "rb");
     if (!f || ferror(f)) {
-        compilerError(SourcePosition(0, 0, path), "Couldn't read input file %s.", path);
+        throw CompilerErrorException(SourcePosition(0, 0, path), "Couldn't read input file %s.", path);
     }
     
     const char *dot = strrchr(path, '.');
     if (!dot || strcmp(dot, ".emojic")) {
-        compilerError(SourcePosition(0, 0, path), "Emojicode files must be suffixed with .emojic: %s", path);
+        throw CompilerErrorException(SourcePosition(0, 0, path), "Emojicode files must be suffixed with .emojic: %s", path);
     }
     
     EmojicodeChar c;
@@ -56,7 +57,7 @@ TokenStream lex(const char *path) {
         stringBuffer[length] = 0;
     }
     else {
-        compilerError(sourcePosition, "Cannot allocate buffer for file %s. It is possibly to large.", path);
+        throw CompilerErrorException(sourcePosition, "Cannot allocate buffer for file %s. It is possibly to large.", path);
     }
     
 #define isIdentifier() ((0x1F300 <= c && c <= 0x1F64F) || (0x1F680 <= c && c <= 0x1F6C5) || (0x1F6CB <= c && c <= 0x1F6F3) || (0x2600 <= c && c <= 0x27BF) || (0x1F191 <= c && c <= 0x1F19A) || c == 0x231A || (0x1F910 <= c && c <= 0x1F9C0) || (0x2B00 <= c && c <= 0x2BFF) || (0x25A0 <= c && c <= 0x25FF) || (0x2300 <= c && c <= 0x23FF) || (0x2190 <= c && c <= 0x21FF))
@@ -113,7 +114,7 @@ TokenStream lex(const char *path) {
                                 break;
                             default: {
                                 ecCharToCharStack(c, tc);
-                                compilerError(sourcePosition, "Unrecognized escape sequence ❌%s.", tc);
+                                throw CompilerErrorException(sourcePosition, "Unrecognized escape sequence ❌%s.", tc);
                             }
                         }
                         
@@ -244,10 +245,10 @@ TokenStream lex(const char *path) {
     delete [] stringBuffer;
     
     if (!nextToken && token->type() == STRING) {
-        compilerError(token->position(), "Expected 🔤 but found end of file instead.");
+        throw CompilerErrorException(token->position(), "Expected 🔤 but found end of file instead.");
     }
     if (!nextToken && token->type() == COMMENT && !oneLineComment) {
-        compilerError(token->position(), "Expected 👵 but found end of file instead.");
+        throw CompilerErrorException(token->position(), "Expected 👵 but found end of file instead.");
     }
     if (token->type() == INTEGER) {
         token->validateInteger(isHex);

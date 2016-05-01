@@ -12,6 +12,7 @@
 #include "Package.hpp"
 #include "Lexer.hpp"
 #include "AbstractParser.hpp"
+#include "CompilerErrorException.hpp"
 #include "utf8.h"
 
 #include <set>
@@ -58,7 +59,7 @@ public:
     void disallow() const {
         if (set_) {
             ecCharToCharStack(attributeName, es)
-            compilerError(position_, "Inapplicable attribute %s.", es);
+            throw CompilerErrorException(position_, "Inapplicable attribute %s.", es);
         }
     }
 private:
