@@ -41,7 +41,7 @@ public:
      * circular dependencies.
      * @param name The name of the package to load.
      */
-    Package* loadPackage(const char *name, EmojicodeChar ns, const Token &errorToken);
+    Package* loadPackage(const char *name, EmojicodeChar ns, SourcePosition p);
     
     Package(const char *n) : name_(n) {}
     void parse(const char *path);

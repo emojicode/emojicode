@@ -16,6 +16,7 @@
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "CompilerErrorException.hpp"
+#include "PackageReporter.hpp"
 
 StartingFlag startingFlag;
 bool foundStartingFlag;
@@ -150,7 +151,7 @@ void loadStandard(Package *_, SourcePosition errorPosition) {
 }
 
 int main(int argc, char * argv[]) {
-    const char *reportPackage = nullptr;
+    const char *packageToReport = nullptr;
     char *outPath = nullptr;
     
     signed char ch;
@@ -161,10 +162,10 @@ int main(int argc, char * argv[]) {
                 return 0;
                 break;
             case 'R':
-                reportPackage = optarg;
+                packageToReport = optarg;
                 break;
             case 'r':
-                reportPackage = "_";
+                packageToReport = "_";
                 break;
             case 'o':
                 outPath = optarg;
@@ -224,21 +225,21 @@ int main(int argc, char * argv[]) {
     
     fclose(out);
     
-    if (outputJSON) {
-        fprintf(stderr, "]");
-    }
-    
     if (hasError) {
         unlink(outPath);
     }
     
-    if (reportPackage) {
-        if (auto package = Package::findPackage(reportPackage)) {
-            report(package);
+    if (packageToReport) {
+        if (auto package = Package::findPackage(packageToReport)) {
+            reportPackage(package);
         }
         else {
-            compilerWarning(errorPosition, "Report for package %s failed as it was not loaded.", reportPackage);
+            compilerWarning(errorPosition, "Report for package %s failed as it was not loaded.", packageToReport);
         }
+    }
+    
+    if (outputJSON) {
+        fprintf(stderr, "]");
     }
     
     return 0;

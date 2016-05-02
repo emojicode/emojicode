@@ -18,12 +18,14 @@
 std::list<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
-Package* Package::loadPackage(const char *name, EmojicodeChar ns, const Token &errorToken) {
+Package* Package::loadPackage(const char *name, EmojicodeChar ns, SourcePosition errorPosition) {
     Package *package = findPackage(name);
     
     if (package) {
         if (!package->finishedLoading()) {
-            throw CompilerErrorException(errorToken, "Circular dependency detected: %s tried to load a package which intiatiated %s’s own loading.", name, name);
+            throw CompilerErrorException(errorPosition,
+                                         "Circular dependency detected: %s tried to load a package which intiatiated %s’s own loading.",
+                                         name, name);
         }
     }
     else {
@@ -33,12 +35,12 @@ Package* Package::loadPackage(const char *name, EmojicodeChar ns, const Token &e
         package = new Package(name);
         
         if (strcmp("s", name) != 0) {
-            package->loadPackage("s", globalNamespace, errorToken);
+            package->loadPackage("s", globalNamespace, errorPosition);
         }
         package->parse(path);
     }
     
-    package->loadInto(this, ns, errorToken);
+    package->loadInto(this, ns, errorPosition);
     return package;
 }
 

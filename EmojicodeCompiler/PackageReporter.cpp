@@ -1,9 +1,9 @@
 //
-//  Reporter.c
+//  PackageReporter.cpp
 //  Emojicode
 //
-//  Created by Theo Weidmann on 06.11.15.
-//  Copyright © 2015 Theo Weidmann. All rights reserved.
+//  Created by Theo Weidmann on 02/05/16.
+//  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
 #include <cstring>
@@ -11,12 +11,12 @@
 #include <list>
 #include <map>
 #include "utf8.h"
-#include "Lexer.hpp"
 #include "Procedure.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
+#include "PackageReporter.hpp"
 
 enum ReturnManner {
     Return,
@@ -127,7 +127,7 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
     printf("}%s", last ? "" : ",");
 }
 
-void report(Package *package) {
+void reportPackage(Package *package) {
     std::list<Enum *> enums;
     std::list<Class *> classes;
     std::list<Protocol *> protocols;
@@ -161,7 +161,7 @@ void report(Package *package) {
         
         ecCharToCharStack(eclass->name(), className);
         printf("\"name\": \"%s\",", className);
-
+        
         reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(),
                                eclass->superGenericArguments().size(), TypeContext(eclass));
         reportDocumentation(eclass->documentation());
