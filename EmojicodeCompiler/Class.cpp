@@ -15,6 +15,7 @@
 #include "Procedure.hpp"
 #include "utf8.h"
 #include "Lexer.hpp"
+#include "TypeContext.hpp"
 
 std::list<Class *> Class::classes_;
 

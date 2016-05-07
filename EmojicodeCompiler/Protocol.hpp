@@ -13,8 +13,7 @@
 #include <map>
 #include "Package.hpp"
 #include "TypeDefinitionWithGenerics.hpp"
-
-struct TypeContext;
+#include "TypeContext.hpp"
 
 class Protocol : public TypeDefinitionWithGenerics {
 public:

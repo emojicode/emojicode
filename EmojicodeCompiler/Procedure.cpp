@@ -12,6 +12,7 @@
 #include "Lexer.hpp"
 #include "CompilerErrorException.hpp"
 #include "EmojicodeCompiler.hpp"
+#include "TypeContext.hpp"
 
 //MARK: Closure
 

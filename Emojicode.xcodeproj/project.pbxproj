@@ -11,6 +11,7 @@
 		E404F6801CCFF39900589659 /* TokenStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E404F67E1CCFF39900589659 /* TokenStream.cpp */; };
 		E407041C1CDE048A0075FBFE /* CallableScoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E407041A1CDE048A0075FBFE /* CallableScoper.cpp */; };
 		E407041F1CDE0D7D0075FBFE /* VariableNotFoundErrorException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E407041D1CDE0D7D0075FBFE /* VariableNotFoundErrorException.cpp */; };
+		E40704221CDE15750075FBFE /* TypeContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40704201CDE15750075FBFE /* TypeContext.cpp */; };
 		E4097EF51AA8B96300CB7355 /* StaticAnalyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4097EF31AA8B96200CB7355 /* StaticAnalyzer.cpp */; };
 		E4478C671B7B8CB400291BD9 /* Type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4478C661B7B8CB400291BD9 /* Type.cpp */; };
 		E449AF6C1CCCC0A200492FC0 /* PackageParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E449AF6A1CCCC0A200492FC0 /* PackageParser.cpp */; };
@@ -77,6 +78,8 @@
 		E407041B1CDE048A0075FBFE /* CallableScoper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CallableScoper.hpp; sourceTree = "<group>"; };
 		E407041D1CDE0D7D0075FBFE /* VariableNotFoundErrorException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VariableNotFoundErrorException.cpp; sourceTree = "<group>"; };
 		E407041E1CDE0D7D0075FBFE /* VariableNotFoundErrorException.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VariableNotFoundErrorException.hpp; sourceTree = "<group>"; };
+		E40704201CDE15750075FBFE /* TypeContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TypeContext.cpp; sourceTree = "<group>"; };
+		E40704211CDE15750075FBFE /* TypeContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TypeContext.hpp; sourceTree = "<group>"; };
 		E4097EF31AA8B96200CB7355 /* StaticAnalyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = StaticAnalyzer.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		E4097EF41AA8B96300CB7355 /* StaticAnalyzer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StaticAnalyzer.hpp; sourceTree = "<group>"; };
 		E425EE9F1A6433A700F3A62B /* EmojicodeAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = EmojicodeAPI.h; sourceTree = SOURCE_ROOT; };
@@ -231,6 +234,8 @@
 				E4478C661B7B8CB400291BD9 /* Type.cpp */,
 				E4805DC71CD2729200B1282B /* CommonTypeFinder.hpp */,
 				E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */,
+				E40704211CDE15750075FBFE /* TypeContext.hpp */,
+				E40704201CDE15750075FBFE /* TypeContext.cpp */,
 			);
 			name = Types;
 			sourceTree = "<group>";
@@ -413,6 +418,7 @@
 				E46A07301C3C79E5003DE2CD /* StaticFunctionAnalyzer.cpp in Sources */,
 				E404F67D1CCFF29C00589659 /* Token.cpp in Sources */,
 				E4BB24C61CD0E2C2003CC098 /* AbstractParser.cpp in Sources */,
+				E40704221CDE15750075FBFE /* TypeContext.cpp in Sources */,
 				E4BB24D11CD0FC90003CC098 /* Protocol.cpp in Sources */,
 				E4478C671B7B8CB400291BD9 /* Type.cpp in Sources */,
 				E407041C1CDE048A0075FBFE /* CallableScoper.cpp in Sources */,

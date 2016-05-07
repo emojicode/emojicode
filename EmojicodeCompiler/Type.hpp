@@ -20,6 +20,7 @@ class Class;
 class Protocol;
 class Package;
 class TypeDefinitionWithGenerics;
+struct CommonTypeFinder;
 
 enum TypeType {
     TT_CLASS,
@@ -54,7 +55,7 @@ enum TypeDynamism {
     Self = 0b10
 };
 
-struct TypeContext;
+class TypeContext;
 class Procedure;
 
 class Type {
@@ -95,12 +96,12 @@ public:
     Type copyWithoutOptional() const;
     
     /** If this type is compatible to the given other type. */
-    bool compatibleTo(Type to, TypeContext tc) const;
+    bool compatibleTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
     /** 
      * Whether this type is considered indentical to the other type. 
      * Mainly used to determine compatibility of generics.
      */
-    bool identicalTo(Type to) const;
+    bool identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *ctargs) const;
     
     /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
     Type resolveOn(TypeContext contextType, bool resolveSelf = true) const;
@@ -118,17 +119,6 @@ private:
     TypeType type_;
     bool optional_;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
-};
-
-struct TypeContext {
-public:
-    TypeContext(Type nt) : normalType(nt) {};
-    TypeContext(Type nt, Procedure *p) : normalType(nt), p(p) {};
-    TypeContext(Type nt, Procedure *p, std::vector<Type> *args) : normalType(nt), p(p), procedureGenericArguments(args) {};
-    
-    Type normalType;
-    Procedure *p = nullptr;
-    std::vector<Type> *procedureGenericArguments = nullptr;
 };
 
 #define typeInteger (Type(TT_INTEGER, false))

@@ -17,9 +17,10 @@
 #include "VariableNotFoundErrorException.hpp"
 #include "StringPool.hpp"
 
-Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken, Type type) {
+Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken,
+                                   Type type, std::vector<CommonTypeFinder> *ctargs) {
     auto returnType = parse(token);
-    if (!returnType.compatibleTo(type, typeContext)) {
+    if (!returnType.compatibleTo(type, typeContext, ctargs)) {
         auto cn = returnType.toString(typeContext, true);
         auto tn = type.toString(typeContext, true);
         throw CompilerErrorException(token, "%s is not compatible to %s.", cn.c_str(), tn.c_str());
@@ -53,51 +54,85 @@ bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
     return false;
 }
 
-void StaticFunctionAnalyzer::checkAccess(Procedure *p, const Token &token, const char *type) {
-    if (p->access == PRIVATE) {
-        if (typeContext.normalType.type() != TT_CLASS || p->eclass != typeContext.normalType.eclass) {
-            ecCharToCharStack(p->name, nm);
-            throw CompilerErrorException(token, "%s %s is 🔒.", type, nm);
-        }
-    }
-    else if (p->access == PROTECTED) {
-        if (typeContext.normalType.type() != TT_CLASS || !typeContext.normalType.eclass->inheritsFrom(p->eclass)) {
-            ecCharToCharStack(p->name, nm);
-            throw CompilerErrorException(token, "%s %s is 🔐.", type, nm);
-        }
-    }
-}
-
-std::vector<Type> StaticFunctionAnalyzer::checkGenericArguments(Procedure *p, const Token &token) {
-    std::vector<Type> k;
+Type StaticFunctionAnalyzer::parseProcedureCall(Type type, Procedure *p, const Token &token) {
+    std::vector<Type> genericArguments;
+    std::vector<CommonTypeFinder> genericArgsFinders;
+    std::vector<Type> givenArgumentTypes;
+    
+    p->deprecatedWarning(token);
     
     while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
         stream_.consumeToken(IDENTIFIER);
         
         auto type = parseAndFetchType(typeContext, AllKindsOfDynamism);
-        k.push_back(type);
+        genericArguments.push_back(type);
     }
     
-    if (k.size() != p->genericArgumentVariables.size()) {
+    auto inferGenericArguments = genericArguments.size() == 0 && p->genericArgumentVariables.size() > 0;
+    auto typeContext = TypeContext(type, p, inferGenericArguments ? nullptr : &genericArguments);
+    
+    if (inferGenericArguments) {
+        genericArgsFinders.resize(p->genericArgumentVariables.size());
+    }
+    else if (genericArguments.size() != p->genericArgumentVariables.size()) {
         throw CompilerErrorException(token, "Too few generic arguments provided.");
     }
     
-    return k;
-}
-
-void StaticFunctionAnalyzer::checkArguments(std::vector<Argument> arguments, TypeContext calledType,
-                                            const Token &token) {
     bool brackets = false;
     if (stream_.nextTokenIs(ARGUMENT_BRACKET_OPEN)) {
         stream_.consumeToken(ARGUMENT_BRACKET_OPEN);
         brackets = true;
     }
-    for (auto var : arguments) {
-        parse(stream_.consumeToken(), token, var.type.resolveOn(calledType));
+    for (auto var : p->arguments) {
+        if (inferGenericArguments) {
+            givenArgumentTypes.push_back(parse(stream_.consumeToken(), token, var.type.resolveOn(typeContext),
+                                               &genericArgsFinders));
+        }
+        else {
+            parse(stream_.consumeToken(), token, var.type.resolveOn(typeContext));
+        }
     }
     if (brackets) {
         stream_.consumeToken(ARGUMENT_BRACKET_CLOSE);
     }
+    
+    if (inferGenericArguments) {
+        for (size_t i = 0; i < genericArgsFinders.size(); i++) {
+            auto commonType = genericArgsFinders[i].getCommonType(token);
+            genericArguments.push_back(commonType);
+            if (!commonType.compatibleTo(p->genericArgumentConstraints[i], typeContext)) {
+                throw CompilerErrorException(token,
+                                        "Infered type %s for generic argument %d is not compatible to constraint %s.",
+                                             commonType.toString(typeContext, true).c_str(), i + 1,
+                                             p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
+            }
+        }
+        typeContext = TypeContext(type, p, &genericArguments);
+        for (size_t i = 0; i < givenArgumentTypes.size(); i++) {
+            auto givenTypen = givenArgumentTypes[i];
+            auto expectedType = p->arguments[i].type.resolveOn(typeContext);
+            if (!givenTypen.compatibleTo(expectedType, typeContext)) {
+                auto cn = expectedType.toString(typeContext, true);
+                auto tn = givenTypen.toString(typeContext, true);
+                throw CompilerErrorException(token, "%s is not compatible to %s.", cn.c_str(), tn.c_str());
+            }
+        }
+    }
+    
+    if (p->access == PRIVATE) {
+        if (typeContext.calleeType().type() != TT_CLASS || p->eclass != typeContext.calleeType().eclass) {
+            ecCharToCharStack(p->name, nm);
+            throw CompilerErrorException(token, "%s is 🔒.", nm);
+        }
+    }
+    else if (p->access == PROTECTED) {
+        if (typeContext.calleeType().type() != TT_CLASS || !typeContext.calleeType().eclass->inheritsFrom(p->eclass)) {
+            ecCharToCharStack(p->name, nm);
+            throw CompilerErrorException(token, "%s is 🔐.", nm);
+        }
+    }
+    
+    return p->returnType.resolveOn(typeContext);
 }
 
 void StaticFunctionAnalyzer::writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object) {
@@ -532,7 +567,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             scoper.objectScope()->initializerUnintializedVariablesCheck(token,
                                                 "Instance variable \"%s\" must be initialized before the use of 🐕.");
             
-            return typeContext.normalType;
+            return typeContext.calleeType();
         }
         case E_UP_POINTING_RED_TRIANGLE: {
             writer.writeCoin(0x13);
@@ -586,7 +621,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 throw CompilerErrorException(token, "🐐 can only be used inside initializers.");
                 break;
             }
-            if (!typeContext.normalType.eclass->superclass) {
+            if (!typeContext.calleeType().eclass->superclass) {
                 throw CompilerErrorException(token, "🐐 can only be used if the eclass inherits from another.");
                 break;
             }
@@ -602,20 +637,18 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             writer.writeCoin(0x3D);
             
-            Class *eclass = typeContext.normalType.eclass;
+            Class *eclass = typeContext.calleeType().eclass;
             
             writer.writeCoin(eclass->superclass->index);
             
             auto &initializerToken = stream_.consumeToken(IDENTIFIER);
             
             auto initializer = eclass->superclass->getInitializer(initializerToken, eclass, typeContext);
-            initializer->deprecatedWarning(initializerToken);
             
             writer.writeCoin(initializer->vti);
             
-            checkAccess(initializer, token, "initializer");
-            checkArguments(initializer->arguments, typeContext.normalType, token);
-            
+            parseProcedureCall(typeContext.calleeType(), initializer, token);
+
             calledSuper = true;
             
             return typeNothingness;
@@ -720,15 +753,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             
             auto method = type.eclass->getMethod(methodToken, type, typeContext);
-            method->deprecatedWarning(methodToken);
             
             writer.writeCoin(method->vti);
             
-            auto genericArgs = checkGenericArguments(method, token);
-            auto typeContext = TypeContext(type, method, &genericArgs);
-            
-            checkAccess(method, token, "method");
-            checkArguments(method->arguments, typeContext, token);
+            parseProcedureCall(type, method, token);
             
             placeholder.write();
             
@@ -802,7 +830,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 throw CompilerErrorException(token, "Not within an object-context.");
             }
             
-            Class *superclass = typeContext.normalType.eclass->superclass;
+            Class *superclass = typeContext.calleeType().eclass->superclass;
             
             if (superclass == nullptr) {
                 throw CompilerErrorException(token, "Class has no superclass.");
@@ -814,12 +842,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             writer.writeCoin(superclass->index);
             writer.writeCoin(method->vti);
             
-            auto genericArgs = checkGenericArguments(method, token);
-            auto tc = TypeContext(typeContext.normalType, method, &genericArgs);
-            
-            checkArguments(method->arguments, tc, token);
-            
-            return method->returnType.resolveOn(tc);
+            return parseProcedureCall(typeContext.calleeType(), method, token);
         }
         case E_LARGE_BLUE_DIAMOND: {
             writer.writeCoin(0x4);
@@ -858,8 +881,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             writer.writeCoin(initializer->vti);
             
-            checkAccess(initializer, token, "Initializer");
-            checkArguments(initializer->arguments, type, token);
+            parseProcedureCall(type, initializer, token);
             
             if (initializer->canReturnNothingness) {
                 type.setOptional();
@@ -888,17 +910,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             writer.writeCoin(type.eclass->index);
             
             auto method = type.eclass->getClassMethod(methodToken, type, typeContext);
-            method->deprecatedWarning(methodToken);
             
             writer.writeCoin(method->vti);
             
-            auto genericArgs = checkGenericArguments(method, token);
-            auto typeContext = TypeContext(type, method, &genericArgs);
-            
-            checkAccess(method, token, "Class method");
-            checkArguments(method->arguments, typeContext, token);
-            
-            return method->returnType.resolveOn(typeContext);
+            return parseProcedureCall(type, method, token);
         }
         default: {
             auto placeholder = writer.writeCoinPlaceholder();
@@ -1054,15 +1069,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 writer.writeCoin(method->vti);
             }
             
-            method->deprecatedWarning(token);
-            
-            auto genericArgs = checkGenericArguments(method, token);
-            auto typeContext = TypeContext(type, method, &genericArgs);
-            
-            checkAccess(method, token, "Method");
-            checkArguments(method->arguments, typeContext, token);
-            
-            return method->returnType.resolveOn(typeContext);
+            return parseProcedureCall(type, method, token);
         }
     }
     return typeNothingness;
@@ -1115,7 +1122,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
             scoper.objectScope()->initializerUnintializedVariablesCheck(initializer->position(),
                                                                     "Instance variable \"%s\" must be initialized.");
             
-            if (!calledSuper && typeContext.normalType.eclass->superclass) {
+            if (!calledSuper && typeContext.calleeType().eclass->superclass) {
                 ecCharToCharStack(initializer->name, initializerName);
                 throw CompilerErrorException(initializer->position(),
                               "Missing call to superinitializer in initializer %s.", initializerName);

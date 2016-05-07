@@ -16,8 +16,8 @@
 #include "Package.hpp"
 #include "TypeDefinitionWithGenerics.hpp"
 #include "Procedure.hpp"
+#include "TypeContext.hpp"
 
-struct TypeContext;
 class Type;
 
 class Class : public TypeDefinitionWithGenerics {

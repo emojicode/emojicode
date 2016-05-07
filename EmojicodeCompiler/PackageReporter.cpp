@@ -17,6 +17,7 @@
 #include "Enum.hpp"
 #include "Protocol.hpp"
 #include "PackageReporter.hpp"
+#include "TypeContext.hpp"
 
 enum ReturnManner {
     Return,

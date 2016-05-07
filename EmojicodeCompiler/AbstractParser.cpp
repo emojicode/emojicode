@@ -10,6 +10,7 @@
 #include "Procedure.hpp"
 #include "utf8.h"
 #include "Protocol.hpp"
+#include "TypeContext.hpp"
 
 const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional) {
     if (stream_.nextTokenIs(VARIABLE)) {
@@ -38,23 +39,23 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         optional = true;
     }
     
-    if (dynamism & GenericTypeVariables && (ct.normalType.canHaveGenericArguments()|| ct.p) &&
+    if (dynamism & GenericTypeVariables && (ct.calleeType().canHaveGenericArguments()|| ct.procedure()) &&
         stream_.nextTokenIs(VARIABLE)) {
         if (dynamicType) *dynamicType = GenericTypeVariables;
         
         auto &variableToken = stream_.consumeToken(VARIABLE);
         
-        if (ct.p) {
-            auto it = ct.p->genericArgumentVariables.find(variableToken.value);
-            if (it != ct.p->genericArgumentVariables.end()) {
+        if (ct.procedure()) {
+            auto it = ct.procedure()->genericArgumentVariables.find(variableToken.value);
+            if (it != ct.procedure()->genericArgumentVariables.end()) {
                 Type type = it->second;
                 if (optional) type.setOptional();
                 return type;
             }
         }
-        if (ct.normalType.canHaveGenericArguments()) {
+        if (ct.calleeType().canHaveGenericArguments()) {
             Type type = typeNothingness;
-            if (ct.normalType.typeDefinitionWithGenerics()->fetchVariable(variableToken.value, optional, &type)) {
+            if (ct.calleeType().typeDefinitionWithGenerics()->fetchVariable(variableToken.value, optional, &type)) {
                 return type;
             }
         }

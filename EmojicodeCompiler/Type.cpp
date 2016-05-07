@@ -14,6 +14,7 @@
 #include "EmojicodeCompiler.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
+#include "TypeContext.hpp"
 
 //MARK: Globals
 /* Very important one time declarations */
@@ -42,12 +43,12 @@ Type Type::copyWithoutOptional() const {
 }
 
 Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool resolveSelf) const {
-    TypeDefinitionWithGenerics *c = typeContext.normalType.typeDefinitionWithGenerics();
+    TypeDefinitionWithGenerics *c = typeContext.calleeType().typeDefinitionWithGenerics();
     Type t = *this;
     bool optional = t.optional();
     
     if (resolveSelf && t.type() == TT_SELF) {
-        t = typeContext.normalType;
+        t = typeContext.calleeType();
     }
     
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
@@ -56,10 +57,10 @@ Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool r
         t = c->superGenericArguments()[t.reference];
     }
     while (t.type() == TT_LOCAL_REFERENCE) {
-        t = typeContext.p->genericArgumentConstraints[t.reference];
+        t = typeContext.procedure()->genericArgumentConstraints[t.reference];
     }
     while (t.type() == TT_REFERENCE) {
-        t = typeContext.normalType.typeDefinitionWithGenerics()->genericArgumentConstraints()[t.reference];
+        t = typeContext.calleeType().typeDefinitionWithGenerics()->genericArgumentConstraints()[t.reference];
     }
     
     if (optional) t.setOptional();
@@ -71,17 +72,17 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
     bool optional = t.optional();
     
     if (resolveSelf && t.type() == TT_SELF) {
-        t = typeContext.normalType;
+        t = typeContext.calleeType();
     }
     
-    while (t.type() == TT_LOCAL_REFERENCE) {
-        t = (*typeContext.procedureGenericArguments)[t.reference];
+    while (t.type() == TT_LOCAL_REFERENCE && typeContext.procedureGenericArguments()) {
+        t = (*typeContext.procedureGenericArguments())[t.reference];
     }
     
-    if (typeContext.normalType.canHaveGenericArguments()) {
+    if (typeContext.calleeType().canHaveGenericArguments()) {
         while (t.type() == TT_REFERENCE &&
-               typeContext.normalType.typeDefinitionWithGenerics()->canBeUsedToResolve(t.resolutionConstraint)) {
-            Type tn = typeContext.normalType.genericArguments[t.reference];
+               typeContext.calleeType().typeDefinitionWithGenerics()->canBeUsedToResolve(t.resolutionConstraint)) {
+            Type tn = typeContext.calleeType().genericArguments[t.reference];
             if (tn.type() == TT_REFERENCE && tn.reference == t.reference) {
                 break;
             }
@@ -107,7 +108,7 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
 
 /** Returns the name of a type */
 
-bool Type::compatibleTo(Type to, TypeContext ct) const {
+bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
     //(to.optional || !a.optional): Either `to` accepts optionals, or if `to` does not accept optionals `a` mustn't be one.
     if (to.type() == TT_SOMETHING) {
         return true;
@@ -120,7 +121,7 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
         if ((to.optional() || !this->optional()) && this->eclass->inheritsFrom(to.eclass)) {
             if (to.eclass->numberOfOwnGenericArguments()) {
                 for (int l = to.eclass->numberOfOwnGenericArguments(), i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
-                    if (!this->genericArguments[i].identicalTo(to.genericArguments[i])) {
+                    if (!this->genericArguments[i].identicalTo(to.genericArguments[i], ct, ctargs)) {
                         return false;
                     }
                 }
@@ -133,7 +134,7 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
         if ((to.optional() || !this->optional()) && this->protocol == to.protocol) {
             if (to.eclass->numberOfOwnGenericArguments()) {
                 for (int l = to.eclass->numberOfOwnGenericArguments(), i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
-                    if (!this->genericArguments[i].identicalTo(to.genericArguments[i])) {
+                    if (!this->genericArguments[i].identicalTo(to.genericArguments[i], ct, ctargs)) {
                         return false;
                     }
                 }
@@ -146,7 +147,7 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
         if (to.optional() || !this->optional()) {
             for (Class *a = this->eclass; a != nullptr; a = a->superclass) {
                 for (auto protocol : a->protocols()) {
-                    if (protocol.resolveOn(*this).compatibleTo(to, ct)) return true;
+                    if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
                 }
             }
         }
@@ -164,30 +165,36 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
             return true;
         }
         return (to.optional() || !this->optional())
-        && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct);
+        && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
     else if (this->type() == TT_REFERENCE) {
-        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct);
+        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
     else if (to.type() == TT_REFERENCE) {
-        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct);
+        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
     else if (this->type() == TT_LOCAL_REFERENCE) {
-        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct);
+        return ctargs || ((to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs));
     }
     else if (to.type() == TT_LOCAL_REFERENCE) {
-        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct);
+        if (ctargs) {
+            (*ctargs)[to.reference].addType(*this, ct);
+            return true;
+        }
+        else {
+            return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
+        }
     }
     else if (to.type() == TT_SELF) {
-        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct);
+        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
     else if (this->type() == TT_SELF) {
-        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct);
+        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
     else if (this->type() == TT_CALLABLE && to.type() == TT_CALLABLE) {
-        if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct) && to.arguments == this->arguments) {
+        if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct, ctargs) && to.arguments == this->arguments) {
             for (int i = 1; i <= to.arguments; i++) {
-                if (!to.genericArguments[i].compatibleTo(this->genericArguments[i], ct)) {
+                if (!to.genericArguments[i].compatibleTo(this->genericArguments[i], ct, ctargs)) {
                     return false;
                 }
             }
@@ -201,14 +208,20 @@ bool Type::compatibleTo(Type to, TypeContext ct) const {
     return false;
 }
 
-bool Type::identicalTo(Type to) const {
+bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *ctargs) const {
+    if (ctargs && to.type() == TT_LOCAL_REFERENCE) {
+        (*ctargs)[to.reference].addType(*this, tc);
+        return true;
+    }
+    
     if (type() == to.type()) {
         switch (type()) {
             case TT_CLASS:
                 if (eclass == to.eclass) {
                     if (to.eclass->numberOfOwnGenericArguments()) {
-                        for (int l = to.eclass->numberOfOwnGenericArguments(), i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
-                            if (!this->genericArguments[i].identicalTo(to.genericArguments[i])) {
+                        for (int l = to.eclass->numberOfOwnGenericArguments(),
+                             i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
+                            if (!this->genericArguments[i].identicalTo(to.genericArguments[i], tc, ctargs)) {
                                 return false;
                             }
                         }
@@ -217,9 +230,10 @@ bool Type::identicalTo(Type to) const {
                 }
                 return false;
             case TT_CALLABLE:
-                if (this->genericArguments[0].identicalTo(to.genericArguments[0]) && to.arguments == this->arguments) {
+                if (this->genericArguments[0].identicalTo(to.genericArguments[0], tc, ctargs)
+                    && to.arguments == this->arguments) {
                     for (int i = 1; i <= to.arguments; i++) {
-                        if (!to.genericArguments[i].identicalTo(this->genericArguments[i])) {
+                        if (!to.genericArguments[i].identicalTo(this->genericArguments[i], tc, ctargs)) {
                             return false;
                         }
                     }
@@ -339,8 +353,8 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             stringAppendEc(E_WATERMELON, string);
             return;
         case TT_REFERENCE: {
-            if (typeContext.normalType.type() == TT_CLASS) {
-                Class *eclass = typeContext.normalType.eclass;
+            if (typeContext.calleeType().type() == TT_CLASS) {
+                Class *eclass = typeContext.calleeType().eclass;
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables()) {
                         if (it.second.reference == type.reference) {
@@ -350,8 +364,8 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
                     }
                 } while ((eclass = eclass->superclass));
             }
-            else if (typeContext.normalType.canHaveGenericArguments()) {
-                for (auto it : typeContext.normalType.typeDefinitionWithGenerics()->ownGenericArgumentVariables()) {
+            else if (typeContext.calleeType().canHaveGenericArguments()) {
+                for (auto it : typeContext.calleeType().typeDefinitionWithGenerics()->ownGenericArgumentVariables()) {
                     if (it.second.reference == type.reference) {
                         string.append(it.first.utf8CString());
                         return;
@@ -364,8 +378,8 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             return;
         }
         case TT_LOCAL_REFERENCE:
-            if (typeContext.p) {
-                for (auto it : typeContext.p->genericArgumentVariables) {
+            if (typeContext.procedure()) {
+                for (auto it : typeContext.procedure()->genericArgumentVariables) {
                     if (it.second.reference == type.reference) {
                         string.append(it.first.utf8CString());
                         return;
@@ -378,7 +392,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             return;
     }
     
-    if (typeContext.normalType.type() != TT_NOTHINGNESS && type.canHaveGenericArguments()) {
+    if (typeContext.calleeType().type() != TT_NOTHINGNESS && type.canHaveGenericArguments()) {
         auto typeDef = type.typeDefinitionWithGenerics();
         int offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->numberOfOwnGenericArguments();
         for (int i = 0, l = typeDef->numberOfOwnGenericArguments(); i < l; i++) {

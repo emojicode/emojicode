@@ -7,6 +7,7 @@
 //
 
 #include "CommonTypeFinder.hpp"
+#include "TypeContext.hpp"
 
 void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
     if (!firstTypeFound) {
@@ -26,7 +27,7 @@ void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
     }
 }
 
-Type CommonTypeFinder::getCommonType(const Token &warningToken) {
+Type CommonTypeFinder::getCommonType(const Token &warningToken) const {
     if (!firstTypeFound) {
         compilerWarning(warningToken, "Type is ambigious without more context.");
     }

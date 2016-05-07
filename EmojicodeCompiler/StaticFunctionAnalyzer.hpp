@@ -14,6 +14,7 @@
 #include "Writer.hpp"
 #include "CallableScoper.hpp"
 #include "AbstractParser.hpp"
+#include "TypeContext.hpp"
 
 struct FlowControlReturn {
     int branches = 0;
@@ -68,7 +69,7 @@ private:
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
      * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
      */
-    Type parse(const Token &token, const Token &parentToken, Type type);
+    Type parse(const Token &token, const Token &parentToken, Type type, std::vector<CommonTypeFinder>* = nullptr);
     
     Type parseIdentifier(const Token &token);
     /** Parses the expression for an if statement. */
@@ -77,19 +78,8 @@ private:
     void noReturnError(SourcePosition p);
     void noEffectWarning(const Token &warningToken);
     
-    /**
-     * Checks that the given Procedure can be called from this context.
-     */
-    void checkAccess(Procedure *p, const Token &token, const char *type);
-    
-    std::vector<Type> checkGenericArguments(Procedure *p, const Token &token);
-    
-    /**
-     * Parses and validates the arguments for a function.
-     * @param calledType The type on which the function is executed. Can be Nothingness.
-     */
-    void checkArguments(std::vector<Argument> arguments, TypeContext calledType, const Token &token);
-    
+    Type parseProcedureCall(Type type, Procedure *p, const Token &token);
+
     bool typeIsEnumerable(Type type, Type *elementType);
     
     /** 

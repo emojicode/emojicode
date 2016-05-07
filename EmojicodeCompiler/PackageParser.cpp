@@ -12,6 +12,7 @@
 #include "Procedure.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
+#include "TypeContext.hpp"
 
 void PackageParser::parse() {
     while (stream_.hasMoreTokens()) {
@@ -379,6 +380,7 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                                                            token.position(), override.set(), documentation,
                                                            deprecated.set(), required.set(),
                                                            canReturnNothingness.set());
+                parseGenericArgumentsInDefinition(initializer, TypeContext(eclass, initializer));
                 parseArgumentList(initializer, TypeContext(eclass, initializer));
                 parseBody(initializer, allowNative);
                 

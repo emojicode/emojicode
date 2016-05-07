@@ -9,6 +9,7 @@
 #include "Protocol.hpp"
 #include "Procedure.hpp"
 #include "utf8.h"
+#include "TypeContext.hpp"
 
 uint_fast16_t Protocol::nextIndex = 0;
 
