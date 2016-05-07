@@ -129,7 +129,7 @@
   🐈 🚂 integer 🚂 base 🚂 📻
 
   🌮
-    Creates a 🔡 representation of the given 🚀 and the precision - the number
+    Creates a 🔡 representation of the given 🚀 and precision – the number
     of digits after the decimal separator “.”.
   🌮
   🐈 🚀 double 🚀 precision 🚂 📻
