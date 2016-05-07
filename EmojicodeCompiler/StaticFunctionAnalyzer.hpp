@@ -12,7 +12,7 @@
 #include "EmojicodeCompiler.hpp"
 #include "Procedure.hpp"
 #include "Writer.hpp"
-#include "CompilerScope.hpp"
+#include "CallableScoper.hpp"
 #include "AbstractParser.hpp"
 
 struct FlowControlReturn {
@@ -24,31 +24,27 @@ struct FlowControlReturn {
 
 class StaticFunctionAnalyzer : AbstractParser {
 public:
-    static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, Scoper &scoper,
+    static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, CallableScoper &scoper,
                                          bool inClassContext = false, Initializer *i = nullptr);
     StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext,
-                           TypeContext typeContext, Writer &writer, Scoper &scoper);
+                           TypeContext typeContext, Writer &writer, CallableScoper &scoper);
     
     /** Performs the analyziation. */
-    void analyze(bool compileDeadCode = false, Scope *copyScope = nullptr);
+    void analyze(bool compileDeadCode = false);
     /** Whether self was used in the callable body. */
     bool usedSelfInBody() { return usedSelf; };
-    /** The number of local variables created in the function. */
-    uint8_t localVariableCount() { return variableCount; };
 private:
     /** The callable which is processed. */
     Callable &callable;
     /** The writer used for writing the byte code. */
     Writer &writer;
     
-    Scoper &scoper;
+    CallableScoper &scoper;
     
     /** This points to the Initializer if we are analyzing an initializer. Set to @c nullptr in an initializer. */
     Initializer *initializer = nullptr;
     /** The flow control depth. */
     int flowControlDepth = 0;
-    /** Counts the local varaibles and provides the next ID for a variable. */
-    uint8_t variableCount = 0;
     /** Whether the statment has an effect. */
     bool effect = false;
     /** Whether the procedure in compilation returned. */
@@ -92,7 +88,7 @@ private:
      * Parses and validates the arguments for a function.
      * @param calledType The type on which the function is executed. Can be Nothingness.
      */
-    void checkArguments(std::vector<Variable> arguments, TypeContext calledType, const Token &token);
+    void checkArguments(std::vector<Argument> arguments, TypeContext calledType, const Token &token);
     
     bool typeIsEnumerable(Type type, Type *elementType);
     
@@ -101,10 +97,7 @@ private:
      * @param stack The command to access the variable if it is on the stack.
      * @param object The command to access the variable it it is an instance variable.
      */
-    void writeCoinForScopesUp(uint8_t scopesUp, const Token &varName, EmojicodeCoin stack, EmojicodeCoin object);
-    
-    /** Returns the next variable ID or issues an error if the limit of variables has been exceeded. */
-    uint8_t nextVariableID();
+    void writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object);
     
     void flowControlBlock();
     

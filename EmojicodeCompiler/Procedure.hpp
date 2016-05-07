@@ -20,8 +20,8 @@ enum AccessLevel {
     PUBLIC, PRIVATE, PROTECTED
 };
 
-struct Variable {
-    Variable(const Token &n, Type t) : name(n), type(t) {}
+struct Argument {
+    Argument(const Token &n, Type t) : name(n), type(t) {}
     
     /** The name of the variable */
     const Token &name;
@@ -33,7 +33,7 @@ class Callable {
 public:
     Callable(SourcePosition p) : position_(p) {};
     
-    std::vector<Variable> arguments;
+    std::vector<Argument> arguments;
     /** Return type of the method */
     Type returnType = typeNothingness;
     

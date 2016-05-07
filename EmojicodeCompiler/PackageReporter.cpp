@@ -111,11 +111,11 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
     printf("\"arguments\": [");
     for (int i = 0; i < p->arguments.size(); i++) {
         printf("{");
-        Variable variable = p->arguments[i];
+        auto argument = p->arguments[i];
         
-        const char *varname = variable.name.value.utf8CString();
+        const char *varname = argument.name.value.utf8CString();
         
-        reportType("type", variable.type, tc);
+        reportType("type", argument.type, tc);
         printf(",\"name\":");
         printJSONStringToFile(varname, stdout);
         printf("}%s", i + 1 == p->arguments.size() ? "" : ",");

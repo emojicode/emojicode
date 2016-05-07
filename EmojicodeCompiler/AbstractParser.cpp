@@ -165,7 +165,7 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct) {
         auto &variableToken = stream_.consumeToken(VARIABLE);
         auto type = parseAndFetchType(ct, AllKindsOfDynamism, &dynamism);
         
-        c->arguments.push_back(Variable(variableToken, type));
+        c->arguments.push_back(Argument(variableToken, type));
         
         if (dynamism == Self) {
             usedSelf = true;

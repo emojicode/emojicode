@@ -39,9 +39,9 @@ public:
     bool canBeUsedToResolve(TypeDefinitionWithGenerics *a);
     
     /** All instance variables. */
-    const std::vector<Variable>& instanceVariables() { return instanceVariables_; }
+    const std::vector<Argument>& instanceVariables() { return instanceVariables_; }
     /** Adds an instance variable. */
-    void addInstanceVariable(const Variable&);
+    void addInstanceVariable(const Argument&);
     
     /** List of all methods for user classes */
     std::vector<Method *> methodList;
@@ -87,7 +87,7 @@ private:
     
     std::list<Type> protocols_;
     std::set<EmojicodeChar> requiredInitializers_;
-    std::vector<Variable> instanceVariables_;
+    std::vector<Argument> instanceVariables_;
     
     SourcePosition position_;
 };

@@ -11,7 +11,7 @@
 #include "StaticFunctionAnalyzer.hpp"
 #include "Writer.hpp"
 #include "Protocol.hpp"
-#include "CompilerScope.hpp"
+#include "CallableScoper.hpp"
 #include "Class.hpp"
 #include "utf8.h"
 #include "EmojicodeCompiler.hpp"
@@ -29,7 +29,7 @@ void analyzeClass(Type classType, Writer &writer) {
         writer.writeUInt16(eclass->index);
     }
     
-    Scope objectScope(true);
+    Scope objectScope;
     
     // Get the ID offset for this eclass by summing up all superclasses instance variable counts
     uint16_t offset = 0;
@@ -52,23 +52,22 @@ void analyzeClass(Type classType, Writer &writer) {
     writer.writeUInt16(eclass->classMethodList.size());
     
     for (auto &var : eclass->instanceVariables()) {
-        CompilerVariable *cv = new CompilerVariable(var.type, offset++, 1, false, var.name);
-        objectScope.setLocalVariable(var.name, cv);
+        objectScope.setLocalVariable(var.name.value, Variable(var.type, offset++, 1, false, var.name));
     }
     
     for (auto method : eclass->methodList) {
-        auto scoper = Scoper(&objectScope);
+        auto scoper = CallableScoper(&objectScope);
         StaticFunctionAnalyzer::writeAndAnalyzeProcedure(method, writer, classType, scoper);
     }
     
     for (auto initializer : eclass->initializerList) {
-        auto scoper = Scoper(&objectScope);
+        auto scoper = CallableScoper(&objectScope);
         StaticFunctionAnalyzer::writeAndAnalyzeProcedure(initializer, writer, classType, scoper, false,
                                                          initializer);
     }
     
     for (auto classMethod : eclass->classMethodList) {
-        auto scoper = Scoper();
+        auto scoper = CallableScoper();
         StaticFunctionAnalyzer::writeAndAnalyzeProcedure(classMethod, writer, classType, scoper, true);
     }
     

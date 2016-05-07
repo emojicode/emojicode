@@ -40,7 +40,7 @@ bool Class::inheritsFrom(Class *from) {
     return false;
 }
 
-void Class::addInstanceVariable(const Variable &variable) {
+void Class::addInstanceVariable(const Argument &variable) {
     instanceVariables_.push_back(variable);
 }
 
