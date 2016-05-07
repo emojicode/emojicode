@@ -8,7 +8,7 @@
 
 #include <map>
 #include "CallableScoper.hpp"
-#include "CompilerErrorException.hpp"
+#include "VariableNotFoundErrorException.hpp"
 
 Scope& CallableScoper::currentScope() {
     return scopes_.front();
@@ -47,7 +47,7 @@ std::pair<Variable&, bool> CallableScoper::getVariable(const EmojicodeString &na
     if (objectScope_ && objectScope_->hasLocalVariable(name)) {
         return std::pair<Variable&, bool>(objectScope_->getLocalVariable(name), true);
     }
-    throw CompilerErrorException(errorPosition, "Variable \"%s\" not defined.", name.utf8CString());
+    throw VariableNotFoundErrorException(errorPosition, name);
 }
 
 int CallableScoper::reserveVariableSlot() {

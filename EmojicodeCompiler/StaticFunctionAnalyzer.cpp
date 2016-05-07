@@ -14,6 +14,7 @@
 #include "Protocol.hpp"
 #include "Procedure.hpp"
 #include "CommonTypeFinder.hpp"
+#include "VariableNotFoundErrorException.hpp"
 #include "StringPool.hpp"
 
 Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken, Type type) {
@@ -294,7 +295,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 
                 type = var.first.type;
             }
-            catch (CompilerErrorException &ce) {
+            catch (VariableNotFoundErrorException &vne) {
                 // Not declared, declaring as local variable
                 writer.writeCoin(0x1B);
                 
