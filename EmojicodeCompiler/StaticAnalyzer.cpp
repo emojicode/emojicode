@@ -10,11 +10,12 @@
 #include "StaticAnalyzer.hpp"
 #include "StaticFunctionAnalyzer.hpp"
 #include "Writer.hpp"
-#include "Lexer.hpp"
-#include "CompilerScope.hpp"
+#include "Protocol.hpp"
+#include "CallableScoper.hpp"
 #include "Class.hpp"
 #include "utf8.h"
 #include "EmojicodeCompiler.hpp"
+#include "StringPool.hpp"
 
 void analyzeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass;
@@ -28,15 +29,15 @@ void analyzeClass(Type classType, Writer &writer) {
         writer.writeUInt16(eclass->index);
     }
     
-    Scoper scoper;
-    Scope objectScope(true);
+    Scope objectScope;
     
     // Get the ID offset for this eclass by summing up all superclasses instance variable counts
     uint16_t offset = 0;
     for (Class *aClass = eclass->superclass; aClass != nullptr; aClass = aClass->superclass) {
-        offset += aClass->instanceVariables.size();
+        offset += aClass->instanceVariables().size();
     }
-    writer.writeUInt16(eclass->instanceVariables.size() + offset);
+    auto instanceVariableCount = eclass->instanceVariables().size() + offset;
+    writer.writeUInt16(instanceVariableCount);
     
     // Number of methods inclusive superclass
     writer.writeUInt16(eclass->nextMethodVti);
@@ -50,31 +51,30 @@ void analyzeClass(Type classType, Writer &writer) {
     writer.writeUInt16(eclass->initializerList.size());
     writer.writeUInt16(eclass->classMethodList.size());
     
-    for (auto var : eclass->instanceVariables) {
-        CompilerVariable *cv = new CompilerVariable(var->type, offset++, 1, false, var->name);
-        objectScope.setLocalVariable(var->name, cv);
+    for (auto &var : eclass->instanceVariables()) {
+        objectScope.setLocalVariable(var.name.value, Variable(var.type, offset++, 1, false, var.name));
     }
     
-    scoper.pushScope(&objectScope);
-    
     for (auto method : eclass->methodList) {
+        auto scoper = CallableScoper(&objectScope);
         StaticFunctionAnalyzer::writeAndAnalyzeProcedure(method, writer, classType, scoper);
     }
     
     for (auto initializer : eclass->initializerList) {
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(initializer, writer, classType, scoper, false, initializer);
+        auto scoper = CallableScoper(&objectScope);
+        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(initializer, writer, classType, scoper, false,
+                                                         initializer);
     }
     
-    scoper.popScope();
-    
     for (auto classMethod : eclass->classMethodList) {
+        auto scoper = CallableScoper();
         StaticFunctionAnalyzer::writeAndAnalyzeProcedure(classMethod, writer, classType, scoper, true);
     }
     
-    if (eclass->instanceVariables.size() > 0 && eclass->initializerList.size() == 0) {
+    if (eclass->instanceVariables().size() > 0 && eclass->initializerList.size() == 0) {
         auto str = classType.toString(typeNothingness, true);
-        compilerWarning(eclass->classBeginToken(), "Class %s defines %d instances variables but has no initializers.",
-                        str.c_str(), eclass->instanceVariables.size());
+        compilerWarning(eclass->position(), "Class %s defines %d instances variables but has no initializers.",
+                        str.c_str(), eclass->instanceVariables().size());
     }
     
     writer.writeUInt16(eclass->protocols().size());
@@ -99,25 +99,30 @@ void analyzeClass(Type classType, Writer &writer) {
             writer.writeUInt16(protocol.protocol->methods().size());
             
             for (auto method : protocol.protocol->methods()) {
-                Method *clm = eclass->lookupMethod(method->name);
-                if (clm == nullptr) {
-                    auto className = classType.toString(typeNothingness, true);
-                    auto protocolName = protocol.toString(typeNothingness, true);
-                    ecCharToCharStack(method->name, ms);
-                    compilerError(eclass->classBeginToken(),
-                                  "Class %s does not agree to protocol %s: Method %s is missing.",
-                                  className.c_str(), protocolName.c_str(), ms);
+                try {
+                    Method *clm = eclass->lookupMethod(method->name);
+                    if (clm == nullptr) {
+                        auto className = classType.toString(typeNothingness, true);
+                        auto protocolName = protocol.toString(typeNothingness, true);
+                        ecCharToCharStack(method->name, ms);
+                        throw CompilerErrorException(eclass->position(),
+                                      "Class %s does not agree to protocol %s: Method %s is missing.",
+                                      className.c_str(), protocolName.c_str(), ms);
+                    }
+                    
+                    writer.writeUInt16(clm->vti);
+                    Procedure::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
+                                                  method->name, clm->position(), "protocol definition", classType);
+                    Procedure::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
+                                                  clm->position(), "protocol definition", classType);
+                    for (int i = 0; i < method->arguments.size(); i++) {
+                        Procedure::checkArgument(clm->arguments[i].type,
+                                                 method->arguments[i].type.resolveOn(protocol, false), i,
+                                                 clm->position(), "protocol definition", classType);
+                    }
                 }
-                
-                writer.writeUInt16(clm->vti);
-                Procedure::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
-                                              method->name, clm->dToken, "protocol definition", classType);
-                Procedure::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
-                                              clm->dToken, "protocol definition", classType);
-                for (int i = 0; i < method->arguments.size(); i++) {
-                    Procedure::checkArgument(clm->arguments[i].type,
-                                             method->arguments[i].type.resolveOn(protocol, false), i,
-                                             clm->dToken, "protocol definition", classType);
+                catch (CompilerErrorException &ce) {
+                    printError(ce);
                 }
             }
         }
@@ -142,7 +147,8 @@ void writePackageHeader(Package *pkg, Writer &writer) {
 void analyzeClassesAndWrite(FILE *fout) {
     Writer writer(fout);
     
-    stringPool.push_back(new Token());
+    auto &theStringPool = StringPool::theStringPool();
+    theStringPool.poolString(EmojicodeString());
     
     writer.writeByte(ByteCodeSpecificationVersion);
     
@@ -150,7 +156,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     // and assign virtual table indexes before we analyze the classes!
     for (auto eclass : Class::classes()) {
         // Decide whether this eclass is eligible for initializer inheritance
-        if (eclass->instanceVariables.size() == 0 && eclass->initializerList.size() == 0) {
+        if (eclass->instanceVariables().size() == 0 && eclass->initializerList.size() == 0) {
             eclass->inheritsContructors = true;
         }
         
@@ -248,7 +254,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     }
     else {
         if (pkgCount > 253) {
-            compilerError(nullptr, "You exceeded the maximum of 253 packages.");
+            throw CompilerErrorException(SourcePosition(0, 0, ""), "You exceeded the maximum of 253 packages."); //TODO: ob
         }
         
         writer.writeByte(pkgCount);
@@ -270,12 +276,12 @@ void analyzeClassesAndWrite(FILE *fout) {
             writer.writeByte(0);
         }
     }
+    
+    writer.writeUInt16(theStringPool.strings().size());
+    for (auto string : theStringPool.strings()) {
+        writer.writeUInt16(string.size());
         
-    writer.writeUInt16(stringPool.size());
-    for (auto token : stringPool) {
-        writer.writeUInt16(token->value.size());
-        
-        for (auto c : token->value) {
+        for (auto c : string) {
             writer.writeEmojicodeChar(c);
         }
     }

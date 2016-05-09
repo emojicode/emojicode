@@ -11,7 +11,9 @@
 
 #include <list>
 #include <array>
+#include <map>
 #include "EmojicodeCompiler.hpp"
+#include "Type.hpp"
 
 #undef major
 #undef minor
@@ -39,13 +41,15 @@ public:
      * circular dependencies.
      * @param name The name of the package to load.
      */
-    Package* loadPackage(const char *name, EmojicodeChar ns, const Token *errorToken);
+    Package* loadPackage(const char *name, EmojicodeChar ns, SourcePosition p);
     
     Package(const char *n) : name_(n) {}
-    void parse(const char *path, const Token *errorToken);
+    void parse(const char *path);
     
     bool finishedLoading() const { return finishedLoading_; }
     PackageVersion version() const { return version_; }
+    /** Whether this package has declared a valid package version. */
+    bool validVersion() const { return version().minor > 0 || version().major > 0; }
     void setPackageVersion(PackageVersion v) { version_ = v; }
     bool requiresBinary() const { return requiresNativeBinary_; }
     void setRequiresBinary(bool b = true) { requiresNativeBinary_ = b; }
@@ -62,12 +66,12 @@ public:
      * Tries to fetch a type by its name and namespace and stores it into @c type.
      * @return Whether the type could be found or not. @c type is untouched if @c false was returned.
      */
-    bool fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, const Token *token, Type *type);
+    bool fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, SourcePosition errorPosition, Type *type);
     
     static const std::list<Package *>& packagesInOrder() { return packagesLoadingOrder_; };
     static Package* findPackage(const char *name);
 private:
-    void loadInto(Package *destinationPackage, EmojicodeChar ns, const Token *errorToken) const;
+    void loadInto(Package *destinationPackage, EmojicodeChar ns, const Token &errorToken) const;
     
     const char *name_;
     PackageVersion version_ = PackageVersion(0, 0);

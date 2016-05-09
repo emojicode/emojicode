@@ -1,9 +1,9 @@
 //
-//  Reporter.c
+//  PackageReporter.cpp
 //  Emojicode
 //
-//  Created by Theo Weidmann on 06.11.15.
-//  Copyright © 2015 Theo Weidmann. All rights reserved.
+//  Created by Theo Weidmann on 02/05/16.
+//  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
 #include <cstring>
@@ -11,10 +11,13 @@
 #include <list>
 #include <map>
 #include "utf8.h"
-#include "Lexer.hpp"
 #include "Procedure.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
+#include "Enum.hpp"
+#include "Protocol.hpp"
+#include "PackageReporter.hpp"
+#include "TypeContext.hpp"
 
 enum ReturnManner {
     Return,
@@ -22,12 +25,12 @@ enum ReturnManner {
     CanReturnNothingness
 };
 
-void reportDocumentation(const Token *documentationToken) {
-    if (!documentationToken) {
+void reportDocumentation(const EmojicodeString &documentation) {
+    if (documentation.size() == 0) {
         return;
     }
     
-    const char *d = documentationToken->value.utf8CString();
+    const char *d = documentation.utf8CString();
     printf("\"documentation\":");
     printJSONStringToFile(d, stdout);
     putc(',', stdout);
@@ -109,11 +112,11 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
     printf("\"arguments\": [");
     for (int i = 0; i < p->arguments.size(); i++) {
         printf("{");
-        Variable variable = p->arguments[i];
+        auto argument = p->arguments[i];
         
-        const char *varname = variable.name->value.utf8CString();
+        const char *varname = argument.name.value.utf8CString();
         
-        reportType("type", variable.type, tc);
+        reportType("type", argument.type, tc);
         printf(",\"name\":");
         printJSONStringToFile(varname, stdout);
         printf("}%s", i + 1 == p->arguments.size() ? "" : ",");
@@ -125,7 +128,7 @@ void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, T
     printf("}%s", last ? "" : ",");
 }
 
-void report(Package *package) {
+void reportPackage(Package *package) {
     std::list<Enum *> enums;
     std::list<Class *> classes;
     std::list<Protocol *> protocols;
@@ -159,10 +162,10 @@ void report(Package *package) {
         
         ecCharToCharStack(eclass->name(), className);
         printf("\"name\": \"%s\",", className);
-
+        
         reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(),
                                eclass->superGenericArguments().size(), TypeContext(eclass));
-        reportDocumentation(eclass->documentationToken());
+        reportDocumentation(eclass->documentation());
         
         if (eclass->superclass) {
             ecCharToCharStack(eclass->superclass->name(), superClassName);
@@ -216,7 +219,7 @@ void report(Package *package) {
         ecCharToCharStack(eenum->name(), enumName);
         printf("\"name\": \"%s\",", enumName);
         
-        reportDocumentation(eenum->documentationToken());
+        reportDocumentation(eenum->documentation());
         
         bool printedValue = false;
         printf("\"values\": [");
@@ -246,7 +249,7 @@ void report(Package *package) {
         
         reportGenericArguments(protocol->ownGenericArgumentVariables(), protocol->genericArgumentConstraints(),
                                protocol->superGenericArguments().size(), Type(protocol, false));
-        reportDocumentation(protocol->documentationToken());
+        reportDocumentation(protocol->documentation());
         
         printf("\"methods\": [");
         for (size_t i = 0; i < protocol->methods().size(); i++) {
