@@ -1045,6 +1045,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                             placeholder.write(0x37);
                             parse(stream_.consumeToken(), token, typeFloat);
                             return typeBoolean;
+                        case E_PUT_LITTER_IN_ITS_SPACE:
+                            placeholder.write(0x38);
+                            parse(stream_.consumeToken(), token, typeFloat);
+                            return typeFloat;
                     }
                 }
                 
