@@ -87,7 +87,7 @@ private:
      * @param stack The command to access the variable if it is on the stack.
      * @param object The command to access the variable it it is an instance variable.
      */
-    void writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object);
+    void writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object, SourcePosition p);
     
     void flowControlBlock();
     

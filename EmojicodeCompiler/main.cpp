@@ -196,10 +196,10 @@ int main(int argc, char * argv[]) {
     
     foundStartingFlag = false;
     
-    Package pkg = Package("_");
-    pkg.setPackageVersion(PackageVersion(1, 0));
-    
     auto errorPosition = SourcePosition(0, 0, argv[0]);
+    
+    Package pkg = Package("_", errorPosition);
+    pkg.setPackageVersion(PackageVersion(1, 0));
     
     FILE *out = fopen(outPath, "wb");
     

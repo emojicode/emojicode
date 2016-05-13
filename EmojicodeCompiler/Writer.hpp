@@ -31,13 +31,13 @@ public:
     void writeUInt16(uint16_t value);
     
     /** Writes a coin with the given value */
-    void writeCoin(EmojicodeCoin value);
+    void writeCoin(EmojicodeCoin value, SourcePosition p);
     
     /** Writes a single unicode character */
     void writeEmojicodeChar(EmojicodeChar c);
     
     /** Must be used to write any double to the file. */
-    void writeDouble(double val);
+    void writeDoubleCoin(double val, SourcePosition p);
 
     void writeByte(unsigned char);
     
@@ -55,8 +55,8 @@ public:
         return WriterPlaceholder<T>(*this, position);
     }
     
-    WriterCoinsCountPlaceholder writeCoinsCountPlaceholderCoin();
-    WriterPlaceholder<EmojicodeCoin> writeCoinPlaceholder();
+    WriterCoinsCountPlaceholder writeCoinsCountPlaceholderCoin(SourcePosition p);
+    WriterPlaceholder<EmojicodeCoin> writeCoinPlaceholder(SourcePosition p);
 private:
     void write(uint16_t v) { writeUInt16(v); };
     void write(uint32_t v) { writeEmojicodeChar(v); };

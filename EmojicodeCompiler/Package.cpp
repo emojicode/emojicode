@@ -32,7 +32,7 @@ Package* Package::loadPackage(const char *name, EmojicodeChar ns, SourcePosition
         char *path;
         asprintf(&path, packageDirectory "%s/header.emojic", name);
         
-        package = new Package(name);
+        package = new Package(name, errorPosition);
         
         if (strcmp("s", name) != 0) {
             package->loadPackage("s", globalNamespace, errorPosition);

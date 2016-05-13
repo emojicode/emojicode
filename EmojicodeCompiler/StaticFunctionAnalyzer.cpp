@@ -135,12 +135,13 @@ Type StaticFunctionAnalyzer::parseProcedureCall(Type type, Procedure *p, const T
     return p->returnType.resolveOn(typeContext);
 }
 
-void StaticFunctionAnalyzer::writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object) {
+void StaticFunctionAnalyzer::writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack,
+                                                  EmojicodeCoin object, SourcePosition p) {
     if (!inObjectScope) {
-        writer.writeCoin(stack);
+        writer.writeCoin(stack, p);
     }
     else {
-        writer.writeCoin(object);
+        writer.writeCoin(object, p);
         usedSelf = true;
     }
 }
@@ -159,7 +160,7 @@ void StaticFunctionAnalyzer::flowControlBlock() {
         throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
     }
     
-    auto placeholder = writer.writeCoinsCountPlaceholderCoin();
+    auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         effect = false;
         auto &token = stream_.consumeToken();
@@ -190,7 +191,7 @@ void StaticFunctionAnalyzer::flowControlReturnEnd(FlowControlReturn &fcr) {
 void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
     if (stream_.nextTokenIs(E_SOFT_ICE_CREAM)) {
         stream_.consumeToken(IDENTIFIER);
-        writer.writeCoin(0x3E);
+        writer.writeCoin(0x3E, token);
         
         auto &varName = stream_.consumeToken(VARIABLE);
         if (scoper.currentScope().hasLocalVariable(varName.value)) {
@@ -198,7 +199,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
         }
         
         int id = scoper.reserveVariableSlot();
-        writer.writeCoin(id);
+        writer.writeCoin(id, token);
         
         Type t = parse(stream_.consumeToken());
         if (!t.optional()) {
@@ -217,15 +218,15 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
 Type StaticFunctionAnalyzer::parse(const Token &token) {
     switch (token.type()) {
         case STRING: {
-            writer.writeCoin(0x10);
-            writer.writeCoin(StringPool::theStringPool().poolString(token.value));
+            writer.writeCoin(0x10, token);
+            writer.writeCoin(StringPool::theStringPool().poolString(token.value), token);
             return Type(CL_STRING);
         }
         case BOOLEAN_TRUE:
-            writer.writeCoin(0x11);
+            writer.writeCoin(0x11, token);
             return typeBoolean;
         case BOOLEAN_FALSE:
-            writer.writeCoin(0x12);
+            writer.writeCoin(0x12, token);
             return typeBoolean;
         case INTEGER: {
             /* We know token->value only contains ints less than 255 */
@@ -234,41 +235,41 @@ Type StaticFunctionAnalyzer::parse(const Token &token) {
             EmojicodeInteger l = strtoll(string, nullptr, 0);
             delete [] string;
             if (llabs(l) > INT32_MAX) {
-                writer.writeCoin(0x14);
+                writer.writeCoin(0x14, token);
                 
-                writer.writeCoin(l >> 32);
-                writer.writeCoin((EmojicodeCoin)l);
+                writer.writeCoin(l >> 32, token);
+                writer.writeCoin((EmojicodeCoin)l, token);
                 
                 return typeInteger;
             }
             else {
-                writer.writeCoin(0x13);
-                writer.writeCoin((EmojicodeCoin)l);
+                writer.writeCoin(0x13, token);
+                writer.writeCoin((EmojicodeCoin)l, token);
                 
                 return typeInteger;
             }
         }
         case DOUBLE: {
-            writer.writeCoin(0x15);
+            writer.writeCoin(0x15, token);
             
             const char *string = token.value.utf8CString();
             
             double d = strtod(string, nullptr);
             delete [] string;
-            writer.writeDouble(d);
+            writer.writeDoubleCoin(d, token);
             return typeFloat;
         }
         case SYMBOL:
-            writer.writeCoin(0x16);
-            writer.writeCoin(token.value[0]);
+            writer.writeCoin(0x16, token);
+            writer.writeCoin(token.value[0], token);
             return typeSymbol;
         case VARIABLE: {
             auto var = scoper.getVariable(token.value, token.position());
             
             var.first.uninitalizedError(token);
             
-            writeCoinForScopesUp(var.second, 0x1A, 0x1C);
-            writer.writeCoin(var.first.id);
+            writeCoinForScopesUp(var.second, 0x1A, 0x1C, token);
+            writer.writeCoin(var.first.id, token);
             
             return var.first.type;
         }
@@ -307,9 +308,9 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             scoper.currentScope().setLocalVariable(varName.value,
                                                    Variable(t, id, t.optional() ? 1 : 0, false, varName));
             if (t.optional()) {
-                writer.writeCoin(0x1B);
-                writer.writeCoin(id);
-                writer.writeCoin(0x17);
+                writer.writeCoin(0x1B, token);
+                writer.writeCoin(id, token);
+                writer.writeCoin(0x17, token);
             }
             return typeNothingness;
         }
@@ -325,17 +326,17 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 
                 var.first.mutate(varName);
                 
-                writeCoinForScopesUp(var.second, 0x1B, 0x1D);
-                writer.writeCoin(var.first.id);
+                writeCoinForScopesUp(var.second, 0x1B, 0x1D, token);
+                writer.writeCoin(var.first.id, token);
                 
                 type = var.first.type;
             }
             catch (VariableNotFoundErrorException &vne) {
                 // Not declared, declaring as local variable
-                writer.writeCoin(0x1B);
+                writer.writeCoin(0x1B, token);
                 
                 int id = scoper.reserveVariableSlot();
-                writer.writeCoin(id);
+                writer.writeCoin(id, token);
                 
                 Type t = parse(stream_.consumeToken());
                 scoper.currentScope().setLocalVariable(varName.value, Variable(t, id, 1, false, varName));
@@ -353,10 +354,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 throw CompilerErrorException(token, "Cannot redeclare variable.");
             }
             
-            writer.writeCoin(0x1B);
+            writer.writeCoin(0x1B, token);
             
             int id = scoper.reserveVariableSlot();
-            writer.writeCoin(id);
+            writer.writeCoin(id, token);
             
             Type t = parse(stream_.consumeToken());
             scoper.currentScope().setLocalVariable(varName.value, Variable(t, id, 1, true, varName));
@@ -377,19 +378,19 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             
             if (token.value[0] == E_COOKING) {
-                writeCoinForScopesUp(var.second, 0x19, 0x1F);
+                writeCoinForScopesUp(var.second, 0x19, 0x1F, token);
             }
             else {
-                writeCoinForScopesUp(var.second, 0x18, 0x1E);
+                writeCoinForScopesUp(var.second, 0x18, 0x1E, token);
             }
             
-            writer.writeCoin(var.first.id);
+            writer.writeCoin(var.first.id, token);
             
             return typeNothingness;
         }
         case E_COOKIE: {
-            writer.writeCoin(0x52);
-            auto placeholder = writer.writeCoinPlaceholder();
+            writer.writeCoin(0x52, token);
+            auto placeholder = writer.writeCoinPlaceholder(token);
             
             int stringCount = 0;
             
@@ -407,9 +408,9 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return Type(CL_STRING);
         }
         case E_ICE_CREAM: {
-            writer.writeCoin(0x51);
+            writer.writeCoin(0x51, token);
             
-            auto placeholder = writer.writeCoinsCountPlaceholderCoin();
+            auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             
             CommonTypeFinder ct;
             
@@ -426,9 +427,9 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return type;
         }
         case E_HONEY_POT: {
-            writer.writeCoin(0x50);
+            writer.writeCoin(0x50, token);
            
-            auto placeholder = writer.writeCoinsCountPlaceholderCoin();
+            auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             
             CommonTypeFinder ct;
             
@@ -446,22 +447,22 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return type;
         }
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE: {
-            writer.writeCoin(0x53);
+            writer.writeCoin(0x53, token);
             parse(stream_.consumeToken(), token, typeInteger);
             parse(stream_.consumeToken(), token, typeInteger);
             return Type(CL_RANGE);
         }
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
-            writer.writeCoin(0x54);
+            writer.writeCoin(0x54, token);
             parse(stream_.consumeToken(), token, typeInteger);
             parse(stream_.consumeToken(), token, typeInteger);
             parse(stream_.consumeToken(), token, typeInteger);
             return Type(CL_RANGE);
         }
         case E_TANGERINE: {
-            writer.writeCoin(0x62);
+            writer.writeCoin(0x62, token);
             
-            auto placeholder = writer.writeCoinsCountPlaceholderCoin();
+            auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             auto fcr = FlowControlReturn();
             
             parseIfExpression(token);
@@ -470,7 +471,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             flowControlReturnEnd(fcr);
             
             while (stream_.nextTokenIs(E_LEMON)) {
-                writer.writeCoin(stream_.consumeToken().value[0]);
+                writer.writeCoin(stream_.consumeToken().value[0], token);
                 
                 parseIfExpression(token);
                 flowControlBlock();
@@ -478,7 +479,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             
             if (stream_.nextTokenIs(E_STRAWBERRY)) {
-                writer.writeCoin(stream_.consumeToken().value[0]);
+                writer.writeCoin(stream_.consumeToken().value[0], token);
                 flowControlBlock();
                 flowControlReturnEnd(fcr);
             }
@@ -493,7 +494,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return typeNothingness;
         }
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
-            writer.writeCoin(0x61);
+            writer.writeCoin(0x61, token);
             
             parse(stream_.consumeToken(), token, typeBoolean);
             flowControlBlock();
@@ -502,7 +503,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return typeNothingness;
         }
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
-            auto placeholder = writer.writeCoinPlaceholder();
+            auto placeholder = writer.writeCoinPlaceholder(token);
             
             auto &variableToken = stream_.consumeToken(VARIABLE);
             
@@ -511,7 +512,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             
             int vID = scoper.reserveVariableSlot();
-            writer.writeCoin(vID);
+            writer.writeCoin(vID, token);
             
             Type iteratee = parse(stream_.consumeToken(), token, typeSomeobject);
             
@@ -520,7 +521,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             if (iteratee.type() == TT_CLASS && iteratee.eclass == CL_LIST) {
                 // If the iteratee is a list, the Real-Time Engine has some special sugar
                 placeholder.write(0x65);
-                writer.writeCoin(scoper.reserveVariableSlot());  //Internally needed
+                writer.writeCoin(scoper.reserveVariableSlot(), token);  //Internally needed
                 scoper.currentScope().setLocalVariable(variableToken.value, Variable(iteratee.genericArguments[0], vID, true, true, variableToken));
             }
             else if (iteratee.type() == TT_CLASS && iteratee.eclass == CL_RANGE) {
@@ -530,7 +531,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             else if (typeIsEnumerable(iteratee, &itemType)) {
                 placeholder.write(0x64);
-                writer.writeCoin(scoper.reserveVariableSlot());  //Internally needed
+                writer.writeCoin(scoper.reserveVariableSlot(), token);  //Internally needed
                 scoper.currentScope().setLocalVariable(variableToken.value, Variable(itemType, vID, true, true, variableToken));
             }
             else {
@@ -554,7 +555,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
         }
         case E_DOG: {
             usedSelf = true;
-            writer.writeCoin(0x3C);
+            writer.writeCoin(0x3C, token);
             if (initializer && !calledSuper && initializer->eclass->superclass) {
                 throw CompilerErrorException(token, "Attempt to use 🐕 before superinitializer call.");
             }
@@ -570,7 +571,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return typeContext.calleeType();
         }
         case E_UP_POINTING_RED_TRIANGLE: {
-            writer.writeCoin(0x13);
+            writer.writeCoin(0x13, token);
             
             Type type = parseAndFetchType(typeContext, AllKindsOfDynamism);
             
@@ -590,26 +591,26 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 throw CompilerErrorException(name, "%s does not have a member named %s.", enumName, valueName);
             }
             else if (v.second > UINT32_MAX) {
-                writer.writeCoin(v.second >> 32);
-                writer.writeCoin((EmojicodeCoin)v.second);
+                writer.writeCoin(v.second >> 32, token);
+                writer.writeCoin((EmojicodeCoin)v.second, token);
             }
             else {
-                writer.writeCoin((EmojicodeCoin)v.second);
+                writer.writeCoin((EmojicodeCoin)v.second, token);
             }
             
             return type;
         }
         case E_HIGH_VOLTAGE_SIGN: {
-            writer.writeCoin(0x17);
+            writer.writeCoin(0x17, token);
             return typeNothingness;
         }
         case E_CLOUD: {
-            writer.writeCoin(0x2E);
+            writer.writeCoin(0x2E, token);
             parse(stream_.consumeToken());
             return typeBoolean;
         }
         case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE: {
-            writer.writeCoin(0x2D);
+            writer.writeCoin(0x2D, token);
             
             parse(stream_.consumeToken(), token, typeSomeobject);
             parse(stream_.consumeToken(), token, typeSomeobject);
@@ -635,17 +636,17 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             scoper.objectScope()->initializerUnintializedVariablesCheck(token,
                                             "Instance variable \"%s\" must be initialized before superinitializer.");
             
-            writer.writeCoin(0x3D);
+            writer.writeCoin(0x3D, token);
             
             Class *eclass = typeContext.calleeType().eclass;
             
-            writer.writeCoin(eclass->superclass->index);
+            writer.writeCoin(eclass->superclass->index, token);
             
             auto &initializerToken = stream_.consumeToken(IDENTIFIER);
             
             auto initializer = eclass->superclass->getInitializer(initializerToken, eclass, typeContext);
             
-            writer.writeCoin(initializer->vti);
+            writer.writeCoin(initializer->vti, token);
             
             parseProcedureCall(typeContext.calleeType(), initializer, token);
 
@@ -660,7 +661,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             effect = true;
             
-            writer.writeCoin(0x60);
+            writer.writeCoin(0x60, token);
             
             if (initializer) {
                 if (initializer->canReturnNothingness) {
@@ -677,7 +678,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return typeNothingness;
         }
         case E_BLACK_SQUARE_BUTTON: {
-            auto placeholder = writer.writeCoinPlaceholder();
+            auto placeholder = writer.writeCoinPlaceholder(token);
             
             Type originalType = parse(stream_.consumeToken(), token, typeSomething);
             Type type = parseAndFetchType(typeContext, NoDynamism, nullptr);
@@ -701,12 +702,12 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                     }
                     
                     placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional() ? 0x44 : 0x40);
-                    writer.writeCoin(type.eclass->index);
+                    writer.writeCoin(type.eclass->index, token);
                     break;
                 }
                 case TT_PROTOCOL:
                     placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional() ? 0x45 : 0x41);
-                    writer.writeCoin(type.protocol->index);
+                    writer.writeCoin(type.protocol->index, token);
                     break;
                 case TT_BOOLEAN:
                     placeholder.write(0x42);
@@ -730,7 +731,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return type;
         }
         case E_BEER_MUG: {
-            writer.writeCoin(0x3A);
+            writer.writeCoin(0x3A, token);
             
             Type t = parse(stream_.consumeToken());
             
@@ -741,9 +742,9 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return t.copyWithoutOptional();
         }
         case E_CLINKING_BEER_MUGS: {
-            writer.writeCoin(0x3B);
+            writer.writeCoin(0x3B, token);
             
-            auto placeholder = writer.writeCoinsCountPlaceholderCoin();
+            auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             
             auto &methodToken = stream_.consumeToken();
             
@@ -754,7 +755,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             auto method = type.eclass->getMethod(methodToken, type, typeContext);
             
-            writer.writeCoin(method->vti);
+            writer.writeCoin(method->vti, token);
             
             parseProcedureCall(type, method, token);
             
@@ -767,7 +768,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
         case E_HOT_PEPPER: {
             auto &methodName = stream_.consumeToken();
             
-            writer.writeCoin(0x71);
+            writer.writeCoin(0x71, token);
             
             Type type = parse(stream_.consumeToken());
             
@@ -778,20 +779,20 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             auto method = type.eclass->getMethod(methodName, type, typeContext);
             method->deprecatedWarning(methodName);
             
-            writer.writeCoin(method->vti);
+            writer.writeCoin(method->vti, token);
             
             return method->type();
         }
         case E_GRAPES: {
-            writer.writeCoin(0x70);
+            writer.writeCoin(0x70, token);
             
             auto function = Closure(token.position());
             parseArgumentList(&function, typeContext);
             parseReturnType(&function, typeContext);
             parseBody(&function);
             
-            auto variableCountPlaceholder = writer.writeCoinPlaceholder();
-            auto coinCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
+            auto variableCountPlaceholder = writer.writeCoinPlaceholder(token);
+            auto coinCountPlaceholder = writer.writeCoinsCountPlaceholderCoin(token);
             
             auto flattenedResult = scoper.flattenedCopy(static_cast<int>(function.arguments.size()));
             auto closureScoper = flattenedResult.first;
@@ -803,13 +804,13 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             coinCountPlaceholder.write();
             variableCountPlaceholder.write(closureScoper.numberOfReservations());
             writer.writeCoin(static_cast<EmojicodeCoin>(function.arguments.size())
-                             | (analyzer.usedSelfInBody() ? 1 << 16 : 0));
-            writer.writeCoin(flattenedResult.second);
+                             | (analyzer.usedSelfInBody() ? 1 << 16 : 0), token);
+            writer.writeCoin(flattenedResult.second, token);
             
             return function.type();
         }
         case E_LOLLIPOP: {
-            writer.writeCoin(0x72);
+            writer.writeCoin(0x72, token);
             
             Type type = parse(stream_.consumeToken());
             
@@ -838,14 +839,14 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             Method *method = superclass->getMethod(nameToken, superclass, typeContext);
             
-            writer.writeCoin(0x5);
-            writer.writeCoin(superclass->index);
-            writer.writeCoin(method->vti);
+            writer.writeCoin(0x5, token);
+            writer.writeCoin(superclass->index, token);
+            writer.writeCoin(method->vti, token);
             
             return parseProcedureCall(typeContext.calleeType(), method, token);
         }
         case E_LARGE_BLUE_DIAMOND: {
-            writer.writeCoin(0x4);
+            writer.writeCoin(0x4, token);
             
             TypeDynamism dynamism;
             Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, &dynamism)
@@ -859,10 +860,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             
             if (dynamism) {
-                writer.writeCoin(UINT32_MAX);
+                writer.writeCoin(UINT32_MAX, token);
             }
             else {
-                writer.writeCoin(type.eclass->index);
+                writer.writeCoin(type.eclass->index, token);
             }
             
             auto initializerName = stream_.consumeToken(IDENTIFIER);
@@ -879,7 +880,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             initializer->deprecatedWarning(initializerName);
             
-            writer.writeCoin(initializer->vti);
+            writer.writeCoin(initializer->vti, token);
             
             parseProcedureCall(type, initializer, token);
             
@@ -889,7 +890,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             return type;
         }
         case E_DOUGHNUT: {
-            writer.writeCoin(0x2);
+            writer.writeCoin(0x2, token);
             
             auto &methodToken = stream_.consumeToken(IDENTIFIER);
             
@@ -907,16 +908,16 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 throw CompilerErrorException(token, "You cannot call methods generic types yet.");
             }
             
-            writer.writeCoin(type.eclass->index);
+            writer.writeCoin(type.eclass->index, token);
             
             auto method = type.eclass->getClassMethod(methodToken, type, typeContext);
             
-            writer.writeCoin(method->vti);
+            writer.writeCoin(method->vti, token);
             
             return parseProcedureCall(type, method, token);
         }
         default: {
-            auto placeholder = writer.writeCoinPlaceholder();
+            auto placeholder = writer.writeCoinPlaceholder(token);
             
             auto &tobject = stream_.consumeToken();
             
@@ -1065,12 +1066,12 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             if (type.type() == TT_PROTOCOL) {
                 placeholder.write(0x3);
-                writer.writeCoin(type.protocol->index);
-                writer.writeCoin(method->vti);
+                writer.writeCoin(type.protocol->index, token);
+                writer.writeCoin(method->vti, token);
             }
             else if (type.type() == TT_CLASS) {
                 placeholder.write(0x1);
-                writer.writeCoin(method->vti);
+                writer.writeCoin(method->vti, token);
             }
             
             return parseProcedureCall(type, method, token);
@@ -1153,7 +1154,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writ
     writer.writeByte(0);
     
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
-    auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin();
+    auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin(procedure->position());
     
     auto sca = StaticFunctionAnalyzer(*procedure, procedure->package, i, inClassContext,
                                       TypeContext(classType, procedure), writer, scoper);

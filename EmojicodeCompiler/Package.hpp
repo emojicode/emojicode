@@ -14,6 +14,7 @@
 #include <map>
 #include "EmojicodeCompiler.hpp"
 #include "Type.hpp"
+#include "Token.hpp"
 
 #undef major
 #undef minor
@@ -43,7 +44,7 @@ public:
      */
     Package* loadPackage(const char *name, EmojicodeChar ns, SourcePosition p);
     
-    Package(const char *n) : name_(n) {}
+    Package(const char *n, SourcePosition p) : name_(n), position_(p) {}
     void parse(const char *path);
     
     bool finishedLoading() const { return finishedLoading_; }
@@ -54,6 +55,8 @@ public:
     bool requiresBinary() const { return requiresNativeBinary_; }
     void setRequiresBinary(bool b = true) { requiresNativeBinary_ = b; }
     const char* name() const { return name_; }
+    
+    const SourcePosition& position() const { return position_; }
     
     void exportType(Type t, EmojicodeChar name);
     void registerClass(Class *cl) { classes_.push_back(cl); }
@@ -77,6 +80,7 @@ private:
     PackageVersion version_ = PackageVersion(0, 0);
     bool requiresNativeBinary_ = false;
     bool finishedLoading_ = false;
+    SourcePosition position_;
     
     std::map<std::array<EmojicodeChar, 2>, Type> types_;
     std::list<ExportedType> exportedTypes_;

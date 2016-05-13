@@ -253,8 +253,9 @@ void analyzeClassesAndWrite(FILE *fout) {
         writer.writeByte(0);
     }
     else {
-        if (pkgCount > 253) {
-            throw CompilerErrorException(SourcePosition(0, 0, ""), "You exceeded the maximum of 253 packages."); //TODO: ob
+        if (pkgCount > 256) {
+            throw CompilerErrorException(Package::packagesInOrder().back()->position(),
+                                         "You exceeded the maximum of 256 packages.");
         }
         
         writer.writeByte(pkgCount);
