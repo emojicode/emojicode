@@ -308,8 +308,10 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return EMOJICODE_FALSE;
         case 0x13:
             return somethingInteger((EmojicodeInteger)(int)consumeCoin(thread));
-        case 0x14:
-            return somethingInteger((EmojicodeInteger)consumeCoin(thread) << 32 | consumeCoin(thread));
+        case 0x14: {
+            EmojicodeInteger a = consumeCoin(thread);
+            return somethingInteger(a << 32 | consumeCoin(thread));
+        }
         case 0x15:
             return somethingDouble(readDouble(thread));
         case 0x16:
@@ -351,16 +353,26 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         //Operators
         case 0x20:
             return somethingBoolean(parse(consumeCoin(thread), thread).raw == parse(consumeCoin(thread), thread).raw);
-        case 0x21:
-            return somethingInteger(parse(consumeCoin(thread), thread).raw - parse(consumeCoin(thread), thread).raw);
-        case 0x22:
-            return somethingInteger(parse(consumeCoin(thread), thread).raw + parse(consumeCoin(thread), thread).raw);
-        case 0x23:
-            return somethingInteger(parse(consumeCoin(thread), thread).raw * parse(consumeCoin(thread), thread).raw);
-        case 0x24:
-            return somethingInteger(parse(consumeCoin(thread), thread).raw / parse(consumeCoin(thread), thread).raw);
-        case 0x25:
-            return somethingInteger(parse(consumeCoin(thread), thread).raw % parse(consumeCoin(thread), thread).raw);
+        case 0x21: {
+            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
+            return somethingInteger(a - parse(consumeCoin(thread), thread).raw);
+        }
+        case 0x22: {
+            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
+            return somethingInteger(a + parse(consumeCoin(thread), thread).raw);
+        }
+        case 0x23: {
+            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
+            return somethingInteger(a * parse(consumeCoin(thread), thread).raw);
+        }
+        case 0x24: {
+            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
+            return somethingInteger(a / parse(consumeCoin(thread), thread).raw);
+        }
+        case 0x25: {
+            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
+            return somethingInteger(a % parse(consumeCoin(thread), thread).raw);
+        }
         case 0x26: //Invert
             return !unwrapBool(parse(consumeCoin(thread), thread)) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
         case 0x27: {
