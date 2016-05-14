@@ -1,9 +1,9 @@
-VERSION = 0.2.0-beta.5
+VERSION = 0.2.0-rc.1
 
 CC ?= gcc
 CXX ?= g++
 
-COMPILER_CFLAGS = -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/ -g
+COMPILER_CFLAGS = -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/
 COMPILER_LDFLAGS =
 
 COMPILER_SRCDIR = EmojicodeCompiler
