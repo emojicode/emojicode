@@ -39,7 +39,7 @@ private:
     /** Parses a enum defintion, starting from the first token after 🦃. */
     void parseEnum(const EmojicodeString &string, bool exported);
     /** Parses a protocol defintion, starting from the first token after🐊. */
-    void parseProtocol(const EmojicodeString &string, bool exported);
+    void parseProtocol(const EmojicodeString &string, const Token &theToken, bool exported);
     
     /** Parses a documentation if found and returns its value or an empty string. */
     EmojicodeString parseDocumentationToken();

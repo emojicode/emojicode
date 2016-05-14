@@ -13,10 +13,10 @@
 
 uint_fast16_t Protocol::nextIndex = 0;
 
-Protocol::Protocol(EmojicodeChar name, Package *pkg, const EmojicodeString &string)
+Protocol::Protocol(EmojicodeChar name, Package *pkg, const EmojicodeString &string, SourcePosition p)
     : TypeDefinitionWithGenerics(name, pkg, string) {
     if (nextIndex == UINT16_MAX) {
-        throw CompilerErrorException(SourcePosition(0, 0, "blalblalb"), "You exceeded the limit of 65,536 protocols."); //TODO: ob
+        throw CompilerErrorException(p, "You exceeded the limit of 65,536 protocols.");
     }
     index = nextIndex++;
 }

@@ -17,7 +17,7 @@
 
 class Protocol : public TypeDefinitionWithGenerics {
 public:
-    Protocol(EmojicodeChar name, Package *pkg, const EmojicodeString &string);
+    Protocol(EmojicodeChar name, Package *pkg, const EmojicodeString &string, SourcePosition p);
     
     uint_fast16_t index;
     

@@ -33,7 +33,7 @@ void PackageParser::parse() {
                 continue;
             }
             case E_CROCODILE:
-                parseProtocol(documentation, exported.set());
+                parseProtocol(documentation, theToken, exported.set());
                 continue;
             case E_TURKEY:
                 parseEnum(documentation, exported.set());
@@ -206,11 +206,11 @@ static AccessLevel readAccessLevel(TokenStream *stream) {
     return access;
 }
 
-void PackageParser::parseProtocol(const EmojicodeString &documentation, bool exported) {
+void PackageParser::parseProtocol(const EmojicodeString &documentation, const Token &theToken, bool exported) {
     EmojicodeChar name, enamespace;
     parseAndValidateNewTypeName(&name, &enamespace);
     
-    auto protocol = new Protocol(name, package_, documentation);
+    auto protocol = new Protocol(name, package_, documentation, theToken);
     
     parseGenericArgumentList(protocol, Type(protocol, false));
     protocol->finalizeGenericArguments();
