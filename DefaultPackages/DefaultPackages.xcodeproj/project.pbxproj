@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E415384E1AE54A1200025753 /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = E415384C1AE54A1200025753 /* sqlite3.c */; };
-		E415384F1AE54A1200025753 /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = E415384D1AE54A1200025753 /* sqlite3.h */; };
-		E41538521AE54A2200025753 /* sqlite.c in Sources */ = {isa = PBXBuildFile; fileRef = E41538501AE54A2200025753 /* sqlite.c */; };
 		E41AE33E1ACC81CA00D27317 /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E41AE33D1ACC81CA00D27317 /* libcurl.dylib */; };
 		E4646BF51B8DF44600CA506A /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E10B7F1ACA989B0072B4C8 /* files.c */; };
 		E4646BF81B8DF44600CA506A /* EmojicodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */; };
@@ -24,9 +21,6 @@
 
 /* Begin PBXFileReference section */
 		E41538471AE549AA00025753 /* sqlite.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = sqlite.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		E415384C1AE54A1200025753 /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = sqlite/sqlite3.c; sourceTree = "<group>"; };
-		E415384D1AE54A1200025753 /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = sqlite/sqlite3.h; sourceTree = "<group>"; };
-		E41538501AE54A2200025753 /* sqlite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite.c; path = sqlite/sqlite.c; sourceTree = "<group>"; };
 		E41AE3351ACC7E8400D27317 /* net.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = net.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		E41AE33D1ACC81CA00D27317 /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = usr/lib/libcurl.dylib; sourceTree = SDKROOT; };
 		E4646BFD1B8DF44600CA506A /* json.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = json.so; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -82,16 +76,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E415384B1AE549CC00025753 /* sqlite */ = {
-			isa = PBXGroup;
-			children = (
-				E415384C1AE54A1200025753 /* sqlite3.c */,
-				E415384D1AE54A1200025753 /* sqlite3.h */,
-				E41538501AE54A2200025753 /* sqlite.c */,
-			);
-			name = sqlite;
-			sourceTree = "<group>";
-		};
 		E47937051C36A3D300536258 /* SDL */ = {
 			isa = PBXGroup;
 			children = (
@@ -112,7 +96,6 @@
 				E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */,
 				E47937051C36A3D300536258 /* SDL */,
 				E4E10B7E1ACA98900072B4C8 /* Files */,
-				E415384B1AE549CC00025753 /* sqlite */,
 				E4E10B781ACA983B0072B4C8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -145,7 +128,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4DA686A1AE6C367003158CA /* EmojicodeDictionary.h in Headers */,
-				E415384F1AE54A1200025753 /* sqlite3.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,8 +300,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E415384E1AE54A1200025753 /* sqlite3.c in Sources */,
-				E41538521AE54A2200025753 /* sqlite.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
