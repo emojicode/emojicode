@@ -94,8 +94,6 @@ public:
     
     EmojicodeString documentationToken;
     
-    uint16_t vti;
-    
     /** The types for the generic arguments. */
     std::vector<Type> genericArgumentConstraints;
     /** Generic type arguments as variables */
@@ -114,9 +112,14 @@ public:
     
     void checkOverride(Procedure *superProcedure);
     
+    int vti() const { return vti_; }
+    void setVti(int vti);
+    
     virtual Type type();
     
     const char *on;
+private:
+    int vti_;
 };
 
 class Method: public Procedure {

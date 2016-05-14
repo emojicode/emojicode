@@ -646,7 +646,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             auto initializer = eclass->superclass->getInitializer(initializerToken, eclass, typeContext);
             
-            writer.writeCoin(initializer->vti, token);
+            writer.writeCoin(initializer->vti(), token);
             
             parseProcedureCall(typeContext.calleeType(), initializer, token);
 
@@ -755,7 +755,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             auto method = type.eclass->getMethod(methodToken, type, typeContext);
             
-            writer.writeCoin(method->vti, token);
+            writer.writeCoin(method->vti(), token);
             
             parseProcedureCall(type, method, token);
             
@@ -779,7 +779,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             auto method = type.eclass->getMethod(methodName, type, typeContext);
             method->deprecatedWarning(methodName);
             
-            writer.writeCoin(method->vti, token);
+            writer.writeCoin(method->vti(), token);
             
             return method->type();
         }
@@ -841,7 +841,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             writer.writeCoin(0x5, token);
             writer.writeCoin(superclass->index, token);
-            writer.writeCoin(method->vti, token);
+            writer.writeCoin(method->vti(), token);
             
             return parseProcedureCall(typeContext.calleeType(), method, token);
         }
@@ -880,7 +880,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             initializer->deprecatedWarning(initializerName);
             
-            writer.writeCoin(initializer->vti, token);
+            writer.writeCoin(initializer->vti(), token);
             
             parseProcedureCall(type, initializer, token);
             
@@ -912,7 +912,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             auto method = type.eclass->getClassMethod(methodToken, type, typeContext);
             
-            writer.writeCoin(method->vti, token);
+            writer.writeCoin(method->vti(), token);
             
             return parseProcedureCall(type, method, token);
         }
@@ -1067,11 +1067,11 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             if (type.type() == TT_PROTOCOL) {
                 placeholder.write(0x3);
                 writer.writeCoin(type.protocol->index, token);
-                writer.writeCoin(method->vti, token);
+                writer.writeCoin(method->vti(), token);
             }
             else if (type.type() == TT_CLASS) {
                 placeholder.write(0x1);
-                writer.writeCoin(method->vti, token);
+                writer.writeCoin(method->vti(), token);
             }
             
             return parseProcedureCall(type, method, token);
@@ -1144,7 +1144,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writ
     writer.resetWrittenCoins();
     
     writer.writeEmojicodeChar(procedure->name);
-    writer.writeUInt16(procedure->vti);
+    writer.writeUInt16(procedure->vti());
     writer.writeByte(static_cast<uint8_t>(procedure->arguments.size()));
     
     if (procedure->native) {

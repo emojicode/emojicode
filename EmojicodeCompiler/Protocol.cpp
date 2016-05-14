@@ -38,7 +38,7 @@ Method* Protocol::getMethod(const Token &token, Type type, TypeContext typeConte
 
 void Protocol::addMethod(Method *method) {
     duplicateDeclarationCheck(method, methods_, method->position());
-    method->vti = methodList_.size();
+    method->setVti(static_cast<int>(methodList_.size()));
     methods_[method->name] = method;
     methodList_.push_back(method);
 }

@@ -32,11 +32,14 @@ void analyzeClass(Type classType, Writer &writer) {
     Scope objectScope;
     
     // Get the ID offset for this eclass by summing up all superclasses instance variable counts
-    uint16_t offset = 0;
+    int offset = 0;
     for (Class *aClass = eclass->superclass; aClass != nullptr; aClass = aClass->superclass) {
         offset += aClass->instanceVariables().size();
     }
     auto instanceVariableCount = eclass->instanceVariables().size() + offset;
+    if (instanceVariableCount > 65536) {
+        throw CompilerErrorException(eclass->position(), "You exceeded the limit of 65,536 instance variables.");
+    }
     writer.writeUInt16(instanceVariableCount);
     
     // Number of methods inclusive superclass
@@ -110,7 +113,7 @@ void analyzeClass(Type classType, Writer &writer) {
                                       className.c_str(), protocolName.c_str(), ms);
                     }
                     
-                    writer.writeUInt16(clm->vti);
+                    writer.writeUInt16(clm->vti());
                     Procedure::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
                                                   method->name, clm->position(), "protocol definition", classType);
                     Procedure::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
@@ -179,10 +182,10 @@ void analyzeClassesAndWrite(FILE *fout) {
             method->checkOverride(superMethod);
             if (superMethod) {
                 method->checkPromises(superMethod, "super method", classType);
-                method->vti = superMethod->vti;
+                method->setVti(superMethod->vti());
             }
             else {
-                method->vti = eclass->nextMethodVti++;
+                method->setVti(eclass->nextMethodVti++);
             }
         }
         for (auto clMethod : eclass->classMethodList) {
@@ -191,10 +194,10 @@ void analyzeClassesAndWrite(FILE *fout) {
             clMethod->checkOverride(superMethod);
             if (superMethod) {
                 clMethod->checkPromises(superMethod, "super classmethod", classType);
-                clMethod->vti = superMethod->vti;
+                clMethod->setVti(superMethod->vti());
             }
             else {
-                clMethod->vti = eclass->nextClassMethodVti++;
+                clMethod->setVti(eclass->nextClassMethodVti++);
             }
         }
         
@@ -208,14 +211,14 @@ void analyzeClassesAndWrite(FILE *fout) {
             if (initializer->required) {
                 if (superInit) {
                     initializer->checkPromises(superInit, "super initializer", classType);
-                    initializer->vti = superInit->vti;
+                    initializer->setVti(superInit->vti());
                 }
                 else {
-                    initializer->vti = subRequiredInitializerNextVti++;
+                    initializer->setVti(static_cast<int>(subRequiredInitializerNextVti++));
                 }
             }
             else {
-                initializer->vti = eclass->nextInitializerVti++;
+                initializer->setVti(eclass->nextInitializerVti++);
             }
         }
     }
@@ -288,5 +291,5 @@ void analyzeClassesAndWrite(FILE *fout) {
     }
     
     writer.writeUInt16(startingFlag.eclass->index);
-    writer.writeUInt16(startingFlag.eclass->lookupClassMethod(E_CHEQUERED_FLAG)->vti);
+    writer.writeUInt16(startingFlag.eclass->lookupClassMethod(E_CHEQUERED_FLAG)->vti());
 }

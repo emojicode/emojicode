@@ -214,7 +214,7 @@ int main(int argc, char * argv[]) {
         }
         
         if (!foundStartingFlag) {
-            throw CompilerErrorException(errorPosition, "No 🏁 eclass method was found.");
+            throw CompilerErrorException(errorPosition, "No 🏁 class method was found.");
         }
         
         analyzeClassesAndWrite(out);

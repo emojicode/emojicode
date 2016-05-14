@@ -109,6 +109,13 @@ void Procedure::deprecatedWarning(const Token &callToken) {
     }
 }
 
+void Procedure::setVti(int vti) {
+    if (vti >= 65536) {
+        throw CompilerErrorException(position(), "You exceeded the limit of 65,536 %s in a class.", on);
+    }
+    vti_ = vti;
+}
+
 Type Procedure::type() {
     Type t = Type(TT_CALLABLE, false);
     t.arguments = (uint8_t)arguments.size();
