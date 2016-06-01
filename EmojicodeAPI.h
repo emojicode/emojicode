@@ -159,7 +159,6 @@ extern Object* newArray(size_t size);
  * Tries to resize the given array object to the given size.
  * @param array An array object created by @c newArray.
  * @param size The new size.
- * @warning Do not use this method to shrink an array.
  * @warning GC-invoking
  */
 extern Object* resizeArray(Object *array, size_t size);
@@ -186,7 +185,7 @@ extern bool instanceof(Object *object, Class *cl);
 extern void mark(Object **of);
 /**
  * If the calling thread needs to be paused for the GC to run, this function will first
- * unlock @c mutex if it is not a @c NULL pointer, then block until the GC cycle is complete
+ * unlock @c mutex if it is not a @c NULL pointer, then block until the GC cycle is completed
  * and finally try to acquire @c mutex. Otherwise no action is performed.
  *
  * You normally do not need to call this method from method or intializer implementations.
