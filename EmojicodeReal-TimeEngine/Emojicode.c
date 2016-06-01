@@ -28,6 +28,11 @@ Class *CL_CAPTURED_METHOD_CALL;
 Class *CL_CLOSURE;
 Class *CL_RANGE;
 
+static Class cl_array = {
+    NULL, NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0, 0, NULL, NULL, 0
+};
+Class *CL_ARRAY = &cl_array;
+
 char **cliArguments;
 int cliArgumentCount;
 

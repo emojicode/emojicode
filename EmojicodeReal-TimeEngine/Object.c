@@ -111,7 +111,7 @@ Object* newArray(size_t size){
     size_t fullSize = sizeof(Object) + size;
     Object *object = emojicodeMalloc(fullSize);
     object->size = fullSize;
-    object->class = CL_STRING;  // Has no marker and no deconstructor.
+    object->class = CL_ARRAY;
     object->value = ((Byte *)object) + sizeof(Object);
     
     return object;
@@ -188,7 +188,7 @@ void gc(){
     currentObjectPointer = otherHeap;
     while (currentObjectPointer < otherHeap + oldMemoryUse) {
         Object *currentObject = (Object *)currentObjectPointer;
-        if(!currentObject->newLocation && currentObject->class->deconstruct){
+        if (!currentObject->newLocation && currentObject->class->deconstruct) {
             currentObject->class->deconstruct(currentObject->value);
         }
         currentObjectPointer += currentObject->size;
