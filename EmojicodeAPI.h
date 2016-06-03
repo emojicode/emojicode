@@ -87,7 +87,6 @@ typedef struct {
 #define NOTHINGNESS ((Something){T_OBJECT, .object = NULL})
 
 #define unwrapInteger(o) ((o).raw)
-#define unwrapLong(o) (*(EmojicodeLong *)((o)->value))
 #define unwrapBool(o) ((o).raw > 0)
 #define unwrapSymbol(o) ((EmojicodeChar)(o).raw)
 
