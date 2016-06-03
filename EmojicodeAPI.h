@@ -89,6 +89,7 @@ typedef struct {
 #define unwrapInteger(o) ((o).raw)
 #define unwrapBool(o) ((o).raw > 0)
 #define unwrapSymbol(o) ((EmojicodeChar)(o).raw)
+#define unwrapDouble(o) ((o).doubl)
 
 /** Whether this thing is Nothingness. */
 extern bool isNothingness(Something sth);
