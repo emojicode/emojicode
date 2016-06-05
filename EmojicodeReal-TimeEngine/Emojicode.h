@@ -110,6 +110,7 @@ struct Class {
     void (*mark)(Object *self);
     
     size_t size;
+    size_t valueSize;
 };
 
 struct Method {

@@ -245,7 +245,8 @@ void readPackage(FILE *in){
             class->deconstruct = class->superclass->deconstruct;
         }
         class->mark = mpfc(name);
-        class->size = sfch(class, name) + class->instanceVariableCount * sizeof(Something);
+        class->valueSize = class->superclass ? class->superclass->valueSize : sfch(class, name);
+        class->size = class->valueSize + class->instanceVariableCount * sizeof(Something);
     } while(fgetc(in));
 }
 
