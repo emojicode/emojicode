@@ -1,17 +1,26 @@
 # Emojicode [![Build Status](https://travis-ci.org/emojicode/emojicode.svg?branch=master)](https://travis-ci.org/emojicode/emojicode) [![Join the chat at https://gitter.im/emojicode/emojicode](https://badges.gitter.im/emojicode/emojicode.svg)](https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-http://www.emojicode.org
+Emojicode is an open source, high-level, multi-paradigm
+programming language consisting of emojis. It features Object-Orientation, Optionals, Generics and Closures.
 
-Emojicode is an open source, high-level, multi-paradigm, object-oriented
-programming language consisting of emojis.
+## Getting Started
 
-## The Language
-
-**To learn more about the language Emojicode visit http://www.emojicode.org/docs.**
+To learn more about the language and getting started visit
+http://www.emojicode.org/docs.
 
 ## Installing
 
-**You can easily install Emojicode from our stable prebuilt binaries: http://www.emojicode.org/docs/guides/install.html.**
+You can easily install Emojicode from our stable prebuilt binaries:
+http://www.emojicode.org/docs/guides/install.html.
+
+## Staying up to date
+
+Follow Emojicode’s Twitter account
+[@Real_Emojicode](https://twitter.com/Real_Emojicode).
+
+## Contributions
+
+Contributions are welcome! A contribution guideline will be setup soon.
 
 ## Building from source
 
@@ -67,13 +76,3 @@ Steps:
 
   After the command is done you will find a directory and a tarfile
 in `builds` named after your platform, e.g. `Emojicode-0.2.0-x86_64-linux-gnu`.
-
-## Staying up to date
-
-You can follow [@idmean](https://twitter.com/idmean) (the creator of Emojicode) on Twitter to stay up to date.
-
-## Contributions
-
-Contributions are welcome! A contribution guideline will be setup soon.
-
-If you wan't to help and have no idea how, check out the [issues](https://github.com/emojicode/emojicode/issues) or ask in the [Gitter Chat](https://gitter.im/emojicode/emojicode).
