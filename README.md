@@ -34,7 +34,7 @@ Steps:
    cd emojicode
    ```
 
-    Beware of, that the master branch contains development code which probably contains bugs. If you want to build the latest stable release make sure to check it out first: `git checkout v0.2.0-rc.1`
+    Beware of, that the master branch contains development code which probably contains bugs. If you want to build the latest stable release make sure to check it out first: `git checkout v0.2.0`
 
 2.  Then simply run
 
@@ -66,7 +66,7 @@ Steps:
    ```
 
   After the command is done you will find a directory and a tarfile
-in `builds` named after your platform, e.g. `Emojicode-0.2.0-rc.1-x86_64-linux-gnu`.
+in `builds` named after your platform, e.g. `Emojicode-0.2.0-x86_64-linux-gnu`.
 
 ## Staying up to date
 
