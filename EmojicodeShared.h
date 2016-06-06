@@ -25,7 +25,7 @@ typedef uint32_t EmojicodeCoin;
 
 /* Using either of them in a package makes absolutely no sense */
 #define packageDirectory "/usr/local/EmojicodePackages/"
-#define ByteCodeSpecificationVersion 3
+#define ByteCodeSpecificationVersion 4
 
 /**
  * @defined(isWhitespace)

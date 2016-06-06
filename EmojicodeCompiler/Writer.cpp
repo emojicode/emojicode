@@ -11,22 +11,22 @@
 #include "CompilerErrorException.hpp"
 
 void Writer::writeUInt16(uint16_t value) {
-    fputc(value >> 8, out);
     fputc(value, out);
+    fputc(value >> 8, out);
 }
 
 void Writer::writeEmojicodeChar(EmojicodeChar c) {
-    fputc(c >> 24, out);
-    fputc(c >> 16, out);
-    fputc(c >> 8, out);
     fputc(c, out);
+    fputc(c >> 8, out);
+    fputc(c >> 16, out);
+    fputc(c >> 24, out);
 }
 
 void Writer::writeCoin(EmojicodeCoin value, SourcePosition p) {
-    fputc(value >> 24, out);
-    fputc(value >> 16, out);
-    fputc(value >> 8, out);
     fputc(value, out);
+    fputc(value >> 8, out);
+    fputc(value >> 16, out);
+    fputc(value >> 24, out);
     
     if (++writtenCoins == 4294967295) {
         throw CompilerErrorException(p, "You exceeded the limit of 4294967295 allowed instructions in a procedure.");
@@ -50,7 +50,6 @@ void Writer::writeDoubleCoin(double val, SourcePosition p) {
     writeCoin((EmojicodeCoin)scale, p);
     writeCoin(exp, p);
 }
-
 
 WriterPlaceholder<EmojicodeCoin> Writer::writeCoinPlaceholder(SourcePosition p) {
     off_t position = ftello(out);

@@ -11,15 +11,15 @@
 #include <dlfcn.h>
 
 uint16_t readUInt16(FILE *in){
-    return ((uint16_t)fgetc(in)) << 8 | (uint16_t)fgetc(in);
+    return ((uint16_t)fgetc(in)) | (fgetc(in) << 8);
 }
 
 EmojicodeChar readEmojicodeChar(FILE *in){
-    return (((EmojicodeCoin)fgetc(in)) << 24) | (fgetc(in) << 16) | (fgetc(in) << 8) | fgetc(in);
+    return ((EmojicodeChar)fgetc(in)) | (fgetc(in) << 8) | ((EmojicodeChar)fgetc(in) << 16) | ((EmojicodeChar)fgetc(in) << 24);
 }
 
 EmojicodeCoin readCoin(FILE *in){
-    return (((EmojicodeCoin)fgetc(in)) << 24) | (fgetc(in) << 16) | (fgetc(in) << 8) | fgetc(in);
+    return ((EmojicodeCoin)fgetc(in)) | (fgetc(in) << 8) | ((EmojicodeCoin)fgetc(in) << 16) | ((EmojicodeCoin)fgetc(in) << 24);
 }
 
 PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor, hpfmResponder *hpfm, hpfcmResponder *hpfcm, hpfcResponder *hpfc, mpfc *mpfc, dpfc *dpfc, SizeForClassHandler *sfch){
