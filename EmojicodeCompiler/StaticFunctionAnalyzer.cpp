@@ -471,7 +471,8 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             flowControlReturnEnd(fcr);
             
             while (stream_.nextTokenIs(E_LEMON)) {
-                writer.writeCoin(stream_.consumeToken().value[0], token);
+                stream_.consumeToken();
+                writer.writeCoin(0x63, token);
                 
                 parseIfExpression(token);
                 flowControlBlock();
@@ -479,7 +480,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             }
             
             if (stream_.nextTokenIs(E_STRAWBERRY)) {
-                writer.writeCoin(stream_.consumeToken().value[0], token);
+                stream_.consumeToken();
                 flowControlBlock();
                 flowControlReturnEnd(fcr);
             }

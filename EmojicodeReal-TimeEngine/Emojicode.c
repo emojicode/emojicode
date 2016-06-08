@@ -679,32 +679,21 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeCoin *ifEnd = thread->tokenStream + length;
             
             Something boolSth = parse(consumeCoin(thread), thread);
-            bool b = unwrapBool(boolSth);
-            
-            if(b){
-                //The if itself was true
-                if(runBlock(thread)){
-                    //We hit a return
+            if (unwrapBool(boolSth)) {  // Main if
+                if (runBlock(thread)) {
                     return NOTHINGNESS;
                 }
                 thread->tokenStream = ifEnd;
             }
-            else if(thread->tokenStream >= ifEnd){
-                return NOTHINGNESS;
-            }
             else {
-                //Get away the 1st orange block
                 passBlock(thread);
                 
-                while (thread->tokenStream < ifEnd && nextCoin(thread) == 0x1F34B) { //All else ifs
+                while (thread->tokenStream < ifEnd && nextCoin(thread) == 0x63) {  // All else ifs
                     consumeCoin(thread);
                     
                     boolSth = parse(consumeCoin(thread), thread);
-                    b = unwrapBool(boolSth);
-                    
-                    if (b) {
-                        //Its condition is true, so let's execute
-                        if(runBlock(thread)){
+                    if (unwrapBool(boolSth)) {
+                        if (runBlock(thread)) {
                             return NOTHINGNESS;
                         }
                         thread->tokenStream = ifEnd;
@@ -715,10 +704,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
                     }
                 }
                 
-                if(thread->tokenStream < ifEnd && nextCoin(thread) == 0x1F353){ //Else?
-                    consumeCoin(thread);
-                    
-                    if(runBlock(thread)){
+                if (thread->tokenStream < ifEnd) {  // Else block
+                    if (runBlock(thread)) {
                         return NOTHINGNESS;
                     }
                 }
