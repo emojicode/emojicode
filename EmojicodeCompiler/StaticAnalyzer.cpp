@@ -135,16 +135,25 @@ void analyzeClass(Type classType, Writer &writer) {
     }
 }
 
+void writePackageHeader(Package *pkg, Writer &writer, uint16_t classCount) {
+    if (pkg->requiresBinary()) {
+        uint16_t l = strlen(pkg->name()) + 1;
+        writer.writeByte(l);
+        
+        writer.writeBytes(pkg->name(), l);
+        
+        writer.writeUInt16(pkg->version().major);
+        writer.writeUInt16(pkg->version().minor);
+    }
+    else {
+        writer.writeByte(0);
+    }
+    
+    writer.writeUInt16(classCount);
+}
+
 void writePackageHeader(Package *pkg, Writer &writer) {
-    uint16_t l = strlen(pkg->name()) + 1;
-    writer.writeUInt16(l);
-    
-    writer.writeBytes(pkg->name(), l);
-    
-    writer.writeUInt16(pkg->version().major);
-    writer.writeUInt16(pkg->version().minor);
-    
-    writer.writeByte(pkg->requiresBinary() ? 1 : 0);
+    writePackageHeader(pkg, writer, pkg->classes().size());
 }
 
 void analyzeClassesAndWrite(FILE *fout) {
@@ -231,29 +240,17 @@ void analyzeClassesAndWrite(FILE *fout) {
         writer.writeByte(1);
         
         auto pkgs = Package::packagesInOrder();
+        auto underscorePackage = (*std::next(pkgs.begin(), 1));
         
-        writePackageHeader(pkgs.front(), writer);
-        
-        auto classWritten = false;
+        writePackageHeader(pkgs.front(), writer, pkgs.front()->classes().size() + underscorePackage->classes().size());
         
         for (auto cl : pkgs.front()->classes()) {
-            if (classWritten) {
-                writer.writeByte(1);
-            }
-            
             analyzeClass(Type(cl), writer);
-            classWritten = true;
-        }
-        for (auto cl : (*std::next(pkgs.begin(), 1))->classes()) {
-            if (classWritten) {
-                writer.writeByte(1);
-            }
-            
-            analyzeClass(Type(cl), writer);
-            classWritten = true;
         }
         
-        writer.writeByte(0);
+        for (auto cl : underscorePackage->classes()) {
+            analyzeClass(Type(cl), writer);
+        }
     }
     else {
         if (pkgCount > 256) {
@@ -264,20 +261,11 @@ void analyzeClassesAndWrite(FILE *fout) {
         writer.writeByte(pkgCount);
         
         for (auto pkg : Package::packagesInOrder()) {
-            auto classWritten = false;
-            
             writePackageHeader(pkg, writer);
             
             for (auto cl : pkg->classes()) {
-                if (classWritten) {
-                    writer.writeByte(1);
-                }
-                
                 analyzeClass(Type(cl), writer);
-                classWritten = true;
             }
-            
-            writer.writeByte(0);
         }
     }
     

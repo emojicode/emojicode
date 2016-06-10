@@ -142,14 +142,6 @@ void readProtocolAgreement(Method **vmt, Method ***pmt, uint_fast16_t offset, FI
 void readPackage(FILE *in){
     static uint16_t classNextIndex = 0;
     
-    uint16_t l = readUInt16(in);
-    
-    char *name = malloc(sizeof(char) * l);
-    fread(name, sizeof(char), l, in);
-    
-    uint16_t major = readUInt16(in);
-    uint16_t minor = readUInt16(in);
-    
     hpfmResponder hpfm;
     hpfcmResponder hpfcm;
     hpfcResponder hpfc;
@@ -157,7 +149,8 @@ void readPackage(FILE *in){
     mpfc mpfc;
     SizeForClassHandler sfch;
     
-    if(!fgetc(in)){
+    uint_fast8_t packageNameLength = fgetc(in);
+    if (!packageNameLength) {
         hpfm = handlerPointerForMethod;
         hpfc = handlerPointerForInitializer;
         hpfcm = handlerPointerForClassMethod;
@@ -166,6 +159,12 @@ void readPackage(FILE *in){
         sfch = sizeForClass;
     }
     else {
+        char *name = malloc(sizeof(char) * packageNameLength);
+        fread(name, sizeof(char), packageNameLength, in);
+        
+        uint16_t major = readUInt16(in);
+        uint16_t minor = readUInt16(in);
+        
         PackageLoadingState s = packageLoad(name, major, minor, &hpfm, &hpfcm, &hpfc, &mpfc, &dpfc, &sfch);
         
         if(s == PACKAGE_INAPPROPRIATE_MAJOR){
@@ -177,10 +176,11 @@ void readPackage(FILE *in){
         else if (s == PACKAGE_LOADING_FAILED) {
             error("Could not load package \"%s\" %s.", name, packageError());
         }
+        
+        free(name);
     }
-    free(name);
     
-    do {
+    for (uint_fast16_t classCount = readUInt16(in); classCount; classCount--) {
         EmojicodeChar name = readEmojicodeChar(in);
         
         Class *class = malloc(sizeof(Class));
@@ -247,7 +247,7 @@ void readPackage(FILE *in){
         class->mark = mpfc(name);
         class->valueSize = class->superclass ? class->superclass->valueSize : sfch(class, name);
         class->size = class->valueSize + class->instanceVariableCount * sizeof(Something);
-    } while(fgetc(in));
+    }
 }
 
 ClassMethod* readBytecode(FILE *in, Class **cl){
