@@ -64,7 +64,7 @@ public:
     Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c)
         : reference(r), resolutionConstraint(c), type_(t), optional_(o) {}
     Type(Class *c, bool o);
-    Type(Class *c) : Type(c, false) {};
+    explicit Type(Class *c) : Type(c, false) {};
     Type(Protocol *p, bool o) : protocol(p), type_(TT_PROTOCOL), optional_(o)  {}
     Type(Enum *e, bool o) : eenum(e), type_(TT_ENUM), optional_(o) {}
     

@@ -19,7 +19,7 @@
 
 Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken,
                                    Type type, std::vector<CommonTypeFinder> *ctargs) {
-    auto returnType = parse(token);
+    auto returnType = parse(token, type);
     if (!returnType.compatibleTo(type, typeContext, ctargs)) {
         auto cn = returnType.toString(typeContext, true);
         auto tn = type.toString(typeContext, true);
@@ -215,7 +215,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
     }
 }
 
-Type StaticFunctionAnalyzer::parse(const Token &token) {
+Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
     switch (token.type()) {
         case STRING: {
             writer.writeCoin(0x10, token);
@@ -234,6 +234,13 @@ Type StaticFunctionAnalyzer::parse(const Token &token) {
             
             EmojicodeInteger l = strtoll(string, nullptr, 0);
             delete [] string;
+            
+            if (expectation.type() == TT_DOUBLE) {
+                writer.writeCoin(0x15, token);
+                writer.writeDoubleCoin(l, token);
+                return typeFloat;
+            }
+            
             if (llabs(l) > INT32_MAX) {
                 writer.writeCoin(0x14, token);
                 
@@ -274,7 +281,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token) {
             return var.first.type;
         }
         case IDENTIFIER:
-            return parseIdentifier(token);
+            return parseIdentifier(token, expectation);
         case DOCUMENTATION_COMMENT:
             throw CompilerErrorException(token, "Misplaced documentation comment.");
         case ARGUMENT_BRACKET_OPEN:
@@ -288,7 +295,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token) {
     throw CompilerErrorException(token, "Cannot determine expression’s return type.");
 }
 
-Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
+Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectation) {
     if (token.value[0] != E_RED_APPLE) {
         // We need a chance to test whether the red apple’s return is used
         effect = true;
@@ -645,7 +652,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             
             auto &initializerToken = stream_.consumeToken(IDENTIFIER);
             
-            auto initializer = eclass->superclass->getInitializer(initializerToken, eclass, typeContext);
+            auto initializer = eclass->superclass->getInitializer(initializerToken, Type(eclass), typeContext);
             
             writer.writeCoin(initializer->vti(), token);
             
@@ -682,7 +689,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             auto placeholder = writer.writeCoinPlaceholder(token);
             
             Type originalType = parse(stream_.consumeToken(), token, typeSomething);
-            Type type = parseAndFetchType(typeContext, NoDynamism, nullptr);
+            Type type = parseAndFetchType(typeContext, NoDynamism, expectation);
             
             if (originalType.compatibleTo(type, typeContext)) {
                 compilerWarning(token, "Superfluous cast.");
@@ -838,7 +845,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
                 throw CompilerErrorException(token, "Class has no superclass.");
             }
             
-            Method *method = superclass->getMethod(nameToken, superclass, typeContext);
+            Method *method = superclass->getMethod(nameToken, Type(superclass), typeContext);
             
             writer.writeCoin(0x5, token);
             writer.writeCoin(superclass->index, token);
@@ -850,7 +857,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             writer.writeCoin(0x4, token);
             
             TypeDynamism dynamism;
-            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, &dynamism)
+            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, expectation, &dynamism)
                         .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.type() != TT_CLASS) {
@@ -896,7 +903,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token) {
             auto &methodToken = stream_.consumeToken(IDENTIFIER);
             
             TypeDynamism dynamism;
-            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, &dynamism)
+            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, expectation, &dynamism)
                         .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {

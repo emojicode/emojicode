@@ -31,8 +31,13 @@ const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeCha
     return className;
 }
 
-Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, TypeDynamism *dynamicType,
-                                       bool allowProtocolsUsingSelf) {
+Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Type expectation,
+                                       TypeDynamism *dynamicType, bool allowProtocolsUsingSelf) {
+    if (stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE)) {
+        stream_.consumeToken();
+        return expectation.copyWithoutOptional();
+    }
+    
     bool optional = false;
     if (stream_.nextTokenIs(E_CANDY)) {
         stream_.consumeToken(IDENTIFIER);
@@ -130,7 +135,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
             while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
                 auto token = stream_.consumeToken(IDENTIFIER);
                 
-                Type ta = parseAndFetchType(ct, dynamism, nullptr);
+                Type ta = parseAndFetchType(ct, dynamism, typeNothingness, nullptr);
                 
                 auto i = count + offset;
                 if (typeDef->numberOfGenericArgumentsWithSuperArguments() <= i) {
@@ -164,7 +169,7 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct) {
     while (stream_.nextTokenIs(VARIABLE)) {
         TypeDynamism dynamism;
         auto &variableToken = stream_.consumeToken(VARIABLE);
-        auto type = parseAndFetchType(ct, AllKindsOfDynamism, &dynamism);
+        auto type = parseAndFetchType(ct, AllKindsOfDynamism, typeNothingness, &dynamism);
         
         c->arguments.push_back(Argument(variableToken, type));
         
@@ -184,7 +189,7 @@ bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
     if (stream_.nextTokenIs(E_RIGHTWARDS_ARROW)) {
         stream_.consumeToken();
         TypeDynamism dynamism;
-        c->returnType = parseAndFetchType(ct, AllKindsOfDynamism, &dynamism);
+        c->returnType = parseAndFetchType(ct, AllKindsOfDynamism, typeNothingness, &dynamism);
         if (dynamism == Self) {
             usedSelf = true;
         }
@@ -197,7 +202,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Procedure *p, TypeContext
         stream_.consumeToken();
         auto &variable = stream_.consumeToken(VARIABLE);
         
-        Type t = parseAndFetchType(Type(p->eclass), GenericTypeVariables, nullptr, true);
+        Type t = parseAndFetchType(Type(p->eclass), GenericTypeVariables, typeNothingness, nullptr, true);
         p->genericArgumentConstraints.push_back(t);
         
         Type rType = Type(TT_LOCAL_REFERENCE, false);

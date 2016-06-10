@@ -185,7 +185,7 @@ void PackageParser::parseGenericArgumentList(TypeDefinitionWithGenerics *typeDef
         stream_.consumeToken(IDENTIFIER);
         
         auto variable = stream_.consumeToken(VARIABLE);
-        auto constraintType = parseAndFetchType(tc, NoDynamism, nullptr, true);
+        auto constraintType = parseAndFetchType(tc, NoDynamism, typeNothingness, nullptr, true);
         typeDef->addGenericArgument(variable, constraintType);
     }
 }
@@ -310,7 +310,7 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                 canReturnNothingness.disallow();
                 deprecated.disallow();
                 
-                Type type = parseAndFetchType(Type(eclass), GenericTypeVariables, nullptr, true);
+                Type type = parseAndFetchType(Type(eclass), GenericTypeVariables, typeNothingness, nullptr, true);
                 
                 if (type.optional()) {
                     throw CompilerErrorException(token, "A class cannot conform to an 🍬 protocol.");
@@ -333,9 +333,10 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                     auto *classMethod = new ClassMethod(name, accessLevel, final.set(), eclass, package_,
                                                         token.position(), override.set(), documentation,
                                                         deprecated.set());
-                    parseGenericArgumentsInDefinition(classMethod, TypeContext(eclass, classMethod));
-                    parseArgumentList(classMethod, TypeContext(eclass, classMethod));
-                    parseReturnType(classMethod, TypeContext(eclass, classMethod));
+                    auto context = TypeContext(Type(eclass), classMethod);
+                    parseGenericArgumentsInDefinition(classMethod, context);
+                    parseArgumentList(classMethod, context);
+                    parseReturnType(classMethod, context);
                     parseBody(classMethod, allowNative);
                     
                     if (classMethod->name == E_CHEQUERED_FLAG) {
@@ -363,9 +364,10 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                     auto *method = new Method(methodName.value[0], accessLevel, final.set(), eclass,
                                               package_, token.position(), override.set(), documentation,
                                               deprecated.set());
-                    parseGenericArgumentsInDefinition(method, TypeContext(eclass, method));
-                    parseArgumentList(method, TypeContext(eclass, method));
-                    parseReturnType(method, TypeContext(eclass, method));
+                    auto context = TypeContext(Type(eclass), method);
+                    parseGenericArgumentsInDefinition(method, context);
+                    parseArgumentList(method, context);
+                    parseReturnType(method, context);
                     parseBody(method, allowNative);
                     
                     eclass->addMethod(method);
@@ -380,8 +382,9 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                                                            token.position(), override.set(), documentation,
                                                            deprecated.set(), required.set(),
                                                            canReturnNothingness.set());
-                parseGenericArgumentsInDefinition(initializer, TypeContext(eclass, initializer));
-                parseArgumentList(initializer, TypeContext(eclass, initializer));
+                auto context = TypeContext(Type(eclass), initializer);
+                parseGenericArgumentsInDefinition(initializer, context);
+                parseArgumentList(initializer, context);
                 parseBody(initializer, allowNative);
                 
                 if (requiredInitializers) {
@@ -436,7 +439,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         eclass->finalizeGenericArguments();
     }
     
-    package_->registerType(eclass, name, enamespace, exported);
+    package_->registerType(Type(eclass), name, enamespace, exported);
     package_->registerClass(eclass);
     
     std::set<EmojicodeChar> requiredInitializers;

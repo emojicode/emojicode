@@ -164,7 +164,7 @@ void reportPackage(Package *package) {
         printf("\"name\": \"%s\",", className);
         
         reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(),
-                               eclass->superGenericArguments().size(), TypeContext(eclass));
+                               eclass->superGenericArguments().size(), TypeContext(Type(eclass)));
         reportDocumentation(eclass->documentation());
         
         if (eclass->superclass) {
@@ -176,7 +176,8 @@ void reportPackage(Package *package) {
         printf("\"methods\": [");
         for (size_t i = 0; i < eclass->methodList.size(); i++) {
             Method *method = eclass->methodList[i];
-            reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size(), TypeContext(eclass, method));
+            reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size(),
+                                       TypeContext(Type(eclass), method));
         }
         printf("],");
         
@@ -184,7 +185,8 @@ void reportPackage(Package *package) {
         for (size_t i = 0; i < eclass->initializerList.size(); i++) {
             Initializer *initializer = eclass->initializerList[i];
             reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
-                                       i + 1 == eclass->initializerList.size(), TypeContext(eclass, initializer));
+                                       i + 1 == eclass->initializerList.size(),
+                                       TypeContext(Type(eclass), initializer));
         }
         printf("],");
         
@@ -192,7 +194,7 @@ void reportPackage(Package *package) {
         for (size_t i = 0; i < eclass->classMethodList.size(); i++) {
             ClassMethod *classMethod = eclass->classMethodList[i];
             reportProcedureInformation(classMethod, Return, eclass->classMethodList.size() == i + 1,
-                                       TypeContext(eclass, classMethod));
+                                       TypeContext(Type(eclass), classMethod));
         }
         printf("],");
         
@@ -200,7 +202,7 @@ void reportPackage(Package *package) {
         bool printedProtocol = false;
         for (auto protocol : eclass->protocols()) {
             commaPrinter(&printedProtocol);
-            reportType(nullptr, protocol, TypeContext(eclass));
+            reportType(nullptr, protocol, TypeContext(Type(eclass)));
         }
         printf("]}");
     }
