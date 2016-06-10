@@ -578,36 +578,6 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             return typeContext.calleeType();
         }
-        case E_UP_POINTING_RED_TRIANGLE: {
-            writer.writeCoin(0x13, token);
-            
-            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism);
-            
-            if (type.type() != TT_ENUM) {
-                throw CompilerErrorException(token, "The given type cannot be accessed.");
-            }
-            else if (type.optional()) {
-                throw CompilerErrorException(token, "Optionals cannot be accessed.");
-            }
-            
-            auto name = stream_.consumeToken(IDENTIFIER);
-            
-            auto v = type.eenum->getValueFor(name.value[0]);
-            if (!v.first) {
-                ecCharToCharStack(name.value[0], valueName);
-                ecCharToCharStack(type.eenum->name(), enumName);
-                throw CompilerErrorException(name, "%s does not have a member named %s.", enumName, valueName);
-            }
-            else if (v.second > UINT32_MAX) {
-                writer.writeCoin(v.second >> 32, token);
-                writer.writeCoin((EmojicodeCoin)v.second, token);
-            }
-            else {
-                writer.writeCoin((EmojicodeCoin)v.second, token);
-            }
-            
-            return type;
-        }
         case E_HIGH_VOLTAGE_SIGN: {
             writer.writeCoin(0x17, token);
             return typeNothingness;
@@ -854,48 +824,75 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             return parseProcedureCall(typeContext.calleeType(), method, token);
         }
         case E_LARGE_BLUE_DIAMOND: {
-            writer.writeCoin(0x4, token);
-            
             TypeDynamism dynamism;
             Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, expectation, &dynamism)
                         .resolveOnSuperArgumentsAndConstraints(typeContext);
             
-            if (type.type() != TT_CLASS) {
-                throw CompilerErrorException(token, "The given type cannot be initiatied.");
-            }
-            else if (type.optional()) {
-                throw CompilerErrorException(token, "Optionals cannot be initiatied.");
+            if (type.optional()) {
+                throw CompilerErrorException(token, "Optionals cannot be instantiated.");
             }
             
-            if (dynamism) {
-                writer.writeCoin(UINT32_MAX, token);
+            if (type.type() == TT_ENUM) {
+                if (dynamism != NoDynamism) {
+                    throw CompilerErrorException(token, "Enums cannot be instantiated dynamically.");
+                }
+                
+                writer.writeCoin(0x13, token);
+                
+                auto name = stream_.consumeToken(IDENTIFIER);
+                
+                auto v = type.eenum->getValueFor(name.value[0]);
+                if (!v.first) {
+                    ecCharToCharStack(name.value[0], valueName);
+                    ecCharToCharStack(type.eenum->name(), enumName);
+                    throw CompilerErrorException(name, "%s does not have a member named %s.", enumName, valueName);
+                }
+                else if (v.second > UINT32_MAX) {
+                    writer.writeCoin(v.second >> 32, token);
+                    writer.writeCoin((EmojicodeCoin)v.second, token);
+                }
+                else {
+                    writer.writeCoin((EmojicodeCoin)v.second, token);
+                }
+                
+                return type;
+            }
+            else if (type.type() == TT_CLASS) {
+                writer.writeCoin(0x4, token);
+                
+                if (dynamism) {
+                    writer.writeCoin(UINT32_MAX, token);
+                }
+                else {
+                    writer.writeCoin(type.eclass->index, token);
+                }
+                
+                auto initializerName = stream_.consumeToken(IDENTIFIER);
+                
+                Initializer *initializer = type.eclass->getInitializer(initializerName, type, typeContext);
+                
+                if (dynamism == Self && !initializer->required) {
+                    throw CompilerErrorException(initializerName,
+                                                 "Only required initializers can be used with dynamic types.");
+                }
+                else if (dynamism == GenericTypeVariables) {
+                    throw CompilerErrorException(initializerName, "You cannot instantiate generic types yet.");
+                }
+                
+                initializer->deprecatedWarning(initializerName);
+                
+                writer.writeCoin(initializer->vti(), token);
+                
+                parseProcedureCall(type, initializer, token);
+                
+                if (initializer->canReturnNothingness) {
+                    type.setOptional();
+                }
+                return type;
             }
             else {
-                writer.writeCoin(type.eclass->index, token);
+                throw CompilerErrorException(token, "The given type cannot be instantiated.");
             }
-            
-            auto initializerName = stream_.consumeToken(IDENTIFIER);
-            
-            Initializer *initializer = type.eclass->getInitializer(initializerName, type, typeContext);
-            
-            if (dynamism == Self && !initializer->required) {
-                throw CompilerErrorException(initializerName,
-                                             "Only required initializers can be used with dynamic types.");
-            }
-            else if (dynamism == GenericTypeVariables) {
-                throw CompilerErrorException(initializerName, "You cannot instantiate generic types yet.");
-            }
-            
-            initializer->deprecatedWarning(initializerName);
-            
-            writer.writeCoin(initializer->vti(), token);
-            
-            parseProcedureCall(type, initializer, token);
-            
-            if (initializer->canReturnNothingness) {
-                type.setOptional();
-            }
-            return type;
         }
         case E_DOUGHNUT: {
             writer.writeCoin(0x2, token);
