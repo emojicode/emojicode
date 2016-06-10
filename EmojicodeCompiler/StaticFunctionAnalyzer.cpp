@@ -19,7 +19,7 @@
 
 Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken,
                                    Type type, std::vector<CommonTypeFinder> *ctargs) {
-    auto returnType = parse(token, type);
+    auto returnType = ctargs ? parse(token) : parse(token, type);
     if (!returnType.compatibleTo(type, typeContext, ctargs)) {
         auto cn = returnType.toString(typeContext, true);
         auto tn = type.toString(typeContext, true);
@@ -419,38 +419,52 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             
-            CommonTypeFinder ct;
-            
-            while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
-                ct.addType(parse(stream_.consumeToken()), typeContext);
+            Type type = Type(CL_LIST);
+            if (expectation.type() == TT_CLASS && expectation.eclass == CL_LIST) {
+                auto listType = expectation.genericArguments[0];
+                while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                    parse(stream_.consumeToken(), token, listType);
+                }
+                stream_.consumeToken(IDENTIFIER);
+                type.genericArguments[0] = listType;
             }
-            stream_.consumeToken(IDENTIFIER);
+            else {
+                CommonTypeFinder ct;
+                while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                    ct.addType(parse(stream_.consumeToken()), typeContext);
+                }
+                stream_.consumeToken(IDENTIFIER);
+                type.genericArguments[0] = ct.getCommonType(token);
+            }
             
             placeholder.write();
-            
-            Type type = Type(CL_LIST);
-            type.genericArguments[0] = ct.getCommonType(token);
-            
             return type;
         }
         case E_HONEY_POT: {
             writer.writeCoin(0x50, token);
            
             auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
+            Type type = Type(CL_DICTIONARY);
             
-            CommonTypeFinder ct;
-            
-            while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
-                parse(stream_.consumeToken(), token, Type(CL_STRING));
-                ct.addType(parse(stream_.consumeToken()), typeContext);
+            if (expectation.type() == TT_CLASS && expectation.eclass == CL_DICTIONARY) {
+                auto listType = expectation.genericArguments[0];
+                while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                    parse(stream_.consumeToken(), token, Type(CL_STRING));
+                    parse(stream_.consumeToken(), token, listType);
+                }
+                type.genericArguments[0] = listType;
             }
-            stream_.consumeToken(IDENTIFIER);
+            else {
+                CommonTypeFinder ct;
+                while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                    parse(stream_.consumeToken(), token, Type(CL_STRING));
+                    ct.addType(parse(stream_.consumeToken()), typeContext);
+                }
+                stream_.consumeToken(IDENTIFIER);
+                type.genericArguments[0] = ct.getCommonType(token);
+            }
             
             placeholder.write();
-            
-            Type type = Type(CL_DICTIONARY);
-            type.genericArguments[0] = ct.getCommonType(token);
-            
             return type;
         }
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE: {

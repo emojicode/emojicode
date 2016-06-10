@@ -34,6 +34,9 @@ const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeCha
 Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Type expectation,
                                        TypeDynamism *dynamicType, bool allowProtocolsUsingSelf) {
     if (stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE)) {
+        if (expectation.type() == TT_NOTHINGNESS) {
+            throw CompilerErrorException(stream_.consumeToken(), "Cannot infer ⚫️.");
+        }
         stream_.consumeToken();
         return expectation.copyWithoutOptional();
     }
