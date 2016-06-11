@@ -14,12 +14,13 @@
 
 class Variable {
 public:
-    Variable(Type type, uint8_t id, bool initd, bool frozen, const Token &token)
-        : type(type), id(id), initialized(initd), definitionToken(token), frozen_(frozen) {};
+    Variable(Type type, int id, bool initd, bool frozen, const Token &token)
+        : type(type), initialized(initd), definitionToken(token), frozen_(frozen), id_(id) {};
     /** The type of the variable. */
     Type type;
     /** The ID of the variable. */
-    uint8_t id;
+    int id() const { return id_; }
+    void setId(int id) { id_ = id; }
     /** The variable is initialized if this field is greater than 0. */
     int initialized;
     /** The variable name token which defined this variable. */
@@ -37,6 +38,8 @@ private:
     bool frozen_;
     /** Mutated */
     bool mutated_ = false;
+    
+    int id_;
 };
 
 #endif /* Variable_hpp */

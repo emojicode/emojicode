@@ -44,6 +44,8 @@ public:
      * Emits a warning for each non-frozen variable that has not been mutated.
      */
     void recommendFrozenVariables() const;
+    
+    size_t localVariableCount() const { return map_.size(); }
 private:
     std::map<EmojicodeString, Variable> map_;
 };

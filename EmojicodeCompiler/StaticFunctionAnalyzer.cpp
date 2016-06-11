@@ -146,10 +146,14 @@ void StaticFunctionAnalyzer::writeCoinForScopesUp(bool inObjectScope, EmojicodeC
     }
 }
 
-void StaticFunctionAnalyzer::flowControlBlock() {
+void StaticFunctionAnalyzer::flowControlBlock(bool block) {
     scoper.currentScope().changeInitializedBy(1);
     if (!inClassContext) {
         scoper.objectScope()->changeInitializedBy(1);
+    }
+    
+    if (block) {
+        scoper.pushScope();
     }
     
     flowControlDepth++;
@@ -171,6 +175,10 @@ void StaticFunctionAnalyzer::flowControlBlock() {
     placeholder.write();
     
     effect = true;
+    
+    if (block) {
+        scoper.popScopeAndRecommendFrozenVariables();
+    }
     
     scoper.currentScope().changeInitializedBy(-1);
     if (!inClassContext) {
@@ -276,7 +284,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
             var.first.uninitalizedError(token);
             
             writeCoinForScopesUp(var.second, 0x1A, 0x1C, token);
-            writer.writeCoin(var.first.id, token);
+            writer.writeCoin(var.first.id(), token);
             
             return var.first.type;
         }
@@ -334,7 +342,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 var.first.mutate(varName);
                 
                 writeCoinForScopesUp(var.second, 0x1B, 0x1D, token);
-                writer.writeCoin(var.first.id, token);
+                writer.writeCoin(var.first.id(), token);
                 
                 type = var.first.type;
             }
@@ -391,7 +399,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 writeCoinForScopesUp(var.second, 0x18, 0x1E, token);
             }
             
-            writer.writeCoin(var.first.id, token);
+            writer.writeCoin(var.first.id(), token);
             
             return typeNothingness;
         }
@@ -529,9 +537,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             auto &variableToken = stream_.consumeToken(VARIABLE);
             
-            if (scoper.currentScope().hasLocalVariable(variableToken.value)) {
-                throw CompilerErrorException(variableToken, "Cannot redeclare variable.");
-            }
+            scoper.pushScope();
             
             int vID = scoper.reserveVariableSlot();
             writer.writeCoin(vID, token);
@@ -561,8 +567,9 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 throw CompilerErrorException(token, "%s does not conform to s🔂.", iterateeString.c_str());
             }
             
-            flowControlBlock();
+            flowControlBlock(false);
             returned = false;
+            scoper.popScopeAndRecommendFrozenVariables();
             
             return typeNothingness;
         }
@@ -794,7 +801,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             analyzer.analyze(true);
             
             coinCountPlaceholder.write();
-            variableCountPlaceholder.write(closureScoper.numberOfReservations());
+            variableCountPlaceholder.write(closureScoper.maxVariableCount());
             writer.writeCoin(static_cast<EmojicodeCoin>(function.arguments.size())
                              | (analyzer.usedSelfInBody() ? 1 << 16 : 0), token);
             writer.writeCoin(flattenedResult.second, token);
@@ -1117,7 +1124,8 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
         Scope &methodScope = scoper.pushScope();
         for (size_t i = 0; i < callable.arguments.size(); i++) {
             auto variable = callable.arguments[i];
-            methodScope.setLocalVariable(variable.name.value, Variable(variable.type, i, true, true, variable.name));
+            methodScope.setLocalVariable(variable.name.value, Variable(variable.type, static_cast<int>(i), true,
+                                                                       true, variable.name));
         }
         scoper.ensureNReservations(static_cast<int>(callable.arguments.size()));
         
@@ -1179,6 +1187,6 @@ void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writ
                                       TypeContext(classType, procedure), writer, scoper);
     sca.analyze();
     
-    variableCountPlaceholder.write(scoper.numberOfReservations());
+    variableCountPlaceholder.write(scoper.maxVariableCount());
     coinsCountPlaceholder.write();
 }

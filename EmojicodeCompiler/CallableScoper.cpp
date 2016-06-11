@@ -15,7 +15,9 @@ Scope& CallableScoper::currentScope() {
 }
 
 void CallableScoper::popScopeAndRecommendFrozenVariables() {
-    currentScope().recommendFrozenVariables();
+    auto &scope = currentScope();
+    scope.recommendFrozenVariables();
+    nextVariableID_ -= scope.localVariableCount();
     scopes_.pop_front();
 }
 
@@ -50,13 +52,22 @@ std::pair<Variable&, bool> CallableScoper::getVariable(const EmojicodeString &na
     throw VariableNotFoundErrorException(errorPosition, name);
 }
 
+void CallableScoper::syncMaxVariableCount() {
+    if (nextVariableID_ > maxVariableCount_) {
+        maxVariableCount_ = nextVariableID_;
+    }
+}
+
 int CallableScoper::reserveVariableSlot() {
-    return nextVariableID_++;
+    auto id = nextVariableID_++;
+    syncMaxVariableCount();
+    return id;
 }
 
 void CallableScoper::ensureNReservations(int n) {
     if (nextVariableID_ < n) {
         nextVariableID_ = n;
+        syncMaxVariableCount();
     }
 }
 
@@ -69,12 +80,14 @@ std::pair<CallableScoper, int> CallableScoper::flattenedCopy(int argumentCount) 
     
     for (auto &scope : scopes_) {
         for (auto &it : scope.map_) {
-            auto variable = Variable(it.second.type, argumentCount + it.second.id,
+            auto variable = Variable(it.second.type, argumentCount + it.second.id(),
                                      it.second.initialized, true, it.second.definitionToken);
             flattenedScope.setLocalVariable(it.first, variable);
         }
         scoper.nextVariableID_ += scope.map_.size();
         variableCount += scope.map_.size();
     }
+    scoper.syncMaxVariableCount();
+    
     return std::pair<CallableScoper, int>(scoper, variableCount);
 }

@@ -59,16 +59,19 @@ public:
     /** Ensures that at least @c n slots are reserved. */
     void ensureNReservations(int n);
     
-    /** 
-     * Returns the number of reserved slots.
+    /* 
+     * Returns the maximal number of variable slots reserved simultaneously.
      * @warning Beware of that it is possible to reserve slots without setting a variable. The value returned
      *          is therefore not always equal to the variables in a scope.
      */
-    int numberOfReservations() const { return nextVariableID_; }
+    int maxVariableCount() { return maxVariableCount_; };
 private:
     std::forward_list<Scope> scopes_;
     Scope *objectScope_ = nullptr;
     int nextVariableID_ = 0;
+    int maxVariableCount_ = 0;
+    
+    void syncMaxVariableCount();
 };
 
 #endif /* CallableScoper_hpp */

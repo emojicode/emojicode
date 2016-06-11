@@ -90,7 +90,7 @@ private:
      */
     void writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object, SourcePosition p);
     
-    void flowControlBlock();
+    void flowControlBlock(bool block = true);
     
     void flowControlReturnEnd(FlowControlReturn &fcr);
 };

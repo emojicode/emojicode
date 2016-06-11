@@ -55,7 +55,7 @@ void analyzeClass(Type classType, Writer &writer) {
     writer.writeUInt16(eclass->classMethodList.size());
     
     for (Variable var : eclass->instanceVariables()) {
-        var.id = offset++;
+        var.setId(offset++);
         objectScope.setLocalVariable(var.definitionToken.value, var);
     }
     
