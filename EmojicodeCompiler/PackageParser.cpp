@@ -299,9 +299,9 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
 
                 auto &variableName = stream_.consumeToken(VARIABLE);
                 auto type = parseAndFetchType(Type(eclass), GenericTypeVariables);
-                eclass->addInstanceVariable(Argument(variableName, type));
-            }
+                eclass->addInstanceVariable(Variable(type, 0, 1, false, variableName));
                 break;
+            }
             case E_CROCODILE: {
                 staticOnType.disallow();
                 override.disallow();

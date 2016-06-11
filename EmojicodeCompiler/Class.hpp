@@ -17,6 +17,7 @@
 #include "TypeDefinitionWithGenerics.hpp"
 #include "Procedure.hpp"
 #include "TypeContext.hpp"
+#include "Variable.hpp"
 
 class Type;
 
@@ -26,7 +27,7 @@ public:
     
     Class(EmojicodeChar name, SourcePosition p, Package *pkg, const EmojicodeString &documentation);
     
-    /** Whether this eclass eligible for initializer inheritance. */
+    /** Whether this class eligible for initializer inheritance. */
     bool inheritsContructors = false;
     
     /** The class's superclass. @c nullptr if the class has no superclass. */
@@ -39,9 +40,9 @@ public:
     bool canBeUsedToResolve(TypeDefinitionWithGenerics *a);
     
     /** All instance variables. */
-    const std::vector<Argument>& instanceVariables() { return instanceVariables_; }
+    const std::vector<Variable>& instanceVariables() { return instanceVariables_; }
     /** Adds an instance variable. */
-    void addInstanceVariable(const Argument&);
+    void addInstanceVariable(const Variable&);
     
     /** List of all methods for user classes */
     std::vector<Method *> methodList;
@@ -53,7 +54,7 @@ public:
     uint16_t nextClassMethodVti;
     uint16_t nextInitializerVti;
 
-    /** Returns true if @c a inherits from eclass @c from */
+    /** Returns true if @c a inherits from class @c from */
     bool inheritsFrom(Class *from);
     
     /** Returns a method by the given identifier token or issues an error if the method does not exist. */
@@ -87,7 +88,7 @@ private:
     
     std::list<Type> protocols_;
     std::set<EmojicodeChar> requiredInitializers_;
-    std::vector<Argument> instanceVariables_;
+    std::vector<Variable> instanceVariables_;
     
     SourcePosition position_;
 };

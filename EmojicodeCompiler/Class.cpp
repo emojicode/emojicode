@@ -41,7 +41,7 @@ bool Class::inheritsFrom(Class *from) {
     return false;
 }
 
-void Class::addInstanceVariable(const Argument &variable) {
+void Class::addInstanceVariable(const Variable &variable) {
     instanceVariables_.push_back(variable);
 }
 

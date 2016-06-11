@@ -53,7 +53,7 @@ public:
     const SourcePosition& position() const { return position_; }
     /** Returns the type of this token. */
     const TokenType& type() const { return type_; }
-    /** Returns the next token or @c nullptr if no token follows. */
+    /** Represents the value of this token. */
     EmojicodeString value;
     
     /** Returns a string describing the token */
