@@ -10,7 +10,7 @@
 #define StaticFunctionAnalyzer_hpp
 
 #include "EmojicodeCompiler.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "Writer.hpp"
 #include "CallableScoper.hpp"
 #include "AbstractParser.hpp"
@@ -25,7 +25,7 @@ struct FlowControlReturn {
 
 class StaticFunctionAnalyzer : AbstractParser {
 public:
-    static void writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType, CallableScoper &scoper,
+    static void writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType, CallableScoper &scoper,
                                          bool inClassContext = false, Initializer *i = nullptr);
     StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext,
                            TypeContext typeContext, Writer &writer, CallableScoper &scoper);
@@ -48,7 +48,7 @@ private:
     int flowControlDepth = 0;
     /** Whether the statment has an effect. */
     bool effect = false;
-    /** Whether the procedure in compilation returned. */
+    /** Whether the function in compilation returned. */
     bool returned = false;
     /** Whether the self reference or an instance variable has been acessed. */
     bool usedSelf = false;
@@ -79,7 +79,7 @@ private:
     void noReturnError(SourcePosition p);
     void noEffectWarning(const Token &warningToken);
     
-    Type parseProcedureCall(Type type, Procedure *p, const Token &token);
+    Type parseFunctionCall(Type type, Function *p, const Token &token);
 
     bool typeIsEnumerable(Type type, Type *elementType);
     

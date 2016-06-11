@@ -12,7 +12,7 @@
 #include "Class.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "CommonTypeFinder.hpp"
 #include "VariableNotFoundErrorException.hpp"
 #include "StringPool.hpp"
@@ -54,7 +54,7 @@ bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
     return false;
 }
 
-Type StaticFunctionAnalyzer::parseProcedureCall(Type type, Procedure *p, const Token &token) {
+Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Token &token) {
     std::vector<Type> genericArguments;
     std::vector<CommonTypeFinder> genericArgsFinders;
     std::vector<Type> givenArgumentTypes;
@@ -647,7 +647,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             writer.writeCoin(initializer->vti(), token);
             
-            parseProcedureCall(typeContext.calleeType(), initializer, token);
+            parseFunctionCall(typeContext.calleeType(), initializer, token);
 
             calledSuper = true;
             
@@ -756,7 +756,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             writer.writeCoin(method->vti(), token);
             
-            parseProcedureCall(type, method, token);
+            parseFunctionCall(type, method, token);
             
             placeholder.write();
             
@@ -842,7 +842,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             writer.writeCoin(superclass->index, token);
             writer.writeCoin(method->vti(), token);
             
-            return parseProcedureCall(typeContext.calleeType(), method, token);
+            return parseFunctionCall(typeContext.calleeType(), method, token);
         }
         case E_LARGE_BLUE_DIAMOND: {
             TypeDynamism dynamism;
@@ -904,7 +904,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 
                 writer.writeCoin(initializer->vti(), token);
                 
-                parseProcedureCall(type, initializer, token);
+                parseFunctionCall(type, initializer, token);
                 
                 if (initializer->canReturnNothingness) {
                     type.setOptional();
@@ -940,7 +940,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             writer.writeCoin(method->vti(), token);
             
-            return parseProcedureCall(type, method, token);
+            return parseFunctionCall(type, method, token);
         }
         default: {
             auto placeholder = writer.writeCoinPlaceholder(token);
@@ -1100,7 +1100,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 writer.writeCoin(method->vti(), token);
             }
             
-            return parseProcedureCall(type, method, token);
+            return parseFunctionCall(type, method, token);
         }
     }
     return typeNothingness;
@@ -1166,25 +1166,25 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
     }
 }
 
-void StaticFunctionAnalyzer::writeAndAnalyzeProcedure(Procedure *procedure, Writer &writer, Type classType,
+void StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType,
                                                       CallableScoper &scoper, bool inClassContext, Initializer *i) {
     writer.resetWrittenCoins();
     
-    writer.writeEmojicodeChar(procedure->name);
-    writer.writeUInt16(procedure->vti());
-    writer.writeByte(static_cast<uint8_t>(procedure->arguments.size()));
+    writer.writeEmojicodeChar(function->name);
+    writer.writeUInt16(function->vti());
+    writer.writeByte(static_cast<uint8_t>(function->arguments.size()));
     
-    if (procedure->native) {
+    if (function->native) {
         writer.writeByte(1);
         return;
     }
     writer.writeByte(0);
     
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
-    auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin(procedure->position());
+    auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin(function->position());
     
-    auto sca = StaticFunctionAnalyzer(*procedure, procedure->package, i, inClassContext,
-                                      TypeContext(classType, procedure), writer, scoper);
+    auto sca = StaticFunctionAnalyzer(*function, function->package, i, inClassContext,
+                                      TypeContext(classType, function), writer, scoper);
     sca.analyze();
     
     variableCountPlaceholder.write(scoper.maxVariableCount());

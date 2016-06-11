@@ -7,7 +7,7 @@
 //
 
 #include "Protocol.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "utf8.h"
 #include "TypeContext.hpp"
 

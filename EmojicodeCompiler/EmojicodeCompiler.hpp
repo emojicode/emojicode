@@ -37,13 +37,6 @@ public:
     char* utf8CString() const;
 };
 
-struct StartingFlag {
-    Class *eclass;
-    ClassMethod *method;
-};
-extern StartingFlag startingFlag;
-extern bool foundStartingFlag;
-
 extern Class *CL_STRING;
 extern Class *CL_LIST;
 extern Class *CL_ERROR;

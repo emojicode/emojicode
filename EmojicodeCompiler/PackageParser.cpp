@@ -9,7 +9,7 @@
 #include <cstring>
 #include "PackageParser.hpp"
 #include "Class.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
@@ -113,6 +113,21 @@ void PackageParser::parse() {
                 
                 delete [] str;
                 continue;
+            }
+            case E_CHEQUERED_FLAG: {
+                if (Function::foundStart) {
+                    throw CompilerErrorException(theToken, "Duplicate 🏁.");
+                }
+                Function::foundStart = true;
+                
+                auto function = new Function(E_CHEQUERED_FLAG, PUBLIC, false, NULL, package_, theToken,
+                                              false, documentation, false);
+                function->setVti(0);
+                function->returnType = typeInteger;
+                parseBody(function, false);
+                
+                Function::addFunction(function);
+                break;
             }
             default:
                 ecCharToCharStack(theToken.value[0], f);
@@ -338,23 +353,6 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                     parseArgumentList(classMethod, context);
                     parseReturnType(classMethod, context);
                     parseBody(classMethod, allowNative);
-                    
-                    if (classMethod->name == E_CHEQUERED_FLAG) {
-                        if (foundStartingFlag) {
-                            auto className = Type(startingFlag.eclass).toString(typeNothingness, true);
-                            throw CompilerErrorException(token,
-                                          "Duplicate 🏁 method. Previous 🏁 method was defined in class %s.",
-                                          className.c_str());
-                        }
-                        foundStartingFlag = true;
-                        
-                        startingFlag.eclass = eclass;
-                        startingFlag.method = classMethod;
-                        
-                        if (!classMethod->returnType.compatibleTo(typeInteger, Type(eclass, false))) {
-                            throw CompilerErrorException(methodName, "🏁 method must return 🚂.");
-                        }
-                    }
                     
                     eclass->addClassMethod(classMethod);
                 }

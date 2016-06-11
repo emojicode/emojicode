@@ -58,7 +58,7 @@ void listRelease(void *l);
 /** List marker for the GC */
 void listMark(Object *self);
 
-MethodHandler listMethodForName(EmojicodeChar method);
-InitializerHandler listInitializerForName(EmojicodeChar method);
+HandlerFunction listMethodForName(EmojicodeChar method);
+InitializerHandlerFunction listInitializerForName(EmojicodeChar method);
 
 #endif /* EmojicodeList_h */

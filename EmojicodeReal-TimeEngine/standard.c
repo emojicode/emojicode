@@ -359,10 +359,10 @@ static void capturedMethodMark(Object *o){
     mark(&c->object);
 }
 
-MethodHandler integerMethodForName(EmojicodeChar name);
-MethodHandler numberMethodForName(EmojicodeChar name);
+HandlerFunction integerMethodForName(EmojicodeChar name);
+HandlerFunction numberMethodForName(EmojicodeChar name);
 
-MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol) {
+HandlerFunction handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol) {
     switch (cl) {
         case 0x1F521: //String
             return stringMethodForName(symbol);
@@ -404,7 +404,7 @@ MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol) {
     return NULL;
 }
 
-InitializerHandler handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol){
+InitializerHandlerFunction handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol){
     switch (cl) {
         case 0x1F535: //Object has a single initializer
             return objectNewBridge;
@@ -431,7 +431,7 @@ InitializerHandler handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar 
     return NULL;
 }
 
-ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
+HandlerFunction handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
     switch (cl) {
         case 0x1F4BB: //💻
             switch (symbol) {

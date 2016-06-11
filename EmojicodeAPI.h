@@ -20,9 +20,8 @@
 #include <pthread.h>
 
 typedef struct Class Class;
-typedef struct Method Method;
-typedef struct ClassMethod ClassMethod;
-typedef struct Initializer Initializer;
+typedef struct Handler Handler;
+typedef struct InitializerHandler InitializerHandler;
 typedef struct List List;
 typedef struct Thread Thread;
 typedef struct StackFrame StackFrame;
@@ -245,9 +244,8 @@ Class* stackGetThisClass(Thread *thread);
 
 //MARK: Packages
 
-typedef Something (*MethodHandler)(Thread *thread);
-typedef Something (*ClassMethodHandler)(Thread *thread);
-typedef void (*InitializerHandler)(Thread *thread);
+typedef Something (*HandlerFunction)(Thread *thread);
+typedef void (*InitializerHandlerFunction)(Thread *thread);
 typedef void (*Marker)(Object *self);
 typedef void (*Deinitializer)(void *value);
 

@@ -18,11 +18,6 @@
 #include "CompilerErrorException.hpp"
 #include "PackageReporter.hpp"
 
-StartingFlag startingFlag;
-bool foundStartingFlag;
-
-std::vector<Class *> classes;
-
 char* EmojicodeString::utf8CString() const {
     // Size needed for UTF8 representation
     size_t ds = u8_codingsize(c_str(), size());
@@ -194,8 +189,6 @@ int main(int argc, char * argv[]) {
         outPath[strlen(outPath) - 1] = 'b';
     }
     
-    foundStartingFlag = false;
-    
     auto errorPosition = SourcePosition(0, 0, argv[0]);
     
     Package pkg = Package("_", errorPosition);
@@ -213,8 +206,8 @@ int main(int argc, char * argv[]) {
             return 1;
         }
         
-        if (!foundStartingFlag) {
-            throw CompilerErrorException(errorPosition, "No 🏁 class method was found.");
+        if (!Function::foundStart) {
+            throw CompilerErrorException(errorPosition, "No 🏁 block was found.");
         }
         
         analyzeClassesAndWrite(out);

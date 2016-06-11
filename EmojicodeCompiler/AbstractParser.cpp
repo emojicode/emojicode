@@ -7,7 +7,7 @@
 //
 
 #include "AbstractParser.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "utf8.h"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
@@ -47,15 +47,15 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         optional = true;
     }
     
-    if (dynamism & GenericTypeVariables && (ct.calleeType().canHaveGenericArguments()|| ct.procedure()) &&
+    if (dynamism & GenericTypeVariables && (ct.calleeType().canHaveGenericArguments()|| ct.function()) &&
         stream_.nextTokenIs(VARIABLE)) {
         if (dynamicType) *dynamicType = GenericTypeVariables;
         
         auto &variableToken = stream_.consumeToken(VARIABLE);
         
-        if (ct.procedure()) {
-            auto it = ct.procedure()->genericArgumentVariables.find(variableToken.value);
-            if (it != ct.procedure()->genericArgumentVariables.end()) {
+        if (ct.function()) {
+            auto it = ct.function()->genericArgumentVariables.find(variableToken.value);
+            if (it != ct.function()->genericArgumentVariables.end()) {
                 Type type = it->second;
                 if (optional) type.setOptional();
                 return type;
@@ -200,7 +200,7 @@ bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
     return usedSelf;
 }
 
-void AbstractParser::parseGenericArgumentsInDefinition(Procedure *p, TypeContext ct) {
+void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext ct) {
     while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
         stream_.consumeToken();
         auto &variable = stream_.consumeToken(VARIABLE);
@@ -218,7 +218,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Procedure *p, TypeContext
     }
 }
 
-void AbstractParser::parseBody(Procedure *p, bool allowNative) {
+void AbstractParser::parseBody(Function *p, bool allowNative) {
     if (stream_.nextTokenIs(E_RADIO)) {
         auto &radio = stream_.consumeToken(IDENTIFIER);
         if (!allowNative) {

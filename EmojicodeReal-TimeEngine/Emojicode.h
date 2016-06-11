@@ -73,6 +73,7 @@ void allocateHeap(void);
 
 /** The class table */
 Class **classTable;
+Handler **functionTable;
 
 uint_fast16_t stringPoolCount;
 Object **stringPool;
@@ -86,11 +87,11 @@ extern int cliArgumentCount;
 //MARK: Classes
 
 struct Class {
-    Method **methodsVtable;
-    ClassMethod **classMethodsVtable;
-    Initializer **initializersVtable;
+    Handler **methodsVtable;
+    Handler **classMethodsVtable;
+    InitializerHandler **initializersVtable;
     
-    Method ***protocolsTable;
+    Handler ***protocolsTable;
     uint_fast16_t protocolsOffset;
     uint_fast16_t protocolsMaxIndex;
     
@@ -113,7 +114,7 @@ struct Class {
     size_t valueSize;
 };
 
-struct Method {
+struct Handler {
     /** Number of arguments. */
     uint8_t argumentCount;
     /** Whether the method is native */
@@ -123,7 +124,7 @@ struct Method {
     
     union {
         /** Function pointer to execute the method. */
-        MethodHandler handler;
+        HandlerFunction handler;
         struct {
             /** The method’s token stream */
             EmojicodeCoin *tokenStream;
@@ -133,27 +134,7 @@ struct Method {
     };
 };
 
-struct ClassMethod {
-    /** Number of arguments. */
-    uint8_t argumentCount;
-    /** Whether the method is native */
-    bool native;
-    /** The number of variables. */
-    uint8_t variableCount;
-    
-    union {
-        /** Function pointer to execute the class method. */
-        ClassMethodHandler handler;
-        struct {
-            /** The method’s token stream */
-            EmojicodeCoin *tokenStream;
-            /** The number of tokens */
-            uint32_t tokenCount;
-        };
-    };
-};
-
-struct Initializer {
+struct InitializerHandler {
     /** Number of arguments. */
     uint8_t argumentCount;
     /** Whether the method is native */
@@ -163,7 +144,7 @@ struct Initializer {
     
     union {
         /** Function pointer to execute the method. */
-        InitializerHandler handler;
+        InitializerHandlerFunction handler;
         struct {
             /** The initializer’s token stream */
             EmojicodeCoin *tokenStream;
@@ -175,7 +156,7 @@ struct Initializer {
 
 typedef struct {
     Object *object;
-    Method *method;
+    Handler *method;
 } CapturedMethodCall;
 
 typedef struct {
@@ -212,7 +193,7 @@ void objectIncrementVariable(Object *o, uint8_t index);
 //MARK: Reading bytecode file
 
 /** Reads all classes from the given bytecode file. Returns the class with the chequered flag. */
-ClassMethod* readBytecode(FILE *in, Class **cl);
+Handler* readBytecode(FILE *in);
 
 
 //MARK: Packages
@@ -222,18 +203,17 @@ typedef enum {
     PACKAGE_LOADING_FAILED, PACKAGE_HEADER_NOT_FOUND, PACKAGE_INAPPROPRIATE_MAJOR, PACKAGE_INAPPROPRIATE_MINOR, PACKAGE_LOADED
 } PackageLoadingState;
 
-typedef MethodHandler (*hpfmResponder)(EmojicodeChar cl, EmojicodeChar symbol);
-typedef ClassMethodHandler (*hpfcmResponder)(EmojicodeChar cl, EmojicodeChar symbol);
-typedef InitializerHandler (*hpfcResponder)(EmojicodeChar cl, EmojicodeChar symbol);
+typedef HandlerFunction (*HandlerFunctionProvider)(EmojicodeChar cl, EmojicodeChar symbol);
+typedef InitializerHandlerFunction (*InitializerHandlerFunctionProvider)(EmojicodeChar cl, EmojicodeChar symbol);
 typedef Marker (*mpfc)(EmojicodeChar cl);
 typedef Deinitializer (*dpfc)(EmojicodeChar cl);
 typedef uint_fast32_t (*SizeForClassHandler)(Class *cl, EmojicodeChar name);
 
 char* packageError(void);
 
-MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol);
-InitializerHandler handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol);
-ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol);
+HandlerFunction handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol);
+HandlerFunction handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol);
+InitializerHandlerFunction handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol);
 Marker markerPointerForClass(EmojicodeChar cl);
 Deinitializer deinitializerPointerForClass(EmojicodeChar cl);
 uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name);

@@ -15,7 +15,7 @@
 #include <set>
 #include "Package.hpp"
 #include "TypeDefinitionWithGenerics.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "TypeContext.hpp"
 #include "Variable.hpp"
 

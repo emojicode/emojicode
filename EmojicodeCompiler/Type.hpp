@@ -56,7 +56,7 @@ enum TypeDynamism {
 };
 
 class TypeContext;
-class Procedure;
+class Function;
 
 class Type {
 public:

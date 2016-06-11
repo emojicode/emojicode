@@ -1,13 +1,13 @@
 //
-//  Procedure.h
+//  Function.h
 //  Emojicode
 //
 //  Created by Theo Weidmann on 04/01/16.
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#ifndef Procedure_hpp
-#define Procedure_hpp
+#ifndef Function_hpp
+#define Function_hpp
 
 #include <vector>
 #include <map>
@@ -57,9 +57,13 @@ public:
     Type type();
 };
 
-/** Procedures are callables that belong to a class as either method, class method or initialiser. */
-class Procedure: public Callable {
+/** Functions are callables that belong to a class as either method, class method or initialiser. */
+class Function: public Callable {
 public:
+    static bool foundStart;
+    static const std::vector<Function *>& functions() { return functions_; }
+    static void addFunction(Function *function) { functions_.push_back(function); }
+    
     static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
                                    const char *on, Type contextType);
     static void checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeChar name, SourcePosition position,
@@ -67,7 +71,7 @@ public:
     static void checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
                               const char *on, Type contextType);
     
-    Procedure(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
+    Function(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
               Package *package, SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated)
         : Callable(p),
           name(name),
@@ -78,7 +82,7 @@ public:
           documentationToken(documentationToken),
           package(package) {}
     
-    /** The procedure name. A Unicode code point for an emoji */
+    /** The function name. A Unicode code point for an emoji */
     EmojicodeChar name;
     
     /** Whether the method is native. */
@@ -89,7 +93,7 @@ public:
     
     AccessLevel access;
     
-    /** Class which defined this procedure. This can be @c nullptr if the procedure belongs to a protocol. */
+    /** Class which defined this function. This can be @c nullptr if the function belongs to a protocol. */
     Class *eclass;
     
     EmojicodeString documentationToken;
@@ -99,18 +103,18 @@ public:
     /** Generic type arguments as variables */
     std::map<EmojicodeString, Type> genericArgumentVariables;
     
-    /** The namespace in which the procedure was defined. This does not necessarily match the class’s namespace. */
+    /** The namespace in which the function was defined. This does not necessarily match the class’s namespace. */
     Package *package;
     
-    /** Issues a warning on at the given token if the procedure is deprecated. */
+    /** Issues a warning on at the given token if the function is deprecated. */
     void deprecatedWarning(const Token &callToken);
     
     /**
-     * Check whether this procedure is breaking promises of @c superProcedure.
+     * Check whether this function is breaking promises of @c superFunction.
      */
-    void checkPromises(Procedure *superProcedure, const char *on, Type contextType);
+    void checkPromises(Function *superFunction, const char *on, Type contextType);
     
-    void checkOverride(Procedure *superProcedure);
+    void checkOverride(Function *superFunction);
     
     int vti() const { return vti_; }
     void setVti(int vti);
@@ -119,26 +123,27 @@ public:
     
     const char *on;
 private:
+    static std::vector<Function *> functions_;
     int vti_;
 };
 
-class Method: public Procedure {
-    using Procedure::Procedure;
+class Method: public Function {
+    using Function::Function;
 public:
     const char *on = "Method";
 };
 
-class ClassMethod: public Procedure {
-    using Procedure::Procedure;
+class ClassMethod: public Function {
+    using Function::Function;
 public:
     const char *on = "Class Method";
 };
  
-class Initializer: public Procedure {
+class Initializer: public Function {
 public:
     Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, Package *package, SourcePosition p,
                 bool overriding, EmojicodeString documentationToken, bool deprecated, bool r, bool crn)
-        : Procedure(name, level, final, eclass, package, p, overriding, documentationToken, deprecated),
+        : Function(name, level, final, eclass, package, p, overriding, documentationToken, deprecated),
           required(r),
           canReturnNothingness(crn) {}
     
@@ -149,4 +154,4 @@ public:
     Type type();
 };
 
-#endif /* Procedure_hpp */
+#endif /* Function_hpp */

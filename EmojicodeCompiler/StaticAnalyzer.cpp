@@ -31,7 +31,7 @@ void analyzeClass(Type classType, Writer &writer) {
     
     Scope objectScope;
     
-    // Get the ID offset for this eclass by summing up all superclasses instance variable counts
+    // Get the ID offset for this class by summing up all superclasses instance variable counts
     int offset = 0;
     for (Class *aClass = eclass->superclass; aClass != nullptr; aClass = aClass->superclass) {
         offset += aClass->instanceVariables().size();
@@ -61,18 +61,18 @@ void analyzeClass(Type classType, Writer &writer) {
     
     for (auto method : eclass->methodList) {
         auto scoper = CallableScoper(&objectScope);
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(method, writer, classType, scoper);
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(method, writer, classType, scoper);
     }
     
     for (auto initializer : eclass->initializerList) {
         auto scoper = CallableScoper(&objectScope);
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(initializer, writer, classType, scoper, false,
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(initializer, writer, classType, scoper, false,
                                                          initializer);
     }
     
     for (auto classMethod : eclass->classMethodList) {
         auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeProcedure(classMethod, writer, classType, scoper, true);
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(classMethod, writer, classType, scoper, true);
     }
     
     if (eclass->instanceVariables().size() > 0 && eclass->initializerList.size() == 0) {
@@ -115,12 +115,12 @@ void analyzeClass(Type classType, Writer &writer) {
                     }
                     
                     writer.writeUInt16(clm->vti());
-                    Procedure::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
+                    Function::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
                                                   method->name, clm->position(), "protocol definition", classType);
-                    Procedure::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
+                    Function::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
                                                   clm->position(), "protocol definition", classType);
                     for (int i = 0; i < method->arguments.size(); i++) {
-                        Procedure::checkArgument(clm->arguments[i].type,
+                        Function::checkArgument(clm->arguments[i].type,
                                                  method->arguments[i].type.resolveOn(protocol, false), i,
                                                  clm->position(), "protocol definition", classType);
                     }
@@ -270,6 +270,13 @@ void analyzeClassesAndWrite(FILE *fout) {
         }
     }
     
+    auto &functions = Function::functions();
+    writer.writeUInt16(functions.size());
+    for (auto function : functions) {
+        auto scoper = CallableScoper();
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(function, writer, typeNothingness, scoper, true);
+    }
+    
     writer.writeUInt16(theStringPool.strings().size());
     for (auto string : theStringPool.strings()) {
         writer.writeUInt16(string.size());
@@ -278,7 +285,4 @@ void analyzeClassesAndWrite(FILE *fout) {
             writer.writeEmojicodeChar(c);
         }
     }
-    
-    writer.writeUInt16(startingFlag.eclass->index);
-    writer.writeUInt16(startingFlag.eclass->lookupClassMethod(E_CHEQUERED_FLAG)->vti());
 }

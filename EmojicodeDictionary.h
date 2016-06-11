@@ -85,6 +85,6 @@ void bridgeDictionaryInit(Thread *thread);
 /** @warning GC-invoking */
 void dictionaryInit(Thread *thread);
 
-MethodHandler dictionaryMethodForName(EmojicodeChar name);
+HandlerFunction dictionaryMethodForName(EmojicodeChar name);
 
 #endif /* EmojicodeDictionary_h */

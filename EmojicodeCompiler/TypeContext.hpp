@@ -11,22 +11,22 @@
 
 #include "Type.hpp"
 #include "CommonTypeFinder.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 
 class TypeContext {
 public:
     TypeContext(Type callee) : calleeType_(callee) {};
-    TypeContext(Type callee, Procedure *p) : calleeType_(callee), procedure_(p) {};
-    TypeContext(Type callee, Procedure *p, std::vector<Type> *args)
-        : calleeType_(callee), procedure_(p), procedureGenericArguments_(args) {};
+    TypeContext(Type callee, Function *p) : calleeType_(callee), function_(p) {};
+    TypeContext(Type callee, Function *p, std::vector<Type> *args)
+        : calleeType_(callee), function_(p), functionGenericArguments_(args) {};
     
     Type calleeType() const { return calleeType_; }
-    Procedure* procedure() const { return procedure_; }
-    std::vector<Type>* procedureGenericArguments() const { return procedureGenericArguments_; }
+    Function* function() const { return function_; }
+    std::vector<Type>* functionGenericArguments() const { return functionGenericArguments_; }
 private:
     Type calleeType_;
-    Procedure *procedure_ = nullptr;
-    std::vector<Type> *procedureGenericArguments_ = nullptr;
+    Function *function_ = nullptr;
+    std::vector<Type> *functionGenericArguments_ = nullptr;
 };
 
 #endif /* TypeContext_hpp */

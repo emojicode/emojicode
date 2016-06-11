@@ -201,7 +201,7 @@ static Something mouseButtonEventDown(Thread *thread){
 }
 
 
-ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
+HandlerFunction handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
     switch (cl) {
         case appName:
             switch (symbol) {
@@ -218,7 +218,7 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
     return NULL;
 }
 
-MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol){
+HandlerFunction handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol){
     switch (cl) {
         case rendererName:
             switch (symbol) {
@@ -257,7 +257,7 @@ MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol){
     return NULL;
 }
 
-InitializerHandler handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol){
+InitializerHandlerFunction handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol){
     switch (cl) {
         case windowName:
             return windowInit;

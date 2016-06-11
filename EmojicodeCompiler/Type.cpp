@@ -10,7 +10,7 @@
 #include <vector>
 #include "utf8.h"
 #include "Class.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
@@ -57,7 +57,7 @@ Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool r
         t = c->superGenericArguments()[t.reference];
     }
     while (t.type() == TT_LOCAL_REFERENCE) {
-        t = typeContext.procedure()->genericArgumentConstraints[t.reference];
+        t = typeContext.function()->genericArgumentConstraints[t.reference];
     }
     while (t.type() == TT_REFERENCE) {
         t = typeContext.calleeType().typeDefinitionWithGenerics()->genericArgumentConstraints()[t.reference];
@@ -75,8 +75,8 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
         t = typeContext.calleeType();
     }
     
-    while (t.type() == TT_LOCAL_REFERENCE && typeContext.procedureGenericArguments()) {
-        t = (*typeContext.procedureGenericArguments())[t.reference];
+    while (t.type() == TT_LOCAL_REFERENCE && typeContext.functionGenericArguments()) {
+        t = (*typeContext.functionGenericArguments())[t.reference];
     }
     
     if (typeContext.calleeType().canHaveGenericArguments()) {
@@ -378,8 +378,8 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             return;
         }
         case TT_LOCAL_REFERENCE:
-            if (typeContext.procedure()) {
-                for (auto it : typeContext.procedure()->genericArgumentVariables) {
+            if (typeContext.function()) {
+                for (auto it : typeContext.function()->genericArgumentVariables) {
                     if (it.second.reference == type.reference) {
                         string.append(it.first.utf8CString());
                         return;

@@ -10,7 +10,7 @@
 #define Writer_hpp
 
 #include "EmojicodeCompiler.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 
 template <typename T>
 class WriterPlaceholder;

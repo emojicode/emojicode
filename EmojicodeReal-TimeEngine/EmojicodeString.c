@@ -640,7 +640,7 @@ void stringMark(Object *self){
     }
 }
 
-MethodHandler stringMethodForName(EmojicodeChar name){
+HandlerFunction stringMethodForName(EmojicodeChar name){
     switch (name) {
         case 0x1F600:
             return stringPrintStdoutBrigde;
@@ -684,7 +684,7 @@ MethodHandler stringMethodForName(EmojicodeChar name){
     return NULL;
 }
 
-InitializerHandler stringInitializerForName(EmojicodeChar name){
+InitializerHandlerFunction stringInitializerForName(EmojicodeChar name){
     switch (name) {
         case 0x1F62F: //😮
             return stringGetInput;

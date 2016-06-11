@@ -12,7 +12,7 @@
 #include "Token.hpp"
 #include "TokenStream.hpp"
 #include "Package.hpp"
-#include "Procedure.hpp"
+#include "Function.hpp"
 
 class AbstractParser {
 protected:
@@ -35,9 +35,9 @@ protected:
      * @return Whether self was used.
      */
     bool parseReturnType(Callable *c, TypeContext ct);
-    void parseGenericArgumentsInDefinition(Procedure *p, TypeContext ct);
+    void parseGenericArgumentsInDefinition(Function *p, TypeContext ct);
     void parseBody(Callable *p);
-    void parseBody(Procedure *p, bool allowNative);
+    void parseBody(Function *p, bool allowNative);
     void parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism, const Token& errorToken);
 private:
 };

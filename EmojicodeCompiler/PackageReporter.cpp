@@ -11,7 +11,7 @@
 #include <list>
 #include <map>
 #include "utf8.h"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Enum.hpp"
@@ -83,7 +83,7 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
     printf("],");
 }
 
-void reportProcedureInformation(Procedure *p, ReturnManner returnm, bool last, TypeContext tc) {
+void reportFunctionInformation(Function *p, ReturnManner returnm, bool last, TypeContext tc) {
     ecCharToCharStack(p->name, nameString);
     
     printf("{");
@@ -176,7 +176,7 @@ void reportPackage(Package *package) {
         printf("\"methods\": [");
         for (size_t i = 0; i < eclass->methodList.size(); i++) {
             Method *method = eclass->methodList[i];
-            reportProcedureInformation(method, Return, i + 1 == eclass->methodList.size(),
+            reportFunctionInformation(method, Return, i + 1 == eclass->methodList.size(),
                                        TypeContext(Type(eclass), method));
         }
         printf("],");
@@ -184,7 +184,7 @@ void reportPackage(Package *package) {
         printf("\"initializers\": [");
         for (size_t i = 0; i < eclass->initializerList.size(); i++) {
             Initializer *initializer = eclass->initializerList[i];
-            reportProcedureInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
+            reportFunctionInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
                                        i + 1 == eclass->initializerList.size(),
                                        TypeContext(Type(eclass), initializer));
         }
@@ -193,7 +193,7 @@ void reportPackage(Package *package) {
         printf("\"classMethods\": [");
         for (size_t i = 0; i < eclass->classMethodList.size(); i++) {
             ClassMethod *classMethod = eclass->classMethodList[i];
-            reportProcedureInformation(classMethod, Return, eclass->classMethodList.size() == i + 1,
+            reportFunctionInformation(classMethod, Return, eclass->classMethodList.size() == i + 1,
                                        TypeContext(Type(eclass), classMethod));
         }
         printf("],");
@@ -256,7 +256,7 @@ void reportPackage(Package *package) {
         printf("\"methods\": [");
         for (size_t i = 0; i < protocol->methods().size(); i++) {
             Method *method = protocol->methods()[i];
-            reportProcedureInformation(method, Return, i + 1 == protocol->methods().size(),
+            reportFunctionInformation(method, Return, i + 1 == protocol->methods().size(),
                                        TypeContext(Type(protocol, false)));
         }
         printf("]}");

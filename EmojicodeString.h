@@ -38,7 +38,7 @@ void stringMark(Object *self);
 
 void initStringFromSymbolList(Object *string, List *list);
 
-MethodHandler stringMethodForName(EmojicodeChar name);
-InitializerHandler stringInitializerForName(EmojicodeChar name);
+HandlerFunction stringMethodForName(EmojicodeChar name);
+InitializerHandlerFunction stringInitializerForName(EmojicodeChar name);
 
 #endif /* EmojicodeString_h */

@@ -303,7 +303,7 @@ void closeFile(void *file){
     fclose((*((FILE**)file)));
 }
 
-ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
+HandlerFunction handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
     if(cl == 0x1F4D1){
         switch (symbol) {
             case 0x1F4C1:
@@ -347,7 +347,7 @@ ClassMethodHandler handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar 
     return NULL;
 }
 
-MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol){
+HandlerFunction handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol){
     switch (symbol) {
         case 0x270F:
             return fileWriteData;
@@ -363,7 +363,7 @@ MethodHandler handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol){
     return NULL;
 }
 
-InitializerHandler handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol){
+InitializerHandlerFunction handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol){
     switch (symbol) {
         case 0x1F4DD:
             return fileForWriting;

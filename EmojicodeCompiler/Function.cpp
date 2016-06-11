@@ -1,5 +1,5 @@
 //
-//  Procedure.cpp
+//  Function.cpp
 //  Emojicode
 //
 //  Created by Theo Weidmann on 04/01/16.
@@ -8,7 +8,7 @@
 
 #include <map>
 #include "utf8.h"
-#include "Procedure.hpp"
+#include "Function.hpp"
 #include "Lexer.hpp"
 #include "CompilerErrorException.hpp"
 #include "EmojicodeCompiler.hpp"
@@ -27,9 +27,12 @@ Type Closure::type() {
     return t;
 }
 
-//MARK: Procedure
+bool Function::foundStart = false;
+std::vector<Function *> Function::functions_;
 
-void Procedure::checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
+//MARK: Function
+
+void Function::checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
                                    const char *on, Type contextType) {
     if (!returnThis.compatibleTo(returnSuper, contextType)) {
         // The return type may be defined more precisely
@@ -41,9 +44,9 @@ void Procedure::checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeC
     }
 }
 
-void Procedure::checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
+void Function::checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
                               const char *on, Type contextType) {
-    // Other way, because the procedure may take more general arguments
+    // Other way, because the function may take more general arguments
     if (!superArgument.compatibleTo(thisArgument, contextType)) {
         auto supertype = superArgument.toString(contextType, true);
         auto thisname = thisArgument.toString(contextType, true);
@@ -53,7 +56,7 @@ void Procedure::checkArgument(Type thisArgument, Type superArgument, int index, 
     }
 }
 
-void Procedure::checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeChar name, SourcePosition position,
+void Function::checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeChar name, SourcePosition position,
                                    const char *on, Type contextType) {
     if (superCount != thisCount) {
         ecCharToCharStack(name, mn);
@@ -62,18 +65,18 @@ void Procedure::checkArgumentCount(size_t thisCount, size_t superCount, Emojicod
     }
 }
 
-void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type contextType) {
+void Function::checkPromises(Function *superFunction, const char *on, Type contextType) {
     try {
-        if (superProcedure->final) {
+        if (superFunction->final) {
             ecCharToCharStack(this->name, mn);
             throw CompilerErrorException(this->position(), "%s of %s was marked 🔏.", on, mn);
         }
-        checkReturnPromise(this->returnType, superProcedure->returnType, this->name, this->position(), on, contextType);
-        checkArgumentCount(this->arguments.size(), superProcedure->arguments.size(), this->name,
+        checkReturnPromise(this->returnType, superFunction->returnType, this->name, this->position(), on, contextType);
+        checkArgumentCount(this->arguments.size(), superFunction->arguments.size(), this->name,
                            this->position(), on, contextType);
 
-        for (int i = 0; i < superProcedure->arguments.size(); i++) {
-            checkArgument(this->arguments[i].type, superProcedure->arguments[i].type, i,
+        for (int i = 0; i < superFunction->arguments.size(); i++) {
+            checkArgument(this->arguments[i].type, superFunction->arguments[i].type, i,
                           this->position(), on, contextType);
         }
     }
@@ -82,18 +85,18 @@ void Procedure::checkPromises(Procedure *superProcedure, const char *on, Type co
     }
 }
 
-void Procedure::checkOverride(Procedure *superProcedure) {
-    if (overriding && !superProcedure) {
+void Function::checkOverride(Function *superFunction) {
+    if (overriding && !superFunction) {
         ecCharToCharStack(name, mn);
         throw CompilerErrorException(position(), "%s was declared ✒️ but does not override anything.", mn);
     }
-    else if (!overriding && superProcedure) {
+    else if (!overriding && superFunction) {
         ecCharToCharStack(name, mn);
         throw CompilerErrorException(position(), "If you want to override %s add ✒️.", mn);
     }
 }
 
-void Procedure::deprecatedWarning(const Token &callToken) {
+void Function::deprecatedWarning(const Token &callToken) {
     if (deprecated) {
         ecCharToCharStack(name, mn);
         if (documentationToken.size() > 0) {
@@ -109,14 +112,14 @@ void Procedure::deprecatedWarning(const Token &callToken) {
     }
 }
 
-void Procedure::setVti(int vti) {
+void Function::setVti(int vti) {
     if (vti >= 65536) {
         throw CompilerErrorException(position(), "You exceeded the limit of 65,536 %s in a class.", on);
     }
     vti_ = vti;
 }
 
-Type Procedure::type() {
+Type Function::type() {
     Type t = Type(TT_CALLABLE, false);
     t.arguments = (uint8_t)arguments.size();
     

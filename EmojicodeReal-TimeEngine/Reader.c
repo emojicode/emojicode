@@ -22,7 +22,10 @@ EmojicodeCoin readCoin(FILE *in){
     return ((EmojicodeCoin)fgetc(in)) | (fgetc(in) << 8) | ((EmojicodeCoin)fgetc(in) << 16) | ((EmojicodeCoin)fgetc(in) << 24);
 }
 
-PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor, hpfmResponder *hpfm, hpfcmResponder *hpfcm, hpfcResponder *hpfc, mpfc *mpfc, dpfc *dpfc, SizeForClassHandler *sfch){
+PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor, HandlerFunctionProvider *hfpMethods,
+                                HandlerFunctionProvider *hfpClassMethods,
+                                InitializerHandlerFunctionProvider *hfpIntializer,
+                                mpfc *mpfc, dpfc *dpfc, SizeForClassHandler *sfch){
     char *path;
     asprintf(&path, packageDirectory "%s-v%d/%s.%s", name, major, name, "so");
     
@@ -33,9 +36,9 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
     if(!package)
         return PACKAGE_LOADING_FAILED;
     
-    *hpfm = dlsym(package, "handlerPointerForMethod");
-    *hpfcm = dlsym(package, "handlerPointerForClassMethod");
-    *hpfc = dlsym(package, "handlerPointerForInitializer");
+    *hfpMethods = dlsym(package, "handlerPointerForMethod");
+    *hfpClassMethods = dlsym(package, "handlerPointerForClassMethod");
+    *hfpIntializer = dlsym(package, "handlerPointerForInitializer");
     *mpfc = dlsym(package, "markerPointerForClass");
     *dpfc = dlsym(package, "deinitializerPointerForClass");
     *sfch = dlsym(package, "sizeForClass");
@@ -43,7 +46,7 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
     PackageVersion(*pvf)() = dlsym(package, "getVersion");
     PackageVersion pv = pvf();
     
-    if(!*hpfm || !*hpfcm || !*hpfc)
+    if(!*hfpMethods || !*hfpClassMethods || !*hfpIntializer)
         return PACKAGE_LOADING_FAILED;
     
     if(pv.major != major)
@@ -76,14 +79,14 @@ uint32_t readBlock(EmojicodeCoin **destination, uint8_t *variableCount, FILE *in
     return coinCount;
 }
 
-void readInitializer(Class *class, EmojicodeChar className, FILE *in, hpfcResponder hpfc){
+void readInitializer(InitializerHandler **table, EmojicodeChar className, FILE *in, InitializerHandlerFunctionProvider hpfc){
     EmojicodeChar name = readEmojicodeChar(in);
     uint16_t vti = readUInt16(in);
 
-    Initializer *initializer = malloc(sizeof(Initializer));
+    InitializerHandler *initializer = malloc(sizeof(InitializerHandler));
     initializer->argumentCount = fgetc(in);
     
-    if(fgetc(in)){
+    if (fgetc(in)) {
         initializer->native = true;
         initializer->handler = hpfc(className, name);
     }
@@ -91,17 +94,17 @@ void readInitializer(Class *class, EmojicodeChar className, FILE *in, hpfcRespon
         initializer->native = false;
         initializer->tokenCount = readBlock(&initializer->tokenStream, &initializer->variableCount, in);
     }
-    class->initializersVtable[vti] = initializer;
+    table[vti] = initializer;
 }
 
-void readMethod(Class *class, EmojicodeChar className, FILE *in, hpfmResponder hpfm){
+void readHandler(Handler **table, EmojicodeChar className, FILE *in, HandlerFunctionProvider hpfm){
     EmojicodeChar methodName = readEmojicodeChar(in);
     uint16_t vti = readUInt16(in);
     
-    Method *method = malloc(sizeof(Method));
+    Handler *method = malloc(sizeof(Handler));
     method->argumentCount = fgetc(in);
     
-    if(fgetc(in)){
+    if (fgetc(in)) {
         method->native = true;
         method->handler = hpfm(className, methodName);
     }
@@ -109,31 +112,13 @@ void readMethod(Class *class, EmojicodeChar className, FILE *in, hpfmResponder h
         method->native = false;
         method->tokenCount = readBlock(&method->tokenStream, &method->variableCount, in);
     }
-    class->methodsVtable[vti] = method;
+    table[vti] = method;
 }
 
-void readClassMethod(Class *class, EmojicodeChar className, FILE *in, hpfcmResponder hpfcm){
-    EmojicodeChar methodName = readEmojicodeChar(in);
-    uint16_t vti = readUInt16(in);
-    
-    ClassMethod *method = malloc(sizeof(ClassMethod));
-    method->argumentCount = fgetc(in);
-    
-    if(fgetc(in)){
-        method->native = true;
-        method->handler = hpfcm(className, methodName);
-    }
-    else {
-        method->native = false;
-        method->tokenCount = readBlock(&method->tokenStream, &method->variableCount, in);
-    }
-    class->classMethodsVtable[vti] = method;
-}
-
-void readProtocolAgreement(Method **vmt, Method ***pmt, uint_fast16_t offset, FILE *in){
+void readProtocolAgreement(Handler **vmt, Handler ***pmt, uint_fast16_t offset, FILE *in){
     uint_fast16_t index = readUInt16(in) - offset;
     uint_fast16_t count = readUInt16(in);
-    pmt[index] = malloc(sizeof(Method *) * count);
+    pmt[index] = malloc(sizeof(Handler *) * count);
     for (uint_fast16_t i = 0; i < count; i++) {
         pmt[index][i] = vmt[readUInt16(in)];
     }
@@ -142,18 +127,18 @@ void readProtocolAgreement(Method **vmt, Method ***pmt, uint_fast16_t offset, FI
 void readPackage(FILE *in){
     static uint16_t classNextIndex = 0;
     
-    hpfmResponder hpfm;
-    hpfcmResponder hpfcm;
-    hpfcResponder hpfc;
+    HandlerFunctionProvider hfpMethods;
+    InitializerHandlerFunctionProvider hfpIntializer;
+    HandlerFunctionProvider hfpClassMethods;
     dpfc dpfc;
     mpfc mpfc;
     SizeForClassHandler sfch;
     
     uint_fast8_t packageNameLength = fgetc(in);
     if (!packageNameLength) {
-        hpfm = handlerPointerForMethod;
-        hpfc = handlerPointerForInitializer;
-        hpfcm = handlerPointerForClassMethod;
+        hfpMethods = handlerPointerForMethod;
+        hfpIntializer = handlerPointerForInitializer;
+        hfpClassMethods = handlerPointerForClassMethod;
         dpfc = deinitializerPointerForClass;
         mpfc = markerPointerForClass;
         sfch = sizeForClass;
@@ -165,12 +150,13 @@ void readPackage(FILE *in){
         uint16_t major = readUInt16(in);
         uint16_t minor = readUInt16(in);
         
-        PackageLoadingState s = packageLoad(name, major, minor, &hpfm, &hpfcm, &hpfc, &mpfc, &dpfc, &sfch);
+        PackageLoadingState s = packageLoad(name, major, minor, &hfpMethods, &hfpClassMethods, &hfpIntializer,
+                                            &mpfc, &dpfc, &sfch);
         
-        if(s == PACKAGE_INAPPROPRIATE_MAJOR){
+        if (s == PACKAGE_INAPPROPRIATE_MAJOR) {
             error("Installed version of package \"%s\" is incompatible with required version %d.%d. (How did you made Emojicode load this version of the package?!)", name, major, minor);
         }
-        else if (s == PACKAGE_INAPPROPRIATE_MINOR){
+        else if (s == PACKAGE_INAPPROPRIATE_MINOR) {
             error("Installed version of package \"%s\" is incompatible with required version %d.%d. Please update to the latest minor version.", name, major, minor);
         }
         else if (s == PACKAGE_LOADING_FAILED) {
@@ -190,24 +176,24 @@ void readPackage(FILE *in){
         class->instanceVariableCount = readUInt16(in);
         
         class->methodCount = readUInt16(in);
-        class->methodsVtable = malloc(sizeof(Method*) * class->methodCount);
+        class->methodsVtable = malloc(sizeof(Handler*) * class->methodCount);
         
         class->classMethodCount = readUInt16(in);
-        class->classMethodsVtable = malloc(sizeof(ClassMethod*) * class->classMethodCount);
+        class->classMethodsVtable = malloc(sizeof(Handler*) * class->classMethodCount);
         
         bool inheritsInitializers = fgetc(in);
         class->initializerCount = readUInt16(in);
-        class->initializersVtable = malloc(sizeof(Initializer*) * class->initializerCount);
+        class->initializersVtable = malloc(sizeof(InitializerHandler*) * class->initializerCount);
         
         uint_fast16_t localMethodCount = readUInt16(in);
         uint_fast16_t localInitializerCount = readUInt16(in);
         uint_fast16_t localClassMethodCount = readUInt16(in);
         
         if(class != class->superclass){
-            memcpy(class->classMethodsVtable, class->superclass->classMethodsVtable, class->superclass->classMethodCount * sizeof(ClassMethod*));
-            memcpy(class->methodsVtable, class->superclass->methodsVtable, class->superclass->methodCount * sizeof(Method*));
+            memcpy(class->classMethodsVtable, class->superclass->classMethodsVtable, class->superclass->classMethodCount * sizeof(Handler*));
+            memcpy(class->methodsVtable, class->superclass->methodsVtable, class->superclass->methodCount * sizeof(Handler*));
             if(inheritsInitializers){
-                memcpy(class->initializersVtable, class->superclass->initializersVtable, class->superclass->initializerCount * sizeof(ClassMethod*));
+                memcpy(class->initializersVtable, class->superclass->initializersVtable, class->superclass->initializerCount * sizeof(InitializerHandler*));
             }
         }
         else {
@@ -215,22 +201,22 @@ void readPackage(FILE *in){
         }
         
         for (uint_fast16_t i = 0; i < localMethodCount; i++) {
-            readMethod(class, name, in, hpfm);
+            readHandler(class->methodsVtable, name, in, hfpMethods);
         }
         
         for (uint_fast16_t i = 0; i < localInitializerCount; i++) {
-            readInitializer(class, name, in, hpfc);
+            readInitializer(class->initializersVtable, name, in, hfpIntializer);
         }
 
         for (uint_fast16_t i = 0; i < localClassMethodCount; i++) {
-            readClassMethod(class, name, in, hpfcm);
+            readHandler(class->classMethodsVtable, name, in, hfpClassMethods);
         }
         
         uint_fast16_t protocolCount = readUInt16(in);
         if(protocolCount > 0){
             class->protocolsMaxIndex = readUInt16(in);
             class->protocolsOffset = readUInt16(in);
-            class->protocolsTable = calloc((class->protocolsMaxIndex - class->protocolsOffset + 1), sizeof(Method **));
+            class->protocolsTable = calloc((class->protocolsMaxIndex - class->protocolsOffset + 1), sizeof(Handler **));
             
             for (uint_fast16_t i = 0; i < protocolCount; i++) {
                 readProtocolAgreement(class->methodsVtable, class->protocolsTable, class->protocolsOffset, in);
@@ -250,15 +236,15 @@ void readPackage(FILE *in){
     }
 }
 
-ClassMethod* readBytecode(FILE *in, Class **cl){
+Handler* readBytecode(FILE *in) {
     uint8_t version = fgetc(in);
-    if(version != ByteCodeSpecificationVersion){
+    if (version != ByteCodeSpecificationVersion) {
         error("The bytecode file (bcsv %d) is not compatible with this interpreter (bcsv %d).\n", version, ByteCodeSpecificationVersion);
     }
     
     classTable = malloc(sizeof(Class*) * readUInt16(in));
     
-    for(uint8_t i = 0, l = fgetc(in); i < l; i++){
+    for (uint8_t i = 0, l = fgetc(in); i < l; i++) {
         readPackage(in);
     }
     
@@ -270,6 +256,12 @@ ClassMethod* readBytecode(FILE *in, Class **cl){
     CL_CAPTURED_METHOD_CALL = classTable[5];
     CL_CLOSURE = classTable[6];
     CL_RANGE = classTable[7];
+    
+    uint16_t functionCount = readUInt16(in);
+    functionTable = malloc(sizeof(Handler*) * functionCount);
+    for (; functionCount; functionCount--) {
+        readHandler(functionTable, 0, in, NULL);
+    }
     
     stringPoolCount = readUInt16(in);
     stringPool = malloc(sizeof(Object*) * stringPoolCount);
@@ -287,8 +279,5 @@ ClassMethod* readBytecode(FILE *in, Class **cl){
         stringPool[i] = o;
     }
     
-    *cl = classTable[readUInt16(in)];
-    uint16_t vtiFlag = readUInt16(in);
-    
-    return (*cl)->classMethodsVtable[vtiFlag];
+    return functionTable[0];
 }
