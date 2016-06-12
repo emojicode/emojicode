@@ -63,7 +63,7 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         }
         if (ct.calleeType().canHaveGenericArguments()) {
             Type type = typeNothingness;
-            if (ct.calleeType().typeDefinitionWithGenerics()->fetchVariable(variableToken.value, optional, &type)) {
+            if (ct.calleeType().typeDefinitionFunctional()->fetchVariable(variableToken.value, optional, &type)) {
                 return type;
             }
         }
@@ -129,7 +129,7 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
 void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism,
                                                   const Token& errorToken) {
     if (type->canHaveGenericArguments()) {
-        auto typeDef = type->typeDefinitionWithGenerics();
+        auto typeDef = type->typeDefinitionFunctional();
         auto offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->numberOfOwnGenericArguments();
         type->genericArguments = std::vector<Type>(typeDef->superGenericArguments());
         

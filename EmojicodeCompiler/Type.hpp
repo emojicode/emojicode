@@ -68,13 +68,12 @@ public:
     Type(Protocol *p, bool o) : protocol(p), type_(TT_PROTOCOL), optional_(o)  {}
     Type(Enum *e, bool o) : eenum(e), type_(TT_ENUM), optional_(o) {}
     
-    
     /** Returns the type of this type. Whether it’s an integer, class, etc. */
     TypeType type() const { return type_; }
     /** Whether this type of type could have generic arguments. */
     bool canHaveGenericArguments() const;
     /** Returns the represented TypeDefinitonWithGenerics by using a cast. */
-    TypeDefinitionFunctional* typeDefinitionWithGenerics() const;
+    TypeDefinitionFunctional* typeDefinitionFunctional() const;
     
     union {
         Class *eclass;
@@ -86,6 +85,7 @@ public:
         };
         uint32_t arguments;
     };
+
     std::vector<Type> genericArguments;
     
     /** Whether the type is an optional. */

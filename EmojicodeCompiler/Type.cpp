@@ -32,7 +32,7 @@ bool Type::canHaveGenericArguments() const {
     return type() == TT_CLASS || type() == TT_PROTOCOL;
 }
 
-TypeDefinitionFunctional* Type::typeDefinitionWithGenerics() const {
+TypeDefinitionFunctional* Type::typeDefinitionFunctional() const {
     return static_cast<TypeDefinitionFunctional *>(eclass);
 }
 
@@ -43,7 +43,7 @@ Type Type::copyWithoutOptional() const {
 }
 
 Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool resolveSelf) const {
-    TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionWithGenerics();
+    TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionFunctional();
     Type t = *this;
     bool optional = t.optional();
     
@@ -60,7 +60,7 @@ Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool r
         t = typeContext.function()->genericArgumentConstraints[t.reference];
     }
     while (t.type() == TT_REFERENCE) {
-        t = typeContext.calleeType().typeDefinitionWithGenerics()->genericArgumentConstraints()[t.reference];
+        t = typeContext.calleeType().typeDefinitionFunctional()->genericArgumentConstraints()[t.reference];
     }
     
     if (optional) t.setOptional();
@@ -81,7 +81,7 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
     
     if (typeContext.calleeType().canHaveGenericArguments()) {
         while (t.type() == TT_REFERENCE &&
-               typeContext.calleeType().typeDefinitionWithGenerics()->canBeUsedToResolve(t.resolutionConstraint)) {
+               typeContext.calleeType().typeDefinitionFunctional()->canBeUsedToResolve(t.resolutionConstraint)) {
             Type tn = typeContext.calleeType().genericArguments[t.reference];
             if (tn.type() == TT_REFERENCE && tn.reference == t.reference) {
                 break;
@@ -93,7 +93,7 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
     if (optional) t.setOptional();
     
     if (t.canHaveGenericArguments()) {
-        for (int i = 0; i < t.typeDefinitionWithGenerics()->numberOfGenericArgumentsWithSuperArguments(); i++) {
+        for (int i = 0; i < t.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments(); i++) {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
         }
     }
@@ -365,7 +365,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
                 } while ((eclass = eclass->superclass));
             }
             else if (typeContext.calleeType().canHaveGenericArguments()) {
-                for (auto it : typeContext.calleeType().typeDefinitionWithGenerics()->ownGenericArgumentVariables()) {
+                for (auto it : typeContext.calleeType().typeDefinitionFunctional()->ownGenericArgumentVariables()) {
                     if (it.second.reference == type.reference) {
                         string.append(it.first.utf8CString());
                         return;
@@ -393,7 +393,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
     }
     
     if (typeContext.calleeType().type() != TT_NOTHINGNESS && type.canHaveGenericArguments()) {
-        auto typeDef = type.typeDefinitionWithGenerics();
+        auto typeDef = type.typeDefinitionFunctional();
         int offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->numberOfOwnGenericArguments();
         for (int i = 0, l = typeDef->numberOfOwnGenericArguments(); i < l; i++) {
             stringAppendEc(E_SPIRAL_SHELL, string);
