@@ -30,14 +30,14 @@ private:
     /** Parses a type name and validates that it is not already in use or an optional. */
     const Token& parseAndValidateNewTypeName(EmojicodeChar *name, EmojicodeChar *ns);
     /** Parses the definition list of generic arguments for a type. */
-    void parseGenericArgumentList(TypeDefinitionWithGenerics *typeDef, TypeContext tc);
+    void parseGenericArgumentList(TypeDefinitionFunctional *typeDef, TypeContext tc);
     
     /** Parses a class definition, starting from the first token after 🐇. */
     void parseClass(const EmojicodeString &string, const Token &theToken, bool exported);
     /** Parses the body of a class. */
     void parseClassBody(Class *eclass, std::set<EmojicodeChar> *requiredInitializers, bool allowNative);
     /** Parses a enum defintion, starting from the first token after 🦃. */
-    void parseEnum(const EmojicodeString &string, bool exported);
+    void parseEnum(const EmojicodeString &string, const Token &theToken, bool exported);
     /** Parses a protocol defintion, starting from the first token after🐊. */
     void parseProtocol(const EmojicodeString &string, const Token &theToken, bool exported);
     

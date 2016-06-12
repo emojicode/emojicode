@@ -14,8 +14,8 @@
 
 class Enum : public TypeDefinition {
 public:
-    Enum(EmojicodeChar name, Package *package, const EmojicodeString &documentation)
-        : TypeDefinition(name, package, documentation) {}
+    Enum(EmojicodeChar name, Package *package, SourcePosition position, const EmojicodeString &documentation)
+        : TypeDefinition(name, package, position, documentation) {}
     
     std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
     void addValueFor(EmojicodeChar c);

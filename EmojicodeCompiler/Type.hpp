@@ -19,7 +19,7 @@ class Enum;
 class Class;
 class Protocol;
 class Package;
-class TypeDefinitionWithGenerics;
+class TypeDefinitionFunctional;
 struct CommonTypeFinder;
 
 enum TypeType {
@@ -61,7 +61,7 @@ class Function;
 class Type {
 public:
     Type(TypeType t, bool o) : type_(t), optional_(o) {}
-    Type(TypeType t, bool o, uint16_t r, TypeDefinitionWithGenerics *c)
+    Type(TypeType t, bool o, uint16_t r, TypeDefinitionFunctional *c)
         : reference(r), resolutionConstraint(c), type_(t), optional_(o) {}
     Type(Class *c, bool o);
     explicit Type(Class *c) : Type(c, false) {};
@@ -74,7 +74,7 @@ public:
     /** Whether this type of type could have generic arguments. */
     bool canHaveGenericArguments() const;
     /** Returns the represented TypeDefinitonWithGenerics by using a cast. */
-    TypeDefinitionWithGenerics* typeDefinitionWithGenerics() const;
+    TypeDefinitionFunctional* typeDefinitionWithGenerics() const;
     
     union {
         Class *eclass;
@@ -82,7 +82,7 @@ public:
         Enum *eenum;
         struct {
             uint16_t reference;
-            TypeDefinitionWithGenerics *resolutionConstraint;
+            TypeDefinitionFunctional *resolutionConstraint;
         };
         uint32_t arguments;
     };

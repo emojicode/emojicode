@@ -12,16 +12,16 @@
 #include <vector>
 #include <map>
 #include "Package.hpp"
-#include "TypeDefinitionWithGenerics.hpp"
+#include "TypeDefinitionFunctional.hpp"
 #include "TypeContext.hpp"
 
-class Protocol : public TypeDefinitionWithGenerics {
+class Protocol : public TypeDefinitionFunctional {
 public:
-    Protocol(EmojicodeChar name, Package *pkg, const EmojicodeString &string, SourcePosition p);
+    Protocol(EmojicodeChar name, Package *pkg, SourcePosition p, const EmojicodeString &string);
     
     uint_fast16_t index;
     
-    bool canBeUsedToResolve(TypeDefinitionWithGenerics *a);
+    bool canBeUsedToResolve(TypeDefinitionFunctional *a);
     
     Method* getMethod(const Token &token, Type type, TypeContext typeContext);
     Method* lookupMethod(EmojicodeChar name);

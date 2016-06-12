@@ -13,8 +13,8 @@
 
 uint_fast16_t Protocol::nextIndex = 0;
 
-Protocol::Protocol(EmojicodeChar name, Package *pkg, const EmojicodeString &string, SourcePosition p)
-    : TypeDefinitionWithGenerics(name, pkg, string) {
+Protocol::Protocol(EmojicodeChar name, Package *pkg, SourcePosition p, const EmojicodeString &string)
+    : TypeDefinitionFunctional(name, pkg, p, string) {
     if (nextIndex == UINT16_MAX) {
         throw CompilerErrorException(p, "You exceeded the limit of 65,536 protocols.");
     }
@@ -43,6 +43,6 @@ void Protocol::addMethod(Method *method) {
     methodList_.push_back(method);
 }
 
-bool Protocol::canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint) {
+bool Protocol::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) {
     return resolutionConstraint == this;
 }

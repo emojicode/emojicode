@@ -17,7 +17,7 @@
 #include <string>
 
 class TypeDefinition;
-class TypeDefinitionWithGenerics;
+class TypeDefinitionFunctional;
 class Class;
 class Protocol;
 class Enum;

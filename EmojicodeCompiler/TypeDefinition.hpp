@@ -23,11 +23,14 @@ public:
     EmojicodeChar name() const { return name_; }
     /** Returns the package in which this type was defined. */
     Package* package() const { return package_; }
+    /** The position at which this type was initially defined. */
+    const SourcePosition& position() const { return position_; }
 protected:
-    TypeDefinition(EmojicodeChar name, Package *p, const EmojicodeString &doc)
+    TypeDefinition(EmojicodeChar name, Package *p, SourcePosition position, const EmojicodeString &doc)
         : name_(name),
           package_(p),
-          documentation_(doc) {}
+          documentation_(doc),
+          position_(position) {}
     template <typename T>
     void duplicateDeclarationCheck(T p, std::map<EmojicodeChar, T> dict, SourcePosition position) {
         if (dict.count(p->name)) {
@@ -39,6 +42,7 @@ private:
     EmojicodeChar name_;
     Package *package_;
     EmojicodeString documentation_;
+    SourcePosition position_;
 };
 
 #endif /* TypeDefinition_hpp */

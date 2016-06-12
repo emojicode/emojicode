@@ -28,7 +28,7 @@
 		E489774F1CD2899E00207633 /* StringPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E489774D1CD2899E00207633 /* StringPool.cpp */; };
 		E4BB24C61CD0E2C2003CC098 /* AbstractParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24C41CD0E2C2003CC098 /* AbstractParser.cpp */; };
 		E4BB24C91CD0F7FA003CC098 /* TypeDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24C71CD0F7FA003CC098 /* TypeDefinition.cpp */; };
-		E4BB24CC1CD0F979003CC098 /* TypeDefinitionWithGenerics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CA1CD0F979003CC098 /* TypeDefinitionWithGenerics.cpp */; };
+		E4BB24CC1CD0F979003CC098 /* TypeDefinitionFunctional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CA1CD0F979003CC098 /* TypeDefinitionFunctional.cpp */; };
 		E4BB24D11CD0FC90003CC098 /* Protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CF1CD0FC90003CC098 /* Protocol.cpp */; };
 		E4BB24D41CD0FF6C003CC098 /* Enum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24D21CD0FF6C003CC098 /* Enum.cpp */; };
 		E4E95F601C89CED20072ECEB /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
@@ -116,8 +116,8 @@
 		E4BB24C51CD0E2C2003CC098 /* AbstractParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AbstractParser.hpp; sourceTree = "<group>"; };
 		E4BB24C71CD0F7FA003CC098 /* TypeDefinition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TypeDefinition.cpp; sourceTree = "<group>"; };
 		E4BB24C81CD0F7FA003CC098 /* TypeDefinition.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TypeDefinition.hpp; sourceTree = "<group>"; };
-		E4BB24CA1CD0F979003CC098 /* TypeDefinitionWithGenerics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TypeDefinitionWithGenerics.cpp; sourceTree = "<group>"; };
-		E4BB24CB1CD0F979003CC098 /* TypeDefinitionWithGenerics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TypeDefinitionWithGenerics.hpp; sourceTree = "<group>"; };
+		E4BB24CA1CD0F979003CC098 /* TypeDefinitionFunctional.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TypeDefinitionFunctional.cpp; sourceTree = "<group>"; };
+		E4BB24CB1CD0F979003CC098 /* TypeDefinitionFunctional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TypeDefinitionFunctional.hpp; sourceTree = "<group>"; };
 		E4BB24CF1CD0FC90003CC098 /* Protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Protocol.cpp; sourceTree = "<group>"; };
 		E4BB24D01CD0FC90003CC098 /* Protocol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Protocol.hpp; sourceTree = "<group>"; };
 		E4BB24D21CD0FF6C003CC098 /* Enum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Enum.cpp; sourceTree = "<group>"; };
@@ -261,8 +261,8 @@
 			children = (
 				E4BB24C81CD0F7FA003CC098 /* TypeDefinition.hpp */,
 				E4BB24C71CD0F7FA003CC098 /* TypeDefinition.cpp */,
-				E4BB24CB1CD0F979003CC098 /* TypeDefinitionWithGenerics.hpp */,
-				E4BB24CA1CD0F979003CC098 /* TypeDefinitionWithGenerics.cpp */,
+				E4BB24CB1CD0F979003CC098 /* TypeDefinitionFunctional.hpp */,
+				E4BB24CA1CD0F979003CC098 /* TypeDefinitionFunctional.cpp */,
 				E43387CA1C41308500B23165 /* Class.hpp */,
 				E4F9D4001AC6CEE3005A1DD6 /* Class.cpp */,
 				E4BB24D01CD0FC90003CC098 /* Protocol.hpp */,
@@ -413,7 +413,7 @@
 			files = (
 				E4EB362B1AA2254700675B52 /* Lexer.cpp in Sources */,
 				E4F9D4011AC6CEE3005A1DD6 /* Class.cpp in Sources */,
-				E4BB24CC1CD0F979003CC098 /* TypeDefinitionWithGenerics.cpp in Sources */,
+				E4BB24CC1CD0F979003CC098 /* TypeDefinitionFunctional.cpp in Sources */,
 				E4BB24C91CD0F7FA003CC098 /* TypeDefinition.cpp in Sources */,
 				E46A07301C3C79E5003DE2CD /* StaticFunctionAnalyzer.cpp in Sources */,
 				E404F67D1CCFF29C00589659 /* Token.cpp in Sources */,

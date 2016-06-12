@@ -174,26 +174,26 @@ void reportPackage(Package *package) {
         }
         
         printf("\"methods\": [");
-        for (size_t i = 0; i < eclass->methodList.size(); i++) {
-            Method *method = eclass->methodList[i];
-            reportFunctionInformation(method, Return, i + 1 == eclass->methodList.size(),
+        for (size_t i = 0; i < eclass->methodList().size(); i++) {
+            Method *method = eclass->methodList()[i];
+            reportFunctionInformation(method, Return, i + 1 == eclass->methodList().size(),
                                        TypeContext(Type(eclass), method));
         }
         printf("],");
         
         printf("\"initializers\": [");
-        for (size_t i = 0; i < eclass->initializerList.size(); i++) {
-            Initializer *initializer = eclass->initializerList[i];
+        for (size_t i = 0; i < eclass->initializerList().size(); i++) {
+            Initializer *initializer = eclass->initializerList()[i];
             reportFunctionInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
-                                       i + 1 == eclass->initializerList.size(),
+                                       i + 1 == eclass->initializerList().size(),
                                        TypeContext(Type(eclass), initializer));
         }
         printf("],");
         
         printf("\"classMethods\": [");
-        for (size_t i = 0; i < eclass->classMethodList.size(); i++) {
-            ClassMethod *classMethod = eclass->classMethodList[i];
-            reportFunctionInformation(classMethod, Return, eclass->classMethodList.size() == i + 1,
+        for (size_t i = 0; i < eclass->classMethodList().size(); i++) {
+            ClassMethod *classMethod = eclass->classMethodList()[i];
+            reportFunctionInformation(classMethod, Return, eclass->classMethodList().size() == i + 1,
                                        TypeContext(Type(eclass), classMethod));
         }
         printf("],");

@@ -32,8 +32,8 @@ bool Type::canHaveGenericArguments() const {
     return type() == TT_CLASS || type() == TT_PROTOCOL;
 }
 
-TypeDefinitionWithGenerics* Type::typeDefinitionWithGenerics() const {
-    return static_cast<TypeDefinitionWithGenerics *>(eclass);
+TypeDefinitionFunctional* Type::typeDefinitionWithGenerics() const {
+    return static_cast<TypeDefinitionFunctional *>(eclass);
 }
 
 Type Type::copyWithoutOptional() const {
@@ -43,7 +43,7 @@ Type Type::copyWithoutOptional() const {
 }
 
 Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool resolveSelf) const {
-    TypeDefinitionWithGenerics *c = typeContext.calleeType().typeDefinitionWithGenerics();
+    TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionWithGenerics();
     Type t = *this;
     bool optional = t.optional();
     

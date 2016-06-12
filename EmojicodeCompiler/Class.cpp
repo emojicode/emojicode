@@ -19,13 +19,13 @@
 
 std::list<Class *> Class::classes_;
 
-Class::Class(EmojicodeChar name, SourcePosition p, Package *pkg, const EmojicodeString &documentation)
-    : TypeDefinitionWithGenerics(name, pkg, documentation), position_(p) {
+Class::Class(EmojicodeChar name, Package *pkg, SourcePosition p, const EmojicodeString &documentation)
+    : TypeDefinitionFunctional(name, pkg, p, documentation) {
     index = classes_.size();
     classes_.push_back(this);
 }
 
-bool Class::canBeUsedToResolve(TypeDefinitionWithGenerics *resolutionConstraint) {
+bool Class::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) {
     if (Class *cl = dynamic_cast<Class *>(resolutionConstraint)) {
         return inheritsFrom(cl);
     }
@@ -45,6 +45,11 @@ void Class::addInstanceVariable(const Variable &variable) {
     instanceVariables_.push_back(variable);
 }
 
+bool Class::addProtocol(Type protocol) {
+    protocols_.push_back(protocol);
+    return true;
+}
+
 Initializer* Class::lookupInitializer(EmojicodeChar name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
         auto pos = eclass->initializers_.find(name);
@@ -58,16 +63,6 @@ Initializer* Class::lookupInitializer(EmojicodeChar name) {
     return nullptr;
 }
 
-Initializer* Class::getInitializer(const Token &token, Type type, TypeContext typeContext) {
-    auto initializer = lookupInitializer(token.value[0]);
-    if (initializer == nullptr) {
-        auto typeString = type.toString(typeContext, true);
-        ecCharToCharStack(token.value[0], initializerString);
-        throw CompilerErrorException(token, "%s has no initializer %s.", typeString.c_str(), initializerString);
-    }
-    return initializer;
-}
-
 Method* Class::lookupMethod(EmojicodeChar name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
         auto pos = eclass->methods_.find(name);
@@ -76,16 +71,6 @@ Method* Class::lookupMethod(EmojicodeChar name) {
         }
     }
     return nullptr;
-}
-
-Method* Class::getMethod(const Token &token, Type type, TypeContext typeContext) {
-    auto method = lookupMethod(token.value[0]);
-    if (method == nullptr) {
-        auto eclass = type.toString(typeContext, true);
-        ecCharToCharStack(token.value[0], method);
-        throw CompilerErrorException(token, "%s has no method %s", eclass.c_str(), method);
-    }
-    return method;
 }
 
 ClassMethod* Class::lookupClassMethod(EmojicodeChar name) {
@@ -98,39 +83,6 @@ ClassMethod* Class::lookupClassMethod(EmojicodeChar name) {
     return nullptr;
 }
 
-ClassMethod* Class::getClassMethod(const Token &token, Type type, TypeContext typeContext) {
-    auto method = lookupClassMethod(token.value[0]);
-    if (method == nullptr) {
-        auto eclass = type.toString(typeContext, true);
-        ecCharToCharStack(token.value[0], method);
-        throw CompilerErrorException(token, "%s has no class method %s", eclass.c_str(), method);
-    }
-    return method;
-}
-
-void Class::addClassMethod(ClassMethod *method) {
-    duplicateDeclarationCheck(method, classMethods_, method->position());
-    classMethods_[method->name] = method;
-    classMethodList.push_back(method);
-}
-
-void Class::addMethod(Method *method) {
-    duplicateDeclarationCheck(method, methods_, method->position());
-    methods_[method->name] = method;
-    methodList.push_back(method);
-}
-
-void Class::addInitializer(Initializer *init) {
-    duplicateDeclarationCheck(init, initializers_, init->position());
-    initializers_[init->name] = init;
-    initializerList.push_back(init);
-    
-    if (init->required) {
-        requiredInitializers_.insert(init->name);
-    }
-}
-
-bool Class::addProtocol(Type protocol) {
-    protocols_.push_back(protocol);
-    return true;
+void Class::handleRequiredInitializer(Initializer *init) {
+    requiredInitializers_.insert(init->name);
 }

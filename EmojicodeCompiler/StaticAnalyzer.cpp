@@ -50,32 +50,32 @@ void analyzeClass(Type classType, Writer &writer) {
     writer.writeByte(eclass->inheritsContructors ? 1 : 0);
     writer.writeUInt16(eclass->nextInitializerVti);
     
-    writer.writeUInt16(eclass->methodList.size());
-    writer.writeUInt16(eclass->initializerList.size());
-    writer.writeUInt16(eclass->classMethodList.size());
+    writer.writeUInt16(eclass->methodList().size());
+    writer.writeUInt16(eclass->initializerList().size());
+    writer.writeUInt16(eclass->classMethodList().size());
     
     for (Variable var : eclass->instanceVariables()) {
         var.setId(offset++);
         objectScope.setLocalVariable(var.definitionToken.value, var);
     }
     
-    for (auto method : eclass->methodList) {
+    for (auto method : eclass->methodList()) {
         auto scoper = CallableScoper(&objectScope);
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(method, writer, classType, scoper);
     }
     
-    for (auto initializer : eclass->initializerList) {
+    for (auto initializer : eclass->initializerList()) {
         auto scoper = CallableScoper(&objectScope);
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(initializer, writer, classType, scoper, false,
                                                          initializer);
     }
     
-    for (auto classMethod : eclass->classMethodList) {
+    for (auto classMethod : eclass->classMethodList()) {
         auto scoper = CallableScoper();
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(classMethod, writer, classType, scoper, true);
     }
     
-    if (eclass->instanceVariables().size() > 0 && eclass->initializerList.size() == 0) {
+    if (eclass->instanceVariables().size() > 0 && eclass->initializerList().size() == 0) {
         auto str = classType.toString(typeNothingness, true);
         compilerWarning(eclass->position(), "Class %s defines %d instances variables but has no initializers.",
                         str.c_str(), eclass->instanceVariables().size());
@@ -169,7 +169,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     // and assign virtual table indexes before we analyze the classes!
     for (auto eclass : Class::classes()) {
         // Decide whether this eclass is eligible for initializer inheritance
-        if (eclass->instanceVariables().size() == 0 && eclass->initializerList.size() == 0) {
+        if (eclass->instanceVariables().size() == 0 && eclass->initializerList().size() == 0) {
             eclass->inheritsContructors = true;
         }
         
@@ -186,8 +186,8 @@ void analyzeClassesAndWrite(FILE *fout) {
         
         Type classType = Type(eclass);
         
-        for (auto method : eclass->methodList) {
-            Method *superMethod = eclass->superclass->lookupMethod(method->name);
+        for (auto method : eclass->methodList()) {
+            auto superMethod = eclass->superclass ? eclass->superclass->lookupMethod(method->name) : NULL;
 
             method->checkOverride(superMethod);
             if (superMethod) {
@@ -198,8 +198,8 @@ void analyzeClassesAndWrite(FILE *fout) {
                 method->setVti(eclass->nextMethodVti++);
             }
         }
-        for (auto clMethod : eclass->classMethodList) {
-            ClassMethod *superMethod = eclass->superclass->lookupClassMethod(clMethod->name);
+        for (auto clMethod : eclass->classMethodList()) {
+            auto superMethod = eclass->superclass ? eclass->superclass->lookupClassMethod(clMethod->name) : NULL;
             
             clMethod->checkOverride(superMethod);
             if (superMethod) {
@@ -213,8 +213,8 @@ void analyzeClassesAndWrite(FILE *fout) {
         
         auto subRequiredInitializerNextVti = eclass->superclass ? eclass->superclass->requiredInitializers().size() : 0;
         eclass->nextInitializerVti += eclass->requiredInitializers().size();
-        for (auto initializer : eclass->initializerList) {
-            Initializer *superInit = eclass->superclass->lookupInitializer(initializer->name);
+        for (auto initializer : eclass->initializerList()) {
+            auto superInit = eclass->superclass ? eclass->superclass->lookupInitializer(initializer->name) : NULL;
             
             initializer->checkOverride(superInit);
             

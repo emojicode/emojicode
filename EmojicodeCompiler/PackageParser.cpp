@@ -36,7 +36,7 @@ void PackageParser::parse() {
                 parseProtocol(documentation, theToken, exported.set());
                 continue;
             case E_TURKEY:
-                parseEnum(documentation, exported.set());
+                parseEnum(documentation, theToken, exported.set());
                 continue;
             case E_RADIO:
                 exported.disallow();
@@ -195,7 +195,7 @@ const Token& PackageParser::parseAndValidateNewTypeName(EmojicodeChar *name, Emo
     return nameToken;
 }
 
-void PackageParser::parseGenericArgumentList(TypeDefinitionWithGenerics *typeDef, TypeContext tc) {
+void PackageParser::parseGenericArgumentList(TypeDefinitionFunctional *typeDef, TypeContext tc) {
     while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
         stream_.consumeToken(IDENTIFIER);
         
@@ -225,7 +225,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
     EmojicodeChar name, enamespace;
     parseAndValidateNewTypeName(&name, &enamespace);
     
-    auto protocol = new Protocol(name, package_, documentation, theToken);
+    auto protocol = new Protocol(name, package_, theToken, documentation);
     
     parseGenericArgumentList(protocol, Type(protocol, false));
     protocol->finalizeGenericArguments();
@@ -263,11 +263,11 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
     stream_.consumeToken(IDENTIFIER);
 }
 
-void PackageParser::parseEnum(const EmojicodeString &documentation, bool exported) {
+void PackageParser::parseEnum(const EmojicodeString &documentation, const Token &theToken, bool exported) {
     EmojicodeChar name, enamespace;
     parseAndValidateNewTypeName(&name, &enamespace);
     
-    Enum *eenum = new Enum(name, package_, documentation);
+    Enum *eenum = new Enum(name, package_, theToken, documentation);
     
     package_->registerType(Type(eenum, false), name, enamespace, exported);
     
@@ -406,7 +406,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
     EmojicodeChar name, enamespace;
     parseAndValidateNewTypeName(&name, &enamespace);
     
-    auto eclass = new Class(name, theToken, package_, documentation);
+    auto eclass = new Class(name, package_, theToken, documentation);
     
     parseGenericArgumentList(eclass, Type(eclass));
     
