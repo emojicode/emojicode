@@ -272,7 +272,7 @@ static void initListWithCapacity(Thread *thread) {
     list->items = n;
 }
 
-HandlerFunction listMethodForName(EmojicodeChar method) {
+FunctionFunctionPointer listMethodForName(EmojicodeChar method) {
     switch (method) {
         case 0x1F43B: //bear
             return listAppendBridge;
@@ -302,7 +302,7 @@ HandlerFunction listMethodForName(EmojicodeChar method) {
     return NULL;
 }
 
-InitializerHandlerFunction listInitializerForName(EmojicodeChar name){
+InitializerFunctionFunctionPointer listInitializerForName(EmojicodeChar name){
     switch (name) {
         case 0x1F427: //🐧
             return initListWithCapacity;

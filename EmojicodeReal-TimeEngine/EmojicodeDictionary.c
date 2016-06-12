@@ -401,7 +401,7 @@ void bridgeDictionaryInit(Thread *thread) {
     dictionaryInit(thread);
 }
 
-HandlerFunction dictionaryMethodForName(EmojicodeChar name) {
+FunctionFunctionPointer dictionaryMethodForName(EmojicodeChar name) {
     switch (name) {
         case 0x1F43D: //🐽
             return bridgeDictionaryGet;
