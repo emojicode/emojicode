@@ -24,6 +24,7 @@
 		E46B2F7C1CD7A32B00447D91 /* Scope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E46B2F7A1CD7A32B00447D91 /* Scope.cpp */; };
 		E46B2F7F1CD7A5A000447D91 /* Variable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E46B2F7D1CD7A5A000447D91 /* Variable.cpp */; };
 		E479370E1C3A5B3200536258 /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E479370D1C3A5B3200536258 /* Function.cpp */; };
+		E47E57E91D0D91D8006611EC /* ValueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47E57E71D0D91D8006611EC /* ValueType.cpp */; };
 		E4805DC81CD2729200B1282B /* CommonTypeFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */; };
 		E489774F1CD2899E00207633 /* StringPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E489774D1CD2899E00207633 /* StringPool.cpp */; };
 		E4BB24C61CD0E2C2003CC098 /* AbstractParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24C41CD0E2C2003CC098 /* AbstractParser.cpp */; };
@@ -108,6 +109,8 @@
 		E46B2F7E1CD7A5A000447D91 /* Variable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Variable.hpp; sourceTree = "<group>"; };
 		E479370D1C3A5B3200536258 /* Function.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Function.cpp; sourceTree = "<group>"; };
 		E47937221C3ACBEC00536258 /* Function.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Function.hpp; sourceTree = "<group>"; };
+		E47E57E71D0D91D8006611EC /* ValueType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ValueType.cpp; sourceTree = "<group>"; };
+		E47E57E81D0D91D8006611EC /* ValueType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ValueType.hpp; sourceTree = "<group>"; };
 		E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommonTypeFinder.cpp; sourceTree = "<group>"; };
 		E4805DC71CD2729200B1282B /* CommonTypeFinder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CommonTypeFinder.hpp; sourceTree = "<group>"; };
 		E489774D1CD2899E00207633 /* StringPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPool.cpp; sourceTree = "<group>"; };
@@ -265,6 +268,8 @@
 				E4BB24CA1CD0F979003CC098 /* TypeDefinitionFunctional.cpp */,
 				E43387CA1C41308500B23165 /* Class.hpp */,
 				E4F9D4001AC6CEE3005A1DD6 /* Class.cpp */,
+				E47E57E81D0D91D8006611EC /* ValueType.hpp */,
+				E47E57E71D0D91D8006611EC /* ValueType.cpp */,
 				E4BB24D01CD0FC90003CC098 /* Protocol.hpp */,
 				E4BB24CF1CD0FC90003CC098 /* Protocol.cpp */,
 				E4BB24D31CD0FF6C003CC098 /* Enum.hpp */,
@@ -412,6 +417,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4EB362B1AA2254700675B52 /* Lexer.cpp in Sources */,
+				E47E57E91D0D91D8006611EC /* ValueType.cpp in Sources */,
 				E4F9D4011AC6CEE3005A1DD6 /* Class.cpp in Sources */,
 				E4BB24CC1CD0F979003CC098 /* TypeDefinitionFunctional.cpp in Sources */,
 				E4BB24C91CD0F7FA003CC098 /* TypeDefinition.cpp in Sources */,

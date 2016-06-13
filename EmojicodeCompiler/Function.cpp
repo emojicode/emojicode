@@ -134,7 +134,7 @@ Type Initializer::type() {
     Type t = Type(TT_CALLABLE, false);
     t.arguments = (uint8_t)arguments.size();
     
-    t.genericArguments.push_back(Type(eclass, canReturnNothingness));
+    t.genericArguments.push_back(Type(owningType.eclass(), canReturnNothingness));
     for (size_t i = 0; i < arguments.size(); i++) {
         t.genericArguments.push_back(arguments[i].type);
     }

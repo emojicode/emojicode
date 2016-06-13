@@ -34,12 +34,15 @@ private:
     
     /** Parses a class definition, starting from the first token after 🐇. */
     void parseClass(const EmojicodeString &string, const Token &theToken, bool exported);
-    /** Parses the body of a class. */
-    void parseClassBody(Class *eclass, std::set<EmojicodeChar> *requiredInitializers, bool allowNative);
     /** Parses a enum defintion, starting from the first token after 🦃. */
     void parseEnum(const EmojicodeString &string, const Token &theToken, bool exported);
     /** Parses a protocol defintion, starting from the first token after🐊. */
     void parseProtocol(const EmojicodeString &string, const Token &theToken, bool exported);
+    /** Parses a value type definition, starting from the first token after 🕊. */
+    void parseValueType(const EmojicodeString &string, const Token &theToken, bool exported);
+    
+    /** Parses the body of a TypeDefinitionFunctional type. */
+    void parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> *requiredInitializers, bool allowNative);
     
     /** Parses a documentation if found and returns its value or an empty string. */
     EmojicodeString parseDocumentationToken();
@@ -64,7 +67,7 @@ public:
     }
 private:
     bool set_ = false;
-    SourcePosition position_ = SourcePosition(0, 0, "Blablabla");
+    SourcePosition position_ = SourcePosition(0, 0, "");
 };
 
 #endif /* PackageParser_hpp */

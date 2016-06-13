@@ -66,18 +66,6 @@ Package* Package::findPackage(const char *name) {
 bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, SourcePosition ep, Type *type) {
     if (ns == globalNamespace) {
         switch (name) {
-            case E_OK_HAND_SIGN:
-                *type = Type(TT_BOOLEAN, optional);
-                return true;
-            case E_INPUT_SYMBOL_FOR_SYMBOLS:
-                *type = Type(TT_SYMBOL, optional);
-                return true;
-            case E_STEAM_LOCOMOTIVE:
-                *type = Type(TT_INTEGER, optional);
-                return true;
-            case E_ROCKET:
-                *type = Type(TT_DOUBLE, optional);
-                return true;
             case E_MEDIUM_WHITE_CIRCLE:
                 if (optional) {
                     compilerWarning(ep, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");

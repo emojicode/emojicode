@@ -15,6 +15,7 @@
 #include "Enum.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
+#include "ValueType.hpp"
 
 //MARK: Globals
 /* Very important one time declarations */
@@ -27,13 +28,52 @@ Class *CL_DICTIONARY;
 Protocol *PR_ENUMERATEABLE;
 Protocol *PR_ENUMERATOR;
 Class *CL_RANGE;
+ValueType *VT_BOOLEAN;
+ValueType *VT_SYMBOL;
+ValueType *VT_INTEGER;
+ValueType *VT_DOUBLE;
+
+Type::Type(Protocol *p, bool o) : typeDefinition_(p), type_(TT_PROTOCOL), optional_(o)  {
+}
+
+Type::Type(Enum *e, bool o) : typeDefinition_(e), type_(TT_ENUM), optional_(o) {
+}
+
+Type::Type(ValueType *v, bool o) : typeDefinition_(v), type_(TT_VALUE_TYPE), optional_(o) {
+}
+
+Type::Type(Class *c, bool o) : typeDefinition_(c), type_(TT_CLASS), optional_(o) {
+    for (int i = 0; i < c->numberOfGenericArgumentsWithSuperArguments(); i++) {
+        genericArguments.push_back(Type(TT_REFERENCE, false, i, c));
+    }
+}
+
+Class* Type::eclass() const {
+    return static_cast<Class *>(typeDefinition_);
+}
+
+Protocol* Type::protocol() const {
+    return static_cast<Protocol *>(typeDefinition_);
+}
+
+Enum* Type::eenum() const {
+    return static_cast<Enum *>(typeDefinition_);
+}
+
+ValueType* Type::valueType() const {
+    return static_cast<ValueType *>(typeDefinition_);
+}
+
+TypeDefinition* Type::typeDefinition() const  {
+    return static_cast<TypeDefinition *>(typeDefinition_);
+}
 
 bool Type::canHaveGenericArguments() const {
     return type() == TT_CLASS || type() == TT_PROTOCOL;
 }
 
 TypeDefinitionFunctional* Type::typeDefinitionFunctional() const {
-    return static_cast<TypeDefinitionFunctional *>(eclass);
+    return static_cast<TypeDefinitionFunctional *>(typeDefinition_);
 }
 
 Type Type::copyWithoutOptional() const {
@@ -106,7 +146,16 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
     return t;
 }
 
-/** Returns the name of a type */
+bool Type::identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
+    if (to.typeDefinitionFunctional()->numberOfOwnGenericArguments()) {
+        for (int l = to.typeDefinitionFunctional()->numberOfOwnGenericArguments(), i = to.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
+            if (!this->genericArguments[i].identicalTo(to.genericArguments[i], ct, ctargs)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
     //(to.optional || !a.optional): Either `to` accepts optionals, or if `to` does not accept optionals `a` mustn't be one.
@@ -118,34 +167,16 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         return to.optional() || !this->optional();
     }
     else if (this->type() == TT_CLASS && to.type() == TT_CLASS) {
-        if ((to.optional() || !this->optional()) && this->eclass->inheritsFrom(to.eclass)) {
-            if (to.eclass->numberOfOwnGenericArguments()) {
-                for (int l = to.eclass->numberOfOwnGenericArguments(), i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
-                    if (!this->genericArguments[i].identicalTo(to.genericArguments[i], ct, ctargs)) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
+        return (to.optional() || !this->optional()) && this->eclass()->inheritsFrom(to.eclass())
+                && identicalGenericArguments(to, ct, ctargs);
     }
-    else if (this->type() == TT_PROTOCOL && to.type() == TT_PROTOCOL) {
-        if ((to.optional() || !this->optional()) && this->protocol == to.protocol) {
-            if (to.eclass->numberOfOwnGenericArguments()) {
-                for (int l = to.eclass->numberOfOwnGenericArguments(), i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
-                    if (!this->genericArguments[i].identicalTo(to.genericArguments[i], ct, ctargs)) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
+    else if ((this->type() == TT_PROTOCOL && to.type() == TT_PROTOCOL) || (this->type() == TT_VALUE_TYPE && to.type() == TT_VALUE_TYPE)) {
+        return (to.optional() || !this->optional()) && this->typeDefinition() == to.typeDefinition()
+                && identicalGenericArguments(to, ct, ctargs);
     }
     else if (this->type() == TT_CLASS && to.type() == TT_PROTOCOL) {
         if (to.optional() || !this->optional()) {
-            for (Class *a = this->eclass; a != nullptr; a = a->superclass) {
+            for (Class *a = this->eclass(); a != nullptr; a = a->superclass) {
                 for (auto protocol : a->protocols()) {
                     if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
                 }
@@ -157,7 +188,7 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         return to.optional() || to.type() == TT_NOTHINGNESS;
     }
     else if (this->type() == TT_ENUM && to.type() == TT_ENUM) {
-        return (to.optional() || !this->optional()) && this->eenum == to.eenum;
+        return (to.optional() || !this->optional()) && this->eenum() == to.eenum();
     }
     else if ((this->type() == TT_REFERENCE && to.type() == TT_REFERENCE) ||
              (this->type() == TT_LOCAL_REFERENCE && to.type() == TT_LOCAL_REFERENCE)) {
@@ -217,42 +248,19 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
     if (type() == to.type()) {
         switch (type()) {
             case TT_CLASS:
-                if (eclass == to.eclass) {
-                    if (to.eclass->numberOfOwnGenericArguments()) {
-                        for (int l = to.eclass->numberOfOwnGenericArguments(),
-                             i = to.eclass->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
-                            if (!this->genericArguments[i].identicalTo(to.genericArguments[i], tc, ctargs)) {
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            case TT_CALLABLE:
-                if (this->genericArguments[0].identicalTo(to.genericArguments[0], tc, ctargs)
-                    && to.arguments == this->arguments) {
-                    for (int i = 1; i <= to.arguments; i++) {
-                        if (!to.genericArguments[i].identicalTo(this->genericArguments[i], tc, ctargs)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            case TT_ENUM:
-                return eenum == to.eenum;
             case TT_PROTOCOL:
-                return protocol == to.protocol;
+            case TT_VALUE_TYPE:
+                return typeDefinitionFunctional() == to.typeDefinitionFunctional()
+                        && identicalGenericArguments(to, tc, ctargs);
+            case TT_CALLABLE:
+                return to.arguments == this->arguments && identicalGenericArguments(to, tc, ctargs);
+            case TT_ENUM:
+                return eenum() == to.eenum();
             case TT_REFERENCE:
             case TT_LOCAL_REFERENCE:
                 return reference == to.reference;
             case TT_SELF:
-            case TT_DOUBLE:
-            case TT_INTEGER:
-            case TT_SYMBOL:
             case TT_SOMETHING:
-            case TT_BOOLEAN:
             case TT_SOMEOBJECT:
             case TT_NOTHINGNESS:
                 return true;
@@ -266,16 +274,11 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
 const char* Type::typePackage() {
     switch (this->type()) {
         case TT_CLASS:
-            return this->eclass->package()->name();
+        case TT_VALUE_TYPE:
         case TT_PROTOCOL:
-            return this->protocol->package()->name();
         case TT_ENUM:
-            return this->eenum->package()->name();
-        case TT_INTEGER:
+            return this->typeDefinition()->package()->name();
         case TT_NOTHINGNESS:
-        case TT_BOOLEAN:
-        case TT_SYMBOL:
-        case TT_DOUBLE:
         case TT_SOMETHING:
         case TT_SOMEOBJECT:
         case TT_REFERENCE:
@@ -291,12 +294,6 @@ void stringAppendEc(EmojicodeChar c, std::string &string) {
     string.append(sc);
 }
 
-Type::Type(Class *c, bool o) : eclass(c), type_(TT_CLASS), optional_(o) {
-    for (int i = 0; i < eclass->numberOfGenericArgumentsWithSuperArguments(); i++) {
-        genericArguments.push_back(Type(TT_REFERENCE, false, i, c));
-    }
-}
-
 void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const {
     if (includePackageAndOptional) {
         if (type.optional()) {
@@ -308,28 +305,13 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
     
     switch (type.type()) {
         case TT_CLASS:
-            stringAppendEc(type.eclass->name(), string);
-            break;
         case TT_PROTOCOL:
-            stringAppendEc(type.protocol->name(), string);
-            break;
         case TT_ENUM:
-            stringAppendEc(type.eenum->name(), string);
-            return;
-        case TT_INTEGER:
-            stringAppendEc(E_STEAM_LOCOMOTIVE, string);
-            return;
+        case TT_VALUE_TYPE:
+            stringAppendEc(type.typeDefinition()->name(), string);
+            break;
         case TT_NOTHINGNESS:
             stringAppendEc(E_SPARKLES, string);
-            return;
-        case TT_BOOLEAN:
-            stringAppendEc(E_OK_HAND_SIGN, string);
-            return;
-        case TT_SYMBOL:
-            stringAppendEc(E_INPUT_SYMBOL_FOR_SYMBOLS, string);
-            return;
-        case TT_DOUBLE:
-            stringAppendEc(E_ROCKET, string);
             return;
         case TT_SOMETHING:
             stringAppendEc(E_MEDIUM_WHITE_CIRCLE, string);
@@ -354,7 +336,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             return;
         case TT_REFERENCE: {
             if (typeContext.calleeType().type() == TT_CLASS) {
-                Class *eclass = typeContext.calleeType().eclass;
+                Class *eclass = typeContext.calleeType().eclass();
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables()) {
                         if (it.second.reference == type.reference) {

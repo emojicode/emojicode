@@ -116,7 +116,7 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         
         parseGenericArgumentsForType(&type, ct, dynamism, token);
         
-        if (!allowProtocolsUsingSelf && type.type() == TT_PROTOCOL && type.protocol->usesSelf()) {
+        if (!allowProtocolsUsingSelf && type.type() == TT_PROTOCOL && type.protocol()->usesSelf()) {
             auto typeStr = type.toString(ct, true);
             throw CompilerErrorException(token, "Protocol %s can only be used as a generic constraint because it uses 🐓.",
                           typeStr.c_str());
@@ -205,7 +205,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext 
         stream_.consumeToken();
         auto &variable = stream_.consumeToken(VARIABLE);
         
-        Type t = parseAndFetchType(Type(p->eclass), GenericTypeVariables, typeNothingness, nullptr, true);
+        Type t = parseAndFetchType(p->owningType, GenericTypeVariables, typeNothingness, nullptr, true);
         p->genericArgumentConstraints.push_back(t);
         
         Type rType = Type(TT_LOCAL_REFERENCE, false);

@@ -18,7 +18,7 @@
 #include "StringPool.hpp"
 
 void analyzeClass(Type classType, Writer &writer) {
-    auto eclass = classType.eclass;
+    auto eclass = classType.eclass();
     
     writer.writeEmojicodeChar(eclass->name());
     if (eclass->superclass) {
@@ -91,18 +91,18 @@ void analyzeClass(Type classType, Writer &writer) {
         uint_fast16_t biggestProtocolIndex = 0;
         
         for (auto protocol : eclass->protocols()) {
-            writer.writeUInt16(protocol.protocol->index);
+            writer.writeUInt16(protocol.protocol()->index);
             
-            if (protocol.protocol->index > biggestProtocolIndex) {
-                biggestProtocolIndex = protocol.protocol->index;
+            if (protocol.protocol()->index > biggestProtocolIndex) {
+                biggestProtocolIndex = protocol.protocol()->index;
             }
-            if (protocol.protocol->index < smallestProtocolIndex) {
-                smallestProtocolIndex = protocol.protocol->index;
+            if (protocol.protocol()->index < smallestProtocolIndex) {
+                smallestProtocolIndex = protocol.protocol()->index;
             }
             
-            writer.writeUInt16(protocol.protocol->methods().size());
+            writer.writeUInt16(protocol.protocol()->methods().size());
             
-            for (auto method : protocol.protocol->methods()) {
+            for (auto method : protocol.protocol()->methods()) {
                 try {
                     Method *clm = eclass->lookupMethod(method->name);
                     if (clm == nullptr) {
@@ -233,6 +233,11 @@ void analyzeClassesAndWrite(FILE *fout) {
         }
     }
     
+    int functionVti = 0;
+    for (auto function : Function::functions()) {
+        function->setVti(functionVti++);
+    }
+    
     writer.writeUInt16(Class::classes().size());
     
     auto pkgCount = Package::packagesInOrder().size();
@@ -274,7 +279,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     writer.writeUInt16(functions.size());
     for (auto function : functions) {
         auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(function, writer, typeNothingness, scoper, true);
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(function, writer, function->owningType, scoper, true);
     }
     
     writer.writeUInt16(theStringPool.strings().size());

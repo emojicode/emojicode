@@ -133,16 +133,16 @@ void reportPackage(Package *package) {
     std::list<Class *> classes;
     std::list<Protocol *> protocols;
     
-    for (auto exported : package->exportedTypes()) {
+    for (auto exported : package->exportedTypes()) { // TODO: Add Value Type
         switch (exported.type.type()) {
             case TT_CLASS:
-                classes.push_back(exported.type.eclass);
+                classes.push_back(exported.type.eclass());
                 break;
             case TT_ENUM:
-                enums.push_back(exported.type.eenum);
+                enums.push_back(exported.type.eenum());
                 break;
             case TT_PROTOCOL:
-                protocols.push_back(exported.type.protocol);
+                protocols.push_back(exported.type.protocol());
                 break;
             default:
                 break;

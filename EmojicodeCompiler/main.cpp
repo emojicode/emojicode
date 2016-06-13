@@ -17,6 +17,7 @@
 #include "EmojicodeCompiler.hpp"
 #include "CompilerErrorException.hpp"
 #include "PackageReporter.hpp"
+#include "ValueType.hpp"
 
 char* EmojicodeString::utf8CString() const {
     // Size needed for UTF8 representation
@@ -115,8 +116,9 @@ Class* getStandardClass(EmojicodeChar name, Package *_, SourcePosition errorPosi
     if (type.type() != TT_CLASS) {
         ecCharToCharStack(name, nameString)
         throw CompilerErrorException(errorPosition, "s package class %s is missing.", nameString);
+        
     }
-    return type.eclass;
+    return type.eclass();
 }
 
 Protocol* getStandardProtocol(EmojicodeChar name, Package *_, SourcePosition errorPosition) {
@@ -126,11 +128,26 @@ Protocol* getStandardProtocol(EmojicodeChar name, Package *_, SourcePosition err
         ecCharToCharStack(name, nameString)
         throw CompilerErrorException(errorPosition, "s package protocol %s is missing.", nameString);
     }
-    return type.protocol;
+    return type.protocol();
+}
+
+ValueType* getStandardValueType(EmojicodeChar name, Package *_, SourcePosition errorPosition) {
+    Type type = typeNothingness;
+    _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
+    if (type.type() != TT_VALUE_TYPE) {
+        ecCharToCharStack(name, nameString)
+        throw CompilerErrorException(errorPosition, "s package value type %s is missing.", nameString);
+    }
+    return type.valueType();
 }
 
 void loadStandard(Package *_, SourcePosition errorPosition) {
     auto package = _->loadPackage("s", globalNamespace, errorPosition);
+    
+    VT_DOUBLE = getStandardValueType(E_ROCKET, _, errorPosition);
+    VT_BOOLEAN = getStandardValueType(E_OK_HAND_SIGN, _, errorPosition);
+    VT_SYMBOL = getStandardValueType(E_INPUT_SYMBOL_FOR_SYMBOLS, _, errorPosition);
+    VT_INTEGER = getStandardValueType(E_STEAM_LOCOMOTIVE, _, errorPosition);
     
     CL_STRING = getStandardClass(0x1F521, _, errorPosition);
     CL_LIST = getStandardClass(0x1F368, _, errorPosition);
@@ -195,6 +212,8 @@ int main(int argc, char * argv[]) {
     pkg.setPackageVersion(PackageVersion(1, 0));
     
     FILE *out = fopen(outPath, "wb");
+    
+    Function::addFunction(nullptr);
     
     try {
         loadStandard(&pkg, errorPosition);

@@ -11,6 +11,7 @@
 #include "Class.hpp"
 #include "Function.hpp"
 #include "Enum.hpp"
+#include "ValueType.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 
@@ -87,12 +88,15 @@ void PackageParser::parse() {
                 }
                 
                 // Native extensions are allowed if the class was defined in this package.
-                parseClassBody(type.eclass, nullptr, type.eclass->package() == package_);
+                parseTypeDefinitionBody(type, nullptr, type.eclass()->package() == package_);
                 
                 continue;
             }
             case E_RABBIT:
                 parseClass(documentation, theToken, exported.set());
+                continue;
+            case E_DOVE_OF_PEACE:
+                parseValueType(documentation, theToken, exported.set());
                 continue;
             case E_SCROLL: {
                 exported.disallow();
@@ -120,13 +124,12 @@ void PackageParser::parse() {
                 }
                 Function::foundStart = true;
                 
-                auto function = new Function(E_CHEQUERED_FLAG, PUBLIC, false, NULL, package_, theToken,
+                auto function = new Function(E_CHEQUERED_FLAG, PUBLIC, false, typeNothingness, package_, theToken,
                                               false, documentation, false);
-                function->setVti(0);
                 function->returnType = typeInteger;
                 parseBody(function, false);
                 
-                Function::addFunction(function);
+                Function::setStartBlockFunction(function);
                 break;
             }
             default:
@@ -250,7 +253,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
         
         auto methodName = stream_.consumeToken(IDENTIFIER);
         
-        auto method = new Method(methodName.value[0], PUBLIC, false, nullptr, package_, methodName.position(),
+        auto method = new Method(methodName.value[0], PUBLIC, false, typeNothingness, package_, methodName.position(),
                                  false, documentation, deprecated.set());
         auto a = parseArgumentList(method, protocolType);
         auto b = parseReturnType(method, protocolType);
@@ -282,126 +285,6 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
     stream_.consumeToken(IDENTIFIER);
 }
 
-void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requiredInitializers, bool allowNative) {
-    allowNative = allowNative && package_->requiresBinary();
-    
-    auto token = stream_.consumeToken(IDENTIFIER);
-    if (token.value[0] != E_GRAPES) {
-        ecCharToCharStack(token.value[0], s);
-        throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
-    }
-    
-    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        auto documentation = parseDocumentationToken();
-        
-        auto deprecated = Attribute<E_WARNING_SIGN>().parse(&stream_);
-        auto final = Attribute<E_LOCK_WITH_INK_PEN>().parse(&stream_);
-        AccessLevel accessLevel = readAccessLevel(&stream_);
-        auto override = Attribute<E_BLACK_NIB>().parse(&stream_);
-        auto staticOnType = Attribute<E_RABBIT>().parse(&stream_);
-        auto required = Attribute<E_KEY>().parse(&stream_);
-        auto canReturnNothingness = Attribute<E_CANDY>().parse(&stream_);
-        
-        auto token = stream_.consumeToken(IDENTIFIER);
-        switch (token.value[0]) {
-            case E_SHORTCAKE: {
-                staticOnType.disallow();
-                override.disallow();
-                final.disallow();
-                required.disallow();
-                canReturnNothingness.disallow();
-                deprecated.disallow();
-
-                auto &variableName = stream_.consumeToken(VARIABLE);
-                auto type = parseAndFetchType(Type(eclass), GenericTypeVariables);
-                eclass->addInstanceVariable(Variable(type, 0, 1, false, variableName));
-                break;
-            }
-            case E_CROCODILE: {
-                staticOnType.disallow();
-                override.disallow();
-                final.disallow();
-                required.disallow();
-                canReturnNothingness.disallow();
-                deprecated.disallow();
-                
-                Type type = parseAndFetchType(Type(eclass), GenericTypeVariables, typeNothingness, nullptr, true);
-                
-                if (type.optional()) {
-                    throw CompilerErrorException(token, "A class cannot conform to an 🍬 protocol.");
-                }
-                if (type.type() != TT_PROTOCOL) {
-                    throw CompilerErrorException(token, "The given type is not a protocol.");
-                }
-                
-                eclass->addProtocol(type);
-            }
-                break;
-            case E_PIG: {
-                required.disallow();
-                canReturnNothingness.disallow();
-
-                auto methodName = stream_.consumeToken(IDENTIFIER);
-                EmojicodeChar name = methodName.value[0];
-                
-                if (staticOnType.set()) {
-                    auto *classMethod = new ClassMethod(name, accessLevel, final.set(), eclass, package_,
-                                                        token.position(), override.set(), documentation,
-                                                        deprecated.set());
-                    auto context = TypeContext(Type(eclass), classMethod);
-                    parseGenericArgumentsInDefinition(classMethod, context);
-                    parseArgumentList(classMethod, context);
-                    parseReturnType(classMethod, context);
-                    parseBody(classMethod, allowNative);
-                    
-                    eclass->addClassMethod(classMethod);
-                }
-                else {
-                    reservedEmojis(methodName, "method");
-                    
-                    auto *method = new Method(methodName.value[0], accessLevel, final.set(), eclass,
-                                              package_, token.position(), override.set(), documentation,
-                                              deprecated.set());
-                    auto context = TypeContext(Type(eclass), method);
-                    parseGenericArgumentsInDefinition(method, context);
-                    parseArgumentList(method, context);
-                    parseReturnType(method, context);
-                    parseBody(method, allowNative);
-                    
-                    eclass->addMethod(method);
-                }
-            }
-                break;
-            case E_CAT: {
-                staticOnType.disallow();
-                
-                EmojicodeChar name = stream_.consumeToken(IDENTIFIER).value[0];
-                Initializer *initializer = new Initializer(name, accessLevel, final.set(), eclass, package_,
-                                                           token.position(), override.set(), documentation,
-                                                           deprecated.set(), required.set(),
-                                                           canReturnNothingness.set());
-                auto context = TypeContext(Type(eclass), initializer);
-                parseGenericArgumentsInDefinition(initializer, context);
-                parseArgumentList(initializer, context);
-                parseBody(initializer, allowNative);
-                
-                if (requiredInitializers) {
-                    requiredInitializers->erase(name);
-                }
-                
-                eclass->addInitializer(initializer);
-            }
-                break;
-            default: {
-                ecCharToCharStack(token.value[0], cs);
-                throw CompilerErrorException(token, "Unexpected identifier %s.", cs);
-                break;
-            }
-        }
-    }
-    stream_.consumeToken(IDENTIFIER);
-}
-
 void PackageParser::parseClass(const EmojicodeString &documentation, const Token &theToken, bool exported) {
     EmojicodeChar name, enamespace;
     parseAndValidateNewTypeName(&name, &enamespace);
@@ -423,10 +306,10 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
             throw CompilerErrorException(token, "The superclass must be a class.");
         }
         if (type.optional()) {
-            throw CompilerErrorException(token, "You cannot inherit from an 🍬.");
+            throw CompilerErrorException(token, "An 🍬 is not a valid superclass.");
         }
         
-        eclass->superclass = type.eclass;
+        eclass->superclass = type.eclass();
         
         eclass->setSuperTypeDef(eclass->superclass);
         parseGenericArgumentsForType(&type, Type(eclass), GenericTypeVariables, token);
@@ -447,12 +330,158 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         requiredInitializers = std::set<EmojicodeChar>(eclass->superclass->requiredInitializers());
     }
     
-    parseClassBody(eclass, &requiredInitializers, true);
+    parseTypeDefinitionBody(Type(eclass), &requiredInitializers, true);
     
     if (requiredInitializers.size()) {
         ecCharToCharStack(*requiredInitializers.begin(), name);
         throw CompilerErrorException(eclass->position(), "Required initializer %s was not implemented.", name);
     }
+}
+
+void PackageParser::parseValueType(const EmojicodeString &documentation, const Token &theToken, bool exported) {
+    EmojicodeChar name, enamespace;
+    parseAndValidateNewTypeName(&name, &enamespace);
+    
+    auto valueType = new ValueType(name, package_, theToken, documentation);
+    
+    auto valueTypeType = Type(valueType, false);
+    
+    parseGenericArgumentList(valueType, valueTypeType);
+    valueType->finalizeGenericArguments();
+    
+    package_->registerType(valueTypeType, name, enamespace, exported);
+    parseTypeDefinitionBody(valueTypeType, nullptr, false);
+}
+
+void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> *requiredInitializers,
+                                            bool allowNative) {
+    allowNative = allowNative && package_->requiresBinary();
+    
+    auto token = stream_.consumeToken(IDENTIFIER);
+    if (token.value[0] != E_GRAPES) {
+        ecCharToCharStack(token.value[0], s);
+        throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
+    }
+    
+    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
+        auto documentation = parseDocumentationToken();
+        
+        auto deprecated = Attribute<E_WARNING_SIGN>().parse(&stream_);
+        auto final = Attribute<E_LOCK_WITH_INK_PEN>().parse(&stream_);
+        AccessLevel accessLevel = readAccessLevel(&stream_);
+        auto override = Attribute<E_BLACK_NIB>().parse(&stream_);
+        auto staticOnType = Attribute<E_RABBIT>().parse(&stream_);
+        auto required = Attribute<E_KEY>().parse(&stream_);
+        auto canReturnNothingness = Attribute<E_CANDY>().parse(&stream_);
+        
+        auto eclass = typed.type() == TT_CLASS ? typed.eclass() : nullptr;
+        
+        auto token = stream_.consumeToken(IDENTIFIER);
+        switch (token.value[0]) {
+            case E_SHORTCAKE: {
+                if (!eclass) {
+                    throw CompilerErrorException(token, "🍰 not allowed here.");
+                }
+                
+                staticOnType.disallow();
+                override.disallow();
+                final.disallow();
+                required.disallow();
+                canReturnNothingness.disallow();
+                deprecated.disallow();
+
+                auto &variableName = stream_.consumeToken(VARIABLE);
+                auto type = parseAndFetchType(typed, GenericTypeVariables);
+                eclass->addInstanceVariable(Variable(type, 0, 1, false, variableName));
+                break;
+            }
+            case E_CROCODILE: {
+                if (!eclass) {
+                    throw CompilerErrorException(token, "🐊 not supported yet.");
+                }
+                
+                staticOnType.disallow();
+                override.disallow();
+                final.disallow();
+                required.disallow();
+                canReturnNothingness.disallow();
+                deprecated.disallow();
+                
+                Type type = parseAndFetchType(typed, GenericTypeVariables, typeNothingness, nullptr, true);
+                
+                if (type.optional()) {
+                    throw CompilerErrorException(token, "A class cannot conform to an 🍬 protocol.");
+                }
+                if (type.type() != TT_PROTOCOL) {
+                    throw CompilerErrorException(token, "The given type is not a protocol.");
+                }
+                
+                eclass->addProtocol(type);
+                break;
+            }
+            case E_PIG: {
+                required.disallow();
+                canReturnNothingness.disallow();
+
+                auto methodName = stream_.consumeToken(IDENTIFIER);
+                EmojicodeChar name = methodName.value[0];
+                
+                if (staticOnType.set()) {
+                    auto *classMethod = new ClassMethod(name, accessLevel, final.set(), typed, package_,
+                                                        token.position(), override.set(), documentation,
+                                                        deprecated.set());
+                    auto context = TypeContext(typed, classMethod);
+                    parseGenericArgumentsInDefinition(classMethod, context);
+                    parseArgumentList(classMethod, context);
+                    parseReturnType(classMethod, context);
+                    parseBody(classMethod, allowNative);
+                    
+                    typed.typeDefinitionFunctional()->addClassMethod(classMethod);
+                }
+                else {
+                    reservedEmojis(methodName, "method");
+                    
+                    auto *method = new Method(methodName.value[0], accessLevel, final.set(), typed,
+                                              package_, token.position(), override.set(), documentation,
+                                              deprecated.set());
+                    auto context = TypeContext(typed, method);
+                    parseGenericArgumentsInDefinition(method, context);
+                    parseArgumentList(method, context);
+                    parseReturnType(method, context);
+                    parseBody(method, allowNative);
+                    
+                    typed.typeDefinitionFunctional()->addMethod(method);
+                }
+                break;
+            }
+            case E_CAT: {
+                staticOnType.disallow();
+                
+                EmojicodeChar name = stream_.consumeToken(IDENTIFIER).value[0];
+                Initializer *initializer = new Initializer(name, accessLevel, final.set(), typed, package_,
+                                                           token.position(), override.set(), documentation,
+                                                           deprecated.set(), required.set(),
+                                                           canReturnNothingness.set());
+                auto context = TypeContext(typed, initializer);
+                parseGenericArgumentsInDefinition(initializer, context);
+                parseArgumentList(initializer, context);
+                parseBody(initializer, allowNative);
+                
+                if (requiredInitializers) {
+                    requiredInitializers->erase(name);
+                }
+                
+                typed.typeDefinitionFunctional()->addInitializer(initializer);
+                break;
+            }
+            default: {
+                ecCharToCharStack(token.value[0], cs);
+                throw CompilerErrorException(token, "Unexpected identifier %s.", cs);
+                break;
+            }
+        }
+    }
+    stream_.consumeToken(IDENTIFIER);
 }
 
 EmojicodeString PackageParser::parseDocumentationToken() {

@@ -11,6 +11,7 @@
 #include "Token.hpp"
 #include "Type.hpp"
 #include "Function.hpp"
+#include "TypeContext.hpp"
 
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Type constraint) {
     genericArgumentConstraints_.push_back(constraint);

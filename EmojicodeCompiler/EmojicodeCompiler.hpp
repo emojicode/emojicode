@@ -25,10 +25,7 @@ class Token;
 class Type;
 class Package;
 class CompilerErrorException;
-
-class Method;
-class Initializer;
-class ClassMethod;
+class ValueType;
 
 struct SourcePosition;
 
@@ -45,6 +42,10 @@ extern Class *CL_DICTIONARY;
 extern Class *CL_RANGE;
 extern Protocol *PR_ENUMERATOR;
 extern Protocol *PR_ENUMERATEABLE;
+extern ValueType *VT_BOOLEAN;
+extern ValueType *VT_SYMBOL;
+extern ValueType *VT_INTEGER;
+extern ValueType *VT_DOUBLE;
 
 //MARK: Errors
 

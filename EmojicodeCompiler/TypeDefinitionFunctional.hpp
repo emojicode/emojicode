@@ -11,7 +11,12 @@
 
 #include <vector>
 #include "TypeDefinition.hpp"
-#include "TypeContext.hpp"
+#include "Type.hpp"
+
+class TypeContext;
+class Initializer;
+class Method;
+class ClassMethod;
 
 class TypeDefinitionFunctional : public TypeDefinition {
 public:
@@ -62,9 +67,9 @@ public:
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     virtual ClassMethod* lookupClassMethod(EmojicodeChar name);
     
-    void addMethod(Method *method);
-    void addInitializer(Initializer *method);
-    void addClassMethod(ClassMethod *method);
+    virtual void addMethod(Method *method);
+    virtual void addInitializer(Initializer *method);
+    virtual void addClassMethod(ClassMethod *method);
     
     const std::vector<Method *>& methodList() const { return methodList_; }
     const std::vector<Initializer *>& initializerList() const { return initializerList_; }

@@ -283,8 +283,11 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         
             return performFunction(class->methodsVtable[vti], stackGetThis(thread), thread);
         }
-        case 0x6:
-            return performFunction(functionTable[consumeCoin(thread)], NULL, thread);
+        case 0x6: {
+            Something s = parse(consumeCoin(thread), thread);
+            EmojicodeCoin c = consumeCoin(thread);
+            return performFunction(functionTable[c], NULL, thread);
+        }
         case 0x10:
             return somethingObject(stringPool[consumeCoin(thread)]);
         case 0x11:

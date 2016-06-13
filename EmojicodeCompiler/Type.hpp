@@ -15,22 +15,22 @@
 #include <vector>
 #include <string>
 
+class TypeDefinition;
 class Enum;
 class Class;
 class Protocol;
 class Package;
 class TypeDefinitionFunctional;
+class TypeContext;
+class Function;
+class ValueType;
 struct CommonTypeFinder;
 
 enum TypeType {
     TT_CLASS,
     TT_PROTOCOL,
     TT_ENUM,
-    
-    TT_BOOLEAN,
-    TT_INTEGER,
-    TT_SYMBOL,
-    TT_DOUBLE,
+    TT_VALUE_TYPE,
     TT_NOTHINGNESS,
     /** Maybe everything. */
     TT_SOMETHING,
@@ -55,18 +55,16 @@ enum TypeDynamism {
     Self = 0b10
 };
 
-class TypeContext;
-class Function;
-
 class Type {
 public:
     Type(TypeType t, bool o) : type_(t), optional_(o) {}
     Type(TypeType t, bool o, uint16_t r, TypeDefinitionFunctional *c)
         : reference(r), resolutionConstraint(c), type_(t), optional_(o) {}
-    Type(Class *c, bool o);
     explicit Type(Class *c) : Type(c, false) {};
-    Type(Protocol *p, bool o) : protocol(p), type_(TT_PROTOCOL), optional_(o)  {}
-    Type(Enum *e, bool o) : eenum(e), type_(TT_ENUM), optional_(o) {}
+    Type(Class *c, bool o);
+    Type(Protocol *p, bool o);
+    Type(Enum *e, bool o);
+    Type(ValueType *v, bool o);
     
     /** Returns the type of this type. Whether it’s an integer, class, etc. */
     TypeType type() const { return type_; }
@@ -74,11 +72,13 @@ public:
     bool canHaveGenericArguments() const;
     /** Returns the represented TypeDefinitonWithGenerics by using a cast. */
     TypeDefinitionFunctional* typeDefinitionFunctional() const;
+    Class* eclass() const;
+    Protocol* protocol() const;
+    Enum* eenum() const;
+    ValueType* valueType() const;
+    TypeDefinition* typeDefinition() const;
     
     union {
-        Class *eclass;
-        Protocol *protocol;
-        Enum *eenum;
         struct {
             uint16_t reference;
             TypeDefinitionFunctional *resolutionConstraint;
@@ -116,17 +116,18 @@ public:
      */
     std::string toString(TypeContext contextType, bool includeNsAndOptional) const;
 private:
+    TypeDefinition *typeDefinition_;
     TypeType type_;
     bool optional_;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
+    bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
 };
 
-#define typeInteger (Type(TT_INTEGER, false))
-#define typeBoolean (Type(TT_BOOLEAN, false))
-#define typeSymbol (Type(TT_SYMBOL, false))
+#define typeInteger (Type(VT_INTEGER, false))
+#define typeBoolean (Type(VT_BOOLEAN, false))
+#define typeSymbol (Type(VT_SYMBOL, false))
+#define typeFloat (Type(VT_DOUBLE, false))
 #define typeSomething (Type(TT_SOMETHING, false))
-#define typeLong (Type(TT_LONG, false))
-#define typeFloat (Type(TT_DOUBLE, false))
 #define typeNothingness (Type(TT_NOTHINGNESS, false))
 #define typeSomeobject (Type(TT_SOMEOBJECT, false))
 

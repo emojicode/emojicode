@@ -63,6 +63,7 @@ public:
     static bool foundStart;
     static const std::vector<Function *>& functions() { return functions_; }
     static void addFunction(Function *function) { functions_.push_back(function); }
+    static void setStartBlockFunction(Function *function) { functions_[0] = function; }
     
     static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
                                    const char *on, Type contextType);
@@ -71,14 +72,14 @@ public:
     static void checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
                               const char *on, Type contextType);
     
-    Function(EmojicodeChar name, AccessLevel level, bool final, Class *eclass,
+    Function(EmojicodeChar name, AccessLevel level, bool final, Type owningType,
               Package *package, SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated)
         : Callable(p),
           name(name),
           overriding(overriding),
           deprecated(deprecated),
           access(level),
-          eclass(eclass),
+          owningType(owningType),
           documentationToken(documentationToken),
           package(package) {}
     
@@ -94,7 +95,7 @@ public:
     AccessLevel access;
     
     /** Class which defined this function. This can be @c nullptr if the function belongs to a protocol. */
-    Class *eclass;
+    Type owningType;
     
     EmojicodeString documentationToken;
     
@@ -141,9 +142,9 @@ public:
  
 class Initializer: public Function {
 public:
-    Initializer(EmojicodeChar name, AccessLevel level, bool final, Class *eclass, Package *package, SourcePosition p,
+    Initializer(EmojicodeChar name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
                 bool overriding, EmojicodeString documentationToken, bool deprecated, bool r, bool crn)
-        : Function(name, level, final, eclass, package, p, overriding, documentationToken, deprecated),
+        : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated),
           required(r),
           canReturnNothingness(crn) {}
     

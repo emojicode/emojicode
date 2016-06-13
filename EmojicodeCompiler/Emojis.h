@@ -101,6 +101,7 @@ enum Emojis {
     E_ANGER_SYMBOL = 0x1F4A2,
     E_DANGO = 0x1F361,
     E_DOWN_POINTING_SMALL_RED_TRIANGLE = 0x1F53D,
+    E_DOVE_OF_PEACE = 0x1F54A,
 };
 
 #endif /* Emojis_h */
