@@ -289,6 +289,10 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeCoin c = consumeCoin(thread);
             return performFunction(functionTable[c], s, thread);
         }
+        case 0x7: {
+            EmojicodeCoin c = consumeCoin(thread);
+            return performFunction(functionTable[c], NOTHINGNESS, thread);
+        }
         case 0x10:
             return somethingObject(stringPool[consumeCoin(thread)]);
         case 0x11:
