@@ -1,6 +1,13 @@
 🔮 0 1
 📻
 
+🌮
+  This class represents a *renderer* that actually renders graphics content on
+  the GPU.
+
+  A renderer always belongs to a window which displays the renderered cotent
+  once the 🍾 method was called
+🌮
 🌍 🐇 🖌 🍇🍉
 
 🌮 A rectangle used by various methods. 🌮
@@ -32,13 +39,6 @@
   🐈 ⛸ renderer 🖌 surface ⛸ 📻
 🍉
 
-🌮
-  This class represents a *renderer* that actually renders graphics content on
-  the GPU.
-
-  A renderer always belongs to a window which displays the renderered cotent
-  once the 🍾 method was called
-🌮
 🐋 🖌 🍇
   🐈 🆕 window 🖼 📻
   🌮
