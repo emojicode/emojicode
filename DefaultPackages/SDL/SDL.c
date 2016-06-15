@@ -70,7 +70,7 @@ static void windowInit(Thread *thread){
     int y = (int)unwrapInteger(stackGetVariable(2, thread));
     int w = (int)unwrapInteger(stackGetVariable(3, thread));
     int h = (int)unwrapInteger(stackGetVariable(4, thread));
-    *(SDL_Window **)stackGetThis(thread)->value = SDL_CreateWindow(str, x, y, w, h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    *(SDL_Window **)stackGetThisObject(thread)->value = SDL_CreateWindow(str, x, y, w, h, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     free(str);
 }
 
@@ -80,7 +80,7 @@ static void windowDeinit(void *w){
 
 static void rendererInit(Thread *thread){
     SDL_Window *window = *(SDL_Window **)stackGetVariable(0, thread).object->value;
-    *(SDL_Renderer **)stackGetThis(thread)->value = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    *(SDL_Renderer **)stackGetThisObject(thread)->value = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 }
 
 static void rendererDeinit(void *r){
@@ -88,7 +88,7 @@ static void rendererDeinit(void *r){
 }
 
 static Something rendererDrawLine(Thread *thread){
-    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThis(thread)->value;
+    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThisObject(thread)->value;
     int x1 = (int)unwrapInteger(stackGetVariable(0, thread));
     int y1 = (int)unwrapInteger(stackGetVariable(1, thread));
     int x2 = (int)unwrapInteger(stackGetVariable(2, thread));
@@ -99,19 +99,19 @@ static Something rendererDrawLine(Thread *thread){
 }
 
 static Something rendererFillRect(Thread *thread){
-    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThis(thread)->value;
+    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThisObject(thread)->value;
     SDL_RenderFillRect(renderer, (SDL_Rect *)stackGetVariable(0, thread).object->value);
     return NOTHINGNESS;
 }
 
 static Something rendererDrawRect(Thread *thread){
-    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThis(thread)->value;
+    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThisObject(thread)->value;
     SDL_RenderDrawRect(renderer, (SDL_Rect *)stackGetVariable(0, thread).object->value);
     return NOTHINGNESS;
 }
 
 static Something rendererSetDrawColor(Thread *thread){
-    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThis(thread)->value;
+    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThisObject(thread)->value;
     int r = (uint8_t)unwrapInteger(stackGetVariable(0, thread));
     int g = (uint8_t)unwrapInteger(stackGetVariable(1, thread));
     int b = (uint8_t)unwrapInteger(stackGetVariable(2, thread));
@@ -121,19 +121,19 @@ static Something rendererSetDrawColor(Thread *thread){
 }
 
 static Something rendererPresent(Thread *thread){
-    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThis(thread)->value;
+    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThisObject(thread)->value;
     SDL_RenderPresent(renderer);
     return NOTHINGNESS;
 }
 
 static Something rendererClear(Thread *thread){
-    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThis(thread)->value;
+    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThisObject(thread)->value;
     SDL_RenderClear(renderer);
     return NOTHINGNESS;
 }
 
 static void rectInit(Thread *thread){
-    SDL_Rect *rect = stackGetThis(thread)->value;
+    SDL_Rect *rect = stackGetThisObject(thread)->value;
     rect->x = (int)unwrapInteger(stackGetVariable(0, thread));
     rect->y = (int)unwrapInteger(stackGetVariable(1, thread));
     rect->w = (int)unwrapInteger(stackGetVariable(2, thread));
@@ -141,7 +141,7 @@ static void rectInit(Thread *thread){
 }
 
 static Something rendererCopyTexture(Thread *thread){
-    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThis(thread)->value;
+    SDL_Renderer *renderer = *(SDL_Renderer **)stackGetThisObject(thread)->value;
     Something source = stackGetVariable(1, thread);
     Something destination = stackGetVariable(2, thread);
     SDL_RenderCopy(renderer, *(SDL_Texture **)stackGetVariable(0, thread).object->value, nullOrValue(source), nullOrValue(destination));
@@ -151,7 +151,7 @@ static Something rendererCopyTexture(Thread *thread){
 static void textureInitFromSurface(Thread *thread){
     SDL_Renderer **renderer = stackGetVariable(0, thread).object->value;
     SDL_Surface **surface = stackGetVariable(1, thread).object->value;
-    *(SDL_Texture **)stackGetThis(thread)->value = SDL_CreateTextureFromSurface(*renderer, *surface);
+    *(SDL_Texture **)stackGetThisObject(thread)->value = SDL_CreateTextureFromSurface(*renderer, *surface);
 }
 
 
@@ -160,11 +160,11 @@ static void surfaceInitFromBMP(Thread *thread){
     SDL_Surface *surface = SDL_LoadBMP(path);
     
     if (surface == NULL) {
-        stackGetThis(thread)->value = NULL;
+        stackGetThisObject(thread)->value = NULL;
         return;
     }
     
-    *(SDL_Surface**)stackGetThis(thread)->value = surface;
+    *(SDL_Surface**)stackGetThisObject(thread)->value = surface;
     free(path);
 }
 
@@ -176,27 +176,27 @@ static void surfaceDeinit(void *r){
 //MARK: Events
 
 static Something keyboardEventDown(Thread *thread){
-    SDL_KeyboardEvent *e = stackGetThis(thread)->value;
+    SDL_KeyboardEvent *e = stackGetThisObject(thread)->value;
     return e->type == SDL_KEYDOWN ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
 static Something keyboardEventSymbol(Thread *thread){
-    SDL_KeyboardEvent *e = stackGetThis(thread)->value;
+    SDL_KeyboardEvent *e = stackGetThisObject(thread)->value;
     return keyCodeToChar(e->keysym.sym);
 }
 
 static Something mouseButtonEventGetX(Thread *thread){
-    SDL_MouseButtonEvent *e = stackGetThis(thread)->value;
+    SDL_MouseButtonEvent *e = stackGetThisObject(thread)->value;
     return somethingInteger(e->x);
 }
 
 static Something mouseButtonEventGetY(Thread *thread){
-    SDL_MouseButtonEvent *e = stackGetThis(thread)->value;
+    SDL_MouseButtonEvent *e = stackGetThisObject(thread)->value;
     return somethingInteger(e->y);
 }
 
 static Something mouseButtonEventDown(Thread *thread){
-    SDL_MouseButtonEvent *e = stackGetThis(thread)->value;
+    SDL_MouseButtonEvent *e = stackGetThisObject(thread)->value;
     return e->type == SDL_MOUSEBUTTONDOWN ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 

@@ -57,6 +57,7 @@ typedef struct Object {
 #define T_BOOLEAN 2
 #define T_SYMBOL 3
 #define T_DOUBLE 4
+#define T_CLASS 5
 
 typedef uint_fast8_t Type;
 typedef unsigned char Byte;
@@ -69,6 +70,7 @@ typedef struct {
         EmojicodeInteger raw;
         double doubl;
         Object *object;
+        Class *eclass;
     };
 } Something;
 
@@ -81,6 +83,7 @@ typedef struct {
 #define somethingSymbol(o) ((Something){T_SYMBOL, (o)})
 #define somethingBoolean(o) ((Something){T_BOOLEAN, (o)})
 #define somethingDouble(o) ((Something){T_DOUBLE, .doubl = (o)})
+#define somethingClass(o) ((Something){T_CLASS, .eclass = (o)})
 #define EMOJICODE_TRUE ((Something){T_BOOLEAN, 1})
 #define EMOJICODE_FALSE ((Something){T_BOOLEAN, 0})
 #define NOTHINGNESS ((Something){T_OBJECT, .object = NULL})
@@ -212,34 +215,33 @@ extern void disallowGCAndPauseIfNeeded();
  * @c this The object/class context.
  * @c variable The number of variables to store in the stack frame.
  */
-void stackPush(void *this, uint8_t variableCount, uint8_t argCount, Thread *thread);
+void stackPush(Something thisContext, uint8_t variableCount, uint8_t argCount, Thread *thread);
 
 /** Pops the current stack frame from the stack. */
 void stackPop(Thread *thread);
 
 /** Get the variable at the given index. */
 Something stackGetVariable(uint8_t index, Thread *thread);
-
 /** Set the variable at the given index. */
 void stackSetVariable(uint8_t index, Something value, Thread *thread);
-
 /** Decrements the variable at the given index. */
 void stackDecrementVariable(uint8_t index, Thread *thread);
 /** Increments the variable at the given index. */
 void stackIncrementVariable(uint8_t index, Thread *thread);
 
-Something* stackReserveFrame(void *t, uint8_t variableCount, Thread *thread);
+Something* stackReserveFrame(Something thisContext, uint8_t variableCount, Thread *thread);
 
 void stackPushReservedFrame(Thread *thread);
 
 StackState storeStackState(Thread *thread);
 void restoreStackState(StackState s, Thread *thread);
 
+/** Returns the value on which the method was called. */
+Something stackGetThisContext(Thread *);
 /** Returns the object on which the method was called. */
-Object* stackGetThis(Thread *);
-
+Object* stackGetThisObject(Thread *);
 /** Returns the class on which the method was called. */
-Class* stackGetThisClass(Thread *thread);
+__attribute__((deprecated)) Class* stackGetThisObjectClass(Thread *thread);
 
 
 //MARK: Packages

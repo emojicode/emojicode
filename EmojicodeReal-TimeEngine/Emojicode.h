@@ -15,10 +15,7 @@
 //MARK: Stack
 
 struct StackFrame {
-    union {
-        Object *this;
-        Class *thisClass;
-    };
+    Something thisContext;
     uint8_t variableCount;
     void *returnPointer;
     void *returnFutureStack;
@@ -155,7 +152,7 @@ struct InitializerFunction {
 };
 
 typedef struct {
-    Object *object;
+    Something callee;
     Function *method;
 } CapturedMethodCall;
 
@@ -166,7 +163,7 @@ typedef struct {
     uint8_t capturedVariablesCount;
     uint8_t variableCount;
     Object *capturedVariables;
-    void *this;
+    Something thisContext;
 } Closure;
 
 //MARK: Parsing

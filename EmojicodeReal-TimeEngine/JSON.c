@@ -47,7 +47,7 @@ typedef struct {
 #define jsonMaxDepth 256
 
 Something parseJSON(Thread *thread) {
-    const size_t length = ((String*)stackGetThis(thread)->value)->length;
+    const size_t length = ((String*)stackGetThisObject(thread)->value)->length;
     JSONStackFrame stack[jsonMaxDepth];
     JSONStackFrame *stackLimit = stack + jsonMaxDepth - 1;
     JSONStackFrame *stackCurrent = stack;
@@ -64,7 +64,7 @@ Something parseJSON(Thread *thread) {
             errorExit();
         }
         
-        c = characters((String *)stackGetThis(thread)->value)[i++];
+        c = characters((String *)stackGetThisObject(thread)->value)[i++];
         
         switch (stackCurrent->state) {
             case JSON_STRING:
@@ -97,7 +97,7 @@ Something parseJSON(Thread *thread) {
                         appendEscape('r', '\r')
                         appendEscape('t', '\t')
                     case 'u': {
-                        EmojicodeChar *chars = characters((String *)stackGetThis(thread)->value);
+                        EmojicodeChar *chars = characters((String *)stackGetThisObject(thread)->value);
                         EmojicodeInteger x = 0, high = 0;
                         while (true) {
                             for (size_t e = i + 4; i < e; i++) {
@@ -263,22 +263,22 @@ Something parseJSON(Thread *thread) {
                 switch (c) {
                     case '"':
                         stackCurrent->state = JSON_STRING;
-                        stackPush(stackGetThis(thread), 2, 0, thread);
+                        stackPush(stackGetThisContext(thread), 2, 0, thread);
                         Object *string = newObject(CL_LIST);
                         stackSetVariable(0, somethingObject(string), thread);
                         break;
                     case '{':
                         stackCurrent->state = JSON_OBJECT_KEY;
-                        stackPush(newObject(CL_DICTIONARY), 0, 0, thread);
+                        stackPush(somethingObject(newObject(CL_DICTIONARY)), 0, 0, thread);
                         dictionaryInit(thread);
-                        Object *o = stackGetThis(thread);
+                        Object *o = stackGetThisObject(thread);
                         stackPop(thread);
-                        stackPush(stackGetThis(thread), 2, 0, thread);
+                        stackPush(somethingObject(stackGetThisObject(thread)), 2, 0, thread);
                         stackSetVariable(0, somethingObject(o), thread);
                         break;
                     case '[':
                         stackCurrent->state = JSON_ARRAY_FIRST;
-                        stackPush(stackGetThis(thread), 1, 0, thread);
+                        stackPush(somethingObject(stackGetThisObject(thread)), 1, 0, thread);
                         stackSetVariable(0, somethingObject(newObject(CL_LIST)), thread);
                         break;
                     case 't':

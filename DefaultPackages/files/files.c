@@ -190,12 +190,12 @@ Something fileDataGet(Thread *thread){
     }
     fclose(file);
     
-    stackPush(bytesObject, 0, 0, thread);
+    stackPush(somethingObject(bytesObject), 0, 0, thread);
     
     Object *obj = newObject(CL_DATA);
     Data *data = obj->value;
     data->length = length;
-    data->bytesObject = stackGetThis(thread);
+    data->bytesObject = stackGetThisObject(thread);
     data->bytes = data->bytesObject->value;
     
     stackPop(thread);
@@ -206,19 +206,19 @@ Something fileDataGet(Thread *thread){
 #define file(obj) (*((FILE**)(obj)->value))
 
 Something fileStdinGet(Thread *thread){
-    Object *obj = newObject(stackGetThisClass(thread));
+    Object *obj = newObject(stackGetThisObjectClass(thread));
     file(obj) = stdin;
     return somethingObject(obj);
 }
 
 Something fileStdoutGet(Thread *thread){
-    Object *obj = newObject(stackGetThisClass(thread));
+    Object *obj = newObject(stackGetThisObjectClass(thread));
     file(obj) = stdout;
     return somethingObject(obj);
 }
 
 Something fileStderrGet(Thread *thread){
-    Object *obj = newObject(stackGetThisClass(thread));
+    Object *obj = newObject(stackGetThisObjectClass(thread));
     file(obj) = stderr;
     return somethingObject(obj);
 }
@@ -229,10 +229,10 @@ void fileForWriting(Thread *thread){
     char *p = stringToChar(stackGetVariable(0, thread).object->value);
     FILE *f = fopen(p, "wb");
     if (f){
-        file(stackGetThis(thread)) = f;
+        file(stackGetThisObject(thread)) = f;
     }
     else {
-        stackGetThis(thread)->value = NULL;
+        stackGetThisObject(thread)->value = NULL;
     }
     free(p);
 }
@@ -241,16 +241,16 @@ void fileForReading(Thread *thread){
     char *p = stringToChar(stackGetVariable(0, thread).object->value);
     FILE *f = fopen(p, "rb");
     if (f){
-        file(stackGetThis(thread)) = f;
+        file(stackGetThisObject(thread)) = f;
     }
     else {
-        stackGetThis(thread)->value = NULL;
+        stackGetThisObject(thread)->value = NULL;
     }
     free(p);
 }
 
 Something fileWriteData(Thread *thread){
-    FILE *f = file(stackGetThis(thread));
+    FILE *f = file(stackGetThisObject(thread));
     Data *d = stackGetVariable(0, thread).object->value;
     
     fwrite(d->bytes, 1, d->length, f);
@@ -261,7 +261,7 @@ Something fileWriteData(Thread *thread){
 }
 
 Something fileReadData(Thread *thread){
-    FILE *f = file(stackGetThis(thread));
+    FILE *f = file(stackGetThisObject(thread));
     EmojicodeInteger n = unwrapInteger(stackGetVariable(0, thread));
     
     Object *bytesObject = newArray(n);
@@ -272,12 +272,12 @@ Something fileReadData(Thread *thread){
         return NOTHINGNESS;
     }
     
-    stackPush(bytesObject, 0, 0, thread);
+    stackPush(somethingObject(bytesObject), 0, 0, thread);
     
     Object *obj = newObject(CL_DATA);
     Data *data = obj->value;
     data->length = n;
-    data->bytesObject = stackGetThis(thread);
+    data->bytesObject = stackGetThisObject(thread);
     data->bytes = data->bytesObject->value;
     
     stackPop(thread);
@@ -286,12 +286,12 @@ Something fileReadData(Thread *thread){
 }
 
 Something fileSeekTo(Thread *thread){
-    fseek(file(stackGetThis(thread)), unwrapInteger(stackGetVariable(0, thread)), SEEK_SET);
+    fseek(file(stackGetThisObject(thread)), unwrapInteger(stackGetVariable(0, thread)), SEEK_SET);
     return NOTHINGNESS;
 }
 
 Something fileSeekToEnd(Thread *thread){
-    fseek(file(stackGetThis(thread)), 0, SEEK_END);
+    fseek(file(stackGetThisObject(thread)), 0, SEEK_END);
     return NOTHINGNESS;
 }
 

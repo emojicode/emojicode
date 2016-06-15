@@ -68,7 +68,7 @@ static Something systemTime(Thread *thread) {
 }
 
 static Something systemArgs(Thread *thread) {
-    stackPush(NULL, 1, 0, thread);
+    stackPush(NOTHINGNESS, 1, 0, thread);
     
     Object *listObject = newObject(CL_LIST);
     stackSetVariable(0, somethingObject(listObject), thread);
@@ -133,7 +133,7 @@ static Something systemSystem(Thread *thread) {
 
 void* threadStarter(void *threadv) {
     Thread *thread = threadv;
-    Object *callable = stackGetThis(thread);
+    Object *callable = stackGetThisObject(thread);
     stackPop(thread);
     executeCallableExtern(callable, NULL, thread);
     removeThread(thread);
@@ -142,7 +142,7 @@ void* threadStarter(void *threadv) {
 
 static Something threadJoin(Thread *thread) {
     allowGC();
-    bool l = pthread_join(*(pthread_t *)((Object *)stackGetThis(thread))->value, NULL) == 0;
+    bool l = pthread_join(*(pthread_t *)((Object *)stackGetThisObject(thread))->value, NULL) == 0;
     disallowGCAndPauseIfNeeded();
     return l ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
@@ -154,16 +154,16 @@ static Something threadSleep(Thread *thread){
 
 static void initThread(Thread *thread) {
     Thread *t = allocateThread();
-    stackPush(stackGetVariable(0, thread).object, 0, 0, t);
-    pthread_create((pthread_t *)((Object *)stackGetThis(thread))->value, NULL, threadStarter, t);
+    stackPush(stackGetVariable(0, thread), 0, 0, t);
+    pthread_create((pthread_t *)((Object *)stackGetThisObject(thread))->value, NULL, threadStarter, t);
 }
 
 static void initMutex(Thread *thread) {
-    pthread_mutex_init(((Object *)stackGetThis(thread))->value, NULL);
+    pthread_mutex_init(((Object *)stackGetThisObject(thread))->value, NULL);
 }
 
 static Something mutexLock(Thread *thread) {
-    while (pthread_mutex_trylock(((Object *)stackGetThis(thread))->value) != 0) {
+    while (pthread_mutex_trylock(((Object *)stackGetThisObject(thread))->value) != 0) {
         //TODO: Obviously stupid, but this is the only safe way. If pthread_mutex_lock was used,
         //the thread would be block, and the GC could cause a deadlock. allowGC, however, would
         //allow moving this mutex – obviously not a good idea either when using pthread_mutex_lock.
@@ -174,12 +174,12 @@ static Something mutexLock(Thread *thread) {
 }
 
 static Something mutexUnlock(Thread *thread) {
-    pthread_mutex_unlock(((Object *)stackGetThis(thread))->value);
+    pthread_mutex_unlock(((Object *)stackGetThisObject(thread))->value);
     return NOTHINGNESS;
 }
 
 static Something mutexTryLock(Thread *thread) {
-    return pthread_mutex_trylock(((Object *)stackGetThis(thread))->value) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+    return pthread_mutex_trylock(((Object *)stackGetThisObject(thread))->value) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
 //MARK: Error
@@ -195,18 +195,18 @@ Object* newError(const char *message, int code){
 }
 
 void newErrorBridge(Thread *thread){
-    EmojicodeError *error = stackGetThis(thread)->value;
+    EmojicodeError *error = stackGetThisObject(thread)->value;
     error->message = stringToChar(stackGetVariable(0, thread).object->value);
     error->code = unwrapInteger(stackGetVariable(1, thread));
 }
 
 static Something errorGetMessage(Thread *thread){
-    EmojicodeError *error = stackGetThis(thread)->value;
+    EmojicodeError *error = stackGetThisObject(thread)->value;
     return somethingObject(stringFromChar(error->message));
 }
 
 static Something errorGetCode(Thread *thread){
-    EmojicodeError *error = stackGetThis(thread)->value;
+    EmojicodeError *error = stackGetThisObject(thread)->value;
     return somethingInteger((EmojicodeInteger)error->code);
 }
 
@@ -217,14 +217,14 @@ void rangeSetDefaultStep(EmojicodeRange *range) {
 }
 
 static void initRangeStartStop(Thread *thread) {
-    EmojicodeRange *range = stackGetThis(thread)->value;
+    EmojicodeRange *range = stackGetThisObject(thread)->value;
     range->start = stackGetVariable(0, thread).raw;
     range->stop = stackGetVariable(1, thread).raw;
     rangeSetDefaultStep(range);
 }
 
 static void initRangeStartStopStep(Thread *thread) {
-    EmojicodeRange *range = stackGetThis(thread)->value;
+    EmojicodeRange *range = stackGetThisObject(thread)->value;
     range->start = stackGetVariable(0, thread).raw;
     range->stop = stackGetVariable(1, thread).raw;
     range->step = stackGetVariable(2, thread).raw;
@@ -232,7 +232,7 @@ static void initRangeStartStopStep(Thread *thread) {
 }
 
 static Something rangeGet(Thread *thread) {
-    EmojicodeRange *range = stackGetThis(thread)->value;
+    EmojicodeRange *range = stackGetThisObject(thread)->value;
     EmojicodeInteger h = range->start + stackGetVariable(0, thread).raw * range->step;
     return (range->step > 0 ? range->start <= h && h < range->stop : range->stop < h && h <= range->start) ? somethingInteger(h) : NOTHINGNESS;
 }
@@ -240,7 +240,7 @@ static Something rangeGet(Thread *thread) {
 //MARK: Data
 
 static Something dataEqual(Thread *thread) {
-    Data *d = stackGetThis(thread)->value;
+    Data *d = stackGetThisObject(thread)->value;
     Data *b = stackGetVariable(0, thread).object->value;
     
     if(d->length != b->length){
@@ -251,7 +251,7 @@ static Something dataEqual(Thread *thread) {
 }
 
 static Something dataSize(Thread *thread) {
-    Data *d = stackGetThis(thread)->value;
+    Data *d = stackGetThisObject(thread)->value;
     return somethingInteger((EmojicodeInteger)d->length);
 }
 
@@ -264,7 +264,7 @@ static void dataMark(Object *o) {
 }
 
 static Something dataGetByte(Thread *thread) {
-    Data *d = stackGetThis(thread)->value;
+    Data *d = stackGetThisObject(thread)->value;
     
     EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
     if (index < 0) {
@@ -340,8 +340,8 @@ static Something mathLn(Thread *thread) {
 
 static void closureMark(Object *o){
     Closure *c = o->value;
-    if (isPossibleObjectPointer(c->this)) {
-        mark((Object **)&c->this);
+    if (isRealObject(c->thisContext)) {
+        mark(&c->thisContext.object);
     }
     mark(&c->capturedVariables);
     
@@ -356,7 +356,9 @@ static void closureMark(Object *o){
 
 static void capturedMethodMark(Object *o){
     CapturedMethodCall *c = o->value;
-    mark(&c->object);
+    if (isRealObject(c->callee)) {
+        mark(&c->callee.object);
+    }
 }
 
 FunctionFunctionPointer integerMethodForName(EmojicodeChar name);

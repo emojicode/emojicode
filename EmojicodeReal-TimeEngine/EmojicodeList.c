@@ -15,17 +15,17 @@
 
 void expandListSize(Thread *thread){
 #define initialSize 7
-    List *list = stackGetThis(thread)->value;
+    List *list = stackGetThisObject(thread)->value;
     if (list->capacity == 0) {
         Object *object = newArray(sizeof(Something) * initialSize);
-        list = stackGetThis(thread)->value;
+        list = stackGetThisObject(thread)->value;
         list->items = object;
         list->capacity = initialSize;
     }
     else {
         size_t newSize = list->capacity + (list->capacity >> 1);
         Object *object = resizeArray(list->items, sizeCalculationWithOverflowProtection(newSize, sizeof(Something)));
-        list = stackGetThis(thread)->value;
+        list = stackGetThisObject(thread)->value;
         list->items = object;
         list->capacity = newSize;
     }
@@ -33,7 +33,7 @@ void expandListSize(Thread *thread){
 }
 
 void listEnsureCapacity(Thread *thread, size_t size) {
-    List *list = stackGetThis(thread)->value;
+    List *list = stackGetThisObject(thread)->value;
     if (list->capacity < size) {
         Object *object;
         if (list->capacity == 0) {
@@ -42,7 +42,7 @@ void listEnsureCapacity(Thread *thread, size_t size) {
         else {
             object = resizeArray(list->items, sizeCalculationWithOverflowProtection(size, sizeof(Something)));
         }
-        list = stackGetThis(thread)->value;
+        list = stackGetThisObject(thread)->value;
         list->items = object;
         list->capacity = size;
     }
@@ -60,12 +60,12 @@ void listMark(Object *self){
 }
 
 void listAppend(Object *lo, Something o, Thread *thread){
-    stackPush(lo, 0, 0, thread);
+    stackPush(somethingObject(lo), 0, 0, thread);
     List *list = lo->value;
     if (list->capacity - list->count == 0) {
         expandListSize(thread);
     }
-    list = stackGetThis(thread)->value;
+    list = stackGetThisObject(thread)->value;
     items(list)[list->count++] = o;
     stackPop(thread);
 }
@@ -103,10 +103,10 @@ Something listGet(List *list, EmojicodeInteger i){
 }
 
 Something listSet(EmojicodeInteger index, Something value, Thread *thread) {
-    List *list = stackGetThis(thread)->value;
+    List *list = stackGetThisObject(thread)->value;
     
     listEnsureCapacity(thread, index + 1);
-    list = stackGetThis(thread)->value;
+    list = stackGetThisObject(thread)->value;
     
     if (list->count <= index)
         list->count = index + 1;
@@ -130,29 +130,29 @@ void listShuffleInPlace(List *list) {
 /* MARK: Emoji bridges */
 
 static Something listCountBridge(Thread *thread){
-    return somethingInteger((EmojicodeInteger)((List *)stackGetThis(thread)->value)->count);
+    return somethingInteger((EmojicodeInteger)((List *)stackGetThisObject(thread)->value)->count);
 }
 
 static Something listAppendBridge(Thread *thread){
-    listAppend(stackGetThis(thread), stackGetVariable(0, thread), thread);
+    listAppend(stackGetThisObject(thread), stackGetVariable(0, thread), thread);
     return NOTHINGNESS;
 }
 
 static Something listGetBridge(Thread *thread){
-    return listGet(stackGetThis(thread)->value, unwrapInteger(stackGetVariable(0, thread)));
+    return listGet(stackGetThisObject(thread)->value, unwrapInteger(stackGetVariable(0, thread)));
 }
 
 static Something listRemoveBridge(Thread *thread){
-    return listRemoveByIndex(stackGetThis(thread)->value, unwrapInteger(stackGetVariable(0, thread))) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+    return listRemoveByIndex(stackGetThisObject(thread)->value, unwrapInteger(stackGetVariable(0, thread))) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
 static Something listPopBridge(Thread *thread){
-    return listPop(stackGetThis(thread)->value);
+    return listPop(stackGetThisObject(thread)->value);
 }
 
 static Something listInsertBridge(Thread *thread){
     EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
-    List *list = stackGetThis(thread)->value;
+    List *list = stackGetThisObject(thread)->value;
     
     if (index < 0) {
         index += list->count;
@@ -165,7 +165,7 @@ static Something listInsertBridge(Thread *thread){
         expandListSize(thread);
     }
     
-    list = stackGetThis(thread)->value;
+    list = stackGetThisObject(thread)->value;
     
     memmove(items(list) + index + 1, items(list) + index, sizeof(Something) * (list->count++ - index));
     items(list)[index] = stackGetVariable(1, thread);
@@ -177,7 +177,7 @@ static void listQSort(Thread *thread, size_t off, size_t n) {
     if (n < 2)
         return;
     
-    Something *items = items((List *)stackGetThis(thread)->value) + off;
+    Something *items = items((List *)stackGetThisObject(thread)->value) + off;
     Something pivot = items[n / 2];
     size_t i, j;
     
@@ -185,7 +185,7 @@ static void listQSort(Thread *thread, size_t off, size_t n) {
         while (true) {
             Something args[2] = {items[i], pivot};
             EmojicodeInteger c = executeCallableExtern(stackGetVariable(0, thread).object, args, thread).raw;
-            items = items((List *)stackGetThis(thread)->value) + off;
+            items = items((List *)stackGetThisObject(thread)->value) + off;
             if (c >= 0) break;
             i++;
         }
@@ -193,7 +193,7 @@ static void listQSort(Thread *thread, size_t off, size_t n) {
         while (true) {
             Something args[2] = {pivot, items[j]};
             EmojicodeInteger c = executeCallableExtern(stackGetVariable(0, thread).object, args, thread).raw;
-            items = items((List *)stackGetThis(thread)->value) + off;
+            items = items((List *)stackGetThisObject(thread)->value) + off;
             if (c >= 0) break;
             j--;
         }
@@ -211,18 +211,18 @@ static void listQSort(Thread *thread, size_t off, size_t n) {
 }
 
 static Something listSort(Thread *thread) {
-    List *list = stackGetThis(thread)->value;
+    List *list = stackGetThisObject(thread)->value;
     listQSort(thread, 0, list->count);
     return NOTHINGNESS;
 }
 
 static Something listFromListBridge(Thread *thread) {
     Object *listO = newObject(CL_LIST);
-    stackPush(stackGetThis(thread), 1, 0, thread);
+    stackPush(stackGetThisContext(thread), 1, 0, thread);
     stackSetVariable(0, somethingObject(listO), thread);
     
     List *list = listO->value;
-    List *cpdList = stackGetThis(thread)->value;
+    List *cpdList = stackGetThisObject(thread)->value;
     
     list->count = cpdList->count;
     list->capacity = cpdList->capacity;
@@ -230,7 +230,7 @@ static Something listFromListBridge(Thread *thread) {
     Object *items = newArray(sizeof(Something) * cpdList->capacity);
     listO = stackGetVariable(0, thread).object;
     list = listO->value;
-    cpdList = stackGetThis(thread)->value;
+    cpdList = stackGetThisObject(thread)->value;
     list->items = items;
     
     memcpy(items(list), items(cpdList), cpdList->count * sizeof(Something));
@@ -239,7 +239,7 @@ static Something listFromListBridge(Thread *thread) {
 }
 
 static Something listRemoveAllBridge(Thread *thread) {
-    List *list = stackGetThis(thread)->value;
+    List *list = stackGetThisObject(thread)->value;
     memset(items(list), 0, list->count);
     list->count = 0;
     return NOTHINGNESS;
@@ -250,7 +250,7 @@ static Something listSetBridge(Thread *thread) {
 }
 
 static Something listShuffleInPlaceBridge(Thread *thread) {
-    listShuffleInPlace(stackGetThis(thread)->value);
+    listShuffleInPlace(stackGetThisObject(thread)->value);
     return NOTHINGNESS;
 }
 
@@ -267,7 +267,7 @@ static void initListEmptyBridge(Thread *thread) {
 static void initListWithCapacity(Thread *thread) {
     EmojicodeInteger capacity = stackGetVariable(0, thread).raw;
     Object *n = newArray(sizeCalculationWithOverflowProtection(capacity, sizeof(Something)));
-    List *list = stackGetThis(thread)->value;
+    List *list = stackGetThisObject(thread)->value;
     list->capacity = capacity;
     list->items = n;
 }

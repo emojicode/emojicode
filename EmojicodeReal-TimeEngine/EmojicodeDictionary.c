@@ -63,10 +63,10 @@ EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeD
 
 /** @warning GC-Invoking */
 Object* dictionaryNewNode(Object **dicto, EmojicodeDictionaryHash hash, Object *key, Something value, Object *next, Thread *thread){
-    stackPush(*dicto, 0, 0, thread);
+    stackPush(somethingObject(*dicto), 0, 0, thread);
     Object *nodeo = newArray(sizeof(EmojicodeDictionaryNode));
     EmojicodeDictionaryNode *node = (EmojicodeDictionaryNode *) nodeo->value;
-    *dicto = stackGetThis(thread);
+    *dicto = stackGetThisObject(thread);
     stackPop(thread);
     
     node->hash = hash;
@@ -107,9 +107,9 @@ Object* dictionaryResize(Object *dicto, Thread *thread) {
         newThr = (newCap < DICTIONARY_MAXIMUM_CAPACTIY && ft < (float)DICTIONARY_MAXIMUM_CAPACTIY) ? (size_t)ft : DICTIONARY_MAXIMUM_CAPACTIY_THRESHOLD;
     }
     
-    stackPush(dicto, 0, 0, thread);
+    stackPush(somethingObject(dicto), 0, 0, thread);
     Object *newBuckoo = newArray(newCap * sizeof(Object *));
-    dicto = stackGetThis(thread);
+    dicto = stackGetThisObject(thread);
     dict = dicto->value;
     stackPop(thread);
     
@@ -286,13 +286,13 @@ size_t dictionaryClear(EmojicodeDictionary *dict) {
 }
 
 Something dictionaryKeys(Object *dicto, Thread *thread) {
-    stackPush(dicto, 2, 0, thread);
+    stackPush(somethingObject(dicto), 2, 0, thread);
     
     {
         Object *listObject = newObject(CL_LIST);
         stackSetVariable(0, somethingObject(listObject), thread);
         
-        dicto = stackGetThis(thread);
+        dicto = stackGetThisObject(thread);
         EmojicodeDictionary *dict = dicto->value;
         
         List *newList = listObject->value;
@@ -301,7 +301,7 @@ Something dictionaryKeys(Object *dicto, Thread *thread) {
         ((List *)stackGetVariable(0, thread).object->value)->items = items;
     }
     
-    dicto = stackGetThis(thread);
+    dicto = stackGetThisObject(thread);
     EmojicodeDictionary *dict = dicto->value;
     
     for (size_t i = 0; i < dict->bucketsCounter; i++) {
@@ -314,7 +314,7 @@ Something dictionaryKeys(Object *dicto, Thread *thread) {
 
             nodeo = ((EmojicodeDictionaryNode *) stackGetVariable(1, thread).object->value)->next;
             
-            dicto = stackGetThis(thread);
+            dicto = stackGetThisObject(thread);
             dict = dicto->value;
         }
     }
@@ -326,7 +326,7 @@ Something dictionaryKeys(Object *dicto, Thread *thread) {
 }
 
 void dictionaryInit(Thread *thread) {
-    EmojicodeDictionary *dict = stackGetThis(thread)->value;
+    EmojicodeDictionary *dict = stackGetThisObject(thread)->value;
     dict->loadFactor = DICTIONARY_DEFAULT_LOAD_FACTOR;
 }
 
@@ -360,13 +360,13 @@ void dictionarySet(Object *dicto, Object *key, Something value, Thread *thread){
 //MARK: Bridges
 
 static Something bridgeDictionarySet(Thread *thread) {
-    dictionarySet(stackGetThis(thread), stackGetVariable(0, thread).object, stackGetVariable(1, thread), thread);
+    dictionarySet(stackGetThisObject(thread), stackGetVariable(0, thread).object, stackGetVariable(1, thread), thread);
     return NOTHINGNESS;
 }
 
 static Something bridgeDictionaryGet(Thread *thread) {
     Object *key = stackGetVariable(0, thread).object;
-    EmojicodeDictionaryNode *node = dictionaryGetNode(stackGetThis(thread)->value, dictionaryHash(stackGetThis(thread)->value, key), key);
+    EmojicodeDictionaryNode *node = dictionaryGetNode(stackGetThisObject(thread)->value, dictionaryHash(stackGetThisObject(thread)->value, key), key);
     if(node == NULL){
         return NOTHINGNESS;
     }
@@ -376,25 +376,25 @@ static Something bridgeDictionaryGet(Thread *thread) {
 }
 
 static Something bridgeDictionaryRemove(Thread *thread) {
-    dictionaryRemove(stackGetThis(thread)->value, stackGetVariable(0, thread).object, thread);
+    dictionaryRemove(stackGetThisObject(thread)->value, stackGetVariable(0, thread).object, thread);
     return NOTHINGNESS;
 }
 
 static Something bridgeDictionaryKeys(Thread *thread) {
-    return dictionaryKeys(stackGetThis(thread), thread);
+    return dictionaryKeys(stackGetThisObject(thread), thread);
 }
 
 static Something bridgeDictionaryClear(Thread *thread) {
-    return somethingInteger(dictionaryClear(stackGetThis(thread)->value));
+    return somethingInteger(dictionaryClear(stackGetThisObject(thread)->value));
 }
 
 static Something bridgeDictionaryContains(Thread *thread) {
     Object *key = stackGetVariable(0, thread).object;
-    return somethingBoolean(dictionaryContains(stackGetThis(thread)->value, key));
+    return somethingBoolean(dictionaryContains(stackGetThisObject(thread)->value, key));
 }
 
 static Something bridgeDictionarySize(Thread *thread) {
-    return somethingInteger(((EmojicodeDictionary *) stackGetThis(thread)->value)->size);
+    return somethingInteger(((EmojicodeDictionary *) stackGetThisObject(thread)->value)->size);
 }
 
 void bridgeDictionaryInit(Thread *thread) {
