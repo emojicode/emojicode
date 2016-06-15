@@ -124,10 +124,10 @@ Object* stringFromChar(const char *cstring){
 //MARK: Bridges
 
 static Something stringPrintStdoutBrigde(Thread *thread){
-//    String *string = stackGetThisObject(thread)->value;
-//    char *utf8str = stringToChar(string);
-//    printf("%s\n", utf8str);
-//    free(utf8str);
+    String *string = stackGetThisObject(thread)->value;
+    char *utf8str = stringToChar(string);
+    printf("%s\n", utf8str);
+    free(utf8str);
     return NOTHINGNESS;
 }
 
