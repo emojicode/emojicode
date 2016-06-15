@@ -146,10 +146,12 @@ public:
                 bool overriding, EmojicodeString documentationToken, bool deprecated, bool r, bool crn)
         : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated),
           required(r),
-          canReturnNothingness(crn) {}
+          canReturnNothingness(crn) {
+              returnType = owningType;
+    }
     
-    bool required : 1;
-    bool canReturnNothingness : 1;
+    bool required;
+    bool canReturnNothingness;
     const char *on = "Initializer";
     
     Type type();

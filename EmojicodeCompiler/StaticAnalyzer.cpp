@@ -61,18 +61,20 @@ void analyzeClass(Type classType, Writer &writer) {
     
     for (auto method : eclass->methodList()) {
         auto scoper = CallableScoper(&objectScope);
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(method, writer, classType, scoper);
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(method, writer, classType, scoper,
+                                                        StaticFunctionAnalyzerMode::ObjectMethod);
     }
     
     for (auto initializer : eclass->initializerList()) {
         auto scoper = CallableScoper(&objectScope);
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(initializer, writer, classType, scoper, false,
-                                                         initializer);
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(initializer, writer, classType, scoper,
+                                                        StaticFunctionAnalyzerMode::ObjectInitializer);
     }
     
     for (auto classMethod : eclass->classMethodList()) {
         auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(classMethod, writer, classType, scoper, true);
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(classMethod, writer, classType, scoper,
+                                                        StaticFunctionAnalyzerMode::Function);
     }
     
     if (eclass->instanceVariables().size() > 0 && eclass->initializerList().size() == 0) {
@@ -279,7 +281,8 @@ void analyzeClassesAndWrite(FILE *fout) {
     writer.writeUInt16(functions.size());
     for (auto function : functions) {
         auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(function, writer, function->owningType, scoper, true);
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(function, writer, function->owningType, scoper,
+                                                        StaticFunctionAnalyzerMode::ThisContextFunction);
     }
     
     writer.writeUInt16(theStringPool.strings().size());

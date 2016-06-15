@@ -150,7 +150,7 @@ void StaticFunctionAnalyzer::writeCoinForScopesUp(bool inObjectScope, EmojicodeC
 
 void StaticFunctionAnalyzer::flowControlBlock(bool block) {
     scoper.currentScope().changeInitializedBy(1);
-    if (!inClassContext) {
+    if (mode == StaticFunctionAnalyzerMode::ObjectMethod || mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
         scoper.objectScope()->changeInitializedBy(1);
     }
     
@@ -183,7 +183,7 @@ void StaticFunctionAnalyzer::flowControlBlock(bool block) {
     }
     
     scoper.currentScope().changeInitializedBy(-1);
-    if (!inClassContext) {
+    if (mode == StaticFunctionAnalyzerMode::ObjectMethod || mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
         scoper.objectScope()->changeInitializedBy(-1);
     }
     
@@ -587,17 +587,18 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_DOG: {
             usedSelf = true;
             writer.writeCoin(0x3C, token);
-            if (initializer && !calledSuper && initializer->owningType.eclass()->superclass) {
-                throw CompilerErrorException(token, "Attempt to use 🐕 before superinitializer call.");
+            if (mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
+                if (!calledSuper && static_cast<Initializer &>(callable).owningType.eclass()->superclass) {
+                    throw CompilerErrorException(token, "Attempt to use 🐕 before superinitializer call.");
+                }
+                
+                scoper.objectScope()->initializerUnintializedVariablesCheck(token,
+                                                                            "Instance variable \"%s\" must be initialized before the use of 🐕.");
             }
             
-            if (inClassContext) {
+            if (mode == StaticFunctionAnalyzerMode::Function) {
                 throw CompilerErrorException(token, "Illegal use of 🐕.");
-                break;
             }
-            
-            scoper.objectScope()->initializerUnintializedVariablesCheck(token,
-                                                "Instance variable \"%s\" must be initialized before the use of 🐕.");
             
             return typeContext.calleeType();
         }
@@ -619,13 +620,11 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             return typeBoolean;
         }
         case E_GOAT: {
-            if (!initializer) {
+            if (mode != StaticFunctionAnalyzerMode::ObjectInitializer) {
                 throw CompilerErrorException(token, "🐐 can only be used inside initializers.");
-                break;
             }
             if (!typeContext.calleeType().eclass()->superclass) {
                 throw CompilerErrorException(token, "🐐 can only be used if the eclass inherits from another.");
-                break;
             }
             if (calledSuper) {
                 throw CompilerErrorException(token, "You may not call more than one superinitializer.");
@@ -664,8 +663,8 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             writer.writeCoin(0x60, token);
             
-            if (initializer) {
-                if (initializer->canReturnNothingness) {
+            if (mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
+                if (static_cast<Initializer &>(callable).canReturnNothingness) {
                     parse(stream_.consumeToken(), token, typeNothingness);
                     return typeNothingness;
                 }
@@ -803,8 +802,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto flattenedResult = scoper.flattenedCopy(static_cast<int>(function.arguments.size()));
             auto closureScoper = flattenedResult.first;
             
-            auto analyzer = StaticFunctionAnalyzer(function, package_, nullptr, inClassContext, typeContext,
-                                                   writer, closureScoper);
+            auto analyzer = StaticFunctionAnalyzer(function, package_, mode, typeContext, writer, closureScoper);  // TODO: Intializer
             analyzer.analyze(true);
             
             coinCountPlaceholder.write();
@@ -833,7 +831,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_CHIPMUNK: {
             auto &nameToken = stream_.consumeToken();
             
-            if (inClassContext) {
+            if (mode != StaticFunctionAnalyzerMode::ObjectMethod) {
                 throw CompilerErrorException(token, "Not within an object-context.");
             }
             
@@ -855,9 +853,13 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             TypeDynamism dynamism;
             Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, expectation, &dynamism)
                         .resolveOnSuperArgumentsAndConstraints(typeContext);
+            auto initializerName = stream_.consumeToken(IDENTIFIER);
             
             if (type.optional()) {
                 throw CompilerErrorException(token, "Optionals cannot be instantiated.");
+            }
+            if (dynamism == GenericTypeVariables) {
+                throw CompilerErrorException(initializerName, "You cannot instantiate generic types yet.");
             }
             
             if (type.type() == TT_ENUM) {
@@ -867,13 +869,12 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 
                 writer.writeCoin(0x13, token);
                 
-                auto name = stream_.consumeToken(IDENTIFIER);
-                
-                auto v = type.eenum()->getValueFor(name.value[0]);
+                auto v = type.eenum()->getValueFor(initializerName.value[0]);
                 if (!v.first) {
-                    ecCharToCharStack(name.value[0], valueName);
+                    ecCharToCharStack(initializerName.value[0], valueName);
                     ecCharToCharStack(type.eenum()->name(), enumName);
-                    throw CompilerErrorException(name, "%s does not have a member named %s.", enumName, valueName);
+                    throw CompilerErrorException(initializerName, "%s does not have a member named %s.",
+                                                 enumName, valueName);
                 }
                 else if (v.second > UINT32_MAX) {
                     writer.writeCoin(v.second >> 32, token);
@@ -895,16 +896,11 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                     writer.writeCoin(type.eclass()->index, token);
                 }
                 
-                auto initializerName = stream_.consumeToken(IDENTIFIER);
-                
                 Initializer *initializer = type.eclass()->getInitializer(initializerName, type, typeContext);
                 
                 if (dynamism == Self && !initializer->required) {
                     throw CompilerErrorException(initializerName,
                                                  "Only required initializers can be used with dynamic types.");
-                }
-                else if (dynamism == GenericTypeVariables) {
-                    throw CompilerErrorException(initializerName, "You cannot instantiate generic types yet.");
                 }
                 
                 initializer->deprecatedWarning(initializerName);
@@ -913,6 +909,16 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 
                 parseFunctionCall(type, initializer, token);
                 
+                if (initializer->canReturnNothingness) {
+                    type.setOptional();
+                }
+                return type;
+            }
+            else if (type.type() == TT_VALUE_TYPE) {
+                auto initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
+                writer.writeCoin(0x7, token);
+                writer.writeCoin(initializer->vti(), token);
+                parseFunctionCall(type, initializer, token);
                 if (initializer->canReturnNothingness) {
                     type.setOptional();
                 }
@@ -1099,6 +1105,10 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 placeholder.write(0x1);
                 writer.writeCoin(method->vti(), token);
             }
+            else {
+                auto typeString = type.toString(typeContext, true);
+                throw CompilerErrorException(token, "You cannot call methods on %s.");
+            }
             
             return parseFunctionCall(type, method, token);
         }
@@ -1106,18 +1116,18 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
     return typeNothingness;
 }
 
-StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext,
+StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, StaticFunctionAnalyzerMode mode,
                                                TypeContext typeContext, Writer &writer, CallableScoper &scoper)
         : AbstractParser(p, callable.tokenStream()),
+          mode(mode),
           callable(callable),
           writer(writer),
           scoper(scoper),
-          initializer(i),
-          inClassContext(inClassContext),
           typeContext(typeContext) {}
 
 void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
-    if (initializer) {
+    auto isClassIntializer = mode == StaticFunctionAnalyzerMode::ObjectInitializer;
+    if (isClassIntializer) {
         scoper.objectScope()->changeInitializedBy(-1);
     }
     try {
@@ -1148,17 +1158,20 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
         }
         
         scoper.popScopeAndRecommendFrozenVariables();
-        noReturnError(callable.position());
         
-        if (initializer) {
-            scoper.objectScope()->initializerUnintializedVariablesCheck(initializer->position(),
+        if (isClassIntializer) {
+            auto initializer = static_cast<Initializer &>(callable);
+            scoper.objectScope()->initializerUnintializedVariablesCheck(initializer.position(),
                                                                     "Instance variable \"%s\" must be initialized.");
             
             if (!calledSuper && typeContext.calleeType().eclass()->superclass) {
-                ecCharToCharStack(initializer->name, initializerName);
-                throw CompilerErrorException(initializer->position(),
+                ecCharToCharStack(initializer.name, initializerName);
+                throw CompilerErrorException(initializer.position(),
                               "Missing call to superinitializer in initializer %s.", initializerName);
             }
+        }
+        else {
+            noReturnError(callable.position());
         }
     }
     catch (CompilerErrorException &ce) {
@@ -1167,7 +1180,7 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
 }
 
 void StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType,
-                                                      CallableScoper &scoper, bool inClassContext, Initializer *i) {
+                                                     CallableScoper &scoper, StaticFunctionAnalyzerMode mode) {
     writer.resetWrittenCoins();
     
     writer.writeEmojicodeChar(function->name);
@@ -1183,8 +1196,8 @@ void StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function *function, Writer 
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
     auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin(function->position());
     
-    auto sca = StaticFunctionAnalyzer(*function, function->package, i, inClassContext,
-                                      TypeContext(classType, function), writer, scoper);
+    auto sca = StaticFunctionAnalyzer(*function, function->package, mode, TypeContext(classType, function),
+                                      writer, scoper);
     sca.analyze();
     
     variableCountPlaceholder.write(scoper.maxVariableCount());

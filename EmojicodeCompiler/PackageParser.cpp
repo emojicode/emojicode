@@ -83,8 +83,8 @@ void PackageParser::parse() {
                 if (!package_->fetchRawType(className, enamespace, optional, theToken, &type)) {
                     throw CompilerErrorException(classNameToken, "Class does not exist.");
                 }
-                if (type.type() != TT_CLASS) {
-                    throw CompilerErrorException(classNameToken, "Only classes are extendable.");
+                if (type.type() != TT_CLASS && type.type() != TT_VALUE_TYPE) {
+                    throw CompilerErrorException(classNameToken, "Only classes and value types are extendable.");
                 }
                 
                 // Native extensions are allowed if the class was defined in this package.

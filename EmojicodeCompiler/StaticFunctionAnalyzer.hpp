@@ -23,40 +23,45 @@ struct FlowControlReturn {
     bool returned() { return branches == branchReturns; }
 };
 
+enum class StaticFunctionAnalyzerMode {
+    ObjectMethod,
+    ObjectInitializer,
+    ThisContextFunction,
+    Function
+};
+
+/** This class is repsonsible for compiling a @c Callable to bytecode. */
 class StaticFunctionAnalyzer : AbstractParser {
 public:
     static void writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType, CallableScoper &scoper,
-                                         bool inClassContext = false, Initializer *i = nullptr);
-    StaticFunctionAnalyzer(Callable &callable, Package *p, Initializer *i, bool inClassContext,
-                           TypeContext typeContext, Writer &writer, CallableScoper &scoper);
+                                        StaticFunctionAnalyzerMode mode);
+    StaticFunctionAnalyzer(Callable &callable, Package *p, StaticFunctionAnalyzerMode mode, TypeContext typeContext,
+                           Writer &writer, CallableScoper &scoper);
     
     /** Performs the analyziation. */
     void analyze(bool compileDeadCode = false);
     /** Whether self was used in the callable body. */
     bool usedSelfInBody() { return usedSelf; };
 private:
+    StaticFunctionAnalyzerMode mode;
     /** The callable which is processed. */
     Callable &callable;
     /** The writer used for writing the byte code. */
     Writer &writer;
-    
+    /** The scoper responsible for scoping the function being compiled. */
     CallableScoper &scoper;
     
-    /** This points to the Initializer if we are analyzing an initializer. Set to @c nullptr in an initializer. */
-    Initializer *initializer = nullptr;
     /** The flow control depth. */
     int flowControlDepth = 0;
     /** Whether the statment has an effect. */
     bool effect = false;
-    /** Whether the function in compilation returned. */
+    /** Whether the function in compilation has returned. */
     bool returned = false;
-    /** Whether the self reference or an instance variable has been acessed. */
+    /** Whether the this context or an instance variable has been acessed. */
     bool usedSelf = false;
-    /** Set to true when compiling a class method. */
-    bool inClassContext = false;
-    /** Whether the superinitializer has been called. */
+    /** Whether the superinitializer has been called (always false if the function is not an intializer). */
     bool calledSuper = false;
-    /** The class type of the eclass which is compiled. */
+    /** The this context in which this function operates. */
     TypeContext typeContext;
     
     /**
@@ -75,23 +80,24 @@ private:
     Type parseIdentifier(const Token &token, Type expectation);
     /** Parses the expression for an if statement. */
     void parseIfExpression(const Token &token);
-    
-    void noReturnError(SourcePosition p);
-    void noEffectWarning(const Token &warningToken);
-    
+    /**
+     * Parses a function call. This method takes care of parsing all arguments as well as generic arguments and of
+     * infering them if necessary.
+     * @param type The type for the type context, therefore the type on which this function was called.
+     */
     Type parseFunctionCall(Type type, Function *p, const Token &token);
-
-    bool typeIsEnumerable(Type type, Type *elementType);
     
-    /** 
+    /**
      * Writes a command to access a variable.
      * @param stack The command to access the variable if it is on the stack.
      * @param object The command to access the variable it it is an instance variable.
      */
     void writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object, SourcePosition p);
     
+    void noReturnError(SourcePosition p);
+    void noEffectWarning(const Token &warningToken);
+    bool typeIsEnumerable(Type type, Type *elementType);
     void flowControlBlock(bool block = true);
-    
     void flowControlReturnEnd(FlowControlReturn &fcr);
 };
 
