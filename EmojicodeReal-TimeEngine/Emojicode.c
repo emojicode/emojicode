@@ -222,6 +222,7 @@ Something performInitializer(Class *class, Initializer *initializer, Object *obj
         
         thread->tokenStream = preCoinStream;
     }
+    object = stackGetThis(thread);
     stackPop(thread);
 
     return somethingObject(object);
