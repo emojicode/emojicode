@@ -20,6 +20,7 @@ const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeCha
     *optional = stream_.nextTokenIs(E_CANDY) ? stream_.consumeToken(IDENTIFIER), true : false;
 
     if (stream_.nextTokenIs(E_ORANGE_TRIANGLE)) {
+        stream_.consumeToken();
         *enamespace = stream_.consumeToken(IDENTIFIER).value[0];
     }
     else {
