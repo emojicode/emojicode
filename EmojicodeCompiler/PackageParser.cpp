@@ -129,7 +129,7 @@ void PackageParser::parse() {
                 function->returnType = typeInteger;
                 parseBody(function, false);
                 
-                Function::setStartBlockFunction(function);
+                Function::start = function;
                 break;
             }
             default:

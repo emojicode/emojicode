@@ -257,10 +257,12 @@ Function* readBytecode(FILE *in) {
     CL_CLOSURE = classTable[6];
     CL_RANGE = classTable[7];
     
-    uint16_t functionCount = readUInt16(in);
-    functionTable = malloc(sizeof(Function*) * functionCount);
-    for (; functionCount; functionCount--) {
-        readFunction(functionTable, 0, in, NULL);
+    functionTable = malloc(sizeof(Function*) * readUInt16(in));
+    for (uint_fast16_t functionSectionCount = readUInt16(in); functionSectionCount; functionSectionCount--) {
+        EmojicodeChar name = readEmojicodeChar(in);
+        for (uint_fast16_t functionCount = readUInt16(in); functionCount; functionCount--) {
+            readFunction(functionTable, name, in, handlerPointerForMethod);
+        }
     }
     
     stringPoolCount = readUInt16(in);

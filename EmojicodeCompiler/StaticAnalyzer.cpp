@@ -16,6 +16,7 @@
 #include "utf8.h"
 #include "EmojicodeCompiler.hpp"
 #include "StringPool.hpp"
+#include "ValueType.hpp"
 
 void analyzeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass();
@@ -138,6 +139,16 @@ void analyzeClass(Type classType, Writer &writer) {
     }
 }
 
+void analyzeValueType(ValueType *vt, Writer &writer) {
+    writer.writeEmojicodeChar(vt->name());
+    writer.writeUInt16(vt->methodList().size());
+    for (auto f : vt->methodList()) {
+        auto scoper = CallableScoper();
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType, scoper,
+                                                        StaticFunctionAnalyzerMode::ThisContextFunction);
+    }
+}
+
 void writePackageHeader(Package *pkg, Writer &writer, uint16_t classCount) {
     if (pkg->requiresBinary()) {
         uint16_t l = strlen(pkg->name()) + 1;
@@ -236,8 +247,18 @@ void analyzeClassesAndWrite(FILE *fout) {
     }
     
     int functionVti = 0;
-    for (auto function : Function::functions()) {
-        function->setVti(functionVti++);
+    Function::start->setVti(functionVti++);
+
+    for (auto vt : ValueType::valueTypes()) {
+        for (auto f : vt->methodList()) {
+            f->setVti(functionVti++);
+        }
+        for (auto f : vt->classMethodList()) {
+            f->setVti(functionVti++);
+        }
+        for (auto f : vt->initializerList()) {
+            f->setVti(functionVti++);
+        }
     }
     
     writer.writeUInt16(Class::classes().size());
@@ -277,12 +298,16 @@ void analyzeClassesAndWrite(FILE *fout) {
         }
     }
     
-    auto &functions = Function::functions();
-    writer.writeUInt16(functions.size());
-    for (auto function : functions) {
-        auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(function, writer, function->owningType, scoper,
-                                                        StaticFunctionAnalyzerMode::ThisContextFunction);
+    writer.writeUInt16(functionVti);
+    writer.writeUInt16(ValueType::valueTypes().size() + 1);
+    writer.writeEmojicodeChar(0);
+    writer.writeUInt16(1);
+    auto scoper = CallableScoper();
+    StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function::start, writer, typeNothingness, scoper,
+                                                    StaticFunctionAnalyzerMode::Function);
+
+    for (auto vt : ValueType::valueTypes()) {
+        analyzeValueType(vt, writer);
     }
     
     writer.writeUInt16(theStringPool.strings().size());

@@ -120,6 +120,17 @@
   🍉
 🍉
 
+🐋 🚂 🍇
+  🌮
+    Creates a string representation of this integer.
+
+    The digits used to represent the integer are
+    `0123456789abcdefghijklmnopqrstuvxyz`. Therefore you shouldn't use a base
+    greater than 35.
+  🌮
+  🐖 🔡 base 🚂 ➡️ 🔡 📻
+🍉
+
 🐋 🔡 🍇
   🐊 🔂🐚🔣
 
@@ -137,15 +148,6 @@
     by *separator*.
   🌮
   🐈 🍨 list 🍨🐚🔡 separator 🔡 📻
-
-  🌮
-    Creates a string representation of the given integer.
-
-    The digits used to represent the integer are
-    `0123456789abcdefghijklmnopqrstuvxyz`. Therefore you shouldn't use a base
-    greater than 35.
-  🌮
-  🐈 🚂 integer 🚂 base 🚂 📻
 
   🌮
     Creates a 🔡 representation of the given 🚀 and precision – the number

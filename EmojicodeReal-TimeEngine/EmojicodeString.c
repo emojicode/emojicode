@@ -437,28 +437,6 @@ static void stringFromSymbol(Thread *thread){
     ((EmojicodeChar *)string->characters->value)[0] = (EmojicodeChar)stackGetVariable(0, thread).raw;
 }
 
-static void stringFromInteger(Thread *thread){
-    EmojicodeInteger base = stackGetVariable(1, thread).raw;
-    EmojicodeInteger n = stackGetVariable(0, thread).raw, a = llabs(n);
-    bool negative = n < 0;
-    
-    EmojicodeInteger d = negative ? 2 : 1;
-    while (n /= base) d++;
-    
-    Object *co = newArray(d * sizeof(EmojicodeChar));
-    
-    String *string = stackGetThisObject(thread)->value;
-    string->length = d;
-    string->characters = co;
-    
-    EmojicodeChar *characters = characters(string) + d;
-    do
-        *--characters =  "0123456789abcdefghijklmnopqrstuvxyz"[a % base % 35];
-    while (a /= base);
-    
-    if (negative) characters[-1] = '-';
-}
-
 static void stringFromDouble(Thread *thread) {
     EmojicodeInteger precision = stackGetVariable(1, thread).raw;
     double d = stackGetVariable(0, thread).doubl;
@@ -537,7 +515,7 @@ static Something charactersToInteger(EmojicodeChar *characters, EmojicodeInteger
     return somethingInteger(x);
 }
 
-static Something stringToInteger(Thread *thread){
+static Something stringToInteger(Thread *thread) {
     EmojicodeInteger base = stackGetVariable(0, thread).raw;
     String *string = (String *)stackGetThisObject(thread)->value;
     
@@ -694,8 +672,6 @@ InitializerFunctionFunctionPointer stringInitializerForName(EmojicodeChar name){
             return stringFromSymbol;
         case 0x1F368: //🍨
             return stringFromStringList;
-        case 0x1F682: //🚂
-            return stringFromInteger;
         case 0x1F680: //🚀
             return stringFromDouble;
         case 0x1F4C7:

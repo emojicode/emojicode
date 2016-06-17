@@ -213,8 +213,6 @@ int main(int argc, char * argv[]) {
     
     FILE *out = fopen(outPath, "wb");
     
-    Function::addFunction(nullptr);
-    
     try {
         loadStandard(&pkg, errorPosition);
         

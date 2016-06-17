@@ -61,9 +61,7 @@ public:
 class Function: public Callable {
 public:
     static bool foundStart;
-    static const std::vector<Function *>& functions() { return functions_; }
-    static void addFunction(Function *function) { functions_.push_back(function); }
-    static void setStartBlockFunction(Function *function) { functions_[0] = function; }
+    static Function *start;
     
     static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
                                    const char *on, Type contextType);
@@ -124,7 +122,6 @@ public:
     
     const char *on;
 private:
-    static std::vector<Function *> functions_;
     int vti_;
 };
 

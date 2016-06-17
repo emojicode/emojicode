@@ -28,7 +28,7 @@ Type Closure::type() {
 }
 
 bool Function::foundStart = false;
-std::vector<Function *> Function::functions_;
+Function *Function::start;
 
 //MARK: Function
 

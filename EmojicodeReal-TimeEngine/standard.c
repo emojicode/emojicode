@@ -277,7 +277,7 @@ static Something dataGetByte(Thread *thread) {
     return somethingInteger(d->bytes[index]);
 }
 
-//MARK: Math
+// MARK: Math
 
 static Something mathSin(Thread *thread) {
     return somethingDouble(sin(stackGetVariable(0, thread).doubl));
@@ -335,8 +335,35 @@ static Something mathLn(Thread *thread) {
     return somethingDouble(log(stackGetVariable(0, thread).doubl));
 }
 
+// MARK: Integer
 
-//MARK: Callable
+Something stringFromInteger(Thread *thread) {
+    EmojicodeInteger base = stackGetVariable(0, thread).raw;
+    EmojicodeInteger n = stackGetThisContext(thread).raw, a = llabs(n);
+    bool negative = n < 0;
+    
+    EmojicodeInteger d = negative ? 2 : 1;
+    while (n /= base) d++;
+    
+    Object *co = newArray(d * sizeof(EmojicodeChar));
+    stackSetVariable(0, somethingObject(co), thread);
+    
+    Object *stringObject = newObject(CL_STRING);
+    String *string = stringObject->value;
+    string->length = d;
+    string->characters = stackGetVariable(0, thread).object;
+    
+    EmojicodeChar *characters = characters(string) + d;
+    do
+        *--characters =  "0123456789abcdefghijklmnopqrstuvxyz"[a % base % 35];
+    while (a /= base);
+    
+    if (negative) characters[-1] = '-';
+    
+    return somethingObject(stringObject);
+}
+
+// MARK: Callable
 
 static void closureMark(Object *o){
     Closure *c = o->value;
@@ -402,6 +429,8 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                 case 0x1f510: //🔐
                     return mutexTryLock;
             }
+        case 0x1F682: //🚂
+            return stringFromInteger;
     }
     return NULL;
 }
