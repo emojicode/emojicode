@@ -363,6 +363,61 @@ Something stringFromInteger(Thread *thread) {
     return somethingObject(stringObject);
 }
 
+static Something stringFromSymbol(Thread *thread){
+    Object *co = newArray(sizeof(EmojicodeChar));
+    stackPush(somethingObject(co), 0, 0, thread);
+    Object *stringObject = newObject(CL_STRING);
+    String *string = stringObject->value;
+    string->length = 1;
+    string->characters = stackGetThisObject(thread);
+    stackPop(thread);
+    ((EmojicodeChar *)string->characters->value)[0] = (EmojicodeChar)stackGetThisContext(thread).raw;
+    return somethingObject(stringObject);
+}
+
+static Something stringFromDouble(Thread *thread) {
+    EmojicodeInteger precision = stackGetVariable(0, thread).raw;
+    double d = stackGetThisContext(thread).doubl;
+    double absD = fabs(d);
+    
+    bool negative = d < 0;
+    
+    EmojicodeInteger length = negative ? 1 : 0;
+    if (precision != 0) {
+        length++;
+    }
+    length += precision;
+    EmojicodeInteger iLength = 1;
+    for (size_t i = 1; pow(10, i) < absD; i++) {
+        iLength++;
+    }
+    length += iLength;
+    
+    Object *co = newArray(length * sizeof(EmojicodeChar));
+    stackSetVariable(0, somethingObject(co), thread);
+    Object *stringObject = newObject(CL_STRING);
+    String *string = stringObject->value;
+    string->length = length;
+    string->characters = stackGetVariable(0, thread).object;
+    
+    EmojicodeChar *characters = characters(string) + length;
+    
+    for (size_t i = precision; i > 0; i--) {
+        *--characters =  (unsigned char) (fmod(absD * pow(10, i), 10.0)) % 10 + '0';
+    }
+    
+    if (precision != 0) {
+        *--characters = '.';
+    }
+    
+    for (size_t i = 0; i < iLength; i++) {
+        *--characters =  (unsigned char) (fmod(absD / pow(10, i), 10.0)) % 10 + '0';
+    }
+    
+    if (negative) characters[-1] = '-';
+    return somethingObject(stringObject);
+}
+
 // MARK: Callable
 
 static void closureMark(Object *o){
@@ -431,6 +486,10 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
             }
         case 0x1F682: //🚂
             return stringFromInteger;
+        case 0x1F680:
+            return stringFromDouble;
+        case 0x1f523: //🔣
+            return stringFromSymbol;
     }
     return NULL;
 }

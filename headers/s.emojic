@@ -1,24 +1,157 @@
 🔮 1 0
 📻
 
-
 🌮
   Boolean
 🌮
-🌍 🕊 👌🍇🍉
+🌍 🕊 👌🍇
+  🌮 Whether this value and *other* are considered equal. 🌮
+  🐖 😛 other 🐓 ➡️ 👌 🍇
+    🍎 😛 🐕 other
+  🍉
+
+  🌮 Logical and. Returns true if both, the receiver and other, are true. 🌮
+  🐖 🎊 other 👌 ➡️ 👌 🍇
+    🍎 🎊 🐕 other
+  🍉
+
+  🌮 Logical or. Returns true if the receiver or other or both are true. 🌮
+  🐖 🎉 other 👌 ➡️ 👌 🍇
+    🍎 🎉 🐕 other
+  🍉
+
+  🌮
+    Inverts the boolean. Returns true if the boolean is false, and false if the
+    boolean is true.
+  🌮
+  🐖 ❎ ➡️ 👌 🍇
+    🍎 ❎ 🐕
+  🍉
+🍉
+
 🌮
   Integer
 🌮
-🌍 🕊 🚂 🍇🍉
+🌍 🕊 🚂 🍇
+  🌮 Whether this value and *other* are considered equal. 🌮
+  🐖 😛 other 🐓 ➡️ 👌 🍇
+    🍎 😛 🐕 other
+  🍉
+
+  🌮 Returns the receiver minus *other*. 🌮
+  🐖 ➖ other 🚂 ➡️ 🚂 🍇
+    🍎 ➖ 🐕 other
+  🍉
+  🌮 Returns the receiver plus *other*. 🌮
+  🐖 ➕ other 🚂 ➡️ 🚂 🍇
+    🍎 ➕ 🐕 other
+  🍉
+  🌮 Returns the receiver divided by *other*. 🌮
+  🐖 ➗ other 🚂 ➡️ 🚂 🍇
+    🍎 ➗ 🐕 other
+  🍉
+  🌮 Returns the receiver multiplied by *other*. 🌮
+  🐖 ✖️ other 🚂 ➡️ 🚂 🍇
+    🍎 ✖️ 🐕 other
+  🍉
+  🌮 Returns the receiver modulus *other*. 🌮
+  🐖 🚮 other 🚂 ➡️ 🚂 🍇
+    🍎 🚮 🐕 other
+  🍉
+  🌮 Returns true if the receiver is smaller than *other*. 🌮
+  🐖 ◀️ other 🚂 ➡️ 👌 🍇
+    🍎 ◀️ 🐕 other
+  🍉
+  🌮 Returns true if the receiver is greater than *other*. 🌮
+  🐖 ▶️ other 🚂 ➡️ 👌 🍇
+    🍎 ▶️ 🐕 other
+  🍉
+  🌮 Returns true if the receiver is smaller than or equal to *other*. 🌮
+  🐖 ⬅️ other 🚂 ➡️ 👌 🍇
+    🍎 ⬅️ 🐕 other
+  🍉
+  🌮 Returns true if the receiver is greater than or equal to *other*. 🌮
+  🐖 ➡️ other 🚂 ➡️ 👌 🍇
+    🍎 ➡️ 🐕 other
+  🍉
+  🌮 Returns this integer AND *other*. 🌮
+  🐖 ⭕️ other 🚂 ➡️ 🚂 🍇
+    🍎 ⭕️ 🐕 other
+  🍉
+  🌮 Returns this integer OR *other*. 🌮
+  🐖 💢 other 🚂 ➡️ 🚂 🍇
+    🍎 💢 🐕 other
+  🍉
+  🌮 Returns this integer XOR *other*. 🌮
+  🐖 ❌ other 🚂 ➡️ 🚂 🍇
+    🍎 ❌ 🐕 other
+  🍉
+  🌮 Returns NOT applied to this integer. 🌮
+  🐖 🚫 ➡️ 🚂 🍇
+    🍎 🚫 🐕
+  🍉
+🍉
+
 🌮
   Double
 🌮
 🌍 🕊 🚀 🍇
+  🌮 Whether this value and *other* are considered equal. 🌮
+  🐖 😛 other 🐓 ➡️ 👌 🍇
+    🍎 😛 🐕 other
+  🍉
+
+  🌮 Returns the receiver minus *other*. 🌮
+  🐖 ➖ other 🚀 ➡️ 🚀 🍇
+    🍎 ➖ 🐕 other
+  🍉
+  🌮 Returns the receiver plus *other*. 🌮
+  🐖 ➕ other 🚀 ➡️ 🚀 🍇
+    🍎 ➕ 🐕 other
+  🍉
+  🌮 Returns the receiver divided by *other*. 🌮
+  🐖 ➗ other 🚀 ➡️ 🚀 🍇
+    🍎 ➗ 🐕 other
+  🍉
+  🌮 Returns the receiver multiplied by *other*. 🌮
+  🐖 ✖️ other 🚀 ➡️ 🚀 🍇
+    🍎 ✖️ 🐕 other
+  🍉
+  🌮
+    Returns the floating-point remainder of the division operation
+    `receiver/other`. This will always be the value of `receiver - n*other` and
+    will always have the same sign as the receiver.
+  🌮
+  🐖 🚮 other 🚀 ➡️ 🚀 🍇
+    🍎 🚮 🐕 other
+  🍉
+  🌮 Returns true if the receiver is smaller than *other*. 🌮
+  🐖 ◀️ other 🚀 ➡️ 👌 🍇
+    🍎 ◀️ 🐕 other
+  🍉
+  🌮 Returns true if the receiver is greater than *other*. 🌮
+  🐖 ▶️ other 🚀 ➡️ 👌 🍇
+    🍎 ▶️ 🐕 other
+  🍉
+  🌮 Returns true if the receiver is smaller than or equal to *other*. 🌮
+  🐖 ⬅️ other 🚀 ➡️ 👌 🍇
+    🍎 ⬅️ 🐕 other
+  🍉
+  🌮 Returns true if the receiver is greater than or equal to *other*. 🌮
+  🐖 ➡️ other 🚀 ➡️ 👌 🍇
+    🍎 ➡️ 🐕 other
+  🍉
 🍉
+
 🌮
   Symbol
 🌮
-🌍 🕊 🔣 🍇🍉
+🌍 🕊 🔣 🍇
+  🌮 Whether this value and *other* are considered equal. 🌮
+  🐖 😛 other 🐓 ➡️ 👌 🍇
+    🍎 😛 🐕 other
+  🍉
+🍉
 
 🌮
   The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings)
@@ -129,6 +262,26 @@
     greater than 35.
   🌮
   🐖 🔡 base 🚂 ➡️ 🔡 📻
+
+  🌮 Returns the double representation of this integer. 🌮
+  🐖 🚀 ➡️ 🚀 🍇
+    🍎 🚀 🐕
+  🍉
+🍉
+
+🐋 🚀 🍇
+  🌮
+    Creates a 🔡 representation of this 🚀 and the given precision – the number
+    of digits after the decimal separator “.”.
+  🌮
+  🐖 🔡 precision 🚂 ➡️ 🔡 📻
+🍉
+
+🐋 🔣 🍇
+  🌮
+    Creates a 🔡 from this symbol.
+  🌮
+  🐖 🔡 ➡️ 🔡 📻
 🍉
 
 🐋 🔡 🍇
@@ -140,20 +293,11 @@
   🌮 Creates a string from the given list of symbols. 🌮
   🐈 🎙 symbolList 🍨🐚🔣 📻
 
-  🌮 Creates a string from the given symbol. 🌮
-  🐈 🔣 symbol 🔣 📻
-
   🌮
     Creates a string by joining all elements into a string sepearted
     by *separator*.
   🌮
   🐈 🍨 list 🍨🐚🔡 separator 🔡 📻
-
-  🌮
-    Creates a 🔡 representation of the given 🚀 and precision – the number
-    of digits after the decimal separator “.”.
-  🌮
-  🐈 🚀 double 🚀 precision 🚂 📻
 
   🌮
     Creates a string from the given 📇 object representing the bytes of a UTF8
