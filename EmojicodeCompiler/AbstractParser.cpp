@@ -73,7 +73,7 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
     }
     else if (stream_.nextTokenIs(E_ROOTSTER)) {
         auto &ratToken = stream_.consumeToken(IDENTIFIER);
-        if ((dynamism & TypeDynamism::Self) != TypeDynamism::None) {
+        if ((dynamism & TypeDynamism::Self) == TypeDynamism::None) {
             throw CompilerErrorException(ratToken, "🐓 not allowed here.");
         }
         if (dynamicType) *dynamicType = TypeDynamism::Self;
