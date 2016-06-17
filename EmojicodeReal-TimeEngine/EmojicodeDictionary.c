@@ -208,7 +208,8 @@ void dictionaryPutVal(Object *dicto, Object *key, Something value, Thread *threa
                     dict = dicto->value;
                     break;
                 }
-                EmojicodeDictionaryNode *e = p->next->value;
+                eo = p->next;
+                EmojicodeDictionaryNode *e = eo->value;
                 
                 if (dictionaryKeyHashEqual(dict, hash, e->hash, key, e->key)) {
                     break;
