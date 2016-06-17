@@ -18,6 +18,7 @@
 #include "Protocol.hpp"
 #include "PackageReporter.hpp"
 #include "TypeContext.hpp"
+#include "ValueType.hpp"
 
 enum ReturnManner {
     Return,
@@ -132,6 +133,7 @@ void reportPackage(Package *package) {
     std::list<Enum *> enums;
     std::list<Class *> classes;
     std::list<Protocol *> protocols;
+    std::list<ValueType *> valueTypes;
     
     for (auto exported : package->exportedTypes()) { // TODO: Add Value Type
         switch (exported.type.type()) {
@@ -144,13 +146,62 @@ void reportPackage(Package *package) {
             case TT_PROTOCOL:
                 protocols.push_back(exported.type.protocol());
                 break;
+            case TT_VALUE_TYPE:
+                valueTypes.push_back(exported.type.valueType());
+                break;
             default:
                 break;
         }
     }
     
-    bool printedClass = false;
     printf("{");
+    
+    bool printedValueType = false;
+    printf("\"valueTypes\": [");
+    for (auto vt : valueTypes) {
+        auto vtcontext = TypeContext(Type(vt, false));
+        if (printedValueType) {
+            putchar(',');
+        }
+        printedValueType = true;
+        
+        printf("{");
+        
+        ecCharToCharStack(vt->name(), className);
+        printf("\"name\": \"%s\",", className);
+        
+        reportGenericArguments(vt->ownGenericArgumentVariables(), vt->genericArgumentConstraints(),
+                               vt->superGenericArguments().size(), vtcontext);
+        reportDocumentation(vt->documentation());
+        
+        printf("\"methods\": [");
+        for (size_t i = 0; i < vt->methodList().size(); i++) {
+            Method *method = vt->methodList()[i];
+            reportFunctionInformation(method, Return, i + 1 == vt->methodList().size(),
+                                      TypeContext(Type(vt, false), method));
+        }
+        printf("],");
+        
+        printf("\"initializers\": [");
+        for (size_t i = 0; i < vt->initializerList().size(); i++) {
+            Initializer *initializer = vt->initializerList()[i];
+            reportFunctionInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
+                                      i + 1 == vt->initializerList().size(),
+                                      TypeContext(Type(vt, false), initializer));
+        }
+        printf("],");
+        
+        printf("\"classMethods\": [");
+        for (size_t i = 0; i < vt->classMethodList().size(); i++) {
+            ClassMethod *classMethod = vt->classMethodList()[i];
+            reportFunctionInformation(classMethod, Return, vt->classMethodList().size() == i + 1,
+                                      TypeContext(Type(vt, false), classMethod));
+        }
+        printf("]}");
+    }
+    printf("],");
+    
+    bool printedClass = false;
     printf("\"classes\": [");
     for (auto eclass : classes) {
         if (printedClass) {
