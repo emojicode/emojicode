@@ -27,6 +27,7 @@ enum class StaticFunctionAnalyzerMode {
     ObjectMethod,
     ObjectInitializer,
     ThisContextFunction,
+    ClassMethod,
     Function
 };
 
@@ -98,6 +99,8 @@ private:
     void noEffectWarning(const Token &warningToken);
     bool typeIsEnumerable(Type type, Type *elementType);
     void flowControlBlock(bool block = true);
+    void writeRoosterClassCoin(Type type, TypeDynamism dynamism, const Token &token);
+
     void flowControlReturnEnd(FlowControlReturn &fcr);
 };
 

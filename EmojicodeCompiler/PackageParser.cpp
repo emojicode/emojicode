@@ -203,7 +203,7 @@ void PackageParser::parseGenericArgumentList(TypeDefinitionFunctional *typeDef, 
         stream_.consumeToken(IDENTIFIER);
         
         auto variable = stream_.consumeToken(VARIABLE);
-        auto constraintType = parseAndFetchType(tc, NoDynamism, typeNothingness, nullptr, true);
+        auto constraintType = parseAndFetchType(tc, TypeDynamism::None, typeNothingness, nullptr, true);
         typeDef->addGenericArgument(variable, constraintType);
     }
 }
@@ -312,7 +312,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         eclass->superclass = type.eclass();
         
         eclass->setSuperTypeDef(eclass->superclass);
-        parseGenericArgumentsForType(&type, Type(eclass), GenericTypeVariables, token);
+        parseGenericArgumentsForType(&type, Type(eclass), TypeDynamism::GenericTypeVariables, token);
         eclass->setSuperGenericArguments(type.genericArguments);
     }
     else {
@@ -391,7 +391,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 deprecated.disallow();
 
                 auto &variableName = stream_.consumeToken(VARIABLE);
-                auto type = parseAndFetchType(typed, GenericTypeVariables);
+                auto type = parseAndFetchType(typed, TypeDynamism::GenericTypeVariables);
                 eclass->addInstanceVariable(Variable(type, 0, 1, false, variableName));
                 break;
             }
@@ -407,7 +407,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 canReturnNothingness.disallow();
                 deprecated.disallow();
                 
-                Type type = parseAndFetchType(typed, GenericTypeVariables, typeNothingness, nullptr, true);
+                Type type = parseAndFetchType(typed, TypeDynamism::GenericTypeVariables, typeNothingness, nullptr, true);
                 
                 if (type.optional()) {
                     throw CompilerErrorException(token, "A class cannot conform to an 🍬 protocol.");

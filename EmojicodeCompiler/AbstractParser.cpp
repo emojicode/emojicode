@@ -20,6 +20,7 @@ const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeCha
     *optional = stream_.nextTokenIs(E_CANDY) ? stream_.consumeToken(IDENTIFIER), true : false;
 
     if (stream_.nextTokenIs(E_ORANGE_TRIANGLE)) {
+        stream_.consumeToken();
         *enamespace = stream_.consumeToken(IDENTIFIER).value[0];
     }
     else {
@@ -47,9 +48,9 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         optional = true;
     }
     
-    if (dynamism & GenericTypeVariables && (ct.calleeType().canHaveGenericArguments()|| ct.function()) &&
+    if ((dynamism & TypeDynamism::GenericTypeVariables) != TypeDynamism::None && (ct.calleeType().canHaveGenericArguments()|| ct.function()) &&
         stream_.nextTokenIs(VARIABLE)) {
-        if (dynamicType) *dynamicType = GenericTypeVariables;
+        if (dynamicType) *dynamicType = TypeDynamism::GenericTypeVariables;
         
         auto &variableToken = stream_.consumeToken(VARIABLE);
         
@@ -72,13 +73,15 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
     }
     else if (stream_.nextTokenIs(E_ROOTSTER)) {
         auto &ratToken = stream_.consumeToken(IDENTIFIER);
-        if (!(dynamism & Self)) throw CompilerErrorException(ratToken, "🐓 not allowed here.");
-        if (dynamicType) *dynamicType = Self;
+        if ((dynamism & TypeDynamism::Self) != TypeDynamism::None) {
+            throw CompilerErrorException(ratToken, "🐓 not allowed here.");
+        }
+        if (dynamicType) *dynamicType = TypeDynamism::Self;
         return Type(TT_SELF, optional);
     }
     else if (stream_.nextTokenIs(E_GRAPES)) {
         stream_.consumeToken(IDENTIFIER);
-        if (dynamicType) *dynamicType = NoDynamism;
+        if (dynamicType) *dynamicType = TypeDynamism::None;
 
         Type t(TT_CALLABLE, optional);
         t.arguments = 0;
@@ -102,7 +105,7 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         return t;
     }
     else {
-        if (dynamicType) *dynamicType = NoDynamism;
+        if (dynamicType) *dynamicType = TypeDynamism::None;
         EmojicodeChar typeName, typeNamespace;
         bool optionalUseless;
         auto &token = parseTypeName(&typeName, &typeNamespace, &optionalUseless);
@@ -172,11 +175,11 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct) {
     while (stream_.nextTokenIs(VARIABLE)) {
         TypeDynamism dynamism;
         auto &variableToken = stream_.consumeToken(VARIABLE);
-        auto type = parseAndFetchType(ct, AllKindsOfDynamism, typeNothingness, &dynamism);
+        auto type = parseAndFetchType(ct, TypeDynamism::AllKinds, typeNothingness, &dynamism);
         
         c->arguments.push_back(Argument(variableToken, type));
         
-        if (dynamism == Self) {
+        if (dynamism == TypeDynamism::Self) {
             usedSelf = true;
         }
     }
@@ -192,8 +195,9 @@ bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
     if (stream_.nextTokenIs(E_RIGHTWARDS_ARROW)) {
         stream_.consumeToken();
         TypeDynamism dynamism;
-        c->returnType = parseAndFetchType(ct, AllKindsOfDynamism, typeNothingness, &dynamism);
-        if (dynamism == Self) {
+
+        c->returnType = parseAndFetchType(ct, TypeDynamism::AllKinds, typeNothingness, &dynamism);
+        if (dynamism == TypeDynamism::Self) {
             usedSelf = true;
         }
     }
@@ -205,7 +209,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext 
         stream_.consumeToken();
         auto &variable = stream_.consumeToken(VARIABLE);
         
-        Type t = parseAndFetchType(p->owningType, GenericTypeVariables, typeNothingness, nullptr, true);
+        Type t = parseAndFetchType(p->owningType, TypeDynamism::GenericTypeVariables, typeNothingness, nullptr, true);
         p->genericArgumentConstraints.push_back(t);
         
         Type rType = Type(TT_LOCAL_REFERENCE, false);

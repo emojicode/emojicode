@@ -74,7 +74,7 @@ void analyzeClass(Type classType, Writer &writer) {
     for (auto classMethod : eclass->classMethodList()) {
         auto scoper = CallableScoper();
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(classMethod, writer, classType, scoper,
-                                                        StaticFunctionAnalyzerMode::Function);
+                                                        StaticFunctionAnalyzerMode::ClassMethod);
     }
     
     if (eclass->instanceVariables().size() > 0 && eclass->initializerList().size() == 0) {

@@ -55,6 +55,19 @@ bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
     return false;
 }
 
+void StaticFunctionAnalyzer::writeRoosterClassCoin(Type type, TypeDynamism dynamism, const Token &token) {
+    if (dynamism == TypeDynamism::Self && mode != StaticFunctionAnalyzerMode::ClassMethod) {
+        throw CompilerErrorException(token, "🐓 may only be used in class method bodies.");
+    }
+    
+    if (dynamism != TypeDynamism::None) {
+        writer.writeCoin(UINT32_MAX, token);
+    }
+    else {
+        writer.writeCoin(type.eclass()->index, token);
+    }
+}
+
 Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Token &token) {
     std::vector<Type> genericArguments;
     std::vector<CommonTypeFinder> genericArgsFinders;
@@ -65,7 +78,7 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
     while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
         stream_.consumeToken(IDENTIFIER);
         
-        auto type = parseAndFetchType(typeContext, AllKindsOfDynamism);
+        auto type = parseAndFetchType(typeContext, TypeDynamism::AllKinds);
         genericArguments.push_back(type);
     }
     
@@ -319,7 +332,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 throw CompilerErrorException(token, "Cannot redeclare variable.");
             }
             
-            Type t = parseAndFetchType(typeContext, AllKindsOfDynamism);
+            Type t = parseAndFetchType(typeContext, TypeDynamism::AllKinds);
             
             int id = scoper.reserveVariableSlot();
             scoper.currentScope().setLocalVariable(varName.value,
@@ -681,7 +694,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto placeholder = writer.writeCoinPlaceholder(token);
             
             Type originalType = parse(stream_.consumeToken(), token, typeSomething);
-            Type type = parseAndFetchType(typeContext, NoDynamism, expectation);
+            Type type = parseAndFetchType(typeContext, TypeDynamism::None, expectation);
             
             if (originalType.compatibleTo(type, typeContext)) {
                 compilerWarning(token, "Superfluous cast.");
@@ -851,19 +864,19 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         }
         case E_LARGE_BLUE_DIAMOND: {
             TypeDynamism dynamism;
-            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, expectation, &dynamism)
+            Type type = parseAndFetchType(typeContext, TypeDynamism::AllKinds, expectation, &dynamism)
                         .resolveOnSuperArgumentsAndConstraints(typeContext);
             auto initializerName = stream_.consumeToken(IDENTIFIER);
             
             if (type.optional()) {
                 throw CompilerErrorException(token, "Optionals cannot be instantiated.");
             }
-            if (dynamism == GenericTypeVariables) {
+            if (dynamism == TypeDynamism::GenericTypeVariables) {
                 throw CompilerErrorException(initializerName, "You cannot instantiate generic types yet.");
             }
             
             if (type.type() == TT_ENUM) {
-                if (dynamism != NoDynamism) {
+                if (dynamism != TypeDynamism::None) {
                     throw CompilerErrorException(token, "Enums cannot be instantiated dynamically.");
                 }
                 
@@ -889,16 +902,11 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             else if (type.type() == TT_CLASS) {
                 writer.writeCoin(0x4, token);
                 
-                if (dynamism) {
-                    writer.writeCoin(UINT32_MAX, token);
-                }
-                else {
-                    writer.writeCoin(type.eclass()->index, token);
-                }
+                writeRoosterClassCoin(type, dynamism, token);
                 
                 Initializer *initializer = type.eclass()->getInitializer(initializerName, type, typeContext);
                 
-                if (dynamism == Self && !initializer->required) {
+                if (dynamism == TypeDynamism::Self && !initializer->required) {
                     throw CompilerErrorException(initializerName,
                                                  "Only required initializers can be used with dynamic types.");
                 }
@@ -934,7 +942,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto &methodToken = stream_.consumeToken(IDENTIFIER);
             
             TypeDynamism dynamism;
-            Type type = parseAndFetchType(typeContext, AllKindsOfDynamism, expectation, &dynamism)
+            Type type = parseAndFetchType(typeContext, TypeDynamism::AllKinds, expectation, &dynamism)
                         .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {
@@ -943,11 +951,11 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             if (type.type() != TT_CLASS) {
                 throw CompilerErrorException(token, "The given type is not a class.");
             }
-            if (dynamism == GenericTypeVariables) {
+            if (dynamism == TypeDynamism::GenericTypeVariables) {
                 throw CompilerErrorException(token, "You cannot call methods generic types yet.");
             }
             
-            writer.writeCoin(type.eclass()->index, token);
+            writeRoosterClassCoin(type, dynamism, token);
             
             auto method = type.eclass()->getClassMethod(methodToken, type, typeContext);
             
