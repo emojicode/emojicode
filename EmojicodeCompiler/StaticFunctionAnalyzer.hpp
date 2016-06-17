@@ -89,6 +89,8 @@ private:
      */
     void writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object, SourcePosition p);
     
+    void writeRoosterClassCoin(Type type, TypeDynamism dynamism, const Token &token);
+    
     void flowControlBlock();
     
     void flowControlReturnEnd(FlowControlReturn &fcr);

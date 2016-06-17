@@ -44,11 +44,11 @@ enum TypeType {
     TT_SELF
 };
 
-enum TypeDynamism {
+enum class TypeDynamism {
     /** No dynamism is allowed or no dynamism was used. */
-    NoDynamism = 0,
+    None = 0,
     /** No kind of dynamism is allowed. This value never comes from a call to @c parseAndFetchType . */
-    AllKindsOfDynamism = 0b11,
+    AllKinds = 0b11,
     /** Generic Variables are allowed or were used. */
     GenericTypeVariables = 0b1,
     /** Self is allowed or was used. */
