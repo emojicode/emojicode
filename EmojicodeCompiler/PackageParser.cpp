@@ -185,7 +185,7 @@ void PackageParser::parseGenericArgumentList(TypeDefinitionWithGenerics *typeDef
         stream_.consumeToken(IDENTIFIER);
         
         auto variable = stream_.consumeToken(VARIABLE);
-        auto constraintType = parseAndFetchType(tc, NoDynamism, nullptr, true);
+        auto constraintType = parseAndFetchType(tc, TypeDynamism::None, nullptr, true);
         typeDef->addGenericArgument(variable, constraintType);
     }
 }
@@ -298,7 +298,7 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                 deprecated.disallow();
 
                 auto &variableName = stream_.consumeToken(VARIABLE);
-                auto type = parseAndFetchType(Type(eclass), GenericTypeVariables);
+                auto type = parseAndFetchType(Type(eclass), TypeDynamism::GenericTypeVariables);
                 eclass->addInstanceVariable(Argument(variableName, type));
             }
                 break;
@@ -310,7 +310,7 @@ void PackageParser::parseClassBody(Class *eclass, std::set<EmojicodeChar> *requi
                 canReturnNothingness.disallow();
                 deprecated.disallow();
                 
-                Type type = parseAndFetchType(Type(eclass), GenericTypeVariables, nullptr, true);
+                Type type = parseAndFetchType(Type(eclass), TypeDynamism::GenericTypeVariables, nullptr, true);
                 
                 if (type.optional()) {
                     throw CompilerErrorException(token, "A class cannot conform to an 🍬 protocol.");
@@ -428,7 +428,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         eclass->superclass = type.eclass;
         
         eclass->setSuperTypeDef(eclass->superclass);
-        parseGenericArgumentsForType(&type, Type(eclass), GenericTypeVariables, token);
+        parseGenericArgumentsForType(&type, Type(eclass), TypeDynamism::GenericTypeVariables, token);
         eclass->setSuperGenericArguments(type.genericArguments);
     }
     else {

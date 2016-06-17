@@ -55,6 +55,14 @@ enum class TypeDynamism {
     Self = 0b10
 };
 
+inline TypeDynamism operator&(TypeDynamism a, TypeDynamism b) {
+    return static_cast<TypeDynamism>(static_cast<int>(a) & static_cast<int>(b));
+}
+
+inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
+    return static_cast<TypeDynamism>(static_cast<int>(a) | static_cast<int>(b));
+}
+
 class TypeContext;
 class Procedure;
 
