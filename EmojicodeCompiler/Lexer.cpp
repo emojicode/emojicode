@@ -36,7 +36,7 @@ TokenStream lex(const char *path) {
     EmojicodeChar c;
     size_t i = 0;
     
-    auto sourcePosition = SourcePosition(0, 0, path);
+    auto sourcePosition = SourcePosition(1, 0, path);
     
     Token *token = new Token(sourcePosition);
     TokenStream stream = TokenStream(token);
