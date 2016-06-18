@@ -62,19 +62,19 @@ void analyzeClass(Type classType, Writer &writer) {
     
     for (auto method : eclass->methodList()) {
         auto scoper = CallableScoper(&objectScope);
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(method, writer, classType, scoper,
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(method, writer, classType.disableSelfResolving(), scoper,
                                                         StaticFunctionAnalyzerMode::ObjectMethod);
     }
     
     for (auto initializer : eclass->initializerList()) {
         auto scoper = CallableScoper(&objectScope);
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(initializer, writer, classType, scoper,
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(initializer, writer, classType.disableSelfResolving(), scoper,
                                                         StaticFunctionAnalyzerMode::ObjectInitializer);
     }
     
     for (auto classMethod : eclass->classMethodList()) {
         auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(classMethod, writer, classType, scoper,
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(classMethod, writer, classType.disableSelfResolving(), scoper,
                                                         StaticFunctionAnalyzerMode::ClassMethod);
     }
     

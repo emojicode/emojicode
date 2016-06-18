@@ -137,16 +137,16 @@ void reportPackage(Package *package) {
     
     for (auto exported : package->exportedTypes()) { // TODO: Add Value Type
         switch (exported.type.type()) {
-            case TT_CLASS:
+            case TypeContent::Class:
                 classes.push_back(exported.type.eclass());
                 break;
-            case TT_ENUM:
+            case TypeContent::Enum:
                 enums.push_back(exported.type.eenum());
                 break;
-            case TT_PROTOCOL:
+            case TypeContent::Protocol:
                 protocols.push_back(exported.type.protocol());
                 break;
-            case TT_VALUE_TYPE:
+            case TypeContent::ValueType:
                 valueTypes.push_back(exported.type.valueType());
                 break;
             default:

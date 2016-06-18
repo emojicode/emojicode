@@ -70,10 +70,10 @@ bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, 
                 if (optional) {
                     compilerWarning(ep, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
                 }
-                *type = Type(TT_SOMETHING, false);
+                *type = Type(TypeContent::Something, false);
                 return true;
             case E_LARGE_BLUE_CIRCLE:
-                *type = Type(TT_SOMEOBJECT, optional);
+                *type = Type(TypeContent::Someobject, optional);
                 return true;
             case E_SPARKLES:
                 throw CompilerErrorException(ep, "The Nothingness type may not be referenced to.");

@@ -26,22 +26,21 @@ class Function;
 class ValueType;
 struct CommonTypeFinder;
 
-enum TypeType {
-    TT_CLASS,
-    TT_PROTOCOL,
-    TT_ENUM,
-    TT_VALUE_TYPE,
-    TT_NOTHINGNESS,
+enum class TypeContent {
+    Class,
+    Protocol,
+    Enum,
+    ValueType,
+    Nothingness,
     /** Maybe everything. */
-    TT_SOMETHING,
+    Something,
     /** Any Object */
-    TT_SOMEOBJECT,
+    Someobject,
     /** Used with generics */
-    TT_REFERENCE,
-    TT_LOCAL_REFERENCE,
-    TT_CALLABLE,
-    
-    TT_SELF
+    Reference,
+    LocalReference,
+    Callable,
+    Self
 };
 
 enum class TypeDynamism {
@@ -65,9 +64,9 @@ inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
 
 class Type {
 public:
-    Type(TypeType t, bool o) : type_(t), optional_(o) {}
-    Type(TypeType t, bool o, uint16_t r, TypeDefinitionFunctional *c)
-        : reference(r), resolutionConstraint(c), type_(t), optional_(o) {}
+    Type(TypeContent t, bool o) : typeContent_(t), optional_(o) {}
+    Type(TypeContent t, bool o, uint16_t r, TypeDefinitionFunctional *c)
+        : reference(r), resolutionConstraint(c), typeContent_(t), optional_(o) {}
     explicit Type(Class *c) : Type(c, false) {};
     Type(Class *c, bool o);
     Type(Protocol *p, bool o);
@@ -75,7 +74,7 @@ public:
     Type(ValueType *v, bool o);
     
     /** Returns the type of this type. Whether it’s an integer, class, etc. */
-    TypeType type() const { return type_; }
+    TypeContent type() const { return typeContent_; }
     /** Whether this type of type could have generic arguments. */
     bool canHaveGenericArguments() const;
     /** Returns the represented TypeDefinitonWithGenerics by using a cast. */
@@ -100,6 +99,8 @@ public:
     bool optional() const { return optional_; }
     /** Marks this type as optional. You can never make an optional type un-optional. */
     void setOptional() { optional_ = true; }
+    /** Disables the resolving of Self on this type instance. */
+    Type& disableSelfResolving() { resolveSelfOn_ = false; return *this; }
     /** Returns a copy of this type but with @c optional set to @c false. */
     Type copyWithoutOptional() const;
     
@@ -113,6 +114,11 @@ public:
     
     /** Returns this type as a non-reference type by resolving it on the given type @c o if necessary. */
     Type resolveOn(TypeContext contextType, bool resolveSelf = true) const;
+    /** 
+     * Used to get as mutch information about a reference type as possible without using the generic arguments of
+     * the type context’s callee.
+     * This method is inteded to be used to determine type compatibility while e.g. compiling generic classes. 
+     */
     Type resolveOnSuperArgumentsAndConstraints(TypeContext ct, bool resolveSelf = true) const;
     
     /** Returns the name of the package to which this type belongs. */
@@ -124,9 +130,11 @@ public:
      */
     std::string toString(TypeContext contextType, bool includeNsAndOptional) const;
 private:
+    Type(TypeDefinition *td, bool o, TypeContent t) : typeDefinition_(td), typeContent_(t), optional_(o) {}
     TypeDefinition *typeDefinition_;
-    TypeType type_;
+    TypeContent typeContent_;
     bool optional_;
+    bool resolveSelfOn_ = true;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
 };
@@ -135,8 +143,8 @@ private:
 #define typeBoolean (Type(VT_BOOLEAN, false))
 #define typeSymbol (Type(VT_SYMBOL, false))
 #define typeFloat (Type(VT_DOUBLE, false))
-#define typeSomething (Type(TT_SOMETHING, false))
-#define typeNothingness (Type(TT_NOTHINGNESS, false))
-#define typeSomeobject (Type(TT_SOMEOBJECT, false))
+#define typeSomething (Type(TypeContent::Something, false))
+#define typeNothingness (Type(TypeContent::Nothingness, false))
+#define typeSomeobject (Type(TypeContent::Someobject, false))
 
 #endif /* Type_hpp */

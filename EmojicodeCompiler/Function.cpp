@@ -17,7 +17,7 @@
 //MARK: Closure
 
 Type Closure::type() {
-    Type t(TT_CALLABLE, false);
+    Type t(TypeContent::Callable, false);
     t.arguments = (uint8_t)arguments.size();
     
     t.genericArguments.push_back(returnType);
@@ -120,7 +120,7 @@ void Function::setVti(int vti) {
 }
 
 Type Function::type() {
-    Type t = Type(TT_CALLABLE, false);
+    Type t = Type(TypeContent::Callable, false);
     t.arguments = (uint8_t)arguments.size();
     
     t.genericArguments.push_back(returnType);
@@ -131,7 +131,7 @@ Type Function::type() {
 }
 
 Type Initializer::type() {
-    Type t = Type(TT_CALLABLE, false);
+    Type t = Type(TypeContent::Callable, false);
     t.arguments = (uint8_t)arguments.size();
     
     t.genericArguments.push_back(Type(owningType.eclass(), canReturnNothingness));

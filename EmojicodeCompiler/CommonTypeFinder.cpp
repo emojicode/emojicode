@@ -18,7 +18,7 @@ void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
         if (commonType.compatibleTo(t, typeContext)) {
             commonType = t;
         }
-        else if (t.type() == TT_CLASS && commonType.type() == TT_CLASS) {
+        else if (t.type() == TypeContent::Class && commonType.type() == TypeContent::Class) {
             commonType = typeSomeobject;
         }
         else {

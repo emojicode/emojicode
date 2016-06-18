@@ -83,7 +83,7 @@ void PackageParser::parse() {
                 if (!package_->fetchRawType(className, enamespace, optional, theToken, &type)) {
                     throw CompilerErrorException(classNameToken, "Class does not exist.");
                 }
-                if (type.type() != TT_CLASS && type.type() != TT_VALUE_TYPE) {
+                if (type.type() != TypeContent::Class && type.type() != TypeContent::ValueType) {
                     throw CompilerErrorException(classNameToken, "Only classes and value types are extendable.");
                 }
                 
@@ -302,7 +302,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         if (!package_->fetchRawType(typeName, typeNamespace, optional, token, &type)) {
             throw CompilerErrorException(token, "Superclass type does not exist.");
         }
-        if (type.type() != TT_CLASS) {
+        if (type.type() != TypeContent::Class) {
             throw CompilerErrorException(token, "The superclass must be a class.");
         }
         if (type.optional()) {
@@ -344,13 +344,13 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
     
     auto valueType = new ValueType(name, package_, theToken, documentation);
     
-    auto valueTypeType = Type(valueType, false);
+    auto valueTypeContent = Type(valueType, false);
     
-    parseGenericArgumentList(valueType, valueTypeType);
+    parseGenericArgumentList(valueType, valueTypeContent);
     valueType->finalizeGenericArguments();
     
-    package_->registerType(valueTypeType, name, enamespace, exported);
-    parseTypeDefinitionBody(valueTypeType, nullptr, true);
+    package_->registerType(valueTypeContent, name, enamespace, exported);
+    parseTypeDefinitionBody(valueTypeContent, nullptr, true);
 }
 
 void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> *requiredInitializers,
@@ -374,7 +374,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
         auto required = Attribute<E_KEY>().parse(&stream_);
         auto canReturnNothingness = Attribute<E_CANDY>().parse(&stream_);
         
-        auto eclass = typed.type() == TT_CLASS ? typed.eclass() : nullptr;
+        auto eclass = typed.type() == TypeContent::Class ? typed.eclass() : nullptr;
         
         auto token = stream_.consumeToken(IDENTIFIER);
         switch (token.value[0]) {
@@ -412,7 +412,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 if (type.optional()) {
                     throw CompilerErrorException(token, "A class cannot conform to an 🍬 protocol.");
                 }
-                if (type.type() != TT_PROTOCOL) {
+                if (type.type() != TypeContent::Protocol) {
                     throw CompilerErrorException(token, "The given type is not a protocol.");
                 }
                 

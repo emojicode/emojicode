@@ -30,7 +30,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken,
 }
 
 void StaticFunctionAnalyzer::noReturnError(SourcePosition p) {
-    if (callable.returnType.type() != TT_NOTHINGNESS && !returned) {
+    if (callable.returnType.type() != TypeContent::Nothingness && !returned) {
         throw CompilerErrorException(p, "An explicit return is missing.");
     }
 }
@@ -42,7 +42,7 @@ void StaticFunctionAnalyzer::noEffectWarning(const Token &warningToken) {
 }
 
 bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
-    if (type.type() == TT_CLASS && !type.optional()) {
+    if (type.type() == TypeContent::Class && !type.optional()) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass) {
             for (auto protocol : a->protocols()) {
                 if (protocol.protocol() == PR_ENUMERATEABLE) {
@@ -136,13 +136,13 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
     
     // TODO: Update for Value Types
     if (p->access == PRIVATE) {
-        if (typeContext.calleeType().type() != TT_CLASS || p->owningType.typeDefinition() != typeContext.calleeType().typeDefinition()) {
+        if (typeContext.calleeType().type() != TypeContent::Class || p->owningType.typeDefinition() != typeContext.calleeType().typeDefinition()) {
             ecCharToCharStack(p->name, nm);
             throw CompilerErrorException(token, "%s is 🔒.", nm);
         }
     }
     else if (p->access == PROTECTED) {
-        if (typeContext.calleeType().type() != TT_CLASS || !typeContext.calleeType().eclass()->inheritsFrom(p->owningType.eclass())) {
+        if (typeContext.calleeType().type() != TypeContent::Class || !typeContext.calleeType().eclass()->inheritsFrom(p->owningType.eclass())) {
             ecCharToCharStack(p->name, nm);
             throw CompilerErrorException(token, "%s is 🔐.", nm);
         }
@@ -259,7 +259,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
             EmojicodeInteger l = strtoll(string, nullptr, 0);
             delete [] string;
             
-            if (expectation.type() == TT_VALUE_TYPE && expectation.valueType() == VT_DOUBLE) {
+            if (expectation.type() == TypeContent::ValueType && expectation.valueType() == VT_DOUBLE) {
                 writer.writeCoin(0x15, token);
                 writer.writeDoubleCoin(l, token);
                 return typeFloat;
@@ -444,7 +444,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             
             Type type = Type(CL_LIST);
-            if (expectation.type() == TT_CLASS && expectation.eclass() == CL_LIST) {
+            if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_LIST) {
                 auto listType = expectation.genericArguments[0];
                 while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                     parse(stream_.consumeToken(), token, listType);
@@ -470,7 +470,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             Type type = Type(CL_DICTIONARY);
             
-            if (expectation.type() == TT_CLASS && expectation.eclass() == CL_DICTIONARY) {
+            if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_DICTIONARY) {
                 auto listType = expectation.genericArguments[0];
                 while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                     parse(stream_.consumeToken(), token, Type(CL_STRING));
@@ -562,13 +562,13 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             Type itemType = typeNothingness;
             
-            if (iteratee.type() == TT_CLASS && iteratee.eclass() == CL_LIST) {
+            if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_LIST) {
                 // If the iteratee is a list, the Real-Time Engine has some special sugar
                 placeholder.write(0x65);
                 writer.writeCoin(scoper.reserveVariableSlot(), token);  //Internally needed
                 scoper.currentScope().setLocalVariable(variableToken.value, Variable(iteratee.genericArguments[0], vID, true, true, variableToken));
             }
-            else if (iteratee.type() == TT_CLASS && iteratee.eclass() == CL_RANGE) {
+            else if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_RANGE) {
                 // If the iteratee is a range, the Real-Time Engine also has some special sugar
                 placeholder.write(0x66);
                 scoper.currentScope().setLocalVariable(variableToken.value, Variable(typeInteger, vID, true, true, variableToken));
@@ -592,8 +592,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_LEMON:
         case E_STRAWBERRY:
         case E_WATERMELON:
-        case E_AUBERGINE:
-        case E_ROOTSTER: {
+        case E_AUBERGINE: {
             ecCharToCharStack(token.value[0], identifier);
             throw CompilerErrorException(token, "Unexpected identifier %s.", identifier);
             return typeNothingness;
@@ -610,7 +609,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                                                                             "Instance variable \"%s\" must be initialized before the use of 🐕.");
             }
             
-            if (mode == StaticFunctionAnalyzerMode::Function) {
+            if (mode == StaticFunctionAnalyzerMode::Function || mode == StaticFunctionAnalyzerMode::ClassMethod) {
                 throw CompilerErrorException(token, "Illegal use of 🐕.");
             }
             
@@ -706,7 +705,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             }
             
             switch (type.type()) {
-                case TT_CLASS: {
+                case TypeContent::Class: {
                     auto offset = type.eclass()->numberOfGenericArgumentsWithSuperArguments() - type.eclass()->numberOfOwnGenericArguments();
                     for (size_t i = 0; i < type.eclass()->numberOfOwnGenericArguments(); i++) {
                         if(!type.eclass()->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments[i], type) ||
@@ -715,15 +714,15 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                         }
                     }
                     
-                    placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional() ? 0x44 : 0x40);
+                    placeholder.write(originalType.type() == TypeContent::Something || originalType.optional() ? 0x44 : 0x40);
                     writer.writeCoin(type.eclass()->index, token);
                     break;
                 }
-                case TT_PROTOCOL:
-                    placeholder.write(originalType.type() == TT_SOMETHING || originalType.optional() ? 0x45 : 0x41);
+                case TypeContent::Protocol:
+                    placeholder.write(originalType.type() == TypeContent::Something || originalType.optional() ? 0x45 : 0x41);
                     writer.writeCoin(type.protocol()->index, token);
                     break;
-                case TT_VALUE_TYPE:
+                case TypeContent::ValueType:
                     if (type.valueType() == VT_BOOLEAN) {
                         placeholder.write(0x42);
                         break;
@@ -791,7 +790,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             Type type = parse(stream_.consumeToken());
             
-            if (type.type() != TT_CLASS) {
+            if (type.type() != TypeContent::Class) {
                 throw CompilerErrorException(token, "You can only capture method calls on class instances.");
             }
             
@@ -832,7 +831,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             Type type = parse(stream_.consumeToken());
             
-            if (type.type() != TT_CALLABLE) {
+            if (type.type() != TypeContent::Callable) {
                 throw CompilerErrorException(token, "Given value is not callable.");
             }
             
@@ -865,8 +864,8 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         }
         case E_LARGE_BLUE_DIAMOND: {
             TypeDynamism dynamism;
-            Type type = parseAndFetchType(typeContext, TypeDynamism::AllKinds, expectation, &dynamism)
-                        .resolveOnSuperArgumentsAndConstraints(typeContext);
+            auto inputType = parseAndFetchType(typeContext, TypeDynamism::AllKinds, expectation, &dynamism);
+            auto type = inputType.resolveOnSuperArgumentsAndConstraints(typeContext);
             auto initializerName = stream_.consumeToken(IDENTIFIER);
             
             if (type.optional()) {
@@ -876,7 +875,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 throw CompilerErrorException(initializerName, "You cannot instantiate generic types yet.");
             }
             
-            if (type.type() == TT_ENUM) {
+            if (type.type() == TypeContent::Enum) {
                 if (dynamism != TypeDynamism::None) {
                     throw CompilerErrorException(token, "Enums cannot be instantiated dynamically.");
                 }
@@ -900,7 +899,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 
                 return type;
             }
-            else if (type.type() == TT_CLASS) {
+            else if (type.type() == TypeContent::Class) {
                 writer.writeCoin(0x4, token);
                 
                 writeRoosterClassCoin(type, dynamism, token);
@@ -919,19 +918,19 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 parseFunctionCall(type, initializer, token);
                 
                 if (initializer->canReturnNothingness) {
-                    type.setOptional();
+                    inputType.setOptional();
                 }
-                return type;
+                return inputType;
             }
-            else if (type.type() == TT_VALUE_TYPE) {
+            else if (type.type() == TypeContent::ValueType) {
                 auto initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
                 writer.writeCoin(0x7, token);
                 writer.writeCoin(initializer->vti(), token);
                 parseFunctionCall(type, initializer, token);
                 if (initializer->canReturnNothingness) {
-                    type.setOptional();
+                    inputType.setOptional();
                 }
-                return type;
+                return inputType;
             }
             else {
                 throw CompilerErrorException(token, "The given type cannot be instantiated.");
@@ -952,14 +951,14 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             }
             
             ClassMethod *method;
-            if (type.type() == TT_CLASS) {
+            if (type.type() == TypeContent::Class) {
                 writer.writeCoin(0x2, token);
                 writeRoosterClassCoin(type, dynamism, token);
                 
                 method = type.typeDefinitionFunctional()->getClassMethod(methodToken, type, typeContext);
                 writer.writeCoin(method->vti(), token);
             }
-            else if (type.type() == TT_VALUE_TYPE) {
+            else if (type.type() == TypeContent::ValueType) {
                 method = type.typeDefinitionFunctional()->getClassMethod(methodToken, type, typeContext);
                 writer.writeCoin(0x7, token);
                 writer.writeCoin(method->vti(), token);
@@ -979,7 +978,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             }
             
             Method *method;
-            if (type.type() == TT_VALUE_TYPE) {
+            if (type.type() == TypeContent::ValueType) {
                 if (type.valueType() == VT_BOOLEAN) {
                     switch (token.value[0]) {
                         case E_NEGATIVE_SQUARED_CROSS_MARK:
@@ -1108,20 +1107,20 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 placeholder.write(0x6);
                 writer.writeCoin(method->vti(), token);
             }
-            else if (type.type() == TT_PROTOCOL) {
+            else if (type.type() == TypeContent::Protocol) {
                 method = type.protocol()->getMethod(token, type, typeContext);
                 placeholder.write(0x3);
                 writer.writeCoin(type.protocol()->index, token);
                 writer.writeCoin(method->vti(), token);
             }
-            else if (type.type() == TT_CLASS) {
+            else if (type.type() == TypeContent::Class) {
                 method = type.eclass()->getMethod(token, type, typeContext);
                 placeholder.write(0x1);
                 writer.writeCoin(method->vti(), token);
             }
             else {
                 auto typeString = type.toString(typeContext, true);
-                throw CompilerErrorException(token, "You cannot call methods on %s.");
+                throw CompilerErrorException(token, "You cannot call methods on %s.", typeString.c_str());
             }
             
             return parseFunctionCall(type, method, token);

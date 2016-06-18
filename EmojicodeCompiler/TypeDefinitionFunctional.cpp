@@ -16,7 +16,7 @@
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Type constraint) {
     genericArgumentConstraints_.push_back(constraint);
     
-    Type referenceType = Type(TT_REFERENCE, false, ownGenericArgumentCount_, this);
+    Type referenceType = Type(TypeContent::Reference, false, ownGenericArgumentCount_, this);
     
     if (ownGenericArgumentVariables_.count(variableName.value)) {
         throw CompilerErrorException(variableName, "A generic argument variable with the same name is already in use.");

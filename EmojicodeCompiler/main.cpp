@@ -113,7 +113,7 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
 Class* getStandardClass(EmojicodeChar name, Package *_, SourcePosition errorPosition) {
     Type type = typeNothingness;
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TT_CLASS) {
+    if (type.type() != TypeContent::Class) {
         ecCharToCharStack(name, nameString)
         throw CompilerErrorException(errorPosition, "s package class %s is missing.", nameString);
         
@@ -124,7 +124,7 @@ Class* getStandardClass(EmojicodeChar name, Package *_, SourcePosition errorPosi
 Protocol* getStandardProtocol(EmojicodeChar name, Package *_, SourcePosition errorPosition) {
     Type type = typeNothingness;
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TT_PROTOCOL) {
+    if (type.type() != TypeContent::Protocol) {
         ecCharToCharStack(name, nameString)
         throw CompilerErrorException(errorPosition, "s package protocol %s is missing.", nameString);
     }
@@ -134,7 +134,7 @@ Protocol* getStandardProtocol(EmojicodeChar name, Package *_, SourcePosition err
 ValueType* getStandardValueType(EmojicodeChar name, Package *_, SourcePosition errorPosition) {
     Type type = typeNothingness;
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TT_VALUE_TYPE) {
+    if (type.type() != TypeContent::ValueType) {
         ecCharToCharStack(name, nameString)
         throw CompilerErrorException(errorPosition, "s package value type %s is missing.", nameString);
     }

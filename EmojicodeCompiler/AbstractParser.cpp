@@ -35,7 +35,7 @@ const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeCha
 Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Type expectation,
                                        TypeDynamism *dynamicType, bool allowProtocolsUsingSelf) {
     if (stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE)) {
-        if (expectation.type() == TT_NOTHINGNESS) {
+        if (expectation.type() == TypeContent::Nothingness) {
             throw CompilerErrorException(stream_.consumeToken(), "Cannot infer ⚫️.");
         }
         stream_.consumeToken();
@@ -71,19 +71,19 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         
         throw CompilerErrorException(variableToken, "No such generic type variable \"%s\".", variableToken.value.utf8CString());
     }
-    else if (stream_.nextTokenIs(E_ROOTSTER)) {
+    else if (stream_.nextTokenIs(E_DOG)) {
         auto &ratToken = stream_.consumeToken(IDENTIFIER);
         if ((dynamism & TypeDynamism::Self) == TypeDynamism::None) {
-            throw CompilerErrorException(ratToken, "🐓 not allowed here.");
+            throw CompilerErrorException(ratToken, "🐕 not allowed here.");
         }
         if (dynamicType) *dynamicType = TypeDynamism::Self;
-        return Type(TT_SELF, optional);
+        return Type(TypeContent::Self, optional);
     }
     else if (stream_.nextTokenIs(E_GRAPES)) {
         stream_.consumeToken(IDENTIFIER);
         if (dynamicType) *dynamicType = TypeDynamism::None;
 
-        Type t(TT_CALLABLE, optional);
+        Type t(TypeContent::Callable, optional);
         t.arguments = 0;
         t.genericArguments.push_back(typeNothingness);
         
@@ -119,7 +119,7 @@ Type AbstractParser::parseAndFetchType(TypeContext ct, TypeDynamism dynamism, Ty
         
         parseGenericArgumentsForType(&type, ct, dynamism, token);
         
-        if (!allowProtocolsUsingSelf && type.type() == TT_PROTOCOL && type.protocol()->usesSelf()) {
+        if (!allowProtocolsUsingSelf && type.type() == TypeContent::Protocol && type.protocol()->usesSelf()) {
             auto typeStr = type.toString(ct, true);
             throw CompilerErrorException(token, "Protocol %s can only be used as a generic constraint because it uses 🐓.",
                           typeStr.c_str());
@@ -212,7 +212,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext 
         Type t = parseAndFetchType(p->owningType, TypeDynamism::GenericTypeVariables, typeNothingness, nullptr, true);
         p->genericArgumentConstraints.push_back(t);
         
-        Type rType = Type(TT_LOCAL_REFERENCE, false);
+        Type rType = Type(TypeContent::LocalReference, false);
         rType.reference = p->genericArgumentVariables.size();
         
         if (p->genericArgumentVariables.count(variable.value)) {
