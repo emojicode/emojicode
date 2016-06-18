@@ -33,6 +33,11 @@
   Integer
 🌮
 🌍 🕊 🚂 🍇
+  🌮
+    Returns a cryptographically secure random number within the given range.
+  🌮
+  🐈 🎰 max 🚂 min 🚂 📻
+
   🌮 Whether this value and *other* are considered equal. 🌮
   🐖 😛 other 🐓 ➡️ 👌 🍇
     🍎 😛 🐕 other
@@ -141,6 +146,89 @@
   🐖 ➡️ other 🚀 ➡️ 👌 🍇
     🍎 ➡️ 🐕 other
   🍉
+
+  🌮
+    Returns an approximation of 𝜋.
+  🌮
+  🐇🐖 ⚾️ ➡️ 🚀 🍇
+    🍎 3.14159265358979323846264338327950288
+  🍉
+  🌮
+    Returns an approximation of 𝜏 which is equal to 𝜋/2.
+  🌮
+  🐇🐖 🏉 ➡️ 🚀 🍇
+    🍎 1.57079632679489661923132169163975144
+  🍉
+  🌮
+    Returns an approximation of 𝜏/2 which is equal to 𝜋/4.
+  🌮
+  🐇🐖 🎾 ➡️ 🚀 🍇
+    🍎 0.785398163397448309615660845819875721
+  🍉
+  🌮
+    Returns an approximation of ℇ (Euler’s number).
+  🌮
+  🐇🐖 🏹 ➡️ 🚀 🍇
+    🍎 2.71828182845904523536028747135266250
+  🍉
+
+  🌮
+    Returns the sine of this 🚀.
+  🌮
+  🐖 📓 ➡️ 🚀 📻
+  🌮
+    Returns the cosine of this 🚀.
+  🌮
+  🐖 📕 ➡️ 🚀 📻
+  🌮
+    Returns the tangent of this 🚀.
+  🌮
+  🐖 📘 ➡️ 🚀 📻
+  🌮
+    Returns the arcsine of this 🚀.
+  🌮
+  🐖 📔 ➡️ 🚀 📻
+  🌮
+    Returns the arccosine of this 🚀.
+  🌮
+  🐖 📙 ➡️ 🚀 📻
+  🌮
+    Returns the arctangent of this 🚀.
+  🌮
+  🐖 📗 ➡️ 🚀 📻
+  🌮
+    Returns this 🚀 to the exponent power, that is, base<sup>exponent</sup>.
+  🌮
+  🐖 🏂 exponent 🚀 ➡️ 🚀 📻
+  🌮
+    Returns the positive square root of this 🚀.
+  🌮
+  🐖 ⛷ ➡️ 🚀 📻
+  🌮
+    Returns the smallest integer greater than or equal to this 🚀.
+  🌮
+  🐖 🚴 ➡️ 🚂 📻
+  🌮
+    Returns the largest integer less than or equal to this 🚀.
+  🌮
+  🐖 🚵 ➡️ 🚂 📻
+  🌮
+    Returns the value of this 🚀 rounded to the nearest integer.
+
+    If the fractional portion of this 🚀 is 0.5 or greater, the argument is
+    rounded to the next higher integer. If the fractional portion of this 🚀 is
+    less than 0.5, the argument is rounded to the next lower integer.
+  🌮
+  🐖 🏇 ➡️ 🚂 📻
+  🌮
+    Returns the base 2 logarithm of this 🚀.
+  🌮
+  🐖 🚣 ➡️ 🚀 📻
+
+  🌮
+    Returns the natural (base ℇ) logarithm of this 🚀.
+  🌮
+  🐖 🏄 ➡️ 🚀 📻
 🍉
 
 🌮
@@ -666,97 +754,6 @@
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
   🌮
   🐇🐖 🕰 ➡️ 🚂📻
-🍉
-
-🌮
-  🚄 provides mathematical functions as class methods.
-🌮
-🌍 🐇 🚄 🍇
-  🌮
-    Returns a crypthographically secure random number within the given range.
-  🌮
-  🐇🐖 🎰 max 🚂 min 🚂 ➡️ 🚂 📻
-  🌮
-    Returns an approximation of 𝜋.
-  🌮
-  🐇🐖 ⚾️ ➡️ 🚀 🍇
-    🍎 3.14159265358979323846264338327950288
-  🍉
-  🌮
-    Returns an approximation of 𝜏 which is equal to 𝜋/2.
-  🌮
-  🐇🐖 🏉 ➡️ 🚀 🍇
-    🍎 1.57079632679489661923132169163975144
-  🍉
-  🌮
-    Returns an approximation of 𝜏/2 which is equal to 𝜋/4.
-  🌮
-  🐇🐖 🎾 ➡️ 🚀 🍇
-    🍎 0.785398163397448309615660845819875721
-  🍉
-  🌮
-    Returns an approximation of ℇ (Euler’s number).
-  🌮
-  🐇🐖 🏹 ➡️ 🚀 🍇
-    🍎 2.71828182845904523536028747135266250
-  🍉
-  🌮
-    Returns the sine of `x`.
-  🌮
-  🐇🐖 📓 x 🚀 ➡️ 🚀 📻
-  🌮
-    Returns the cosine of `x`.
-  🌮
-  🐇🐖 📕 x 🚀 ➡️ 🚀 📻
-  🌮
-    Returns the tangent of `x`.
-  🌮
-  🐇🐖 📘 x 🚀 ➡️ 🚀 📻
-  🌮
-    Returns the arcsine of `x`.
-  🌮
-  🐇🐖 📔 x 🚀 ➡️ 🚀 📻
-  🌮
-    Returns the arccosine of `x`.
-  🌮
-  🐇🐖 📙 x 🚀 ➡️ 🚀 📻
-  🌮
-    Returns the arctangent of `x`.
-  🌮
-  🐇🐖 📗 x 🚀 ➡️ 🚀 📻
-  🌮
-    Returns base to the exponent power, that is, base<sup>exponent</sup>.
-  🌮
-  🐇🐖 🏂 base 🚀 exponent 🚀 ➡️ 🚀 📻
-  🌮
-    Returns the positive square root of `x`.
-  🌮
-  🐇🐖 ⛷ x 🚀 ➡️ 🚀 📻
-  🌮
-    Returns the smallest integer greater than or equal to `x`.
-  🌮
-  🐇🐖 🚴 x 🚀 ➡️ 🚂 📻
-  🌮
-    Returns the largest integer less than or equal to `x`.
-  🌮
-  🐇🐖 🚵 x 🚀 ➡️ 🚂 📻
-  🌮
-    Returns the value of `x` rounded to the nearest integer.
-
-    If the fractional portion of number is 0.5 or greater, the argument is
-    rounded to the next higher integer. If the fractional portion of number is
-    less than 0.5, the argument is rounded to the next lower integer.
-  🌮
-  🐇🐖 🏇 x 🚀 ➡️ 🚂 📻
-  🌮
-    Returns the base 2 logarithm of `x`.
-  🌮
-  🐇🐖 🚣 x 🚀 ➡️ 🚀 📻
-
-  🌮
-    Returns the natural (base ℇ) logarithm of `x`.
-  🌮
-  🐇🐖 🏄 x 🚀 ➡️ 🚀 📻
 🍉
 
 🌮

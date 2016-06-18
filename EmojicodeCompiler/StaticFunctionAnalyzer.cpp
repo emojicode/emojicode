@@ -937,8 +937,6 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             }
         }
         case E_DOUGHNUT: {
-            writer.writeCoin(0x2, token);
-            
             auto &methodToken = stream_.consumeToken(IDENTIFIER);
             
             TypeDynamism dynamism;
@@ -946,21 +944,28 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                         .resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {
-                compilerWarning(token, "Please remove useless 🍬.");
-            }
-            if (type.type() != TT_CLASS) {
-                throw CompilerErrorException(token, "The given type is not a class.");
+                compilerWarning(token, "You cannot call optionals on 🍬.");
             }
             if (dynamism == TypeDynamism::GenericTypeVariables) {
                 throw CompilerErrorException(token, "You cannot call methods generic types yet.");
             }
             
-            writeRoosterClassCoin(type, dynamism, token);
-            
-            auto method = type.eclass()->getClassMethod(methodToken, type, typeContext);
-            
-            writer.writeCoin(method->vti(), token);
-            
+            ClassMethod *method;
+            if (type.type() == TT_CLASS) {
+                writer.writeCoin(0x2, token);
+                writeRoosterClassCoin(type, dynamism, token);
+                
+                method = type.typeDefinitionFunctional()->getClassMethod(methodToken, type, typeContext);
+                writer.writeCoin(method->vti(), token);
+            }
+            else if (type.type() == TT_VALUE_TYPE) {
+                method = type.typeDefinitionFunctional()->getClassMethod(methodToken, type, typeContext);
+                writer.writeCoin(0x7, token);
+                writer.writeCoin(method->vti(), token);
+            }
+            else {
+                throw CompilerErrorException(token, "The given type is not a class.");
+            }
             return parseFunctionCall(type, method, token);
         }
         default: {

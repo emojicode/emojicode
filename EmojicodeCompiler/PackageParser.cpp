@@ -350,7 +350,7 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
     valueType->finalizeGenericArguments();
     
     package_->registerType(valueTypeType, name, enamespace, exported);
-    parseTypeDefinitionBody(valueTypeType, nullptr, false);
+    parseTypeDefinitionBody(valueTypeType, nullptr, true);
 }
 
 void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> *requiredInitializers,

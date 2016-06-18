@@ -277,67 +277,9 @@ static Something dataGetByte(Thread *thread) {
     return somethingInteger(d->bytes[index]);
 }
 
-// MARK: Math
-
-static Something mathSin(Thread *thread) {
-    return somethingDouble(sin(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathCos(Thread *thread) {
-    return somethingDouble(cos(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathTan(Thread *thread) {
-    return somethingDouble(tan(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathASin(Thread *thread) {
-    return somethingDouble(asin(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathACos(Thread *thread) {
-    return somethingDouble(acos(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathATan(Thread *thread) {
-    return somethingDouble(atan(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathPow(Thread *thread) {
-    return somethingDouble(pow(stackGetVariable(0, thread).doubl, stackGetVariable(1, thread).doubl));
-}
-
-static Something mathSqrt(Thread *thread) {
-    return somethingDouble(sqrt(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathRound(Thread *thread) {
-    return somethingInteger(round(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathCeil(Thread *thread) {
-    return somethingInteger(ceil(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathFloor(Thread *thread) {
-    return somethingInteger(floor(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathRandom(Thread *thread) {
-    return somethingInteger(secureRandomNumber(stackGetVariable(0, thread).raw, stackGetVariable(1, thread).raw));
-}
-
-static Something mathLog2(Thread *thread) {
-    return somethingDouble(log2(stackGetVariable(0, thread).doubl));
-}
-
-static Something mathLn(Thread *thread) {
-    return somethingDouble(log(stackGetVariable(0, thread).doubl));
-}
-
 // MARK: Integer
 
-Something stringFromInteger(Thread *thread) {
+Something integerToString(Thread *thread) {
     EmojicodeInteger base = stackGetVariable(0, thread).raw;
     EmojicodeInteger n = stackGetThisContext(thread).raw, a = llabs(n);
     bool negative = n < 0;
@@ -363,6 +305,10 @@ Something stringFromInteger(Thread *thread) {
     return somethingObject(stringObject);
 }
 
+static Something integerRandom(Thread *thread) {
+    return somethingInteger(secureRandomNumber(stackGetVariable(1, thread).raw, stackGetVariable(1, thread).raw));
+}
+
 static Something stringFromSymbol(Thread *thread){
     Object *co = newArray(sizeof(EmojicodeChar));
     stackPush(somethingObject(co), 0, 0, thread);
@@ -375,7 +321,7 @@ static Something stringFromSymbol(Thread *thread){
     return somethingObject(stringObject);
 }
 
-static Something stringFromDouble(Thread *thread) {
+static Something doubleToString(Thread *thread) {
     EmojicodeInteger precision = stackGetVariable(0, thread).raw;
     double d = stackGetThisContext(thread).doubl;
     double absD = fabs(d);
@@ -416,6 +362,58 @@ static Something stringFromDouble(Thread *thread) {
     
     if (negative) characters[-1] = '-';
     return somethingObject(stringObject);
+}
+
+static Something doubleSin(Thread *thread) {
+    return somethingDouble(sin(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleCos(Thread *thread) {
+    return somethingDouble(cos(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleTan(Thread *thread) {
+    return somethingDouble(tan(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleASin(Thread *thread) {
+    return somethingDouble(asin(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleACos(Thread *thread) {
+    return somethingDouble(acos(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleATan(Thread *thread) {
+    return somethingDouble(atan(stackGetThisContext(thread).doubl));
+}
+
+static Something doublePow(Thread *thread) {
+    return somethingDouble(pow(stackGetThisContext(thread).doubl, stackGetVariable(0, thread).doubl));
+}
+
+static Something doubleSqrt(Thread *thread) {
+    return somethingDouble(sqrt(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleRound(Thread *thread) {
+    return somethingInteger(round(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleCeil(Thread *thread) {
+    return somethingInteger(ceil(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleFloor(Thread *thread) {
+    return somethingInteger(floor(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleLog2(Thread *thread) {
+    return somethingDouble(log2(stackGetThisContext(thread).doubl));
+}
+
+static Something doubleLn(Thread *thread) {
+    return somethingDouble(log(stackGetThisContext(thread).doubl));
 }
 
 // MARK: Callable
@@ -485,9 +483,43 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                     return mutexTryLock;
             }
         case 0x1F682: //🚂
-            return stringFromInteger;
+            switch (symbol) {
+                case 0x1f521: //🔡
+                    return integerToString;
+                case 0x1f3b0: //🎰
+                    return integerRandom;
+            }
         case 0x1F680:
-            return stringFromDouble;
+            switch (symbol) {
+                case 0x1f4d3: //📓
+                    return doubleSin;
+                case 0x1f4d8: //📘
+                    return doubleTan;
+                case 0x1f4d5: //📕
+                    return doubleCos;
+                case 0x1f4d4: //📔
+                    return doubleASin;
+                case 0x1f4d9: //📙
+                    return doubleACos;
+                case 0x1f4d7: //📗
+                    return doubleATan;
+                case 0x1f3c2: //🏂
+                    return doublePow;
+                case 0x26f7: //⛷
+                    return doubleSqrt;
+                case 0x1f6b4: //🚴
+                    return doubleCeil;
+                case 0x1f6b5: //🚵
+                    return doubleFloor;
+                case 0x1f3c7: //🏇
+                    return doubleRound;
+                case 0x1f6a3: //🚣
+                    return doubleLog2;
+                case 0x1f3c4: //🏄
+                    return doubleLn;
+                case 0x1f521: //🔡
+                    return doubleToString;
+            }
         case 0x1f523: //🔣
             return stringFromSymbol;
     }
@@ -539,37 +571,6 @@ FunctionFunctionPointer handlerPointerForClassMethod(EmojicodeChar cl, Emojicode
                     return systemSystem;
             }
             break;
-        case 0x1F684: //🚄
-            switch (symbol) {
-                case 0x1f4d3: //📓
-                    return mathSin;
-                case 0x1f4d8: //📘
-                    return mathTan;
-                case 0x1f4d5: //📕
-                    return mathCos;
-                case 0x1f4d4: //📔
-                    return mathASin;
-                case 0x1f4d9: //📙
-                    return mathACos;
-                case 0x1f4d7: //📗
-                    return mathATan;
-                case 0x1f3c2: //🏂
-                    return mathPow;
-                case 0x26f7: //⛷
-                    return mathSqrt;
-                case 0x1f6b4: //🚴
-                    return mathCeil;
-                case 0x1f6b5: //🚵
-                    return mathFloor;
-                case 0x1f3c7: //🏇
-                    return mathRound;
-                case 0x1f3b0: //🎰
-                    return mathRandom;
-                case 0x1f6a3: //🚣
-                    return mathLog2;
-                case 0x1f3c4: //🏄
-                    return mathLn;
-            }
         case 0x1f488: //💈
             //case 0x23f3: //⏳
             return threadSleep;
