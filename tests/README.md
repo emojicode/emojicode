@@ -10,7 +10,7 @@ You might need to prepend `sudo` to `make install`.
 
 (Warning: The tests contain a lot of nonsense. 😜)
 
-## Sturcture
+## Structure
 
 - `compilation`: Contains different compilation problems (from very simple to
   advanced) and expected output.
