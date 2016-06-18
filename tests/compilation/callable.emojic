@@ -1,0 +1,65 @@
+🏁 🍇
+  🍦 string 🔤Krass🔤
+
+  🍦 append 🌶 📝 string
+
+  😀 🍭 append 🔟!
+  😀 🍭 append 🔟?
+
+  🍦 greet 🍇 name 🔡 ➡️ 🔡
+    😀 🍪🔤Wir grüßen den Ehrwürdigen 🔤 name🍪
+
+    🍮 out 🔤🔤
+
+    🔂 i️ ⏩ ➖ 📏 name 1 -1 🍇
+      🍮 out 📝 out 🍺🔬 name i
+    🍉
+    🍎 out
+  🍉
+
+  😀 🍭 greet 🔤Hans🔤
+
+  🍦 detektiv 🔷🕵🐑 🔤Karate Kid🔤
+
+  🍦 derNameFunktion 💳 detektiv
+  🏷 detektiv 🔤Kung Fu Panda🔤
+
+  😀 🍭 derNameFunktion
+
+  🍦 walfriedGrüßer 🍩🙋🍤 🔤Walfried🔤
+  😀 🍭 walfriedGrüßer 14
+  😀 🍭 walfriedGrüßer 12
+  😀 🍭 walfriedGrüßer 14
+
+  🍎 0
+🍉
+
+🐇 🕵 🍇
+  🍰 name 🔡
+
+  🐈 🐑 @name 🔡 🍇
+    🍮 name @name
+  🍉
+
+  🐖 🏷 neuerName 🔡 🍇
+    🍮 name neuerName
+  🍉
+
+  🐖 💳 ➡️ 🍇➡️🔡🍉 🍇
+    🍎 🍇 ➡️ 🔡
+      🍎 name
+    🍉
+  🍉
+
+🍉
+
+🐇 🍤 🍇
+  🐇🐖 🙋 name 🔡 ➡️ 🍇🚂➡️🔡🍉 🍇
+    🍎 🍇 hour 🚂 ➡️ 🔡
+      🍊 😛 hour 12 🍇
+        🍎 🍪 🔤Have a good lunch, 🔤 name🍪
+      🍉
+      🍎 🍪 🔤Hello, 🔤 name🍪
+    🍉
+  🍉
+🍉

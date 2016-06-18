@@ -76,20 +76,36 @@ $(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/$(1).emojic
 $(DIST)/$(ENGINE_BINARY) $(TESTS_DIR)/$(1).emojib
 endef
 
+define compilationTestOutput
+$(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/$(1).emojic
+$(DIST)/$(ENGINE_BINARY) $(TESTS_DIR)/$(1).emojib > $(TESTS_DIR)/$(1).out.txt
+cmp -b $(TESTS_DIR)/$(1).out.txt $(TESTS_DIR)/$(1).txt
+endef
+
 install: dist
 	cd $(DIST) && ./install.sh
 
 tests:
-	$(call testFile,stringTest)
-	$(call testFile,primitiveMethodsTest)
-	$(call testFile,listTest)
-	$(call testFile,dictionaryTest)
-	$(call testFile,rangeTest)
-	$(call testFile,dataTest)
-	$(call testFile,mathTest)
-	$(call testFile,fileTest)
-	$(call testFile,systemTest)
-	$(call testFile,jsonTest)
+	$(call compilationTestOutput,compilation/hello)
+	$(call compilationTestOutput,compilation/namespace)
+	$(call compilationTestOutput,compilation/branch)
+	$(call compilationTestOutput,compilation/class)
+	$(call compilationTestOutput,compilation/protocol)
+	$(call compilationTestOutput,compilation/selfInDeclaration)
+	$(call compilationTestOutput,compilation/generics)
+	$(call compilationTestOutput,compilation/genericProtocol)
+	$(call compilationTestOutput,compilation/callable)
+	$(call testFile,s/stringTest)
+	$(call testFile,s/primitiveMethodsTest)
+	$(call testFile,s/listTest)
+	$(call testFile,s/dictionaryTest)
+	$(call testFile,s/rangeTest)
+	$(call testFile,s/dataTest)
+	$(call testFile,s/mathTest)
+	$(call testFile,s/fileTest)
+	$(call testFile,s/systemTest)
+	$(call testFile,s/jsonTest)
+	@echo "✅ ✅  All tests passed."
 
 dist:
 	rm -f $(DIST)/install.sh

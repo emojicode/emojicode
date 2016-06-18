@@ -1,2 +1,3 @@
-# Ignore compiled tests
+# Ignore compiled tests and outputs
 *.emojib
+*.out.txt
