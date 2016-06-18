@@ -112,7 +112,7 @@ static Class* readClass(Thread *thread) {
     EmojicodeCoin classIndex = consumeCoin(thread);
     
     if(classIndex == UINT32_MAX){
-        return stackGetThisObjectClass(thread);
+        return parse(consumeCoin(thread), thread).eclass;
     }
     
     return classTable[classIndex];
@@ -443,9 +443,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         case 0x3C:
             return stackGetThisContext(thread);
         case 0x3D: {
-            Object *o = stackGetThisObject(thread);
-            
             Class *class = readClass(thread);
+            Object *o = stackGetThisObject(thread);
             
             EmojicodeCoin vti = consumeCoin(thread);
             InitializerFunction *initializer = class->initializersVtable[vti];

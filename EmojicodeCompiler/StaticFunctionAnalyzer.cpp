@@ -62,6 +62,7 @@ void StaticFunctionAnalyzer::writeRoosterClassCoin(Type type, TypeDynamism dynam
     
     if (dynamism != TypeDynamism::None) {
         writer.writeCoin(UINT32_MAX, token);
+        writer.writeCoin(0x3C, token);
     }
     else {
         writer.writeCoin(type.eclass()->index, token);
