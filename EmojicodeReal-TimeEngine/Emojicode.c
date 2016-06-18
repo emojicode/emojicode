@@ -24,7 +24,7 @@ Class *CL_LIST;
 Class *CL_ERROR;
 Class *CL_DATA;
 Class *CL_DICTIONARY;
-Class *CL_CAPTURED_METHOD_CALL;
+Class *CL_CAPTURED_FUNCTION_CALL;
 Class *CL_CLOSURE;
 Class *CL_RANGE;
 
@@ -139,7 +139,7 @@ bool isRealObject(Something sth){
 //MARK: Low level parsing
 
 Something executeCallableExtern(Object *callable, Something *args, Thread *thread){
-    if (callable->class == CL_CAPTURED_METHOD_CALL) {
+    if (callable->class == CL_CAPTURED_FUNCTION_CALL) {
         CapturedMethodCall *cmc = callable->value;
         Function *method = cmc->method;
         
@@ -793,7 +793,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         }
         case 0x71: {
             stackPush(parse(consumeCoin(thread), thread), 0, 0, thread);
-            Object *cmco = newObject(CL_CAPTURED_METHOD_CALL);
+            Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
             CapturedMethodCall *cmc = cmco->value;
             
             EmojicodeCoin vti = consumeCoin(thread);
@@ -804,7 +804,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         }
         case 0x72: {
             Object *callable = parse(consumeCoin(thread), thread).object;
-            if (callable->class == CL_CAPTURED_METHOD_CALL) {
+            if (callable->class == CL_CAPTURED_FUNCTION_CALL) {
                 CapturedMethodCall *cmc = callable->value;
                 return performFunction(cmc->method, cmc->callee, thread);
             }

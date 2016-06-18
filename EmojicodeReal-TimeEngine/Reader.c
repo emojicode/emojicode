@@ -253,7 +253,7 @@ Function* readBytecode(FILE *in) {
     CL_ERROR = classTable[2];
     CL_DATA = classTable[3];
     CL_DICTIONARY = classTable[4];
-    CL_CAPTURED_METHOD_CALL = classTable[5];
+    CL_CAPTURED_FUNCTION_CALL = classTable[5];
     CL_CLOSURE = classTable[6];
     CL_RANGE = classTable[7];
     
