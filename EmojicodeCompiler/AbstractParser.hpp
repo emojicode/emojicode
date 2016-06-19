@@ -23,8 +23,9 @@ protected:
     /** Reads a type name and stores it into the given pointers. */
     const Token& parseTypeName(EmojicodeChar *typeName, EmojicodeChar *ns, bool *optional);
     /** Reads a type name and stores it into the given pointers. */
-    Type parseAndFetchType(TypeContext tc, TypeDynamism dynamism, Type expectation = typeNothingness,
-                           TypeDynamism *dynamicType = nullptr, bool allowProtocolsUsingSelf = false);
+    Type parseTypeDeclarative(TypeContext tc, TypeDynamism dynamism, Type expectation = typeNothingness,
+                              TypeDynamism *dynamicType = nullptr, bool allowProtocolsUsingSelf = false);
+    
     /**
      * Parses the arguments for a callable.
      * @return Whether self was used.

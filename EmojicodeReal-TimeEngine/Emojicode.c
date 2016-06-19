@@ -109,13 +109,7 @@ static Something runFunctionPointerBlock(Thread *thread, uint32_t length){
 }
 
 static Class* readClass(Thread *thread) {
-    EmojicodeCoin classIndex = consumeCoin(thread);
-    
-    if(classIndex == UINT32_MAX){
-        return parse(consumeCoin(thread), thread).eclass;
-    }
-    
-    return classTable[classIndex];
+    return parse(consumeCoin(thread), thread).eclass;
 }
 
 static double readDouble(Thread *thread) {
@@ -252,16 +246,16 @@ Something performFunction(Function *method, Something this, Thread *thread){
 Something parse(EmojicodeCoin coin, Thread *thread){
     switch (coin) {
         case 0x1: {
-            Object *object = parse(consumeCoin(thread), thread).object;
+            Something sth = parse(consumeCoin(thread), thread);
             
             EmojicodeCoin vti = consumeCoin(thread);
-            return performFunction(object->class->methodsVtable[vti], somethingObject(object), thread);
+            return performFunction(sth.object->class->methodsVtable[vti], sth, thread);
         }
         case 0x2: { //donut – class method
-            Class *class = readClass(thread);
+            Something sth = parse(consumeCoin(thread), thread);
             
             EmojicodeCoin vti = consumeCoin(thread);
-            return performFunction(class->methodsVtable[vti], somethingClass(class), thread);
+            return performFunction(sth.eclass->methodsVtable[vti], sth, thread);
         }
         case 0x3: {
             Object *object = parse(consumeCoin(thread), thread).object;

@@ -55,20 +55,6 @@ bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
     return false;
 }
 
-void StaticFunctionAnalyzer::writeRoosterClassCoin(Type type, TypeDynamism dynamism, const Token &token) {
-    if (dynamism == TypeDynamism::Self && mode != StaticFunctionAnalyzerMode::ClassMethod) {
-        throw CompilerErrorException(token, "🐓 may only be used in class method bodies.");
-    }
-    
-    if (dynamism != TypeDynamism::None) {
-        writer.writeCoin(UINT32_MAX, token);
-        writer.writeCoin(0x3C, token);
-    }
-    else {
-        writer.writeCoin(type.eclass()->index, token);
-    }
-}
-
 Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Token &token) {
     std::vector<Type> genericArguments;
     std::vector<CommonTypeFinder> genericArgsFinders;
@@ -79,7 +65,7 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
     while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
         stream_.consumeToken(IDENTIFIER);
         
-        auto type = parseAndFetchType(typeContext, TypeDynamism::AllKinds);
+        auto type = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
         genericArguments.push_back(type);
     }
     
@@ -333,7 +319,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 throw CompilerErrorException(token, "Cannot redeclare variable.");
             }
             
-            Type t = parseAndFetchType(typeContext, TypeDynamism::AllKinds);
+            Type t = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
             
             int id = scoper.reserveVariableSlot();
             scoper.currentScope().setLocalVariable(varName.value,
@@ -653,6 +639,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             Class *eclass = typeContext.calleeType().eclass();
             
+            writer.writeCoin(0xF, token);
             writer.writeCoin(eclass->superclass->index, token);
             
             auto &initializerToken = stream_.consumeToken(IDENTIFIER);
@@ -694,7 +681,8 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto placeholder = writer.writeCoinPlaceholder(token);
             
             Type originalType = parse(stream_.consumeToken(), token, typeSomething);
-            Type type = parseAndFetchType(typeContext, TypeDynamism::None, expectation);
+            auto pair = parseTypeAsValue(typeContext, token);
+            auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (originalType.compatibleTo(type, typeContext)) {
                 compilerWarning(token, "Superfluous cast.");
@@ -704,45 +692,38 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 compilerWarning(token, "Cast to unrelated type %s will always fail.", typeString.c_str());
             }
             
-            switch (type.type()) {
-                case TypeContent::Class: {
-                    auto offset = type.eclass()->numberOfGenericArgumentsWithSuperArguments() - type.eclass()->numberOfOwnGenericArguments();
-                    for (size_t i = 0; i < type.eclass()->numberOfOwnGenericArguments(); i++) {
-                        if(!type.eclass()->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments[i], type) ||
-                           !type.genericArguments[i].compatibleTo(type.eclass()->genericArgumentConstraints()[offset + i], type)) {
-                            throw CompilerErrorException(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
-                        }
+            if (type.type() == TypeContent::Class) {
+                auto offset = type.eclass()->numberOfGenericArgumentsWithSuperArguments() - type.eclass()->numberOfOwnGenericArguments();
+                for (size_t i = 0; i < type.eclass()->numberOfOwnGenericArguments(); i++) {
+                    if(!type.eclass()->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments[i], type) ||
+                       !type.genericArguments[i].compatibleTo(type.eclass()->genericArgumentConstraints()[offset + i], type)) {
+                        throw CompilerErrorException(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
                     }
-                    
-                    placeholder.write(originalType.type() == TypeContent::Something || originalType.optional() ? 0x44 : 0x40);
-                    writer.writeCoin(type.eclass()->index, token);
-                    break;
                 }
-                case TypeContent::Protocol:
-                    placeholder.write(originalType.type() == TypeContent::Something || originalType.optional() ? 0x45 : 0x41);
-                    writer.writeCoin(type.protocol()->index, token);
-                    break;
-                case TypeContent::ValueType:
-                    if (type.valueType() == VT_BOOLEAN) {
-                        placeholder.write(0x42);
-                        break;
-                    }
-                    else if (type.valueType() == VT_INTEGER) {
-                        placeholder.write(0x43);
-                        break;
-                    }
-                    else if (type.valueType() == VT_SYMBOL) {
-                        placeholder.write(0x46);
-                        break;
-                    }
-                    else if (type.valueType() == VT_DOUBLE) {
-                        placeholder.write(0x47);
-                        break;
-                    }
-                default: {
-                    auto typeString = type.toString(typeContext, true);
-                    throw CompilerErrorException(token, "You cannot cast to %s.", typeString.c_str());
+                
+                placeholder.write(originalType.type() == TypeContent::Something || originalType.optional() ? 0x44 : 0x40);
+            }
+            else if (type.type() == TypeContent::Protocol && isStatic(pair.second)) {
+                placeholder.write(originalType.type() == TypeContent::Something || originalType.optional() ? 0x45 : 0x41);
+                writer.writeCoin(type.protocol()->index, token);
+            }
+            else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
+                if (type.valueType() == VT_BOOLEAN) {
+                    placeholder.write(0x42);
                 }
+                else if (type.valueType() == VT_INTEGER) {
+                    placeholder.write(0x43);
+                }
+                else if (type.valueType() == VT_SYMBOL) {
+                    placeholder.write(0x46);
+                }
+                else if (type.valueType() == VT_DOUBLE) {
+                    placeholder.write(0x47);
+                }
+            }
+            else {
+                auto typeString = pair.first.toString(typeContext, true);
+                throw CompilerErrorException(token, "You cannot cast to %s.", typeString.c_str());
             }
             
             type.setOptional();
@@ -790,14 +771,13 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             if (stream_.nextTokenIs(E_DOUGHNUT)) {
                 stream_.consumeToken();
                 auto &methodName = stream_.consumeToken();
-                Type type = parseAndFetchType(typeContext, TypeDynamism::None);
+                auto pair = parseTypeAsValue(typeContext, token);
+                auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
                 
                 if (type.type() == TypeContent::Class) {
                     placeholder.write(0x73);
-                    writer.writeCoin(0xF, token);
-                    writer.writeCoin(type.eclass()->index, token);
                 }
-                else if (type.type() == TypeContent::ValueType) {
+                else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
                     placeholder.write(0x74);
                     writer.writeCoin(0x17, token);
                 }
@@ -883,30 +863,25 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             Method *method = superclass->getMethod(nameToken, Type(superclass), typeContext);
             
             writer.writeCoin(0x5, token);
+            writer.writeCoin(0xF, token);
             writer.writeCoin(superclass->index, token);
             writer.writeCoin(method->vti(), token);
             
             return parseFunctionCall(typeContext.calleeType(), method, token);
         }
         case E_LARGE_BLUE_DIAMOND: {
-            TypeDynamism dynamism;
-            auto inputType = parseAndFetchType(typeContext, TypeDynamism::AllKinds, expectation, &dynamism);
-            auto type = inputType.resolveOnSuperArgumentsAndConstraints(typeContext);
-            auto initializerName = stream_.consumeToken(IDENTIFIER);
+            auto placeholder = writer.writeCoinPlaceholder(token);
+            auto pair = parseTypeAsValue(typeContext, token, expectation);
+            auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
+            
+            auto &initializerName = stream_.consumeToken(IDENTIFIER);
             
             if (type.optional()) {
                 throw CompilerErrorException(token, "Optionals cannot be instantiated.");
             }
-            if (dynamism == TypeDynamism::GenericTypeVariables) {
-                throw CompilerErrorException(initializerName, "You cannot instantiate generic types yet.");
-            }
             
-            if (type.type() == TypeContent::Enum) {
-                if (dynamism != TypeDynamism::None) {
-                    throw CompilerErrorException(token, "Enums cannot be instantiated dynamically.");
-                }
-                
-                writer.writeCoin(0x13, token);
+            if (type.type() == TypeContent::Enum && isStatic(pair.second)) {
+                placeholder.write(0x13);
                 
                 auto v = type.eenum()->getValueFor(initializerName.value[0]);
                 if (!v.first) {
@@ -925,14 +900,23 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 
                 return type;
             }
-            else if (type.type() == TypeContent::Class) {
-                writer.writeCoin(0x4, token);
+            else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
+                placeholder.write(0x7);
                 
-                writeRoosterClassCoin(type, dynamism, token);
+                auto initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
+                writer.writeCoin(initializer->vti(), token);
+                parseFunctionCall(type, initializer, token);
+                if (initializer->canReturnNothingness) {
+                    type.setOptional();
+                }
+                return type;
+            }
+            else if (type.type() == TypeContent::Class) {
+                placeholder.write(0x4);
                 
                 Initializer *initializer = type.eclass()->getInitializer(initializerName, type, typeContext);
                 
-                if (dynamism == TypeDynamism::Self && !initializer->required) {
+                if (!isStatic(pair.second) && !initializer->required) {
                     throw CompilerErrorException(initializerName,
                                                  "Only required initializers can be used with dynamic types.");
                 }
@@ -944,19 +928,9 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 parseFunctionCall(type, initializer, token);
                 
                 if (initializer->canReturnNothingness) {
-                    inputType.setOptional();
+                    type.setOptional();
                 }
-                return inputType;
-            }
-            else if (type.type() == TypeContent::ValueType) {
-                auto initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
-                writer.writeCoin(0x7, token);
-                writer.writeCoin(initializer->vti(), token);
-                parseFunctionCall(type, initializer, token);
-                if (initializer->canReturnNothingness) {
-                    inputType.setOptional();
-                }
-                return inputType;
+                return type;
             }
             else {
                 throw CompilerErrorException(token, "The given type cannot be instantiated.");
@@ -965,32 +939,28 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_DOUGHNUT: {
             auto &methodToken = stream_.consumeToken(IDENTIFIER);
             
-            TypeDynamism dynamism;
-            Type type = parseAndFetchType(typeContext, TypeDynamism::AllKinds, expectation, &dynamism)
-                        .resolveOnSuperArgumentsAndConstraints(typeContext);
+            auto placeholder = writer.writeCoinPlaceholder(token);
+            auto pair = parseTypeAsValue(typeContext, token);
+            auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
             
             if (type.optional()) {
                 compilerWarning(token, "You cannot call optionals on 🍬.");
             }
-            if (dynamism == TypeDynamism::GenericTypeVariables) {
-                throw CompilerErrorException(token, "You cannot call methods generic types yet.");
-            }
-            
+
             ClassMethod *method;
             if (type.type() == TypeContent::Class) {
-                writer.writeCoin(0x2, token);
-                writeRoosterClassCoin(type, dynamism, token);
-                
+                placeholder.write(0x2);
                 method = type.typeDefinitionFunctional()->getClassMethod(methodToken, type, typeContext);
                 writer.writeCoin(method->vti(), token);
             }
-            else if (type.type() == TypeContent::ValueType) {
+            else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
                 method = type.typeDefinitionFunctional()->getClassMethod(methodToken, type, typeContext);
-                writer.writeCoin(0x7, token);
+                placeholder.write(0x7);
                 writer.writeCoin(method->vti(), token);
             }
             else {
-                throw CompilerErrorException(token, "The given type is not a class.");
+                throw CompilerErrorException(token, "You can’t call type methods on %s.",
+                                             pair.first.toString(typeContext, true).c_str());
             }
             return parseFunctionCall(type, method, token);
         }
@@ -1153,6 +1123,30 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         }
     }
     return typeNothingness;
+}
+
+std::pair<Type, TypeAvailability> StaticFunctionAnalyzer::parseTypeAsValue(TypeContext tc, SourcePosition p,
+                                                                           Type expectation) {
+    Type ot = parseTypeDeclarative(tc, TypeDynamism::AllKinds, expectation);
+    switch (ot.type()) {
+        case TypeContent::Reference:
+            throw CompilerErrorException(p, "Generic Arguments are not yet available for reflection.");
+        case TypeContent::Class:
+            writer.writeCoin(0xF, p);
+            writer.writeCoin(ot.eclass()->index, p);
+            return std::pair<Type, TypeAvailability>(ot, TypeAvailability::StaticAndAvailabale);
+        case TypeContent::Self:
+            if (mode != StaticFunctionAnalyzerMode::ClassMethod) {
+                throw CompilerErrorException(p, "Illegal use of 🐕.");
+            }
+            writer.writeCoin(0x3C, p);
+            return std::pair<Type, TypeAvailability>(ot, TypeAvailability::DynamicAndAvailabale);
+        case TypeContent::LocalReference:
+            throw CompilerErrorException(p, "Function Generic Arguments are not available for reflection.");
+        default:
+            break;
+    }
+    return std::pair<Type, TypeAvailability>(ot, TypeAvailability::StaticAndUnavailable);
 }
 
 StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, StaticFunctionAnalyzerMode mode,

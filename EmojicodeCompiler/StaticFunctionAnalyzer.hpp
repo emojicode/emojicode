@@ -31,6 +31,18 @@ enum class StaticFunctionAnalyzerMode {
     Function
 };
 
+enum class TypeAvailability {
+    /** The type is known at compile type, can’t change and will be available at runtime. Instruction to retrieve the 
+        type at runtime were written to the file. */
+    StaticAndAvailabale,
+    /** The type is known at compile type, but a another compatible type might be provided at runtime instead.
+        The type will be available at runtime. Instruction to retrieve the type at runtime were written to the file. */
+    DynamicAndAvailabale,
+    /** The type is fully known at compile type but won’t be available at runtime (Enum, ValueType etc.).
+        Nothing was written to the file if this value is returned. */
+    StaticAndUnavailable,
+};
+
 /** This class is repsonsible for compiling a @c Callable to bytecode. */
 class StaticFunctionAnalyzer : AbstractParser {
 public:
@@ -77,6 +89,14 @@ private:
      * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
      */
     Type parse(const Token &token, const Token &parentToken, Type type, std::vector<CommonTypeFinder>* = nullptr);
+    /** 
+     * Parses a type name and writes instructions to fetch it at runtime. If everything goes well, the parsed
+     * type (unresolved) and true are returned.
+     * If the type, however, isn’t available at runtime (Enum, ValueType, Protocol) the parsed type (unresolved) 
+     * is returned and false are returned.
+     */
+    std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, SourcePosition p,
+                                                       Type expectation = typeNothingness);
     /** Parses an identifier when occurring without context. */
     Type parseIdentifier(const Token &token, Type expectation);
     /** Parses the expression for an if statement. */
@@ -99,9 +119,11 @@ private:
     void noEffectWarning(const Token &warningToken);
     bool typeIsEnumerable(Type type, Type *elementType);
     void flowControlBlock(bool block = true);
-    void writeRoosterClassCoin(Type type, TypeDynamism dynamism, const Token &token);
 
     void flowControlReturnEnd(FlowControlReturn &fcr);
+    
+    bool isStatic(TypeAvailability t) { return t == TypeAvailability::StaticAndUnavailable
+                                                    || t == TypeAvailability::StaticAndAvailabale; }
 };
 
 #endif /* StaticFunctionAnalyzer_hpp */
