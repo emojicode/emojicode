@@ -11,7 +11,7 @@
 
 #include "CompilerErrorException.hpp"
 
-class VariableNotFoundErrorException: CompilerErrorException {
+class VariableNotFoundErrorException: public CompilerErrorException {
 public:
     VariableNotFoundErrorException(SourcePosition p, const EmojicodeString &name)
         : CompilerErrorException(p, "Variable \"%s\" not defined.", name.utf8CString()) {};
