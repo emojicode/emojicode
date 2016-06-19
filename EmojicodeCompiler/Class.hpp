@@ -44,7 +44,6 @@ public:
     const std::set<EmojicodeChar>& requiredInitializers() const { return requiredInitializers_; }
     
     uint16_t nextMethodVti;
-    uint16_t nextClassMethodVti;
     uint16_t nextInitializerVti;
 
     /** Returns true if @c a inherits from class @c from */

@@ -23,7 +23,6 @@ EmojicodeCoin readCoin(FILE *in){
 }
 
 PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor, FunctionFunctionPointerProvider *hfpMethods,
-                                FunctionFunctionPointerProvider *hfpClassMethods,
                                 InitializerFunctionFunctionPointerProvider *hfpIntializer,
                                 mpfc *mpfc, dpfc *dpfc, SizeForClassFunction *sfch){
     char *path;
@@ -37,7 +36,6 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
         return PACKAGE_LOADING_FAILED;
     
     *hfpMethods = dlsym(package, "handlerPointerForMethod");
-    *hfpClassMethods = dlsym(package, "handlerPointerForClassMethod");
     *hfpIntializer = dlsym(package, "handlerPointerForInitializer");
     *mpfc = dlsym(package, "markerPointerForClass");
     *dpfc = dlsym(package, "deinitializerPointerForClass");
@@ -46,7 +44,7 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
     PackageVersion(*pvf)() = dlsym(package, "getVersion");
     PackageVersion pv = pvf();
     
-    if(!*hfpMethods || !*hfpClassMethods || !*hfpIntializer)
+    if(!*hfpMethods || !*hfpIntializer)
         return PACKAGE_LOADING_FAILED;
     
     if(pv.major != major)
@@ -104,9 +102,10 @@ void readFunction(Function **table, EmojicodeChar className, FILE *in, FunctionF
     Function *method = malloc(sizeof(Function));
     method->argumentCount = fgetc(in);
     
-    if (fgetc(in)) {
+    MethodType nativeType;
+    if ((nativeType = fgetc(in))) {
         method->native = true;
-        method->handler = hpfm(className, methodName);
+        method->handler = hpfm(className, methodName, nativeType);
     }
     else {
         method->native = false;
@@ -129,7 +128,6 @@ void readPackage(FILE *in){
     
     FunctionFunctionPointerProvider hfpMethods;
     InitializerFunctionFunctionPointerProvider hfpIntializer;
-    FunctionFunctionPointerProvider hfpClassMethods;
     dpfc dpfc;
     mpfc mpfc;
     SizeForClassFunction sfch;
@@ -138,7 +136,6 @@ void readPackage(FILE *in){
     if (!packageNameLength) {
         hfpMethods = handlerPointerForMethod;
         hfpIntializer = handlerPointerForInitializer;
-        hfpClassMethods = handlerPointerForClassMethod;
         dpfc = deinitializerPointerForClass;
         mpfc = markerPointerForClass;
         sfch = sizeForClass;
@@ -150,7 +147,7 @@ void readPackage(FILE *in){
         uint16_t major = readUInt16(in);
         uint16_t minor = readUInt16(in);
         
-        PackageLoadingState s = packageLoad(name, major, minor, &hfpMethods, &hfpClassMethods, &hfpIntializer,
+        PackageLoadingState s = packageLoad(name, major, minor, &hfpMethods, &hfpIntializer,
                                             &mpfc, &dpfc, &sfch);
         
         if (s == PACKAGE_INAPPROPRIATE_MAJOR) {
@@ -178,21 +175,16 @@ void readPackage(FILE *in){
         class->methodCount = readUInt16(in);
         class->methodsVtable = malloc(sizeof(Function*) * class->methodCount);
         
-        class->classMethodCount = readUInt16(in);
-        class->classMethodsVtable = malloc(sizeof(Function*) * class->classMethodCount);
-        
         bool inheritsInitializers = fgetc(in);
         class->initializerCount = readUInt16(in);
         class->initializersVtable = malloc(sizeof(InitializerFunction*) * class->initializerCount);
         
         uint_fast16_t localMethodCount = readUInt16(in);
         uint_fast16_t localInitializerCount = readUInt16(in);
-        uint_fast16_t localClassMethodCount = readUInt16(in);
         
-        if(class != class->superclass){
-            memcpy(class->classMethodsVtable, class->superclass->classMethodsVtable, class->superclass->classMethodCount * sizeof(Function*));
+        if (class != class->superclass) {
             memcpy(class->methodsVtable, class->superclass->methodsVtable, class->superclass->methodCount * sizeof(Function*));
-            if(inheritsInitializers){
+            if (inheritsInitializers) {
                 memcpy(class->initializersVtable, class->superclass->initializersVtable, class->superclass->initializerCount * sizeof(InitializerFunction*));
             }
         }
@@ -206,10 +198,6 @@ void readPackage(FILE *in){
         
         for (uint_fast16_t i = 0; i < localInitializerCount; i++) {
             readInitializer(class->initializersVtable, name, in, hfpIntializer);
-        }
-
-        for (uint_fast16_t i = 0; i < localClassMethodCount; i++) {
-            readFunction(class->classMethodsVtable, name, in, hfpClassMethods);
         }
         
         uint_fast16_t protocolCount = readUInt16(in);

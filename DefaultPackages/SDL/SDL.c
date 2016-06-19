@@ -200,25 +200,7 @@ static Something mouseButtonEventDown(Thread *thread){
     return e->type == SDL_MOUSEBUTTONDOWN ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
-
-FunctionFunctionPointer handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
-    switch (cl) {
-        case appName:
-            switch (symbol) {
-                case 0x1F3AC: //🎬
-                    return appSetup;
-                case 0x26F3: //⛳️
-                    return appQuit;
-                case 0x1F570: //🕰
-                    return appDelay;
-                case eventName:
-                    return appPollEvent;
-            }
-    }
-    return NULL;
-}
-
-FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol){
+FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol, MethodType t){
     switch (cl) {
         case rendererName:
             switch (symbol) {
@@ -252,6 +234,17 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                     return mouseButtonEventGetY;
                 case 0x2B07:
                     return mouseButtonEventDown;
+            }
+        case appName:
+            switch (symbol) {
+                case 0x1F3AC: //🎬
+                    return appSetup;
+                case 0x26F3: //⛳️
+                    return appQuit;
+                case 0x1F570: //🕰
+                    return appDelay;
+                case eventName:
+                    return appPollEvent;
             }
     }
     return NULL;

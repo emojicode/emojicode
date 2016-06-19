@@ -85,7 +85,6 @@ extern int cliArgumentCount;
 
 struct Class {
     Function **methodsVtable;
-    Function **classMethodsVtable;
     InitializerFunction **initializersVtable;
     
     Function ***protocolsTable;
@@ -98,7 +97,6 @@ struct Class {
     /** The number of instance variables. */
     uint16_t instanceVariableCount;
     uint16_t methodCount;
-    uint16_t classMethodCount;
     uint16_t initializerCount;
     
     /** Deinitializer */
@@ -197,10 +195,11 @@ Function* readBytecode(FILE *in);
 
 /** Determines whether the loading of a package was succesfull */
 typedef enum {
-    PACKAGE_LOADING_FAILED, PACKAGE_HEADER_NOT_FOUND, PACKAGE_INAPPROPRIATE_MAJOR, PACKAGE_INAPPROPRIATE_MINOR, PACKAGE_LOADED
+    PACKAGE_LOADING_FAILED, PACKAGE_HEADER_NOT_FOUND, PACKAGE_INAPPROPRIATE_MAJOR, PACKAGE_INAPPROPRIATE_MINOR,
+    PACKAGE_LOADED
 } PackageLoadingState;
 
-typedef FunctionFunctionPointer (*FunctionFunctionPointerProvider)(EmojicodeChar cl, EmojicodeChar symbol);
+typedef FunctionFunctionPointer (*FunctionFunctionPointerProvider)(EmojicodeChar cl, EmojicodeChar symbol, MethodType);
 typedef InitializerFunctionFunctionPointer (*InitializerFunctionFunctionPointerProvider)(EmojicodeChar cl, EmojicodeChar symbol);
 typedef Marker (*mpfc)(EmojicodeChar cl);
 typedef Deinitializer (*dpfc)(EmojicodeChar cl);
@@ -208,8 +207,7 @@ typedef uint_fast32_t (*SizeForClassFunction)(Class *cl, EmojicodeChar name);
 
 char* packageError(void);
 
-FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol);
-FunctionFunctionPointer handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol);
+FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol, MethodType);
 InitializerFunctionFunctionPointer handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol);
 Marker markerPointerForClass(EmojicodeChar cl);
 Deinitializer deinitializerPointerForClass(EmojicodeChar cl);

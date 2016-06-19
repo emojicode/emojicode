@@ -1193,7 +1193,8 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
 }
 
 void StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType,
-                                                     CallableScoper &scoper, StaticFunctionAnalyzerMode mode) {
+                                                     CallableScoper &scoper, StaticFunctionAnalyzerMode mode,
+                                                     bool typeMethod) {
     writer.resetWrittenCoins();
     
     writer.writeEmojicodeChar(function->name);
@@ -1201,7 +1202,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function *function, Writer 
     writer.writeByte(static_cast<uint8_t>(function->arguments.size()));
     
     if (function->native) {
-        writer.writeByte(1);
+        writer.writeByte(typeMethod ? 2 : 1);
         return;
     }
     writer.writeByte(0);

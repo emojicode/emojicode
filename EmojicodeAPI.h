@@ -259,6 +259,10 @@ typedef struct {
     uint16_t minor;
 } PackageVersion;
 
+typedef enum {
+    INSTANCE_METHOD = 1, TYPE_METHOD = 2
+} MethodType;
+
 /**
  * Generates a secure random number. The integer is either generated using arc4random_uniform if available
  * or by reading from @c /dev/urandmon.

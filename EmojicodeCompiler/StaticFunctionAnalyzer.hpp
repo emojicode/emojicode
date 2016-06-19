@@ -35,7 +35,7 @@ enum class StaticFunctionAnalyzerMode {
 class StaticFunctionAnalyzer : AbstractParser {
 public:
     static void writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType, CallableScoper &scoper,
-                                        StaticFunctionAnalyzerMode mode);
+                                        StaticFunctionAnalyzerMode mode, bool typeMethod);
     StaticFunctionAnalyzer(Callable &callable, Package *p, StaticFunctionAnalyzerMode mode, TypeContext typeContext,
                            Writer &writer, CallableScoper &scoper);
     

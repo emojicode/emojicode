@@ -45,15 +45,12 @@ void analyzeClass(Type classType, Writer &writer) {
     
     // Number of methods inclusive superclass
     writer.writeUInt16(eclass->nextMethodVti);
-    // Number of eclass methods inclusive superclass
-    writer.writeUInt16(eclass->nextClassMethodVti);
     // Initializer inclusive superclass
     writer.writeByte(eclass->inheritsContructors ? 1 : 0);
     writer.writeUInt16(eclass->nextInitializerVti);
     
-    writer.writeUInt16(eclass->methodList().size());
+    writer.writeUInt16(eclass->methodList().size() + eclass->classMethodList().size());
     writer.writeUInt16(eclass->initializerList().size());
-    writer.writeUInt16(eclass->classMethodList().size());
     
     for (Variable var : eclass->instanceVariables()) {
         var.setId(offset++);
@@ -63,19 +60,19 @@ void analyzeClass(Type classType, Writer &writer) {
     for (auto method : eclass->methodList()) {
         auto scoper = CallableScoper(&objectScope);
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(method, writer, classType.disableSelfResolving(), scoper,
-                                                        StaticFunctionAnalyzerMode::ObjectMethod);
-    }
-    
-    for (auto initializer : eclass->initializerList()) {
-        auto scoper = CallableScoper(&objectScope);
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(initializer, writer, classType.disableSelfResolving(), scoper,
-                                                        StaticFunctionAnalyzerMode::ObjectInitializer);
+                                                        StaticFunctionAnalyzerMode::ObjectMethod, false);
     }
     
     for (auto classMethod : eclass->classMethodList()) {
         auto scoper = CallableScoper();
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(classMethod, writer, classType.disableSelfResolving(), scoper,
-                                                        StaticFunctionAnalyzerMode::ClassMethod);
+                                                        StaticFunctionAnalyzerMode::ClassMethod, true);
+    }
+    
+    for (auto initializer : eclass->initializerList()) {
+        auto scoper = CallableScoper(&objectScope);
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(initializer, writer, classType.disableSelfResolving(), scoper,
+                                                        StaticFunctionAnalyzerMode::ObjectInitializer, false);
     }
     
     if (eclass->instanceVariables().size() > 0 && eclass->initializerList().size() == 0) {
@@ -145,17 +142,17 @@ void analyzeValueType(ValueType *vt, Writer &writer) {
     for (auto f : vt->methodList()) {
         auto scoper = CallableScoper();
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType, scoper,
-                                                        StaticFunctionAnalyzerMode::ThisContextFunction);
+                                                        StaticFunctionAnalyzerMode::ThisContextFunction, false);
     }
     for (auto f : vt->initializerList()) {
         auto scoper = CallableScoper();
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType, scoper,
-                                                        StaticFunctionAnalyzerMode::ThisContextFunction);
+                                                        StaticFunctionAnalyzerMode::ThisContextFunction, false);
     }
     for (auto f : vt->classMethodList()) {
         auto scoper = CallableScoper();
         StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType, scoper,
-                                                        StaticFunctionAnalyzerMode::ThisContextFunction);
+                                                        StaticFunctionAnalyzerMode::Function, true);
     }
 }
 
@@ -197,12 +194,10 @@ void analyzeClassesAndWrite(FILE *fout) {
         }
         
         if (eclass->superclass) {
-            eclass->nextClassMethodVti = eclass->superclass->nextClassMethodVti;
             eclass->nextInitializerVti = eclass->inheritsContructors ? eclass->superclass->nextInitializerVti : 0;
             eclass->nextMethodVti = eclass->superclass->nextMethodVti;
         }
         else {
-            eclass->nextClassMethodVti = 0;
             eclass->nextInitializerVti = 0;
             eclass->nextMethodVti = 0;
         }
@@ -230,7 +225,7 @@ void analyzeClassesAndWrite(FILE *fout) {
                 clMethod->setVti(superMethod->vti());
             }
             else {
-                clMethod->setVti(eclass->nextClassMethodVti++);
+                clMethod->setVti(eclass->nextMethodVti++);
             }
         }
         
@@ -314,7 +309,7 @@ void analyzeClassesAndWrite(FILE *fout) {
     writer.writeUInt16(1);
     auto scoper = CallableScoper();
     StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function::start, writer, typeNothingness, scoper,
-                                                    StaticFunctionAnalyzerMode::Function);
+                                                    StaticFunctionAnalyzerMode::Function, false);
 
     for (auto vt : ValueType::valueTypes()) {
         analyzeValueType(vt, writer);

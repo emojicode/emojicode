@@ -205,19 +205,19 @@ Something fileDataGet(Thread *thread){
 
 #define file(obj) (*((FILE**)(obj)->value))
 
-Something fileStdinGet(Thread *thread){
+Something fileStdinGet(Thread *thread) {
     Object *obj = newObject(stackGetThisObjectClass(thread));
     file(obj) = stdin;
     return somethingObject(obj);
 }
 
-Something fileStdoutGet(Thread *thread){
+Something fileStdoutGet(Thread *thread) {
     Object *obj = newObject(stackGetThisObjectClass(thread));
     file(obj) = stdout;
     return somethingObject(obj);
 }
 
-Something fileStderrGet(Thread *thread){
+Something fileStderrGet(Thread *thread) {
     Object *obj = newObject(stackGetThisObjectClass(thread));
     file(obj) = stderr;
     return somethingObject(obj);
@@ -303,7 +303,7 @@ void closeFile(void *file){
     fclose((*((FILE**)file)));
 }
 
-FunctionFunctionPointer handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
+FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol, MethodType t) {
     if(cl == 0x1F4D1){
         switch (symbol) {
             case 0x1F4C1:
@@ -342,23 +342,17 @@ FunctionFunctionPointer handlerPointerForClassMethod(EmojicodeChar cl, Emojicode
                 return fileStdoutGet;
             case 0x1F4EF:
                 return fileStderrGet;
+            case 0x270F:
+                return fileWriteData;
+            case 0x1F4D3:
+                return fileReadData;
+            case 0x1F51B:
+                return fileSeekTo;
+            case 0x1F51A:
+                return fileSeekToEnd;
+            case 0x1F5E1:
+                return fileReadLine;
         }
-    }
-    return NULL;
-}
-
-FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol){
-    switch (symbol) {
-        case 0x270F:
-            return fileWriteData;
-        case 0x1F4D3:
-            return fileReadData;
-        case 0x1F51B:
-            return fileSeekTo;
-        case 0x1F51A:
-            return fileSeekToEnd;
-        case 0x1F5E1:
-            return fileReadLine;
     }
     return NULL;
 }

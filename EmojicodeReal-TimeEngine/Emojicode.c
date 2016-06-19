@@ -29,7 +29,7 @@ Class *CL_CLOSURE;
 Class *CL_RANGE;
 
 static Class cl_array = {
-    NULL, NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0, 0, NULL, NULL, 0, 0
+    NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0, NULL, NULL, 0, 0
 };
 Class *CL_ARRAY = &cl_array;
 
@@ -261,7 +261,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             Class *class = readClass(thread);
             
             EmojicodeCoin vti = consumeCoin(thread);
-            return performFunction(class->classMethodsVtable[vti], somethingClass(class), thread);
+            return performFunction(class->methodsVtable[vti], somethingClass(class), thread);
         }
         case 0x3: {
             Object *object = parse(consumeCoin(thread), thread).object;

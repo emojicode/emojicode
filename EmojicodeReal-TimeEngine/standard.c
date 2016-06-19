@@ -444,7 +444,7 @@ static void capturedMethodMark(Object *o){
 FunctionFunctionPointer integerMethodForName(EmojicodeChar name);
 FunctionFunctionPointer numberMethodForName(EmojicodeChar name);
 
-FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol) {
+FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol, MethodType type) {
     switch (cl) {
         case 0x1F521: //String
             return stringMethodForName(symbol);
@@ -472,7 +472,12 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
             // case 0x1F43D: //pig nose
             return rangeGet;
         case 0x1f488: //💈
-            return threadJoin;
+            switch (symbol) {
+                case 0x23f3: //⏳
+                    return threadSleep;
+                case 0x1f6c2: //🛂
+                    return threadJoin;
+            }
         case 0x1f510: //🔐
             switch (symbol) {
                 case 0x1f512: //🔒
@@ -522,11 +527,26 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
             }
         case 0x1f523: //🔣
             return stringFromSymbol;
+        case 0x1F4BB: //💻
+            switch (symbol) {
+                case 0x1F6AA:
+                    return systemExit;
+                case 0x1F333:
+                    return systemGetEnv;
+                case 0x1F30D:
+                    return systemCWD;
+                case 0x1f570: //🕰
+                    return systemTime;
+                case 0x1f39e: //🎞
+                    return systemArgs;
+                case 0x1f574: //🕴
+                    return systemSystem;
+            }
     }
     return NULL;
 }
 
-InitializerFunctionFunctionPointer handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol){
+InitializerFunctionFunctionPointer handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol) {
     switch (cl) {
         case 0x1F535: //Object has a single initializer
             return objectNewBridge;
@@ -549,31 +569,6 @@ InitializerFunctionFunctionPointer handlerPointerForInitializer(EmojicodeChar cl
                 case 0x23ED:
                     return initRangeStartStopStep;
             }
-    }
-    return NULL;
-}
-
-FunctionFunctionPointer handlerPointerForClassMethod(EmojicodeChar cl, EmojicodeChar symbol){
-    switch (cl) {
-        case 0x1F4BB: //💻
-            switch (symbol) {
-                case 0x1F6AA:
-                    return systemExit;
-                case 0x1F333:
-                    return systemGetEnv;
-                case 0x1F30D:
-                    return systemCWD;
-                case 0x1f570: //🕰
-                    return systemTime;
-                case 0x1f39e: //🎞
-                    return systemArgs;
-                case 0x1f574: //🕴
-                    return systemSystem;
-            }
-            break;
-        case 0x1f488: //💈
-            //case 0x23f3: //⏳
-            return threadSleep;
     }
     return NULL;
 }
