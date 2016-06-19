@@ -135,7 +135,7 @@ void allocateHeap(){
 
 void mark(Object **oPointer){
     Object *o = *oPointer;
-    if (o->newLocation) {
+    if (currentHeap < (Byte *)o->newLocation && (Byte *)o->newLocation < currentHeap + heapSize / 2) {
         *oPointer = o->newLocation;
         return;
     }
@@ -162,14 +162,6 @@ void gc(){
         zeroingNeeded = true;
     }
     
-    //Set new location of all objects to NULL
-    Byte *currentObjectPointer = currentHeap;
-    while (currentObjectPointer < currentHeap + memoryUse - 1) {
-        Object *currentObject = (Object *)currentObjectPointer;
-        currentObject->newLocation = NULL;
-        currentObjectPointer += currentObject->size;
-    }
-    
     void *tempHeap = currentHeap;
     currentHeap = otherHeap;
     otherHeap = tempHeap;
@@ -185,7 +177,7 @@ void gc(){
     }
     
     //Call the deinitializers
-    currentObjectPointer = otherHeap;
+    Byte *currentObjectPointer = otherHeap;
     while (currentObjectPointer < otherHeap + oldMemoryUse) {
         Object *currentObject = (Object *)currentObjectPointer;
         if (!currentObject->newLocation && currentObject->class->deconstruct) {
