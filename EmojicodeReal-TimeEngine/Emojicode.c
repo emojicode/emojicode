@@ -140,8 +140,8 @@ bool isRealObject(Something sth){
 
 Something executeCallableExtern(Object *callable, Something *args, Thread *thread){
     if (callable->class == CL_CAPTURED_FUNCTION_CALL) {
-        CapturedMethodCall *cmc = callable->value;
-        Function *method = cmc->method;
+        CapturedFunctionCall *cmc = callable->value;
+        Function *method = cmc->function;
         
         Something ret;
         if (method->native) {
@@ -293,6 +293,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeCoin c = consumeCoin(thread);
             return performFunction(functionTable[c], NOTHINGNESS, thread);
         }
+        case 0xF:
+            return somethingClass(classTable[consumeCoin(thread)]);
         case 0x10:
             return somethingObject(stringPool[consumeCoin(thread)]);
         case 0x11:
@@ -760,6 +762,30 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return NOTHINGNESS;
         }
         case 0x70: {
+            Object *callable = parse(consumeCoin(thread), thread).object;
+            if (callable->class == CL_CAPTURED_FUNCTION_CALL) {
+                CapturedFunctionCall *cmc = callable->value;
+                return performFunction(cmc->function, cmc->callee, thread);
+            }
+            else {
+                Closure *c = callable->value;
+                stackPush(c->thisContext, c->variableCount, c->argumentCount, thread);
+                
+                Something *cv = c->capturedVariables->value;
+                for (uint8_t i = 0; i < c->capturedVariablesCount; i++) {
+                    stackSetVariable(c->argumentCount + i, cv[i], thread);
+                }
+                
+                EmojicodeCoin *preCoinStream = thread->tokenStream;
+                thread->tokenStream = c->tokenStream;
+                Something ret = runFunctionPointerBlock(thread, c->coinCount);
+                thread->tokenStream = preCoinStream;
+                
+                stackPop(thread);
+                return ret;
+            }
+        }
+        case 0x71: {
             stackPush(stackGetThisContext(thread), 1, 0, thread);
             stackSetVariable(0, somethingObject(newObject(CL_CLOSURE)), thread);
             
@@ -791,40 +817,38 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             return somethingObject(co);
         }
-        case 0x71: {
+        case 0x72: {
             stackPush(parse(consumeCoin(thread), thread), 0, 0, thread);
             Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
-            CapturedMethodCall *cmc = cmco->value;
+            CapturedFunctionCall *cmc = cmco->value;
             
             EmojicodeCoin vti = consumeCoin(thread);
-            cmc->method = stackGetThisObject(thread)->class->methodsVtable[vti];
+            cmc->function = stackGetThisObject(thread)->class->methodsVtable[vti];
             cmc->callee = stackGetThisContext(thread);
             stackPop(thread);
             return somethingObject(cmco);
         }
-        case 0x72: {
-            Object *callable = parse(consumeCoin(thread), thread).object;
-            if (callable->class == CL_CAPTURED_FUNCTION_CALL) {
-                CapturedMethodCall *cmc = callable->value;
-                return performFunction(cmc->method, cmc->callee, thread);
-            }
-            else {
-                Closure *c = callable->value;
-                stackPush(c->thisContext, c->variableCount, c->argumentCount, thread);
-                
-                Something *cv = c->capturedVariables->value;
-                for (uint8_t i = 0; i < c->capturedVariablesCount; i++) {
-                    stackSetVariable(c->argumentCount + i, cv[i], thread);
-                }
-                
-                EmojicodeCoin *preCoinStream = thread->tokenStream;
-                thread->tokenStream = c->tokenStream;
-                Something ret = runFunctionPointerBlock(thread, c->coinCount);
-                thread->tokenStream = preCoinStream;
-                
-                stackPop(thread);
-                return ret;
-            }
+        case 0x73: {
+            stackPush(parse(consumeCoin(thread), thread), 0, 0, thread);
+            Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
+            CapturedFunctionCall *cmc = cmco->value;
+            
+            EmojicodeCoin vti = consumeCoin(thread);
+            cmc->function = stackGetThisContext(thread).eclass->methodsVtable[vti];
+            cmc->callee = stackGetThisContext(thread);
+            stackPop(thread);
+            return somethingObject(cmco);
+        }
+        case 0x74: {
+            stackPush(parse(consumeCoin(thread), thread), 0, 0, thread);
+            Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
+            CapturedFunctionCall *cmc = cmco->value;
+            
+            EmojicodeCoin vti = consumeCoin(thread);
+            cmc->function = functionTable[vti];
+            cmc->callee = stackGetThisContext(thread);
+            stackPop(thread);
+            return somethingObject(cmco);
         }
     }
     return NOTHINGNESS;

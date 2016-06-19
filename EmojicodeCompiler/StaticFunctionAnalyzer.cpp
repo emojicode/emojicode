@@ -784,25 +784,51 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             return returnType.resolveOn(typeContext);
         }
         case E_HOT_PEPPER: {
-            auto &methodName = stream_.consumeToken();
+            Function *function;
             
-            writer.writeCoin(0x71, token);
-            
-            Type type = parse(stream_.consumeToken());
-            
-            if (type.type() != TypeContent::Class) {
-                throw CompilerErrorException(token, "You can only capture method calls on class instances.");
+            auto placeholder = writer.writeCoinPlaceholder(token);
+            if (stream_.nextTokenIs(E_DOUGHNUT)) {
+                stream_.consumeToken();
+                auto &methodName = stream_.consumeToken();
+                Type type = parseAndFetchType(typeContext, TypeDynamism::None);
+                
+                if (type.type() == TypeContent::Class) {
+                    placeholder.write(0x73);
+                    writer.writeCoin(0xF, token);
+                    writer.writeCoin(type.eclass()->index, token);
+                }
+                else if (type.type() == TypeContent::ValueType) {
+                    placeholder.write(0x74);
+                    writer.writeCoin(0x17, token);
+                }
+                else {
+                    throw CompilerErrorException(token, "You can’t capture method calls on this kind of type.");
+                }
+                
+                function = type.eclass()->getClassMethod(methodName, type, typeContext);
             }
-            
-            auto method = type.eclass()->getMethod(methodName, type, typeContext);
-            method->deprecatedWarning(methodName);
-            
-            writer.writeCoin(method->vti(), token);
-            
-            return method->type();
+            else {
+                auto &methodName = stream_.consumeToken();
+                Type type = parse(stream_.consumeToken());
+                
+                if (type.type() == TypeContent::Class) {
+                    placeholder.write(0x72);
+                }
+                else if (type.type() == TypeContent::ValueType) {
+                    placeholder.write(0x74);
+                }
+                else {
+                    throw CompilerErrorException(token, "You can’t capture method calls on this kind of type.");
+                }
+                function = type.typeDefinitionFunctional()->getMethod(methodName, type, typeContext);
+            }
+
+            function->deprecatedWarning(token);
+            writer.writeCoin(function->vti(), token);
+            return function->type();
         }
         case E_GRAPES: {
-            writer.writeCoin(0x70, token);
+            writer.writeCoin(0x71, token);
             
             auto function = Closure(token.position());
             parseArgumentList(&function, typeContext);
@@ -827,7 +853,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             return function.type();
         }
         case E_LOLLIPOP: {
-            writer.writeCoin(0x72, token);
+            writer.writeCoin(0x70, token);
             
             Type type = parse(stream_.consumeToken());
             

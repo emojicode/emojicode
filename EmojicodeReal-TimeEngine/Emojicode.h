@@ -151,8 +151,8 @@ struct InitializerFunction {
 
 typedef struct {
     Something callee;
-    Function *method;
-} CapturedMethodCall;
+    Function *function;
+} CapturedFunctionCall;
 
 typedef struct {
     EmojicodeCoin *tokenStream;

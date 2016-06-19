@@ -435,7 +435,7 @@ static void closureMark(Object *o){
 }
 
 static void capturedMethodMark(Object *o){
-    CapturedMethodCall *c = o->value;
+    CapturedFunctionCall *c = o->value;
     if (isRealObject(c->callee)) {
         mark(&c->callee.object);
     }
@@ -586,7 +586,7 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
         case 0x1F347:
             return sizeof(Closure);
         case 0x1F336:
-            return sizeof(CapturedMethodCall);
+            return sizeof(CapturedFunctionCall);
         case 0x23E9:
             return sizeof(EmojicodeRange);
         case 0x1f488: //💈
