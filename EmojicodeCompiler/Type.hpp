@@ -40,7 +40,8 @@ enum class TypeContent {
     Reference,
     LocalReference,
     Callable,
-    Self
+    Self,
+    ClassMeta
 };
 
 enum class TypeDynamism {
@@ -64,6 +65,7 @@ inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
 
 class Type {
 public:
+    static Type classMeta(Class *c);
     Type(TypeContent t, bool o) : typeContent_(t), optional_(o) {}
     Type(TypeContent t, bool o, uint16_t r, TypeDefinitionFunctional *c)
         : reference(r), resolutionConstraint(c), typeContent_(t), optional_(o) {}

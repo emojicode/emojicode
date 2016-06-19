@@ -287,6 +287,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeCoin c = consumeCoin(thread);
             return performFunction(functionTable[c], NOTHINGNESS, thread);
         }
+        case 0xE:
+            return somethingClass(parse(consumeCoin(thread), thread).object->class);
         case 0xF:
             return somethingClass(classTable[consumeCoin(thread)]);
         case 0x10:

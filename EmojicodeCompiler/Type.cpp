@@ -33,6 +33,10 @@ ValueType *VT_SYMBOL;
 ValueType *VT_INTEGER;
 ValueType *VT_DOUBLE;
 
+Type Type::classMeta(Class *c) {
+    return Type(c, false, TypeContent::ClassMeta);
+}
+
 Type::Type(Protocol *p, bool o) : typeDefinition_(p), typeContent_(TypeContent::Protocol), optional_(o)  {
 }
 
@@ -166,7 +170,8 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
                                             this->type() == TypeContent::Protocol || this->type() == TypeContent::Someobject)) {
         return to.optional() || !this->optional();
     }
-    else if (this->type() == TypeContent::Class && to.type() == TypeContent::Class) {
+    else if (this->type() == TypeContent::Class && to.type() == TypeContent::Class ||
+             this->type() == TypeContent::ClassMeta && to.type() == TypeContent::ClassMeta) {
         return (to.optional() || !this->optional()) && this->eclass()->inheritsFrom(to.eclass())
                 && identicalGenericArguments(to, ct, ctargs);
     }
@@ -250,6 +255,7 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
             case TypeContent::Class:
             case TypeContent::Protocol:
             case TypeContent::ValueType:
+            case TypeContent::ClassMeta:
                 return typeDefinitionFunctional() == to.typeDefinitionFunctional()
                         && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Callable:
@@ -277,6 +283,7 @@ const char* Type::typePackage() {
         case TypeContent::ValueType:
         case TypeContent::Protocol:
         case TypeContent::Enum:
+        case TypeContent::ClassMeta:
             return this->typeDefinition()->package()->name();
         case TypeContent::Nothingness:
         case TypeContent::Something:
@@ -304,6 +311,8 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
     }
     
     switch (type.type()) {
+        case TypeContent::ClassMeta:
+            stringAppendEc(E_RABBIT, string);
         case TypeContent::Class:
         case TypeContent::Protocol:
         case TypeContent::Enum:

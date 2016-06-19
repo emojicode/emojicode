@@ -86,7 +86,7 @@ private:
     Type parse(const Token &token, Type expectation = typeNothingness);
     /**
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
-     * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
+     * @param token The token to evaluate.
      */
     Type parse(const Token &token, const Token &parentToken, Type type, std::vector<CommonTypeFinder>* = nullptr);
     /** 

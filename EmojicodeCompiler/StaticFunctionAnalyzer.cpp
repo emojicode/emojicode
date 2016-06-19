@@ -677,10 +677,29 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             returned = true;
             return typeNothingness;
         }
+        case E_WHITE_LARGE_SQUARE: {
+            writer.writeCoin(0xE, token);
+            Type originalType = parse(stream_.consumeToken());
+            if (originalType.type() != TypeContent::Class) {
+                auto string = originalType.toString(typeContext, true);
+                throw CompilerErrorException(token, "Can’t get metatype of %s.", string.c_str());
+            }
+            return Type::classMeta(originalType.eclass());
+        }
+        case E_WHITE_SQUARE_BUTTON: {
+            writer.writeCoin(0xF, token);
+            Type originalType = parseTypeDeclarative(typeContext, TypeDynamism::None);
+            if (originalType.type() != TypeContent::Class) {
+                auto string = originalType.toString(typeContext, true);
+                throw CompilerErrorException(token, "Can’t get metatype of %s.", string.c_str());
+            }
+            writer.writeCoin(originalType.eclass()->index, token);
+            return Type::classMeta(originalType.eclass());
+        }
         case E_BLACK_SQUARE_BUTTON: {
             auto placeholder = writer.writeCoinPlaceholder(token);
             
-            Type originalType = parse(stream_.consumeToken(), token, typeSomething);
+            Type originalType = parse(stream_.consumeToken());
             auto pair = parseTypeAsValue(typeContext, token);
             auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
             
@@ -1127,6 +1146,17 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
 
 std::pair<Type, TypeAvailability> StaticFunctionAnalyzer::parseTypeAsValue(TypeContext tc, SourcePosition p,
                                                                            Type expectation) {
+    if (stream_.nextTokenIs(E_BLACK_LARGE_SQUARE)) {
+        stream_.consumeToken();
+        auto type = parse(stream_.consumeToken());
+        if (type.type() != TypeContent::ClassMeta) {
+            throw CompilerErrorException(p, "Expected meta type.");
+        }
+        if (type.optional()) {
+            throw CompilerErrorException(p, "🍬 can’t be used as meta type.");
+        }
+        return std::pair<Type, TypeAvailability>(Type(type.eclass()), TypeAvailability::DynamicAndAvailabale);
+    }
     Type ot = parseTypeDeclarative(tc, TypeDynamism::AllKinds, expectation);
     switch (ot.type()) {
         case TypeContent::Reference:
