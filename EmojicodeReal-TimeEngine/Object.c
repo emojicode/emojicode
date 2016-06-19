@@ -135,7 +135,7 @@ void allocateHeap(){
 
 void mark(Object **oPointer){
     Object *o = *oPointer;
-    if (currentHeap < (Byte *)o->newLocation && (Byte *)o->newLocation < currentHeap + heapSize / 2) {
+    if (currentHeap <= (Byte *)o->newLocation && (Byte *)o->newLocation < currentHeap + heapSize / 2) {
         *oPointer = o->newLocation;
         return;
     }
