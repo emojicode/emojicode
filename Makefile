@@ -88,6 +88,7 @@ install: dist
 tests:
 	$(call compilationTestOutput,compilation/hello)
 	$(call compilationTestOutput,compilation/namespace)
+	$(call compilationTestOutput,compilation/extension)
 	$(call compilationTestOutput,compilation/branch)
 	$(call compilationTestOutput,compilation/class)
 	$(call compilationTestOutput,compilation/protocol)
