@@ -425,10 +425,9 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return sth;
         }
         case 0x3B: {
-            EmojicodeCoin count = consumeCoin(thread);
             Something sth = parse(consumeCoin(thread), thread);
             EmojicodeCoin vti = consumeCoin(thread);
-            
+            EmojicodeCoin count = consumeCoin(thread);
             if(isNothingness(sth)){
                 thread->tokenStream += count;
                 return NOTHINGNESS;

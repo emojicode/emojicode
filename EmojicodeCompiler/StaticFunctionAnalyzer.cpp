@@ -762,8 +762,6 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_CLINKING_BEER_MUGS: {
             writer.writeCoin(0x3B, token);
             
-            auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
-            
             auto &methodToken = stream_.consumeToken();
             
             Type type = parse(stream_.consumeToken());
@@ -775,6 +773,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             writer.writeCoin(method->vti(), token);
             
+            auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             parseFunctionCall(type, method, token);
             
             placeholder.write();
