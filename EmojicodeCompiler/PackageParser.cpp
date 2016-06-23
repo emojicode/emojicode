@@ -126,7 +126,11 @@ void PackageParser::parse() {
                 
                 auto function = new Function(E_CHEQUERED_FLAG, PUBLIC, false, typeNothingness, package_, theToken,
                                               false, documentation, false);
-                function->returnType = typeInteger;
+                parseReturnType(function, typeNothingness);
+                if (function->returnType.type() != TypeContent::Nothingness &&
+                    !function->returnType.compatibleTo(typeInteger, typeNothingness)) {
+                    throw CompilerErrorException(theToken, "🏁 must either return ✨ or 🚂.");
+                }
                 parseBody(function, false);
                 
                 Function::start = function;
