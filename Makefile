@@ -87,6 +87,7 @@ install: dist
 
 tests:
 	$(call compilationTestOutput,compilation/hello)
+	$(call compilationTestOutput,compilation/piglatin)
 	$(call compilationTestOutput,compilation/namespace)
 	$(call compilationTestOutput,compilation/extension)
 	$(call compilationTestOutput,compilation/chaining)
