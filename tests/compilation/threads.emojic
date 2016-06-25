@@ -1,0 +1,42 @@
+🐇 🏦 🍇
+  🍰 account 🚂
+
+  🐈 🆕 🍇
+    🍮 account 300
+  🍉
+
+  🐖 💸 sum 🚂 🍇
+    🍮 account ➖ account sum
+  🍉
+
+  🐖 💶 ➡️ 🚂 🍇
+    🍎 account
+  🍉
+🍉
+
+🏁 🍇
+  🍦 threads 🔷🍨🐚💈🐸
+
+  🍦 account 🔷🏦🆕
+
+  🍦 mutex 🔷🔐🆕
+
+  🔂 i ⏩ 0 10 🍇
+    🐻 threads 🔷💈🆕 🍇
+      🔂 j ⏩ 0 5 🍇
+        🔒 mutex
+        🍊 ➡️ 💶 account 10 🍇
+          😀 🔤Money, money, money – Must be funny🔤
+          💸 account 10
+        🍉
+        🔓 mutex
+      🍉
+    🍉
+  🍉
+
+  🔂 thread threads 🍇
+    🛂 thread
+  🍉
+
+  😀 🔡 💶 account 10 👴 Print the balance
+🍉

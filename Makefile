@@ -98,6 +98,7 @@ tests:
 	$(call compilationTestOutput,compilation/generics)
 	$(call compilationTestOutput,compilation/genericProtocol)
 	$(call compilationTestOutput,compilation/callable)
+	$(call compilationTestOutput,compilation/threads)
 	$(call compilationTestOutput,compilation/reflection)
 	$(call testFile,s/stringTest)
 	$(call testFile,s/primitiveMethodsTest)
