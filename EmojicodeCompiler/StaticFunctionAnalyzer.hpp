@@ -122,6 +122,7 @@ private:
 
     void flowControlReturnEnd(FlowControlReturn &fcr);
     
+    void notStaticError(TypeAvailability t, SourcePosition p, const char *name);
     bool isStatic(TypeAvailability t) { return t == TypeAvailability::StaticAndUnavailable
                                                     || t == TypeAvailability::StaticAndAvailabale; }
 };

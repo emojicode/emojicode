@@ -79,6 +79,15 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         if (dynamicType) *dynamicType = TypeDynamism::Self;
         return Type(TypeContent::Self, optional);
     }
+    else if (stream_.nextTokenIs(E_WHITE_SQUARE_BUTTON)) {
+        auto &token = stream_.consumeToken();
+        Type type = parseTypeDeclarative(ct, dynamism, expectation, dynamicType, allowProtocolsUsingSelf);
+        if (!type.allowsMetaType() || type.meta()) {
+            throw CompilerErrorException(token, "Meta type of %s is restricted.", type.toString(ct, true).c_str());
+        }
+        type.setMeta(true);
+        return type;
+    }
     else if (stream_.nextTokenIs(E_GRAPES)) {
         stream_.consumeToken(IDENTIFIER);
         if (dynamicType) *dynamicType = TypeDynamism::None;

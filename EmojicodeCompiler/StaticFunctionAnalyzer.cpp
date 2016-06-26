@@ -29,18 +29,6 @@ Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken,
     return returnType;
 }
 
-void StaticFunctionAnalyzer::noReturnError(SourcePosition p) {
-    if (callable.returnType.type() != TypeContent::Nothingness && !returned) {
-        throw CompilerErrorException(p, "An explicit return is missing.");
-    }
-}
-
-void StaticFunctionAnalyzer::noEffectWarning(const Token &warningToken) {
-    if (!effect) {
-        compilerWarning(warningToken, "Statement seems to have no effect whatsoever.");
-    }
-}
-
 bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
     if (type.type() == TypeContent::Class && !type.optional()) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass) {
@@ -680,21 +668,23 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_WHITE_LARGE_SQUARE: {
             writer.writeCoin(0xE, token);
             Type originalType = parse(stream_.consumeToken());
-            if (originalType.type() != TypeContent::Class) {
+            if (!originalType.allowsMetaType()) {
                 auto string = originalType.toString(typeContext, true);
                 throw CompilerErrorException(token, "Can’t get metatype of %s.", string.c_str());
             }
-            return Type::classMeta(originalType.eclass());
+            originalType.setMeta(true);
+            return originalType;
         }
         case E_WHITE_SQUARE_BUTTON: {
             writer.writeCoin(0xF, token);
             Type originalType = parseTypeDeclarative(typeContext, TypeDynamism::None);
-            if (originalType.type() != TypeContent::Class) {
+            if (!originalType.allowsMetaType()) {
                 auto string = originalType.toString(typeContext, true);
                 throw CompilerErrorException(token, "Can’t get metatype of %s.", string.c_str());
             }
             writer.writeCoin(originalType.eclass()->index, token);
-            return Type::classMeta(originalType.eclass());
+            originalType.setMeta(true);
+            return originalType;
         }
         case E_BLACK_SQUARE_BUTTON: {
             auto placeholder = writer.writeCoinPlaceholder(token);
@@ -795,7 +785,8 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 if (type.type() == TypeContent::Class) {
                     placeholder.write(0x73);
                 }
-                else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
+                else if (type.type() == TypeContent::ValueType) {
+                    notStaticError(pair.second, token, "Value Types");
                     placeholder.write(0x74);
                     writer.writeCoin(0x17, token);
                 }
@@ -898,7 +889,8 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 throw CompilerErrorException(token, "Optionals cannot be instantiated.");
             }
             
-            if (type.type() == TypeContent::Enum && isStatic(pair.second)) {
+            if (type.type() == TypeContent::Enum) {
+                notStaticError(pair.second, token, "Enums");
                 placeholder.write(0x13);
                 
                 auto v = type.eenum()->getValueFor(initializerName.value[0]);
@@ -918,7 +910,8 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 
                 return type;
             }
-            else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
+            else if (type.type() == TypeContent::ValueType) {
+                notStaticError(pair.second, token, "Value Types");
                 placeholder.write(0x7);
                 
                 auto initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
@@ -1143,18 +1136,37 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
     return typeNothingness;
 }
 
+void StaticFunctionAnalyzer::noReturnError(SourcePosition p) {
+    if (callable.returnType.type() != TypeContent::Nothingness && !returned) {
+        throw CompilerErrorException(p, "An explicit return is missing.");
+    }
+}
+
+void StaticFunctionAnalyzer::noEffectWarning(const Token &warningToken) {
+    if (!effect) {
+        compilerWarning(warningToken, "Statement seems to have no effect whatsoever.");
+    }
+}
+
+void StaticFunctionAnalyzer::notStaticError(TypeAvailability t, SourcePosition p, const char *name) {
+    if (!isStatic(t)) {
+        throw CompilerErrorException(p, "%s cannot be used dynamically.", name);
+    }
+}
+
 std::pair<Type, TypeAvailability> StaticFunctionAnalyzer::parseTypeAsValue(TypeContext tc, SourcePosition p,
                                                                            Type expectation) {
     if (stream_.nextTokenIs(E_BLACK_LARGE_SQUARE)) {
         stream_.consumeToken();
         auto type = parse(stream_.consumeToken());
-        if (type.type() != TypeContent::ClassMeta) {
+        if (!type.meta()) {
             throw CompilerErrorException(p, "Expected meta type.");
         }
         if (type.optional()) {
             throw CompilerErrorException(p, "🍬 can’t be used as meta type.");
         }
-        return std::pair<Type, TypeAvailability>(Type(type.eclass()), TypeAvailability::DynamicAndAvailabale);
+        type.setMeta(false);
+        return std::pair<Type, TypeAvailability>(type, TypeAvailability::DynamicAndAvailabale);
     }
     Type ot = parseTypeDeclarative(tc, TypeDynamism::AllKinds, expectation);
     switch (ot.type()) {

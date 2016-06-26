@@ -33,10 +33,6 @@ ValueType *VT_SYMBOL;
 ValueType *VT_INTEGER;
 ValueType *VT_DOUBLE;
 
-Type Type::classMeta(Class *c) {
-    return Type(c, false, TypeContent::ClassMeta);
-}
-
 Type::Type(Protocol *p, bool o) : typeDefinition_(p), typeContent_(TypeContent::Protocol), optional_(o)  {
 }
 
@@ -84,6 +80,10 @@ Type Type::copyWithoutOptional() const {
     Type type = *this;
     type.optional_ = false;
     return type;
+}
+
+bool Type::allowsMetaType() {
+    return type() == TypeContent::Class || type() == TypeContent::Enum || type() == TypeContent::ValueType;
 }
 
 Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool resolveSelf) const {
@@ -162,16 +162,19 @@ bool Type::identicalGenericArguments(Type to, TypeContext ct, std::vector<Common
 }
 
 bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
-    //(to.optional || !a.optional): Either `to` accepts optionals, or if `to` does not accept optionals `a` mustn't be one.
     if (to.type() == TypeContent::Something) {
         return true;
     }
-    else if (to.type() == TypeContent::Someobject && (this->type() == TypeContent::Class ||
+    if (to.meta_ != meta_) {
+        return false;
+    }
+    
+    //(to.optional || !a.optional): Either `to` accepts optionals, or if `to` does not accept optionals `a` mustn't be one.
+    if (to.type() == TypeContent::Someobject && (this->type() == TypeContent::Class ||
                                             this->type() == TypeContent::Protocol || this->type() == TypeContent::Someobject)) {
         return to.optional() || !this->optional();
     }
-    else if (this->type() == TypeContent::Class && to.type() == TypeContent::Class ||
-             this->type() == TypeContent::ClassMeta && to.type() == TypeContent::ClassMeta) {
+    else if (this->type() == TypeContent::Class && to.type() == TypeContent::Class) {
         return (to.optional() || !this->optional()) && this->eclass()->inheritsFrom(to.eclass())
                 && identicalGenericArguments(to, ct, ctargs);
     }
@@ -255,7 +258,6 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
             case TypeContent::Class:
             case TypeContent::Protocol:
             case TypeContent::ValueType:
-            case TypeContent::ClassMeta:
                 return typeDefinitionFunctional() == to.typeDefinitionFunctional()
                         && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Callable:
@@ -283,7 +285,6 @@ const char* Type::typePackage() {
         case TypeContent::ValueType:
         case TypeContent::Protocol:
         case TypeContent::Enum:
-        case TypeContent::ClassMeta:
             return this->typeDefinition()->package()->name();
         case TypeContent::Nothingness:
         case TypeContent::Something:
@@ -302,6 +303,10 @@ void stringAppendEc(EmojicodeChar c, std::string &string) {
 }
 
 void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const {
+    if (type.meta_) {
+        stringAppendEc(E_WHITE_SQUARE_BUTTON, string);
+    }
+    
     if (includePackageAndOptional) {
         if (type.optional()) {
             stringAppendEc(E_CANDY, string);
@@ -311,8 +316,6 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
     }
     
     switch (type.type()) {
-        case TypeContent::ClassMeta:
-            stringAppendEc(E_RABBIT, string);
         case TypeContent::Class:
         case TypeContent::Protocol:
         case TypeContent::Enum:

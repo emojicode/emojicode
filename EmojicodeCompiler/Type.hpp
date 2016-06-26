@@ -40,8 +40,7 @@ enum class TypeContent {
     Reference,
     LocalReference,
     Callable,
-    Self,
-    ClassMeta
+    Self
 };
 
 enum class TypeDynamism {
@@ -65,7 +64,6 @@ inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
 
 class Type {
 public:
-    static Type classMeta(Class *c);
     Type(TypeContent t, bool o) : typeContent_(t), optional_(o) {}
     Type(TypeContent t, bool o, uint16_t r, TypeDefinitionFunctional *c)
         : reference(r), resolutionConstraint(c), typeContent_(t), optional_(o) {}
@@ -131,12 +129,17 @@ public:
      * @param includeNsAndOptional Whether to include optional indicators and the namespaces.
      */
     std::string toString(TypeContext contextType, bool includeNsAndOptional) const;
+    
+    void setMeta(bool meta) { meta_ = meta; }
+    bool meta() { return meta_; }
+    
+    bool allowsMetaType();
 private:
-    Type(TypeDefinition *td, bool o, TypeContent t) : typeDefinition_(td), typeContent_(t), optional_(o) {}
     TypeDefinition *typeDefinition_;
     TypeContent typeContent_;
     bool optional_;
     bool resolveSelfOn_ = true;
+    bool meta_ = false;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
 };
