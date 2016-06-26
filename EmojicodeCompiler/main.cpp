@@ -235,10 +235,6 @@ int main(int argc, char * argv[]) {
     
     fclose(out);
     
-    if (hasError) {
-        unlink(outPath);
-    }
-    
     if (packageToReport) {
         if (auto package = Package::findPackage(packageToReport)) {
             reportPackage(package);
@@ -250,6 +246,11 @@ int main(int argc, char * argv[]) {
     
     if (outputJSON) {
         fprintf(stderr, "]");
+    }
+    
+    if (hasError) {
+        unlink(outPath);
+        return 1;
     }
     
     return 0;
