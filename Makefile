@@ -33,6 +33,9 @@ DIST_BUILDS=builds
 DIST=$(DIST_BUILDS)/$(DIST_NAME)
 
 TESTS_DIR=tests
+TESTS_REJECT=$(wildcard $(TESTS_DIR)/reject/*.emojic)
+TESTS_COMPILATION=hello piglatin namespace extension chaining branch class protocol selfInDeclaration generics genericProtocol callable threads reflection castToSelf variableInitAndScoping
+TESTS_S=stringTest primitives listTest dictionaryTest rangeTest dataTest mathTest fileTest systemTest jsonTest
 
 .PHONY: builds tests install dist
 
@@ -72,44 +75,30 @@ builds:
 	mkdir -p $(DIST)
 
 define testFile
-$(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/$(1).emojic
-$(DIST)/$(ENGINE_BINARY) $(TESTS_DIR)/$(1).emojib
+$(DIST)/$(COMPILER_BINARY) -o $(1).emojib $(1).emojic
+$(DIST)/$(ENGINE_BINARY) $(1).emojib
+
 endef
 
 define compilationTestOutput
-$(DIST)/$(COMPILER_BINARY) -o $(TESTS_DIR)/$(1).emojib $(TESTS_DIR)/$(1).emojic
-$(DIST)/$(ENGINE_BINARY) $(TESTS_DIR)/$(1).emojib > $(TESTS_DIR)/$(1).out.txt
-cmp -b $(TESTS_DIR)/$(1).out.txt $(TESTS_DIR)/$(1).txt
+$(DIST)/$(COMPILER_BINARY) -o $(1).emojib $(1).emojic
+$(DIST)/$(ENGINE_BINARY) $(1).emojib > $(1).out.txt
+cmp -b $(1).out.txt $(1).txt
+
+endef
+
+define compilationReject
+! $(DIST)/$(COMPILER_BINARY) -o $(1).emojib $(1).emojic > /dev/null
+
 endef
 
 install: dist
 	cd $(DIST) && ./install.sh
 
 tests:
-	$(call compilationTestOutput,compilation/hello)
-	$(call compilationTestOutput,compilation/piglatin)
-	$(call compilationTestOutput,compilation/namespace)
-	$(call compilationTestOutput,compilation/extension)
-	$(call compilationTestOutput,compilation/chaining)
-	$(call compilationTestOutput,compilation/branch)
-	$(call compilationTestOutput,compilation/class)
-	$(call compilationTestOutput,compilation/protocol)
-	$(call compilationTestOutput,compilation/selfInDeclaration)
-	$(call compilationTestOutput,compilation/generics)
-	$(call compilationTestOutput,compilation/genericProtocol)
-	$(call compilationTestOutput,compilation/callable)
-	$(call compilationTestOutput,compilation/threads)
-	$(call compilationTestOutput,compilation/reflection)
-	$(call testFile,s/stringTest)
-	$(call testFile,s/primitiveMethodsTest)
-	$(call testFile,s/listTest)
-	$(call testFile,s/dictionaryTest)
-	$(call testFile,s/rangeTest)
-	$(call testFile,s/dataTest)
-	$(call testFile,s/mathTest)
-	$(call testFile,s/fileTest)
-	$(call testFile,s/systemTest)
-	$(call testFile,s/jsonTest)
+	$(foreach n,$(TESTS_COMPILATION),$(call compilationTestOutput,$(TESTS_DIR)/compilation/$(basename $(n))))
+	$(foreach n,$(TESTS_REJECT),$(call compilationReject,$(basename $(n))))
+	$(foreach n,$(TESTS_S),$(call testFile,$(TESTS_DIR)/s/$(basename $(n))))
 	@echo "✅ ✅  All tests passed."
 
 dist:
