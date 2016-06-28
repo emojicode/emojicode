@@ -36,6 +36,8 @@ Class *CL_ARRAY = &cl_array;
 char **cliArguments;
 int cliArgumentCount;
 
+const char *packageDirectory = defaultPackagesDirectory;
+
 //MARK: Coins
 
 EmojicodeCoin consumeCoin(Thread *thread){
@@ -852,6 +854,10 @@ Something parse(EmojicodeCoin coin, Thread *thread){
 int main(int argc, char *argv[]) {
     cliArgumentCount = argc;
     cliArguments = argv;
+    const char *ppath;
+    if ((ppath = getenv("EMOJICODE_PACKAGES_PATH"))) {
+        packageDirectory = ppath;
+    }
     
     setlocale(LC_CTYPE, "de_DE.UTF-8");
     if (argc < 2){

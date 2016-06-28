@@ -31,6 +31,7 @@ char* EmojicodeString::utf8CString() const {
 static bool outputJSON = false;
 static bool printedErrorOrWarning = false;
 static bool hasError = false;
+const char *packageDirectory = defaultPackagesDirectory;
 
 void printJSONStringToFile(const char *string, FILE *f) {
     char c;
@@ -165,6 +166,11 @@ void loadStandard(Package *_, SourcePosition errorPosition) {
 int main(int argc, char * argv[]) {
     const char *packageToReport = nullptr;
     char *outPath = nullptr;
+    
+    const char *ppath;
+    if ((ppath = getenv("EMOJICODE_PACKAGES_PATH"))) {
+        packageDirectory = ppath;
+    }
     
     signed char ch;
     while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {

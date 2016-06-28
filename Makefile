@@ -3,7 +3,7 @@ VERSION = 0.2.2
 CC ?= gcc
 CXX ?= g++
 
-COMPILER_CFLAGS = -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/
+COMPILER_CFLAGS = -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/ $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
 COMPILER_LDFLAGS =
 
 COMPILER_SRCDIR = EmojicodeCompiler
@@ -11,7 +11,7 @@ COMPILER_SOURCES = $(wildcard $(COMPILER_SRCDIR)/*.cpp)
 COMPILER_OBJECTS = $(COMPILER_SOURCES:%.cpp=%.o)
 COMPILER_BINARY = emojicodec
 
-ENGINE_CFLAGS = -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler -std=gnu11 -Wall -Wno-unused-result $(if $(HEAP_SIZE),-DheapSize=$(HEAP_SIZE))
+ENGINE_CFLAGS = -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler -std=gnu11 -Wall -Wno-unused-result $(if $(HEAP_SIZE),-DheapSize=$(HEAP_SIZE)) $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
 ENGINE_LDFLAGS = -lm -ldl -lpthread -rdynamic
 
 ENGINE_SRCDIR = EmojicodeReal-TimeEngine

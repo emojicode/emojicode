@@ -60,7 +60,12 @@ Steps:
   make HEAP_SIZE=128000000
   ```
 
-  The default heap size is 512MB.
+  The default heap size is 512MB. It’s also possible to change the default
+  package search path by setting `DEFAULT_PACKAGES_DIRECTORY`. As for example:
+
+  ```
+  make DEFAULT_PACKAGES_DIRECTORY=/opt/strange/place
+  ```
 
 3. You can now either install Emojicode and run the tests:
 

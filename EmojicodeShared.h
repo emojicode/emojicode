@@ -24,7 +24,10 @@ typedef int_fast64_t EmojicodeInteger;
 typedef uint32_t EmojicodeCoin;
 
 /* Using either of them in a package makes absolutely no sense */
-#define packageDirectory "/usr/local/EmojicodePackages/"
+#ifndef defaultPackagesDirectory
+#define defaultPackagesDirectory "/usr/local/EmojicodePackages"
+#endif
+extern const char *packageDirectory;
 #define ByteCodeSpecificationVersion 5
 
 /**
@@ -38,14 +41,6 @@ typedef uint32_t EmojicodeCoin;
 #define ecCharToCharStack(ec, outVariable)\
 char outVariable[5] = {0, 0, 0, 0, 0};\
 u8_wc_toutf8(outVariable, (ec));
-
-/**
- * 32-bit FNV-1a hash of k
- * @param k Data
- * @param length Length of @c k
- * @return Hash
- **/
-uint32_t fnv32(const char *k, size_t length);
 
 #define PORTABLE_INTLEAST64_MAX ((int_least64_t)9223372036854775807)
 

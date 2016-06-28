@@ -26,7 +26,7 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
                                 InitializerFunctionFunctionPointerProvider *hfpIntializer,
                                 mpfc *mpfc, dpfc *dpfc, SizeForClassFunction *sfch){
     char *path;
-    asprintf(&path, packageDirectory "%s-v%d/%s.%s", name, major, name, "so");
+    asprintf(&path, "%s/%s-v%d/%s.%s", packageDirectory, name, major, name, "so");
     
     void* package = dlopen(path, RTLD_LAZY);
     
