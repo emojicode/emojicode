@@ -108,7 +108,6 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
         }
     }
     
-    // TODO: Update for Value Types
     if (p->access == PRIVATE) {
         if (this->typeContext.calleeType().type() != p->owningType.type() || p->owningType.typeDefinition() != this->typeContext.calleeType().typeDefinition()) {
             ecCharToCharStack(p->name, nm);
