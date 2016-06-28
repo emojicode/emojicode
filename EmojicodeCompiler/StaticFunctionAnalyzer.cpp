@@ -110,13 +110,13 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
     
     // TODO: Update for Value Types
     if (p->access == PRIVATE) {
-        if (typeContext.calleeType().type() != TypeContent::Class || p->owningType.typeDefinition() != typeContext.calleeType().typeDefinition()) {
+        if (this->typeContext.calleeType().type() != p->owningType.type() || p->owningType.typeDefinition() != this->typeContext.calleeType().typeDefinition()) {
             ecCharToCharStack(p->name, nm);
             throw CompilerErrorException(token, "%s is 🔒.", nm);
         }
     }
     else if (p->access == PROTECTED) {
-        if (typeContext.calleeType().type() != TypeContent::Class || !typeContext.calleeType().eclass()->inheritsFrom(p->owningType.eclass())) {
+        if (this->typeContext.calleeType().type() != p->owningType.type() || !this->typeContext.calleeType().eclass()->inheritsFrom(p->owningType.eclass())) {
             ecCharToCharStack(p->name, nm);
             throw CompilerErrorException(token, "%s is 🔐.", nm);
         }
