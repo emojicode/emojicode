@@ -1,0 +1,13 @@
+🍦 listOfStrings 🍨 🔤Curiosity🔤 🔤Doesn’t🔤 🍆
+
+🍰 listOfSomethings 🍨🐚⚪️
+🍮 listOfSomethings listOfStrings
+👴 Our list of strings is now suddenly a list of somethings
+👴 (remember listOfSomethings points to the same list as listOfStrings)
+
+🐻 listOfSomethings 13 👴 Add an integer
+
+🔂 string listOfStrings 🍇
+  👴 The program would crash as there’s an integer in our list of strings
+  😀 string
+🍉
