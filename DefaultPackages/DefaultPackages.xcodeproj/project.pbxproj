@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E41AE33E1ACC81CA00D27317 /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E41AE33D1ACC81CA00D27317 /* libcurl.dylib */; };
-		E4646BF51B8DF44600CA506A /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E10B7F1ACA989B0072B4C8 /* files.c */; };
-		E4646BF81B8DF44600CA506A /* EmojicodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */; };
-		E4646BF91B8DF44600CA506A /* EmojicodeString.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */; };
 		E47937071C36A3E000536258 /* SDL.c in Sources */ = {isa = PBXBuildFile; fileRef = E47937061C36A3E000536258 /* SDL.c */; };
 		E47937091C36DDC200536258 /* KeycodeToChar.c in Sources */ = {isa = PBXBuildFile; fileRef = E47937081C36DDC200536258 /* KeycodeToChar.c */; };
+		E4CF872B1D2D3512006B3B0F /* EmojicodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */; };
+		E4CF872C1D2D3512006B3B0F /* EmojicodeString.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */; };
+		E4CF87341D2D38E0006B3B0F /* sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = E4CF87311D2D356F006B3B0F /* sockets.c */; };
 		E4DA686A1AE6C367003158CA /* EmojicodeDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */; };
 		E4E10B8B1ACA994B0072B4C8 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E10B7F1ACA989B0072B4C8 /* files.c */; };
 		E4E10B8E1ACAAE240072B4C8 /* EmojicodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */; };
@@ -21,13 +20,13 @@
 
 /* Begin PBXFileReference section */
 		E41538471AE549AA00025753 /* sqlite.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = sqlite.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		E41AE3351ACC7E8400D27317 /* net.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = net.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		E41AE33D1ACC81CA00D27317 /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = usr/lib/libcurl.dylib; sourceTree = SDKROOT; };
-		E4646BFD1B8DF44600CA506A /* json.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = json.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		E47937011C36A3CE00536258 /* SDL.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = SDL.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		E47937061C36A3E000536258 /* SDL.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SDL.c; path = SDL/SDL.c; sourceTree = "<group>"; };
 		E47937081C36DDC200536258 /* KeycodeToChar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = KeycodeToChar.c; path = SDL/KeycodeToChar.c; sourceTree = "<group>"; };
 		E479370A1C36DE6000536258 /* SDLPackage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SDLPackage.h; path = SDL/SDLPackage.h; sourceTree = "<group>"; };
+		E4CF87301D2D3512006B3B0F /* sockets.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = sockets.so; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4CF87311D2D356F006B3B0F /* sockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sockets.c; path = sockets/sockets.c; sourceTree = "<group>"; };
 		E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeDictionary.h; path = ../EmojicodeDictionary.h; sourceTree = "<group>"; };
 		E4E10B7F1ACA989B0072B4C8 /* files.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = files.c; path = files/files.c; sourceTree = "<group>"; };
 		E4E10B811ACA98AC0072B4C8 /* EmojicodeAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeAPI.h; path = ../EmojicodeAPI.h; sourceTree = "<group>"; };
@@ -44,22 +43,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E41AE3321ACC7E8400D27317 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E41AE33E1ACC81CA00D27317 /* libcurl.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E4646BF61B8DF44600CA506A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E47936FE1C36A3CE00536258 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4CF87291D2D3512006B3B0F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -86,6 +77,14 @@
 			name = SDL;
 			sourceTree = "<group>";
 		};
+		E4CF87331D2D3575006B3B0F /* sockets */ = {
+			isa = PBXGroup;
+			children = (
+				E4CF87311D2D356F006B3B0F /* sockets.c */,
+			);
+			name = sockets;
+			sourceTree = "<group>";
+		};
 		E4E10B6E1ACA983B0072B4C8 = {
 			isa = PBXGroup;
 			children = (
@@ -96,6 +95,7 @@
 				E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */,
 				E47937051C36A3D300536258 /* SDL */,
 				E4E10B7E1ACA98900072B4C8 /* Files */,
+				E4CF87331D2D3575006B3B0F /* sockets */,
 				E4E10B781ACA983B0072B4C8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -104,10 +104,9 @@
 			isa = PBXGroup;
 			children = (
 				E4E10B871ACA98EE0072B4C8 /* files.so */,
-				E41AE3351ACC7E8400D27317 /* net.so */,
 				E41538471AE549AA00025753 /* sqlite.so */,
-				E4646BFD1B8DF44600CA506A /* json.so */,
 				E47937011C36A3CE00536258 /* SDL.so */,
+				E4CF87301D2D3512006B3B0F /* sockets.so */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -131,26 +130,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E41AE3331ACC7E8400D27317 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E4646BF71B8DF44600CA506A /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E4646BF81B8DF44600CA506A /* EmojicodeList.h in Headers */,
-				E4646BF91B8DF44600CA506A /* EmojicodeString.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E47936FF1C36A3CE00536258 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4CF872A1D2D3512006B3B0F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4CF872B1D2D3512006B3B0F /* EmojicodeList.h in Headers */,
+				E4CF872C1D2D3512006B3B0F /* EmojicodeString.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -183,40 +175,6 @@
 			productReference = E41538471AE549AA00025753 /* sqlite.so */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		E41AE3341ACC7E8400D27317 /* net */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E41AE3381ACC7E8400D27317 /* Build configuration list for PBXNativeTarget "net" */;
-			buildPhases = (
-				E41AE3311ACC7E8400D27317 /* Sources */,
-				E41AE3321ACC7E8400D27317 /* Frameworks */,
-				E41AE3331ACC7E8400D27317 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = net;
-			productName = net;
-			productReference = E41AE3351ACC7E8400D27317 /* net.so */;
-			productType = "com.apple.product-type.library.dynamic";
-		};
-		E4646BF31B8DF44600CA506A /* json */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E4646BFA1B8DF44600CA506A /* Build configuration list for PBXNativeTarget "json" */;
-			buildPhases = (
-				E4646BF41B8DF44600CA506A /* Sources */,
-				E4646BF61B8DF44600CA506A /* Frameworks */,
-				E4646BF71B8DF44600CA506A /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = json;
-			productName = Files;
-			productReference = E4646BFD1B8DF44600CA506A /* json.so */;
-			productType = "com.apple.product-type.library.dynamic";
-		};
 		E47937001C36A3CE00536258 /* SDL */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E47937021C36A3CE00536258 /* Build configuration list for PBXNativeTarget "SDL" */;
@@ -232,6 +190,23 @@
 			name = SDL;
 			productName = SDL;
 			productReference = E47937011C36A3CE00536258 /* SDL.so */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		E4CF87261D2D3512006B3B0F /* sockets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E4CF872D1D2D3512006B3B0F /* Build configuration list for PBXNativeTarget "sockets" */;
+			buildPhases = (
+				E4CF87271D2D3512006B3B0F /* Sources */,
+				E4CF87291D2D3512006B3B0F /* Frameworks */,
+				E4CF872A1D2D3512006B3B0F /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = sockets;
+			productName = Files;
+			productReference = E4CF87301D2D3512006B3B0F /* sockets.so */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		E4E10B861ACA98EE0072B4C8 /* files */ = {
@@ -263,9 +238,6 @@
 					E41538461AE549AA00025753 = {
 						CreatedOnToolsVersion = 6.3;
 					};
-					E41AE3341ACC7E8400D27317 = {
-						CreatedOnToolsVersion = 6.2;
-					};
 					E47937001C36A3CE00536258 = {
 						CreatedOnToolsVersion = 7.2;
 					};
@@ -287,10 +259,9 @@
 			projectRoot = "";
 			targets = (
 				E4E10B861ACA98EE0072B4C8 /* files */,
-				E41AE3341ACC7E8400D27317 /* net */,
 				E41538461AE549AA00025753 /* sqlite */,
-				E4646BF31B8DF44600CA506A /* json */,
 				E47937001C36A3CE00536258 /* SDL */,
+				E4CF87261D2D3512006B3B0F /* sockets */,
 			);
 		};
 /* End PBXProject section */
@@ -303,27 +274,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E41AE3311ACC7E8400D27317 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E4646BF41B8DF44600CA506A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E4646BF51B8DF44600CA506A /* files.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E47936FD1C36A3CE00536258 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				E47937071C36A3E000536258 /* SDL.c in Sources */,
 				E47937091C36DDC200536258 /* KeycodeToChar.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4CF87271D2D3512006B3B0F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4CF87341D2D38E0006B3B0F /* sockets.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,58 +331,6 @@
 			};
 			name = Release;
 		};
-		E41AE3361ACC7E8400D27317 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = "";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		E41AE3371ACC7E8400D27317 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		E4646BFB1B8DF44600CA506A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = "";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				PRODUCT_NAME = json;
-			};
-			name = Debug;
-		};
-		E4646BFC1B8DF44600CA506A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = "";
-				PRODUCT_NAME = json;
-			};
-			name = Release;
-		};
 		E47937031C36A3CE00536258 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -456,6 +368,32 @@
 					dynamic_lookup,
 					"-lSDL2",
 				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		E4CF872E1D2D3512006B3B0F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E4CF872F1D2D3512006B3B0F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -583,29 +521,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E41AE3381ACC7E8400D27317 /* Build configuration list for PBXNativeTarget "net" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E41AE3361ACC7E8400D27317 /* Debug */,
-				E41AE3371ACC7E8400D27317 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E4646BFA1B8DF44600CA506A /* Build configuration list for PBXNativeTarget "json" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E4646BFB1B8DF44600CA506A /* Debug */,
-				E4646BFC1B8DF44600CA506A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		E47937021C36A3CE00536258 /* Build configuration list for PBXNativeTarget "SDL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E47937031C36A3CE00536258 /* Debug */,
 				E47937041C36A3CE00536258 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E4CF872D1D2D3512006B3B0F /* Build configuration list for PBXNativeTarget "sockets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4CF872E1D2D3512006B3B0F /* Debug */,
+				E4CF872F1D2D3512006B3B0F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

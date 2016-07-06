@@ -102,7 +102,7 @@
   🌮
   🐖 📓 bytesToRead 🚂 ➡️ 🍬📇 📻
   🌮
-    Trys to read one line. If the end of the stream has been reached
+    Tries to read one line. If the end of the stream has been reached
     Nothingness is returned.
   🌮
   🐖 🗡 ➡️ 🍬📇 📻
