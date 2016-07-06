@@ -6,6 +6,7 @@
 //  Copyright (c) 2016 Theo Weidmann. All rights reserved.
 //
 
+#define _XOPEN_SOURCE 500
 #include "EmojicodeAPI.h"
 #include "EmojicodeString.h"
 #include <sys/socket.h>
