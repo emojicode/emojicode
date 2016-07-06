@@ -1119,6 +1119,11 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 writer.writeCoin(type.protocol()->index, token);
                 writer.writeCoin(method->vti(), token);
             }
+            else if (type.type() == TypeContent::Enum && token.value[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
+                parse(stream_.consumeToken(), token, type);  // Must be of the same type as the callee
+                placeholder.write(0x20);
+                return typeBoolean;
+            }
             else if (type.type() == TypeContent::Class) {
                 method = type.eclass()->getMethod(token, type, typeContext);
                 placeholder.write(0x1);
