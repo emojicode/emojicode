@@ -1,4 +1,4 @@
-VERSION = 0.2.2
+VERSION = 0.3-beta.1
 
 CC ?= gcc
 CXX ?= g++
