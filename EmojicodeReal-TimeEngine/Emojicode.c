@@ -635,6 +635,14 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return somethingInteger(parse(consumeCoin(thread), thread).raw ^ parse(consumeCoin(thread), thread).raw);
         case 0x5D:
             return somethingInteger(~parse(consumeCoin(thread), thread).raw);
+        case 0x5E: {
+            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
+            return somethingInteger(a << parse(consumeCoin(thread), thread).raw);
+        }
+        case 0x5F: {
+            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
+            return somethingInteger(a >> parse(consumeCoin(thread), thread).raw);
+        }
         //MARK: Flow Control
         case 0x60: { //Red apple - return
             thread->returnValue = parse(consumeCoin(thread), thread);
@@ -644,7 +652,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         case 0x61: { //MARK: cherries
             EmojicodeCoin *beginPosition = thread->tokenStream;
             while (unwrapBool(parse(consumeCoin(thread), thread))) {
-                if(runBlock(thread)) {
+                if (runBlock(thread)) {
                     return NOTHINGNESS;
                 }
                 thread->tokenStream = beginPosition;

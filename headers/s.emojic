@@ -95,6 +95,14 @@
   🐖 🚫 ➡️ 🚂 🍇
     🍎 🚫 🐕
   🍉
+  🌮 Shifts this integer by *n* bits to the left. 🌮
+  🐖 👈 n 🚂 ➡️ 🚂 🍇
+    🍎 👈 🐕 n
+  🍉
+  🌮 Shifts this integer by *n* bits to the right. 🌮
+  🐖 👉 n 🚂 ➡️ 🚂 🍇
+    🍎 👉 🐕 n
+  🍉
 🍉
 
 🌮

@@ -1056,6 +1056,14 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                         case E_ROCKET:
                             placeholder.write(0x3F);
                             return typeFloat;
+                        case E_LEFT_POINTING_BACKHAND_INDEX:
+                            placeholder.write(0x5E);
+                            parse(stream_.consumeToken(), token, typeInteger);
+                            return typeInteger;
+                        case E_RIGHT_POINTING_BACKHAND_INDEX:
+                            placeholder.write(0x5F);
+                            parse(stream_.consumeToken(), token, typeInteger);
+                            return typeInteger;
                     }
                 }
                 else if (type.valueType() == VT_DOUBLE) {
