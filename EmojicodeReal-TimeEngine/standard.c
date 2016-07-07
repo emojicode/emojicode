@@ -277,6 +277,25 @@ static Something dataGetByte(Thread *thread) {
     return somethingInteger(d->bytes[index]);
 }
 
+static Something dataToString(Thread *thread){
+    Data *data = stackGetThisObject(thread)->value;
+    if (!u8_isvalid(data->bytes, data->length)) {
+        return NOTHINGNESS;
+    }
+    
+    EmojicodeInteger len = u8_strlen_l(data->bytes, data->length);
+    Object *characters = newArray(len * sizeof(EmojicodeChar));
+    
+    stackPush(somethingObject(characters), 0, 0, thread);
+    Object *sto = newObject(CL_STRING);
+    String *string = sto->value;
+    string->length = len;
+    string->characters = stackGetThisObject(thread);
+    stackPop(thread);
+    u8_toucs(characters(string), len, data->bytes, data->length);
+    return somethingObject(sto);
+}
+
 // MARK: Integer
 
 Something integerToString(Thread *thread) {
@@ -457,7 +476,7 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                 case 0x1F634:
                     return errorGetCode;
             }
-        case 0x1F4C7:
+        case 0x1f4c7: //📇
             switch (symbol) {
                 case 0x1F61B:
                     return dataEqual;
@@ -465,6 +484,8 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                     return dataSize;
                 case 0x1F43D:
                     return dataGetByte;
+                case 0x1f521: //🔡
+                    return dataToString;
             }
         case 0x1F36F:
             return dictionaryMethodForName(symbol);

@@ -537,25 +537,6 @@ static Something stringToDouble(Thread *thread){
     return somethingDouble(d);
 }
 
-static void stringFromData(Thread *thread){
-    Data *data = stackGetVariable(0, thread).object->value;
-    if (!u8_isvalid(data->bytes, data->length)) {
-        stackGetThisObject(thread)->value = NULL;
-        return;
-    }
-    
-    EmojicodeInteger len = u8_strlen_l(data->bytes, data->length);
-    Object *characters = newArray(len * sizeof(EmojicodeChar));
-    
-    String *string = stackGetThisObject(thread)->value;
-    string->length = len;
-    string->characters = characters;
-    
-    data = stackGetVariable(0, thread).object->value;
-    
-    u8_toucs(characters(string), len, data->bytes, data->length);
-}
-
 static Something stringCompareBridge(Thread *thread) {
     String *a = stackGetThisObject(thread)->value;
     String *b = stackGetVariable(0, thread).object->value;
@@ -620,8 +601,6 @@ InitializerFunctionFunctionPointer stringInitializerForName(EmojicodeChar name){
             return stringFromSymbolListBridge;
         case 0x1F368: //🍨
             return stringFromStringList;
-        case 0x1F4C7:
-            return stringFromData;
     }
     return NULL;
 }
