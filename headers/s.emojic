@@ -672,6 +672,11 @@
     object does not represent a valid UTF8 sequence.
   🌮
   🐖 🔡 ➡️ 🍬🔡 📻
+  🌮
+    Returns a copy of the data within the given range. This method employes
+    various techniques to make this as efficient as possible.
+  🌮
+  🐖 🔪 from 🚂 length 🚂 ➡️ 📇 📻
 🍉
 
 🐋 🚨 🍇
