@@ -346,7 +346,7 @@ Something integerToString(Thread *thread) {
 }
 
 static Something integerRandom(Thread *thread) {
-    return somethingInteger(secureRandomNumber(stackGetVariable(1, thread).raw, stackGetVariable(1, thread).raw));
+    return somethingInteger(secureRandomNumber(stackGetVariable(0, thread).raw, stackGetVariable(1, thread).raw));
 }
 
 static Something stringFromSymbol(Thread *thread){
