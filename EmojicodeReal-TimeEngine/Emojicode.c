@@ -537,30 +537,35 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         }
         //MARK: Literals
         case 0x50: {
-            stackPush(somethingObject(newObject(CL_DICTIONARY)), 0, 0, thread);
+            Object *dico = newObject(CL_DICTIONARY);
+            stackPush(somethingObject(dico), 0, 0, thread);
             dictionaryInit(thread);
-            
+            stackPop(thread);
+            Something *t = stackReserveFrame(NOTHINGNESS, 1, thread);
+            *t = somethingObject(dico);
             EmojicodeCoin *end = thread->tokenStream + consumeCoin(thread);
             while (thread->tokenStream < end) {
                 Object *key = parse(consumeCoin(thread), thread).object;
                 Something sth = parse(consumeCoin(thread), thread);
                 
-                dictionarySet(stackGetThisObject(thread), key, sth, thread);
+                dictionarySet(t->object, key, sth, thread);
             }
-            
-            Something sth = stackGetThisContext(thread);
+            Something sth = *t;
+            stackPushReservedFrame(thread);
             stackPop(thread);
             return sth;
         }
         case 0x51: {
-            stackPush(somethingObject(newObject(CL_LIST)), 0, 0, thread);
+            Something *t = stackReserveFrame(NOTHINGNESS, 1, thread);
+            *t = somethingObject(newObject(CL_LIST));
             
             EmojicodeCoin *end = thread->tokenStream + consumeCoin(thread);
             while (thread->tokenStream < end) {
-                listAppend(stackGetThisObject(thread), parse(consumeCoin(thread), thread), thread);
+                listAppend(t->object, parse(consumeCoin(thread), thread), thread);
             }
             
-            Something sth = stackGetThisContext(thread);
+            Something sth = *t;
+            stackPushReservedFrame(thread);
             stackPop(thread);
             return sth;
         }
