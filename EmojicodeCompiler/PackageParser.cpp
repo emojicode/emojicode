@@ -284,7 +284,9 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
         throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
     }
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        eenum->addValueFor(stream_.consumeToken().value[0]);
+        auto documentation = parseDocumentationToken();
+        auto &token = stream_.consumeToken(IDENTIFIER);
+        eenum->addValueFor(token.value[0], token, documentation);
     }
     stream_.consumeToken(IDENTIFIER);
 }

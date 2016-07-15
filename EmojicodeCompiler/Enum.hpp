@@ -18,11 +18,11 @@ public:
         : TypeDefinition(name, package, position, documentation) {}
     
     std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
-    void addValueFor(EmojicodeChar c);
+    void addValueFor(EmojicodeChar c, SourcePosition position, EmojicodeString documentation);
     
-    const std::map<EmojicodeChar, EmojicodeInteger>& values() const { return map_; }
+    const std::map<EmojicodeChar, std::pair<EmojicodeInteger, EmojicodeString>>& values() const { return map_; }
 private:
-    std::map<EmojicodeChar, EmojicodeInteger> map_;
+    std::map<EmojicodeChar, std::pair<EmojicodeInteger, EmojicodeString>> map_;
     EmojicodeInteger valuesCounter = 0;
 };
 
