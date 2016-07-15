@@ -483,17 +483,20 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             auto fcr = FlowControlReturn();
             
+            scoper.pushScope();
             parseIfExpression(token);
-            
-            flowControlBlock();
+            flowControlBlock(false);
+            scoper.popScopeAndRecommendFrozenVariables();
             flowControlReturnEnd(fcr);
             
             while (stream_.nextTokenIs(E_LEMON)) {
                 stream_.consumeToken();
                 writer.writeCoin(0x63, token);
                 
+                scoper.pushScope();
                 parseIfExpression(token);
-                flowControlBlock();
+                flowControlBlock(false);
+                scoper.popScopeAndRecommendFrozenVariables();
                 flowControlReturnEnd(fcr);
             }
             
