@@ -219,7 +219,8 @@ void readPackage(FILE *in){
             class->deconstruct = class->superclass->deconstruct;
         }
         class->mark = mpfc(name);
-        class->valueSize = class->superclass && class->superclass->valueSize ? class->superclass->valueSize : sfch(class, name);
+        size_t size = sfch(class, name);
+        class->valueSize = class->superclass && class->superclass->valueSize ? class->superclass->valueSize : size;
         class->size = class->valueSize + class->instanceVariableCount * sizeof(Something);
     }
 }
