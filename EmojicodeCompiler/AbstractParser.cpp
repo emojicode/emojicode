@@ -13,21 +13,21 @@
 #include "TypeContext.hpp"
 
 const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional) {
-    if (stream_.nextTokenIs(VARIABLE)) {
-        throw CompilerErrorException(stream_.consumeToken(VARIABLE), "Generic variables not allowed here.");
+    if (stream_.nextTokenIs(TokenType::Variable)) {
+        throw CompilerErrorException(stream_.consumeToken(TokenType::Variable), "Generic variables not allowed here.");
     }
     
-    *optional = stream_.nextTokenIs(E_CANDY) ? stream_.consumeToken(IDENTIFIER), true : false;
+    *optional = stream_.nextTokenIs(E_CANDY) ? stream_.consumeToken(TokenType::Identifier), true : false;
 
     if (stream_.nextTokenIs(E_ORANGE_TRIANGLE)) {
         stream_.consumeToken();
-        *enamespace = stream_.consumeToken(IDENTIFIER).value[0];
+        *enamespace = stream_.consumeToken(TokenType::Identifier).value[0];
     }
     else {
         *enamespace = globalNamespace;
     }
     
-    auto &className = stream_.consumeToken(IDENTIFIER);
+    auto &className = stream_.consumeToken(TokenType::Identifier);
     *typeName = className.value[0];
     return className;
 }
@@ -53,15 +53,15 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
     
     bool optional = false;
     if (stream_.nextTokenIs(E_CANDY)) {
-        stream_.consumeToken(IDENTIFIER);
+        stream_.consumeToken(TokenType::Identifier);
         optional = true;
     }
     
     if ((dynamism & TypeDynamism::GenericTypeVariables) != TypeDynamism::None && (ct.calleeType().canHaveGenericArguments()|| ct.function()) &&
-        stream_.nextTokenIs(VARIABLE)) {
+        stream_.nextTokenIs(TokenType::Variable)) {
         if (dynamicType) *dynamicType = TypeDynamism::GenericTypeVariables;
         
-        auto &variableToken = stream_.consumeToken(VARIABLE);
+        auto &variableToken = stream_.consumeToken(TokenType::Variable);
         
         if (ct.function()) {
             auto it = ct.function()->genericArgumentVariables.find(variableToken.value);
@@ -81,7 +81,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         throw CompilerErrorException(variableToken, "No such generic type variable \"%s\".", variableToken.value.utf8CString());
     }
     else if (stream_.nextTokenIs(E_DOG)) {
-        auto &ratToken = stream_.consumeToken(IDENTIFIER);
+        auto &ratToken = stream_.consumeToken(TokenType::Identifier);
         if ((dynamism & TypeDynamism::Self) == TypeDynamism::None) {
             throw CompilerErrorException(ratToken, "🐕 not allowed here.");
         }
@@ -89,7 +89,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         return Type(TypeContent::Self, optional);
     }
     else if (stream_.nextTokenIs(E_GRAPES)) {
-        stream_.consumeToken(IDENTIFIER);
+        stream_.consumeToken(TokenType::Identifier);
         if (dynamicType) *dynamicType = TypeDynamism::None;
 
         Type t(TypeContent::Callable, optional);
@@ -100,11 +100,11 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         }
         
         if (stream_.nextTokenIs(E_RIGHTWARDS_ARROW)) {
-            stream_.consumeToken(IDENTIFIER);
+            stream_.consumeToken(TokenType::Identifier);
             t.genericArguments[0] = parseTypeDeclarative(ct, dynamism);
         }
         
-        auto &token = stream_.consumeToken(IDENTIFIER);
+        auto &token = stream_.consumeToken(TokenType::Identifier);
         if (token.value[0] != E_WATERMELON) {
             throw CompilerErrorException(token, "Expected 🍉.");
         }
@@ -146,7 +146,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
         if (typeDef->numberOfOwnGenericArguments()) {
             int count = 0;
             while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
-                auto token = stream_.consumeToken(IDENTIFIER);
+                auto token = stream_.consumeToken(TokenType::Identifier);
                 
                 Type ta = parseTypeDeclarative(ct, dynamism, typeNothingness, nullptr);
                 
@@ -179,9 +179,9 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
 bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct) {
     bool usedSelf = false;
     
-    while (stream_.nextTokenIs(VARIABLE)) {
+    while (stream_.nextTokenIs(TokenType::Variable)) {
         TypeDynamism dynamism;
-        auto &variableToken = stream_.consumeToken(VARIABLE);
+        auto &variableToken = stream_.consumeToken(TokenType::Variable);
         auto type = parseTypeDeclarative(ct, TypeDynamism::AllKinds, typeNothingness, &dynamism);
         
         c->arguments.push_back(Argument(variableToken, type));
@@ -214,7 +214,7 @@ bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
 void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext ct) {
     while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
         stream_.consumeToken();
-        auto &variable = stream_.consumeToken(VARIABLE);
+        auto &variable = stream_.consumeToken(TokenType::Variable);
         
         Type t = parseTypeDeclarative(p->owningType, TypeDynamism::GenericTypeVariables, typeNothingness, nullptr, true);
         p->genericArgumentConstraints.push_back(t);
@@ -231,14 +231,14 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext 
 
 void AbstractParser::parseBody(Function *p, bool allowNative) {
     if (stream_.nextTokenIs(E_RADIO)) {
-        auto &radio = stream_.consumeToken(IDENTIFIER);
+        auto &radio = stream_.consumeToken(TokenType::Identifier);
         if (!allowNative) {
             throw CompilerErrorException(radio, "Native code is not allowed in this context.");
         }
         p->native = true;
     }
     else {
-        auto &token = stream_.consumeToken(IDENTIFIER);
+        auto &token = stream_.consumeToken(TokenType::Identifier);
         
         if (token.value[0] != E_GRAPES) {
             ecCharToCharStack(token.value[0], c);
@@ -254,10 +254,10 @@ void AbstractParser::parseBody(Callable *p) {
     int depth = 0;
     while (true) {
         auto &token = stream_.consumeToken();
-        if (token.type() == IDENTIFIER && token.value[0] == E_GRAPES) {
+        if (token.type() == TokenType::Identifier && token.value[0] == E_GRAPES) {
             depth++;
         }
-        else if (token.type() == IDENTIFIER && token.value[0] == E_WATERMELON) {
+        else if (token.type() == TokenType::Identifier && token.value[0] == E_WATERMELON) {
             if (depth == 0) {
                 break;
             }

@@ -19,7 +19,7 @@ public:
      * Returns the next token if it matches the given type. If it does not match or the end of the stream was reached
      * an error is issued.
      */
-    const Token& consumeToken(TokenType type = NO_TYPE);
+    const Token& consumeToken(TokenType type = TokenType::NoType);
     /** Whether there are tokens left or the end of the stream was reached. */
     bool hasMoreTokens() const;
     /** Tests whether the next token is of the given type. */

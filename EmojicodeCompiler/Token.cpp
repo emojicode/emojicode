@@ -19,30 +19,30 @@ const char* Token::stringName() const {
 
 const char* Token::stringNameForType(TokenType type) {
     switch (type) {
-        case BOOLEAN_FALSE:
+        case TokenType::BooleanFalse:
             return "Boolean False";
-        case BOOLEAN_TRUE:
+        case TokenType::BooleanTrue:
             return "Boolean True";
-        case DOUBLE:
+        case TokenType::Double:
             return "Double";
-        case INTEGER:
+        case TokenType::Integer:
             return "Integer";
-        case STRING:
+        case TokenType::String:
             return "String";
-        case SYMBOL:
+        case TokenType::Symbol:
             return "Symbol";
-        case VARIABLE:
+        case TokenType::Variable:
             return "Variable";
-        case IDENTIFIER:
+        case TokenType::Identifier:
             return "Identifier";
-        case DOCUMENTATION_COMMENT:
+        case TokenType::DocumentationComment:
             return "Documentation Comment";
-        case ARGUMENT_BRACKET_CLOSE:
+        case TokenType::ArgumentBracketClose:
             return "Argument Bracket Close";
-        case ARGUMENT_BRACKET_OPEN:
+        case TokenType::ArgumentBracketOpen:
             return "Argument Bracket Open";
-        case NO_TYPE:
-        case COMMENT:
+        case TokenType::NoType:
+        case TokenType::Comment:
             break;
     }
     return "Mysterious unnamed token";

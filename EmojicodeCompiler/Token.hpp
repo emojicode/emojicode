@@ -13,20 +13,20 @@
 
 class TokenStream;
 
-enum TokenType {
-    NO_TYPE,
-    STRING,
-    COMMENT,
-    DOCUMENTATION_COMMENT,
-    INTEGER,
-    DOUBLE,
-    BOOLEAN_TRUE,
-    BOOLEAN_FALSE,
-    IDENTIFIER,
-    VARIABLE,
-    SYMBOL,
-    ARGUMENT_BRACKET_OPEN,
-    ARGUMENT_BRACKET_CLOSE
+enum class TokenType {
+    NoType,
+    String,
+    Comment,
+    DocumentationComment,
+    Integer,
+    Double,
+    BooleanTrue,
+    BooleanFalse,
+    Identifier,
+    Variable,
+    Symbol,
+    ArgumentBracketOpen,
+    ArgumentBracketClose
 };
 
 class Token;
@@ -65,7 +65,7 @@ public:
     void validateDouble() const;
 private:
     SourcePosition position_;
-    TokenType type_ = NO_TYPE;
+    TokenType type_ = TokenType::NoType;
     Token *nextToken_ = nullptr;
 };
 

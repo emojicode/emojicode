@@ -53,7 +53,7 @@ class Attribute {
 public:
     Attribute& parse(TokenStream *tokenStream) {
         if (tokenStream->nextTokenIs(attributeName)) {
-            position_ = tokenStream->consumeToken(IDENTIFIER).position();
+            position_ = tokenStream->consumeToken(TokenType::Identifier).position();
             set_ = true;
         }
         return *this;

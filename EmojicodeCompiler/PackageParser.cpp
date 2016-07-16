@@ -20,13 +20,13 @@ void PackageParser::parse() {
         auto documentation = parseDocumentationToken();
         
         auto exported = Attribute<E_EARTH_GLOBE_EUROPE_AFRICA>().parse(&stream_);
-        auto theToken = stream_.consumeToken(IDENTIFIER);
+        auto theToken = stream_.consumeToken(TokenType::Identifier);
         switch (theToken.value[0]) {
             case E_PACKAGE: {
                 exported.disallow();
                 
-                auto nameToken = stream_.consumeToken(VARIABLE);
-                auto namespaceToken = stream_.consumeToken(IDENTIFIER);
+                auto nameToken = stream_.consumeToken(TokenType::Variable);
+                auto namespaceToken = stream_.consumeToken(TokenType::Identifier);
                 
                 auto name = nameToken.value.utf8CString();
                 package_->loadPackage(name, namespaceToken.value[0], theToken);
@@ -52,8 +52,8 @@ void PackageParser::parse() {
                     throw CompilerErrorException(theToken, "Package version already declared.");
                 }
                 
-                auto major = stream_.consumeToken(INTEGER).value.utf8CString();
-                auto minor = stream_.consumeToken(INTEGER).value.utf8CString();
+                auto major = stream_.consumeToken(TokenType::Integer).value.utf8CString();
+                auto minor = stream_.consumeToken(TokenType::Integer).value.utf8CString();
                 
                 uint16_t majori = strtol(major, nullptr, 0);
                 uint16_t minori = strtol(minor, nullptr, 0);
@@ -100,7 +100,7 @@ void PackageParser::parse() {
                 continue;
             case E_SCROLL: {
                 exported.disallow();
-                auto pathString = stream_.consumeToken(STRING);
+                auto pathString = stream_.consumeToken(TokenType::String);
                 auto relativePath = pathString.position().file;
                 auto fileString = pathString.value.utf8CString();
                 
@@ -204,9 +204,9 @@ const Token& PackageParser::parseAndValidateNewTypeName(EmojicodeChar *name, Emo
 
 void PackageParser::parseGenericArgumentList(TypeDefinitionFunctional *typeDef, TypeContext tc) {
     while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
-        stream_.consumeToken(IDENTIFIER);
+        stream_.consumeToken(TokenType::Identifier);
         
-        auto variable = stream_.consumeToken(VARIABLE);
+        auto variable = stream_.consumeToken(TokenType::Variable);
         auto constraintType = parseTypeDeclarative(tc, TypeDynamism::None, typeNothingness, nullptr, true);
         typeDef->addGenericArgument(variable, constraintType);
     }
@@ -216,14 +216,14 @@ static AccessLevel readAccessLevel(TokenStream *stream) {
     AccessLevel access = PUBLIC;
     if (stream->nextTokenIs(E_CLOSED_LOCK_WITH_KEY)) {
         access = PROTECTED;
-        stream->consumeToken(IDENTIFIER);
+        stream->consumeToken(TokenType::Identifier);
     }
     else if (stream->nextTokenIs(E_LOCK)) {
         access = PRIVATE;
-        stream->consumeToken(IDENTIFIER);
+        stream->consumeToken(TokenType::Identifier);
     }
     else if (stream->nextTokenIs(E_OPEN_LOCK)) {
-        stream->consumeToken(IDENTIFIER);
+        stream->consumeToken(TokenType::Identifier);
     }
     return access;
 }
@@ -237,7 +237,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
     parseGenericArgumentList(protocol, Type(protocol, false));
     protocol->finalizeGenericArguments();
     
-    auto token = stream_.consumeToken(IDENTIFIER);
+    auto token = stream_.consumeToken(TokenType::Identifier);
     if (token.value[0] != E_GRAPES) {
         ecCharToCharStack(token.value[0], s);
         throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
@@ -248,14 +248,14 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
     
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         auto documentation = parseDocumentationToken();
-        auto token = stream_.consumeToken(IDENTIFIER);
+        auto token = stream_.consumeToken(TokenType::Identifier);
         auto deprecated = Attribute<E_WARNING_SIGN>().parse(&stream_);
         
         if (token.value[0] != E_PIG) {
             throw CompilerErrorException(token, "Only method declarations are allowed inside a protocol.");
         }
         
-        auto methodName = stream_.consumeToken(IDENTIFIER);
+        auto methodName = stream_.consumeToken(TokenType::Identifier);
         
         auto method = new Method(methodName.value[0], PUBLIC, false, typeNothingness, package_, methodName.position(),
                                  false, documentation, deprecated.set());
@@ -267,7 +267,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
         
         protocol->addMethod(method);
     }
-    stream_.consumeToken(IDENTIFIER);
+    stream_.consumeToken(TokenType::Identifier);
 }
 
 void PackageParser::parseEnum(const EmojicodeString &documentation, const Token &theToken, bool exported) {
@@ -278,17 +278,17 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
     
     package_->registerType(Type(eenum, false), name, enamespace, exported);
     
-    auto token = stream_.consumeToken(IDENTIFIER);
+    auto token = stream_.consumeToken(TokenType::Identifier);
     if (token.value[0] != E_GRAPES) {
         ecCharToCharStack(token.value[0], s);
         throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
     }
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         auto documentation = parseDocumentationToken();
-        auto &token = stream_.consumeToken(IDENTIFIER);
+        auto &token = stream_.consumeToken(TokenType::Identifier);
         eenum->addValueFor(token.value[0], token, documentation);
     }
-    stream_.consumeToken(IDENTIFIER);
+    stream_.consumeToken(TokenType::Identifier);
 }
 
 void PackageParser::parseClass(const EmojicodeString &documentation, const Token &theToken, bool exported) {
@@ -363,7 +363,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                                             bool allowNative) {
     allowNative = allowNative && package_->requiresBinary();
     
-    auto token = stream_.consumeToken(IDENTIFIER);
+    auto token = stream_.consumeToken(TokenType::Identifier);
     if (token.value[0] != E_GRAPES) {
         ecCharToCharStack(token.value[0], s);
         throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
@@ -382,7 +382,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
         
         auto eclass = typed.type() == TypeContent::Class ? typed.eclass() : nullptr;
         
-        auto token = stream_.consumeToken(IDENTIFIER);
+        auto token = stream_.consumeToken(TokenType::Identifier);
         switch (token.value[0]) {
             case E_SHORTCAKE: {
                 if (!eclass) {
@@ -396,7 +396,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 canReturnNothingness.disallow();
                 deprecated.disallow();
 
-                auto &variableName = stream_.consumeToken(VARIABLE);
+                auto &variableName = stream_.consumeToken(TokenType::Variable);
                 auto type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables);
                 eclass->addInstanceVariable(Variable(type, 0, 1, false, variableName));
                 break;
@@ -430,7 +430,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 required.disallow();
                 canReturnNothingness.disallow();
 
-                auto methodName = stream_.consumeToken(IDENTIFIER);
+                auto methodName = stream_.consumeToken(TokenType::Identifier);
                 EmojicodeChar name = methodName.value[0];
                 
                 if (staticOnType.set()) {
@@ -464,7 +464,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
             case E_CAT: {
                 staticOnType.disallow();
                 
-                EmojicodeChar name = stream_.consumeToken(IDENTIFIER).value[0];
+                EmojicodeChar name = stream_.consumeToken(TokenType::Identifier).value[0];
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), typed, package_,
                                                            token.position(), override.set(), documentation,
                                                            deprecated.set(), required.set(),
@@ -488,13 +488,13 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
             }
         }
     }
-    stream_.consumeToken(IDENTIFIER);
+    stream_.consumeToken(TokenType::Identifier);
 }
 
 EmojicodeString PackageParser::parseDocumentationToken() {
     EmojicodeString documentation;
-    if (stream_.nextTokenIs(DOCUMENTATION_COMMENT)) {
-        documentation = stream_.consumeToken(DOCUMENTATION_COMMENT).value;
+    if (stream_.nextTokenIs(TokenType::DocumentationComment)) {
+        documentation = stream_.consumeToken(TokenType::DocumentationComment).value;
     }
     return documentation;
 }

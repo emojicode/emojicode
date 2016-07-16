@@ -51,7 +51,7 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
     p->deprecatedWarning(token);
     
     while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
-        stream_.consumeToken(IDENTIFIER);
+        stream_.consumeToken(TokenType::Identifier);
         
         auto type = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
         genericArguments.push_back(type);
@@ -68,8 +68,8 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
     }
     
     bool brackets = false;
-    if (stream_.nextTokenIs(ARGUMENT_BRACKET_OPEN)) {
-        stream_.consumeToken(ARGUMENT_BRACKET_OPEN);
+    if (stream_.nextTokenIs(TokenType::ArgumentBracketOpen)) {
+        stream_.consumeToken(TokenType::ArgumentBracketOpen);
         brackets = true;
     }
     for (auto var : p->arguments) {
@@ -82,7 +82,7 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
         }
     }
     if (brackets) {
-        stream_.consumeToken(ARGUMENT_BRACKET_CLOSE);
+        stream_.consumeToken(TokenType::ArgumentBracketClose);
     }
     
     if (inferGenericArguments) {
@@ -147,7 +147,7 @@ void StaticFunctionAnalyzer::flowControlBlock(bool block) {
     
     flowControlDepth++;
     
-    auto &token = stream_.consumeToken(IDENTIFIER);
+    auto &token = stream_.consumeToken(TokenType::Identifier);
     if (token.value[0] != E_GRAPES) {
         ecCharToCharStack(token.value[0], s);
         throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
@@ -187,10 +187,10 @@ void StaticFunctionAnalyzer::flowControlReturnEnd(FlowControlReturn &fcr) {
 
 void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
     if (stream_.nextTokenIs(E_SOFT_ICE_CREAM)) {
-        stream_.consumeToken(IDENTIFIER);
+        stream_.consumeToken(TokenType::Identifier);
         writer.writeCoin(0x3E, token);
         
-        auto &varName = stream_.consumeToken(VARIABLE);
+        auto &varName = stream_.consumeToken(TokenType::Variable);
         if (scoper.currentScope().hasLocalVariable(varName.value)) {
             throw CompilerErrorException(token, "Cannot redeclare variable.");
         }
@@ -208,24 +208,24 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
         scoper.currentScope().setLocalVariable(varName.value, Variable(t, id, 1, true, varName));
     }
     else {
-        parse(stream_.consumeToken(NO_TYPE), token, typeBoolean);
+        parse(stream_.consumeToken(TokenType::NoType), token, typeBoolean);
     }
 }
 
 Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
     switch (token.type()) {
-        case STRING: {
+        case TokenType::String: {
             writer.writeCoin(0x10, token);
             writer.writeCoin(StringPool::theStringPool().poolString(token.value), token);
             return Type(CL_STRING);
         }
-        case BOOLEAN_TRUE:
+        case TokenType::BooleanTrue:
             writer.writeCoin(0x11, token);
             return typeBoolean;
-        case BOOLEAN_FALSE:
+        case TokenType::BooleanFalse:
             writer.writeCoin(0x12, token);
             return typeBoolean;
-        case INTEGER: {
+        case TokenType::Integer: {
             /* We know token->value only contains ints less than 255 */
             const char *string = token.value.utf8CString();
             
@@ -253,7 +253,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
                 return typeInteger;
             }
         }
-        case DOUBLE: {
+        case TokenType::Double: {
             writer.writeCoin(0x15, token);
             
             const char *string = token.value.utf8CString();
@@ -263,11 +263,11 @@ Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
             writer.writeDoubleCoin(d, token);
             return typeFloat;
         }
-        case SYMBOL:
+        case TokenType::Symbol:
             writer.writeCoin(0x16, token);
             writer.writeCoin(token.value[0], token);
             return typeSymbol;
-        case VARIABLE: {
+        case TokenType::Variable: {
             auto var = scoper.getVariable(token.value, token.position());
             
             var.first.uninitalizedError(token);
@@ -277,16 +277,16 @@ Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
             
             return var.first.type;
         }
-        case IDENTIFIER:
+        case TokenType::Identifier:
             return parseIdentifier(token, expectation);
-        case DOCUMENTATION_COMMENT:
+        case TokenType::DocumentationComment:
             throw CompilerErrorException(token, "Misplaced documentation comment.");
-        case ARGUMENT_BRACKET_OPEN:
+        case TokenType::ArgumentBracketOpen:
             throw CompilerErrorException(token, "Unexpected 〖");
-        case ARGUMENT_BRACKET_CLOSE:
+        case TokenType::ArgumentBracketClose:
             throw CompilerErrorException(token, "Unexpected 〗");
-        case NO_TYPE:
-        case COMMENT:
+        case TokenType::NoType:
+        case TokenType::Comment:
             break;
     }
     throw CompilerErrorException(token, "Cannot determine expression’s return type.");
@@ -300,7 +300,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
 
     switch (token.value[0]) {
         case E_SHORTCAKE: {
-            auto &varName = stream_.consumeToken(VARIABLE);
+            auto &varName = stream_.consumeToken(TokenType::Variable);
             
             if (scoper.currentScope().hasLocalVariable(varName.value)) {
                 throw CompilerErrorException(token, "Cannot redeclare variable.");
@@ -319,7 +319,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             return typeNothingness;
         }
         case E_CUSTARD: {
-            auto &varName = stream_.consumeToken(VARIABLE);
+            auto &varName = stream_.consumeToken(TokenType::Variable);
             
             Type type = typeNothingness;
             try {
@@ -352,7 +352,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             return typeNothingness;
         }
         case E_SOFT_ICE_CREAM: {
-            auto &varName = stream_.consumeToken(VARIABLE);
+            auto &varName = stream_.consumeToken(TokenType::Variable);
             
             if (scoper.currentScope().hasLocalVariable(varName.value)) {
                 throw CompilerErrorException(token, "Cannot redeclare variable.");
@@ -369,7 +369,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         }
         case E_COOKING:
         case E_CHOCOLATE_BAR: {
-            auto &varName = stream_.consumeToken(VARIABLE);
+            auto &varName = stream_.consumeToken(TokenType::Variable);
             
             auto var = scoper.getVariable(varName.value, varName.position());
             
@@ -402,7 +402,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 parse(stream_.consumeToken(), token, Type(CL_STRING));
                 stringCount++;
             }
-            stream_.consumeToken(IDENTIFIER);
+            stream_.consumeToken(TokenType::Identifier);
             
             if (stringCount == 0) {
                 throw CompilerErrorException(token, "An empty 🍪 is invalid.");
@@ -422,7 +422,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                     parse(stream_.consumeToken(), token, listType);
                 }
-                stream_.consumeToken(IDENTIFIER);
+                stream_.consumeToken(TokenType::Identifier);
                 type.genericArguments[0] = listType;
             }
             else {
@@ -430,7 +430,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                     ct.addType(parse(stream_.consumeToken()), typeContext);
                 }
-                stream_.consumeToken(IDENTIFIER);
+                stream_.consumeToken(TokenType::Identifier);
                 type.genericArguments[0] = ct.getCommonType(token);
             }
             
@@ -457,7 +457,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                     parse(stream_.consumeToken(), token, Type(CL_STRING));
                     ct.addType(parse(stream_.consumeToken()), typeContext);
                 }
-                stream_.consumeToken(IDENTIFIER);
+                stream_.consumeToken(TokenType::Identifier);
                 type.genericArguments[0] = ct.getCommonType(token);
             }
             
@@ -527,7 +527,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
             auto placeholder = writer.writeCoinPlaceholder(token);
             
-            auto &variableToken = stream_.consumeToken(VARIABLE);
+            auto &variableToken = stream_.consumeToken(TokenType::Variable);
             
             scoper.pushScope();
             
@@ -632,7 +632,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             writer.writeCoin(0xF, token);
             writer.writeCoin(eclass->superclass->index, token);
             
-            auto &initializerToken = stream_.consumeToken(IDENTIFIER);
+            auto &initializerToken = stream_.consumeToken(TokenType::Identifier);
             
             auto initializer = eclass->superclass->getInitializer(initializerToken, Type(eclass), typeContext);
             
@@ -885,7 +885,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto pair = parseTypeAsValue(typeContext, token, expectation);
             auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
             
-            auto &initializerName = stream_.consumeToken(IDENTIFIER);
+            auto &initializerName = stream_.consumeToken(TokenType::Identifier);
             
             if (type.optional()) {
                 throw CompilerErrorException(token, "Optionals cannot be instantiated.");
@@ -950,7 +950,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             }
         }
         case E_DOUGHNUT: {
-            auto &methodToken = stream_.consumeToken(IDENTIFIER);
+            auto &methodToken = stream_.consumeToken(TokenType::Identifier);
             
             auto placeholder = writer.writeCoinPlaceholder(token);
             auto pair = parseTypeAsValue(typeContext, token);

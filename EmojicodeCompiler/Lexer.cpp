@@ -69,22 +69,22 @@ TokenStream lex(const char *path) {
         
         if (!nextToken) {
             switch (token->type()) {
-                case COMMENT:
+                case TokenType::Comment:
                     if (!oneLineComment) {
                         detectWhitespace(c, &sourcePosition.character, &sourcePosition.line);
                         if (c == E_OLDER_WOMAN) {
                             /* End of the comment, reset the token for future use */
-                            token->type_ = NO_TYPE;
+                            token->type_ = TokenType::NoType;
                         }
                     }
                     else {
                         detectWhitespace(c, &sourcePosition.character, &sourcePosition.line);
                         if (isNewline()) {
-                            token->type_ = NO_TYPE;
+                            token->type_ = TokenType::NoType;
                         }
                     }
                     continue;
-                case DOCUMENTATION_COMMENT:
+                case TokenType::DocumentationComment:
                     detectWhitespace(c, &sourcePosition.character, &sourcePosition.line);
                     if (c == E_TACO) {
                         nextToken = true;
@@ -93,7 +93,7 @@ TokenStream lex(const char *path) {
                         token->value.push_back(c);
                     }
                     continue;
-                case STRING:
+                case TokenType::String:
                     if (escapeSequence) {
                         switch (c) {
                             case E_INPUT_SYMBOL_LATIN_LETTERS:
@@ -132,7 +132,7 @@ TokenStream lex(const char *path) {
                         token->value.push_back(c);
                     }
                     continue;
-                case VARIABLE:
+                case TokenType::Variable:
                     if (detectWhitespace(c, &sourcePosition.character, &sourcePosition.line)) {
                         /* End of variable */
                         nextToken = true;
@@ -147,14 +147,14 @@ TokenStream lex(const char *path) {
                         continue;
                     }
                     break;
-                case INTEGER:
+                case TokenType::Integer:
                     if ((47 < c && c < 58) || (((64 < c && c < 71) || (96 < c && c < 103)) && isHex)) {
                         token->value.push_back(c);
                         continue;
                     }
                     else if (c == 46) {
                         /* A period. Seems to be a float */
-                        token->type_ = DOUBLE;
+                        token->type_ = TokenType::Double;
                         token->value.push_back(c);
                         continue;
                     }
@@ -172,7 +172,7 @@ TokenStream lex(const char *path) {
                         nextToken = true;
                     }
                     break;
-                case DOUBLE:
+                case TokenType::Double:
                     // Note: 46 is not required, we are just lexing the floating numbers
                     if ((47 < c && c < 58)) {
                         token->value.push_back(c);
@@ -184,7 +184,7 @@ TokenStream lex(const char *path) {
                         nextToken = true;
                     }
                     break;
-                case SYMBOL:
+                case TokenType::Symbol:
                     token->value.push_back(c);
                     nextToken = true;
                     continue;
@@ -202,58 +202,58 @@ TokenStream lex(const char *path) {
         }
         
         if (c == E_INPUT_SYMBOL_LATIN_LETTERS) {
-            token->type_ = STRING;
+            token->type_ = TokenType::String;
         }
         else if (c == E_OLDER_WOMAN || c == E_OLDER_MAN) {
-            token->type_ = COMMENT;
+            token->type_ = TokenType::Comment;
             oneLineComment = (c == E_OLDER_MAN);
         }
         else if (c == E_TACO) {
-            token->type_ = DOCUMENTATION_COMMENT;
+            token->type_ = TokenType::DocumentationComment;
         }
         else if ((47 < c && c < 58) || c == 45 || c == 43) {
-            token->type_ = INTEGER;
+            token->type_ = TokenType::Integer;
             token->value.push_back(c);
             
             isHex = false;
         }
         else if (c == E_THUMBS_UP_SIGN || c == E_THUMBS_DOWN_SIGN) {
-            token->type_ = (c == E_THUMBS_UP_SIGN) ? BOOLEAN_TRUE : BOOLEAN_FALSE;
+            token->type_ = (c == E_THUMBS_UP_SIGN) ? TokenType::BooleanTrue : TokenType::BooleanFalse;
             nextToken = 1;
         }
         else if (c == E_KEYCAP_10) {
-            token->type_ = SYMBOL;
+            token->type_ = TokenType::Symbol;
         }
         else if (c == 0x3016) {  // 〖
-            token->type_ = ARGUMENT_BRACKET_OPEN;
+            token->type_ = TokenType::ArgumentBracketOpen;
             nextToken = true;
         }
         else if (c == 0x3017) {  // 〗
-            token->type_ = ARGUMENT_BRACKET_CLOSE;
+            token->type_ = TokenType::ArgumentBracketClose;
             nextToken = true;
         }
         else if (isIdentifier()) {
-            token->type_ = IDENTIFIER;
+            token->type_ = TokenType::Identifier;
             token->value.push_back(c);
             nextToken = true;
         }
         else {
-            token->type_ = VARIABLE;
+            token->type_ = TokenType::Variable;
             token->value.push_back(c);
         }
     }
     delete [] stringBuffer;
     
-    if (!nextToken && token->type() == STRING) {
+    if (!nextToken && token->type() == TokenType::String) {
         throw CompilerErrorException(token->position(), "Expected 🔤 but found end of file instead.");
     }
-    if (!nextToken && token->type() == COMMENT && !oneLineComment) {
+    if (!nextToken && token->type() == TokenType::Comment && !oneLineComment) {
         throw CompilerErrorException(token->position(), "Expected 👵 but found end of file instead.");
     }
-    if (token->type() == INTEGER) {
+    if (token->type() == TokenType::Integer) {
         token->validateInteger(isHex);
     }
-    else if (token->type() == DOUBLE) {
+    else if (token->type() == TokenType::Double) {
         token->validateDouble();
     }
 
