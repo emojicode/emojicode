@@ -34,9 +34,10 @@
 🌮
 🌍 🕊 🚂 🍇
   🌮
-    Returns a cryptographically secure random number within the given range.
+    Returns a cryptographically secure random number that is greater than
+    or equal to *min* and less than or equal to *max*.
   🌮
-  🐈 🎰 max 🚂 min 🚂 📻
+  🐈 🎰 min 🚂 max 🚂 📻
 
   🌮 Whether this value and *other* are considered equal. 🌮
   🐖 😛 other 🐕 ➡️ 👌 🍇
