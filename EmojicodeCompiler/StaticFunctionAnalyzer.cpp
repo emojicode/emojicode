@@ -852,7 +852,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                 throw CompilerErrorException(token, "Given value is not callable.");
             }
             
-            for (int i = 1; i <= type.arguments; i++) {
+            for (int i = 1; i < type.genericArguments.size(); i++) {
                 parse(stream_.consumeToken(), token, type.genericArguments[i]);
             }
             

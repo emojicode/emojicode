@@ -93,11 +93,9 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         if (dynamicType) *dynamicType = TypeDynamism::None;
 
         Type t(TypeContent::Callable, optional);
-        t.arguments = 0;
         t.genericArguments.push_back(typeNothingness);
         
         while (stream_.nextTokenIsEverythingBut(E_WATERMELON) && stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW)) {
-            t.arguments++;
             t.genericArguments.push_back(parseTypeDeclarative(ct, dynamism));
         }
         

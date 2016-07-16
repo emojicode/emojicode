@@ -142,7 +142,7 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
         }
     }
     else if (t.type() == TypeContent::Callable) {
-        for (int i = 0; i < t.arguments + 1; i++) {
+        for (int i = 0; i < t.genericArguments.size(); i++) {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
         }
     }
@@ -231,8 +231,9 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
     else if (this->type() == TypeContent::Callable && to.type() == TypeContent::Callable) {
-        if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct, ctargs) && to.arguments == this->arguments) {
-            for (int i = 1; i <= to.arguments; i++) {
+        if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct, ctargs)
+            && to.genericArguments.size() == this->genericArguments.size()) {
+            for (int i = 1; i < to.genericArguments.size(); i++) {
                 if (!to.genericArguments[i].compatibleTo(this->genericArguments[i], ct, ctargs)) {
                     return false;
                 }
@@ -261,7 +262,8 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
                 return typeDefinitionFunctional() == to.typeDefinitionFunctional()
                         && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Callable:
-                return to.arguments == this->arguments && identicalGenericArguments(to, tc, ctargs);
+                return to.genericArguments.size() == this->genericArguments.size()
+                        && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Enum:
                 return eenum() == to.eenum();
             case TypeContent::Reference:
@@ -337,7 +339,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
         case TypeContent::Callable:
             stringAppendEc(E_GRAPES, string);
             
-            for (int i = 1; i <= type.arguments; i++) {
+            for (int i = 1; i < type.genericArguments.size(); i++) {
                 typeName(type.genericArguments[i], typeContext, includePackageAndOptional, string);
             }
             

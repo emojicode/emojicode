@@ -85,12 +85,9 @@ public:
     ValueType* valueType() const;
     TypeDefinition* typeDefinition() const;
     
-    union {
-        struct {
-            uint16_t reference;
-            TypeDefinitionFunctional *resolutionConstraint;
-        };
-        uint32_t arguments;
+    struct {
+        uint16_t reference;
+        TypeDefinitionFunctional *resolutionConstraint;
     };
 
     std::vector<Type> genericArguments;
