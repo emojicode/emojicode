@@ -206,6 +206,7 @@ void dictionaryPutVal(Object *dicto, Object *key, Something value, Thread *threa
                 if (p->next == NULL) {
                     p->next = dictionaryNewNode(&dicto, hash, key, value, NULL, thread);
                     dict = dicto->value;
+                    eo = NULL;
                     break;
                 }
                 eo = p->next;
