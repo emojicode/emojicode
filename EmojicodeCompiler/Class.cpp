@@ -19,9 +19,10 @@
 
 std::list<Class *> Class::classes_;
 
-Class::Class(EmojicodeChar name, Package *pkg, SourcePosition p, const EmojicodeString &documentation)
+Class::Class(EmojicodeChar name, Package *pkg, SourcePosition p, const EmojicodeString &documentation, bool final)
     : TypeDefinitionFunctional(name, pkg, p, documentation) {
     index = classes_.size();
+    final_ = final;
     classes_.push_back(this);
 }
 
@@ -32,8 +33,8 @@ bool Class::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) {
     return false;
 }
 
-bool Class::inheritsFrom(Class *from) {
-    for (Class *a = this; a != nullptr; a = a->superclass) {
+bool Class::inheritsFrom(Class *from) const {
+    for (const Class *a = this; a != nullptr; a = a->superclass) {
         if (a == from) {
             return true;
         }

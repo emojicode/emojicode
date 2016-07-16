@@ -20,10 +20,12 @@ void PackageParser::parse() {
         auto documentation = parseDocumentationToken();
         
         auto exported = Attribute<E_EARTH_GLOBE_EUROPE_AFRICA>().parse(&stream_);
+        auto final = Attribute<E_LOCK_WITH_INK_PEN>().parse(&stream_);
         auto theToken = stream_.consumeToken(TokenType::Identifier);
         switch (theToken.value[0]) {
             case E_PACKAGE: {
                 exported.disallow();
+                final.disallow();
                 
                 auto nameToken = stream_.consumeToken(TokenType::Variable);
                 auto namespaceToken = stream_.consumeToken(TokenType::Identifier);
@@ -34,12 +36,15 @@ void PackageParser::parse() {
                 continue;
             }
             case E_CROCODILE:
+                final.disallow();
                 parseProtocol(documentation, theToken, exported.set());
                 continue;
             case E_TURKEY:
+                final.disallow();
                 parseEnum(documentation, theToken, exported.set());
                 continue;
             case E_RADIO:
+                final.disallow();
                 exported.disallow();
                 package_->setRequiresBinary();
                 if (strcmp(package_->name(), "_") == 0) {
@@ -47,6 +52,7 @@ void PackageParser::parse() {
                 }
                 continue;
             case E_CRYSTAL_BALL: {
+                final.disallow();
                 exported.disallow();
                 if (package_->validVersion()) {
                     throw CompilerErrorException(theToken, "Package version already declared.");
@@ -69,6 +75,7 @@ void PackageParser::parse() {
                 continue;
             }
             case E_WALE: {
+                final.disallow();
                 exported.disallow();
                 EmojicodeChar className, enamespace;
                 bool optional;
@@ -93,12 +100,14 @@ void PackageParser::parse() {
                 continue;
             }
             case E_RABBIT:
-                parseClass(documentation, theToken, exported.set());
+                parseClass(documentation, theToken, exported.set(), final.set());
                 continue;
             case E_DOVE_OF_PEACE:
+                final.disallow();
                 parseValueType(documentation, theToken, exported.set());
                 continue;
             case E_SCROLL: {
+                final.disallow();
                 exported.disallow();
                 auto pathString = stream_.consumeToken(TokenType::String);
                 auto relativePath = pathString.position().file;
@@ -119,6 +128,7 @@ void PackageParser::parse() {
                 continue;
             }
             case E_CHEQUERED_FLAG: {
+                final.disallow();
                 if (Function::foundStart) {
                     throw CompilerErrorException(theToken, "Duplicate 🏁.");
                 }
@@ -291,11 +301,11 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
     stream_.consumeToken(TokenType::Identifier);
 }
 
-void PackageParser::parseClass(const EmojicodeString &documentation, const Token &theToken, bool exported) {
+void PackageParser::parseClass(const EmojicodeString &documentation, const Token &theToken, bool exported, bool final) {
     EmojicodeChar name, enamespace;
     parseAndValidateNewTypeName(&name, &enamespace);
     
-    auto eclass = new Class(name, package_, theToken, documentation);
+    auto eclass = new Class(name, package_, theToken, documentation, final);
     
     parseGenericArgumentList(eclass, Type(eclass));
     
@@ -320,6 +330,12 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         eclass->setSuperTypeDef(eclass->superclass);
         parseGenericArgumentsForType(&type, Type(eclass), TypeDynamism::GenericTypeVariables, token);
         eclass->setSuperGenericArguments(type.genericArguments);
+        
+        if (eclass->superclass->final()) {
+            auto string = type.toString(Type(eclass), true);
+            throw CompilerErrorException(token, "%s can’t be used as superclass as it was marked with 🔏.",
+                                         string.c_str());
+        }
     }
     else {
         eclass->superclass = nullptr;

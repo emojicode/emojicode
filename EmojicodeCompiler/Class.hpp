@@ -25,7 +25,7 @@ class Class : public TypeDefinitionFunctional {
 public:
     static const std::list<Class *>& classes() { return classes_; }
     
-    Class(EmojicodeChar name, Package *pkg, SourcePosition position, const EmojicodeString &documentation);
+    Class(EmojicodeChar name, Package *pkg, SourcePosition position, const EmojicodeString &documentation, bool final);
     
     /** Whether this class eligible for initializer inheritance. */
     bool inheritsContructors = false;
@@ -47,7 +47,9 @@ public:
     uint16_t nextInitializerVti;
 
     /** Returns true if @c a inherits from class @c from */
-    bool inheritsFrom(Class *from);
+    bool inheritsFrom(Class *from) const;
+    
+    bool final() const { return final_; }
     
     /** Declares that this class agrees to the given protocol. */
     bool addProtocol(Type type);
@@ -66,6 +68,8 @@ private:
     std::list<Type> protocols_;
     std::set<EmojicodeChar> requiredInitializers_;
     std::vector<Variable> instanceVariables_;
+    
+    bool final_;
     
     virtual void handleRequiredInitializer(Initializer *init);
 };

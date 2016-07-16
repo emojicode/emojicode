@@ -33,7 +33,7 @@ private:
     void parseGenericArgumentList(TypeDefinitionFunctional *typeDef, TypeContext tc);
     
     /** Parses a class definition, starting from the first token after 🐇. */
-    void parseClass(const EmojicodeString &string, const Token &theToken, bool exported);
+    void parseClass(const EmojicodeString &string, const Token &theToken, bool exported, bool final);
     /** Parses a enum defintion, starting from the first token after 🦃. */
     void parseEnum(const EmojicodeString &string, const Token &theToken, bool exported);
     /** Parses a protocol defintion, starting from the first token after🐊. */

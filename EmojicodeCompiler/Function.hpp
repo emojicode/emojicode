@@ -74,6 +74,7 @@ public:
               Package *package, SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated)
         : Callable(p),
           name(name),
+          final(final),
           overriding(overriding),
           deprecated(deprecated),
           access(level),
