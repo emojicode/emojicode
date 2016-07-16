@@ -30,9 +30,9 @@ Prerequisites:
 - clang and clang++ 3.4 or newer, or
 - gcc and g++ 4.8 or newer
 - GNU Make
-- SDL2 (libsdl2-dev) to compile the SDL package
-  - `sudo apt-get install libsdl2-dev` on Debian/Ubuntu
-  - `brew install SDL2` on OS X
+- Allegro 5 to compile the allegro package
+  - `sudo apt-get install liballegro5-dev` on Debian/Ubuntu
+  - `brew install allegro` on OS X
 
 Steps:
 

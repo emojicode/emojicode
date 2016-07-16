@@ -1,0 +1,433 @@
+//
+//  allegro.c
+//  Packages
+//
+//  Created by Theo Weidmann on 14.07.2016.
+//  Copyright (c) 2016 Theo Weidmann. All rights reserved.
+//
+
+#include "EmojicodeAPI.h"
+#include "EmojicodeString.h"
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_color.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
+
+static Class *CL_EVENT;
+static Class *CL_EVENT_KEY_CHAR;
+static Class *CL_EVENT_KEY_DOWN;
+static Class *CL_EVENT_KEY_UP;
+static Class *CL_BITMAP;
+
+#define display(c) (*(ALLEGRO_DISPLAY **)(c)->value)
+#define bitmap(c) (*(ALLEGRO_BITMAP **)(c)->value)
+#define font(c) (*(ALLEGRO_FONT **)(c)->value)
+#define color(c) (*(ALLEGRO_COLOR *)(c)->value)
+#define eventQueue(c) (*(ALLEGRO_EVENT_QUEUE **)(c)->value)
+#define event(c) (*(ALLEGRO_EVENT *)(c)->value)
+#define sample(c) (*(ALLEGRO_SAMPLE **)(c)->value)
+
+PackageVersion getVersion() {
+    return (PackageVersion){0, 1};
+}
+
+static Something emojicodeMain;
+static Thread *thread;
+
+static int redundantMain(int argc, char **argv) {
+    al_init();
+    al_install_keyboard();
+    al_install_mouse();
+    al_init_primitives_addon();
+    al_init_image_addon();
+    al_init_font_addon();
+    al_init_ttf_addon();
+    al_install_audio();
+    al_init_acodec_addon();
+    executeCallableExtern(emojicodeMain.object, NULL, thread);
+    return 0;
+}
+
+Something appInit(Thread *e) {
+    emojicodeMain = stackGetVariable(0, e);
+    thread = e;
+    al_run_main(0, NULL, redundantMain);
+    return NOTHINGNESS;
+}
+
+void displayInitWithDimensions(Thread *thread) {
+    int w = (int)stackGetVariable(0, thread).raw;
+    int h = (int)stackGetVariable(1, thread).raw;
+    display(stackGetThisObject(thread)) = al_create_display(w, h);
+}
+
+Something appFlip(Thread *thread) {
+    al_flip_display();
+    return NOTHINGNESS;
+}
+
+Something appDrawLine(Thread *thread) {
+    float x1 = (float)stackGetVariable(0, thread).doubl;
+    float y1 = (float)stackGetVariable(1, thread).doubl;
+    float x2 = (float)stackGetVariable(2, thread).doubl;
+    float y2 = (float)stackGetVariable(3, thread).doubl;
+    float t = (float)stackGetVariable(5, thread).doubl;
+    al_draw_line(x1, y1, x2, y2, color(stackGetVariable(4, thread).object), t);
+    return NOTHINGNESS;
+}
+
+Something appDrawTriangle(Thread *thread) {
+    float x1 = (float)stackGetVariable(0, thread).doubl;
+    float y1 = (float)stackGetVariable(1, thread).doubl;
+    float x2 = (float)stackGetVariable(2, thread).doubl;
+    float y2 = (float)stackGetVariable(3, thread).doubl;
+    float x3 = (float)stackGetVariable(4, thread).doubl;
+    float y3 = (float)stackGetVariable(5, thread).doubl;
+    float t = (float)stackGetVariable(7, thread).doubl;
+    al_draw_triangle(x1, y1, x2, y2, x3, y3, color(stackGetVariable(6, thread).object), t);
+    return NOTHINGNESS;
+}
+
+Something appDrawFilledTriangle(Thread *thread) {
+    float x1 = (float)stackGetVariable(0, thread).doubl;
+    float y1 = (float)stackGetVariable(1, thread).doubl;
+    float x2 = (float)stackGetVariable(2, thread).doubl;
+    float y2 = (float)stackGetVariable(3, thread).doubl;
+    float x3 = (float)stackGetVariable(4, thread).doubl;
+    float y3 = (float)stackGetVariable(5, thread).doubl;
+    al_draw_filled_triangle(x1, y1, x2, y2, x3, y3, color(stackGetVariable(6, thread).object));
+    return NOTHINGNESS;
+}
+
+Something displaySetTitle(Thread *thread) {
+    char *title = stringToChar(stackGetVariable(0, thread).object->value);
+    al_set_window_title(display(stackGetThisObject(thread)), title);
+    free(title);
+    return NOTHINGNESS;
+}
+
+Something appDrawRectangle(Thread *thread) {
+    float x1 = (float)stackGetVariable(0, thread).doubl;
+    float y1 = (float)stackGetVariable(1, thread).doubl;
+    float x2 = (float)stackGetVariable(2, thread).doubl;
+    float y2 = (float)stackGetVariable(3, thread).doubl;
+    float t = (float)stackGetVariable(5, thread).doubl;
+    al_draw_rectangle(x1, y1, x2, y2, color(stackGetVariable(4, thread).object), t);
+    return NOTHINGNESS;
+}
+
+Something appDrawFilledRectangle(Thread *thread) {
+    float x1 = (float)stackGetVariable(0, thread).doubl;
+    float y1 = (float)stackGetVariable(1, thread).doubl;
+    float x2 = (float)stackGetVariable(2, thread).doubl;
+    float y2 = (float)stackGetVariable(3, thread).doubl;
+    al_draw_filled_rectangle(x1, y1, x2, y2, color(stackGetVariable(4, thread).object));
+    return NOTHINGNESS;
+}
+
+Something appClear(Thread *thread) {
+    al_clear_to_color(color(stackGetVariable(0, thread).object));
+    return NOTHINGNESS;
+}
+
+Something appDrawCircle(Thread *thread) {
+    float cx = (float)stackGetVariable(0, thread).doubl;
+    float cy = (float)stackGetVariable(1, thread).doubl;
+    float r = (float)stackGetVariable(2, thread).doubl;
+    float t = (float)stackGetVariable(4, thread).doubl;
+    al_draw_circle(cx, cy, r, color(stackGetVariable(3, thread).object), t);
+    return NOTHINGNESS;
+}
+
+Something appDrawFilledCircle(Thread *thread) {
+    float cx = (float)stackGetVariable(0, thread).doubl;
+    float cy = (float)stackGetVariable(1, thread).doubl;
+    float r = (float)stackGetVariable(2, thread).doubl;
+    al_draw_filled_circle(cx, cy, r, color(stackGetVariable(3, thread).object));
+    return NOTHINGNESS;
+}
+
+Something appDrawRoundedRectangle(Thread *thread) {
+    float x1 = (float)stackGetVariable(0, thread).doubl;
+    float y1 = (float)stackGetVariable(1, thread).doubl;
+    float x2 = (float)stackGetVariable(2, thread).doubl;
+    float y2 = (float)stackGetVariable(3, thread).doubl;
+    float rx = (float)stackGetVariable(4, thread).doubl;
+    float ry = (float)stackGetVariable(5, thread).doubl;
+    float t = (float)stackGetVariable(7, thread).doubl;
+    al_draw_rounded_rectangle(x1, y1, x2, y2, rx, ry, color(stackGetVariable(6, thread).object), t);
+    return NOTHINGNESS;
+}
+
+Something appDrawFilledRoundedRectangle(Thread *thread) {
+    float x1 = (float)stackGetVariable(0, thread).doubl;
+    float y1 = (float)stackGetVariable(1, thread).doubl;
+    float x2 = (float)stackGetVariable(2, thread).doubl;
+    float y2 = (float)stackGetVariable(3, thread).doubl;
+    float rx = (float)stackGetVariable(4, thread).doubl;
+    float ry = (float)stackGetVariable(5, thread).doubl;
+    al_draw_filled_rounded_rectangle(x1, y1, x2, y2, rx, ry, color(stackGetVariable(6, thread).object));
+    return NOTHINGNESS;
+}
+
+Something appDrawBitmap(Thread *thread) {
+    ALLEGRO_BITMAP *bmp = bitmap(stackGetVariable(0, thread).object);
+    float dx = (float)stackGetVariable(1, thread).doubl;
+    float dy = (float)stackGetVariable(2, thread).doubl;
+    al_draw_bitmap(bmp, dx, dy, 0);
+    return NOTHINGNESS;
+}
+
+Something appDrawScaledBitmap(Thread *thread) {
+    ALLEGRO_BITMAP *bmp = bitmap(stackGetVariable(0, thread).object);
+    float sx = (float)stackGetVariable(1, thread).doubl;
+    float sy = (float)stackGetVariable(2, thread).doubl;
+    float sw = (float)stackGetVariable(3, thread).doubl;
+    float sh = (float)stackGetVariable(4, thread).doubl;
+    float dx = (float)stackGetVariable(5, thread).doubl;
+    float dy = (float)stackGetVariable(6, thread).doubl;
+    float dw = (float)stackGetVariable(7, thread).doubl;
+    float dh = (float)stackGetVariable(8, thread).doubl;
+    al_draw_scaled_bitmap(bmp, sx, sy, sw, sh, dx, dy, dw, dh, 0);
+    return NOTHINGNESS;
+}
+
+Something appDrawText(Thread *thread) {
+    ALLEGRO_FONT *font = font(stackGetVariable(0, thread).object);
+    char *text = stringToChar(stackGetVariable(4, thread).object->value);
+    float x = (float)stackGetVariable(2, thread).doubl;
+    float y = (float)stackGetVariable(3, thread).doubl;
+    al_draw_text(font, color(stackGetVariable(1, thread).object), x, y, (int)stackGetVariable(5, thread).raw, text);
+    free(text);
+    return NOTHINGNESS;
+}
+
+void colorInitRGBA(Thread *thread) {
+    int r = (int)stackGetVariable(0, thread).raw;
+    int g = (int)stackGetVariable(1, thread).raw;
+    int b = (int)stackGetVariable(2, thread).raw;
+    int a = (int)stackGetVariable(3, thread).raw;
+    color(stackGetThisObject(thread)) = al_map_rgba(r, g, b, a);
+}
+
+void bitmapInitFile(Thread *thread) {
+    char *path = stringToChar(stackGetVariable(0, thread).object->value);
+    ALLEGRO_BITMAP *bmp = al_load_bitmap(path);
+    if (bmp) {
+        bitmap(stackGetThisObject(thread)) = bmp;
+    }
+    else {
+        stackGetThisObject(thread)->value = NULL;
+    }
+    free(path);
+}
+
+void bitmapInitSize(Thread *thread) {
+    ALLEGRO_BITMAP *bmp = al_create_bitmap((int)stackGetVariable(0, thread).raw, (int)stackGetVariable(1, thread).raw);
+    if (bmp) {
+        bitmap(stackGetThisObject(thread)) = bmp;
+    }
+    else {
+        stackGetThisObject(thread)->value = NULL;
+    }
+}
+
+void fontInitFile(Thread *thread) {
+    char *path = stringToChar(stackGetVariable(0, thread).object->value);
+    ALLEGRO_FONT *font = al_load_ttf_font(path, (int)stackGetVariable(1, thread).raw, 0);
+    if (font) {
+        font(stackGetThisObject(thread)) = font;
+    }
+    else {
+        stackGetThisObject(thread)->value = NULL;
+    }
+    free(path);
+}
+
+void eventQueueInit(Thread *thread) {
+    eventQueue(stackGetThisObject(thread)) = al_create_event_queue();
+}
+
+Something eventQueueWait(Thread *thread) {
+    Object *event = newObject(CL_EVENT);
+    al_wait_for_event(eventQueue(stackGetThisObject(thread)), event->value);
+    switch (event(event).type) {
+        case ALLEGRO_EVENT_KEY_CHAR:
+            event->class = CL_EVENT_KEY_CHAR;
+            break;
+        case ALLEGRO_EVENT_KEY_DOWN:
+            event->class = CL_EVENT_KEY_DOWN;
+            break;
+        case ALLEGRO_EVENT_KEY_UP:
+            event->class = CL_EVENT_KEY_UP;
+            break;
+        default:
+            break;
+    }
+    return somethingObject(event);
+}
+
+Something eventQueueRegisterMouse(Thread *thread) {
+    al_register_event_source(eventQueue(stackGetThisObject(thread)), al_get_mouse_event_source());
+    return NOTHINGNESS;
+}
+
+Something eventQueueRegisterKeyboard(Thread *thread) {
+    al_register_event_source(eventQueue(stackGetThisObject(thread)), al_get_keyboard_event_source());
+    return NOTHINGNESS;
+}
+
+Something keyboardEventKeycode(Thread *thread) {
+    return somethingInteger(event(stackGetThisObject(thread)).keyboard.keycode);
+}
+
+Something keyboardEventSymbol(Thread *thread) {
+    EmojicodeInteger symbol = event(stackGetThisObject(thread)).keyboard.unichar;
+    return symbol < 1 ? NOTHINGNESS : somethingSymbol(symbol);
+}
+
+Something keyboardEventRepeated(Thread *thread) {
+    return somethingBoolean(event(stackGetThisObject(thread)).keyboard.repeat);
+}
+
+void sampleInitFile(Thread *thread) {
+    char *path = stringToChar(stackGetVariable(0, thread).object->value);
+    ALLEGRO_SAMPLE *sample = al_load_sample(path);
+    if (sample) {
+        sample(stackGetThisObject(thread)) = sample;
+    }
+    else {
+        stackGetThisObject(thread)->value = NULL;
+    }
+    free(path);
+}
+
+Something samplePlay(Thread *thread) {
+    ALLEGRO_SAMPLE *sample = sample(stackGetThisObject(thread));
+    float gain = (float)stackGetVariable(0, thread).doubl;
+    float pan = (float)stackGetVariable(1, thread).doubl;
+    float speed = (float)stackGetVariable(2, thread).doubl;
+    al_reserve_samples(1);
+    al_play_sample(sample, gain, pan, speed, ALLEGRO_PLAYMODE_ONCE, NULL);
+    return NOTHINGNESS;
+}
+
+FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol, MethodType t) {
+    switch (symbol) {
+        case 0x1f64b: //🙋
+            return appInit;
+        case 0x1f3a6: //🎦
+            return appFlip;
+        case 0x1f3f7: //🏷
+            return displaySetTitle;
+        case 0x1f58d: //🖍
+            return appDrawLine;
+        case 0x1f4d0: //📐
+            return appDrawTriangle;
+        case 0x1f6a9: //🚩
+            return appDrawFilledTriangle;
+        case 0x1f4cb: //📋
+            return appDrawRectangle;
+        case 0x1f5c4: //🗄
+            return appDrawFilledRectangle;
+        case 0x1f6bf: //🚿
+            return appClear;
+        case 0x26bd: //⚽
+            return appDrawCircle;
+        case 0x1f3c0: //🏀
+            return appDrawFilledCircle;
+        case 0x1f3c9: //🏉
+            return appDrawRoundedRectangle;
+        case 0x1f3c8: //🏈
+            return appDrawFilledRoundedRectangle;
+        case 0x1f4fc: //📼
+            return appDrawBitmap;
+        case 0x1f4bd: //💽
+            return appDrawScaledBitmap;
+        case 0x1f521: //🔡
+            return appDrawText;
+        case 0x23f3: //⏳
+            return eventQueueWait;
+        case 0x1f5b1: //🖱
+            return eventQueueRegisterMouse;
+        case 0x2328: //⌨
+            return eventQueueRegisterKeyboard;
+        case 0x1f4df: //📟
+            return keyboardEventKeycode;
+        case 0x1f523: //🔣
+            return keyboardEventSymbol;
+        case 0x1f503: //🔃
+            return keyboardEventRepeated;
+        case 0x1f3c1: //🏁
+            return samplePlay;
+    }
+    return NULL;
+}
+
+InitializerFunctionFunctionPointer handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol) {
+    switch (cl) {
+        case 0x1f4fa: //📺
+            return displayInitWithDimensions;
+        case 0x1f3a8: //🎨
+            return colorInitRGBA;
+        case 0x1f5bc: //🖼
+            switch (symbol) {
+                case 0x1f4c4: //📄
+                    return bitmapInitFile;
+                case 0x1f195: //🆕
+                    return bitmapInitSize;
+            }
+        case 0x1f549: //🕉
+            return fontInitFile;
+        case 0x1f5c3: //🗃
+            return eventQueueInit;
+        case 0x1f3b6: //🎶
+            return sampleInitFile;
+    }
+    return NULL;
+}
+
+Marker markerPointerForClass(EmojicodeChar cl) {
+    return NULL;
+}
+
+uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
+    switch (name) {
+        case 0x1f4fa: //📺
+            return sizeof(ALLEGRO_DISPLAY*);
+        case 0x1f3a8: //🎨
+            return sizeof(ALLEGRO_COLOR);
+        case 0x1f5bc: //🖼
+            CL_BITMAP = cl;
+            return sizeof(ALLEGRO_BITMAP*);
+        case 0x1f549: //🕉
+            return sizeof(ALLEGRO_FONT*);
+        case 0x1f5c3: //🗃
+            return sizeof(ALLEGRO_EVENT_QUEUE*);
+        case 0x1f389: //🎉
+            CL_EVENT = cl;
+            return sizeof(ALLEGRO_EVENT);
+        case 0x1f4e9: //📩
+            CL_EVENT_KEY_CHAR = cl;
+            break;
+        case 0x1f4e4: //📤
+            CL_EVENT_KEY_UP = cl;
+            break;
+        case 0x1f4e5: //📥
+            CL_EVENT_KEY_DOWN = cl;
+            break;
+        case 0x1f3b6: //🎶
+            return sizeof(ALLEGRO_SAMPLE*);
+    }
+    return 0;
+}
+
+Deinitializer deinitializerPointerForClass(EmojicodeChar cl) {
+    switch (cl) {
+
+    }
+    return NULL;
+}

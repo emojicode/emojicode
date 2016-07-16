@@ -1,0 +1,190 @@
+🔮 0 1
+📻
+
+🌮
+  🎨 represents a color.
+🌮
+🌍 🐇 🎨 🍇
+  🌮 Creates a color from the given RGBA. 🌮
+  🐈 🆕 r 🚂 g 🚂 b 🚂 a 🚂 📻
+🍉
+
+🌮 🖼 represents a bitmap. 🌮
+🌍 🐇 🖼 🍇
+  🌮 Creates a bitmap from the image at the given path. 🌮
+  🍬🐈 📄 path 🔡 📻
+  🌮 Creates a bitmap with the given height and width. 🌮
+  🍬🐈 🆕 width 🚂 height 🚂 📻
+🍉
+
+🌮 🕉 represents a font. 🌮
+🌍 🐇 🕉 🍇
+  🌮 Loads a TrueType font from the given path and with the given size. 🌮
+  🍬🐈 📄 path 🔡 size 🚂 📻
+🍉
+
+🌮 ⚖ provides values to align text 🌮
+🌍 🦃 ⚖ 🍇
+  🌮 Aligns text to the left. 🌮
+  ⬅️
+  🌮 Centers the text. 🌮
+  ↔️
+  🌮 Aligns text to the right. 🌮
+  ➡️
+🍉
+
+🌮 🎉 represents an event. You’ll always receive subclasses of this class. 🌮
+🌍 🐇 🎉 🍇🍉
+
+🌮 📩 is an event that occurs when a character was typed on the keyboard. 🌮
+🌍 🐇 📩 🎉 🍇
+  🌮 Returns the keycode associated with this event. 🌮
+  🐖 📟 ➡️ 🚂 📻
+  🌮
+    Returns the symbol that was typed. This may be ✨ if the pressed key cannot
+    be represented as a symbol, e.g. if an arrow key was pressed.
+  🌮
+  🐖 🔣 ➡️ 🍬🔣 📻
+  🌮 Whether the character was repeated. 🌮
+  🐖 🔃 ➡️ 👌 📻
+🍉
+
+🌮 📥 is an event that occurs when a keyboard key was pressed. 🌮
+🌍 🐇 📥 🎉 🍇
+  🌮 Returns the keycode associated with this event. 🌮
+  🐖 📟 ➡️ 🚂 📻
+🍉
+
+🌮 📤 is an event that occurs when a keyboard key was released. 🌮
+🌍 🐇 📤 🎉 🍇
+  🌮 Returns the keycode associated with this event. 🌮
+  🐖 📟 ➡️ 🚂 📻
+🍉
+
+🌮 🗃 represents an event queue. 🌮
+🌍 🐇 🗃 🍇
+  🌮 Creates a new event queue. 🌮
+  🐈 🆕 📻
+  🌮 Waits for an event and returns it. 🌮
+  🐖 ⏳ ➡️ 🎉 📻
+  🌮 Registers the mouse as an event source. 🌮
+  🐖 🖱 📻
+  🌮 Registers the keyboard as an event source. 🌮
+  🐖 ⌨️ 📻
+🍉
+
+🌮 🎶 represents an audio sample. 🌮
+🌍 🐇 🎶 🍇
+  🌮
+    Loads the sample from the file at the given path. Depending on what
+    libraries are available, the full set of recognised extensions is: .wav,
+    .flac, .ogg, .it, .mod, .s3m, .xm.
+  🌮
+  🍬🐈 📄 path 🔡 📻
+  🌮 Starts playing the sample. 🌮
+  🐖 🏁 volume 🚀 pan 🚀 speed 🚀 📻
+🍉
+
+🌮
+  🏔 represents the application.
+🌮
+🌍 🐇 🏔 🍇
+  🌮
+    You must call this method before using any of the other methods as it
+    initializes the system.
+  🌮
+  🐇🐖 🙋 main 🍇🍉 📻
+
+  🌮
+    *Flips* the drawing target display. Copies or updates the front and back
+    buffers so that what has been drawn previously on the drawing target display
+    becomes visible on screen.
+  🌮
+  🐇🐖 🎦 📻
+
+  🌮
+    Fills the entire drawing target with the given color.
+  🌮
+  🐇🐖 🚿 color 🎨 📻
+
+  🌮
+    Draws a line between the two points ((*x1*|*y1*) and (*x2*|*y2*)).
+  🌮
+  🐇🐖 🖍 x1 🚀 y1 🚀 x2 🚀 y2 🚀 color 🎨 thickness 🚀 📻
+
+  🌮
+    Draws an outlined triangle between the given three points ((*x1*|*y1*),
+    (*x2*|*y2*) and (*x3*|*y3*)).
+  🌮
+  🐇🐖 📐 x1 🚀 y1 🚀 x2 🚀 y2 🚀 x3 🚀 y3 🚀 color 🎨 thickness 🚀 📻
+
+  🌮
+    Draws a filled triangle between the given three points ((*x1*|*y1*),
+    (*x2*|*y2*) and (*x3*|*y3*)).
+  🌮
+  🐇🐖 🚩 x1 🚀 y1 🚀 x2 🚀 y2 🚀 x3 🚀 y3 🚀 color 🎨 📻
+
+  🌮
+    Draws an outlined rectangle between the two points ((*x1*|*y1*) and
+    (*x2*|*y2*)) which are the upper left and lower right point of the rectangle
+    respectively.
+  🌮
+  🐇🐖 📋 x1 🚀 y1 🚀 x2 🚀 y2 🚀 color 🎨 thickness 🚀 📻
+
+  🌮
+    Draws a filled rectangle between the two points ((*x1*|*y1*) and
+    (*x2*|*y2*)) which are the upper left and lower right point of the rectangle
+    respectively.
+  🌮
+  🐇🐖 🗄 x1 🚀 y1 🚀 x2 🚀 y2 🚀 color 🎨 📻
+
+  🌮
+    Draws an outlined circle. The center of the circle is the given point
+    ((*x1*|*y1*) and the radius is *r*.
+  🌮
+  🐇🐖 ⚽️ x1 🚀 y1 🚀 r 🚀 color 🎨 thickness 🚀 📻
+
+  🌮
+    Draws a filled circle. The center of the circle is the given point
+    ((*x1*|*y1*) and the radius is *r*.
+  🌮
+  🐇🐖 🏀 x1 🚀 y1 🚀 r 🚀 color 🎨 📻
+
+  🌮
+    Draws an outlined rectangle with rounded corners between the two points
+    ((*x1*|*y1*) and (*x2*|*y2*)) which are the upper left and lower right point
+    of the rectangle respectively.
+  🌮
+  🐇🐖 🏉 x1 🚀 y1 🚀 x2 🚀 y2 🚀 rx 🚀 ry 🚀 color 🎨 thickness 🚀 📻
+
+  🌮
+    Draws a filled rectangle with rounded corners between the two points
+    ((*x1*|*y1*) and (*x2*|*y2*)) which are the upper left and lower right point
+    of the rectangle respectively.
+  🌮
+  🐇🐖 🏈 x1 🚀 y1 🚀 x2 🚀 y2 🚀 rx 🚀 ry 🚀 color 🎨 📻
+
+  🌮
+    Draws the given bitmap at the given location.
+  🌮
+  🐇🐖 📼 bitmap 🖼 dx 🚀 dy 🚀 📻
+
+  🌮
+    Draws a scaled and cropped version of the given bitmap at the given
+    location.
+  🌮
+  🐇🐖 💽 bitmap 🖼 sx 🚀 sy 🚀 sw 🚀 sh 🚀 dx 🚀 dy 🚀 dw 🚀 dh 🚀 📻
+
+  🌮
+    Draws the given text at the given position in the given font and color.
+  🌮
+  🐇🐖 🔡 font 🕉 color 🎨 x 🚀 y 🚀 text 🔡 align ⚖ 📻
+🍉
+
+🌮 📺 represents a display. 🌮
+🌍 🐇 📺 🍇
+  🌮 Creates a display with the given width and height. 🌮
+  🍬🐈 🆕 width 🚂 height 🚂 📻
+  🌮 Sets the the title of the window. 🌮
+  🐖 🏷 title 🔡 📻
+🍉

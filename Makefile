@@ -19,14 +19,14 @@ ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.c)
 ENGINE_OBJECTS = $(ENGINE_SOURCES:%.c=%.o)
 ENGINE_BINARY = emojicode
 
-PACKAGE_CFLAGS = -O3 -iquote . -std=c11 -Wno-unused-result -fPIC
+PACKAGE_CFLAGS = -Ofast -iquote . -std=c11 -Wno-unused-result -fPIC
 PACKAGE_LDFLAGS = -shared -fPIC
 ifeq ($(shell uname), Darwin)
 PACKAGE_LDFLAGS += -undefined dynamic_lookup
 endif
 
 PACKAGES_DIR=DefaultPackages
-PACKAGES=files SDL sockets
+PACKAGES=files allegro sockets
 
 DIST_NAME=Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
 DIST_BUILDS=builds
@@ -55,8 +55,8 @@ $(ENGINE_OBJECTS): %.o: %.c
 
 define package
 PKG_$(1)_LDFLAGS = $$(PACKAGE_LDFLAGS)
-ifeq ($(1), SDL)
-PKG_$(1)_LDFLAGS += -lSDL2
+ifeq ($(1), allegro)
+PKG_$(1)_LDFLAGS += -lallegro_color -lallegro_primitives -lallegro -lallegro_image -lallegro_ttf -lallegro_audio -lallegro_acodec
 endif
 PKG_$(1)_SOURCES = $$(wildcard $$(PACKAGES_DIR)/$(1)/*.c)
 PKG_$(1)_OBJECTS = $$(PKG_$(1)_SOURCES:%.c=%.o)

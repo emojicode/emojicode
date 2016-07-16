@@ -7,24 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E47937071C36A3E000536258 /* SDL.c in Sources */ = {isa = PBXBuildFile; fileRef = E47937061C36A3E000536258 /* SDL.c */; };
-		E47937091C36DDC200536258 /* KeycodeToChar.c in Sources */ = {isa = PBXBuildFile; fileRef = E47937081C36DDC200536258 /* KeycodeToChar.c */; };
+		E4A797E21D37DFBE0048DA41 /* allegro.c in Sources */ = {isa = PBXBuildFile; fileRef = E4A797E01D37DCC20048DA41 /* allegro.c */; };
 		E4CF872B1D2D3512006B3B0F /* EmojicodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */; };
 		E4CF872C1D2D3512006B3B0F /* EmojicodeString.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */; };
 		E4CF87341D2D38E0006B3B0F /* sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = E4CF87311D2D356F006B3B0F /* sockets.c */; };
-		E4DA686A1AE6C367003158CA /* EmojicodeDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */; };
 		E4E10B8B1ACA994B0072B4C8 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E10B7F1ACA989B0072B4C8 /* files.c */; };
 		E4E10B8E1ACAAE240072B4C8 /* EmojicodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */; };
 		E4E10B8F1ACAAE240072B4C8 /* EmojicodeString.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E41538471AE549AA00025753 /* sqlite.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = sqlite.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		E41AE33D1ACC81CA00D27317 /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = usr/lib/libcurl.dylib; sourceTree = SDKROOT; };
-		E47937011C36A3CE00536258 /* SDL.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = SDL.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		E47937061C36A3E000536258 /* SDL.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SDL.c; path = SDL/SDL.c; sourceTree = "<group>"; };
-		E47937081C36DDC200536258 /* KeycodeToChar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = KeycodeToChar.c; path = SDL/KeycodeToChar.c; sourceTree = "<group>"; };
-		E479370A1C36DE6000536258 /* SDLPackage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SDLPackage.h; path = SDL/SDLPackage.h; sourceTree = "<group>"; };
+		E4A797DE1D37DC8D0048DA41 /* allegro.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = allegro.so; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4A797E01D37DCC20048DA41 /* allegro.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = allegro.c; path = allegro/allegro.c; sourceTree = "<group>"; };
 		E4CF87301D2D3512006B3B0F /* sockets.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = sockets.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4CF87311D2D356F006B3B0F /* sockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sockets.c; path = sockets/sockets.c; sourceTree = "<group>"; };
 		E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeDictionary.h; path = ../EmojicodeDictionary.h; sourceTree = "<group>"; };
@@ -36,14 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E41538441AE549AA00025753 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E47936FE1C36A3CE00536258 /* Frameworks */ = {
+		E4A797D91D37DC8D0048DA41 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -67,14 +54,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E47937051C36A3D300536258 /* SDL */ = {
+		E4A797DF1D37DCA00048DA41 /* allegro */ = {
 			isa = PBXGroup;
 			children = (
-				E479370A1C36DE6000536258 /* SDLPackage.h */,
-				E47937061C36A3E000536258 /* SDL.c */,
-				E47937081C36DDC200536258 /* KeycodeToChar.c */,
+				E4A797E01D37DCC20048DA41 /* allegro.c */,
 			);
-			name = SDL;
+			name = allegro;
 			sourceTree = "<group>";
 		};
 		E4CF87331D2D3575006B3B0F /* sockets */ = {
@@ -88,12 +73,11 @@
 		E4E10B6E1ACA983B0072B4C8 = {
 			isa = PBXGroup;
 			children = (
-				E41AE33D1ACC81CA00D27317 /* libcurl.dylib */,
 				E4E10B811ACA98AC0072B4C8 /* EmojicodeAPI.h */,
 				E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */,
 				E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */,
 				E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */,
-				E47937051C36A3D300536258 /* SDL */,
+				E4A797DF1D37DCA00048DA41 /* allegro */,
 				E4E10B7E1ACA98900072B4C8 /* Files */,
 				E4CF87331D2D3575006B3B0F /* sockets */,
 				E4E10B781ACA983B0072B4C8 /* Products */,
@@ -104,9 +88,8 @@
 			isa = PBXGroup;
 			children = (
 				E4E10B871ACA98EE0072B4C8 /* files.so */,
-				E41538471AE549AA00025753 /* sqlite.so */,
-				E47937011C36A3CE00536258 /* SDL.so */,
 				E4CF87301D2D3512006B3B0F /* sockets.so */,
+				E4A797DE1D37DC8D0048DA41 /* allegro.so */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -122,15 +105,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E41538451AE549AA00025753 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E4DA686A1AE6C367003158CA /* EmojicodeDictionary.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E47936FF1C36A3CE00536258 /* Headers */ = {
+		E4A797DA1D37DC8D0048DA41 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -158,38 +133,21 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		E41538461AE549AA00025753 /* sqlite */ = {
+		E4A797D51D37DC8D0048DA41 /* allegro */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E415384A1AE549AA00025753 /* Build configuration list for PBXNativeTarget "sqlite" */;
+			buildConfigurationList = E4A797DB1D37DC8D0048DA41 /* Build configuration list for PBXNativeTarget "allegro" */;
 			buildPhases = (
-				E41538431AE549AA00025753 /* Sources */,
-				E41538441AE549AA00025753 /* Frameworks */,
-				E41538451AE549AA00025753 /* Headers */,
+				E4A797D61D37DC8D0048DA41 /* Sources */,
+				E4A797D91D37DC8D0048DA41 /* Frameworks */,
+				E4A797DA1D37DC8D0048DA41 /* Headers */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = sqlite;
-			productName = sqlite;
-			productReference = E41538471AE549AA00025753 /* sqlite.so */;
-			productType = "com.apple.product-type.library.dynamic";
-		};
-		E47937001C36A3CE00536258 /* SDL */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E47937021C36A3CE00536258 /* Build configuration list for PBXNativeTarget "SDL" */;
-			buildPhases = (
-				E47936FD1C36A3CE00536258 /* Sources */,
-				E47936FE1C36A3CE00536258 /* Frameworks */,
-				E47936FF1C36A3CE00536258 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SDL;
+			name = allegro;
 			productName = SDL;
-			productReference = E47937011C36A3CE00536258 /* SDL.so */;
+			productReference = E4A797DE1D37DC8D0048DA41 /* allegro.so */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		E4CF87261D2D3512006B3B0F /* sockets */ = {
@@ -235,12 +193,6 @@
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Theo Weidmann";
 				TargetAttributes = {
-					E41538461AE549AA00025753 = {
-						CreatedOnToolsVersion = 6.3;
-					};
-					E47937001C36A3CE00536258 = {
-						CreatedOnToolsVersion = 7.2;
-					};
 					E4E10B861ACA98EE0072B4C8 = {
 						CreatedOnToolsVersion = 6.2;
 					};
@@ -259,27 +211,18 @@
 			projectRoot = "";
 			targets = (
 				E4E10B861ACA98EE0072B4C8 /* files */,
-				E41538461AE549AA00025753 /* sqlite */,
-				E47937001C36A3CE00536258 /* SDL */,
 				E4CF87261D2D3512006B3B0F /* sockets */,
+				E4A797D51D37DC8D0048DA41 /* allegro */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E41538431AE549AA00025753 /* Sources */ = {
+		E4A797D61D37DC8D0048DA41 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E47936FD1C36A3CE00536258 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E47937071C36A3E000536258 /* SDL.c in Sources */,
-				E47937091C36DDC200536258 /* KeycodeToChar.c in Sources */,
+				E4A797E21D37DFBE0048DA41 /* allegro.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,36 +245,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		E41538481AE549AA00025753 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = "";
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		E41538491AE549AA00025753 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = "";
-				GCC_NO_COMMON_BLOCKS = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		E47937031C36A3CE00536258 /* Debug */ = {
+		E4A797DC1D37DC8D0048DA41 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
@@ -346,13 +260,15 @@
 				OTHER_LDFLAGS = (
 					"-undefined",
 					dynamic_lookup,
-					"-lSDL2",
+					"-lallegro_color",
+					"-lallegro_primitives",
+					"-lallegro",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		E47937041C36A3CE00536258 /* Release */ = {
+		E4A797DD1D37DC8D0048DA41 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
@@ -366,7 +282,9 @@
 				OTHER_LDFLAGS = (
 					"-undefined",
 					dynamic_lookup,
-					"-lSDL2",
+					"-lallegro_color",
+					"-lallegro_primitives",
+					"-lallegro",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -512,20 +430,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E415384A1AE549AA00025753 /* Build configuration list for PBXNativeTarget "sqlite" */ = {
+		E4A797DB1D37DC8D0048DA41 /* Build configuration list for PBXNativeTarget "allegro" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E41538481AE549AA00025753 /* Debug */,
-				E41538491AE549AA00025753 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E47937021C36A3CE00536258 /* Build configuration list for PBXNativeTarget "SDL" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E47937031C36A3CE00536258 /* Debug */,
-				E47937041C36A3CE00536258 /* Release */,
+				E4A797DC1D37DC8D0048DA41 /* Debug */,
+				E4A797DD1D37DC8D0048DA41 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -6,5 +6,5 @@ sudo: required
 script: make && make install && make tests
 before_install:
   - sudo chmod -R 777 /usr/local/
-  - sudo apt-get install -y libsdl2-dev
+  - sudo apt-get install -y liballegro5-dev
 dist: trusty
