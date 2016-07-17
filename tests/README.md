@@ -1,12 +1,11 @@
 # Tests
 
-You can run these tests **from the root** of this repository:
+You can run these tests **from the root** of this repository once you have
+installed Emojicode.
 
 ```
-make && make install && make tests
+make tests
 ```
-
-You might need to prepend `sudo` to `make install`.
 
 (Warning: The tests contain a lot of nonsense. 😜)
 
@@ -15,3 +14,5 @@ You might need to prepend `sudo` to `make install`.
 - `compilation`: Contains different compilation problems (from very simple to
   advanced) and expected output.
 - `s`: Contains tests to test the s package.
+- `reject`: Contains invalid code or otherwise invalid operations that must be
+  rejected by the compiler.
