@@ -16,8 +16,8 @@
 #include "TokenStream.hpp"
 #include "Type.hpp"
 
-enum AccessLevel {
-    PUBLIC, PRIVATE, PROTECTED
+enum class AccessLevel {
+    Public, Private, Protected
 };
 
 struct Argument {
@@ -74,37 +74,42 @@ public:
               Package *package, SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated)
         : Callable(p),
           name(name),
-          final(final),
-          overriding(overriding),
-          deprecated(deprecated),
-          access(level),
-          owningType(owningType),
-          documentationToken(documentationToken),
-          package(package) {}
+          final_(final),
+          overriding_(overriding),
+          deprecated_(deprecated),
+          access_(level),
+          owningType_(owningType),
+          package_(package),
+          documentation_(documentationToken) {}
     
     /** The function name. A Unicode code point for an emoji */
     EmojicodeChar name;
     
-    /** Whether the method is native. */
+    /** Whether the method is implemented natively and Run-Time Native Linking must occur. */
     bool native = false;
-    bool final = false;
-    bool overriding = false;
-    bool deprecated = false;
+    /** Whether the method was marked as final and can’t be overriden. */
+    bool final() const { return final_; }
+    /** Whether the method is intended to override a super method. */
+    bool overriding() const { return overriding_; }
+    /** Whether the method is deprecated. */
+    bool deprecated() const { return deprecated_; }
+    /** Returns the access level to this method. */
+    AccessLevel accessLevel() const { return access_; }
     
-    AccessLevel access;
+    /** Type to which this function belongs. 
+        This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
+    Type owningType() const { return owningType_; }
     
-    /** Class which defined this function. This can be @c nullptr if the function belongs to a protocol. */
-    Type owningType;
-    
-    EmojicodeString documentationToken;
+    const EmojicodeString& documentation() const { return documentation_; }
     
     /** The types for the generic arguments. */
     std::vector<Type> genericArgumentConstraints;
     /** Generic type arguments as variables */
     std::map<EmojicodeString, Type> genericArgumentVariables;
     
-    /** The namespace in which the function was defined. This does not necessarily match the class’s namespace. */
-    Package *package;
+    /** The namespace in which the function was defined.
+        This does not necessarily match the package of @c owningType. */
+    Package* package() const { return package_; }
     
     /** Issues a warning on at the given token if the function is deprecated. */
     void deprecatedWarning(const Token &callToken);
@@ -124,6 +129,13 @@ public:
     const char *on;
 private:
     int vti_;
+    bool final_;
+    bool overriding_;
+    bool deprecated_;
+    AccessLevel access_;
+    Type owningType_;
+    Package *package_;
+    EmojicodeString documentation_;
 };
 
 class Method: public Function {

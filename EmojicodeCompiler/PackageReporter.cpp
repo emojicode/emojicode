@@ -89,10 +89,10 @@ void reportFunctionInformation(Function *p, ReturnManner returnm, bool last, Typ
     
     printf("{");
     printf("\"name\":\"%s\",", nameString);
-    if (p->access == PRIVATE) {
+    if (p->accessLevel() == AccessLevel::Private) {
         printf("\"access\":\"🔒\",");
     }
-    else if (p->access == PROTECTED) {
+    else if (p->accessLevel() == AccessLevel::Protected) {
         printf("\"access\":\"🔐\",");
     }
     else {
@@ -108,7 +108,7 @@ void reportFunctionInformation(Function *p, ReturnManner returnm, bool last, Typ
     }
     
     reportGenericArguments(p->genericArgumentVariables, p->genericArgumentConstraints, 0, tc);
-    reportDocumentation(p->documentationToken);
+    reportDocumentation(p->documentation());
     
     printf("\"arguments\":[");
     for (int i = 0; i < p->arguments.size(); i++) {

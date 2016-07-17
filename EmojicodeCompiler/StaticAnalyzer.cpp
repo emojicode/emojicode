@@ -141,17 +141,17 @@ void analyzeValueType(ValueType *vt, Writer &writer) {
     writer.writeUInt16(vt->methodList().size() + vt->initializerList().size() + vt->classMethodList().size());
     for (auto f : vt->methodList()) {
         auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType, scoper,
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType(), scoper,
                                                         StaticFunctionAnalyzerMode::ThisContextFunction, false);
     }
     for (auto f : vt->initializerList()) {
         auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType, scoper,
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType(), scoper,
                                                         StaticFunctionAnalyzerMode::ThisContextFunction, false);
     }
     for (auto f : vt->classMethodList()) {
         auto scoper = CallableScoper();
-        StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType, scoper,
+        StaticFunctionAnalyzer::writeAndAnalyzeFunction(f, writer, f->owningType(), scoper,
                                                         StaticFunctionAnalyzerMode::Function, true);
     }
 }

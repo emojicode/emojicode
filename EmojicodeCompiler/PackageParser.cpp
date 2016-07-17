@@ -134,8 +134,8 @@ void PackageParser::parse() {
                 }
                 Function::foundStart = true;
                 
-                auto function = new Function(E_CHEQUERED_FLAG, PUBLIC, false, typeNothingness, package_, theToken,
-                                              false, documentation, false);
+                auto function = new Function(E_CHEQUERED_FLAG, AccessLevel::Public, false, typeNothingness, package_,
+                                             theToken, false, documentation, false);
                 parseReturnType(function, typeNothingness);
                 if (function->returnType.type() != TypeContent::Nothingness &&
                     !function->returnType.compatibleTo(typeInteger, typeNothingness)) {
@@ -223,13 +223,13 @@ void PackageParser::parseGenericArgumentList(TypeDefinitionFunctional *typeDef, 
 }
 
 static AccessLevel readAccessLevel(TokenStream *stream) {
-    AccessLevel access = PUBLIC;
+    auto access = AccessLevel::Public;
     if (stream->nextTokenIs(E_CLOSED_LOCK_WITH_KEY)) {
-        access = PROTECTED;
+        access = AccessLevel::Protected;
         stream->consumeToken(TokenType::Identifier);
     }
     else if (stream->nextTokenIs(E_LOCK)) {
-        access = PRIVATE;
+        access = AccessLevel::Private;
         stream->consumeToken(TokenType::Identifier);
     }
     else if (stream->nextTokenIs(E_OPEN_LOCK)) {
@@ -267,8 +267,8 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
         
         auto methodName = stream_.consumeToken(TokenType::Identifier);
         
-        auto method = new Method(methodName.value[0], PUBLIC, false, typeNothingness, package_, methodName.position(),
-                                 false, documentation, deprecated.set());
+        auto method = new Method(methodName.value[0], AccessLevel::Public, false, protocolType, package_,
+                                 methodName.position(), false, documentation, deprecated.set());
         auto a = parseArgumentList(method, protocolType);
         auto b = parseReturnType(method, protocolType);
         if (a || b) {

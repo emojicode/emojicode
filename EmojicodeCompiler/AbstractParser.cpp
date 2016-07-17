@@ -216,7 +216,8 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext 
         stream_.consumeToken();
         auto &variable = stream_.consumeToken(TokenType::Variable);
         
-        Type t = parseTypeDeclarative(p->owningType, TypeDynamism::GenericTypeVariables, typeNothingness, nullptr, true);
+        Type t = parseTypeDeclarative(p->owningType(), TypeDynamism::GenericTypeVariables, typeNothingness, nullptr,
+                                      true);
         p->genericArgumentConstraints.push_back(t);
         
         Type rType = Type(TypeContent::LocalReference, false);

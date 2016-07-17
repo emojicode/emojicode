@@ -65,7 +65,7 @@ void Function::checkArgumentCount(size_t thisCount, size_t superCount, Emojicode
 
 void Function::checkPromises(Function *superFunction, const char *on, Type contextType) {
     try {
-        if (superFunction->final) {
+        if (superFunction->final()) {
             ecCharToCharStack(this->name, mn);
             throw CompilerErrorException(this->position(), "%s of %s was marked 🔏.", on, mn);
         }
@@ -84,25 +84,25 @@ void Function::checkPromises(Function *superFunction, const char *on, Type conte
 }
 
 void Function::checkOverride(Function *superFunction) {
-    if (overriding && !superFunction) {
+    if (overriding() && !superFunction) {
         ecCharToCharStack(name, mn);
         throw CompilerErrorException(position(), "%s was declared ✒️ but does not override anything.", mn);
     }
-    else if (!overriding && superFunction) {
+    else if (!overriding() && superFunction) {
         ecCharToCharStack(name, mn);
         throw CompilerErrorException(position(), "If you want to override %s add ✒️.", mn);
     }
 }
 
 void Function::deprecatedWarning(const Token &callToken) {
-    if (deprecated) {
+    if (deprecated()) {
         ecCharToCharStack(name, mn);
-        if (documentationToken.size() > 0) {
-            char *documentation = documentationToken.utf8CString();
+        if (documentation().size() > 0) {
+            char *documentationString = documentation().utf8CString();
             compilerWarning(callToken,
                             "%s is deprecated. Please refer to the documentation for further information:\n%s",
-                            mn, documentation);
-            delete [] documentation;
+                            mn, documentationString);
+            delete [] documentationString;
         }
         else {
             compilerWarning(callToken, "%s is deprecated.", mn);
@@ -128,7 +128,7 @@ Type Function::type() {
 
 Type Initializer::type() {
     Type t = Type(TypeContent::Callable, false);
-    t.genericArguments.push_back(Type(owningType.eclass(), canReturnNothingness));
+    t.genericArguments.push_back(Type(owningType().eclass(), canReturnNothingness));
     for (size_t i = 0; i < arguments.size(); i++) {
         t.genericArguments.push_back(arguments[i].type);
     }

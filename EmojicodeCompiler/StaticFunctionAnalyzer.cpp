@@ -108,14 +108,16 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
         }
     }
     
-    if (p->access == PRIVATE) {
-        if (this->typeContext.calleeType().type() != p->owningType.type() || p->owningType.typeDefinition() != this->typeContext.calleeType().typeDefinition()) {
+    if (p->accessLevel() == AccessLevel::Private) {
+        if (this->typeContext.calleeType().type() != p->owningType().type()
+                || p->owningType().typeDefinition() != this->typeContext.calleeType().typeDefinition()) {
             ecCharToCharStack(p->name, nm);
             throw CompilerErrorException(token, "%s is 🔒.", nm);
         }
     }
-    else if (p->access == PROTECTED) {
-        if (this->typeContext.calleeType().type() != p->owningType.type() || !this->typeContext.calleeType().eclass()->inheritsFrom(p->owningType.eclass())) {
+    else if (p->accessLevel() == AccessLevel::Protected) {
+        if (this->typeContext.calleeType().type() != p->owningType().type()
+                || !this->typeContext.calleeType().eclass()->inheritsFrom(p->owningType().eclass())) {
             ecCharToCharStack(p->name, nm);
             throw CompilerErrorException(token, "%s is 🔐.", nm);
         }
@@ -577,7 +579,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             usedSelf = true;
             writer.writeCoin(0x3C, token);
             if (mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
-                if (!calledSuper && static_cast<Initializer &>(callable).owningType.eclass()->superclass) {
+                if (!calledSuper && static_cast<Initializer &>(callable).owningType().eclass()->superclass) {
                     throw CompilerErrorException(token, "Attempt to use 🐕 before superinitializer call.");
                 }
                 
@@ -1286,7 +1288,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function *function, Writer 
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
     auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin(function->position());
     
-    auto sca = StaticFunctionAnalyzer(*function, function->package, mode, TypeContext(classType, function),
+    auto sca = StaticFunctionAnalyzer(*function, function->package(), mode, TypeContext(classType, function),
                                       writer, scoper);
     sca.analyze();
     
