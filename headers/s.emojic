@@ -352,11 +352,11 @@
 
 🐋 🚂 🍇
   🌮
-    Creates a string representation of this integer.
+    Creates a string representation of this integer. *base* must be greater than
+    or equal to 2 and less than or equal to 35.
 
     The digits used to represent the integer are
-    `0123456789abcdefghijklmnopqrstuvxyz`. Therefore you shouldn't use a base
-    greater than 35.
+    `0123456789abcdefghijklmnopqrstuvxyz`.
   🌮
   🐖 🔡 base 🚂 ➡️ 🔡 📻
 
