@@ -349,6 +349,12 @@ static Something integerRandom(Thread *thread) {
     return somethingInteger(secureRandomNumber(stackGetVariable(0, thread).raw, stackGetVariable(1, thread).raw));
 }
 
+#define abs(x) _Generic((x), long: labs, long long: llabs, default: abs)(x)
+
+static Something integerAbsolute(Thread *thread) {
+    return somethingInteger(abs(stackGetThisContext(thread).raw));
+}
+
 static Something stringFromSymbol(Thread *thread){
     Object *co = newArray(sizeof(EmojicodeChar));
     stackPush(somethingObject(co), 0, 0, thread);
@@ -456,6 +462,10 @@ static Something doubleLn(Thread *thread) {
     return somethingDouble(log(stackGetThisContext(thread).doubl));
 }
 
+static Something doubleAbsolute(Thread *thread) {
+    return somethingDouble(fabs(stackGetThisContext(thread).doubl));
+}
+
 // MARK: Callable
 
 static void closureMark(Object *o){
@@ -537,6 +547,8 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                     return integerToString;
                 case 0x1f3b0: //🎰
                     return integerRandom;
+                case 0x1f3e7: //🏧
+                    return integerAbsolute;
             }
         case 0x1F680:
             switch (symbol) {
@@ -568,6 +580,8 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                     return doubleLn;
                 case 0x1f521: //🔡
                     return doubleToString;
+                case 0x1f3e7: //🏧
+                    return doubleAbsolute;
             }
         case 0x1f523: //🔣
             return stringFromSymbol;
