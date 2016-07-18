@@ -21,6 +21,9 @@ static Class *CL_EVENT_KEY_CHAR;
 static Class *CL_EVENT_KEY_DOWN;
 static Class *CL_EVENT_KEY_UP;
 static Class *CL_BITMAP;
+static Class *CL_EVENT_MOUSE_AXES;
+static Class *CL_EVENT_MOUSE_DOWN;
+static Class *CL_EVENT_MOUSE_UP;
 
 #define display(c) (*(ALLEGRO_DISPLAY **)(c)->value)
 #define bitmap(c) (*(ALLEGRO_BITMAP **)(c)->value)
@@ -62,6 +65,10 @@ void displayInitWithDimensions(Thread *thread) {
     int w = (int)stackGetVariable(0, thread).raw;
     int h = (int)stackGetVariable(1, thread).raw;
     display(stackGetThisObject(thread)) = al_create_display(w, h);
+}
+
+void displayDe(void *v) {
+    al_destroy_display(*(ALLEGRO_DISPLAY **)v);
 }
 
 Something appFlip(Thread *thread) {
@@ -205,6 +212,18 @@ Something appDrawText(Thread *thread) {
     return NOTHINGNESS;
 }
 
+Something appSetTargetBitmap(Thread *thread) {
+    ALLEGRO_BITMAP *bmp = bitmap(stackGetVariable(0, thread).object);
+    al_set_target_bitmap(bmp);
+    return NOTHINGNESS;
+}
+
+Something appSetTargetBackbuffer(Thread *thread) {
+    ALLEGRO_DISPLAY *display = display(stackGetVariable(0, thread).object);
+    al_set_target_backbuffer(display);
+    return NOTHINGNESS;
+}
+
 void colorInitRGBA(Thread *thread) {
     int r = (int)stackGetVariable(0, thread).raw;
     int g = (int)stackGetVariable(1, thread).raw;
@@ -223,6 +242,10 @@ void bitmapInitFile(Thread *thread) {
         stackGetThisObject(thread)->value = NULL;
     }
     free(path);
+}
+
+void bitmapDe(void *v) {
+    al_destroy_bitmap(*(ALLEGRO_BITMAP **)v);
 }
 
 void bitmapInitSize(Thread *thread) {
@@ -247,8 +270,16 @@ void fontInitFile(Thread *thread) {
     free(path);
 }
 
+void fontDe(void *v) {
+    al_destroy_font(*(ALLEGRO_FONT **)v);
+}
+
 void eventQueueInit(Thread *thread) {
     eventQueue(stackGetThisObject(thread)) = al_create_event_queue();
+}
+
+void eventQueueDe(void *v) {
+    al_destroy_event_queue(*(ALLEGRO_EVENT_QUEUE **)v);
 }
 
 Something eventQueueWait(Thread *thread) {
@@ -263,6 +294,15 @@ Something eventQueueWait(Thread *thread) {
             break;
         case ALLEGRO_EVENT_KEY_UP:
             event->class = CL_EVENT_KEY_UP;
+            break;
+        case ALLEGRO_EVENT_MOUSE_AXES:
+            event->class = CL_EVENT_MOUSE_AXES;
+            break;
+        case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+            event->class = CL_EVENT_MOUSE_DOWN;
+            break;
+        case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+            event->class = CL_EVENT_MOUSE_UP;
             break;
         default:
             break;
@@ -293,6 +333,14 @@ Something keyboardEventRepeated(Thread *thread) {
     return somethingBoolean(event(stackGetThisObject(thread)).keyboard.repeat);
 }
 
+Something mouseAxesEventX(Thread *thread) {
+    return somethingDouble(event(stackGetThisObject(thread)).mouse.x);
+}
+
+Something mouseAxesEventY(Thread *thread) {
+    return somethingDouble(event(stackGetThisObject(thread)).mouse.y);
+}
+
 void sampleInitFile(Thread *thread) {
     char *path = stringToChar(stackGetVariable(0, thread).object->value);
     ALLEGRO_SAMPLE *sample = al_load_sample(path);
@@ -303,6 +351,10 @@ void sampleInitFile(Thread *thread) {
         stackGetThisObject(thread)->value = NULL;
     }
     free(path);
+}
+
+void sampleDe(void *v) {
+    al_destroy_sample(*(ALLEGRO_SAMPLE **)v);
 }
 
 Something samplePlay(Thread *thread) {
@@ -349,6 +401,10 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
             return appDrawScaledBitmap;
         case 0x1f521: //🔡
             return appDrawText;
+        case 0x1f3d3: //🏓
+            return appSetTargetBitmap;
+        case 0x1f3cf: //🏏
+            return appSetTargetBackbuffer;
         case 0x23f3: //⏳
             return eventQueueWait;
         case 0x1f5b1: //🖱
@@ -363,6 +419,10 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
             return keyboardEventRepeated;
         case 0x1f3c1: //🏁
             return samplePlay;
+        case 0x1f449: //👉
+            return mouseAxesEventX;
+        case 0x1f447: //👇
+            return mouseAxesEventY;
     }
     return NULL;
 }
@@ -419,6 +479,15 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
         case 0x1f4e5: //📥
             CL_EVENT_KEY_DOWN = cl;
             break;
+        case 0x2747: //❇
+            CL_EVENT_MOUSE_AXES = cl;
+            break;
+        case 0x1f51b: //🔛
+            CL_EVENT_MOUSE_DOWN = cl;
+            break;
+        case 0x1f51d: //🔝
+            CL_EVENT_MOUSE_UP = cl;
+            break;
         case 0x1f3b6: //🎶
             return sizeof(ALLEGRO_SAMPLE*);
     }
@@ -427,7 +496,16 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
 
 Deinitializer deinitializerPointerForClass(EmojicodeChar cl) {
     switch (cl) {
-
+        case 0x1f4fa: //📺
+            return displayDe;
+        case 0x1f5bc: //🖼
+            return bitmapDe;
+        case 0x1f549: //🕉
+            return fontDe;
+        case 0x1f5c3: //🗃
+            return eventQueueDe;
+        case 0x1f3b6: //🎶
+            return sampleDe;
     }
     return NULL;
 }
