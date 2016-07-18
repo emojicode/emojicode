@@ -152,6 +152,11 @@ static Something threadSleep(Thread *thread){
     return NOTHINGNESS;
 }
 
+static Something threadSleepMicroseconds(Thread *thread){
+    usleep((unsigned int)stackGetVariable(0, thread).raw);
+    return NOTHINGNESS;
+}
+
 static void initThread(Thread *thread) {
     Thread *t = allocateThread();
     stackPush(stackGetVariable(0, thread), 0, 0, t);
@@ -529,6 +534,8 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
             switch (symbol) {
                 case 0x23f3: //⏳
                     return threadSleep;
+                case 0x23f2: //⏲
+                    return threadSleepMicroseconds;
                 case 0x1f6c2: //🛂
                     return threadJoin;
             }

@@ -787,9 +787,14 @@
   🐖 🛂 📻
   🌮
     Suspends the calling thread from execution for at least the number of
-    seconds specified by the arguments *seconds*.
+    seconds specified by the argument *seconds*.
   🌮
   🐇🐖 ⏳ seconds 🚂 📻
+  🌮
+    Suspends the calling thread from execution for at least the number of
+    microseconds specified by the argument *microseconds*.
+  🌮
+  🐇🐖 ⏲ microseconds 🚂 📻
 🍉
 
 🌮
