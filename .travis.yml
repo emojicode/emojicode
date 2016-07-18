@@ -7,10 +7,11 @@ script: make && make install && make tests
 before_install:
   - sudo chmod -R 777 /usr/local/
 dist: trusty
-apt:
-  sources:
-  - ubuntu-toolchain-r-test
-  packages:
-  - gcc-4.9
-  - g++-4.9
-  - liballegro5-dev
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.9
+    - g++-4.9
+    - liballegro5-dev
