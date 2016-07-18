@@ -28,7 +28,7 @@ If you need to build Emojicode from source you can of course also do this. **We,
 
 Prerequisites:
 - clang and clang++ 3.4 or newer, or
-- gcc and g++ 4.8 or newer
+- gcc and g++ 4.9 or newer
 - GNU Make
 - Allegro 5 to compile the allegro package
   - `sudo apt-get install liballegro5-dev` on Debian/Ubuntu
