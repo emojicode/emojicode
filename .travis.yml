@@ -6,6 +6,8 @@ sudo: required
 script: make && make install && make tests
 before_install:
   - sudo chmod -R 777 /usr/local/
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 dist: trusty
 addons:
   apt:
