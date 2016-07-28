@@ -24,6 +24,7 @@ static Class *CL_BITMAP;
 static Class *CL_EVENT_MOUSE_AXES;
 static Class *CL_EVENT_MOUSE_DOWN;
 static Class *CL_EVENT_MOUSE_UP;
+static Class *CL_EVENT_TIMER;
 
 #define display(c) (*(ALLEGRO_DISPLAY **)(c)->value)
 #define bitmap(c) (*(ALLEGRO_BITMAP **)(c)->value)
@@ -32,6 +33,7 @@ static Class *CL_EVENT_MOUSE_UP;
 #define eventQueue(c) (*(ALLEGRO_EVENT_QUEUE **)(c)->value)
 #define event(c) (*(ALLEGRO_EVENT *)(c)->value)
 #define sample(c) (*(ALLEGRO_SAMPLE **)(c)->value)
+#define timer(c) (*(ALLEGRO_TIMER **)(c)->value)
 
 PackageVersion getVersion() {
     return (PackageVersion){0, 1};
@@ -304,6 +306,9 @@ Something eventQueueWait(Thread *thread) {
         case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
             event->class = CL_EVENT_MOUSE_UP;
             break;
+        case ALLEGRO_EVENT_TIMER:
+            event->class = CL_EVENT_TIMER;
+            break;
         default:
             break;
     }
@@ -317,6 +322,12 @@ Something eventQueueRegisterMouse(Thread *thread) {
 
 Something eventQueueRegisterKeyboard(Thread *thread) {
     al_register_event_source(eventQueue(stackGetThisObject(thread)), al_get_keyboard_event_source());
+    return NOTHINGNESS;
+}
+
+Something eventQueueRegisterTimer(Thread *thread) {
+    al_register_event_source(eventQueue(stackGetThisObject(thread)),
+                             al_get_timer_event_source(timer(stackGetVariable(0, thread).object)));
     return NOTHINGNESS;
 }
 
@@ -367,6 +378,25 @@ Something samplePlay(Thread *thread) {
     return NOTHINGNESS;
 }
 
+void timerInit(Thread *thread) {
+    timer(stackGetThisObject(thread)) = al_create_timer(stackGetVariable(0, thread).doubl);
+}
+
+Something timerStart(Thread *thread) {
+    al_start_timer(timer(stackGetThisObject(thread)));
+    return NOTHINGNESS;
+}
+
+Something timerStop(Thread *thread) {
+    al_stop_timer(timer(stackGetThisObject(thread)));
+    return NOTHINGNESS;
+}
+
+Something timerResume(Thread *thread) {
+    al_resume_timer(timer(stackGetThisObject(thread)));
+    return NOTHINGNESS;
+}
+
 FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol, MethodType t) {
     switch (symbol) {
         case 0x1f64b: //🙋
@@ -411,6 +441,8 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
             return eventQueueRegisterMouse;
         case 0x2328: //⌨
             return eventQueueRegisterKeyboard;
+        case 0x23f2: //⏲
+            return eventQueueRegisterTimer;
         case 0x1f4df: //📟
             return keyboardEventKeycode;
         case 0x1f523: //🔣
@@ -418,11 +450,20 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
         case 0x1f503: //🔃
             return keyboardEventRepeated;
         case 0x1f3c1: //🏁
-            return samplePlay;
+            switch (cl) {
+                case 0x23f2: //⏲
+                    return timerStart;
+                default:
+                    return samplePlay;
+            }
         case 0x1f449: //👉
             return mouseAxesEventX;
         case 0x1f447: //👇
             return mouseAxesEventY;
+        case 0x1f6a6: //🚦
+            return timerResume;
+        case 0x26d4: //⛔
+            return timerStop;
     }
     return NULL;
 }
@@ -433,6 +474,8 @@ InitializerFunctionFunctionPointer handlerPointerForInitializer(EmojicodeChar cl
             return displayInitWithDimensions;
         case 0x1f3a8: //🎨
             return colorInitRGBA;
+        case 0x23f2: //⏲
+            return timerInit;
         case 0x1f5bc: //🖼
             switch (symbol) {
                 case 0x1f4c4: //📄
@@ -487,6 +530,9 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
             break;
         case 0x1f51d: //🔝
             CL_EVENT_MOUSE_UP = cl;
+            break;
+        case 0x1f6ce: //🛎
+            CL_EVENT_TIMER = cl;
             break;
         case 0x1f3b6: //🎶
             return sizeof(ALLEGRO_SAMPLE*);

@@ -84,17 +84,46 @@
 
 🌮 ❇️ is an event that occurs when one or more mouse axis changed. 🌮
 🌍 🐇 ❇️ 🖱 🍇
-
 🍉
 
 🌮 🔛 is an event that occurs when a mouse button was pressed. 🌮
 🌍 🐇 🔛 🖱 🍇
-
 🍉
 
 🌮 🔝 is an event that occurs when a mouse button was released. 🌮
 🌍 🐇 🔝 🖱 🍇
+🍉
 
+🌮 🛎 is an event that occurs for each ⏲ tick. 🌮
+🌍 🐇 🛎 🎉 🍇
+🍉
+
+🌮 ⏲ represents a timer that sends an event in a specified interval. 🌮
+🌍 🐇 ⏲ 🍇
+  🌮
+    Creates a new, stopped timer that ticks every *seconds* seconds.
+    Seconds must be positive.
+  🌮
+  🐈 🆕 seconds 🚀 📻
+  🌮
+    Starts the timer. From then, the timer's counter will increment at a
+    constant rate, and it will begin generating events. Starting a timer that
+    is already started does nothing.
+  🌮
+  🐖 🏁 📻
+  🌮
+    Resume the timer specified. From then, the timer's counter will increment at
+    a constant rate, and it will begin generating events. Resuming a timer
+    that is already started does nothing. Resuming a stopped timer will not
+    reset the timer's counter.
+  🌮
+  🐖 🚦 📻
+  🌮
+    Stop the timer specified. The timer's counter will stop incrementing and it
+    will stop generating events. Stopping a timer that is already stopped does
+    nothing.
+  🌮
+  🐖 ⛔️ 📻
 🍉
 
 🌮
@@ -112,6 +141,8 @@
   🐖 🖱 📻
   🌮 Registers the keyboard as an event source. 🌮
   🐖 ⌨️ 📻
+  🌮 Registers a ⏲ instance as an event source. 🌮
+  🐖 ⏲ timer ⏲ 📻
 🍉
 
 🌮 🎶 represents an audio sample. 🌮
