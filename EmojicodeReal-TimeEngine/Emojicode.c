@@ -124,12 +124,19 @@ static double readDouble(Thread *thread) {
 
 //MARK:
 
-bool isNothingness(Something sth){
+bool isNothingness(Something sth) {
     return sth.type == T_OBJECT && sth.object == NULL;
 }
 
-bool isRealObject(Something sth){
+bool isRealObject(Something sth) {
     return sth.type == T_OBJECT && sth.object;
+}
+
+Something unwrapOptional(Something sth) {
+    if (isNothingness(sth)) {
+        error("Unexpectedly found ✨ while unwrapping a 🍬.");
+    }
+    return sth;
 }
 
 //MARK: Low level parsing
@@ -417,15 +424,8 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return somethingDouble(fmod(a, b));
         }
         //MARK: Optionals
-        case 0x3A: {
-            Something sth = parse(consumeCoin(thread), thread);
-            
-            if(isNothingness(sth)){
-                error("Unexpectedly found ✨ while unwrapping a 🍬.");
-            }
-            
-            return sth;
-        }
+        case 0x3A:
+            return unwrapOptional(parse(consumeCoin(thread), thread));
         case 0x3B: {
             Something sth = parse(consumeCoin(thread), thread);
             EmojicodeCoin vti = consumeCoin(thread);
@@ -744,7 +744,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeCoin *begin = thread->tokenStream;
             
             for (size_t i = 0; i < (list = stackGetVariable(listObjectVariable, thread).object->value)->count; i++) {
-                stackSetVariable(variable, listGet(list, i), thread);
+                stackSetVariable(variable, unwrapOptional(listGet(list, i)), thread);
                 
                 if(runBlock(thread)){
                     return NOTHINGNESS;
