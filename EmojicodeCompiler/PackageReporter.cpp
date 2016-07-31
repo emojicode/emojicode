@@ -39,15 +39,15 @@ void reportDocumentation(const EmojicodeString &documentation) {
 }
 
 void reportType(const char *key, Type type, TypeContext tc) {
-    auto returnTypeName = type.toString(tc, false).c_str();
+    auto returnTypeName = type.toString(tc, false);
     
     if (key) {
         printf("\"%s\":{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
-               key, type.typePackage(), returnTypeName, type.optional() ? "true" : "false");
+               key, type.typePackage(), returnTypeName.c_str(), type.optional() ? "true" : "false");
     }
     else {
         printf("{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
-               type.typePackage(), returnTypeName, type.optional() ? "true" : "false");
+               type.typePackage(), returnTypeName.c_str(), type.optional() ? "true" : "false");
     }
 }
 
