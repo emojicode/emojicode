@@ -66,7 +66,7 @@ class Type {
 public:
     Type(TypeContent t, bool o) : typeContent_(t), optional_(o) {}
     Type(TypeContent t, bool o, uint16_t r, TypeDefinitionFunctional *c)
-        : reference(r), resolutionConstraint(c), typeContent_(t), optional_(o) {}
+        : reference(r), resolutionConstraint_(c), typeContent_(t), optional_(o) {}
     explicit Type(Class *c) : Type(c, false) {};
     Type(Class *c, bool o);
     Type(Protocol *p, bool o);
@@ -85,11 +85,8 @@ public:
     ValueType* valueType() const;
     TypeDefinition* typeDefinition() const;
     
-    struct {
-        uint16_t reference;
-        TypeDefinitionFunctional *resolutionConstraint;
-    };
-
+    uint16_t reference;
+    
     std::vector<Type> genericArguments;
     
     /** Whether the type is an optional. */
@@ -132,7 +129,10 @@ public:
     
     bool allowsMetaType();
 private:
-    TypeDefinition *typeDefinition_;
+    union {
+        TypeDefinition *typeDefinition_;
+        TypeDefinitionFunctional *resolutionConstraint_;
+    };
     TypeContent typeContent_;
     bool optional_;
     bool resolveSelfOn_ = true;

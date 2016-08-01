@@ -125,9 +125,10 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
     
     if (typeContext.calleeType().canHaveGenericArguments()) {
         while (t.type() == TypeContent::Reference &&
-               typeContext.calleeType().typeDefinitionFunctional()->canBeUsedToResolve(t.resolutionConstraint)) {
+               typeContext.calleeType().typeDefinitionFunctional()->canBeUsedToResolve(t.resolutionConstraint_)) {
             Type tn = typeContext.calleeType().genericArguments[t.reference];
-            if (tn.type() == TypeContent::Reference && tn.reference == t.reference) {
+            if (tn.type() == TypeContent::Reference && tn.reference == t.reference
+                && tn.resolutionConstraint_ == t.resolutionConstraint_) {
                 break;
             }
             t = tn;

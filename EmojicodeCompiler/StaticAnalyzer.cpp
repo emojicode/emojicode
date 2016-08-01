@@ -90,7 +90,7 @@ void analyzeClass(Type classType, Writer &writer) {
         uint_fast16_t smallestProtocolIndex = UINT_FAST16_MAX;
         uint_fast16_t biggestProtocolIndex = 0;
         
-        for (auto protocol : eclass->protocols()) {
+        for (Type protocol : eclass->protocols()) {
             writer.writeUInt16(protocol.protocol()->index);
             
             if (protocol.protocol()->index > biggestProtocolIndex) {
