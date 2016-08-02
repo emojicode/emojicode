@@ -158,7 +158,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
                 if (!ta.compatibleTo(typeDef->genericArgumentConstraints()[i], ct)) {
                     auto thisName = typeDef->genericArgumentConstraints()[i].toString(ct, true);
                     auto thatName = ta.toString(ct, true);
-                    throw CompilerErrorException(token, "Generic argument %s is not compatible to constraint %s.",
+                    throw CompilerErrorException(token, "Generic argument for %s is not compatible to constraint %s.",
                                   thatName.c_str(), thisName.c_str());
                 }
                 

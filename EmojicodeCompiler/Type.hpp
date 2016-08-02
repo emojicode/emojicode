@@ -139,6 +139,7 @@ private:
     bool meta_ = false;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
+    Type resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeContext) const;
 };
 
 #define typeInteger (Type(VT_INTEGER, false))

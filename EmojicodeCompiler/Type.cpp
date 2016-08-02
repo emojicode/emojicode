@@ -86,6 +86,21 @@ bool Type::allowsMetaType() {
     return type() == TypeContent::Class || type() == TypeContent::Enum || type() == TypeContent::ValueType;
 }
 
+Type Type::resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeContext) const {
+    TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionFunctional();
+    Type t = *this;
+    
+    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
+    // Try to resolve on the generic arguments to the superclass.
+    while (t.type() == TypeContent::Reference && c->canBeUsedToResolve(c) && t.reference < maxReferenceForSuper) {
+        Type tn = c->superGenericArguments()[t.reference];
+        if (tn.type() != TypeContent::Reference) {
+            break;
+        }
+    }
+    return t;
+}
+
 Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool resolveSelf) const {
     TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionFunctional();
     Type t = *this;
@@ -169,69 +184,66 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
     if (to.meta_ != meta_) {
         return false;
     }
+    if (this->optional() && !to.optional()) {
+        return false;
+    }
     
-    //(to.optional || !a.optional): Either `to` accepts optionals, or if `to` does not accept optionals `a` mustn't be one.
-    if (to.type() == TypeContent::Someobject && (this->type() == TypeContent::Class ||
-                                            this->type() == TypeContent::Protocol || this->type() == TypeContent::Someobject)) {
-        return to.optional() || !this->optional();
+    if (to.type() == TypeContent::Someobject && this->type() == TypeContent::Class ||
+        this->type() == TypeContent::Protocol || this->type() == TypeContent::Someobject) {
+        return true;
     }
-    else if (this->type() == TypeContent::Class && to.type() == TypeContent::Class) {
-        return (to.optional() || !this->optional()) && this->eclass()->inheritsFrom(to.eclass())
-                && identicalGenericArguments(to, ct, ctargs);
+    if (this->type() == TypeContent::Class && to.type() == TypeContent::Class) {
+        return this->eclass()->inheritsFrom(to.eclass()) && identicalGenericArguments(to, ct, ctargs);
     }
-    else if ((this->type() == TypeContent::Protocol && to.type() == TypeContent::Protocol) || (this->type() == TypeContent::ValueType && to.type() == TypeContent::ValueType)) {
-        return (to.optional() || !this->optional()) && this->typeDefinition() == to.typeDefinition()
-                && identicalGenericArguments(to, ct, ctargs);
+    if ((this->type() == TypeContent::Protocol && to.type() == TypeContent::Protocol) ||
+        (this->type() == TypeContent::ValueType && to.type() == TypeContent::ValueType)) {
+        return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, ct, ctargs);
     }
-    else if (this->type() == TypeContent::Class && to.type() == TypeContent::Protocol) {
-        if (to.optional() || !this->optional()) {
-            for (Class *a = this->eclass(); a != nullptr; a = a->superclass) {
-                for (auto protocol : a->protocols()) {
-                    if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
-                }
+    if (this->type() == TypeContent::Class && to.type() == TypeContent::Protocol) {
+        for (Class *a = this->eclass(); a != nullptr; a = a->superclass) {
+            for (auto protocol : a->protocols()) {
+                if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
             }
         }
         return false;
     }
-    else if (this->type() == TypeContent::Nothingness) {
+    if (this->type() == TypeContent::Nothingness) {
         return to.optional() || to.type() == TypeContent::Nothingness;
     }
-    else if (this->type() == TypeContent::Enum && to.type() == TypeContent::Enum) {
-        return (to.optional() || !this->optional()) && this->eenum() == to.eenum();
+    if (this->type() == TypeContent::Enum && to.type() == TypeContent::Enum) {
+        return this->eenum() == to.eenum();
     }
-    else if ((this->type() == TypeContent::Reference && to.type() == TypeContent::Reference) ||
+    if ((this->type() == TypeContent::Reference && to.type() == TypeContent::Reference) ||
              (this->type() == TypeContent::LocalReference && to.type() == TypeContent::LocalReference)) {
-        if ((to.optional() || !this->optional()) && this->reference == to.reference) {
-            return true;
-        }
-        return (to.optional() || !this->optional())
-        && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
+        return this->reference == to.reference && this->resolutionConstraint_ == to.resolutionConstraint_ ||
+                this->resolveOnSuperArgumentsAndConstraints(ct)
+                    .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
-    else if (this->type() == TypeContent::Reference) {
-        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
+    if (this->type() == TypeContent::Reference) {
+        return this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
-    else if (to.type() == TypeContent::Reference) {
-        return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
+    if (to.type() == TypeContent::Reference) {
+        return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
-    else if (this->type() == TypeContent::LocalReference) {
-        return ctargs || ((to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs));
+    if (this->type() == TypeContent::LocalReference) {
+        return ctargs || this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
-    else if (to.type() == TypeContent::LocalReference) {
+    if (to.type() == TypeContent::LocalReference) {
         if (ctargs) {
             (*ctargs)[to.reference].addType(*this, ct);
             return true;
         }
         else {
-            return (to.optional() || !this->optional()) && this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
+            return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
         }
     }
-    else if (to.type() == TypeContent::Self) {
-        return (to.optional() || !this->optional()) && this->type() == to.type();
+    if (to.type() == TypeContent::Self) {
+        return this->type() == to.type();
     }
-    else if (this->type() == TypeContent::Self) {
-        return (to.optional() || !this->optional()) && this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
+    if (this->type() == TypeContent::Self) {
+        return this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
-    else if (this->type() == TypeContent::Callable && to.type() == TypeContent::Callable) {
+    if (this->type() == TypeContent::Callable && to.type() == TypeContent::Callable) {
         if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct, ctargs)
             && to.genericArguments.size() == this->genericArguments.size()) {
             for (int i = 1; i < to.genericArguments.size(); i++) {
@@ -243,10 +255,8 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         }
         return false;
     }
-    else {
-        return (to.optional() || !this->optional()) && this->type() == to.type();
-    }
-    return false;
+
+    return this->type() == to.type();
 }
 
 bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *ctargs) const {
@@ -269,7 +279,8 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
                 return eenum() == to.eenum();
             case TypeContent::Reference:
             case TypeContent::LocalReference:
-                return reference == to.reference;
+                return resolveReferenceToBaseReferenceOnSuperArguments(tc).reference ==
+                        to.resolveReferenceToBaseReferenceOnSuperArguments(tc).reference;
             case TypeContent::Self:
             case TypeContent::Something:
             case TypeContent::Someobject:
