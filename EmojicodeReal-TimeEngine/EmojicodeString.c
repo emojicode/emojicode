@@ -555,11 +555,11 @@ FunctionFunctionPointer stringMethodForName(EmojicodeChar name){
             return stringPrintStdoutBrigde;
         case 0x1F61B:
             return stringEqualBridge;
-        case 0x1F4CF:
+        case 0x1f414: //🐔
             return stringLengthBridge;
         case 0x1F4DD:
             return stringByAppendingSymbolBridge;
-        case 0x1F52C:
+        case 0x1f43d: //🐽
             return stringSymbolAtBridge;
         case 0x1F52A:  //🔪
             return stringSubstringBridge;

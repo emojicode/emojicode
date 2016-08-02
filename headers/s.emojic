@@ -332,26 +332,109 @@
   🐖 🐽 n 🚂 ➡️ 🍬🚂 📻
 🍉
 
-🌮 Iterator over a 🔡. 🌮
-🐇 📴 🍇
-  🐊 🍡🐚🔣
+🌮
+  A class whose elements can be accessed by 🐽. The number of elements must
+  be finite and returned by 🐔.
+🌮
+🌍 🐊 🐽️🐚Element⚪️ 🍇
+  🌮
+    Gets the item at `index`. If the index is invalid Nothingness is returned.
+  🌮
+  🐖 🐽 index 🚂 ➡️ 🍬Element
+  🌮 Returns the number of items in the list. 🌮
+  🐖 🐔 ➡️ 🚂
+🍉
 
-  🍰 string 🔡
+🌮 Iterator over a 🐽. 🌮
+🌍 🐇 🌳🐚Element⚪️ 🍇
+  🐊 🍡🐚Element
+  🐊 🔂🐚Element
+
+  🍰 iteratee 🐽🐚Element
   🍰 index 🚂
 
-  🐈 🆕 @string 🔡 🍇
-    🍮 string @string
+  🐈 🆕 @iteratee 🐽🐚Element 🍇
+    🍮 iteratee @iteratee
     🍮 index 0
   🍉
 
-  🐖 🔽 ➡️ 🔣 🍇
-    🍦 sy 🍺 🔬 string index
+  🐖 🔽 ➡️ Element 🍇
+    🍦 sy 🍺 🐽 iteratee index
     🍫 index
     🍎 sy
   🍉
 
   🐖 ❓ ➡️ 👌 🍇
-    🍎 ◀️ index 📏 string
+    🍎 ◀️ index 🐔 iteratee
+  🍉
+
+  🐖 🍡 ➡️ 🍡🐚Element 🍇
+    🍎 🐕
+  🍉
+🍉
+
+🌮
+  Iterator over a 🍨. This iterator does *not* unwrap any values retrieved from
+  the list and therefore returns optionals. You can use the subclass
+  [🌴](t5535657140.html) to have optionals automatically unwrapped.
+🌮
+🌍 🐇 🌱🐚Element⚪️ 🍇
+  🐊 🍡🐚🍬Element
+  🐊 🔂🐚🍬Element
+
+  🍰 iteratee 🍨🐚Element
+  🍰 index 🚂
+
+  🐈 🆕 @iteratee 🍨🐚Element 🍇
+    🍮 iteratee @iteratee
+    🍮 index 0
+  🍉
+
+  🐖 🔽 ➡️ 🍬Element 🍇
+    🍦 sy 🐽 iteratee index
+    🍫 index
+    🍎 sy
+  🍉
+
+  🐖 ❓ ➡️ 👌 🍇
+    🍎 ◀️ index 🐔 iteratee
+  🍉
+
+  🌮
+    Removes the element last returned by 🔽 from the list. Calling this method
+    before having called 🔽 results in undefined behavior.
+  🌮
+  🐖 🚯  🍇
+    🍳 index
+    🐨 iteratee index
+  🍉
+
+  🐖 🍡 ➡️ 🍡🐚Element 🍇
+    🍎 🐕
+  🍉
+
+  🔐 🐖 🍚 ➡️ 🍨🐚Element 🍇
+    🍎 iteratee
+  🍉
+
+  🔐 🐖 🍶 ➡️ 🚂 🍇
+    🍦 i index
+    🍫 index
+    🍎 i
+  🍉
+🍉
+
+🌮
+  Iterator over a 🍨. This iterator unwraps all values obtained from the list.
+  You can therefore not use this iterator if the list contains Nothingness, but
+  you may use [🌱](t5535657137.html).
+🌮
+🌍 🐇 🌴🐚Element⚪️ 🌱🐚Element 🍇
+  🐊 🍡🐚Element
+  🐊 🔂🐚Element
+
+  ✒️ 🐖 🔽 ➡️ Element 🍇
+    🍎 🍺 🐽 🍚🐕 🍶🐕
   🍉
 🍉
 
@@ -388,6 +471,7 @@
 
 🐋 🔡 🍇
   🐊 🔂🐚🔣
+  🐊 🐽🐚🔣
 
   🌮 Prompts the user for input. (via the standard input/output) 🌮
   🐈 😯 prompt 🔡 📻
@@ -415,7 +499,6 @@
     >!N and is only meant for use with non-localized sorting. The results of
     >!N the sort will always be the same, but may not appear logical to human
     >!N beings.
-
   🌮
   🐖 ↔️ b 🔡 ➡️ 🚂 📻
 
@@ -466,7 +549,7 @@
     is possibly not the number of bytes needed to write the string to a file,
     since Emojicode encodes everything into UTF8.
   🌮
-  🐖 📏 ➡️ 🚂 📻
+  🐖 🐔 ➡️ 🚂 📻
 
   🌮
     Returns the number of bytes needed to encode this string into proper UTF8.
@@ -492,7 +575,7 @@
   🐖 📝 symbol 🔣 ➡️ 🔡 📻
 
   🌮 Gets a symbol by its index. 🌮
-  🐖 🔬 index 🚂 ➡️ 🍬🔣 📻
+  🐖 🐽 index 🚂 ➡️ 🍬🔣 📻
 
   🌮 Converts the string to data encoded as UTF8. 🌮
   🐖 📇 ➡️ 📇 📻
@@ -503,18 +586,19 @@
   🌮
     Tries to parse this string as JSON. If the string doesn’t represent valid
     JSON Nothigness is returned. The depth is limited to 256 levels.
-
-    >!N This method was named 🗞 in 0.2 Beta 4!
   🌮
   🐖 📰 ➡️ ⚪️ 📻
 
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
-  🐖 🍡 ➡️ 📴 🍇
-    🍎 🔷📴🆕 🐕
+  🐖 🍡 ➡️ 🌳🐚🔣 🍇
+    🍎 🔷🌳🐚🔣🆕 🐕
   🍉
 🍉
 
 🐋 🍨 🍇
+  🐊 🔂🐚Element
+  🐊 🐽🐚Element
+
   🌮 Creates an empty list. 🌮
   🐈 🐸 📻
 
@@ -657,6 +741,11 @@
       🍫 i
     🍉
     🍎 👍
+  🍉
+
+  🌮 Returns an iterator to iterate over the elements of this list. 🌮
+  🐖 🍡 ➡️ 🌴🐚Element 🍇
+    🍎 🔷⚫️🆕 🐕
   🍉
 🍉
 

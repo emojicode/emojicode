@@ -276,13 +276,13 @@ FunctionFunctionPointer listMethodForName(EmojicodeChar method) {
     switch (method) {
         case 0x1F43B: //bear
             return listAppendBridge;
-        case 0x1F43D: //pig nose
+        case 0x1f43d: //🐽
             return listGetBridge;
         case 0x1F428: //koala
             return listRemoveBridge;
         case 0x1F435: //monkey
             return listInsertBridge;
-        case 0x1F414: //chicken
+        case 0x1f414: //🐔
             return listCountBridge;
         case 0x1F43C: //panda
             return listPopBridge;

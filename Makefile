@@ -3,7 +3,7 @@ VERSION = 0.3-beta.1
 CC ?= gcc
 CXX ?= g++
 
-COMPILER_CFLAGS = -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/ $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
+COMPILER_CFLAGS = -g -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/ $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
 COMPILER_LDFLAGS =
 
 COMPILER_SRCDIR = EmojicodeCompiler
@@ -35,7 +35,7 @@ DIST=$(DIST_BUILDS)/$(DIST_NAME)
 TESTS_DIR=tests
 TESTS_REJECT=$(wildcard $(TESTS_DIR)/reject/*.emojic)
 TESTS_COMPILATION=hello piglatin namespace enum extension chaining branch class protocol selfInDeclaration generics genericProtocol callable threads reflection castToSelf variableInitAndScoping
-TESTS_S=stringTest primitives listTest dictionaryTest rangeTest dataTest mathTest fileTest systemTest jsonTest
+TESTS_S=stringTest primitives listTest dictionaryTest rangeTest dataTest mathTest fileTest systemTest jsonTest enumerator
 
 .PHONY: builds tests install dist
 
