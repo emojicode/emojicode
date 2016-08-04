@@ -516,9 +516,9 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
             switch (symbol) {
                 case 0x1F61B:
                     return dataEqual;
-                case 0x1F4CF: //📏
+                case 0x1f414: //🐔
                     return dataSize;
-                case 0x1F43D:
+                case 0x1f43d: //🐽
                     return dataGetByte;
                 case 0x1f521: //🔡
                     return dataToString;
