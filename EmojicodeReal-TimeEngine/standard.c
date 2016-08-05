@@ -322,6 +322,40 @@ static Something dataSlice(Thread *thread) {
     return somethingObject(ooData);
 }
 
+static Something dataIndexOf(Thread *thread) {
+    Data *data = stackGetThisObject(thread)->value;
+    Data *search = stackGetVariable(0, thread).object->value;
+    void *location = memmem(data->bytes, data->length, search->bytes, search->length);
+    if (!location) {
+        return NOTHINGNESS;
+    }
+    else {
+        return somethingInteger((Byte *)location - (Byte *)data->bytes);
+    }
+}
+
+static Something dataByAppendingData(Thread *thread) {
+    Data *data = stackGetThisObject(thread)->value;
+    Data *b = stackGetVariable(0, thread).object->value;
+    
+    size_t size = data->length + b->length;
+    Object *newBytes = newArray(size);
+    
+    b = stackGetVariable(0, thread).object->value;
+    data = stackGetThisObject(thread)->value;
+    
+    memcpy(newBytes->value, data->bytes, data->length);
+    memcpy((Byte *)newBytes->value + data->length, b->bytes, b->length);
+    
+    stackSetVariable(0, somethingObject(newBytes), thread);
+    Object *ooData = newObject(CL_DATA);
+    Data *oData = ooData->value;
+    oData->bytesObject = stackGetVariable(0, thread).object;
+    oData->bytes = oData->bytesObject->value;
+    oData->length = size;
+    return somethingObject(ooData);
+}
+
 // MARK: Integer
 
 Something integerToString(Thread *thread) {
@@ -524,6 +558,10 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                     return dataToString;
                 case 0x1f52a: //🔪
                     return dataSlice;
+                case 0x1f50d: //🔍
+                    return dataIndexOf;
+                case 0x1f4dd: //📝
+                    return dataByAppendingData;
             }
         case 0x1F36F:
             return dictionaryMethodForName(symbol);

@@ -517,9 +517,9 @@
 
   🌮
     Finds the first occurrences of a string in this string. Search is done from
-    left to right.
+    left to right. Nothingness is returned if *search* cannot be found.
   🌮
-  🐖 🔍 searchValue 🔡 ➡️ 🍬🚂 📻
+  🐖 🔍 search 🔡 ➡️ 🍬🚂 📻
 
   🌮 Whether this strings begins with another string. 🌮
   🐖 🎼 testString 🔡 ➡️ 👌 📻
@@ -778,6 +778,17 @@
     various techniques to make this as efficient as possible.
   🌮
   🐖 🔪 from 🚂 length 🚂 ➡️ 📇 📻
+  🌮
+    Finds the first occurrences of *search* in the bytes represented by this
+    instance. Search is done from left to right. Nothingness is returned if
+    *search* cannot be found.
+  🌮
+  🐖 🔍 searchValue 📇 ➡️ 🍬🚂 📻
+  🌮
+    Creates a new data object by with the bytes of this instance and *b*
+    concatenated.
+  🌮
+  🐖 📝 b 📇 ➡️ 📇 📻
 
   🌮 Returns an iterator to iterate over the bytes of this data object. 🌮
   🐖 🍡 ➡️ 🌳🐚🚂 🍇

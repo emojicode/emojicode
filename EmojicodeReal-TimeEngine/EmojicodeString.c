@@ -152,24 +152,18 @@ static Something stringSubstringBridge(Thread *thread){
     return somethingObject(stringSubstring(stackGetThisObject(thread), from, length, thread));
 }
 
-static Something stringSearchBridge(Thread *thread){
+static Something stringIndexOf(Thread *thread){
     String *string = stackGetThisObject(thread)->value;
     String *search = stackGetVariable(0, thread).object->value;
     
-    for (EmojicodeInteger i = 0; i < string->length; ++i){
-        bool found = true;
-        for (EmojicodeInteger j = 0; j < search->length; ++j) {
-            if (characters(string)[i + j] != characters(search)[j]) {
-                found = false;
-                break;
-            }
-        }
-        
-        if (found) {
-            return somethingInteger(i);
-        }
+    void *location = memmem(characters(string), string->length * sizeof(EmojicodeChar),
+                            characters(search), search->length * sizeof(EmojicodeChar));
+    if (!location) {
+        return NOTHINGNESS;
     }
-    return NOTHINGNESS;
+    else {
+        return somethingInteger(((Byte *)location - (Byte *)characters(string)) / sizeof(EmojicodeChar));
+    }
 }
 
 static Something stringTrimBridge(Thread *thread){
@@ -288,7 +282,7 @@ static Something stringUTF8LengthBridge(Thread *thread){
     return somethingInteger((EmojicodeInteger)u8_codingsize(str->characters->value, str->length));
 }
 
-static Something stringByAppendingSymbolBridge(Thread *thread){
+static Something stringByAppendingSymbolBridge(Thread *thread){ //TODO: GC-Safety
     Object *co = newArray((((String *)stackGetThisObject(thread)->value)->length + 1) * sizeof(EmojicodeChar));
     String *string = stackGetThisObject(thread)->value;
     
@@ -557,14 +551,14 @@ FunctionFunctionPointer stringMethodForName(EmojicodeChar name){
             return stringEqualBridge;
         case 0x1f414: //🐔
             return stringLengthBridge;
-        case 0x1F4DD:
+        case 0x1f4dd: //📝
             return stringByAppendingSymbolBridge;
         case 0x1f43d: //🐽
             return stringSymbolAtBridge;
         case 0x1F52A:  //🔪
             return stringSubstringBridge;
         case 0x1F50D: //🔍
-            return stringSearchBridge;
+            return stringIndexOf;
         case 0x1F527: //🔧
             return stringTrimBridge;
         case 0x1F52B: //🔫
