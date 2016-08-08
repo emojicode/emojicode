@@ -18,6 +18,7 @@
 #include "EmojicodeString.h"
 #include "EmojicodeDictionary.h"
 #include "utf8.h"
+#include "algorithms.h"
 
 EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max){
     uint_fast64_t z;
@@ -325,7 +326,7 @@ static Something dataSlice(Thread *thread) {
 static Something dataIndexOf(Thread *thread) {
     Data *data = stackGetThisObject(thread)->value;
     Data *search = stackGetVariable(0, thread).object->value;
-    void *location = memmem(data->bytes, data->length, search->bytes, search->length);
+    void *location = findBytesInBytes(data->bytes, data->length, search->bytes, search->length);
     if (!location) {
         return NOTHINGNESS;
     }

@@ -12,6 +12,7 @@
 #include <math.h>
 #include "utf8.h"
 #include "EmojicodeList.h"
+#include "algorithms.h"
 
 EmojicodeInteger stringCompare(String *a, String *b) {
     if (a == b) {
@@ -156,8 +157,8 @@ static Something stringIndexOf(Thread *thread){
     String *string = stackGetThisObject(thread)->value;
     String *search = stackGetVariable(0, thread).object->value;
     
-    void *location = memmem(characters(string), string->length * sizeof(EmojicodeChar),
-                            characters(search), search->length * sizeof(EmojicodeChar));
+    void *location = findBytesInBytes(characters(string), string->length * sizeof(EmojicodeChar),
+                                      characters(search), search->length * sizeof(EmojicodeChar));
     if (!location) {
         return NOTHINGNESS;
     }
