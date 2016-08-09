@@ -202,7 +202,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
         
         Type t = parse(stream_.consumeToken());
         if (!t.optional()) {
-            throw CompilerErrorException(token, "🍊🍦 can only be used with optionals.");
+            throw CompilerErrorException(token, "Condition assignment can only be used with optionals.");
         }
         
         t = t.copyWithoutOptional();
@@ -520,7 +520,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
             writer.writeCoin(0x61, token);
             
-            parse(stream_.consumeToken(), token, typeBoolean);
+            parseIfExpression(token);
             flowControlBlock();
             returned = false;
             
