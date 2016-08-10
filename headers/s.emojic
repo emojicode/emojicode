@@ -592,6 +592,18 @@
   🌮
   🐖 📰 ➡️ ⚪️ 📻
 
+  🌮
+    Returns a new string in which at least all letters contained in ASCII
+    were converted to uppercase.
+  🌮
+  🐖 📫 ➡️ 🔡 📻
+
+  🌮
+    Returns a new string in which at least all letters contained in ASCII
+    were converted to lowercase.
+  🌮
+  🐖 📪 ➡️ 🔡 📻
+
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
   🐖 🍡 ➡️ 🌳🐚🔣 🍇
     🍎 🔷🌳🐚🔣🆕 🐕

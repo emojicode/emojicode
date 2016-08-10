@@ -10,6 +10,7 @@
 
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 #include "utf8.h"
 #include "EmojicodeList.h"
 #include "algorithms.h"
@@ -532,6 +533,44 @@ static Something stringToDouble(Thread *thread){
     return somethingDouble(d);
 }
 
+static Something stringToUppercase(Thread *thread) {
+    Object *o = newObject(CL_STRING);
+    size_t length = ((String *)stackGetThisObject(thread)->value)->length;
+    stackPush(somethingObject(o), 0, 0, thread);
+    Object *characters = newArray(length * sizeof(EmojicodeChar));
+    o = stackGetThisObject(thread);
+    String *news = o->value;
+    news->characters = characters;
+    news->length = length;
+    stackPop(thread);
+    String *os = stackGetThisObject(thread)->value;
+    for (size_t i = 0; i < length; i++) {
+        EmojicodeChar c = characters(os)[i];
+        if (c <= 'z') characters(news)[i] = toupper(c);
+        else characters(news)[i] = c;
+    }
+    return somethingObject(o);
+}
+
+static Something stringToLowercase(Thread *thread) {
+    Object *o = newObject(CL_STRING);
+    size_t length = ((String *)stackGetThisObject(thread)->value)->length;
+    stackPush(somethingObject(o), 0, 0, thread);
+    Object *characters = newArray(length * sizeof(EmojicodeChar));
+    o = stackGetThisObject(thread);
+    String *news = o->value;
+    news->characters = characters;
+    news->length = length;
+    stackPop(thread);
+    String *os = stackGetThisObject(thread)->value;
+    for (size_t i = 0; i < length; i++) {
+        EmojicodeChar c = characters(os)[i];
+        if (c <= 'z') characters(news)[i] = tolower(c);
+        else characters(news)[i] = c;
+    }
+    return somethingObject(o);
+}
+
 static Something stringCompareBridge(Thread *thread) {
     String *a = stackGetThisObject(thread)->value;
     String *b = stackGetVariable(0, thread).object->value;
@@ -584,6 +623,10 @@ FunctionFunctionPointer stringMethodForName(EmojicodeChar name){
             return stringToDouble;
         case 0x2194: //↔️
             return stringCompareBridge;
+        case 0x1f4eb: //📫
+            return stringToUppercase;
+        case 0x1f4ea: //📪
+            return stringToLowercase;
     }
     return NULL;
 }
