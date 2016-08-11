@@ -280,7 +280,7 @@ static Something dataGetByte(Thread *thread) {
         return NOTHINGNESS;
     }
     
-    return somethingInteger(d->bytes[index]);
+    return somethingInteger((unsigned char)d->bytes[index]);
 }
 
 static Something dataToString(Thread *thread) {

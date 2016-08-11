@@ -776,6 +776,10 @@
     Returns an integer representing the value of the byte at the given index
     `index`. A negative index is assumed to be relative to the end of the data.
 
+    This method treats the byte at the index as if it was an unsigned value, that is the front most
+    bit is also counted towards the value and does not indicate the sign. The value is therefore
+    always positive.
+
     Nothingness is returned if the index is out of range.
   🌮
   🐖 🐽 index 🚂 ➡️ 🍬🚂 📻
