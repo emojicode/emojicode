@@ -451,6 +451,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                     parse(stream_.consumeToken(), token, Type(CL_STRING));
                     parse(stream_.consumeToken(), token, listType);
                 }
+                stream_.consumeToken(TokenType::Identifier);
                 type.genericArguments[0] = listType;
             }
             else {
