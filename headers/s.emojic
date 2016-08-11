@@ -466,10 +466,10 @@
 🍉
 
 🐋 🔣 🍇
-  🌮
-    Creates a 🔡 from this symbol.
-  🌮
+  🌮 Creates a 🔡 from this symbol. 🌮
   🐖 🔡 ➡️ 🔡 📻
+  🌮 Returns the Unicode code point of this symbol. 🌮
+  🐖 🚂 ➡️ 🚂 📻
 🍉
 
 🐋 🔡 🍇

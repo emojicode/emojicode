@@ -395,7 +395,7 @@ static Something integerAbsolute(Thread *thread) {
     return somethingInteger(abs(stackGetThisContext(thread).raw));
 }
 
-static Something stringFromSymbol(Thread *thread){
+static Something symbolToString(Thread *thread){
     Object *co = newArray(sizeof(EmojicodeChar));
     stackPush(somethingObject(co), 0, 0, thread);
     Object *stringObject = newObject(CL_STRING);
@@ -405,6 +405,10 @@ static Something stringFromSymbol(Thread *thread){
     stackPop(thread);
     ((EmojicodeChar *)string->characters->value)[0] = (EmojicodeChar)stackGetThisContext(thread).raw;
     return somethingObject(stringObject);
+}
+
+static Something symbolToInteger(Thread *thread) {
+    return stackGetThisContext(thread);
 }
 
 static Something doubleToString(Thread *thread) {
@@ -630,7 +634,12 @@ FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar 
                     return doubleAbsolute;
             }
         case 0x1f523: //🔣
-            return stringFromSymbol;
+            switch (symbol) {
+                case 0x1f521: //🔡
+                    return symbolToString;
+                case 0x1f682: //🚂
+                    return symbolToInteger;
+            }
         case 0x1F4BB: //💻
             switch (symbol) {
                 case 0x1F6AA:
