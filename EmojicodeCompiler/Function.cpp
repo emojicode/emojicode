@@ -69,6 +69,10 @@ void Function::checkPromises(Function *superFunction, const char *on, Type conte
             ecCharToCharStack(this->name, mn);
             throw CompilerErrorException(this->position(), "%s of %s was marked 🔏.", on, mn);
         }
+        if (this->accessLevel() != superFunction->accessLevel()) {
+            ecCharToCharStack(this->name, mn);
+            throw CompilerErrorException(this->position(), "The access level of %s and its %s don’t match.", mn, on);
+        }
         checkReturnPromise(this->returnType, superFunction->returnType, this->name, this->position(), on, contextType);
         checkArgumentCount(this->arguments.size(), superFunction->arguments.size(), this->name,
                            this->position(), on, contextType);
@@ -83,15 +87,20 @@ void Function::checkPromises(Function *superFunction, const char *on, Type conte
     }
 }
 
-void Function::checkOverride(Function *superFunction) {
-    if (overriding() && !superFunction) {
-        ecCharToCharStack(name, mn);
-        throw CompilerErrorException(position(), "%s was declared ✒️ but does not override anything.", mn);
+bool Function::checkOverride(Function *superFunction) {
+    if (overriding()) {
+        if (!superFunction || superFunction->accessLevel() == AccessLevel::Private) {
+            ecCharToCharStack(name, mn);
+            throw CompilerErrorException(position(), "%s was declared ✒️ but does not override anything.", mn);
+        }
+        return true;
     }
-    else if (!overriding() && superFunction) {
+    
+    if (superFunction && superFunction->accessLevel() != AccessLevel::Private) {
         ecCharToCharStack(name, mn);
         throw CompilerErrorException(position(), "If you want to override %s add ✒️.", mn);
     }
+    return false;
 }
 
 void Function::deprecatedWarning(const Token &callToken) {

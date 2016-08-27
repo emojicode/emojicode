@@ -207,8 +207,7 @@ void analyzeClassesAndWrite(FILE *fout) {
         for (auto method : eclass->methodList()) {
             auto superMethod = eclass->superclass ? eclass->superclass->lookupMethod(method->name) : NULL;
 
-            method->checkOverride(superMethod);
-            if (superMethod) {
+            if (method->checkOverride(superMethod)) {
                 method->checkPromises(superMethod, "super method", classType);
                 method->setVti(superMethod->vti());
             }
@@ -219,8 +218,7 @@ void analyzeClassesAndWrite(FILE *fout) {
         for (auto clMethod : eclass->classMethodList()) {
             auto superMethod = eclass->superclass ? eclass->superclass->lookupClassMethod(clMethod->name) : NULL;
             
-            clMethod->checkOverride(superMethod);
-            if (superMethod) {
+            if (clMethod->checkOverride(superMethod)) {
                 clMethod->checkPromises(superMethod, "super classmethod", classType);
                 clMethod->setVti(superMethod->vti());
             }
@@ -234,9 +232,7 @@ void analyzeClassesAndWrite(FILE *fout) {
         for (auto initializer : eclass->initializerList()) {
             auto superInit = eclass->superclass ? eclass->superclass->lookupInitializer(initializer->name) : NULL;
             
-            initializer->checkOverride(superInit);
-            
-            if (initializer->required) {
+            if (initializer->checkOverride(superInit)) {
                 if (superInit) {
                     initializer->checkPromises(superInit, "super initializer", classType);
                     initializer->setVti(superInit->vti());

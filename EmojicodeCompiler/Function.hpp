@@ -119,7 +119,7 @@ public:
      */
     void checkPromises(Function *superFunction, const char *on, Type contextType);
     
-    void checkOverride(Function *superFunction);
+    bool checkOverride(Function *superFunction);
     
     int vti() const { return vti_; }
     void setVti(int vti);
