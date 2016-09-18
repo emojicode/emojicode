@@ -74,8 +74,8 @@ void printJSONStringToFile(const char *string, FILE *f) {
 void printError(const CompilerErrorException &ce) {
     hasError = true;
     if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":", printedErrorOrWarning ? ",": "",
-                ce.position().line, ce.position().character);
+        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":",
+                printedErrorOrWarning ? ",": "", ce.position().line, ce.position().character);
         printJSONStringToFile(ce.position().file, stderr);
         fprintf(stderr, ", \"message\":");
         printJSONStringToFile(ce.error(), stderr);
@@ -96,8 +96,8 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
     vsprintf(error, err, list);
     
     if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":", printedErrorOrWarning ? ",": "",
-                p.line, p.character);
+        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":",
+                printedErrorOrWarning ? ",": "", p.line, p.character);
         printJSONStringToFile(p.file, stderr);
         fprintf(stderr, ", \"message\":");
         printJSONStringToFile(error, stderr);
@@ -176,7 +176,7 @@ int main(int argc, char * argv[]) {
     while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {
         switch (ch) {
             case 'v':
-                puts("Emojicode Compiler 1.0.0alpha1. Emojicode 0.2. Built with 💚 by Theo Weidmann.");
+                puts("Emojicode 0.3. Built with 💚 by Theo Weidmann.");
                 return 0;
                 break;
             case 'R':

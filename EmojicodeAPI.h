@@ -152,16 +152,17 @@ extern Object* newObject(Class *class);
 extern size_t sizeCalculationWithOverflowProtection(size_t items, size_t itemSize);
 
 /** 
- * Allocates an object with an value area with the size given.
+ * Allocates an array with a value area of the given size.
  * @param size The size of the value area.
  * @warning GC-invoking
  */
 extern Object* newArray(size_t size);
 
 /**
- * Tries to resize the given array object to the given size.
+ * Tries to resize the given array object to the given size and returns a pointer to the resized array.
  * @param array An array object created by @c newArray.
  * @param size The new size.
+ * @returns A pointer to the resized array.
  * @warning GC-invoking
  */
 extern Object* resizeArray(Object *array, size_t size);
