@@ -1,12 +1,12 @@
 //
-//  StaticFunctionAnalyzer.cpp
+//  CallableParserAndGenerator.cpp
 //  Emojicode
 //
 //  Created by Theo Weidmann on 05/01/16.
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include "StaticFunctionAnalyzer.hpp"
+#include "CallableParserAndGenerator.hpp"
 #include "Type.hpp"
 #include "utf8.h"
 #include "Class.hpp"
@@ -18,7 +18,7 @@
 #include "VariableNotFoundErrorException.hpp"
 #include "StringPool.hpp"
 
-Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken,
+Type CallableParserAndGenerator::parse(const Token &token, const Token &parentToken,
                                    Type type, std::vector<CommonTypeFinder> *ctargs) {
     auto returnType = ctargs ? parse(token) : parse(token, type);
     if (!returnType.compatibleTo(type, typeContext, ctargs)) {
@@ -29,7 +29,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token, const Token &parentToken,
     return returnType;
 }
 
-bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
+bool CallableParserAndGenerator::typeIsEnumerable(Type type, Type *elementType) {
     if (type.type() == TypeContent::Class && !type.optional()) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass) {
             for (auto protocol : a->protocols()) {
@@ -43,7 +43,7 @@ bool StaticFunctionAnalyzer::typeIsEnumerable(Type type, Type *elementType) {
     return false;
 }
 
-Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Token &token) {
+Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const Token &token) {
     std::vector<Type> genericArguments;
     std::vector<CommonTypeFinder> genericArgsFinders;
     std::vector<Type> givenArgumentTypes;
@@ -126,7 +126,7 @@ Type StaticFunctionAnalyzer::parseFunctionCall(Type type, Function *p, const Tok
     return p->returnType.resolveOn(typeContext);
 }
 
-void StaticFunctionAnalyzer::writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack,
+void CallableParserAndGenerator::writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack,
                                                   EmojicodeCoin object, SourcePosition p) {
     if (!inObjectScope) {
         writer.writeCoin(stack, p);
@@ -137,9 +137,9 @@ void StaticFunctionAnalyzer::writeCoinForScopesUp(bool inObjectScope, EmojicodeC
     }
 }
 
-void StaticFunctionAnalyzer::flowControlBlock(bool block) {
+void CallableParserAndGenerator::flowControlBlock(bool block) {
     scoper.currentScope().changeInitializedBy(1);
-    if (mode == StaticFunctionAnalyzerMode::ObjectMethod || mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
+    if (mode == CallableParserAndGeneratorMode::ObjectMethod || mode == CallableParserAndGeneratorMode::ObjectInitializer) {
         scoper.objectScope()->changeInitializedBy(1);
     }
     
@@ -172,14 +172,14 @@ void StaticFunctionAnalyzer::flowControlBlock(bool block) {
     }
     
     scoper.currentScope().changeInitializedBy(-1);
-    if (mode == StaticFunctionAnalyzerMode::ObjectMethod || mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
+    if (mode == CallableParserAndGeneratorMode::ObjectMethod || mode == CallableParserAndGeneratorMode::ObjectInitializer) {
         scoper.objectScope()->changeInitializedBy(-1);
     }
     
     flowControlDepth--;
 }
 
-void StaticFunctionAnalyzer::flowControlReturnEnd(FlowControlReturn &fcr) {
+void CallableParserAndGenerator::flowControlReturnEnd(FlowControlReturn &fcr) {
     if (returned) {
         fcr.branchReturns++;
         returned = false;
@@ -187,7 +187,7 @@ void StaticFunctionAnalyzer::flowControlReturnEnd(FlowControlReturn &fcr) {
     fcr.branches++;
 }
 
-void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
+void CallableParserAndGenerator::parseIfExpression(const Token &token) {
     if (stream_.nextTokenIs(E_SOFT_ICE_CREAM)) {
         stream_.consumeToken(TokenType::Identifier);
         writer.writeCoin(0x3E, token);
@@ -214,7 +214,7 @@ void StaticFunctionAnalyzer::parseIfExpression(const Token &token) {
     }
 }
 
-Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
+Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
     switch (token.type()) {
         case TokenType::String: {
             writer.writeCoin(0x10, token);
@@ -294,7 +294,7 @@ Type StaticFunctionAnalyzer::parse(const Token &token, Type expectation) {
     throw CompilerErrorException(token, "Cannot determine expression’s return type.");
 }
 
-Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectation) {
+Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expectation) {
     if (token.value[0] != E_RED_APPLE) {
         // We need a chance to test whether the red apple’s return is used
         effect = true;
@@ -579,7 +579,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_DOG: {
             usedSelf = true;
             writer.writeCoin(0x3C, token);
-            if (mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
+            if (mode == CallableParserAndGeneratorMode::ObjectInitializer) {
                 if (!calledSuper && static_cast<Initializer &>(callable).owningType().eclass()->superclass) {
                     throw CompilerErrorException(token, "Attempt to use 🐕 before superinitializer call.");
                 }
@@ -588,7 +588,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
                                                                             "Instance variable \"%s\" must be initialized before the use of 🐕.");
             }
             
-            if (mode == StaticFunctionAnalyzerMode::Function || mode == StaticFunctionAnalyzerMode::ClassMethod) {
+            if (mode == CallableParserAndGeneratorMode::Function || mode == CallableParserAndGeneratorMode::ClassMethod) {
                 throw CompilerErrorException(token, "Illegal use of 🐕.");
             }
             
@@ -612,7 +612,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             return typeBoolean;
         }
         case E_GOAT: {
-            if (mode != StaticFunctionAnalyzerMode::ObjectInitializer) {
+            if (mode != CallableParserAndGeneratorMode::ObjectInitializer) {
                 throw CompilerErrorException(token, "🐐 can only be used inside initializers.");
             }
             if (!typeContext.calleeType().eclass()->superclass) {
@@ -656,7 +656,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             
             writer.writeCoin(0x60, token);
             
-            if (mode == StaticFunctionAnalyzerMode::ObjectInitializer) {
+            if (mode == CallableParserAndGeneratorMode::ObjectInitializer) {
                 if (static_cast<Initializer &>(callable).canReturnNothingness) {
                     parse(stream_.consumeToken(), token, typeNothingness);
                     return typeNothingness;
@@ -835,7 +835,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
             auto flattenedResult = scoper.flattenedCopy(static_cast<int>(function.arguments.size()));
             auto closureScoper = flattenedResult.first;
             
-            auto analyzer = StaticFunctionAnalyzer(function, package_, mode, typeContext, writer, closureScoper);  // TODO: Intializer
+            auto analyzer = CallableParserAndGenerator(function, package_, mode, typeContext, writer, closureScoper);  // TODO: Intializer
             analyzer.analyze(true);
             
             coinCountPlaceholder.write();
@@ -864,7 +864,7 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
         case E_CHIPMUNK: {
             auto &nameToken = stream_.consumeToken();
             
-            if (mode != StaticFunctionAnalyzerMode::ObjectMethod) {
+            if (mode != CallableParserAndGeneratorMode::ObjectMethod) {
                 throw CompilerErrorException(token, "Not within an object-context.");
             }
             
@@ -1154,25 +1154,25 @@ Type StaticFunctionAnalyzer::parseIdentifier(const Token &token, Type expectatio
     return typeNothingness;
 }
 
-void StaticFunctionAnalyzer::noReturnError(SourcePosition p) {
+void CallableParserAndGenerator::noReturnError(SourcePosition p) {
     if (callable.returnType.type() != TypeContent::Nothingness && !returned) {
         throw CompilerErrorException(p, "An explicit return is missing.");
     }
 }
 
-void StaticFunctionAnalyzer::noEffectWarning(const Token &warningToken) {
+void CallableParserAndGenerator::noEffectWarning(const Token &warningToken) {
     if (!effect) {
         compilerWarning(warningToken, "Statement seems to have no effect whatsoever.");
     }
 }
 
-void StaticFunctionAnalyzer::notStaticError(TypeAvailability t, SourcePosition p, const char *name) {
+void CallableParserAndGenerator::notStaticError(TypeAvailability t, SourcePosition p, const char *name) {
     if (!isStatic(t)) {
         throw CompilerErrorException(p, "%s cannot be used dynamically.", name);
     }
 }
 
-std::pair<Type, TypeAvailability> StaticFunctionAnalyzer::parseTypeAsValue(TypeContext tc, SourcePosition p,
+std::pair<Type, TypeAvailability> CallableParserAndGenerator::parseTypeAsValue(TypeContext tc, SourcePosition p,
                                                                            Type expectation) {
     if (stream_.nextTokenIs(E_BLACK_LARGE_SQUARE)) {
         stream_.consumeToken();
@@ -1195,7 +1195,7 @@ std::pair<Type, TypeAvailability> StaticFunctionAnalyzer::parseTypeAsValue(TypeC
             writer.writeCoin(ot.eclass()->index, p);
             return std::pair<Type, TypeAvailability>(ot, TypeAvailability::StaticAndAvailabale);
         case TypeContent::Self:
-            if (mode != StaticFunctionAnalyzerMode::ClassMethod) {
+            if (mode != CallableParserAndGeneratorMode::ClassMethod) {
                 throw CompilerErrorException(p, "Illegal use of 🐕.");
             }
             writer.writeCoin(0x3C, p);
@@ -1208,7 +1208,7 @@ std::pair<Type, TypeAvailability> StaticFunctionAnalyzer::parseTypeAsValue(TypeC
     return std::pair<Type, TypeAvailability>(ot, TypeAvailability::StaticAndUnavailable);
 }
 
-StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, StaticFunctionAnalyzerMode mode,
+CallableParserAndGenerator::CallableParserAndGenerator(Callable &callable, Package *p, CallableParserAndGeneratorMode mode,
                                                TypeContext typeContext, Writer &writer, CallableScoper &scoper)
         : AbstractParser(p, callable.tokenStream()),
           mode(mode),
@@ -1217,8 +1217,8 @@ StaticFunctionAnalyzer::StaticFunctionAnalyzer(Callable &callable, Package *p, S
           scoper(scoper),
           typeContext(typeContext) {}
 
-void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
-    auto isClassIntializer = mode == StaticFunctionAnalyzerMode::ObjectInitializer;
+void CallableParserAndGenerator::analyze(bool compileDeadCode) {
+    auto isClassIntializer = mode == CallableParserAndGeneratorMode::ObjectInitializer;
     if (isClassIntializer) {
         scoper.objectScope()->changeInitializedBy(-1);
     }
@@ -1271,8 +1271,8 @@ void StaticFunctionAnalyzer::analyze(bool compileDeadCode) {
     }
 }
 
-void StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType,
-                                                     CallableScoper &scoper, StaticFunctionAnalyzerMode mode,
+void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType,
+                                                     CallableScoper &scoper, CallableParserAndGeneratorMode mode,
                                                      bool typeMethod) {
     writer.resetWrittenCoins();
     
@@ -1289,7 +1289,7 @@ void StaticFunctionAnalyzer::writeAndAnalyzeFunction(Function *function, Writer 
     auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
     auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin(function->position());
     
-    auto sca = StaticFunctionAnalyzer(*function, function->package(), mode, TypeContext(classType, function),
+    auto sca = CallableParserAndGenerator(*function, function->package(), mode, TypeContext(classType, function),
                                       writer, scoper);
     sca.analyze();
     

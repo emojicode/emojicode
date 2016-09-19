@@ -1,13 +1,13 @@
 //
-//  StaticFunctionAnalyzer.hpp
+//  CallableParserAndGenerator.hpp
 //  Emojicode
 //
 //  Created by Theo Weidmann on 05/01/16.
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#ifndef StaticFunctionAnalyzer_hpp
-#define StaticFunctionAnalyzer_hpp
+#ifndef CallableParserAndGenerator_hpp
+#define CallableParserAndGenerator_hpp
 
 #include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
@@ -23,7 +23,7 @@ struct FlowControlReturn {
     bool returned() { return branches == branchReturns; }
 };
 
-enum class StaticFunctionAnalyzerMode {
+enum class CallableParserAndGeneratorMode {
     ObjectMethod,
     ObjectInitializer,
     ThisContextFunction,
@@ -44,11 +44,11 @@ enum class TypeAvailability {
 };
 
 /** This class is repsonsible for compiling a @c Callable to bytecode. */
-class StaticFunctionAnalyzer : AbstractParser {
+class CallableParserAndGenerator : AbstractParser {
 public:
     static void writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType, CallableScoper &scoper,
-                                        StaticFunctionAnalyzerMode mode, bool typeMethod);
-    StaticFunctionAnalyzer(Callable &callable, Package *p, StaticFunctionAnalyzerMode mode, TypeContext typeContext,
+                                        CallableParserAndGeneratorMode mode, bool typeMethod);
+    CallableParserAndGenerator(Callable &callable, Package *p, CallableParserAndGeneratorMode mode, TypeContext typeContext,
                            Writer &writer, CallableScoper &scoper);
     
     /** Performs the analyziation. */
@@ -56,7 +56,7 @@ public:
     /** Whether self was used in the callable body. */
     bool usedSelfInBody() { return usedSelf; };
 private:
-    StaticFunctionAnalyzerMode mode;
+    CallableParserAndGeneratorMode mode;
     /** The callable which is processed. */
     Callable &callable;
     /** The writer used for writing the byte code. */
@@ -127,4 +127,4 @@ private:
                                                     || t == TypeAvailability::StaticAndAvailabale; }
 };
 
-#endif /* StaticFunctionAnalyzer_hpp */
+#endif /* CallableParserAndGenerator_hpp */

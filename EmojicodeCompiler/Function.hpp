@@ -62,6 +62,10 @@ class Function: public Callable {
 public:
     static bool foundStart;
     static Function *start;
+    /** Returns a VTI for a function. */
+    static int nextFunctionVti() { return nextVti_++; }
+    /** Returns the number of funciton VTIs assigned. This should be equal to the number of compiled functions. */
+    static int functionCount() { return nextVti_; }
     
     static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
                                    const char *on, Type contextType);
@@ -128,6 +132,7 @@ public:
     
     const char *on;
 private:
+    static int nextVti_;
     int vti_;
     bool final_;
     bool overriding_;

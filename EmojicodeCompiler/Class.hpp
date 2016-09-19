@@ -18,6 +18,7 @@
 #include "Function.hpp"
 #include "TypeContext.hpp"
 #include "Variable.hpp"
+#include "Scope.hpp"
 
 class Type;
 
@@ -27,8 +28,6 @@ public:
     
     Class(EmojicodeChar name, Package *pkg, SourcePosition position, const EmojicodeString &documentation, bool final);
     
-    /** Whether this class eligible for initializer inheritance. */
-    bool inheritsContructors = false;
     /** The class's superclass. @c nullptr if the class has no superclass. */
     Class *superclass = nullptr;
     
@@ -42,17 +41,17 @@ public:
     void addInstanceVariable(const Variable&);
     /** Returns a list of all required intializers. */
     const std::set<EmojicodeChar>& requiredInitializers() const { return requiredInitializers_; }
-    
-    uint16_t nextMethodVti;
-    uint16_t nextInitializerVti;
 
     /** Returns true if @c a inherits from class @c from */
     bool inheritsFrom(Class *from) const;
     
+    /** Whether this class can be subclassed. */
     bool final() const { return final_; }
+    /** Whether this class is eligible for initializer inheritance. */
+    bool inheritsInitializers() const { return inheritsInitializers_; }
     
     /** Declares that this class agrees to the given protocol. */
-    bool addProtocol(Type type);
+    void addProtocol(Type type);
     /** Returns a list of all protocols to which this class conforms. */
     const std::list<Type>& protocols() const { return protocols_; };
     
@@ -62,6 +61,21 @@ public:
     virtual Initializer* lookupInitializer(EmojicodeChar name);
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     virtual ClassMethod* lookupClassMethod(EmojicodeChar name);
+    
+    virtual void finalize();
+    
+    /** Returns an object scope for an instance of the defined type.
+        @warning @c finalize() must be called before a call to this method. */
+    Scope& objectScope() { return objectScope_; }
+    /** Returns the number of instance variables including those inherited from the superclass.
+        @warning @c finalize() must be called before a call to this method. */
+    size_t fullInstanceVariableCount() { return nextInstanceVariableID_; }
+    /** Returns the number of initializers including those inherited from the superclass.
+        @warning @c finalize() must be called before a call to this method. */
+    size_t fullInitializerCount() { return nextInitializerVti_; }
+    /** Returns the number of methods and type methods including those inherited from the superclass.
+        @warning @c finalize() must be called before a call to this method. */
+    size_t fullMethodCount() { return nextMethodVti_; }
 private:
     static std::list<Class *> classes_;
     
@@ -70,6 +84,14 @@ private:
     std::vector<Variable> instanceVariables_;
     
     bool final_;
+    bool inheritsInitializers_;
+    
+    int nextMethodVti_;
+    int nextInitializerVti_;
+
+    Scope objectScope_;
+    
+    size_t nextInstanceVariableID_ = 0;
     
     virtual void handleRequiredInitializer(Initializer *init);
 };

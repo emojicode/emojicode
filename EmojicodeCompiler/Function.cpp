@@ -27,6 +27,7 @@ Type Closure::type() {
 
 bool Function::foundStart = false;
 Function *Function::start;
+int Function::nextVti_ = 0;
 
 //MARK: Function
 

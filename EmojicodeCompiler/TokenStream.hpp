@@ -27,8 +27,8 @@ public:
     /** Tests whether the next token is an identifier and the value’s first element matches the given character. */
     bool nextTokenIs(EmojicodeChar c) const;
     /** 
-     * Tests whether the end of the stream was not reached and the value’s first element matches
-     * the given character. 
+     * Tests whether the end of the stream was not reached and the first element of the next token’s value does not
+     * match the given character.
      */
     bool nextTokenIsEverythingBut(EmojicodeChar c) const;
 private:

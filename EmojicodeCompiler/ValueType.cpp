@@ -10,3 +10,15 @@
 #include "Function.hpp"
 
 std::vector<ValueType *> ValueType::valueType_;
+
+void ValueType::finalize() {
+    for (auto f : methodList()) {
+        f->setVti(Function::nextFunctionVti());
+    }
+    for (auto f : classMethodList()) {
+        f->setVti(Function::nextFunctionVti());
+    }
+    for (auto f : initializerList()) {
+        f->setVti(Function::nextFunctionVti());
+    }
+}

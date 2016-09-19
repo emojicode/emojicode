@@ -31,12 +31,12 @@ public:
     /** Marks the variable as mutated or issues an error if the variable is frozen. */
     void mutate(const Token &variableToken);
     
+    /** Whether the variable was mutated since its definition. */
     bool mutated() const { return mutated_; }
+    /** Whether this is a frozen variable. */
     bool frozen() const { return frozen_; }
 private:
-    /** Indicating whether variable was frozen. */
     bool frozen_;
-    /** Mutated */
     bool mutated_ = false;
     
     int id_;

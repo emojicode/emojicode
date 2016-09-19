@@ -46,9 +46,8 @@ void Class::addInstanceVariable(const Variable &variable) {
     instanceVariables_.push_back(variable);
 }
 
-bool Class::addProtocol(Type protocol) {
+void Class::addProtocol(Type protocol) {
     protocols_.push_back(protocol);
-    return true;
 }
 
 Initializer* Class::lookupInitializer(EmojicodeChar name) {
@@ -57,7 +56,7 @@ Initializer* Class::lookupInitializer(EmojicodeChar name) {
         if (pos != eclass->initializers_.end()) {
             return pos->second;
         }
-        if (!eclass->inheritsContructors) {  // Does this eclass inherit initializers?
+        if (!eclass->inheritsInitializers()) {
             break;
         }
     }
@@ -86,4 +85,79 @@ ClassMethod* Class::lookupClassMethod(EmojicodeChar name) {
 
 void Class::handleRequiredInitializer(Initializer *init) {
     requiredInitializers_.insert(init->name);
+}
+
+void Class::finalize() {
+    if (instanceVariables().size() == 0 && initializerList().size() == 0) {
+        inheritsInitializers_ = true;
+    }
+    
+    if (superclass) {
+        nextInitializerVti_ = inheritsInitializers() ? superclass->nextInitializerVti_ : 0;
+        nextMethodVti_ = superclass->nextMethodVti_;
+        nextInstanceVariableID_ = superclass->nextInstanceVariableID_;
+    }
+    else {
+        nextInitializerVti_ = 0;
+        nextMethodVti_ = 0;
+    }
+    
+    Type classType = Type(this);
+    
+    for (auto method : methodList()) {
+        auto superMethod = superclass ? superclass->lookupMethod(method->name) : NULL;
+        
+        if (method->checkOverride(superMethod)) {
+            method->checkPromises(superMethod, "super method", classType);
+            method->setVti(superMethod->vti());
+        }
+        else {
+            method->setVti(nextMethodVti_++);
+        }
+    }
+    for (auto clMethod : classMethodList()) {
+        auto superMethod = superclass ? superclass->lookupClassMethod(clMethod->name) : NULL;
+        
+        if (clMethod->checkOverride(superMethod)) {
+            clMethod->checkPromises(superMethod, "super classmethod", classType);
+            clMethod->setVti(superMethod->vti());
+        }
+        else {
+            clMethod->setVti(nextMethodVti_++);
+        }
+    }
+    
+    auto subRequiredInitializerNextVti = superclass ? superclass->requiredInitializers().size() : 0;
+    nextInitializerVti_ += requiredInitializers().size();
+    for (auto initializer : initializerList()) {
+        auto superInit = superclass ? superclass->lookupInitializer(initializer->name) : NULL;
+        
+        if (initializer->checkOverride(superInit)) {
+            if (superInit) {
+                initializer->checkPromises(superInit, "super initializer", classType);
+                initializer->setVti(superInit->vti());
+            }
+            else {
+                initializer->setVti(static_cast<int>(subRequiredInitializerNextVti++));
+            }
+        }
+        else {
+            initializer->setVti(nextInitializerVti_++);
+        }
+    }
+    
+    for (Variable var : instanceVariables()) {
+        var.setId(static_cast<int>(nextInstanceVariableID_++));
+        objectScope_.setLocalVariable(var.definitionToken.value, var);
+    }
+    
+    if (nextInstanceVariableID_ > 65536) {
+        throw CompilerErrorException(position(), "You exceeded the limit of 65,536 instance variables.");
+    }
+    
+    if (instanceVariables().size() > 0 && initializerList().size() == 0) {
+        auto str = classType.toString(typeNothingness, true);
+        compilerWarning(position(), "Class %s defines %d instances variables but has no initializers.",
+                        str.c_str(), instanceVariables().size());
+    }
 }

@@ -21,7 +21,9 @@ public:
             valueType_.push_back(this);
     }
     
-    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) { return false; }
+    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) override { return false; }
+    
+    void finalize() override;
 private:
     static std::vector<ValueType *> valueType_;
 };

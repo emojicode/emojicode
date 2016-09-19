@@ -12,7 +12,8 @@
 #include <cstring>
 #include <vector>
 #include "utf8.h"
-#include "StaticAnalyzer.hpp"
+#include "CodeGenerator.hpp"
+#include "Writer.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "CompilerErrorException.hpp"
@@ -233,7 +234,8 @@ int main(int argc, char * argv[]) {
             throw CompilerErrorException(errorPosition, "No 🏁 block was found.");
         }
         
-        analyzeClassesAndWrite(out);
+        Writer writer = Writer(out);
+        generateCode(writer);
     }
     catch (CompilerErrorException &ce) {
         printError(ce);

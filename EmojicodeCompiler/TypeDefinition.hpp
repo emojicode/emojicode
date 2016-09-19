@@ -25,6 +25,9 @@ public:
     Package* package() const { return package_; }
     /** The position at which this type was initially defined. */
     const SourcePosition& position() const { return position_; }
+    /** Computes the type definition’s size and other values that must be
+        computed before functional code can be compiled. */
+    virtual void finalize() {}
 protected:
     TypeDefinition(EmojicodeChar name, Package *p, SourcePosition position, const EmojicodeString &doc)
         : name_(name),

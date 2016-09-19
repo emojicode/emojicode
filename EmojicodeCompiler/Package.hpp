@@ -70,8 +70,10 @@ public:
      * @return Whether the type could be found or not. @c type is untouched if @c false was returned.
      */
     bool fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, SourcePosition errorPosition, Type *type);
-    
+    /** Returns the loaded packages in the order in which they were loaded. */
     static const std::list<Package *>& packagesInOrder() { return packagesLoadingOrder_; };
+    /** Searches the loaded packages for the package with the given name. If the package has not been loaded @c nullptr
+        is returned. */
     static Package* findPackage(const char *name);
 private:
     void loadInto(Package *destinationPackage, EmojicodeChar ns, const Token &errorToken) const;
