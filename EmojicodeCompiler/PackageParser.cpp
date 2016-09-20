@@ -325,20 +325,18 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
             throw CompilerErrorException(token, "An 🍬 is not a valid superclass.");
         }
         
-        eclass->superclass = type.eclass();
-        
-        eclass->setSuperTypeDef(eclass->superclass);
+        eclass->setSuperclass(type.eclass());
+        eclass->setSuperTypeDef(eclass->superclass());
         parseGenericArgumentsForType(&type, Type(eclass), TypeDynamism::GenericTypeVariables, token);
         eclass->setSuperGenericArguments(type.genericArguments);
         
-        if (eclass->superclass->final()) {
+        if (eclass->superclass()->final()) {
             auto string = type.toString(Type(eclass), true);
             throw CompilerErrorException(token, "%s can’t be used as superclass as it was marked with 🔏.",
                                          string.c_str());
         }
     }
     else {
-        eclass->superclass = nullptr;
         eclass->finalizeGenericArguments();
     }
     
@@ -346,10 +344,10 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
     package_->registerClass(eclass);
     
     std::set<EmojicodeChar> requiredInitializers;
-    if (eclass->superclass != nullptr) {
+    if (eclass->superclass() != nullptr) {
         // This set contains methods that must be implemented.
         // If a method is implemented it gets removed from this list by parseClassBody.
-        requiredInitializers = std::set<EmojicodeChar>(eclass->superclass->requiredInitializers());
+        requiredInitializers = std::set<EmojicodeChar>(eclass->superclass()->requiredInitializers());
     }
     
     parseTypeDefinitionBody(Type(eclass), &requiredInitializers, true);

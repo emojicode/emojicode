@@ -21,8 +21,8 @@ void writeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass();
     
     writer.writeEmojicodeChar(eclass->name());
-    if (eclass->superclass) {
-        writer.writeUInt16(eclass->superclass->index);
+    if (eclass->superclass()) {
+        writer.writeUInt16(eclass->superclass()->index);
     }
     else {
         // If the class does not have a superclass the own index is written.

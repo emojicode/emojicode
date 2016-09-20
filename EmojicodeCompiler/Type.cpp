@@ -200,7 +200,7 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, ct, ctargs);
     }
     if (this->type() == TypeContent::Class && to.type() == TypeContent::Protocol) {
-        for (Class *a = this->eclass(); a != nullptr; a = a->superclass) {
+        for (Class *a = this->eclass(); a != nullptr; a = a->superclass()) {
             for (auto protocol : a->protocols()) {
                 if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
             }
@@ -370,7 +370,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
                             return;
                         }
                     }
-                } while ((eclass = eclass->superclass));
+                } while ((eclass = eclass->superclass()));
             }
             else if (typeContext.calleeType().canHaveGenericArguments()) {
                 for (auto it : typeContext.calleeType().typeDefinitionFunctional()->ownGenericArgumentVariables()) {

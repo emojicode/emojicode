@@ -29,7 +29,9 @@ public:
     Class(EmojicodeChar name, Package *pkg, SourcePosition position, const EmojicodeString &documentation, bool final);
     
     /** The class's superclass. @c nullptr if the class has no superclass. */
-    Class *superclass = nullptr;
+    Class* superclass() const { return superclass_; };
+    /** Sets the class superclass to the given class. */
+    void setSuperclass(Class *);
     
     uint16_t index;
     
@@ -90,6 +92,7 @@ private:
     int nextInitializerVti_;
 
     Scope objectScope_;
+    Class *superclass_ = nullptr;
     
     size_t nextInstanceVariableID_ = 0;
     

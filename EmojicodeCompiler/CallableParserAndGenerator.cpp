@@ -31,7 +31,7 @@ Type CallableParserAndGenerator::parse(const Token &token, const Token &parentTo
 
 bool CallableParserAndGenerator::typeIsEnumerable(Type type, Type *elementType) {
     if (type.type() == TypeContent::Class && !type.optional()) {
-        for (Class *a = type.eclass(); a != nullptr; a = a->superclass) {
+        for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
             for (auto protocol : a->protocols()) {
                 if (protocol.protocol() == PR_ENUMERATEABLE) {
                     *elementType = protocol.resolveOn(type).genericArguments[0];
@@ -580,7 +580,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             usedSelf = true;
             writer.writeCoin(0x3C, token);
             if (mode == CallableParserAndGeneratorMode::ObjectInitializer) {
-                if (!calledSuper && static_cast<Initializer &>(callable).owningType().eclass()->superclass) {
+                if (!calledSuper && static_cast<Initializer &>(callable).owningType().eclass()->superclass()) {
                     throw CompilerErrorException(token, "Attempt to use 🐕 before superinitializer call.");
                 }
                 
@@ -615,7 +615,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             if (mode != CallableParserAndGeneratorMode::ObjectInitializer) {
                 throw CompilerErrorException(token, "🐐 can only be used inside initializers.");
             }
-            if (!typeContext.calleeType().eclass()->superclass) {
+            if (!typeContext.calleeType().eclass()->superclass()) {
                 throw CompilerErrorException(token, "🐐 can only be used if the eclass inherits from another.");
             }
             if (calledSuper) {
@@ -633,11 +633,11 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             Class *eclass = typeContext.calleeType().eclass();
             
             writer.writeCoin(0xF, token);
-            writer.writeCoin(eclass->superclass->index, token);
+            writer.writeCoin(eclass->superclass()->index, token);
             
             auto &initializerToken = stream_.consumeToken(TokenType::Identifier);
             
-            auto initializer = eclass->superclass->getInitializer(initializerToken, Type(eclass), typeContext);
+            auto initializer = eclass->superclass()->getInitializer(initializerToken, Type(eclass), typeContext);
             
             writer.writeCoin(initializer->vti(), token);
             
@@ -868,7 +868,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerErrorException(token, "Not within an object-context.");
             }
             
-            Class *superclass = typeContext.calleeType().eclass()->superclass;
+            Class *superclass = typeContext.calleeType().eclass()->superclass();
             
             if (superclass == nullptr) {
                 throw CompilerErrorException(token, "Class has no superclass.");
@@ -1256,7 +1256,7 @@ void CallableParserAndGenerator::analyze(bool compileDeadCode) {
             scoper.objectScope()->initializerUnintializedVariablesCheck(initializer.position(),
                                                                     "Instance variable \"%s\" must be initialized.");
             
-            if (!calledSuper && typeContext.calleeType().eclass()->superclass) {
+            if (!calledSuper && typeContext.calleeType().eclass()->superclass()) {
                 ecCharToCharStack(initializer.name, initializerName);
                 throw CompilerErrorException(initializer.position(),
                               "Missing call to superinitializer in initializer %s.", initializerName);

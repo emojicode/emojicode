@@ -26,6 +26,10 @@ Class::Class(EmojicodeChar name, Package *pkg, SourcePosition p, const Emojicode
     classes_.push_back(this);
 }
 
+void Class::setSuperclass(Class *eclass) {
+    superclass_ = eclass;
+}
+
 bool Class::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) {
     if (Class *cl = dynamic_cast<Class *>(resolutionConstraint)) {
         return inheritsFrom(cl);
@@ -34,7 +38,7 @@ bool Class::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) {
 }
 
 bool Class::inheritsFrom(Class *from) const {
-    for (const Class *a = this; a != nullptr; a = a->superclass) {
+    for (const Class *a = this; a != nullptr; a = a->superclass()) {
         if (a == from) {
             return true;
         }
@@ -51,7 +55,7 @@ void Class::addProtocol(Type protocol) {
 }
 
 Initializer* Class::lookupInitializer(EmojicodeChar name) {
-    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
+    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->initializers_.find(name);
         if (pos != eclass->initializers_.end()) {
             return pos->second;
@@ -64,7 +68,7 @@ Initializer* Class::lookupInitializer(EmojicodeChar name) {
 }
 
 Method* Class::lookupMethod(EmojicodeChar name) {
-    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
+    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->methods_.find(name);
         if (pos != eclass->methods_.end()) {
             return pos->second;
@@ -74,7 +78,7 @@ Method* Class::lookupMethod(EmojicodeChar name) {
 }
 
 ClassMethod* Class::lookupClassMethod(EmojicodeChar name) {
-    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass) {
+    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->classMethods_.find(name);
         if (pos != eclass->classMethods_.end()) {
             return pos->second;
@@ -92,10 +96,10 @@ void Class::finalize() {
         inheritsInitializers_ = true;
     }
     
-    if (superclass) {
-        nextInitializerVti_ = inheritsInitializers() ? superclass->nextInitializerVti_ : 0;
-        nextMethodVti_ = superclass->nextMethodVti_;
-        nextInstanceVariableID_ = superclass->nextInstanceVariableID_;
+    if (superclass()) {
+        nextInitializerVti_ = inheritsInitializers() ? superclass()->nextInitializerVti_ : 0;
+        nextMethodVti_ = superclass()->nextMethodVti_;
+        nextInstanceVariableID_ = superclass()->nextInstanceVariableID_;
     }
     else {
         nextInitializerVti_ = 0;
@@ -105,7 +109,7 @@ void Class::finalize() {
     Type classType = Type(this);
     
     for (auto method : methodList()) {
-        auto superMethod = superclass ? superclass->lookupMethod(method->name) : NULL;
+        auto superMethod = superclass() ? superclass()->lookupMethod(method->name) : NULL;
         
         if (method->checkOverride(superMethod)) {
             method->checkPromises(superMethod, "super method", classType);
@@ -116,7 +120,7 @@ void Class::finalize() {
         }
     }
     for (auto clMethod : classMethodList()) {
-        auto superMethod = superclass ? superclass->lookupClassMethod(clMethod->name) : NULL;
+        auto superMethod = superclass() ? superclass()->lookupClassMethod(clMethod->name) : NULL;
         
         if (clMethod->checkOverride(superMethod)) {
             clMethod->checkPromises(superMethod, "super classmethod", classType);
@@ -127,10 +131,10 @@ void Class::finalize() {
         }
     }
     
-    auto subRequiredInitializerNextVti = superclass ? superclass->requiredInitializers().size() : 0;
+    auto subRequiredInitializerNextVti = superclass() ? superclass()->requiredInitializers().size() : 0;
     nextInitializerVti_ += requiredInitializers().size();
     for (auto initializer : initializerList()) {
-        auto superInit = superclass ? superclass->lookupInitializer(initializer->name) : NULL;
+        auto superInit = superclass() ? superclass()->lookupInitializer(initializer->name) : NULL;
         
         if (initializer->checkOverride(superInit)) {
             if (superInit) {
