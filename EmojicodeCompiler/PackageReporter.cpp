@@ -218,10 +218,10 @@ void reportPackage(Package *package) {
                                eclass->superGenericArguments().size(), TypeContext(Type(eclass)));
         reportDocumentation(eclass->documentation());
         
-        if (eclass->superclass) {
-            ecCharToCharStack(eclass->superclass->name(), superClassName);
+        if (eclass->superclass()) {
+            ecCharToCharStack(eclass->superclass()->name(), superClassName);
             printf("\"superclass\":{\"package\":\"%s\",\"name\":\"%s\"},",
-                   eclass->superclass->package()->name(), superClassName);
+                   eclass->superclass()->package()->name(), superClassName);
         }
         
         printf("\"methods\":[");
