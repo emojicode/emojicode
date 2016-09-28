@@ -3,26 +3,21 @@
 Emojicode is an open source, high-level, multi-paradigm
 programming language consisting of emojis. It features Object-Orientation, Optionals, Generics and Closures.
 
-## Getting Started
+## 🏁 Getting Started
 
-To learn more about the language and getting started visit
-http://www.emojicode.org/docs.
+To learn more about the language and get started quickly visit Emojicode’s
+[documentation](http://www.emojicode.org/docs).
 
-## Installing
+You can easily install Emojicode from our stable prebuilt binaries.
+[See Installing Emojicode](http://www.emojicode.org/docs/guides/install.html)
+for instructions.
 
-You can easily install Emojicode from our stable prebuilt binaries:
-http://www.emojicode.org/docs/guides/install.html.
-
-## Staying up to date
+## 🗞 Staying up to date
 
 Follow Emojicode’s Twitter account
 [@Real_Emojicode](https://twitter.com/Real_Emojicode).
 
-## Contributions
-
-Contributions are welcome! A contribution guideline will be setup soon.
-
-## Building from source
+## 🔨 Building from source
 
 If you need to build Emojicode from source you can of course also do this. **We, however, recommend you to install Emojicode from the prebuilt binaries if possible.**
 
@@ -81,3 +76,22 @@ Steps:
 
   After the command is done you will find a directory and a tarfile
 in `builds` named after your platform, e.g. `Emojicode-0.3-beta.2-x86_64-linux-gnu`.
+
+## 📝 Contributions
+
+Want to improve something? Great! First of all, please be nice and helpful.
+You can help in lots of ways, like reporting bugs, fixing bugs, improving the
+documentation, suggesting new features, or implementing new features.
+
+Whatever you want to do, please look for an existing issue or create a new one
+to discuss your plans briefly.
+
+## 📃 License
+
+Emojicode [is licensed under the Artistic License 2.0](LICENSE).
+If you don’t want to read the whole license, here’s a summary without legal force:
+
+- You are allowed to download, use, copy, publish and distribute Emojicode.
+- You are allowed to create modified versions of Emojicode but you may only distribute them on some conditions.
+-  The license contains a grant of patent rights and does not allow you to use any trademark, service mark, tradename, or logo.
+- Emojicode comes with absolutely no warranty.
