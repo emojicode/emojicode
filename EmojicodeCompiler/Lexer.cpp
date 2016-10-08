@@ -46,6 +46,7 @@ TokenStream lex(const char *path) {
     bool oneLineComment = false;
     bool isHex = false;
     bool escapeSequence = false;
+	bool possiblyIdentifier = false;
     
     fseek(f, 0, SEEK_END);
     long length = ftell(f);
@@ -133,7 +134,7 @@ TokenStream lex(const char *path) {
                     }
                     continue;
                 case TokenType::Variable:
-                    if (detectWhitespace(c, &sourcePosition.character, &sourcePosition.line)) {
+                    if ((c != 0xFE0F) && detectWhitespace(c, &sourcePosition.character, &sourcePosition.line)) {
                         /* End of variable */
                         nextToken = true;
                         continue;
@@ -142,6 +143,29 @@ TokenStream lex(const char *path) {
                         /* End of variable */
                         nextToken = true;
                     }
+					else if (c == 0xFE0F) {
+						// Variation Selector 16
+						possiblyIdentifier = true;
+						continue;
+					}
+					else if (possiblyIdentifier) {
+						if (c == 0x20E3) {
+							// COMBINING ENCLOSING KEYCAP: This is a keycap emoji
+							auto first = token->value[0];
+							token->value.clear();
+							token->value.push_back(first);
+							token->type_ = TokenType::Identifier;
+							nextToken = true;
+							continue;
+						}
+						else {
+							// There was just a misplaced Variation Selector, delete and move on
+							possiblyIdentifier = false;
+							token->value.pop_back();
+							token->value.push_back(c);
+							continue;
+						}
+					}
                     else {
                         token->value.push_back(c);
                         continue;
@@ -166,6 +190,29 @@ TokenStream lex(const char *path) {
                     else if (c == '_') {
                         continue;
                     }
+					else if (c == 0xFE0F) {
+						// Variation Selector 16
+						possiblyIdentifier = true;
+						continue;
+					}
+					else if (possiblyIdentifier) {
+						if (c == 0x20E3) {
+							// COMBINING ENCLOSING KEYCAP: This is a keycap emoji
+							auto first = token->value[0];
+							token->value.clear();
+							token->value.push_back(first);
+							token->type_ = TokenType::Identifier;
+							nextToken = true;
+							continue;
+						}
+						else {
+							// There was just a misplaced Variation Selector, delete and move on
+							possiblyIdentifier = false;
+							token->value.pop_back();
+							token->value.push_back(c);
+							continue;
+						}
+					}
                     else {
                         token->validateInteger(isHex);
                         // An unexpected character, seems to be a new token
@@ -216,6 +263,7 @@ TokenStream lex(const char *path) {
             token->value.push_back(c);
             
             isHex = false;
+			possiblyIdentifier = false;
         }
         else if (c == E_THUMBS_UP_SIGN || c == E_THUMBS_DOWN_SIGN) {
             token->type_ = (c == E_THUMBS_UP_SIGN) ? TokenType::BooleanTrue : TokenType::BooleanFalse;
@@ -240,6 +288,8 @@ TokenStream lex(const char *path) {
         else {
             token->type_ = TokenType::Variable;
             token->value.push_back(c);
+			
+			possiblyIdentifier = false;
         }
     }
     delete [] stringBuffer;
