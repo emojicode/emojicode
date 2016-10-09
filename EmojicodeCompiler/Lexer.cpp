@@ -22,6 +22,23 @@ bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line) {
     return isWhitespace(c);
 }
 
+#define checkForVS16(c) (c == 0xFE0F)
+
+#define checkAndConvertIfIdentifier() \
+    if (c == 0x20E3) { \
+        /* COMBINING ENCLOSING KEYCAP: This is a keycap emoji */ \
+        auto first = token->value[0]; \
+        token->value.clear(); \
+        token->value.push_back(first); \
+        token->type_ = TokenType::Identifier; \
+        nextToken = true; \
+    } \
+    else { \
+        /* There was just a misplaced Variation Selector, ignore and move on */ \
+        possiblyIdentifier = false; \
+        token->value.push_back(c); \
+    }
+
 TokenStream lex(const char *path) {
     FILE *f = fopen(path, "rb");
     if (!f || ferror(f)) {
@@ -46,6 +63,7 @@ TokenStream lex(const char *path) {
     bool oneLineComment = false;
     bool isHex = false;
     bool escapeSequence = false;
+    bool possiblyIdentifier = false;
     
     fseek(f, 0, SEEK_END);
     long length = ftell(f);
@@ -60,7 +78,7 @@ TokenStream lex(const char *path) {
         throw CompilerErrorException(sourcePosition, "Cannot allocate buffer for file %s. It is possibly to large.", path);
     }
     
-#define isIdentifier() ((0x1F300 <= c && c <= 0x1F64F) || (0x1F680 <= c && c <= 0x1F6C5) || (0x1F6CB <= c && c <= 0x1F6F3) || (0x2600 <= c && c <= 0x27BF) || (0x1F191 <= c && c <= 0x1F19A) || c == 0x231A || (0x1F910 <= c && c <= 0x1F9C0) || (0x2B00 <= c && c <= 0x2BFF) || (0x25A0 <= c && c <= 0x25FF) || (0x2300 <= c && c <= 0x23FF) || (0x2190 <= c && c <= 0x21FF))
+#define isIdentifier() ((0x1F300 <= c && c <= 0x1F64F) || (0x1F680 <= c && c <= 0x1F6C5) || (0x1F6CB <= c && c <= 0x1F6F3) || (0x2600 <= c && c <= 0x27BF) || (0x1F191 <= c && c <= 0x1F19A) || c == 0x231A || (0x1F910 <= c && c <= 0x1F9C0) || (0x2B00 <= c && c <= 0x2BFF) || (0x25A0 <= c && c <= 0x25FF) || (0x2300 <= c && c <= 0x23FF) || (0x2190 <= c && c <= 0x21FF) || (c == 0x2139) || (0x2934 <= c && c <= 0x2935))
     
     while (i < length) {
         size_t delta = i;
@@ -133,7 +151,7 @@ TokenStream lex(const char *path) {
                     }
                     continue;
                 case TokenType::Variable:
-                    if (detectWhitespace(c, &sourcePosition.character, &sourcePosition.line)) {
+                    if ((c != 0xFE0F) && detectWhitespace(c, &sourcePosition.character, &sourcePosition.line)) {
                         /* End of variable */
                         nextToken = true;
                         continue;
@@ -141,6 +159,14 @@ TokenStream lex(const char *path) {
                     else if (isIdentifier() || c == 0x3017 || c == 0x3016) {
                         /* End of variable */
                         nextToken = true;
+                    }
+                    else if (checkForVS16(c)) {
+                        possiblyIdentifier = true;
+                        continue;
+                    }
+                    else if (possiblyIdentifier) {
+                        checkAndConvertIfIdentifier();
+                        continue;
                     }
                     else {
                         token->value.push_back(c);
@@ -164,6 +190,14 @@ TokenStream lex(const char *path) {
                         continue;
                     }
                     else if (c == '_') {
+                        continue;
+                    }
+                    else if (checkForVS16(c)) {
+                        possiblyIdentifier = true;
+                        continue;
+                    }
+                    else if (possiblyIdentifier) {
+                        checkAndConvertIfIdentifier();
                         continue;
                     }
                     else {
@@ -216,6 +250,7 @@ TokenStream lex(const char *path) {
             token->value.push_back(c);
             
             isHex = false;
+            possiblyIdentifier = false;
         }
         else if (c == E_THUMBS_UP_SIGN || c == E_THUMBS_DOWN_SIGN) {
             token->type_ = (c == E_THUMBS_UP_SIGN) ? TokenType::BooleanTrue : TokenType::BooleanFalse;
@@ -240,6 +275,8 @@ TokenStream lex(const char *path) {
         else {
             token->type_ = TokenType::Variable;
             token->value.push_back(c);
+            
+            possiblyIdentifier = false;
         }
     }
     delete [] stringBuffer;
