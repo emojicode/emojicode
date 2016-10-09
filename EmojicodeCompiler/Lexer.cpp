@@ -160,12 +160,15 @@ TokenStream lex(const char *path) {
                         /* End of variable */
                         nextToken = true;
                     }
+                    else if (checkForVS16(c)) {
+                        possiblyIdentifier = true;
+                        continue;
+                    }
                     else if (possiblyIdentifier) {
                         checkAndConvertIfIdentifier();
                         continue;
                     }
                     else {
-                        possiblyIdentifier = checkForVS16(c);
                         token->value.push_back(c);
                         continue;
                     }
