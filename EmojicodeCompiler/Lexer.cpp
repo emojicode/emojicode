@@ -22,6 +22,23 @@ bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line) {
     return isWhitespace(c);
 }
 
+#define checkForVS16(c) (c == 0xFE0F)
+
+#define checkAndConvertIfIdentifier() \
+    if (c == 0x20E3) { \
+        /* COMBINING ENCLOSING KEYCAP: This is a keycap emoji */ \
+        auto first = token->value[0]; \
+        token->value.clear(); \
+        token->value.push_back(first); \
+        token->type_ = TokenType::Identifier; \
+        nextToken = true; \
+    } \
+    else { \
+        /* There was just a misplaced Variation Selector, ignore and move on */ \
+        possiblyIdentifier = false; \
+        token->value.push_back(c); \
+    }
+
 TokenStream lex(const char *path) {
     FILE *f = fopen(path, "rb");
     if (!f || ferror(f)) {
@@ -143,30 +160,12 @@ TokenStream lex(const char *path) {
                         /* End of variable */
                         nextToken = true;
                     }
-                    else if (c == 0xFE0F) {
-                        // Variation Selector 16
-                        possiblyIdentifier = true;
+                    else if (possiblyIdentifier) {
+                        checkAndConvertIfIdentifier();
                         continue;
                     }
-                    else if (possiblyIdentifier) {
-                        if (c == 0x20E3) {
-                            // COMBINING ENCLOSING KEYCAP: This is a keycap emoji
-                            auto first = token->value[0];
-                            token->value.clear();
-                            token->value.push_back(first);
-                            token->type_ = TokenType::Identifier;
-                            nextToken = true;
-                            continue;
-                        }
-                        else {
-                            // There was just a misplaced Variation Selector, delete and move on
-                            possiblyIdentifier = false;
-                            token->value.pop_back();
-                            token->value.push_back(c);
-                            continue;
-                        }
-                    }
                     else {
+                        possiblyIdentifier = checkForVS16(c);
                         token->value.push_back(c);
                         continue;
                     }
@@ -190,28 +189,13 @@ TokenStream lex(const char *path) {
                     else if (c == '_') {
                         continue;
                     }
-                    else if (c == 0xFE0F) {
-                        // Variation Selector 16
+                    else if (checkForVS16(c)) {
                         possiblyIdentifier = true;
                         continue;
                     }
                     else if (possiblyIdentifier) {
-                        if (c == 0x20E3) {
-                            // COMBINING ENCLOSING KEYCAP: This is a keycap emoji
-                            auto first = token->value[0];
-                            token->value.clear();
-                            token->value.push_back(first);
-                            token->type_ = TokenType::Identifier;
-                            nextToken = true;
-                            continue;
-                        }
-                        else {
-                            // There was just a misplaced Variation Selector, delete and move on
-                            possiblyIdentifier = false;
-                            token->value.pop_back();
-                            token->value.push_back(c);
-                            continue;
-                        }
+                        checkAndConvertIfIdentifier();
+                        continue;
                     }
                     else {
                         token->validateInteger(isHex);
