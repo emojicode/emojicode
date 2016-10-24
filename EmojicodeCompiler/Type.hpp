@@ -22,7 +22,6 @@ class Protocol;
 class Package;
 class TypeDefinitionFunctional;
 class TypeContext;
-class Function;
 class ValueType;
 struct CommonTypeFinder;
 

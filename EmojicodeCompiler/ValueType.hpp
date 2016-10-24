@@ -24,8 +24,11 @@ public:
     bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) override { return false; }
     
     void finalize() override;
+    int assignedFunctionCount() const { return assignedFunctionCount_; };
 private:
     static std::vector<ValueType *> valueType_;
+    int assignedFunctionCount_ = 0;
+    int nextFunctionVti();
 };
 
 #endif /* ValueType_hpp */

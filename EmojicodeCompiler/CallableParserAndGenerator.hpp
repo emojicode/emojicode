@@ -11,24 +11,17 @@
 
 #include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
-#include "Writer.hpp"
 #include "CallableScoper.hpp"
 #include "AbstractParser.hpp"
 #include "TypeContext.hpp"
+#include "CallableWriter.hpp"
+#include "CallableParserAndGeneratorMode.hpp"
 
 struct FlowControlReturn {
     int branches = 0;
     int branchReturns = 0;
     
     bool returned() { return branches == branchReturns; }
-};
-
-enum class CallableParserAndGeneratorMode {
-    ObjectMethod,
-    ObjectInitializer,
-    ThisContextFunction,
-    ClassMethod,
-    Function
 };
 
 enum class TypeAvailability {
@@ -46,10 +39,10 @@ enum class TypeAvailability {
 /** This class is repsonsible for compiling a @c Callable to bytecode. */
 class CallableParserAndGenerator : AbstractParser {
 public:
-    static void writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType, CallableScoper &scoper,
-                                        CallableParserAndGeneratorMode mode, bool typeMethod);
-    CallableParserAndGenerator(Callable &callable, Package *p, CallableParserAndGeneratorMode mode, TypeContext typeContext,
-                           Writer &writer, CallableScoper &scoper);
+    static void writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type classType,
+                                        CallableScoper &scoper, CallableParserAndGeneratorMode mode);
+    CallableParserAndGenerator(Callable &callable, Package *p, CallableParserAndGeneratorMode mode,
+                               TypeContext typeContext, CallableWriter &writer, CallableScoper &scoper);
     
     /** Performs the analyziation. */
     void analyze(bool compileDeadCode = false);
@@ -60,7 +53,7 @@ private:
     /** The callable which is processed. */
     Callable &callable;
     /** The writer used for writing the byte code. */
-    Writer &writer;
+    CallableWriter &writer;
     /** The scoper responsible for scoping the function being compiled. */
     CallableScoper &scoper;
     

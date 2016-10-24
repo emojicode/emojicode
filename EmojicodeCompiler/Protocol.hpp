@@ -23,10 +23,10 @@ public:
     
     bool canBeUsedToResolve(TypeDefinitionFunctional *a);
     
-    Method* getMethod(const Token &token, Type type, TypeContext typeContext);
-    Method* lookupMethod(EmojicodeChar name);
-    void addMethod(Method *method);
-    const std::vector<Method*>& methods() { return methodList_; };
+    Function* getMethod(const Token &token, Type type, TypeContext typeContext);
+    Function* lookupMethod(EmojicodeChar name);
+    void addMethod(Function *method);
+    const std::vector<Function*>& methods() { return methodList_; };
     
     bool usesSelf() const { return usesSelf_; }
     void setUsesSelf() { usesSelf_ = true; }
@@ -34,12 +34,12 @@ private:
     static uint_fast16_t nextIndex;
     
     /** List of all methods. */
-    std::vector<Method *> methodList_;
+    std::vector<Function *> methodList_;
     
     bool usesSelf_ = false;
     
     /** Hashmap holding methods. @warning Don't access it directly, use the correct functions. */
-    std::map<EmojicodeChar, Method*> methods_;
+    std::map<EmojicodeChar, Function*> methods_;
 };
 
 #endif /* Protocol_hpp */

@@ -639,7 +639,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             auto initializer = eclass->superclass()->getInitializer(initializerToken, Type(eclass), typeContext);
             
-            writer.writeCoin(initializer->vti(), token);
+            writer.writeCoin(initializer->vtiForUse(), token);
             
             parseFunctionCall(typeContext.calleeType(), initializer, token);
 
@@ -766,7 +766,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             auto method = type.eclass()->getMethod(methodToken, type, typeContext);
             
-            writer.writeCoin(method->vti(), token);
+            writer.writeCoin(method->vtiForUse(), token);
             
             auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
             parseFunctionCall(type, method, token);
@@ -818,7 +818,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             }
 
             function->deprecatedWarning(token);
-            writer.writeCoin(function->vti(), token);
+            writer.writeCoin(function->vtiForUse(), token);
             return function->type();
         }
         case E_GRAPES: {
@@ -874,12 +874,12 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerErrorException(token, "Class has no superclass.");
             }
             
-            Method *method = superclass->getMethod(nameToken, Type(superclass), typeContext);
+            Function *method = superclass->getMethod(nameToken, Type(superclass), typeContext);
             
             writer.writeCoin(0x5, token);
             writer.writeCoin(0xF, token);
             writer.writeCoin(superclass->index, token);
-            writer.writeCoin(method->vti(), token);
+            writer.writeCoin(method->vtiForUse(), token);
             
             return parseFunctionCall(typeContext.calleeType(), method, token);
         }
@@ -920,7 +920,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 placeholder.write(0x7);
                 
                 auto initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
-                writer.writeCoin(initializer->vti(), token);
+                writer.writeCoin(initializer->vtiForUse(), token);
                 parseFunctionCall(type, initializer, token);
                 if (initializer->canReturnNothingness) {
                     type.setOptional();
@@ -939,7 +939,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 
                 initializer->deprecatedWarning(initializerName);
                 
-                writer.writeCoin(initializer->vti(), token);
+                writer.writeCoin(initializer->vtiForUse(), token);
                 
                 parseFunctionCall(type, initializer, token);
                 
@@ -963,16 +963,16 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 compilerWarning(token, "You cannot call optionals on 🍬.");
             }
 
-            ClassMethod *method;
+            Function *method;
             if (type.type() == TypeContent::Class) {
                 placeholder.write(0x2);
                 method = type.typeDefinitionFunctional()->getClassMethod(methodToken, type, typeContext);
-                writer.writeCoin(method->vti(), token);
+                writer.writeCoin(method->vtiForUse(), token);
             }
             else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
                 method = type.typeDefinitionFunctional()->getClassMethod(methodToken, type, typeContext);
                 placeholder.write(0x7);
-                writer.writeCoin(method->vti(), token);
+                writer.writeCoin(method->vtiForUse(), token);
             }
             else {
                 throw CompilerErrorException(token, "You can’t call type methods on %s.",
@@ -989,7 +989,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerErrorException(tobject, "You cannot call methods on optionals.");
             }
             
-            Method *method;
+            Function *method;
             if (type.type() == TypeContent::ValueType) {
                 if (type.valueType() == VT_BOOLEAN) {
                     switch (token.value[0]) {
@@ -1125,13 +1125,13 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 
                 method = type.valueType()->getMethod(token, type, typeContext);
                 placeholder.write(0x6);
-                writer.writeCoin(method->vti(), token);
+                writer.writeCoin(method->vtiForUse(), token);
             }
             else if (type.type() == TypeContent::Protocol) {
                 method = type.protocol()->getMethod(token, type, typeContext);
                 placeholder.write(0x3);
                 writer.writeCoin(type.protocol()->index, token);
-                writer.writeCoin(method->vti(), token);
+                writer.writeCoin(method->vtiForUse(), token);
             }
             else if (type.type() == TypeContent::Enum && token.value[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
                 parse(stream_.consumeToken(), token, type);  // Must be of the same type as the callee
@@ -1141,7 +1141,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             else if (type.type() == TypeContent::Class) {
                 method = type.eclass()->getMethod(token, type, typeContext);
                 placeholder.write(0x1);
-                writer.writeCoin(method->vti(), token);
+                writer.writeCoin(method->vtiForUse(), token);
             }
             else {
                 auto typeString = type.toString(typeContext, true);
@@ -1208,8 +1208,10 @@ std::pair<Type, TypeAvailability> CallableParserAndGenerator::parseTypeAsValue(T
     return std::pair<Type, TypeAvailability>(ot, TypeAvailability::StaticAndUnavailable);
 }
 
-CallableParserAndGenerator::CallableParserAndGenerator(Callable &callable, Package *p, CallableParserAndGeneratorMode mode,
-                                               TypeContext typeContext, Writer &writer, CallableScoper &scoper)
+CallableParserAndGenerator::CallableParserAndGenerator(Callable &callable, Package *p,
+                                                       CallableParserAndGeneratorMode mode,
+                                                       TypeContext typeContext, CallableWriter &writer,
+                                                       CallableScoper &scoper)
         : AbstractParser(p, callable.tokenStream()),
           mode(mode),
           callable(callable),
@@ -1271,28 +1273,10 @@ void CallableParserAndGenerator::analyze(bool compileDeadCode) {
     }
 }
 
-void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, Writer &writer, Type classType,
-                                                     CallableScoper &scoper, CallableParserAndGeneratorMode mode,
-                                                     bool typeMethod) {
-    writer.resetWrittenCoins();
-    
-    writer.writeEmojicodeChar(function->name);
-    writer.writeUInt16(function->vti());
-    writer.writeByte(static_cast<uint8_t>(function->arguments.size()));
-    
-    if (function->native) {
-        writer.writeByte(typeMethod ? 2 : 1);
-        return;
-    }
-    writer.writeByte(0);
-    
-    auto variableCountPlaceholder = writer.writePlaceholder<unsigned char>();
-    auto coinsCountPlaceholder = writer.writeCoinsCountPlaceholderCoin(function->position());
-    
+void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type classType,
+                                                     CallableScoper &scoper, CallableParserAndGeneratorMode mode) {
     auto sca = CallableParserAndGenerator(*function, function->package(), mode, TypeContext(classType, function),
-                                      writer, scoper);
+                                          writer, scoper);
     sca.analyze();
-    
-    variableCountPlaceholder.write(scoper.maxVariableCount());
-    coinsCountPlaceholder.write();
+    function->setMaxVariableCount(scoper.maxVariableCount());
 }

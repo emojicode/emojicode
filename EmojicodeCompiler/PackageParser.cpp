@@ -135,7 +135,8 @@ void PackageParser::parse() {
                 Function::foundStart = true;
                 
                 auto function = new Function(E_CHEQUERED_FLAG, AccessLevel::Public, false, typeNothingness, package_,
-                                             theToken, false, documentation, false);
+                                             theToken, false, documentation, false,
+                                             CallableParserAndGeneratorMode::Function);
                 parseReturnType(function, typeNothingness);
                 if (function->returnType.type() != TypeContent::Nothingness &&
                     !function->returnType.compatibleTo(typeInteger, typeNothingness)) {
@@ -267,8 +268,9 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
         
         auto methodName = stream_.consumeToken(TokenType::Identifier);
         
-        auto method = new Method(methodName.value[0], AccessLevel::Public, false, protocolType, package_,
-                                 methodName.position(), false, documentation, deprecated.set());
+        auto method = new Function(methodName.value[0], AccessLevel::Public, false, protocolType, package_,
+                                 methodName.position(), false, documentation, deprecated.set(),
+                                 CallableParserAndGeneratorMode::ObjectMethod);
         auto a = parseArgumentList(method, protocolType);
         auto b = parseReturnType(method, protocolType);
         if (a || b) {
@@ -448,9 +450,11 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 EmojicodeChar name = methodName.value[0];
                 
                 if (staticOnType.set()) {
-                    auto *classMethod = new ClassMethod(name, accessLevel, final.set(), typed, package_,
-                                                        token.position(), override.set(), documentation,
-                                                        deprecated.set());
+                    auto *classMethod = new Function(name, accessLevel, final.set(), typed, package_,
+                                                     token.position(), override.set(), documentation,
+                                                     deprecated.set(),
+                                                     eclass ? CallableParserAndGeneratorMode::ClassMethod :
+                                                        CallableParserAndGeneratorMode::Function);
                     auto context = TypeContext(typed, classMethod);
                     parseGenericArgumentsInDefinition(classMethod, context);
                     parseArgumentList(classMethod, context);
@@ -462,9 +466,11 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 else {
                     reservedEmojis(methodName, "method");
                     
-                    auto *method = new Method(methodName.value[0], accessLevel, final.set(), typed,
-                                              package_, token.position(), override.set(), documentation,
-                                              deprecated.set());
+                    auto *method = new Function(methodName.value[0], accessLevel, final.set(), typed,
+                                                package_, token.position(), override.set(), documentation,
+                                                deprecated.set(),
+                                                eclass ? CallableParserAndGeneratorMode::ObjectMethod :
+                                                    CallableParserAndGeneratorMode::ThisContextFunction);
                     auto context = TypeContext(typed, method);
                     parseGenericArgumentsInDefinition(method, context);
                     parseArgumentList(method, context);
@@ -482,7 +488,9 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), typed, package_,
                                                            token.position(), override.set(), documentation,
                                                            deprecated.set(), required.set(),
-                                                           canReturnNothingness.set());
+                                                           canReturnNothingness.set(),
+                                                           eclass ? CallableParserAndGeneratorMode::ObjectInitializer :
+                                                              CallableParserAndGeneratorMode::ThisContextFunction);
                 auto context = TypeContext(typed, initializer);
                 parseGenericArgumentsInDefinition(initializer, context);
                 parseArgumentList(initializer, context);

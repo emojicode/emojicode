@@ -10,11 +10,11 @@
 #define Writer_hpp
 
 #include "EmojicodeCompiler.hpp"
-#include "Function.hpp"
 
 template <typename T>
 class WriterPlaceholder;
 class WriterCoinsCountPlaceholder;
+class Function;
 
 /**
  * The writer finally writes all types to the byte file.
@@ -31,19 +31,16 @@ public:
     void writeUInt16(uint16_t value);
     
     /** Writes a coin with the given value */
-    void writeCoin(EmojicodeCoin value, SourcePosition p);
+    void writeCoin(EmojicodeCoin value);
     
     /** Writes a single unicode character */
     void writeEmojicodeChar(EmojicodeChar c);
-    
-    /** Must be used to write any double to the file. */
-    void writeDoubleCoin(double val, SourcePosition p);
 
     void writeByte(unsigned char);
     
     void writeBytes(const char *bytes, size_t count);
     
-    void resetWrittenCoins() { writtenCoins = 0; };
+    void writeFunction(Function *f);
     
     /**
      * Writes a placeholder coin. To replace the placeholder use `writeCoinAtPlaceholder`
@@ -54,16 +51,12 @@ public:
         write((T)0);
         return WriterPlaceholder<T>(*this, position);
     }
-    
-    WriterCoinsCountPlaceholder writeCoinsCountPlaceholderCoin(SourcePosition p);
-    WriterPlaceholder<EmojicodeCoin> writeCoinPlaceholder(SourcePosition p);
 private:
     void write(uint16_t v) { writeUInt16(v); };
     void write(uint32_t v) { writeEmojicodeChar(v); };
     void write(unsigned char v) { writeByte(v); };
     
     FILE *out;
-    uint32_t writtenCoins = 0;
 };
 
 template <typename T>

@@ -63,7 +63,7 @@ Initializer* TypeDefinitionFunctional::lookupInitializer(EmojicodeChar name) {
     return nullptr;
 }
 
-Method* TypeDefinitionFunctional::lookupMethod(EmojicodeChar name) {
+Function* TypeDefinitionFunctional::lookupMethod(EmojicodeChar name) {
     auto pos = methods_.find(name);
     if (pos != methods_.end()) {
         return pos->second;
@@ -71,7 +71,7 @@ Method* TypeDefinitionFunctional::lookupMethod(EmojicodeChar name) {
     return nullptr;
 }
 
-ClassMethod* TypeDefinitionFunctional::lookupClassMethod(EmojicodeChar name) {
+Function* TypeDefinitionFunctional::lookupClassMethod(EmojicodeChar name) {
     auto pos = classMethods_.find(name);
     if (pos != classMethods_.end()) {
         return pos->second;
@@ -89,7 +89,7 @@ Initializer* TypeDefinitionFunctional::getInitializer(const Token &token, Type t
     return initializer;
 }
 
-Method* TypeDefinitionFunctional::getMethod(const Token &token, Type type, TypeContext typeContext) {
+Function* TypeDefinitionFunctional::getMethod(const Token &token, Type type, TypeContext typeContext) {
     auto method = lookupMethod(token.value[0]);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
@@ -99,7 +99,7 @@ Method* TypeDefinitionFunctional::getMethod(const Token &token, Type type, TypeC
     return method;
 }
 
-ClassMethod* TypeDefinitionFunctional::getClassMethod(const Token &token, Type type, TypeContext typeContext) {
+Function* TypeDefinitionFunctional::getClassMethod(const Token &token, Type type, TypeContext typeContext) {
     auto method = lookupClassMethod(token.value[0]);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
@@ -109,13 +109,13 @@ ClassMethod* TypeDefinitionFunctional::getClassMethod(const Token &token, Type t
     return method;
 }
 
-void TypeDefinitionFunctional::addClassMethod(ClassMethod *method) {
+void TypeDefinitionFunctional::addClassMethod(Function *method) {
     duplicateDeclarationCheck(method, classMethods_, method->position());
     classMethods_[method->name] = method;
     classMethodList_.push_back(method);
 }
 
-void TypeDefinitionFunctional::addMethod(Method *method) {
+void TypeDefinitionFunctional::addMethod(Function *method) {
     duplicateDeclarationCheck(method, methods_, method->position());
     methods_[method->name] = method;
     methodList_.push_back(method);

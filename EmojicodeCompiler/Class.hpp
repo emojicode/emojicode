@@ -15,12 +15,12 @@
 #include <set>
 #include "Package.hpp"
 #include "TypeDefinitionFunctional.hpp"
-#include "Function.hpp"
 #include "TypeContext.hpp"
 #include "Variable.hpp"
 #include "Scope.hpp"
 
 class Type;
+
 
 class Class : public TypeDefinitionFunctional {
 public:
@@ -58,11 +58,11 @@ public:
     const std::list<Type>& protocols() const { return protocols_; };
     
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Method* lookupMethod(EmojicodeChar name);
+    virtual Function* lookupMethod(EmojicodeChar name);
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
     virtual Initializer* lookupInitializer(EmojicodeChar name);
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual ClassMethod* lookupClassMethod(EmojicodeChar name);
+    virtual Function* lookupClassMethod(EmojicodeChar name);
     
     virtual void finalize();
     
@@ -78,6 +78,9 @@ public:
     /** Returns the number of methods and type methods including those inherited from the superclass.
         @warning @c finalize() must be called before a call to this method. */
     size_t fullMethodCount() { return nextMethodVti_; }
+    
+    int assignedMethodCount() { return assignedMethodCount_; }
+    int assignedInitializerCount() { return assignedInitializerCount_; }
 private:
     static std::list<Class *> classes_;
     
@@ -88,9 +91,22 @@ private:
     bool final_;
     bool inheritsInitializers_;
     
-    int nextMethodVti_;
-    int nextInitializerVti_;
+    int nextMethodVti_ = 0;
+    int nextInitializerVti_ = 0;
+    
+    int assignedMethodCount_ = 0;
+    int assignedInitializerCount_ = 0;
+    
+    int nextMethodVti() { ecCharToCharStack(name(), named);
+        incrementAssignedMethodCount();
+        return nextMethodVti_++; }
+    int nextInitializerVti() {
+        incrementAssignedInitializerCount();
+        return nextInitializerVti_++; }
 
+    int incrementAssignedMethodCount() { return assignedMethodCount_++; }
+    int incrementAssignedInitializerCount() { return assignedInitializerCount_++; }
+    
     Scope objectScope_;
     Class *superclass_ = nullptr;
     

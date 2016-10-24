@@ -16,6 +16,7 @@
 #include "utf8.h"
 #include "Lexer.hpp"
 #include "TypeContext.hpp"
+#include "Protocol.hpp"
 
 std::list<Class *> Class::classes_;
 
@@ -67,7 +68,7 @@ Initializer* Class::lookupInitializer(EmojicodeChar name) {
     return nullptr;
 }
 
-Method* Class::lookupMethod(EmojicodeChar name) {
+Function* Class::lookupMethod(EmojicodeChar name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->methods_.find(name);
         if (pos != eclass->methods_.end()) {
@@ -77,7 +78,7 @@ Method* Class::lookupMethod(EmojicodeChar name) {
     return nullptr;
 }
 
-ClassMethod* Class::lookupClassMethod(EmojicodeChar name) {
+Function* Class::lookupClassMethod(EmojicodeChar name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->classMethods_.find(name);
         if (pos != eclass->classMethods_.end()) {
@@ -96,27 +97,30 @@ void Class::finalize() {
         inheritsInitializers_ = true;
     }
     
-    if (superclass()) {
-        nextInitializerVti_ = inheritsInitializers() ? superclass()->nextInitializerVti_ : 0;
-        nextMethodVti_ = superclass()->nextMethodVti_;
-        nextInstanceVariableID_ = superclass()->nextInstanceVariableID_;
-    }
-    else {
-        nextInitializerVti_ = 0;
-        nextMethodVti_ = 0;
-    }
-    
     Type classType = Type(this);
+    
+    if (superclass()) {
+        for (auto method : superclass()->methodList()) {
+            method->vtiForUse();
+        }
+        for (auto clMethod : superclass()->classMethodList()) {
+            clMethod->vtiForUse();
+        }
+        for (auto initializer : superclass()->initializerList()) {
+            initializer->vtiForUse();
+        }
+    }
     
     for (auto method : methodList()) {
         auto superMethod = superclass() ? superclass()->lookupMethod(method->name) : NULL;
         
         if (method->checkOverride(superMethod)) {
             method->checkPromises(superMethod, "super method", classType);
-            method->setVti(superMethod->vti());
+            method->setVti(superMethod->vtiForUse());
+            incrementAssignedMethodCount();
         }
         else {
-            method->setVti(nextMethodVti_++);
+            method->setVtiAssigner(std::bind(&Class::nextMethodVti, this));
         }
     }
     for (auto clMethod : classMethodList()) {
@@ -124,30 +128,39 @@ void Class::finalize() {
         
         if (clMethod->checkOverride(superMethod)) {
             clMethod->checkPromises(superMethod, "super classmethod", classType);
-            clMethod->setVti(superMethod->vti());
+            clMethod->setVti(superMethod->vtiForUse());
+            incrementAssignedMethodCount();
         }
         else {
-            clMethod->setVti(nextMethodVti_++);
+            clMethod->setVtiAssigner(std::bind(&Class::nextMethodVti, this));
         }
     }
     
     auto subRequiredInitializerNextVti = superclass() ? superclass()->requiredInitializers().size() : 0;
-    nextInitializerVti_ += requiredInitializers().size();
     for (auto initializer : initializerList()) {
         auto superInit = superclass() ? superclass()->lookupInitializer(initializer->name) : NULL;
         
-        if (initializer->checkOverride(superInit)) {
-            if (superInit) {
+        if (initializer->required) {
+            if (superInit && superInit->required) {
                 initializer->checkPromises(superInit, "super initializer", classType);
-                initializer->setVti(superInit->vti());
+                initializer->setVti(superInit->getVti());
+                incrementAssignedInitializerCount();
             }
             else {
                 initializer->setVti(static_cast<int>(subRequiredInitializerNextVti++));
+                incrementAssignedInitializerCount();
             }
         }
         else {
-            initializer->setVti(nextInitializerVti_++);
+            initializer->setVtiAssigner(std::bind(&Class::nextInitializerVti, this));
         }
+    }
+    
+    if (superclass()) {
+        nextInitializerVti_ = inheritsInitializers() ? superclass()->nextInitializerVti_ :
+                                static_cast<int>(requiredInitializers().size());
+        nextMethodVti_ = superclass()->nextMethodVti_;
+        nextInstanceVariableID_ = superclass()->nextInstanceVariableID_;
     }
     
     for (Variable var : instanceVariables()) {
@@ -163,5 +176,14 @@ void Class::finalize() {
         auto str = classType.toString(typeNothingness, true);
         compilerWarning(position(), "Class %s defines %d instances variables but has no initializers.",
                         str.c_str(), instanceVariables().size());
+    }
+    
+    for (Type protocol : protocols()) {
+        for (auto method : protocol.protocol()->methods()) {
+            Function *clm = lookupMethod(method->name);
+            if (clm) {
+                clm->vtiForUse();
+            }
+        }
     }
 }

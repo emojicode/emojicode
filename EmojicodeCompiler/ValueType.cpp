@@ -6,6 +6,7 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include <functional>
 #include "ValueType.hpp"
 #include "Function.hpp"
 
@@ -13,12 +14,17 @@ std::vector<ValueType *> ValueType::valueType_;
 
 void ValueType::finalize() {
     for (auto f : methodList()) {
-        f->setVti(Function::nextFunctionVti());
+        f->setVtiAssigner(std::bind(&ValueType::nextFunctionVti, this));
     }
     for (auto f : classMethodList()) {
-        f->setVti(Function::nextFunctionVti());
+        f->setVtiAssigner(std::bind(&ValueType::nextFunctionVti, this));
     }
     for (auto f : initializerList()) {
-        f->setVti(Function::nextFunctionVti());
+        f->setVtiAssigner(std::bind(&ValueType::nextFunctionVti, this));
     }
+}
+
+int ValueType::nextFunctionVti() {
+    assignedFunctionCount_++;
+    return Function::nextFunctionVti();
 }

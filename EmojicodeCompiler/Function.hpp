@@ -9,59 +9,35 @@
 #ifndef Function_hpp
 #define Function_hpp
 
-#include <vector>
+#include <queue>
 #include <map>
-#include "Writer.hpp"
+#include <functional>
 #include "Token.hpp"
 #include "TokenStream.hpp"
 #include "Type.hpp"
+#include "Callable.hpp"
+#include "CallableParserAndGeneratorMode.hpp"
+#include "CallableWriter.hpp"
+#include "Class.hpp"
 
 enum class AccessLevel {
     Public, Private, Protected
 };
 
-struct Argument {
-    Argument(const Token &n, Type t) : name(n), type(t) {}
-    
-    /** The name of the variable */
-    const Token &name;
-    /** The type */
-    Type type;
-};
-
-class Callable {
-public:
-    Callable(SourcePosition p) : position_(p) {};
-    
-    std::vector<Argument> arguments;
-    /** Return type of the method */
-    Type returnType = typeNothingness;
-    
-    /** Returns the position at which this callable was defined. */
-    const SourcePosition& position() const { return position_; }
-    
-    /** Returns a copy of the token stream intended to be used to parse this callable. */
-    TokenStream tokenStream() const { return tokenStream_; }
-    void setTokenStream(TokenStream ts) { tokenStream_ = ts; }
-    
-    /** The type of this callable when used as value. */
-    virtual Type type() = 0;
-private:
-    TokenStream tokenStream_;
-    SourcePosition position_;
-};
-
 class Closure: public Callable {
 public:
     Closure(SourcePosition p) : Callable(p) {};
-    Type type();
 };
 
-/** Functions are callables that belong to a class as either method, class method or initialiser. */
+/** Functions are callables that belong to a class as either a method, a class method or an initializer. */
 class Function: public Callable {
+    friend void Class::finalize();
+    friend Protocol;
+    friend void generateCode(Writer &writer);
 public:
     static bool foundStart;
     static Function *start;
+    static std::queue<Function *> compilationQueue;
     /** Returns a VTI for a function. */
     static int nextFunctionVti() { return nextVti_++; }
     /** Returns the number of funciton VTIs assigned. This should be equal to the number of compiled functions. */
@@ -74,8 +50,8 @@ public:
     static void checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
                               const char *on, Type contextType);
     
-    Function(EmojicodeChar name, AccessLevel level, bool final, Type owningType,
-              Package *package, SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated)
+    Function(EmojicodeChar name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
+             bool overriding, EmojicodeString documentationToken, bool deprecated, CallableParserAndGeneratorMode mode)
         : Callable(p),
           name(name),
           final_(final),
@@ -84,7 +60,8 @@ public:
           access_(level),
           owningType_(owningType),
           package_(package),
-          documentation_(documentationToken) {}
+          documentation_(documentationToken),
+          compilationMode_(mode) {}
     
     /** The function name. A Unicode code point for an emoji */
     EmojicodeChar name;
@@ -125,15 +102,30 @@ public:
     
     bool checkOverride(Function *superFunction);
     
-    int vti() const { return vti_; }
+    /** Returns the VTI for this function or fetches one by calling the VTI Assigner.
+        @warning This method must only be called if the function will be needed at run-time and 
+        should be assigned a VTI. */
+    int vtiForUse();
+    int getVti() const;
+    void setVtiAssigner(std::function<int()>);
+    
+    CallableParserAndGeneratorMode compilationMode() const { return compilationMode_; }
+    
+    /** Whether this function should be treated as type method at Run-Time Native Linking time. */
+    bool typeMethod() const;
+    
+    bool assigned() const;
+    
+    int maxVariableCount() const { return maxVariableCount_; }
+    void setMaxVariableCount(int c) { maxVariableCount_ = c; }
+    
+    CallableWriter writer_;
+private:
+    /** Sets the VTI to @c vti and enters this functions into the list of functions to be compiled into the binary. */
     void setVti(int vti);
     
-    virtual Type type();
-    
-    const char *on;
-private:
     static int nextVti_;
-    int vti_;
+    int vti_ = -1;
     bool final_;
     bool overriding_;
     bool deprecated_;
@@ -141,25 +133,17 @@ private:
     Type owningType_;
     Package *package_;
     EmojicodeString documentation_;
-};
-
-class Method: public Function {
-    using Function::Function;
-public:
-    const char *on = "Method";
-};
-
-class ClassMethod: public Function {
-    using Function::Function;
-public:
-    const char *on = "Class Method";
+    std::function<int()> vtiAssigner_ = nullptr;
+    CallableParserAndGeneratorMode compilationMode_;
+    int maxVariableCount_ = -1;
 };
  
 class Initializer: public Function {
 public:
     Initializer(EmojicodeChar name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
-                bool overriding, EmojicodeString documentationToken, bool deprecated, bool r, bool crn)
-        : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated),
+                bool overriding, EmojicodeString documentationToken, bool deprecated, bool r, bool crn,
+                CallableParserAndGeneratorMode mode)
+        : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, mode),
           required(r),
           canReturnNothingness(crn) {
               returnType = owningType;
@@ -167,9 +151,8 @@ public:
     
     bool required;
     bool canReturnNothingness;
-    const char *on = "Initializer";
     
-    Type type();
+    virtual Type type() const override;
 };
 
 #endif /* Function_hpp */

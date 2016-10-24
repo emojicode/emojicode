@@ -15,8 +15,7 @@
 
 class TypeContext;
 class Initializer;
-class Method;
-class ClassMethod;
+class Function;
 
 class TypeDefinitionFunctional : public TypeDefinition {
 public:
@@ -54,37 +53,37 @@ public:
     const std::vector<Type>& genericArgumentConstraints() const { return genericArgumentConstraints_; }
     
     /** Returns a method by the given identifier token or issues an error if the method does not exist. */
-    Method* getMethod(const Token &token, Type type, TypeContext typeContext);
+    Function* getMethod(const Token &token, Type type, TypeContext typeContext);
     /** Returns an initializer by the given identifier token or issues an error if the initializer does not exist. */
     Initializer* getInitializer(const Token &token, Type type, TypeContext typeContext);
     /** Returns a method by the given identifier token or issues an error if the method does not exist. */
-    ClassMethod* getClassMethod(const Token &token, Type type, TypeContext typeContext);
+    Function* getClassMethod(const Token &token, Type type, TypeContext typeContext);
     
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Method* lookupMethod(EmojicodeChar name);
+    virtual Function* lookupMethod(EmojicodeChar name);
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
     virtual Initializer* lookupInitializer(EmojicodeChar name);
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual ClassMethod* lookupClassMethod(EmojicodeChar name);
+    virtual Function* lookupClassMethod(EmojicodeChar name);
     
-    virtual void addMethod(Method *method);
+    virtual void addMethod(Function *method);
     virtual void addInitializer(Initializer *method);
-    virtual void addClassMethod(ClassMethod *method);
+    virtual void addClassMethod(Function *method);
     
-    const std::vector<Method *>& methodList() const { return methodList_; }
+    const std::vector<Function *>& methodList() const { return methodList_; }
     const std::vector<Initializer *>& initializerList() const { return initializerList_; }
-    const std::vector<ClassMethod *>& classMethodList() const { return classMethodList_; }
+    const std::vector<Function *>& classMethodList() const { return classMethodList_; }
 protected:
     TypeDefinitionFunctional(EmojicodeChar name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
         : TypeDefinition(name, p, pos, documentation) {}
     
-    std::map<EmojicodeChar, Method *> methods_;
-    std::map<EmojicodeChar, ClassMethod *> classMethods_;
+    std::map<EmojicodeChar, Function *> methods_;
+    std::map<EmojicodeChar, Function *> classMethods_;
     std::map<EmojicodeChar, Initializer *> initializers_;
     
-    std::vector<Method *> methodList_;
+    std::vector<Function *> methodList_;
     std::vector<Initializer *> initializerList_;
-    std::vector<ClassMethod *> classMethodList_;
+    std::vector<Function *> classMethodList_;
     
     virtual void handleRequiredInitializer(Initializer *init);
 private:

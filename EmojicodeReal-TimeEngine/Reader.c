@@ -10,6 +10,12 @@
 #include <string.h>
 #include <dlfcn.h>
 
+#ifdef DEBUG
+#define DEBUG_LOG(format, ...) printf(format "\n", ##__VA_ARGS__)
+#else
+#define DEBUG_LOG(...)
+#endif
+
 uint16_t readUInt16(FILE *in){
     return ((uint16_t)fgetc(in)) | (fgetc(in) << 8);
 }
@@ -74,6 +80,8 @@ uint32_t readBlock(EmojicodeCoin **destination, uint8_t *variableCount, FILE *in
         (*destination)[i] = readCoin(in);
     }
     
+    DEBUG_LOG("Read block with %d coins and %d local variable(s)", coinCount, *variableCount);
+    
     return coinCount;
 }
 
@@ -102,8 +110,11 @@ void readFunction(Function **table, EmojicodeChar className, FILE *in, FunctionF
     Function *method = malloc(sizeof(Function));
     method->argumentCount = fgetc(in);
     
+    DEBUG_LOG("Reading function with vti %d and takes %d argument(s)", vti, method->argumentCount);
+    
     MethodType nativeType;
     if ((nativeType = fgetc(in))) {
+        DEBUG_LOG("Function is native");
         method->native = true;
         method->handler = hpfm(className, methodName, nativeType);
     }
@@ -118,8 +129,11 @@ void readProtocolAgreement(Function **vmt, Function ***pmt, uint_fast16_t offset
     uint_fast16_t index = readUInt16(in) - offset;
     uint_fast16_t count = readUInt16(in);
     pmt[index] = malloc(sizeof(Function *) * count);
+    DEBUG_LOG("Reading protocol %d agreement: %d method(s)", index + offset, count);
     for (uint_fast16_t i = 0; i < count; i++) {
-        pmt[index][i] = vmt[readUInt16(in)];
+        const uint_fast16_t vti = readUInt16(in);
+        DEBUG_LOG("Protocol agreement method VTI %d", vti);
+        pmt[index][i] = vmt[vti];
     }
 }
 
@@ -134,6 +148,7 @@ void readPackage(FILE *in){
     
     uint_fast8_t packageNameLength = fgetc(in);
     if (!packageNameLength) {
+        DEBUG_LOG("Package does not have native binary");
         hfpMethods = handlerPointerForMethod;
         hfpIntializer = handlerPointerForInitializer;
         dpfc = deinitializerPointerForClass;
@@ -141,11 +156,14 @@ void readPackage(FILE *in){
         sfch = sizeForClass;
     }
     else {
+        DEBUG_LOG("Package has native binary");
         char *name = malloc(sizeof(char) * packageNameLength);
         fread(name, sizeof(char), packageNameLength, in);
         
         uint16_t major = readUInt16(in);
         uint16_t minor = readUInt16(in);
+        
+        DEBUG_LOG("Package is named %s and has version %d.%d.x", name, major, minor);
         
         PackageLoadingState s = packageLoad(name, major, minor, &hfpMethods, &hfpIntializer,
                                             &mpfc, &dpfc, &sfch);
@@ -164,7 +182,10 @@ void readPackage(FILE *in){
     }
     
     for (uint_fast16_t classCount = readUInt16(in); classCount; classCount--) {
+        DEBUG_LOG("➡️ Still %d class(es) to load", classCount);
         EmojicodeChar name = readEmojicodeChar(in);
+        
+        DEBUG_LOG("Loading class %X", name);
         
         Class *class = malloc(sizeof(Class));
         classTable[classNextIndex++] = class;
@@ -179,8 +200,16 @@ void readPackage(FILE *in){
         class->initializerCount = readUInt16(in);
         class->initializersVtable = malloc(sizeof(InitializerFunction*) * class->initializerCount);
         
+        DEBUG_LOG("Inherting intializers: %s", inheritsInitializers ? "true" : "false");
+        
+        DEBUG_LOG("%d instance variable(s); %d methods; %d initializer(s)",
+                  class->instanceVariableCount, class->methodCount, class->initializerCount);
+        
         uint_fast16_t localMethodCount = readUInt16(in);
         uint_fast16_t localInitializerCount = readUInt16(in);
+        
+        DEBUG_LOG("Reading %d method(s) and %d initializer(s) that are not inherited or overriden",
+                  localMethodCount, localInitializerCount);
         
         if (class != class->superclass) {
             memcpy(class->methodsVtable, class->superclass->methodsVtable, class->superclass->methodCount * sizeof(Function*));
@@ -201,10 +230,13 @@ void readPackage(FILE *in){
         }
         
         uint_fast16_t protocolCount = readUInt16(in);
+        DEBUG_LOG("Reading %d protocol(s)", protocolCount);
         if(protocolCount > 0){
             class->protocolsMaxIndex = readUInt16(in);
             class->protocolsOffset = readUInt16(in);
             class->protocolsTable = calloc((class->protocolsMaxIndex - class->protocolsOffset + 1), sizeof(Function **));
+            
+            DEBUG_LOG("Protocol max index is %d, offset is %d", class->protocolsMaxIndex, class->protocolsOffset);
             
             for (uint_fast16_t i = 0; i < protocolCount; i++) {
                 readProtocolAgreement(class->methodsVtable, class->protocolsTable, class->protocolsOffset, in);
@@ -231,9 +263,15 @@ Function* readBytecode(FILE *in) {
         error("The bytecode file (bcsv %d) is not compatible with this interpreter (bcsv %d).\n", version, ByteCodeSpecificationVersion);
     }
     
-    classTable = malloc(sizeof(Class*) * readUInt16(in));
+    DEBUG_LOG("Bytecode version %d", version);
+    
+    const uint_fast16_t classCount = readUInt16(in);
+    classTable = malloc(sizeof(Class*) * classCount);
+    
+    DEBUG_LOG("%d class(es) on the whole", classCount);
     
     for (uint8_t i = 0, l = fgetc(in); i < l; i++) {
+        DEBUG_LOG("Reading package %d of %d", i + 1, l);
         readPackage(in);
     }
     
@@ -246,15 +284,20 @@ Function* readBytecode(FILE *in) {
     CL_CLOSURE = classTable[6];
     CL_RANGE = classTable[7];
     
+    DEBUG_LOG("✅ Read all packages");
+    
     functionTable = malloc(sizeof(Function*) * readUInt16(in));
     for (uint_fast16_t functionSectionCount = readUInt16(in); functionSectionCount; functionSectionCount--) {
         EmojicodeChar name = readEmojicodeChar(in);
+        DEBUG_LOG("➡️ Reading function section %X. Still %d sections to come.", name, functionSectionCount);
         for (uint_fast16_t functionCount = readUInt16(in); functionCount; functionCount--) {
+            DEBUG_LOG("Still %d functions to come", functionCount);
             readFunction(functionTable, name, in, handlerPointerForMethod);
         }
     }
     
     stringPoolCount = readUInt16(in);
+    DEBUG_LOG("Reading string pool with %d strings", stringPoolCount);
     stringPool = malloc(sizeof(Object*) * stringPoolCount);
     for (uint16_t i = 0; i < stringPoolCount; i++) {
         Object *o = newObject(CL_STRING);
@@ -270,5 +313,6 @@ Function* readBytecode(FILE *in) {
         stringPool[i] = o;
     }
     
+    DEBUG_LOG("✅ Program ready for execution");
     return functionTable[0];
 }

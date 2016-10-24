@@ -38,6 +38,13 @@ int cliArgumentCount;
 
 const char *packageDirectory = defaultPackagesDirectory;
 
+Class **classTable;
+Function **functionTable;
+
+uint_fast16_t stringPoolCount;
+Object **stringPool;
+
+
 //MARK: Coins
 
 EmojicodeCoin consumeCoin(Thread *thread){
@@ -248,7 +255,6 @@ Something performFunction(Function *method, Something this, Thread *thread){
         thread->tokenStream = preCoinStream;
     }
     stackPop(thread);
-    
     return ret;
 }
 
@@ -268,7 +274,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         }
         case 0x3: {
             Object *object = parse(consumeCoin(thread), thread).object;
-            
+        
             EmojicodeCoin pti = consumeCoin(thread);
             EmojicodeCoin vti = consumeCoin(thread);
             

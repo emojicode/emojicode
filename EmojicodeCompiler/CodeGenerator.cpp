@@ -7,6 +7,7 @@
 //
 
 #include <cstring>
+#include <vector>
 #include "CodeGenerator.hpp"
 #include "CallableParserAndGenerator.hpp"
 #include "Protocol.hpp"
@@ -16,6 +17,35 @@
 #include "EmojicodeCompiler.hpp"
 #include "StringPool.hpp"
 #include "ValueType.hpp"
+#include "DiscardingCallableWriter.hpp"
+
+template <typename T>
+void writeAssigned(const std::vector<T *> &functions, Writer &writer) {
+    for (auto function : functions) {
+        if (function->assigned()) {
+            writer.writeFunction(function);
+        }
+    }
+}
+
+template <typename T>
+void compileUnassigned(const std::vector<T *> &functions) {
+    for (auto function : functions) {
+        if (!function->assigned() && !function->native) {
+            DiscardingCallableWriter writer = DiscardingCallableWriter();
+            generateCodeForFunction(function, writer);
+        }
+    }
+}
+void generateCodeForFunction(Function *function, CallableWriter &w) {
+    CallableScoper scoper = CallableScoper();
+    if (function->compilationMode() == CallableParserAndGeneratorMode::ObjectMethod ||
+        function->compilationMode() == CallableParserAndGeneratorMode::ObjectInitializer) {
+        scoper = CallableScoper(&function->owningType().eclass()->objectScope());
+    }
+    CallableParserAndGenerator::writeAndAnalyzeFunction(function, w, function->owningType().disableSelfResolving(),
+                                                        scoper, function->compilationMode());
+}
 
 void writeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass();
@@ -34,27 +64,12 @@ void writeClass(Type classType, Writer &writer) {
     writer.writeByte(eclass->inheritsInitializers() ? 1 : 0);
     writer.writeUInt16(eclass->fullInitializerCount());
     
-    writer.writeUInt16(eclass->methodList().size() + eclass->classMethodList().size());
-    writer.writeUInt16(eclass->initializerList().size());
+    writer.writeUInt16(eclass->assignedMethodCount());
+    writer.writeUInt16(eclass->assignedInitializerCount());
     
-    for (auto method : eclass->methodList()) {
-        auto scoper = CallableScoper(&eclass->objectScope());
-        CallableParserAndGenerator::writeAndAnalyzeFunction(method, writer, classType.disableSelfResolving(), scoper,
-                                                        CallableParserAndGeneratorMode::ObjectMethod, false);
-    }
-    
-    for (auto classMethod : eclass->classMethodList()) {
-        auto scoper = CallableScoper();
-        CallableParserAndGenerator::writeAndAnalyzeFunction(classMethod, writer, classType.disableSelfResolving(), scoper,
-                                                        CallableParserAndGeneratorMode::ClassMethod, true);
-    }
-    
-    for (auto initializer : eclass->initializerList()) {
-        auto scoper = CallableScoper(&eclass->objectScope());
-        CallableParserAndGenerator::writeAndAnalyzeFunction(initializer, writer, classType.disableSelfResolving(), scoper,
-                                                        CallableParserAndGeneratorMode::ObjectInitializer, false);
-    }
-    
+    writeAssigned(eclass->methodList(), writer);
+    writeAssigned(eclass->classMethodList(), writer);
+    writeAssigned(eclass->initializerList(), writer);
     
     writer.writeUInt16(eclass->protocols().size());
     
@@ -79,7 +94,7 @@ void writeClass(Type classType, Writer &writer) {
             
             for (auto method : protocol.protocol()->methods()) {
                 try {
-                    Method *clm = eclass->lookupMethod(method->name);
+                    Function *clm = eclass->lookupMethod(method->name);
                     if (clm == nullptr) {
                         auto className = classType.toString(typeNothingness, true);
                         auto protocolName = protocol.toString(typeNothingness, true);
@@ -89,7 +104,7 @@ void writeClass(Type classType, Writer &writer) {
                                                      className.c_str(), protocolName.c_str(), ms);
                     }
                     
-                    writer.writeUInt16(clm->vti());
+                    writer.writeUInt16(clm->vtiForUse());
                     Function::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
                                                  method->name, clm->position(), "protocol definition", classType);
                     Function::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
@@ -113,22 +128,10 @@ void writeClass(Type classType, Writer &writer) {
 
 void writeValueType(ValueType *vt, Writer &writer) {
     writer.writeEmojicodeChar(vt->name());
-    writer.writeUInt16(vt->methodList().size() + vt->initializerList().size() + vt->classMethodList().size());
-    for (auto f : vt->methodList()) {
-        auto scoper = CallableScoper();
-        CallableParserAndGenerator::writeAndAnalyzeFunction(f, writer, f->owningType(), scoper,
-                                                        CallableParserAndGeneratorMode::ThisContextFunction, false);
-    }
-    for (auto f : vt->initializerList()) {
-        auto scoper = CallableScoper();
-        CallableParserAndGenerator::writeAndAnalyzeFunction(f, writer, f->owningType(), scoper,
-                                                        CallableParserAndGeneratorMode::ThisContextFunction, false);
-    }
-    for (auto f : vt->classMethodList()) {
-        auto scoper = CallableScoper();
-        CallableParserAndGenerator::writeAndAnalyzeFunction(f, writer, f->owningType(), scoper,
-                                                        CallableParserAndGeneratorMode::Function, true);
-    }
+    writer.writeUInt16(vt->assignedFunctionCount());
+    writeAssigned(vt->methodList(), writer);
+    writeAssigned(vt->classMethodList(), writer);
+    writeAssigned(vt->initializerList(), writer);
 }
 
 void writePackageHeader(Package *pkg, Writer &writer, uint16_t classCount) {
@@ -152,18 +155,25 @@ void writePackageHeader(Package *pkg, Writer &writer) {
     writePackageHeader(pkg, writer, pkg->classes().size());
 }
 
+
 void generateCode(Writer &writer) {
     auto &theStringPool = StringPool::theStringPool();
     theStringPool.poolString(EmojicodeString());
+    
+    Function::start->setVti(Function::nextFunctionVti());
     
     for (auto eclass : Class::classes()) {
         eclass->finalize();
     }
     
-    Function::start->setVti(Function::nextFunctionVti());
-    
     for (auto vt : ValueType::valueTypes()) {
         vt->finalize();
+    }
+    
+    while (!Function::compilationQueue.empty()) {
+        Function *function = Function::compilationQueue.front();
+        generateCodeForFunction(function, function->writer_);
+        Function::compilationQueue.pop();
     }
     
     writer.writeByte(ByteCodeSpecificationVersion);
@@ -209,9 +219,9 @@ void generateCode(Writer &writer) {
     writer.writeEmojicodeChar(0);
     writer.writeUInt16(1);
     auto scoper = CallableScoper();
-    CallableParserAndGenerator::writeAndAnalyzeFunction(Function::start, writer, typeNothingness, scoper,
-                                                    CallableParserAndGeneratorMode::Function, false);
     
+    writer.writeFunction(Function::start);
+
     for (auto vt : ValueType::valueTypes()) {
         writeValueType(vt, writer);
     }
@@ -223,5 +233,17 @@ void generateCode(Writer &writer) {
         for (auto c : string) {
             writer.writeEmojicodeChar(c);
         }
+    }
+    
+    for (auto eclass : Class::classes()) {
+        compileUnassigned(eclass->methodList());
+        compileUnassigned(eclass->initializerList());
+        compileUnassigned(eclass->classMethodList());
+    }
+    
+    for (auto vt : ValueType::valueTypes()) {
+        compileUnassigned(vt->methodList());
+        compileUnassigned(vt->initializerList());
+        compileUnassigned(vt->classMethodList());
     }
 }

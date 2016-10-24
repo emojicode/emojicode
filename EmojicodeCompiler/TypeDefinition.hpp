@@ -38,7 +38,7 @@ protected:
     void duplicateDeclarationCheck(T p, std::map<EmojicodeChar, T> dict, SourcePosition position) {
         if (dict.count(p->name)) {
             ecCharToCharStack(p->name, nameString);
-            throw CompilerErrorException(position, "%s %s is declared twice.", p->on, nameString);
+            throw CompilerErrorException(position, "%s is declared twice.", nameString);
         }
     }
 private:

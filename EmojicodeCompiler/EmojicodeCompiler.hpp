@@ -47,15 +47,10 @@ extern ValueType *VT_SYMBOL;
 extern ValueType *VT_INTEGER;
 extern ValueType *VT_DOUBLE;
 
-//MARK: Errors
-
-/**
- * Issues a compiler warning. The compilation is continued afterwards.
- */
+/** Issues a compiler warning. The compilation is continued afterwards. */
 void compilerWarning(SourcePosition p, const char *err, ...);
-
+/** Prints the given error and stores that an error was raised during compilation. */
 void printError(const CompilerErrorException &ce);
-
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
 

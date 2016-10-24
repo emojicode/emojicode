@@ -7,6 +7,7 @@
 //
 
 #include <map>
+#include <stdexcept>
 #include "utf8.h"
 #include "Function.hpp"
 #include "Lexer.hpp"
@@ -14,20 +15,10 @@
 #include "EmojicodeCompiler.hpp"
 #include "TypeContext.hpp"
 
-//MARK: Closure
-
-Type Closure::type() {
-    Type t(TypeContent::Callable, false);
-    t.genericArguments.push_back(returnType);
-    for (int i = 0; i < arguments.size(); i++) {
-        t.genericArguments.push_back(arguments[i].type);
-    }
-    return t;
-}
-
 bool Function::foundStart = false;
 Function *Function::start;
 int Function::nextVti_ = 0;
+std::queue<Function*> Function::compilationQueue;
 
 //MARK: Function
 
@@ -120,27 +111,52 @@ void Function::deprecatedWarning(const Token &callToken) {
     }
 }
 
+int Function::vtiForUse() {
+    if (!assigned()) {
+        ecCharToCharStack(name, named);
+        setVti(vtiAssigner_());
+    }
+    return vti_;
+}
+
+int Function::getVti() const {
+    if (!assigned()) {
+        throw std::logic_error("Getting VTI from unassinged function.");
+    }
+    return vti_;
+}
+
 void Function::setVti(int vti) {
-    if (vti >= 65536) {
-        throw CompilerErrorException(position(), "You exceeded the limit of 65,536 %s in a class.", on);
+    if (assigned()) {
+        throw std::logic_error("You cannot reassign the VTI.");
     }
     vti_ = vti;
-}
-
-Type Function::type() {
-    Type t = Type(TypeContent::Callable, false);
-    t.genericArguments.push_back(returnType);
-    for (size_t i = 0; i < arguments.size(); i++) {
-        t.genericArguments.push_back(arguments[i].type);
+    if (!native) {
+        Function::compilationQueue.push(this);
     }
-    return t;
 }
 
-Type Initializer::type() {
+bool Function::assigned() const {
+    return vti_ >= 0;
+}
+
+void Function::setVtiAssigner(std::function<int()> vtiAssigner) {
+    if (vtiAssigner_) {
+        throw std::logic_error("You cannot reassign the VTI assigner.");
+    }
+    vtiAssigner_ = vtiAssigner;
+}
+
+Type Initializer::type() const {
     Type t = Type(TypeContent::Callable, false);
     t.genericArguments.push_back(Type(owningType().eclass(), canReturnNothingness));
     for (size_t i = 0; i < arguments.size(); i++) {
         t.genericArguments.push_back(arguments[i].type);
     }
     return t;
+}
+
+bool Function::typeMethod() const {
+    return compilationMode_ == CallableParserAndGeneratorMode::Function ||
+            compilationMode_ == CallableParserAndGeneratorMode::ClassMethod;
 }

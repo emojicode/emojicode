@@ -13,6 +13,8 @@
 
 size_t memoryUse = 0;
 bool zeroingNeeded = false;
+Byte *currentHeap;
+Byte *otherHeap;
 
 size_t gcThreshold = heapSize / 2;
 

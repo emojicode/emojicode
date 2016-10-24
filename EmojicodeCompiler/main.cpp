@@ -19,6 +19,7 @@
 #include "CompilerErrorException.hpp"
 #include "PackageReporter.hpp"
 #include "ValueType.hpp"
+#include "Function.hpp"
 
 char* EmojicodeString::utf8CString() const {
     // Size needed for UTF8 representation
@@ -165,99 +166,109 @@ void loadStandard(Package *_, SourcePosition errorPosition) {
 }
 
 int main(int argc, char * argv[]) {
-    const char *packageToReport = nullptr;
-    char *outPath = nullptr;
-    
-    const char *ppath;
-    if ((ppath = getenv("EMOJICODE_PACKAGES_PATH"))) {
-        packageDirectory = ppath;
-    }
-    
-    signed char ch;
-    while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {
-        switch (ch) {
-            case 'v':
-                puts("Emojicode 0.3. Built with 💚 by Theo Weidmann.");
-                return 0;
-                break;
-            case 'R':
-                packageToReport = optarg;
-                break;
-            case 'r':
-                packageToReport = "_";
-                break;
-            case 'o':
-                outPath = optarg;
-                break;
-            case 'j':
-                outputJSON = true;
-                break;
-            default:
-                break;
-        }
-    }
-    argc -= optind;
-    argv += optind;
-    
-    if (outputJSON) {
-        fprintf(stderr, "[");
-    }
-    
-    if (argc == 0) {
-        compilerWarning(SourcePosition(0, 0, ""), "No input files provided.");
-        return 1;
-    }
-    
-    if (outPath == nullptr) {
-        outPath = strdup(argv[0]);
-        outPath[strlen(outPath) - 1] = 'b';
-    }
-    
-    auto errorPosition = SourcePosition(0, 0, argv[0]);
-    
-    Package pkg = Package("_", errorPosition);
-    pkg.setPackageVersion(PackageVersion(1, 0));
-    
-    FILE *out = fopen(outPath, "wb");
-    
     try {
-        loadStandard(&pkg, errorPosition);
+        const char *packageToReport = nullptr;
+        char *outPath = nullptr;
         
-        pkg.parse(argv[0]);
+        const char *ppath;
+        if ((ppath = getenv("EMOJICODE_PACKAGES_PATH"))) {
+            packageDirectory = ppath;
+        }
         
-        if (!out || ferror(out)) {
-            throw CompilerErrorException(errorPosition, "Couldn't write output file.");
+        signed char ch;
+        while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {
+            switch (ch) {
+                case 'v':
+                    puts("Emojicode 0.3. Built with 💚 by Theo Weidmann.");
+                    return 0;
+                    break;
+                case 'R':
+                    packageToReport = optarg;
+                    break;
+                case 'r':
+                    packageToReport = "_";
+                    break;
+                case 'o':
+                    outPath = optarg;
+                    break;
+                case 'j':
+                    outputJSON = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+        argc -= optind;
+        argv += optind;
+        
+        if (outputJSON) {
+            fprintf(stderr, "[");
+        }
+        
+        if (argc == 0) {
+            compilerWarning(SourcePosition(0, 0, ""), "No input files provided.");
             return 1;
         }
         
-        if (!Function::foundStart) {
-            throw CompilerErrorException(errorPosition, "No 🏁 block was found.");
+        if (outPath == nullptr) {
+            outPath = strdup(argv[0]);
+            outPath[strlen(outPath) - 1] = 'b';
         }
         
-        Writer writer = Writer(out);
-        generateCode(writer);
-    }
-    catch (CompilerErrorException &ce) {
-        printError(ce);
-    }
+        auto errorPosition = SourcePosition(0, 0, argv[0]);
+        
+        Package pkg = Package("_", errorPosition);
+        pkg.setPackageVersion(PackageVersion(1, 0));
+        
+        FILE *out = fopen(outPath, "wb");
     
-    fclose(out);
-    
-    if (packageToReport) {
-        if (auto package = Package::findPackage(packageToReport)) {
-            reportPackage(package);
+        try {
+            loadStandard(&pkg, errorPosition);
+            
+            pkg.parse(argv[0]);
+            
+            if (!out || ferror(out)) {
+                throw CompilerErrorException(errorPosition, "Couldn't write output file.");
+                return 1;
+            }
+            
+            if (!Function::foundStart) {
+                throw CompilerErrorException(errorPosition, "No 🏁 block was found.");
+            }
+            
+            Writer writer = Writer(out);
+            generateCode(writer);
         }
-        else {
-            compilerWarning(errorPosition, "Report for package %s failed as it was not loaded.", packageToReport);
+        catch (CompilerErrorException &ce) {
+            printError(ce);
+        }
+        
+        fclose(out);
+        
+        if (packageToReport) {
+            if (auto package = Package::findPackage(packageToReport)) {
+                reportPackage(package);
+            }
+            else {
+                compilerWarning(errorPosition, "Report for package %s failed as it was not loaded.", packageToReport);
+            }
+        }
+        
+        if (outputJSON) {
+            fprintf(stderr, "]");
+        }
+        
+        if (hasError) {
+            unlink(outPath);
+            return 1;
         }
     }
-    
-    if (outputJSON) {
-        fprintf(stderr, "]");
+    catch (std::exception &ex) {
+        printf("💣 The compiler crashed due to an internal problem: %s\nPlease report this message and the code that you were trying to compile as an issue on GitHub.", ex.what());
+        return 1;
     }
-    
-    if (hasError) {
-        unlink(outPath);
+    catch (...) {
+        printf("💣 The compiler crashed due to an unidentifiable internal problem.\nPlease report this message and the code that you were trying to compile as an issue on GitHub.");
         return 1;
     }
     

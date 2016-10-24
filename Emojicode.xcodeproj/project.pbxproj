@@ -27,12 +27,15 @@
 		E479370E1C3A5B3200536258 /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E479370D1C3A5B3200536258 /* Function.cpp */; };
 		E47E57E91D0D91D8006611EC /* ValueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47E57E71D0D91D8006611EC /* ValueType.cpp */; };
 		E4805DC81CD2729200B1282B /* CommonTypeFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */; };
+		E48228D41DBD0C5500216039 /* DiscardingCallableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48228D21DBD0C5500216039 /* DiscardingCallableWriter.cpp */; };
 		E489774F1CD2899E00207633 /* StringPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E489774D1CD2899E00207633 /* StringPool.cpp */; };
 		E4BB24C61CD0E2C2003CC098 /* AbstractParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24C41CD0E2C2003CC098 /* AbstractParser.cpp */; };
 		E4BB24C91CD0F7FA003CC098 /* TypeDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24C71CD0F7FA003CC098 /* TypeDefinition.cpp */; };
 		E4BB24CC1CD0F979003CC098 /* TypeDefinitionFunctional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CA1CD0F979003CC098 /* TypeDefinitionFunctional.cpp */; };
 		E4BB24D11CD0FC90003CC098 /* Protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CF1CD0FC90003CC098 /* Protocol.cpp */; };
 		E4BB24D41CD0FF6C003CC098 /* Enum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24D21CD0FF6C003CC098 /* Enum.cpp */; };
+		E4CE6FCF1D9C011200F32071 /* Callable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4CE6FCD1D9C011200F32071 /* Callable.cpp */; };
+		E4D1A9DE1D9C30E00031789A /* CallableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */; };
 		E4E95F601C89CED20072ECEB /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
 		E4EB362B1AA2254700675B52 /* Lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EB36291AA2254700675B52 /* Lexer.cpp */; };
 		E4EB4A871AA315ED00FF4CED /* Writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EB4A851AA315ED00FF4CED /* Writer.cpp */; };
@@ -116,6 +119,8 @@
 		E47E57E81D0D91D8006611EC /* ValueType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ValueType.hpp; sourceTree = "<group>"; };
 		E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommonTypeFinder.cpp; sourceTree = "<group>"; };
 		E4805DC71CD2729200B1282B /* CommonTypeFinder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CommonTypeFinder.hpp; sourceTree = "<group>"; };
+		E48228D21DBD0C5500216039 /* DiscardingCallableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiscardingCallableWriter.cpp; sourceTree = "<group>"; };
+		E48228D31DBD0C5500216039 /* DiscardingCallableWriter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DiscardingCallableWriter.hpp; sourceTree = "<group>"; };
 		E489774D1CD2899E00207633 /* StringPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPool.cpp; sourceTree = "<group>"; };
 		E489774E1CD2899E00207633 /* StringPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StringPool.hpp; sourceTree = "<group>"; };
 		E4BB24C41CD0E2C2003CC098 /* AbstractParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AbstractParser.cpp; sourceTree = "<group>"; };
@@ -128,6 +133,11 @@
 		E4BB24D01CD0FC90003CC098 /* Protocol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Protocol.hpp; sourceTree = "<group>"; };
 		E4BB24D21CD0FF6C003CC098 /* Enum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Enum.cpp; sourceTree = "<group>"; };
 		E4BB24D31CD0FF6C003CC098 /* Enum.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Enum.hpp; sourceTree = "<group>"; };
+		E4CE6FCC1D9BF55500F32071 /* CallableWriter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CallableWriter.hpp; sourceTree = "<group>"; };
+		E4CE6FCD1D9C011200F32071 /* Callable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Callable.cpp; sourceTree = "<group>"; };
+		E4CE6FCE1D9C011200F32071 /* Callable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Callable.hpp; sourceTree = "<group>"; };
+		E4CE6FD01D9C0E7A00F32071 /* CallableParserAndGeneratorMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CallableParserAndGeneratorMode.hpp; sourceTree = "<group>"; };
+		E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CallableWriter.cpp; sourceTree = "<group>"; };
 		E4E404071A5B2E4300034386 /* Emojicode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Emojicode; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4E404141A5B2E8F00034386 /* Emojicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Emojicode.h; path = "EmojicodeReal-TimeEngine/Emojicode.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		E4EB36291AA2254700675B52 /* Lexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Lexer.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
@@ -224,6 +234,11 @@
 				E46B3F881D90411100969E53 /* CodeGenerator.cpp */,
 				E4EB4A861AA315ED00FF4CED /* Writer.hpp */,
 				E4EB4A851AA315ED00FF4CED /* Writer.cpp */,
+				E4CE6FCC1D9BF55500F32071 /* CallableWriter.hpp */,
+				E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */,
+				E48228D31DBD0C5500216039 /* DiscardingCallableWriter.hpp */,
+				E48228D21DBD0C5500216039 /* DiscardingCallableWriter.cpp */,
+				E4CE6FD01D9C0E7A00F32071 /* CallableParserAndGeneratorMode.hpp */,
 			);
 			name = "Code Generation";
 			sourceTree = "<group>";
@@ -258,6 +273,8 @@
 			isa = PBXGroup;
 			children = (
 				E46B2F791CD7A32000447D91 /* Scoping */,
+				E4CE6FCE1D9C011200F32071 /* Callable.hpp */,
+				E4CE6FCD1D9C011200F32071 /* Callable.cpp */,
 				E47937221C3ACBEC00536258 /* Function.hpp */,
 				E479370D1C3A5B3200536258 /* Function.cpp */,
 				E46395231CAEB49D001461C1 /* Package.hpp */,
@@ -445,8 +462,10 @@
 				E4E95F601C89CED20072ECEB /* utf8.c in Sources */,
 				E46B3F8A1D90411100969E53 /* CodeGenerator.cpp in Sources */,
 				E46B2F7C1CD7A32B00447D91 /* Scope.cpp in Sources */,
+				E48228D41DBD0C5500216039 /* DiscardingCallableWriter.cpp in Sources */,
 				E4EB4A871AA315ED00FF4CED /* Writer.cpp in Sources */,
 				E45FA2F61AA0D24200F032A8 /* main.cpp in Sources */,
+				E4D1A9DE1D9C30E00031789A /* CallableWriter.cpp in Sources */,
 				E407041F1CDE0D7D0075FBFE /* VariableNotFoundErrorException.cpp in Sources */,
 				E46395241CAEB49D001461C1 /* Package.cpp in Sources */,
 				E4BB24D41CD0FF6C003CC098 /* Enum.cpp in Sources */,
@@ -454,6 +473,7 @@
 				E449AF6C1CCCC0A200492FC0 /* PackageParser.cpp in Sources */,
 				E4805DC81CD2729200B1282B /* CommonTypeFinder.cpp in Sources */,
 				E46B2F781CD794D800447D91 /* PackageReporter.cpp in Sources */,
+				E4CE6FCF1D9C011200F32071 /* Callable.cpp in Sources */,
 				E46B2F7F1CD7A5A000447D91 /* Variable.cpp in Sources */,
 				E404F6801CCFF39900589659 /* TokenStream.cpp in Sources */,
 				E469A5821CD512A10012D60E /* CompilerErrorException.cpp in Sources */,
@@ -487,10 +507,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-Wreorder",
@@ -542,7 +559,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = PRIVATE_EMOJICODE;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
@@ -556,7 +573,10 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				WARNING_CFLAGS = "-Werror-pointer-arith";
+				WARNING_CFLAGS = (
+					"-Werror-pointer-arith",
+					"-Winconsistent-missing-override",
+				);
 			};
 			name = Debug;
 		};
@@ -589,7 +609,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
-				GCC_PREPROCESSOR_DEFINITIONS = PRIVATE_EMOJICODE;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -601,7 +621,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				WARNING_CFLAGS = "-Werror-pointer-arith";
+				WARNING_CFLAGS = (
+					"-Werror-pointer-arith",
+					"-Winconsistent-missing-override",
+				);
 			};
 			name = Release;
 		};
@@ -609,6 +632,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

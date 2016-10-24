@@ -11,7 +11,8 @@
 
 #include "Type.hpp"
 #include "CommonTypeFinder.hpp"
-#include "Function.hpp"
+
+class Function;
 
 class TypeContext {
 public:

@@ -135,7 +135,7 @@ void reportPackage(Package *package) {
     std::list<Protocol *> protocols;
     std::list<ValueType *> valueTypes;
     
-    for (auto exported : package->exportedTypes()) { // TODO: Add Value Type
+    for (auto exported : package->exportedTypes()) {
         switch (exported.type.type()) {
             case TypeContent::Class:
                 classes.push_back(exported.type.eclass());
@@ -176,7 +176,7 @@ void reportPackage(Package *package) {
         
         printf("\"methods\":[");
         for (size_t i = 0; i < vt->methodList().size(); i++) {
-            Method *method = vt->methodList()[i];
+            Function *method = vt->methodList()[i];
             reportFunctionInformation(method, Return, i + 1 == vt->methodList().size(),
                                       TypeContext(Type(vt, false), method));
         }
@@ -193,7 +193,7 @@ void reportPackage(Package *package) {
         
         printf("\"classMethods\":[");
         for (size_t i = 0; i < vt->classMethodList().size(); i++) {
-            ClassMethod *classMethod = vt->classMethodList()[i];
+            Function *classMethod = vt->classMethodList()[i];
             reportFunctionInformation(classMethod, Return, vt->classMethodList().size() == i + 1,
                                       TypeContext(Type(vt, false), classMethod));
         }
@@ -226,7 +226,7 @@ void reportPackage(Package *package) {
         
         printf("\"methods\":[");
         for (size_t i = 0; i < eclass->methodList().size(); i++) {
-            Method *method = eclass->methodList()[i];
+            Function *method = eclass->methodList()[i];
             reportFunctionInformation(method, Return, i + 1 == eclass->methodList().size(),
                                        TypeContext(Type(eclass), method));
         }
@@ -243,7 +243,7 @@ void reportPackage(Package *package) {
         
         printf("\"classMethods\":[");
         for (size_t i = 0; i < eclass->classMethodList().size(); i++) {
-            ClassMethod *classMethod = eclass->classMethodList()[i];
+            Function *classMethod = eclass->classMethodList()[i];
             reportFunctionInformation(classMethod, Return, eclass->classMethodList().size() == i + 1,
                                        TypeContext(Type(eclass), classMethod));
         }
@@ -308,7 +308,7 @@ void reportPackage(Package *package) {
         
         printf("\"methods\":[");
         for (size_t i = 0; i < protocol->methods().size(); i++) {
-            Method *method = protocol->methods()[i];
+            Function *method = protocol->methods()[i];
             reportFunctionInformation(method, Return, i + 1 == protocol->methods().size(),
                                        TypeContext(Type(protocol, false)));
         }

@@ -21,12 +21,12 @@ Protocol::Protocol(EmojicodeChar name, Package *pkg, SourcePosition p, const Emo
     index = nextIndex++;
 }
 
-Method* Protocol::lookupMethod(EmojicodeChar name) {
+Function* Protocol::lookupMethod(EmojicodeChar name) {
     auto it = methods_.find(name);
     return it != methods_.end() ? it->second : nullptr;
 }
 
-Method* Protocol::getMethod(const Token &token, Type type, TypeContext typeContext) {
+Function* Protocol::getMethod(const Token &token, Type type, TypeContext typeContext) {
     auto method = lookupMethod(token.value[0]);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
@@ -36,8 +36,9 @@ Method* Protocol::getMethod(const Token &token, Type type, TypeContext typeConte
     return method;
 }
 
-void Protocol::addMethod(Method *method) {
+void Protocol::addMethod(Function *method) {
     duplicateDeclarationCheck(method, methods_, method->position());
+    method->native = true;
     method->setVti(static_cast<int>(methodList_.size()));
     methods_[method->name] = method;
     methodList_.push_back(method);

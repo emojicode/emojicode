@@ -60,8 +60,8 @@ extern int threads;
 
 //MARK: VM
 
-Byte *currentHeap;
-Byte *otherHeap;
+extern Byte *currentHeap;
+extern Byte *otherHeap;
 void allocateHeap(void);
 
 #ifndef heapSize
@@ -69,11 +69,11 @@ void allocateHeap(void);
 #endif
 
 /** The class table */
-Class **classTable;
-Function **functionTable;
+extern Class **classTable;
+extern Function **functionTable;
 
-uint_fast16_t stringPoolCount;
-Object **stringPool;
+extern uint_fast16_t stringPoolCount;
+extern Object **stringPool;
 
 /** Whether the given pointer points into the heap. */
 extern bool isPossibleObjectPointer(void *);
