@@ -102,6 +102,7 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeConte
 }
 
 Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool resolveSelf) const {
+    if (typeContext.calleeType().type() == TypeContent::Nothingness) return *this;
     TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionFunctional();
     Type t = *this;
     bool optional = t.optional();
