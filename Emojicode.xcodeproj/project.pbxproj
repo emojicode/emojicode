@@ -28,6 +28,7 @@
 		E47E57E91D0D91D8006611EC /* ValueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47E57E71D0D91D8006611EC /* ValueType.cpp */; };
 		E4805DC81CD2729200B1282B /* CommonTypeFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */; };
 		E48228D41DBD0C5500216039 /* DiscardingCallableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48228D21DBD0C5500216039 /* DiscardingCallableWriter.cpp */; };
+		E48228D71DBFD41400216039 /* VTIProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48228D51DBFD41400216039 /* VTIProvider.cpp */; };
 		E489774F1CD2899E00207633 /* StringPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E489774D1CD2899E00207633 /* StringPool.cpp */; };
 		E4BB24C61CD0E2C2003CC098 /* AbstractParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24C41CD0E2C2003CC098 /* AbstractParser.cpp */; };
 		E4BB24C91CD0F7FA003CC098 /* TypeDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24C71CD0F7FA003CC098 /* TypeDefinition.cpp */; };
@@ -121,6 +122,8 @@
 		E4805DC71CD2729200B1282B /* CommonTypeFinder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CommonTypeFinder.hpp; sourceTree = "<group>"; };
 		E48228D21DBD0C5500216039 /* DiscardingCallableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiscardingCallableWriter.cpp; sourceTree = "<group>"; };
 		E48228D31DBD0C5500216039 /* DiscardingCallableWriter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DiscardingCallableWriter.hpp; sourceTree = "<group>"; };
+		E48228D51DBFD41400216039 /* VTIProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VTIProvider.cpp; sourceTree = "<group>"; };
+		E48228D61DBFD41400216039 /* VTIProvider.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VTIProvider.hpp; sourceTree = "<group>"; };
 		E489774D1CD2899E00207633 /* StringPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPool.cpp; sourceTree = "<group>"; };
 		E489774E1CD2899E00207633 /* StringPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StringPool.hpp; sourceTree = "<group>"; };
 		E4BB24C41CD0E2C2003CC098 /* AbstractParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AbstractParser.cpp; sourceTree = "<group>"; };
@@ -302,6 +305,8 @@
 				E4BB24CF1CD0FC90003CC098 /* Protocol.cpp */,
 				E4BB24D31CD0FF6C003CC098 /* Enum.hpp */,
 				E4BB24D21CD0FF6C003CC098 /* Enum.cpp */,
+				E48228D61DBFD41400216039 /* VTIProvider.hpp */,
+				E48228D51DBFD41400216039 /* VTIProvider.cpp */,
 			);
 			name = "Type Definitions";
 			sourceTree = "<group>";
@@ -476,6 +481,7 @@
 				E4CE6FCF1D9C011200F32071 /* Callable.cpp in Sources */,
 				E46B2F7F1CD7A5A000447D91 /* Variable.cpp in Sources */,
 				E404F6801CCFF39900589659 /* TokenStream.cpp in Sources */,
+				E48228D71DBFD41400216039 /* VTIProvider.cpp in Sources */,
 				E469A5821CD512A10012D60E /* CompilerErrorException.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -14,6 +14,7 @@
 #include "CompilerErrorException.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "TypeContext.hpp"
+#include "VTIProvider.hpp"
 
 bool Function::foundStart = false;
 Function *Function::start;
@@ -58,15 +59,15 @@ void Function::checkArgumentCount(size_t thisCount, size_t superCount, Emojicode
 void Function::checkPromises(Function *superFunction, const char *on, Type contextType) {
     try {
         if (superFunction->final()) {
-            ecCharToCharStack(this->name, mn);
+            ecCharToCharStack(this->name(), mn);
             throw CompilerErrorException(this->position(), "%s of %s was marked 🔏.", on, mn);
         }
         if (this->accessLevel() != superFunction->accessLevel()) {
-            ecCharToCharStack(this->name, mn);
+            ecCharToCharStack(this->name(), mn);
             throw CompilerErrorException(this->position(), "The access level of %s and its %s don’t match.", mn, on);
         }
-        checkReturnPromise(this->returnType, superFunction->returnType, this->name, this->position(), on, contextType);
-        checkArgumentCount(this->arguments.size(), superFunction->arguments.size(), this->name,
+        checkReturnPromise(this->returnType, superFunction->returnType, this->name(), this->position(), on, contextType);
+        checkArgumentCount(this->arguments.size(), superFunction->arguments.size(), this->name(),
                            this->position(), on, contextType);
 
         for (int i = 0; i < superFunction->arguments.size(); i++) {
@@ -82,14 +83,14 @@ void Function::checkPromises(Function *superFunction, const char *on, Type conte
 bool Function::checkOverride(Function *superFunction) {
     if (overriding()) {
         if (!superFunction || superFunction->accessLevel() == AccessLevel::Private) {
-            ecCharToCharStack(name, mn);
+            ecCharToCharStack(name(), mn);
             throw CompilerErrorException(position(), "%s was declared ✒️ but does not override anything.", mn);
         }
         return true;
     }
     
     if (superFunction && superFunction->accessLevel() != AccessLevel::Private) {
-        ecCharToCharStack(name, mn);
+        ecCharToCharStack(name(), mn);
         throw CompilerErrorException(position(), "If you want to override %s add ✒️.", mn);
     }
     return false;
@@ -97,7 +98,7 @@ bool Function::checkOverride(Function *superFunction) {
 
 void Function::deprecatedWarning(const Token &callToken) {
     if (deprecated()) {
-        ecCharToCharStack(name, mn);
+        ecCharToCharStack(name(), mn);
         if (documentation().size() > 0) {
             char *documentationString = documentation().utf8CString();
             compilerWarning(callToken,
@@ -113,8 +114,8 @@ void Function::deprecatedWarning(const Token &callToken) {
 
 int Function::vtiForUse() {
     if (!assigned()) {
-        ecCharToCharStack(name, named);
-        setVti(vtiAssigner_());
+        ecCharToCharStack(name(), named);
+        setVti(vtiProvider_->next());
     }
     return vti_;
 }
@@ -140,11 +141,11 @@ bool Function::assigned() const {
     return vti_ >= 0;
 }
 
-void Function::setVtiAssigner(std::function<int()> vtiAssigner) {
-    if (vtiAssigner_) {
-        throw std::logic_error("You cannot reassign the VTI assigner.");
+void Function::setVtiProvider(VTIProvider *provider) {
+    if (vtiProvider_) {
+        throw std::logic_error("You cannot reassign the VTI provider.");
     }
-    vtiAssigner_ = vtiAssigner;
+    vtiProvider_ = provider;
 }
 
 Type Initializer::type() const {

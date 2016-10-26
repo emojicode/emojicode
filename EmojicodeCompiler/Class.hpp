@@ -18,6 +18,7 @@
 #include "TypeContext.hpp"
 #include "Variable.hpp"
 #include "Scope.hpp"
+#include "VTIProvider.hpp"
 
 class Type;
 
@@ -74,13 +75,13 @@ public:
     size_t fullInstanceVariableCount() { return nextInstanceVariableID_; }
     /** Returns the number of initializers including those inherited from the superclass.
         @warning @c finalize() must be called before a call to this method. */
-    size_t fullInitializerCount() { return nextInitializerVti_; }
+    size_t fullInitializerCount() { return initializerVtiProvider_.peekNext(); }
     /** Returns the number of methods and type methods including those inherited from the superclass.
         @warning @c finalize() must be called before a call to this method. */
-    size_t fullMethodCount() { return nextMethodVti_; }
-    
-    int assignedMethodCount() { return assignedMethodCount_; }
-    int assignedInitializerCount() { return assignedInitializerCount_; }
+    size_t fullMethodCount() { return methodVtiProvider_.peekNext(); }
+
+    int assignedMethodCount() { return methodVtiProvider_.vtiCount(); }
+    int assignedInitializerCount() { return initializerVtiProvider_.vtiCount(); }
 private:
     static std::list<Class *> classes_;
     
@@ -91,22 +92,9 @@ private:
     bool final_;
     bool inheritsInitializers_;
     
-    int nextMethodVti_ = 0;
-    int nextInitializerVti_ = 0;
-    
-    int assignedMethodCount_ = 0;
-    int assignedInitializerCount_ = 0;
-    
-    int nextMethodVti() { ecCharToCharStack(name(), named);
-        incrementAssignedMethodCount();
-        return nextMethodVti_++; }
-    int nextInitializerVti() {
-        incrementAssignedInitializerCount();
-        return nextInitializerVti_++; }
+    ClassVTIProvider methodVtiProvider_;
+    ClassVTIProvider initializerVtiProvider_;
 
-    int incrementAssignedMethodCount() { return assignedMethodCount_++; }
-    int incrementAssignedInitializerCount() { return assignedInitializerCount_++; }
-    
     Scope objectScope_;
     Class *superclass_ = nullptr;
     

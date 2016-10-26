@@ -111,19 +111,19 @@ Function* TypeDefinitionFunctional::getClassMethod(const Token &token, Type type
 
 void TypeDefinitionFunctional::addClassMethod(Function *method) {
     duplicateDeclarationCheck(method, classMethods_, method->position());
-    classMethods_[method->name] = method;
+    classMethods_[method->name()] = method;
     classMethodList_.push_back(method);
 }
 
 void TypeDefinitionFunctional::addMethod(Function *method) {
     duplicateDeclarationCheck(method, methods_, method->position());
-    methods_[method->name] = method;
+    methods_[method->name()] = method;
     methodList_.push_back(method);
 }
 
 void TypeDefinitionFunctional::addInitializer(Initializer *init) {
     duplicateDeclarationCheck(init, initializers_, init->position());
-    initializers_[init->name] = init;
+    initializers_[init->name()] = init;
     initializerList_.push_back(init);
 
     if (init->required) {

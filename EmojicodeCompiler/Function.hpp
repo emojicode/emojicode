@@ -11,7 +11,6 @@
 
 #include <queue>
 #include <map>
-#include <functional>
 #include "Token.hpp"
 #include "TokenStream.hpp"
 #include "Type.hpp"
@@ -19,6 +18,8 @@
 #include "CallableParserAndGeneratorMode.hpp"
 #include "CallableWriter.hpp"
 #include "Class.hpp"
+
+class VTIProvider;
 
 enum class AccessLevel {
     Public, Private, Protected
@@ -53,7 +54,7 @@ public:
     Function(EmojicodeChar name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, EmojicodeString documentationToken, bool deprecated, CallableParserAndGeneratorMode mode)
         : Callable(p),
-          name(name),
+          name_(name),
           final_(final),
           overriding_(overriding),
           deprecated_(deprecated),
@@ -64,7 +65,7 @@ public:
           compilationMode_(mode) {}
     
     /** The function name. A Unicode code point for an emoji */
-    EmojicodeChar name;
+    EmojicodeChar name() const { return name_; }
     
     /** Whether the method is implemented natively and Run-Time Native Linking must occur. */
     bool native = false;
@@ -106,8 +107,11 @@ public:
         @warning This method must only be called if the function will be needed at run-time and 
         should be assigned a VTI. */
     int vtiForUse();
+    /** Returns the VTI this function was assigned. If the function wasn’t assigned a VTI, 
+        a @c std::logic_error is thrown. */
     int getVti() const;
-    void setVtiAssigner(std::function<int()>);
+    /** Sets the @c VTIProvider which should be used to assign this method a VTI and to update the VTI counter. */
+    void setVtiProvider(VTIProvider *provider);
     
     CallableParserAndGeneratorMode compilationMode() const { return compilationMode_; }
     
@@ -124,6 +128,7 @@ private:
     /** Sets the VTI to @c vti and enters this functions into the list of functions to be compiled into the binary. */
     void setVti(int vti);
     
+    EmojicodeChar name_;
     static int nextVti_;
     int vti_ = -1;
     bool final_;
@@ -133,11 +138,11 @@ private:
     Type owningType_;
     Package *package_;
     EmojicodeString documentation_;
-    std::function<int()> vtiAssigner_ = nullptr;
+    VTIProvider *vtiProvider_ = nullptr;
     CallableParserAndGeneratorMode compilationMode_;
     int maxVariableCount_ = -1;
 };
- 
+
 class Initializer: public Function {
 public:
     Initializer(EmojicodeChar name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,

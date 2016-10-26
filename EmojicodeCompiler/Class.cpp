@@ -89,7 +89,7 @@ Function* Class::lookupClassMethod(EmojicodeChar name) {
 }
 
 void Class::handleRequiredInitializer(Initializer *init) {
-    requiredInitializers_.insert(init->name);
+    requiredInitializers_.insert(init->name());
 }
 
 void Class::finalize() {
@@ -112,54 +112,54 @@ void Class::finalize() {
     }
     
     for (auto method : methodList()) {
-        auto superMethod = superclass() ? superclass()->lookupMethod(method->name) : NULL;
+        auto superMethod = superclass() ? superclass()->lookupMethod(method->name()) : NULL;
         
         if (method->checkOverride(superMethod)) {
             method->checkPromises(superMethod, "super method", classType);
             method->setVti(superMethod->vtiForUse());
-            incrementAssignedMethodCount();
+            methodVtiProvider_.incrementVtiCount();
         }
         else {
-            method->setVtiAssigner(std::bind(&Class::nextMethodVti, this));
+            method->setVtiProvider(&methodVtiProvider_);
         }
     }
     for (auto clMethod : classMethodList()) {
-        auto superMethod = superclass() ? superclass()->lookupClassMethod(clMethod->name) : NULL;
+        auto superMethod = superclass() ? superclass()->lookupClassMethod(clMethod->name()) : NULL;
         
         if (clMethod->checkOverride(superMethod)) {
             clMethod->checkPromises(superMethod, "super classmethod", classType);
             clMethod->setVti(superMethod->vtiForUse());
-            incrementAssignedMethodCount();
+            methodVtiProvider_.incrementVtiCount();
         }
         else {
-            clMethod->setVtiAssigner(std::bind(&Class::nextMethodVti, this));
+            clMethod->setVtiProvider(&methodVtiProvider_);
         }
     }
     
     auto subRequiredInitializerNextVti = superclass() ? superclass()->requiredInitializers().size() : 0;
     for (auto initializer : initializerList()) {
-        auto superInit = superclass() ? superclass()->lookupInitializer(initializer->name) : NULL;
+        auto superInit = superclass() ? superclass()->lookupInitializer(initializer->name()) : NULL;
         
         if (initializer->required) {
             if (superInit && superInit->required) {
                 initializer->checkPromises(superInit, "super initializer", classType);
                 initializer->setVti(superInit->getVti());
-                incrementAssignedInitializerCount();
+                initializerVtiProvider_.incrementVtiCount();
             }
             else {
                 initializer->setVti(static_cast<int>(subRequiredInitializerNextVti++));
-                incrementAssignedInitializerCount();
+                initializerVtiProvider_.incrementVtiCount();
             }
         }
         else {
-            initializer->setVtiAssigner(std::bind(&Class::nextInitializerVti, this));
+            initializer->setVtiProvider(&initializerVtiProvider_);
         }
     }
     
     if (superclass()) {
-        nextInitializerVti_ = inheritsInitializers() ? superclass()->nextInitializerVti_ :
-                                static_cast<int>(requiredInitializers().size());
-        nextMethodVti_ = superclass()->nextMethodVti_;
+        initializerVtiProvider_.offsetVti(inheritsInitializers() ? superclass()->initializerVtiProvider_.peekNext() :
+                                          static_cast<int>(requiredInitializers().size()));
+        methodVtiProvider_.offsetVti(superclass()->methodVtiProvider_.peekNext());
         nextInstanceVariableID_ = superclass()->nextInstanceVariableID_;
     }
     
@@ -180,7 +180,7 @@ void Class::finalize() {
     
     for (Type protocol : protocols()) {
         for (auto method : protocol.protocol()->methods()) {
-            Function *clm = lookupMethod(method->name);
+            Function *clm = lookupMethod(method->name());
             if (clm) {
                 clm->vtiForUse();
             }

@@ -111,14 +111,14 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     if (p->accessLevel() == AccessLevel::Private) {
         if (this->typeContext.calleeType().type() != p->owningType().type()
                 || p->owningType().typeDefinition() != this->typeContext.calleeType().typeDefinition()) {
-            ecCharToCharStack(p->name, nm);
+            ecCharToCharStack(p->name(), nm);
             throw CompilerErrorException(token, "%s is 🔒.", nm);
         }
     }
     else if (p->accessLevel() == AccessLevel::Protected) {
         if (this->typeContext.calleeType().type() != p->owningType().type()
                 || !this->typeContext.calleeType().eclass()->inheritsFrom(p->owningType().eclass())) {
-            ecCharToCharStack(p->name, nm);
+            ecCharToCharStack(p->name(), nm);
             throw CompilerErrorException(token, "%s is 🔐.", nm);
         }
     }
@@ -1259,7 +1259,7 @@ void CallableParserAndGenerator::analyze(bool compileDeadCode) {
                                                                     "Instance variable \"%s\" must be initialized.");
             
             if (!calledSuper && typeContext.calleeType().eclass()->superclass()) {
-                ecCharToCharStack(initializer.name, initializerName);
+                ecCharToCharStack(initializer.name(), initializerName);
                 throw CompilerErrorException(initializer.position(),
                               "Missing call to superinitializer in initializer %s.", initializerName);
             }

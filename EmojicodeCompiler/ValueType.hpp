@@ -11,6 +11,7 @@
 
 #include <vector>
 #include "TypeDefinitionFunctional.hpp"
+#include "VTIProvider.hpp"
 
 class ValueType : public TypeDefinitionFunctional {
 public:
@@ -24,11 +25,10 @@ public:
     bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) override { return false; }
     
     void finalize() override;
-    int assignedFunctionCount() const { return assignedFunctionCount_; };
+    int assignedFunctionCount() const { return vtiProvider_.vtiCount(); };
 private:
     static std::vector<ValueType *> valueType_;
-    int assignedFunctionCount_ = 0;
-    int nextFunctionVti();
+    ValueTypeVTIProvider vtiProvider_;
 };
 
 #endif /* ValueType_hpp */

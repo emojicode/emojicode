@@ -85,7 +85,7 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
 }
 
 void reportFunctionInformation(Function *p, ReturnManner returnm, bool last, TypeContext tc) {
-    ecCharToCharStack(p->name, nameString);
+    ecCharToCharStack(p->name(), nameString);
     
     printf("{");
     printf("\"name\":\"%s\",", nameString);

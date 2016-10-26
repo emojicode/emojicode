@@ -40,7 +40,7 @@ void Protocol::addMethod(Function *method) {
     duplicateDeclarationCheck(method, methods_, method->position());
     method->native = true;
     method->setVti(static_cast<int>(methodList_.size()));
-    methods_[method->name] = method;
+    methods_[method->name()] = method;
     methodList_.push_back(method);
 }
 

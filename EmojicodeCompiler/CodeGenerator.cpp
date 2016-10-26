@@ -94,11 +94,11 @@ void writeClass(Type classType, Writer &writer) {
             
             for (auto method : protocol.protocol()->methods()) {
                 try {
-                    Function *clm = eclass->lookupMethod(method->name);
+                    Function *clm = eclass->lookupMethod(method->name());
                     if (clm == nullptr) {
                         auto className = classType.toString(typeNothingness, true);
                         auto protocolName = protocol.toString(typeNothingness, true);
-                        ecCharToCharStack(method->name, ms);
+                        ecCharToCharStack(method->name(), ms);
                         throw CompilerErrorException(eclass->position(),
                                                      "Class %s does not agree to protocol %s: Method %s is missing.",
                                                      className.c_str(), protocolName.c_str(), ms);
@@ -106,8 +106,8 @@ void writeClass(Type classType, Writer &writer) {
                     
                     writer.writeUInt16(clm->vtiForUse());
                     Function::checkReturnPromise(clm->returnType, method->returnType.resolveOn(protocol, false),
-                                                 method->name, clm->position(), "protocol definition", classType);
-                    Function::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name,
+                                                 method->name(), clm->position(), "protocol definition", classType);
+                    Function::checkArgumentCount(clm->arguments.size(), method->arguments.size(), method->name(),
                                                  clm->position(), "protocol definition", classType);
                     for (int i = 0; i < method->arguments.size(); i++) {
                         Function::checkArgument(clm->arguments[i].type,
