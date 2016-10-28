@@ -25,7 +25,7 @@ public:
     bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) override { return false; }
     
     void finalize() override;
-    int assignedFunctionCount() const { return vtiProvider_.vtiCount(); };
+    int usedFunctionCount() const { return vtiProvider_.usedCount(); };
 private:
     static std::vector<ValueType *> valueType_;
     ValueTypeVTIProvider vtiProvider_;

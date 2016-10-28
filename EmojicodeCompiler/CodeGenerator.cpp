@@ -20,18 +20,19 @@
 #include "DiscardingCallableWriter.hpp"
 
 template <typename T>
-void writeAssigned(const std::vector<T *> &functions, Writer &writer) {
+void writeUsed(const std::vector<T *> &functions, Writer &writer) {
     for (auto function : functions) {
-        if (function->assigned()) {
+        if (function->used()) {
+            ecCharToCharStack(function->name(), names);
             writer.writeFunction(function);
         }
     }
 }
 
 template <typename T>
-void compileUnassigned(const std::vector<T *> &functions) {
+void compileUnused(const std::vector<T *> &functions) {
     for (auto function : functions) {
-        if (!function->assigned() && !function->native) {
+        if (!function->used() && !function->native) {
             DiscardingCallableWriter writer = DiscardingCallableWriter();
             generateCodeForFunction(function, writer);
         }
@@ -64,12 +65,12 @@ void writeClass(Type classType, Writer &writer) {
     writer.writeByte(eclass->inheritsInitializers() ? 1 : 0);
     writer.writeUInt16(eclass->fullInitializerCount());
     
-    writer.writeUInt16(eclass->assignedMethodCount());
-    writer.writeUInt16(eclass->assignedInitializerCount());
+    writer.writeUInt16(eclass->usedMethodCount());
+    writer.writeUInt16(eclass->usedInitializerCount());
     
-    writeAssigned(eclass->methodList(), writer);
-    writeAssigned(eclass->classMethodList(), writer);
-    writeAssigned(eclass->initializerList(), writer);
+    writeUsed(eclass->methodList(), writer);
+    writeUsed(eclass->classMethodList(), writer);
+    writeUsed(eclass->initializerList(), writer);
     
     writer.writeUInt16(eclass->protocols().size());
     
@@ -128,10 +129,10 @@ void writeClass(Type classType, Writer &writer) {
 
 void writeValueType(ValueType *vt, Writer &writer) {
     writer.writeEmojicodeChar(vt->name());
-    writer.writeUInt16(vt->assignedFunctionCount());
-    writeAssigned(vt->methodList(), writer);
-    writeAssigned(vt->classMethodList(), writer);
-    writeAssigned(vt->initializerList(), writer);
+    writer.writeUInt16(vt->usedFunctionCount());
+    writeUsed(vt->methodList(), writer);
+    writeUsed(vt->classMethodList(), writer);
+    writeUsed(vt->initializerList(), writer);
 }
 
 void writePackageHeader(Package *pkg, Writer &writer, uint16_t classCount) {
@@ -155,12 +156,13 @@ void writePackageHeader(Package *pkg, Writer &writer) {
     writePackageHeader(pkg, writer, pkg->classes().size());
 }
 
-
 void generateCode(Writer &writer) {
     auto &theStringPool = StringPool::theStringPool();
     theStringPool.poolString(EmojicodeString());
     
-    Function::start->setVti(Function::nextFunctionVti());
+    ValueTypeVTIProvider provider;
+    Function::start->setVtiProvider(&provider);
+    Function::start->vtiForUse();
     
     for (auto eclass : Class::classes()) {
         eclass->finalize();
@@ -174,6 +176,7 @@ void generateCode(Writer &writer) {
         Function *function = Function::compilationQueue.front();
         generateCodeForFunction(function, function->writer_);
         Function::compilationQueue.pop();
+        ecCharToCharStack(function->name(), names);
     }
     
     writer.writeByte(ByteCodeSpecificationVersion);
@@ -236,14 +239,14 @@ void generateCode(Writer &writer) {
     }
     
     for (auto eclass : Class::classes()) {
-        compileUnassigned(eclass->methodList());
-        compileUnassigned(eclass->initializerList());
-        compileUnassigned(eclass->classMethodList());
+        compileUnused(eclass->methodList());
+        compileUnused(eclass->initializerList());
+        compileUnused(eclass->classMethodList());
     }
     
     for (auto vt : ValueType::valueTypes()) {
-        compileUnassigned(vt->methodList());
-        compileUnassigned(vt->initializerList());
-        compileUnassigned(vt->classMethodList());
+        compileUnused(vt->methodList());
+        compileUnused(vt->initializerList());
+        compileUnused(vt->classMethodList());
     }
 }

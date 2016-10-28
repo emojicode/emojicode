@@ -222,10 +222,12 @@ void readPackage(FILE *in){
         }
         
         for (uint_fast16_t i = 0; i < localMethodCount; i++) {
+            DEBUG_LOG("Reading method %d", i);
             readFunction(class->methodsVtable, name, in, hfpMethods);
         }
         
         for (uint_fast16_t i = 0; i < localInitializerCount; i++) {
+            DEBUG_LOG("Reading initializer %d", i);
             readInitializer(class->initializersVtable, name, in, hfpIntializer);
         }
         

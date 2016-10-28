@@ -101,38 +101,36 @@ void Class::finalize() {
     
     if (superclass()) {
         for (auto method : superclass()->methodList()) {
-            method->vtiForUse();
+            method->assignVti();
         }
         for (auto clMethod : superclass()->classMethodList()) {
-            clMethod->vtiForUse();
+            clMethod->assignVti();
         }
         for (auto initializer : superclass()->initializerList()) {
-            initializer->vtiForUse();
+            initializer->assignVti();
         }
     }
     
     for (auto method : methodList()) {
         auto superMethod = superclass() ? superclass()->lookupMethod(method->name()) : NULL;
         
+        method->setVtiProvider(&methodVtiProvider_);
         if (method->checkOverride(superMethod)) {
             method->checkPromises(superMethod, "super method", classType);
-            method->setVti(superMethod->vtiForUse());
+            method->setVti(superMethod->getVti());
+            superMethod->registerOverrider(method);
             methodVtiProvider_.incrementVtiCount();
-        }
-        else {
-            method->setVtiProvider(&methodVtiProvider_);
         }
     }
     for (auto clMethod : classMethodList()) {
         auto superMethod = superclass() ? superclass()->lookupClassMethod(clMethod->name()) : NULL;
         
+        clMethod->setVtiProvider(&methodVtiProvider_);
         if (clMethod->checkOverride(superMethod)) {
             clMethod->checkPromises(superMethod, "super classmethod", classType);
-            clMethod->setVti(superMethod->vtiForUse());
+            clMethod->setVti(superMethod->getVti());
+            superMethod->registerOverrider(clMethod);
             methodVtiProvider_.incrementVtiCount();
-        }
-        else {
-            clMethod->setVtiProvider(&methodVtiProvider_);
         }
     }
     
@@ -140,19 +138,18 @@ void Class::finalize() {
     for (auto initializer : initializerList()) {
         auto superInit = superclass() ? superclass()->lookupInitializer(initializer->name()) : NULL;
         
+        initializer->setVtiProvider(&initializerVtiProvider_);
         if (initializer->required) {
             if (superInit && superInit->required) {
                 initializer->checkPromises(superInit, "super initializer", classType);
                 initializer->setVti(superInit->getVti());
+                superInit->registerOverrider(initializer);
                 initializerVtiProvider_.incrementVtiCount();
             }
             else {
                 initializer->setVti(static_cast<int>(subRequiredInitializerNextVti++));
                 initializerVtiProvider_.incrementVtiCount();
             }
-        }
-        else {
-            initializer->setVtiProvider(&initializerVtiProvider_);
         }
     }
     
@@ -182,7 +179,8 @@ void Class::finalize() {
         for (auto method : protocol.protocol()->methods()) {
             Function *clm = lookupMethod(method->name());
             if (clm) {
-                clm->vtiForUse();
+                clm->assignVti();
+                method->registerOverrider(clm);
             }
         }
     }

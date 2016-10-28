@@ -14,6 +14,10 @@
 class VTIProvider {
 public:
     virtual int next() = 0;
+    void used() { usedCount_++; }
+    int usedCount() const { return usedCount_; }
+private:
+    int usedCount_ = 0;
 };
 
 class ClassVTIProvider : public VTIProvider {

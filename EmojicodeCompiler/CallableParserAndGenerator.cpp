@@ -553,6 +553,11 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 scoper.currentScope().setLocalVariable(variableToken.value, Variable(typeInteger, vID, true, true, variableToken));
             }
             else if (typeIsEnumerable(iteratee, &itemType)) {
+                Function *iteratorMethod = iteratee.eclass()->lookupMethod(E_DANGO);
+                iteratorMethod->vtiForUse();
+                TypeDefinitionFunctional *td = iteratorMethod->returnType.typeDefinitionFunctional();
+                td->lookupMethod(E_DOWN_POINTING_SMALL_RED_TRIANGLE)->vtiForUse();
+                td->lookupMethod(E_RED_QUESTION_MARK)->vtiForUse();
                 placeholder.write(0x64);
                 writer.writeCoin(scoper.reserveVariableSlot(), token);  //Internally needed
                 scoper.currentScope().setLocalVariable(variableToken.value, Variable(itemType, vID, true, true, variableToken));

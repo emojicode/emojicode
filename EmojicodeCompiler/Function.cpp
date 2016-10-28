@@ -112,10 +112,34 @@ void Function::deprecatedWarning(const Token &callToken) {
     }
 }
 
+void Function::assignVti() {
+    if (!assigned()) {
+        setVti(vtiProvider_->next());
+    }
+}
+
+void Function::markUsed() {
+    if (used_) {
+        return;
+    }
+    used_ = true;
+    if (vtiProvider_) {
+        vtiProvider_->used();
+    }
+    if (!native) {
+        Function::compilationQueue.push(this);
+    }
+    for (Function *function : overriders_) {
+        function->markUsed();
+    }
+}
+
 int Function::vtiForUse() {
     if (!assigned()) {
-        ecCharToCharStack(name(), named);
         setVti(vtiProvider_->next());
+    }
+    if (!used_) {
+        markUsed();
     }
     return vti_;
 }
@@ -132,9 +156,6 @@ void Function::setVti(int vti) {
         throw std::logic_error("You cannot reassign the VTI.");
     }
     vti_ = vti;
-    if (!native) {
-        Function::compilationQueue.push(this);
-    }
 }
 
 bool Function::assigned() const {

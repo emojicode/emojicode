@@ -103,15 +103,21 @@ public:
     
     bool checkOverride(Function *superFunction);
     
-    /** Returns the VTI for this function or fetches one by calling the VTI Assigner.
+    /** Returns the VTI for this function or fetches one by calling the VTI Assigner and marks the function as used.
         @warning This method must only be called if the function will be needed at run-time and 
         should be assigned a VTI. */
     int vtiForUse();
+    /** Assigns this method a VTI without marking it as used. */
+    void assignVti();
     /** Returns the VTI this function was assigned. If the function wasn’t assigned a VTI, 
         a @c std::logic_error is thrown. */
     int getVti() const;
     /** Sets the @c VTIProvider which should be used to assign this method a VTI and to update the VTI counter. */
     void setVtiProvider(VTIProvider *provider);
+    /** Whether the function was really used. */
+    bool used() const { return used_; }
+    
+    void registerOverrider(Function *f) { overriders_.push_back(f); }
     
     CallableParserAndGeneratorMode compilationMode() const { return compilationMode_; }
     
@@ -127,6 +133,7 @@ public:
 private:
     /** Sets the VTI to @c vti and enters this functions into the list of functions to be compiled into the binary. */
     void setVti(int vti);
+    void markUsed();
     
     EmojicodeChar name_;
     static int nextVti_;
@@ -134,6 +141,7 @@ private:
     bool final_;
     bool overriding_;
     bool deprecated_;
+    bool used_ = false;
     AccessLevel access_;
     Type owningType_;
     Package *package_;
@@ -141,6 +149,7 @@ private:
     VTIProvider *vtiProvider_ = nullptr;
     CallableParserAndGeneratorMode compilationMode_;
     int maxVariableCount_ = -1;
+    std::vector<Function*> overriders_;
 };
 
 class Initializer: public Function {

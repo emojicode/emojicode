@@ -80,8 +80,8 @@ public:
         @warning @c finalize() must be called before a call to this method. */
     size_t fullMethodCount() { return methodVtiProvider_.peekNext(); }
 
-    int assignedMethodCount() { return methodVtiProvider_.vtiCount(); }
-    int assignedInitializerCount() { return initializerVtiProvider_.vtiCount(); }
+    int usedMethodCount() { return methodVtiProvider_.usedCount(); }
+    int usedInitializerCount() { return initializerVtiProvider_.usedCount(); }
 private:
     static std::list<Class *> classes_;
     
