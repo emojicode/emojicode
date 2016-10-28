@@ -218,16 +218,21 @@ void generateCode(Writer &writer) {
     }
     
     writer.writeUInt16(Function::functionCount());
-    writer.writeUInt16(ValueType::valueTypes().size() + 1);
+    auto valueTypeCountPlaceholder = writer.writePlaceholder<uint16_t>();
     writer.writeEmojicodeChar(0);
     writer.writeUInt16(1);
     auto scoper = CallableScoper();
     
     writer.writeFunction(Function::start);
 
+    int valueTypeCount = 1;
     for (auto vt : ValueType::valueTypes()) {
-        writeValueType(vt, writer);
+        if (vt->usedFunctionCount() > 0) {
+            writeValueType(vt, writer);
+            valueTypeCount++;
+        }
     }
+    valueTypeCountPlaceholder.write(valueTypeCount);
     
     writer.writeUInt16(theStringPool.strings().size());
     for (auto string : theStringPool.strings()) {
