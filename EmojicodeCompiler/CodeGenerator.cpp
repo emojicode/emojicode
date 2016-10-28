@@ -23,7 +23,6 @@ template <typename T>
 void writeUsed(const std::vector<T *> &functions, Writer &writer) {
     for (auto function : functions) {
         if (function->used()) {
-            ecCharToCharStack(function->name(), names);
             writer.writeFunction(function);
         }
     }
@@ -176,7 +175,6 @@ void generateCode(Writer &writer) {
         Function *function = Function::compilationQueue.front();
         generateCodeForFunction(function, function->writer_);
         Function::compilationQueue.pop();
-        ecCharToCharStack(function->name(), names);
     }
     
     writer.writeByte(ByteCodeSpecificationVersion);
