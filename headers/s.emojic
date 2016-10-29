@@ -356,8 +356,7 @@
   🍰 iteratee 🐽🐚Element
   🍰 index 🚂
 
-  🐈 🆕 @iteratee 🐽🐚Element 🍇
-    🍮 iteratee @iteratee
+  🐈 🆕 🍼 iteratee 🐽🐚Element 🍇
     🍮 index 0
   🍉
 
@@ -388,8 +387,7 @@
   🍰 iteratee 🍨🐚Element
   🍰 index 🚂
 
-  🐈 🆕 @iteratee 🍨🐚Element 🍇
-    🍮 iteratee @iteratee
+  🐈 🆕 🍼 iteratee 🍨🐚Element 🍇
     🍮 index 0
   🍉
 
