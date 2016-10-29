@@ -483,6 +483,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
             }
             case E_CAT: {
                 staticOnType.disallow();
+                override.disallow();
                 
                 EmojicodeChar name = stream_.consumeToken(TokenType::Identifier).value[0];
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), typed, package_,
