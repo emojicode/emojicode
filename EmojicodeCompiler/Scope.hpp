@@ -21,7 +21,9 @@ class Scope {
 public:
     Scope() {};
     
-    void changeInitializedBy(int c);
+    void setVariableInitialization(bool initd);
+    void pushInitializationLevel();
+    void popInitializationLevel();
     
     /** Sets a variable in this scope. */
     void setLocalVariable(const EmojicodeString &variable, Variable value);

@@ -138,9 +138,10 @@ void CallableParserAndGenerator::writeCoinForScopesUp(bool inObjectScope, Emojic
 }
 
 void CallableParserAndGenerator::flowControlBlock(bool block) {
-    scoper.currentScope().changeInitializedBy(1);
-    if (mode == CallableParserAndGeneratorMode::ObjectMethod || mode == CallableParserAndGeneratorMode::ObjectInitializer) {
-        scoper.objectScope()->changeInitializedBy(1);
+    scoper.currentScope().pushInitializationLevel();
+    if (mode == CallableParserAndGeneratorMode::ObjectMethod ||
+        mode == CallableParserAndGeneratorMode::ObjectInitializer) {
+        scoper.objectScope()->pushInitializationLevel();
     }
     
     if (block) {
@@ -171,9 +172,10 @@ void CallableParserAndGenerator::flowControlBlock(bool block) {
         scoper.popScopeAndRecommendFrozenVariables();
     }
     
-    scoper.currentScope().changeInitializedBy(-1);
-    if (mode == CallableParserAndGeneratorMode::ObjectMethod || mode == CallableParserAndGeneratorMode::ObjectInitializer) {
-        scoper.objectScope()->changeInitializedBy(-1);
+    scoper.currentScope().popInitializationLevel();
+    if (mode == CallableParserAndGeneratorMode::ObjectMethod ||
+        mode == CallableParserAndGeneratorMode::ObjectInitializer) {
+        scoper.objectScope()->popInitializationLevel();
     }
     
     flowControlDepth--;
@@ -593,7 +595,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                                                                             "Instance variable \"%s\" must be initialized before the use of 🐕.");
             }
             
-            if (mode == CallableParserAndGeneratorMode::Function || mode == CallableParserAndGeneratorMode::ClassMethod) {
+            if (mode == CallableParserAndGeneratorMode::Function ||
+                mode == CallableParserAndGeneratorMode::ClassMethod) {
                 throw CompilerErrorException(token, "Illegal use of 🐕.");
             }
             
@@ -1225,9 +1228,10 @@ CallableParserAndGenerator::CallableParserAndGenerator(Callable &callable, Packa
           typeContext(typeContext) {}
 
 void CallableParserAndGenerator::analyze(bool compileDeadCode) {
-    auto isClassIntializer = mode == CallableParserAndGeneratorMode::ObjectInitializer;
-    if (isClassIntializer) {
-        scoper.objectScope()->changeInitializedBy(-1);
+    auto isClassInitializer = mode == CallableParserAndGeneratorMode::ObjectInitializer;
+    if (mode == CallableParserAndGeneratorMode::ObjectMethod ||
+        mode == CallableParserAndGeneratorMode::ObjectInitializer) {
+        scoper.objectScope()->setVariableInitialization(!isClassInitializer);
     }
     try {
         Scope &methodScope = scoper.pushScope();
@@ -1258,7 +1262,7 @@ void CallableParserAndGenerator::analyze(bool compileDeadCode) {
         
         scoper.popScopeAndRecommendFrozenVariables();
         
-        if (isClassIntializer) {
+        if (isClassInitializer) {
             auto initializer = static_cast<Initializer &>(callable);
             scoper.objectScope()->initializerUnintializedVariablesCheck(initializer.position(),
                                                                     "Instance variable \"%s\" must be initialized.");

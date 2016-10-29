@@ -9,11 +9,26 @@
 #include "Scope.hpp"
 #include "CompilerErrorException.hpp"
 
-void Scope::changeInitializedBy(int c) {
+void Scope::setVariableInitialization(bool initd) {
+    for (auto &it : map_) {
+        it.second.initialized = initd ? 1 : 0;
+    }
+}
+
+void Scope::pushInitializationLevel() {
     for (auto &it : map_) {
         Variable &cv = it.second;
         if (cv.initialized > 0) {
-            cv.initialized += c;
+            cv.initialized++;
+        }
+    }
+}
+
+void Scope::popInitializationLevel() {
+    for (auto &it : map_) {
+        Variable &cv = it.second;
+        if (cv.initialized > 0) {
+            cv.initialized--;
         }
     }
 }
