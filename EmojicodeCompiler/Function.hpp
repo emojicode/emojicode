@@ -167,6 +167,11 @@ public:
     bool canReturnNothingness;
     
     virtual Type type() const override;
+    
+    void addArgumentToVariable(const EmojicodeString &string) { argumentsToVariables_.push_back(string); }
+    const std::vector<EmojicodeString>& argumentsToVariables() const { return argumentsToVariables_; }
+private:
+    std::vector<EmojicodeString> argumentsToVariables_;
 };
 
 #endif /* Function_hpp */

@@ -47,7 +47,7 @@ public:
     /** Performs the analyziation. */
     void analyze(bool compileDeadCode = false);
     /** Whether self was used in the callable body. */
-    bool usedSelfInBody() { return usedSelf; };
+    bool usedSelfInBody() const { return usedSelf; }
 private:
     CallableParserAndGeneratorMode mode;
     /** The callable which is processed. */

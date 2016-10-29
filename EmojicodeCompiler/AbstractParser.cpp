@@ -176,10 +176,18 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
     }
 }
 
-bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct) {
+bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initializer) {
     bool usedSelf = false;
+    bool argumentToVariable;
     
-    while (stream_.nextTokenIs(TokenType::Variable)) {
+    while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {
+        if (argumentToVariable) {
+            auto &token = stream_.consumeToken(TokenType::Identifier);
+            if (!initializer) {
+                throw CompilerErrorException(token, "🍼 can only be used with initializers.");
+            }
+        }
+            
         TypeDynamism dynamism;
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
         auto type = parseTypeDeclarative(ct, TypeDynamism::AllKinds, typeNothingness, &dynamism);
@@ -188,6 +196,9 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct) {
         
         if (dynamism == TypeDynamism::Self) {
             usedSelf = true;
+        }
+        if (argumentToVariable) {
+            static_cast<Initializer *>(c)->addArgumentToVariable(variableToken.value);
         }
     }
     

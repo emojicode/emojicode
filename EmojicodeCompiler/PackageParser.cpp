@@ -494,7 +494,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                                                               CallableParserAndGeneratorMode::ThisContextFunction);
                 auto context = TypeContext(typed, initializer);
                 parseGenericArgumentsInDefinition(initializer, context);
-                parseArgumentList(initializer, context);
+                parseArgumentList(initializer, context, true);
                 parseBody(initializer, allowNative);
                 
                 if (requiredInitializers) {

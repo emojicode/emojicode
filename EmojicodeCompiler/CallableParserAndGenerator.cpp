@@ -1242,8 +1242,30 @@ void CallableParserAndGenerator::analyze(bool compileDeadCode) {
         }
         scoper.ensureNReservations(static_cast<int>(callable.arguments.size()));
         
-        bool emittedDeadCodeWarning = false;
+        if (isClassInitializer) {
+            auto initializer = static_cast<Initializer &>(callable);
+            for (auto &var : initializer.argumentsToVariables()) {
+                if (scoper.objectScope()->hasLocalVariable(var) == 0) {
+                    throw CompilerErrorException(initializer.position(),
+                                                 "🍼 was applied to \"%s\" but no matching instance variable was found.",
+                                                 var.utf8CString());
+                }
+                auto &instanceVariable = scoper.objectScope()->getLocalVariable(var);
+                auto &argumentVariable = methodScope.getLocalVariable(var);
+                if (!argumentVariable.type.compatibleTo(instanceVariable.type, typeContext)) {
+                    throw CompilerErrorException(initializer.position(),
+                                                 "🍼 was applied to \"%s\" but instance variable has incompatible type.",
+                                                 var.utf8CString());
+                }
+                instanceVariable.initialized = 1;
+                writer.writeCoin(0x1D, initializer.position());
+                writer.writeCoin(instanceVariable.id(), initializer.position());
+                writer.writeCoin(0x1A, initializer.position());
+                writer.writeCoin(argumentVariable.id(), initializer.position());
+            }
+        }
         
+        bool emittedDeadCodeWarning = false;
         while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
             effect = false;
             

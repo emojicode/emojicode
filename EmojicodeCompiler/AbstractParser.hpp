@@ -30,7 +30,7 @@ protected:
      * Parses the arguments for a callable.
      * @return Whether self was used.
      */
-    bool parseArgumentList(Callable *c, TypeContext ct);
+    bool parseArgumentList(Callable *c, TypeContext ct, bool initializer = false);
     /**
      * Parses the return type for this function if there is one specified.
      * @return Whether self was used.
