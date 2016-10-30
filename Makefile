@@ -61,7 +61,7 @@ endif
 PKG_$(1)_SOURCES = $$(wildcard $$(PACKAGES_DIR)/$(1)/*.c)
 PKG_$(1)_OBJECTS = $$(PKG_$(1)_SOURCES:%.c=%.o)
 $(1).so: $$(PKG_$(1)_OBJECTS)
-	$$(CC) $$(PKG_$(1)_LDFLAGS) $$^ -o $(DIST)/$$@ -iquote $$(<D)
+	$$(CC) $$(PKG_$(1)_LDFLAGS) $$^ -o $(DIST)/packages/$(1)/$$@ -iquote $$(<D)
 $$(PKG_$(1)_OBJECTS): %.o: %.c
 	$$(CC) $$(PACKAGE_CFLAGS) -c $$< -o $$@
 endef
@@ -73,6 +73,7 @@ clean:
 
 builds:
 	mkdir -p $(DIST)
+	$(foreach pkg,$(PACKAGES),mkdir -p $(DIST)/packages/$(pkg);)
 
 define testFile
 $(DIST)/$(COMPILER_BINARY) -o $(1).emojib $(1).emojic
@@ -95,6 +96,7 @@ endef
 install: dist
 	cd $(DIST) && ./install.sh
 
+tests: export EMOJICODE_PACKAGES_PATH=$(DIST)/packages
 tests:
 	$(foreach n,$(TESTS_COMPILATION),$(call compilationTestOutput,$(TESTS_DIR)/compilation/$(basename $(n))))
 	$(foreach n,$(TESTS_REJECT),$(call compilationReject,$(basename $(n))))
@@ -105,5 +107,8 @@ dist:
 	rm -f $(DIST)/install.sh
 	rm -rf $(DIST)/headers
 	cp install.sh $(DIST)/install.sh
-	cp -r headers/ $(DIST)/headers
+	mkdir -p $(DIST)/packages/s
+	cp headers/s.emojic $(DIST)/packages/s/header.emojic
+	$(foreach pkg,$(PACKAGES),cp headers/$(pkg).emojic $(DIST)/packages/$(pkg)/header.emojic;)
+	$(foreach pkg,$(PACKAGES),rm -f $(DIST)/packages/$(pkg)-v0; ln -s $(pkg) $(DIST)/packages/$(pkg)-v0;)
 	tar -czf $(DIST).tar.gz -C $(DIST_BUILDS) $(DIST_NAME)

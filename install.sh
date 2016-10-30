@@ -2,54 +2,65 @@
 
 b=$(tput bold)
 n=$(tput sgr0)
+cyan=$(tput setaf 6)
+magenta=$(tput setaf 5)
+r=$(tput setaf 1)
 
-if [[ ! -w "/usr/local/" ]] ; then
-	tput setaf 5
-	echo "${b}/usr/local/ is not writeable from this user. Carefully try using sudo."
-	tput sgr0
-	exit 1
+binaries=${1:-"/usr/local/bin"}
+packages=${2:-"/usr/local/EmojicodePackages"}
+
+echo "${b}🙋  Hi, I’m the Emojicode installer!${n}"
+
+echo "${b}I’ll copy the ${cyan}Emojicode Compiler${n}${b} and ${magenta}Real-Time Engine${n}${b} to ${binaries}.${n}"
+echo "${b}Then I’ll copy the packages to ${packages}.${n}"
+
+read -p "${b}If you want to proceed type Y. ➡️ ${n}" -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  echo
+  if [[ ! -w $binaries ]] ; then
+    echo "${b}${r}${binaries} is not writeable from this user. Carefully try using sudo.${n}"
+    exit 1
+  fi
+
+  if [[ ! -w $packages ]] ; then
+    pp=$(dirname "$packages")
+    if [[ ! -w $pp ]] ; then
+      echo "${b}${r}${pp} is not writeable from this user. Carefully try using sudo.${n}"
+      exit 1
+    else
+      if [[ ! -d $packages ]] ; then
+        echo "${b}Setting up packages directory in ${packages}${n}"
+
+        mkdir -p ${packages}
+      else
+        echo "${b}${r}${packages} is not writeable from this user. Carefully try using sudo.${n}"
+        exit 1
+      fi
+    fi
+  fi
+
+  (
+    set -e
+    echo "${b}Copying builds${n}"
+
+    cp emojicode ${binaries}/emojicode
+    cp emojicodec ${binaries}/emojicodec
+
+    chmod 755 ${binaries}/emojicode ${binaries}/emojicodec
+
+    echo "${b}Copying packages${n}"
+
+    rsync -rl --copy-dirlinks packages/ ${packages}
+    chmod -R 755 ${packages}
+  )
+  if [ $? = 0 ]
+  then
+    tput setaf 2
+    echo "${b}✅  Emojicode was successfully installed.${n}"
+  else
+    echo "${b}${r}Installation failed. Please refer to the error above.${n}"
+  fi
 fi
 
-if [[ ! -w "/usr/local/bin" ]] ; then
-	tput setaf 5
-	echo "${b}/usr/local/bin is not writeable from this user. Carefully try using sudo."
-	tput sgr0
-	exit 1
-fi
 
-echo "${b}Copying builds to /usr/local/bin/${n}"
-
-cp emojicode /usr/local/bin/emojicode
-cp emojicodec /usr/local/bin/emojicodec
-
-chmod 755 /usr/local/bin/emojicode /usr/local/bin/emojicodec
-
-echo "${b}Setting up packages directory in /usr/local/EmojicodePackages${n}"
-
-mkdir -p /usr/local/EmojicodePackages
-
-echo "${b}Copying s Package header${n}"
-
-mkdir -p /usr/local/EmojicodePackages/s-v1
-rm -f /usr/local/EmojicodePackages/s
-ln -s /usr/local/EmojicodePackages/s-v1 /usr/local/EmojicodePackages/s
-cp -f headers/s.emojic /usr/local/EmojicodePackages/s-v1/header.emojic
-
-function copyPackage {
-  echo "${b}Copying Package $1${n}"
-  mkdir -p /usr/local/EmojicodePackages/$1-v$2
-  rm -f /usr/local/EmojicodePackages/$1
-  ln -s /usr/local/EmojicodePackages/$1-v$2 /usr/local/EmojicodePackages/$1
-  cp -f headers/$1.emojic /usr/local/EmojicodePackages/$1-v$2/header.emojic
-  cp -f $1.so /usr/local/EmojicodePackages/$1-v$2/$1.so
-}
-
-copyPackage files 0
-copyPackage allegro 0
-copyPackage sockets 0
-
-chmod -R 755 /usr/local/EmojicodePackages
-
-tput setaf 2
-echo "${b}If there are no errors above Emojicode was successfully installed."
-tput sgr0
