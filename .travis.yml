@@ -2,7 +2,7 @@ language: cpp
 compiler:
   - gcc
   - clang
-sudo: false
+sudo: required
 script: make && make tests
 dist: trusty
 install:
