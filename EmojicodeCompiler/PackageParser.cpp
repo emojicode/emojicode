@@ -17,8 +17,7 @@
 
 void PackageParser::parse() {
     while (stream_.hasMoreTokens()) {
-        auto documentation = parseDocumentationToken();
-        
+        auto documentation = Documentation().parse(&stream_);
         auto exported = Attribute<E_EARTH_GLOBE_EUROPE_AFRICA>().parse(&stream_);
         auto final = Attribute<E_LOCK_WITH_INK_PEN>().parse(&stream_);
         auto theToken = stream_.consumeToken(TokenType::Identifier);
@@ -26,6 +25,7 @@ void PackageParser::parse() {
             case E_PACKAGE: {
                 exported.disallow();
                 final.disallow();
+                documentation.disallow();
                 
                 auto nameToken = stream_.consumeToken(TokenType::Variable);
                 auto namespaceToken = stream_.consumeToken(TokenType::Identifier);
@@ -37,15 +37,16 @@ void PackageParser::parse() {
             }
             case E_CROCODILE:
                 final.disallow();
-                parseProtocol(documentation, theToken, exported.set());
+                parseProtocol(documentation.get(), theToken, exported.set());
                 continue;
             case E_TURKEY:
                 final.disallow();
-                parseEnum(documentation, theToken, exported.set());
+                parseEnum(documentation.get(), theToken, exported.set());
                 continue;
             case E_RADIO:
                 final.disallow();
                 exported.disallow();
+                documentation.disallow();
                 package_->setRequiresBinary();
                 if (strcmp(package_->name(), "_") == 0) {
                     throw CompilerErrorException(theToken, "You may not set 📻 for the _ package.");
@@ -72,13 +73,15 @@ void PackageParser::parse() {
                     throw CompilerErrorException(theToken, "The provided package version is not valid.");
                 }
                 
-                package_->setDocumentation(documentation);
+                package_->setDocumentation(documentation.get());
                 
                 continue;
             }
             case E_WALE: {
                 final.disallow();
                 exported.disallow();
+                documentation.disallow();
+                
                 EmojicodeChar className, enamespace;
                 bool optional;
                 auto &classNameToken = parseTypeName(&className, &enamespace, &optional);
@@ -102,15 +105,17 @@ void PackageParser::parse() {
                 continue;
             }
             case E_RABBIT:
-                parseClass(documentation, theToken, exported.set(), final.set());
+                parseClass(documentation.get(), theToken, exported.set(), final.set());
                 continue;
             case E_DOVE_OF_PEACE:
                 final.disallow();
-                parseValueType(documentation, theToken, exported.set());
+                parseValueType(documentation.get(), theToken, exported.set());
                 continue;
             case E_SCROLL: {
                 final.disallow();
                 exported.disallow();
+                documentation.disallow();
+                
                 auto pathString = stream_.consumeToken(TokenType::String);
                 auto relativePath = pathString.position().file;
                 auto fileString = pathString.value.utf8CString();
@@ -137,7 +142,7 @@ void PackageParser::parse() {
                 Function::foundStart = true;
                 
                 auto function = new Function(E_CHEQUERED_FLAG, AccessLevel::Public, false, typeNothingness, package_,
-                                             theToken, false, documentation, false,
+                                             theToken, false, documentation.get(), false,
                                              CallableParserAndGeneratorMode::Function);
                 parseReturnType(function, typeNothingness);
                 if (function->returnType.type() != TypeContent::Nothingness &&
@@ -260,7 +265,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
     package_->registerType(protocolType, name, enamespace, exported);
     
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        auto documentation = parseDocumentationToken();
+        auto documentation = Documentation().parse(&stream_);
         auto token = stream_.consumeToken(TokenType::Identifier);
         auto deprecated = Attribute<E_WARNING_SIGN>().parse(&stream_);
         
@@ -271,7 +276,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
         auto methodName = stream_.consumeToken(TokenType::Identifier);
         
         auto method = new Function(methodName.value[0], AccessLevel::Public, false, protocolType, package_,
-                                 methodName.position(), false, documentation, deprecated.set(),
+                                 methodName.position(), false, documentation.get(), deprecated.set(),
                                  CallableParserAndGeneratorMode::ObjectMethod);
         auto a = parseArgumentList(method, protocolType);
         auto b = parseReturnType(method, protocolType);
@@ -298,9 +303,9 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
         throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
     }
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        auto documentation = parseDocumentationToken();
+        auto documentation = Documentation().parse(&stream_);
         auto &token = stream_.consumeToken(TokenType::Identifier);
-        eenum->addValueFor(token.value[0], token, documentation);
+        eenum->addValueFor(token.value[0], token, documentation.get());
     }
     stream_.consumeToken(TokenType::Identifier);
 }
@@ -388,8 +393,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
     }
     
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        auto documentation = parseDocumentationToken();
-        
+        auto documentation = Documentation().parse(&stream_);
         auto deprecated = Attribute<E_WARNING_SIGN>().parse(&stream_);
         auto final = Attribute<E_LOCK_WITH_INK_PEN>().parse(&stream_);
         AccessLevel accessLevel = readAccessLevel(&stream_);
@@ -413,7 +417,8 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 required.disallow();
                 canReturnNothingness.disallow();
                 deprecated.disallow();
-
+                documentation.disallow();
+                
                 auto &variableName = stream_.consumeToken(TokenType::Variable);
                 auto type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables);
                 eclass->addInstanceVariable(Variable(type, 0, 1, false, variableName));
@@ -430,6 +435,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 required.disallow();
                 canReturnNothingness.disallow();
                 deprecated.disallow();
+                documentation.disallow();
                 
                 Type type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables, typeNothingness, nullptr,
                                                  true);
@@ -453,7 +459,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 
                 if (staticOnType.set()) {
                     auto *classMethod = new Function(name, accessLevel, final.set(), typed, package_,
-                                                     token.position(), override.set(), documentation,
+                                                     token.position(), override.set(), documentation.get(),
                                                      deprecated.set(),
                                                      eclass ? CallableParserAndGeneratorMode::ClassMethod :
                                                         CallableParserAndGeneratorMode::Function);
@@ -469,7 +475,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                     reservedEmojis(methodName, "method");
                     
                     auto *method = new Function(methodName.value[0], accessLevel, final.set(), typed,
-                                                package_, token.position(), override.set(), documentation,
+                                                package_, token.position(), override.set(), documentation.get(),
                                                 deprecated.set(),
                                                 eclass ? CallableParserAndGeneratorMode::ObjectMethod :
                                                     CallableParserAndGeneratorMode::ThisContextFunction);
@@ -489,7 +495,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
                 
                 EmojicodeChar name = stream_.consumeToken(TokenType::Identifier).value[0];
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), typed, package_,
-                                                           token.position(), override.set(), documentation,
+                                                           token.position(), override.set(), documentation.get(),
                                                            deprecated.set(), required.set(),
                                                            canReturnNothingness.set(),
                                                            eclass ? CallableParserAndGeneratorMode::ObjectInitializer :
@@ -514,12 +520,4 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> 
         }
     }
     stream_.consumeToken(TokenType::Identifier);
-}
-
-EmojicodeString PackageParser::parseDocumentationToken() {
-    EmojicodeString documentation;
-    if (stream_.nextTokenIs(TokenType::DocumentationComment)) {
-        documentation = stream_.consumeToken(TokenType::DocumentationComment).value;
-    }
-    return documentation;
 }

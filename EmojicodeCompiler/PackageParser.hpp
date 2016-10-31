@@ -43,9 +43,6 @@ private:
     
     /** Parses the body of a TypeDefinitionFunctional type. */
     void parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> *requiredInitializers, bool allowNative);
-    
-    /** Parses a documentation if found and returns its value or an empty string. */
-    EmojicodeString parseDocumentationToken();
 };
 
 template<EmojicodeChar attributeName>
@@ -67,6 +64,29 @@ public:
     }
 private:
     bool set_ = false;
+    SourcePosition position_ = SourcePosition(0, 0, "");
+};
+
+class Documentation {
+public:
+    Documentation& parse(TokenStream *tokenStream) {
+        if (tokenStream->nextTokenIs(TokenType::DocumentationComment)) {
+            auto &token = tokenStream->consumeToken(TokenType::DocumentationComment);
+            position_ = token.position();
+            documentation_ = token.value;
+            found_ = true;
+        }
+        return *this;
+    }
+    const EmojicodeString& get() const { return documentation_; }
+    void disallow() const {
+        if (found_) {
+            throw CompilerErrorException(position_, "Misplaced documentation token.");
+        }
+    }
+private:
+    EmojicodeString documentation_;
+    bool found_ = false;
     SourcePosition position_ = SourcePosition(0, 0, "");
 };
 
