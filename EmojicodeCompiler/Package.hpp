@@ -75,6 +75,9 @@ public:
     /** Searches the loaded packages for the package with the given name. If the package has not been loaded @c nullptr
         is returned. */
     static Package* findPackage(const char *name);
+    
+    const EmojicodeString& documentation() const { return documentation_; }
+    void setDocumentation(const EmojicodeString &doc) { documentation_ = doc; }
 private:
     void loadInto(Package *destinationPackage, EmojicodeChar ns, const Token &errorToken) const;
     
@@ -90,6 +93,8 @@ private:
     
     static std::list<Package *> packagesLoadingOrder_;
     static std::map<std::string, Package *> packages_;
+    
+    EmojicodeString documentation_;
 };
 
 #endif /* Package_hpp */

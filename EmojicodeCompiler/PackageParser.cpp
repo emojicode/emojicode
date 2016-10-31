@@ -72,6 +72,8 @@ void PackageParser::parse() {
                     throw CompilerErrorException(theToken, "The provided package version is not valid.");
                 }
                 
+                package_->setDocumentation(documentation);
+                
                 continue;
             }
             case E_WALE: {

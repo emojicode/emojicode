@@ -156,8 +156,11 @@ void reportPackage(Package *package) {
     
     printf("{");
     
+    printf("\"documentation\":");
+    printJSONStringToFile(package->documentation().utf8CString(), stdout);
+    
     bool printedValueType = false;
-    printf("\"valueTypes\":[");
+    printf(",\"valueTypes\":[");
     for (auto vt : valueTypes) {
         auto vtcontext = TypeContext(Type(vt, false));
         if (printedValueType) {

@@ -1,3 +1,44 @@
+🌮
+  The sockets package allows you to open TCP sockets to servers or to create a TCP server socket
+  yourself.
+
+  The following is a very basic example of opening a TCP socket to make an HTTP request and print
+  the first 140 characters of the response.
+  ```
+  🍦 socket 🍺 🔷📞🆕 🔤www.emojicode.org🔤 🔤80🔤
+  💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: www.emojicode.org❌r❌n❌r❌n🔤
+
+  🍦 data 🍺 👂 socket 140
+  😀 🍺 🔡 data
+  ```
+
+  At the time of writing this, the above code would return something similar to:
+  ```
+  HTTP/1.1 200 OK
+  Server: GitHub.com
+  Content-Type: text/html; charset=utf-8
+  Last-Modified: Sat, 29 Oct 2016 11:54:03 GMT
+  Access-Control-Al
+  ```
+
+  Here we’ve an example of a minimal echo-server that listens on port 8728. The server simply sends
+  back a copy of the data it received.
+  ```
+  🍦 server 🍺 🔷🏄🆕 8728
+
+  🔁 👍 🍇
+    🍦 clientSocket 🍺 🙋 server
+    🔁 👍 🍇
+      🍦 readData 👂 clientSocket 50
+      🍊🍦 data readData 🍇
+        💬 clientSocket data
+      🍉
+    🍉
+  🍉
+  ```
+  Of course, the code above is very minimal and incomplete. For example, it can handle only one
+  connection.
+🌮
 🔮 0 1
 📻
 
