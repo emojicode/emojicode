@@ -1,9 +1,9 @@
-VERSION = 0.3-beta.2
+VERSION = 0.3
 
 CC ?= gcc
 CXX ?= g++
 
-COMPILER_CFLAGS = -g -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/ $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
+COMPILER_CFLAGS = -c -Wall -std=c++11 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/ $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
 COMPILER_LDFLAGS =
 
 COMPILER_SRCDIR = EmojicodeCompiler
