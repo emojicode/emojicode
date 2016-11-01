@@ -60,6 +60,7 @@ then
     echo "${b}✅  Emojicode was successfully installed.${n}"
   else
     echo "${b}${r}Installation failed. Please refer to the error above.${n}"
+    exit 1
   fi
 fi
 
