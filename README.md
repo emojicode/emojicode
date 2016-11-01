@@ -48,8 +48,8 @@ Steps:
 
   to compile the Engine, the compiler and all default packages.
 
-  You may need to use a smaller heap size on older Raspberry Pis. You can
-  specify the heap size in bytes when compiling the engine:
+  You may need to use a smaller heap size on older Raspberry Pis, for example.
+  You can specify the heap size in bytes when compiling the engine:
 
   ```
   make HEAP_SIZE=128000000
@@ -62,20 +62,19 @@ Steps:
   make DEFAULT_PACKAGES_DIRECTORY=/opt/strange/place
   ```
 
-3. You can now either install Emojicode and run the tests:
+3. Run the tests:
 
    ```
-   [sudo] make install && make tests
+   make tests
    ```
 
-   or package the binaries for distribution:
+4. You can now either install Emojicode:
 
    ```
-   make dist
+   make install
    ```
 
-  After the command is done you will find a directory and a tarfile
-in `builds` named after your platform, e.g. `Emojicode-0.3-beta.2-x86_64-linux-gnu`.
+   or copy the binaries from `builds/`.
 
 ## 📝 Contributions
 

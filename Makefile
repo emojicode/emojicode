@@ -105,10 +105,9 @@ tests:
 
 dist:
 	rm -f $(DIST)/install.sh
-	rm -rf $(DIST)/headers
 	cp install.sh $(DIST)/install.sh
 	mkdir -p $(DIST)/packages/s
-	cp headers/s.emojic $(DIST)/packages/s/header.emojic
-	$(foreach pkg,$(PACKAGES),cp headers/$(pkg).emojic $(DIST)/packages/$(pkg)/header.emojic;)
+	cp -f headers/s.emojic $(DIST)/packages/s/header.emojic
+	$(foreach pkg,$(PACKAGES),cp -f headers/$(pkg).emojic $(DIST)/packages/$(pkg)/header.emojic;)
 	$(foreach pkg,$(PACKAGES),rm -f $(DIST)/packages/$(pkg)-v0; ln -s $(pkg) $(DIST)/packages/$(pkg)-v0;)
 	tar -czf $(DIST).tar.gz -C $(DIST_BUILDS) $(DIST_NAME)
