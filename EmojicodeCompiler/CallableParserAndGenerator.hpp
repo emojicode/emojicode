@@ -104,9 +104,9 @@ private:
     /**
      * Writes a command to access a variable.
      * @param stack The command to access the variable if it is on the stack.
-     * @param object The command to access the variable it it is an instance variable.
+     * @param instance The command to access the variable it it is an instance variable.
      */
-    void writeCoinForScopesUp(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin object, SourcePosition p);
+    void writeCoinForStackOrInstance(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin instance, SourcePosition p);
     
     void noReturnError(SourcePosition p);
     void noEffectWarning(const Token &warningToken);

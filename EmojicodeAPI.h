@@ -135,7 +135,7 @@ extern void rangeSetDefaultStep(EmojicodeRange *range);
 //MARK: Callables
 
 /** You can use this function to call a callable object. It’s internally Garbage-Collector safe. */
-extern Something executeCallableExtern(Object *callable, Something *args, Thread *thread);
+extern void executeCallableExtern(Object *callable, Something *args, Thread *thread, Something *destination);
 
 
 //MARK: Primitive Objects
@@ -219,10 +219,10 @@ extern void disallowGCAndPauseIfNeeded();
  * @c this The object/class context.
  * @c variable The number of variables to store in the stack frame.
  */
-void stackPush(Something thisContext, uint8_t variableCount, uint8_t argCount, Thread *thread);
+extern void stackPush(Something t, int frameSize, uint8_t argCount, Thread *thread);
 
 /** Pops the current stack frame from the stack. */
-void stackPop(Thread *thread);
+extern void stackPop(Thread *thread);
 
 /** Get the variable at the given index. */
 Something stackGetVariable(uint8_t index, Thread *thread);
@@ -233,7 +233,7 @@ void stackDecrementVariable(uint8_t index, Thread *thread);
 /** Increments the variable at the given index. */
 void stackIncrementVariable(uint8_t index, Thread *thread);
 
-Something* stackReserveFrame(Something thisContext, uint8_t variableCount, Thread *thread);
+Something* stackReserveFrame(Something this, int size, Thread *thread);
 
 void stackPushReservedFrame(Thread *thread);
 

@@ -68,23 +68,6 @@ static Object* newObjectWithSizeInternal(Class *class, size_t size){
     return object;
 }
 
-Something objectGetVariable(Object *o, uint8_t index){
-    return *(Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
-}
-
-void objectSetVariable(Object *o, uint8_t index, Something value){
-    Something *v = (Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
-    *v = value;
-}
-
-void objectDecrementVariable(Object *o, uint8_t index){
-    ((Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index))->raw--;
-}
-
-void objectIncrementVariable(Object *o, uint8_t index){
-    ((Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index))->raw++;
-}
-
 Object* newObject(Class *class){
     return newObjectWithSizeInternal(class, class->size);
 }

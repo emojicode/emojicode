@@ -371,10 +371,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
         auto &token = stream_.consumeToken(TokenType::Identifier);
         switch (token.value()[0]) {
             case E_SHORTCAKE: {
-                if (!eclass) {
-                    throw CompilerErrorException(token, "🍰 not allowed here.");
-                }
-                
                 staticOnType.disallow();
                 override.disallow();
                 final.disallow();
@@ -385,7 +381,8 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 
                 auto &variableName = stream_.consumeToken(TokenType::Variable);
                 auto type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables);
-                eclass->addInstanceVariable(Variable(type, 0, 1, false, variableName));
+                typed.typeDefinitionFunctional()->addInstanceVariable(InstanceVariableDeclaration(variableName.value(),
+                                                                                    type, variableName.position()));
                 break;
             }
             case E_CROCODILE: {
@@ -432,7 +429,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                     parseReturnType(classMethod, context);
                     parseBody(classMethod, allowNative);
                     
-                    typed.typeDefinitionFunctional()->addClassMethod(classMethod);
+                    typed.typeDefinitionFunctional()->addTypeMethod(classMethod);
                 }
                 else {
                     reservedEmojis(methodName, "method");
@@ -473,6 +470,13 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 }
                 
                 typed.typeDefinitionFunctional()->addInitializer(initializer);
+                break;
+            }
+            case E_FOG: {
+                if (eclass) {
+                    throw CompilerErrorException(token, "🌫 can only occur in a value type.");
+                }
+                typed.valueType()->makePrimitive();
                 break;
             }
             default:

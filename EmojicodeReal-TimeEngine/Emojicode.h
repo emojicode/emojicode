@@ -16,7 +16,8 @@
 
 struct StackFrame {
     Something thisContext;
-    uint8_t variableCount;
+    /** The size of the frame as a magnitude of Somethings. */
+    int size;
     void *returnPointer;
     void *returnFutureStack;
 };
@@ -35,10 +36,16 @@ void removeThread(Thread *);
 /** Marks all variables on the stack */
 void stackMark(Thread *);
 
+/**
+ * The garbage collector.
+ * Not thread-safe!
+ */
+void gc(void);
+
 struct Thread {
+    /** The execution-position. Is @c NULL when the frame returned. */
     EmojicodeCoin *tokenStream;
-    Something returnValue;
-    bool returned;
+    Something *returnDestination;
     
     Byte *stackLimit;
     Byte *stackBottom;
@@ -165,7 +172,8 @@ typedef struct {
 EmojicodeCoin consumeCoin(Thread *thread);
 
 /** Parse a token */
-Something parse(EmojicodeCoin coin, Thread *);
+void produce(EmojicodeCoin coin, Thread *thread, Something *destination);
+Something evaluateExpression(EmojicodeCoin coin, Thread *thread);
 
 /** Throw a runtime error */
 _Noreturn void error(char *err, ...);

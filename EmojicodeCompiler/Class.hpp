@@ -31,21 +31,14 @@ public:
           const EmojicodeString &documentation, bool final);
     
     /** The class's superclass. @c nullptr if the class has no superclass. */
-    Class* superclass() const { return superclass_; };
+    Class* superclass() const { return superclass_; }
     /** Sets the class superclass to the given class. */
     void setSuperclass(Class *);
     
     uint16_t index;
     
-    bool canBeUsedToResolve(TypeDefinitionFunctional *a);
+    bool canBeUsedToResolve(TypeDefinitionFunctional *a) override;
     
-    /** All instance variables. */
-    const std::vector<Variable>& instanceVariables() { return instanceVariables_; }
-    /** Adds an instance variable. */
-    void addInstanceVariable(const Variable&);
-    /** Returns a list of all required intializers. */
-    const std::set<EmojicodeString>& requiredInitializers() const { return requiredInitializers_; }
-
     /** Returns true if @c a inherits from class @c from */
     bool inheritsFrom(Class *from) const;
     
@@ -53,6 +46,8 @@ public:
     bool final() const { return final_; }
     /** Whether this class is eligible for initializer inheritance. */
     bool inheritsInitializers() const { return inheritsInitializers_; }
+    /** Returns a list of all required intializers. */
+    const std::set<EmojicodeString>& requiredInitializers() const { return requiredInitializers_; }
     
     /** Declares that this class agrees to the given protocol. */
     void addProtocol(Type type);
@@ -60,26 +55,23 @@ public:
     const std::list<Type>& protocols() const { return protocols_; };
     
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupMethod(EmojicodeString name);
+    virtual Function* lookupMethod(EmojicodeString name) override;
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    virtual Initializer* lookupInitializer(EmojicodeString name);
+    virtual Initializer* lookupInitializer(EmojicodeString name) override;
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupClassMethod(EmojicodeString name);
+    virtual Function* lookupTypeMethod(EmojicodeString name) override;
     
-    virtual void finalize();
+    virtual void finalize() override;
     
-    /** Returns an object scope for an instance of the defined type.
-        @warning @c finalize() must be called before a call to this method. */
-    Scope& objectScope() { return objectScope_; }
     /** Returns the number of instance variables including those inherited from the superclass.
         @warning @c finalize() must be called before a call to this method. */
-    size_t fullInstanceVariableCount() { return nextInstanceVariableID_; }
+    size_t fullInstanceVariableCount() const { return nextInstanceVariableID_; }
     /** Returns the number of initializers including those inherited from the superclass.
         @warning @c finalize() must be called before a call to this method. */
-    size_t fullInitializerCount() { return initializerVtiProvider_.peekNext(); }
+    size_t fullInitializerCount() const { return initializerVtiProvider_.peekNext(); }
     /** Returns the number of methods and type methods including those inherited from the superclass.
         @warning @c finalize() must be called before a call to this method. */
-    size_t fullMethodCount() { return methodVtiProvider_.peekNext(); }
+    size_t fullMethodCount() const { return methodVtiProvider_.peekNext(); }
 
     int usedMethodCount() { return methodVtiProvider_.usedCount(); }
     int usedInitializerCount() { return initializerVtiProvider_.usedCount(); }
@@ -88,7 +80,6 @@ private:
     
     std::list<Type> protocols_;
     std::set<EmojicodeString> requiredInitializers_;
-    std::vector<Variable> instanceVariables_;
     
     bool final_;
     bool inheritsInitializers_;
@@ -96,12 +87,11 @@ private:
     ClassVTIProvider methodVtiProvider_;
     ClassVTIProvider initializerVtiProvider_;
 
-    Scope objectScope_;
     Class *superclass_ = nullptr;
     
     size_t nextInstanceVariableID_ = 0;
     
-    virtual void handleRequiredInitializer(Initializer *init);
+    virtual void handleRequiredInitializer(Initializer *init) override;
 };
 
 #endif /* Class_hpp */

@@ -68,7 +68,7 @@ void writeClass(Type classType, Writer &writer) {
     writer.writeUInt16(eclass->usedInitializerCount());
     
     writeUsed(eclass->methodList(), writer);
-    writeUsed(eclass->classMethodList(), writer);
+    writeUsed(eclass->typeMethodList(), writer);
     writeUsed(eclass->initializerList(), writer);
     
     writer.writeUInt16(eclass->protocols().size());
@@ -130,7 +130,7 @@ void writeValueType(ValueType *vt, Writer &writer) {
     writer.writeEmojicodeChar(vt->name()[0]);
     writer.writeUInt16(vt->usedFunctionCount());
     writeUsed(vt->methodList(), writer);
-    writeUsed(vt->classMethodList(), writer);
+    writeUsed(vt->typeMethodList(), writer);
     writeUsed(vt->initializerList(), writer);
 }
 
@@ -168,6 +168,7 @@ void generateCode(Writer &writer) {
     
     for (auto vt : ValueType::valueTypes()) {
         vt->finalize();
+        printf("Value Type %s is %d something large\n", vt->name().utf8().c_str(), vt->size());
     }
     
     while (!Function::compilationQueue.empty()) {
@@ -243,12 +244,12 @@ void generateCode(Writer &writer) {
     for (auto eclass : Class::classes()) {
         compileUnused(eclass->methodList());
         compileUnused(eclass->initializerList());
-        compileUnused(eclass->classMethodList());
+        compileUnused(eclass->typeMethodList());
     }
     
     for (auto vt : ValueType::valueTypes()) {
         compileUnused(vt->methodList());
         compileUnused(vt->initializerList());
-        compileUnused(vt->classMethodList());
+        compileUnused(vt->typeMethodList());
     }
 }

@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "Emojicode.h"
+#include "EmojicodeInstructions.h"
 
 #include "EmojicodeList.h"
 #include "EmojicodeString.h"
@@ -44,20 +45,21 @@ Function **functionTable;
 uint_fast16_t stringPoolCount;
 Object **stringPool;
 
+Something garbage;
 
 //MARK: Coins
 
-EmojicodeCoin consumeCoin(Thread *thread){
+EmojicodeCoin consumeCoin(Thread *thread) {
     return *(thread->tokenStream++);
 }
 
-static EmojicodeCoin nextCoin(Thread *thread){
-    return *thread->tokenStream;
+static EmojicodeCoin nextCoin(Thread *thread) {
+    return *(thread->tokenStream);
 }
 
 //MARK: Error
 
-_Noreturn void error(char *err, ...){
+_Noreturn void error(char *err, ...) {
     va_list list;
     va_start(list, err);
     
@@ -72,7 +74,7 @@ _Noreturn void error(char *err, ...){
 
 //MARK: Block utilities
 
-static void passBlock(Thread *thread){
+static void passBlock(Thread *thread) {
     EmojicodeCoin length = consumeCoin(thread);
     thread->tokenStream += length; //This coin only contains the length of the block
 }
@@ -87,11 +89,11 @@ static bool runBlock(Thread *thread){
     
     EmojicodeCoin *end = thread->tokenStream + length;
     while (thread->tokenStream < end) {
-        parse(consumeCoin(thread), thread);
-        
+        produce(consumeCoin(thread), thread, &garbage);
+    
         pauseForGC(NULL);
         
-        if(thread->returned){
+        if (thread->tokenStream == NULL) {
             return true;
         }
     }
@@ -99,26 +101,22 @@ static bool runBlock(Thread *thread){
     return false;
 }
 
-static Something runFunctionPointerBlock(Thread *thread, uint32_t length){
+static void runFunctionPointerBlock(Thread *thread, uint32_t length){
     EmojicodeCoin *end = thread->tokenStream + length;
     while (thread->tokenStream < end) {
-        EmojicodeCoin c = consumeCoin(thread);
-
-        parse(c, thread);
+        produce(consumeCoin(thread), thread, &garbage);
         
         pauseForGC(NULL);
         
-        if(thread->returned){
-            Something ret = thread->returnValue;
-            thread->returned = false;
-            return ret;
+        if (thread->tokenStream == NULL) {
+            return;
         }
     }
-    return NOTHINGNESS;
+    return;
 }
 
-static Class* readClass(Thread *thread) {
-    return parse(consumeCoin(thread), thread).eclass;
+Class* readClass(Thread *thread) {
+    return evaluateExpression(consumeCoin(thread), thread).eclass;
 }
 
 static double readDouble(Thread *thread) {
@@ -139,16 +137,15 @@ bool isRealObject(Something sth) {
     return sth.type == T_OBJECT && sth.object;
 }
 
-Something unwrapOptional(Something sth) {
+void unwrapOptional(Something sth) {
     if (isNothingness(sth)) {
         error("Unexpectedly found ✨ while unwrapping a 🍬.");
     }
-    return sth;
 }
 
 //MARK: Low level parsing
 
-Something executeCallableExtern(Object *callable, Something *args, Thread *thread){
+void executeCallableExtern(Object *callable, Something *args, Thread *thread, Something *destination){
     if (callable->class == CL_CAPTURED_FUNCTION_CALL) {
         CapturedFunctionCall *cmc = callable->value;
         Function *method = cmc->function;
@@ -168,13 +165,11 @@ Something executeCallableExtern(Object *callable, Something *args, Thread *threa
             EmojicodeCoin *preCoinStream = thread->tokenStream;
             
             thread->tokenStream = method->tokenStream;
-            
-            ret = runFunctionPointerBlock(thread, method->tokenCount);
-            
+            thread->returnDestination = destination;
+            runFunctionPointerBlock(thread, method->tokenCount);
             thread->tokenStream = preCoinStream;
         }
         stackPop(thread);
-        return ret;
     }
     else {
         Closure *c = callable->value;
@@ -190,16 +185,16 @@ Something executeCallableExtern(Object *callable, Something *args, Thread *threa
         
         EmojicodeCoin *preCoinStream = thread->tokenStream;
         thread->tokenStream = c->tokenStream;
-        Something ret = runFunctionPointerBlock(thread, c->coinCount);
+        thread->returnDestination = destination;
+        runFunctionPointerBlock(thread, c->coinCount);
         thread->tokenStream = preCoinStream;
         
         stackPop(thread);
-        return ret;
     }
 }
 
-Something performInitializer(Class *class, InitializerFunction *initializer, Object *object, Thread *thread){
-    if(object == NULL){
+Something performInitializer(Class *class, InitializerFunction *initializer, Object *object, Thread *thread) {
+    if (object == NULL) {
         object = newObject(class);
     }
     
@@ -207,7 +202,7 @@ Something performInitializer(Class *class, InitializerFunction *initializer, Obj
         stackPush(somethingObject(object), initializer->argumentCount, initializer->argumentCount, thread);
         initializer->handler(thread);
         
-        if(object->value == NULL){
+        if (object->value == NULL) {
             stackPop(thread);
             return NOTHINGNESS;
         }
@@ -220,9 +215,9 @@ Something performInitializer(Class *class, InitializerFunction *initializer, Obj
         
         EmojicodeCoin *end = thread->tokenStream + initializer->tokenCount;
         while (thread->tokenStream < end) {
-            parse(consumeCoin(thread), thread);
+            produce(consumeCoin(thread), thread, &garbage);
             
-            if(thread->returned){
+            if (thread->returned) {
                 thread->tokenStream = preCoinStream;
                 stackPop(thread);
                 return NOTHINGNESS;
@@ -237,206 +232,362 @@ Something performInitializer(Class *class, InitializerFunction *initializer, Obj
     return somethingObject(object);
 }
 
-Something performFunction(Function *method, Something this, Thread *thread){
+void performFunction(Function *method, Something this, Thread *thread, Something *destination) {
     Something ret;
     if (method->native) {
         stackPush(this, method->argumentCount, method->argumentCount, thread);
-        ret = method->handler(thread);
+        ret = method->handler(thread); // TODO: Wrong
     }
     else {
         stackPush(this, method->variableCount, method->argumentCount, thread);
         
         EmojicodeCoin *preCoinStream = thread->tokenStream;
         
+        thread->returnDestination = destination;
         thread->tokenStream = method->tokenStream;
-        
-        ret = runFunctionPointerBlock(thread, method->tokenCount);
-        
+        runFunctionPointerBlock(thread, method->tokenCount);
         thread->tokenStream = preCoinStream;
     }
     stackPop(thread);
-    return ret;
 }
 
-Something parse(EmojicodeCoin coin, Thread *thread){
-    switch (coin) {
-        case 0x1: {
-            Something sth = parse(consumeCoin(thread), thread);
+void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
+    switch ((EmojicodeInstruction)coin) {
+        case INS_DISPATCH_METHOD: {
+            Something sth = evaluateExpression(consumeCoin(thread), thread);
             
             EmojicodeCoin vti = consumeCoin(thread);
-            return performFunction(sth.object->class->methodsVtable[vti], sth, thread);
+            performFunction(sth.object->class->methodsVtable[vti], sth, thread, destination);
+            return;
         }
-        case 0x2: { //donut – class method
-            Something sth = parse(consumeCoin(thread), thread);
+        case INS_DISPATCH_TYPE_METHOD: { //donut – class method
+            Something sth = evaluateExpression(consumeCoin(thread), thread);
             
             EmojicodeCoin vti = consumeCoin(thread);
-            return performFunction(sth.eclass->methodsVtable[vti], sth, thread);
+            performFunction(sth.eclass->methodsVtable[vti], sth, thread, destination);
+            return;
         }
-        case 0x3: {
-            Object *object = parse(consumeCoin(thread), thread).object;
-        
+        case INS_DISPATCH_PROTOCOL: {
+            Object *object = evaluateExpression(consumeCoin(thread), thread).object;
+            
             EmojicodeCoin pti = consumeCoin(thread);
             EmojicodeCoin vti = consumeCoin(thread);
             
-            return performFunction(object->class->protocolsTable[pti - object->class->protocolsOffset][vti],
-                                   somethingObject(object), thread);
+            performFunction(object->class->protocolsTable[pti - object->class->protocolsOffset][vti],
+                            somethingObject(object), thread, destination);
+            return;
         }
-        case 0x4: { //New Object
+        case INS_NEW_OBJECT: { //New Object
             Class *class = readClass(thread);
             
             InitializerFunction *initializer = class->initializersVtable[consumeCoin(thread)];
-            return performInitializer(class, initializer, NULL, thread);
+            performInitializer(class, initializer, NULL, thread);
+            return;
         }
-        case 0x5: {
+        case INS_DISPATCH_SUPER: {
             Class *class = readClass(thread);
             EmojicodeCoin vti = consumeCoin(thread);
-        
-            return performFunction(class->methodsVtable[vti], stackGetThisContext(thread), thread);
+            
+            performFunction(class->methodsVtable[vti], stackGetThisContext(thread), thread, destination);
+            return;
         }
-        case 0x6: {
+        case INS_CALL_CONTEXTED_FUNCTION: {
             Something s = parse(consumeCoin(thread), thread);
             EmojicodeCoin c = consumeCoin(thread);
             return performFunction(functionTable[c], s, thread);
         }
-        case 0x7: {
+        case INS_CALL_FUNCTION: {
             EmojicodeCoin c = consumeCoin(thread);
-            return performFunction(functionTable[c], NOTHINGNESS, thread);
+            performFunction(functionTable[c], NOTHINGNESS, thread, destination);
+            return;
         }
-        case 0xE:
-            return somethingClass(parse(consumeCoin(thread), thread).object->class);
-        case 0xF:
-            return somethingClass(classTable[consumeCoin(thread)]);
-        case 0x10:
-            return somethingObject(stringPool[consumeCoin(thread)]);
-        case 0x11:
-            return EMOJICODE_TRUE;
-        case 0x12:
-            return EMOJICODE_FALSE;
-        case 0x13:
-            return somethingInteger((EmojicodeInteger)(int)consumeCoin(thread));
-        case 0x14: {
+        case INS_GET_CLASS_FROM_INSTANCE: {
+            Something a;
+            produce(consumeCoin(thread), thread, &a);
+            *destination = somethingClass(a.object->class);
+            return;
+        }
+        case INS_GET_CLASS_FROM_INDEX:
+            *destination = somethingClass(classTable[consumeCoin(thread)]);
+            return;
+        case INS_GET_STRING_POOL:
+            *destination = somethingObject(stringPool[consumeCoin(thread)]);
+            return;
+        case INS_GET_TRUE:
+            *destination = EMOJICODE_TRUE;
+            return;
+        case INS_GET_FALSE:
+            *destination = EMOJICODE_FALSE;
+            return;
+        case INS_GET_32_INTEGER:
+            *destination = somethingInteger((EmojicodeInteger)(int)consumeCoin(thread));
+            return;
+        case INS_GET_64_INTEGER: {
             EmojicodeInteger a = consumeCoin(thread);
-            return somethingInteger(a << 32 | consumeCoin(thread));
+            *destination = somethingInteger(a << 32 | consumeCoin(thread));
+            return;
         }
-        case 0x15:
-            return somethingDouble(readDouble(thread));
-        case 0x16:
-            return somethingSymbol((EmojicodeChar)consumeCoin(thread));
-        case 0x17:
-            return NOTHINGNESS;
-        case 0x18:
-            stackIncrementVariable(consumeCoin(thread), thread);
-            return NOTHINGNESS;
-        case 0x19:
-            stackDecrementVariable(consumeCoin(thread), thread);
-            return NOTHINGNESS;
-        case 0x1A:
-            return stackGetVariable(consumeCoin(thread), thread);
-        case 0x1B: {
+        case INS_GET_DOUBLE:
+            *destination = somethingDouble(readDouble(thread));
+            return;
+        case INS_GET_SYMBOL:
+            *destination = somethingSymbol((EmojicodeChar)consumeCoin(thread));
+            return;
+        case INS_GET_NOTHINGNESS:
+            *destination = NOTHINGNESS;
+            return;
+        case INS_PRODUCE_WITH_STACK_DESTINATION: {
             EmojicodeCoin index = consumeCoin(thread);
-            stackSetVariable(index, parse(consumeCoin(thread), thread), thread);
-            return NOTHINGNESS;
+            Something *d = (Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
+            produce(consumeCoin(thread), thread, d);
+            return;
         }
-        case 0x1C: {
+        case INS_PRODUCE_WITH_INSTANCE_DESTINATION: {
             EmojicodeCoin index = consumeCoin(thread);
-            return objectGetVariable(stackGetThisObject(thread), index);
+            Object *o = ((StackFrame *)thread->stack)->thisContext.object;
+            Something *d = (Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
+            produce(consumeCoin(thread), thread, d);
+            return;
         }
-        case 0x1D: {
+        case INS_INCREMENT:
+            destination->raw++;
+            return;
+        case INS_DECREMENT:
+            destination->raw--;
+            return;
+        case INS_COPY_SINGLE_STACK: {
             EmojicodeCoin index = consumeCoin(thread);
-            objectSetVariable(stackGetThisObject(thread), index, parse(consumeCoin(thread), thread));
-            return NOTHINGNESS;
+            *destination = *(Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
+            return;
         }
-        case 0x1E: {
+        case INS_COPY_WITH_SIZE_STACK: {
             EmojicodeCoin index = consumeCoin(thread);
-            objectIncrementVariable(stackGetThisObject(thread), index);
-            return NOTHINGNESS;
+            Something *source = (Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
+            memcpy(destination, source, sizeof(Something) * consumeCoin(thread));
+            return;
         }
-        case 0x1F: {
+        case INS_COPY_SINGLE_INSTANCE: {
             EmojicodeCoin index = consumeCoin(thread);
-            objectDecrementVariable(stackGetThisObject(thread), index);
-            return NOTHINGNESS;
+            Object *o = ((StackFrame *)thread->stack)->thisContext.object;
+            *destination = *(Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
         }
-        //Operators
-        case 0x20:
-            return somethingBoolean(parse(consumeCoin(thread), thread).raw == parse(consumeCoin(thread), thread).raw);
-        case 0x21: {
-            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
-            return somethingInteger(a - parse(consumeCoin(thread), thread).raw);
+        case INS_COPY_WITH_SIZE_INSTANCE: {
+            EmojicodeCoin index = consumeCoin(thread);
+            Object *o = ((StackFrame *)thread->stack)->thisContext.object;
+            Something *source = (Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
+            memcpy(destination, source, sizeof(Something) * consumeCoin(thread));
+            return;
         }
-        case 0x22: {
-            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
-            return somethingInteger(a + parse(consumeCoin(thread), thread).raw);
+        // Operators
+        case INS_EQUAL_PRIMITIVE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.raw == b.raw);
+            return;
         }
-        case 0x23: {
-            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
-            return somethingInteger(a * parse(consumeCoin(thread), thread).raw);
+        case INS_SUBTRACT_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingInteger(a.raw - b.raw);
+            return;
         }
-        case 0x24: {
-            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
-            return somethingInteger(a / parse(consumeCoin(thread), thread).raw);
+        case INS_ADD_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingInteger(a.raw + b.raw);
+            return;
         }
-        case 0x25: {
-            EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
-            return somethingInteger(a % parse(consumeCoin(thread), thread).raw);
+        case INS_MULTIPLY_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingInteger(a.raw * b.raw);
+            return;
         }
-        case 0x26: //Invert
-            return !unwrapBool(parse(consumeCoin(thread), thread)) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
-        case 0x27: {
-            Something a = parse(consumeCoin(thread), thread);
-            Something b = parse(consumeCoin(thread), thread);
-            return unwrapBool(a) || unwrapBool(b) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+        case INS_DIVIDE_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingInteger(a.raw / b.raw);
+            return;
         }
-        case 0x28: {
-            Something a = parse(consumeCoin(thread), thread);
-            Something b = parse(consumeCoin(thread), thread);
-            return unwrapBool(a) && unwrapBool(b) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+        case INS_REMAINDER_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingInteger(a.raw % b.raw);
+            return;
         }
-        //MARK: Integers
-        case 0x29:
-            return somethingBoolean(parse(consumeCoin(thread), thread).raw < parse(consumeCoin(thread), thread).raw);
-        case 0x2A:
-            return somethingBoolean(parse(consumeCoin(thread), thread).raw > parse(consumeCoin(thread), thread).raw);
-        case 0x2B:
-            return somethingBoolean(parse(consumeCoin(thread), thread).raw <= parse(consumeCoin(thread), thread).raw);
-        case 0x2C:
-            return somethingBoolean(parse(consumeCoin(thread), thread).raw >= parse(consumeCoin(thread), thread).raw);
-        //MARK: General Comparisons
-        case 0x2D:
-            return somethingBoolean(parse(consumeCoin(thread), thread).object == parse(consumeCoin(thread), thread).object);
-        case 0x2E:
-            return isNothingness(parse(consumeCoin(thread), thread)) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
-        //MARK: Floats
-        case 0x2F:
-            return somethingBoolean(parse(consumeCoin(thread), thread).doubl == parse(consumeCoin(thread), thread).doubl);
-        case 0x30:
-            return somethingDouble(parse(consumeCoin(thread), thread).doubl - parse(consumeCoin(thread), thread).doubl);
-        case 0x31:
-            return somethingDouble(parse(consumeCoin(thread), thread).doubl + parse(consumeCoin(thread), thread).doubl);
-        case 0x32:
-            return somethingDouble(parse(consumeCoin(thread), thread).doubl * parse(consumeCoin(thread), thread).doubl);
-        case 0x33:
-            return somethingDouble(parse(consumeCoin(thread), thread).doubl / parse(consumeCoin(thread), thread).doubl);
-        case 0x34:
-            return somethingBoolean(parse(consumeCoin(thread), thread).doubl < parse(consumeCoin(thread), thread).doubl);
-        case 0x35:
-            return somethingBoolean(parse(consumeCoin(thread), thread).doubl > parse(consumeCoin(thread), thread).doubl);
-        case 0x36:
-            return somethingBoolean(parse(consumeCoin(thread), thread).doubl <= parse(consumeCoin(thread), thread).doubl);
-        case 0x37:
-            return somethingBoolean(parse(consumeCoin(thread), thread).doubl >= parse(consumeCoin(thread), thread).doubl);
-        case 0x38: {
-            double a = parse(consumeCoin(thread), thread).doubl;
-            double b = parse(consumeCoin(thread), thread).doubl;
-            return somethingDouble(fmod(a, b));
+        case INS_INVERT_BOOLEAN: {
+            Something a;
+            produce(consumeCoin(thread), thread, &a);
+            *destination = !unwrapBool(a) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+            return;
         }
-        //MARK: Optionals
-        case 0x3A:
-            return unwrapOptional(parse(consumeCoin(thread), thread));
+        case INS_OR_BOOLEAN: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = unwrapBool(a) || unwrapBool(b) ? EMOJICODE_TRUE : EMOJICODE_FALSE;;
+            return;
+        }
+        case INS_AND_BOOLEAN: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = unwrapBool(a) && unwrapBool(b) ? EMOJICODE_TRUE : EMOJICODE_FALSE;;
+            return;
+        }
+        case INS_LESS_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.raw < b.raw);
+            return;
+        }
+        case INS_GREATER_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.raw > b.raw);
+            return;
+        }
+        case INS_GREATER_OR_EQUAL_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.raw <= b.raw);
+            return;
+        }
+        case INS_LESS_OR_EQUAL_INTEGER: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.raw >= b.raw);
+            return;
+        }
+        case INS_SAME_OBJECT: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.object == b.object);
+            return;
+        }
+        case INS_IS_NOTHINGNESS: {
+            Something a;
+            produce(consumeCoin(thread), thread, &a);
+            *destination = isNothingness(a) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+            return;
+        }
+        case INS_EQUAL_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.doubl == b.doubl);
+            return;
+        }
+        case INS_SUBTRACT_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingDouble(a.doubl - b.doubl);
+            return;
+        }
+        case INS_ADD_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingDouble(a.doubl + b.doubl);
+            return;
+        }
+        case INS_MULTIPLY_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingDouble(a.doubl * b.doubl);
+            return;
+        }
+        case INS_DIVIDE_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.doubl / b.doubl);
+            return;
+        }
+        case INS_LESS_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.doubl < b.doubl);
+            return;
+        }
+        case INS_GREATER_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.doubl > b.doubl);
+            return;
+        }
+        case INS_LESS_OR_EQUAL_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.doubl <= b.doubl);
+            return;
+        }
+        case INS_GREATER_OR_EQUAL_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingBoolean(a.doubl >= b.doubl);
+            return;
+        }
+        case INS_REMAINDER_DOUBLE: {
+            Something a;
+            Something b;
+            produce(consumeCoin(thread), thread, &a);
+            produce(consumeCoin(thread), thread, &b);
+            *destination = somethingDouble(fmod(a.doubl, b.doubl));
+        }
+        case INS_INT_TO_DOUBLE: {
+            Something a;
+            produce(consumeCoin(thread), thread, &a);
+            *destination = somethingDouble((double) a.raw);
+        }
+        case INS_UNWRAP_OPTIONAL:
+            produce(consumeCoin(thread), thread, destination);
+            unwrapOptional(*destination);
+            return;
         case 0x3B: {
             Something sth = parse(consumeCoin(thread), thread);
             EmojicodeCoin vti = consumeCoin(thread);
             EmojicodeCoin count = consumeCoin(thread);
-            if(isNothingness(sth)){
+            if (isNothingness(sth)) {
                 thread->tokenStream += count;
                 return NOTHINGNESS;
             }
@@ -444,9 +595,9 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             Function *method = sth.object->class->methodsVtable[vti];
             return performFunction(method, sth, thread);
         }
-        //MARK: Object Orientation Utility
+            //MARK: Object Orientation Utility
         case 0x3C:
-            return stackGetThisContext(thread);
+            *destination = stackGetThisContext(thread);
         case 0x3D: {
             Class *class = readClass(thread);
             Object *o = stackGetThisObject(thread);
@@ -460,46 +611,40 @@ Something parse(EmojicodeCoin coin, Thread *thread){
         }
         case 0x3E: {
             EmojicodeCoin index = consumeCoin(thread);
-            Something sth = parse(consumeCoin(thread), thread);
+            produce(consumeCoin(thread), thread, index);
             if (isNothingness(sth)) {
-                return EMOJICODE_FALSE;
+                *destination = EMOJICODE_FALSE;
             }
             else {
-                stackSetVariable(index, sth, thread);
-                return EMOJICODE_TRUE;
+                *destination = EMOJICODE_TRUE;
             }
+            return;
         }
-        //MARK: Int To Double
-        case 0x3F:
-            return somethingDouble((double) parse(consumeCoin(thread), thread).raw);
-        //MARK: Casts
-        case 0x40: {
-            Something sth = parse(consumeCoin(thread), thread);
+            //MARK: Casts
+        case INS_CAST_TO_CLASS: {
+            produce(consumeCoin(thread), thread, destination);
             Class *class = readClass(thread);
-            if(sth.type == T_OBJECT && instanceof(sth.object, class)){
-                return sth;
+            if (!(destination->type == T_OBJECT && instanceof(destination->object, class))){
+                *destination = NOTHINGNESS;
             }
-            
-            return NOTHINGNESS;
+            return;
         }
-        case 0x41: {
-            Something sth = parse(consumeCoin(thread), thread);
+        case INS_CAST_TO_PROTOCOL: {
+            produce(consumeCoin(thread), thread, destination);
             EmojicodeCoin pi = consumeCoin(thread);
-            if(sth.type == T_OBJECT && conformsTo(sth.object->class, pi)){
-                return sth;
+            if (!(destination->type == T_OBJECT && conformsTo(destination->object->class, pi))){
+                *destination = NOTHINGNESS;
             }
-            
-            return NOTHINGNESS;
+            return;
         }
-        case 0x42: {
-            Something sth = parse(consumeCoin(thread), thread);
-            if(sth.type == T_BOOLEAN){
-                return sth;
+        case INS_CAST_TO_BOOLEAN: {
+            produce(consumeCoin(thread), thread, destination);
+            if (destination->type != T_BOOLEAN){
+                *destination = NOTHINGNESS;
             }
-            
-            return NOTHINGNESS;
+            return;
         }
-        case 0x43: {
+        case INS_CAST_TO_INTEGER: {
             Something sth = parse(consumeCoin(thread), thread);
             if(sth.type == T_INTEGER){
                 return sth;
@@ -507,23 +652,22 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             return NOTHINGNESS;
         }
-        case 0x44: {
-            Something sth = parse(consumeCoin(thread), thread);
+        case INS_SAFE_CAST_TO_CLASS: {
+            produce(consumeCoin(thread), thread, destination);
             Class *class = readClass(thread);
-            if(sth.type == T_OBJECT && !isNothingness(sth) && instanceof(sth.object, class)){
-                return sth;
+            if (!(destination->type == T_OBJECT && !isNothingness(destination)
+                  && instanceof(destination->object, class))){
+                *destination = NOTHINGNESS;
             }
-            
-            return NOTHINGNESS;
+            return;
         }
-        case 0x45: {
-            Something sth = parse(consumeCoin(thread), thread);
+        case INS_SAFE_CAST_TO_PROTOCOL: {
+            produce(consumeCoin(thread), thread, destination);
             EmojicodeCoin pi = consumeCoin(thread);
-            if(sth.type == T_OBJECT && !isNothingness(sth) && conformsTo(sth.object->class, pi)){
-                return sth;
+            if (!(destination->type == T_OBJECT && !isNothingness(destination) &&
+                  conformsTo(destination->object->class, pi))){
+                *destination = NOTHINGNESS;
             }
-            
-            return NOTHINGNESS;
         }
         case 0x46: {
             Something sth = parse(consumeCoin(thread), thread);
@@ -541,7 +685,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             
             return NOTHINGNESS;
         }
-        //MARK: Literals
+            //MARK: Literals
         case 0x50: {
             Object *dico = newObject(CL_DICTIONARY);
             stackPush(somethingObject(dico), 0, 0, thread);
@@ -637,7 +781,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             if (range->step == 0) rangeSetDefaultStep(range);
             return somethingObject(object);
         }
-        //MARK: Binary Operations
+            //MARK: Binary Operations
         case 0x5A:
             return somethingInteger(parse(consumeCoin(thread), thread).raw & parse(consumeCoin(thread), thread).raw);
         case 0x5B:
@@ -654,7 +798,7 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             EmojicodeInteger a = parse(consumeCoin(thread), thread).raw;
             return somethingInteger(a >> parse(consumeCoin(thread), thread).raw);
         }
-        //MARK: Flow Control
+            //MARK: Flow Control
         case 0x60: { //Red apple - return
             thread->returnValue = parse(consumeCoin(thread), thread);
             thread->returned = true;
@@ -867,7 +1011,11 @@ Something parse(EmojicodeCoin coin, Thread *thread){
             return somethingObject(cmco);
         }
     }
-    return NOTHINGNESS;
+    error("Illegal bytecode instruction");
+}
+
+Something evaluateExpression(EmojicodeCoin coin, Thread *thread) {
+    
 }
 
 int main(int argc, char *argv[]) {

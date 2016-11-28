@@ -9,16 +9,16 @@
 #include "Emojicode.h"
 #include <string.h>
 
-Something* stackReserveFrame(Something this, uint8_t variableCount, Thread *thread){
-    StackFrame *sf = (StackFrame *)(thread->futureStack - (sizeof(StackFrame) + sizeof(Something) * variableCount));
+Something* stackReserveFrame(Something this, int size, Thread *thread) {
+    StackFrame *sf = (StackFrame *)(thread->futureStack - (sizeof(StackFrame) + sizeof(Something) * size));
     if ((Byte *)sf < thread->stackLimit) {
         error("Your program triggerd a stack overflow!");
     }
     
-    memset((Byte *)sf + sizeof(StackFrame), 0, sizeof(Something) * variableCount);
+    memset((Byte *)sf + sizeof(StackFrame), 0, sizeof(Something) * size);
     
     sf->thisContext = this;
-    sf->variableCount = variableCount;
+    sf->size = size;
     sf->returnPointer = thread->stack;
     sf->returnFutureStack = thread->futureStack;
     
@@ -31,11 +31,11 @@ void stackPushReservedFrame(Thread *thread){
     thread->stack = thread->futureStack;
 }
 
-void stackPush(Something this, uint8_t variableCount, uint8_t argCount, Thread *thread){
-    Something *t = stackReserveFrame(this, variableCount, thread);
+void stackPush(Something this, int frameSize, uint8_t argCount, Thread *thread) {
+    Something *t = stackReserveFrame(this, frameSize, thread);
     
-    for (uint8_t i = 0; i < argCount; i++) {
-        t[i] = parse(consumeCoin(thread), thread);
+    for (int i = 0; i < argCount; i++) {
+        produce(consumeCoin(thread), thread, t + i);
     }
     
     stackPushReservedFrame(thread);
@@ -58,14 +58,6 @@ void restoreStackState(StackState s, Thread *thread) {
 
 Something stackGetVariable(uint8_t index, Thread *thread){
     return *(Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
-}
-
-void stackDecrementVariable(uint8_t index, Thread *thread){
-    ((Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index))->raw--;
-}
-
-void stackIncrementVariable(uint8_t index, Thread *thread){
-    ((Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index))->raw++;
 }
 
 void stackSetVariable(uint8_t index, Something value, Thread *thread){

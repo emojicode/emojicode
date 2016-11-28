@@ -36,6 +36,8 @@
 		E4BB24CC1CD0F979003CC098 /* TypeDefinitionFunctional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CA1CD0F979003CC098 /* TypeDefinitionFunctional.cpp */; };
 		E4BB24D11CD0FC90003CC098 /* Protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CF1CD0FC90003CC098 /* Protocol.cpp */; };
 		E4BB24D41CD0FF6C003CC098 /* Enum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24D21CD0FF6C003CC098 /* Enum.cpp */; };
+		E4C18C5B1DDA1FCF00B4B5D5 /* Scoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C18C591DDA1FCF00B4B5D5 /* Scoper.cpp */; };
+		E4C18C5E1DDA34AF00B4B5D5 /* ScoperWithScope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */; };
 		E4CE6FCF1D9C011200F32071 /* Callable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4CE6FCD1D9C011200F32071 /* Callable.cpp */; };
 		E4D1A9DE1D9C30E00031789A /* CallableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */; };
 		E4E95F601C89CED20072ECEB /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
@@ -127,6 +129,7 @@
 		E48228D61DBFD41400216039 /* VTIProvider.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VTIProvider.hpp; sourceTree = "<group>"; };
 		E489774D1CD2899E00207633 /* StringPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPool.cpp; sourceTree = "<group>"; };
 		E489774E1CD2899E00207633 /* StringPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StringPool.hpp; sourceTree = "<group>"; };
+		E49FD7741DE9A2BB00FD5170 /* EmojicodeInstructions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeInstructions.h; sourceTree = "<group>"; };
 		E4B7AFFC1E0D8FF20095F956 /* EmojiTokenization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EmojiTokenization.cpp; sourceTree = "<group>"; };
 		E4B7AFFD1E0D8FF20095F956 /* EmojiTokenization.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EmojiTokenization.hpp; sourceTree = "<group>"; };
 		E4BB24C41CD0E2C2003CC098 /* AbstractParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AbstractParser.cpp; sourceTree = "<group>"; };
@@ -139,6 +142,10 @@
 		E4BB24D01CD0FC90003CC098 /* Protocol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Protocol.hpp; sourceTree = "<group>"; };
 		E4BB24D21CD0FF6C003CC098 /* Enum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Enum.cpp; sourceTree = "<group>"; };
 		E4BB24D31CD0FF6C003CC098 /* Enum.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Enum.hpp; sourceTree = "<group>"; };
+		E4C18C591DDA1FCF00B4B5D5 /* Scoper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scoper.cpp; sourceTree = "<group>"; };
+		E4C18C5A1DDA1FCF00B4B5D5 /* Scoper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scoper.hpp; sourceTree = "<group>"; };
+		E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScoperWithScope.cpp; sourceTree = "<group>"; };
+		E4C18C5D1DDA34AF00B4B5D5 /* ScoperWithScope.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScoperWithScope.hpp; sourceTree = "<group>"; };
 		E4CE6FCC1D9BF55500F32071 /* CallableWriter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CallableWriter.hpp; sourceTree = "<group>"; };
 		E4CE6FCD1D9C011200F32071 /* Callable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Callable.cpp; sourceTree = "<group>"; };
 		E4CE6FCE1D9C011200F32071 /* Callable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Callable.hpp; sourceTree = "<group>"; };
@@ -209,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				E455BC671B5BEB82002411C8 /* EmojicodeShared.h */,
+				E49FD7741DE9A2BB00FD5170 /* EmojicodeInstructions.h */,
 				E4F49AB31A5C22DE00A5FD48 /* Third Party */,
 			);
 			name = Shared;
@@ -217,6 +225,8 @@
 		E46B2F791CD7A32000447D91 /* Scoping */ = {
 			isa = PBXGroup;
 			children = (
+				E4C18C5A1DDA1FCF00B4B5D5 /* Scoper.hpp */,
+				E4C18C591DDA1FCF00B4B5D5 /* Scoper.cpp */,
 				E407041B1CDE048A0075FBFE /* CallableScoper.hpp */,
 				E407041A1CDE048A0075FBFE /* CallableScoper.cpp */,
 				E46B2F7B1CD7A32B00447D91 /* Scope.hpp */,
@@ -225,6 +235,8 @@
 				E46B2F7D1CD7A5A000447D91 /* Variable.cpp */,
 				E407041E1CDE0D7D0075FBFE /* VariableNotFoundErrorException.hpp */,
 				E407041D1CDE0D7D0075FBFE /* VariableNotFoundErrorException.cpp */,
+				E4C18C5D1DDA34AF00B4B5D5 /* ScoperWithScope.hpp */,
+				E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */,
 			);
 			name = Scoping;
 			sourceTree = "<group>";
@@ -460,6 +472,7 @@
 				E47E57E91D0D91D8006611EC /* ValueType.cpp in Sources */,
 				E4F9D4011AC6CEE3005A1DD6 /* Class.cpp in Sources */,
 				E4BB24CC1CD0F979003CC098 /* TypeDefinitionFunctional.cpp in Sources */,
+				E4C18C5B1DDA1FCF00B4B5D5 /* Scoper.cpp in Sources */,
 				E4BB24C91CD0F7FA003CC098 /* TypeDefinition.cpp in Sources */,
 				E46A07301C3C79E5003DE2CD /* CallableParserAndGenerator.cpp in Sources */,
 				E404F67D1CCFF29C00589659 /* Token.cpp in Sources */,
@@ -483,6 +496,7 @@
 				E449AF6C1CCCC0A200492FC0 /* PackageParser.cpp in Sources */,
 				E4805DC81CD2729200B1282B /* CommonTypeFinder.cpp in Sources */,
 				E46B2F781CD794D800447D91 /* PackageReporter.cpp in Sources */,
+				E4C18C5E1DDA34AF00B4B5D5 /* ScoperWithScope.cpp in Sources */,
 				E4CE6FCF1D9C011200F32071 /* Callable.cpp in Sources */,
 				E4B7AFFE1E0D8FF20095F956 /* EmojiTokenization.cpp in Sources */,
 				E46B2F7F1CD7A5A000447D91 /* Variable.cpp in Sources */,

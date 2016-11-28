@@ -18,7 +18,7 @@ void Variable::uninitalizedError(const Token &variableToken) const {
 
 void Variable::mutate(const Token &variableToken) {
     if (frozen()) {
-        throw CompilerErrorException(variableToken, "Cannot modify frozen variable \"%s\".",
+        throw CompilerErrorException(position_, "Cannot modify frozen variable \"%s\".",
                                      variableToken.value().utf8().c_str());
     }
     mutated_ = true;

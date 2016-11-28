@@ -11,11 +11,21 @@
 
 #include <vector>
 #include "TypeDefinition.hpp"
+#include "ScoperWithScope.hpp"
 #include "Type.hpp"
 
 class TypeContext;
 class Initializer;
 class Function;
+
+struct InstanceVariableDeclaration {
+    InstanceVariableDeclaration() = delete;
+    InstanceVariableDeclaration(EmojicodeString name, Type type, SourcePosition pos)
+        : name(name), type(type), position(pos) {}
+    EmojicodeString name;
+    Type type;
+    SourcePosition position;
+};
 
 class TypeDefinitionFunctional : public TypeDefinition {
 public:
@@ -57,22 +67,34 @@ public:
     /** Returns an initializer by the given identifier token or issues an error if the initializer does not exist. */
     Initializer* getInitializer(const Token &token, Type type, TypeContext typeContext);
     /** Returns a method by the given identifier token or issues an error if the method does not exist. */
-    Function* getClassMethod(const Token &token, Type type, TypeContext typeContext);
+    Function* getTypeMethod(const Token &token, Type type, TypeContext typeContext);
     
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     virtual Function* lookupMethod(EmojicodeString name);
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
     virtual Initializer* lookupInitializer(EmojicodeString name);
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupClassMethod(EmojicodeString name);
+    virtual Function* lookupTypeMethod(EmojicodeString name);
     
     virtual void addMethod(Function *method);
     virtual void addInitializer(Initializer *method);
-    virtual void addClassMethod(Function *method);
+    virtual void addTypeMethod(Function *method);
+    void addInstanceVariable(const InstanceVariableDeclaration&);
     
     const std::vector<Function *>& methodList() const { return methodList_; }
     const std::vector<Initializer *>& initializerList() const { return initializerList_; }
-    const std::vector<Function *>& classMethodList() const { return classMethodList_; }
+    const std::vector<Function *>& typeMethodList() const { return typeMethodList_; }
+    const std::vector<InstanceVariableDeclaration>& instanceVariables() { return instanceVariables_; }
+    
+    /** Finalizes the instance variables. 
+        @warning All subclasses that override, this method must call this method. */
+    virtual void finalize() override;
+    
+    virtual int size() const override { return static_cast<int>(scoper_.fullSize()); }
+    
+    /** Returns an object scope for an instance of the defined type.
+     @warning @c finalize() must be called before a call to this method. */
+    Scope& objectScope() { return scoper_.scope(); }
 protected:
     TypeDefinitionFunctional(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
         : TypeDefinition(name, p, pos, documentation) {}
@@ -83,7 +105,7 @@ protected:
     
     std::vector<Function *> methodList_;
     std::vector<Initializer *> initializerList_;
-    std::vector<Function *> classMethodList_;
+    std::vector<Function *> typeMethodList_;
     
     virtual void handleRequiredInitializer(Initializer *init);
 private:
@@ -97,6 +119,10 @@ private:
     std::vector<Type> superGenericArguments_;
     /** Generic type arguments as variables */
     std::map<EmojicodeString, Type> ownGenericArgumentVariables_;
+    
+    std::vector<InstanceVariableDeclaration> instanceVariables_;
+    
+    ScoperWithScope scoper_;
 };
 
 

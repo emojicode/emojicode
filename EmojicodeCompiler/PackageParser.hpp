@@ -19,7 +19,7 @@
 
 class PackageParser : AbstractParser {
 public:
-    PackageParser(Package *pkg, TokenStream stream) : AbstractParser(pkg, stream) {};
+    PackageParser(Package *pkg, TokenStream stream) : AbstractParser(pkg, stream) {}
     void parse();
 private:
     /**

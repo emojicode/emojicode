@@ -28,6 +28,8 @@ public:
     /** Computes the type definition’s size and other values that must be
         computed before functional code can be compiled. */
     virtual void finalize() {}
+    /** The size in multiples of Something. */
+    virtual int size() const = 0;
 protected:
     TypeDefinition(EmojicodeString name, Package *p, SourcePosition position, const EmojicodeString &doc)
         : name_(name),

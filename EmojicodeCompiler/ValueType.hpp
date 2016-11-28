@@ -26,9 +26,14 @@ public:
     
     void finalize() override;
     int usedFunctionCount() const { return vtiProvider_.usedCount(); };
+    
+    virtual int size() const override { return primitive_ ? 1 : TypeDefinitionFunctional::size(); }
+    
+    void makePrimitive() { primitive_ = true; }
 private:
     static std::vector<ValueType *> valueType_;
     ValueTypeVTIProvider vtiProvider_;
+    bool primitive_ = false;
 };
 
 #endif /* ValueType_hpp */

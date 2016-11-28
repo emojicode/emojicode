@@ -126,8 +126,8 @@ public:
     
     bool assigned() const;
     
-    int maxVariableCount() const { return maxVariableCount_; }
-    void setMaxVariableCount(int c) { maxVariableCount_ = c; }
+    int fullSize() const { return fullSize_; }
+    void setFullSize(int c) { fullSize_ = c; }
     
     CallableWriter writer_;
 private:
@@ -148,7 +148,7 @@ private:
     EmojicodeString documentation_;
     VTIProvider *vtiProvider_ = nullptr;
     CallableParserAndGeneratorMode compilationMode_;
-    int maxVariableCount_ = -1;
+    int fullSize_ = -1;
     std::vector<Function*> overriders_;
 };
 

@@ -49,7 +49,7 @@ void Writer::writeFunction(Function *function) {
     }
     writeByte(0);
     
-    writeByte(function->maxVariableCount());
+    writeByte(function->fullSize());
     writeCoin(static_cast<EmojicodeCoin>(function->writer_.writtenCoins()));
 
     for (auto coin : function->writer_.coins_) {

@@ -62,7 +62,7 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
     
     auto gans = std::vector<EmojicodeString>(map.size());
     for (auto it : map) {
-        gans[it.second.reference - superCount] = it.first;
+        gans[it.second.reference() - superCount] = it.first;
     }
     
     auto reported = false;
@@ -184,9 +184,9 @@ void reportPackage(Package *package) {
         printf("],");
         
         printf("\"classMethods\":[");
-        for (size_t i = 0; i < vt->classMethodList().size(); i++) {
-            Function *classMethod = vt->classMethodList()[i];
-            reportFunctionInformation(classMethod, Return, vt->classMethodList().size() == i + 1,
+        for (size_t i = 0; i < vt->typeMethodList().size(); i++) {
+            Function *classMethod = vt->typeMethodList()[i];
+            reportFunctionInformation(classMethod, Return, vt->typeMethodList().size() == i + 1,
                                       TypeContext(Type(vt, false), classMethod));
         }
         printf("]}");
@@ -232,9 +232,9 @@ void reportPackage(Package *package) {
         printf("],");
         
         printf("\"classMethods\":[");
-        for (size_t i = 0; i < eclass->classMethodList().size(); i++) {
-            Function *classMethod = eclass->classMethodList()[i];
-            reportFunctionInformation(classMethod, Return, eclass->classMethodList().size() == i + 1,
+        for (size_t i = 0; i < eclass->typeMethodList().size(); i++) {
+            Function *classMethod = eclass->typeMethodList()[i];
+            reportFunctionInformation(classMethod, Return, eclass->typeMethodList().size() == i + 1,
                                        TypeContext(Type(eclass), classMethod));
         }
         printf("],");

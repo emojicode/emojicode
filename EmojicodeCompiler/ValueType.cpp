@@ -12,10 +12,16 @@
 std::vector<ValueType *> ValueType::valueType_;
 
 void ValueType::finalize() {
+    TypeDefinitionFunctional::finalize();
+    
+    if (primitive_ && instanceVariables().size() > 0) {
+        throw CompilerErrorException(position(), "A value type marked with 🌫 cannot contain instance variables.");
+    }
+    
     for (auto f : methodList()) {
         f->setVtiProvider(&vtiProvider_);
     }
-    for (auto f : classMethodList()) {
+    for (auto f : typeMethodList()) {
         f->setVtiProvider(&vtiProvider_);
     }
     for (auto f : initializerList()) {

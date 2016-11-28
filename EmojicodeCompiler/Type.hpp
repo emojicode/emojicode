@@ -63,10 +63,11 @@ inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
 }
 
 class Type {
+    friend TypeDefinitionFunctional;
 public:
     Type(TypeContent t, bool o) : typeContent_(t), optional_(o) {}
-    Type(TypeContent t, bool o, uint16_t r, TypeDefinitionFunctional *c)
-        : reference(r), resolutionConstraint_(c), typeContent_(t), optional_(o) {}
+    Type(TypeContent t, bool o, int r, TypeDefinitionFunctional *c)
+        : reference_(r), resolutionConstraint_(c), typeContent_(t), optional_(o) {}
     explicit Type(Class *c) : Type(c, false) {};
     Type(Class *c, bool o);
     Type(Protocol *p, bool o);
@@ -85,7 +86,10 @@ public:
     ValueType* valueType() const;
     TypeDefinition* typeDefinition() const;
     
-    uint16_t reference;
+    /** Returns the size of exactly this type instance in a scope or another type instance. */
+    int size() const;
+    
+    int reference() const { return reference_; };
     
     std::vector<Type> genericArguments;
     
@@ -129,6 +133,7 @@ public:
     
     bool allowsMetaType();
 private:
+    int reference_;
     union {
         TypeDefinition *typeDefinition_;
         TypeDefinitionFunctional *resolutionConstraint_;

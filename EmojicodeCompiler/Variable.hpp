@@ -14,8 +14,8 @@
 
 class Variable {
 public:
-    Variable(Type type, int id, bool initd, bool frozen, const Token &token)
-        : type(type), initialized(initd), definitionToken(token), frozen_(frozen), id_(id) {};
+    Variable(Type type, int id, bool initd, bool frozen, const EmojicodeString &string, SourcePosition p)
+        : type(type), initialized(initd), string_(string), frozen_(frozen), id_(id), position_(p) {};
     /** The type of the variable. */
     Type type;
     /** The ID of the variable. */
@@ -23,8 +23,10 @@ public:
     void setId(int id) { id_ = id; }
     /** The variable is initialized if this field is greater than 0. */
     int initialized;
-    /** The variable name token which defined this variable. */
-    const Token &definitionToken;
+    /** The name of this variable. */
+    const EmojicodeString string_;
+    /** The position at which is variable was defined */
+    SourcePosition position() const { return position_; }
     
     /** Throws an error if the variable is not initalized. */
     void uninitalizedError(const Token &variableToken) const;
@@ -40,6 +42,8 @@ private:
     bool mutated_ = false;
     
     int id_;
+    
+    SourcePosition position_;
 };
 
 #endif /* Variable_hpp */

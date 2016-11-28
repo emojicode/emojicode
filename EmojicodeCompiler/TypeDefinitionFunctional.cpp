@@ -32,7 +32,7 @@ void TypeDefinitionFunctional::setSuperTypeDef(TypeDefinitionFunctional *superTy
                                        superTypeDef->genericArgumentConstraints_.end());
     
     for (auto &genericArg : ownGenericArgumentVariables_) {
-        genericArg.second.reference += superTypeDef->genericArgumentCount_;
+        genericArg.second.reference_ += superTypeDef->genericArgumentCount_;
     }
 }
 
@@ -71,7 +71,7 @@ Function* TypeDefinitionFunctional::lookupMethod(EmojicodeString name) {
     return nullptr;
 }
 
-Function* TypeDefinitionFunctional::lookupClassMethod(EmojicodeString name) {
+Function* TypeDefinitionFunctional::lookupTypeMethod(EmojicodeString name) {
     auto pos = classMethods_.find(name);
     if (pos != classMethods_.end()) {
         return pos->second;
@@ -98,8 +98,8 @@ Function* TypeDefinitionFunctional::getMethod(const Token &token, Type type, Typ
     return method;
 }
 
-Function* TypeDefinitionFunctional::getClassMethod(const Token &token, Type type, TypeContext typeContext) {
-    auto method = lookupClassMethod(token.value());
+Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, Type type, TypeContext typeContext) {
+    auto method = lookupTypeMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
         throw CompilerErrorException(token, "%s has no class method %s", eclass.c_str(), token.value().utf8().c_str());
@@ -107,10 +107,10 @@ Function* TypeDefinitionFunctional::getClassMethod(const Token &token, Type type
     return method;
 }
 
-void TypeDefinitionFunctional::addClassMethod(Function *method) {
+void TypeDefinitionFunctional::addTypeMethod(Function *method) {
     duplicateDeclarationCheck(method, classMethods_, method->position());
     classMethods_[method->name()] = method;
-    classMethodList_.push_back(method);
+    typeMethodList_.push_back(method);
 }
 
 void TypeDefinitionFunctional::addMethod(Function *method) {
@@ -129,6 +129,25 @@ void TypeDefinitionFunctional::addInitializer(Initializer *init) {
     }
 }
 
+void TypeDefinitionFunctional::addInstanceVariable(const InstanceVariableDeclaration &variable) {
+    instanceVariables_.push_back(variable);
+}
+
 void TypeDefinitionFunctional::handleRequiredInitializer(Initializer *init) {
     throw CompilerErrorException(init->position(), "Required initializer not supported.");
+}
+
+void TypeDefinitionFunctional::finalize() {
+    for (auto &var : instanceVariables()) {
+        objectScope().setLocalVariable(var.name, var.type, false, var.position);
+    }
+    
+    if (instanceVariables().size() > 65536) {
+        throw CompilerErrorException(position(), "You exceeded the limit of 65,536 instance variables.");
+    }
+    
+    if (instanceVariables().size() > 0 && initializerList().size() == 0) {
+        compilerWarning(position(), "Type defines %d instances variables but has no initializers.",
+                        instanceVariables().size());
+    }
 }

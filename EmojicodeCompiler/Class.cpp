@@ -47,10 +47,6 @@ bool Class::inheritsFrom(Class *from) const {
     return false;
 }
 
-void Class::addInstanceVariable(const Variable &variable) {
-    instanceVariables_.push_back(variable);
-}
-
 void Class::addProtocol(Type protocol) {
     protocols_.push_back(protocol);
 }
@@ -78,7 +74,7 @@ Function* Class::lookupMethod(EmojicodeString name) {
     return nullptr;
 }
 
-Function* Class::lookupClassMethod(EmojicodeString name) {
+Function* Class::lookupTypeMethod(EmojicodeString name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->classMethods_.find(name);
         if (pos != eclass->classMethods_.end()) {
@@ -93,6 +89,8 @@ void Class::handleRequiredInitializer(Initializer *init) {
 }
 
 void Class::finalize() {
+    TypeDefinitionFunctional::finalize();
+    
     if (instanceVariables().size() == 0 && initializerList().size() == 0) {
         inheritsInitializers_ = true;
     }
@@ -103,7 +101,7 @@ void Class::finalize() {
         for (auto method : superclass()->methodList()) {
             method->assignVti();
         }
-        for (auto clMethod : superclass()->classMethodList()) {
+        for (auto clMethod : superclass()->typeMethodList()) {
             clMethod->assignVti();
         }
         for (auto initializer : superclass()->initializerList()) {
@@ -122,8 +120,8 @@ void Class::finalize() {
             methodVtiProvider_.incrementVtiCount();
         }
     }
-    for (auto clMethod : classMethodList()) {
-        auto superMethod = superclass() ? superclass()->lookupClassMethod(clMethod->name()) : NULL;
+    for (auto clMethod : typeMethodList()) {
+        auto superMethod = superclass() ? superclass()->lookupTypeMethod(clMethod->name()) : NULL;
         
         clMethod->setVtiProvider(&methodVtiProvider_);
         if (clMethod->checkOverride(superMethod)) {
@@ -158,21 +156,6 @@ void Class::finalize() {
                                           static_cast<int>(requiredInitializers().size()));
         methodVtiProvider_.offsetVti(superclass()->methodVtiProvider_.peekNext());
         nextInstanceVariableID_ = superclass()->nextInstanceVariableID_;
-    }
-    
-    for (Variable var : instanceVariables()) {
-        var.setId(static_cast<int>(nextInstanceVariableID_++));
-        objectScope_.setLocalVariable(var.definitionToken.value(), var);
-    }
-    
-    if (nextInstanceVariableID_ > 65536) {
-        throw CompilerErrorException(position(), "You exceeded the limit of 65,536 instance variables.");
-    }
-    
-    if (instanceVariables().size() > 0 && initializerList().size() == 0) {
-        auto str = classType.toString(typeNothingness, true);
-        compilerWarning(position(), "Class %s defines %d instances variables but has no initializers.",
-                        str.c_str(), instanceVariables().size());
     }
     
     for (Type protocol : protocols()) {

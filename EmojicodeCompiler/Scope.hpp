@@ -14,19 +14,20 @@
 #include "Token.hpp"
 #include "Variable.hpp"
 
-class CallableScoper;
+class Scoper;
 
 class Scope {
-    friend CallableScoper;
 public:
-    Scope() {};
+    Scope() = delete;
+    Scope(Scoper *scoper) : scoper_(scoper) {};
     
     void setVariableInitialization(bool initd);
     void pushInitializationLevel();
     void popInitializationLevel();
     
     /** Sets a variable in this scope. */
-    void setLocalVariable(const EmojicodeString &variable, Variable value);
+    Variable& setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos,
+                               bool initialized = false);
     
     /**
      * Retrieves a variable form the scope or returns @c nullptr.
@@ -47,9 +48,11 @@ public:
      */
     void recommendFrozenVariables() const;
     
-    size_t localVariableCount() const { return map_.size(); }
+    size_t size() const { return size_; }
 private:
     std::map<EmojicodeString, Variable> map_;
+    int size_ = 0;
+    Scoper *scoper_;
 };
 
 #endif /* Scope_hpp */

@@ -234,8 +234,8 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext 
                                       true);
         p->genericArgumentConstraints.push_back(t);
         
-        Type rType = Type(TypeContent::LocalReference, false);
-        rType.reference = p->genericArgumentVariables.size();
+        Type rType = Type(TypeContent::LocalReference, false, static_cast<int>(p->genericArgumentVariables.size()),
+                          nullptr);
         
         if (p->genericArgumentVariables.count(variable.value())) {
             throw CompilerErrorException(variable, "A generic argument variable with the same name is already in use.");

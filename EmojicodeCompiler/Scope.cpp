@@ -8,6 +8,8 @@
 
 #include "Scope.hpp"
 #include "CompilerErrorException.hpp"
+#include "TypeDefinition.hpp"
+#include "Scoper.hpp"
 
 void Scope::setVariableInitialization(bool initd) {
     for (auto &it : map_) {
@@ -33,8 +35,15 @@ void Scope::popInitializationLevel() {
     }
 }
 
-void Scope::setLocalVariable(const EmojicodeString &variable, Variable value) {
-    map_.emplace(variable, value);
+Variable& Scope::setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos,
+                                  bool initialized) {
+    if (hasLocalVariable(variable)) {
+        return getLocalVariable(variable);
+    }
+    int id = scoper_->reserveVariable(type.size());
+    Variable &v = map_.emplace(variable, Variable(type, id, initialized ? 1 : 0, frozen, variable, pos)).first->second;
+    size_ += type.size();
+    return v;
 }
 
 Variable& Scope::getLocalVariable(const EmojicodeString &variable) {
@@ -49,7 +58,7 @@ void Scope::initializerUnintializedVariablesCheck(const Token &errorToken, const
     for (auto &it : map_) {
         Variable &cv = it.second;
         if (cv.initialized <= 0 && !cv.type.optional()) {
-            throw CompilerErrorException(errorToken, errorMessage, cv.definitionToken.value().utf8().c_str());
+            throw CompilerErrorException(errorToken, errorMessage, cv.string_.utf8().c_str());
         }
     }
 }
@@ -58,9 +67,9 @@ void Scope::recommendFrozenVariables() const {
     for (auto &it : map_) {
         const Variable &cv = it.second;
         if (!cv.frozen() && !cv.mutated()) {
-            compilerWarning(cv.definitionToken,
+            compilerWarning(cv.position(),
                             "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.",
-                            cv.definitionToken.value().utf8().c_str());
+                            cv.string_.utf8().c_str());
         }
     }
 }
