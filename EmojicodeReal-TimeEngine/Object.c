@@ -16,6 +16,8 @@ bool zeroingNeeded = false;
 Byte *currentHeap;
 Byte *otherHeap;
 
+void gc();
+
 size_t gcThreshold = heapSize / 2;
 
 int pausingThreadsCount = 0;
@@ -33,21 +35,7 @@ static void* emojicodeMalloc(size_t size){
             error("Allocation of %zu bytes is too big. Try to enlarge the heap. (Heap size: %zu)", size, heapSize);
         }
         
-        pauseThreads = true;
-        pthread_mutex_unlock(&allocationMutex);
-        
-        pthread_mutex_lock(&pausingThreadsCountMutex);
-        pausingThreadsCount++;
-
-        while (pausingThreadsCount < threads) pthread_cond_wait(&threadsCountCondition, &pausingThreadsCountMutex);
         gc();
-        
-        pausingThreadsCount--;
-        pthread_mutex_unlock(&pausingThreadsCountMutex);
-
-        pauseThreads = false;
-        pthread_cond_broadcast(&pauseThreadsFalsedCondition);
-        pthread_mutex_lock(&allocationMutex);
     }
     Byte *block = currentHeap + memoryUse;
     memoryUse += size;
@@ -154,15 +142,23 @@ void mark(Object **oPointer){
     if (o->class->mark) {
         o->class->mark(o->newLocation);
     }
+    
+    for (int i = 0; i < o->class->instanceVariableCount; i++) {
+        Something *s = (Something *)(((Byte *)o->newLocation) + sizeof(Object) + i * sizeof(Something));
+        if (isRealObject(*s)) {
+            mark(&s->object);
+        }
+    }
 }
 
-void gc(){
-    if (zeroingNeeded) {
-        memset(otherHeap, 0, heapSize / 2);
-    }
-    else {
-        zeroingNeeded = true;
-    }
+void gc() {
+    pauseThreads = true;
+    pthread_mutex_unlock(&allocationMutex);
+    
+    pthread_mutex_lock(&pausingThreadsCountMutex);
+    pausingThreadsCount++;
+    
+    while (pausingThreadsCount < threads) pthread_cond_wait(&threadsCountCondition, &pausingThreadsCountMutex);
     
     void *tempHeap = currentHeap;
     currentHeap = otherHeap;
@@ -178,7 +174,23 @@ void gc(){
         mark(stringPool + i);
     }
     
-    //Call the deinitializers
+    if (oldMemoryUse == memoryUse) {
+        error("Terminating program due to too high memory pressure.");
+    }
+    
+    if (zeroingNeeded) {
+        memset(currentHeap + memoryUse, 0, (heapSize / 2) - memoryUse);
+    }
+    else {
+        zeroingNeeded = true;
+    }
+    
+    pausingThreadsCount--;
+    pthread_mutex_unlock(&pausingThreadsCountMutex);
+    pauseThreads = false;
+    pthread_cond_broadcast(&pauseThreadsFalsedCondition);
+    
+    // Call the deinitializers
     Byte *currentObjectPointer = otherHeap;
     while (currentObjectPointer < otherHeap + oldMemoryUse) {
         Object *currentObject = (Object *)currentObjectPointer;
@@ -186,10 +198,6 @@ void gc(){
             currentObject->class->deconstruct(currentObject->value);
         }
         currentObjectPointer += currentObject->size;
-    }
-   
-    if (oldMemoryUse == memoryUse) {
-        error("Terminating program due to too high memory pressure.");
     }
 }
 

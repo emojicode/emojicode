@@ -35,12 +35,6 @@ void removeThread(Thread *);
 /** Marks all variables on the stack */
 void stackMark(Thread *);
 
-/**
- * The garbage collector.
- * Not thread-safe!
- */
-void gc();
-
 struct Thread {
     EmojicodeCoin *tokenStream;
     Something returnValue;
