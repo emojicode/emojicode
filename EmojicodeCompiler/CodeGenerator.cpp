@@ -50,7 +50,7 @@ void generateCodeForFunction(Function *function, CallableWriter &w) {
 void writeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass();
     
-    writer.writeEmojicodeChar(eclass->name());
+    writer.writeEmojicodeChar(eclass->name()[0]);
     if (eclass->superclass()) {
         writer.writeUInt16(eclass->superclass()->index);
     }
@@ -98,10 +98,10 @@ void writeClass(Type classType, Writer &writer) {
                     if (clm == nullptr) {
                         auto className = classType.toString(typeNothingness, true);
                         auto protocolName = protocol.toString(typeNothingness, true);
-                        ecCharToCharStack(method->name(), ms);
                         throw CompilerErrorException(eclass->position(),
                                                      "Class %s does not agree to protocol %s: Method %s is missing.",
-                                                     className.c_str(), protocolName.c_str(), ms);
+                                                     className.c_str(), protocolName.c_str(),
+                                                     method->name().utf8().c_str());
                     }
                     
                     writer.writeUInt16(clm->vtiForUse());
@@ -127,7 +127,7 @@ void writeClass(Type classType, Writer &writer) {
 }
 
 void writeValueType(ValueType *vt, Writer &writer) {
-    writer.writeEmojicodeChar(vt->name());
+    writer.writeEmojicodeChar(vt->name()[0]);
     writer.writeUInt16(vt->usedFunctionCount());
     writeUsed(vt->methodList(), writer);
     writeUsed(vt->classMethodList(), writer);
@@ -136,10 +136,9 @@ void writeValueType(ValueType *vt, Writer &writer) {
 
 void writePackageHeader(Package *pkg, Writer &writer, uint16_t classCount) {
     if (pkg->requiresBinary()) {
-        uint16_t l = strlen(pkg->name()) + 1;
+        size_t l = pkg->name().size() + 1;
         writer.writeByte(l);
-        
-        writer.writeBytes(pkg->name(), l);
+        writer.writeBytes(pkg->name().c_str(), l);
         
         writer.writeUInt16(pkg->version().major);
         writer.writeUInt16(pkg->version().minor);

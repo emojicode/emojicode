@@ -8,6 +8,7 @@
 
 #include "Token.hpp"
 #include "CompilerErrorException.hpp"
+#include "EmojiTokenization.hpp"
 
 SourcePosition::SourcePosition(const Token &token) : SourcePosition(token.position()) {
     
@@ -48,14 +49,27 @@ const char* Token::stringNameForType(TokenType type) {
     return "Mysterious unnamed token";
 }
 
-void Token::validateInteger(bool isHex) const {
-    if (isHex && value.size() < 3) {
-        throw CompilerErrorException(position(), "Expected a digit after integer literal prefix.");
+void Token::validate() const {
+    switch (type()) {
+        case TokenType::Integer:
+            if (value().back() == 'x') {
+                throw CompilerErrorException(position(), "Expected a digit after integer literal prefix.");
+            }
+            break;
+        case TokenType::Double:
+            if (value().back() == '.') {
+                throw CompilerErrorException(position(), "Expected a digit after decimal seperator.");
+            }
+            break;
+        case TokenType::Identifier:
+            if (!isValidEmoji(value())) {
+                throw CompilerErrorException(position(), "Invalid emoji.");
+            }
+        default:
+            break;
     }
 }
 
-void Token::validateDouble() const {
-    if (value.back() == '.') {
-        throw CompilerErrorException(position(), "Expected a digit after decimal seperator.");
-    }
+bool Token::isIdentifier(EmojicodeChar ch) const {
+    return type() == TokenType::Identifier && value_.size() == 1 && value_[0] == ch;
 }

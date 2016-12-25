@@ -30,12 +30,10 @@ void reportDocumentation(const EmojicodeString &documentation) {
     if (documentation.size() == 0) {
         return;
     }
-    
-    const char *d = documentation.utf8CString();
+
     printf("\"documentation\":");
-    printJSONStringToFile(d, stdout);
+    printJSONStringToFile(documentation.utf8().c_str(), stdout);
     putc(',', stdout);
-    delete [] d;
 }
 
 void reportType(const char *key, Type type, TypeContext tc) {
@@ -43,11 +41,11 @@ void reportType(const char *key, Type type, TypeContext tc) {
     
     if (key) {
         printf("\"%s\":{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
-               key, type.typePackage(), returnTypeName.c_str(), type.optional() ? "true" : "false");
+               key, type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
     }
     else {
         printf("{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
-               type.typePackage(), returnTypeName.c_str(), type.optional() ? "true" : "false");
+               type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
     }
 }
 
@@ -71,24 +69,20 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
     
     for (size_t i = 0; i < gans.size(); i++) {
         auto gan = gans[i];
-        auto utf8 = gan.utf8CString();
         commaPrinter(&reported);
         printf("{\"name\":");
-        printJSONStringToFile(utf8, stdout);
+        printJSONStringToFile(gan.utf8().c_str(), stdout);
         printf(",");
         reportType("constraint", constraints[i], tc);
         printf("}");
-        delete [] utf8;
     }
     
     printf("],");
 }
 
 void reportFunctionInformation(Function *p, ReturnManner returnm, bool last, TypeContext tc) {
-    ecCharToCharStack(p->name(), nameString);
-    
     printf("{");
-    printf("\"name\":\"%s\",", nameString);
+    printf("\"name\":\"%s\",", p->name().utf8().c_str());
     if (p->accessLevel() == AccessLevel::Private) {
         printf("\"access\":\"🔒\",");
     }
@@ -115,14 +109,10 @@ void reportFunctionInformation(Function *p, ReturnManner returnm, bool last, Typ
         printf("{");
         auto argument = p->arguments[i];
         
-        const char *varname = argument.name.value.utf8CString();
-        
         reportType("type", argument.type, tc);
         printf(",\"name\":");
-        printJSONStringToFile(varname, stdout);
+        printJSONStringToFile(argument.name.value().utf8().c_str(), stdout);
         printf("}%s", i + 1 == p->arguments.size() ? "" : ",");
-        
-        delete [] varname;
     }
     printf("]");
     
@@ -157,7 +147,7 @@ void reportPackage(Package *package) {
     printf("{");
     
     printf("\"documentation\":");
-    printJSONStringToFile(package->documentation().utf8CString(), stdout);
+    printJSONStringToFile(package->documentation().utf8().c_str(), stdout);
     
     bool printedValueType = false;
     printf(",\"valueTypes\":[");
@@ -169,9 +159,8 @@ void reportPackage(Package *package) {
         printedValueType = true;
         
         printf("{");
-        
-        ecCharToCharStack(vt->name(), className);
-        printf("\"name\":\"%s\",", className);
+
+        printf("\"name\":\"%s\",", vt->name().utf8().c_str());
         
         reportGenericArguments(vt->ownGenericArgumentVariables(), vt->genericArgumentConstraints(),
                                vt->superGenericArguments().size(), vtcontext);
@@ -213,18 +202,16 @@ void reportPackage(Package *package) {
         printedClass = true;
         
         printf("{");
-        
-        ecCharToCharStack(eclass->name(), className);
-        printf("\"name\": \"%s\",", className);
+
+        printf("\"name\": \"%s\",", eclass->name().utf8().c_str());
         
         reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(),
                                eclass->superGenericArguments().size(), TypeContext(Type(eclass)));
         reportDocumentation(eclass->documentation());
         
         if (eclass->superclass()) {
-            ecCharToCharStack(eclass->superclass()->name(), superClassName);
             printf("\"superclass\":{\"package\":\"%s\",\"name\":\"%s\"},",
-                   eclass->superclass()->package()->name(), superClassName);
+                   eclass->superclass()->package()->name().c_str(), eclass->superclass()->name().utf8().c_str());
         }
         
         printf("\"methods\":[");
@@ -271,9 +258,8 @@ void reportPackage(Package *package) {
         printf("{");
         
         printedEnum = true;
-        
-        ecCharToCharStack(eenum->name(), enumName);
-        printf("\"name\":\"%s\",", enumName);
+
+        printf("\"name\":\"%s\",", eenum->name().utf8().c_str());
         
         reportDocumentation(eenum->documentation());
         
@@ -286,8 +272,7 @@ void reportPackage(Package *package) {
             printedValue = true;
             printf("{");
             reportDocumentation(it.second.second);
-            ecCharToCharStack(it.first, value);
-            printf("\"value\":\"%s\"}", value);
+            printf("\"value\":\"%s\"}", it.first.utf8().c_str());
         }
         printf("]}");
     }
@@ -301,9 +286,8 @@ void reportPackage(Package *package) {
         }
         printedProtocol = true;
         printf("{");
-        
-        ecCharToCharStack(protocol->name(), protocolName);
-        printf("\"name\":\"%s\",", protocolName);
+
+        printf("\"name\":\"%s\",", protocol->name().utf8().c_str());
         
         reportGenericArguments(protocol->ownGenericArgumentVariables(), protocol->genericArgumentConstraints(),
                                protocol->superGenericArguments().size(), Type(protocol, false));

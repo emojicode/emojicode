@@ -294,7 +294,7 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
 
 //MARK: Type Visulisation
 
-const char* Type::typePackage() {
+std::string Type::typePackage() {
     switch (this->type()) {
         case TypeContent::Class:
         case TypeContent::ValueType:
@@ -313,7 +313,8 @@ const char* Type::typePackage() {
 }
 
 void stringAppendEc(EmojicodeChar c, std::string &string) {
-    ecCharToCharStack(c, sc);
+    char sc[5] = {0, 0, 0, 0, 0};
+    u8_wc_toutf8(sc, c);
     string.append(sc);
 }
 
@@ -335,7 +336,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
         case TypeContent::Protocol:
         case TypeContent::Enum:
         case TypeContent::ValueType:
-            stringAppendEc(type.typeDefinition()->name(), string);
+            string.append(type.typeDefinition()->name().utf8());
             break;
         case TypeContent::Nothingness:
             stringAppendEc(E_SPARKLES, string);
@@ -367,7 +368,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables()) {
                         if (it.second.reference == type.reference) {
-                            string.append(it.first.utf8CString());
+                            string.append(it.first.utf8());
                             return;
                         }
                     }
@@ -376,7 +377,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             else if (typeContext.calleeType().canHaveGenericArguments()) {
                 for (auto it : typeContext.calleeType().typeDefinitionFunctional()->ownGenericArgumentVariables()) {
                     if (it.second.reference == type.reference) {
-                        string.append(it.first.utf8CString());
+                        string.append(it.first.utf8());
                         return;
                     }
                 }
@@ -390,7 +391,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             if (typeContext.function()) {
                 for (auto it : typeContext.function()->genericArgumentVariables) {
                     if (it.second.reference == type.reference) {
-                        string.append(it.first.utf8CString());
+                        string.append(it.first.utf8());
                         return;
                     }
                 }

@@ -13,7 +13,9 @@ const Token& TokenStream::consumeToken(TokenType type) {
     if (!hasMoreTokens()) {
         throw CompilerErrorException(currentToken_->position(), "Unexpected end of program.");
     }
+
     currentToken_ = currentToken_->nextToken_;
+    
     if (type != TokenType::NoType && currentToken_->type() != type) {
         throw CompilerErrorException(currentToken_->position(), "Expected token %s but instead found %s.",
                       Token::stringNameForType(type), currentToken_->stringName());
@@ -32,10 +34,19 @@ bool TokenStream::nextTokenIs(TokenType type) const {
 
 bool TokenStream::nextTokenIs(EmojicodeChar c) const {
     const Token *nextToken = currentToken_->nextToken_;
-    return nextToken && nextToken->type() == TokenType::Identifier && nextToken->value[0] == c;
+    return nextToken && nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c;
 }
 
 bool TokenStream::nextTokenIsEverythingBut(EmojicodeChar c) const {
     const Token *nextToken = currentToken_->nextToken_;
-    return nextToken && !(nextToken->type() == TokenType::Identifier && nextToken->value[0] == c);
+    return nextToken && !(nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c);
+}
+
+const Token& TokenStream::requireIdentifier(EmojicodeChar ch) {
+    auto &token = consumeToken(TokenType::Identifier);
+    if (!token.isIdentifier(ch)) {
+        throw CompilerErrorException(token, "Expected %s but found %s instead.", EmojicodeString(ch).utf8().c_str(),
+                                     token.value().utf8().c_str());
+    }
+    return token;
 }

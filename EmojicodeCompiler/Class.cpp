@@ -20,7 +20,7 @@
 
 std::list<Class *> Class::classes_;
 
-Class::Class(EmojicodeChar name, Package *pkg, SourcePosition p, const EmojicodeString &documentation, bool final)
+Class::Class(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &documentation, bool final)
     : TypeDefinitionFunctional(name, pkg, p, documentation) {
     index = classes_.size();
     final_ = final;
@@ -55,7 +55,7 @@ void Class::addProtocol(Type protocol) {
     protocols_.push_back(protocol);
 }
 
-Initializer* Class::lookupInitializer(EmojicodeChar name) {
+Initializer* Class::lookupInitializer(EmojicodeString name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->initializers_.find(name);
         if (pos != eclass->initializers_.end()) {
@@ -68,7 +68,7 @@ Initializer* Class::lookupInitializer(EmojicodeChar name) {
     return nullptr;
 }
 
-Function* Class::lookupMethod(EmojicodeChar name) {
+Function* Class::lookupMethod(EmojicodeString name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->methods_.find(name);
         if (pos != eclass->methods_.end()) {
@@ -78,7 +78,7 @@ Function* Class::lookupMethod(EmojicodeChar name) {
     return nullptr;
 }
 
-Function* Class::lookupClassMethod(EmojicodeChar name) {
+Function* Class::lookupClassMethod(EmojicodeString name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->classMethods_.find(name);
         if (pos != eclass->classMethods_.end()) {
@@ -162,7 +162,7 @@ void Class::finalize() {
     
     for (Variable var : instanceVariables()) {
         var.setId(static_cast<int>(nextInstanceVariableID_++));
-        objectScope_.setLocalVariable(var.definitionToken.value, var);
+        objectScope_.setLocalVariable(var.definitionToken.value(), var);
     }
     
     if (nextInstanceVariableID_ > 65536) {

@@ -18,6 +18,9 @@
 
 #include "EmojicodeShared.h"
 #include <pthread.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct Class Class;
 typedef struct Function Function;

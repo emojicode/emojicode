@@ -44,14 +44,14 @@ public:
     /** Returns the number of funciton VTIs assigned. This should be equal to the number of compiled functions. */
     static int functionCount() { return nextVti_; }
     
-    static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
+    static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeString name, SourcePosition position,
                                    const char *on, Type contextType);
-    static void checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeChar name, SourcePosition position,
+    static void checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeString name, SourcePosition position,
                                    const char *on, Type contextType);
     static void checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
                               const char *on, Type contextType);
     
-    Function(EmojicodeChar name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
+    Function(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, EmojicodeString documentationToken, bool deprecated, CallableParserAndGeneratorMode mode)
         : Callable(p),
           name_(name),
@@ -65,7 +65,7 @@ public:
           compilationMode_(mode) {}
     
     /** The function name. A Unicode code point for an emoji */
-    EmojicodeChar name() const { return name_; }
+    EmojicodeString name() const { return name_; }
     
     /** Whether the method is implemented natively and Run-Time Native Linking must occur. */
     bool native = false;
@@ -135,7 +135,7 @@ private:
     void setVti(int vti);
     void markUsed();
     
-    EmojicodeChar name_;
+    EmojicodeString name_;
     static int nextVti_;
     int vti_ = -1;
     bool final_;
@@ -154,9 +154,9 @@ private:
 
 class Initializer: public Function {
 public:
-    Initializer(EmojicodeChar name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
-                bool overriding, EmojicodeString documentationToken, bool deprecated, bool r, bool crn,
-                CallableParserAndGeneratorMode mode)
+    Initializer(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package,
+                SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated, bool r,
+                bool crn, CallableParserAndGeneratorMode mode)
         : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, mode),
           required(r),
           canReturnNothingness(crn) {

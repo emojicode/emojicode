@@ -33,16 +33,17 @@ class Token;
 
 struct SourcePosition {
     SourcePosition(const Token &token);
-    SourcePosition(size_t line, size_t character, const char *file) : line(line), character(character), file(file) {};
+    SourcePosition(size_t line, size_t character, std::string file) : line(line), character(character), file(file) {};
     size_t line;
     size_t character;
-    const char *file;
+    std::string file;
 };
 
 class Token {
-    friend TokenStream lex(const char *);
+    friend TokenStream lex(std::string);
     friend class TokenStream;
 public:
+    Token(const Token&) = delete;
     Token(SourcePosition p) : position_(p) {}
     Token(SourcePosition p, Token *prevToken) : position_(p) {
         if(prevToken)
@@ -54,19 +55,21 @@ public:
     /** Returns the type of this token. */
     const TokenType& type() const { return type_; }
     /** Represents the value of this token. */
-    EmojicodeString value;
+    const EmojicodeString& value() const { return value_; }
+
+    bool isIdentifier(EmojicodeChar ch) const;
     
     /** Returns a string describing the token */
     const char* stringName() const;
     /** Returns a string describing the token */
     static const char* stringNameForType(TokenType type);
     
-    void validateInteger(bool hex) const;
-    void validateDouble() const;
+    void validate() const;
 private:
     SourcePosition position_;
     TokenType type_ = TokenType::NoType;
     Token *nextToken_ = nullptr;
+    EmojicodeString value_;
 };
 
 #endif /* Token_hpp */

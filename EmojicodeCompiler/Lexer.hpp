@@ -13,6 +13,6 @@
 #include "Token.hpp"
 #include "TokenStream.hpp"
 
-TokenStream lex(const char* fileName);
+TokenStream lex(std::string fileName);
 
 #endif /* Lexer_hpp */

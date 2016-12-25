@@ -20,7 +20,7 @@ public:
     /** Returns a documentation token documenting this type definition or @c nullptr. */
     const EmojicodeString& documentation() const { return documentation_; }
     /** Returns the name of the type definition. */
-    EmojicodeChar name() const { return name_; }
+    EmojicodeString name() const { return name_; }
     /** Returns the package in which this type was defined. */
     Package* package() const { return package_; }
     /** The position at which this type was initially defined. */
@@ -29,20 +29,19 @@ public:
         computed before functional code can be compiled. */
     virtual void finalize() {}
 protected:
-    TypeDefinition(EmojicodeChar name, Package *p, SourcePosition position, const EmojicodeString &doc)
+    TypeDefinition(EmojicodeString name, Package *p, SourcePosition position, const EmojicodeString &doc)
         : name_(name),
           package_(p),
           documentation_(doc),
           position_(position) {}
     template <typename T>
-    void duplicateDeclarationCheck(T p, std::map<EmojicodeChar, T> dict, SourcePosition position) {
+    void duplicateDeclarationCheck(T p, std::map<EmojicodeString, T> dict, SourcePosition position) {
         if (dict.count(p->name())) {
-            ecCharToCharStack(p->name(), nameString);
-            throw CompilerErrorException(position, "%s is declared twice.", nameString);
+            throw CompilerErrorException(position, "%s is declared twice.", p->name().utf8().c_str());
         }
     }
 private:
-    EmojicodeChar name_;
+    EmojicodeString name_;
     Package *package_;
     EmojicodeString documentation_;
     SourcePosition position_;

@@ -49,8 +49,7 @@ void Scope::initializerUnintializedVariablesCheck(const Token &errorToken, const
     for (auto &it : map_) {
         Variable &cv = it.second;
         if (cv.initialized <= 0 && !cv.type.optional()) {
-            const char *variableName = cv.definitionToken.value.utf8CString();
-            throw CompilerErrorException(errorToken, errorMessage, variableName);
+            throw CompilerErrorException(errorToken, errorMessage, cv.definitionToken.value().utf8().c_str());
         }
     }
 }
@@ -59,10 +58,9 @@ void Scope::recommendFrozenVariables() const {
     for (auto &it : map_) {
         const Variable &cv = it.second;
         if (!cv.frozen() && !cv.mutated()) {
-            const char *variableName = cv.definitionToken.value.utf8CString();
             compilerWarning(cv.definitionToken,
                             "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.",
-                            variableName);
+                            cv.definitionToken.value().utf8().c_str());
         }
     }
 }

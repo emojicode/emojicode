@@ -11,15 +11,15 @@
 
 void Variable::uninitalizedError(const Token &variableToken) const {
     if (initialized <= 0) {
-        throw CompilerErrorException(variableToken,
-                                     "Variable \"%s\" is possibly not initialized.", variableToken.value.utf8CString());
+        throw CompilerErrorException(variableToken, "Variable \"%s\" is possibly not initialized.",
+                                     variableToken.value().utf8().c_str());
     }
 }
 
 void Variable::mutate(const Token &variableToken) {
     if (frozen()) {
         throw CompilerErrorException(variableToken, "Cannot modify frozen variable \"%s\".",
-                                     variableToken.value.utf8CString());
+                                     variableToken.value().utf8().c_str());
     }
     mutated_ = true;
 }

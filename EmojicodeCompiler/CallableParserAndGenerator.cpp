@@ -6,6 +6,7 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include <cstdlib>
 #include "CallableParserAndGenerator.hpp"
 #include "Type.hpp"
 #include "utf8.h"
@@ -111,15 +112,13 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     if (p->accessLevel() == AccessLevel::Private) {
         if (this->typeContext.calleeType().type() != p->owningType().type()
                 || p->owningType().typeDefinition() != this->typeContext.calleeType().typeDefinition()) {
-            ecCharToCharStack(p->name(), nm);
-            throw CompilerErrorException(token, "%s is 🔒.", nm);
+            throw CompilerErrorException(token, "%s is 🔒.", p->name().utf8().c_str());
         }
     }
     else if (p->accessLevel() == AccessLevel::Protected) {
         if (this->typeContext.calleeType().type() != p->owningType().type()
                 || !this->typeContext.calleeType().eclass()->inheritsFrom(p->owningType().eclass())) {
-            ecCharToCharStack(p->name(), nm);
-            throw CompilerErrorException(token, "%s is 🔐.", nm);
+            throw CompilerErrorException(token, "%s is 🔐.", p->name().utf8().c_str());
         }
     }
     
@@ -149,13 +148,9 @@ void CallableParserAndGenerator::flowControlBlock(bool block) {
     }
     
     flowControlDepth++;
-    
-    auto &token = stream_.consumeToken(TokenType::Identifier);
-    if (token.value[0] != E_GRAPES) {
-        ecCharToCharStack(token.value[0], s);
-        throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", s);
-    }
-    
+
+    auto &token = stream_.requireIdentifier(E_GRAPES);
+
     auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         effect = false;
@@ -195,7 +190,7 @@ void CallableParserAndGenerator::parseIfExpression(const Token &token) {
         writer.writeCoin(0x3E, token);
         
         auto &varName = stream_.consumeToken(TokenType::Variable);
-        if (scoper.currentScope().hasLocalVariable(varName.value)) {
+        if (scoper.currentScope().hasLocalVariable(varName.value())) {
             throw CompilerErrorException(token, "Cannot redeclare variable.");
         }
         
@@ -209,7 +204,7 @@ void CallableParserAndGenerator::parseIfExpression(const Token &token) {
         
         t = t.copyWithoutOptional();
         
-        scoper.currentScope().setLocalVariable(varName.value, Variable(t, id, 1, true, varName));
+        scoper.currentScope().setLocalVariable(varName.value(), Variable(t, id, 1, true, varName));
     }
     else {
         parse(stream_.consumeToken(TokenType::NoType), token, typeBoolean);
@@ -220,7 +215,7 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
     switch (token.type()) {
         case TokenType::String: {
             writer.writeCoin(0x10, token);
-            writer.writeCoin(StringPool::theStringPool().poolString(token.value), token);
+            writer.writeCoin(StringPool::theStringPool().poolString(token.value()), token);
             return Type(CL_STRING);
         }
         case TokenType::BooleanTrue:
@@ -230,29 +225,25 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
             writer.writeCoin(0x12, token);
             return typeBoolean;
         case TokenType::Integer: {
-            /* We know token->value only contains ints less than 255 */
-            const char *string = token.value.utf8CString();
-            
-            EmojicodeInteger l = strtoll(string, nullptr, 0);
-            delete [] string;
-            
+            long long value = std::stoll(token.value().utf8(), 0, 0);
+
             if (expectation.type() == TypeContent::ValueType && expectation.valueType() == VT_DOUBLE) {
                 writer.writeCoin(0x15, token);
-                writer.writeDoubleCoin(l, token);
+                writer.writeDoubleCoin(value, token);
                 return typeFloat;
             }
             
-            if (llabs(l) > INT32_MAX) {
+            if (std::llabs(value) > INT32_MAX) {
                 writer.writeCoin(0x14, token);
                 
-                writer.writeCoin(l >> 32, token);
-                writer.writeCoin((EmojicodeCoin)l, token);
+                writer.writeCoin(value >> 32, token);
+                writer.writeCoin(static_cast<EmojicodeCoin>(value), token);
                 
                 return typeInteger;
             }
             else {
                 writer.writeCoin(0x13, token);
-                writer.writeCoin((EmojicodeCoin)l, token);
+                writer.writeCoin(static_cast<EmojicodeCoin>(value), token);
                 
                 return typeInteger;
             }
@@ -260,19 +251,17 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
         case TokenType::Double: {
             writer.writeCoin(0x15, token);
             
-            const char *string = token.value.utf8CString();
-            
-            double d = strtod(string, nullptr);
-            delete [] string;
+            double d = std::stod(token.value().utf8());
             writer.writeDoubleCoin(d, token);
+
             return typeFloat;
         }
         case TokenType::Symbol:
             writer.writeCoin(0x16, token);
-            writer.writeCoin(token.value[0], token);
+            writer.writeCoin(token.value()[0], token);
             return typeSymbol;
         case TokenType::Variable: {
-            auto var = scoper.getVariable(token.value, token.position());
+            auto var = scoper.getVariable(token.value(), token.position());
             
             var.first.uninitalizedError(token);
             
@@ -297,23 +286,23 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
 }
 
 Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expectation) {
-    if (token.value[0] != E_RED_APPLE) {
+    if (!token.isIdentifier(E_RED_APPLE)) {
         // We need a chance to test whether the red apple’s return is used
         effect = true;
     }
 
-    switch (token.value[0]) {
+    switch (token.value()[0]) {
         case E_SHORTCAKE: {
             auto &varName = stream_.consumeToken(TokenType::Variable);
             
-            if (scoper.currentScope().hasLocalVariable(varName.value)) {
+            if (scoper.currentScope().hasLocalVariable(varName.value())) {
                 throw CompilerErrorException(token, "Cannot redeclare variable.");
             }
             
             Type t = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
             
             int id = scoper.reserveVariableSlot();
-            scoper.currentScope().setLocalVariable(varName.value,
+            scoper.currentScope().setLocalVariable(varName.value(),
                                                    Variable(t, id, t.optional() ? 1 : 0, false, varName));
             if (t.optional()) {
                 writer.writeCoin(0x1B, token);
@@ -327,7 +316,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             Type type = typeNothingness;
             try {
-                auto var = scoper.getVariable(varName.value, varName.position());
+                auto var = scoper.getVariable(varName.value(), varName.position());
                 if (var.first.initialized <= 0) {
                     var.first.initialized = 1;
                 }
@@ -347,7 +336,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 writer.writeCoin(id, token);
                 
                 Type t = parse(stream_.consumeToken());
-                scoper.currentScope().setLocalVariable(varName.value, Variable(t, id, 1, false, varName));
+                scoper.currentScope().setLocalVariable(varName.value(), Variable(t, id, 1, false, varName));
                 return typeNothingness;
             }
 
@@ -358,7 +347,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         case E_SOFT_ICE_CREAM: {
             auto &varName = stream_.consumeToken(TokenType::Variable);
             
-            if (scoper.currentScope().hasLocalVariable(varName.value)) {
+            if (scoper.currentScope().hasLocalVariable(varName.value())) {
                 throw CompilerErrorException(token, "Cannot redeclare variable.");
             }
             
@@ -368,24 +357,24 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writer.writeCoin(id, token);
             
             Type t = parse(stream_.consumeToken());
-            scoper.currentScope().setLocalVariable(varName.value, Variable(t, id, 1, true, varName));
+            scoper.currentScope().setLocalVariable(varName.value(), Variable(t, id, 1, true, varName));
             return typeNothingness;
         }
         case E_COOKING:
         case E_CHOCOLATE_BAR: {
             auto &varName = stream_.consumeToken(TokenType::Variable);
             
-            auto var = scoper.getVariable(varName.value, varName.position());
+            auto var = scoper.getVariable(varName.value(), varName.position());
             
             var.first.uninitalizedError(varName);
             var.first.mutate(varName);
             
             if (!var.first.type.compatibleTo(typeInteger, typeContext)) {
-                ecCharToCharStack(token.value[0], ls);
-                throw CompilerErrorException(token, "%s can only operate on 🚂 variables.", ls);
+                throw CompilerErrorException(token, "%s can only operate on 🚂 variables.",
+                                             token.value().utf8().c_str());
             }
             
-            if (token.value[0] == E_COOKING) {
+            if (token.isIdentifier(E_COOKING)) {
                 writeCoinForScopesUp(var.second, 0x19, 0x1F, token);
             }
             else {
@@ -547,22 +536,26 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 // If the iteratee is a list, the Real-Time Engine has some special sugar
                 placeholder.write(0x65);
                 writer.writeCoin(scoper.reserveVariableSlot(), token);  //Internally needed
-                scoper.currentScope().setLocalVariable(variableToken.value, Variable(iteratee.genericArguments[0], vID, true, true, variableToken));
+                scoper.currentScope().setLocalVariable(variableToken.value(),
+                                                       Variable(iteratee.genericArguments[0], vID, true,
+                                                                true, variableToken));
             }
             else if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_RANGE) {
                 // If the iteratee is a range, the Real-Time Engine also has some special sugar
                 placeholder.write(0x66);
-                scoper.currentScope().setLocalVariable(variableToken.value, Variable(typeInteger, vID, true, true, variableToken));
+                scoper.currentScope().setLocalVariable(variableToken.value(),
+                                                       Variable(typeInteger, vID, true, true, variableToken));
             }
             else if (typeIsEnumerable(iteratee, &itemType)) {
-                Function *iteratorMethod = iteratee.eclass()->lookupMethod(E_DANGO);
+                Function *iteratorMethod = iteratee.eclass()->lookupMethod(EmojicodeString(E_DANGO));
                 iteratorMethod->vtiForUse();
                 TypeDefinitionFunctional *td = iteratorMethod->returnType.typeDefinitionFunctional();
-                td->lookupMethod(E_DOWN_POINTING_SMALL_RED_TRIANGLE)->vtiForUse();
-                td->lookupMethod(E_RED_QUESTION_MARK)->vtiForUse();
+                td->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
+                td->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
                 placeholder.write(0x64);
                 writer.writeCoin(scoper.reserveVariableSlot(), token);  //Internally needed
-                scoper.currentScope().setLocalVariable(variableToken.value, Variable(itemType, vID, true, true, variableToken));
+                scoper.currentScope().setLocalVariable(variableToken.value(),
+                                                       Variable(itemType, vID, true, true, variableToken));
             }
             else {
                 auto iterateeString = iteratee.toString(typeContext, true);
@@ -572,15 +565,14 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             flowControlBlock(false);
             returned = false;
             scoper.popScopeAndRecommendFrozenVariables();
-            
+
             return typeNothingness;
         }
         case E_LEMON:
         case E_STRAWBERRY:
         case E_WATERMELON:
         case E_AUBERGINE: {
-            ecCharToCharStack(token.value[0], identifier);
-            throw CompilerErrorException(token, "Unexpected identifier %s.", identifier);
+            throw CompilerErrorException(token, "Unexpected identifier %s.", token.value().utf8().c_str());
             return typeNothingness;
         }
         case E_DOG: {
@@ -906,12 +898,11 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 notStaticError(pair.second, token, "Enums");
                 placeholder.write(0x13);
                 
-                auto v = type.eenum()->getValueFor(initializerName.value[0]);
+                auto v = type.eenum()->getValueFor(initializerName.value());
                 if (!v.first) {
-                    ecCharToCharStack(initializerName.value[0], valueName);
-                    ecCharToCharStack(type.eenum()->name(), enumName);
                     throw CompilerErrorException(initializerName, "%s does not have a member named %s.",
-                                                 enumName, valueName);
+                                                 type.eenum()->name().utf8().c_str(),
+                                                 initializerName.value().utf8().c_str());
                 }
                 else if (v.second > UINT32_MAX) {
                     writer.writeCoin(v.second >> 32, token);
@@ -1000,7 +991,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             Function *method;
             if (type.type() == TypeContent::ValueType) {
                 if (type.valueType() == VT_BOOLEAN) {
-                    switch (token.value[0]) {
+                    switch (token.value()[0]) {
                         case E_NEGATIVE_SQUARED_CROSS_MARK:
                             placeholder.write(0x26);
                             return typeBoolean;
@@ -1015,7 +1006,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     }
                 }
                 else if (type.valueType() == VT_INTEGER) {
-                    switch (token.value[0]) {
+                    switch (token.value()[0]) {
                         case E_HEAVY_MINUS_SIGN:
                             placeholder.write(0x21);
                             parse(stream_.consumeToken(), token, typeInteger);
@@ -1081,7 +1072,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     }
                 }
                 else if (type.valueType() == VT_DOUBLE) {
-                    switch (token.value[0]) {
+                    switch (token.value()[0]) {
                         case E_FACE_WITH_STUCK_OUT_TONGUE:
                             placeholder.write(0x2F);
                             parse(stream_.consumeToken(), token, typeFloat);
@@ -1125,7 +1116,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     }
                 }
                 
-                if (token.value[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
+                if (token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE)) {
                     parse(stream_.consumeToken(), token, type);  // Must be of the same type as the callee
                     placeholder.write(0x20);
                     return typeBoolean;
@@ -1141,7 +1132,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 writer.writeCoin(type.protocol()->index, token);
                 writer.writeCoin(method->vtiForUse(), token);
             }
-            else if (type.type() == TypeContent::Enum && token.value[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
+            else if (type.type() == TypeContent::Enum && token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
                 parse(stream_.consumeToken(), token, type);  // Must be of the same type as the callee
                 placeholder.write(0x20);
                 return typeBoolean;
@@ -1237,7 +1228,7 @@ void CallableParserAndGenerator::analyze(bool compileDeadCode) {
         Scope &methodScope = scoper.pushScope();
         for (size_t i = 0; i < callable.arguments.size(); i++) {
             auto variable = callable.arguments[i];
-            methodScope.setLocalVariable(variable.name.value, Variable(variable.type, static_cast<int>(i), true,
+            methodScope.setLocalVariable(variable.name.value(), Variable(variable.type, static_cast<int>(i), true,
                                                                        true, variable.name));
         }
         scoper.ensureNReservations(static_cast<int>(callable.arguments.size()));
@@ -1248,14 +1239,14 @@ void CallableParserAndGenerator::analyze(bool compileDeadCode) {
                 if (scoper.objectScope()->hasLocalVariable(var) == 0) {
                     throw CompilerErrorException(initializer.position(),
                                                  "🍼 was applied to \"%s\" but no matching instance variable was found.",
-                                                 var.utf8CString());
+                                                 var.utf8().c_str());
                 }
                 auto &instanceVariable = scoper.objectScope()->getLocalVariable(var);
                 auto &argumentVariable = methodScope.getLocalVariable(var);
                 if (!argumentVariable.type.compatibleTo(instanceVariable.type, typeContext)) {
                     throw CompilerErrorException(initializer.position(),
                                                  "🍼 was applied to \"%s\" but instance variable has incompatible type.",
-                                                 var.utf8CString());
+                                                 var.utf8().c_str());
                 }
                 instanceVariable.initialized = 1;
                 writer.writeCoin(0x1D, initializer.position());
@@ -1290,9 +1281,8 @@ void CallableParserAndGenerator::analyze(bool compileDeadCode) {
                                                                     "Instance variable \"%s\" must be initialized.");
             
             if (!calledSuper && typeContext.calleeType().eclass()->superclass()) {
-                ecCharToCharStack(initializer.name(), initializerName);
                 throw CompilerErrorException(initializer.position(),
-                              "Missing call to superinitializer in initializer %s.", initializerName);
+                              "Missing call to superinitializer in initializer %s.", initializer.name().utf8().c_str());
             }
         }
         else {

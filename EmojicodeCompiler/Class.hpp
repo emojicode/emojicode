@@ -27,7 +27,8 @@ class Class : public TypeDefinitionFunctional {
 public:
     static const std::list<Class *>& classes() { return classes_; }
     
-    Class(EmojicodeChar name, Package *pkg, SourcePosition position, const EmojicodeString &documentation, bool final);
+    Class(EmojicodeString name, Package *pkg, SourcePosition position,
+          const EmojicodeString &documentation, bool final);
     
     /** The class's superclass. @c nullptr if the class has no superclass. */
     Class* superclass() const { return superclass_; };
@@ -43,7 +44,7 @@ public:
     /** Adds an instance variable. */
     void addInstanceVariable(const Variable&);
     /** Returns a list of all required intializers. */
-    const std::set<EmojicodeChar>& requiredInitializers() const { return requiredInitializers_; }
+    const std::set<EmojicodeString>& requiredInitializers() const { return requiredInitializers_; }
 
     /** Returns true if @c a inherits from class @c from */
     bool inheritsFrom(Class *from) const;
@@ -59,11 +60,11 @@ public:
     const std::list<Type>& protocols() const { return protocols_; };
     
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupMethod(EmojicodeChar name);
+    virtual Function* lookupMethod(EmojicodeString name);
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    virtual Initializer* lookupInitializer(EmojicodeChar name);
+    virtual Initializer* lookupInitializer(EmojicodeString name);
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupClassMethod(EmojicodeChar name);
+    virtual Function* lookupClassMethod(EmojicodeString name);
     
     virtual void finalize();
     
@@ -86,7 +87,7 @@ private:
     static std::list<Class *> classes_;
     
     std::list<Type> protocols_;
-    std::set<EmojicodeChar> requiredInitializers_;
+    std::set<EmojicodeString> requiredInitializers_;
     std::vector<Variable> instanceVariables_;
     
     bool final_;

@@ -10,6 +10,7 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <cstring>
+#include <cstdlib>
 #include <vector>
 #include "utf8.h"
 #include "CodeGenerator.hpp"
@@ -21,19 +22,19 @@
 #include "ValueType.hpp"
 #include "Function.hpp"
 
-char* EmojicodeString::utf8CString() const {
+std::string EmojicodeString::utf8() const {
     // Size needed for UTF8 representation
     size_t ds = u8_codingsize(c_str(), size());
-    char *utf8str = new char[ds + 1];
+    char utf8str[ds + 1];
     size_t written = u8_toutf8(utf8str, ds, c_str(), size());
     utf8str[written] = 0;
-    return utf8str;
+    return std::string(utf8str);
 }
 
 static bool outputJSON = false;
 static bool printedErrorOrWarning = false;
 static bool hasError = false;
-const char *packageDirectory = defaultPackagesDirectory;
+std::string packageDirectory = defaultPackagesDirectory;
 
 void printJSONStringToFile(const char *string, FILE *f) {
     char c;
@@ -78,14 +79,14 @@ void printError(const CompilerErrorException &ce) {
     if (outputJSON) {
         fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":",
                 printedErrorOrWarning ? ",": "", ce.position().line, ce.position().character);
-        printJSONStringToFile(ce.position().file, stderr);
+        printJSONStringToFile(ce.position().file.c_str(), stderr);
         fprintf(stderr, ", \"message\":");
         printJSONStringToFile(ce.error(), stderr);
         fprintf(stderr, "}\n");
     }
     else {
         fprintf(stderr, "🚨 line %zu column %zu %s: %s\n", ce.position().line, ce.position().character,
-                ce.position().file, ce.error());
+                ce.position().file.c_str(), ce.error());
     }
     printedErrorOrWarning = true;
 }
@@ -100,46 +101,43 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
     if (outputJSON) {
         fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":",
                 printedErrorOrWarning ? ",": "", p.line, p.character);
-        printJSONStringToFile(p.file, stderr);
+        printJSONStringToFile(p.file.c_str(), stderr);
         fprintf(stderr, ", \"message\":");
         printJSONStringToFile(error, stderr);
         fprintf(stderr, "}\n");
     }
     else {
-        fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", p.line, p.character, p.file, error);
+        fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", p.line, p.character, p.file.c_str(), error);
     }
     printedErrorOrWarning = true;
     
     va_end(list);
 }
 
-Class* getStandardClass(EmojicodeChar name, Package *_, SourcePosition errorPosition) {
+Class* getStandardClass(EmojicodeString name, Package *_, SourcePosition errorPosition) {
     Type type = typeNothingness;
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Class) {
-        ecCharToCharStack(name, nameString)
-        throw CompilerErrorException(errorPosition, "s package class %s is missing.", nameString);
+        throw CompilerErrorException(errorPosition, "s package class %s is missing.", name.utf8().c_str());
         
     }
     return type.eclass();
 }
 
-Protocol* getStandardProtocol(EmojicodeChar name, Package *_, SourcePosition errorPosition) {
+Protocol* getStandardProtocol(EmojicodeString name, Package *_, SourcePosition errorPosition) {
     Type type = typeNothingness;
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Protocol) {
-        ecCharToCharStack(name, nameString)
-        throw CompilerErrorException(errorPosition, "s package protocol %s is missing.", nameString);
+        throw CompilerErrorException(errorPosition, "s package protocol %s is missing.", name.utf8().c_str());
     }
     return type.protocol();
 }
 
-ValueType* getStandardValueType(EmojicodeChar name, Package *_, SourcePosition errorPosition) {
+ValueType* getStandardValueType(EmojicodeString name, Package *_, SourcePosition errorPosition) {
     Type type = typeNothingness;
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::ValueType) {
-        ecCharToCharStack(name, nameString)
-        throw CompilerErrorException(errorPosition, "s package value type %s is missing.", nameString);
+        throw CompilerErrorException(errorPosition, "s package value type %s is missing.", name.utf8().c_str());
     }
     return type.valueType();
 }
@@ -147,20 +145,20 @@ ValueType* getStandardValueType(EmojicodeChar name, Package *_, SourcePosition e
 void loadStandard(Package *_, SourcePosition errorPosition) {
     auto package = _->loadPackage("s", globalNamespace, errorPosition);
     
-    VT_DOUBLE = getStandardValueType(E_ROCKET, _, errorPosition);
-    VT_BOOLEAN = getStandardValueType(E_OK_HAND_SIGN, _, errorPosition);
-    VT_SYMBOL = getStandardValueType(E_INPUT_SYMBOL_FOR_SYMBOLS, _, errorPosition);
-    VT_INTEGER = getStandardValueType(E_STEAM_LOCOMOTIVE, _, errorPosition);
+    VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), _, errorPosition);
+    VT_BOOLEAN = getStandardValueType(EmojicodeString(E_OK_HAND_SIGN), _, errorPosition);
+    VT_SYMBOL = getStandardValueType(EmojicodeString(E_INPUT_SYMBOL_FOR_SYMBOLS), _, errorPosition);
+    VT_INTEGER = getStandardValueType(EmojicodeString(E_STEAM_LOCOMOTIVE), _, errorPosition);
     
-    CL_STRING = getStandardClass(0x1F521, _, errorPosition);
-    CL_LIST = getStandardClass(0x1F368, _, errorPosition);
-    CL_ERROR = getStandardClass(0x1F6A8, _, errorPosition);
-    CL_DATA = getStandardClass(0x1F4C7, _, errorPosition);
-    CL_DICTIONARY = getStandardClass(0x1F36F, _, errorPosition);
-    CL_RANGE = getStandardClass(0x23E9, _, errorPosition);
+    CL_STRING = getStandardClass(EmojicodeString(0x1F521), _, errorPosition);
+    CL_LIST = getStandardClass(EmojicodeString(0x1F368), _, errorPosition);
+    CL_ERROR = getStandardClass(EmojicodeString(0x1F6A8), _, errorPosition);
+    CL_DATA = getStandardClass(EmojicodeString(0x1F4C7), _, errorPosition);
+    CL_DICTIONARY = getStandardClass(EmojicodeString(0x1F36F), _, errorPosition);
+    CL_RANGE = getStandardClass(EmojicodeString(0x23E9), _, errorPosition);
     
-    PR_ENUMERATOR = getStandardProtocol(0x1F361, _, errorPosition);
-    PR_ENUMERATEABLE = getStandardProtocol(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY, _, errorPosition);
+    PR_ENUMERATOR = getStandardProtocol(EmojicodeString(0x1F361), _, errorPosition);
+    PR_ENUMERATEABLE = getStandardProtocol(EmojicodeString(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), _, errorPosition);
     
     package->setRequiresBinary(false);
 }
@@ -181,7 +179,6 @@ int main(int argc, char * argv[]) {
                 case 'v':
                     puts("Emojicode 0.3. Built with 💚 by Theo Weidmann.");
                     return 0;
-                    break;
                 case 'R':
                     packageToReport = optarg;
                     break;

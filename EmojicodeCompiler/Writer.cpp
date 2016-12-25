@@ -39,7 +39,7 @@ void Writer::writeBytes(const char *bytes, size_t count) {
 }
 
 void Writer::writeFunction(Function *function) {
-    writeEmojicodeChar(function->name());
+    writeEmojicodeChar(function->name()[0]);
     writeUInt16(function->getVti());
     writeByte(static_cast<uint8_t>(function->arguments.size()));
     

@@ -9,7 +9,7 @@
 #include "Enum.hpp"
 #include "CompilerErrorException.hpp"
 
-std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeChar c) const {
+std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeString c) const {
     auto it = map_.find(c);
     if (it == map_.end()) {
         return std::pair<bool, EmojicodeInteger>(false, 0);
@@ -19,7 +19,7 @@ std::pair<bool, EmojicodeInteger> Enum::getValueFor(EmojicodeChar c) const {
     }
 }
 
-void Enum::addValueFor(EmojicodeChar c, SourcePosition position, EmojicodeString documentation) {
+void Enum::addValueFor(EmojicodeString c, SourcePosition position, EmojicodeString documentation) {
     if (map_.count(c)) {
         throw CompilerErrorException(position, "Duplicate enum value.");
     }

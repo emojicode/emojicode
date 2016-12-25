@@ -75,6 +75,8 @@ extern bool isPossibleObjectPointer(void *);
 extern char **cliArguments;
 extern int cliArgumentCount;
 
+extern const char *packageDirectory;
+
 //MARK: Classes
 
 struct Class {

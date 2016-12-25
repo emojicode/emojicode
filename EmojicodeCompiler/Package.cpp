@@ -18,23 +18,22 @@
 std::list<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
-Package* Package::loadPackage(const char *name, EmojicodeChar ns, SourcePosition errorPosition) {
+Package* Package::loadPackage(std::string name, EmojicodeString ns, SourcePosition errorPosition) {
     Package *package = findPackage(name);
     
     if (package) {
         if (!package->finishedLoading()) {
             throw CompilerErrorException(errorPosition,
-                                         "Circular dependency detected: %s tried to load a package which intiatiated %s’s own loading.",
-                                         name, name);
+                                         "Circular dependency detected: %s (loaded first) and %s depend on each other.",
+                                         this->name().c_str(), name.c_str());
         }
     }
     else {
-        char *path;
-        asprintf(&path, "%s/%s/header.emojic", packageDirectory, name);
-        
+        auto path = packageDirectory + "/" + name + "/header.emojic";
+
         package = new Package(name, errorPosition);
         
-        if (strcmp("s", name) != 0) {
+        if (name != "s") {
             package->loadPackage("s", globalNamespace, errorPosition);
         }
         package->parse(path);
@@ -44,13 +43,14 @@ Package* Package::loadPackage(const char *name, EmojicodeChar ns, SourcePosition
     return package;
 }
 
-void Package::parse(const char *path) {
+void Package::parse(std::string path) {
     packages_.emplace(name(), this);
     
     PackageParser(this, lex(path)).parse();
     
     if (!validVersion()) {
-        throw CompilerErrorException(SourcePosition(0, 0, path), "Package %s does not provide a valid version.", name());
+        throw CompilerErrorException(SourcePosition(0, 0, path), "Package %s does not provide a valid version.",
+                                     name().c_str());
     }
     
     packagesLoadingOrder_.push_back(this);
@@ -58,14 +58,18 @@ void Package::parse(const char *path) {
     finishedLoading_ = true;
 }
 
-Package* Package::findPackage(const char *name) {
+Package* Package::findPackage(const std::string &name) {
     auto it = packages_.find(name);
     return it != packages_.end() ? it->second : nullptr;
 }
 
-bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, SourcePosition ep, Type *type) {
-    if (ns == globalNamespace) {
-        switch (name) {
+bool Package::fetchRawType(ParsedTypeName ptn, Type *type) {
+    return fetchRawType(ptn.name, ptn.ns, ptn.optional, ptn.token.position(), type);
+}
+
+bool Package::fetchRawType(EmojicodeString name, EmojicodeString ns, bool optional, SourcePosition ep, Type *type) {
+    if (ns == globalNamespace && ns.size() == 1) {
+        switch (name.front()) {
             case E_MEDIUM_WHITE_CIRCLE:
                 if (optional) {
                     compilerWarning(ep, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
@@ -80,7 +84,8 @@ bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, 
         }
     }
     
-    std::array<EmojicodeChar, 2> key = {ns, name};
+    EmojicodeString key = EmojicodeString(ns);
+    key.append(name);
     auto it = types_.find(key);
     
     if (it != types_.end()) {
@@ -94,15 +99,16 @@ bool Package::fetchRawType(EmojicodeChar name, EmojicodeChar ns, bool optional, 
     }
 }
 
-void Package::exportType(Type t, EmojicodeChar name) {
+void Package::exportType(Type t, EmojicodeString name) {
     if (finishedLoading()) {
         throw std::logic_error("The package did already finish loading. No more types can be exported.");
     }
     exportedTypes_.push_back(ExportedType(t, name));
 }
 
-void Package::registerType(Type t, EmojicodeChar name, EmojicodeChar ns, bool exportFromPackage) {
-    std::array<EmojicodeChar, 2> key = {ns, name};
+void Package::registerType(Type t, EmojicodeString name, EmojicodeString ns, bool exportFromPackage) {
+    EmojicodeString key = EmojicodeString(ns);
+    key.append(name);
     types_.emplace(key, t);
     
     if (exportFromPackage) {
@@ -110,13 +116,12 @@ void Package::registerType(Type t, EmojicodeChar name, EmojicodeChar ns, bool ex
     }
 }
 
-void Package::loadInto(Package *destinationPackage, EmojicodeChar ns, const Token &errorToken) const {
+void Package::loadInto(Package *destinationPackage, EmojicodeString ns, const Token &errorToken) const {
     for (auto exported : exportedTypes_) {
         Type type = typeNothingness;
         if (destinationPackage->fetchRawType(exported.name, ns, false, errorToken, &type)) {
-            ecCharToCharStack(ns, nss);
-            ecCharToCharStack(exported.name, tname);
-            throw CompilerErrorException(errorToken, "Package %s could not be loaded into namespace %s of package %s: %s collides with a type of the same name in the same namespace.", name(), nss, destinationPackage->name(), tname);
+            throw CompilerErrorException(errorToken, "Package %s could not be loaded into namespace %s of package %s: %s collides with a type of the same name in the same namespace.", name().c_str(), ns.utf8().c_str(), destinationPackage->name().c_str(),
+                                         exported.name.utf8().c_str());
         }
         
         destinationPackage->registerType(exported.type, exported.name, ns, false);

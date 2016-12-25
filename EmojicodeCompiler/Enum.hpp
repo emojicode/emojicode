@@ -14,15 +14,15 @@
 
 class Enum : public TypeDefinition {
 public:
-    Enum(EmojicodeChar name, Package *package, SourcePosition position, const EmojicodeString &documentation)
+    Enum(EmojicodeString name, Package *package, SourcePosition position, const EmojicodeString &documentation)
         : TypeDefinition(name, package, position, documentation) {}
     
-    std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeChar c) const;
-    void addValueFor(EmojicodeChar c, SourcePosition position, EmojicodeString documentation);
+    std::pair<bool, EmojicodeInteger> getValueFor(EmojicodeString c) const;
+    void addValueFor(EmojicodeString c, SourcePosition position, EmojicodeString documentation);
     
-    const std::map<EmojicodeChar, std::pair<EmojicodeInteger, EmojicodeString>>& values() const { return map_; }
+    const std::map<EmojicodeString, std::pair<EmojicodeInteger, EmojicodeString>>& values() const { return map_; }
 private:
-    std::map<EmojicodeChar, std::pair<EmojicodeInteger, EmojicodeString>> map_;
+    std::map<EmojicodeString, std::pair<EmojicodeInteger, EmojicodeString>> map_;
     EmojicodeInteger valuesCounter = 0;
 };
 

@@ -28,7 +28,7 @@ private:
      */
     void reservedEmojis(const Token &token, const char *place) const;
     /** Parses a type name and validates that it is not already in use or an optional. */
-    const Token& parseAndValidateNewTypeName(EmojicodeChar *name, EmojicodeChar *ns);
+    ParsedTypeName parseAndValidateNewTypeName();
     /** Parses the definition list of generic arguments for a type. */
     void parseGenericArgumentList(TypeDefinitionFunctional *typeDef, TypeContext tc);
     
@@ -42,7 +42,7 @@ private:
     void parseValueType(const EmojicodeString &string, const Token &theToken, bool exported);
     
     /** Parses the body of a TypeDefinitionFunctional type. */
-    void parseTypeDefinitionBody(Type typed, std::set<EmojicodeChar> *requiredInitializers, bool allowNative);
+    void parseTypeDefinitionBody(Type typed, std::set<EmojicodeString> *requiredInitializers, bool allowNative);
 };
 
 template<EmojicodeChar attributeName>
@@ -58,8 +58,8 @@ public:
     bool set() const { return set_; }
     void disallow() const {
         if (set_) {
-            ecCharToCharStack(attributeName, es)
-            throw CompilerErrorException(position_, "Inapplicable attribute %s.", es);
+            throw CompilerErrorException(position_, "Inapplicable attribute %s.",
+                                         EmojicodeString(attributeName).utf8().c_str());
         }
     }
 private:
@@ -73,7 +73,7 @@ public:
         if (tokenStream->nextTokenIs(TokenType::DocumentationComment)) {
             auto &token = tokenStream->consumeToken(TokenType::DocumentationComment);
             position_ = token.position();
-            documentation_ = token.value;
+            documentation_ = token.value();
             found_ = true;
         }
         return *this;

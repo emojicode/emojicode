@@ -12,24 +12,29 @@
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 
-const Token& AbstractParser::parseTypeName(EmojicodeChar *typeName, EmojicodeChar *enamespace, bool *optional) {
+ParsedTypeName AbstractParser::parseTypeName() {
     if (stream_.nextTokenIs(TokenType::Variable)) {
         throw CompilerErrorException(stream_.consumeToken(TokenType::Variable), "Generic variables not allowed here.");
     }
     
-    *optional = stream_.nextTokenIs(E_CANDY) ? stream_.consumeToken(TokenType::Identifier), true : false;
+    bool optional = false;
+    if (stream_.nextTokenIs(E_CANDY)) {
+        stream_.consumeToken(TokenType::Identifier);
+        optional = true;
+    }
+
+    EmojicodeString enamespace;
 
     if (stream_.nextTokenIs(E_ORANGE_TRIANGLE)) {
         stream_.consumeToken();
-        *enamespace = stream_.consumeToken(TokenType::Identifier).value[0];
+        enamespace = stream_.consumeToken(TokenType::Identifier).value();
     }
     else {
-        *enamespace = globalNamespace;
+        enamespace = globalNamespace;
     }
-    
-    auto &className = stream_.consumeToken(TokenType::Identifier);
-    *typeName = className.value[0];
-    return className;
+
+    auto &typeName = stream_.consumeToken(TokenType::Identifier);
+    return ParsedTypeName(typeName.value(), enamespace, optional, typeName);
 }
 
 Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism, Type expectation,
@@ -64,7 +69,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
         
         if (ct.function()) {
-            auto it = ct.function()->genericArgumentVariables.find(variableToken.value);
+            auto it = ct.function()->genericArgumentVariables.find(variableToken.value());
             if (it != ct.function()->genericArgumentVariables.end()) {
                 Type type = it->second;
                 if (optional) type.setOptional();
@@ -73,12 +78,13 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         }
         if (ct.calleeType().canHaveGenericArguments()) {
             Type type = typeNothingness;
-            if (ct.calleeType().typeDefinitionFunctional()->fetchVariable(variableToken.value, optional, &type)) {
+            if (ct.calleeType().typeDefinitionFunctional()->fetchVariable(variableToken.value(), optional, &type)) {
                 return type;
             }
         }
         
-        throw CompilerErrorException(variableToken, "No such generic type variable \"%s\".", variableToken.value.utf8CString());
+        throw CompilerErrorException(variableToken, "No such generic type variable \"%s\".",
+                                     variableToken.value().utf8().c_str());
     }
     else if (stream_.nextTokenIs(E_DOG)) {
         auto &ratToken = stream_.consumeToken(TokenType::Identifier);
@@ -104,32 +110,29 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
             t.genericArguments[0] = parseTypeDeclarative(ct, dynamism);
         }
         
-        auto &token = stream_.consumeToken(TokenType::Identifier);
-        if (token.value[0] != E_WATERMELON) {
-            throw CompilerErrorException(token, "Expected 🍉.");
-        }
+        stream_.requireIdentifier(E_WATERMELON);
         
         return t;
     }
     else {
         if (dynamicType) *dynamicType = TypeDynamism::None;
-        EmojicodeChar typeName, typeNamespace;
-        bool optionalUseless;
-        auto &token = parseTypeName(&typeName, &typeNamespace, &optionalUseless);
-        
+        auto parsedType = parseTypeName();
+
+        parsedType.optional = optional;
+
         auto type = typeNothingness;
-        if (!package_->fetchRawType(typeName, typeNamespace, optional, token, &type)) {
-            ecCharToCharStack(typeName, nameString);
-            ecCharToCharStack(typeNamespace, namespaceString);
-            throw CompilerErrorException(token, "Could not find type %s in enamespace %s.", nameString, namespaceString);
+        if (!package_->fetchRawType(parsedType, &type)) {
+            throw CompilerErrorException(parsedType.token, "Could not find type %s in enamespace %s.",
+                                         parsedType.name.utf8().c_str(), parsedType.ns.utf8().c_str());
         }
         
-        parseGenericArgumentsForType(&type, ct, dynamism, token);
+        parseGenericArgumentsForType(&type, ct, dynamism, parsedType.token);
         
         if (!allowProtocolsUsingSelf && type.type() == TypeContent::Protocol && type.protocol()->usesSelf()) {
             auto typeStr = type.toString(ct, true);
-            throw CompilerErrorException(token, "Protocol %s can only be used as a generic constraint because it uses 🐓.",
-                          typeStr.c_str());
+            throw CompilerErrorException(parsedType.token,
+                                         "Protocol %s can only be used as a generic constraint because it uses 🐓.",
+                                         typeStr.c_str());
         }
         
         return type;
@@ -146,7 +149,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
         if (typeDef->numberOfOwnGenericArguments()) {
             int count = 0;
             while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
-                auto token = stream_.consumeToken(TokenType::Identifier);
+                auto &token = stream_.consumeToken(TokenType::Identifier);
                 
                 Type ta = parseTypeDeclarative(ct, dynamism, typeNothingness, nullptr);
                 
@@ -198,7 +201,7 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initial
             usedSelf = true;
         }
         if (argumentToVariable) {
-            static_cast<Initializer *>(c)->addArgumentToVariable(variableToken.value);
+            static_cast<Initializer *>(c)->addArgumentToVariable(variableToken.value());
         }
     }
     
@@ -234,10 +237,10 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext 
         Type rType = Type(TypeContent::LocalReference, false);
         rType.reference = p->genericArgumentVariables.size();
         
-        if (p->genericArgumentVariables.count(variable.value)) {
+        if (p->genericArgumentVariables.count(variable.value())) {
             throw CompilerErrorException(variable, "A generic argument variable with the same name is already in use.");
         }
-        p->genericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable.value, rType));
+        p->genericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable.value(), rType));
     }
 }
 
@@ -250,12 +253,7 @@ void AbstractParser::parseBody(Function *p, bool allowNative) {
         p->native = true;
     }
     else {
-        auto &token = stream_.consumeToken(TokenType::Identifier);
-        
-        if (token.value[0] != E_GRAPES) {
-            ecCharToCharStack(token.value[0], c);
-            throw CompilerErrorException(token, "Expected 🍇 but found %s instead.", c);
-        }
+        stream_.requireIdentifier(E_GRAPES);
         parseBody(p);
     }
 }
@@ -266,10 +264,10 @@ void AbstractParser::parseBody(Callable *p) {
     int depth = 0;
     while (true) {
         auto &token = stream_.consumeToken();
-        if (token.type() == TokenType::Identifier && token.value[0] == E_GRAPES) {
+        if (token.isIdentifier(E_GRAPES)) {
             depth++;
         }
-        else if (token.type() == TokenType::Identifier && token.value[0] == E_WATERMELON) {
+        else if (token.isIdentifier(E_WATERMELON)) {
             if (depth == 0) {
                 break;
             }

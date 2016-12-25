@@ -14,7 +14,7 @@
 class VariableNotFoundErrorException: public CompilerErrorException {
 public:
     VariableNotFoundErrorException(SourcePosition p, const EmojicodeString &name)
-        : CompilerErrorException(p, "Variable \"%s\" not defined.", name.utf8CString()) {};
+        : CompilerErrorException(p, "Variable \"%s\" not defined.", name.utf8().c_str()) {};
 };
 
 #endif /* VariableNotFoundErrorException_hpp */

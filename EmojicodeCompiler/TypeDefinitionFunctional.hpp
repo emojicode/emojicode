@@ -60,11 +60,11 @@ public:
     Function* getClassMethod(const Token &token, Type type, TypeContext typeContext);
     
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupMethod(EmojicodeChar name);
+    virtual Function* lookupMethod(EmojicodeString name);
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    virtual Initializer* lookupInitializer(EmojicodeChar name);
+    virtual Initializer* lookupInitializer(EmojicodeString name);
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupClassMethod(EmojicodeChar name);
+    virtual Function* lookupClassMethod(EmojicodeString name);
     
     virtual void addMethod(Function *method);
     virtual void addInitializer(Initializer *method);
@@ -74,12 +74,12 @@ public:
     const std::vector<Initializer *>& initializerList() const { return initializerList_; }
     const std::vector<Function *>& classMethodList() const { return classMethodList_; }
 protected:
-    TypeDefinitionFunctional(EmojicodeChar name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
+    TypeDefinitionFunctional(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
         : TypeDefinition(name, p, pos, documentation) {}
     
-    std::map<EmojicodeChar, Function *> methods_;
-    std::map<EmojicodeChar, Function *> classMethods_;
-    std::map<EmojicodeChar, Initializer *> initializers_;
+    std::map<EmojicodeString, Function *> methods_;
+    std::map<EmojicodeString, Function *> classMethods_;
+    std::map<EmojicodeString, Initializer *> initializers_;
     
     std::vector<Function *> methodList_;
     std::vector<Initializer *> initializerList_;

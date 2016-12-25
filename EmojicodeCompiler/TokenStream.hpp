@@ -12,7 +12,7 @@
 #include "Token.hpp"
 
 class TokenStream {
-    friend TokenStream lex(const char *);
+    friend TokenStream lex(std::string);
 public:
     TokenStream() : currentToken_(nullptr) {};
     /**
@@ -31,6 +31,10 @@ public:
      * match the given character.
      */
     bool nextTokenIsEverythingBut(EmojicodeChar c) const;
+
+    /// Consumes the next toekn and throws an CompilerErrorException if this token isn’t an indentifier whose
+    /// value is @c ch.
+    const Token& requireIdentifier(EmojicodeChar ch);
 private:
     TokenStream(Token *beginToken) : currentToken_(beginToken) {};
     const Token* currentToken_;

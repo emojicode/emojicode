@@ -23,15 +23,14 @@ std::queue<Function*> Function::compilationQueue;
 
 //MARK: Function
 
-void Function::checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeChar name, SourcePosition position,
+void Function::checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeString name, SourcePosition position,
                                    const char *on, Type contextType) {
     if (!returnThis.compatibleTo(returnSuper, contextType)) {
-        // The return type may be defined more precisely
-        ecCharToCharStack(name, mn);
         auto supername = returnSuper.toString(contextType, true);
         auto thisname = returnThis.toString(contextType, true);
-        throw CompilerErrorException(position, "Return type %s of %s is not compatible with the return type %s of its %s.",
-                      thisname.c_str(), mn, supername.c_str(), on);
+        throw CompilerErrorException(position,
+                                     "Return type %s of %s is not compatible with the return type %s of its %s.",
+                                     thisname.c_str(), name.utf8().c_str(), supername.c_str(), on);
     }
 }
 
@@ -47,24 +46,22 @@ void Function::checkArgument(Type thisArgument, Type superArgument, int index, S
     }
 }
 
-void Function::checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeChar name, SourcePosition position,
+void Function::checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeString name, SourcePosition position,
                                    const char *on, Type contextType) {
     if (superCount != thisCount) {
-        ecCharToCharStack(name, mn);
-        throw CompilerErrorException(position, "%s expects %s arguments than its %s.", mn,
-                      (superCount < thisCount) ? "more" : "less", on);
+        throw CompilerErrorException(position, "%s expects %s arguments than its %s.", name.utf8().c_str(),
+                                     superCount < thisCount ? "more" : "less", on);
     }
 }
 
 void Function::checkPromises(Function *superFunction, const char *on, Type contextType) {
     try {
         if (superFunction->final()) {
-            ecCharToCharStack(this->name(), mn);
-            throw CompilerErrorException(this->position(), "%s of %s was marked 🔏.", on, mn);
+            throw CompilerErrorException(this->position(), "%s of %s was marked 🔏.", on, name().utf8().c_str());
         }
         if (this->accessLevel() != superFunction->accessLevel()) {
-            ecCharToCharStack(this->name(), mn);
-            throw CompilerErrorException(this->position(), "The access level of %s and its %s don’t match.", mn, on);
+            throw CompilerErrorException(this->position(), "The access level of %s and its %s don’t match.",
+                                         name().utf8().c_str(), on);
         }
         checkReturnPromise(this->returnType, superFunction->returnType, this->name(), this->position(), on, contextType);
         checkArgumentCount(this->arguments.size(), superFunction->arguments.size(), this->name(),
@@ -83,31 +80,27 @@ void Function::checkPromises(Function *superFunction, const char *on, Type conte
 bool Function::checkOverride(Function *superFunction) {
     if (overriding()) {
         if (!superFunction || superFunction->accessLevel() == AccessLevel::Private) {
-            ecCharToCharStack(name(), mn);
-            throw CompilerErrorException(position(), "%s was declared ✒️ but does not override anything.", mn);
+            throw CompilerErrorException(position(), "%s was declared ✒️ but does not override anything.",
+                                         name().utf8().c_str());
         }
         return true;
     }
     
     if (superFunction && superFunction->accessLevel() != AccessLevel::Private) {
-        ecCharToCharStack(name(), mn);
-        throw CompilerErrorException(position(), "If you want to override %s add ✒️.", mn);
+        throw CompilerErrorException(position(), "If you want to override %s add ✒️.", name().utf8().c_str());
     }
     return false;
 }
 
 void Function::deprecatedWarning(const Token &callToken) {
     if (deprecated()) {
-        ecCharToCharStack(name(), mn);
         if (documentation().size() > 0) {
-            char *documentationString = documentation().utf8CString();
             compilerWarning(callToken,
                             "%s is deprecated. Please refer to the documentation for further information:\n%s",
-                            mn, documentationString);
-            delete [] documentationString;
+                            name().utf8().c_str(), documentation().utf8().c_str());
         }
         else {
-            compilerWarning(callToken, "%s is deprecated.", mn);
+            compilerWarning(callToken, "%s is deprecated.", name().utf8().c_str());
         }
     }
 }

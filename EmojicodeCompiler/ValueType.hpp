@@ -17,7 +17,7 @@ class ValueType : public TypeDefinitionFunctional {
 public:
     static const std::vector<ValueType *>& valueTypes() { return valueType_; }
     
-    ValueType(EmojicodeChar name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
+    ValueType(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
         : TypeDefinitionFunctional(name, p, pos, documentation) {
             valueType_.push_back(this);
     }

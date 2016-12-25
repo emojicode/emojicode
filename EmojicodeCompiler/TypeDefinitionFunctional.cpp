@@ -18,10 +18,10 @@ void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Typ
     
     Type referenceType = Type(TypeContent::Reference, false, ownGenericArgumentCount_, this);
     
-    if (ownGenericArgumentVariables_.count(variableName.value)) {
+    if (ownGenericArgumentVariables_.count(variableName.value())) {
         throw CompilerErrorException(variableName, "A generic argument variable with the same name is already in use.");
     }
-    ownGenericArgumentVariables_.insert(std::map<EmojicodeString, Type>::value_type(variableName.value, referenceType));
+    ownGenericArgumentVariables_.emplace(variableName.value(), referenceType);
     ownGenericArgumentCount_++;
 }
 
@@ -55,7 +55,7 @@ bool TypeDefinitionFunctional::fetchVariable(EmojicodeString name, bool optional
     return false;
 }
 
-Initializer* TypeDefinitionFunctional::lookupInitializer(EmojicodeChar name) {
+Initializer* TypeDefinitionFunctional::lookupInitializer(EmojicodeString name) {
     auto pos = initializers_.find(name);
     if (pos != initializers_.end()) {
         return pos->second;
@@ -63,7 +63,7 @@ Initializer* TypeDefinitionFunctional::lookupInitializer(EmojicodeChar name) {
     return nullptr;
 }
 
-Function* TypeDefinitionFunctional::lookupMethod(EmojicodeChar name) {
+Function* TypeDefinitionFunctional::lookupMethod(EmojicodeString name) {
     auto pos = methods_.find(name);
     if (pos != methods_.end()) {
         return pos->second;
@@ -71,7 +71,7 @@ Function* TypeDefinitionFunctional::lookupMethod(EmojicodeChar name) {
     return nullptr;
 }
 
-Function* TypeDefinitionFunctional::lookupClassMethod(EmojicodeChar name) {
+Function* TypeDefinitionFunctional::lookupClassMethod(EmojicodeString name) {
     auto pos = classMethods_.find(name);
     if (pos != classMethods_.end()) {
         return pos->second;
@@ -80,31 +80,29 @@ Function* TypeDefinitionFunctional::lookupClassMethod(EmojicodeChar name) {
 }
 
 Initializer* TypeDefinitionFunctional::getInitializer(const Token &token, Type type, TypeContext typeContext) {
-    auto initializer = lookupInitializer(token.value[0]);
+    auto initializer = lookupInitializer(token.value());
     if (initializer == nullptr) {
         auto typeString = type.toString(typeContext, true);
-        ecCharToCharStack(token.value[0], initializerString);
-        throw CompilerErrorException(token, "%s has no initializer %s.", typeString.c_str(), initializerString);
+        throw CompilerErrorException(token, "%s has no initializer %s.", typeString.c_str(),
+                                     token.value().utf8().c_str());
     }
     return initializer;
 }
 
 Function* TypeDefinitionFunctional::getMethod(const Token &token, Type type, TypeContext typeContext) {
-    auto method = lookupMethod(token.value[0]);
+    auto method = lookupMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        ecCharToCharStack(token.value[0], method);
-        throw CompilerErrorException(token, "%s has no method %s", eclass.c_str(), method);
+        throw CompilerErrorException(token, "%s has no method %s", eclass.c_str(), token.value().utf8().c_str());
     }
     return method;
 }
 
 Function* TypeDefinitionFunctional::getClassMethod(const Token &token, Type type, TypeContext typeContext) {
-    auto method = lookupClassMethod(token.value[0]);
+    auto method = lookupClassMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        ecCharToCharStack(token.value[0], method);
-        throw CompilerErrorException(token, "%s has no class method %s", eclass.c_str(), method);
+        throw CompilerErrorException(token, "%s has no class method %s", eclass.c_str(), token.value().utf8().c_str());
     }
     return method;
 }

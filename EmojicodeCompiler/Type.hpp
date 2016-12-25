@@ -9,11 +9,12 @@
 #ifndef Type_hpp
 #define Type_hpp
 
-/** The Emoji representing the standard ("global") enamespace. */
-#define globalNamespace E_LARGE_RED_CIRCLE
-
 #include <vector>
 #include <string>
+#include "EmojicodeCompiler.hpp"
+
+/** The Emoji representing the standard ("global") enamespace. */
+const EmojicodeString globalNamespace = EmojicodeString(E_LARGE_RED_CIRCLE);
 
 class TypeDefinition;
 class Enum;
@@ -115,7 +116,7 @@ public:
     Type resolveOnSuperArgumentsAndConstraints(TypeContext ct, bool resolveSelf = true) const;
     
     /** Returns the name of the package to which this type belongs. */
-    const char* typePackage();
+    std::string typePackage();
     /**
      * Returns a depp string representation of the given type.
      * @param contextType The contextType. Can be Nothingeness if the type is not in a context.

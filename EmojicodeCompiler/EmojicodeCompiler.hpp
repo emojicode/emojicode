@@ -29,9 +29,13 @@ class ValueType;
 
 struct SourcePosition;
 
+extern std::string packageDirectory;
+
 class EmojicodeString: public std::basic_string<EmojicodeChar>  {
 public:
-    char* utf8CString() const;
+    EmojicodeString() : basic_string() {}
+    explicit EmojicodeString(EmojicodeChar ch) : basic_string(1, ch) {}
+    std::string utf8() const;
 };
 
 extern Class *CL_STRING;
