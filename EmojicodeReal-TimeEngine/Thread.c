@@ -17,7 +17,6 @@ Thread* allocateThread() {
 #define stackSize (sizeof(StackFrame) + 4 * sizeof(Something)) * 10000 //ca. 400 KB
     Thread *thread = malloc(sizeof(Thread));
     thread->stackLimit = malloc(stackSize);
-    thread->returned = false;
     if (!thread->stackLimit) {
         error("Could not allocate stack!");
     }

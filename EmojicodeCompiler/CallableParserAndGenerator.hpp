@@ -45,7 +45,7 @@ public:
                                TypeContext typeContext, CallableWriter &writer, CallableScoper &scoper);
     
     /** Performs the analyziation. */
-    void analyze(bool compileDeadCode = false);
+    void analyze();
     /** Whether self was used in the callable body. */
     bool usedSelfInBody() const { return usedSelf; }
 private:
@@ -107,7 +107,10 @@ private:
      * @param instance The command to access the variable it it is an instance variable.
      */
     void writeCoinForStackOrInstance(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin instance, SourcePosition p);
-    
+
+    void parseCoinInBlock();
+    void copyVariableContent(const Variable &variable, bool inObjectScope, SourcePosition p);
+
     void noReturnError(SourcePosition p);
     void noEffectWarning(const Token &warningToken);
     bool typeIsEnumerable(Type type, Type *elementType);

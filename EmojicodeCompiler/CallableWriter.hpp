@@ -36,6 +36,16 @@ private:
     size_t count_;
 };
 
+class CallableWriterInsertionPoint {
+    friend CallableWriter;
+public:
+    virtual void insert(EmojicodeCoin value);
+private:
+    CallableWriterInsertionPoint(CallableWriter *writer, size_t index) : writer_(writer), index_(index) {}
+    CallableWriter *writer_;
+    size_t index_;
+};
+
 /** 
  * The callable writer is responsible for storing the bytecode generated for a callable. It is normally used in
  * conjunction with a @c CallableParserAndGenerator instance.
@@ -43,6 +53,7 @@ private:
 class CallableWriter {
     friend CallableWriterPlaceholder;
     friend Writer;
+    friend CallableWriterInsertionPoint;
 public:
     /** Writes a coin with the given value. */
     virtual void writeCoin(EmojicodeCoin value, SourcePosition p);
@@ -52,6 +63,8 @@ public:
     virtual CallableWriterPlaceholder writeCoinPlaceholder(SourcePosition p);
     
     virtual CallableWriterCoinsCountPlaceholder writeCoinsCountPlaceholderCoin(SourcePosition p);
+
+    virtual CallableWriterInsertionPoint getInsertionPoint();
     
     /** Must be used to write any double to the file. */
     virtual void writeDoubleCoin(double val, SourcePosition p);

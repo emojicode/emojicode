@@ -34,8 +34,10 @@ void stackPushReservedFrame(Thread *thread){
 void stackPush(Something this, int frameSize, uint8_t argCount, Thread *thread) {
     Something *t = stackReserveFrame(this, frameSize, thread);
     
-    for (int i = 0; i < argCount; i++) {
-        produce(consumeCoin(thread), thread, t + i);
+    for (int i = 0, index = 0; i < argCount; i++) {
+        EmojicodeCoin copySize = consumeCoin(thread);
+        produce(consumeCoin(thread), thread, t + index);
+        index += copySize;
     }
     
     stackPushReservedFrame(thread);
@@ -57,11 +59,11 @@ void restoreStackState(StackState s, Thread *thread) {
 }
 
 Something stackGetVariable(uint8_t index, Thread *thread){
-    return *(Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
+    return *stackVariableDestination(index, thread);
 }
 
-void stackSetVariable(uint8_t index, Something value, Thread *thread){
-    *(Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index) = value;
+Something* stackVariableDestination(uint8_t index, Thread *thread){
+    return (Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
 }
 
 Object* stackGetThisObject(Thread *thread){
@@ -78,7 +80,7 @@ Class* stackGetThisObjectClass(Thread *thread){
 
 void stackMark(Thread *thread){
     for (StackFrame *stackFrame = (StackFrame *)thread->futureStack; (Byte *)stackFrame < thread->stackBottom; stackFrame = stackFrame->returnFutureStack) {
-        for (uint8_t i = 0; i < stackFrame->variableCount; i++) {
+        for (uint8_t i = 0; i < stackFrame->size; i++) {
             Something *s = (Something *)(((Byte *)stackFrame) + sizeof(StackFrame) + sizeof(Something) * i);
             if (isRealObject(*s)) {
                 mark(&s->object);

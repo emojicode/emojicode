@@ -62,10 +62,7 @@ public:
     virtual Function* lookupTypeMethod(EmojicodeString name) override;
     
     virtual void finalize() override;
-    
-    /** Returns the number of instance variables including those inherited from the superclass.
-        @warning @c finalize() must be called before a call to this method. */
-    size_t fullInstanceVariableCount() const { return nextInstanceVariableID_; }
+
     /** Returns the number of initializers including those inherited from the superclass.
         @warning @c finalize() must be called before a call to this method. */
     size_t fullInitializerCount() const { return initializerVtiProvider_.peekNext(); }
@@ -88,8 +85,6 @@ private:
     ClassVTIProvider initializerVtiProvider_;
 
     Class *superclass_ = nullptr;
-    
-    size_t nextInstanceVariableID_ = 0;
     
     virtual void handleRequiredInitializer(Initializer *init) override;
 };

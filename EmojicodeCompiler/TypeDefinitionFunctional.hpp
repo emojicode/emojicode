@@ -106,6 +106,8 @@ protected:
     std::vector<Function *> methodList_;
     std::vector<Initializer *> initializerList_;
     std::vector<Function *> typeMethodList_;
+
+    ScoperWithScope scoper_;
     
     virtual void handleRequiredInitializer(Initializer *init);
 private:
@@ -121,8 +123,6 @@ private:
     std::map<EmojicodeString, Type> ownGenericArgumentVariables_;
     
     std::vector<InstanceVariableDeclaration> instanceVariables_;
-    
-    ScoperWithScope scoper_;
 };
 
 

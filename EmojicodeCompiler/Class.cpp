@@ -89,6 +89,10 @@ void Class::handleRequiredInitializer(Initializer *init) {
 }
 
 void Class::finalize() {
+    if (superclass()) {
+        scoper_ = superclass()->scoper_;
+    }
+
     TypeDefinitionFunctional::finalize();
     
     if (instanceVariables().size() == 0 && initializerList().size() == 0) {
@@ -155,7 +159,6 @@ void Class::finalize() {
         initializerVtiProvider_.offsetVti(inheritsInitializers() ? superclass()->initializerVtiProvider_.peekNext() :
                                           static_cast<int>(requiredInitializers().size()));
         methodVtiProvider_.offsetVti(superclass()->methodVtiProvider_.peekNext());
-        nextInstanceVariableID_ = superclass()->nextInstanceVariableID_;
     }
     
     for (Type protocol : protocols()) {

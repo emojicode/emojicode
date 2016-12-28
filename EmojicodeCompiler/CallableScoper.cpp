@@ -26,6 +26,10 @@ Scope& CallableScoper::pushScope() {
     return scopes_.front();
 }
 
+Scope& CallableScoper::topmostLocalScope() {
+    return scopes_.back();
+}
+
 std::pair<Variable&, bool> CallableScoper::getVariable(const EmojicodeString &name, SourcePosition errorPosition) {
     for (Scope &scope : scopes_) {
         if (scope.hasLocalVariable(name)) {
@@ -37,25 +41,3 @@ std::pair<Variable&, bool> CallableScoper::getVariable(const EmojicodeString &na
     }
     throw VariableNotFoundErrorException(errorPosition, name);
 }
-
-
-//
-//std::pair<CallableScoper, int> CallableScoper::flattenedCopy(int argumentCount) const {
-//    int variableCount = 0;
-//    CallableScoper scoper = CallableScoper(objectScope());
-//    Scope &flattenedScope = scoper.pushScope();
-//    
-//    scoper.nextVariableID_ += argumentCount;
-//    for (auto &scope : scopes_) {
-//        for (auto &it : scope.map_) {
-//            auto variable = Variable(it.second.type, argumentCount + it.second.id(),
-//                                     it.second.initialized, true, it.second.definitionToken);
-//            flattenedScope.setLocalVariable(it.first, variable);
-//        }
-//        scoper.nextVariableID_ += scope.map_.size();
-//        variableCount += scope.map_.size();
-//    }
-//    scoper.syncSize();
-//    
-//    return std::pair<CallableScoper, int>(scoper, variableCount);
-//}

@@ -21,6 +21,8 @@ public:
     void addValueFor(EmojicodeString c, SourcePosition position, EmojicodeString documentation);
     
     const std::map<EmojicodeString, std::pair<EmojicodeInteger, EmojicodeString>>& values() const { return map_; }
+
+    virtual int size() const override { return 1; }
 private:
     std::map<EmojicodeString, std::pair<EmojicodeInteger, EmojicodeString>> map_;
     EmojicodeInteger valuesCounter = 0;

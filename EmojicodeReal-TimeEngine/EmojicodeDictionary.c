@@ -292,8 +292,8 @@ Something dictionaryKeys(Object *dicto, Thread *thread) {
     
     {
         Object *listObject = newObject(CL_LIST);
-        stackSetVariable(0, somethingObject(listObject), thread);
-        
+        *stackVariableDestination(0, thread) = somethingObject(listObject);
+
         dicto = stackGetThisObject(thread);
         EmojicodeDictionary *dict = dicto->value;
         
@@ -310,8 +310,8 @@ Something dictionaryKeys(Object *dicto, Thread *thread) {
         Object **bucko = (Object **)dict->buckets->value;
         Object *nodeo = bucko[i];
         while (nodeo) {
-            stackSetVariable(1, somethingObject(nodeo), thread);
-            
+            *stackVariableDestination(1, thread) = somethingObject(nodeo);
+
             listAppend(stackGetVariable(0, thread).object, somethingObject(((EmojicodeDictionaryNode *) nodeo->value)->key), thread);
 
             nodeo = ((EmojicodeDictionaryNode *) stackGetVariable(1, thread).object->value)->next;
@@ -361,42 +361,40 @@ void dictionarySet(Object *dicto, Object *key, Something value, Thread *thread){
 
 //MARK: Bridges
 
-static Something bridgeDictionarySet(Thread *thread) {
+static void bridgeDictionarySet(Thread *thread, Something *destination) {
     dictionarySet(stackGetThisObject(thread), stackGetVariable(0, thread).object, stackGetVariable(1, thread), thread);
-    return NOTHINGNESS;
 }
 
-static Something bridgeDictionaryGet(Thread *thread) {
+static void bridgeDictionaryGet(Thread *thread, Something *destination) {
     Object *key = stackGetVariable(0, thread).object;
     EmojicodeDictionaryNode *node = dictionaryGetNode(stackGetThisObject(thread)->value, dictionaryHash(stackGetThisObject(thread)->value, key), key);
-    if(node == NULL){
-        return NOTHINGNESS;
+    if (node == NULL) {
+        *destination = NOTHINGNESS;
     }
     else {
-        return node->value;
+        *destination = node->value;
     }
 }
 
-static Something bridgeDictionaryRemove(Thread *thread) {
+static void bridgeDictionaryRemove(Thread *thread, Something *destination) {
     dictionaryRemove(stackGetThisObject(thread)->value, stackGetVariable(0, thread).object, thread);
-    return NOTHINGNESS;
 }
 
-static Something bridgeDictionaryKeys(Thread *thread) {
-    return dictionaryKeys(stackGetThisObject(thread), thread);
+static void bridgeDictionaryKeys(Thread *thread, Something *destination) {
+    *destination = dictionaryKeys(stackGetThisObject(thread), thread);
 }
 
-static Something bridgeDictionaryClear(Thread *thread) {
-    return somethingInteger(dictionaryClear(stackGetThisObject(thread)->value));
+static void bridgeDictionaryClear(Thread *thread, Something *destination) {
+    *destination = somethingInteger(dictionaryClear(stackGetThisObject(thread)->value));
 }
 
-static Something bridgeDictionaryContains(Thread *thread) {
+static void bridgeDictionaryContains(Thread *thread, Something *destination) {
     Object *key = stackGetVariable(0, thread).object;
-    return somethingBoolean(dictionaryContains(stackGetThisObject(thread)->value, key));
+    *destination = somethingBoolean(dictionaryContains(stackGetThisObject(thread)->value, key));
 }
 
-static Something bridgeDictionarySize(Thread *thread) {
-    return somethingInteger(((EmojicodeDictionary *) stackGetThisObject(thread)->value)->size);
+static void bridgeDictionarySize(Thread *thread, Something *destination) {
+    *destination = somethingInteger(((EmojicodeDictionary *) stackGetThisObject(thread)->value)->size);
 }
 
 void bridgeDictionaryInit(Thread *thread) {

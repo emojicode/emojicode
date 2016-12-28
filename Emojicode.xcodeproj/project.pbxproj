@@ -36,6 +36,7 @@
 		E4BB24CC1CD0F979003CC098 /* TypeDefinitionFunctional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CA1CD0F979003CC098 /* TypeDefinitionFunctional.cpp */; };
 		E4BB24D11CD0FC90003CC098 /* Protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24CF1CD0FC90003CC098 /* Protocol.cpp */; };
 		E4BB24D41CD0FF6C003CC098 /* Enum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BB24D21CD0FF6C003CC098 /* Enum.cpp */; };
+		E4BFB8DC1E12D8FB0037152E /* CapturingCallableScoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BFB8DA1E12D8FB0037152E /* CapturingCallableScoper.cpp */; };
 		E4C18C5B1DDA1FCF00B4B5D5 /* Scoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C18C591DDA1FCF00B4B5D5 /* Scoper.cpp */; };
 		E4C18C5E1DDA34AF00B4B5D5 /* ScoperWithScope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */; };
 		E4CE6FCF1D9C011200F32071 /* Callable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4CE6FCD1D9C011200F32071 /* Callable.cpp */; };
@@ -142,6 +143,8 @@
 		E4BB24D01CD0FC90003CC098 /* Protocol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Protocol.hpp; sourceTree = "<group>"; };
 		E4BB24D21CD0FF6C003CC098 /* Enum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Enum.cpp; sourceTree = "<group>"; };
 		E4BB24D31CD0FF6C003CC098 /* Enum.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Enum.hpp; sourceTree = "<group>"; };
+		E4BFB8DA1E12D8FB0037152E /* CapturingCallableScoper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CapturingCallableScoper.cpp; sourceTree = "<group>"; };
+		E4BFB8DB1E12D8FB0037152E /* CapturingCallableScoper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CapturingCallableScoper.hpp; sourceTree = "<group>"; };
 		E4C18C591DDA1FCF00B4B5D5 /* Scoper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scoper.cpp; sourceTree = "<group>"; };
 		E4C18C5A1DDA1FCF00B4B5D5 /* Scoper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scoper.hpp; sourceTree = "<group>"; };
 		E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScoperWithScope.cpp; sourceTree = "<group>"; };
@@ -229,6 +232,8 @@
 				E4C18C591DDA1FCF00B4B5D5 /* Scoper.cpp */,
 				E407041B1CDE048A0075FBFE /* CallableScoper.hpp */,
 				E407041A1CDE048A0075FBFE /* CallableScoper.cpp */,
+				E4BFB8DB1E12D8FB0037152E /* CapturingCallableScoper.hpp */,
+				E4BFB8DA1E12D8FB0037152E /* CapturingCallableScoper.cpp */,
 				E46B2F7B1CD7A32B00447D91 /* Scope.hpp */,
 				E46B2F7A1CD7A32B00447D91 /* Scope.cpp */,
 				E46B2F7E1CD7A5A000447D91 /* Variable.hpp */,
@@ -485,6 +490,7 @@
 				E4E95F601C89CED20072ECEB /* utf8.c in Sources */,
 				E46B3F8A1D90411100969E53 /* CodeGenerator.cpp in Sources */,
 				E46B2F7C1CD7A32B00447D91 /* Scope.cpp in Sources */,
+				E4BFB8DC1E12D8FB0037152E /* CapturingCallableScoper.cpp in Sources */,
 				E48228D41DBD0C5500216039 /* DiscardingCallableWriter.cpp in Sources */,
 				E4EB4A871AA315ED00FF4CED /* Writer.cpp in Sources */,
 				E45FA2F61AA0D24200F032A8 /* main.cpp in Sources */,

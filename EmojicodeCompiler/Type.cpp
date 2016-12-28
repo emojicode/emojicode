@@ -296,7 +296,6 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
 int Type::size() const {
     switch (type()) {
         case TypeContent::ValueType:
-        case TypeContent::Protocol:
         case TypeContent::Enum:
             return typeDefinition()->size();
         case TypeContent::Nothingness:
@@ -307,6 +306,7 @@ int Type::size() const {
         case TypeContent::Callable:
         case TypeContent::Self:
         case TypeContent::Class:
+        case TypeContent::Protocol:
             return 1;
     }
 }

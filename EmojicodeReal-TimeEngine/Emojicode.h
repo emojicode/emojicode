@@ -158,12 +158,18 @@ typedef struct {
 } CapturedFunctionCall;
 
 typedef struct {
+    int size;
+    int destination;
+} CaptureInformation;
+
+typedef struct {
     EmojicodeCoin *tokenStream;
     uint32_t coinCount;
     uint8_t argumentCount;
-    uint8_t capturedVariablesCount;
     uint8_t variableCount;
+    int captureCount;
     Object *capturedVariables;
+    Object *capturesInformation;
     Something thisContext;
 } Closure;
 
@@ -173,7 +179,6 @@ EmojicodeCoin consumeCoin(Thread *thread);
 
 /** Parse a token */
 void produce(EmojicodeCoin coin, Thread *thread, Something *destination);
-Something evaluateExpression(EmojicodeCoin coin, Thread *thread);
 
 /** Throw a runtime error */
 _Noreturn void error(char *err, ...);

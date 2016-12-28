@@ -24,7 +24,7 @@ public:
     /** The variable is initialized if this field is greater than 0. */
     int initialized;
     /** The name of this variable. */
-    const EmojicodeString string_;
+    EmojicodeString string_;
     /** The position at which is variable was defined */
     SourcePosition position() const { return position_; }
     

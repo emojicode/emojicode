@@ -61,6 +61,7 @@ typedef struct Object {
 #define T_SYMBOL 3
 #define T_DOUBLE 4
 #define T_CLASS 5
+#define T_SOMETHING_POINTER 6
 
 typedef uint_fast8_t Type;
 typedef unsigned char Byte;
@@ -226,8 +227,9 @@ extern void stackPop(Thread *thread);
 
 /** Get the variable at the given index. */
 Something stackGetVariable(uint8_t index, Thread *thread);
-/** Set the variable at the given index. */
-void stackSetVariable(uint8_t index, Something value, Thread *thread);
+/** Gets the stack address for the given index. */
+Something* stackVariableDestination(uint8_t index, Thread *thread);
+#pragma GCC poison stackSetVariable
 /** Decrements the variable at the given index. */
 void stackDecrementVariable(uint8_t index, Thread *thread);
 /** Increments the variable at the given index. */
@@ -250,7 +252,7 @@ __attribute__((deprecated)) Class* stackGetThisObjectClass(Thread *thread);
 
 //MARK: Packages
 
-typedef Something (*FunctionFunctionPointer)(Thread *thread);
+typedef void (*FunctionFunctionPointer)(Thread *thread, Something *destination);
 typedef void (*InitializerFunctionFunctionPointer)(Thread *thread);
 typedef void (*Marker)(Object *self);
 typedef void (*Deinitializer)(void *value);

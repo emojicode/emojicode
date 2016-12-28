@@ -28,7 +28,7 @@ public:
     bool usesSelf() const { return usesSelf_; }
     void setUsesSelf() { usesSelf_ = true; }
     
-    virtual int size() const override { return 0; }
+    virtual int size() const override { return 1; }
 private:
     static uint_fast16_t nextIndex;
 

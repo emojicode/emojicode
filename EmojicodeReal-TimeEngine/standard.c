@@ -40,40 +40,41 @@ void objectNewBridge(Thread *thread){}
 
 //MARK: System
 
-static Something systemExit(Thread *thread){
+static void systemExit(Thread *thread, Something *destination) {
     EmojicodeInteger state = unwrapInteger(stackGetVariable(0, thread));
     exit((int)state);
-    return NOTHINGNESS;
 }
 
-static Something systemGetEnv(Thread *thread){
+static void systemGetEnv(Thread *thread, Something *destination) {
     char* variableName = stringToChar(stackGetVariable(0, thread).object->value);
     char* env = getenv(variableName);
     
-    if(!env)
-        return NOTHINGNESS;
+    if (!env) {
+        *destination = NOTHINGNESS;
+        return;
+    }
     
     free(variableName);
-    return somethingObject(stringFromChar(env));
+    *destination = somethingObject(stringFromChar(env));
 }
 
-static Something systemCWD(Thread *thread){
+static void systemCWD(Thread *thread, Something *destination) {
     char path[1050];
     getcwd(path, sizeof(path));
     
-    return somethingObject(stringFromChar(path));
+    *destination = somethingObject(stringFromChar(path));
 }
 
-static Something systemTime(Thread *thread) {
-    return somethingInteger(time(NULL));
+static void systemTime(Thread *thread, Something *destination) {
+    *destination = somethingInteger(time(NULL));
 }
 
-static Something systemArgs(Thread *thread) {
+static void systemArgs(Thread *thread, Something *destination) {
     stackPush(NOTHINGNESS, 1, 0, thread);
     
     Object *listObject = newObject(CL_LIST);
-    stackSetVariable(0, somethingObject(listObject), thread);
-    
+    *stackVariableDestination(0, thread) = somethingObject(listObject);
+
     List *newList = listObject->value;
     newList->capacity = cliArgumentCount;
     Object *items = newArray(sizeof(Something) * cliArgumentCount);
@@ -87,16 +88,17 @@ static Something systemArgs(Thread *thread) {
     }
     
     stackPop(thread);
-    return somethingObject(listObject);
+    *destination = somethingObject(listObject);
 }
 
-static Something systemSystem(Thread *thread) {
+static void systemSystem(Thread *thread, Something *destination) {
     char *command = stringToChar(stackGetVariable(0, thread).object->value);
     FILE *f = popen(command, "r");
     free(command);
     
     if (!f) {
-        return NOTHINGNESS;
+        *destination = NOTHINGNESS;
+        return;
     }
     
     size_t bufferUsedSize = 0;
@@ -117,7 +119,7 @@ static Something systemSystem(Thread *thread) {
     EmojicodeInteger len = u8_strlen_l(buffer->value, bufferUsedSize);
     
     Object *so = newObject(CL_STRING);
-    stackSetVariable(0, somethingObject(so), thread);
+    *stackVariableDestination(0, thread) = somethingObject(so);
     String *string = so->value;
     string->length = len;
     
@@ -127,7 +129,7 @@ static Something systemSystem(Thread *thread) {
     
     u8_toucs(characters(string), len, buffer->value, bufferUsedSize);
     
-    return stackGetVariable(0, thread);
+    *destination = stackGetVariable(0, thread);
 }
 
 //MARK: Threads
@@ -136,26 +138,23 @@ void* threadStarter(void *threadv) {
     Thread *thread = threadv;
     Object *callable = stackGetThisObject(thread);
     stackPop(thread);
-    executeCallableExtern(callable, NULL, thread);
+    executeCallableExtern(callable, NULL, thread, NULL);
     removeThread(thread);
     return NULL;
 }
 
-static Something threadJoin(Thread *thread) {
+static void threadJoin(Thread *thread, Something *destination) {
     allowGC();
-    bool l = pthread_join(*(pthread_t *)((Object *)stackGetThisObject(thread))->value, NULL) == 0;
+    pthread_join(*(pthread_t *)((Object *)stackGetThisObject(thread))->value, NULL);  // TODO: GC?!
     disallowGCAndPauseIfNeeded();
-    return l ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
-static Something threadSleep(Thread *thread){
+static void threadSleep(Thread *thread, Something *destination) {
     sleep((unsigned int)stackGetVariable(0, thread).raw);
-    return NOTHINGNESS;
 }
 
-static Something threadSleepMicroseconds(Thread *thread){
+static void threadSleepMicroseconds(Thread *thread, Something *destination) {
     usleep((unsigned int)stackGetVariable(0, thread).raw);
-    return NOTHINGNESS;
 }
 
 static void initThread(Thread *thread) {
@@ -168,7 +167,7 @@ static void initMutex(Thread *thread) {
     pthread_mutex_init(((Object *)stackGetThisObject(thread))->value, NULL);
 }
 
-static Something mutexLock(Thread *thread) {
+static void mutexLock(Thread *thread, Something *destination) {
     while (pthread_mutex_trylock(((Object *)stackGetThisObject(thread))->value) != 0) {
         //TODO: Obviously stupid, but this is the only safe way. If pthread_mutex_lock was used,
         //the thread would be block, and the GC could cause a deadlock. allowGC, however, would
@@ -176,16 +175,15 @@ static Something mutexLock(Thread *thread) {
         pauseForGC(NULL);
         usleep(10);
     }
-    return NOTHINGNESS;
 }
 
-static Something mutexUnlock(Thread *thread) {
+static void mutexUnlock(Thread *thread, Something *destination) {
     pthread_mutex_unlock(((Object *)stackGetThisObject(thread))->value);
-    return NOTHINGNESS;
 }
 
-static Something mutexTryLock(Thread *thread) {
-    return pthread_mutex_trylock(((Object *)stackGetThisObject(thread))->value) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+static void mutexTryLock(Thread *thread, Something *destination) {
+    *destination = pthread_mutex_trylock(((Object *)stackGetThisObject(thread))->value) == 0 ? EMOJICODE_TRUE :
+                                                                                               EMOJICODE_FALSE;
 }
 
 //MARK: Error
@@ -200,20 +198,20 @@ Object* newError(const char *message, int code){
     return o;
 }
 
-void newErrorBridge(Thread *thread){
+void newErrorBridge(Thread *thread) {
     EmojicodeError *error = stackGetThisObject(thread)->value;
     error->message = stringToChar(stackGetVariable(0, thread).object->value);
     error->code = unwrapInteger(stackGetVariable(1, thread));
 }
 
-static Something errorGetMessage(Thread *thread){
+static void errorGetMessage(Thread *thread, Something *destination) {
     EmojicodeError *error = stackGetThisObject(thread)->value;
-    return somethingObject(stringFromChar(error->message));
+    *destination = somethingObject(stringFromChar(error->message));
 }
 
-static Something errorGetCode(Thread *thread){
+static void errorGetCode(Thread *thread, Something *destination) {
     EmojicodeError *error = stackGetThisObject(thread)->value;
-    return somethingInteger((EmojicodeInteger)error->code);
+    *destination = somethingInteger((EmojicodeInteger)error->code);
 }
 
 //MARK: Range
@@ -237,28 +235,29 @@ static void initRangeStartStopStep(Thread *thread) {
     if (range->step == 0) rangeSetDefaultStep(range);
 }
 
-static Something rangeGet(Thread *thread) {
+static void rangeGet(Thread *thread, Something *something) {
     EmojicodeRange *range = stackGetThisObject(thread)->value;
     EmojicodeInteger h = range->start + stackGetVariable(0, thread).raw * range->step;
-    return (range->step > 0 ? range->start <= h && h < range->stop : range->stop < h && h <= range->start) ? somethingInteger(h) : NOTHINGNESS;
+    *something = (range->step > 0 ? range->start <= h && h < range->stop : range->stop < h && h <= range->start) ? somethingInteger(h) : NOTHINGNESS;
 }
 
 //MARK: Data
 
-static Something dataEqual(Thread *thread) {
+static void dataEqual(Thread *thread, Something *destination) {
     Data *d = stackGetThisObject(thread)->value;
     Data *b = stackGetVariable(0, thread).object->value;
     
     if(d->length != b->length){
-        return EMOJICODE_FALSE;
+        *destination = EMOJICODE_FALSE;
+        return;
     }
     
-    return memcmp(d->bytes, b->bytes, d->length) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
+    *destination = memcmp(d->bytes, b->bytes, d->length) == 0 ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
-static Something dataSize(Thread *thread) {
+static void dataSize(Thread *thread, Something *destination) {
     Data *d = stackGetThisObject(thread)->value;
-    return somethingInteger((EmojicodeInteger)d->length);
+    *destination = somethingInteger((EmojicodeInteger)d->length);
 }
 
 static void dataMark(Object *o) {
@@ -269,7 +268,7 @@ static void dataMark(Object *o) {
     }
 }
 
-static Something dataGetByte(Thread *thread) {
+static void dataGetByte(Thread *thread, Something *destination) {
     Data *d = stackGetThisObject(thread)->value;
     
     EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
@@ -277,16 +276,18 @@ static Something dataGetByte(Thread *thread) {
         index += d->length;
     }
     if (index < 0 || d->length <= index){
-        return NOTHINGNESS;
+        *destination = NOTHINGNESS;
+        return;
     }
     
-    return somethingInteger((unsigned char)d->bytes[index]);
+    *destination = somethingInteger((unsigned char)d->bytes[index]);
 }
 
-static Something dataToString(Thread *thread) {
+static void dataToString(Thread *thread, Something *destination) {
     Data *data = stackGetThisObject(thread)->value;
     if (!u8_isvalid(data->bytes, data->length)) {
-        return NOTHINGNESS;
+        *destination = NOTHINGNESS;
+        return;
     }
     
     EmojicodeInteger len = u8_strlen_l(data->bytes, data->length);
@@ -299,17 +300,18 @@ static Something dataToString(Thread *thread) {
     string->characters = stackGetThisObject(thread);
     stackPop(thread);
     u8_toucs(characters(string), len, data->bytes, data->length);
-    return somethingObject(sto);
+    *destination = somethingObject(sto);
 }
 
-static Something dataSlice(Thread *thread) {
+static void dataSlice(Thread *thread, Something *destination) {
     Object *ooData = newObject(CL_DATA);
     Data *oData = ooData->value;
     Data *data = stackGetThisObject(thread)->value;
     
     EmojicodeInteger from = stackGetVariable(0, thread).raw;
     if (from >= data->length) {
-        return somethingObject(ooData);
+        *destination = somethingObject(ooData);
+        return;
     }
     
     EmojicodeInteger l = stackGetVariable(1, thread).raw;
@@ -320,22 +322,22 @@ static Something dataSlice(Thread *thread) {
     oData->bytesObject = data->bytesObject;
     oData->bytes = data->bytes + from;
     oData->length = l;
-    return somethingObject(ooData);
+    *destination = somethingObject(ooData);
 }
 
-static Something dataIndexOf(Thread *thread) {
+static void dataIndexOf(Thread *thread, Something *destination) {
     Data *data = stackGetThisObject(thread)->value;
     Data *search = stackGetVariable(0, thread).object->value;
     void *location = findBytesInBytes(data->bytes, data->length, search->bytes, search->length);
     if (!location) {
-        return NOTHINGNESS;
+        *destination = NOTHINGNESS;
     }
     else {
-        return somethingInteger((Byte *)location - (Byte *)data->bytes);
+        *destination = somethingInteger((Byte *)location - (Byte *)data->bytes);
     }
 }
 
-static Something dataByAppendingData(Thread *thread) {
+static void dataByAppendingData(Thread *thread, Something *destination) {
     Data *data = stackGetThisObject(thread)->value;
     Data *b = stackGetVariable(0, thread).object->value;
     
@@ -347,19 +349,19 @@ static Something dataByAppendingData(Thread *thread) {
     
     memcpy(newBytes->value, data->bytes, data->length);
     memcpy((Byte *)newBytes->value + data->length, b->bytes, b->length);
-    
-    stackSetVariable(0, somethingObject(newBytes), thread);
+
+    *stackVariableDestination(0, thread) = somethingObject(newBytes);
     Object *ooData = newObject(CL_DATA);
     Data *oData = ooData->value;
     oData->bytesObject = stackGetVariable(0, thread).object;
     oData->bytes = oData->bytesObject->value;
     oData->length = size;
-    return somethingObject(ooData);
+    *destination = somethingObject(ooData);
 }
 
 // MARK: Integer
 
-Something integerToString(Thread *thread) {
+void integerToString(Thread *thread, Something *destination) {
     EmojicodeInteger base = stackGetVariable(0, thread).raw;
     EmojicodeInteger n = stackGetThisContext(thread).raw, a = llabs(n);
     bool negative = n < 0;
@@ -368,7 +370,7 @@ Something integerToString(Thread *thread) {
     while (n /= base) d++;
     
     Object *co = newArray(d * sizeof(EmojicodeChar));
-    stackSetVariable(0, somethingObject(co), thread);
+    *stackVariableDestination(0, thread) = somethingObject(co);
     
     Object *stringObject = newObject(CL_STRING);
     String *string = stringObject->value;
@@ -382,20 +384,20 @@ Something integerToString(Thread *thread) {
     
     if (negative) characters[-1] = '-';
     
-    return somethingObject(stringObject);
+    *destination = somethingObject(stringObject);
 }
 
-static Something integerRandom(Thread *thread) {
-    return somethingInteger(secureRandomNumber(stackGetVariable(0, thread).raw, stackGetVariable(1, thread).raw));
+static void integerRandom(Thread *thread, Something *destination) {
+    *destination = somethingInteger(secureRandomNumber(stackGetVariable(0, thread).raw, stackGetVariable(1, thread).raw));
 }
 
 #define abs(x) _Generic((x), long: labs, long long: llabs, default: abs)(x)
 
-static Something integerAbsolute(Thread *thread) {
-    return somethingInteger(abs(stackGetThisContext(thread).raw));
+static void integerAbsolute(Thread *thread, Something *destination) {
+    *destination = somethingInteger(abs(stackGetThisContext(thread).raw));
 }
 
-static Something symbolToString(Thread *thread){
+static void symbolToString(Thread *thread, Something *destination) {
     Object *co = newArray(sizeof(EmojicodeChar));
     stackPush(somethingObject(co), 0, 0, thread);
     Object *stringObject = newObject(CL_STRING);
@@ -404,14 +406,14 @@ static Something symbolToString(Thread *thread){
     string->characters = stackGetThisObject(thread);
     stackPop(thread);
     ((EmojicodeChar *)string->characters->value)[0] = (EmojicodeChar)stackGetThisContext(thread).raw;
-    return somethingObject(stringObject);
+    *destination = somethingObject(stringObject);
 }
 
-static Something symbolToInteger(Thread *thread) {
-    return stackGetThisContext(thread);
+static void symbolToInteger(Thread *thread, Something *destination) {
+    *destination = stackGetThisContext(thread);
 }
 
-static Something doubleToString(Thread *thread) {
+static void doubleToString(Thread *thread, Something *something) {
     EmojicodeInteger precision = stackGetVariable(0, thread).raw;
     double d = stackGetThisContext(thread).doubl;
     double absD = fabs(d);
@@ -430,7 +432,7 @@ static Something doubleToString(Thread *thread) {
     length += iLength;
     
     Object *co = newArray(length * sizeof(EmojicodeChar));
-    stackSetVariable(0, somethingObject(co), thread);
+    *stackVariableDestination(0, thread) = somethingObject(co);
     Object *stringObject = newObject(CL_STRING);
     String *string = stringObject->value;
     string->length = length;
@@ -451,63 +453,63 @@ static Something doubleToString(Thread *thread) {
     }
     
     if (negative) characters[-1] = '-';
-    return somethingObject(stringObject);
+    *something = somethingObject(stringObject);
 }
 
-static Something doubleSin(Thread *thread) {
-    return somethingDouble(sin(stackGetThisContext(thread).doubl));
+static void doubleSin(Thread *thread, Something *destination) {
+    *destination = somethingDouble(sin(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleCos(Thread *thread) {
-    return somethingDouble(cos(stackGetThisContext(thread).doubl));
+static void doubleCos(Thread *thread, Something *destination) {
+    *destination = somethingDouble(cos(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleTan(Thread *thread) {
-    return somethingDouble(tan(stackGetThisContext(thread).doubl));
+static void doubleTan(Thread *thread, Something *destination) {
+    *destination = somethingDouble(tan(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleASin(Thread *thread) {
-    return somethingDouble(asin(stackGetThisContext(thread).doubl));
+static void doubleASin(Thread *thread, Something *destination) {
+    *destination = somethingDouble(asin(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleACos(Thread *thread) {
-    return somethingDouble(acos(stackGetThisContext(thread).doubl));
+static void doubleACos(Thread *thread, Something *destination) {
+    *destination = somethingDouble(acos(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleATan(Thread *thread) {
-    return somethingDouble(atan(stackGetThisContext(thread).doubl));
+static void doubleATan(Thread *thread, Something *destination) {
+    *destination = somethingDouble(atan(stackGetThisContext(thread).doubl));
 }
 
-static Something doublePow(Thread *thread) {
-    return somethingDouble(pow(stackGetThisContext(thread).doubl, stackGetVariable(0, thread).doubl));
+static void doublePow(Thread *thread, Something *destination) {
+    *destination = somethingDouble(pow(stackGetThisContext(thread).doubl, stackGetVariable(0, thread).doubl));
 }
 
-static Something doubleSqrt(Thread *thread) {
-    return somethingDouble(sqrt(stackGetThisContext(thread).doubl));
+static void doubleSqrt(Thread *thread, Something *destination) {
+    *destination = somethingDouble(sqrt(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleRound(Thread *thread) {
-    return somethingInteger(round(stackGetThisContext(thread).doubl));
+static void doubleRound(Thread *thread, Something *destination) {
+    *destination = somethingInteger(round(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleCeil(Thread *thread) {
-    return somethingInteger(ceil(stackGetThisContext(thread).doubl));
+static void doubleCeil(Thread *thread, Something *destination) {
+    *destination = somethingInteger(ceil(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleFloor(Thread *thread) {
-    return somethingInteger(floor(stackGetThisContext(thread).doubl));
+static void doubleFloor(Thread *thread, Something *destination) {
+    *destination = somethingInteger(floor(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleLog2(Thread *thread) {
-    return somethingDouble(log2(stackGetThisContext(thread).doubl));
+static void doubleLog2(Thread *thread, Something *destination) {
+    *destination = somethingDouble(log2(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleLn(Thread *thread) {
-    return somethingDouble(log(stackGetThisContext(thread).doubl));
+static void doubleLn(Thread *thread, Something *destination) {
+    *destination = somethingDouble(log(stackGetThisContext(thread).doubl));
 }
 
-static Something doubleAbsolute(Thread *thread) {
-    return somethingDouble(fabs(stackGetThisContext(thread).doubl));
+static void doubleAbsolute(Thread *thread, Something *destination) {
+    *destination = somethingDouble(fabs(stackGetThisContext(thread).doubl));
 }
 
 // MARK: Callable
@@ -520,8 +522,9 @@ static void closureMark(Object *o){
     mark(&c->capturedVariables);
     
     Something *t = c->capturedVariables->value;
-    for (uint8_t i = 0; i < c->capturedVariablesCount; i++) {
-        Something *s = t + c->argumentCount + i;
+    CaptureInformation *infop = c->capturesInformation->value;
+    for (int i = 0; i < c->captureCount; i++) {
+        Something *s = t + (infop++)->destination;
         if (isRealObject(*s)) {
             mark(&s->object);
         }

@@ -49,6 +49,8 @@ public:
     void recommendFrozenVariables() const;
     
     size_t size() const { return size_; }
+
+    const std::map<EmojicodeString, Variable>& map() const { return map_; }
 private:
     std::map<EmojicodeString, Variable> map_;
     int size_ = 0;

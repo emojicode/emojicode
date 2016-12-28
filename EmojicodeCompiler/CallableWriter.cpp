@@ -34,10 +34,18 @@ CallableWriterCoinsCountPlaceholder CallableWriter::writeCoinsCountPlaceholderCo
     return CallableWriterCoinsCountPlaceholder(this, coins_.size() - 1, writtenCoins());
 }
 
+CallableWriterInsertionPoint CallableWriter::getInsertionPoint() {
+    return CallableWriterInsertionPoint(this, coins_.size());
+}
+
 void CallableWriterPlaceholder::write(EmojicodeCoin value) {
     writer_->coins_[index_] = value;
 }
 
 void CallableWriterCoinsCountPlaceholder::write() {
     CallableWriterPlaceholder::write(static_cast<EmojicodeCoin>(writer_->writtenCoins() - count_));
+}
+
+void CallableWriterInsertionPoint::insert(EmojicodeCoin value) {
+    writer_->coins_.insert(writer_->coins_.begin() + index_, value);
 }
