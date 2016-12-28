@@ -18,15 +18,13 @@ ParsedTypeName AbstractParser::parseTypeName() {
     }
     
     bool optional = false;
-    if (stream_.nextTokenIs(E_CANDY)) {
-        stream_.consumeToken(TokenType::Identifier);
+    if (stream_.consumeTokenIf(E_CANDY)) {
         optional = true;
     }
 
     EmojicodeString enamespace;
 
-    if (stream_.nextTokenIs(E_ORANGE_TRIANGLE)) {
-        stream_.consumeToken();
+    if (stream_.consumeTokenIf(E_ORANGE_TRIANGLE)) {
         enamespace = stream_.consumeToken(TokenType::Identifier).value();
     }
     else {
@@ -57,8 +55,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
     }
     
     bool optional = false;
-    if (stream_.nextTokenIs(E_CANDY)) {
-        stream_.consumeToken(TokenType::Identifier);
+    if (stream_.consumeTokenIf(E_CANDY)) {
         optional = true;
     }
     
@@ -94,8 +91,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         if (dynamicType) *dynamicType = TypeDynamism::Self;
         return Type(TypeContent::Self, optional);
     }
-    else if (stream_.nextTokenIs(E_GRAPES)) {
-        stream_.consumeToken(TokenType::Identifier);
+    else if (stream_.consumeTokenIf(E_GRAPES)) {
         if (dynamicType) *dynamicType = TypeDynamism::None;
 
         Type t(TypeContent::Callable, optional);
@@ -105,13 +101,11 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
             t.genericArguments.push_back(parseTypeDeclarative(ct, dynamism));
         }
         
-        if (stream_.nextTokenIs(E_RIGHTWARDS_ARROW)) {
-            stream_.consumeToken(TokenType::Identifier);
+        if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW)) {
             t.genericArguments[0] = parseTypeDeclarative(ct, dynamism);
         }
         
         stream_.requireIdentifier(E_WATERMELON);
-        
         return t;
     }
     else {
@@ -213,8 +207,7 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initial
 
 bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
     bool usedSelf = false;
-    if (stream_.nextTokenIs(E_RIGHTWARDS_ARROW)) {
-        stream_.consumeToken();
+    if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW)) {
         TypeDynamism dynamism;
 
         c->returnType = parseTypeDeclarative(ct, TypeDynamism::AllKinds, Type::nothingness(), &dynamism);
@@ -226,8 +219,7 @@ bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
 }
 
 void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext ct) {
-    while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
-        stream_.consumeToken();
+    while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
         auto &variable = stream_.consumeToken(TokenType::Variable);
         
         Type t = parseTypeDeclarative(p->owningType(), TypeDynamism::GenericTypeVariables, Type::nothingness(), nullptr,

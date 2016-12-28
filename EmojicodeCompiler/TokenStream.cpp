@@ -42,6 +42,14 @@ bool TokenStream::nextTokenIsEverythingBut(EmojicodeChar c) const {
     return nextToken && !(nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c);
 }
 
+bool TokenStream::consumeTokenIf(EmojicodeChar c) {
+    if (nextTokenIs(c)) {
+        currentToken_ = currentToken_->nextToken_;
+        return true;
+    }
+    return false;
+}
+
 const Token& TokenStream::requireIdentifier(EmojicodeChar ch) {
     auto &token = consumeToken(TokenType::Identifier);
     if (!token.isIdentifier(ch)) {

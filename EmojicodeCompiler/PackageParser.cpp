@@ -204,9 +204,7 @@ ParsedTypeName PackageParser::parseAndValidateNewTypeName() {
 }
 
 void PackageParser::parseGenericArgumentList(TypeDefinitionFunctional *typeDef, TypeContext tc) {
-    while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
-        stream_.consumeToken(TokenType::Identifier);
-        
+    while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
         auto &variable = stream_.consumeToken(TokenType::Variable);
         auto constraintType = parseTypeDeclarative(tc, TypeDynamism::None, Type::nothingness(), nullptr, true);
         typeDef->addGenericArgument(variable, constraintType);
@@ -215,16 +213,14 @@ void PackageParser::parseGenericArgumentList(TypeDefinitionFunctional *typeDef, 
 
 static AccessLevel readAccessLevel(TokenStream *stream) {
     auto access = AccessLevel::Public;
-    if (stream->nextTokenIs(E_CLOSED_LOCK_WITH_KEY)) {
+    if (stream->consumeTokenIf(E_CLOSED_LOCK_WITH_KEY)) {
         access = AccessLevel::Protected;
-        stream->consumeToken(TokenType::Identifier);
     }
-    else if (stream->nextTokenIs(E_LOCK)) {
+    else if (stream->consumeTokenIf(E_LOCK)) {
         access = AccessLevel::Private;
-        stream->consumeToken(TokenType::Identifier);
     }
-    else if (stream->nextTokenIs(E_OPEN_LOCK)) {
-        stream->consumeToken(TokenType::Identifier);
+    else {
+        stream->consumeTokenIf(E_OPEN_LOCK);
     }
     return access;
 }

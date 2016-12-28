@@ -53,9 +53,7 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     
     p->deprecatedWarning(token);
     
-    while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
-        stream_.consumeToken(TokenType::Identifier);
-        
+    while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
         auto type = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
         genericArguments.push_back(type);
     }
@@ -212,8 +210,7 @@ void CallableParserAndGenerator::flowControlReturnEnd(FlowControlReturn &fcr) {
 }
 
 void CallableParserAndGenerator::parseIfExpression(const Token &token) {
-    if (stream_.nextTokenIs(E_SOFT_ICE_CREAM)) {
-        stream_.consumeToken(TokenType::Identifier);
+    if (stream_.consumeTokenIf(E_SOFT_ICE_CREAM)) {
         writer.writeCoin(0x3E, token);
         
         auto &varName = stream_.consumeToken(TokenType::Variable);
@@ -511,8 +508,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             scoper.popScopeAndRecommendFrozenVariables();
             flowControlReturnEnd(fcr);
             
-            while (stream_.nextTokenIs(E_LEMON)) {
-                stream_.consumeToken();
+            while (stream_.consumeTokenIf(E_LEMON)) {
                 writer.writeCoin(0x63, token);
                 
                 scoper.pushScope();
@@ -522,8 +518,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 flowControlReturnEnd(fcr);
             }
             
-            if (stream_.nextTokenIs(E_STRAWBERRY)) {
-                stream_.consumeToken();
+            if (stream_.consumeTokenIf(E_STRAWBERRY)) {
                 flowControlBlock();
                 flowControlReturnEnd(fcr);
             }
@@ -816,8 +811,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             Function *function;
             
             auto placeholder = writer.writeCoinPlaceholder(token);
-            if (stream_.nextTokenIs(E_DOUGHNUT)) {
-                stream_.consumeToken();
+            if (stream_.consumeTokenIf(E_DOUGHNUT)) {
                 auto &methodName = stream_.consumeToken();
                 auto pair = parseTypeAsValue(typeContext, token);
                 auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
@@ -1215,8 +1209,7 @@ void CallableParserAndGenerator::notStaticError(TypeAvailability t, SourcePositi
 
 std::pair<Type, TypeAvailability> CallableParserAndGenerator::parseTypeAsValue(TypeContext tc, SourcePosition p,
                                                                            Type expectation) {
-    if (stream_.nextTokenIs(E_BLACK_LARGE_SQUARE)) {
-        stream_.consumeToken();
+    if (stream_.consumeTokenIf(E_BLACK_LARGE_SQUARE)) {
         auto type = parse(stream_.consumeToken());
         if (!type.meta()) {
             throw CompilerErrorException(p, "Expected meta type.");
