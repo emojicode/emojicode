@@ -38,10 +38,6 @@ const char* Token::stringNameForType(TokenType type) {
             return "Identifier";
         case TokenType::DocumentationComment:
             return "Documentation Comment";
-        case TokenType::ArgumentBracketClose:
-            return "Argument Bracket Close";
-        case TokenType::ArgumentBracketOpen:
-            return "Argument Bracket Open";
         case TokenType::NoType:
         case TokenType::Comment:
             break;

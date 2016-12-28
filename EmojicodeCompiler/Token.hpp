@@ -24,9 +24,7 @@ enum class TokenType {
     BooleanFalse,
     Identifier,
     Variable,
-    Symbol,
-    ArgumentBracketOpen,
-    ArgumentBracketClose
+    Symbol
 };
 
 class Token;

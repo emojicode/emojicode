@@ -227,14 +227,6 @@ TokenStream lex(std::string path) {
             else if (c == E_KEYCAP_10) {
                 token->type_ = TokenType::Symbol;
             }
-            else if (c == 0x3016) {  // 〖
-                token->type_ = TokenType::ArgumentBracketOpen;
-                nextToken = true;
-            }
-            else if (c == 0x3017) {  // 〗
-                token->type_ = TokenType::ArgumentBracketClose;
-                nextToken = true;
-            }
             else if (isEmoji(c)) {
                 token->type_ = TokenType::Identifier;
                 token->value_.push_back(c);

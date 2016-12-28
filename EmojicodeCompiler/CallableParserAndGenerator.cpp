@@ -67,12 +67,7 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     else if (genericArguments.size() != p->genericArgumentVariables.size()) {
         throw CompilerErrorException(token, "Too few generic arguments provided.");
     }
-    
-    bool brackets = false;
-    if (stream_.nextTokenIs(TokenType::ArgumentBracketOpen)) {
-        stream_.consumeToken(TokenType::ArgumentBracketOpen);
-        brackets = true;
-    }
+
     for (auto var : p->arguments) {
         auto resolved = var.type.resolveOn(typeContext);
         if (inferGenericArguments) {
@@ -84,10 +79,7 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
             parse(stream_.consumeToken(), token, resolved);
         }
     }
-    if (brackets) {
-        stream_.consumeToken(TokenType::ArgumentBracketClose);
-    }
-    
+
     if (inferGenericArguments) {
         for (size_t i = 0; i < genericArgsFinders.size(); i++) {
             auto commonType = genericArgsFinders[i].getCommonType(token);
@@ -296,10 +288,6 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
             return parseIdentifier(token, expectation);
         case TokenType::DocumentationComment:
             throw CompilerErrorException(token, "Misplaced documentation comment.");
-        case TokenType::ArgumentBracketOpen:
-            throw CompilerErrorException(token, "Unexpected 〖");
-        case TokenType::ArgumentBracketClose:
-            throw CompilerErrorException(token, "Unexpected 〗");
         case TokenType::NoType:
         case TokenType::Comment:
             break;
