@@ -31,7 +31,7 @@ public:
     
     std::vector<Argument> arguments;
     /** Return type of the method */
-    Type returnType = typeNothingness;
+    Type returnType = Type::nothingness();
     
     /** Returns the position at which this callable was defined. */
     const SourcePosition& position() const { return position_; }

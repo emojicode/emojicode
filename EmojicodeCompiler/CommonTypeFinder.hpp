@@ -19,7 +19,7 @@ struct CommonTypeFinder {
     Type getCommonType(const Token &warningToken) const;
 private:
     bool firstTypeFound = false;
-    Type commonType = typeSomething;
+    Type commonType = Type::something();
 };
 
 

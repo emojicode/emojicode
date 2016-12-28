@@ -97,8 +97,8 @@ void writeClass(Type classType, Writer &writer) {
                 try {
                     Function *clm = eclass->lookupMethod(method->name());
                     if (clm == nullptr) {
-                        auto className = classType.toString(typeNothingness, true);
-                        auto protocolName = protocol.toString(typeNothingness, true);
+                        auto className = classType.toString(Type::nothingness(), true);
+                        auto protocolName = protocol.toString(Type::nothingness(), true);
                         throw CompilerErrorException(eclass->position(),
                                                      "Class %s does not agree to protocol %s: Method %s is missing.",
                                                      className.c_str(), protocolName.c_str(),

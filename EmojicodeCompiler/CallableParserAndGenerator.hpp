@@ -74,9 +74,9 @@ private:
      * Safely tries to parse the given token, evaluate the associated command and returns the type of that command.
      * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
      * @param expectation The type which is expected to be produced by the following lexical unit. It’s taken into
-                          account when parsing numbers etc. Pass @c typeNothingness to indicate no expectations.
+                          account when parsing numbers etc. Pass @c Type::nothingness() to indicate no expectations.
      */
-    Type parse(const Token &token, Type expectation = typeNothingness);
+    Type parse(const Token &token, Type expectation = Type::nothingness());
     /**
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
      * @param token The token to evaluate.
@@ -89,7 +89,7 @@ private:
      * is returned and false are returned.
      */
     std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, SourcePosition p,
-                                                       Type expectation = typeNothingness);
+                                                       Type expectation = Type::nothingness());
     /** Parses an identifier when occurring without context. */
     Type parseIdentifier(const Token &token, Type expectation);
     /** Parses the expression for an if statement. */

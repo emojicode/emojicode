@@ -81,7 +81,7 @@ void PackageParser::parse() {
                     throw CompilerErrorException(parsedType.token, "Optional types are not extendable.");
                 }
                 
-                Type type = typeNothingness;
+                Type type = Type::nothingness();
                 
                 if (!package_->fetchRawType(parsedType, &type)) {
                     throw CompilerErrorException(parsedType.token, "Class does not exist.");
@@ -128,11 +128,11 @@ void PackageParser::parse() {
                 Function::foundStart = true;
                 
                 auto function = new Function(EmojicodeString(E_CHEQUERED_FLAG), AccessLevel::Public, false,
-                                             typeNothingness, package_, theToken, false, documentation.get(), false,
+                                             Type::nothingness(), package_, theToken, false, documentation.get(), false,
                                              CallableParserAndGeneratorMode::Function);
-                parseReturnType(function, typeNothingness);
+                parseReturnType(function, Type::nothingness());
                 if (function->returnType.type() != TypeContent::Nothingness &&
-                    !function->returnType.compatibleTo(typeInteger, typeNothingness)) {
+                    !function->returnType.compatibleTo(Type::integer(), Type::nothingness())) {
                     throw CompilerErrorException(theToken, "🏁 must either return ✨ or 🚂.");
                 }
                 parseBody(function, false);
@@ -194,9 +194,9 @@ ParsedTypeName PackageParser::parseAndValidateNewTypeName() {
         throw CompilerErrorException(parsedTypeName.token, "🍬 cannot be declared as type.");
     }
     
-    Type type = typeNothingness;
+    Type type = Type::nothingness();
     if (package_->fetchRawType(parsedTypeName, &type)) {
-        auto str = type.toString(typeNothingness, true);
+        auto str = type.toString(Type::nothingness(), true);
         throw CompilerErrorException(parsedTypeName.token, "Type %s is already defined.", str.c_str());
     }
     
@@ -208,7 +208,7 @@ void PackageParser::parseGenericArgumentList(TypeDefinitionFunctional *typeDef, 
         stream_.consumeToken(TokenType::Identifier);
         
         auto &variable = stream_.consumeToken(TokenType::Variable);
-        auto constraintType = parseTypeDeclarative(tc, TypeDynamism::None, typeNothingness, nullptr, true);
+        auto constraintType = parseTypeDeclarative(tc, TypeDynamism::None, Type::nothingness(), nullptr, true);
         typeDef->addGenericArgument(variable, constraintType);
     }
 }
@@ -292,7 +292,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
     if (!stream_.nextTokenIs(E_GRAPES)) {
         auto parsedTypeName = parseTypeName();
 
-        Type type = typeNothingness;
+        Type type = Type::nothingness();
         if (!package_->fetchRawType(parsedTypeName, &type)) {
             throw CompilerErrorException(parsedTypeName.token, "Superclass type does not exist.");
         }
@@ -398,7 +398,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 deprecated.disallow();
                 documentation.disallow();
                 
-                Type type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables, typeNothingness, nullptr,
+                Type type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables, Type::nothingness(), nullptr,
                                                  true);
                 
                 if (type.optional()) {

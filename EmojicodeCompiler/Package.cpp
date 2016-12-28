@@ -118,7 +118,7 @@ void Package::registerType(Type t, EmojicodeString name, EmojicodeString ns, boo
 
 void Package::loadInto(Package *destinationPackage, EmojicodeString ns, const Token &errorToken) const {
     for (auto exported : exportedTypes_) {
-        Type type = typeNothingness;
+        Type type = Type::nothingness();
         if (destinationPackage->fetchRawType(exported.name, ns, false, errorToken, &type)) {
             throw CompilerErrorException(errorToken, "Package %s could not be loaded into namespace %s of package %s: %s collides with a type of the same name in the same namespace.", name().c_str(), ns.utf8().c_str(), destinationPackage->name().c_str(),
                                          exported.name.utf8().c_str());

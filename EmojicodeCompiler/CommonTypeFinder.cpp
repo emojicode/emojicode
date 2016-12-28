@@ -19,10 +19,10 @@ void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
             commonType = t;
         }
         else if (t.type() == TypeContent::Class && commonType.type() == TypeContent::Class) {
-            commonType = typeSomeobject;
+            commonType = Type::someobject();
         }
         else {
-            commonType = typeSomething;
+            commonType = Type::something();
         }
     }
 }

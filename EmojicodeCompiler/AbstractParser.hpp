@@ -32,7 +32,7 @@ protected:
     /** Reads a type name and stores it into the given pointers. */
     ParsedTypeName parseTypeName();
     /** Reads a type name and stores it into the given pointers. */
-    Type parseTypeDeclarative(TypeContext tc, TypeDynamism dynamism, Type expectation = typeNothingness,
+    Type parseTypeDeclarative(TypeContext tc, TypeDynamism dynamism, Type expectation = Type::nothingness(),
                               TypeDynamism *dynamicType = nullptr, bool allowProtocolsUsingSelf = false);
     
     /**

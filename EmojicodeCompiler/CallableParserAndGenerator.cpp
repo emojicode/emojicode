@@ -234,7 +234,7 @@ void CallableParserAndGenerator::parseIfExpression(const Token &token) {
         placeholder.write(id);
     }
     else {
-        parse(stream_.consumeToken(TokenType::NoType), token, typeBoolean);
+        parse(stream_.consumeToken(TokenType::NoType), token, Type::boolean());
     }
 }
 
@@ -247,17 +247,17 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
         }
         case TokenType::BooleanTrue:
             writer.writeCoin(INS_GET_TRUE, token);
-            return typeBoolean;
+            return Type::boolean();
         case TokenType::BooleanFalse:
             writer.writeCoin(INS_GET_FALSE, token);
-            return typeBoolean;
+            return Type::boolean();
         case TokenType::Integer: {
             long long value = std::stoll(token.value().utf8(), 0, 0);
 
             if (expectation.type() == TypeContent::ValueType && expectation.valueType() == VT_DOUBLE) {
                 writer.writeCoin(INS_GET_DOUBLE, token);
                 writer.writeDoubleCoin(value, token);
-                return typeFloat;
+                return Type::doubl();
             }
             
             if (std::llabs(value) > INT32_MAX) {
@@ -266,13 +266,13 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
                 writer.writeCoin(value >> 32, token);
                 writer.writeCoin(static_cast<EmojicodeCoin>(value), token);
                 
-                return typeInteger;
+                return Type::integer();
             }
             else {
                 writer.writeCoin(INS_GET_32_INTEGER, token);
                 writer.writeCoin(static_cast<EmojicodeCoin>(value), token);
                 
-                return typeInteger;
+                return Type::integer();
             }
         }
         case TokenType::Double: {
@@ -281,12 +281,12 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
             double d = std::stod(token.value().utf8());
             writer.writeDoubleCoin(d, token);
 
-            return typeFloat;
+            return Type::doubl();
         }
         case TokenType::Symbol:
             writer.writeCoin(INS_GET_SYMBOL, token);
             writer.writeCoin(token.value()[0], token);
-            return typeSymbol;
+            return Type::symbol();
         case TokenType::Variable: {
             auto var = scoper.getVariable(token.value(), token.position());
             
@@ -335,12 +335,12 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 writer.writeCoin(var.id(), token);
                 writer.writeCoin(INS_GET_NOTHINGNESS, token);
             }
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_CUSTARD: {
             auto &varName = stream_.consumeToken(TokenType::Variable);
             
-            Type type = typeNothingness;
+            Type type = Type::nothingness();
             try {
                 auto var = scoper.getVariable(varName.value(), varName.position());
                 if (var.first.initialized <= 0) {
@@ -364,12 +364,12 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 Type t = parse(stream_.consumeToken());
                 int id = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position(), true).id();
                 placeholder.write(id);
-                return typeNothingness;
+                return Type::nothingness();
             }
 
             parse(stream_.consumeToken(), token, type);
             
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_SOFT_ICE_CREAM: {
             auto &varName = stream_.consumeToken(TokenType::Variable);
@@ -385,7 +385,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             Type t = parse(stream_.consumeToken());
             int id = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position(), true).id();
             placeholder.write(id);
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_COOKING:
         case E_CHOCOLATE_BAR: {
@@ -396,7 +396,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             var.first.uninitalizedError(varName);
             var.first.mutate(varName);
             
-            if (!var.first.type.compatibleTo(typeInteger, typeContext)) {
+            if (!var.first.type.compatibleTo(Type::integer(), typeContext)) {
                 throw CompilerErrorException(token, "%s can only operate on 🚂 variables.",
                                              token.value().utf8().c_str());
             }
@@ -411,7 +411,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             else {
                 writer.writeCoin(INS_INCREMENT, token);
             }
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_COOKIE: {
             writer.writeCoin(0x52, token);
@@ -488,15 +488,15 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         }
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE: {
             writer.writeCoin(0x53, token);
-            parse(stream_.consumeToken(), token, typeInteger);
-            parse(stream_.consumeToken(), token, typeInteger);
+            parse(stream_.consumeToken(), token, Type::integer());
+            parse(stream_.consumeToken(), token, Type::integer());
             return Type(CL_RANGE);
         }
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
             writer.writeCoin(0x54, token);
-            parse(stream_.consumeToken(), token, typeInteger);
-            parse(stream_.consumeToken(), token, typeInteger);
-            parse(stream_.consumeToken(), token, typeInteger);
+            parse(stream_.consumeToken(), token, Type::integer());
+            parse(stream_.consumeToken(), token, Type::integer());
+            parse(stream_.consumeToken(), token, Type::integer());
             return Type(CL_RANGE);
         }
         case E_TANGERINE: {
@@ -535,7 +535,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             returned = fcr.returned();
             
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
             writer.writeCoin(INS_REPEAT_WHILE, token);
@@ -544,7 +544,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             flowControlBlock();
             returned = false;
             
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
             auto placeholder = writer.writeCoinPlaceholder(token);
@@ -555,9 +555,9 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             auto valueVariablePlaceholder = writer.writeCoinPlaceholder(token);
             
-            Type iteratee = parse(stream_.consumeToken(), token, typeSomeobject);
+            Type iteratee = parse(stream_.consumeToken(), token, Type::someobject());
             
-            Type itemType = typeNothingness;
+            Type itemType = Type::nothingness();
             
             if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_LIST) {
                 // If the iteratee is a list, the Real-Time Engine has some special sugar
@@ -572,7 +572,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             else if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_RANGE) {
                 // If the iteratee is a range, the Real-Time Engine also has some special sugar
                 placeholder.write(0x66);
-                int id = scoper.currentScope().setLocalVariable(variableToken.value(), typeInteger, true,
+                int id = scoper.currentScope().setLocalVariable(variableToken.value(), Type::integer(), true,
                                                                 variableToken.position(), true).id();
                 valueVariablePlaceholder.write(id);
             }
@@ -599,14 +599,14 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             returned = false;
             scoper.popScopeAndRecommendFrozenVariables();
 
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_LEMON:
         case E_STRAWBERRY:
         case E_WATERMELON:
         case E_AUBERGINE: {
             throw CompilerErrorException(token, "Unexpected identifier %s.", token.value().utf8().c_str());
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_DOG: {
             usedSelf = true;
@@ -629,20 +629,20 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         }
         case E_HIGH_VOLTAGE_SIGN: {
             writer.writeCoin(INS_GET_NOTHINGNESS, token);
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_CLOUD: {
             writer.writeCoin(INS_IS_NOTHINGNESS, token);
             parse(stream_.consumeToken());
-            return typeBoolean;
+            return Type::boolean();
         }
         case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE: {
             writer.writeCoin(INS_SAME_OBJECT, token);
             
-            parse(stream_.consumeToken(), token, typeSomeobject);
-            parse(stream_.consumeToken(), token, typeSomeobject);
+            parse(stream_.consumeToken(), token, Type::someobject());
+            parse(stream_.consumeToken(), token, Type::someobject());
             
-            return typeBoolean;
+            return Type::boolean();
         }
         case E_GOAT: {
             if (mode != CallableParserAndGeneratorMode::ObjectInitializer) {
@@ -678,7 +678,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             calledSuper = true;
             
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_RED_APPLE: {
             if (effect) {
@@ -691,8 +691,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             if (mode == CallableParserAndGeneratorMode::ObjectInitializer) {
                 if (static_cast<Initializer &>(callable).canReturnNothingness) {
-                    parse(stream_.consumeToken(), token, typeNothingness);
-                    return typeNothingness;
+                    parse(stream_.consumeToken(), token, Type::nothingness());
+                    return Type::nothingness();
                 }
                 else {
                     throw CompilerErrorException(token, "🍎 cannot be used inside an initializer.");
@@ -701,7 +701,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             parse(stream_.consumeToken(), token, callable.returnType);
             returned = true;
-            return typeNothingness;
+            return Type::nothingness();
         }
         case E_WHITE_LARGE_SQUARE: {
             writer.writeCoin(INS_GET_CLASS_FROM_INSTANCE, token);
@@ -1036,132 +1036,132 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     switch (token.value()[0]) {
                         case E_NEGATIVE_SQUARED_CROSS_MARK:
                             placeholder.write(INS_INVERT_BOOLEAN);
-                            return typeBoolean;
+                            return Type::boolean();
                         case E_PARTY_POPPER:
                             placeholder.write(INS_OR_BOOLEAN);
-                            parse(stream_.consumeToken(), token, typeBoolean);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::boolean());
+                            return Type::boolean();
                         case E_CONFETTI_BALL:
                             placeholder.write(INS_AND_BOOLEAN);
-                            parse(stream_.consumeToken(), token, typeBoolean);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::boolean());
+                            return Type::boolean();
                     }
                 }
                 else if (type.valueType() == VT_INTEGER) {
                     switch (token.value()[0]) {
                         case E_HEAVY_MINUS_SIGN:
                             placeholder.write(INS_SUBTRACT_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_HEAVY_PLUS_SIGN:
                             placeholder.write(INS_ADD_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_HEAVY_DIVISION_SIGN:
                             placeholder.write(INS_DIVIDE_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_HEAVY_MULTIPLICATION_SIGN:
                             placeholder.write(INS_MULTIPLY_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_LEFT_POINTING_TRIANGLE:
                             placeholder.write(INS_LESS_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::boolean();
                         case E_RIGHT_POINTING_TRIANGLE:
                             placeholder.write(INS_GREATER_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::boolean();
                         case E_LEFTWARDS_ARROW:
                             placeholder.write(INS_LESS_OR_EQUAL_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::boolean();
                         case E_RIGHTWARDS_ARROW:
                             placeholder.write(INS_GREATER_OR_EQUAL_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::boolean();
                         case E_PUT_LITTER_IN_ITS_SPACE:
                             placeholder.write(INS_REMAINDER_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_HEAVY_LARGE_CIRCLE:
                             placeholder.write(INS_BINARY_AND_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_ANGER_SYMBOL:
                             placeholder.write(INS_BINARY_OR_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_CROSS_MARK:
                             placeholder.write(INS_BINARY_XOR_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_NO_ENTRY_SIGN:
                             placeholder.write(INS_BINARY_NOT_INTEGER);
-                            return typeInteger;
+                            return Type::integer();
                         case E_ROCKET:
                             placeholder.write(INS_INT_TO_DOUBLE);
-                            return typeFloat;
+                            return Type::doubl();
                         case E_LEFT_POINTING_BACKHAND_INDEX:
                             placeholder.write(INS_SHIFT_LEFT_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                         case E_RIGHT_POINTING_BACKHAND_INDEX:
                             placeholder.write(INS_SHIFT_RIGHT_INTEGER);
-                            parse(stream_.consumeToken(), token, typeInteger);
-                            return typeInteger;
+                            parse(stream_.consumeToken(), token, Type::integer());
+                            return Type::integer();
                     }
                 }
                 else if (type.valueType() == VT_DOUBLE) {
                     switch (token.value()[0]) {
                         case E_FACE_WITH_STUCK_OUT_TONGUE:
                             placeholder.write(INS_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::boolean();
                         case E_HEAVY_MINUS_SIGN:
                             placeholder.write(INS_SUBTRACT_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeFloat;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::doubl();
                         case E_HEAVY_PLUS_SIGN:
                             placeholder.write(INS_ADD_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeFloat;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::doubl();
                         case E_HEAVY_DIVISION_SIGN:
                             placeholder.write(INS_DIVIDE_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeFloat;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::doubl();
                         case E_HEAVY_MULTIPLICATION_SIGN:
                             placeholder.write(INS_MULTIPLY_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeFloat;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::doubl();
                         case E_LEFT_POINTING_TRIANGLE:
                             placeholder.write(INS_LESS_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::boolean();
                         case E_RIGHT_POINTING_TRIANGLE:
                             placeholder.write(INS_GREATER_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::boolean();
                         case E_LEFTWARDS_ARROW:
                             placeholder.write(INS_LESS_OR_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::boolean();
                         case E_RIGHTWARDS_ARROW:
                             placeholder.write(INS_GREATER_OR_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeBoolean;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::boolean();
                         case E_PUT_LITTER_IN_ITS_SPACE:
                             placeholder.write(INS_REMAINDER_DOUBLE);
-                            parse(stream_.consumeToken(), token, typeFloat);
-                            return typeFloat;
+                            parse(stream_.consumeToken(), token, Type::doubl());
+                            return Type::doubl();
                     }
                 }
                 
                 if (token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE)) {
                     parse(stream_.consumeToken(), token, type);  // Must be of the same type as the callee
                     placeholder.write(INS_EQUAL_PRIMITIVE);
-                    return typeBoolean;
+                    return Type::boolean();
                 }
                 
                 method = type.valueType()->getMethod(token, type, typeContext);
@@ -1177,7 +1177,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             else if (type.type() == TypeContent::Enum && token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
                 parse(stream_.consumeToken(), token, type);  // Must be of the same type as the callee
                 placeholder.write(INS_EQUAL_PRIMITIVE);
-                return typeBoolean;
+                return Type::boolean();
             }
             else if (type.type() == TypeContent::Class) {
                 method = type.eclass()->getMethod(token, type, typeContext);
@@ -1192,7 +1192,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             return parseFunctionCall(type, method, token);
         }
     }
-    return typeNothingness;
+    return Type::nothingness();
 }
 
 void CallableParserAndGenerator::noReturnError(SourcePosition p) {

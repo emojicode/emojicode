@@ -77,7 +77,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
             }
         }
         if (ct.calleeType().canHaveGenericArguments()) {
-            Type type = typeNothingness;
+            Type type = Type::nothingness();
             if (ct.calleeType().typeDefinitionFunctional()->fetchVariable(variableToken.value(), optional, &type)) {
                 return type;
             }
@@ -99,7 +99,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         if (dynamicType) *dynamicType = TypeDynamism::None;
 
         Type t(TypeContent::Callable, optional);
-        t.genericArguments.push_back(typeNothingness);
+        t.genericArguments.push_back(Type::nothingness());
         
         while (stream_.nextTokenIsEverythingBut(E_WATERMELON) && stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW)) {
             t.genericArguments.push_back(parseTypeDeclarative(ct, dynamism));
@@ -120,7 +120,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
 
         parsedType.optional = optional;
 
-        auto type = typeNothingness;
+        auto type = Type::nothingness();
         if (!package_->fetchRawType(parsedType, &type)) {
             throw CompilerErrorException(parsedType.token, "Could not find type %s in enamespace %s.",
                                          parsedType.name.utf8().c_str(), parsedType.ns.utf8().c_str());
@@ -151,7 +151,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
             while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
                 auto &token = stream_.consumeToken(TokenType::Identifier);
                 
-                Type ta = parseTypeDeclarative(ct, dynamism, typeNothingness, nullptr);
+                Type ta = parseTypeDeclarative(ct, dynamism, Type::nothingness(), nullptr);
                 
                 auto i = count + offset;
                 if (typeDef->numberOfGenericArgumentsWithSuperArguments() <= i) {
@@ -171,7 +171,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
             }
             
             if (count != typeDef->numberOfOwnGenericArguments()) {
-                auto str = type->toString(typeNothingness, true);
+                auto str = type->toString(Type::nothingness(), true);
                 throw CompilerErrorException(errorToken, "Type %s requires %d generic arguments, but %d were given.",
                               str.c_str(), typeDef->numberOfOwnGenericArguments(), count);
             }
@@ -193,7 +193,7 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initial
             
         TypeDynamism dynamism;
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
-        auto type = parseTypeDeclarative(ct, TypeDynamism::AllKinds, typeNothingness, &dynamism);
+        auto type = parseTypeDeclarative(ct, TypeDynamism::AllKinds, Type::nothingness(), &dynamism);
         
         c->arguments.push_back(Argument(variableToken, type));
         
@@ -217,7 +217,7 @@ bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
         stream_.consumeToken();
         TypeDynamism dynamism;
 
-        c->returnType = parseTypeDeclarative(ct, TypeDynamism::AllKinds, typeNothingness, &dynamism);
+        c->returnType = parseTypeDeclarative(ct, TypeDynamism::AllKinds, Type::nothingness(), &dynamism);
         if (dynamism == TypeDynamism::Self) {
             usedSelf = true;
         }
@@ -230,7 +230,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext 
         stream_.consumeToken();
         auto &variable = stream_.consumeToken(TokenType::Variable);
         
-        Type t = parseTypeDeclarative(p->owningType(), TypeDynamism::GenericTypeVariables, typeNothingness, nullptr,
+        Type t = parseTypeDeclarative(p->owningType(), TypeDynamism::GenericTypeVariables, Type::nothingness(), nullptr,
                                       true);
         p->genericArgumentConstraints.push_back(t);
         

@@ -115,7 +115,7 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
 }
 
 Class* getStandardClass(EmojicodeString name, Package *_, SourcePosition errorPosition) {
-    Type type = typeNothingness;
+    Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Class) {
         throw CompilerErrorException(errorPosition, "s package class %s is missing.", name.utf8().c_str());
@@ -125,7 +125,7 @@ Class* getStandardClass(EmojicodeString name, Package *_, SourcePosition errorPo
 }
 
 Protocol* getStandardProtocol(EmojicodeString name, Package *_, SourcePosition errorPosition) {
-    Type type = typeNothingness;
+    Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Protocol) {
         throw CompilerErrorException(errorPosition, "s package protocol %s is missing.", name.utf8().c_str());
@@ -134,7 +134,7 @@ Protocol* getStandardProtocol(EmojicodeString name, Package *_, SourcePosition e
 }
 
 ValueType* getStandardValueType(EmojicodeString name, Package *_, SourcePosition errorPosition) {
-    Type type = typeNothingness;
+    Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::ValueType) {
         throw CompilerErrorException(errorPosition, "s package value type %s is missing.", name.utf8().c_str());

@@ -73,6 +73,14 @@ public:
     Type(Protocol *p, bool o);
     Type(Enum *e, bool o);
     Type(ValueType *v, bool o);
+
+    static Type integer() { return Type(VT_INTEGER, false); }
+    static Type boolean() { return Type(VT_BOOLEAN, false); }
+    static Type symbol() { return Type(VT_SYMBOL, false); }
+    static Type doubl() { return Type(VT_DOUBLE, false); }
+    static Type something() { return Type(TypeContent::Something, false); }
+    static Type nothingness() { return Type(TypeContent::Nothingness, false); }
+    static Type someobject() { return Type(TypeContent::Someobject, false); }
     
     /** Returns the type of this type. Whether it’s an integer, class, etc. */
     TypeContent type() const { return typeContent_; }
@@ -146,13 +154,5 @@ private:
     bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
     Type resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeContext) const;
 };
-
-#define typeInteger (Type(VT_INTEGER, false))
-#define typeBoolean (Type(VT_BOOLEAN, false))
-#define typeSymbol (Type(VT_SYMBOL, false))
-#define typeFloat (Type(VT_DOUBLE, false))
-#define typeSomething (Type(TypeContent::Something, false))
-#define typeNothingness (Type(TypeContent::Nothingness, false))
-#define typeSomeobject (Type(TypeContent::Someobject, false))
 
 #endif /* Type_hpp */
