@@ -72,12 +72,12 @@ public:
     Type(Class *c, bool o);
     Type(Protocol *p, bool o);
     Type(Enum *e, bool o);
-    Type(ValueType *v, bool o);
+    Type(ValueType *v, bool o, bool reference);
 
-    static Type integer() { return Type(VT_INTEGER, false); }
-    static Type boolean() { return Type(VT_BOOLEAN, false); }
-    static Type symbol() { return Type(VT_SYMBOL, false); }
-    static Type doubl() { return Type(VT_DOUBLE, false); }
+    static Type integer() { return Type(VT_INTEGER, false, false); }
+    static Type boolean() { return Type(VT_BOOLEAN, false, false); }
+    static Type symbol() { return Type(VT_SYMBOL, false, false); }
+    static Type doubl() { return Type(VT_DOUBLE, false, false); }
     static Type something() { return Type(TypeContent::Something, false); }
     static Type nothingness() { return Type(TypeContent::Nothingness, false); }
     static Type someobject() { return Type(TypeContent::Someobject, false); }
@@ -137,8 +137,9 @@ public:
     std::string toString(TypeContext contextType, bool includeNsAndOptional) const;
     
     void setMeta(bool meta) { meta_ = meta; }
-    bool meta() { return meta_; }
-    
+    bool meta() const { return meta_; }
+    bool isVTReference() const { return vtReference_; }
+    void setVTReference() { vtReference_ = true; }
     bool allowsMetaType();
 private:
     int reference_;
@@ -150,6 +151,7 @@ private:
     bool optional_;
     bool resolveSelfOn_ = true;
     bool meta_ = false;
+    bool vtReference_ = false;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
     Type resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeContext) const;

@@ -16,6 +16,7 @@
 #include "TypeContext.hpp"
 #include "CallableWriter.hpp"
 #include "CallableParserAndGeneratorMode.hpp"
+#include "Destination.hpp"
 
 struct FlowControlReturn {
     int branches = 0;
@@ -48,6 +49,8 @@ public:
     void analyze();
     /** Whether self was used in the callable body. */
     bool usedSelfInBody() const { return usedSelf; }
+
+    static bool hasInstanceScope(CallableParserAndGeneratorMode mode);
 private:
     CallableParserAndGeneratorMode mode;
     /** The callable which is processed. */
@@ -67,21 +70,29 @@ private:
     bool usedSelf = false;
     /** Whether the superinitializer has been called (always false if the function is not an intializer). */
     bool calledSuper = false;
+    bool pushedTemporaryScope_ = false;
+
     /** The this context in which this function operates. */
     TypeContext typeContext;
     
     /**
-     * Safely tries to parse the given token, evaluate the associated command and returns the type of that command.
-     * @param token The token to evaluate. Can be @c nullptr which leads to a compiler error.
-     * @param expectation The type which is expected to be produced by the following lexical unit. It’s taken into
+     * Safely tries to parse and write the bytecode of the expression starting at the given token.
+     * @returns The expression’s return type.
+     * @param token The token at which the expression to evaluate begins.
+     * @param expectation The type which is expected to be produced by the expression. It’s taken into
                           account when parsing numbers etc. Pass @c Type::nothingness() to indicate no expectations.
+     * @param vtDestinationID The stack ID at which a non-primitive value type would be stored. -2 indicates that no
+                             place is designated to store the value. -1 means that a place value type is only
+                             temporay. You must call @c popTemporaryScope() appropriately after a call to this method
+                             with @c vtDestinationID set to -1.
      */
-    Type parse(const Token &token, Type expectation = Type::nothingness());
+    Type parse(const Token &token, Type expectation = Type::nothingness(), Destination des = Destination());
     /**
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
      * @param token The token to evaluate.
      */
-    Type parse(const Token &token, const Token &parentToken, Type type, std::vector<CommonTypeFinder>* = nullptr);
+    Type parse(const Token &token, const Token &parentToken, Type type, std::vector<CommonTypeFinder>* = nullptr,
+               Destination des = Destination());
     /** 
      * Parses a type name and writes instructions to fetch it at runtime. If everything goes well, the parsed
      * type (unresolved) and true are returned.
@@ -91,7 +102,7 @@ private:
     std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, SourcePosition p,
                                                        Type expectation = Type::nothingness());
     /** Parses an identifier when occurring without context. */
-    Type parseIdentifier(const Token &token, Type expectation);
+    Type parseIdentifier(const Token &token, Type expectation, Destination des);
     /** Parses the expression for an if statement. */
     void parseIfExpression(const Token &token);
     /**
@@ -106,10 +117,14 @@ private:
      * @param stack The command to access the variable if it is on the stack.
      * @param instance The command to access the variable it it is an instance variable.
      */
-    void writeCoinForStackOrInstance(bool inObjectScope, EmojicodeCoin stack, EmojicodeCoin instance, SourcePosition p);
+    void writeCoinForStackOrInstance(bool inInstanceScope, EmojicodeCoin stack,
+                                     EmojicodeCoin object, EmojicodeCoin vt, SourcePosition p);
 
     void parseCoinInBlock();
+
     void copyVariableContent(const Variable &variable, bool inObjectScope, SourcePosition p);
+    void produceToVariable(const Variable &variable, bool inInstanceScope, SourcePosition p);
+    void getVTReference(const Variable &variable, bool inInstanceScope, SourcePosition p);
 
     void noReturnError(SourcePosition p);
     void noEffectWarning(const Token &warningToken);
@@ -117,6 +132,17 @@ private:
     void flowControlBlock(bool block = true);
 
     void flowControlReturnEnd(FlowControlReturn &fcr);
+
+    bool isSuperconstructorRequired() const;
+    bool isFullyInitializedCheckRequired() const;
+    bool isSelfAllowed() const;
+    bool hasInstanceScope() const;
+    bool isOnlyNothingnessReturnAllowed() const;
+
+    void pushTemporaryScope();
+    void popTemporaryScope();
+
+    Type parseMethodCallee();
     
     void notStaticError(TypeAvailability t, SourcePosition p, const char *name);
     bool isStatic(TypeAvailability t) { return t == TypeAvailability::StaticAndUnavailable

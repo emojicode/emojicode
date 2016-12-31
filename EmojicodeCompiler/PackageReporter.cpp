@@ -152,7 +152,8 @@ void reportPackage(Package *package) {
     bool printedValueType = false;
     printf(",\"valueTypes\":[");
     for (auto vt : valueTypes) {
-        auto vtcontext = TypeContext(Type(vt, false));
+        auto vttype = Type(vt, false, false);
+        auto vtcontext = TypeContext(vttype);
         if (printedValueType) {
             putchar(',');
         }
@@ -169,8 +170,7 @@ void reportPackage(Package *package) {
         printf("\"methods\":[");
         for (size_t i = 0; i < vt->methodList().size(); i++) {
             Function *method = vt->methodList()[i];
-            reportFunctionInformation(method, Return, i + 1 == vt->methodList().size(),
-                                      TypeContext(Type(vt, false), method));
+            reportFunctionInformation(method, Return, i + 1 == vt->methodList().size(), TypeContext(vttype, method));
         }
         printf("],");
         
@@ -178,8 +178,7 @@ void reportPackage(Package *package) {
         for (size_t i = 0; i < vt->initializerList().size(); i++) {
             Initializer *initializer = vt->initializerList()[i];
             reportFunctionInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
-                                      i + 1 == vt->initializerList().size(),
-                                      TypeContext(Type(vt, false), initializer));
+                                      i + 1 == vt->initializerList().size(), TypeContext(vttype, initializer));
         }
         printf("],");
         
@@ -187,7 +186,7 @@ void reportPackage(Package *package) {
         for (size_t i = 0; i < vt->typeMethodList().size(); i++) {
             Function *classMethod = vt->typeMethodList()[i];
             reportFunctionInformation(classMethod, Return, vt->typeMethodList().size() == i + 1,
-                                      TypeContext(Type(vt, false), classMethod));
+                                      TypeContext(vttype, classMethod));
         }
         printf("]}");
     }

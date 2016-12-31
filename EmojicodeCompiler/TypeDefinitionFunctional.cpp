@@ -139,7 +139,7 @@ void TypeDefinitionFunctional::handleRequiredInitializer(Initializer *init) {
 
 void TypeDefinitionFunctional::finalize() {
     for (auto &var : instanceVariables()) {
-        objectScope().setLocalVariable(var.name, var.type, false, var.position);
+        instanceScope().setLocalVariable(var.name, var.type, false, var.position);
     }
     
     if (instanceVariables().size() > 65536) {

@@ -39,9 +39,8 @@ void compileUnused(const std::vector<T *> &functions) {
 }
 void generateCodeForFunction(Function *function, CallableWriter &w) {
     CallableScoper scoper = CallableScoper();
-    if (function->compilationMode() == CallableParserAndGeneratorMode::ObjectMethod ||
-        function->compilationMode() == CallableParserAndGeneratorMode::ObjectInitializer) {
-        scoper = CallableScoper(&function->owningType().eclass()->objectScope());
+    if (CallableParserAndGenerator::hasInstanceScope(function->compilationMode())) {
+        scoper = CallableScoper(&function->owningType().typeDefinitionFunctional()->instanceScope());
     }
     CallableParserAndGenerator::writeAndAnalyzeFunction(function, w, function->owningType().disableSelfResolving(),
                                                         scoper, function->compilationMode());
@@ -63,7 +62,6 @@ void writeClass(Type classType, Writer &writer) {
     writer.writeUInt16(eclass->fullMethodCount());
     writer.writeByte(eclass->inheritsInitializers() ? 1 : 0);
     writer.writeUInt16(eclass->fullInitializerCount());
-    printf("Class %s size: %d\n", eclass->name().utf8().c_str(), eclass->size());
 
     writer.writeUInt16(eclass->usedMethodCount());
     writer.writeUInt16(eclass->usedInitializerCount());
@@ -165,12 +163,10 @@ void generateCode(Writer &writer) {
     
     for (auto eclass : Class::classes()) {
         eclass->finalize();
-        printf("Class %s is %d something large\n", eclass->name().utf8().c_str(), eclass->size());
     }
     
     for (auto vt : ValueType::valueTypes()) {
         vt->finalize();
-        printf("Value Type %s is %d something large\n", vt->name().utf8().c_str(), vt->size());
     }
     
     while (!Function::compilationQueue.empty()) {

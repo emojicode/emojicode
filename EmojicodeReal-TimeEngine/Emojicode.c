@@ -299,6 +299,17 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
             *destination = performInitializer(class, initializer, NULL, thread);
             return;
         }
+        case INS_PRODUCE_TO_AND_GET_VT_REFERENCE: {
+            Something *pd = stackVariableDestination(consumeCoin(thread), thread);
+            produce(consumeCoin(thread), thread, pd);
+            *destination = somethingVTReference(pd);
+            return;
+        }
+        case INS_INIT_VT: {
+            EmojicodeCoin c = consumeCoin(thread);
+            performFunction(functionTable[c], somethingVTReference(destination), thread, NULL);
+            return;
+        }
         case INS_DISPATCH_SUPER: {
             Class *class = readClass(thread);
             EmojicodeCoin vti = consumeCoin(thread);
@@ -317,6 +328,20 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
         case INS_CALL_FUNCTION: {
             EmojicodeCoin c = consumeCoin(thread);
             performFunction(functionTable[c], NOTHINGNESS, thread, destination);
+            return;
+        }
+        case INS_GET_VT_REFERENCE_STACK:
+            *destination = somethingVTReference(stackVariableDestination(consumeCoin(thread), thread));
+            return;
+        case INS_GET_VT_REFERENCE_OBJECT: {
+            Object *o = ((StackFrame *)thread->stack)->thisContext.object;
+            Something *d = (Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * consumeCoin(thread));
+            *destination = somethingVTReference(d);
+            return;
+        }
+        case INS_GET_VT_REFERENCE_VT: {
+            Something *d = ((StackFrame *)thread->stack)->thisContext.something + consumeCoin(thread);
+            *destination = somethingVTReference(d);
             return;
         }
         case INS_GET_CLASS_FROM_INSTANCE: {
@@ -359,10 +384,15 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
             produce(consumeCoin(thread), thread, stackVariableDestination(index, thread));
             return;
         }
-        case INS_PRODUCE_WITH_INSTANCE_DESTINATION: {
+        case INS_PRODUCE_WITH_OBJECT_DESTINATION: {
             EmojicodeCoin index = consumeCoin(thread);
             Object *o = ((StackFrame *)thread->stack)->thisContext.object;
             Something *d = (Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
+            produce(consumeCoin(thread), thread, d);
+            return;
+        }
+        case INS_PRODUCE_WITH_VT_DESTINATION: {
+            Something *d = ((StackFrame *)thread->stack)->thisContext.something + consumeCoin(thread);
             produce(consumeCoin(thread), thread, d);
             return;
         }
@@ -372,27 +402,33 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
         case INS_DECREMENT:
             destination->raw--;
             return;
-        case INS_COPY_SINGLE_STACK: {
-            EmojicodeCoin index = consumeCoin(thread);
-            *destination = *(Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
+        case INS_COPY_SINGLE_STACK:
+            *destination = stackGetVariable(consumeCoin(thread), thread);
             return;
-        }
         case INS_COPY_WITH_SIZE_STACK: {
             EmojicodeCoin index = consumeCoin(thread);
-            Something *source = (Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
+            Something *source = stackVariableDestination(index, thread);
             memcpy(destination, source, sizeof(Something) * consumeCoin(thread));
             return;
         }
-        case INS_COPY_SINGLE_INSTANCE: {
+        case INS_COPY_SINGLE_OBJECT: {
             EmojicodeCoin index = consumeCoin(thread);
             Object *o = ((StackFrame *)thread->stack)->thisContext.object;
             *destination = *(Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
             return;
         }
-        case INS_COPY_WITH_SIZE_INSTANCE: {
+        case INS_COPY_WITH_SIZE_OBJECT: {
             EmojicodeCoin index = consumeCoin(thread);
             Object *o = ((StackFrame *)thread->stack)->thisContext.object;
             Something *source = (Something *)(((Byte *)o) + sizeof(Object) + sizeof(Something) * index);
+            memcpy(destination, source, sizeof(Something) * consumeCoin(thread));
+            return;
+        }
+        case INS_COPY_SINGLE_VT:
+            *destination = ((StackFrame *)thread->stack)->thisContext.something[consumeCoin(thread)];
+            return;
+        case INS_COPY_WITH_SIZE_VT: {
+            Something *source = ((StackFrame *)thread->stack)->thisContext.something + consumeCoin(thread);
             memcpy(destination, source, sizeof(Something) * consumeCoin(thread));
             return;
         }
@@ -603,7 +639,7 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
             produce(consumeCoin(thread), thread, destination);
             unwrapOptional(*destination);
             return;
-        case 0x3B: {  // TODO: Won’t work with real vts
+        case INS_OPTIONAL_DISPATCH_METHOD: {
             Something sth;
             produce(consumeCoin(thread), thread, &sth);
             EmojicodeCoin vti = consumeCoin(thread);
@@ -642,7 +678,6 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
             }
             return;
         }
-            //MARK: Casts
         case INS_CAST_TO_CLASS: {
             produce(consumeCoin(thread), thread, destination);
             Class *class = readClass(thread);

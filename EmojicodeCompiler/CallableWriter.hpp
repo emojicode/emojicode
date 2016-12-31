@@ -40,6 +40,7 @@ class CallableWriterInsertionPoint {
     friend CallableWriter;
 public:
     virtual void insert(EmojicodeCoin value);
+    virtual void insert(std::initializer_list<EmojicodeCoin> values);
 private:
     CallableWriterInsertionPoint(CallableWriter *writer, size_t index) : writer_(writer), index_(index) {}
     CallableWriter *writer_;

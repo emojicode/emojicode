@@ -13,7 +13,8 @@ enum class CallableParserAndGeneratorMode {
     ObjectMethod,
     ObjectInitializer,
     /** A function with a context. (e.g. a value type method) */
-    ThisContextFunction,
+    ValueTypeMethod,
+    ValueTypeInitializer,
     /** A type method. */
     ClassMethod,
     /** A plain function without a context. (🏁) */

@@ -108,7 +108,7 @@ enum Emojis {
     E_RIGHT_POINTING_BACKHAND_INDEX = 0x1F449,
     E_RED_QUESTION_MARK = 0x2753,
     E_BABY_BOTTLE = 0x1F37C,
-    E_FOG = 0x1F32B,
+    E_WHITE_CIRCLE = 0x26AA,
 };
 
 #endif /* Emojis_h */

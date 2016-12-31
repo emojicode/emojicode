@@ -15,7 +15,7 @@ void ValueType::finalize() {
     TypeDefinitionFunctional::finalize();
     
     if (primitive_ && instanceVariables().size() > 0) {
-        throw CompilerErrorException(position(), "A value type marked with 🌫 cannot contain instance variables.");
+        throw CompilerErrorException(position(), "A value type marked with ⚪️ cannot have instance variables.");
     }
     
     for (auto f : methodList()) {

@@ -13,6 +13,7 @@
 		E407041F1CDE0D7D0075FBFE /* VariableNotFoundErrorException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E407041D1CDE0D7D0075FBFE /* VariableNotFoundErrorException.cpp */; };
 		E40704221CDE15750075FBFE /* TypeContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40704201CDE15750075FBFE /* TypeContext.cpp */; };
 		E42B3D0E1D590E0500D87126 /* algorithms.c in Sources */ = {isa = PBXBuildFile; fileRef = E42B3D0C1D590E0500D87126 /* algorithms.c */; };
+		E441E16B1E16519500607633 /* Destination.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E441E1691E16519500607633 /* Destination.cpp */; };
 		E4478C671B7B8CB400291BD9 /* Type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4478C661B7B8CB400291BD9 /* Type.cpp */; };
 		E449AF6C1CCCC0A200492FC0 /* PackageParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E449AF6A1CCCC0A200492FC0 /* PackageParser.cpp */; };
 		E45DB8141CB44D7500AE6FBE /* Thread.c in Sources */ = {isa = PBXBuildFile; fileRef = E45DB8131CB44D7500AE6FBE /* Thread.c */; };
@@ -94,6 +95,8 @@
 		E42B3D0C1D590E0500D87126 /* algorithms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = algorithms.c; path = "EmojicodeReal-TimeEngine/algorithms.c"; sourceTree = SOURCE_ROOT; };
 		E42B3D0D1D590E0500D87126 /* algorithms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = algorithms.h; path = "EmojicodeReal-TimeEngine/algorithms.h"; sourceTree = SOURCE_ROOT; };
 		E43387CA1C41308500B23165 /* Class.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Class.hpp; sourceTree = "<group>"; };
+		E441E1691E16519500607633 /* Destination.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Destination.cpp; sourceTree = "<group>"; };
+		E441E16A1E16519500607633 /* Destination.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Destination.hpp; sourceTree = "<group>"; };
 		E4442C6B1C31C74A00151317 /* Emojis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Emojis.h; sourceTree = "<group>"; };
 		E4442C6C1C327D0C00151317 /* Type.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Type.hpp; sourceTree = "<group>"; };
 		E4478C661B7B8CB400291BD9 /* Type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Type.cpp; sourceTree = "<group>"; };
@@ -308,6 +311,8 @@
 				E4BB24C41CD0E2C2003CC098 /* AbstractParser.cpp */,
 				E449AF6B1CCCC0A200492FC0 /* PackageParser.hpp */,
 				E449AF6A1CCCC0A200492FC0 /* PackageParser.cpp */,
+				E441E1691E16519500607633 /* Destination.cpp */,
+				E441E16A1E16519500607633 /* Destination.hpp */,
 			);
 			name = "Parsing & Analysis";
 			sourceTree = "<group>";
@@ -475,6 +480,7 @@
 			files = (
 				E4EB362B1AA2254700675B52 /* Lexer.cpp in Sources */,
 				E47E57E91D0D91D8006611EC /* ValueType.cpp in Sources */,
+				E441E16B1E16519500607633 /* Destination.cpp in Sources */,
 				E4F9D4011AC6CEE3005A1DD6 /* Class.cpp in Sources */,
 				E4BB24CC1CD0F979003CC098 /* TypeDefinitionFunctional.cpp in Sources */,
 				E4C18C5B1DDA1FCF00B4B5D5 /* Scoper.cpp in Sources */,

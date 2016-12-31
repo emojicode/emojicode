@@ -20,11 +20,11 @@ struct VariableCapture {
 };
 
 /** A @c CapturingCallableScoper can automatically capture unknown variables from another scope. These two
-    scopes must share the same object scopes as capturing from objects scope is not supported. */
+    scopes must share the same instance scope as capturing from instance scopes is not supported. */
 class CapturingCallableScoper : public CallableScoper {
 public:
     CapturingCallableScoper(CallableScoper &captured)
-        : CallableScoper(captured.objectScope()), capturedScoper_(captured) {}
+        : CallableScoper(captured.instanceScope()), capturedScoper_(captured) {}
     virtual std::pair<Variable&, bool> getVariable(const EmojicodeString &name, SourcePosition errorPosition) override;
     const std::vector<VariableCapture>& captures() const { return captures_; }
     int captureSize() const { return captureSize_; }

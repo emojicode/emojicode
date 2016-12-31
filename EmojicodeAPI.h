@@ -61,13 +61,13 @@ typedef struct Object {
 #define T_SYMBOL 3
 #define T_DOUBLE 4
 #define T_CLASS 5
-#define T_SOMETHING_POINTER 6
+#define T_VT_REFERENCE 6
 
 typedef uint_fast8_t Type;
 typedef unsigned char Byte;
 
 /** Either an object reference or a primitive value. */
-typedef struct {
+typedef struct Something {
     /** The type of the primitive or whether it contains an object reference. */
     Type type;
     union {
@@ -75,6 +75,7 @@ typedef struct {
         double doubl;
         Object *object;
         Class *eclass;
+        struct Something *something;
     };
 } Something;
 
@@ -88,6 +89,7 @@ typedef struct {
 #define somethingBoolean(o) ((Something){T_BOOLEAN, (o)})
 #define somethingDouble(o) ((Something){T_DOUBLE, .doubl = (o)})
 #define somethingClass(o) ((Something){T_CLASS, .eclass = (o)})
+#define somethingVTReference(o) ((Something){T_VT_REFERENCE, .something = (o)})
 #define EMOJICODE_TRUE ((Something){T_BOOLEAN, 1})
 #define EMOJICODE_FALSE ((Something){T_BOOLEAN, 0})
 #define NOTHINGNESS ((Something){T_OBJECT, .object = NULL})
@@ -215,26 +217,16 @@ extern void disallowGCAndPauseIfNeeded();
 
 //MARK: Stack
 
-/**
- * Pushes a new stack frame with the given values.
- * @c this The object/class context.
- * @c variable The number of variables to store in the stack frame.
- */
-extern void stackPush(Something t, int frameSize, uint8_t argCount, Thread *thread);
-
 /** Pops the current stack frame from the stack. */
 extern void stackPop(Thread *thread);
 
 /** Get the variable at the given index. */
-Something stackGetVariable(uint8_t index, Thread *thread);
+Something stackGetVariable(int index, Thread *thread);
 /** Gets the stack address for the given index. */
-Something* stackVariableDestination(uint8_t index, Thread *thread);
+Something* stackVariableDestination(int index, Thread *thread);
 #pragma GCC poison stackSetVariable
-/** Decrements the variable at the given index. */
-void stackDecrementVariable(uint8_t index, Thread *thread);
-/** Increments the variable at the given index. */
-void stackIncrementVariable(uint8_t index, Thread *thread);
 
+void stackPush(Something this, int frameSize, uint8_t argCount, Thread *thread);
 Something* stackReserveFrame(Something this, int size, Thread *thread);
 
 void stackPushReservedFrame(Thread *thread);
@@ -246,8 +238,6 @@ void restoreStackState(StackState s, Thread *thread);
 Something stackGetThisContext(Thread *);
 /** Returns the object on which the method was called. */
 Object* stackGetThisObject(Thread *);
-/** Returns the class on which the method was called. */
-__attribute__((deprecated)) Class* stackGetThisObjectClass(Thread *thread);
 
 
 //MARK: Packages

@@ -30,6 +30,7 @@ public:
     virtual int size() const override { return primitive_ ? 1 : TypeDefinitionFunctional::size(); }
     
     void makePrimitive() { primitive_ = true; }
+    bool isPrimitive() { return primitive_; }
 private:
     static std::vector<ValueType *> valueType_;
     ValueTypeVTIProvider vtiProvider_;

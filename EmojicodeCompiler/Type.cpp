@@ -39,7 +39,8 @@ Type::Type(Protocol *p, bool o) : typeDefinition_(p), typeContent_(TypeContent::
 Type::Type(Enum *e, bool o) : typeDefinition_(e), typeContent_(TypeContent::Enum), optional_(o) {
 }
 
-Type::Type(ValueType *v, bool o) : typeDefinition_(v), typeContent_(TypeContent::ValueType), optional_(o) {
+Type::Type(ValueType *v, bool o, bool reference)
+    : typeDefinition_(v), typeContent_(TypeContent::ValueType), optional_(o), vtReference_(reference) {
 }
 
 Type::Type(Class *c, bool o) : typeDefinition_(c), typeContent_(TypeContent::Class), optional_(o) {
@@ -179,7 +180,8 @@ bool Type::identicalGenericArguments(Type to, TypeContext ct, std::vector<Common
 }
 
 bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
-    if (to.type() == TypeContent::Something) {
+    if (to.type() == TypeContent::Something &&
+        !(this->type() == TypeContent::ValueType && !this->valueType()->isPrimitive())) {
         return true;
     }
     if (to.meta_ != meta_) {

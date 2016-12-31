@@ -388,7 +388,7 @@ void integerToString(Thread *thread, Something *destination) {
 }
 
 static void integerRandom(Thread *thread, Something *destination) {
-    *destination = somethingInteger(secureRandomNumber(stackGetVariable(0, thread).raw, stackGetVariable(1, thread).raw));
+    *stackGetThisContext(thread).something = somethingInteger(secureRandomNumber(stackGetVariable(0, thread).raw, stackGetVariable(1, thread).raw));
 }
 
 #define abs(x) _Generic((x), long: labs, long long: llabs, default: abs)(x)

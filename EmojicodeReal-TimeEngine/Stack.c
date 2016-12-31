@@ -58,24 +58,20 @@ void restoreStackState(StackState s, Thread *thread) {
     thread->stack = s.stack;
 }
 
-Something stackGetVariable(uint8_t index, Thread *thread){
+Something stackGetVariable(int index, Thread *thread) {
     return *stackVariableDestination(index, thread);
 }
 
-Something* stackVariableDestination(uint8_t index, Thread *thread){
+Something* stackVariableDestination(int index, Thread *thread) {
     return (Something *)(thread->stack + sizeof(StackFrame) + sizeof(Something) * index);
 }
 
-Object* stackGetThisObject(Thread *thread){
+Object* stackGetThisObject(Thread *thread) {
     return ((StackFrame *)thread->stack)->thisContext.object;
 }
 
-Something stackGetThisContext(Thread *thread){
+Something stackGetThisContext(Thread *thread) {
     return ((StackFrame *)thread->stack)->thisContext;
-}
-
-Class* stackGetThisObjectClass(Thread *thread){
-    return ((StackFrame *)thread->stack)->thisContext.eclass;
 }
 
 void stackMark(Thread *thread){

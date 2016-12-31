@@ -4,8 +4,7 @@
 🌮
   Boolean
 🌮
-🌍 🕊 👌🍇
-  🌫
+🌍 🕊 👌 ⚪️ 🍇
   🌮 Whether this value and *other* are considered equal. 🌮
   🐖 😛 other 🐕 ➡️ 👌 🍇
     🍎 😛 🐕 other
@@ -33,8 +32,7 @@
 🌮
   Integer
 🌮
-🌍 🕊 🚂 🍇
-  🌫
+🌍 🕊 🚂 ⚪️ 🍇
   🌮
     Returns a cryptographically secure random number that is greater than
     or equal to *min* and less than or equal to *max*.
@@ -113,8 +111,7 @@
 🌮
   Double
 🌮
-🌍 🕊 🚀 🍇
-  🌫
+🌍 🕊 🚀 ⚪️ 🍇
   🌮 Whether this value and *other* are considered equal. 🌮
   🐖 😛 other 🐕 ➡️ 👌 🍇
     🍎 😛 🐕 other
@@ -251,8 +248,7 @@
 🌮
   Symbol
 🌮
-🌍 🕊 🔣 🍇
-  🌫
+🌍 🕊 🔣 ⚪️ 🍇
   🌮 Whether this value and *other* are considered equal. 🌮
   🐖 😛 other 🐕 ➡️ 👌 🍇
     🍎 😛 🐕 other

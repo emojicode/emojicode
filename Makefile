@@ -34,7 +34,7 @@ DIST=$(DIST_BUILDS)/$(DIST_NAME)
 
 TESTS_DIR=tests
 TESTS_REJECT=$(wildcard $(TESTS_DIR)/reject/*.emojic)
-TESTS_COMPILATION=hello piglatin namespace enum extension chaining branch class protocol selfInDeclaration generics genericProtocol callable threads reflection castToSelf variableInitAndScoping privateMethod babyBottleInitializer sequenceTypes
+TESTS_COMPILATION=hello piglatin namespace enum extension chaining branch class protocol selfInDeclaration generics genericProtocol callable threads reflection castToSelf variableInitAndScoping privateMethod babyBottleInitializer sequenceTypes valueType valueTypeSelf
 TESTS_S=stringTest primitives listTest dictionaryTest rangeTest dataTest mathTest fileTest systemTest jsonTest enumerator
 
 .PHONY: builds tests install dist

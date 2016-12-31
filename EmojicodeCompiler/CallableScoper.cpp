@@ -36,8 +36,8 @@ std::pair<Variable&, bool> CallableScoper::getVariable(const EmojicodeString &na
             return std::pair<Variable&, bool>(scope.getLocalVariable(name), false);
         }
     }
-    if (objectScope_ && objectScope_->hasLocalVariable(name)) {
-        return std::pair<Variable&, bool>(objectScope_->getLocalVariable(name), true);
+    if (instanceScope_ && instanceScope_->hasLocalVariable(name)) {
+        return std::pair<Variable&, bool>(instanceScope_->getLocalVariable(name), true);
     }
     throw VariableNotFoundErrorException(errorPosition, name);
 }

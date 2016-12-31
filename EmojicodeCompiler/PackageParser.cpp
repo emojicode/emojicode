@@ -337,8 +337,12 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
     auto parsedTypeName = parseAndValidateNewTypeName();
     
     auto valueType = new ValueType(parsedTypeName.name, package_, theToken, documentation);
-    
-    auto valueTypeContent = Type(valueType, false);
+
+    if (stream_.consumeTokenIf(E_WHITE_CIRCLE)) {
+        valueType->makePrimitive();
+    }
+
+    auto valueTypeContent = Type(valueType, false, true);
     parseGenericArgumentList(valueType, valueTypeContent);
     valueType->finalizeGenericArguments();
     
@@ -434,7 +438,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                                                 package_, token.position(), override.set(), documentation.get(),
                                                 deprecated.set(),
                                                 eclass ? CallableParserAndGeneratorMode::ObjectMethod :
-                                                    CallableParserAndGeneratorMode::ThisContextFunction);
+                                                    CallableParserAndGeneratorMode::ValueTypeMethod);
                     auto context = TypeContext(typed, method);
                     parseGenericArgumentsInDefinition(method, context);
                     parseArgumentList(method, context);
@@ -455,7 +459,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                                                            deprecated.set(), required.set(),
                                                            canReturnNothingness.set(),
                                                            eclass ? CallableParserAndGeneratorMode::ObjectInitializer :
-                                                              CallableParserAndGeneratorMode::ThisContextFunction);
+                                                              CallableParserAndGeneratorMode::ValueTypeInitializer);
                 auto context = TypeContext(typed, initializer);
                 parseGenericArgumentsInDefinition(initializer, context);
                 parseArgumentList(initializer, context, true);
@@ -466,13 +470,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 }
                 
                 typed.typeDefinitionFunctional()->addInitializer(initializer);
-                break;
-            }
-            case E_FOG: {
-                if (eclass) {
-                    throw CompilerErrorException(token, "🌫 can only occur in a value type.");
-                }
-                typed.valueType()->makePrimitive();
                 break;
             }
             default:

@@ -49,3 +49,7 @@ void CallableWriterCoinsCountPlaceholder::write() {
 void CallableWriterInsertionPoint::insert(EmojicodeCoin value) {
     writer_->coins_.insert(writer_->coins_.begin() + index_, value);
 }
+
+void CallableWriterInsertionPoint::insert(std::initializer_list<EmojicodeCoin> values) {
+    writer_->coins_.insert(writer_->coins_.begin() + index_, values);
+}

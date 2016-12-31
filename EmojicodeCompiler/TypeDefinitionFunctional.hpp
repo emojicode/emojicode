@@ -94,7 +94,7 @@ public:
     
     /** Returns an object scope for an instance of the defined type.
      @warning @c finalize() must be called before a call to this method. */
-    Scope& objectScope() { return scoper_.scope(); }
+    Scope& instanceScope() { return scoper_.scope(); }
 protected:
     TypeDefinitionFunctional(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
         : TypeDefinition(name, p, pos, documentation) {}

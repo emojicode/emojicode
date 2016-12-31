@@ -28,6 +28,8 @@ public:
     /** Sets a variable in this scope. */
     Variable& setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos,
                                bool initialized = false);
+    /** Allocates a variable only for internal use and returns its ID. */
+    int allocateInternalVariable(Type type);
     
     /**
      * Retrieves a variable form the scope or returns @c nullptr.
