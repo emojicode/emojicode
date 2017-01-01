@@ -129,27 +129,27 @@ void listShuffleInPlace(List *list) {
 
 /* MARK: Emoji bridges */
 
-static void listCountBridge(Thread *thread, Something *destination) {
+void listCountBridge(Thread *thread, Something *destination) {
     *destination = somethingInteger((EmojicodeInteger)((List *)stackGetThisObject(thread)->value)->count);
 }
 
-static void listAppendBridge(Thread *thread, Something *destination) {
+void listAppendBridge(Thread *thread, Something *destination) {
     listAppend(stackGetThisObject(thread), stackGetVariable(0, thread), thread);
 }
 
-static void listGetBridge(Thread *thread, Something *destination) {
+void listGetBridge(Thread *thread, Something *destination) {
     *destination = listGet(stackGetThisObject(thread)->value, unwrapInteger(stackGetVariable(0, thread)));
 }
 
-static void listRemoveBridge(Thread *thread, Something *destination) {
+void listRemoveBridge(Thread *thread, Something *destination) {
     *destination = listRemoveByIndex(stackGetThisObject(thread)->value, unwrapInteger(stackGetVariable(0, thread))) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
-static void listPopBridge(Thread *thread, Something *destination) {
+void listPopBridge(Thread *thread, Something *destination) {
     *destination = listPop(stackGetThisObject(thread)->value);
 }
 
-static void listInsertBridge(Thread *thread, Something *destination) {
+void listInsertBridge(Thread *thread, Something *destination) {
     EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
     List *list = stackGetThisObject(thread)->value;
     
@@ -170,7 +170,7 @@ static void listInsertBridge(Thread *thread, Something *destination) {
     items(list)[index] = stackGetVariable(1, thread);
 }
 
-static void listQSort(Thread *thread, size_t off, size_t n) {
+void listQSort(Thread *thread, size_t off, size_t n) {
     if (n < 2)
         return;
     
@@ -209,12 +209,12 @@ static void listQSort(Thread *thread, size_t off, size_t n) {
     listQSort(thread, off + i, n - i);
 }
 
-static void listSort(Thread *thread, Something *destination) {
+void listSort(Thread *thread, Something *destination) {
     List *list = stackGetThisObject(thread)->value;
     listQSort(thread, 0, list->count);
 }
 
-static void listFromListBridge(Thread *thread, Something *destination) {
+void listFromListBridge(Thread *thread, Something *destination) {
     Object *listO = newObject(CL_LIST);
     stackPush(stackGetThisContext(thread), 1, 0, thread);
     *stackVariableDestination(0, thread) = somethingObject(listO);
@@ -236,74 +236,33 @@ static void listFromListBridge(Thread *thread, Something *destination) {
     *destination = somethingObject(listO);
 }
 
-static void listRemoveAllBridge(Thread *thread, Something *destination) {
+void listRemoveAllBridge(Thread *thread, Something *destination) {
     List *list = stackGetThisObject(thread)->value;
     memset(items(list), 0, list->count);
     list->count = 0;
 }
 
-static void listSetBridge(Thread *thread, Something *destination) {
+void listSetBridge(Thread *thread, Something *destination) {
     listSet(stackGetVariable(0, thread).raw, stackGetVariable(1, thread), thread);
 }
 
-static void listShuffleInPlaceBridge(Thread *thread, Something *destination) {
+void listShuffleInPlaceBridge(Thread *thread, Something *destination) {
     listShuffleInPlace(stackGetThisObject(thread)->value);
 }
 
-static void listEnsureCapacityBridge(Thread *thread, Something *destination) {
+void listEnsureCapacityBridge(Thread *thread, Something *destination) {
     listEnsureCapacity(thread, stackGetVariable(0, thread).raw);
 }
 
-static void initListEmptyBridge(Thread *thread) {
+void initListEmptyBridge(Thread *thread, Something *destination) {
     //Nothing to do
     //The Real-Time Engine guarantees pre-nulled objects.
 }
 
-static void initListWithCapacity(Thread *thread) {
+void initListWithCapacity(Thread *thread, Something *destination) {
     EmojicodeInteger capacity = stackGetVariable(0, thread).raw;
     Object *n = newArray(sizeCalculationWithOverflowProtection(capacity, sizeof(Something)));
     List *list = stackGetThisObject(thread)->value;
     list->capacity = capacity;
     list->items = n;
-}
-
-FunctionFunctionPointer listMethodForName(EmojicodeChar method) {
-    switch (method) {
-        case 0x1F43B: //bear
-            return listAppendBridge;
-        case 0x1f43d: //🐽
-            return listGetBridge;
-        case 0x1F428: //koala
-            return listRemoveBridge;
-        case 0x1F435: //monkey
-            return listInsertBridge;
-        case 0x1f414: //🐔
-            return listCountBridge;
-        case 0x1F43C: //panda
-            return listPopBridge;
-        case 0x1F439: //🐹
-            return listShuffleInPlaceBridge;
-        case 0x1F42E: //🐮
-            return listFromListBridge;
-        case 0x1F981: //🦁
-            return listSort;
-        case 0x1f417: //🐗
-            return listRemoveAllBridge;
-        case 0x1f437: //🐷
-            return listSetBridge;
-        case 0x1f434: //🐴
-            return listEnsureCapacityBridge;
-    }
-    return NULL;
-}
-
-InitializerFunctionFunctionPointer listInitializerForName(EmojicodeChar name){
-    switch (name) {
-        case 0x1F427: //🐧
-            return initListWithCapacity;
-            break;
-        default:
-            return initListEmptyBridge;
-            break;
-    }
 }

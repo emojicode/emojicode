@@ -242,7 +242,12 @@ void AbstractParser::parseBody(Function *p, bool allowNative) {
         if (!allowNative) {
             throw CompilerErrorException(radio, "Native code is not allowed in this context.");
         }
-        p->native = true;
+        auto &indexToken = stream_.consumeToken(TokenType::Integer);
+        auto index = std::stoll(indexToken.value().utf8(), 0, 0);
+        if (index < 1 || index > UINT16_MAX) {
+            throw CompilerErrorException(indexToken.position(), "Linking Table Index is not in range.");
+        }
+        p->setLinkingTableIndex(static_cast<int>(index));
     }
     else {
         stream_.requireIdentifier(E_GRAPES);

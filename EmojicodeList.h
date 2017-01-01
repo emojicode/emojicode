@@ -29,9 +29,6 @@ struct List {
  */
 void listAppend(Object *lo, Something o, Thread *thread);
 
-/** Removes the last element of the list and returns it. O(1) */
-Something listPop(List *list);
-
 /**
  * Returns the item at @c i or @c NULL if @c i is out of bounds.
  */
@@ -58,7 +55,19 @@ void listRelease(void *l);
 /** List marker for the GC */
 void listMark(Object *self);
 
-FunctionFunctionPointer listMethodForName(EmojicodeChar method);
-InitializerFunctionFunctionPointer listInitializerForName(EmojicodeChar method);
+void initListEmptyBridge(Thread *thread, Something *destination);
+void initListWithCapacity(Thread *thread, Something *destination);
+void listCountBridge(Thread *thread, Something *destination);
+void listAppendBridge(Thread *thread, Something *destination);
+void listGetBridge(Thread *thread, Something *destination);
+void listRemoveBridge(Thread *thread, Something *destination);
+void listPopBridge(Thread *thread, Something *destination);
+void listInsertBridge(Thread *thread, Something *destination);
+void listSort(Thread *thread, Something *destination);
+void listFromListBridge(Thread *thread, Something *destination);
+void listRemoveAllBridge(Thread *thread, Something *destination);
+void listSetBridge(Thread *thread, Something *destination);
+void listShuffleInPlaceBridge(Thread *thread, Something *destination);
+void listEnsureCapacityBridge(Thread *thread, Something *destination);
 
 #endif /* EmojicodeList_h */

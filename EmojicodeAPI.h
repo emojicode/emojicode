@@ -24,7 +24,6 @@
 
 typedef struct Class Class;
 typedef struct Function Function;
-typedef struct InitializerFunction InitializerFunction;
 typedef struct List List;
 typedef struct Thread Thread;
 typedef struct StackFrame StackFrame;
@@ -243,7 +242,6 @@ Object* stackGetThisObject(Thread *);
 //MARK: Packages
 
 typedef void (*FunctionFunctionPointer)(Thread *thread, Something *destination);
-typedef void (*InitializerFunctionFunctionPointer)(Thread *thread);
 typedef void (*Marker)(Object *self);
 typedef void (*Deinitializer)(void *value);
 
@@ -255,9 +253,7 @@ typedef struct {
     uint16_t minor;
 } PackageVersion;
 
-typedef enum {
-    INSTANCE_METHOD = 1, TYPE_METHOD = 2
-} MethodType;
+#define LinkingTable FunctionFunctionPointer linkingTable[] =
 
 /**
  * Generates a secure random number. The integer is either generated using arc4random_uniform if available

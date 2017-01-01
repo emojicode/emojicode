@@ -22,7 +22,7 @@ Protocol::Protocol(EmojicodeString name, Package *pkg, SourcePosition p, const E
 }
 
 void Protocol::addMethod(Function *method) {
-    method->native = true;
+    method->setLinkingTableIndex(1);
     method->setVti(static_cast<int>(methodList_.size()));
     TypeDefinitionFunctional::addMethod(method);
 }

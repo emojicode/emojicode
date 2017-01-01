@@ -26,7 +26,8 @@ PACKAGE_LDFLAGS += -undefined dynamic_lookup
 endif
 
 PACKAGES_DIR=DefaultPackages
-PACKAGES=files allegro sockets
+PACKAGES=files sockets
+# allegro
 
 DIST_NAME=Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
 DIST_BUILDS=builds

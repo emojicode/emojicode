@@ -31,7 +31,7 @@ void writeUsed(const std::vector<T *> &functions, Writer &writer) {
 template <typename T>
 void compileUnused(const std::vector<T *> &functions) {
     for (auto function : functions) {
-        if (!function->used() && !function->native) {
+        if (!function->used() && !function->isNative()) {
             DiscardingCallableWriter writer = DiscardingCallableWriter();
             generateCodeForFunction(function, writer);
         }
@@ -125,14 +125,6 @@ void writeClass(Type classType, Writer &writer) {
     }
 }
 
-void writeValueType(ValueType *vt, Writer &writer) {
-    writer.writeEmojicodeChar(vt->name()[0]);
-    writer.writeUInt16(vt->usedFunctionCount());
-    writeUsed(vt->methodList(), writer);
-    writeUsed(vt->typeMethodList(), writer);
-    writeUsed(vt->initializerList(), writer);
-}
-
 void writePackageHeader(Package *pkg, Writer &writer, uint16_t classCount) {
     if (pkg->requiresBinary()) {
         size_t l = pkg->name().size() + 1;
@@ -214,21 +206,13 @@ void generateCode(Writer &writer) {
     }
     
     writer.writeUInt16(Function::functionCount());
-    auto valueTypeCountPlaceholder = writer.writePlaceholder<uint16_t>();
-    writer.writeEmojicodeChar(0);
-    writer.writeUInt16(1);
-    auto scoper = CallableScoper();
-    
     writer.writeFunction(Function::start);
 
-    int valueTypeCount = 1;
     for (auto vt : ValueType::valueTypes()) {
-        if (vt->usedFunctionCount() > 0) {
-            writeValueType(vt, writer);
-            valueTypeCount++;
-        }
+        writeUsed(vt->methodList(), writer);
+        writeUsed(vt->typeMethodList(), writer);
+        writeUsed(vt->initializerList(), writer);
     }
-    valueTypeCountPlaceholder.write(valueTypeCount);
     
     writer.writeUInt16(theStringPool.strings().size());
     for (auto string : theStringPool.strings()) {

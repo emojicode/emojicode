@@ -88,7 +88,7 @@ extern const char *packageDirectory;
 
 struct Class {
     Function **methodsVtable;
-    InitializerFunction **initializersVtable;
+    Function **initializersVtable;
     
     Function ***protocolsTable;
     uint_fast16_t protocolsOffset;
@@ -118,33 +118,13 @@ struct Function {
     /** Whether the method is native */
     bool native;
     /** The number of variavles. */
-    uint8_t variableCount;
+    int variableCount;
     
     union {
         /** FunctionPointer pointer to execute the method. */
         FunctionFunctionPointer handler;
         struct {
             /** The method’s token stream */
-            EmojicodeCoin *tokenStream;
-            /** The number of tokens */
-            uint32_t tokenCount;
-        };
-    };
-};
-
-struct InitializerFunction {
-    /** Number of arguments. */
-    uint8_t argumentCount;
-    /** Whether the method is native */
-    bool native;
-    /** The number of variables. */
-    uint8_t variableCount;
-    
-    union {
-        /** FunctionPointer pointer to execute the method. */
-        InitializerFunctionFunctionPointer handler;
-        struct {
-            /** The initializer’s token stream */
             EmojicodeCoin *tokenStream;
             /** The number of tokens */
             uint32_t tokenCount;
@@ -208,16 +188,13 @@ typedef enum {
     PACKAGE_LOADED
 } PackageLoadingState;
 
-typedef FunctionFunctionPointer (*FunctionFunctionPointerProvider)(EmojicodeChar cl, EmojicodeChar symbol, MethodType);
-typedef InitializerFunctionFunctionPointer (*InitializerFunctionFunctionPointerProvider)(EmojicodeChar cl, EmojicodeChar symbol);
 typedef Marker (*mpfc)(EmojicodeChar cl);
 typedef Deinitializer (*dpfc)(EmojicodeChar cl);
 typedef uint_fast32_t (*SizeForClassFunction)(Class *cl, EmojicodeChar name);
 
 char* packageError(void);
 
-FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol, MethodType);
-InitializerFunctionFunctionPointer handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol);
+extern FunctionFunctionPointer sLinkingTable[100];
 Marker markerPointerForClass(EmojicodeChar cl);
 Deinitializer deinitializerPointerForClass(EmojicodeChar cl);
 uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name);

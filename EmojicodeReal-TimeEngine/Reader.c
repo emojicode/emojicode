@@ -1,4 +1,4 @@
-//
+    //
 //  Reader.c
 //  Emojicode
 //
@@ -28,9 +28,8 @@ EmojicodeCoin readCoin(FILE *in){
     return ((EmojicodeCoin)fgetc(in)) | (fgetc(in) << 8) | ((EmojicodeCoin)fgetc(in) << 16) | ((EmojicodeCoin)fgetc(in) << 24);
 }
 
-PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor, FunctionFunctionPointerProvider *hfpMethods,
-                                InitializerFunctionFunctionPointerProvider *hfpIntializer,
-                                mpfc *mpfc, dpfc *dpfc, SizeForClassFunction *sfch){
+PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor,
+                                FunctionFunctionPointer **linkingTable, mpfc *mpfc, dpfc *dpfc, SizeForClassFunction *sfch){
     char *path;
     asprintf(&path, "%s/%s-v%d/%s.%s", packageDirectory, name, major, name, "so");
     
@@ -40,9 +39,8 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
     
     if(!package)
         return PACKAGE_LOADING_FAILED;
-    
-    *hfpMethods = dlsym(package, "handlerPointerForMethod");
-    *hfpIntializer = dlsym(package, "handlerPointerForInitializer");
+
+    *linkingTable = dlsym(package, "linkingTable");
     *mpfc = dlsym(package, "markerPointerForClass");
     *dpfc = dlsym(package, "deinitializerPointerForClass");
     *sfch = dlsym(package, "sizeForClass");
@@ -50,7 +48,7 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
     PackageVersion(*pvf)() = dlsym(package, "getVersion");
     PackageVersion pv = pvf();
     
-    if(!*hfpMethods || !*hfpIntializer)
+    if(!*linkingTable)
         return PACKAGE_LOADING_FAILED;
     
     if(pv.major != major)
@@ -66,12 +64,7 @@ char* packageError(){
     return dlerror();
 }
 
-void readQualifiedTypeName(EmojicodeChar *name, EmojicodeChar *namespace, FILE *in){
-    *name = readEmojicodeChar(in);
-    *namespace = readEmojicodeChar(in);
-}
-
-uint32_t readBlock(EmojicodeCoin **destination, uint8_t *variableCount, FILE *in){
+uint32_t readBlock(EmojicodeCoin **destination, int *variableCount, FILE *in){
     *variableCount = fgetc(in);
     uint32_t coinCount = readEmojicodeChar(in);
 
@@ -85,38 +78,19 @@ uint32_t readBlock(EmojicodeCoin **destination, uint8_t *variableCount, FILE *in
     return coinCount;
 }
 
-void readInitializer(InitializerFunction **table, EmojicodeChar className, FILE *in, InitializerFunctionFunctionPointerProvider hpfc){
-    EmojicodeChar name = readEmojicodeChar(in);
-    uint16_t vti = readUInt16(in);
-
-    InitializerFunction *initializer = malloc(sizeof(InitializerFunction));
-    initializer->argumentCount = fgetc(in);
-    
-    if (fgetc(in)) {
-        initializer->native = true;
-        initializer->handler = hpfc(className, name);
-    }
-    else {
-        initializer->native = false;
-        initializer->tokenCount = readBlock(&initializer->tokenStream, &initializer->variableCount, in);
-    }
-    table[vti] = initializer;
-}
-
-void readFunction(Function **table, EmojicodeChar className, FILE *in, FunctionFunctionPointerProvider hpfm){
-    EmojicodeChar methodName = readEmojicodeChar(in);
+void readFunction(Function **table, FILE *in, FunctionFunctionPointer *linkingTable){
     uint16_t vti = readUInt16(in);
     
     Function *method = malloc(sizeof(Function));
     method->argumentCount = fgetc(in);
     
     DEBUG_LOG("Reading function with vti %d and takes %d argument(s)", vti, method->argumentCount);
-    
-    MethodType nativeType;
-    if ((nativeType = fgetc(in))) {
+
+    uint16_t native = readUInt16(in);
+    if (native) {
         DEBUG_LOG("Function is native");
         method->native = true;
-        method->handler = hpfm(className, methodName, nativeType);
+        method->handler = linkingTable[native];
     }
     else {
         method->native = false;
@@ -140,8 +114,7 @@ void readProtocolAgreement(Function **vmt, Function ***pmt, uint_fast16_t offset
 void readPackage(FILE *in){
     static uint16_t classNextIndex = 0;
     
-    FunctionFunctionPointerProvider hfpMethods;
-    InitializerFunctionFunctionPointerProvider hfpIntializer;
+    FunctionFunctionPointer *linkingTable;
     dpfc dpfc;
     mpfc mpfc;
     SizeForClassFunction sfch;
@@ -149,8 +122,7 @@ void readPackage(FILE *in){
     uint_fast8_t packageNameLength = fgetc(in);
     if (!packageNameLength) {
         DEBUG_LOG("Package does not have native binary");
-        hfpMethods = handlerPointerForMethod;
-        hfpIntializer = handlerPointerForInitializer;
+        linkingTable = sLinkingTable;
         dpfc = deinitializerPointerForClass;
         mpfc = markerPointerForClass;
         sfch = sizeForClass;
@@ -165,8 +137,7 @@ void readPackage(FILE *in){
         
         DEBUG_LOG("Package is named %s and has version %d.%d.x", name, major, minor);
         
-        PackageLoadingState s = packageLoad(name, major, minor, &hfpMethods, &hfpIntializer,
-                                            &mpfc, &dpfc, &sfch);
+        PackageLoadingState s = packageLoad(name, major, minor, &linkingTable, &mpfc, &dpfc, &sfch);
         
         if (s == PACKAGE_INAPPROPRIATE_MAJOR) {
             error("Installed version of package \"%s\" is incompatible with required version %d.%d. (How did you made Emojicode load this version of the package?!)", name, major, minor);
@@ -198,7 +169,7 @@ void readPackage(FILE *in){
         
         bool inheritsInitializers = fgetc(in);
         class->initializerCount = readUInt16(in);
-        class->initializersVtable = malloc(sizeof(InitializerFunction*) * class->initializerCount);
+        class->initializersVtable = malloc(sizeof(Function*) * class->initializerCount);
         
         DEBUG_LOG("Inherting intializers: %s", inheritsInitializers ? "true" : "false");
         
@@ -212,9 +183,11 @@ void readPackage(FILE *in){
                   localMethodCount, localInitializerCount);
         
         if (class != class->superclass) {
-            memcpy(class->methodsVtable, class->superclass->methodsVtable, class->superclass->methodCount * sizeof(Function*));
+            memcpy(class->methodsVtable, class->superclass->methodsVtable,
+                   class->superclass->methodCount * sizeof(Function*));
             if (inheritsInitializers) {
-                memcpy(class->initializersVtable, class->superclass->initializersVtable, class->superclass->initializerCount * sizeof(InitializerFunction*));
+                memcpy(class->initializersVtable, class->superclass->initializersVtable,
+                       class->superclass->initializerCount * sizeof(Function*));
             }
         }
         else {
@@ -223,12 +196,12 @@ void readPackage(FILE *in){
         
         for (uint_fast16_t i = 0; i < localMethodCount; i++) {
             DEBUG_LOG("Reading method %d", i);
-            readFunction(class->methodsVtable, name, in, hfpMethods);
+            readFunction(class->methodsVtable, in, linkingTable);
         }
         
         for (uint_fast16_t i = 0; i < localInitializerCount; i++) {
             DEBUG_LOG("Reading initializer %d", i);
-            readInitializer(class->initializersVtable, name, in, hfpIntializer);
+            readFunction(class->initializersVtable, in, linkingTable);
         }
         
         uint_fast16_t protocolCount = readUInt16(in);
@@ -272,7 +245,7 @@ Function* readBytecode(FILE *in) {
     
     DEBUG_LOG("%d class(es) on the whole", classCount);
     
-    for (uint8_t i = 0, l = fgetc(in); i < l; i++) {
+    for (int i = 0, l = fgetc(in); i < l; i++) {
         DEBUG_LOG("Reading package %d of %d", i + 1, l);
         readPackage(in);
     }
@@ -287,28 +260,25 @@ Function* readBytecode(FILE *in) {
     CL_RANGE = classTable[7];
     
     DEBUG_LOG("✅ Read all packages");
-    
-    functionTable = malloc(sizeof(Function*) * readUInt16(in));
-    for (uint_fast16_t functionSectionCount = readUInt16(in); functionSectionCount; functionSectionCount--) {
-        EmojicodeChar name = readEmojicodeChar(in);
-        DEBUG_LOG("➡️ Reading function section %X. Still %d sections to come.", name, functionSectionCount);
-        for (uint_fast16_t functionCount = readUInt16(in); functionCount; functionCount--) {
-            DEBUG_LOG("Still %d functions to come", functionCount);
-            readFunction(functionTable, name, in, handlerPointerForMethod);
-        }
+
+    int functionCount = readUInt16(in);
+    functionTable = malloc(sizeof(Function*) * functionCount);
+    for (; functionCount; functionCount--) {
+        DEBUG_LOG("Still %d functions to come", functionCount);
+        readFunction(functionTable, in, sLinkingTable);
     }
     
     stringPoolCount = readUInt16(in);
     DEBUG_LOG("Reading string pool with %d strings", stringPoolCount);
     stringPool = malloc(sizeof(Object*) * stringPoolCount);
-    for (uint16_t i = 0; i < stringPoolCount; i++) {
+    for (int i = 0; i < stringPoolCount; i++) {
         Object *o = newObject(CL_STRING);
         String *string = o->value;
 
         string->length = readUInt16(in);
         string->characters = newArray(string->length * sizeof(EmojicodeChar));
         
-        for (uint16_t j = 0; j < string->length; j++) {
+        for (int j = 0; j < string->length; j++) {
             ((EmojicodeChar*)string->characters->value)[j] = readEmojicodeChar(in);
         }
 

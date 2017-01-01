@@ -200,16 +200,17 @@ void executeCallableExtern(Object *callable, Something *args, Thread *thread, So
     }
 }
 
-Something performInitializer(Class *class, InitializerFunction *initializer, Object *object, Thread *thread) {
+Something performInitializer(Class *class, Function *initializer, Object *object, Thread *thread) {
     if (object == NULL) {
         object = newObject(class);
     }
-    
+
+    Something returned = EMOJICODE_TRUE;
     if (initializer->native) {
         stackPush(somethingObject(object), initializer->argumentCount, initializer->argumentCount, thread);
-        initializer->handler(thread);
+        initializer->handler(thread, &returned);
         
-        if (object->value == NULL) {
+        if (!returned.raw) {
             stackPop(thread);
             return NOTHINGNESS;
         }
@@ -219,7 +220,6 @@ Something performInitializer(Class *class, InitializerFunction *initializer, Obj
         EmojicodeCoin *preCoinStream = thread->tokenStream;
         Something *preReturnDest = thread->returnDestination;
 
-        Something returned = EMOJICODE_TRUE;
         thread->tokenStream = initializer->tokenStream;
         thread->returnDestination = &returned;
         
@@ -295,7 +295,7 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
         case INS_NEW_OBJECT: { //New Object
             Class *class = readClass(thread);
             
-            InitializerFunction *initializer = class->initializersVtable[consumeCoin(thread)];
+            Function *initializer = class->initializersVtable[consumeCoin(thread)];
             *destination = performInitializer(class, initializer, NULL, thread);
             return;
         }
@@ -661,7 +661,7 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
             Object *o = stackGetThisObject(thread);
             
             EmojicodeCoin vti = consumeCoin(thread);
-            InitializerFunction *initializer = class->initializersVtable[vti];
+            Function *initializer = class->initializersVtable[vti];
             
             performInitializer(class, initializer, o, thread);
             return;
@@ -961,7 +961,7 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
             performFunction(iteratee.object->class->protocolsTable[1 - iteratee.object->class->protocolsOffset][0],
                             iteratee, thread, &iterator);
             EmojicodeCoin enumeratorVindex = consumeCoin(thread);
-//            stackSetVariable(enumeratorVindex, iterator, thread);
+            *stackVariableDestination(enumeratorVindex, thread) = iterator;
             
             Function *nextMethod = iterator.object->class->protocolsTable[0][0];
             Function *moreComing = iterator.object->class->protocolsTable[0][1];

@@ -22,7 +22,7 @@ EmojicodeInteger stringCompare(String *a, String *b) {
     if (a->length != b->length) {
         return a->length - b->length;
     }
-    
+
     return memcmp(a->characters->value, b->characters->value, a->length * sizeof(EmojicodeChar));
 }
 
@@ -34,7 +34,7 @@ bool stringBeginsWith(String *a, String *with){
     if(a->length < with->length){
         return false;
     }
-    
+
     return memcmp(a->characters->value, with->characters->value, with->length * sizeof(EmojicodeChar)) == 0;
 }
 
@@ -42,7 +42,7 @@ bool stringEndsWith(String *a, String *end){
     if(a->length < end->length){
         return false;
     }
-    
+
     return memcmp(((EmojicodeChar*)a->characters->value) + (a->length - end->length), end->characters->value, end->length * sizeof(EmojicodeChar)) == 0;
 }
 
@@ -55,11 +55,11 @@ Object* stringSubstring(Object *stro, EmojicodeInteger from, EmojicodeInteger le
             length = 0;
             from = 0;
         }
-        
+
         if (length + from >= string->length){
             length = string->length - from;
         }
-        
+
         if(length == 0){
             stackPop(thread);
             return emptyString;
@@ -68,26 +68,26 @@ Object* stringSubstring(Object *stro, EmojicodeInteger from, EmojicodeInteger le
 
     *stackVariableDestination(0, thread) = somethingObject(newObject(CL_STRING));
     Object *co = newArray(length * sizeof(EmojicodeChar));
-    
+
     Object *ostro = stackGetVariable(0, thread).object;
     String *ostr = ostro->value;
-    
+
     ostr->length = length;
     ostr->characters = co;
-    
+
     memcpy(ostr->characters->value, characters((String *)stackGetThisObject(thread)->value) + from, length * sizeof(EmojicodeChar));
-    
+
     stackPop(thread);
     return ostro;
 }
 
 void initStringFromSymbolList(Object *string, List *list){
     String *str = string->value;
-    
+
     size_t count = list->count;
     str->length = count;
     str->characters = newArray(count * sizeof(EmojicodeChar));
-    
+
     for (size_t i = 0; i < count; i++) {
         characters(str)[i] = (EmojicodeChar)listGet(list, i).raw;
     }
@@ -108,55 +108,55 @@ char* stringToChar(String *str){
 
 Object* stringFromChar(const char *cstring){
     EmojicodeInteger len = u8_strlen(cstring);
-    
+
     if(len == 0){
         return emptyString;
     }
-    
+
     Object *stro = newObject(CL_STRING);
     String *string = stro->value;
     string->length = len;
     string->characters = newArray(len * sizeof(EmojicodeChar));
-    
+
     u8_toucs(characters(string), len, cstring, strlen(cstring));
-    
+
     return stro;
 }
 
 //MARK: Bridges
 
-static void stringPrintStdoutBrigde(Thread *thread, Something *destination) {
+void stringPrintStdoutBrigde(Thread *thread, Something *destination) {
     String *string = stackGetThisObject(thread)->value;
     char *utf8str = stringToChar(string);
     printf("%s\n", utf8str);
     free(utf8str);
 }
 
-static void stringEqualBridge(Thread *thread, Something *destination) {
+void stringEqualBridge(Thread *thread, Something *destination) {
     String *a = stackGetThisObject(thread)->value;
     String *b = stackGetVariable(0, thread).object->value;
     *destination = stringEqual(a, b) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
-static void stringSubstringBridge(Thread *thread, Something *destination) {
+void stringSubstringBridge(Thread *thread, Something *destination) {
     EmojicodeInteger from = unwrapInteger(stackGetVariable(0, thread));
     EmojicodeInteger length = unwrapInteger(stackGetVariable(1, thread));
     String *string = stackGetThisObject(thread)->value;
-    
+
     if (from < 0) {
         from = (EmojicodeInteger)string->length + from;
     }
     if (length < 0) {
         length = (EmojicodeInteger)string->length + length;
     }
-    
+
     *destination = somethingObject(stringSubstring(stackGetThisObject(thread), from, length, thread));
 }
 
-static void stringIndexOf(Thread *thread, Something *destination) {
+void stringIndexOf(Thread *thread, Something *destination) {
     String *string = stackGetThisObject(thread)->value;
     String *search = stackGetVariable(0, thread).object->value;
-    
+
     void *location = findBytesInBytes(characters(string), string->length * sizeof(EmojicodeChar),
                                       characters(search), search->length * sizeof(EmojicodeChar));
     if (!location) {
@@ -167,70 +167,70 @@ static void stringIndexOf(Thread *thread, Something *destination) {
     }
 }
 
-static void stringTrimBridge(Thread *thread, Something *destination){
+void stringTrimBridge(Thread *thread, Something *destination) {
     String *string = stackGetThisObject(thread)->value;
-    
+
     EmojicodeInteger start = 0;
     EmojicodeInteger stop = string->length - 1;
-    
+
     while(start < string->length && isWhitespace(characters(string)[start]))
         start++;
-    
+
     while(stop > 0 && isWhitespace(characters(string)[stop]))
         stop--;
-    
+
     *destination = somethingObject(stringSubstring(stackGetThisObject(thread), start, stop - start + 1, thread));
 }
 
-static void stringGetInput(Thread *thread) {
+void stringGetInput(Thread *thread, Something *destination) {
     String *prompt = stackGetVariable(0, thread).object->value;
     char *utf8str = stringToChar(prompt);
     printf("%s\n", utf8str);
     fflush(stdout);
     free(utf8str);
-    
+
     int bufferSize = 50, oldBufferSize = 0;
     Object *buffer = newArray(bufferSize);
     size_t bufferUsedSize = 0;
-    
+
     while (true) {
         fgets((char *)buffer->value + oldBufferSize, bufferSize - oldBufferSize, stdin);
-        
+
         bufferUsedSize = strlen(buffer->value);
-        
+
         if(bufferUsedSize < bufferSize - 1){
             if (((char *)buffer->value)[bufferUsedSize - 1] == '\n') {
                 bufferUsedSize -= 1;
             }
             break;
         }
-        
+
         oldBufferSize = bufferSize - 1;
         bufferSize *= 2;
         buffer = resizeArray(buffer, bufferSize);
     }
 
     EmojicodeInteger len = u8_strlen_l(buffer->value, bufferUsedSize);
-    
+
     String *string = stackGetThisObject(thread)->value;
     string->length = len;
-    
+
     Object *chars = newArray(len * sizeof(EmojicodeChar));
     string = stackGetThisObject(thread)->value;
     string->characters = chars;
-    
+
     u8_toucs(characters(string), len, buffer->value, bufferUsedSize);
 }
 
-static void stringSplitByStringBridge(Thread *thread, Something *destination) {
+void stringSplitByStringBridge(Thread *thread, Something *destination) {
     Something sp = stackGetVariable(0, thread);
-    
+
     stackPush(stackGetThisContext(thread), 2, 0, thread);
     *stackVariableDestination(1, thread) = somethingObject(newObject(CL_LIST));
     *stackVariableDestination(0, thread) = sp;
 
     EmojicodeInteger firstOfSeperator = 0, seperatorIndex = 0, firstAfterSeperator = 0;
-    
+
     for (EmojicodeInteger i = 0, l = ((String *)stackGetThisObject(thread)->value)->length; i < l; i++) {
         Object *stringObject = stackGetThisObject(thread);
         Object *separatorObject = stackGetVariable(0, thread).object;
@@ -239,7 +239,7 @@ static void stringSplitByStringBridge(Thread *thread, Something *destination) {
             if (seperatorIndex == 0) {
                 firstOfSeperator = i;
             }
-            
+
             //Full seperator found
             if(firstOfSeperator + separator->length == i + 1){
                 Object *stro;
@@ -263,153 +263,153 @@ static void stringSplitByStringBridge(Thread *thread, Something *destination) {
             i = firstOfSeperator;
         }
     }
-    
+
     Object *stringObject = stackGetThisObject(thread);
     String *string = (String *)stringObject->value;
     listAppend(stackGetVariable(1, thread).object, somethingObject(stringSubstring(stringObject, firstAfterSeperator, string->length - firstAfterSeperator, thread)), thread);
-    
+
     Something list = stackGetVariable(1, thread);
     stackPop(thread);
     *destination = list;
 }
 
-static void stringLengthBridge(Thread *thread, Something *destination){
+void stringLengthBridge(Thread *thread, Something *destination) {
     String *string = stackGetThisObject(thread)->value;
     *destination = somethingInteger((EmojicodeInteger)string->length);
 }
 
-static void stringUTF8LengthBridge(Thread *thread, Something *destination) {
+void stringUTF8LengthBridge(Thread *thread, Something *destination) {
     String *str = stackGetThisObject(thread)->value;
     *destination = somethingInteger((EmojicodeInteger)u8_codingsize(str->characters->value, str->length));
 }
 
-static void stringByAppendingSymbolBridge(Thread *thread, Something *destination) { //TODO: GC-Safety
+void stringByAppendingSymbolBridge(Thread *thread, Something *destination) { //TODO: GC-Safety
     Object *co = newArray((((String *)stackGetThisObject(thread)->value)->length + 1) * sizeof(EmojicodeChar));
     String *string = stackGetThisObject(thread)->value;
-    
+
     Object *ostro = newObject(CL_STRING);
     String *ostr = ostro->value;
-    
+
     ostr->length = string->length + 1;
     ostr->characters = co;
-    
+
     memcpy(characters(ostr), characters(string), string->length * sizeof(EmojicodeChar));
-    
+
     characters(ostr)[string->length] = unwrapSymbol(stackGetVariable(0, thread));
-    
+
     *destination = somethingObject(ostro);
 }
 
-static void stringSymbolAtBridge(Thread *thread, Something *destination){
+void stringSymbolAtBridge(Thread *thread, Something *destination) {
     EmojicodeInteger index = unwrapInteger(stackGetVariable(0, thread));
     String *str = stackGetThisObject(thread)->value;
     if(index >= str->length){
         *destination = NOTHINGNESS;
     }
-    
+
     *destination = somethingInteger(characters(str)[index]);
 }
 
-static void stringBeginsWithBridge(Thread *thread, Something *destination) {
+void stringBeginsWithBridge(Thread *thread, Something *destination) {
     *destination = stringBeginsWith(stackGetThisObject(thread)->value, stackGetVariable(0, thread).object->value) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
-static void stringEndsWithBridge(Thread *thread, Something *destination) {
+void stringEndsWithBridge(Thread *thread, Something *destination) {
     *destination = stringEndsWith(stackGetThisObject(thread)->value, stackGetVariable(0, thread).object->value) ? EMOJICODE_TRUE : EMOJICODE_FALSE;
 }
 
-static void stringSplitBySymbolBridge(Thread *thread, Something *destination) {
+void stringSplitBySymbolBridge(Thread *thread, Something *destination) {
     EmojicodeChar separator = unwrapSymbol(stackGetVariable(0, thread));
     stackPush(stackGetThisContext(thread), 1, 0, thread);
     *stackVariableDestination(0, thread) = somethingObject(newObject(CL_LIST));
-    
+
     EmojicodeInteger from = 0;
-    
+
     for (EmojicodeInteger i = 0, l = ((String *)stackGetThisObject(thread)->value)->length; i < l; i++) {
         Object *stringObject = stackGetThisObject(thread);
         if (characters((String *)stringObject->value)[i] == separator) {
             listAppend(stackGetVariable(0, thread).object, somethingObject(stringSubstring(stringObject, from, i - from, thread)), thread);
             from = i + 1;
         }
-        
+
     }
 
     Object *stringObject = stackGetThisObject(thread);
     listAppend(stackGetVariable(0, thread).object, somethingObject(stringSubstring(stringObject, from, ((String *) stringObject->value)->length - from, thread)), thread);
-    
+
     Something list = stackGetVariable(0, thread);
     stackPop(thread);
     *destination = list;
 }
 
-static void stringToData(Thread *thread, Something *destination) {
+void stringToData(Thread *thread, Something *destination) {
     String *str = stackGetThisObject(thread)->value;
-    
+
     size_t ds = u8_codingsize(characters(str), str->length);
-    
+
     Object *bytesObject = newArray(ds);
-    
+
     str = stackGetThisObject(thread)->value;
     u8_toutf8(bytesObject->value, ds, characters(str), str->length);
-    
+
     stackPush(somethingObject(bytesObject), 0, 0, thread);
-    
+
     Object *o = newObject(CL_DATA);
     Data *d = o->value;
     d->length = ds;
     d->bytesObject = stackGetThisObject(thread);
     d->bytes = d->bytesObject->value;
-    
+
     stackPop(thread);
-    
+
     *destination = somethingObject(o);
 }
 
-static void stringToCharacterList(Thread *thread, Something *destination) {
+void stringToCharacterList(Thread *thread, Something *destination) {
     String *str = stackGetThisObject(thread)->value;
     Object *list = newObject(CL_LIST);
-    
+
     for (size_t i = 0; i < str->length; i++) {
         listAppend(list, somethingSymbol(characters(str)[i]), thread);
     }
     *destination = somethingObject(list);
 }
 
-static void stringJSON(Thread *thread, Something *destination) {
+void stringJSON(Thread *thread, Something *destination) {
     *destination = parseJSON(thread);
 }
 
-static void stringFromSymbolListBridge(Thread *thread){
+void stringFromSymbolListBridge(Thread *thread, Something *destination) {
     initStringFromSymbolList(stackGetThisObject(thread), stackGetVariable(0, thread).object->value);
 }
 
-static void stringFromStringList(Thread *thread) {
+void stringFromStringList(Thread *thread, Something *destination) {
     size_t stringSize = 0;
     size_t appendLocation = 0;
-    
+
     {
         List *list = stackGetVariable(0, thread).object->value;
         String *glue = stackGetVariable(1, thread).object->value;
-        
+
         for (size_t i = 0; i < list->count; i++) {
             stringSize += ((String *)listGet(list, i).object->value)->length;
         }
-        
+
         if (list->count > 0){
             stringSize += glue->length * (list->count - 1);
         }
     }
-        
+
     Object *co = newArray(stringSize * sizeof(EmojicodeChar));
-    
+
     {
         List *list = stackGetVariable(0, thread).object->value;
         String *glue = stackGetVariable(1, thread).object->value;
-        
+
         String *string = stackGetThisObject(thread)->value;
         string->length = stringSize;
         string->characters = co;
-        
+
         for (size_t i = 0; i < list->count; i++) {
             String *aString = listGet(list, i).object->value;
             memcpy(characters(string) + appendLocation, characters(aString), aString->length * sizeof(EmojicodeChar));
@@ -422,7 +422,7 @@ static void stringFromStringList(Thread *thread) {
     }
 }
 
-static Something charactersToInteger(EmojicodeChar *characters, EmojicodeInteger base, EmojicodeInteger length) {
+Something charactersToInteger(EmojicodeChar *characters, EmojicodeInteger base, EmojicodeInteger length) {
     if (length == 0) {
         return NOTHINGNESS;
     }
@@ -434,7 +434,7 @@ static Something charactersToInteger(EmojicodeChar *characters, EmojicodeInteger
             }
             continue;
         }
-        
+
         EmojicodeInteger b = base;
         if ('0' <= characters[i] && characters[i] <= '9') {
             b = characters[i] - '0';
@@ -445,51 +445,51 @@ static Something charactersToInteger(EmojicodeChar *characters, EmojicodeInteger
         else if ('a' <= characters[i] && characters[i] <= 'z') {
             b = characters[i] - 'a' + 10;
         }
-        
+
         if (b >= base) {
             return NOTHINGNESS;
         }
-        
+
         x *= base;
         x += b;
     }
-    
+
     if (characters[0] == '-') {
         x *= -1;
     }
     return somethingInteger(x);
 }
 
-static void stringToInteger(Thread *thread, Something *destination) {
+void stringToInteger(Thread *thread, Something *destination) {
     EmojicodeInteger base = stackGetVariable(0, thread).raw;
     String *string = (String *)stackGetThisObject(thread)->value;
-    
+
     *destination = charactersToInteger(characters(string), base, string->length);
 }
 
 
-static void stringToDouble(Thread *thread, Something *destination) {
+void stringToDouble(Thread *thread, Something *destination) {
     String *string = (String *)stackGetThisObject(thread)->value;
-    
+
     if (string->length == 0) {
         *destination = NOTHINGNESS;
     }
-    
+
     EmojicodeChar *characters = characters(string);
-    
+
     double d = 0.0;
     bool sign = true;
     bool foundSeparator = false;
     bool foundDigit = false;
     size_t i = 0, decimalPlace = 0;
-    
+
     if (characters[0] == '-') {
         sign = false;
         i++;
     } else if (characters[0] == '+') {
         i++;
     }
-    
+
     for (; i < string->length; i++) {
         if (characters[i] == '.') {
             if (foundSeparator) {
@@ -522,21 +522,21 @@ static void stringToDouble(Thread *thread, Something *destination) {
             return;
         }
     }
-    
+
     if (!foundDigit) {
         *destination = NOTHINGNESS;
         return;
     }
 
     d /= pow(10, decimalPlace);
-    
+
     if (!sign) {
         d *= -1;
     }
     *destination = somethingDouble(d);
 }
 
-static void stringToUppercase(Thread *thread, Something *destination) {
+void stringToUppercase(Thread *thread, Something *destination) {
     Object *o = newObject(CL_STRING);
     size_t length = ((String *)stackGetThisObject(thread)->value)->length;
     stackPush(somethingObject(o), 0, 0, thread);
@@ -555,7 +555,7 @@ static void stringToUppercase(Thread *thread, Something *destination) {
     *destination = somethingObject(o);
 }
 
-static void stringToLowercase(Thread *thread, Something *destination) {
+void stringToLowercase(Thread *thread, Something *destination) {
     Object *o = newObject(CL_STRING);
     size_t length = ((String *)stackGetThisObject(thread)->value)->length;
     stackPush(somethingObject(o), 0, 0, thread);
@@ -574,7 +574,7 @@ static void stringToLowercase(Thread *thread, Something *destination) {
     *destination = somethingObject(o);
 }
 
-static void stringCompareBridge(Thread *thread, Something *destination) {
+void stringCompareBridge(Thread *thread, Something *destination) {
     String *a = stackGetThisObject(thread)->value;
     String *b = stackGetVariable(0, thread).object->value;
     *destination = somethingInteger(stringCompare(a, b));
@@ -584,64 +584,4 @@ void stringMark(Object *self){
     if(((String *)self->value)->characters){
         mark(&((String *)self->value)->characters);
     }
-}
-
-FunctionFunctionPointer stringMethodForName(EmojicodeChar name){
-    switch (name) {
-        case 0x1F600:
-            return stringPrintStdoutBrigde;
-        case 0x1F61B:
-            return stringEqualBridge;
-        case 0x1f414: //🐔
-            return stringLengthBridge;
-        case 0x1f4dd: //📝
-            return stringByAppendingSymbolBridge;
-        case 0x1f43d: //🐽
-            return stringSymbolAtBridge;
-        case 0x1F52A:  //🔪
-            return stringSubstringBridge;
-        case 0x1F50D: //🔍
-            return stringIndexOf;
-        case 0x1F527: //🔧
-            return stringTrimBridge;
-        case 0x1F52B: //🔫
-            return stringSplitByStringBridge;
-        case 0x1F4D0: //📐
-            return stringUTF8LengthBridge;
-        case 0x1F4A3: //💣
-            return stringSplitBySymbolBridge;
-        case 0x1F3BC: //🎼
-            return stringBeginsWithBridge;
-        case 0x26F3: //⛳️
-            return stringEndsWithBridge;
-        case 0x1F3B6: //🎶
-            return stringToCharacterList;
-        case 0x1F4C7: //📇
-            return stringToData;
-        case 0x1f4f0: //📰
-            return stringJSON;
-        case 0x1F682: //🚂
-            return stringToInteger;
-        case 0x1F680: //🚀
-            return stringToDouble;
-        case 0x2194: //↔️
-            return stringCompareBridge;
-        case 0x1f4eb: //📫
-            return stringToUppercase;
-        case 0x1f4ea: //📪
-            return stringToLowercase;
-    }
-    return NULL;
-}
-
-InitializerFunctionFunctionPointer stringInitializerForName(EmojicodeChar name){
-    switch (name) {
-        case 0x1F62F: //😮
-            return stringGetInput;
-        case 0x1F399: //🎙
-            return stringFromSymbolListBridge;
-        case 0x1F368: //🍨
-            return stringFromStringList;
-    }
-    return NULL;
 }

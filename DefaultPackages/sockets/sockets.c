@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <string.h>
+#include <unistd.h>
 
 static Class *CL_SOCKET;
 
@@ -20,7 +21,7 @@ PackageVersion getVersion() {
     return (PackageVersion){0, 1};
 }
 
-void serverInitWithPort(Thread *thread) {
+void serverInitWithPort(Thread *thread, Something *destination) {
     int listenerDescriptor = socket(PF_INET, SOCK_STREAM, 0);
     if (listenerDescriptor == -1) {
         stackGetThisObject(thread)->value = NULL;
@@ -43,37 +44,40 @@ void serverInitWithPort(Thread *thread) {
     *(int *)stackGetThisObject(thread)->value = listenerDescriptor;
 }
 
-Something serverAccept(Thread *thread) {
+void serverAccept(Thread *thread, Something *destination) {
     int listenerDescriptor = *(int *)stackGetThisObject(thread)->value;
     struct sockaddr_storage clientAddress;
     unsigned int addressSize = sizeof(clientAddress);
     int connectionAddress = accept(listenerDescriptor, (struct sockaddr *)&clientAddress, &addressSize);
     
     if (connectionAddress == -1) {
-        return NOTHINGNESS;
+        *destination = NOTHINGNESS;
+        return;
     }
     
     Object *socket = newObject(CL_SOCKET);
     *(int *)socket->value = connectionAddress;
-    return somethingObject(socket);
+    *destination = somethingObject(socket);
 }
 
-Something socketSendData(Thread *thread) {
+void socketSendData(Thread *thread, Something *destination) {
     int connectionAddress = *(int *)stackGetThisObject(thread)->value;
     Data *data = stackGetVariable(0, thread).object->value;
     if (send(connectionAddress, data->bytes, data->length, 0) == -1) {
-        return EMOJICODE_FALSE;
+        *destination = EMOJICODE_FALSE;
     }
-    return EMOJICODE_TRUE;
+    else {
+        *destination = EMOJICODE_TRUE;
+    }
 }
 
-Something socketClose(Thread *thread) {
+void socketClose(Thread *thread, Something *destination) {
     int connectionAddress = *(int *)stackGetThisObject(thread)->value;
     close(connectionAddress);
-    return NOTHINGNESS;
+    *destination = NOTHINGNESS;
 }
 
-Something socketReadBytes(Thread *thread) {
+void socketReadBytes(Thread *thread, Something *destination) {
     int connectionAddress = *(int *)stackGetThisObject(thread)->value;
     EmojicodeInteger n = unwrapInteger(stackGetVariable(0, thread));
     
@@ -82,7 +86,8 @@ Something socketReadBytes(Thread *thread) {
     size_t read = recv(connectionAddress, bytesObject->value, n, 0);
     
     if (read < 1) {
-        return NOTHINGNESS;
+        *destination = NOTHINGNESS;
+        return;
     }
     
     stackPush(somethingObject(bytesObject), 0, 0, thread);
@@ -94,31 +99,31 @@ Something socketReadBytes(Thread *thread) {
     data->bytes = data->bytesObject->value;
     
     stackPop(thread);
-    return somethingObject(obj);
+    *destination = somethingObject(obj);
 }
 
-void socketInitWithHost(Thread *thread) {
+void socketInitWithHost(Thread *thread, Something *destination) {
     char *string = stringToChar(stackGetVariable(0, thread).object->value);
-    char *service = stringToChar(stackGetVariable(1, thread).object->value);
-    
-    struct addrinfo *res;
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = PF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    if (getaddrinfo(string, service, &hints, &res) == -1) {
-        stackGetThisObject(thread)->value = NULL;
+
+    struct hostent *server = gethostbyname(string);
+    if (!server) {
+        *destination = NOTHINGNESS;
         return;
     }
+
+    struct sockaddr_in address;
+    memset(&address, 0, sizeof(address));
+    memcpy(&address.sin_addr.s_addr, server->h_addr_list[0], server->h_length);
+    address.sin_family = PF_INET;
+    address.sin_port = htons(stackGetVariable(1, thread).raw);
+
     free(string);
-    free(service);
-    int socketDescriptor = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if (socketDescriptor == -1 || connect(socketDescriptor, res->ai_addr, res->ai_addrlen) == -1) {
-        freeaddrinfo(res);
-        stackGetThisObject(thread)->value = NULL;
+
+    int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+    if (socketDescriptor == -1 || connect(socketDescriptor, (struct sockaddr *) &address, sizeof(address)) == -1) {
+        *destination = NOTHINGNESS;
         return;
     }
-    freeaddrinfo(res);
     *(int *)stackGetThisObject(thread)->value = socketDescriptor;
 }
 
@@ -126,29 +131,14 @@ void socketDestruct(void *d) {
     close(*(int *)d);
 }
 
-FunctionFunctionPointer handlerPointerForMethod(EmojicodeChar cl, EmojicodeChar symbol, MethodType t) {
-    switch (symbol) {
-        case 0x1f64b: //🙋
-            return serverAccept;
-        case 0x1f4ac: //💬
-            return socketSendData;
-        case 0x1f645: //🙅
-            return socketClose;
-        case 0x1f442: //👂
-            return socketReadBytes;
-    }
-    return NULL;
-}
-
-InitializerFunctionFunctionPointer handlerPointerForInitializer(EmojicodeChar cl, EmojicodeChar symbol) {
-    switch (cl) {
-        case 0x1f4de: //📞
-            return socketInitWithHost;
-        case 0x1f3c4: //🏄
-            return serverInitWithPort;
-    }
-    return NULL;
-}
+LinkingTable {
+    [1] = serverAccept,
+    [2] = socketSendData,
+    [3] = socketClose,
+    [4] = socketReadBytes,
+    [5] = socketInitWithHost,
+    [6] = serverInitWithPort
+};
 
 Marker markerPointerForClass(EmojicodeChar cl) {
     return NULL;

@@ -23,6 +23,10 @@ std::queue<Function*> Function::compilationQueue;
 
 //MARK: Function
 
+void Function::setLinkingTableIndex(int index) {
+    linkingTableIndex_ = index;
+}
+
 void Function::checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeString name, SourcePosition position,
                                    const char *on, Type contextType) {
     if (!returnThis.compatibleTo(returnSuper, contextType)) {
@@ -119,7 +123,7 @@ void Function::markUsed() {
     if (vtiProvider_) {
         vtiProvider_->used();
     }
-    if (!native) {
+    if (!isNative()) {
         Function::compilationQueue.push(this);
     }
     for (Function *function : overriders_) {

@@ -5,7 +5,7 @@
   The following is a very basic example of opening a TCP socket to make an HTTP request and print
   the first 140 characters of the response.
   ```
-  🍦 socket 🍺 🔷📞🆕 🔤www.emojicode.org🔤 🔤80🔤
+  🍦 socket 🍺 🔷📞🆕 🔤www.emojicode.org🔤 80
   💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: www.emojicode.org❌r❌n❌r❌n🔤
 
   🍦 data 🍺 👂 socket 140
@@ -17,7 +17,7 @@
   HTTP/1.1 200 OK
   Server: GitHub.com
   Content-Type: text/html; charset=utf-8
-  Last-Modified: Sat, 29 Oct 2016 11:54:03 GMT
+  Last-Modified: Sat, 26 Nov 2016 20:52:04 GMT
   Access-Control-Al
   ```
 
@@ -53,24 +53,24 @@
     Opens a socket to *address*. *address* can be a host name which will be
     resolved.
   🌮
-  🍬🐈 🆕 host 🔡 service 🔡 📻
+  🍬🐈 🆕 host 🔡 socket 🚂 📻 5
 
   🌮
     Sends the given data to the peer. Returns true if the data was successfully
     sent or false on error.
   🌮
-  🐖 💬 message 📇 ➡️ 👌 📻
+  🐖 💬 message 📇 ➡️ 👌 📻 2
 
   🌮
     Closes this socket.
   🌮
-  🐖 🙅 📻
+  🐖 🙅 📻 3
 
   🌮
     Tries to read up to *bytes* bytes from the socket. Nothingness is returned
     on error or if the socket was closed by the peer.
   🌮
-  🐖 👂 bytes 🚂 ➡️ 🍬📇 📻
+  🐖 👂 bytes 🚂 ➡️ 🍬📇 📻 4
 🍉
 
 🐋 🏄 🍇
@@ -79,12 +79,12 @@
     This initializer returns Nothingness if the socket can’t be bound to the
     given port.
   🌮
-  🍬🐈 🆕 port 🚂 📻
+  🍬🐈 🆕 port 🚂 📻 6
 
   🌮
     Waits until a client wants to connect to this socket and returns a socket
     to communicate with it.
   🌮
-  🐖 🙋 ➡️ 🍬📞 📻
+  🐖 🙋 ➡️ 🍬📞 📻 1
 🍉
 

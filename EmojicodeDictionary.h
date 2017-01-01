@@ -80,11 +80,17 @@ Something dictionaryKeys(Object *dicto, Thread *thread);
 
 void dictionaryMark(Object *dict);
 
-void bridgeDictionaryInit(Thread *thread);
+void initDictionaryBridge(Thread *thread, Something *destination);
 
 /** @warning GC-invoking */
 void dictionaryInit(Thread *thread);
 
-FunctionFunctionPointer dictionaryMethodForName(EmojicodeChar name);
+void bridgeDictionarySet(Thread *thread, Something *destination);
+void bridgeDictionaryGet(Thread *thread, Something *destination);
+void bridgeDictionaryRemove(Thread *thread, Something *destination);
+void bridgeDictionaryKeys(Thread *thread, Something *destination);
+void bridgeDictionaryClear(Thread *thread, Something *destination);
+void bridgeDictionaryContains(Thread *thread, Something *destination);
+void bridgeDictionarySize(Thread *thread, Something *destination);
 
 #endif /* EmojicodeDictionary_h */

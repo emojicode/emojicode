@@ -98,4 +98,98 @@ typedef enum EmojicodeInstruction {
     INS_CAPTURE_CONTEXTED_FUNCTION = 0x74
 } EmojicodeInstruction;
 
+#ifdef DEBUG
+void printInstructionDescription(EmojicodeInstruction ins) {
+    switch (ins) {
+        case INS_DISPATCH_METHOD: puts("INS_DISPATCH_METHOD"); return;
+        case INS_DISPATCH_TYPE_METHOD: puts("INS_DISPATCH_TYPE_METHOD"); return;
+        case INS_DISPATCH_PROTOCOL: puts("INS_DISPATCH_PROTOCOL"); return;
+        case INS_NEW_OBJECT: puts("INS_NEW_OBJECT"); return;
+        case INS_DISPATCH_SUPER: puts("INS_DISPATCH_SUPER"); return;
+        case INS_CALL_CONTEXTED_FUNCTION: puts("INS_CALL_CONTEXTED_FUNCTION"); return;
+        case INS_CALL_FUNCTION: puts("INS_CALL_FUNCTION"); return;
+        case INS_PRODUCE_TO_AND_GET_VT_REFERENCE: puts("INS_PRODUCE_TO_AND_GET_VT_REFERENCE"); return;
+        case INS_INIT_VT: puts("INS_INIT_VT"); return;
+        case INS_GET_VT_REFERENCE_STACK: puts("INS_GET_VT_REFERENCE_STACK"); return;
+        case INS_GET_VT_REFERENCE_OBJECT: puts("INS_GET_VT_REFERENCE_OBJECT"); return;
+        case INS_GET_VT_REFERENCE_VT: puts("INS_GET_VT_REFERENCE_VT"); return;
+        case INS_GET_CLASS_FROM_INSTANCE: puts("INS_GET_CLASS_FROM_INSTANCE"); return;
+        case INS_GET_CLASS_FROM_INDEX: puts("INS_GET_CLASS_FROM_INDEX"); return;
+        case INS_GET_STRING_POOL: puts("INS_GET_STRING_POOL"); return;
+        case INS_GET_TRUE: puts("INS_GET_TRUE"); return;
+        case INS_GET_FALSE: puts("INS_GET_FALSE"); return;
+        case INS_GET_32_INTEGER: puts("INS_GET_32_INTEGER"); return;
+        case INS_GET_64_INTEGER: puts("INS_GET_64_INTEGER"); return;
+        case INS_GET_DOUBLE: puts("INS_GET_DOUBLE"); return;
+        case INS_GET_SYMBOL: puts("INS_GET_SYMBOL"); return;
+        case INS_GET_NOTHINGNESS: puts("INS_GET_NOTHINGNESS"); return;
+        case INS_PRODUCE_WITH_STACK_DESTINATION: puts("INS_PRODUCE_WITH_STACK_DESTINATION"); return;
+        case INS_PRODUCE_WITH_OBJECT_DESTINATION: puts("INS_PRODUCE_WITH_OBJECT_DESTINATION"); return;
+        case INS_PRODUCE_WITH_VT_DESTINATION: puts("INS_PRODUCE_WITH_VT_DESTINATION"); return;
+        case INS_INCREMENT: puts("INS_INCREMENT"); return;
+        case INS_DECREMENT: puts("INS_DECREMENT"); return;
+        case INS_COPY_SINGLE_STACK: puts("INS_COPY_SINGLE_STACK"); return;
+        case INS_COPY_WITH_SIZE_STACK: puts("INS_COPY_WITH_SIZE_STACK"); return;
+        case INS_COPY_SINGLE_OBJECT: puts("INS_COPY_SINGLE_OBJECT"); return;
+        case INS_COPY_WITH_SIZE_OBJECT: puts("INS_COPY_WITH_SIZE_OBJECT"); return;
+        case INS_COPY_SINGLE_VT: puts("INS_COPY_SINGLE_VT"); return;
+        case INS_COPY_WITH_SIZE_VT: puts("INS_COPY_WITH_SIZE_VT"); return;
+        case INS_EQUAL_PRIMITIVE: puts("INS_EQUAL_PRIMITIVE"); return;
+        case INS_SUBTRACT_INTEGER: puts("INS_SUBTRACT_INTEGER"); return;
+        case INS_ADD_INTEGER: puts("INS_ADD_INTEGER"); return;
+        case INS_MULTIPLY_INTEGER: puts("INS_MULTIPLY_INTEGER"); return;
+        case INS_DIVIDE_INTEGER: puts("INS_DIVIDE_INTEGER"); return;
+        case INS_REMAINDER_INTEGER: puts("INS_REMAINDER_INTEGER"); return;
+        case INS_INVERT_BOOLEAN: puts("INS_INVERT_BOOLEAN"); return;
+        case INS_OR_BOOLEAN: puts("INS_OR_BOOLEAN"); return;
+        case INS_AND_BOOLEAN: puts("INS_AND_BOOLEAN"); return;
+        case INS_LESS_INTEGER: puts("INS_LESS_INTEGER"); return;
+        case INS_GREATER_INTEGER: puts("INS_GREATER_INTEGER"); return;
+        case INS_GREATER_OR_EQUAL_INTEGER: puts("INS_GREATER_OR_EQUAL_INTEGER"); return;
+        case INS_LESS_OR_EQUAL_INTEGER: puts("INS_LESS_OR_EQUAL_INTEGER"); return;
+        case INS_SAME_OBJECT: puts("INS_SAME_OBJECT"); return;
+        case INS_IS_NOTHINGNESS: puts("INS_IS_NOTHINGNESS"); return;
+        case INS_EQUAL_DOUBLE: puts("INS_EQUAL_DOUBLE"); return;
+        case INS_SUBTRACT_DOUBLE: puts("INS_SUBTRACT_DOUBLE"); return;
+        case INS_ADD_DOUBLE: puts("INS_ADD_DOUBLE"); return;
+        case INS_MULTIPLY_DOUBLE: puts("INS_MULTIPLY_DOUBLE"); return;
+        case INS_DIVIDE_DOUBLE: puts("INS_DIVIDE_DOUBLE"); return;
+        case INS_LESS_DOUBLE: puts("INS_LESS_DOUBLE"); return;
+        case INS_GREATER_DOUBLE: puts("INS_GREATER_DOUBLE"); return;
+        case INS_LESS_OR_EQUAL_DOUBLE: puts("INS_LESS_OR_EQUAL_DOUBLE"); return;
+        case INS_GREATER_OR_EQUAL_DOUBLE: puts("INS_GREATER_OR_EQUAL_DOUBLE"); return;
+        case INS_REMAINDER_DOUBLE: puts("INS_REMAINDER_DOUBLE"); return;
+        case INS_INT_TO_DOUBLE: puts("INS_INT_TO_DOUBLE"); return;
+        case INS_UNWRAP_OPTIONAL: puts("INS_UNWRAP_OPTIONAL"); return;
+        case INS_OPTIONAL_DISPATCH_METHOD: puts("INS_OPTIONAL_DISPATCH_METHOD"); return;
+        case INS_GET_THIS: puts("INS_GET_THIS"); return;
+        case INS_SUPER_INITIALIZER: puts("INS_SUPER_INITIALIZER"); return;
+        case INS_CONDITIONAL_PRODUCE: puts("INS_CONDITIONAL_PRODUCE"); return;
+        case INS_CAST_TO_CLASS: puts("INS_CAST_TO_CLASS"); return;
+        case INS_CAST_TO_PROTOCOL: puts("INS_CAST_TO_PROTOCOL"); return;
+        case INS_SAFE_CAST_TO_CLASS: puts("INS_SAFE_CAST_TO_CLASS"); return;
+        case INS_SAFE_CAST_TO_PROTOCOL: puts("INS_SAFE_CAST_TO_PROTOCOL"); return;
+        case INS_CAST_TO_BOOLEAN: puts("INS_CAST_TO_BOOLEAN"); return;
+        case INS_CAST_TO_INTEGER: puts("INS_CAST_TO_INTEGER"); return;
+        case INS_DISCARD_PRODUCTION: puts("INS_DISCARD_PRODUCTION"); return;
+        case INS_BINARY_AND_INTEGER: puts("INS_BINARY_AND_INTEGER"); return;
+        case INS_BINARY_OR_INTEGER: puts("INS_BINARY_OR_INTEGER"); return;
+        case INS_BINARY_XOR_INTEGER: puts("INS_BINARY_XOR_INTEGER"); return;
+        case INS_BINARY_NOT_INTEGER: puts("INS_BINARY_NOT_INTEGER"); return;
+        case INS_SHIFT_LEFT_INTEGER: puts("INS_SHIFT_LEFT_INTEGER"); return;
+        case INS_SHIFT_RIGHT_INTEGER: puts("INS_SHIFT_RIGHT_INTEGER"); return;
+        case INS_REPEAT_WHILE: puts("INS_REPEAT_WHILE"); return;
+        case INS_IF: puts("INS_IF"); return;
+        case INS_FOREACH: puts("INS_FOREACH"); return;
+        case INS_RETURN: puts("INS_RETURN"); return;
+        case INS_EXECUTE_CALLABLE: puts("INS_EXECUTE_CALLABLE"); return;
+        case INS_CLOSURE: puts("INS_CLOSURE"); return;
+        case INS_CAPTURE_METHOD: puts("INS_CAPTURE_METHOD"); return;
+        case INS_CAPTURE_TYPE_METHOD: puts("INS_CAPTURE_TYPE_METHOD"); return;
+        case INS_CAPTURE_CONTEXTED_FUNCTION: puts("INS_CAPTURE_CONTEXTED_FUNCTION"); return;
+    }
+    printf("UNKNOWN: 0x%X\n", ins);
+}
+#endif
+
 #endif /* EmojicodeInstructions_h */

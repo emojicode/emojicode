@@ -38,7 +38,29 @@ void stringMark(Object *self);
 
 void initStringFromSymbolList(Object *string, List *list);
 
-FunctionFunctionPointer stringMethodForName(EmojicodeChar name);
-InitializerFunctionFunctionPointer stringInitializerForName(EmojicodeChar name);
+void stringPrintStdoutBrigde(Thread *thread, Something *destination);
+void stringEqualBridge(Thread *thread, Something *destination);
+void stringSubstringBridge(Thread *thread, Something *destination);
+void stringIndexOf(Thread *thread, Something *destination);
+void stringTrimBridge(Thread *thread, Something *destination);
+void stringGetInput(Thread *thread, Something *destination);
+void stringSplitByStringBridge(Thread *thread, Something *destination);
+void stringLengthBridge(Thread *thread, Something *destination);
+void stringUTF8LengthBridge(Thread *thread, Something *destination);
+void stringByAppendingSymbolBridge(Thread *thread, Something *destination);
+void stringSymbolAtBridge(Thread *thread, Something *destination);
+void stringBeginsWithBridge(Thread *thread, Something *destination);
+void stringEndsWithBridge(Thread *thread, Something *destination);
+void stringSplitBySymbolBridge(Thread *thread, Something *destination);
+void stringToData(Thread *thread, Something *destination);
+void stringToCharacterList(Thread *thread, Something *destination);
+void stringJSON(Thread *thread, Something *destination);
+void stringFromSymbolListBridge(Thread *thread, Something *destination);
+void stringFromStringList(Thread *thread, Something *destination);
+void stringToInteger(Thread *thread, Something *destination);
+void stringToDouble(Thread *thread, Something *destination);
+void stringToUppercase(Thread *thread, Something *destination);
+void stringToLowercase(Thread *thread, Something *destination);
+void stringCompareBridge(Thread *thread, Something *destination);
 
 #endif /* EmojicodeString_h */

@@ -809,10 +809,10 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             }
             else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
                 if (type.valueType() == VT_BOOLEAN) {
-                    placeholder.write(0x42);
+                    placeholder.write(INS_CAST_TO_BOOLEAN);
                 }
                 else if (type.valueType() == VT_INTEGER) {
-                    placeholder.write(0x43);
+                    placeholder.write(INS_CAST_TO_INTEGER);
                 }
                 else if (type.valueType() == VT_SYMBOL) {
                     placeholder.write(0x46);

@@ -39,15 +39,14 @@ void Writer::writeBytes(const char *bytes, size_t count) {
 }
 
 void Writer::writeFunction(Function *function) {
-    writeEmojicodeChar(function->name()[0]);
     writeUInt16(function->getVti());
     writeByte(static_cast<uint8_t>(function->arguments.size()));
     
-    if (function->native) {
-        writeByte(function->typeMethod() ? 2 : 1);
+    if (function->isNative()) {
+        writeUInt16(function->linkingTabelIndex());
         return;
     }
-    writeByte(0);
+    writeUInt16(0);
     
     writeByte(function->fullSize());
     writeCoin(static_cast<EmojicodeCoin>(function->writer_.writtenCoins()));

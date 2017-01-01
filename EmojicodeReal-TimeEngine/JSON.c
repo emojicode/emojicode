@@ -73,7 +73,7 @@ Something parseJSON(Thread *thread) {
                         stackCurrent->state = JSON_STRING_ESCAPE;
                         continue;
                     case '"':
-//                        stackSetVariable(1, somethingObject(newObject(CL_STRING)), thread);
+                        *stackVariableDestination(1, thread) = somethingObject(newObject(CL_STRING));
                         initStringFromSymbolList(stackGetVariable(1, thread).object, stackGetVariable(0, thread).object->value);
                         backValue = stackGetVariable(1, thread);
                         stackPop(thread);
@@ -216,7 +216,7 @@ Something parseJSON(Thread *thread) {
                 if (backValue.type != T_OBJECT || backValue.object->class != CL_STRING) {
                     errorExit();
                 }
-//                stackSetVariable(1, backValue, thread);
+                *stackVariableDestination(1, thread) = backValue;
                 stackCurrent->state = JSON_OBJECT_COLON;
                 i--;
                 continue;
@@ -265,7 +265,7 @@ Something parseJSON(Thread *thread) {
                         stackCurrent->state = JSON_STRING;
                         stackPush(stackGetThisContext(thread), 2, 0, thread);
                         Object *string = newObject(CL_LIST);
-//                        stackSetVariable(0, somethingObject(string), thread);
+                        *stackVariableDestination(0, thread) = somethingObject(string);
                         break;
                     case '{':
                         stackCurrent->state = JSON_OBJECT_KEY;
@@ -274,12 +274,12 @@ Something parseJSON(Thread *thread) {
                         Object *o = stackGetThisObject(thread);
                         stackPop(thread);
                         stackPush(somethingObject(stackGetThisObject(thread)), 2, 0, thread);
-//                        stackSetVariable(0, somethingObject(o), thread);
+                        *stackVariableDestination(0, thread) = somethingObject(o);
                         break;
                     case '[':
                         stackCurrent->state = JSON_ARRAY_FIRST;
                         stackPush(somethingObject(stackGetThisObject(thread)), 1, 0, thread);
-//                        stackSetVariable(0, somethingObject(newObject(CL_LIST)), thread);
+                        *stackVariableDestination(0, thread) = somethingObject(newObject(CL_LIST));
                         break;
                     case 't':
                         stackCurrent->state = JSON_TRUE_T;

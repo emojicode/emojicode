@@ -68,7 +68,9 @@ public:
     EmojicodeString name() const { return name_; }
     
     /** Whether the method is implemented natively and Run-Time Native Linking must occur. */
-    bool native = false;
+    bool isNative() const { return linkingTableIndex_ > 0; }
+    unsigned int linkingTabelIndex() const { return linkingTableIndex_; }
+    void setLinkingTableIndex(int index);
     /** Whether the method was marked as final and can’t be overriden. */
     bool final() const { return final_; }
     /** Whether the method is intended to override a super method. */
@@ -142,6 +144,7 @@ private:
     bool overriding_;
     bool deprecated_;
     bool used_ = false;
+    unsigned int linkingTableIndex_ = 0;
     AccessLevel access_;
     Type owningType_;
     Package *package_;
