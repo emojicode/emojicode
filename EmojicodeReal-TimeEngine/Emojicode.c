@@ -1164,7 +1164,7 @@ int main(int argc, char *argv[]) {
     allocateHeap();
     
     Function *handler = readBytecode(f);
-    Something sth;
+    Something sth = somethingInteger(0);
     performFunction(handler, NOTHINGNESS, mainThread, &sth);
     return (int)sth.raw;
 }
