@@ -671,8 +671,12 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             if (!isSelfAllowed()) {
                 throw CompilerErrorException(token, "Illegal use of 🐕.");
             }
-            
-            return typeContext.calleeType();
+
+            auto type = typeContext.calleeType();
+            if (type.type() == TypeContent::ValueType) {
+                type.setVTReference();
+            }
+            return type;
         }
         case E_HIGH_VOLTAGE_SIGN: {
             writer.writeCoin(INS_GET_NOTHINGNESS, token);
