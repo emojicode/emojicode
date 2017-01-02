@@ -291,8 +291,8 @@ void fileSeekToEnd(Thread *thread, Something *destination) {
     fseek(file(stackGetThisObject(thread)), 0, SEEK_END);
 }
 
-void closeFile(void *file){
-    fclose((*((FILE**)file)));
+void fileClose(Thread *thread, Something *destination) {
+    fclose(file(stackGetThisObject(thread)));
 }
 
 LinkingTable {
@@ -317,7 +317,8 @@ LinkingTable {
     [19] = fileSeekTo,
     [20] = fileSeekToEnd,
     [22] = fileForWriting,
-    [23] = fileForReading
+    [23] = fileForReading,
+    [24] = fileClose,
 };
 
 Marker markerPointerForClass(EmojicodeChar cl){
@@ -330,11 +331,4 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
             return sizeof(FILE*);
     }
     return 0;
-}
-
-Deinitializer deinitializerPointerForClass(EmojicodeChar cl){
-    if(cl == 0x1F4C4){
-        return closeFile;
-    }
-    return NULL;
 }

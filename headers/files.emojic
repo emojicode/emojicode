@@ -67,6 +67,9 @@
     writing. They operate always on the whole file and reading can be very
     inefficient using these shortcuts when working with big files, because they
     will read the whole file into memory.
+
+    You must close files openend with 📝 and 📜 appropriately with 🙅 when they
+    are no longer needed.
 🌮
 🌍 🐇 📄 🍇
   🌮
@@ -128,4 +131,7 @@
 
   🌮 Returns a 📄 object representing the **standard error**. 🌮
   🐇🐖 📯 ➡️ 📄 📻 16
+
+  🌮 Closes the file. Reading or writing thereafter is undefined behavior. 🌮
+  🐇🐖 🙅 📻 24
 🍉

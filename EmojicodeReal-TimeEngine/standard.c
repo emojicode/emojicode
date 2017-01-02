@@ -681,7 +681,3 @@ Marker markerPointerForClass(EmojicodeChar cl){
     }
     return NULL;
 }
-
-Deinitializer deinitializerPointerForClass(EmojicodeChar cl){
-    return NULL;
-}

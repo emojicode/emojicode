@@ -243,7 +243,6 @@ Object* stackGetThisObject(Thread *);
 
 typedef void (*FunctionFunctionPointer)(Thread *thread, Something *destination);
 typedef void (*Marker)(Object *self);
-typedef void (*Deinitializer)(void *value);
 
 /** The version of a package. Must follow semantic versioning 2.0 http://semver.org */
 typedef struct {

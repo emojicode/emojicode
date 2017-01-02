@@ -29,7 +29,7 @@ EmojicodeCoin readCoin(FILE *in){
 }
 
 PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor,
-                                FunctionFunctionPointer **linkingTable, mpfc *mpfc, dpfc *dpfc, SizeForClassFunction *sfch){
+                                FunctionFunctionPointer **linkingTable, mpfc *mpfc, SizeForClassFunction *sfch){
     char *path;
     asprintf(&path, "%s/%s-v%d/%s.%s", packageDirectory, name, major, name, "so");
     
@@ -42,7 +42,6 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
 
     *linkingTable = dlsym(package, "linkingTable");
     *mpfc = dlsym(package, "markerPointerForClass");
-    *dpfc = dlsym(package, "deinitializerPointerForClass");
     *sfch = dlsym(package, "sizeForClass");
     
     PackageVersion(*pvf)() = dlsym(package, "getVersion");
@@ -115,7 +114,6 @@ void readPackage(FILE *in){
     static uint16_t classNextIndex = 0;
     
     FunctionFunctionPointer *linkingTable;
-    dpfc dpfc;
     mpfc mpfc;
     SizeForClassFunction sfch;
     
@@ -123,7 +121,6 @@ void readPackage(FILE *in){
     if (!packageNameLength) {
         DEBUG_LOG("Package does not have native binary");
         linkingTable = sLinkingTable;
-        dpfc = deinitializerPointerForClass;
         mpfc = markerPointerForClass;
         sfch = sizeForClass;
     }
@@ -137,7 +134,7 @@ void readPackage(FILE *in){
         
         DEBUG_LOG("Package is named %s and has version %d.%d.x", name, major, minor);
         
-        PackageLoadingState s = packageLoad(name, major, minor, &linkingTable, &mpfc, &dpfc, &sfch);
+        PackageLoadingState s = packageLoad(name, major, minor, &linkingTable, &mpfc, &sfch);
         
         if (s == PACKAGE_INAPPROPRIATE_MAJOR) {
             error("Installed version of package \"%s\" is incompatible with required version %d.%d. (How did you made Emojicode load this version of the package?!)", name, major, minor);
@@ -221,10 +218,6 @@ void readPackage(FILE *in){
             class->protocolsTable = NULL;
         }
         
-        class->deconstruct = dpfc(name);
-        if(!class->deconstruct && class->superclass){
-            class->deconstruct = class->superclass->deconstruct;
-        }
         class->mark = mpfc(name);
         size_t size = sfch(class, name);
         class->valueSize = class->superclass && class->superclass->valueSize ? class->superclass->valueSize : size;

@@ -172,16 +172,6 @@ void gc() {
     pthread_mutex_unlock(&pausingThreadsCountMutex);
     pauseThreads = false;
     pthread_cond_broadcast(&pauseThreadsFalsedCondition);
-    
-    // Call the deinitializers
-    Byte *currentObjectPointer = otherHeap;
-    while (currentObjectPointer < otherHeap + oldMemoryUse) {
-        Object *currentObject = (Object *)currentObjectPointer;
-        if (!currentObject->newLocation && currentObject->class->deconstruct) {
-            currentObject->class->deconstruct(currentObject->value);
-        }
-        currentObjectPointer += currentObject->size;
-    }
 }
 
 void pauseForGC(pthread_mutex_t *mutex) {

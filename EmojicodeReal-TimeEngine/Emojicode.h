@@ -102,9 +102,6 @@ struct Class {
     uint16_t methodCount;
     uint16_t initializerCount;
     
-    /** Deinitializer */
-    void (*deconstruct)(void *);
-    
     /** Marker FunctionPointer for GC */
     void (*mark)(Object *self);
     
@@ -189,14 +186,12 @@ typedef enum {
 } PackageLoadingState;
 
 typedef Marker (*mpfc)(EmojicodeChar cl);
-typedef Deinitializer (*dpfc)(EmojicodeChar cl);
 typedef uint_fast32_t (*SizeForClassFunction)(Class *cl, EmojicodeChar name);
 
 char* packageError(void);
 
 extern FunctionFunctionPointer sLinkingTable[100];
 Marker markerPointerForClass(EmojicodeChar cl);
-Deinitializer deinitializerPointerForClass(EmojicodeChar cl);
 uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name);
 
 #endif /* Emojicode_h */

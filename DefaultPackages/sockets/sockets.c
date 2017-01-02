@@ -137,7 +137,7 @@ LinkingTable {
     [3] = socketClose,
     [4] = socketReadBytes,
     [5] = socketInitWithHost,
-    [6] = serverInitWithPort
+    [6] = serverInitWithPort,
 };
 
 Marker markerPointerForClass(EmojicodeChar cl) {
@@ -153,13 +153,4 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
             return sizeof(int);
     }
     return 0;
-}
-
-Deinitializer deinitializerPointerForClass(EmojicodeChar cl) {
-    switch (cl) {
-        case 0x1f3c4: //🏄
-        case 0x1f4de: //📞
-            return socketDestruct;
-    }
-    return NULL;
 }
