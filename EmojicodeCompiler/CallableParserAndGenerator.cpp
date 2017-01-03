@@ -158,15 +158,11 @@ void CallableParserAndGenerator::copyVariableContent(const Variable &variable, b
 void CallableParserAndGenerator::parseCoinInBlock() {
     effect = false;
 
-    auto insertionPoint = writer.getInsertionPoint();
-
     auto &token = stream_.consumeToken();
-    auto type = parse(token);
+    auto des = Destination::temporary();
+    auto type = parse(token, Type::nothingness(), des);
     noEffectWarning(token);
-
-    if (type.type() != TypeContent::Nothingness) {
-        insertionPoint.insert(INS_DISCARD_PRODUCTION);
-    }
+    popTemporaryScope();
 }
 
 void CallableParserAndGenerator::flowControlBlock(bool block) {

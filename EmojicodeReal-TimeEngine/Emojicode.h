@@ -16,10 +16,10 @@
 
 struct StackFrame {
     Something thisContext;
-    /** The size of the frame as a magnitude of Somethings. */
-    int size;
-    void *returnPointer;
-    void *returnFutureStack;
+    alignas(Something) struct {
+        void *returnPointer;
+        void *returnFutureStack;
+    };
 };
 
 struct StackState {

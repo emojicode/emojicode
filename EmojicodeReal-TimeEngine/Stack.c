@@ -15,10 +15,7 @@ Something* stackReserveFrame(Something this, int size, Thread *thread) {
         error("Your program triggerd a stack overflow!");
     }
     
-    memset((Byte *)sf + sizeof(StackFrame), 0, sizeof(Something) * size);
-    
     sf->thisContext = this;
-    sf->size = size;
     sf->returnPointer = thread->stack;
     sf->returnFutureStack = thread->futureStack;
     
@@ -44,8 +41,11 @@ void stackPush(Something this, int frameSize, uint8_t argCount, Thread *thread) 
 }
 
 void stackPop(Thread *thread) {
-    thread->futureStack = ((StackFrame *)thread->stack)->returnFutureStack;
-    thread->stack = ((StackFrame *)thread->stack)->returnPointer;
+    StackFrame *frame = ((StackFrame *)thread->stack);
+    thread->futureStack = frame->returnFutureStack;
+    thread->stack = frame->returnPointer;
+    // Avoid randomly leaving behind an object reference as returnPointer takes the place of Type
+    frame->returnPointer = (void *)T_INTEGER;
 }
 
 StackState storeStackState(Thread *thread) {
@@ -74,16 +74,15 @@ Something stackGetThisContext(Thread *thread) {
     return ((StackFrame *)thread->stack)->thisContext;
 }
 
-void stackMark(Thread *thread){
-    for (StackFrame *stackFrame = (StackFrame *)thread->futureStack; (Byte *)stackFrame < thread->stackBottom; stackFrame = stackFrame->returnFutureStack) {
-        for (uint8_t i = 0; i < stackFrame->size; i++) {
-            Something *s = (Something *)(((Byte *)stackFrame) + sizeof(StackFrame) + sizeof(Something) * i);
-            if (isRealObject(*s)) {
-                mark(&s->object);
-            }
+void stackMark(Thread *thread) {
+    Something *nextStackFrame = (Something *)thread->futureStack;
+    for (Something *something = nextStackFrame; (Byte *)something < thread->stackBottom; something++) {
+        if (isRealObject(*something)) {
+            mark(&something->object);
         }
-        if (isRealObject(stackFrame->thisContext)) {
-            mark(&stackFrame->thisContext.object);
+        if (nextStackFrame == something) {  // Check here, because first StackFrame member is Something.
+            nextStackFrame = (Something *)((StackFrame *)something)->returnFutureStack;
+            something++;  // Jump over the return pointers, which have been aligned as Something
         }
     }
 }

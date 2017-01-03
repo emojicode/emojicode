@@ -80,7 +80,6 @@ typedef enum EmojicodeInstruction {
     INS_SAFE_CAST_TO_PROTOCOL = 0x43,
     INS_CAST_TO_BOOLEAN = 0x44,
     INS_CAST_TO_INTEGER = 0x45,
-    INS_DISCARD_PRODUCTION = 0x4A,
     INS_BINARY_AND_INTEGER = 0x5A,
     INS_BINARY_OR_INTEGER = 0x5B,
     INS_BINARY_XOR_INTEGER = 0x5C,
@@ -171,7 +170,6 @@ void printInstructionDescription(EmojicodeInstruction ins) {
         case INS_SAFE_CAST_TO_PROTOCOL: puts("INS_SAFE_CAST_TO_PROTOCOL"); return;
         case INS_CAST_TO_BOOLEAN: puts("INS_CAST_TO_BOOLEAN"); return;
         case INS_CAST_TO_INTEGER: puts("INS_CAST_TO_INTEGER"); return;
-        case INS_DISCARD_PRODUCTION: puts("INS_DISCARD_PRODUCTION"); return;
         case INS_BINARY_AND_INTEGER: puts("INS_BINARY_AND_INTEGER"); return;
         case INS_BINARY_OR_INTEGER: puts("INS_BINARY_OR_INTEGER"); return;
         case INS_BINARY_XOR_INTEGER: puts("INS_BINARY_XOR_INTEGER"); return;

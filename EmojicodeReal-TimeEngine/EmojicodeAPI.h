@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdalign.h>
 
 typedef struct Class Class;
 typedef struct Function Function;
@@ -68,7 +69,7 @@ typedef unsigned char Byte;
 /** Either an object reference or a primitive value. */
 typedef struct Something {
     /** The type of the primitive or whether it contains an object reference. */
-    Type type;
+    alignas(int) Type type;
     union {
         EmojicodeInteger raw;
         double doubl;

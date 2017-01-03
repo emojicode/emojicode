@@ -87,7 +87,8 @@ static bool runBlock(Thread *thread){
     
     EmojicodeCoin *end = thread->tokenStream + length;
     while (thread->tokenStream < end) {
-        produce(consumeCoin(thread), thread, NULL);
+        Something garbage;
+        produce(consumeCoin(thread), thread, &garbage);
     
         pauseForGC(NULL);
         
@@ -102,7 +103,8 @@ static bool runBlock(Thread *thread){
 static void runFunctionPointerBlock(Thread *thread, uint32_t length){
     EmojicodeCoin *end = thread->tokenStream + length;
     while (thread->tokenStream < end) {
-        produce(consumeCoin(thread), thread, NULL);
+        Something garbage;
+        produce(consumeCoin(thread), thread, &garbage);
         
         pauseForGC(NULL);
         
@@ -225,7 +227,8 @@ Something performInitializer(Class *class, Function *initializer, Object *object
         
         EmojicodeCoin *end = thread->tokenStream + initializer->tokenCount;
         while (thread->tokenStream < end) {
-            produce(consumeCoin(thread), thread, NULL);
+            Something garbage;
+            produce(consumeCoin(thread), thread, &garbage);
             
             if (!returned.raw) {
                 thread->tokenStream = preCoinStream;
@@ -895,9 +898,6 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
         case INS_RETURN:
             produce(consumeCoin(thread), thread, thread->returnDestination);
             thread->tokenStream = NULL;
-            return;
-        case INS_DISCARD_PRODUCTION:
-            produce(consumeCoin(thread), thread, (Something *)otherHeap);
             return;
         case INS_REPEAT_WHILE: {
             EmojicodeCoin *beginPosition = thread->tokenStream;
