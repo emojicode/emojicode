@@ -102,6 +102,7 @@
 		E4478C661B7B8CB400291BD9 /* Type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Type.cpp; sourceTree = "<group>"; };
 		E449AF6A1CCCC0A200492FC0 /* PackageParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PackageParser.cpp; sourceTree = "<group>"; };
 		E449AF6B1CCCC0A200492FC0 /* PackageParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PackageParser.hpp; sourceTree = "<group>"; };
+		E45570ED1E1C08D50093B52B /* EmojicodeList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EmojicodeList.h; path = "EmojicodeReal-TimeEngine/EmojicodeList.h"; sourceTree = SOURCE_ROOT; };
 		E455BC671B5BEB82002411C8 /* EmojicodeShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeShared.h; sourceTree = "<group>"; };
 		E45DB8131CB44D7500AE6FBE /* Thread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Thread.c; path = "EmojicodeReal-TimeEngine/Thread.c"; sourceTree = SOURCE_ROOT; };
 		E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EmojicodeCompiler; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -171,9 +172,8 @@
 		E4EEB9F51C830194009E7089 /* EmojicodeString.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = EmojicodeString.c; path = "EmojicodeReal-TimeEngine/EmojicodeString.c"; sourceTree = SOURCE_ROOT; };
 		E4EEB9F71C8301A5009E7089 /* JSON.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = JSON.c; path = "EmojicodeReal-TimeEngine/JSON.c"; sourceTree = SOURCE_ROOT; };
 		E4EEB9F91C8301B5009E7089 /* Reader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Reader.c; path = "EmojicodeReal-TimeEngine/Reader.c"; sourceTree = SOURCE_ROOT; };
-		E4EEB9FB1C8301C5009E7089 /* EmojicodeList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeList.h; sourceTree = SOURCE_ROOT; };
-		E4EEB9FC1C8301CC009E7089 /* EmojicodeDictionary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeDictionary.h; sourceTree = SOURCE_ROOT; };
-		E4EEB9FD1C8301D6009E7089 /* EmojicodeString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeString.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		E4EEB9FC1C8301CC009E7089 /* EmojicodeDictionary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EmojicodeDictionary.h; path = "EmojicodeReal-TimeEngine/EmojicodeDictionary.h"; sourceTree = SOURCE_ROOT; };
+		E4EEB9FD1C8301D6009E7089 /* EmojicodeString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EmojicodeString.h; path = "EmojicodeReal-TimeEngine/EmojicodeString.h"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		E4EEB9FE1C8301E7009E7089 /* Object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Object.c; path = "EmojicodeReal-TimeEngine/Object.c"; sourceTree = SOURCE_ROOT; };
 		E4EEBA001C8301F7009E7089 /* Stack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Stack.c; path = "EmojicodeReal-TimeEngine/Stack.c"; sourceTree = SOURCE_ROOT; };
 		E4EEBA021C830209009E7089 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = SOURCE_ROOT; };
@@ -378,7 +378,7 @@
 			isa = PBXGroup;
 			children = (
 				E4EEB9EB1C83014B009E7089 /* standard.c */,
-				E4EEB9FB1C8301C5009E7089 /* EmojicodeList.h */,
+				E45570ED1E1C08D50093B52B /* EmojicodeList.h */,
 				E4EEB9F11C83018B009E7089 /* EmojicodeList.c */,
 				E4EEB9FC1C8301CC009E7089 /* EmojicodeDictionary.h */,
 				E4EEB9F31C83018F009E7089 /* EmojicodeDictionary.c */,

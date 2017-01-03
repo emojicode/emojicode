@@ -27,7 +27,6 @@ Class *CL_DATA;
 Class *CL_DICTIONARY;
 Protocol *PR_ENUMERATEABLE;
 Protocol *PR_ENUMERATOR;
-Class *CL_RANGE;
 ValueType *VT_BOOLEAN;
 ValueType *VT_SYMBOL;
 ValueType *VT_INTEGER;

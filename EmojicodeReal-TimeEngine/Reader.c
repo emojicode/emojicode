@@ -250,7 +250,6 @@ Function* readBytecode(FILE *in) {
     CL_DICTIONARY = classTable[4];
     CL_CAPTURED_FUNCTION_CALL = classTable[5];
     CL_CLOSURE = classTable[6];
-    CL_RANGE = classTable[7];
     
     DEBUG_LOG("✅ Read all packages");
 

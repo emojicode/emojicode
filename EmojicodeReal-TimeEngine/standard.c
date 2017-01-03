@@ -210,33 +210,6 @@ static void errorGetCode(Thread *thread, Something *destination) {
     *destination = somethingInteger((EmojicodeInteger)error->code);
 }
 
-//MARK: Range
-
-void rangeSetDefaultStep(EmojicodeRange *range) {
-    range->step = range->start > range->stop ? -1 : 1;
-}
-
-static void initRangeStartStop(Thread *thread, Something *destination) {
-    EmojicodeRange *range = stackGetThisObject(thread)->value;
-    range->start = stackGetVariable(0, thread).raw;
-    range->stop = stackGetVariable(1, thread).raw;
-    rangeSetDefaultStep(range);
-}
-
-static void initRangeStartStopStep(Thread *thread, Something *destination) {
-    EmojicodeRange *range = stackGetThisObject(thread)->value;
-    range->start = stackGetVariable(0, thread).raw;
-    range->stop = stackGetVariable(1, thread).raw;
-    range->step = stackGetVariable(2, thread).raw;
-    if (range->step == 0) rangeSetDefaultStep(range);
-}
-
-static void rangeGet(Thread *thread, Something *something) {
-    EmojicodeRange *range = stackGetThisObject(thread)->value;
-    EmojicodeInteger h = range->start + stackGetVariable(0, thread).raw * range->step;
-    *something = (range->step > 0 ? range->start <= h && h < range->stop : range->stop < h && h <= range->start) ? somethingInteger(h) : NOTHINGNESS;
-}
-
 //MARK: Data
 
 static void dataEqual(Thread *thread, Something *destination) {
@@ -586,9 +559,6 @@ FunctionFunctionPointer sLinkingTable[] = {
     [39] = systemTime, //🕰
     [40] = systemArgs, //🎞
     [41] = systemSystem, //🕴
-    [42] = initRangeStartStop,
-    [43] = initRangeStartStopStep,
-    [44] = rangeGet,
     [45] = listAppendBridge, //bear
     [46] = listGetBridge, //🐽
     [47] = listRemoveBridge, //koala
@@ -654,8 +624,6 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
             return sizeof(Closure);
         case 0x1F336:
             return sizeof(CapturedFunctionCall);
-        case 0x23E9:
-            return sizeof(EmojicodeRange);
         case 0x1f488: //💈
             return sizeof(pthread_t);
         case 0x1f510: //🔐

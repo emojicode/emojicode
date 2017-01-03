@@ -67,10 +67,8 @@ public:
     const std::list<Class *>& classes() const { return classes_; };
     const std::list<ExportedType>& exportedTypes() const { return exportedTypes_; };
 
-    /**
-     * Tries to fetch a type by its name and namespace and stores it into @c type.
-     * @return Whether the type could be found or not. @c type is untouched if @c false was returned.
-     */
+    /// Tries to fetch a type by its name and namespace and stores it into @c type.
+    /// @returns Whether the type could be found or not. @c type is untouched if @c false was returned.
     bool fetchRawType(EmojicodeString name, EmojicodeString ns, bool opt, SourcePosition errorPosition, Type *type);
     bool fetchRawType(ParsedTypeName ptn, Type *type);
 

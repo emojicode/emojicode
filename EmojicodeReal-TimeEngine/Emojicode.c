@@ -27,10 +27,9 @@ Class *CL_DATA;
 Class *CL_DICTIONARY;
 Class *CL_CAPTURED_FUNCTION_CALL;
 Class *CL_CLOSURE;
-Class *CL_RANGE;
 
 static Class cl_array = {
-    NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0, NULL, NULL, 0, 0
+    NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0, NULL, 0, 0
 };
 Class *CL_ARRAY = &cl_array;
 
@@ -820,35 +819,6 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
             *destination = sm;
             return;
         }
-        case 0x53: {
-            Something start;
-            produce(consumeCoin(thread), thread, &start);
-            Something stop;
-            produce(consumeCoin(thread), thread, &stop);
-            Object *object = newObject(CL_RANGE);
-            EmojicodeRange *range = object->value;
-            range->start = start.raw;
-            range->stop = stop.raw;
-            rangeSetDefaultStep(range);
-            *destination = somethingObject(object);
-            return;
-        }
-        case 0x54: {
-            Something start;
-            produce(consumeCoin(thread), thread, &start);
-            Something stop;
-            produce(consumeCoin(thread), thread, &stop);
-            Something step;
-            produce(consumeCoin(thread), thread, &step);
-            Object *object = newObject(CL_RANGE);
-            EmojicodeRange *range = object->value;
-            range->start = start.raw;
-            range->stop = stop.raw;
-            range->step = step.raw;
-            if (range->step == 0) rangeSetDefaultStep(range);
-            *destination = somethingObject(object);
-            return;
-        }
         case INS_BINARY_AND_INTEGER: {
             Something a;
             Something b;
@@ -1010,11 +980,10 @@ void produce(EmojicodeCoin coin, Thread *thread, Something *destination) {
         }
         case 0x66: {
             EmojicodeCoin variable = consumeCoin(thread);
-            Something sth;
-            produce(consumeCoin(thread), thread, &sth);
-            EmojicodeRange range = *(EmojicodeRange *)sth.object->value;
+            Something sth[3];
+            produce(consumeCoin(thread), thread, sth);
             EmojicodeCoin *begin = thread->tokenStream;
-            for (EmojicodeInteger i = range.start; i != range.stop; i += range.step) {
+            for (EmojicodeInteger i = sth[0].raw; i != sth[1].raw; i += sth[2].raw) {
                 *stackVariableDestination(variable, thread) = somethingInteger(i);
                 
                 if (runBlock(thread)) {

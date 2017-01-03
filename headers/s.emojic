@@ -315,21 +315,43 @@
   numbers. [Read more in the
   language reference.](../../reference/the-s-package.html#-ranges)
 🌮
-🌍 🐇 ⏩ 🍇
+🌍 🕊 ⏩ 🍇
+  🍰 start 🚂
+  🍰 stop 🚂
+  🍰 step 🚂
+
   🌮
-    Creates an range from start to stop.
+    Creates a range from start to stop.
   🌮
-  🐈 ⏩ start 🚂 stop 🚂 📻 42
+  🐈 ⏩ 🍼 start 🚂 🍼 stop 🚂 🍇
+    🍮 step 1
+    🍊 ◀️ stop start 🍇
+      🍮 step -1
+    🍉
+  🍉
   🌮
-    Creates an range from start to stop with the given step.
+    Creates a range from start to stop with the given step.
   🌮
-  🐈 ⏭ start 🚂 stop 🚂 step 🚂 📻 43
+  🐈 ⏭ 🍼 start 🚂 🍼 stop 🚂 🍼 step 🚂 🍇🍉
   🌮
     Returns the `n`th element of the range. `n` is only valid if
     `start + step * n` is `>= start` and `< stop`. If `n` is invalid
     Nothingness is returned.
   🌮
-  🐖 🐽 n 🚂 ➡️ 🍬🚂 📻 44
+  🐖 🐽 n 🚂 ➡️ 🍬🚂 🍇
+    🍦 v ➕ start ✖️ n step
+    🍊 ◀️ step 0 🍇
+      🍊 🎊 ◀️ stop v ⬅️ v start 🍇
+        🍎 v
+      🍉
+    🍉
+    🍓 🍇
+      🍊 🎊 ⬅️ start v ◀️ v stop 🍇
+        🍎 v
+      🍉
+    🍉
+    🍎 ⚡️
+  🍉
 🍉
 
 🌮

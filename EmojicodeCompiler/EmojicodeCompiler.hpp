@@ -43,7 +43,6 @@ extern Class *CL_LIST;
 extern Class *CL_ERROR;
 extern Class *CL_DATA;
 extern Class *CL_DICTIONARY;
-extern Class *CL_RANGE;
 extern Protocol *PR_ENUMERATOR;
 extern Protocol *PR_ENUMERATEABLE;
 extern ValueType *VT_BOOLEAN;

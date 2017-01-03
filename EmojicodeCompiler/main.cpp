@@ -155,7 +155,6 @@ void loadStandard(Package *_, SourcePosition errorPosition) {
     CL_ERROR = getStandardClass(EmojicodeString(0x1F6A8), _, errorPosition);
     CL_DATA = getStandardClass(EmojicodeString(0x1F4C7), _, errorPosition);
     CL_DICTIONARY = getStandardClass(EmojicodeString(0x1F36F), _, errorPosition);
-    CL_RANGE = getStandardClass(EmojicodeString(0x23E9), _, errorPosition);
     
     PR_ENUMERATOR = getStandardProtocol(EmojicodeString(0x1F361), _, errorPosition);
     PR_ENUMERATEABLE = getStandardProtocol(EmojicodeString(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), _, errorPosition);

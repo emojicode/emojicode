@@ -558,18 +558,26 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             placeholder.write();
             return type;
         }
-        case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE: {
-            writer.writeCoin(0x53, token);
-            parse(stream_.consumeToken(), token, Type::integer());
-            parse(stream_.consumeToken(), token, Type::integer());
-            return Type(CL_RANGE);
-        }
+        case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE:
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
-            writer.writeCoin(0x54, token);
-            parse(stream_.consumeToken(), token, Type::integer());
-            parse(stream_.consumeToken(), token, Type::integer());
-            parse(stream_.consumeToken(), token, Type::integer());
-            return Type(CL_RANGE);
+            Type type = Type::nothingness();
+            package_->fetchRawType(EmojicodeString(E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE), globalNamespace,
+                                   false, token, &type);
+            if (des.isTemporary()) {  // Temporary instance
+                pushTemporaryScope();
+                int destinationID = scoper.currentScope().allocateInternalVariable(type);
+                writer.writeCoin(INS_PRODUCE_TO_AND_GET_VT_REFERENCE, token);
+                writer.writeCoin(destinationID, token);
+                type.setVTReference();
+            }
+
+            writer.writeCoin(INS_INIT_VT, token);
+            auto initializer = type.valueType()->getInitializer(token, type, typeContext);
+            writer.writeCoin(initializer->vtiForUse(), token);
+
+            parseFunctionCall(type, initializer, token);
+
+            return type;
         }
         case E_TANGERINE: {
             writer.writeCoin(INS_IF, token);
@@ -625,7 +633,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             auto valueVariablePlaceholder = writer.writeCoinPlaceholder(token);
             
-            Type iteratee = parse(stream_.consumeToken(), token, Type::someobject());
+            Type iteratee = parse(stream_.consumeToken());
             
             Type itemType = Type::nothingness();
             
@@ -638,7 +646,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                                                                 true, variableToken.position(), true).id();
                 valueVariablePlaceholder.write(id);
             }
-            else if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_RANGE) {
+            else if (iteratee.type() == TypeContent::ValueType && iteratee.valueType()->name()[0] == E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE) {
                 // If the iteratee is a range, the Real-Time Engine also has some special sugar
                 placeholder.write(0x66);
                 int id = scoper.currentScope().setLocalVariable(variableToken.value(), Type::integer(), true,
