@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include "CallableParserAndGenerator.hpp"
 #include "Type.hpp"
-#include "utf8.h"
 #include "Class.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
@@ -18,7 +17,7 @@
 #include "CommonTypeFinder.hpp"
 #include "VariableNotFoundErrorException.hpp"
 #include "StringPool.hpp"
-#include "EmojicodeInstructions.h"
+#include "../EmojicodeInstructions.h"
 #include "CapturingCallableScoper.hpp"
 
 Type CallableParserAndGenerator::parse(const Token &token, const Token &parentToken, Type type,
@@ -76,7 +75,7 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
         }
         else {
             writer.writeCoin(resolved.size(), token);
-            parse(stream_.consumeToken(), token, resolved, nullptr, Destination::with());
+            parse(stream_.consumeToken(), token, resolved, nullptr, Destination::immutableDestination());
         }
     }
 
@@ -239,12 +238,12 @@ void CallableParserAndGenerator::parseIfExpression(const Token &token) {
     }
 }
 
-Type CallableParserAndGenerator::parseMethodCallee() {
+std::pair<Type, Destination> CallableParserAndGenerator::parseMethodCallee() {
     auto &tobject = stream_.consumeToken();
-    Type type = parse(tobject, Type::nothingness(), Destination::temporary())
-        .resolveOnSuperArgumentsAndConstraints(typeContext);
+    auto destination = Destination::temporary();
+    Type type = parse(tobject, Type::nothingness(), destination).resolveOnSuperArgumentsAndConstraints(typeContext);
 
-    return type;
+    return std::make_pair(type, destination);
 }
 
 void CallableParserAndGenerator::pushTemporaryScope() {
@@ -291,7 +290,22 @@ bool CallableParserAndGenerator::isOnlyNothingnessReturnAllowed() const {
            mode == CallableParserAndGeneratorMode::ValueTypeInitializer;
 }
 
-Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Destination des) {
+void CallableParserAndGenerator::mutatingMethodCheck(Function *method, Type type, Destination des, SourcePosition p) {
+    if (method->mutating()) {
+        if (!type.isMutable()) {
+            throw CompilerErrorException(p, "%s was marked 🖍 but callee is not mutable.",
+                                         method->name().utf8().c_str());
+        }
+        des.mutateVariable(p);
+    }
+}
+
+Type CallableParserAndGenerator::parse(const Token &token, Type expectation) {
+    auto destination = Destination();
+    return parse(token, expectation, destination);
+}
+
+Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Destination &des) {
     switch (token.type()) {
         case TokenType::String: {
             writer.writeCoin(INS_GET_STRING_POOL, token);
@@ -345,12 +359,16 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Des
             var.first.uninitalizedError(token);
 
             des.validateIfValueType(var.first.type);
+            des.setMutatedVariable(var.first);
             if (var.first.type.type() == TypeContent::ValueType && des.isReference() && !var.first.type.isVTReference()
                 && !var.first.type.valueType()->isPrimitive()) {
                 getVTReference(var.first, var.second, token.position());
             }
             else {
                 copyVariableContent(var.first, var.second, token.position());
+                if (des.isMutable()) {
+                    var.first.type.setMutable(true);
+                }
             }
 
             return var.first.type;
@@ -366,7 +384,7 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Des
     throw std::logic_error("Cannot determine expression’s return type.");
 }
 
-Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expectation, Destination des) {
+Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expectation, Destination &des) {
     if (!token.isIdentifier(E_RED_APPLE)) {
         // We need a chance to test whether the red apple’s return is used
         effect = true;
@@ -406,17 +424,23 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 var.first.mutate(varName);
 
                 produceToVariable(var.first, var.second, token);
+
+                if (var.second && !typeContext.calleeType().isMutable()) {
+                    throw CompilerErrorException(token.position(),
+                                                 "Can’t mutate instance variable as method is not marked with 🖍.");
+                }
                 
                 type = var.first.type;
-                parse(stream_.consumeToken(), token, type, nullptr, Destination::with());
+                parse(stream_.consumeToken(), token, type, nullptr, Destination::mutableDestination());
             }
             catch (VariableNotFoundErrorException &vne) {
                 // Not declared, declaring as local variable
                 writer.writeCoin(INS_PRODUCE_WITH_STACK_DESTINATION, token);
                 
                 auto placeholder = writer.writeCoinPlaceholder(token);
-                
-                Type t = parse(stream_.consumeToken(), Type::nothingness(), Destination::with());
+
+                auto des = Destination::mutableDestination();
+                Type t = parse(stream_.consumeToken(), Type::nothingness(), des);
                 int id = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position(), true).id();
                 placeholder.write(id);
                 return Type::nothingness();
@@ -434,8 +458,9 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writer.writeCoin(INS_PRODUCE_WITH_STACK_DESTINATION, token);
             
             auto placeholder = writer.writeCoinPlaceholder(token);
-            
-            Type t = parse(stream_.consumeToken(), Type::nothingness(), Destination::with());
+
+            auto des = Destination::immutableDestination();
+            Type t = parse(stream_.consumeToken(), Type::nothingness(), des);
             int id = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position(), true).id();
             placeholder.write(id);
             return Type::nothingness();
@@ -672,11 +697,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerErrorException(token, "Illegal use of 🐕.");
             }
 
-            auto type = typeContext.calleeType();
-            if (type.type() == TypeContent::ValueType) {
-                type.setVTReference();
-            }
-            return type;
+            return typeContext.calleeType();
         }
         case E_HIGH_VOLTAGE_SIGN: {
             writer.writeCoin(INS_GET_NOTHINGNESS, token);
@@ -750,7 +771,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 }
             }
             
-            parse(stream_.consumeToken(), token, callable.returnType, nullptr, Destination::with());
+            parse(stream_.consumeToken(), token, callable.returnType, nullptr, Destination::mutableDestination());
             returned = true;
             return Type::nothingness();
         }
@@ -845,14 +866,19 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             
             auto &methodToken = stream_.consumeToken();
 
-            Type type = parseMethodCallee();
+            auto calleePair = parseMethodCallee();
+            Type type = calleePair.first;
 
             if (!type.optional()) {
                 throw CompilerErrorException(token, "🍻 may only be used on 🍬.");
             }
 
             auto method = type.eclass()->getMethod(methodToken, type, typeContext);
-            
+
+            if (type.type() == TypeContent::ValueType) {
+                mutatingMethodCheck(method, type, calleePair.second, token);
+            }
+
             writer.writeCoin(method->vtiForUse(), token);
             
             auto placeholder = writer.writeCoinsCountPlaceholderCoin(token);
@@ -950,7 +976,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             for (int i = 1; i < type.genericArguments.size(); i++) {
                 writer.writeCoin(type.genericArguments[i].size(), token);
-                parse(stream_.consumeToken(), token, type.genericArguments[i], nullptr, Destination::with());
+                parse(stream_.consumeToken(), token, type.genericArguments[i], nullptr,
+                      Destination::immutableDestination());
             }
             
             return type.genericArguments[0];
@@ -1087,7 +1114,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             auto insertionPoint = writer.getInsertionPoint();
             auto placeholder = writer.writeCoinPlaceholder(token);
 
-            Type type = parseMethodCallee();
+            auto calleePair = parseMethodCallee();
+            Type type = calleePair.first;
 
             if (type.optional()) {
                 throw CompilerErrorException(token, "You cannot call methods on optionals.");
@@ -1226,8 +1254,9 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     placeholder.write(INS_EQUAL_PRIMITIVE);
                     return Type::boolean();
                 }
-                
+
                 method = type.valueType()->getMethod(token, type, typeContext);
+                mutatingMethodCheck(method, type, calleePair.second, token);
                 placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
                 writer.writeCoin(method->vtiForUse(), token);
             }
@@ -1398,9 +1427,15 @@ void CallableParserAndGenerator::analyze() {
     }
 }
 
-void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type classType,
+void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type contextType,
                                                      CallableScoper &scoper, CallableParserAndGeneratorMode mode) {
-    auto sca = CallableParserAndGenerator(*function, function->package(), mode, TypeContext(classType, function),
+    if (contextType.type() == TypeContent::ValueType) {
+        if (function->mutating()) {
+            contextType.setMutable(true);
+        }
+        contextType.setVTReference();
+    }
+    auto sca = CallableParserAndGenerator(*function, function->package(), mode, TypeContext(contextType, function),
                                           writer, scoper);
     sca.analyze();
     function->setFullSize(scoper.fullSize());

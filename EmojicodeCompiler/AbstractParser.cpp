@@ -8,7 +8,6 @@
 
 #include "AbstractParser.hpp"
 #include "Function.hpp"
-#include "utf8.h"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 

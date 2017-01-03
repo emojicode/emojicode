@@ -11,7 +11,7 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
-#include "utf8.h"
+#include "../utf8.h"
 #include "EmojicodeList.h"
 #include "algorithms.h"
 

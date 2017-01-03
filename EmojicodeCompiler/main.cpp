@@ -12,7 +12,6 @@
 #include <cstring>
 #include <cstdlib>
 #include <vector>
-#include "utf8.h"
 #include "CodeGenerator.hpp"
 #include "Writer.hpp"
 #include "Class.hpp"
@@ -21,6 +20,7 @@
 #include "PackageReporter.hpp"
 #include "ValueType.hpp"
 #include "Function.hpp"
+#include "../utf8.h"
 
 std::string EmojicodeString::utf8() const {
     // Size needed for UTF8 representation

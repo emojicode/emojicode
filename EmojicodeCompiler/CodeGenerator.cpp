@@ -13,7 +13,6 @@
 #include "Protocol.hpp"
 #include "CallableScoper.hpp"
 #include "Class.hpp"
-#include "utf8.h"
 #include "EmojicodeCompiler.hpp"
 #include "StringPool.hpp"
 #include "ValueType.hpp"

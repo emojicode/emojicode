@@ -16,7 +16,7 @@
 #ifndef EmojicodeAPI_h
 #define EmojicodeAPI_h
 
-#include "EmojicodeShared.h"
+#include "../EmojicodeShared.h"
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>

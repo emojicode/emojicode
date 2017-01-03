@@ -8,9 +8,9 @@
 
 #include <cstring>
 #include <vector>
-#include "utf8.h"
 #include "Class.hpp"
 #include "Function.hpp"
+#include "../utf8.h"
 #include "EmojicodeCompiler.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
@@ -39,8 +39,8 @@ Type::Type(Protocol *p, bool o) : typeDefinition_(p), typeContent_(TypeContent::
 Type::Type(Enum *e, bool o) : typeDefinition_(e), typeContent_(TypeContent::Enum), optional_(o) {
 }
 
-Type::Type(ValueType *v, bool o, bool reference)
-    : typeDefinition_(v), typeContent_(TypeContent::ValueType), optional_(o), vtReference_(reference) {
+Type::Type(ValueType *v, bool o, bool reference, bool isMutable)
+    : typeDefinition_(v), typeContent_(TypeContent::ValueType), optional_(o), mutable_(isMutable) {
 }
 
 Type::Type(Class *c, bool o) : typeDefinition_(c), typeContent_(TypeContent::Class), optional_(o) {

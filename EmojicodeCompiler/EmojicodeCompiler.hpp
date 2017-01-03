@@ -11,7 +11,7 @@
 
 #define EmojicodeCompiler
 
-#include "EmojicodeShared.h"
+#include "../EmojicodeShared.h"
 #include "Emojis.h"
 
 #include <string>

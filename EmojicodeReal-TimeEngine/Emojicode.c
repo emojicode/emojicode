@@ -12,12 +12,12 @@
 #include <math.h>
 
 #include "Emojicode.h"
-#include "EmojicodeInstructions.h"
+#include "../EmojicodeInstructions.h"
 
 #include "EmojicodeList.h"
 #include "EmojicodeString.h"
 #include "EmojicodeDictionary.h"
-#include "utf8.h"
+#include "../utf8.h"
 
 Class *CL_OBJECT = NULL;
 Class *CL_STRING;
@@ -1151,7 +1151,7 @@ int main(int argc, char *argv[]) {
     
     setlocale(LC_CTYPE, "de_DE.UTF-8");
     if (argc < 2){
-       error("No file provided.");
+        error("No file provided.");
     }
     
     FILE *f = fopen(argv[1], "rb");

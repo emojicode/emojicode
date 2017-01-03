@@ -13,7 +13,6 @@
 #include "Package.hpp"
 #include "PackageParser.hpp"
 #include "CompilerErrorException.hpp"
-#include "utf8.h"
 
 std::list<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;

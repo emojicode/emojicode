@@ -9,8 +9,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "../utf8.h"
 #include "Lexer.hpp"
-#include "utf8.h"
 #include "CompilerErrorException.hpp"
 #include "EmojiTokenization.hpp"
 

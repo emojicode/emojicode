@@ -17,7 +17,7 @@
 #include "EmojicodeList.h"
 #include "EmojicodeString.h"
 #include "EmojicodeDictionary.h"
-#include "utf8.h"
+#include "../utf8.h"
 #include "algorithms.h"
 
 EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max){

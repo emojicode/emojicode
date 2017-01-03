@@ -109,6 +109,7 @@ enum Emojis {
     E_RED_QUESTION_MARK = 0x2753,
     E_BABY_BOTTLE = 0x1F37C,
     E_WHITE_CIRCLE = 0x26AA,
+    E_CRAYON = 0x1F58D,
 };
 
 #endif /* Emojis_h */

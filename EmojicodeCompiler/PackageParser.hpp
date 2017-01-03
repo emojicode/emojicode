@@ -13,7 +13,7 @@
 #include "Lexer.hpp"
 #include "AbstractParser.hpp"
 #include "CompilerErrorException.hpp"
-#include "utf8.h"
+#include "../utf8.h"
 
 #include <set>
 

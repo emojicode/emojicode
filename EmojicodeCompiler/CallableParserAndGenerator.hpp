@@ -40,7 +40,7 @@ enum class TypeAvailability {
 /** This class is repsonsible for compiling a @c Callable to bytecode. */
 class CallableParserAndGenerator : AbstractParser {
 public:
-    static void writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type classType,
+    static void writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type contextType,
                                         CallableScoper &scoper, CallableParserAndGeneratorMode mode);
     CallableParserAndGenerator(Callable &callable, Package *p, CallableParserAndGeneratorMode mode,
                                TypeContext typeContext, CallableWriter &writer, CallableScoper &scoper);
@@ -86,7 +86,8 @@ private:
                              temporay. You must call @c popTemporaryScope() appropriately after a call to this method
                              with @c vtDestinationID set to -1.
      */
-    Type parse(const Token &token, Type expectation = Type::nothingness(), Destination des = Destination());
+    Type parse(const Token &token, Type expectation = Type::nothingness());
+    Type parse(const Token &token, Type expectation, Destination &des);
     /**
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
      * @param token The token to evaluate.
@@ -102,7 +103,7 @@ private:
     std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, SourcePosition p,
                                                        Type expectation = Type::nothingness());
     /** Parses an identifier when occurring without context. */
-    Type parseIdentifier(const Token &token, Type expectation, Destination des);
+    Type parseIdentifier(const Token &token, Type expectation, Destination &des);
     /** Parses the expression for an if statement. */
     void parseIfExpression(const Token &token);
     /**
@@ -128,6 +129,7 @@ private:
 
     void noReturnError(SourcePosition p);
     void noEffectWarning(const Token &warningToken);
+    void mutatingMethodCheck(Function *function, Type type, Destination des, SourcePosition p);
     bool typeIsEnumerable(Type type, Type *elementType);
     void flowControlBlock(bool block = true);
 
@@ -142,7 +144,7 @@ private:
     void pushTemporaryScope();
     void popTemporaryScope();
 
-    Type parseMethodCallee();
+    std::pair<Type, Destination> parseMethodCallee();
     
     void notStaticError(TypeAvailability t, SourcePosition p, const char *name);
     bool isStatic(TypeAvailability t) { return t == TypeAvailability::StaticAndUnavailable

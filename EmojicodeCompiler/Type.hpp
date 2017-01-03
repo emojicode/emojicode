@@ -13,7 +13,7 @@
 #include <string>
 #include "EmojicodeCompiler.hpp"
 
-/** The Emoji representing the standard ("global") enamespace. */
+/** The Emoji representing the standard ("global") namespace. */
 const EmojicodeString globalNamespace = EmojicodeString(E_LARGE_RED_CIRCLE);
 
 class TypeDefinition;
@@ -72,12 +72,12 @@ public:
     Type(Class *c, bool o);
     Type(Protocol *p, bool o);
     Type(Enum *e, bool o);
-    Type(ValueType *v, bool o, bool reference);
+    Type(ValueType *v, bool o, bool reference, bool isMutable);
 
-    static Type integer() { return Type(VT_INTEGER, false, false); }
-    static Type boolean() { return Type(VT_BOOLEAN, false, false); }
-    static Type symbol() { return Type(VT_SYMBOL, false, false); }
-    static Type doubl() { return Type(VT_DOUBLE, false, false); }
+    static Type integer() { return Type(VT_INTEGER, false, false, false); }
+    static Type boolean() { return Type(VT_BOOLEAN, false, false, false); }
+    static Type symbol() { return Type(VT_SYMBOL, false, false, false); }
+    static Type doubl() { return Type(VT_DOUBLE, false, false, false); }
     static Type something() { return Type(TypeContent::Something, false); }
     static Type nothingness() { return Type(TypeContent::Nothingness, false); }
     static Type someobject() { return Type(TypeContent::Someobject, false); }
@@ -86,7 +86,7 @@ public:
     TypeContent type() const { return typeContent_; }
     /** Whether this type of type could have generic arguments. */
     bool canHaveGenericArguments() const;
-    /** Returns the represented TypeDefinitonWithGenerics by using a cast. */
+    /** Returns the represented TypeDefinitionWithGenerics by using a cast. */
     TypeDefinitionFunctional* typeDefinitionFunctional() const;
     Class* eclass() const;
     Protocol* protocol() const;
@@ -123,14 +123,14 @@ public:
     /** 
      * Used to get as mutch information about a reference type as possible without using the generic arguments of
      * the type context’s callee.
-     * This method is inteded to be used to determine type compatibility while e.g. compiling generic classes. 
+     * This method is intended to be used to determine type compatibility while e.g. compiling generic classes.
      */
     Type resolveOnSuperArgumentsAndConstraints(TypeContext ct, bool resolveSelf = true) const;
     
     /** Returns the name of the package to which this type belongs. */
     std::string typePackage();
     /**
-     * Returns a depp string representation of the given type.
+     * Returns a deep string representation of the given type.
      * @param contextType The contextType. Can be Nothingeness if the type is not in a context.
      * @param includeNsAndOptional Whether to include optional indicators and the namespaces.
      */
@@ -140,6 +140,8 @@ public:
     bool meta() const { return meta_; }
     bool isVTReference() const { return vtReference_; }
     void setVTReference() { vtReference_ = true; }
+    bool isMutable() const { return mutable_; }
+    void setMutable(bool b) { mutable_ = b; }
     bool allowsMetaType();
 private:
     int reference_;
@@ -152,6 +154,7 @@ private:
     bool resolveSelfOn_ = true;
     bool meta_ = false;
     bool vtReference_ = false;
+    bool mutable_ = true;
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
     Type resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeContext) const;

@@ -13,7 +13,6 @@
 #include "EmojicodeCompiler.hpp"
 #include "CompilerErrorException.hpp"
 #include "Token.hpp"
-#include "utf8.h"
 
 class TypeDefinition {
 public:

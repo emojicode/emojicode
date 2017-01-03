@@ -8,7 +8,6 @@
 
 #include <map>
 #include <stdexcept>
-#include "utf8.h"
 #include "Function.hpp"
 #include "Lexer.hpp"
 #include "CompilerErrorException.hpp"

@@ -13,7 +13,6 @@
 #include "CompilerErrorException.hpp"
 #include "Class.hpp"
 #include "Function.hpp"
-#include "utf8.h"
 #include "Lexer.hpp"
 #include "TypeContext.hpp"
 #include "Protocol.hpp"

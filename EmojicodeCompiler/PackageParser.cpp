@@ -14,6 +14,7 @@
 #include "ValueType.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
+#include "../utf8.h"
 
 void PackageParser::parse() {
     while (stream_.hasMoreTokens()) {
@@ -129,7 +130,7 @@ void PackageParser::parse() {
                 
                 auto function = new Function(EmojicodeString(E_CHEQUERED_FLAG), AccessLevel::Public, false,
                                              Type::nothingness(), package_, theToken, false, documentation.get(), false,
-                                             CallableParserAndGeneratorMode::Function);
+                                             false, CallableParserAndGeneratorMode::Function);
                 parseReturnType(function, Type::nothingness());
                 if (function->returnType.type() != TypeContent::Nothingness &&
                     !function->returnType.compatibleTo(Type::integer(), Type::nothingness())) {
@@ -249,7 +250,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
         auto &methodName = stream_.consumeToken(TokenType::Identifier);
         
         auto method = new Function(methodName.value(), AccessLevel::Public, false, protocolType, package_,
-                                 methodName.position(), false, documentation.get(), deprecated.set(),
+                                 methodName.position(), false, documentation.get(), deprecated.set(), false,
                                  CallableParserAndGeneratorMode::ObjectMethod);
         auto a = parseArgumentList(method, protocolType);
         auto b = parseReturnType(method, protocolType);
@@ -342,7 +343,7 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
         valueType->makePrimitive();
     }
 
-    auto valueTypeContent = Type(valueType, false, false);
+    auto valueTypeContent = Type(valueType, false, false, false);
     parseGenericArgumentList(valueType, valueTypeContent);
     valueType->finalizeGenericArguments();
     
@@ -363,11 +364,12 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
         AccessLevel accessLevel = readAccessLevel(&stream_);
         auto override = Attribute<E_BLACK_NIB>().parse(&stream_);
         auto staticOnType = Attribute<E_RABBIT>().parse(&stream_);
+        auto mutating = Attribute<E_CRAYON>().parse(&stream_);
         auto required = Attribute<E_KEY>().parse(&stream_);
         auto canReturnNothingness = Attribute<E_CANDY>().parse(&stream_);
         
         auto eclass = typed.type() == TypeContent::Class ? typed.eclass() : nullptr;
-        
+
         auto &token = stream_.consumeToken(TokenType::Identifier);
         switch (token.value()[0]) {
             case E_SHORTCAKE: {
@@ -378,6 +380,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 canReturnNothingness.disallow();
                 deprecated.disallow();
                 documentation.disallow();
+                mutating.disallow();
                 
                 auto &variableName = stream_.consumeToken(TokenType::Variable);
                 auto type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables);
@@ -397,6 +400,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 canReturnNothingness.disallow();
                 deprecated.disallow();
                 documentation.disallow();
+                mutating.disallow();
                 
                 Type type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables, Type::nothingness(), nullptr,
                                                  true);
@@ -418,9 +422,10 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 auto &methodName = stream_.consumeToken(TokenType::Identifier);
                 
                 if (staticOnType.set()) {
+                    mutating.disallow();
                     auto *classMethod = new Function(methodName.value(), accessLevel, final.set(), typed, package_,
                                                      token.position(), override.set(), documentation.get(),
-                                                     deprecated.set(),
+                                                     deprecated.set(), true,
                                                      eclass ? CallableParserAndGeneratorMode::ClassMethod :
                                                         CallableParserAndGeneratorMode::Function);
                     auto context = TypeContext(typed, classMethod);
@@ -432,11 +437,18 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                     typed.typeDefinitionFunctional()->addTypeMethod(classMethod);
                 }
                 else {
+                    auto isMutating = true;
+                    if (eclass) {
+                        mutating.disallow();
+                    }
+                    else {
+                        isMutating = mutating.set();
+                    }
                     reservedEmojis(methodName, "method");
                     
                     auto *method = new Function(methodName.value(), accessLevel, final.set(), typed,
                                                 package_, token.position(), override.set(), documentation.get(),
-                                                deprecated.set(),
+                                                deprecated.set(), isMutating,
                                                 eclass ? CallableParserAndGeneratorMode::ObjectMethod :
                                                     CallableParserAndGeneratorMode::ValueTypeMethod);
                     auto context = TypeContext(typed, method);
@@ -452,6 +464,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
             case E_CAT: {
                 staticOnType.disallow();
                 override.disallow();
+                mutating.disallow();
                 
                 EmojicodeString name = stream_.consumeToken(TokenType::Identifier).value();
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), typed, package_,

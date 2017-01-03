@@ -9,7 +9,7 @@
 #ifndef EmojiTokenization_hpp
 #define EmojiTokenization_hpp
 
-#include "EmojicodeShared.h"
+#include "../EmojicodeShared.h"
 #include "EmojicodeCompiler.hpp"
 
 /// Whether the character is an emoji or not. This method acts in conformance with Unicode Emoji v4.0, except for that

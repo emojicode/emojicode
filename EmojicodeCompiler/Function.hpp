@@ -52,12 +52,14 @@ public:
                               const char *on, Type contextType);
     
     Function(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
-             bool overriding, EmojicodeString documentationToken, bool deprecated, CallableParserAndGeneratorMode mode)
+             bool overriding, EmojicodeString documentationToken, bool deprecated, bool mutating,
+             CallableParserAndGeneratorMode mode)
         : Callable(p),
           name_(name),
           final_(final),
           overriding_(overriding),
           deprecated_(deprecated),
+          mutating_(mutating),
           access_(level),
           owningType_(owningType),
           package_(package),
@@ -127,6 +129,8 @@ public:
     bool typeMethod() const;
     
     bool assigned() const;
+
+    bool mutating() const { return mutating_; }
     
     int fullSize() const { return fullSize_; }
     void setFullSize(int c) { fullSize_ = c; }
@@ -143,6 +147,7 @@ private:
     bool final_;
     bool overriding_;
     bool deprecated_;
+    bool mutating_;
     bool used_ = false;
     unsigned int linkingTableIndex_ = 0;
     AccessLevel access_;
@@ -160,7 +165,7 @@ public:
     Initializer(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated, bool r,
                 bool crn, CallableParserAndGeneratorMode mode)
-        : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, mode),
+        : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, true, mode),
           required(r),
           canReturnNothingness(crn) {
               returnType = owningType;
