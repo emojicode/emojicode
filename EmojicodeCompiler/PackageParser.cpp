@@ -424,18 +424,18 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 
                 if (staticOnType.set()) {
                     mutating.disallow();
-                    auto *classMethod = new Function(methodName.value(), accessLevel, final.set(), typed, package_,
+                    auto *typeMethod = new Function(methodName.value(), accessLevel, final.set(), typed, package_,
                                                      token.position(), override.set(), documentation.get(),
                                                      deprecated.set(), true,
                                                      eclass ? CallableParserAndGeneratorMode::ClassMethod :
                                                         CallableParserAndGeneratorMode::Function);
-                    auto context = TypeContext(typed, classMethod);
-                    parseGenericArgumentsInDefinition(classMethod, context);
-                    parseArgumentList(classMethod, context);
-                    parseReturnType(classMethod, context);
-                    parseBody(classMethod, allowNative);
+                    auto context = TypeContext(typed, typeMethod);
+                    parseGenericArgumentsInDefinition(typeMethod, context);
+                    parseArgumentList(typeMethod, context);
+                    parseReturnType(typeMethod, context);
+                    parseBody(typeMethod, allowNative);
                     
-                    typed.typeDefinitionFunctional()->addTypeMethod(classMethod);
+                    typed.typeDefinitionFunctional()->addTypeMethod(typeMethod);
                 }
                 else {
                     auto isMutating = true;

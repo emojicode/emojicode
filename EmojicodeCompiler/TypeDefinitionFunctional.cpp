@@ -72,8 +72,8 @@ Function* TypeDefinitionFunctional::lookupMethod(EmojicodeString name) {
 }
 
 Function* TypeDefinitionFunctional::lookupTypeMethod(EmojicodeString name) {
-    auto pos = classMethods_.find(name);
-    if (pos != classMethods_.end()) {
+    auto pos = typeMethods_.find(name);
+    if (pos != typeMethods_.end()) {
         return pos->second;
     }
     return nullptr;
@@ -102,14 +102,14 @@ Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, Type type,
     auto method = lookupTypeMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        throw CompilerErrorException(token, "%s has no class method %s", eclass.c_str(), token.value().utf8().c_str());
+        throw CompilerErrorException(token, "%s has no type method %s", eclass.c_str(), token.value().utf8().c_str());
     }
     return method;
 }
 
 void TypeDefinitionFunctional::addTypeMethod(Function *method) {
-    duplicateDeclarationCheck(method, classMethods_, method->position());
-    classMethods_[method->name()] = method;
+    duplicateDeclarationCheck(method, typeMethods_, method->position());
+    typeMethods_[method->name()] = method;
     typeMethodList_.push_back(method);
 }
 

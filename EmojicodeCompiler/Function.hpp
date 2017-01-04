@@ -30,7 +30,7 @@ public:
     Closure(SourcePosition p) : Callable(p) {};
 };
 
-/** Functions are callables that belong to a class as either a method, a class method or an initializer. */
+/** Functions are callables that belong to a class or value type as either method, type method or initializer. */
 class Function: public Callable {
     friend void Class::finalize();
     friend Protocol;

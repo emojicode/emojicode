@@ -75,8 +75,8 @@ Function* Class::lookupMethod(EmojicodeString name) {
 
 Function* Class::lookupTypeMethod(EmojicodeString name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
-        auto pos = eclass->classMethods_.find(name);
-        if (pos != eclass->classMethods_.end()) {
+        auto pos = eclass->typeMethods_.find(name);
+        if (pos != eclass->typeMethods_.end()) {
             return pos->second;
         }
     }
@@ -128,7 +128,7 @@ void Class::finalize() {
         
         clMethod->setVtiProvider(&methodVtiProvider_);
         if (clMethod->checkOverride(superMethod)) {
-            clMethod->checkPromises(superMethod, "super classmethod", classType);
+            clMethod->checkPromises(superMethod, "super type method", classType);
             clMethod->setVti(superMethod->getVti());
             superMethod->registerOverrider(clMethod);
             methodVtiProvider_.incrementVtiCount();

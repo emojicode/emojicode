@@ -100,7 +100,7 @@ protected:
         : TypeDefinition(name, p, pos, documentation) {}
     
     std::map<EmojicodeString, Function *> methods_;
-    std::map<EmojicodeString, Function *> classMethods_;
+    std::map<EmojicodeString, Function *> typeMethods_;
     std::map<EmojicodeString, Initializer *> initializers_;
     
     std::vector<Function *> methodList_;
