@@ -18,7 +18,7 @@ class Writer;
 class CallableWriterPlaceholder {
     friend CallableWriter;
 public:
-    virtual void write(EmojicodeCoin value);
+    void write(EmojicodeCoin value);
 protected:
     CallableWriterPlaceholder(CallableWriter *writer, size_t index) : writer_(writer), index_(index) {}
     CallableWriter *writer_;
@@ -29,7 +29,7 @@ private:
 class CallableWriterCoinsCountPlaceholder : private CallableWriterPlaceholder {
     friend CallableWriter;
 public:
-    virtual void write();
+    void write();
 private:
     CallableWriterCoinsCountPlaceholder(CallableWriter *writer, size_t index, size_t count)
         : CallableWriterPlaceholder(writer, index), count_(count) {}

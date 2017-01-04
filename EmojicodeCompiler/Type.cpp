@@ -190,8 +190,8 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         return false;
     }
     
-    if (to.type() == TypeContent::Someobject && this->type() == TypeContent::Class ||
-        this->type() == TypeContent::Protocol || this->type() == TypeContent::Someobject) {
+    if ((to.type() == TypeContent::Someobject && this->type() == TypeContent::Class) ||
+        (this->type() == TypeContent::Protocol || this->type() == TypeContent::Someobject)) {
         return true;
     }
     if (this->type() == TypeContent::Class && to.type() == TypeContent::Class) {
@@ -217,7 +217,7 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
     }
     if ((this->type() == TypeContent::Reference && to.type() == TypeContent::Reference) ||
              (this->type() == TypeContent::LocalReference && to.type() == TypeContent::LocalReference)) {
-        return this->reference() == to.reference() && this->resolutionConstraint_ == to.resolutionConstraint_ ||
+        return (this->reference() == to.reference() && this->resolutionConstraint_ == to.resolutionConstraint_) ||
                 this->resolveOnSuperArgumentsAndConstraints(ct)
                     .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
