@@ -149,7 +149,7 @@ void readPackage(FILE *in){
         free(name);
     }
     
-    for (uint_fast16_t classCount = readUInt16(in); classCount; classCount--) {
+    for (int classCount = readUInt16(in); classCount; classCount--) {
         DEBUG_LOG("➡️ Still %d class(es) to load", classCount);
         EmojicodeChar name = readEmojicodeChar(in);
         
@@ -223,6 +223,11 @@ void readPackage(FILE *in){
         class->valueSize = class->superclass && class->superclass->valueSize ? class->superclass->valueSize : size;
         class->size = class->valueSize + class->instanceVariableCount * sizeof(Something);
     }
+
+    for (int functionCount = readUInt16(in); functionCount; functionCount--) {
+        DEBUG_LOG("➡️ Still %d functions to come", functionCount);
+        readFunction(functionTable, in, linkingTable);
+    }
 }
 
 Function* readBytecode(FILE *in) {
@@ -233,10 +238,15 @@ Function* readBytecode(FILE *in) {
     
     DEBUG_LOG("Bytecode version %d", version);
     
-    const uint_fast16_t classCount = readUInt16(in);
+    const int classCount = readUInt16(in);
     classTable = malloc(sizeof(Class*) * classCount);
-    
+
     DEBUG_LOG("%d class(es) on the whole", classCount);
+
+    const int functionCount = readUInt16(in);
+    functionTable = malloc(sizeof(Function*) * functionCount);
+
+    DEBUG_LOG("%d function(s) on the whole", functionCount);
     
     for (int i = 0, l = fgetc(in); i < l; i++) {
         DEBUG_LOG("Reading package %d of %d", i + 1, l);
@@ -252,13 +262,6 @@ Function* readBytecode(FILE *in) {
     CL_CLOSURE = classTable[6];
     
     DEBUG_LOG("✅ Read all packages");
-
-    int functionCount = readUInt16(in);
-    functionTable = malloc(sizeof(Function*) * functionCount);
-    for (; functionCount; functionCount--) {
-        DEBUG_LOG("Still %d functions to come", functionCount);
-        readFunction(functionTable, in, sLinkingTable);
-    }
     
     stringPoolCount = readUInt16(in);
     DEBUG_LOG("Reading string pool with %d strings", stringPoolCount);

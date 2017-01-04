@@ -16,6 +16,8 @@
 #include "Type.hpp"
 #include "Token.hpp"
 
+class Function;
+
 #undef major
 #undef minor
 
@@ -62,9 +64,11 @@ public:
     
     void exportType(Type t, EmojicodeString name);
     void registerClass(Class *cl) { classes_.push_back(cl); }
+    void registerFunction(Function *function) { functions_.push_back(function); }
     void registerType(Type t, EmojicodeString name, EmojicodeString ns, bool exportFromPackage);
     
     const std::list<Class *>& classes() const { return classes_; };
+    const std::vector<Function *> functions() const { return functions_; }
     const std::list<ExportedType>& exportedTypes() const { return exportedTypes_; };
 
     /// Tries to fetch a type by its name and namespace and stores it into @c type.
@@ -92,6 +96,7 @@ private:
     std::map<EmojicodeString, Type> types_;
     std::list<ExportedType> exportedTypes_;
     std::list<Class *> classes_;
+    std::vector<Function *> functions_;
     
     static std::list<Package *> packagesLoadingOrder_;
     static std::map<std::string, Package *> packages_;

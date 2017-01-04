@@ -137,6 +137,7 @@ void PackageParser::parse() {
                     throw CompilerErrorException(theToken, "🏁 must either return ✨ or 🚂.");
                 }
                 parseBody(function, false);
+                package_->registerFunction(function);
 
                 Function::start = function;
                 break;

@@ -19,12 +19,15 @@
 #include "DiscardingCallableWriter.hpp"
 
 template <typename T>
-void writeUsed(const std::vector<T *> &functions, Writer &writer) {
+int writeUsed(const std::vector<T *> &functions, Writer &writer) {
+    int counter = 0;
     for (auto function : functions) {
         if (function->used()) {
             writer.writeFunction(function);
+            counter++;
         }
     }
+    return counter;
 }
 
 template <typename T>
@@ -124,7 +127,7 @@ void writeClass(Type classType, Writer &writer) {
     }
 }
 
-void writePackageHeader(Package *pkg, Writer &writer, uint16_t classCount) {
+void writePackageHeader(Package *pkg, Writer &writer) {
     if (pkg->requiresBinary()) {
         size_t l = pkg->name().size() + 1;
         writer.writeByte(l);
@@ -137,11 +140,7 @@ void writePackageHeader(Package *pkg, Writer &writer, uint16_t classCount) {
         writer.writeByte(0);
     }
     
-    writer.writeUInt16(classCount);
-}
-
-void writePackageHeader(Package *pkg, Writer &writer) {
-    writePackageHeader(pkg, writer, pkg->classes().size());
+    writer.writeUInt16(pkg->classes().size());
 }
 
 void generateCode(Writer &writer) {
@@ -168,49 +167,26 @@ void generateCode(Writer &writer) {
     
     writer.writeByte(ByteCodeSpecificationVersion);
     writer.writeUInt16(Class::classes().size());
+    writer.writeUInt16(Function::functionCount());
     
     auto pkgCount = Package::packagesInOrder().size();
-    
-    if (pkgCount == 2) {
-        writer.writeByte(1);
-        
-        auto pkgs = Package::packagesInOrder();
-        auto underscorePackage = (*std::next(pkgs.begin(), 1));
-        
-        writePackageHeader(pkgs.front(), writer, pkgs.front()->classes().size() + underscorePackage->classes().size());
-        
-        for (auto cl : pkgs.front()->classes()) {
-            writeClass(Type(cl), writer);
-        }
-        
-        for (auto cl : underscorePackage->classes()) {
-            writeClass(Type(cl), writer);
-        }
-    }
-    else {
-        if (pkgCount > 256) {
-            throw CompilerErrorException(Package::packagesInOrder().back()->position(),
-                                         "You exceeded the maximum of 256 packages.");
-        }
-        
-        writer.writeByte(pkgCount);
-        
-        for (auto pkg : Package::packagesInOrder()) {
-            writePackageHeader(pkg, writer);
-            
-            for (auto cl : pkg->classes()) {
-                writeClass(Type(cl), writer);
-            }
-        }
-    }
-    
-    writer.writeUInt16(Function::functionCount());
-    writer.writeFunction(Function::start);
 
-    for (auto vt : ValueType::valueTypes()) {
-        writeUsed(vt->methodList(), writer);
-        writeUsed(vt->typeMethodList(), writer);
-        writeUsed(vt->initializerList(), writer);
+    if (pkgCount > 256) {
+        throw CompilerErrorException(Package::packagesInOrder().back()->position(),
+                                     "You exceeded the maximum of 256 packages.");
+    }
+    
+    writer.writeByte(pkgCount);
+    
+    for (auto pkg : Package::packagesInOrder()) {
+        writePackageHeader(pkg, writer);
+        
+        for (auto cl : pkg->classes()) {
+            writeClass(Type(cl), writer);
+        }
+
+        auto placeholder = writer.writePlaceholder<uint16_t>();
+        placeholder.write(writeUsed(pkg->functions(), writer));
     }
     
     writer.writeUInt16(theStringPool.strings().size());
