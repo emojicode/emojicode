@@ -18,6 +18,7 @@ typedef int_fast64_t EmojicodeInteger;
 
 struct Class;
 struct List;
+struct Object;
 class Thread;
 
 extern Class *CL_STRING;
@@ -28,23 +29,6 @@ extern Class *CL_DICTIONARY;
 extern Class *CL_CAPTURED_FUNCTION_CALL;
 extern Class *CL_CLOSURE;
 extern Class *CL_ARRAY;
-
-struct Object {
-    /** The object’s class. */
-    Class *klass;
-    /** The size of this object: the size of the Object struct and the value area. */
-    size_t size;
-    /** The objects garabage collection state. Do not touch this field! */
-    Object *newLocation;
-    /**
-     * A pointer to the allocated @c value area. This area is as large as specified in the class.
-     * @warning Never change the content of this variable as the Garbage Collector updates this field
-     * in each cycle.
-     */
-    void *value;
-};
-
-#define T_SYMBOL 5
 
 /// A one-Emojicode-word large value without type information.
 union Value {
@@ -68,6 +52,27 @@ union Value {
 #if __SIZEOF_DOUBLE__ != 8
 #warning Double does not match the size of an 64-bit integer
 #endif
+
+struct Object {
+    union {
+        /// The class of the object
+        Class *klass;
+        /// Used by the Garbage Collector, do not change!
+        Object *newLocation;
+    };
+    /** The size of this object: the size of the Object struct and the value area. */
+    size_t size;
+    /**
+     * A pointer to the allocated @c value area. This area is as large as specified in the class.
+     * @warning Never change the content of this variable as the Garbage Collector updates this field
+     * in each cycle.
+     */
+    void *value;
+
+    inline Value* variableDestination(EmojicodeInstruction index) {
+        return reinterpret_cast<Value *>(reinterpret_cast<Byte *>(this) + sizeof(Object) + sizeof(Value) * index);
+    }
+};
 
 /// Used to store a value when the type of the value is not known at compile time.
 struct Box {

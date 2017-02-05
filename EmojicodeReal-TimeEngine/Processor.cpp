@@ -272,8 +272,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             destination->value = thread->variableDestination(thread->consumeInstruction());
             return;
         case INS_GET_VT_REFERENCE_OBJECT: {
-            Object *o = thread->getThisObject();
-            destination->value = (Value *)(((Byte *)o) + sizeof(Object) + sizeof(Value) * thread->consumeInstruction());
+            destination->value = thread->getThisObject()->variableDestination(thread->consumeInstruction());
             return;
         }
         case INS_GET_VT_REFERENCE_VT: {
@@ -323,8 +322,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_PRODUCE_WITH_OBJECT_DESTINATION: {
             EmojicodeInstruction index = thread->consumeInstruction();
-            Object *o = thread->getThisObject();
-            Value *d = (Value *)(((Byte *)o) + sizeof(Object) + sizeof(Value) * index);
+            Value *d = thread->getThisObject()->variableDestination(index);
             produce(thread->consumeInstruction(), thread, d);
             return;
         }
@@ -350,14 +348,12 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_COPY_SINGLE_OBJECT: {
             EmojicodeInstruction index = thread->consumeInstruction();
-            Object *o = thread->getThisObject();
-            *destination = *(Value *)(((Byte *)o) + sizeof(Object) + sizeof(Value) * index);
+            *destination = *thread->getThisObject()->variableDestination(index);
             return;
         }
         case INS_COPY_WITH_SIZE_OBJECT: {
             EmojicodeInstruction index = thread->consumeInstruction();
-            Object *o = thread->getThisObject();
-            Value *source = (Value *)(((Byte *)o) + sizeof(Object) + sizeof(Value) * index);
+            Value *source = thread->getThisObject()->variableDestination(index);
             std::memcpy(destination, source, sizeof(Value) * thread->consumeInstruction());
             return;
         }
