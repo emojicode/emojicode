@@ -22,28 +22,28 @@ class Function;
 class Writer {
     friend WriterCoinsCountPlaceholder;
     friend WriterPlaceholder<uint16_t>;
-    friend WriterPlaceholder<EmojicodeCoin>;
+    friend WriterPlaceholder<EmojicodeInstruction>;
     friend WriterPlaceholder<unsigned char>;
 public:
     Writer(FILE *outFile) : out(outFile) {};
-    
+
     /** Must be used to write any uint16_t to the file */
     void writeUInt16(uint16_t value);
-    
+
     /** Writes a coin with the given value */
-    void writeCoin(EmojicodeCoin value);
-    
+    void writeInstruction(EmojicodeInstruction value);
+
     /** Writes a single unicode character */
     void writeEmojicodeChar(EmojicodeChar c);
 
     void writeByte(unsigned char);
-    
+
     void writeBytes(const char *bytes, size_t count);
-    
+
     void writeFunction(Function *f);
-    
+
     /**
-     * Writes a placeholder coin. To replace the placeholder use `writeCoinAtPlaceholder`
+     * Writes a placeholder coin. To replace the placeholder use `writeInstructionAtPlaceholder`
      */
     template<typename T>
     WriterPlaceholder<T> writePlaceholder() {
@@ -55,7 +55,7 @@ private:
     void write(uint16_t v) { writeUInt16(v); };
     void write(uint32_t v) { writeEmojicodeChar(v); };
     void write(unsigned char v) { writeByte(v); };
-    
+
     FILE *out;
 };
 
@@ -76,13 +76,13 @@ protected:
     off_t position;
 };
 
-class WriterCoinsCountPlaceholder: private WriterPlaceholder<EmojicodeCoin> {
+class WriterCoinsCountPlaceholder: private WriterPlaceholder<EmojicodeInstruction> {
     friend Writer;
 public:
     void write();
 private:
-    WriterCoinsCountPlaceholder(Writer &w, off_t position, uint32_t writtenCoins)
-        : WriterPlaceholder(w, position), oWrittenCoins(writtenCoins) {};
+    WriterCoinsCountPlaceholder(Writer &w, off_t position, uint32_t writtenInstructions)
+        : WriterPlaceholder(w, position), oWrittenCoins(writtenInstructions) {};
     uint32_t oWrittenCoins;
 };
 

@@ -18,17 +18,17 @@
 class Protocol : public TypeDefinitionFunctional {
 public:
     Protocol(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &string);
-    
+
     uint_fast16_t index;
-    
-    virtual bool canBeUsedToResolve(TypeDefinitionFunctional *a) override;
-    virtual void addMethod(Function *method) override;
+
+    bool canBeUsedToResolve(TypeDefinitionFunctional *a) override;
+    void addMethod(Function *method) override;
     const std::vector<Function*>& methods() { return methodList_; };
-    
+
     bool usesSelf() const { return usesSelf_; }
     void setUsesSelf() { usesSelf_ = true; }
-    
-    virtual int size() const override { return 1; }
+
+    int size() const override { return 1; }
 private:
     static uint_fast16_t nextIndex;
 

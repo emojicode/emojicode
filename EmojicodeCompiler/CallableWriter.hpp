@@ -14,11 +14,12 @@
 
 class CallableWriter;
 class Writer;
+class WriteLocation;
 
 class CallableWriterPlaceholder {
     friend CallableWriter;
 public:
-    void write(EmojicodeCoin value);
+    void write(EmojicodeInstruction value);
 protected:
     CallableWriterPlaceholder(CallableWriter *writer, size_t index) : writer_(writer), index_(index) {}
     CallableWriter *writer_;
@@ -38,16 +39,18 @@ private:
 
 class CallableWriterInsertionPoint {
     friend CallableWriter;
+    friend WriteLocation;
 public:
-    virtual void insert(EmojicodeCoin value);
-    virtual void insert(std::initializer_list<EmojicodeCoin> values);
+    virtual void insert(EmojicodeInstruction value);
+    virtual void insert(std::initializer_list<EmojicodeInstruction> values);
 private:
     CallableWriterInsertionPoint(CallableWriter *writer, size_t index) : writer_(writer), index_(index) {}
+    CallableWriterInsertionPoint() {}
     CallableWriter *writer_;
     size_t index_;
 };
 
-/** 
+/**
  * The callable writer is responsible for storing the bytecode generated for a callable. It is normally used in
  * conjunction with a @c CallableParserAndGenerator instance.
  */
@@ -57,20 +60,40 @@ class CallableWriter {
     friend CallableWriterInsertionPoint;
 public:
     /** Writes a coin with the given value. */
-    virtual void writeCoin(EmojicodeCoin value, SourcePosition p);
-  
-    virtual size_t writtenCoins() { return coins_.size(); }
-    
-    virtual CallableWriterPlaceholder writeCoinPlaceholder(SourcePosition p);
-    
-    virtual CallableWriterCoinsCountPlaceholder writeCoinsCountPlaceholderCoin(SourcePosition p);
+    virtual void writeInstruction(EmojicodeInstruction value, SourcePosition p);
+    virtual void writeInstruction(std::initializer_list<EmojicodeInstruction> values);
+
+    virtual size_t writtenInstructions() { return instructions_.size(); }
+
+    virtual CallableWriterPlaceholder writeInstructionPlaceholder(SourcePosition p);
+
+    virtual CallableWriterCoinsCountPlaceholder writeInstructionsCountPlaceholderCoin(SourcePosition p);
 
     virtual CallableWriterInsertionPoint getInsertionPoint();
-    
+
     /** Must be used to write any double to the file. */
     virtual void writeDoubleCoin(double val, SourcePosition p);
 private:
-    std::vector<EmojicodeCoin> coins_;
+    std::vector<EmojicodeInstruction> instructions_;
+};
+
+class WriteLocation {
+public:
+    WriteLocation(CallableWriterInsertionPoint insertionPoint)
+        : useInsertionPoint_(true), insertionPoint_(insertionPoint) {}
+    WriteLocation(CallableWriter &writer) : useInsertionPoint_(false), writer_(&writer) {}
+    void write(std::initializer_list<EmojicodeInstruction> values) {
+        if (useInsertionPoint_) insertionPoint_.insert(values);
+        else writer_->writeInstruction(values);
+    }
+    CallableWriterInsertionPoint insertionPoint() const {
+        if (useInsertionPoint_) return insertionPoint_;
+        else return writer_->getInsertionPoint();
+    }
+private:
+    bool useInsertionPoint_;
+    CallableWriterInsertionPoint insertionPoint_;
+    CallableWriter *writer_;
 };
 
 #endif /* CallableWriter_h */

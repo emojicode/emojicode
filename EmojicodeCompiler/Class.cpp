@@ -10,17 +10,17 @@
 #include <map>
 #include <utility>
 #include "EmojicodeCompiler.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "Class.hpp"
 #include "Function.hpp"
 #include "Lexer.hpp"
 #include "TypeContext.hpp"
 #include "Protocol.hpp"
 
-std::list<Class *> Class::classes_;
+std::vector<Class *> Class::classes_;
 
 Class::Class(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &documentation, bool final)
-    : TypeDefinitionFunctional(name, pkg, p, documentation) {
+: TypeDefinitionFunctional(name, pkg, p, documentation) {
     index = classes_.size();
     final_ = final;
     classes_.push_back(this);
@@ -90,16 +90,17 @@ void Class::handleRequiredInitializer(Initializer *init) {
 void Class::finalize() {
     if (superclass()) {
         scoper_ = superclass()->scoper_;
+        instanceScope().markInherited();
     }
 
     TypeDefinitionFunctional::finalize();
-    
+
     if (instanceVariables().size() == 0 && initializerList().size() == 0) {
         inheritsInitializers_ = true;
     }
-    
-    Type classType = Type(this);
-    
+
+    Type classType = Type(this, false);
+
     if (superclass()) {
         for (auto method : superclass()->methodList()) {
             method->assignVti();
@@ -111,40 +112,34 @@ void Class::finalize() {
             initializer->assignVti();
         }
     }
-    
+
     for (auto method : methodList()) {
-        auto superMethod = superclass() ? superclass()->lookupMethod(method->name()) : NULL;
-        
+        auto superMethod = superclass() ? superclass()->lookupMethod(method->name()) : nullptr;
+
         method->setVtiProvider(&methodVtiProvider_);
         if (method->checkOverride(superMethod)) {
-            method->checkPromises(superMethod, "super method", classType);
-            method->setVti(superMethod->getVti());
-            superMethod->registerOverrider(method);
+            method->override(superMethod, classType);
             methodVtiProvider_.incrementVtiCount();
         }
     }
     for (auto clMethod : typeMethodList()) {
-        auto superMethod = superclass() ? superclass()->lookupTypeMethod(clMethod->name()) : NULL;
-        
+        auto superMethod = superclass() ? superclass()->lookupTypeMethod(clMethod->name()) : nullptr;
+
         clMethod->setVtiProvider(&methodVtiProvider_);
         if (clMethod->checkOverride(superMethod)) {
-            clMethod->checkPromises(superMethod, "super type method", classType);
-            clMethod->setVti(superMethod->getVti());
-            superMethod->registerOverrider(clMethod);
+            clMethod->override(superMethod, classType);
             methodVtiProvider_.incrementVtiCount();
         }
     }
-    
+
     auto subRequiredInitializerNextVti = superclass() ? superclass()->requiredInitializers().size() : 0;
     for (auto initializer : initializerList()) {
-        auto superInit = superclass() ? superclass()->lookupInitializer(initializer->name()) : NULL;
-        
+        auto superInit = superclass() ? superclass()->lookupInitializer(initializer->name()) : nullptr;
+
         initializer->setVtiProvider(&initializerVtiProvider_);
         if (initializer->required) {
             if (superInit && superInit->required) {
-                initializer->checkPromises(superInit, "super initializer", classType);
-                initializer->setVti(superInit->getVti());
-                superInit->registerOverrider(initializer);
+                initializer->override(superInit, classType);
                 initializerVtiProvider_.incrementVtiCount();
             }
             else {
@@ -153,13 +148,13 @@ void Class::finalize() {
             }
         }
     }
-    
+
     if (superclass()) {
         initializerVtiProvider_.offsetVti(inheritsInitializers() ? superclass()->initializerVtiProvider_.peekNext() :
                                           static_cast<int>(requiredInitializers().size()));
         methodVtiProvider_.offsetVti(superclass()->methodVtiProvider_.peekNext());
     }
-    
+
     for (Type protocol : protocols()) {
         for (auto method : protocol.protocol()->methods()) {
             Function *clm = lookupMethod(method->name());

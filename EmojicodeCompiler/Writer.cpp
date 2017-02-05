@@ -7,7 +7,7 @@
 //
 
 #include "Writer.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "Function.hpp"
 #include "CallableWriter.hpp"
 
@@ -23,7 +23,7 @@ void Writer::writeEmojicodeChar(EmojicodeChar c) {
     fputc(c >> 24, out);
 }
 
-void Writer::writeCoin(EmojicodeCoin value) {
+void Writer::writeInstruction(EmojicodeInstruction value) {
     fputc(value, out);
     fputc(value >> 8, out);
     fputc(value >> 16, out);
@@ -41,17 +41,17 @@ void Writer::writeBytes(const char *bytes, size_t count) {
 void Writer::writeFunction(Function *function) {
     writeUInt16(function->getVti());
     writeByte(static_cast<uint8_t>(function->arguments.size()));
-    
+    writeUInt16(function->fullSize());
+
     if (function->isNative()) {
         writeUInt16(function->linkingTabelIndex());
         return;
     }
     writeUInt16(0);
-    
-    writeByte(function->fullSize());
-    writeCoin(static_cast<EmojicodeCoin>(function->writer_.writtenCoins()));
 
-    for (auto coin : function->writer_.coins_) {
-        writeCoin(coin);
+    writeInstruction(static_cast<EmojicodeInstruction>(function->writer_.writtenInstructions()));
+
+    for (auto coin : function->writer_.instructions_) {
+        writeInstruction(coin);
     }
 }

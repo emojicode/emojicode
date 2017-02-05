@@ -10,14 +10,15 @@
 #include "Function.hpp"
 
 std::vector<ValueType *> ValueType::valueType_;
+int ValueType::nextId = 3;
 
 void ValueType::finalize() {
     TypeDefinitionFunctional::finalize();
-    
+
     if (primitive_ && instanceVariables().size() > 0) {
-        throw CompilerErrorException(position(), "A value type marked with ⚪️ cannot have instance variables.");
+        throw CompilerError(position(), "A value type marked with ⚪️ cannot have instance variables.");
     }
-    
+
     for (auto f : methodList()) {
         f->setVtiProvider(&vtiProvider_);
         f->package()->registerFunction(f);

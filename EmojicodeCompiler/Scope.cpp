@@ -7,31 +7,26 @@
 //
 
 #include "Scope.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "TypeDefinition.hpp"
 #include "Scoper.hpp"
 
 void Scope::setVariableInitialization(bool initd) {
     for (auto &it : map_) {
-        it.second.initialized = initd ? 1 : 0;
+        if (initd) it.second.initialize();
+        else it.second.uninitialize();
     }
 }
 
 void Scope::pushInitializationLevel() {
     for (auto &it : map_) {
-        Variable &cv = it.second;
-        if (cv.initialized > 0) {
-            cv.initialized++;
-        }
+        it.second.pushInitializationLevel();
     }
 }
 
 void Scope::popInitializationLevel() {
     for (auto &it : map_) {
-        Variable &cv = it.second;
-        if (cv.initialized > 0) {
-            cv.initialized--;
-        }
+        it.second.popInitializationLevel();
     }
 }
 
@@ -60,11 +55,11 @@ bool Scope::hasLocalVariable(const EmojicodeString &variable) const {
     return map_.count(variable) > 0;
 }
 
-void Scope::initializerUnintializedVariablesCheck(const Token &errorToken, const char *errorMessage) {
+void Scope::initializerUnintializedVariablesCheck(SourcePosition p, const char *errorMessage) {
     for (auto &it : map_) {
         Variable &cv = it.second;
-        if (cv.initialized <= 0 && !cv.type.optional()) {
-            throw CompilerErrorException(errorToken, errorMessage, cv.string_.utf8().c_str());
+        if (!cv.initialized() && !cv.type().optional() && !cv.inherited()) {
+            throw CompilerError(p, errorMessage, cv.name().utf8().c_str());
         }
     }
 }
@@ -75,7 +70,7 @@ void Scope::recommendFrozenVariables() const {
         if (!cv.frozen() && !cv.mutated()) {
             compilerWarning(cv.position(),
                             "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.",
-                            cv.string_.utf8().c_str());
+                            cv.name().utf8().c_str());
         }
     }
 }

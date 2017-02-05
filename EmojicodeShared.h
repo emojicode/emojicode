@@ -9,21 +9,30 @@
 #ifndef EmojicodeShared_h
 #define EmojicodeShared_h
 
-#include <stdint.h>
+#include <cstdint>
 
-/** An Unicode codepoint */
+/// A Unicode codepoint
 typedef uint32_t EmojicodeChar;
 
-typedef int_fast64_t EmojicodeInteger;
-/** The bytecode file is structured into Coins. Each Coin represents a single instruction or value. */
-typedef uint32_t EmojicodeCoin;
+/// A byte-code instruction
+typedef uint32_t EmojicodeInstruction;
 
-/* Using either of them in a package makes absolutely no sense */
 #ifndef defaultPackagesDirectory
 #define defaultPackagesDirectory "/usr/local/EmojicodePackages"
 #endif
 
 #define ByteCodeSpecificationVersion 5
+
+#define T_NOTHINGNESS 0
+#define T_OBJECT 1
+#define T_VT_REFERENCE 2
+
+#define T_BOOLEAN 3
+#define T_INTEGER 4
+#define T_DOUBLE 5
+
+#define META_MASK 0x100000000
+#define ENUM_MASK 0x200000000
 
 /**
  * @defined(isWhitespace)

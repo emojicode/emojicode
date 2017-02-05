@@ -17,9 +17,6 @@
 #include "TypeContext.hpp"
 #include "ValueType.hpp"
 
-//MARK: Globals
-/* Very important one time declarations */
-
 Class *CL_STRING;
 Class *CL_LIST;
 Class *CL_ERROR;
@@ -39,7 +36,7 @@ Type::Type(Enum *e, bool o) : typeDefinition_(e), typeContent_(TypeContent::Enum
 }
 
 Type::Type(ValueType *v, bool o, bool reference, bool isMutable)
-    : typeDefinition_(v), typeContent_(TypeContent::ValueType), optional_(o), mutable_(isMutable) {
+: typeDefinition_(v), typeContent_(TypeContent::ValueType), optional_(o), mutable_(isMutable) {
 }
 
 Type::Type(Class *c, bool o) : typeDefinition_(c), typeContent_(TypeContent::Class), optional_(o) {
@@ -82,6 +79,12 @@ Type Type::copyWithoutOptional() const {
     return type;
 }
 
+int Type::reference() const {
+    if (type() != TypeContent::Reference && type() != TypeContent::LocalReference)
+        throw std::domain_error("Tried to get reference from non-reference type");
+    return reference_;
+}
+
 bool Type::allowsMetaType() {
     return type() == TypeContent::Class || type() == TypeContent::Enum || type() == TypeContent::ValueType;
 }
@@ -89,14 +92,16 @@ bool Type::allowsMetaType() {
 Type Type::resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeContext) const {
     TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionFunctional();
     Type t = *this;
-    
+
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
     // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeContent::Reference && c->canBeUsedToResolve(c) && t.reference() < maxReferenceForSuper) {
+    while (t.type() == TypeContent::Reference && c->canBeUsedToResolve(t.resolutionConstraint_) && t.reference() < maxReferenceForSuper) {
         Type tn = c->superGenericArguments()[t.reference()];
-        if (tn.type() != TypeContent::Reference) {
+        if (tn.type() == TypeContent::Reference && tn.reference() == t.reference()
+            && tn.resolutionConstraint_ == t.resolutionConstraint_) {
             break;
         }
+        t = tn;
     }
     return t;
 }
@@ -105,12 +110,14 @@ Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool r
     if (typeContext.calleeType().type() == TypeContent::Nothingness) return *this;
     TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionFunctional();
     Type t = *this;
+    if (type() == TypeContent::Nothingness) return t;
     bool optional = t.optional();
-    
+    bool box = t.storageType() == StorageType::Box;
+
     if (resolveSelf && t.type() == TypeContent::Self) {
         t = typeContext.calleeType();
     }
-    
+
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
     // Try to resolve on the generic arguments to the superclass.
     while (t.type() == TypeContent::Reference && t.reference() < maxReferenceForSuper) {
@@ -122,23 +129,26 @@ Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool r
     while (t.type() == TypeContent::Reference) {
         t = typeContext.calleeType().typeDefinitionFunctional()->genericArgumentConstraints()[t.reference()];
     }
-    
+
     if (optional) t.setOptional();
+    if (box) t.forceBox_ = true;
     return t;
 }
 
 Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
     Type t = *this;
+    if (type() == TypeContent::Nothingness) return t;
     bool optional = t.optional();
-    
+    bool box = t.storageType() == StorageType::Box;
+
     if (resolveSelf && t.type() == TypeContent::Self && typeContext.calleeType().resolveSelfOn_) {
         t = typeContext.calleeType();
     }
-    
+
     while (t.type() == TypeContent::LocalReference && typeContext.functionGenericArguments()) {
         t = (*typeContext.functionGenericArguments())[t.reference()];
     }
-    
+
     if (typeContext.calleeType().canHaveGenericArguments()) {
         while (t.type() == TypeContent::Reference &&
                typeContext.calleeType().typeDefinitionFunctional()->canBeUsedToResolve(t.resolutionConstraint_)) {
@@ -150,9 +160,9 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
             t = tn;
         }
     }
-    
+
     if (optional) t.setOptional();
-    
+
     if (t.canHaveGenericArguments()) {
         for (int i = 0; i < t.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments(); i++) {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
@@ -163,7 +173,8 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
             t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
         }
     }
-    
+
+    if (box) t.forceBox_ = true;
     return t;
 }
 
@@ -179,8 +190,7 @@ bool Type::identicalGenericArguments(Type to, TypeContext ct, std::vector<Common
 }
 
 bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
-    if (to.type() == TypeContent::Something &&
-        !(this->type() == TypeContent::ValueType && !this->valueType()->isPrimitive())) {
+    if (to.type() == TypeContent::Something) {
         return true;
     }
     if (to.meta_ != meta_) {
@@ -189,9 +199,8 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
     if (this->optional() && !to.optional()) {
         return false;
     }
-    
-    if ((to.type() == TypeContent::Someobject && this->type() == TypeContent::Class) ||
-        (this->type() == TypeContent::Protocol || this->type() == TypeContent::Someobject)) {
+
+    if (to.type() == TypeContent::Someobject && this->type() == TypeContent::Class) {
         return true;
     }
     if (this->type() == TypeContent::Class && to.type() == TypeContent::Class) {
@@ -216,10 +225,10 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         return this->eenum() == to.eenum();
     }
     if ((this->type() == TypeContent::Reference && to.type() == TypeContent::Reference) ||
-             (this->type() == TypeContent::LocalReference && to.type() == TypeContent::LocalReference)) {
+        (this->type() == TypeContent::LocalReference && to.type() == TypeContent::LocalReference)) {
         return (this->reference() == to.reference() && this->resolutionConstraint_ == to.resolutionConstraint_) ||
-                this->resolveOnSuperArgumentsAndConstraints(ct)
-                    .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
+        this->resolveOnSuperArgumentsAndConstraints(ct)
+        .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
     if (this->type() == TypeContent::Reference) {
         return this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
@@ -266,23 +275,23 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
         (*ctargs)[to.reference()].addType(*this, tc);
         return true;
     }
-    
+
     if (type() == to.type()) {
         switch (type()) {
             case TypeContent::Class:
             case TypeContent::Protocol:
             case TypeContent::ValueType:
                 return typeDefinitionFunctional() == to.typeDefinitionFunctional()
-                        && identicalGenericArguments(to, tc, ctargs);
+                && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Callable:
                 return to.genericArguments.size() == this->genericArguments.size()
-                        && identicalGenericArguments(to, tc, ctargs);
+                && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Enum:
                 return eenum() == to.eenum();
             case TypeContent::Reference:
             case TypeContent::LocalReference:
                 return resolveReferenceToBaseReferenceOnSuperArguments(tc).reference() ==
-                        to.resolveReferenceToBaseReferenceOnSuperArguments(tc).reference();
+                to.resolveReferenceToBaseReferenceOnSuperArguments(tc).reference();
             case TypeContent::Self:
             case TypeContent::Something:
             case TypeContent::Someobject:
@@ -295,20 +304,98 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
 
 
 int Type::size() const {
+    int basesize = 0;
+    switch (storageType()) {
+        case StorageType::SimpleOptional:
+            basesize = 1;
+        case StorageType::Simple:
+            switch (type()) {
+                case TypeContent::ValueType:
+                case TypeContent::Enum:
+                    return basesize + typeDefinition()->size();
+                case TypeContent::Callable:
+                case TypeContent::Class:
+                case TypeContent::Someobject:
+                case TypeContent::Protocol:
+                case TypeContent::Self:
+                    return basesize + 1;
+                case TypeContent::Nothingness:
+                    return 0;
+                default:
+                    throw std::logic_error("Type is wrongly value stored");
+            }
+        case StorageType::Box:
+            return 4;
+        default:
+            throw std::logic_error("Type has invalid storage type");
+    }
+}
+
+StorageType Type::storageType() const {
+    if (forceBox_ || requiresBox()) return StorageType::Box;
+    return optional() ? StorageType::SimpleOptional : StorageType::Simple;
+}
+
+EmojicodeInstruction Type::boxIdentifier() const {
+    EmojicodeInstruction value;
+    switch (type()) {
+        case TypeContent::ValueType:
+            value = isValueReference() ? T_VT_REFERENCE : valueType()->boxIdentifier();
+            break;
+        case TypeContent::Enum:
+            value = 1 & ENUM_MASK;
+            break;
+        case TypeContent::Callable:
+        case TypeContent::Class:
+        case TypeContent::Someobject:
+            value = T_OBJECT;
+            break;
+        case TypeContent::Nothingness:
+        case TypeContent::Protocol:
+        case TypeContent::Something:
+        case TypeContent::Reference:
+        case TypeContent::LocalReference:
+        case TypeContent::Self:
+            throw std::logic_error("Getting box identifier for purely static type");
+    }
+    return meta() ? (value | META_MASK) : value;
+}
+
+bool Type::requiresBox() const {
     switch (type()) {
         case TypeContent::ValueType:
         case TypeContent::Enum:
-            return typeDefinition()->size();
-        case TypeContent::Nothingness:
-        case TypeContent::Something:
+        case TypeContent::Callable:
+        case TypeContent::Class:
         case TypeContent::Someobject:
+        case TypeContent::Self:
+        case TypeContent::Protocol:
+        case TypeContent::Nothingness:
+            return false;
+        case TypeContent::Something:
         case TypeContent::Reference:
         case TypeContent::LocalReference:
+            return true;
+    }
+}
+
+bool Type::isValueReferenceWorthy() const {
+    switch (type()) {
+        case TypeContent::ValueType:
+            return !(valueType()->isPrimitive() && storageType() == StorageType::Simple);
         case TypeContent::Callable:
-        case TypeContent::Self:
         case TypeContent::Class:
+        case TypeContent::Someobject:
+        case TypeContent::Enum:
+        case TypeContent::Reference:
+        case TypeContent::LocalReference:
+        case TypeContent::Self:
+            return storageType() != StorageType::Simple;
+        case TypeContent::Nothingness:
+            return false;
         case TypeContent::Protocol:
-            return 1;
+        case TypeContent::Something:
+            return true;
     }
 }
 
@@ -342,15 +429,15 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
     if (type.meta_) {
         stringAppendEc(E_WHITE_SQUARE_BUTTON, string);
     }
-    
+
     if (includePackageAndOptional) {
         if (type.optional()) {
             stringAppendEc(E_CANDY, string);
         }
-        
+
         string.append(type.typePackage());
     }
-    
+
     switch (type.type()) {
         case TypeContent::Class:
         case TypeContent::Protocol:
@@ -372,11 +459,11 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             return;
         case TypeContent::Callable:
             stringAppendEc(E_GRAPES, string);
-            
+
             for (int i = 1; i < type.genericArguments.size(); i++) {
                 typeName(type.genericArguments[i], typeContext, includePackageAndOptional, string);
             }
-            
+
             stringAppendEc(E_RIGHTWARDS_ARROW, string);
             stringAppendEc(0xFE0F, string);
             typeName(type.genericArguments[0], typeContext, includePackageAndOptional, string);
@@ -402,7 +489,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
                     }
                 }
             }
-            
+
             stringAppendEc('T', string);
             stringAppendEc('0' + type.reference(), string);
             return;
@@ -416,12 +503,12 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
                     }
                 }
             }
-            
+
             stringAppendEc('L', string);
             stringAppendEc('0' + type.reference(), string);
             return;
     }
-    
+
     if (typeContext.calleeType().type() != TypeContent::Nothingness && type.canHaveGenericArguments()) {
         auto typeDef = type.typeDefinitionFunctional();
         int offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->numberOfOwnGenericArguments();

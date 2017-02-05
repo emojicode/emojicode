@@ -35,11 +35,11 @@ public:
         the given character. */
     bool consumeTokenIf(EmojicodeChar c);
 
-    /// Consumes the next toekn and throws an CompilerErrorException if this token isn’t an indentifier whose
+    /// Consumes the next toekn and throws an CompilerError if this token isn’t an indentifier whose
     /// value is @c ch.
     const Token& requireIdentifier(EmojicodeChar ch);
 private:
-    TokenStream(Token *beginToken) : currentToken_(beginToken) {};
+    explicit TokenStream(Token *beginToken) : currentToken_(beginToken) {};
     const Token* currentToken_;
 };
 

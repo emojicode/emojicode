@@ -11,10 +11,9 @@
 
 #define EmojicodeCompiler
 
+#include <string>
 #include "../EmojicodeShared.h"
 #include "Emojis.h"
-
-#include <string>
 
 class TypeDefinition;
 class TypeDefinitionFunctional;
@@ -24,7 +23,7 @@ class Enum;
 class Token;
 class Type;
 class Package;
-class CompilerErrorException;
+class CompilerError;
 class ValueType;
 
 struct SourcePosition;
@@ -53,7 +52,7 @@ extern ValueType *VT_DOUBLE;
 /** Issues a compiler warning. The compilation is continued afterwards. */
 void compilerWarning(SourcePosition p, const char *err, ...);
 /** Prints the given error and stores that an error was raised during compilation. */
-void printError(const CompilerErrorException &ce);
+void printError(const CompilerError &ce);
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
 

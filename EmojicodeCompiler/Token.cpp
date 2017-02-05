@@ -7,11 +7,10 @@
 //
 
 #include "Token.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "EmojiTokenization.hpp"
 
 SourcePosition::SourcePosition(const Token &token) : SourcePosition(token.position()) {
-    
 }
 
 const char* Token::stringName() const {
@@ -49,17 +48,17 @@ void Token::validate() const {
     switch (type()) {
         case TokenType::Integer:
             if (value().back() == 'x') {
-                throw CompilerErrorException(position(), "Expected a digit after integer literal prefix.");
+                throw CompilerError(position(), "Expected a digit after integer literal prefix.");
             }
             break;
         case TokenType::Double:
             if (value().back() == '.') {
-                throw CompilerErrorException(position(), "Expected a digit after decimal seperator.");
+                throw CompilerError(position(), "Expected a digit after decimal seperator.");
             }
             break;
         case TokenType::Identifier:
             if (!isValidEmoji(value())) {
-                throw CompilerErrorException(position(), "Invalid emoji.");
+                throw CompilerError(position(), "Invalid emoji.");
             }
         default:
             break;

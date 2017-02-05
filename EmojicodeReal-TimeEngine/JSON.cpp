@@ -6,83 +6,90 @@
 //  Copyright © 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Emojicode.h"
+#include <cmath>
+#include "Emojicode.hpp"
 #include "EmojicodeDictionary.h"
 #include "EmojicodeList.h"
-#include <math.h>
+#include "Thread.hpp"
 
-typedef enum {
+enum JSONState {
     JSON_NONE = 0,
     JSON_STRING = 1,
     JSON_STRING_ESCAPE = 2,
     JSON_NUMBER = 3, JSON_DOUBLE = 4, JSON_EXPONENT = 5, JSON_EXPONENT_NO_PLUS = 6, JSON_EXPONENT_BACK_VALUE = 7,
-    JSON_NUMBER_NEGATIVE = 8, JSON_DOUBLE_NEGATIVE = 9, JSON_EXPONENT_NEGATIVE = 10, JSON_EXPONENT_NO_PLUS_NEGATIVE = 11, JSON_EXPONENT_BACK_VALUE_NEGATIVE = 12,
-    JSON_OBJECT_KEY, JSON_OBJECT_KEY_BACK_VALUE, JSON_OBJECT_COLON, JSON_OBJECT_VALUE_BACK_VALUE, JSON_OBJECT_NEXT,
-    JSON_ARRAY, JSON_ARRAY_BACK_VALUE, JSON_ARRAY_NEXT, JSON_ARRAY_FIRST,
+    JSON_NUMBER_NEGATIVE = 8, JSON_DOUBLE_NEGATIVE = 9, JSON_EXPONENT_NEGATIVE = 10,
+    JSON_EXPONENT_NO_PLUS_NEGATIVE = 11, JSON_EXPONENT_BACK_VALUE_NEGATIVE = 12,
+    JSON_OBJECT_KEY, JSON_OBJECT_KEY_BACK_VALUE, JSON_OBJECT_VALUE_BACK_VALUE,
+    JSON_ARRAY, JSON_ARRAY_BACK_VALUE, JSON_ARRAY_FIRST,
     JSON_TRUE_T, JSON_TRUE_TR, JSON_TRUE_TRU,
     JSON_FALSE_F, JSON_FALSE_FA, JSON_FALSE_FAL, JSON_FALSE_FALS,
     JSON_NULL_N, JSON_NULL_NU, JSON_NULL_NUL
-} JSONState;
+};
 
-typedef struct {
-    JSONState state;
+struct JSONStackFrame {
+    int state;
+
     EmojicodeInteger integer;
     int numberDigitsFraction;
-} JSONStackFrame;
+    Object *const *object;
+    Object *const *secondaryObject;
+};
 
-#define errorExit() restoreStackState(s, thread); return NOTHINGNESS;
+#define errorExit() destination->makeNothingness(); return;
 #define upgrade(now, expect, ec) case now: if (c == ec) { stackCurrent->state = now ## expect; continue; } else { errorExit(); }
 #define upgradeReturn(now, ec, r) case now: if (c == ec) { backValue = r; popTheStack(); } else { errorExit(); }
-#define appendEscape(seq, c) case seq: listAppend(stackGetVariable(0, thread).object, somethingSymbol(c), thread); continue;
+#define appendEscape(seq, c) case seq: *listAppendDestination(*stackCurrent->object, thread) = Box(T_SYMBOL, EmojicodeChar(c)); continue;
 #define whitespaceCase case '\t': case '\n': case '\r': case ' ':
-#define popTheStack() stackCurrent--; continue;
-#define pushTheStack() stackCurrent++; if (stackCurrent > stackLimit) { errorExit(); } stackCurrent->state = JSON_NONE; continue;
-#define returnArray() backValue = stackGetVariable(0, thread); stackPop(thread); popTheStack();
-#define integerValue() somethingInteger((stackCurrent->state == JSON_NUMBER_NEGATIVE) ? -stackCurrent->integer : stackCurrent->integer)
+#define popTheStack() if (stackCurrent->secondaryObject) thread->release(1); if (stackCurrent->object) thread->release(1); stackCurrent--; continue;
+#define pushTheStack() stackCurrent++; if (stackCurrent > stackLimit) { errorExit(); } stackCurrent->state = JSON_NONE; stackCurrent->secondaryObject = nullptr; stackCurrent->object = nullptr; continue;
+#define returnArray() backValue = Box(T_OBJECT, *stackCurrent->object); popTheStack();
+#define integerValue() Box(T_INTEGER, (stackCurrent->state == JSON_NUMBER_NEGATIVE) ? -stackCurrent->integer : stackCurrent->integer)
 
 #define _doubleInternalValue() ((double)stackCurrent->integer/pow(10, stackCurrent->numberDigitsFraction))
 #define doubleRawValue() ((stackCurrent->state == JSON_DOUBLE_NEGATIVE) ? -_doubleInternalValue() : _doubleInternalValue())
-#define doubleValue() somethingDouble(doubleRawValue())
+#define doubleValue() Box(T_DOUBLE, doubleRawValue())
 
 #define jsonMaxDepth 256
 
-Something parseJSON(Thread *thread) {
-    const size_t length = ((String*)stackGetThisObject(thread)->value)->length;
+void parseJSON(Thread *thread, Box *destination) {
+    const size_t length = ((String*)thread->getThisObject()->value)->length;
     JSONStackFrame stack[jsonMaxDepth];
     JSONStackFrame *stackLimit = stack + jsonMaxDepth - 1;
     JSONStackFrame *stackCurrent = stack;
     EmojicodeChar c;
-    Something backValue = NOTHINGNESS;
+    Box backValue;
     size_t i = 0;
-    
-    StackState s = storeStackState(thread);
-    
+
     stackCurrent->state = JSON_NONE;
-    
+    stackCurrent->object = nullptr;
+    stackCurrent->secondaryObject = nullptr;
+
     while (i < length) {
         if (stackCurrent < stack) {
             errorExit();
         }
-        
-        c = characters((String *)stackGetThisObject(thread)->value)[i++];
-        
+
+        c = characters((String *)thread->getThisObject()->value)[i++];
+
         switch (stackCurrent->state) {
             case JSON_STRING:
                 switch (c) {
                     case '\\':
                         stackCurrent->state = JSON_STRING_ESCAPE;
                         continue;
-                    case '"':
-                        *stackVariableDestination(1, thread) = somethingObject(newObject(CL_STRING));
-                        initStringFromSymbolList(stackGetVariable(1, thread).object, stackGetVariable(0, thread).object->value);
-                        backValue = stackGetVariable(1, thread);
-                        stackPop(thread);
+                    case '"': {
+                        auto &stringObject = thread->retain(newObject(CL_STRING));
+                        initStringFromSymbolList(static_cast<String *>(stringObject->value),
+                                                 static_cast<List *>((*stackCurrent->object)->value));
+                        thread->release(1);
+                        backValue = Box(T_OBJECT, stringObject);
                         popTheStack();
+                    }
                     default:
                         if (c <= 0x1F) {
                             errorExit();
                         }
-                        listAppend(stackGetVariable(0, thread).object, somethingSymbol(c), thread);
+                        *listAppendDestination(*stackCurrent->object, thread) = Box(T_SYMBOL, c);
                         continue;
                 }
             case JSON_STRING_ESCAPE:
@@ -97,17 +104,17 @@ Something parseJSON(Thread *thread) {
                         appendEscape('r', '\r')
                         appendEscape('t', '\t')
                     case 'u': {
-                        EmojicodeChar *chars = characters((String *)stackGetThisObject(thread)->value);
+                        EmojicodeChar *chars = characters((String *)thread->getThisObject()->value);
                         EmojicodeInteger x = 0, high = 0;
                         while (true) {
                             for (size_t e = i + 4; i < e; i++) {
                                 if (i >= length) {
                                     errorExit();
                                 }
-                                
+
                                 c = chars[i];
                                 x *= 16;
-                                
+
                                 if ('0' <= c && c <= '9')
                                     x += c - '0';
                                 else if ('A' <= c && c <= 'F')
@@ -130,7 +137,7 @@ Something parseJSON(Thread *thread) {
                             }
                             break;
                         }
-                        listAppend(stackGetVariable(0, thread).object, somethingSymbol(x), thread);
+                        *listAppendDestination(*stackCurrent->object, thread) = Box(T_SYMBOL, x);
                         continue;
                     }
                 }
@@ -176,12 +183,12 @@ Something parseJSON(Thread *thread) {
                 stackCurrent->state++;
                 pushTheStack();
             case JSON_EXPONENT_BACK_VALUE:
-            case JSON_EXPONENT_BACK_VALUE_NEGATIVE:
-                if (backValue.type != T_INTEGER) {
+            case JSON_EXPONENT_BACK_VALUE_NEGATIVE: {
+                if (backValue.type.raw != T_INTEGER) {
                     errorExit();
                 }
-                double x = doubleRawValue() * pow(10, backValue.raw);
-                backValue = somethingDouble(x);
+                backValue = Box(T_DOUBLE, doubleRawValue() * pow(10, backValue.value1.raw));
+            }
             case JSON_ARRAY_FIRST:
                 stackCurrent->state = JSON_ARRAY;
                 if (c == ']') {
@@ -192,11 +199,8 @@ Something parseJSON(Thread *thread) {
                 stackCurrent->state = JSON_ARRAY_BACK_VALUE;
                 pushTheStack();
             case JSON_ARRAY_BACK_VALUE:
-                listAppend(stackGetVariable(0, thread).object, backValue, thread);
-                stackCurrent->state = JSON_ARRAY_NEXT;
-                i--;
-                continue;
-            case JSON_ARRAY_NEXT:
+                *listAppendDestination(*stackCurrent->object, thread) = backValue;
+
                 switch (c) {
                     case ',':
                         stackCurrent->state = JSON_ARRAY;
@@ -213,74 +217,66 @@ Something parseJSON(Thread *thread) {
                 stackCurrent->state = JSON_OBJECT_KEY_BACK_VALUE;
                 pushTheStack();
             case JSON_OBJECT_KEY_BACK_VALUE:
-                if (backValue.type != T_OBJECT || backValue.object->class != CL_STRING) {
+                if (backValue.type.raw != T_OBJECT || backValue.value1.object->klass != CL_STRING) {
                     errorExit();
                 }
-                *stackVariableDestination(1, thread) = backValue;
-                stackCurrent->state = JSON_OBJECT_COLON;
-                i--;
-                continue;
-            case JSON_OBJECT_COLON:
+                stackCurrent->secondaryObject = &thread->retain(backValue.value1.object);
+
                 switch (c) {
                     case ':':
                         stackCurrent->state = JSON_OBJECT_VALUE_BACK_VALUE;
                         pushTheStack();
-                    whitespaceCase
+                        whitespaceCase
                         continue;
                     default:
                         errorExit();
                 }
             case JSON_OBJECT_VALUE_BACK_VALUE:
-                dictionarySet(stackGetVariable(0, thread).object, stackGetVariable(1, thread).object, backValue, thread);
-                stackCurrent->state = JSON_OBJECT_NEXT;
-                i--;
-                continue;
-            case JSON_OBJECT_NEXT:
+                dictionaryPutVal(*stackCurrent->object, *stackCurrent->secondaryObject, backValue, thread);
+
                 switch (c) {
                     case ',':
                         stackCurrent->state = JSON_OBJECT_KEY;
                         continue;
                     case '}':
-                        backValue = stackGetVariable(0, thread);
-                        stackPop(thread);
+                        backValue = Box(T_OBJECT, *stackCurrent->object);
                         popTheStack();
                         whitespaceCase
                         continue;
                     default:
                         errorExit();
                 }
-            upgrade(JSON_TRUE_T, R, 'r')
-            upgrade(JSON_TRUE_TR, U, 'u')
-            upgradeReturn(JSON_TRUE_TRU, 'e', EMOJICODE_TRUE)
-            upgrade(JSON_FALSE_F, A, 'a')
-            upgrade(JSON_FALSE_FA, L, 'l')
-            upgrade(JSON_FALSE_FAL, S, 's')
-            upgradeReturn(JSON_FALSE_FALS, 'e', EMOJICODE_FALSE)
-            upgrade(JSON_NULL_N, U, 'u')
-            upgrade(JSON_NULL_NU, L, 'l')
-            upgradeReturn(JSON_NULL_NUL, 'l', NOTHINGNESS)
+                upgrade(JSON_TRUE_T, R, 'r')
+                upgrade(JSON_TRUE_TR, U, 'u')
+                upgradeReturn(JSON_TRUE_TRU, 'e', Box(T_BOOLEAN, EmojicodeInteger(1)))
+                upgrade(JSON_FALSE_F, A, 'a')
+                upgrade(JSON_FALSE_FA, L, 'l')
+                upgrade(JSON_FALSE_FAL, S, 's')
+                upgradeReturn(JSON_FALSE_FALS, 'e', Box(T_BOOLEAN, EmojicodeInteger(0)))
+                upgrade(JSON_NULL_N, U, 'u')
+                upgrade(JSON_NULL_NU, L, 'l')
+                upgradeReturn(JSON_NULL_NUL, 'l', Box(T_NOTHINGNESS, EmojicodeInteger(0)))
             case JSON_NONE:
                 switch (c) {
-                    case '"':
+                    case '"': {
                         stackCurrent->state = JSON_STRING;
-                        stackPush(stackGetThisContext(thread), 2, 0, thread);
-                        Object *string = newObject(CL_LIST);
-                        *stackVariableDestination(0, thread) = somethingObject(string);
+                        stackCurrent->object = &thread->retain(newObject(CL_LIST));
                         break;
-                    case '{':
+                    }
+                    case '{': {
                         stackCurrent->state = JSON_OBJECT_KEY;
-                        stackPush(somethingObject(newObject(CL_DICTIONARY)), 0, 0, thread);
+                        thread->pushStack(newObject(CL_DICTIONARY), 1, 0, nullptr, nullptr, nullptr);
                         dictionaryInit(thread);
-                        Object *o = stackGetThisObject(thread);
-                        stackPop(thread);
-                        stackPush(somethingObject(stackGetThisObject(thread)), 2, 0, thread);
-                        *stackVariableDestination(0, thread) = somethingObject(o);
+                        Object *o = thread->getThisObject();
+                        thread->popStack();
+                        stackCurrent->object = &thread->retain(o);
                         break;
-                    case '[':
+                    }
+                    case '[': {
                         stackCurrent->state = JSON_ARRAY_FIRST;
-                        stackPush(somethingObject(stackGetThisObject(thread)), 1, 0, thread);
-                        *stackVariableDestination(0, thread) = somethingObject(newObject(CL_LIST));
+                        stackCurrent->object = &thread->retain(newObject(CL_LIST));
                         break;
+                    }
                     case 't':
                         stackCurrent->state = JSON_TRUE_T;
                         break;
@@ -307,29 +303,32 @@ Something parseJSON(Thread *thread) {
                         stackCurrent->state = JSON_NUMBER;
                         stackCurrent->integer = c - '0';
                         break;
-                    whitespaceCase
+                        whitespaceCase
                         continue;
                     default:
                         errorExit();
                 }
         }
     }
-    
+
     if (stackCurrent == stack) {
         switch (stackCurrent->state) {
             case JSON_DOUBLE:
             case JSON_DOUBLE_NEGATIVE:
-                return doubleValue();
+                *destination = doubleValue();
+                return;
             case JSON_NUMBER:
             case JSON_NUMBER_NEGATIVE:
-                return integerValue();
+                *destination = integerValue();
+                return;
             default:
                 break;
         }
     }
-    
+
     if (stackCurrent < stack) {
-        return backValue;
+        *destination = backValue;
+        return;
     }
     
     errorExit();

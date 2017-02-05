@@ -7,18 +7,18 @@
 //
 
 #include "TokenStream.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 
 const Token& TokenStream::consumeToken(TokenType type) {
     if (!hasMoreTokens()) {
-        throw CompilerErrorException(currentToken_->position(), "Unexpected end of program.");
+        throw CompilerError(currentToken_->position(), "Unexpected end of program.");
     }
 
     currentToken_ = currentToken_->nextToken_;
-    
+
     if (type != TokenType::NoType && currentToken_->type() != type) {
-        throw CompilerErrorException(currentToken_->position(), "Expected token %s but instead found %s.",
-                      Token::stringNameForType(type), currentToken_->stringName());
+        throw CompilerError(currentToken_->position(), "Expected token %s but instead found %s.",
+                                     Token::stringNameForType(type), currentToken_->stringName());
     }
     return *currentToken_;
 }
@@ -53,7 +53,7 @@ bool TokenStream::consumeTokenIf(EmojicodeChar c) {
 const Token& TokenStream::requireIdentifier(EmojicodeChar ch) {
     auto &token = consumeToken(TokenType::Identifier);
     if (!token.isIdentifier(ch)) {
-        throw CompilerErrorException(token, "Expected %s but found %s instead.", EmojicodeString(ch).utf8().c_str(),
+        throw CompilerError(token, "Expected %s but found %s instead.", EmojicodeString(ch).utf8().c_str(),
                                      token.value().utf8().c_str());
     }
     return token;

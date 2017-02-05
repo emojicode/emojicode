@@ -16,19 +16,17 @@
 #include "Writer.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "PackageReporter.hpp"
 #include "ValueType.hpp"
 #include "Function.hpp"
 #include "../utf8.h"
 
 std::string EmojicodeString::utf8() const {
-    // Size needed for UTF8 representation
-    size_t ds = u8_codingsize(c_str(), size());
-    char utf8str[ds + 1];
-    size_t written = u8_toutf8(utf8str, ds, c_str(), size());
-    utf8str[written] = 0;
-    return std::string(utf8str);
+    std::string string;
+    string.resize(u8_codingsize(c_str(), size()));
+    u8_toutf8(&string[0], string.capacity(), c_str(), size());
+    return string;
 }
 
 static bool outputJSON = false;
@@ -74,7 +72,7 @@ void printJSONStringToFile(const char *string, FILE *f) {
 
 //MARK: Warnings
 
-void printError(const CompilerErrorException &ce) {
+void printError(const CompilerError &ce) {
     hasError = true;
     if (outputJSON) {
         fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":",
@@ -94,10 +92,10 @@ void printError(const CompilerErrorException &ce) {
 void compilerWarning(SourcePosition p, const char *err, ...) {
     va_list list;
     va_start(list, err);
-    
+
     char error[450];
     vsprintf(error, err, list);
-    
+
     if (outputJSON) {
         fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":",
                 printedErrorOrWarning ? ",": "", p.line, p.character);
@@ -110,7 +108,7 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
         fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", p.line, p.character, p.file.c_str(), error);
     }
     printedErrorOrWarning = true;
-    
+
     va_end(list);
 }
 
@@ -118,8 +116,7 @@ Class* getStandardClass(EmojicodeString name, Package *_, SourcePosition errorPo
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Class) {
-        throw CompilerErrorException(errorPosition, "s package class %s is missing.", name.utf8().c_str());
-        
+        throw CompilerError(errorPosition, "s package class %s is missing.", name.utf8().c_str());
     }
     return type.eclass();
 }
@@ -128,7 +125,7 @@ Protocol* getStandardProtocol(EmojicodeString name, Package *_, SourcePosition e
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Protocol) {
-        throw CompilerErrorException(errorPosition, "s package protocol %s is missing.", name.utf8().c_str());
+        throw CompilerError(errorPosition, "s package protocol %s is missing.", name.utf8().c_str());
     }
     return type.protocol();
 }
@@ -137,28 +134,28 @@ ValueType* getStandardValueType(EmojicodeString name, Package *_, SourcePosition
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::ValueType) {
-        throw CompilerErrorException(errorPosition, "s package value type %s is missing.", name.utf8().c_str());
+        throw CompilerError(errorPosition, "s package value type %s is missing.", name.utf8().c_str());
     }
     return type.valueType();
 }
 
 void loadStandard(Package *_, SourcePosition errorPosition) {
     auto package = _->loadPackage("s", globalNamespace, errorPosition);
-    
+
     VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), _, errorPosition);
     VT_BOOLEAN = getStandardValueType(EmojicodeString(E_OK_HAND_SIGN), _, errorPosition);
     VT_SYMBOL = getStandardValueType(EmojicodeString(E_INPUT_SYMBOL_FOR_SYMBOLS), _, errorPosition);
     VT_INTEGER = getStandardValueType(EmojicodeString(E_STEAM_LOCOMOTIVE), _, errorPosition);
-    
+
     CL_STRING = getStandardClass(EmojicodeString(0x1F521), _, errorPosition);
     CL_LIST = getStandardClass(EmojicodeString(0x1F368), _, errorPosition);
     CL_ERROR = getStandardClass(EmojicodeString(0x1F6A8), _, errorPosition);
     CL_DATA = getStandardClass(EmojicodeString(0x1F4C7), _, errorPosition);
     CL_DICTIONARY = getStandardClass(EmojicodeString(0x1F36F), _, errorPosition);
-    
+
     PR_ENUMERATOR = getStandardProtocol(EmojicodeString(0x1F361), _, errorPosition);
     PR_ENUMERATEABLE = getStandardProtocol(EmojicodeString(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), _, errorPosition);
-    
+
     package->setRequiresBinary(false);
 }
 
@@ -166,12 +163,12 @@ int main(int argc, char * argv[]) {
     try {
         const char *packageToReport = nullptr;
         char *outPath = nullptr;
-        
+
         const char *ppath;
         if ((ppath = getenv("EMOJICODE_PACKAGES_PATH"))) {
             packageDirectory = ppath;
         }
-        
+
         signed char ch;
         while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {
             switch (ch) {
@@ -196,51 +193,51 @@ int main(int argc, char * argv[]) {
         }
         argc -= optind;
         argv += optind;
-        
+
         if (outputJSON) {
             fprintf(stderr, "[");
         }
-        
+
         if (argc == 0) {
             compilerWarning(SourcePosition(0, 0, ""), "No input files provided.");
             return 1;
         }
-        
+
         if (outPath == nullptr) {
             outPath = strdup(argv[0]);
             outPath[strlen(outPath) - 1] = 'b';
         }
-        
+
         auto errorPosition = SourcePosition(0, 0, argv[0]);
-        
+
         Package pkg = Package("_", errorPosition);
         pkg.setPackageVersion(PackageVersion(1, 0));
-        
+
         FILE *out = fopen(outPath, "wb");
-    
+
         try {
             loadStandard(&pkg, errorPosition);
-            
+
             pkg.parse(argv[0]);
-            
+
             if (!out || ferror(out)) {
-                throw CompilerErrorException(errorPosition, "Couldn't write output file.");
+                throw CompilerError(errorPosition, "Couldn't write output file.");
                 return 1;
             }
-            
+
             if (!Function::foundStart) {
-                throw CompilerErrorException(errorPosition, "No 🏁 block was found.");
+                throw CompilerError(errorPosition, "No 🏁 block was found.");
             }
-            
+
             Writer writer = Writer(out);
             generateCode(writer);
         }
-        catch (CompilerErrorException &ce) {
+        catch (CompilerError &ce) {
             printError(ce);
         }
-        
+
         fclose(out);
-        
+
         if (packageToReport) {
             if (auto package = Package::findPackage(packageToReport)) {
                 reportPackage(package);
@@ -249,11 +246,11 @@ int main(int argc, char * argv[]) {
                 compilerWarning(errorPosition, "Report for package %s failed as it was not loaded.", packageToReport);
             }
         }
-        
+
         if (outputJSON) {
             fprintf(stderr, "]");
         }
-        
+
         if (hasError) {
             unlink(outPath);
             return 1;
@@ -267,6 +264,6 @@ int main(int argc, char * argv[]) {
         printf("💣 The compiler crashed due to an unidentifiable internal problem.\nPlease report this message and the code that you were trying to compile as an issue on GitHub.");
         return 1;
     }
-    
+
     return 0;
 }

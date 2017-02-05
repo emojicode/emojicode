@@ -12,6 +12,6 @@
 #include <stddef.h>
 
 /** @c memmem implementation. */
-void* findBytesInBytes(const void *l, size_t l_len, const void *s, size_t s_len);
+const void* findBytesInBytes(const void *l, size_t l_len, const void *s, size_t s_len);
 
 #endif /* algorithms_h */

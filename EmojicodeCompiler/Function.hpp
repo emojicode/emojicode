@@ -11,6 +11,8 @@
 
 #include <queue>
 #include <map>
+#include <vector>
+#include <experimental/optional>
 #include "Token.hpp"
 #include "TokenStream.hpp"
 #include "Type.hpp"
@@ -43,32 +45,24 @@ public:
     static int nextFunctionVti() { return nextVti_++; }
     /** Returns the number of funciton VTIs assigned. This should be equal to the number of compiled functions. */
     static int functionCount() { return nextVti_; }
-    
-    static void checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeString name, SourcePosition position,
-                                   const char *on, Type contextType);
-    static void checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeString name, SourcePosition position,
-                                   const char *on, Type contextType);
-    static void checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
-                              const char *on, Type contextType);
-    
+
     Function(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, EmojicodeString documentationToken, bool deprecated, bool mutating,
              CallableParserAndGeneratorMode mode)
-        : Callable(p),
-          name_(name),
-          final_(final),
-          overriding_(overriding),
-          deprecated_(deprecated),
-          mutating_(mutating),
-          access_(level),
-          owningType_(owningType),
-          package_(package),
-          documentation_(documentationToken),
-          compilationMode_(mode) {}
-    
-    /** The function name. A Unicode code point for an emoji */
+    : Callable(p),
+    name_(name),
+    final_(final),
+    overriding_(overriding),
+    deprecated_(deprecated),
+    mutating_(mutating),
+    access_(level),
+    owningType_(owningType),
+    package_(package),
+    documentation_(documentationToken),
+    compilationMode_(mode) {}
+
     EmojicodeString name() const { return name_; }
-    
+
     /** Whether the method is implemented natively and Run-Time Native Linking must occur. */
     bool isNative() const { return linkingTableIndex_ > 0; }
     unsigned int linkingTabelIndex() const { return linkingTableIndex_; }
@@ -81,66 +75,70 @@ public:
     bool deprecated() const { return deprecated_; }
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
-    
-    /** Type to which this function belongs. 
-        This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
+
+    /** Type to which this function belongs.
+     This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
     Type owningType() const { return owningType_; }
-    
+
     const EmojicodeString& documentation() const { return documentation_; }
-    
+
     /** The types for the generic arguments. */
     std::vector<Type> genericArgumentConstraints;
     /** Generic type arguments as variables */
     std::map<EmojicodeString, Type> genericArgumentVariables;
-    
+
     /** The namespace in which the function was defined.
-        This does not necessarily match the package of @c owningType. */
+     This does not necessarily match the package of @c owningType. */
     Package* package() const { return package_; }
-    
-    /** Issues a warning on at the given token if the function is deprecated. */
-    void deprecatedWarning(const Token &callToken);
-    
-    /**
-     * Check whether this function is breaking promises of @c superFunction.
-     */
-    void checkPromises(Function *superFunction, const char *on, Type contextType);
-    
-    bool checkOverride(Function *superFunction);
-    
+
+    /// Issues a warning at the given position if the function is deprecated.
+    void deprecatedWarning(SourcePosition position) const;
+
+    /// Returns true if the method is validly overriding a method or false if it does not override.
+    /// @throws CompilerError if the override is improper, e.g. implicit
+    bool checkOverride(Function *superFunction) const;
+    /// Makes this method properly inherit from @c super.
+    void override(Function *super, Type typeContext) {
+        enforcePromises(super, typeContext, std::experimental::nullopt);
+        setVti(super->getVti());
+        super->registerOverrider(this);
+    }
+    /// Checks that no promises were broken and applies boxing if necessary.
+    void enforcePromises(Function *superFunction, TypeContext typeContext,
+                         std::experimental::optional<TypeContext> protocol);
+
+    void registerOverrider(Function *f) { overriders_.push_back(f); }
+
     /** Returns the VTI for this function or fetches one by calling the VTI Assigner and marks the function as used.
-        @warning This method must only be called if the function will be needed at run-time and 
-        should be assigned a VTI. */
+     @warning This method must only be called if the function will be needed at run-time and
+     should be assigned a VTI. */
     int vtiForUse();
-    /** Assigns this method a VTI without marking it as used. */
+    /// Assigns this method a VTI without marking it as used.
     void assignVti();
-    /** Returns the VTI this function was assigned. If the function wasn’t assigned a VTI, 
-        a @c std::logic_error is thrown. */
+    /// Returns the VTI this function was assigned.
+    /// @throws std::logic_error if the function wasn’t assigned a VTI
     int getVti() const;
     /** Sets the @c VTIProvider which should be used to assign this method a VTI and to update the VTI counter. */
     void setVtiProvider(VTIProvider *provider);
-    /** Whether the function was really used. */
+    /// Whether the function was used.
     bool used() const { return used_; }
-    
-    void registerOverrider(Function *f) { overriders_.push_back(f); }
-    
-    CallableParserAndGeneratorMode compilationMode() const { return compilationMode_; }
-    
-    /** Whether this function should be treated as type method at Run-Time Native Linking time. */
-    bool typeMethod() const;
-    
+    /// Whether the function was assigned a VTI
     bool assigned() const;
 
+    /// Whether the function mutates the callee. Only relevant for value type instance methods.
     bool mutating() const { return mutating_; }
-    
+
+    CallableParserAndGeneratorMode compilationMode() const { return compilationMode_; }
+
     int fullSize() const { return fullSize_; }
     void setFullSize(int c) { fullSize_ = c; }
-    
+
     CallableWriter writer_;
 private:
     /** Sets the VTI to @c vti and enters this functions into the list of functions to be compiled into the binary. */
     void setVti(int vti);
     void markUsed();
-    
+
     EmojicodeString name_;
     static int nextVti_;
     int vti_ = -1;
@@ -165,17 +163,17 @@ public:
     Initializer(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated, bool r,
                 bool crn, CallableParserAndGeneratorMode mode)
-        : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, true, mode),
-          required(r),
-          canReturnNothingness(crn) {
-              returnType = owningType;
+    : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, true, mode),
+    required(r),
+    canReturnNothingness(crn) {
+        returnType = owningType;
     }
-    
+
     bool required;
     bool canReturnNothingness;
-    
-    virtual Type type() const override;
-    
+
+    Type type() const override;
+
     void addArgumentToVariable(const EmojicodeString &string) { argumentsToVariables_.push_back(string); }
     const std::vector<EmojicodeString>& argumentsToVariables() const { return argumentsToVariables_; }
 private:

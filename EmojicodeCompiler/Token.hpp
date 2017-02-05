@@ -42,12 +42,11 @@ class Token {
     friend class TokenStream;
 public:
     Token(const Token&) = delete;
-    Token(SourcePosition p) : position_(p) {}
+    explicit Token(SourcePosition p) : position_(p) {}
     Token(SourcePosition p, Token *prevToken) : position_(p) {
-        if(prevToken)
-            prevToken->nextToken_ = this;
+        if (prevToken) prevToken->nextToken_ = this;
     }
-    
+
     /** Returns the position at which this token was defined. */
     const SourcePosition& position() const { return position_; }
     /** Returns the type of this token. */
@@ -56,12 +55,12 @@ public:
     const EmojicodeString& value() const { return value_; }
 
     bool isIdentifier(EmojicodeChar ch) const;
-    
+
     /** Returns a string describing the token */
     const char* stringName() const;
     /** Returns a string describing the token */
     static const char* stringNameForType(TokenType type);
-    
+
     void validate() const;
 private:
     SourcePosition position_;

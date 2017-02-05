@@ -7,19 +7,17 @@
 //
 
 #include "Variable.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 
-void Variable::uninitalizedError(const Token &variableToken) const {
-    if (initialized <= 0) {
-        throw CompilerErrorException(variableToken, "Variable \"%s\" is possibly not initialized.",
-                                     variableToken.value().utf8().c_str());
+void Variable::uninitalizedError(SourcePosition p) const {
+    if (initialized_ <= 0) {
+        throw CompilerError(position(), "Variable \"%s\" is possibly not initialized.", name().utf8().c_str());
     }
 }
 
-void Variable::mutate(const Token &variableToken) {
+void Variable::mutate(SourcePosition p) {
     if (frozen()) {
-        throw CompilerErrorException(position_, "Cannot modify frozen variable \"%s\".",
-                                     variableToken.value().utf8().c_str());
+        throw CompilerError(position(), "Cannot modify frozen variable \"%s\".", name().utf8().c_str());
     }
     mutated_ = true;
 }

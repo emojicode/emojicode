@@ -9,7 +9,7 @@
 #include "Callable.hpp"
 
 Type Callable::type() const {
-    Type t(TypeContent::Callable, false);
+    Type t = Type::callableIncomplete();
     t.genericArguments.push_back(returnType);
     for (int i = 0; i < arguments.size(); i++) {
         t.genericArguments.push_back(arguments[i].type);

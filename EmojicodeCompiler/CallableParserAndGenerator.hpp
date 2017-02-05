@@ -9,6 +9,8 @@
 #ifndef CallableParserAndGenerator_hpp
 #define CallableParserAndGenerator_hpp
 
+#include <utility>
+#include <vector>
 #include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
 #include "CallableScoper.hpp"
@@ -21,19 +23,19 @@
 struct FlowControlReturn {
     int branches = 0;
     int branchReturns = 0;
-    
+
     bool returned() { return branches == branchReturns; }
 };
 
 enum class TypeAvailability {
-    /** The type is known at compile type, can’t change and will be available at runtime. Instruction to retrieve the 
-        type at runtime were written to the file. */
+    /** The type is known at compile type, can’t change and will be available at runtime. Instruction to retrieve the
+     type at runtime were written to the file. */
     StaticAndAvailabale,
     /** The type is known at compile type, but a another compatible type might be provided at runtime instead.
-        The type will be available at runtime. Instruction to retrieve the type at runtime were written to the file. */
+     The type will be available at runtime. Instruction to retrieve the type at runtime were written to the file. */
     DynamicAndAvailabale,
     /** The type is fully known at compile type but won’t be available at runtime (Enum, ValueType etc.).
-        Nothing was written to the file if this value is returned. */
+     Nothing was written to the file if this value is returned. */
     StaticAndUnavailable,
 };
 
@@ -44,7 +46,7 @@ public:
                                         CallableScoper &scoper, CallableParserAndGeneratorMode mode);
     CallableParserAndGenerator(Callable &callable, Package *p, CallableParserAndGeneratorMode mode,
                                TypeContext typeContext, CallableWriter &writer, CallableScoper &scoper);
-    
+
     /** Performs the analyziation. */
     void analyze();
     /** Whether self was used in the callable body. */
@@ -59,7 +61,7 @@ private:
     CallableWriter &writer;
     /** The scoper responsible for scoping the function being compiled. */
     CallableScoper &scoper;
-    
+
     /** The flow control depth. */
     int flowControlDepth = 0;
     /** Whether the statment has an effect. */
@@ -70,34 +72,22 @@ private:
     bool usedSelf = false;
     /** Whether the superinitializer has been called (always false if the function is not an intializer). */
     bool calledSuper = false;
-    bool pushedTemporaryScope_ = false;
 
     /** The this context in which this function operates. */
     TypeContext typeContext;
-    
-    /**
-     * Safely tries to parse and write the bytecode of the expression starting at the given token.
-     * @returns The expression’s return type.
-     * @param token The token at which the expression to evaluate begins.
-     * @param expectation The type which is expected to be produced by the expression. It’s taken into
-                          account when parsing numbers etc. Pass @c Type::nothingness() to indicate no expectations.
-     * @param vtDestinationID The stack ID at which a non-primitive value type would be stored. -2 indicates that no
-                             place is designated to store the value. -1 means that a place value type is only
-                             temporay. You must call @c popTemporaryScope() appropriately after a call to this method
-                             with @c vtDestinationID set to -1.
-     */
-    Type parse(const Token &token, Type expectation = Type::nothingness());
+
     Type parse(const Token &token, Type expectation, Destination &des);
+    Type parse(const Token &token, Destination &des);
     /**
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
      * @param token The token to evaluate.
      */
-    Type parse(const Token &token, const Token &parentToken, Type type, std::vector<CommonTypeFinder>* = nullptr,
-               Destination des = Destination());
-    /** 
+    Type parse(const Token &token, const Token &parentToken, Type type, Destination des,
+               std::vector<CommonTypeFinder>* = nullptr);
+    /**
      * Parses a type name and writes instructions to fetch it at runtime. If everything goes well, the parsed
      * type (unresolved) and true are returned.
-     * If the type, however, isn’t available at runtime (Enum, ValueType, Protocol) the parsed type (unresolved) 
+     * If the type, however, isn’t available at runtime (Enum, ValueType, Protocol) the parsed type (unresolved)
      * is returned and false are returned.
      */
     std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, SourcePosition p,
@@ -112,20 +102,29 @@ private:
      * @param type The type for the type context, therefore the type on which this function was called.
      */
     Type parseFunctionCall(Type type, Function *p, const Token &token);
-    
-    /**
-     * Writes a command to access a variable.
-     * @param stack The command to access the variable if it is on the stack.
-     * @param instance The command to access the variable it it is an instance variable.
-     */
-    void writeCoinForStackOrInstance(bool inInstanceScope, EmojicodeCoin stack,
-                                     EmojicodeCoin object, EmojicodeCoin vt, SourcePosition p);
+
+    /// Writes instructions necessary to peform an action on a variable.
+    /// @param inInstanceScope Whether the value is in the instance or on the stack.
+    /// @param stack The instruction for a stack variable.
+    /// @param object The instruction for an object instance variable.
+    /// @param vt The instruction for a value type instance variable.
+    void writeInstructionForStackOrInstance(bool inInstanceScope, EmojicodeInstruction stack,
+                                            EmojicodeInstruction object, EmojicodeInstruction vt, SourcePosition p);
+
+    /// Writes the instructions necessary to wrap or unwrap in order to produce correctly to the given destination, and
+    /// the instructions to store the return value at a temporary location on the stack, if the destination type of
+    /// temporary type.
+    /// @attention Makes @c returnType a reference if the returned value type is temporarily needed as reference.
+    void writeBoxingAndTemporary(Destination des, Type &returnType, SourcePosition p, WriteLocation location) const;
+    void writeBoxingAndTemporary(Destination des, Type returnType, SourcePosition p) const {
+        writeBoxingAndTemporary(des, returnType, p, writer);
+    }
 
     void parseCoinInBlock();
 
-    void copyVariableContent(const Variable &variable, bool inObjectScope, SourcePosition p);
-    void produceToVariable(const Variable &variable, bool inInstanceScope, SourcePosition p);
-    void getVTReference(const Variable &variable, bool inInstanceScope, SourcePosition p);
+    void copyVariableContent(ResolvedVariable var, SourcePosition p);
+    void produceToVariable(ResolvedVariable var, SourcePosition p);
+    void getVTReference(ResolvedVariable var, SourcePosition p);
 
     void noReturnError(SourcePosition p);
     void noEffectWarning(const Token &warningToken);
@@ -141,14 +140,11 @@ private:
     bool hasInstanceScope() const;
     bool isOnlyNothingnessReturnAllowed() const;
 
-    void pushTemporaryScope();
-    void popTemporaryScope();
-
     std::pair<Type, Destination> parseMethodCallee();
-    
+
     void notStaticError(TypeAvailability t, SourcePosition p, const char *name);
     bool isStatic(TypeAvailability t) { return t == TypeAvailability::StaticAndUnavailable
-                                                    || t == TypeAvailability::StaticAndAvailabale; }
+        || t == TypeAvailability::StaticAndAvailabale; }
 };
 
 #endif /* CallableParserAndGenerator_hpp */

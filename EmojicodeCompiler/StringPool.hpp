@@ -28,7 +28,7 @@ public:
      * the string is added to the end of the pool. 
      * @returns The index to access the string in the pool.
      */
-    EmojicodeCoin poolString(const EmojicodeString &string);
+    EmojicodeInstruction poolString(const EmojicodeString &string);
     /** Returns a vector of all strings in the order in which they must appear in the pool at run-time. */
     const std::vector<EmojicodeString>& strings() const { return strings_; }
 private:

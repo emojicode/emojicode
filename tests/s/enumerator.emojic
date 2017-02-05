@@ -15,9 +15,9 @@
       🐻 testList name
     🍉
 
-    ⛔️🐕 🦄 list testList 🍇 a 🔡 b 🔡 ➡️ 👌
-      🍎 😜 a b
-    🍉 🔤Array Equal False🔤
+    👴 ⛔️🐕 🦄 list testList 🍇 a 🔡 b 🔡 ➡️ 👌
+    👴   🍎 😜 a b
+    👴 🍉 🔤Array Equal False🔤
   🍉
 
   🐖 📇 🍇
@@ -28,10 +28,10 @@
       🐻 testList byte
     🍉
 
-    🍦 list 🍨0x44 0x61 0x66 0x74 0x20 0x50 0x75 0x6e 0x6b🍆
-    ⛔️🐕 🦄 list testList 🍇 a 🚂 b 🚂 ➡️ 👌
-      🍎 😛 a b
-    🍉 🔤Array Equal False🔤
+    👴 🍦 list 🍨0x44 0x61 0x66 0x74 0x20 0x50 0x75 0x6e 0x6b🍆
+    👴 ⛔️🐕 🦄 list testList 🍇 a 🚂 b 🚂 ➡️ 👌
+    👴   🍎 😛 a b
+    👴 🍉 🔤Array Equal False🔤s
   🍉
 
   🐖 🤗 🍇
@@ -42,9 +42,9 @@
       🐻 testList 🍺name
     🍉
 
-    ⛔️🐕 🦄 list testList 🍇 a 🔡 b 🔡 ➡️ 👌
-      🍎 😜 a b
-    🍉 🔤Array Equal False🔤
+    👴 ⛔️🐕 🦄 list testList 🍇 a 🔡 b 🔡 ➡️ 👌
+    👴   🍎 😜 a b
+    👴 🍉 🔤Array Equal False🔤
   🍉
 
   ✒️ 🐖 🏁 🍇

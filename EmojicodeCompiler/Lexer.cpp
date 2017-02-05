@@ -11,7 +11,7 @@
 #include <sstream>
 #include "../utf8.h"
 #include "Lexer.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "EmojiTokenization.hpp"
 
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
@@ -40,10 +40,10 @@ TokenStream lex(std::string path) {
         std::ifstream f(path, std::ios_base::binary | std::ios_base::in);
 
         if (!ends_with(path, ".emojic")) {
-            throw CompilerErrorException(SourcePosition(0, 0, path),
+            throw CompilerError(SourcePosition(0, 0, path),
                                          "Emojicode files must be suffixed with .emojic: %s", path.c_str());
         }
-        
+
         EmojicodeChar c;
         size_t i = 0;
 
@@ -61,7 +61,7 @@ TokenStream lex(std::string path) {
             size_t delta = i;
             c = u8_nextchar(string.c_str(), &i);
             sourcePosition.character += i - delta;
-            
+
             if (!nextToken) {
                 switch (token->type()) {
                     case TokenType::Identifier:
@@ -73,9 +73,9 @@ TokenStream lex(std::string path) {
                         else if ((isEmojiModifier(c) && isEmojiModifierBase(token->value_.back())) ||
                                  (isRegionalIndicator(c) && token->value().size() == 1 &&
                                   isRegionalIndicator(token->value().front()))) {
-                            token->value_.push_back(c);
-                            continue;
-                        }
+                                     token->value_.push_back(c);
+                                     continue;
+                                 }
                         else if (c == 0x200D) {
                             token->value_.push_back(c);
                             foundZWJ = true;
@@ -122,16 +122,14 @@ TokenStream lex(std::string path) {
                                 case 'r':
                                     token->value_.push_back('\r');
                                     break;
-                                case 'e':
-                                    token->value_.push_back('\e');
-                                    break;
                                 default: {
                                     char tc[5] = {0, 0, 0, 0, 0};
                                     u8_wc_toutf8(tc, c);
-                                    throw CompilerErrorException(sourcePosition, "Unrecognized escape sequence ❌%s.", tc);
+                                    throw CompilerError(sourcePosition, "Unrecognized escape sequence ❌%s.",
+                                                                 tc);
                                 }
                             }
-                            
+
                             escapeSequence = false;
                         }
                         else if (c == E_CROSS_MARK) {
@@ -194,7 +192,7 @@ TokenStream lex(std::string path) {
                         break;
                 }
             }
-            
+
             if (detectWhitespace(c, &sourcePosition.character, &sourcePosition.line)) {
                 continue;
             }
@@ -203,7 +201,7 @@ TokenStream lex(std::string path) {
                 token = new Token(sourcePosition, token);
                 nextToken = false;
             }
-            
+
             if (c == E_INPUT_SYMBOL_LATIN_LETTERS) {
                 token->type_ = TokenType::String;
             }
@@ -217,7 +215,7 @@ TokenStream lex(std::string path) {
             else if (('0' <= c && c <= '9') || c == '-' || c == '+') {
                 token->type_ = TokenType::Integer;
                 token->value_.push_back(c);
-                
+
                 isHex = false;
             }
             else if (c == E_THUMBS_UP_SIGN || c == E_THUMBS_DOWN_SIGN) {
@@ -236,18 +234,18 @@ TokenStream lex(std::string path) {
                 token->value_.push_back(c);
             }
         }
-        
+
         if (!nextToken && token->type() == TokenType::String) {
-            throw CompilerErrorException(token->position(), "Expected 🔤 but found end of file instead.");
+            throw CompilerError(token->position(), "Expected 🔤 but found end of file instead.");
         }
         if (!nextToken && token->type() == TokenType::Comment && !oneLineComment) {
-            throw CompilerErrorException(token->position(), "Expected 👵 but found end of file instead.");
+            throw CompilerError(token->position(), "Expected 👵 but found end of file instead.");
         }
         token->validate();
     }
     catch (const std::ifstream::failure &e) {
-        throw CompilerErrorException(SourcePosition(0, 0, path), "Couldn't read input file %s.", path.c_str());
+        throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file %s.", path.c_str());
     }
-
+    
     return stream;
 }

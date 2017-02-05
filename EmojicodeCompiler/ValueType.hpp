@@ -16,25 +16,29 @@
 class ValueType : public TypeDefinitionFunctional {
 public:
     static const std::vector<ValueType *>& valueTypes() { return valueType_; }
-    
+
     ValueType(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
         : TypeDefinitionFunctional(name, p, pos, documentation) {
-            valueType_.push_back(this);
+        valueType_.push_back(this);
     }
-    
+
     bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) override { return false; }
-    
+
     void finalize() override;
     int usedFunctionCount() const { return vtiProvider_.usedCount(); };
-    
+
     virtual int size() const override { return primitive_ ? 1 : TypeDefinitionFunctional::size(); }
-    
+
     void makePrimitive() { primitive_ = true; }
     bool isPrimitive() { return primitive_; }
+
+    int boxIdentifier() const { return id_; }
 private:
+    static int nextId;
     static std::vector<ValueType *> valueType_;
     ValueTypeVTIProvider vtiProvider_;
     bool primitive_ = false;
+    int id_ = nextId++;
 };
 
 #endif /* ValueType_hpp */

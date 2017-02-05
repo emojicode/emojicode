@@ -8,9 +8,10 @@
 
 #include <map>
 #include <stdexcept>
+#include <numeric>
 #include "Function.hpp"
 #include "Lexer.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "TypeContext.hpp"
 #include "VTIProvider.hpp"
@@ -20,90 +21,79 @@ Function *Function::start;
 int Function::nextVti_ = 0;
 std::queue<Function*> Function::compilationQueue;
 
-//MARK: Function
-
 void Function::setLinkingTableIndex(int index) {
     linkingTableIndex_ = index;
 }
 
-void Function::checkReturnPromise(Type returnThis, Type returnSuper, EmojicodeString name, SourcePosition position,
-                                   const char *on, Type contextType) {
-    if (!returnThis.compatibleTo(returnSuper, contextType)) {
-        auto supername = returnSuper.toString(contextType, true);
-        auto thisname = returnThis.toString(contextType, true);
-        throw CompilerErrorException(position,
-                                     "Return type %s of %s is not compatible with the return type %s of its %s.",
-                                     thisname.c_str(), name.utf8().c_str(), supername.c_str(), on);
-    }
-}
-
-void Function::checkArgument(Type thisArgument, Type superArgument, int index, SourcePosition position,
-                              const char *on, Type contextType) {
-    // Other way, because the function may take more general arguments
-    if (!superArgument.compatibleTo(thisArgument, contextType)) {
-        auto supertype = superArgument.toString(contextType, true);
-        auto thisname = thisArgument.toString(contextType, true);
-        throw CompilerErrorException(position,
-                      "Type %s of argument %d is not compatible with its %s argument type %s.",
-                      thisname.c_str(), index + 1, on, supertype.c_str());
-    }
-}
-
-void Function::checkArgumentCount(size_t thisCount, size_t superCount, EmojicodeString name, SourcePosition position,
-                                   const char *on, Type contextType) {
-    if (superCount != thisCount) {
-        throw CompilerErrorException(position, "%s expects %s arguments than its %s.", name.utf8().c_str(),
-                                     superCount < thisCount ? "more" : "less", on);
-    }
-}
-
-void Function::checkPromises(Function *superFunction, const char *on, Type contextType) {
+void Function::enforcePromises(Function *super, TypeContext typeContext,
+                               std::experimental::optional<TypeContext> protocol) {
     try {
-        if (superFunction->final()) {
-            throw CompilerErrorException(this->position(), "%s of %s was marked 🔏.", on, name().utf8().c_str());
+        if (super->final()) {
+            throw CompilerError(position(), "%s’s implementation of %s was marked 🔏.",
+                                super->owningType().toString(typeContext, true).c_str(), name().utf8().c_str());
         }
-        if (this->accessLevel() != superFunction->accessLevel()) {
-            throw CompilerErrorException(this->position(), "The access level of %s and its %s don’t match.",
-                                         name().utf8().c_str(), on);
+        if (this->accessLevel() != super->accessLevel()) {
+            throw CompilerError(position(), "Access level of %s’s implementation of %s doesn‘t match.",
+                                super->owningType().toString(typeContext, true).c_str(), name().utf8().c_str());
         }
-        checkReturnPromise(this->returnType, superFunction->returnType, this->name(), this->position(), on, contextType);
-        checkArgumentCount(this->arguments.size(), superFunction->arguments.size(), this->name(),
-                           this->position(), on, contextType);
 
-        for (int i = 0; i < superFunction->arguments.size(); i++) {
-            checkArgument(this->arguments[i].type, superFunction->arguments[i].type, i,
-                          this->position(), on, contextType);
+        auto superReturnType = protocol ? super->returnType.resolveOn(*protocol, false) : super->returnType;
+        if (!returnType.compatibleTo(superReturnType, typeContext)) {
+            auto supername = superReturnType.toString(typeContext, true);
+            auto thisname = returnType.toString(typeContext, true);
+            throw CompilerError(position(), "Return type %s of %s is not compatible to the return type defined in %s.",
+                                returnType.toString(typeContext, true).c_str(), name().utf8().c_str(),
+                                super->owningType().toString(typeContext, true).c_str());
+        }
+        if (superReturnType.storageType() == StorageType::Box) {
+            returnType.forceBox();
+        }
+
+        if (super->arguments.size() != arguments.size()) {
+            throw CompilerError(position(), "Argument count does not match.");
+        }
+        for (size_t i = 0; i < super->arguments.size(); i++) {
+            // More general arguments are OK
+            auto superArgumentType = protocol ? super->arguments[i].type.resolveOn(*protocol, false) :
+            super->arguments[i].type;
+            if (!superArgumentType.compatibleTo(arguments[i].type, typeContext)) {
+                auto supertype = superArgumentType.toString(typeContext, true);
+                auto thisname = arguments[i].type.toString(typeContext, true);
+                throw CompilerError(position(),
+                                    "Type %s of argument %d is not compatible with its %s argument type %s.",
+                                    thisname.c_str(), i + 1, supertype.c_str());
+            }
         }
     }
-    catch (CompilerErrorException &ce) {
+    catch (CompilerError &ce) {
         printError(ce);
     }
 }
 
-bool Function::checkOverride(Function *superFunction) {
+bool Function::checkOverride(Function *superFunction) const {
     if (overriding()) {
         if (!superFunction || superFunction->accessLevel() == AccessLevel::Private) {
-            throw CompilerErrorException(position(), "%s was declared ✒️ but does not override anything.",
-                                         name().utf8().c_str());
+            throw CompilerError(position(), "%s was declared ✒️ but does not override anything.",
+                                name().utf8().c_str());
         }
         return true;
     }
-    
+
     if (superFunction && superFunction->accessLevel() != AccessLevel::Private) {
-        throw CompilerErrorException(position(), "If you want to override %s add ✒️.", name().utf8().c_str());
+        throw CompilerError(position(), "If you want to override %s add ✒️.", name().utf8().c_str());
     }
     return false;
 }
 
-void Function::deprecatedWarning(const Token &callToken) {
+void Function::deprecatedWarning(SourcePosition p) const {
     if (deprecated()) {
         if (documentation().size() > 0) {
-            compilerWarning(callToken,
+            compilerWarning(p,
                             "%s is deprecated. Please refer to the documentation for further information:\n%s",
                             name().utf8().c_str(), documentation().utf8().c_str());
         }
         else {
-            compilerWarning(callToken, "%s is deprecated.", name().utf8().c_str());
+            compilerWarning(p, "%s is deprecated.", name().utf8().c_str());
         }
     }
 }
@@ -124,6 +114,11 @@ void Function::markUsed() {
     }
     if (!isNative()) {
         Function::compilationQueue.push(this);
+    }
+    else {
+        fullSize_ = std::accumulate(arguments.begin(), arguments.end(), 0, [](int a, Argument b) {
+            return a + b.type.size();
+        });
     }
     for (Function *function : overriders_) {
         function->markUsed();
@@ -166,15 +161,10 @@ void Function::setVtiProvider(VTIProvider *provider) {
 }
 
 Type Initializer::type() const {
-    Type t = Type(TypeContent::Callable, false);
+    Type t = Type::callableIncomplete();
     t.genericArguments.push_back(Type(owningType().eclass(), canReturnNothingness));
     for (size_t i = 0; i < arguments.size(); i++) {
         t.genericArguments.push_back(arguments[i].type);
     }
     return t;
-}
-
-bool Function::typeMethod() const {
-    return compilationMode_ == CallableParserAndGeneratorMode::Function ||
-            compilationMode_ == CallableParserAndGeneratorMode::ClassMethod;
 }

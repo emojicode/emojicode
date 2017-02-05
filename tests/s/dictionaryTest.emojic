@@ -54,18 +54,18 @@
     ⛔️🐕 😛 🍺 🐽 literalDictionary 🔤Birne🔤 24 🔤Birne = 24🔤
     ⛔️🐕 😛 🍺 🐽 literalDictionary 🔤Apfel🔤 111 🔤Apfel = 111🔤
 
-    🍦keysDictionary 🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆
-    🍦keys 🍨 🔤Grapefruit🔤 🔤Birne🔤 🔤Apfel🔤 🍆
-    🦁 keys 🍇 a 🔡 b 🔡 ➡️ 🚂
-      🍎 ↔️ a b
-    🍉
-    🍦dictKeys  🐙keysDictionary
-    🦁 dictKeys 🍇 a 🔡 b 🔡 ➡️ 🚂
-      🍎 ↔️ a b
-    🍉
-    ⛔️🐕 🦄 keys 🐚🔡 dictKeys 🍇 a 🔡 b 🔡 ➡️ 👌
-      🍎 😛 a b
-    🍉 🔤🍯 🐙 should be equal to its keys🔤
+    👴 🍦keysDictionary 🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆
+    👴 🍦keys 🍨 🔤Grapefruit🔤 🔤Birne🔤 🔤Apfel🔤 🍆
+    👴 🦁 keys 🍇 a 🔡 b 🔡 ➡️ 🚂
+    👴   🍎 ↔️ a b
+    👴 🍉
+    👴 🍦dictKeys  🐙keysDictionary
+    👴 🦁 dictKeys 🍇 a 🔡 b 🔡 ➡️ 🚂
+    👴   🍎 ↔️ a b
+    👴 🍉
+    👴 ⛔️🐕 🦄 keys 🐚🔡 dictKeys 🍇 a 🔡 b 🔡 ➡️ 👌
+    👴   🍎 😛 a b
+    👴 🍉 🔤🍯 🐙 should be equal to its keys🔤
 
     🍦clearDictionary 🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆
     ⛔️🐕 😛 🐗clearDictionary 3 🔤Cleared Amount = 3🔤

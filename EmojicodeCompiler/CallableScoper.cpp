@@ -8,7 +8,7 @@
 
 #include <map>
 #include "CallableScoper.hpp"
-#include "VariableNotFoundErrorException.hpp"
+#include "VariableNotFoundError.hpp"
 
 Scope& CallableScoper::currentScope() {
     return scopes_.front();
@@ -30,14 +30,14 @@ Scope& CallableScoper::topmostLocalScope() {
     return scopes_.back();
 }
 
-std::pair<Variable&, bool> CallableScoper::getVariable(const EmojicodeString &name, SourcePosition errorPosition) {
+ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, SourcePosition errorPosition) {
     for (Scope &scope : scopes_) {
         if (scope.hasLocalVariable(name)) {
-            return std::pair<Variable&, bool>(scope.getLocalVariable(name), false);
+            return ResolvedVariable(scope.getLocalVariable(name), false);
         }
     }
     if (instanceScope_ && instanceScope_->hasLocalVariable(name)) {
-        return std::pair<Variable&, bool>(instanceScope_->getLocalVariable(name), true);
+        return ResolvedVariable(instanceScope_->getLocalVariable(name), true);
     }
-    throw VariableNotFoundErrorException(errorPosition, name);
+    throw VariableNotFoundError(errorPosition, name);
 }

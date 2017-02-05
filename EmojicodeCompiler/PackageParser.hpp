@@ -12,7 +12,7 @@
 #include "Package.hpp"
 #include "Lexer.hpp"
 #include "AbstractParser.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "../utf8.h"
 
 #include <set>
@@ -58,7 +58,7 @@ public:
     bool set() const { return set_; }
     void disallow() const {
         if (set_) {
-            throw CompilerErrorException(position_, "Inapplicable attribute %s.",
+            throw CompilerError(position_, "Inapplicable attribute %s.",
                                          EmojicodeString(attributeName).utf8().c_str());
         }
     }
@@ -81,7 +81,7 @@ public:
     const EmojicodeString& get() const { return documentation_; }
     void disallow() const {
         if (found_) {
-            throw CompilerErrorException(position_, "Misplaced documentation token.");
+            throw CompilerError(position_, "Misplaced documentation token.");
         }
     }
 private:

@@ -8,13 +8,13 @@
 
 #include "StringPool.hpp"
 
-EmojicodeCoin StringPool::poolString(const EmojicodeString &string) {
+EmojicodeInstruction StringPool::poolString(const EmojicodeString &string) {
     for (size_t i = 0; i < strings_.size(); i++) {
         if (strings_[i].compare(string) == 0) {
-            return static_cast<EmojicodeCoin>(i);
+            return static_cast<EmojicodeInstruction>(i);
         }
     }
     
     strings_.push_back(string);
-    return static_cast<EmojicodeCoin>(strings_.size() - 1);
+    return static_cast<EmojicodeInstruction>(strings_.size() - 1);
 }

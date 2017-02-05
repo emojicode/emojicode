@@ -1,5 +1,5 @@
 //
-//  CompilerErrorException.cpp
+//  CompilerError.cpp
 //  Emojicode
 //
 //  Created by Theo Weidmann on 30/04/16.
@@ -7,9 +7,9 @@
 //
 
 #include <cstdarg>
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 
-CompilerErrorException::CompilerErrorException(SourcePosition p, const char *err, ...) : position_(p) {
+CompilerError::CompilerError(SourcePosition p, const char *err, ...) : position_(p) {
     va_list list;
     va_start(list, err);
     

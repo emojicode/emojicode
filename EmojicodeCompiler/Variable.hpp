@@ -15,33 +15,50 @@
 class Variable {
 public:
     Variable(Type type, int id, bool initd, bool frozen, const EmojicodeString &string, SourcePosition p)
-        : type(type), initialized(initd), string_(string), frozen_(frozen), id_(id), position_(p) {};
-    /** The type of the variable. */
-    Type type;
-    /** The ID of the variable. */
+        : type_(type), frozen_(frozen), string_(string), id_(id), initialized_(initd), position_(p) {}
+    /// The type of the variable.
+    const Type type() const { return type_; }
+    /// The ID of the variable.
     int id() const { return id_; }
     void setId(int id) { id_ = id; }
-    /** The variable is initialized if this field is greater than 0. */
-    int initialized;
-    /** The name of this variable. */
-    EmojicodeString string_;
-    /** The position at which is variable was defined */
+
+    /// The name of this variable.
+    const EmojicodeString& name() const { return string_; }
+
+    /// The position at which this variable was defined
     SourcePosition position() const { return position_; }
     
-    /** Throws an error if the variable is not initalized. */
-    void uninitalizedError(const Token &variableToken) const;
-    /** Marks the variable as mutated or issues an error if the variable is frozen. */
-    void mutate(const Token &variableToken);
+    /// Throws an error if the variable is not initalized.
+    /// @throws CompilerError
+    void uninitalizedError(SourcePosition p) const;
+
+    /// Marks the variable as mutated or issues an error if the variable is frozen.
+    /// @throws CompilerError if the variable is frozen.
+    void mutate(SourcePosition p);
     
-    /** Whether the variable was mutated since its definition. */
+    /// Whether the variable was mutated since its definition.
     bool mutated() const { return mutated_; }
-    /** Whether this is a frozen variable. */
+
+    /// Whether this is a frozen variable.
     bool frozen() const { return frozen_; }
+
+    bool inherited() const { return inherited_; }
+    void setInherited() { inherited_ = true; }
+
+    void initialize() { if (!initialized()) initialized_ = 1; }
+    void uninitialize() { initialized_ = 0; }
+    void popInitializationLevel() { if (initialized()) initialized_--; }
+    void pushInitializationLevel() { if (initialized()) initialized_++; }
+
+    bool initialized() const { return initialized_ > 0; }
 private:
+    Type type_;
     bool frozen_;
     bool mutated_ = false;
-    
+    bool inherited_ = false;
+    EmojicodeString string_;
     int id_;
+    int initialized_;
     
     SourcePosition position_;
 };

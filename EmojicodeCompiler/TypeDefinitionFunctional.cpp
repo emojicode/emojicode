@@ -7,7 +7,7 @@
 //
 
 #include "TypeDefinitionFunctional.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 #include "Token.hpp"
 #include "Type.hpp"
 #include "Function.hpp"
@@ -15,11 +15,11 @@
 
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Type constraint) {
     genericArgumentConstraints_.push_back(constraint);
-    
+
     Type referenceType = Type(TypeContent::Reference, false, ownGenericArgumentCount_, this);
-    
+
     if (ownGenericArgumentVariables_.count(variableName.value())) {
-        throw CompilerErrorException(variableName, "A generic argument variable with the same name is already in use.");
+        throw CompilerError(variableName, "A generic argument variable with the same name is already in use.");
     }
     ownGenericArgumentVariables_.emplace(variableName.value(), referenceType);
     ownGenericArgumentCount_++;
@@ -30,7 +30,7 @@ void TypeDefinitionFunctional::setSuperTypeDef(TypeDefinitionFunctional *superTy
     genericArgumentConstraints_.insert(genericArgumentConstraints_.begin(),
                                        superTypeDef->genericArgumentConstraints_.begin(),
                                        superTypeDef->genericArgumentConstraints_.end());
-    
+
     for (auto &genericArg : ownGenericArgumentVariables_) {
         genericArg.second.reference_ += superTypeDef->genericArgumentCount_;
     }
@@ -83,7 +83,7 @@ Initializer* TypeDefinitionFunctional::getInitializer(const Token &token, Type t
     auto initializer = lookupInitializer(token.value());
     if (initializer == nullptr) {
         auto typeString = type.toString(typeContext, true);
-        throw CompilerErrorException(token, "%s has no initializer %s.", typeString.c_str(),
+        throw CompilerError(token, "%s has no initializer %s.", typeString.c_str(),
                                      token.value().utf8().c_str());
     }
     return initializer;
@@ -93,7 +93,7 @@ Function* TypeDefinitionFunctional::getMethod(const Token &token, Type type, Typ
     auto method = lookupMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        throw CompilerErrorException(token, "%s has no method %s", eclass.c_str(), token.value().utf8().c_str());
+        throw CompilerError(token, "%s has no method %s", eclass.c_str(), token.value().utf8().c_str());
     }
     return method;
 }
@@ -102,7 +102,7 @@ Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, Type type,
     auto method = lookupTypeMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        throw CompilerErrorException(token, "%s has no type method %s", eclass.c_str(), token.value().utf8().c_str());
+        throw CompilerError(token, "%s has no type method %s", eclass.c_str(), token.value().utf8().c_str());
     }
     return method;
 }
@@ -134,18 +134,18 @@ void TypeDefinitionFunctional::addInstanceVariable(const InstanceVariableDeclara
 }
 
 void TypeDefinitionFunctional::handleRequiredInitializer(Initializer *init) {
-    throw CompilerErrorException(init->position(), "Required initializer not supported.");
+    throw CompilerError(init->position(), "Required initializer not supported.");
 }
 
 void TypeDefinitionFunctional::finalize() {
     for (auto &var : instanceVariables()) {
         instanceScope().setLocalVariable(var.name, var.type, false, var.position);
     }
-    
+
     if (instanceVariables().size() > 65536) {
-        throw CompilerErrorException(position(), "You exceeded the limit of 65,536 instance variables.");
+        throw CompilerError(position(), "You exceeded the limit of 65,536 instance variables.");
     }
-    
+
     if (instanceVariables().size() > 0 && initializerList().size() == 0) {
         compilerWarning(position(), "Type defines %d instances variables but has no initializers.",
                         instanceVariables().size());

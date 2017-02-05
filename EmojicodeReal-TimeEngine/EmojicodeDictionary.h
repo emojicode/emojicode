@@ -29,7 +29,7 @@ typedef struct {
     Object *key;
     
     /** The user specified value. */
-    Something value;
+    Box value;
     
     /** The cached hash for the key. Calculated on item addition. */
     EmojicodeDictionaryHash hash;
@@ -57,40 +57,30 @@ typedef struct {
     size_t nextThreshold;
 } EmojicodeDictionary;
 
-/**
- * Insert an item and use keyString as key 
- * @warning GC-invoking
- */
-void dictionarySet(Object *dicto, Object *key, Something value, Thread *thread);
+void dictionaryPutVal(Object *dicto, Object *key, Box value, Thread *thread);
 
 /** Remove an item by keyString as key */
 void dictionaryRemove(EmojicodeDictionary *dict, Object *key, Thread *thread);
 
 /** Get an item by keyString as key */
-Something dictionaryLookup(EmojicodeDictionary *dict, Object *key, Thread *thread);
+Value dictionaryLookup(EmojicodeDictionary *dict, Object *key, Thread *thread);
 
 /** Check whether a key is in the dictionary */
 bool dictionaryContains(EmojicodeDictionary *dict, Object *key);
 
-/** 
- * Get all keys as a list
- * @warning GC-Invoking
- */
-Something dictionaryKeys(Object *dicto, Thread *thread);
-
 void dictionaryMark(Object *dict);
 
-void initDictionaryBridge(Thread *thread, Something *destination);
+void initDictionaryBridge(Thread *thread, Value *destination);
 
 /** @warning GC-invoking */
 void dictionaryInit(Thread *thread);
 
-void bridgeDictionarySet(Thread *thread, Something *destination);
-void bridgeDictionaryGet(Thread *thread, Something *destination);
-void bridgeDictionaryRemove(Thread *thread, Something *destination);
-void bridgeDictionaryKeys(Thread *thread, Something *destination);
-void bridgeDictionaryClear(Thread *thread, Something *destination);
-void bridgeDictionaryContains(Thread *thread, Something *destination);
-void bridgeDictionarySize(Thread *thread, Something *destination);
+void bridgeDictionarySet(Thread *thread, Value *destination);
+void bridgeDictionaryGet(Thread *thread, Value *destination);
+void bridgeDictionaryRemove(Thread *thread, Value *destination);
+void bridgeDictionaryKeys(Thread *thread, Value *destination);
+void bridgeDictionaryClear(Thread *thread, Value *destination);
+void bridgeDictionaryContains(Thread *thread, Value *destination);
+void bridgeDictionarySize(Thread *thread, Value *destination);
 
 #endif /* EmojicodeDictionary_h */

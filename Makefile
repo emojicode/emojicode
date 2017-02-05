@@ -3,7 +3,11 @@ VERSION = 0.3
 CC ?= gcc
 CXX ?= g++
 
-COMPILER_CFLAGS = -c -Wall -std=c++14 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/ $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
+DIST_NAME=Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
+DIST_BUILDS ?= builds
+DIST=$(DIST_BUILDS)/$(DIST_NAME)
+
+COMPILER_CFLAGS = -Wall -pedantic -std=c++14 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler/ $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
 COMPILER_LDFLAGS =
 
 COMPILER_SRCDIR = EmojicodeCompiler
@@ -11,12 +15,12 @@ COMPILER_SOURCES = $(wildcard $(COMPILER_SRCDIR)/*.cpp)
 COMPILER_OBJECTS = $(COMPILER_SOURCES:%.cpp=%.o)
 COMPILER_BINARY = emojicodec
 
-ENGINE_CFLAGS = -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler -std=c11 -Wall -Wno-unused-result -Wno-missing-braces $(if $(HEAP_SIZE),-DheapSize=$(HEAP_SIZE)) $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
-ENGINE_LDFLAGS = -lm -ldl -lpthread -rdynamic
+ENGINE_CFLAGS = -Wall -pedantic -std=c++14 -Ofast -iquote . -iquote EmojicodeReal-TimeEngine/ -iquote EmojicodeCompiler  $(if $(HEAP_SIZE),-DheapSize=$(HEAP_SIZE)) $(if $(DEFAULT_PACKAGES_DIRECTORY),-DdefaultPackagesDirectory=\"$(DEFAULT_PACKAGES_DIRECTORY)\")
+ENGINE_LDFLAGS = -ldl -lpthread
 
 ENGINE_SRCDIR = EmojicodeReal-TimeEngine
-ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.c)
-ENGINE_OBJECTS = $(ENGINE_SOURCES:%.c=%.o)
+ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.cpp)
+ENGINE_OBJECTS = $(ENGINE_SOURCES:%.cpp=%.o)
 ENGINE_BINARY = emojicode
 
 PACKAGE_CFLAGS = -Ofast -iquote EmojicodeReal-TimeEngine/ -std=c11 -Wno-unused-result -fPIC
@@ -26,17 +30,15 @@ PACKAGE_LDFLAGS += -undefined dynamic_lookup
 endif
 
 PACKAGES_DIR=DefaultPackages
-PACKAGES=files sockets
-# allegro
-
-DIST_NAME=Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
-DIST_BUILDS ?= builds
-DIST=$(DIST_BUILDS)/$(DIST_NAME)
+PACKAGES=
+# files sockets allegro
 
 TESTS_DIR=tests
 TESTS_REJECT=$(wildcard $(TESTS_DIR)/reject/*.emojic)
-TESTS_COMPILATION=hello piglatin namespace enum extension chaining branch class protocol selfInDeclaration generics genericProtocol callable threads reflection castToSelf variableInitAndScoping privateMethod babyBottleInitializer sequenceTypes valueType valueTypeSelf valueTypeMutate gcStressTest vtClosures
-TESTS_S=stringTest primitives listTest dictionaryTest rangeTest dataTest mathTest fileTest systemTest jsonTest enumerator
+# gcStressTest chaining
+TESTS_COMPILATION=hello intTest branch namespace enum unwrap conditionalProduce piglatin stringConcat extension class babyBottleInitializer valueType isNothingness downcastClass protocol callable threads variableInitAndScoping reflection privateMethod sequenceTypes vtClosures valueTypeSelf castAny valueTypeMutate generics genericProtocol selfInDeclaration castToSelf
+# fileTest
+TESTS_S=stringTest primitives mathTest listTest rangeTest dataTest dictionaryTest systemTest jsonTest enumerator
 
 .PHONY: builds tests install dist
 
@@ -49,10 +51,10 @@ $(COMPILER_OBJECTS): %.o: %.cpp
 	$(CXX) -c $< -o $@ $(COMPILER_CFLAGS)
 
 $(ENGINE_BINARY): $(ENGINE_OBJECTS) utf8.o
-	$(CC) $^ -o $(DIST)/$(ENGINE_BINARY) $(ENGINE_LDFLAGS)
+	$(CXX) $^ -o $(DIST)/$(ENGINE_BINARY) $(ENGINE_LDFLAGS)
 
-$(ENGINE_OBJECTS): %.o: %.c
-	$(CC) -c $< -o $@ $(ENGINE_CFLAGS)
+$(ENGINE_OBJECTS): %.o: %.cpp
+	$(CXX) -c $< -o $@ $(ENGINE_CFLAGS)
 
 %.o: %.c
 	$(CC) -c $< -o $@

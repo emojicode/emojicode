@@ -12,17 +12,17 @@
 #include <map>
 #include "Package.hpp"
 #include "PackageParser.hpp"
-#include "CompilerErrorException.hpp"
+#include "CompilerError.hpp"
 
-std::list<Package *> Package::packagesLoadingOrder_;
+std::vector<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
 Package* Package::loadPackage(std::string name, EmojicodeString ns, SourcePosition errorPosition) {
     Package *package = findPackage(name);
-    
+
     if (package) {
         if (!package->finishedLoading()) {
-            throw CompilerErrorException(errorPosition,
+            throw CompilerError(errorPosition,
                                          "Circular dependency detected: %s (loaded first) and %s depend on each other.",
                                          this->name().c_str(), name.c_str());
         }
@@ -31,29 +31,29 @@ Package* Package::loadPackage(std::string name, EmojicodeString ns, SourcePositi
         auto path = packageDirectory + "/" + name + "/header.emojic";
 
         package = new Package(name, errorPosition);
-        
+
         if (name != "s") {
             package->loadPackage("s", globalNamespace, errorPosition);
         }
         package->parse(path);
     }
-    
+
     package->loadInto(this, ns, errorPosition);
     return package;
 }
 
 void Package::parse(std::string path) {
     packages_.emplace(name(), this);
-    
+
     PackageParser(this, lex(path)).parse();
-    
+
     if (!validVersion()) {
-        throw CompilerErrorException(SourcePosition(0, 0, path), "Package %s does not provide a valid version.",
+        throw CompilerError(SourcePosition(0, 0, path), "Package %s does not provide a valid version.",
                                      name().c_str());
     }
-    
+
     packagesLoadingOrder_.push_back(this);
-    
+
     finishedLoading_ = true;
 }
 
@@ -71,22 +71,22 @@ bool Package::fetchRawType(EmojicodeString name, EmojicodeString ns, bool option
         switch (name.front()) {
             case E_MEDIUM_WHITE_CIRCLE:
                 if (optional) {
-                    compilerWarning(ep, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
+                    throw CompilerError(ep, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
                 }
-                *type = Type(TypeContent::Something, false);
+                *type = Type::something();
                 return true;
             case E_LARGE_BLUE_CIRCLE:
-                *type = Type(TypeContent::Someobject, optional);
+                *type = Type::someobject(optional);
                 return true;
             case E_SPARKLES:
-                throw CompilerErrorException(ep, "The Nothingness type may not be referenced to.");
+                throw CompilerError(ep, "The Nothingness type may not be referenced to.");
         }
     }
-    
+
     EmojicodeString key = EmojicodeString(ns);
     key.append(name);
     auto it = types_.find(key);
-    
+
     if (it != types_.end()) {
         auto xtype = it->second;
         if (optional) xtype.setOptional();
@@ -109,20 +109,20 @@ void Package::registerType(Type t, EmojicodeString name, EmojicodeString ns, boo
     EmojicodeString key = EmojicodeString(ns);
     key.append(name);
     types_.emplace(key, t);
-    
+
     if (exportFromPackage) {
         exportType(t, name);
     }
 }
 
-void Package::loadInto(Package *destinationPackage, EmojicodeString ns, const Token &errorToken) const {
+void Package::loadInto(Package *destinationPackage, EmojicodeString ns, SourcePosition p) const {
     for (auto exported : exportedTypes_) {
         Type type = Type::nothingness();
-        if (destinationPackage->fetchRawType(exported.name, ns, false, errorToken, &type)) {
-            throw CompilerErrorException(errorToken, "Package %s could not be loaded into namespace %s of package %s: %s collides with a type of the same name in the same namespace.", name().c_str(), ns.utf8().c_str(), destinationPackage->name().c_str(),
+        if (destinationPackage->fetchRawType(exported.name, ns, false, p, &type)) {
+            throw CompilerError(p, "Package %s could not be loaded into namespace %s of package %s: %s collides with a type of the same name in the same namespace.", name().c_str(), ns.utf8().c_str(), destinationPackage->name().c_str(),
                                          exported.name.utf8().c_str());
         }
-        
+
         destinationPackage->registerType(exported.type, exported.name, ns, false);
     }
 }

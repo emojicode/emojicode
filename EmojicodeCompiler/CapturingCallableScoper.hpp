@@ -23,9 +23,9 @@ struct VariableCapture {
     scopes must share the same instance scope as capturing from instance scopes is not supported. */
 class CapturingCallableScoper : public CallableScoper {
 public:
-    CapturingCallableScoper(CallableScoper &captured)
+    explicit CapturingCallableScoper(CallableScoper &captured)
         : CallableScoper(captured.instanceScope()), capturedScoper_(captured) {}
-    virtual std::pair<Variable&, bool> getVariable(const EmojicodeString &name, SourcePosition errorPosition) override;
+    ResolvedVariable getVariable(const EmojicodeString &name, SourcePosition errorPosition) override;
     const std::vector<VariableCapture>& captures() const { return captures_; }
     int captureSize() const { return captureSize_; }
 private:

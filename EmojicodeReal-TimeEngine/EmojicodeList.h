@@ -9,7 +9,7 @@
 #ifndef EmojicodeList_h
 #define EmojicodeList_h
 
-#include "EmojicodeAPI.h"
+#include "EmojicodeAPI.hpp"
 
 struct List {
     /** The number of elements in the list. */
@@ -17,32 +17,22 @@ struct List {
     /** The capacity of the list. */
     size_t capacity;
     /**
-     * The array which stores the list items which has a size of @c capacity * sizeof(Something).
-     * Can be @c NULL if @c capacity is 0.
+     * The array which stores the list items which has a size of @c capacity * sizeof(Value).
+     * Can be @c nullptr if @c capacity is 0.
      */
     Object *items;
+
+    Box* elements() const { return static_cast<Box *>(items->value); }
 };
 
-/** 
- * Inserts @c o at the end of the list. O(1) 
- * @warning GC-invoking
- */
-void listAppend(Object *lo, Something o, Thread *thread);
-
-/**
- * Returns the item at @c i or @c NULL if @c i is out of bounds.
- */
-Something listGet(List *list, EmojicodeInteger i);
+/// Prepares the list for a new element to be added to the end and returns a pointer to where the new element should be
+/// copied.
+Box* listAppendDestination(Object *lo, Thread *thread);
 
 /**
  * Creates a list by copying all references from @c cpdList.
  */
 Object* listFromList(List *cpdList);
-
-/**
- * Removes the first occourence of x.
- */
-bool listRemove(List *list, Something x);
 
 /**
  * Shuffles the list in place by using the Fisher Yates alogrithm.
@@ -55,19 +45,19 @@ void listRelease(void *l);
 /** List marker for the GC */
 void listMark(Object *self);
 
-void initListEmptyBridge(Thread *thread, Something *destination);
-void initListWithCapacity(Thread *thread, Something *destination);
-void listCountBridge(Thread *thread, Something *destination);
-void listAppendBridge(Thread *thread, Something *destination);
-void listGetBridge(Thread *thread, Something *destination);
-void listRemoveBridge(Thread *thread, Something *destination);
-void listPopBridge(Thread *thread, Something *destination);
-void listInsertBridge(Thread *thread, Something *destination);
-void listSort(Thread *thread, Something *destination);
-void listFromListBridge(Thread *thread, Something *destination);
-void listRemoveAllBridge(Thread *thread, Something *destination);
-void listSetBridge(Thread *thread, Something *destination);
-void listShuffleInPlaceBridge(Thread *thread, Something *destination);
-void listEnsureCapacityBridge(Thread *thread, Something *destination);
+void initListEmptyBridge(Thread *thread, Value *destination);
+void initListWithCapacity(Thread *thread, Value *destination);
+void listCountBridge(Thread *thread, Value *destination);
+void listAppendBridge(Thread *thread, Value *destination);
+void listGetBridge(Thread *thread, Value *destination);
+void listRemoveBridge(Thread *thread, Value *destination);
+void listPopBridge(Thread *thread, Value *destination);
+void listInsertBridge(Thread *thread, Value *destination);
+void listSort(Thread *thread, Value *destination);
+void listFromListBridge(Thread *thread, Value *destination);
+void listRemoveAllBridge(Thread *thread, Value *destination);
+void listSetBridge(Thread *thread, Value *destination);
+void listShuffleInPlaceBridge(Thread *thread, Value *destination);
+void listEnsureCapacityBridge(Thread *thread, Value *destination);
 
 #endif /* EmojicodeList_h */

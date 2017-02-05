@@ -9,7 +9,7 @@
 #ifndef EmojicodeString_h
 #define EmojicodeString_h
 
-#include "EmojicodeAPI.h"
+#include "EmojicodeAPI.hpp"
 #include "EmojicodeList.h"
 
 extern Object **stringPool;
@@ -30,37 +30,36 @@ Object* stringFromChar(const char *cstring);
 
 /** 
  * Tries to parse the string in the this-slot on the stack as JSON.
- * @returns The top-level object or Nothingness if there was an error parsing the string.
  */
-Something parseJSON(Thread *thread);
+void parseJSON(Thread *thread, Box *destination);
 
 void stringMark(Object *self);
 
-void initStringFromSymbolList(Object *string, List *list);
+void initStringFromSymbolList(String *string, List *list);
 
-void stringPrintStdoutBrigde(Thread *thread, Something *destination);
-void stringEqualBridge(Thread *thread, Something *destination);
-void stringSubstringBridge(Thread *thread, Something *destination);
-void stringIndexOf(Thread *thread, Something *destination);
-void stringTrimBridge(Thread *thread, Something *destination);
-void stringGetInput(Thread *thread, Something *destination);
-void stringSplitByStringBridge(Thread *thread, Something *destination);
-void stringLengthBridge(Thread *thread, Something *destination);
-void stringUTF8LengthBridge(Thread *thread, Something *destination);
-void stringByAppendingSymbolBridge(Thread *thread, Something *destination);
-void stringSymbolAtBridge(Thread *thread, Something *destination);
-void stringBeginsWithBridge(Thread *thread, Something *destination);
-void stringEndsWithBridge(Thread *thread, Something *destination);
-void stringSplitBySymbolBridge(Thread *thread, Something *destination);
-void stringToData(Thread *thread, Something *destination);
-void stringToCharacterList(Thread *thread, Something *destination);
-void stringJSON(Thread *thread, Something *destination);
-void stringFromSymbolListBridge(Thread *thread, Something *destination);
-void stringFromStringList(Thread *thread, Something *destination);
-void stringToInteger(Thread *thread, Something *destination);
-void stringToDouble(Thread *thread, Something *destination);
-void stringToUppercase(Thread *thread, Something *destination);
-void stringToLowercase(Thread *thread, Something *destination);
-void stringCompareBridge(Thread *thread, Something *destination);
+void stringPrintStdoutBrigde(Thread *thread, Value *destination);
+void stringEqualBridge(Thread *thread, Value *destination);
+void stringSubstringBridge(Thread *thread, Value *destination);
+void stringIndexOf(Thread *thread, Value *destination);
+void stringTrimBridge(Thread *thread, Value *destination);
+void stringGetInput(Thread *thread, Value *destination);
+void stringSplitByStringBridge(Thread *thread, Value *destination);
+void stringLengthBridge(Thread *thread, Value *destination);
+void stringUTF8LengthBridge(Thread *thread, Value *destination);
+void stringByAppendingSymbolBridge(Thread *thread, Value *destination);
+void stringSymbolAtBridge(Thread *thread, Value *destination);
+void stringBeginsWithBridge(Thread *thread, Value *destination);
+void stringEndsWithBridge(Thread *thread, Value *destination);
+void stringSplitBySymbolBridge(Thread *thread, Value *destination);
+void stringToData(Thread *thread, Value *destination);
+void stringToCharacterList(Thread *thread, Value *destination);
+void stringJSON(Thread *thread, Value *destination);
+void stringFromSymbolListBridge(Thread *thread, Value *destination);
+void stringFromStringList(Thread *thread, Value *destination);
+void stringToInteger(Thread *thread, Value *destination);
+void stringToDouble(Thread *thread, Value *destination);
+void stringToUppercase(Thread *thread, Value *destination);
+void stringToLowercase(Thread *thread, Value *destination);
+void stringCompareBridge(Thread *thread, Value *destination);
 
 #endif /* EmojicodeString_h */

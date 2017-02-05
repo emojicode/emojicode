@@ -23,7 +23,7 @@ private:
 class ClassVTIProvider : public VTIProvider {
 public:
     /** Returns a new VTI for a function. This method is called by @c Function’s @c assignVTI */
-    virtual int next() override { vtiCount_++; return nextVti_++; }
+    int next() override { vtiCount_++; return nextVti_++; }
     /** Returns the number of VTIs that were used. This counter is incremented by either calling @c next() or
         @c incrementVtiCount() */
     int vtiCount() const { return vtiCount_; }
@@ -40,7 +40,7 @@ private:
 
 class ValueTypeVTIProvider : public VTIProvider {
 public:
-    virtual int next() override;
+    int next() override;
     int vtiCount() const { return vtiCount_; }
 private:
     int vtiCount_ = 0;

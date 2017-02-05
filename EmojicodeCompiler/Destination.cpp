@@ -7,19 +7,3 @@
 //
 
 #include "Destination.hpp"
-#include "ValueType.hpp"
-
-void Destination::validateForValueType() const {
-    if (type_ == DestinationType::Unknown) {
-        throw std::logic_error("Instantiating value type without proper destination");
-    }
-    if (isTemporary() && !isReference()) {
-        throw std::logic_error("Instantiating temporary value type but no reference expected");
-    }
-}
-
-void Destination::validateIfValueType(Type type) const {
-    if (type.type() == TypeContent::ValueType && !type.valueType()->isPrimitive()) {
-        validateForValueType();
-    }
-}

@@ -16,16 +16,17 @@
 class DiscardingCallableWriter : public CallableWriter {
 public:
     DiscardingCallableWriter() : CallableWriter() {
-        CallableWriter::writeCoin(0, SourcePosition(0, 0, ""));
+        CallableWriter::writeInstruction(0, SourcePosition(0, 0, ""));
     }
     
-    /** Writes a coin with the given value. */
-    virtual void writeCoin(EmojicodeCoin value, SourcePosition p) override {}
-    
-    virtual size_t writtenCoins() override { return 0; }
-
-    /** Must be used to write any double to the file. */
-    virtual void writeDoubleCoin(double val, SourcePosition p) override {}
+//    /** Writes a coin with the given value. */
+//    virtual void writeInstruction(EmojicodeInstruction value, SourcePosition p) override {}
+//    virtual void writeInstruction(EmojicodeInstruction values...) override {}
+//    
+//    virtual size_t writtenInstructions() override { return 0; }
+//
+//    /** Must be used to write any double to the file. */
+//    virtual void writeDoubleCoin(double val, SourcePosition p) override {}
 };
 
 #endif /* DiscardingCallableWriter_hpp */
