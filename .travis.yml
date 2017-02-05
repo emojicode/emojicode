@@ -3,17 +3,19 @@ compiler:
   - gcc
   - clang
 sudo: required
-script: make && make tests
+script: mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests
 dist: trusty
 install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - gcc-4.9
-    - g++-4.9
+    - ninja-build
+    - python3
+    - gcc-5
+    - g++-5
     - liballegro5-dev
     - liballegro-acodec5-dev
     - liballegro-audio5-dev

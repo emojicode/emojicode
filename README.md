@@ -19,62 +19,65 @@ Follow Emojicode’s Twitter account
 
 ## 🔨 Building from source
 
-If you need to build Emojicode from source you can of course also do this. **We, however, recommend you to install Emojicode from the prebuilt binaries if possible.**
+If you don’t want to use the prebuilt binaries, you can of course also build
+Emojicode from source.
+
+**These build instructions only apply to the latest code in the master branch.
+To build previous versions, please consult the according README.md by cloning
+the repository and checking out a version: `git checkout v0.3`**
 
 Prerequisites:
+
 - clang and clang++ 3.4 or newer, or
 - gcc and g++ 4.9 or newer
-- GNU Make
+- CMake 3.5.1 and (preferably) Ninja
+- Python 3.5.2 or above to pack for distribution and run tests
 - Allegro 5 to compile the allegro package
   - `sudo apt-get install liballegro5-dev` on Debian/Ubuntu
   - `brew install allegro` on OS X
 
 Steps:
 
-1. Clone Emojicode (or download the source code and extract it) and navigate into it:
+1. Clone Emojicode (or download the source code and extract it) and navigate
+  into it:
 
    ```
    git clone https://github.com/emojicode/emojicode
    cd emojicode
    ```
 
-    Beware of, that the master branch contains development code which probably contains bugs. If you want to build the latest stable release make sure to check it out first: `git checkout v0.3`
-
-2.  Then simply run
+2.  Create a `build` directory and run CMake in it:
 
   ```
-  make
+  mkdir build
+  cd build
+  cmake .. -GNinja
   ```
 
-  to compile the Engine, the compiler and all default packages.
-
-  You may need to use a smaller heap size on older Raspberry Pis, for example.
-  You can specify the heap size in bytes when compiling the engine:
-
-  ```
-  make HEAP_SIZE=128000000
-  ```
-
-  The default heap size is 512MB. It’s also possible to change the default
-  package search path by setting `DEFAULT_PACKAGES_DIRECTORY`. As for example:
+  You can specify the heap size in bytes, which defaults to 512MB, with
+  `-DheapSize` and the default package search path with
+  `-DdefaultPackagesDirectory` like so:
 
   ```
-  make DEFAULT_PACKAGES_DIRECTORY=/opt/strange/place
+  cmake -DheapSize=128000000 -DdefaultPackagesDirectory=/opt/strange/place .. -GNinja
   ```
 
-3. Run the tests:
+  You can of course also run CMake in another directory or use another build
+  system than Ninja. Refer to the CMake documentation for more information.
+
+3. Build the Compiler and Real-Time Engine:
 
    ```
-   make tests
+   ninja
    ```
 
-4. You can now either install Emojicode:
+4. You can now test Emojicode:
 
    ```
-   make install
+   ninja tests
    ```
 
-   or copy the binaries from `builds/`.
+   and take the distribution package created inside the build directory.
 
 ## 📝 Contributions
 

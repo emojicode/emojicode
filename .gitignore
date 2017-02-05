@@ -1,6 +1,5 @@
 # Emojicode
-builds
-*.o
+build
 
 # Xcode
 #
@@ -53,3 +52,5 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+__pycache__
