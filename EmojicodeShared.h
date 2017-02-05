@@ -30,6 +30,7 @@ typedef uint32_t EmojicodeInstruction;
 #define T_BOOLEAN 3
 #define T_INTEGER 4
 #define T_DOUBLE 5
+#define T_SYMBOL 6
 
 #define META_MASK 0x100000000
 #define ENUM_MASK 0x200000000
