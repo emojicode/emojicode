@@ -2,6 +2,7 @@ from subprocess import *
 import glob
 import os
 import dist
+import sys
 
 os.environ["EMOJICODE_PACKAGES_PATH"] = os.path.join(dist.path, "packages")
 
@@ -69,6 +70,8 @@ for test in library_tests:
 
 if len(failed_tests) == 0:
     print("✅ ✅  All tests passed.")
+    sys.exit(0)
 else:
     print("🛑 🛑  {0} tests failed: {1}".format(len(failed_tests),
                                               ", ".join(failed_tests)))
+    sys.exit(1)
