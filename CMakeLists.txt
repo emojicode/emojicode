@@ -9,7 +9,7 @@ if(heapSize)
 endif()
 
 if(defaultPackagesDirectory)
-  add_definitions(-DdefaultPackagesDirectory=${defaultPackagesDirectory})
+  add_definitions(-DdefaultPackagesDirectory="${defaultPackagesDirectory}")
 endif()
 
 file(GLOB EMOJICODE_SOURCES "EmojicodeReal-TimeEngine/*")
