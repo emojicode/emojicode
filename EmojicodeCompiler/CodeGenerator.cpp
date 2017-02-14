@@ -125,10 +125,10 @@ void writeClass(Type classType, Writer &writer) {
 
     writer.writeUInt16(information.size());
 
-    for (auto information : information) {
-        writer.writeUInt16(information.index);
-        writer.writeUInt16(information.conditionIndex);
-        writer.writeUInt16(static_cast<uint16_t>(information.type));
+    for (auto info : information) {
+        writer.writeUInt16(info.index);
+        writer.writeUInt16(info.conditionIndex);
+        writer.writeUInt16(static_cast<uint16_t>(info.type));
     }
 }
 
