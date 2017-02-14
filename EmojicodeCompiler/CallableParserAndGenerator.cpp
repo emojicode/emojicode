@@ -244,7 +244,6 @@ void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &
             }
             break;
         case StorageType::Simple:
-            assert(!rtype.optional());
             switch (rtype.storageType()) {
                 case StorageType::Simple:
                 case StorageType::SimpleOptional:

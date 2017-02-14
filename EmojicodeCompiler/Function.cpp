@@ -48,6 +48,10 @@ void Function::enforcePromises(Function *super, TypeContext typeContext,
         if (superReturnType.storageType() == StorageType::Box) {
             returnType.forceBox();
         }
+        if (returnType.storageType() != superReturnType.storageType()) {
+            throw CompilerError(position(), "Return type is too deviating in memory from super return type. "
+                                "Considering Promise broken.");
+        }
 
         if (super->arguments.size() != arguments.size()) {
             throw CompilerError(position(), "Argument count does not match.");
@@ -62,6 +66,10 @@ void Function::enforcePromises(Function *super, TypeContext typeContext,
                 throw CompilerError(position(),
                                     "Type %s of argument %d is not compatible with its %s argument type %s.",
                                     thisname.c_str(), i + 1, supertype.c_str());
+            }
+            if (arguments[i].type.storageType() != superArgumentType.storageType()) {
+                throw CompilerError(position(), "Argument %d is too deviating in memory from super argument. "
+                                    "Considering Promise broken.", i + 1);
             }
         }
     }
