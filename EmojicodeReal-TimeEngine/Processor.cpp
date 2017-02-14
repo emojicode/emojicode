@@ -361,6 +361,13 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             std::memcpy(destination, source, sizeof(Value) * thread->consumeInstruction());
             return;
         }
+        case INS_COPY_REFERENCE: {
+            Value value;
+            auto size = thread->consumeInstruction();
+            produce(thread->consumeInstruction(), thread, &value);
+            std::memcpy(destination, value.value, sizeof(Value) * size);
+            return;
+        }
             // Operators
         case INS_EQUAL_PRIMITIVE: {
             Value a;

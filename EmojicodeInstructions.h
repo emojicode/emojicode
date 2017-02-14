@@ -76,6 +76,7 @@ enum EmojicodeInstructionConstants {
     INS_SUPER_INITIALIZER = 0x3D,
     INS_CONDITIONAL_PRODUCE_BOX = 0x3E,
     INS_CONDITIONAL_PRODUCE_SIMPLE_OPTIONAL = 0x86,
+    INS_COPY_REFERENCE = 0x87,
     // Know it’s an object instance and want to cast it to a subclass
     INS_DOWNCAST_TO_CLASS = 0x40,
     INS_CAST_TO_PROTOCOL = 0x41,

@@ -11,6 +11,7 @@ compilation_tests = [
     "conditionalProduce", "piglatin", "stringConcat", "extension", "class",
     "babyBottleInitializer", "valueType", "isNothingness", "downcastClass",
     "protocol", "variableInitAndScoping", "gcStressTest1", "gcStressTest2",
+    "valueTypeCopySelf",
     # chaining callable threads
 ]
 library_tests = [

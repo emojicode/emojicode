@@ -266,6 +266,10 @@ void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &
         insertionPoint.insert({ INS_PRODUCE_TO_AND_GET_VT_REFERENCE, EmojicodeInstruction(destinationID) });
         rtype.setValueReference();
     }
+    else if (rtype.isValueReference() && !des.isTemporaryReference()) {
+        rtype.setValueReference(false);
+        insertionPoint.insert({ INS_COPY_REFERENCE, EmojicodeInstruction(rtype.size()) });
+    }
 }
 
 void CallableParserAndGenerator::parseIfExpression(const Token &token) {
@@ -286,6 +290,7 @@ void CallableParserAndGenerator::parseIfExpression(const Token &token) {
         auto box = t.storageType() == StorageType::Box;
         placeholder.write(box ? INS_CONDITIONAL_PRODUCE_BOX : INS_CONDITIONAL_PRODUCE_SIMPLE_OPTIONAL);
 
+        t.setValueReference(false);
         t = t.copyWithoutOptional();
 
         auto &variable = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
@@ -770,11 +775,12 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerError(token, "Illegal use of 🐕.");
             }
 
-            writeBoxingAndTemporary(des, typeContext.calleeType(), token.position());
+            auto type = typeContext.calleeType();
+            writeBoxingAndTemporary(des, type, token.position(), writer);
             usedSelf = true;
             writer.writeInstruction(INS_GET_THIS, token);
 
-            return typeContext.calleeType();
+            return type;
         }
         case E_HIGH_VOLTAGE_SIGN: {  // Producing
             writer.writeInstruction(INS_GET_NOTHINGNESS, token);
