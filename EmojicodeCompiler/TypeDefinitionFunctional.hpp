@@ -57,7 +57,7 @@ public:
      * Determines whether the given type reference resolution constraint allows the type to be
      * resolved on this type definition.
      */
-    virtual bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) = 0;
+    virtual bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const = 0;
 
     const std::map<EmojicodeString, Type>& ownGenericArgumentVariables() const { return ownGenericArgumentVariables_; }
     const std::vector<Type>& superGenericArguments() const { return superGenericArguments_; }

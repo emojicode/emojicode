@@ -36,7 +36,7 @@ public:
 
     uint16_t index;
 
-    bool canBeUsedToResolve(TypeDefinitionFunctional *a) override;
+    bool canBeUsedToResolve(TypeDefinitionFunctional *a) const override;
 
     /** Returns true if @c a inherits from class @c from */
     bool inheritsFrom(Class *from) const;

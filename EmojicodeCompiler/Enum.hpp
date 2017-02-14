@@ -12,12 +12,14 @@
 #include <map>
 #include <utility>
 #include "EmojicodeCompiler.hpp"
-#include "TypeDefinition.hpp"
+#include "ValueType.hpp"
 
-class Enum : public TypeDefinition {
+class Enum : public ValueType {
 public:
     Enum(EmojicodeString name, Package *package, SourcePosition position, const EmojicodeString &documentation)
-        : TypeDefinition(name, package, position, documentation) {}
+        : ValueType(name, package, position, documentation) {
+            makePrimitive();
+    }
 
     std::pair<bool, long> getValueFor(EmojicodeString c) const;
     void addValueFor(EmojicodeString c, SourcePosition position, EmojicodeString documentation);
@@ -25,6 +27,8 @@ public:
     const std::map<EmojicodeString, std::pair<long, EmojicodeString>>& values() const { return map_; }
 
     int size() const override { return 1; }
+
+    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const override { return false; }
 private:
     std::map<EmojicodeString, std::pair<long, EmojicodeString>> map_;
     long valuesCounter = 0;

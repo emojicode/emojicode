@@ -267,15 +267,9 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
 
     Enum *eenum = new Enum(parsedTypeName.name, package_, theToken, documentation);
 
-    package_->registerType(Type(eenum, false), parsedTypeName.name, parsedTypeName.ns, exported);
-
-    stream_.requireIdentifier(E_GRAPES);
-    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        auto documentation = Documentation().parse(&stream_);
-        auto &token = stream_.consumeToken(TokenType::Identifier);
-        eenum->addValueFor(token.value(), token, documentation.get());
-    }
-    stream_.consumeToken(TokenType::Identifier);
+    auto type = Type(eenum, false);
+    package_->registerType(type, parsedTypeName.name, parsedTypeName.ns, exported);
+    parseTypeDefinitionBody(type, nullptr, true);
 }
 
 void PackageParser::parseClass(const EmojicodeString &documentation, const Token &theToken, bool exported, bool final) {
@@ -369,8 +363,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
         auto required = Attribute<E_KEY>().parse(&stream_);
         auto canReturnNothingness = Attribute<E_CANDY>().parse(&stream_);
 
-        auto eclass = typed.type() == TypeContent::Class ? typed.eclass() : nullptr;
-
         auto &token = stream_.consumeToken(TokenType::Identifier);
         switch (token.value()[0]) {
             case E_SHORTCAKE: {
@@ -383,14 +375,31 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 documentation.disallow();
                 mutating.disallow();
 
+                if (typed.type() == TypeContent::Enum) {
+                    throw CompilerError(token, "Enums cannot have instance variable.");
+                }
+
                 auto &variableName = stream_.consumeToken(TokenType::Variable);
                 auto type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables);
-                typed.typeDefinitionFunctional()->addInstanceVariable(InstanceVariableDeclaration(variableName.value(),
-                                                                                                  type, variableName.position()));
+                auto instanceVar = InstanceVariableDeclaration(variableName.value(), type, variableName.position());
+                typed.typeDefinitionFunctional()->addInstanceVariable(instanceVar);
+                break;
+            }
+            case E_RADIO_BUTTON: {
+                staticOnType.disallow();
+                override.disallow();
+                final.disallow();
+                required.disallow();
+                canReturnNothingness.disallow();
+                deprecated.disallow();
+                mutating.disallow();
+
+                auto &token = stream_.consumeToken(TokenType::Identifier);
+                typed.eenum()->addValueFor(token.value(), token, documentation.get());
                 break;
             }
             case E_CROCODILE: {
-                if (!eclass) {
+                if (typed.type() != TypeContent::Class) {
                     throw CompilerError(token, "🐊 not supported yet.");
                 }
 
@@ -403,8 +412,8 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 documentation.disallow();
                 mutating.disallow();
 
-                Type type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables, Type::nothingness(), nullptr,
-                                                 true);
+                Type type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables, Type::nothingness(),
+                                                 nullptr, true);
 
                 if (type.optional()) {
                     throw CompilerError(token, "A class cannot conform to an 🍬 protocol.");
@@ -413,7 +422,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                     throw CompilerError(token, "The given type is not a protocol.");
                 }
 
-                eclass->addProtocol(type);
+                typed.eclass()->addProtocol(type);
                 break;
             }
             case E_PIG: {
@@ -426,8 +435,8 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                     mutating.disallow();
                     auto *typeMethod = new Function(methodName.value(), accessLevel, final.set(), typed, package_,
                                                     token.position(), override.set(), documentation.get(),
-                                                    deprecated.set(), true,
-                                                    eclass ? CallableParserAndGeneratorMode::ClassMethod :
+                                                    deprecated.set(), true, typed.type() == TypeContent::Class ?
+                                                    CallableParserAndGeneratorMode::ClassMethod :
                                                     CallableParserAndGeneratorMode::Function);
                     auto context = TypeContext(typed, typeMethod);
                     parseGenericArgumentsInDefinition(typeMethod, context);
@@ -439,18 +448,18 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 }
                 else {
                     auto isMutating = true;
-                    if (eclass) {
-                        mutating.disallow();
+                    if (typed.type() == TypeContent::ValueType) {
+                        isMutating = mutating.set();
                     }
                     else {
-                        isMutating = mutating.set();
+                        mutating.disallow();
                     }
                     reservedEmojis(methodName, "method");
 
                     auto *method = new Function(methodName.value(), accessLevel, final.set(), typed,
                                                 package_, token.position(), override.set(), documentation.get(),
-                                                deprecated.set(), isMutating,
-                                                eclass ? CallableParserAndGeneratorMode::ObjectMethod :
+                                                deprecated.set(), isMutating, typed.type() == TypeContent::Class ?
+                                                CallableParserAndGeneratorMode::ObjectMethod :
                                                 CallableParserAndGeneratorMode::ValueTypeMethod);
                     auto context = TypeContext(typed, method);
                     parseGenericArgumentsInDefinition(method, context);
@@ -467,12 +476,16 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 override.disallow();
                 mutating.disallow();
 
+                if (typed.type() == TypeContent::Enum) {
+                    throw CompilerError(token, "Enums cannot have custom initializers.");
+                }
+
                 EmojicodeString name = stream_.consumeToken(TokenType::Identifier).value();
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), typed, package_,
                                                            token.position(), override.set(), documentation.get(),
-                                                           deprecated.set(), required.set(),
-                                                           canReturnNothingness.set(),
-                                                           eclass ? CallableParserAndGeneratorMode::ObjectInitializer :
+                                                           deprecated.set(), required.set(), canReturnNothingness.set(),
+                                                           typed.type() == TypeContent::Class ?
+                                                           CallableParserAndGeneratorMode::ObjectInitializer :
                                                            CallableParserAndGeneratorMode::ValueTypeInitializer);
                 auto context = TypeContext(typed, initializer);
                 parseGenericArgumentsInDefinition(initializer, context);

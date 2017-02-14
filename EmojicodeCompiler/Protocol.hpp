@@ -21,7 +21,7 @@ public:
 
     uint_fast16_t index;
 
-    bool canBeUsedToResolve(TypeDefinitionFunctional *a) override;
+    bool canBeUsedToResolve(TypeDefinitionFunctional *a) const override;
     void addMethod(Function *method) override;
     const std::vector<Function*>& methods() { return methodList_; };
 

@@ -1224,14 +1224,15 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 method = type.typeDefinitionFunctional()->getTypeMethod(methodToken, type, typeContext);
                 writer.writeInstruction(method->vtiForUse(), token);
             }
-            else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
+            else if ((type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum)
+                     && isStatic(pair.second)) {
                 method = type.typeDefinitionFunctional()->getTypeMethod(methodToken, type, typeContext);
                 placeholder.write(INS_CALL_FUNCTION);
                 writer.writeInstruction(method->vtiForUse(), token);
             }
             else {
                 throw CompilerError(token, "You can’t call type methods on %s.",
-                                             pair.first.toString(typeContext, true).c_str());
+                                    pair.first.toString(typeContext, true).c_str());
             }
             auto rtype = parseFunctionCall(type, method, token);
             writeBoxingAndTemporary(des, rtype, token.position(), insertionPoint);
@@ -1420,11 +1421,16 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 writer.writeInstruction(type.protocol()->index, token);
                 writer.writeInstruction(method->vtiForUse(), token);
             }
-            else if (type.type() == TypeContent::Enum && token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
-                auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
-                parse(stream_.consumeToken(), token, type, destination);  // Must be of the same type as the callee
-                placeholder.write(INS_EQUAL_PRIMITIVE);
-                return Type::boolean();
+            else if (type.type() == TypeContent::Enum) {
+                if (token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
+                    auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
+                    parse(stream_.consumeToken(), token, type, destination);  // Must be of the same type as the callee
+                    placeholder.write(INS_EQUAL_PRIMITIVE);
+                    return Type::boolean();
+                }
+                method = type.eenum()->getMethod(token, type, typeContext);
+                placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
+                writer.writeInstruction(method->vtiForUse(), token);
             }
             else if (type.type() == TypeContent::Class) {
                 method = type.eclass()->getMethod(token, type, typeContext);

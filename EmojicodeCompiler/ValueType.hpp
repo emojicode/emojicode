@@ -22,7 +22,7 @@ public:
         valueType_.push_back(this);
     }
 
-    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) override { return false; }
+    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const override { return false; }
 
     void finalize() override;
     int usedFunctionCount() const { return vtiProvider_.usedCount(); };

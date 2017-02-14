@@ -25,6 +25,6 @@ void Protocol::addMethod(Function *method) {
     TypeDefinitionFunctional::addMethod(method);
 }
 
-bool Protocol::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) {
+bool Protocol::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const {
     return resolutionConstraint == this;
 }
