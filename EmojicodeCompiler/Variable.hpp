@@ -14,13 +14,12 @@
 
 class Variable {
 public:
-    Variable(Type type, int id, bool initd, bool frozen, const EmojicodeString &string, SourcePosition p)
-        : type_(type), frozen_(frozen), string_(string), id_(id), initialized_(initd), position_(p) {}
+    Variable(Type type, int id, bool frozen, const EmojicodeString &string, SourcePosition p)
+        : type_(type), frozen_(frozen), string_(string), id_(id), position_(p) {}
     /// The type of the variable.
     const Type type() const { return type_; }
     /// The ID of the variable.
     int id() const { return id_; }
-    void setId(int id) { id_ = id; }
 
     /// The name of this variable.
     const EmojicodeString& name() const { return string_; }
@@ -45,12 +44,21 @@ public:
     bool inherited() const { return inherited_; }
     void setInherited() { inherited_ = true; }
 
-    void initialize() { if (!initialized()) initialized_ = 1; }
+    void initialize(InstructionCount position) {
+        if (!initialized()) {
+            initialized_ = 1;
+            initializationPosition_ = position;
+        }
+    }
     void uninitialize() { initialized_ = 0; }
     void popInitializationLevel() { if (initialized()) initialized_--; }
     void pushInitializationLevel() { if (initialized()) initialized_++; }
 
+    /// Whether the variable is initialized.
     bool initialized() const { return initialized_ > 0; }
+    int initializationLevel() const { return initialized_; }
+    /// The instruction position at which the variable was initialized.
+    InstructionCount initializationPosition() { return initializationPosition_; }
 private:
     Type type_;
     bool frozen_;
@@ -58,7 +66,8 @@ private:
     bool inherited_ = false;
     EmojicodeString string_;
     int id_;
-    int initialized_;
+    int initialized_ = 0;
+    InstructionCount initializationPosition_;
     
     SourcePosition position_;
 };

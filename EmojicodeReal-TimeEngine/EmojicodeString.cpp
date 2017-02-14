@@ -244,7 +244,7 @@ void stringUTF8LengthBridge(Thread *thread, Value *destination) {
     destination->raw = u8_codingsize(characters(str), str->length);
 }
 
-void stringByAppendingSymbolBridge(Thread *thread, Value *destination) { //TODO: GC-Safety
+void stringByAppendingSymbolBridge(Thread *thread, Value *destination) {
     String *string = static_cast<String *>(thread->getThisObject()->value);
     Object *const &co = thread->retain(newArray((string->length + 1) * sizeof(EmojicodeChar)));
 
@@ -260,6 +260,7 @@ void stringByAppendingSymbolBridge(Thread *thread, Value *destination) { //TODO:
     characters(ostr)[string->length] = thread->getVariable(0).character;
 
     destination->object = ostro;
+    thread->release(1);
 }
 
 void stringSymbolAtBridge(Thread *thread, Value *destination) {
@@ -570,7 +571,8 @@ void stringCompareBridge(Thread *thread, Value *destination) {
 }
 
 void stringMark(Object *self){
-    if(((String *)self->value)->characters){
-        mark(&((String *)self->value)->characters);
+    auto string = static_cast<String *>(self->value);
+    if (string->characters){
+        mark(&string->characters);
     }
 }

@@ -6,18 +6,29 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <map>
 #include "CallableScoper.hpp"
+#include <map>
 #include "VariableNotFoundError.hpp"
+#include "Function.hpp"
 
 Scope& CallableScoper::currentScope() {
     return scopes_.front();
 }
 
-void CallableScoper::popScopeAndRecommendFrozenVariables() {
+void CallableScoper::popScopeAndRecommendFrozenVariables(std::vector<FunctionObjectVariableInformation> &info,
+                                                         InstructionCount count) {
     auto &scope = currentScope();
     scope.recommendFrozenVariables();
     reduceOffsetBy(static_cast<int>(scope.size()));
+
+    for (Scope &scope : scopes_) {
+        for (auto variable : scope.map()) {
+            if (variable.second.initializationLevel() == 1) {
+                variable.second.type().objectVariableRecords(variable.second.id(), info,
+                                                             variable.second.initializationPosition(), count);
+            }
+        }
+    }
     scopes_.pop_front();
 }
 
@@ -40,4 +51,22 @@ ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, Source
         return ResolvedVariable(instanceScope_->getLocalVariable(name), true);
     }
     throw VariableNotFoundError(errorPosition, name);
+}
+
+void CallableScoper::pushInitializationLevel() {
+    for (auto &scope : scopes_) {
+        scope.pushInitializationLevel();
+    }
+    if (instanceScope()) {
+        instanceScope()->pushInitializationLevel();
+    }
+}
+
+void CallableScoper::popInitializationLevel() {
+    for (auto &scope : scopes_) {
+        scope.popInitializationLevel();
+    }
+    if (instanceScope()) {
+        instanceScope()->popInitializationLevel();
+    }
 }

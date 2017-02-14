@@ -15,7 +15,7 @@
 #include <cmath>
 #include <thread>
 
-#include "Emojicode.hpp"
+#include "Engine.hpp"
 #include "EmojicodeString.h"
 #include "EmojicodeList.h"
 #include "EmojicodeString.h"
@@ -126,15 +126,6 @@ static void systemSystem(Thread *thread, Value *destination) {
 
 //MARK: Threads
 
-void* threadStarter(void *threadv) {
-    Thread *thread = static_cast<Thread *>(threadv);
-    Object *callable = thread->getThisObject();
-    thread->popStack();
-    executeCallableExtern(callable, nullptr, thread, nullptr);
-    delete thread;
-    return nullptr;
-}
-
 static void threadJoin(Thread *thread, Value *destination) {
     allowGC();
     pthread_join(*(pthread_t *)((Object *)thread->getThisObject())->value, nullptr);  // TODO: GC?!
@@ -149,10 +140,13 @@ static void threadSleepMicroseconds(Thread *thread, Value *destination) {
     std::this_thread::sleep_for(std::chrono::microseconds(thread->getVariable(0).raw));
 }
 
+void threadStart(Object *callable, Thread thread) {
+    executeCallableExtern(callable, nullptr, &thread, nullptr);
+}
+
 static void initThread(Thread *thread, Value *destination) {
-    Thread *t = new Thread();
-    t->pushStack(thread->getVariable(0), 0, 0, nullptr, nullptr, nullptr);
-    pthread_create((pthread_t *)(thread->getThisObject())->value, nullptr, threadStarter, t);
+    Thread newThread = Thread();
+    std::thread(threadStart, thread->getVariable(0).object, newThread);
 }
 
 static void initMutex(Thread *thread, Value *destination) {
@@ -164,7 +158,7 @@ static void mutexLock(Thread *thread, Value *destination) {
         // TODO: Obviously stupid, but this is the only safe way. If pthread_mutex_lock was used,
         // the thread would be block, and the GC could cause a deadlock. allowGC, however, would
         // allow moving this mutex – obviously not a good idea either when using pthread_mutex_lock.
-        pauseForGC(nullptr);
+        pauseForGC();
         usleep(10);
     }
 }

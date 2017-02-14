@@ -6,15 +6,17 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <pthread.h>
+#include "Thread.hpp"
 #include <cstring>
 #include <cstdlib>
-#include "Thread.hpp"
+#include <thread>
+#include <mutex>
 #include "Processor.hpp"
+#include "Object.hpp"
 
 Thread *Thread::lastThread_ = nullptr;
 int Thread::threads_ = 0;
-pthread_mutex_t threadListMutex = PTHREAD_MUTEX_INITIALIZER;
+std::mutex threadListMutex;
 
 Thread* Thread::lastThread() {
     return lastThread_;
@@ -33,7 +35,7 @@ Thread::Thread() {
     stackBottom_ = reinterpret_cast<StackFrame *>(reinterpret_cast<Byte *>(stackLimit_) + stackSize - 1);
     this->futureStack_ = this->stack_ = this->stackBottom_;
 
-    pthread_mutex_lock(&threadListMutex);
+    std::lock_guard<std::mutex> threadListLock(threadListMutex);
     threadBefore_ = lastThread_;
     threadAfter_ = nullptr;
     if (lastThread_) {
@@ -41,11 +43,10 @@ Thread::Thread() {
     }
     lastThread_ = this;
     threads_++;
-    pthread_mutex_unlock(&threadListMutex);
 }
 
 Thread::~Thread() {
-    pthread_mutex_lock(&threadListMutex);
+    std::lock_guard<std::mutex> threadListLock(threadListMutex);
     Thread *before = this->threadBefore_;
     Thread *after = this->threadAfter_;
 
@@ -54,43 +55,44 @@ Thread::~Thread() {
     else lastThread_ = before;
 
     threads_--;
-    pthread_mutex_unlock(&threadListMutex);
 
     free(stackLimit_);
 }
 
-Value* Thread::reserveFrame(Value self, int size, Function *function, Value *destination,
+StackFrame* Thread::reserveFrame(Value self, int size, Function *function, Value *destination,
                             EmojicodeInstruction *executionPointer) {
     StackFrame *sf = (StackFrame *)((Byte *)futureStack_ - (sizeof(StackFrame) + sizeof(Value) * size));
     if (sf < stackLimit_) {
         error("Your program triggerd a stack overflow!");
     }
 
-    std::memset(&sf->thisContext + 1, 0, sizeof(Value) * size);
-
     sf->thisContext = self;
     sf->returnPointer = stack_;
     sf->returnFutureStack = futureStack_;
     sf->executionPointer = executionPointer;
     sf->destination = destination;
+    sf->function = function;
 
     futureStack_ = sf;
 
-    return &sf->thisContext + 1;
+    return sf;
 }
 
 void Thread::pushReservedFrame() {
+    futureStack_->argPushIndex = UINT32_MAX;
     stack_ = futureStack_;
 }
 
 void Thread::pushStack(Value self, int frameSize, int argCount, Function *function, Value *destination,
                        EmojicodeInstruction *executionPointer) {
-    Value *t = reserveFrame(self, frameSize, function, destination, executionPointer);
+    StackFrame *sf = reserveFrame(self, frameSize, function, destination, executionPointer);
 
-    for (int i = 0, index = 0; i < argCount; i++) {
+    sf->argPushIndex = 0;
+
+    for (int i = 0; i < argCount; i++) {
         EmojicodeInstruction copySize = consumeInstruction();
-        produce(consumeInstruction(), this, t + index);
-        index += copySize;
+        produce(consumeInstruction(), this, sf->variableDestination(0) + sf->argPushIndex);
+        sf->argPushIndex += copySize;
     }
 
     pushReservedFrame();
@@ -103,10 +105,6 @@ void Thread::popStack() {
 
 Value Thread::getVariable(int index) const {
     return *variableDestination(index);
-}
-
-Value* Thread::variableDestination(int index) const {
-    return &stack_->thisContext + index + 1;
 }
 
 Object* Thread::getThisObject() const {
@@ -122,4 +120,14 @@ EmojicodeInstruction Thread::consumeInstruction() {
 }
 
 void Thread::markStack() {
+    for (auto frame = futureStack_; frame < stackBottom_; frame = frame->returnFutureStack) {
+        unsigned int delta = frame->executionPointer ? frame->executionPointer - frame->function->block.instructions : 0;
+        for (unsigned int i = 0; i < frame->function->objectVariableRecordsCount; i++) {
+            auto record = frame->function->objectVariableRecords[i];
+            if (record.from <= delta && delta <= frame->function->objectVariableRecords[i].to
+                && record.variableIndex < frame->argPushIndex) {
+                markByObjectVariableRecord(record, frame->variableDestination(0), i);
+            }
+        }
+    }
 }

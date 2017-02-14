@@ -6,56 +6,61 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include <pthread.h>
+#include "Object.hpp"
 #include <cstring>
 #include <cstdlib>
-#include "Emojicode.hpp"
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <algorithm>
+#include "Engine.hpp"
 #include "Thread.hpp"
+#include "Class.hpp"
 
 size_t memoryUse = 0;
 bool zeroingNeeded = false;
 Byte *currentHeap;
 Byte *otherHeap;
 
-void gc();
+void gc(std::unique_lock<std::mutex> &allocationLock);
 
 size_t gcThreshold = heapSize / 2;
 
 int pausingThreadsCount = 0;
-bool pauseThreads = false;
-pthread_mutex_t pausingThreadsCountMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t allocationMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t pauseThreadsFalsedCondition = PTHREAD_COND_INITIALIZER;
-pthread_cond_t threadsCountCondition = PTHREAD_COND_INITIALIZER;
+bool pauseThreads = false;  // Must only be set after a allocationMutex lock was obtained
+std::mutex pausingThreadsCountMutex;
+std::mutex allocationMutex;
+std::condition_variable pauseThreadsCondition;
+std::condition_variable pausingThreadsCountCondition;
 
 Object* emojicodeMalloc(size_t size) {
-    pthread_mutex_lock(&allocationMutex);
-    pauseForGC(&allocationMutex);
+    // We must obtain this mutex lock first to avoid a race condition on pauseThreads
+    std::unique_lock<std::mutex> lock(allocationMutex);
+    pauseForGC();
     if (memoryUse + size > gcThreshold) {
         if (size > gcThreshold) {
             error("Allocation of %zu bytes is too big. Try to enlarge the heap. (Heap size: %zu)", size, heapSize);
         }
 
-        gc();
+        gc(lock);
     }
     Byte *block = currentHeap + memoryUse;
     memoryUse += size;
-    pthread_mutex_unlock(&allocationMutex);
     return reinterpret_cast<Object *>(block);
 }
 
 Object* emojicodeRealloc(Object *ptr, size_t oldSize, size_t newSize) {
-    pthread_mutex_lock(&allocationMutex);
+    // We must obtain this mutex lock first to avoid a race condition on pauseThreads
+    std::unique_lock<std::mutex> lock(allocationMutex);
+    pauseForGC();
     // Nothing has been allocated since the allocation of ptr
-    if (ptr == reinterpret_cast<Object *>(currentHeap + memoryUse - oldSize)) {
+    if (ptr == reinterpret_cast<Object *>(currentHeap + memoryUse - oldSize) && memoryUse + newSize < gcThreshold) {
         memoryUse += newSize - oldSize;
-        pthread_mutex_unlock(&allocationMutex);
         return ptr;
     }
-    pthread_mutex_unlock(&allocationMutex);
-
+    lock.unlock();
     Object *block = emojicodeMalloc(newSize);
-    memcpy(block, ptr, oldSize);
+    std::memcpy(block, ptr, oldSize);
     return block;
 }
 
@@ -64,7 +69,7 @@ static Object* newObjectWithSizeInternal(Class *klass, size_t size) {
     Object *object = emojicodeMalloc(fullSize);
     object->size = fullSize;
     object->klass = klass;
-    object->value = ((Byte *)object) + sizeof(Object) + klass->instanceVariableCount * sizeof(Value);
+    object->value = ((Byte *)object) + sizeof(Object) + (klass->size - klass->valueSize);
 
     return object;
 }
@@ -76,7 +81,8 @@ Object* newObject(Class *klass) {
 size_t sizeCalculationWithOverflowProtection(size_t items, size_t itemSize) {
     size_t r = items * itemSize;
     if (r / items != itemSize) {
-        error("Integer overflow while allocating memory. It’s not possible to allocate objects of this size due to hardware limitations.");
+        error("Integer overflow while allocating memory. It’s not possible to allocate objects of this size due to "
+              "hardware limitations.");
     }
     return r;
 }
@@ -107,56 +113,61 @@ void allocateHeap() {
     otherHeap = currentHeap + (heapSize / 2);
 }
 
+bool inNewHeap(Object *o) {
+    return currentHeap <= reinterpret_cast<Byte *>(o) && reinterpret_cast<Byte *>(o) < currentHeap + heapSize / 2;
+}
+
 void mark(Object **oPointer) {
-    Object *o = *oPointer;
-    if (currentHeap <= (Byte *)o->newLocation && (Byte *)o->newLocation < currentHeap + heapSize / 2) {
-        *oPointer = o->newLocation;
+    Object *oldObject = *oPointer;
+    if (inNewHeap(oldObject->newLocation)) {
+        *oPointer = oldObject->newLocation;
         return;
     }
 
-    o->newLocation = (Object *)(currentHeap + memoryUse);
-    memoryUse += o->size;
+    Object *newObject = reinterpret_cast<Object *>(currentHeap + memoryUse);
+    memoryUse += oldObject->size;
 
-    memcpy(o->newLocation, o, o->size);
-    *oPointer = o->newLocation;
+    std::memcpy(newObject, oldObject, oldObject->size);
 
-    o->newLocation->value = ((Byte *)o->newLocation) + sizeof(Object) + o->klass->instanceVariableCount * sizeof(Value);
-
-    // This class can lead the GC to other objects.
-    if (o->klass->mark) {
-        o->klass->mark(o->newLocation);
-    }
-
-    //    for (int i = 0; i < o->klass->instanceVariableCount; i++) {
-    //        Value *s = (Value *)(((Byte *)o->newLocation) + sizeof(Object) + i * sizeof(Value));
-    //        if (isRealObject(*s)) {
-    //            mark(&s->object);
-    //        }
-    //    }
+    newObject->value = reinterpret_cast<Byte *>(newObject) + sizeof(Object)
+                        + oldObject->klass->size - oldObject->klass->valueSize;
+    oldObject->newLocation = newObject;
+    *oPointer = newObject;
 }
 
-void gc() {
+void gc(std::unique_lock<std::mutex> &allocationLock) {
     pauseThreads = true;
-    pthread_mutex_unlock(&allocationMutex);
+    allocationLock.unlock();
 
-    pthread_mutex_lock(&pausingThreadsCountMutex);
+    auto pausingThreadsCountLock = std::unique_lock<std::mutex>(pausingThreadsCountMutex);
     pausingThreadsCount++;
 
-    while (pausingThreadsCount < Thread::threads())
-        pthread_cond_wait(&threadsCountCondition, &pausingThreadsCountMutex);
+    pausingThreadsCountCondition.wait(pausingThreadsCountLock, []{ return pausingThreadsCount == Thread::threads(); });
 
-    Byte *tempHeap = currentHeap;
-    currentHeap = otherHeap;
-    otherHeap = tempHeap;
+    std::swap(currentHeap, otherHeap);
+
     size_t oldMemoryUse = memoryUse;
     memoryUse = 0;
 
     for (Thread *thread = Thread::lastThread(); thread != nullptr; thread = thread->threadBefore()) {
         thread->markStack();
+        thread->markRetainList();
     }
 
     for (uint_fast16_t i = 0; i < stringPoolCount; i++) {
         mark(stringPool + i);
+    }
+
+    for (Byte *byte = currentHeap; byte < currentHeap + memoryUse;) {
+        auto object = reinterpret_cast<Object *>(byte);
+
+        for (size_t i = 0; i < object->klass->instanceVariableRecordsCount; i++) {
+            auto record = object->klass->instanceVariableRecords[i];
+            markByObjectVariableRecord(record, object->variableDestination(0), i);
+        }
+
+        if (object->klass->mark) object->klass->mark(object);
+        byte += object->size;
     }
 
     if (oldMemoryUse == memoryUse) {
@@ -164,48 +175,38 @@ void gc() {
     }
 
     if (zeroingNeeded) {
-        memset(currentHeap + memoryUse, 0, (heapSize / 2) - memoryUse);
+        std::memset(currentHeap + memoryUse, 0, (heapSize / 2) - memoryUse);
     }
     else {
         zeroingNeeded = true;
     }
 
     pausingThreadsCount--;
-    pthread_mutex_unlock(&pausingThreadsCountMutex);
+    pausingThreadsCountLock.unlock();
     pauseThreads = false;
-    pthread_cond_broadcast(&pauseThreadsFalsedCondition);
+    pauseThreadsCondition.notify_all();
+    allocationLock.lock();
 }
 
-void pauseForGC(pthread_mutex_t *mutex) {
+void pauseForGC() {
     if (pauseThreads) {
-        if (mutex) pthread_mutex_unlock(mutex);
-
-        pthread_mutex_lock(&pausingThreadsCountMutex);
+        auto pausingThreadsCountLock = std::unique_lock<std::mutex>(pausingThreadsCountMutex);
         pausingThreadsCount++;
-        pthread_cond_signal(&threadsCountCondition);
-        while (pauseThreads) pthread_cond_wait(&pauseThreadsFalsedCondition, &pausingThreadsCountMutex);
+        pausingThreadsCountCondition.notify_one();
+        pauseThreadsCondition.wait(pausingThreadsCountLock, []{ return !pauseThreads; });
         pausingThreadsCount--;
-        pthread_mutex_unlock(&pausingThreadsCountMutex);
-
-        if (mutex) pthread_mutex_lock(mutex);
     }
 }
 
 void allowGC() {
-    pthread_mutex_lock(&pausingThreadsCountMutex);
+    std::unique_lock<std::mutex> pausingThreadsCountLock(pausingThreadsCountMutex);
     pausingThreadsCount++;
-    pthread_cond_signal(&threadsCountCondition);
-    pthread_mutex_unlock(&pausingThreadsCountMutex);
+    pausingThreadsCountCondition.notify_one();
 }
 
 void disallowGCAndPauseIfNeeded() {
-    pthread_mutex_lock(&pausingThreadsCountMutex);
-    while (pauseThreads) pthread_cond_wait(&pauseThreadsFalsedCondition, &pausingThreadsCountMutex);
+    auto pausingThreadsCountLock = std::unique_lock<std::mutex>(pausingThreadsCountMutex);
+    pauseThreadsCondition.wait(pausingThreadsCountLock, []{ return !pauseThreads; });
     pausingThreadsCount--;
-    pthread_cond_signal(&threadsCountCondition);
-    pthread_mutex_unlock(&pausingThreadsCountMutex);
-}
-
-bool isPossibleObjectPointer(void *s) {
-    return (Byte *)s < currentHeap + heapSize/2 && s >= (void *)currentHeap;
+    pausingThreadsCountCondition.notify_one();
 }

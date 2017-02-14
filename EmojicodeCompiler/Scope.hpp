@@ -25,8 +25,7 @@ public:
     void popInitializationLevel();
 
     /// Sets a variable in this scope.
-    Variable& setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos,
-                               bool initialized = false);
+    Variable& setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos);
     /// Allocates a variable for internal use only and returns its ID.
     int allocateInternalVariable(Type type);
 
@@ -50,6 +49,8 @@ public:
     void recommendFrozenVariables() const;
 
     size_t size() const { return size_; }
+
+    const std::map<EmojicodeString, Variable>& map() const { return map_; }
 
     void markInherited() {
         for (auto &pair : map_) {

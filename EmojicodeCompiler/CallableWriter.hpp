@@ -63,7 +63,7 @@ public:
     virtual void writeInstruction(EmojicodeInstruction value, SourcePosition p);
     virtual void writeInstruction(std::initializer_list<EmojicodeInstruction> values);
 
-    virtual size_t writtenInstructions() { return instructions_.size(); }
+    virtual InstructionCount writtenInstructions() { return instructions_.size(); }
 
     virtual CallableWriterPlaceholder writeInstructionPlaceholder(SourcePosition p);
 

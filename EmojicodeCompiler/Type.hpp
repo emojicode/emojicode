@@ -45,6 +45,15 @@ enum class TypeContent {
     Self
 };
 
+struct ObjectVariableInformation {
+    ObjectVariableInformation(int index, ObjectVariableType type) : index(index), type(type) {}
+    ObjectVariableInformation(int index, int condition, ObjectVariableType type)
+        : index(index), conditionIndex(condition), type(type) {}
+    int index;
+    int conditionIndex;
+    ObjectVariableType type;
+};
+
 enum class TypeDynamism {
     /** No dynamism is allowed or no dynamism was used. */
     None = 0,
@@ -125,6 +134,13 @@ public:
     /// Returns the reference if the type is a @c Reference.
     /// @throws std::domain_error if the Type is not a reference.
     int reference() const;
+
+    /// Appends all records necessary to inform the garbage collector about any object variables inside this type at
+    /// index @c index to the end of @c information by constructing an instance of @c T with a constructors as
+    /// those provided by @c ObjectVariableInformation. @c args are passed forward to the constructors at the end of the
+    /// argument list.
+    template <typename T, typename... Us>
+    void objectVariableRecords(int index, std::vector<T> &information, Us... args) const;
 
     std::vector<Type> genericArguments;
     /// True if this type could have generic arguments.

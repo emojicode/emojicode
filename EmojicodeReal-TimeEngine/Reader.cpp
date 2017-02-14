@@ -6,10 +6,12 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
+#include "Reader.hpp"
 #include <dlfcn.h>
 #include <cstring>
 #include <cstdlib>
-#include "Emojicode.hpp"
+#include "Engine.hpp"
+#include "Class.hpp"
 
 #ifdef DEBUG
 #define DEBUG_LOG(format, ...) printf(format "\n", ##__VA_ARGS__)
@@ -70,7 +72,19 @@ void readFunction(Function **table, FILE *in, FunctionFunctionPointer *linkingTa
     Function *function = static_cast<Function *>(malloc(sizeof(Function)));
     function->argumentCount = fgetc(in);
 
-    DEBUG_LOG("Reading function with vti %d and takes %d argument(s)", vti, function->argumentCount);
+    DEBUG_LOG("*️⃣ Reading function with vti %d and takes %d argument(s)", vti, function->argumentCount);
+
+    function->objectVariableRecordsCount = readUInt16(in);
+    function->objectVariableRecords = new FunctionObjectVariableRecord[function->objectVariableRecordsCount];
+    for (int i = 0; i < function->objectVariableRecordsCount; i++) {
+        function->objectVariableRecords[i].variableIndex = readUInt16(in);
+        function->objectVariableRecords[i].condition = readUInt16(in);
+        function->objectVariableRecords[i].type = static_cast<ObjectVariableType>(readUInt16(in));
+        function->objectVariableRecords[i].from = readInstruction(in);
+        function->objectVariableRecords[i].to = readInstruction(in);
+    }
+
+    DEBUG_LOG("Read %d object variable records", function->objectVariableRecordsCount);
 
     function->frameSize = readUInt16(in);
     uint16_t native = readUInt16(in);
@@ -142,20 +156,20 @@ void readPackage(FILE *in) {
             error("Could not load package \"%s\" %s.", name, packageError());
         }
 
-        free(name);
+        delete [] name;
     }
 
     for (int classCount = readUInt16(in); classCount; classCount--) {
         DEBUG_LOG("➡️ Still %d class(es) to load", classCount);
         EmojicodeChar name = readEmojicodeChar(in);
 
-        DEBUG_LOG("Loading class %X", name);
-
         Class *klass = new Class;
         classTable[classNextIndex++] = klass;
 
+        DEBUG_LOG("Loading class %X into %p", name, klass);
+
         klass->superclass = classTable[readUInt16(in)];
-        klass->instanceVariableCount = readUInt16(in);
+        int instanceVariableCount = readUInt16(in);
 
         int methodCount = readUInt16(in);
         klass->methodsVtable = new Function*[methodCount];
@@ -167,7 +181,7 @@ void readPackage(FILE *in) {
         DEBUG_LOG("Inherting intializers: %s", inheritsInitializers ? "true" : "false");
 
         DEBUG_LOG("%d instance variable(s); %d methods; %d initializer(s)",
-                  klass->instanceVariableCount, initializerCount, methodCount);
+                  instanceVariableCount, initializerCount, methodCount);
 
         uint_fast16_t localMethodCount = readUInt16(in);
         uint_fast16_t localInitializerCount = readUInt16(in);
@@ -216,7 +230,17 @@ void readPackage(FILE *in) {
         klass->mark = mpfc(name);
         size_t size = sfch(klass, name);
         klass->valueSize = klass->superclass && klass->superclass->valueSize ? klass->superclass->valueSize : size;
-        klass->size = klass->valueSize + klass->instanceVariableCount * sizeof(Value);
+        klass->size = klass->valueSize + instanceVariableCount * sizeof(Value);
+
+        klass->instanceVariableRecordsCount = readUInt16(in);
+        klass->instanceVariableRecords = new FunctionObjectVariableRecord[klass->instanceVariableRecordsCount];
+        for (int i = 0; i < klass->instanceVariableRecordsCount; i++) {
+            klass->instanceVariableRecords[i].variableIndex = readUInt16(in);
+            klass->instanceVariableRecords[i].condition = readUInt16(in);
+            klass->instanceVariableRecords[i].type = static_cast<ObjectVariableType>(readUInt16(in));
+        }
+
+        DEBUG_LOG("Read %d object variable records", klass->instanceVariableRecordsCount);
     }
 
     for (int functionCount = readUInt16(in); functionCount; functionCount--) {

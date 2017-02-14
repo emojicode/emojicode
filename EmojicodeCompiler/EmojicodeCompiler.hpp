@@ -49,6 +49,8 @@ extern ValueType *VT_SYMBOL;
 extern ValueType *VT_INTEGER;
 extern ValueType *VT_DOUBLE;
 
+using InstructionCount = unsigned int;
+
 /** Issues a compiler warning. The compilation is continued afterwards. */
 void compilerWarning(SourcePosition p, const char *err, ...);
 /** Prints the given error and stores that an error was raised during compilation. */

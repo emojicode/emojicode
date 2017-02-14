@@ -53,7 +53,7 @@
 		E4EC74871E1E9FFA007A22AA /* StorageType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EC74851E1E9FFA007A22AA /* StorageType.cpp */; };
 		E4EC74881E1ECF92007A22AA /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9EB1C83014B009E7089 /* standard.cpp */; };
 		E4EEB9EE1C83015A009E7089 /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9ED1C83015A009E7089 /* Class.cpp */; };
-		E4EEB9F01C83016C009E7089 /* Emojicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9EF1C83016C009E7089 /* Emojicode.cpp */; };
+		E4EEB9F01C83016C009E7089 /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9EF1C83016C009E7089 /* Engine.cpp */; };
 		E4EEB9FA1C8301B5009E7089 /* Reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F91C8301B5009E7089 /* Reader.cpp */; };
 		E4EEB9FF1C8301E7009E7089 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9FE1C8301E7009E7089 /* Object.cpp */; };
 		E4EEBA041C830209009E7089 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
@@ -161,7 +161,7 @@
 		E4CE6FD01D9C0E7A00F32071 /* CallableParserAndGeneratorMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CallableParserAndGeneratorMode.hpp; sourceTree = "<group>"; };
 		E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CallableWriter.cpp; sourceTree = "<group>"; };
 		E4E404071A5B2E4300034386 /* Emojicode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Emojicode; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4E404141A5B2E8F00034386 /* Emojicode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; name = Emojicode.hpp; path = "EmojicodeReal-TimeEngine/Emojicode.hpp"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		E4E404141A5B2E8F00034386 /* Engine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; name = Engine.hpp; path = "EmojicodeReal-TimeEngine/Engine.hpp"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		E4EB36291AA2254700675B52 /* Lexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Lexer.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		E4EB4A851AA315ED00FF4CED /* Writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Writer.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		E4EB4A861AA315ED00FF4CED /* Writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Writer.hpp; sourceTree = "<group>"; };
@@ -173,7 +173,7 @@
 		E4EC74861E1E9FFA007A22AA /* StorageType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StorageType.hpp; sourceTree = "<group>"; };
 		E4EEB9EB1C83014B009E7089 /* standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = standard.cpp; path = "EmojicodeReal-TimeEngine/standard.cpp"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		E4EEB9ED1C83015A009E7089 /* Class.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Class.cpp; path = "EmojicodeReal-TimeEngine/Class.cpp"; sourceTree = SOURCE_ROOT; };
-		E4EEB9EF1C83016C009E7089 /* Emojicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Emojicode.cpp; path = "EmojicodeReal-TimeEngine/Emojicode.cpp"; sourceTree = SOURCE_ROOT; };
+		E4EEB9EF1C83016C009E7089 /* Engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Engine.cpp; path = "EmojicodeReal-TimeEngine/Engine.cpp"; sourceTree = SOURCE_ROOT; };
 		E4EEB9F11C83018B009E7089 /* EmojicodeList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = EmojicodeList.cpp; path = "EmojicodeReal-TimeEngine/EmojicodeList.cpp"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E4EEB9F31C83018F009E7089 /* EmojicodeDictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = EmojicodeDictionary.cpp; path = "EmojicodeReal-TimeEngine/EmojicodeDictionary.cpp"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E4EEB9F51C830194009E7089 /* EmojicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = EmojicodeString.cpp; path = "EmojicodeReal-TimeEngine/EmojicodeString.cpp"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -184,6 +184,9 @@
 		E4EEB9FE1C8301E7009E7089 /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Object.cpp; path = "EmojicodeReal-TimeEngine/Object.cpp"; sourceTree = SOURCE_ROOT; };
 		E4EEBA021C830209009E7089 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = SOURCE_ROOT; };
 		E4EEBA031C830209009E7089 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = SOURCE_ROOT; };
+		E4F8EE731E48E068006CF7EA /* Class.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Class.hpp; path = "EmojicodeReal-TimeEngine/Class.hpp"; sourceTree = SOURCE_ROOT; };
+		E4F8EE741E48E0DC006CF7EA /* Object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Object.hpp; path = "EmojicodeReal-TimeEngine/Object.hpp"; sourceTree = SOURCE_ROOT; };
+		E4F8EE751E48E7CC006CF7EA /* Reader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Reader.hpp; path = "EmojicodeReal-TimeEngine/Reader.hpp"; sourceTree = SOURCE_ROOT; };
 		E4F9D4001AC6CEE3005A1DD6 /* Class.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Class.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 /* End PBXFileReference section */
 
@@ -369,14 +372,17 @@
 			isa = PBXGroup;
 			children = (
 				E425EE9F1A6433A700F3A62B /* EmojicodeAPI.hpp */,
-				E4E404141A5B2E8F00034386 /* Emojicode.hpp */,
-				E4EEB9EF1C83016C009E7089 /* Emojicode.cpp */,
+				E4E404141A5B2E8F00034386 /* Engine.hpp */,
+				E4EEB9EF1C83016C009E7089 /* Engine.cpp */,
 				E4EC747F1E1D9644007A22AA /* Processor.hpp */,
 				E4EC747E1E1D9644007A22AA /* Processor.cpp */,
 				E4EC747D1E1D87F9007A22AA /* Thread.hpp */,
 				E45DB8131CB44D7500AE6FBE /* Thread.cpp */,
+				E4F8EE731E48E068006CF7EA /* Class.hpp */,
 				E4EEB9ED1C83015A009E7089 /* Class.cpp */,
+				E4F8EE741E48E0DC006CF7EA /* Object.hpp */,
 				E4EEB9FE1C8301E7009E7089 /* Object.cpp */,
+				E4F8EE751E48E7CC006CF7EA /* Reader.hpp */,
 				E4EEB9F91C8301B5009E7089 /* Reader.cpp */,
 				E4F048361A7FB0D7005BB2C1 /* standard Package */,
 			);
@@ -565,7 +571,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4EEB9EE1C83015A009E7089 /* Class.cpp in Sources */,
-				E4EEB9F01C83016C009E7089 /* Emojicode.cpp in Sources */,
+				E4EEB9F01C83016C009E7089 /* Engine.cpp in Sources */,
 				E42B3D0E1D590E0500D87126 /* algorithms.cpp in Sources */,
 				E4EC74811E1E67C0007A22AA /* EmojicodeList.cpp in Sources */,
 				E4EEB9FF1C8301E7009E7089 /* Object.cpp in Sources */,
@@ -646,6 +652,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_MISSING_PARENTHESES = NO;
 				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -696,6 +703,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_MISSING_PARENTHESES = NO;
 				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;

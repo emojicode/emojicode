@@ -9,8 +9,7 @@
 #ifndef EmojicodeAPI_h
 #define EmojicodeAPI_h
 
-#include <pthread.h>
-#include <cstring>
+#include <thread>
 #include "../EmojicodeShared.h"
 
 typedef unsigned char Byte;
@@ -83,8 +82,6 @@ struct Box {
     Value value1;
     Value value2;
     Value value3;
-    /// Determines whether this stroage box is an object reference.
-    bool isRealObject() const;
     /// Returns true if this Box contains Nothingness
     bool isNothingness() const { return type.raw == T_NOTHINGNESS; }
     /// Aborts the program if this Box contains Nothingness
@@ -174,7 +171,7 @@ extern void mark(Object **of);
  *
  * You normally do not need to call this method from method or intializer implementations.
  */
-extern void pauseForGC(pthread_mutex_t *mutex);
+extern void pauseForGC();
 /**
  * This function allows the GC to run even while the calling thread is not paused and working.
  * You must ensure that @c disallowGCAndPauseIfNeeded is called at an appropriate time, but it must be

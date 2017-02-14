@@ -6,12 +6,14 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include <locale.h>
+#include "Engine.hpp"
 #include <cstdarg>
 #include <cstdlib>
-#include "Emojicode.hpp"
 #include "Thread.hpp"
 #include "Processor.hpp"
+#include "Class.hpp"
+#include "Object.hpp"
+#include "Reader.hpp"
 
 Class *CL_STRING;
 Class *CL_LIST;
@@ -56,7 +58,6 @@ int main(int argc, char *argv[]) {
         packageDirectory = ppath;
     }
 
-    setlocale(LC_CTYPE, "de_DE.UTF-8");
     if (argc < 2) {
         error("No file provided.");
     }

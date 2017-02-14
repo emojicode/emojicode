@@ -9,7 +9,7 @@
 #ifndef Processor_hpp
 #define Processor_hpp
 
-#include "Emojicode.hpp"
+#include "Engine.hpp"
 
 void performFunction(Function *function, Value self, Thread *thread, Value *destination);
 void produce(EmojicodeInstruction coin, Thread *thread, Value *destination);

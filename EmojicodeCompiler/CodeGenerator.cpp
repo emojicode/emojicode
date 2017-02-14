@@ -117,6 +117,19 @@ void writeClass(Type classType, Writer &writer) {
         biggestPlaceholder.write(biggestProtocolIndex);
         smallestPlaceholder.write(smallestProtocolIndex);
     }
+
+    std::vector<ObjectVariableInformation> information;
+    for (auto variable : eclass->instanceScope().map()) {
+        variable.second.type().objectVariableRecords(variable.second.id(), information);
+    }
+
+    writer.writeUInt16(information.size());
+
+    for (auto information : information) {
+        writer.writeUInt16(information.index);
+        writer.writeUInt16(information.conditionIndex);
+        writer.writeUInt16(static_cast<uint16_t>(information.type));
+    }
 }
 
 void writePackageHeader(Package *pkg, Writer &writer) {
@@ -143,12 +156,11 @@ void generateCode(Writer &writer) {
     Function::start->setVtiProvider(&provider);
     Function::start->vtiForUse();
 
-    for (auto eclass : Class::classes()) {
-        eclass->finalize();
-    }
-
-    for (auto vt : ValueType::valueTypes()) {
+    for (auto vt : ValueType::valueTypes()) {  // Must be processed first, different sizes
         vt->finalize();
+    }
+    for (auto eclass : Class::classes()) {  // Can be processed afterwards, all pointer are 1 word
+        eclass->finalize();
     }
 
     while (!Function::compilationQueue.empty()) {

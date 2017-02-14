@@ -47,16 +47,16 @@ void listEnsureCapacity(Thread *thread, size_t size) {
     }
 }
 
-// TODO: Fix
 void listMark(Object *self) {
-    //    List *list = static_cast<List *>(self->value);
-    //    if (list->items) {
-    //        mark(&list->items);
-    //    }
-    //    for (size_t i = 0; i < list->count; i++) {
-    //        if(isRealObject(items(list)[i]))
-    //           mark(&items(list)[i].object);
-    //    }
+    List *list = static_cast<List *>(self->value);
+    if (list->items) {
+        mark(&list->items);
+    }
+    for (size_t i = 0; i < list->count; i++) {
+        if (list->elements()[i].type.raw == T_OBJECT) {
+           mark(&list->elements()[i].value1.object);
+        }
+    }
 }
 
 Box* listAppendDestination(Object *lo, Thread *thread) {

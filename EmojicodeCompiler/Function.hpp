@@ -32,6 +32,16 @@ public:
     Closure(SourcePosition p) : Callable(p) {};
 };
 
+struct FunctionObjectVariableInformation : public ObjectVariableInformation {
+    FunctionObjectVariableInformation(int index, ObjectVariableType type, InstructionCount from, InstructionCount to)
+        : ObjectVariableInformation(index, type), from(from), to(to) {}
+    FunctionObjectVariableInformation(int index, int condition, ObjectVariableType type, InstructionCount from,
+                                      InstructionCount to)
+        : ObjectVariableInformation(index, condition, type), from(from), to(to) {}
+    int from;
+    int to;
+};
+
 /** Functions are callables that belong to a class or value type as either method, type method or initializer. */
 class Function: public Callable {
     friend void Class::finalize();
@@ -134,6 +144,7 @@ public:
     void setFullSize(int c) { fullSize_ = c; }
 
     CallableWriter writer_;
+    std::vector<FunctionObjectVariableInformation>& objectVariableInformation() { return objectVariableInformation_; }
 private:
     /** Sets the VTI to @c vti and enters this functions into the list of functions to be compiled into the binary. */
     void setVti(int vti);
@@ -156,6 +167,7 @@ private:
     CallableParserAndGeneratorMode compilationMode_;
     int fullSize_ = -1;
     std::vector<Function*> overriders_;
+    std::vector<FunctionObjectVariableInformation> objectVariableInformation_;
 };
 
 class Initializer: public Function {

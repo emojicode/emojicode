@@ -10,8 +10,8 @@ compilation_tests = [
     "hello", "intTest", "branch", "namespace", "enum", "unwrap",
     "conditionalProduce", "piglatin", "stringConcat", "extension", "class",
     "babyBottleInitializer", "valueType", "isNothingness", "downcastClass",
-    "protocol", "callable", "threads", "variableInitAndScoping"
-    # gcStressTest chaining
+    "protocol", "variableInitAndScoping", "gcStressTest1", "gcStressTest2",
+    # chaining callable threads
 ]
 library_tests = [
     "stringTest", "primitives", "mathTest", "listTest", "rangeTest",
@@ -51,7 +51,9 @@ def compilation_test(name):
     run(["./emojicodec", source_path], check=True)
     completed = run(["./emojicode", binary_path], stdout=PIPE)
     exp_path = os.path.join(dist.source, "tests", "compilation", name + ".txt")
-    if completed.stdout.decode('utf-8') != open(exp_path, "r").read():
+    output = completed.stdout.decode('utf-8')
+    if output != open(exp_path, "r").read():
+        print(output)
         fail_test(name)
 
 

@@ -7,6 +7,7 @@
 //
 
 #include "Writer.hpp"
+#include <iostream>
 #include "CompilerError.hpp"
 #include "Function.hpp"
 #include "CallableWriter.hpp"
@@ -41,6 +42,16 @@ void Writer::writeBytes(const char *bytes, size_t count) {
 void Writer::writeFunction(Function *function) {
     writeUInt16(function->getVti());
     writeByte(static_cast<uint8_t>(function->arguments.size()));
+
+    writeUInt16(function->objectVariableInformation().size());
+    for (auto info : function->objectVariableInformation()) {
+        writeUInt16(info.index);
+        writeUInt16(info.conditionIndex);
+        writeUInt16(static_cast<uint16_t>(info.type));
+        writeInstruction(info.from);
+        writeInstruction(info.to);
+    }
+
     writeUInt16(function->fullSize());
 
     if (function->isNative()) {

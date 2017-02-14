@@ -7,7 +7,7 @@
 //
 
 #include <cmath>
-#include "Emojicode.hpp"
+#include "Engine.hpp"
 #include "EmojicodeDictionary.h"
 #include "EmojicodeList.h"
 #include "Thread.hpp"

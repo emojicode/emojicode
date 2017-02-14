@@ -169,13 +169,10 @@ void CallableParserAndGenerator::parseCoinInBlock() {
     scoper.clearAllTemporaryScopes();
 }
 
-void CallableParserAndGenerator::flowControlBlock(bool block) {
-    scoper.currentScope().pushInitializationLevel();
-    if (hasInstanceScope()) {
-        scoper.instanceScope()->pushInitializationLevel();
-    }
+void CallableParserAndGenerator::flowControlBlock(bool pushScope) {
+    scoper.pushInitializationLevel();
 
-    if (block) {
+    if (pushScope) {
         scoper.pushScope();
     }
 
@@ -192,15 +189,10 @@ void CallableParserAndGenerator::flowControlBlock(bool block) {
 
     effect = true;
 
-    if (block) {
-        scoper.popScopeAndRecommendFrozenVariables();
-    }
+    scoper.popScopeAndRecommendFrozenVariables(static_cast<Function &>(callable).objectVariableInformation(),
+                                               writer.writtenInstructions());
 
-    scoper.currentScope().popInitializationLevel();
-    if (hasInstanceScope()) {
-        scoper.instanceScope()->popInitializationLevel();
-    }
-
+    scoper.popInitializationLevel();
     flowControlDepth--;
 }
 
@@ -296,8 +288,9 @@ void CallableParserAndGenerator::parseIfExpression(const Token &token) {
 
         t = t.copyWithoutOptional();
 
-        int id = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position(), true).id();
-        writer.writeInstruction(id, token.position());
+        auto &variable = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
+        variable.initialize(writer.writtenInstructions());
+        writer.writeInstruction(variable.id(), token.position());
         if (!box) writer.writeInstruction(t.size(), token.position());
     }
     else {
@@ -468,10 +461,10 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             Type t = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
 
 
-            auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position(),
-                                                               t.optional());
+            auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position());
 
             if (t.optional()) {
+                var.initialize(writer.writtenInstructions());
                 writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
                 writer.writeInstruction(var.id(), token);
                 writer.writeInstruction(INS_GET_NOTHINGNESS, token);
@@ -485,7 +478,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             try {
                 auto rvar = scoper.getVariable(varName.value(), varName.position());
 
-                rvar.variable.initialize();
+                rvar.variable.initialize(writer.writtenInstructions());
                 rvar.variable.mutate(varName);
 
                 produceToVariable(rvar, token);
@@ -507,9 +500,9 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
                 auto destination = Destination(DestinationMutability::Mutable, StorageType::SimpleIfPossible);
                 Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
-                int id = scoper.currentScope().setLocalVariable(varName.value(), t,
-                                                                false, varName.position(), true).id();
-                placeholder.write(id);
+                auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position());
+                var.initialize(writer.writtenInstructions());
+                placeholder.write(var.id());
                 return Type::nothingness();
             }
 
@@ -528,8 +521,9 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             auto destination = Destination(DestinationMutability::Immutable, StorageType::SimpleIfPossible);
             Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
-            int id = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position(), true).id();
-            placeholder.write(id);
+            auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
+            var.initialize(writer.writtenInstructions());
+            placeholder.write(var.id());
             return Type::nothingness();
         }
         case E_COOKING:
@@ -542,8 +536,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             var.variable.mutate(varName);
 
             if (!var.variable.type().compatibleTo(Type::integer(), typeContext)) {
-                throw CompilerError(token, "%s can only operate on 🚂 variables.",
-                                             token.value().utf8().c_str());
+                throw CompilerError(token, "%s can only operate on 🚂 variables.", token.value().utf8().c_str());
             }
 
             produceToVariable(var, token);
@@ -664,7 +657,6 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             scoper.pushScope();
             parseIfExpression(token);
             flowControlBlock(false);
-            scoper.popScopeAndRecommendFrozenVariables();
             flowControlReturnEnd(fcr);
 
             while (stream_.consumeTokenIf(E_LEMON)) {
@@ -673,7 +665,6 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 scoper.pushScope();
                 parseIfExpression(token);
                 flowControlBlock(false);
-                scoper.popScopeAndRecommendFrozenVariables();
                 flowControlReturnEnd(fcr);
             }
 
@@ -722,17 +713,19 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 int internalId = scoper.currentScope().allocateInternalVariable(iteratee);
                 writer.writeInstruction(internalId, token);  // Internally needed
                 auto type = Type(TypeContent::Reference, false, 0, CL_LIST).resolveOn(iteratee);
-                int id = scoper.currentScope().setLocalVariable(variableToken.value(), type,
-                                                                true, variableToken.position(), true).id();
-                valueVariablePlaceholder.write(id);
+                auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), type,
+                                                                   true, variableToken.position());
+                var.initialize(writer.writtenInstructions());
+                valueVariablePlaceholder.write(var.id());
             }
             else if (iteratee.type() == TypeContent::ValueType &&
                      iteratee.valueType()->name()[0] == E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE) {
                 // If the iteratee is a range, the Real-Time Engine also has some special sugar
                 placeholder.write(0x66);
-                int id = scoper.currentScope().setLocalVariable(variableToken.value(), Type::integer(), true,
-                                                                variableToken.position(), true).id();
-                valueVariablePlaceholder.write(id);
+                auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), Type::integer(), true,
+                                                                   variableToken.position());
+                var.initialize(writer.writtenInstructions());
+                valueVariablePlaceholder.write(var.id());
             }
             else if (typeIsEnumerable(iteratee, &itemType)) {
                 Function *iteratorMethod = iteratee.eclass()->lookupMethod(EmojicodeString(E_DANGO));
@@ -743,9 +736,10 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 placeholder.write(INS_FOREACH);
                 int internalId = scoper.currentScope().allocateInternalVariable(iteratee);
                 writer.writeInstruction(internalId, token);  // Internally needed
-                int id = scoper.currentScope().setLocalVariable(variableToken.value(), itemType, true,
-                                                                variableToken.position(), true).id();
-                valueVariablePlaceholder.write(id);
+                auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), itemType, true,
+                                                                   variableToken.position());
+                var.initialize(writer.writtenInstructions());
+                valueVariablePlaceholder.write(var.id());
             }
             else {
                 auto iterateeString = iteratee.toString(typeContext, true);
@@ -754,7 +748,6 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             flowControlBlock(false);
             returned = false;
-            scoper.popScopeAndRecommendFrozenVariables();
 
             return Type::nothingness();
         }
@@ -769,8 +762,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerError(token, "Attempt to use 🐕 before superinitializer call.");
             }
             if (isFullyInitializedCheckRequired()) {
-                scoper.instanceScope()->initializerUnintializedVariablesCheck(token,
-                                                                              "Instance variable \"%s\" must be initialized before the use of 🐕.");
+                scoper.instanceScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be "
+                                                                              "initialized before the use of 🐕.");
             }
 
             if (!isSelfAllowed()) {
@@ -822,8 +815,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerError(token, "You may not put a call to a superinitializer in a flow control structure.");
             }
 
-            scoper.instanceScope()->initializerUnintializedVariablesCheck(token,
-                                                                          "Instance variable \"%s\" must be initialized before superinitializer.");
+            scoper.instanceScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be "
+                                                                          "initialized before superinitializer.");
 
             writer.writeInstruction(INS_SUPER_INITIALIZER, token);
 
@@ -917,7 +910,9 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 for (size_t i = 0; i < type.eclass()->numberOfOwnGenericArguments(); i++) {
                     if (!type.eclass()->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments[i], type) ||
                        !type.genericArguments[i].compatibleTo(type.eclass()->genericArgumentConstraints()[offset + i], type)) {
-                        throw CompilerError(token, "Dynamic casts involving generic type arguments are not possible yet. Please specify the generic argument constraints of the class for compatibility with future versions.");
+                        throw CompilerError(token, "Dynamic casts involving generic type arguments are not possible "
+                                            "yet. Please specify the generic argument constraints of the class for "
+                                            "compatibility with future versions.");
                     }
                 }
 
@@ -1517,7 +1512,9 @@ void CallableParserAndGenerator::analyze() {
     try {
         Scope &methodScope = scoper.pushScope();
         for (auto variable : callable.arguments) {
-            methodScope.setLocalVariable(variable.name.value(), variable.type, true, variable.name.position(), true);
+            auto &var = methodScope.setLocalVariable(variable.name.value(), variable.type, true,
+                                                     variable.name.position());
+            var.initialize(writer.writtenInstructions());
         }
 
         if (isFullyInitializedCheckRequired()) {
@@ -1535,7 +1532,7 @@ void CallableParserAndGenerator::analyze() {
                                                  "🍼 was applied to \"%s\" but instance variable has incompatible type.",
                                                  var.utf8().c_str());
                 }
-                instanceVariable.initialize();
+                instanceVariable.initialize(writer.writtenInstructions());
                 produceToVariable(ResolvedVariable(instanceVariable, true), initializer.position());
                 copyVariableContent(ResolvedVariable(argumentVariable, false), initializer.position());
             }
@@ -1550,7 +1547,8 @@ void CallableParserAndGenerator::analyze() {
             }
         }
 
-        scoper.popScopeAndRecommendFrozenVariables();
+        scoper.popScopeAndRecommendFrozenVariables(static_cast<Function &>(callable).objectVariableInformation(),
+                                                   writer.writtenInstructions());
 
         if (isFullyInitializedCheckRequired()) {
             auto initializer = static_cast<Initializer &>(callable);

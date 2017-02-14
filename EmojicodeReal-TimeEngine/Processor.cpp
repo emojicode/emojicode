@@ -13,7 +13,7 @@
 #include <thread>
 #include "../EmojicodeInstructions.h"
 #include "Thread.hpp"
-
+#include "Class.hpp"
 #include "EmojicodeList.h"
 #include "EmojicodeString.h"
 #include "EmojicodeDictionary.h"
@@ -30,7 +30,7 @@ static bool runBlock(Thread *thread) {
         Box garbage;
         produce(thread->consumeInstruction(), thread, &garbage.type);
 
-        pauseForGC(nullptr);
+        pauseForGC();
 
         if (thread->currentStackFrame()->executionPointer == nullptr) {
             return true;
@@ -46,7 +46,7 @@ static void runFunctionPointerBlock(Thread *thread, uint32_t length) {
         Box garbage;
         produce(thread->consumeInstruction(), thread, &garbage.type);
 
-        pauseForGC(nullptr);
+        pauseForGC();
 
         if (thread->currentStackFrame()->executionPointer == nullptr) {
             return;
@@ -68,10 +68,6 @@ static double readDouble(Thread *thread) {
     return ldexp(static_cast<double>(scale)/PORTABLE_INTLEAST64_MAX, static_cast<int>(exp));
 }
 
-
-bool Box::isRealObject() const {
-    return type.raw == T_OBJECT && value1.object;
-}
 
 void Box::unwrapOptional() const {
     if (isNothingness()) {
@@ -95,15 +91,15 @@ void executeCallableExtern(Object *callable, Value *args, Thread *thread, Value 
         Function *method = cmc->function;
 
         if (method->native) {
-            Value *t = thread->reserveFrame(cmc->callee, method->frameSize, method, nullptr, nullptr);
-            std::memcpy(t, args, method->argumentCount * sizeof(Value));
+            auto sf = thread->reserveFrame(cmc->callee, method->frameSize, method, nullptr, nullptr);
+            std::memcpy(sf->variableDestination(0), args, method->argumentCount * sizeof(Value));
             thread->pushReservedFrame();
             method->handler(thread, destination);
         }
         else {
-            Value *t = thread->reserveFrame(cmc->callee, method->frameSize, method, destination,
+            auto sf = thread->reserveFrame(cmc->callee, method->frameSize, method, destination,
                                             method->block.instructions);
-            memcpy(t, args, method->argumentCount * sizeof(Value));
+            memcpy(sf->variableDestination(0), args, method->argumentCount * sizeof(Value));
             thread->pushReservedFrame();
 
             runFunctionPointerBlock(thread, method->block.instructionCount);
@@ -114,8 +110,8 @@ void executeCallableExtern(Object *callable, Value *args, Thread *thread, Value 
 
         // TODO: Won’t work with real vts
         // TODO: WRONG nullptr
-        Value *t = thread->reserveFrame(c->thisContext, c->variableCount, nullptr, destination, c->block.instructions);
-        memcpy(t, args, c->argumentCount * sizeof(Value));
+        auto sf = thread->reserveFrame(c->thisContext, c->variableCount, nullptr, destination, c->block.instructions);
+        memcpy(sf->variableDestination(0), args, c->argumentCount * sizeof(Value));
         thread->pushReservedFrame();
 
         loadCapture(c, thread);

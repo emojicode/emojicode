@@ -45,4 +45,13 @@ typedef uint32_t EmojicodeInstruction;
 
 #define PORTABLE_INTLEAST64_MAX ((int_least64_t)9223372036854775807)
 
+enum class ObjectVariableType {
+    /// There is an object pointer a the given index
+    Simple = 0,
+    /// There is an object pointer a the given index if the value at @c condition is truthy
+    Condition = 1,
+    Box = 2,
+    ConditionalSkip = 3
+};
+
 #endif /* EmojicodeShared_h */

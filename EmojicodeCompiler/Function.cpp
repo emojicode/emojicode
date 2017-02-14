@@ -6,10 +6,10 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include "Function.hpp"
 #include <map>
 #include <stdexcept>
 #include <numeric>
-#include "Function.hpp"
 #include "Lexer.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"

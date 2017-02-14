@@ -399,6 +399,59 @@ bool Type::isValueReferenceWorthy() const {
     }
 }
 
+template <typename T, typename... Us>
+void Type::objectVariableRecords(int index, std::vector<T> &information, Us... args) const {
+    switch (type()) {
+        case TypeContent::ValueType: {
+            if (storageType() == StorageType::Box) {
+                information.push_back(T(index, ObjectVariableType::Box, args...));
+                return;
+            }
+
+            auto optional = storageType() == StorageType::SimpleOptional;
+            auto size = information.size();
+            for (auto variable : valueType()->instanceScope().map()) {
+                auto vindex = index + variable.second.id() + (optional ? 1 : 0);
+                variable.second.type().objectVariableRecords(vindex, information, args...);
+            }
+            if (optional) {
+                auto info = T(static_cast<unsigned int>(information.size() - size), index,
+                              ObjectVariableType::ConditionalSkip, args...);
+                information.insert(information.begin() + size, info);
+            }
+            return;
+        }
+        case TypeContent::Class:
+        case TypeContent::Self:
+        case TypeContent::Someobject:
+        case TypeContent::Callable:
+        case TypeContent::Protocol:
+        case TypeContent::Something:
+        case TypeContent::Reference:
+        case TypeContent::LocalReference:
+            switch (storageType()) {
+                case StorageType::SimpleOptional:
+                    information.push_back(T(index + 1, index, ObjectVariableType::Condition, args...));
+                    return;
+                case StorageType::Simple:
+                    information.push_back(T(index, ObjectVariableType::Simple, args...));
+                    return;
+                case StorageType::Box:
+                    information.push_back(T(index, ObjectVariableType::Box, args...));
+                    return;
+                default:
+                    throw std::domain_error("invalid storage type");
+            }
+        case TypeContent::Enum:
+        case TypeContent::Nothingness:
+            return;  // Can't be object pointer
+    }
+}
+
+template void Type::objectVariableRecords(int, std::vector<ObjectVariableInformation>&) const;
+template void Type::objectVariableRecords(int, std::vector<FunctionObjectVariableInformation>&,
+                                          InstructionCount, InstructionCount) const;
+
 //MARK: Type Visulisation
 
 std::string Type::typePackage() {

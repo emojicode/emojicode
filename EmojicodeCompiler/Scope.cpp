@@ -13,7 +13,7 @@
 
 void Scope::setVariableInitialization(bool initd) {
     for (auto &it : map_) {
-        if (initd) it.second.initialize();
+        if (initd) it.second.initialize(0);
         else it.second.uninitialize();
     }
 }
@@ -30,13 +30,12 @@ void Scope::popInitializationLevel() {
     }
 }
 
-Variable& Scope::setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos,
-                                  bool initialized) {
+Variable& Scope::setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos) {
     if (hasLocalVariable(variable)) {
         return getLocalVariable(variable);
     }
     int id = scoper_->reserveVariable(type.size());
-    Variable &v = map_.emplace(variable, Variable(type, id, initialized ? 1 : 0, frozen, variable, pos)).first->second;
+    Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, pos)).first->second;
     size_ += type.size();
     return v;
 }

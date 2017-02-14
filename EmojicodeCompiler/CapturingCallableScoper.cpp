@@ -17,8 +17,8 @@ ResolvedVariable CapturingCallableScoper::getVariable(const EmojicodeString &nam
         auto pair = capturedScoper_.getVariable(name, errorPosition);
         auto &variable = pair.variable;
         auto &captureVariable = topmostLocalScope().setLocalVariable(variable.name(), variable.type(),
-                                                                     variable.frozen(), variable.position(),
-                                                                     variable.initialized());
+                                                                     variable.frozen(), variable.position());
+        captureVariable.initialize(0);  // TODO: Fix!
         captures_.push_back(VariableCapture(variable.id(), variable.type(), captureVariable.id()));
         captureSize_ += variable.type().size();
         return ResolvedVariable(captureVariable, false);

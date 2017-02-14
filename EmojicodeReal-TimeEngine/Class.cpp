@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Emojicode.hpp"
+#include "Class.hpp"
 
 bool Class::inheritsFrom(Class *from) const {
     for (const Class *a = this; a != nullptr; a = a->superclass) {
