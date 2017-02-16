@@ -64,7 +64,7 @@ EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeD
     return nullptr;
 }
 
-Object* dictionaryNewNode(EmojicodeDictionaryHash hash, Object *key, Box value, Object *next, Thread *thread){
+Object* dictionaryNewNode(EmojicodeDictionaryHash hash, Object *key, Box value, Object *next, Thread *thread) {
     Object *nodeo = newArray(sizeof(EmojicodeDictionaryNode));
     EmojicodeDictionaryNode *node = (EmojicodeDictionaryNode *) nodeo->value;
 
@@ -89,13 +89,13 @@ void dictionaryResize(Object *const &dictObject, Thread *thread) {
             return;
         }
         else if (newCap < DICTIONARY_MAXIMUM_CAPACTIY && oldCap >= DICTIONARY_DEFAULT_INITIAL_CAPACITY) {
-            newThr = oldThr << 1; // double threshold
+            newThr = oldThr << 1;  // double threshold
         }
     }
-    else if (oldThr > 0) { // initial capacity was placed in threshold
+    else if (oldThr > 0) {  // initial capacity was placed in threshold
         newCap = oldThr;
     }
-    else { // zero initial threshold signifies using defaults
+    else {  // zero initial threshold signifies using defaults
         newCap = DICTIONARY_DEFAULT_INITIAL_CAPACITY;
         newThr = (size_t) (DICTIONARY_DEFAULT_LOAD_FACTOR * DICTIONARY_DEFAULT_INITIAL_CAPACITY);
     }
@@ -123,7 +123,7 @@ void dictionaryResize(Object *const &dictObject, Thread *thread) {
                 if (e->next == nullptr) {
                     newBucko[e->hash & (newCap - 1)] = eo;
                 }
-                else { // preserve order
+                else {  // preserve order
                     Object *loHeado = nullptr, *loTailo = nullptr;
                     Object *hiHeado = nullptr, *hiTailo = nullptr;
                     Object *nexto;

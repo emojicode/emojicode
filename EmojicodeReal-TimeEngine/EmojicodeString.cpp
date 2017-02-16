@@ -570,9 +570,9 @@ void stringCompareBridge(Thread *thread, Value *destination) {
     destination->raw = stringCompare(a, b);
 }
 
-void stringMark(Object *self){
+void stringMark(Object *self) {
     auto string = static_cast<String *>(self->value);
-    if (string->characters){
+    if (string->characters) {
         mark(&string->characters);
     }
 }

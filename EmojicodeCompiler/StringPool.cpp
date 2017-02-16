@@ -14,7 +14,7 @@ EmojicodeInstruction StringPool::poolString(const EmojicodeString &string) {
             return static_cast<EmojicodeInstruction>(i);
         }
     }
-    
+
     strings_.push_back(string);
     return static_cast<EmojicodeInstruction>(strings_.size() - 1);
 }

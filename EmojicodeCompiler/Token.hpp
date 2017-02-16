@@ -9,6 +9,7 @@
 #ifndef Token_hpp
 #define Token_hpp
 
+#include <string>
 #include "EmojicodeCompiler.hpp"
 
 class TokenStream;

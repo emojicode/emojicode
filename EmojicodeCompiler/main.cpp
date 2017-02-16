@@ -70,7 +70,7 @@ void printJSONStringToFile(const char *string, FILE *f) {
     fputc('"', f);
 }
 
-//MARK: Warnings
+// MARK: Warnings
 
 void printError(const CompilerError &ce) {
     hasError = true;
@@ -257,11 +257,13 @@ int main(int argc, char * argv[]) {
         }
     }
     catch (std::exception &ex) {
-        printf("💣 The compiler crashed due to an internal problem: %s\nPlease report this message and the code that you were trying to compile as an issue on GitHub.", ex.what());
+        printf("💣 The compiler crashed due to an internal problem: %s\nPlease report this message and the code that "
+               "you were trying to compile as an issue on GitHub.", ex.what());
         return 1;
     }
     catch (...) {
-        printf("💣 The compiler crashed due to an unidentifiable internal problem.\nPlease report this message and the code that you were trying to compile as an issue on GitHub.");
+        printf("💣 The compiler crashed due to an unidentifiable internal problem.\nPlease report this message and the "
+               "code that you were trying to compile as an issue on GitHub.");
         return 1;
     }
 

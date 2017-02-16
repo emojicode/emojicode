@@ -9,6 +9,7 @@
 #ifndef TypeContext_hpp
 #define TypeContext_hpp
 
+#include <vector>
 #include "Type.hpp"
 #include "CommonTypeFinder.hpp"
 
@@ -20,7 +21,7 @@ public:
     TypeContext(Type callee, Function *p) : calleeType_(callee), function_(p) {};
     TypeContext(Type callee, Function *p, std::vector<Type> *args)
         : calleeType_(callee), function_(p), functionGenericArguments_(args) {};
-    
+
     Type calleeType() const { return calleeType_; }
     Function* function() const { return function_; }
     std::vector<Type>* functionGenericArguments() const { return functionGenericArguments_; }

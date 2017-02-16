@@ -25,9 +25,9 @@ protected:
 private:
     int nextOffset_ = 0;
     int size_ = 0;
-    
+
     void syncSize();
-    
+
     int reserveVariable(int size);
 };
 

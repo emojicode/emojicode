@@ -246,6 +246,6 @@ TokenStream lex(std::string path) {
     catch (const std::ifstream::failure &e) {
         throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file %s.", path.c_str());
     }
-    
+
     return stream;
 }

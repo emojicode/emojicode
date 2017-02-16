@@ -26,7 +26,7 @@ public:
 
     /// The position at which this variable was defined
     SourcePosition position() const { return position_; }
-    
+
     /// Throws an error if the variable is not initalized.
     /// @throws CompilerError
     void uninitalizedError(SourcePosition p) const;
@@ -34,7 +34,7 @@ public:
     /// Marks the variable as mutated or issues an error if the variable is frozen.
     /// @throws CompilerError if the variable is frozen.
     void mutate(SourcePosition p);
-    
+
     /// Whether the variable was mutated since its definition.
     bool mutated() const { return mutated_; }
 
@@ -68,7 +68,7 @@ private:
     int id_;
     int initialized_ = 0;
     InstructionCount initializationPosition_;
-    
+
     SourcePosition position_;
 };
 

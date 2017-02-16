@@ -25,7 +25,7 @@ class Writer {
     friend WriterPlaceholder<EmojicodeInstruction>;
     friend WriterPlaceholder<unsigned char>;
 public:
-    Writer(FILE *outFile) : out(outFile) {};
+    explicit Writer(FILE *outFile) : out(outFile) {};
 
     /** Must be used to write any uint16_t to the file */
     void writeUInt16(uint16_t value);

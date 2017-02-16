@@ -46,7 +46,6 @@ bool CallableParserAndGenerator::typeIsEnumerable(Type type, Type *elementType) 
     else if (type.type() == TypeContent::Protocol && type.protocol() == PR_ENUMERATEABLE) {
         *elementType = Type(TypeContent::Reference, false, 0, type.protocol()).resolveOn(type);
         return true;
-
     }
     return false;
 }
@@ -92,9 +91,10 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
             auto commonType = genericArgsFinders[i].getCommonType(token);
             genericArguments.push_back(commonType);
             if (!commonType.compatibleTo(p->genericArgumentConstraints[i], typeContext)) {
-                throw CompilerError(token, "Infered type %s for generic argument %d is not compatible to constraint %s.",
-                                             commonType.toString(typeContext, true).c_str(), i + 1,
-                                             p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
+                throw CompilerError(token,
+                                    "Infered type %s for generic argument %d is not compatible to constraint %s.",
+                                    commonType.toString(typeContext, true).c_str(), i + 1,
+                                    p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
             }
         }
         typeContext = TypeContext(type, p, &genericArguments);
@@ -126,7 +126,8 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
 }
 
 void CallableParserAndGenerator::writeInstructionForStackOrInstance(bool inInstanceScope, EmojicodeInstruction stack,
-                                                                    EmojicodeInstruction object, EmojicodeInstruction vt,
+                                                                    EmojicodeInstruction object,
+                                                                    EmojicodeInstruction vt,
                                                                     SourcePosition p) {
     if (!inInstanceScope) {
         writer.writeInstruction(stack, p);
@@ -1561,15 +1562,15 @@ void CallableParserAndGenerator::analyze() {
             for (auto &var : initializer.argumentsToVariables()) {
                 if (scoper.instanceScope()->hasLocalVariable(var) == 0) {
                     throw CompilerError(initializer.position(),
-                                                 "🍼 was applied to \"%s\" but no matching instance variable was found.",
-                                                 var.utf8().c_str());
+                                        "🍼 was applied to \"%s\" but no matching instance variable was found.",
+                                        var.utf8().c_str());
                 }
                 auto &instanceVariable = scoper.instanceScope()->getLocalVariable(var);
                 auto &argumentVariable = methodScope.getLocalVariable(var);
                 if (!argumentVariable.type().compatibleTo(instanceVariable.type(), typeContext)) {
                     throw CompilerError(initializer.position(),
-                                                 "🍼 was applied to \"%s\" but instance variable has incompatible type.",
-                                                 var.utf8().c_str());
+                                        "🍼 was applied to \"%s\" but instance variable has incompatible type.",
+                                        var.utf8().c_str());
                 }
                 instanceVariable.initialize(writer.writtenInstructions());
                 produceToVariable(ResolvedVariable(instanceVariable, true), initializer.position());

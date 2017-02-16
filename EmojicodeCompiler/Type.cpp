@@ -95,7 +95,8 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeConte
 
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
     // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeContent::Reference && c->canBeUsedToResolve(t.resolutionConstraint_) && t.reference() < maxReferenceForSuper) {
+    while (t.type() == TypeContent::Reference && c->canBeUsedToResolve(t.resolutionConstraint_) &&
+           t.reference() < maxReferenceForSuper) {
         Type tn = c->superGenericArguments()[t.reference()];
         if (tn.type() == TypeContent::Reference && tn.reference() == t.reference()
             && tn.resolutionConstraint_ == t.resolutionConstraint_) {
@@ -180,7 +181,8 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
 
 bool Type::identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
     if (to.typeDefinitionFunctional()->numberOfOwnGenericArguments()) {
-        for (int l = to.typeDefinitionFunctional()->numberOfOwnGenericArguments(), i = to.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
+        for (int l = to.typeDefinitionFunctional()->numberOfOwnGenericArguments(),
+             i = to.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
             if (!this->genericArguments[i].identicalTo(to.genericArguments[i], ct, ctargs)) {
                 return false;
             }
@@ -458,7 +460,7 @@ template void Type::objectVariableRecords(int, std::vector<ObjectVariableInforma
 template void Type::objectVariableRecords(int, std::vector<FunctionObjectVariableInformation>&,
                                           InstructionCount, InstructionCount) const;
 
-//MARK: Type Visulisation
+// MARK: Type Visulisation
 
 std::string Type::typePackage() {
     switch (this->type()) {

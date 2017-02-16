@@ -12,8 +12,8 @@
 CompilerError::CompilerError(SourcePosition p, const char *err, ...) : position_(p) {
     va_list list;
     va_start(list, err);
-    
+
     vsprintf(error_, err, list);
-    
+
     va_end(list);
 }
