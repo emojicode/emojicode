@@ -761,15 +761,17 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
                     static_cast<EmojicodeInstruction>(iteratorId), INS_DISPATCH_PROTOCOL,
                 });
-                writer.writeInstruction({ PR_ENUMERATEABLE->index,
+                writer.writeInstruction({ static_cast<EmojicodeInstruction>(PR_ENUMERATEABLE->index),
                     static_cast<EmojicodeInstruction>(iteratorMethodIndex), INS_REPEAT_WHILE, INS_DISPATCH_PROTOCOL,
-                    INS_GET_VT_REFERENCE_STACK, static_cast<EmojicodeInstruction>(iteratorId), PR_ENUMERATOR->index,
+                    INS_GET_VT_REFERENCE_STACK, static_cast<EmojicodeInstruction>(iteratorId),
+                    static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
                     static_cast<EmojicodeInstruction>(moreVTI)
                 });
                 flowControlBlock(false, [this, iteratorId, &var, nextVTI]{
                     writer.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
                         static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL, INS_GET_VT_REFERENCE_STACK,
-                        static_cast<EmojicodeInstruction>(iteratorId), PR_ENUMERATOR->index,
+                        static_cast<EmojicodeInstruction>(iteratorId),
+                        static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
                         static_cast<EmojicodeInstruction>(nextVTI)
                     });
                 });

@@ -26,10 +26,10 @@ Emojicode from source.
 To build previous versions, please consult the according README.md by cloning
 the repository and checking out a version: `git checkout v0.3`**
 
-Prerequisites:
+Prerequisites (earlier versions might work but are not tested):
 
-- clang and clang++ 3.4 or newer, or
-- gcc and g++ 4.9 or newer
+- clang and clang++ 3.9 or newer, or
+- gcc and g++ 5.4 or newer
 - CMake 3.5.1 and (preferably) Ninja
 - Python 3.5.2 or above to pack for distribution and run tests
 - Allegro 5 to compile the allegro package
