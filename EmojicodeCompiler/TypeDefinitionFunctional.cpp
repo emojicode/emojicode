@@ -12,6 +12,7 @@
 #include "Type.hpp"
 #include "Function.hpp"
 #include "TypeContext.hpp"
+#include "Protocol.hpp"
 
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Type constraint) {
     genericArgumentConstraints_.push_back(constraint);
@@ -107,6 +108,16 @@ Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, Type type,
     return method;
 }
 
+void TypeDefinitionFunctional::addProtocol(Type type, SourcePosition p) {
+    for (auto protocol : protocols_) {
+        if (protocol.identicalTo(type, Type::nothingness(), nullptr)) {
+            auto name = type.toString(Type::nothingness(), true);
+            throw CompilerError(p, "Conformance to protocol %s was already declared.", name.c_str());
+        }
+    }
+    protocols_.push_back(type);
+}
+
 void TypeDefinitionFunctional::addTypeMethod(Function *method) {
     duplicateDeclarationCheck(method, typeMethods_, method->position());
     typeMethods_[method->name()] = method;
@@ -149,5 +160,17 @@ void TypeDefinitionFunctional::finalize() {
     if (instanceVariables().size() > 0 && initializerList().size() == 0) {
         compilerWarning(position(), "Type defines %d instances variables but has no initializers.",
                         instanceVariables().size());
+    }
+}
+
+void TypeDefinitionFunctional::finalizeProtocols() {
+    for (Type protocol : protocols()) {
+        for (auto method : protocol.protocol()->methods()) {
+            Function *clm = lookupMethod(method->name());
+            if (clm) {
+                clm->assignVti();
+                method->registerOverrider(clm);
+            }
+        }
     }
 }

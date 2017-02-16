@@ -210,11 +210,17 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         (this->type() == TypeContent::ValueType && to.type() == TypeContent::ValueType)) {
         return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, ct, ctargs);
     }
-    if (this->type() == TypeContent::Class && to.type() == TypeContent::Protocol) {
+    if (type() == TypeContent::Class && to.type() == TypeContent::Protocol) {
         for (Class *a = this->eclass(); a != nullptr; a = a->superclass()) {
             for (auto protocol : a->protocols()) {
                 if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
             }
+        }
+        return false;
+    }
+    if ((type() == TypeContent::ValueType || type() == TypeContent::Enum) && to.type() == TypeContent::Protocol) {
+        for (auto protocol : typeDefinitionFunctional()->protocols()) {
+            if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
         }
         return false;
     }
@@ -271,6 +277,7 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
 }
 
 bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *ctargs) const {
+    if (optional() != to.optional()) return false;
     if (ctargs && to.type() == TypeContent::LocalReference) {
         (*ctargs)[to.reference()].addType(*this, tc);
         return true;
@@ -303,6 +310,8 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
 }
 
 
+// MARK: Storage
+
 int Type::size() const {
     int basesize = 0;
     switch (storageType()) {
@@ -316,13 +325,12 @@ int Type::size() const {
                 case TypeContent::Callable:
                 case TypeContent::Class:
                 case TypeContent::Someobject:
-                case TypeContent::Protocol:
                 case TypeContent::Self:
                     return basesize + 1;
                 case TypeContent::Nothingness:
                     return 0;
                 default:
-                    throw std::logic_error("Type is wrongly value stored");
+                    throw std::logic_error("Type is wrongly simply stored");
             }
         case StorageType::Box:
             return 4;
@@ -340,10 +348,8 @@ EmojicodeInstruction Type::boxIdentifier() const {
     EmojicodeInstruction value;
     switch (type()) {
         case TypeContent::ValueType:
-            value = isValueReference() ? T_VT_REFERENCE : valueType()->boxIdentifier();
-            break;
         case TypeContent::Enum:
-            value = 1 & ENUM_MASK;
+            value = isValueReference() ? T_VT_REFERENCE : valueType()->boxIdentifier();
             break;
         case TypeContent::Callable:
         case TypeContent::Class:
@@ -369,12 +375,12 @@ bool Type::requiresBox() const {
         case TypeContent::Class:
         case TypeContent::Someobject:
         case TypeContent::Self:
-        case TypeContent::Protocol:
         case TypeContent::Nothingness:
             return false;
         case TypeContent::Something:
         case TypeContent::Reference:
         case TypeContent::LocalReference:
+        case TypeContent::Protocol:
             return true;
     }
 }

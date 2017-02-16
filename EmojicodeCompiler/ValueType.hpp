@@ -15,11 +15,11 @@
 
 class ValueType : public TypeDefinitionFunctional {
 public:
-    static const std::vector<ValueType *>& valueTypes() { return valueType_; }
+    static const std::vector<ValueType *>& valueTypes() { return valueTypes_; }
 
     ValueType(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
         : TypeDefinitionFunctional(name, p, pos, documentation) {
-        valueType_.push_back(this);
+        valueTypes_.push_back(this);
     }
 
     bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const override { return false; }
@@ -35,7 +35,7 @@ public:
     int boxIdentifier() const { return id_; }
 private:
     static int nextId;
-    static std::vector<ValueType *> valueType_;
+    static std::vector<ValueType *> valueTypes_;
     ValueTypeVTIProvider vtiProvider_;
     bool primitive_ = false;
     int id_ = nextId++;

@@ -9,7 +9,7 @@
 #include "ValueType.hpp"
 #include "Function.hpp"
 
-std::vector<ValueType *> ValueType::valueType_;
+std::vector<ValueType *> ValueType::valueTypes_;
 int ValueType::nextId = 3;
 
 void ValueType::finalize() {
@@ -31,4 +31,6 @@ void ValueType::finalize() {
         f->setVtiProvider(&vtiProvider_);
         f->package()->registerFunction(f);
     }
+
+    TypeDefinitionFunctional::finalizeProtocols();
 }

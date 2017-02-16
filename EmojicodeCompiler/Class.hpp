@@ -48,11 +48,6 @@ public:
     /** Returns a list of all required intializers. */
     const std::set<EmojicodeString>& requiredInitializers() const { return requiredInitializers_; }
 
-    /** Declares that this class agrees to the given protocol. */
-    void addProtocol(Type type);
-    /** Returns a list of all protocols to which this class conforms. */
-    const std::list<Type>& protocols() const { return protocols_; };
-
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     Function* lookupMethod(EmojicodeString name) override;
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
@@ -74,7 +69,6 @@ public:
 private:
     static std::vector<Class *> classes_;
 
-    std::list<Type> protocols_;
     std::set<EmojicodeString> requiredInitializers_;
 
     bool final_;

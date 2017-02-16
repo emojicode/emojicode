@@ -6,9 +6,9 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include "CodeGenerator.hpp"
 #include <cstring>
 #include <vector>
-#include "CodeGenerator.hpp"
 #include "CallableParserAndGenerator.hpp"
 #include "Protocol.hpp"
 #include "CallableScoper.hpp"
@@ -17,6 +17,7 @@
 #include "StringPool.hpp"
 #include "ValueType.hpp"
 #include "DiscardingCallableWriter.hpp"
+#include "TypeDefinitionFunctional.hpp"
 
 template <typename T>
 int writeUsed(const std::vector<T *> &functions, Writer &writer) {
@@ -48,6 +49,53 @@ void generateCodeForFunction(Function *function, CallableWriter &w) {
                                                         scoper, function->compilationMode());
 }
 
+void writeProtocolTable(Type type, Writer &writer) {
+    auto typeDefinitionFunctional = type.typeDefinitionFunctional();
+    writer.writeUInt16(typeDefinitionFunctional->protocols().size());
+    if (typeDefinitionFunctional->protocols().size() > 0) {
+        auto biggestPlaceholder = writer.writePlaceholder<uint16_t>();
+        auto smallestPlaceholder = writer.writePlaceholder<uint16_t>();
+
+        uint_fast16_t smallestProtocolIndex = UINT_FAST16_MAX;
+        uint_fast16_t biggestProtocolIndex = 0;
+
+        for (Type protocol : typeDefinitionFunctional->protocols()) {
+            writer.writeUInt16(protocol.protocol()->index);
+
+            if (protocol.protocol()->index > biggestProtocolIndex) {
+                biggestProtocolIndex = protocol.protocol()->index;
+            }
+            if (protocol.protocol()->index < smallestProtocolIndex) {
+                smallestProtocolIndex = protocol.protocol()->index;
+            }
+
+            writer.writeUInt16(protocol.protocol()->methods().size());
+
+            for (auto method : protocol.protocol()->methods()) {
+                try {
+                    Function *clm = typeDefinitionFunctional->lookupMethod(method->name());
+                    if (clm == nullptr) {
+                        auto typeName = type.toString(Type::nothingness(), true);
+                        auto protocolName = protocol.toString(Type::nothingness(), true);
+                        throw CompilerError(typeDefinitionFunctional->position(),
+                                            "%s does not agree to protocol %s: Method %s is missing.",
+                                            typeName.c_str(), protocolName.c_str(), method->name().utf8().c_str());
+                    }
+
+                    writer.writeUInt16(clm->vtiForUse());
+                    clm->enforcePromises(method, type, protocol, TypeContext(protocol));
+                }
+                catch (CompilerError &ce) {
+                    printError(ce);
+                }
+            }
+        }
+
+        biggestPlaceholder.write(biggestProtocolIndex);
+        smallestPlaceholder.write(smallestProtocolIndex);
+    }
+}
+
 void writeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass();
 
@@ -72,51 +120,7 @@ void writeClass(Type classType, Writer &writer) {
     writeUsed(eclass->typeMethodList(), writer);
     writeUsed(eclass->initializerList(), writer);
 
-    writer.writeUInt16(eclass->protocols().size());
-
-    if (eclass->protocols().size() > 0) {
-        auto biggestPlaceholder = writer.writePlaceholder<uint16_t>();
-        auto smallestPlaceholder = writer.writePlaceholder<uint16_t>();
-
-        uint_fast16_t smallestProtocolIndex = UINT_FAST16_MAX;
-        uint_fast16_t biggestProtocolIndex = 0;
-
-        for (Type protocol : eclass->protocols()) {
-            writer.writeUInt16(protocol.protocol()->index);
-
-            if (protocol.protocol()->index > biggestProtocolIndex) {
-                biggestProtocolIndex = protocol.protocol()->index;
-            }
-            if (protocol.protocol()->index < smallestProtocolIndex) {
-                smallestProtocolIndex = protocol.protocol()->index;
-            }
-
-            writer.writeUInt16(protocol.protocol()->methods().size());
-
-            for (auto method : protocol.protocol()->methods()) {
-                try {
-                    Function *clm = eclass->lookupMethod(method->name());
-                    if (clm == nullptr) {
-                        auto className = classType.toString(Type::nothingness(), true);
-                        auto protocolName = protocol.toString(Type::nothingness(), true);
-                        throw CompilerError(eclass->position(),
-                                                     "Class %s does not agree to protocol %s: Method %s is missing.",
-                                                     className.c_str(), protocolName.c_str(),
-                                                     method->name().utf8().c_str());
-                    }
-
-                    writer.writeUInt16(clm->vtiForUse());
-                    clm->enforcePromises(method, classType, TypeContext(protocol));
-                }
-                catch (CompilerError &ce) {
-                    printError(ce);
-                }
-            }
-        }
-
-        biggestPlaceholder.write(biggestProtocolIndex);
-        smallestPlaceholder.write(smallestProtocolIndex);
-    }
+    writeProtocolTable(classType, writer);
 
     std::vector<ObjectVariableInformation> information;
     for (auto variable : eclass->instanceScope().map()) {
@@ -159,7 +163,7 @@ void generateCode(Writer &writer) {
     for (auto vt : ValueType::valueTypes()) {  // Must be processed first, different sizes
         vt->finalize();
     }
-    for (auto eclass : Class::classes()) {  // Can be processed afterwards, all pointer are 1 word
+    for (auto eclass : Class::classes()) {  // Can be processed afterwards, all pointers are 1 word
         eclass->finalize();
     }
 
@@ -176,8 +180,7 @@ void generateCode(Writer &writer) {
     auto pkgCount = Package::packagesInOrder().size();
 
     if (pkgCount > 256) {
-        throw CompilerError(Package::packagesInOrder().back()->position(),
-                                     "You exceeded the maximum of 256 packages.");
+        throw CompilerError(Package::packagesInOrder().back()->position(), "You exceeded the maximum of 256 packages.");
     }
 
     writer.writeByte(pkgCount);
@@ -192,6 +195,27 @@ void generateCode(Writer &writer) {
         auto placeholder = writer.writePlaceholder<uint16_t>();
         placeholder.write(writeUsed(pkg->functions(), writer));
     }
+
+    int smallestBoxIdentifier = UINT16_MAX;
+    int biggestBoxIdentifier = 0;
+    int vtWithProtocolsCount = 0;
+    auto countPlaceholder = writer.writePlaceholder<uint16_t>();
+    auto smallestPlaceholder = writer.writePlaceholder<uint16_t>();
+    for (auto vt : ValueType::valueTypes()) {
+        if (vt->protocols().size() > 0) {
+            writer.writeUInt16(vt->boxIdentifier());
+            writeProtocolTable(Type(vt, false, false, false), writer);
+            if (vt->boxIdentifier() < smallestBoxIdentifier) {
+                smallestBoxIdentifier = vt->boxIdentifier();
+            }
+            if (vt->boxIdentifier() > biggestBoxIdentifier) {
+                biggestBoxIdentifier = vt->boxIdentifier();
+            }
+            vtWithProtocolsCount++;
+        }
+    }
+    countPlaceholder.write(vtWithProtocolsCount > 0 ? biggestBoxIdentifier - smallestBoxIdentifier + 1 : 0);
+    smallestPlaceholder.write(smallestBoxIdentifier);
 
     writer.writeUInt16(theStringPool.strings().size());
     for (auto string : theStringPool.strings()) {

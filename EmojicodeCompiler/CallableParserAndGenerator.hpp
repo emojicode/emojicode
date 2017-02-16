@@ -11,6 +11,7 @@
 
 #include <utility>
 #include <vector>
+#include <functional>
 #include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
 #include "CallableScoper.hpp"
@@ -130,7 +131,7 @@ private:
     void noEffectWarning(const Token &warningToken);
     void mutatingMethodCheck(Function *function, Type type, Destination des, SourcePosition p);
     bool typeIsEnumerable(Type type, Type *elementType);
-    void flowControlBlock(bool block = true);
+    void flowControlBlock(bool block = true, std::function<void()> = nullptr);
 
     void flowControlReturnEnd(FlowControlReturn &fcr);
 

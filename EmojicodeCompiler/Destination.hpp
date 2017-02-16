@@ -22,8 +22,8 @@ enum class DestinationMutability {
 class Destination {
 public:
     Destination(DestinationMutability mutability, StorageType type) : mutability_(mutability), type_(type) {}
-    static Destination temporaryReference() {
-        return Destination(true, StorageType::SimpleIfPossible);
+    static Destination temporaryReference(StorageType type = StorageType::SimpleIfPossible) {
+        return Destination(true, type);
     }
 
     bool isTemporaryReference() const { return temporary_; }

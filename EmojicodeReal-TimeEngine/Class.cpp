@@ -16,10 +16,3 @@ bool Class::inheritsFrom(Class *from) const {
     }
     return false;
 }
-
-bool Class::conformsTo(int protocolIndex) const {
-    if (protocolsTable == nullptr || protocolIndex < protocolsOffset || protocolIndex > protocolsMaxIndex) {
-        return false;
-    }
-    return protocolsTable[protocolIndex - protocolsOffset] != nullptr;
-}

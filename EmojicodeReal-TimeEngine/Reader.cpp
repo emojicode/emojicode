@@ -120,6 +120,25 @@ void readProtocolAgreement(Function **vmt, Function ***pmt, uint_fast16_t offset
     }
 }
 
+void readProtocolTable(ProtocolDispatchTable &table, Function **functionTable, FILE *in) {
+    uint_fast16_t protocolCount = readUInt16(in);
+    DEBUG_LOG("Reading %d protocol(s)", protocolCount);
+    if (protocolCount > 0) {
+        table.protocolsMaxIndex = readUInt16(in);
+        table.protocolsOffset = readUInt16(in);
+        table.protocolsTable = new Function**[table.protocolsMaxIndex - table.protocolsOffset + 1]();
+
+        DEBUG_LOG("Protocol max index is %d, offset is %d", table.protocolsMaxIndex, table.protocolsOffset);
+
+        for (uint_fast16_t i = 0; i < protocolCount; i++) {
+            readProtocolAgreement(functionTable, table.protocolsTable, table.protocolsOffset, in);
+        }
+    }
+    else {
+        table.protocolsTable = nullptr;
+    }
+}
+
 void readPackage(FILE *in) {
     static uint16_t classNextIndex = 0;
 
@@ -210,22 +229,7 @@ void readPackage(FILE *in) {
             readFunction(klass->initializersVtable, in, linkingTable);
         }
 
-        uint_fast16_t protocolCount = readUInt16(in);
-        DEBUG_LOG("Reading %d protocol(s)", protocolCount);
-        if (protocolCount > 0) {
-            klass->protocolsMaxIndex = readUInt16(in);
-            klass->protocolsOffset = readUInt16(in);
-            klass->protocolsTable = new Function**[klass->protocolsMaxIndex - klass->protocolsOffset + 1]();
-
-            DEBUG_LOG("Protocol max index is %d, offset is %d", klass->protocolsMaxIndex, klass->protocolsOffset);
-
-            for (uint_fast16_t i = 0; i < protocolCount; i++) {
-                readProtocolAgreement(klass->methodsVtable, klass->protocolsTable, klass->protocolsOffset, in);
-            }
-        }
-        else {
-            klass->protocolsTable = nullptr;
-        }
+        readProtocolTable(klass->protocolTable, klass->methodsVtable, in);
 
         klass->mark = mpfc(name);
         size_t size = sfch(klass, name);
@@ -282,6 +286,16 @@ Function* readBytecode(FILE *in) {
     CL_CLOSURE = classTable[6];
 
     DEBUG_LOG("✅ Read all packages");
+
+    EmojicodeInstruction count = readUInt16(in);
+    protocolDispatchTableTable = new ProtocolDispatchTable[count];
+    protocolDTTOffset = readUInt16(in);
+    DEBUG_LOG("%d value type protocols, starting from %d", count, protocolDTTOffset);
+    for (; count; count--) {
+        DEBUG_LOG("➡️ Still %d value type protocol tables to load", count);
+        auto index = readUInt16(in);
+        readProtocolTable(protocolDispatchTableTable[index - protocolDTTOffset], functionTable, in);
+    }
 
     stringPoolCount = readUInt16(in);
     DEBUG_LOG("Reading string pool with %d strings", stringPoolCount);

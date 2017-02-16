@@ -95,7 +95,6 @@ enum EmojicodeInstructionConstants {
     INS_SHIFT_RIGHT_INTEGER = 0x5F,
     INS_REPEAT_WHILE = 0x61,
     INS_IF = 0x62,
-    INS_FOREACH = 0x64,
     INS_RETURN = 0x60,
     INS_EXECUTE_CALLABLE = 0x70,
     INS_CLOSURE = 0x71,

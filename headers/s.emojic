@@ -399,8 +399,8 @@
 
 🌮
   Iterator over a 🍨. This iterator does *not* unwrap any values retrieved from
-  the list and therefore returns optionals. You can use the subclass [[🌴]] to
-  have optionals automatically unwrapped.
+  the list and therefore returns optionals. You can use [[🌳]] to have
+	optionals automatically unwrapped.
 🌮
 🌍 🐇 🌱🐚Element⚪️ 🍇
   🐊 🍡🐚🍬Element
@@ -432,7 +432,7 @@
     🐨 iteratee index
   🍉
 
-  🐖 🍡 ➡️ 🍡🐚Element 🍇
+  🐖 🍡 ➡️ 🍡🐚🍬Element 🍇
     🍎 🐕
   🍉
 
@@ -444,20 +444,6 @@
     🍦 i index
     🍫 index
     🍎 i
-  🍉
-🍉
-
-🌮
-  Iterator over a 🍨. This iterator unwraps all values obtained from the list.
-  You can therefore not use this iterator if the list contains Nothingness, but
-  you may use [[🌱]].
-🌮
-🌍 🐇 🌴🐚Element⚪️ 🌱🐚Element 🍇
-  🐊 🍡🐚Element
-  🐊 🔂🐚Element
-
-  ✒️ 🐖 🔽 ➡️ Element 🍇
-    🍎 🍺 🐽 🍚🐕 🍶🐕
   🍉
 🍉
 
@@ -779,7 +765,7 @@
   🍉
 
   🌮 Returns an iterator to iterate over the elements of this list. 🌮
-  🐖 🍡 ➡️ 🌴🐚Element 🍇
+  🐖 🍡 ➡️ 🌳🐚Element 🍇
     🍎 🔷⚫️🆕 🐕
   🍉
 🍉

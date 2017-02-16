@@ -25,16 +25,16 @@ void Function::setLinkingTableIndex(int index) {
     linkingTableIndex_ = index;
 }
 
-void Function::enforcePromises(Function *super, TypeContext typeContext,
+void Function::enforcePromises(Function *super, TypeContext typeContext, Type superSource,
                                std::experimental::optional<TypeContext> protocol) {
     try {
         if (super->final()) {
             throw CompilerError(position(), "%s’s implementation of %s was marked 🔏.",
-                                super->owningType().toString(typeContext, true).c_str(), name().utf8().c_str());
+                                superSource.toString(typeContext, true).c_str(), name().utf8().c_str());
         }
         if (this->accessLevel() != super->accessLevel()) {
             throw CompilerError(position(), "Access level of %s’s implementation of %s doesn‘t match.",
-                                super->owningType().toString(typeContext, true).c_str(), name().utf8().c_str());
+                                superSource.toString(typeContext, true).c_str(), name().utf8().c_str());
         }
 
         auto superReturnType = protocol ? super->returnType.resolveOn(*protocol, false) : super->returnType;
@@ -43,14 +43,14 @@ void Function::enforcePromises(Function *super, TypeContext typeContext,
             auto thisname = returnType.toString(typeContext, true);
             throw CompilerError(position(), "Return type %s of %s is not compatible to the return type defined in %s.",
                                 returnType.toString(typeContext, true).c_str(), name().utf8().c_str(),
-                                super->owningType().toString(typeContext, true).c_str());
+                                superSource.toString(typeContext, true).c_str());
         }
         if (superReturnType.storageType() == StorageType::Box) {
             returnType.forceBox();
         }
-        if (returnType.storageType() != superReturnType.storageType()) {
-            throw CompilerError(position(), "Return type is too deviating in memory from super return type. "
-                                "Considering Promise broken.");
+        if (returnType.optional() != superReturnType.optional()) {
+            throw CompilerError(position(), "Return type and super return type must both either be optional "
+                                "or non-optional.");
         }
 
         if (super->arguments.size() != arguments.size()) {
@@ -68,8 +68,8 @@ void Function::enforcePromises(Function *super, TypeContext typeContext,
                                     thisname.c_str(), i + 1, supertype.c_str());
             }
             if (arguments[i].type.storageType() != superArgumentType.storageType()) {
-                throw CompilerError(position(), "Argument %d is too deviating in memory from super argument. "
-                                    "Considering Promise broken.", i + 1);
+                throw CompilerError(position(), "Argument %d and super argument must both either be optional "
+                                    "or non-optional.", i + 1);
             }
         }
     }

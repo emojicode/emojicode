@@ -41,7 +41,11 @@ class CallableWriterInsertionPoint {
     friend CallableWriter;
     friend WriteLocation;
 public:
+    /// Inserts one value at the insertion point. Subsequent calls will insert values after the values previously
+    /// inserted.
     virtual void insert(EmojicodeInstruction value);
+    /// Inserts multiple values at the insertion point in the order given.
+    /// Subsequent calls will insert values after the values previously inserted.
     virtual void insert(std::initializer_list<EmojicodeInstruction> values);
 private:
     CallableWriterInsertionPoint(CallableWriter *writer, size_t index) : writer_(writer), index_(index) {}

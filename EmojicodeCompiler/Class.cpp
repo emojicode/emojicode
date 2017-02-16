@@ -15,7 +15,6 @@
 #include "Function.hpp"
 #include "Lexer.hpp"
 #include "TypeContext.hpp"
-#include "Protocol.hpp"
 
 std::vector<Class *> Class::classes_;
 
@@ -44,10 +43,6 @@ bool Class::inheritsFrom(Class *from) const {
         }
     }
     return false;
-}
-
-void Class::addProtocol(Type protocol) {
-    protocols_.push_back(protocol);
 }
 
 Initializer* Class::lookupInitializer(EmojicodeString name) {
@@ -118,7 +113,7 @@ void Class::finalize() {
 
         method->setVtiProvider(&methodVtiProvider_);
         if (method->checkOverride(superMethod)) {
-            method->override(superMethod, classType);
+            method->override(superMethod, classType, Type(superclass(), false));
             methodVtiProvider_.incrementVtiCount();
         }
     }
@@ -127,7 +122,7 @@ void Class::finalize() {
 
         clMethod->setVtiProvider(&methodVtiProvider_);
         if (clMethod->checkOverride(superMethod)) {
-            clMethod->override(superMethod, classType);
+            clMethod->override(superMethod, classType, Type(superclass(), false));
             methodVtiProvider_.incrementVtiCount();
         }
     }
@@ -139,7 +134,7 @@ void Class::finalize() {
         initializer->setVtiProvider(&initializerVtiProvider_);
         if (initializer->required) {
             if (superInit && superInit->required) {
-                initializer->override(superInit, classType);
+                initializer->override(superInit, classType, Type(superclass(), false));
                 initializerVtiProvider_.incrementVtiCount();
             }
             else {
@@ -155,13 +150,5 @@ void Class::finalize() {
         methodVtiProvider_.offsetVti(superclass()->methodVtiProvider_.peekNext());
     }
 
-    for (Type protocol : protocols()) {
-        for (auto method : protocol.protocol()->methods()) {
-            Function *clm = lookupMethod(method->name());
-            if (clm) {
-                clm->assignVti();
-                method->registerOverrider(clm);
-            }
-        }
-    }
+    TypeDefinitionFunctional::finalizeProtocols();
 }

@@ -33,6 +33,8 @@ const char *packageDirectory = defaultPackagesDirectory;
 
 Class **classTable;
 Function **functionTable;
+ProtocolDispatchTable *protocolDispatchTableTable;
+uint32_t protocolDTTOffset;
 
 uint_fast16_t stringPoolCount;
 Object **stringPool;

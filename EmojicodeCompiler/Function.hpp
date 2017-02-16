@@ -108,13 +108,13 @@ public:
     /// @throws CompilerError if the override is improper, e.g. implicit
     bool checkOverride(Function *superFunction) const;
     /// Makes this method properly inherit from @c super.
-    void override(Function *super, Type typeContext) {
-        enforcePromises(super, typeContext, std::experimental::nullopt);
+    void override(Function *super, Type superSource, Type typeContext) {
+        enforcePromises(super, typeContext, superSource, std::experimental::nullopt);
         setVti(super->getVti());
         super->registerOverrider(this);
     }
     /// Checks that no promises were broken and applies boxing if necessary.
-    void enforcePromises(Function *superFunction, TypeContext typeContext,
+    void enforcePromises(Function *superFunction, TypeContext typeContext, Type superSource,
                          std::experimental::optional<TypeContext> protocol);
 
     void registerOverrider(Function *f) { overriders_.push_back(f); }

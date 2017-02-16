@@ -52,10 +52,30 @@ struct Function {
     };
 };
 
+struct ProtocolDispatchTable {
+    Function ***protocolsTable;
+    uint_fast16_t protocolsOffset;
+    uint_fast16_t protocolsMaxIndex;
+
+    Function* dispatch(uint_fast16_t protocolIndex, uint_fast16_t functionIndex) const {
+        return protocolsTable[protocolIndex - protocolsOffset][functionIndex];
+    }
+
+    bool conformsTo(uint_fast16_t protocolIndex) const {
+        if (protocolsTable == nullptr || protocolIndex < protocolsOffset || protocolIndex > protocolsMaxIndex) {
+            return false;
+        }
+        return protocolsTable[protocolIndex - protocolsOffset] != nullptr;
+    }
+};
+
 /// The global class table
 extern Class **classTable;
 /// The global function table for function dispatch
 extern Function **functionTable;
+/// The global protocol dispatch table table for value types
+extern ProtocolDispatchTable *protocolDispatchTableTable;
+extern uint32_t protocolDTTOffset;
 
 extern uint_fast16_t stringPoolCount;
 extern Object **stringPool;

@@ -87,9 +87,15 @@ public:
     const std::vector<Function *>& typeMethodList() const { return typeMethodList_; }
     const std::vector<InstanceVariableDeclaration>& instanceVariables() { return instanceVariables_; }
 
+    /** Declares that this class agrees to the given protocol. */
+    void addProtocol(Type type, SourcePosition p);
+    /** Returns a list of all protocols to which this class conforms. */
+    const std::vector<Type>& protocols() const { return protocols_; };
+
     /** Finalizes the instance variables.
      @warning All subclasses that override, this method must call this method. */
     void finalize() override;
+    void finalizeProtocols();
 
     int size() const override { return static_cast<int>(scoper_.fullSize()); }
 
@@ -107,6 +113,8 @@ protected:
     std::vector<Function *> methodList_;
     std::vector<Initializer *> initializerList_;
     std::vector<Function *> typeMethodList_;
+
+    std::vector<Type> protocols_;
 
     ScoperWithScope scoper_;
 

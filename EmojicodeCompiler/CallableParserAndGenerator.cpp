@@ -6,10 +6,9 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include "CallableParserAndGenerator.hpp"
 #include <cstdlib>
 #include <cassert>
-#include <utility>
-#include "CallableParserAndGenerator.hpp"
 #include "Type.hpp"
 #include "Class.hpp"
 #include "Enum.hpp"
@@ -43,6 +42,11 @@ bool CallableParserAndGenerator::typeIsEnumerable(Type type, Type *elementType) 
                 }
             }
         }
+    }
+    else if (type.type() == TypeContent::Protocol && type.protocol() == PR_ENUMERATEABLE) {
+        *elementType = Type(TypeContent::Reference, false, 0, type.protocol()).resolveOn(type);
+        return true;
+
     }
     return false;
 }
@@ -169,7 +173,7 @@ void CallableParserAndGenerator::parseCoinInBlock() {
     scoper.clearAllTemporaryScopes();
 }
 
-void CallableParserAndGenerator::flowControlBlock(bool pushScope) {
+void CallableParserAndGenerator::flowControlBlock(bool pushScope, std::function<void()> bodyPredicate) {
     scoper.pushInitializationLevel();
 
     if (pushScope) {
@@ -181,6 +185,7 @@ void CallableParserAndGenerator::flowControlBlock(bool pushScope) {
     auto &token = stream_.requireIdentifier(E_GRAPES);
 
     auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
+    if (bodyPredicate) bodyPredicate();
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         parseCoinInBlock();
     }
@@ -207,6 +212,7 @@ void CallableParserAndGenerator::flowControlReturnEnd(FlowControlReturn &fcr) {
 void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &rtype, SourcePosition p,
                                                          WriteLocation location) const {
     if (rtype.type() == TypeContent::Nothingness) return;
+    if (des.simplify(rtype) == StorageType::NoAction) return;
 
     auto insertionPoint = location.insertionPoint();
 
@@ -215,6 +221,7 @@ void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &
             switch (rtype.storageType()) {
                 case StorageType::SimpleOptional:
                 case StorageType::SimpleIfPossible:
+                case StorageType::NoAction:
                     break;
                 case StorageType::Box:
                     rtype.unbox();
@@ -230,15 +237,18 @@ void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &
             switch (rtype.storageType()) {
                 case StorageType::Box:
                 case StorageType::SimpleIfPossible:
+                case StorageType::NoAction:
                     break;
                 case StorageType::SimpleOptional:
                     if ((rtype.size() > 3 && !rtype.optional()) || rtype.size() > 4)
                         throw std::logic_error("Beta: Cannot box " + rtype.toString(typeContext, true) + " due to its size.");
+                    rtype.forceBox();
                     location.write({ INS_SIMPLE_OPTIONAL_TO_BOX, EmojicodeInstruction(rtype.boxIdentifier()) });
                     break;
                 case StorageType::Simple:
                     if ((rtype.size() > 3 && !rtype.optional()) || rtype.size() > 4)
                         throw std::logic_error("Beta: Cannot box " + rtype.toString(typeContext, true) + " due to its size.");
+                    rtype.forceBox();
                     location.write({ INS_BOX_PRODUCE, EmojicodeInstruction(rtype.boxIdentifier()) });
                     break;
             }
@@ -248,6 +258,7 @@ void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &
                 case StorageType::Simple:
                 case StorageType::SimpleOptional:
                 case StorageType::SimpleIfPossible:
+                case StorageType::NoAction:
                     break;
                 case StorageType::Box:
                     rtype.unbox();
@@ -255,6 +266,7 @@ void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &
                     break;
             }
             break;
+        case StorageType::NoAction:
         case StorageType::SimpleIfPossible:
             break;
     }
@@ -698,59 +710,75 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             return Type::nothingness();
         }
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
-            auto placeholder = writer.writeInstructionPlaceholder(token);
+            scoper.pushScope();
 
             auto &variableToken = stream_.consumeToken(TokenType::Variable);
 
-            scoper.pushScope();
-
-            auto valueVariablePlaceholder = writer.writeInstructionPlaceholder(token);
-
-            auto destination = Destination::temporaryReference();
+            auto insertionPoint = writer.getInsertionPoint();
+            auto destination = Destination(DestinationMutability::Unknown, StorageType::NoAction);
             Type iteratee = parse(stream_.consumeToken(), Type::nothingness(), destination);
 
             Type itemType = Type::nothingness();
 
             if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_LIST) {
                 // If the iteratee is a list, the Real-Time Engine has some special sugar
-                placeholder.write(0x65);
                 int internalId = scoper.currentScope().allocateInternalVariable(iteratee);
                 writer.writeInstruction(internalId, token);  // Internally needed
                 auto type = Type(TypeContent::Reference, false, 0, CL_LIST).resolveOn(iteratee);
                 auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), type,
                                                                    true, variableToken.position());
                 var.initialize(writer.writtenInstructions());
-                valueVariablePlaceholder.write(var.id());
+                auto destination = Destination::temporaryReference();
+                writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                insertionPoint.insert({ 0x65, static_cast<unsigned int>(var.id()) });
+                flowControlBlock(false);
             }
             else if (iteratee.type() == TypeContent::ValueType &&
                      iteratee.valueType()->name()[0] == E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE) {
                 // If the iteratee is a range, the Real-Time Engine also has some special sugar
-                placeholder.write(0x66);
                 auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), Type::integer(), true,
                                                                    variableToken.position());
                 var.initialize(writer.writtenInstructions());
-                valueVariablePlaceholder.write(var.id());
+                auto destination = Destination::temporaryReference();
+                writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                insertionPoint.insert({ 0x66, static_cast<unsigned int>(var.id()) });
+                flowControlBlock(false);
             }
             else if (typeIsEnumerable(iteratee, &itemType)) {
-                Function *iteratorMethod = iteratee.eclass()->lookupMethod(EmojicodeString(E_DANGO));
-                iteratorMethod->vtiForUse();
-                TypeDefinitionFunctional *td = iteratorMethod->returnType.typeDefinitionFunctional();
-                td->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
-                td->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
-                placeholder.write(INS_FOREACH);
-                int internalId = scoper.currentScope().allocateInternalVariable(iteratee);
-                writer.writeInstruction(internalId, token);  // Internally needed
+                auto iteratorMethodIndex = PR_ENUMERATEABLE->lookupMethod(EmojicodeString(E_DANGO))->vtiForUse();
+
+                auto iteratorId = scoper.currentScope().allocateInternalVariable(Type(PR_ENUMERATOR, false));
+                auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
+                auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
+
                 auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), itemType, true,
                                                                    variableToken.position());
                 var.initialize(writer.writtenInstructions());
-                valueVariablePlaceholder.write(var.id());
+
+                auto destination = Destination::temporaryReference(StorageType::Box);
+                writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
+                    static_cast<EmojicodeInstruction>(iteratorId), INS_DISPATCH_PROTOCOL,
+                });
+                writer.writeInstruction({ PR_ENUMERATEABLE->index,
+                    static_cast<EmojicodeInstruction>(iteratorMethodIndex), INS_REPEAT_WHILE, INS_DISPATCH_PROTOCOL,
+                    INS_GET_VT_REFERENCE_STACK, static_cast<EmojicodeInstruction>(iteratorId), PR_ENUMERATOR->index,
+                    static_cast<EmojicodeInstruction>(moreVTI)
+                });
+                flowControlBlock(false, [this, iteratorId, &var, nextVTI]{
+                    writer.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
+                        static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL, INS_GET_VT_REFERENCE_STACK,
+                        static_cast<EmojicodeInstruction>(iteratorId), PR_ENUMERATOR->index,
+                        static_cast<EmojicodeInstruction>(nextVTI)
+                    });
+                });
             }
             else {
                 auto iterateeString = iteratee.toString(typeContext, true);
                 throw CompilerError(token, "%s does not conform to s🔂.", iterateeString.c_str());
             }
 
-            flowControlBlock(false);
+
             returned = false;
 
             return Type::nothingness();

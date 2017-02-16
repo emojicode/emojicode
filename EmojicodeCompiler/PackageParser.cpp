@@ -399,10 +399,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 break;
             }
             case E_CROCODILE: {
-                if (typed.type() != TypeContent::Class) {
-                    throw CompilerError(token, "🐊 not supported yet.");
-                }
-
                 staticOnType.disallow();
                 override.disallow();
                 final.disallow();
@@ -415,14 +411,11 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 Type type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables, Type::nothingness(),
                                                  nullptr, true);
 
-                if (type.optional()) {
-                    throw CompilerError(token, "A class cannot conform to an 🍬 protocol.");
-                }
-                if (type.type() != TypeContent::Protocol) {
+                if (type.type() != TypeContent::Protocol || type.optional()) {
                     throw CompilerError(token, "The given type is not a protocol.");
                 }
 
-                typed.eclass()->addProtocol(type);
+                typed.typeDefinitionFunctional()->addProtocol(type, token.position());
                 break;
             }
             case E_PIG: {

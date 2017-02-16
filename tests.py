@@ -11,7 +11,8 @@ compilation_tests = [
     "enumTypeMethod", "unwrap",
     "conditionalProduce", "piglatin", "stringConcat", "extension", "class",
     "babyBottleInitializer", "valueType", "isNothingness", "downcastClass",
-    "protocol", "variableInitAndScoping", "gcStressTest1", "gcStressTest2",
+    "protocolClass", "protocolValueType", "variableInitAndScoping",
+    "gcStressTest1", "gcStressTest2",
     "valueTypeCopySelf",
     # chaining callable threads
 ]
@@ -20,7 +21,7 @@ library_tests = [
     "dataTest", "dictionaryTest", "systemTest", "jsonTest", "enumerator"
     # fileTest
 ]
-reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject,",
+reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject",
                                       "*.emojic"))
 
 failed_tests = []

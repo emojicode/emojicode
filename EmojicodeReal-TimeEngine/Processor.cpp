@@ -191,9 +191,15 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             EmojicodeInstruction pti = thread->consumeInstruction();
             EmojicodeInstruction vti = thread->consumeInstruction();
 
-            Object *o = sth.value[0].object;
-            performFunction(o->klass->protocolsTable[pti - o->klass->protocolsOffset][vti], sth.value[0], thread,
-                            destination);
+            auto type = sth.value[0].raw;
+            if (type == T_OBJECT) {
+                Object *o = sth.value[1].object;
+                performFunction(o->klass->protocolTable.dispatch(pti, vti), sth.value[1], thread, destination);
+            }
+            else {
+                performFunction(protocolDispatchTableTable[type - protocolDTTOffset].dispatch(pti, vti),
+                                sth.value + 1, thread, destination);
+            }
             return;
         }
         case INS_NEW_OBJECT: {
@@ -658,16 +664,14 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             return;
         }
         case INS_CAST_TO_PROTOCOL: {
-            Box box;
-            produce(thread->consumeInstruction(), thread, &box.type);
+            produce(thread->consumeInstruction(), thread, destination);
             EmojicodeInstruction pi = thread->consumeInstruction();
-            // TODO: Handle Value Type
-            if (box.isNothingness() || !(box.type.raw == T_OBJECT && box.value1.object->klass->conformsTo(pi))) {
-                destination[0].raw = 1;
-                destination[1] = box.value1;
-                return;
+            auto box = reinterpret_cast<Box *>(destination);
+            if (!(!box->isNothingness() &&
+                  ((box->type.raw == T_OBJECT && box->value1.object->klass->protocolTable.conformsTo(pi)) ||
+                    protocolDispatchTableTable[box->type.raw].conformsTo(pi)))) {
+                destination[0].raw = 0;
             }
-            destination[0].raw = 0;
             return;
         }
         case INS_CAST_TO_VALUE_TYPE: {
@@ -839,37 +843,6 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
                     }
                 }
             }
-            return;
-        }
-        case INS_FOREACH: {
-            EmojicodeInstruction variable = thread->consumeInstruction();
-
-            Value iteratee;
-            produce(thread->consumeInstruction(), thread, &iteratee);
-
-            Value iterator;
-            performFunction(iteratee.object->klass->protocolsTable[1 - iteratee.object->klass->protocolsOffset][0],
-                            iteratee, thread, &iterator);
-            EmojicodeInstruction enumeratorVindex = thread->consumeInstruction();
-            *thread->variableDestination(enumeratorVindex) = iterator;
-
-            Function *nextMethod = iterator.object->klass->protocolsTable[0][0];
-            Function *moreComing = iterator.object->klass->protocolsTable[0][1];
-
-            EmojicodeInstruction *begin = thread->currentStackFrame()->executionPointer;
-
-            Value more;
-            while (performFunction(moreComing, thread->getVariable(enumeratorVindex), thread, &more), more.raw) {
-                performFunction(nextMethod, thread->getVariable(enumeratorVindex), thread,
-                                thread->variableDestination(variable));
-
-                if (runBlock(thread)) {
-                    return;
-                }
-                thread->currentStackFrame()->executionPointer = begin;
-            }
-            passBlock(thread);
-
             return;
         }
         case 0x65: {
