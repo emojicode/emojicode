@@ -164,16 +164,6 @@ void CallableParserAndGenerator::copyVariableContent(ResolvedVariable var, Sourc
     }
 }
 
-void CallableParserAndGenerator::parseCoinInBlock() {
-    effect = false;
-
-    auto &token = stream_.consumeToken();
-    auto des = Destination::temporaryReference();
-    auto type = parse(token, Type::nothingness(), des);
-    noEffectWarning(token);
-    scoper.clearAllTemporaryScopes();
-}
-
 void CallableParserAndGenerator::flowControlBlock(bool pushScope, std::function<void()> bodyPredicate) {
     scoper.pushInitializationLevel();
 
@@ -188,7 +178,7 @@ void CallableParserAndGenerator::flowControlBlock(bool pushScope, std::function<
     auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
     if (bodyPredicate) bodyPredicate();
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        parseCoinInBlock();
+        parseStatement(stream_.consumeToken());
     }
     stream_.consumeToken();
     placeholder.write();
@@ -367,6 +357,290 @@ Type CallableParserAndGenerator::parse(const Token &token, Destination &des) {
     return parse(token, Type::nothingness(), des);
 }
 
+void CallableParserAndGenerator::parseStatement(const Token &token) {
+    if (token.type() == TokenType::Identifier) {
+        switch (token.value()[0]) {
+            case E_SHORTCAKE: {
+                auto &varName = stream_.consumeToken(TokenType::Variable);
+
+                if (scoper.currentScope().hasLocalVariable(varName.value())) {
+                    throw CompilerError(token, "Cannot redeclare variable.");
+                }
+
+                Type t = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
+
+
+                auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position());
+
+                if (t.optional()) {
+                    var.initialize(writer.writtenInstructions());
+                    writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
+                    writer.writeInstruction(var.id(), token);
+                    writer.writeInstruction(INS_GET_NOTHINGNESS, token);
+                }
+                return;
+            }
+            case E_CUSTARD: {
+                auto &varName = stream_.consumeToken(TokenType::Variable);
+
+                Type type = Type::nothingness();
+                try {
+                    auto rvar = scoper.getVariable(varName.value(), varName.position());
+
+                    rvar.variable.initialize(writer.writtenInstructions());
+                    rvar.variable.mutate(varName);
+
+                    produceToVariable(rvar, token);
+
+                    if (rvar.inInstanceScope && !typeContext.calleeType().isMutable()) {
+                        throw CompilerError(token.position(),
+                                            "Can’t mutate instance variable as method is not marked with 🖍.");
+                    }
+
+                    type = rvar.variable.type();
+                    parse(stream_.consumeToken(), token, type,
+                          Destination(DestinationMutability::Mutable, type.storageType()));
+                }
+                catch (VariableNotFoundError &vne) {
+                    // Not declared, declaring as local variable
+                    writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
+
+                    auto placeholder = writer.writeInstructionPlaceholder(token);
+
+                    auto destination = Destination(DestinationMutability::Mutable, StorageType::SimpleIfPossible);
+                    Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
+                    auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position());
+                    var.initialize(writer.writtenInstructions());
+                    placeholder.write(var.id());
+                }
+                return;
+            }
+            case E_SOFT_ICE_CREAM: {
+                auto &varName = stream_.consumeToken(TokenType::Variable);
+
+                if (scoper.currentScope().hasLocalVariable(varName.value())) {
+                    throw CompilerError(token, "Cannot redeclare variable.");
+                }
+
+                writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
+
+                auto placeholder = writer.writeInstructionPlaceholder(token);
+
+                auto destination = Destination(DestinationMutability::Immutable, StorageType::SimpleIfPossible);
+                Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
+                auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
+                var.initialize(writer.writtenInstructions());
+                placeholder.write(var.id());
+                return;
+            }
+            case E_COOKING:
+            case E_CHOCOLATE_BAR: {
+                auto &varName = stream_.consumeToken(TokenType::Variable);
+
+                auto var = scoper.getVariable(varName.value(), varName.position());
+
+                var.variable.uninitalizedError(varName);
+                var.variable.mutate(varName);
+
+                if (!var.variable.type().compatibleTo(Type::integer(), typeContext)) {
+                    throw CompilerError(token, "%s can only operate on 🚂 variables.", token.value().utf8().c_str());
+                }
+
+                produceToVariable(var, token);
+
+                if (token.isIdentifier(E_COOKING)) {
+                    writer.writeInstruction(INS_DECREMENT, token);
+                }
+                else {
+                    writer.writeInstruction(INS_INCREMENT, token);
+                }
+                return;
+            }
+            case E_TANGERINE: {
+                writer.writeInstruction(INS_IF, token);
+
+                auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
+                auto fcr = FlowControlReturn();
+
+                scoper.pushScope();
+                parseIfExpression(token);
+                flowControlBlock(false);
+                flowControlReturnEnd(fcr);
+
+                while (stream_.consumeTokenIf(E_LEMON)) {
+                    writer.writeInstruction(0x1, token);
+
+                    scoper.pushScope();
+                    parseIfExpression(token);
+                    flowControlBlock(false);
+                    flowControlReturnEnd(fcr);
+                }
+
+                if (stream_.consumeTokenIf(E_STRAWBERRY)) {
+                    writer.writeInstruction(0x2, token);
+                    flowControlBlock();
+                    flowControlReturnEnd(fcr);
+                }
+                else {
+                    writer.writeInstruction(0x0, token);
+                    fcr.branches++;  // The else branch always exists. Theoretically at least.
+                }
+
+                placeholder.write();
+
+                returned = fcr.returned();
+                
+                return;
+            }
+            case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
+                writer.writeInstruction(INS_REPEAT_WHILE, token);
+
+                parseIfExpression(token);
+                flowControlBlock();
+                returned = false;
+
+                return;
+            }
+            case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
+                scoper.pushScope();
+
+                auto &variableToken = stream_.consumeToken(TokenType::Variable);
+
+                auto insertionPoint = writer.getInsertionPoint();
+                auto destination = Destination(DestinationMutability::Unknown, StorageType::NoAction);
+                Type iteratee = parse(stream_.consumeToken(), Type::nothingness(), destination);
+
+                Type itemType = Type::nothingness();
+
+                if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_LIST) {
+                    // If the iteratee is a list, the Real-Time Engine has some special sugar
+                    int internalId = scoper.currentScope().allocateInternalVariable(iteratee);
+                    writer.writeInstruction(internalId, token);  // Internally needed
+                    auto type = Type(TypeContent::Reference, false, 0, CL_LIST).resolveOn(iteratee);
+                    auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), type,
+                                                                       true, variableToken.position());
+                    var.initialize(writer.writtenInstructions());
+                    auto destination = Destination::temporaryReference();
+                    writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                    insertionPoint.insert({ 0x65, static_cast<unsigned int>(var.id()) });
+                    flowControlBlock(false);
+                }
+                else if (iteratee.type() == TypeContent::ValueType &&
+                         iteratee.valueType()->name()[0] == E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE) {
+                    // If the iteratee is a range, the Real-Time Engine also has some special sugar
+                    auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), Type::integer(), true,
+                                                                       variableToken.position());
+                    var.initialize(writer.writtenInstructions());
+                    auto destination = Destination::temporaryReference();
+                    writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                    insertionPoint.insert({ 0x66, static_cast<unsigned int>(var.id()) });
+                    flowControlBlock(false);
+                }
+                else if (typeIsEnumerable(iteratee, &itemType)) {
+                    auto iteratorMethodIndex = PR_ENUMERATEABLE->lookupMethod(EmojicodeString(E_DANGO))->vtiForUse();
+
+                    auto iteratorId = scoper.currentScope().allocateInternalVariable(Type(PR_ENUMERATOR, false));
+                    auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
+                    auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
+
+                    auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), itemType, true,
+                                                                       variableToken.position());
+                    var.initialize(writer.writtenInstructions());
+
+                    auto destination = Destination::temporaryReference(StorageType::Box);
+                    writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                    insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
+                        static_cast<EmojicodeInstruction>(iteratorId), INS_DISPATCH_PROTOCOL,
+                    });
+                    writer.writeInstruction({ static_cast<EmojicodeInstruction>(PR_ENUMERATEABLE->index),
+                        static_cast<EmojicodeInstruction>(iteratorMethodIndex), INS_REPEAT_WHILE, INS_DISPATCH_PROTOCOL,
+                        INS_GET_VT_REFERENCE_STACK, static_cast<EmojicodeInstruction>(iteratorId),
+                        static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
+                        static_cast<EmojicodeInstruction>(moreVTI)
+                    });
+                    flowControlBlock(false, [this, iteratorId, &var, nextVTI]{
+                        writer.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
+                            static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL, INS_GET_VT_REFERENCE_STACK,
+                            static_cast<EmojicodeInstruction>(iteratorId),
+                            static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
+                            static_cast<EmojicodeInstruction>(nextVTI)
+                        });
+                    });
+                }
+                else {
+                    auto iterateeString = iteratee.toString(typeContext, true);
+                    throw CompilerError(token, "%s does not conform to s🔂.", iterateeString.c_str());
+                }
+
+                returned = false;
+                return;
+            }
+            case E_GOAT: {
+                if (!isSuperconstructorRequired()) {
+                    throw CompilerError(token, "🐐 can only be used inside initializers.");
+                }
+                if (!typeContext.calleeType().eclass()->superclass()) {
+                    throw CompilerError(token, "🐐 can only be used if the eclass inherits from another.");
+                }
+                if (calledSuper) {
+                    throw CompilerError(token, "You may not call more than one superinitializer.");
+                }
+                if (flowControlDepth) {
+                    throw CompilerError(token, "You may not put a call to a superinitializer in a flow control structure.");
+                }
+
+                scoper.instanceScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be "
+                                                                              "initialized before superinitializer.");
+
+                writer.writeInstruction(INS_SUPER_INITIALIZER, token);
+
+                Class *eclass = typeContext.calleeType().eclass();
+
+                writer.writeInstruction(INS_GET_CLASS_FROM_INDEX, token);
+                writer.writeInstruction(eclass->superclass()->index, token);
+
+                auto &initializerToken = stream_.consumeToken(TokenType::Identifier);
+
+                auto initializer = eclass->superclass()->getInitializer(initializerToken, Type(eclass, false), typeContext);
+
+                writer.writeInstruction(initializer->vtiForUse(), token);
+
+                parseFunctionCall(typeContext.calleeType(), initializer, token);
+                
+                calledSuper = true;
+                
+                return;
+            }
+            case E_RED_APPLE: {
+                writer.writeInstruction(INS_RETURN, token);
+
+                if (isOnlyNothingnessReturnAllowed()) {
+                    if (static_cast<Initializer &>(callable).canReturnNothingness) {
+                        parse(stream_.consumeToken(), token, Type::nothingness(),
+                              Destination(DestinationMutability::Unknown, StorageType::Simple));
+                        return;
+                    }
+                    else {
+                        throw CompilerError(token, "🍎 cannot be used inside an initializer.");
+                    }
+                }
+
+                parse(stream_.consumeToken(), token, callable.returnType,
+                      Destination(DestinationMutability::Immutable, callable.returnType.storageType()));
+                returned = true;
+                return;
+            }
+        }
+    }
+
+    // Must be an expression
+    effect = false;
+    auto des = Destination::temporaryReference();
+    auto type = parse(token, Type::nothingness(), des);
+    noEffectWarning(token);
+    scoper.clearAllTemporaryScopes();
+}
+
 Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Destination &des) {
     switch (token.type()) {
         case TokenType::String: {
@@ -460,113 +734,23 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Des
 }
 
 Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expectation, Destination &des) {
-    if (!token.isIdentifier(E_RED_APPLE)) {
-        // We need a chance to test whether the red apple’s return is used
-        effect = true;
-    }
-
     switch (token.value()[0]) {
-        case 0x1F6D1:
-            return Type::nothingness();
-        case E_SHORTCAKE: {
-            auto &varName = stream_.consumeToken(TokenType::Variable);
-
-            if (scoper.currentScope().hasLocalVariable(varName.value())) {
-                throw CompilerError(token, "Cannot redeclare variable.");
-            }
-
-            Type t = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
-
-
-            auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position());
-
-            if (t.optional()) {
-                var.initialize(writer.writtenInstructions());
-                writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
-                writer.writeInstruction(var.id(), token);
-                writer.writeInstruction(INS_GET_NOTHINGNESS, token);
-            }
-            return Type::nothingness();
-        }
-        case E_CUSTARD: {
-            auto &varName = stream_.consumeToken(TokenType::Variable);
-
-            Type type = Type::nothingness();
-            try {
-                auto rvar = scoper.getVariable(varName.value(), varName.position());
-
-                rvar.variable.initialize(writer.writtenInstructions());
-                rvar.variable.mutate(varName);
-
-                produceToVariable(rvar, token);
-
-                if (rvar.inInstanceScope && !typeContext.calleeType().isMutable()) {
-                    throw CompilerError(token.position(),
-                                                 "Can’t mutate instance variable as method is not marked with 🖍.");
-                }
-
-                type = rvar.variable.type();
-                parse(stream_.consumeToken(), token, type,
-                      Destination(DestinationMutability::Mutable, type.storageType()));
-            }
-            catch (VariableNotFoundError &vne) {
-                // Not declared, declaring as local variable
-                writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
-
-                auto placeholder = writer.writeInstructionPlaceholder(token);
-
-                auto destination = Destination(DestinationMutability::Mutable, StorageType::SimpleIfPossible);
-                Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
-                auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position());
-                var.initialize(writer.writtenInstructions());
-                placeholder.write(var.id());
-                return Type::nothingness();
-            }
-
-            return Type::nothingness();
-        }
-        case E_SOFT_ICE_CREAM: {
-            auto &varName = stream_.consumeToken(TokenType::Variable);
-
-            if (scoper.currentScope().hasLocalVariable(varName.value())) {
-                throw CompilerError(token, "Cannot redeclare variable.");
-            }
-
-            writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
-
-            auto placeholder = writer.writeInstructionPlaceholder(token);
-
-            auto destination = Destination(DestinationMutability::Immutable, StorageType::SimpleIfPossible);
-            Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
-            auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
-            var.initialize(writer.writtenInstructions());
-            placeholder.write(var.id());
-            return Type::nothingness();
-        }
+        case E_LEMON:
+        case E_STRAWBERRY:
+        case E_WATERMELON:
+        case E_AUBERGINE:
+        case E_SHORTCAKE:
+        case E_CUSTARD:
+        case E_SOFT_ICE_CREAM:
         case E_COOKING:
-        case E_CHOCOLATE_BAR: {
-            auto &varName = stream_.consumeToken(TokenType::Variable);
-
-            auto var = scoper.getVariable(varName.value(), varName.position());
-
-            var.variable.uninitalizedError(varName);
-            var.variable.mutate(varName);
-
-            if (!var.variable.type().compatibleTo(Type::integer(), typeContext)) {
-                throw CompilerError(token, "%s can only operate on 🚂 variables.", token.value().utf8().c_str());
-            }
-
-            produceToVariable(var, token);
-
-            if (token.isIdentifier(E_COOKING)) {
-                writer.writeInstruction(INS_DECREMENT, token);
-            }
-            else {
-                writer.writeInstruction(INS_INCREMENT, token);
-            }
-            return Type::nothingness();
-        }
-        case E_COOKIE: {  // Producing
+        case E_CHOCOLATE_BAR:
+        case E_TANGERINE:
+        case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS:
+        case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY:
+        case E_GOAT:
+        case E_RED_APPLE:
+            throw CompilerError(token, "Unexpected statement %s.", token.value().utf8().c_str());
+        case E_COOKIE: {
             writeBoxingAndTemporary(des, Type(CL_STRING, false), token.position());
             writer.writeInstruction(0x52, token);
             auto placeholder = writer.writeInstructionPlaceholder(token);
@@ -587,7 +771,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             placeholder.write(stringCount);
             return Type(CL_STRING, false);
         }
-        case E_ICE_CREAM: {  // Producing
+        case E_ICE_CREAM: {
             writeBoxingAndTemporary(des, Type(CL_LIST, false), token.position());
             writer.writeInstruction(0x51, token);
 
@@ -616,7 +800,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             placeholder.write();
             return type;
         }
-        case E_HONEY_POT: {  // Producing
+        case E_HONEY_POT: {
             writeBoxingAndTemporary(des, Type(CL_LIST, false), token.position());
             writer.writeInstruction(0x50, token);
 
@@ -650,7 +834,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             return type;
         }
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE:
-        case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {  // Producing
+        case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
             Type type = Type::nothingness();
             package_->fetchRawType(EmojicodeString(E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE), globalNamespace,
                                    false, token, &type);
@@ -665,133 +849,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             return type;
         }
-        case E_TANGERINE: {
-            writer.writeInstruction(INS_IF, token);
-
-            auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
-            auto fcr = FlowControlReturn();
-
-            scoper.pushScope();
-            parseIfExpression(token);
-            flowControlBlock(false);
-            flowControlReturnEnd(fcr);
-
-            while (stream_.consumeTokenIf(E_LEMON)) {
-                writer.writeInstruction(0x1, token);
-
-                scoper.pushScope();
-                parseIfExpression(token);
-                flowControlBlock(false);
-                flowControlReturnEnd(fcr);
-            }
-
-            if (stream_.consumeTokenIf(E_STRAWBERRY)) {
-                writer.writeInstruction(0x2, token);
-                flowControlBlock();
-                flowControlReturnEnd(fcr);
-            }
-            else {
-                writer.writeInstruction(0x0, token);
-                fcr.branches++;  // The else branch always exists. Theoretically at least.
-            }
-
-            placeholder.write();
-
-            returned = fcr.returned();
-
-            return Type::nothingness();
-        }
-        case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
-            writer.writeInstruction(INS_REPEAT_WHILE, token);
-
-            parseIfExpression(token);
-            flowControlBlock();
-            returned = false;
-
-            return Type::nothingness();
-        }
-        case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
-            scoper.pushScope();
-
-            auto &variableToken = stream_.consumeToken(TokenType::Variable);
-
-            auto insertionPoint = writer.getInsertionPoint();
-            auto destination = Destination(DestinationMutability::Unknown, StorageType::NoAction);
-            Type iteratee = parse(stream_.consumeToken(), Type::nothingness(), destination);
-
-            Type itemType = Type::nothingness();
-
-            if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_LIST) {
-                // If the iteratee is a list, the Real-Time Engine has some special sugar
-                int internalId = scoper.currentScope().allocateInternalVariable(iteratee);
-                writer.writeInstruction(internalId, token);  // Internally needed
-                auto type = Type(TypeContent::Reference, false, 0, CL_LIST).resolveOn(iteratee);
-                auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), type,
-                                                                   true, variableToken.position());
-                var.initialize(writer.writtenInstructions());
-                auto destination = Destination::temporaryReference();
-                writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
-                insertionPoint.insert({ 0x65, static_cast<unsigned int>(var.id()) });
-                flowControlBlock(false);
-            }
-            else if (iteratee.type() == TypeContent::ValueType &&
-                     iteratee.valueType()->name()[0] == E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE) {
-                // If the iteratee is a range, the Real-Time Engine also has some special sugar
-                auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), Type::integer(), true,
-                                                                   variableToken.position());
-                var.initialize(writer.writtenInstructions());
-                auto destination = Destination::temporaryReference();
-                writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
-                insertionPoint.insert({ 0x66, static_cast<unsigned int>(var.id()) });
-                flowControlBlock(false);
-            }
-            else if (typeIsEnumerable(iteratee, &itemType)) {
-                auto iteratorMethodIndex = PR_ENUMERATEABLE->lookupMethod(EmojicodeString(E_DANGO))->vtiForUse();
-
-                auto iteratorId = scoper.currentScope().allocateInternalVariable(Type(PR_ENUMERATOR, false));
-                auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
-                auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
-
-                auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), itemType, true,
-                                                                   variableToken.position());
-                var.initialize(writer.writtenInstructions());
-
-                auto destination = Destination::temporaryReference(StorageType::Box);
-                writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
-                insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
-                    static_cast<EmojicodeInstruction>(iteratorId), INS_DISPATCH_PROTOCOL,
-                });
-                writer.writeInstruction({ static_cast<EmojicodeInstruction>(PR_ENUMERATEABLE->index),
-                    static_cast<EmojicodeInstruction>(iteratorMethodIndex), INS_REPEAT_WHILE, INS_DISPATCH_PROTOCOL,
-                    INS_GET_VT_REFERENCE_STACK, static_cast<EmojicodeInstruction>(iteratorId),
-                    static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
-                    static_cast<EmojicodeInstruction>(moreVTI)
-                });
-                flowControlBlock(false, [this, iteratorId, &var, nextVTI]{
-                    writer.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
-                        static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL, INS_GET_VT_REFERENCE_STACK,
-                        static_cast<EmojicodeInstruction>(iteratorId),
-                        static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
-                        static_cast<EmojicodeInstruction>(nextVTI)
-                    });
-                });
-            }
-            else {
-                auto iterateeString = iteratee.toString(typeContext, true);
-                throw CompilerError(token, "%s does not conform to s🔂.", iterateeString.c_str());
-            }
-
-
-            returned = false;
-
-            return Type::nothingness();
-        }
-        case E_LEMON:
-        case E_STRAWBERRY:
-        case E_WATERMELON:
-        case E_AUBERGINE:
-            throw CompilerError(token, "Unexpected identifier %s.", token.value().utf8().c_str());
-        case E_DOG: {  // Producing
+        case E_DOG: {
             if (isSuperconstructorRequired() && !calledSuper &&
                 static_cast<Initializer &>(callable).owningType().eclass()->superclass()) {
                 throw CompilerError(token, "Attempt to use 🐕 before superinitializer call.");
@@ -812,11 +870,11 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             return type;
         }
-        case E_HIGH_VOLTAGE_SIGN: {  // Producing
+        case E_HIGH_VOLTAGE_SIGN: {
             writer.writeInstruction(INS_GET_NOTHINGNESS, token);
             return Type::nothingness();
         }
-        case E_CLOUD: {  // Producing
+        case E_CLOUD: {
             writeBoxingAndTemporary(des, Type::boolean(), token.position());
             writer.writeInstruction(INS_IS_NOTHINGNESS, token);
             auto destination = Destination::temporaryReference();
@@ -827,7 +885,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             scoper.popTemporaryScope();
             return Type::boolean();
         }
-        case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE: {  // Producing
+        case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE: {
             writeBoxingAndTemporary(des, Type::boolean(), token.position());
             writer.writeInstruction(INS_SAME_OBJECT, token);
 
@@ -837,68 +895,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             return Type::boolean();
         }
-        case E_GOAT: {
-            if (!isSuperconstructorRequired()) {
-                throw CompilerError(token, "🐐 can only be used inside initializers.");
-            }
-            if (!typeContext.calleeType().eclass()->superclass()) {
-                throw CompilerError(token, "🐐 can only be used if the eclass inherits from another.");
-            }
-            if (calledSuper) {
-                throw CompilerError(token, "You may not call more than one superinitializer.");
-            }
-            if (flowControlDepth) {
-                throw CompilerError(token, "You may not put a call to a superinitializer in a flow control structure.");
-            }
-
-            scoper.instanceScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be "
-                                                                          "initialized before superinitializer.");
-
-            writer.writeInstruction(INS_SUPER_INITIALIZER, token);
-
-            Class *eclass = typeContext.calleeType().eclass();
-
-            writer.writeInstruction(INS_GET_CLASS_FROM_INDEX, token);
-            writer.writeInstruction(eclass->superclass()->index, token);
-
-            auto &initializerToken = stream_.consumeToken(TokenType::Identifier);
-
-            auto initializer = eclass->superclass()->getInitializer(initializerToken, Type(eclass, false), typeContext);
-
-            writer.writeInstruction(initializer->vtiForUse(), token);
-
-            parseFunctionCall(typeContext.calleeType(), initializer, token);
-
-            calledSuper = true;
-
-            return Type::nothingness();
-        }
-        case E_RED_APPLE: {
-            if (effect) {
-                // Effect is true, so apple is called as subcommand
-                throw CompilerError(token, "🍎’s return may not be used as an argument.");
-            }
-            effect = true;
-
-            writer.writeInstruction(INS_RETURN, token);
-
-            if (isOnlyNothingnessReturnAllowed()) {
-                if (static_cast<Initializer &>(callable).canReturnNothingness) {
-                    parse(stream_.consumeToken(), token, Type::nothingness(),
-                          Destination(DestinationMutability::Unknown, StorageType::Simple));
-                    return Type::nothingness();
-                }
-                else {
-                    throw CompilerError(token, "🍎 cannot be used inside an initializer.");
-                }
-            }
-
-            parse(stream_.consumeToken(), token, callable.returnType,
-                  Destination(DestinationMutability::Immutable, callable.returnType.storageType()));
-            returned = true;
-            return Type::nothingness();
-        }
-        case E_WHITE_LARGE_SQUARE: {  // Producing
+        case E_WHITE_LARGE_SQUARE: {
             auto insertionPoint = writer.getInsertionPoint();
             writer.writeInstruction(INS_GET_CLASS_FROM_INSTANCE, token);
             auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
@@ -911,7 +908,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, originalType, token.position(), insertionPoint);
             return originalType;
         }
-        case E_WHITE_SQUARE_BUTTON: {  // Producing
+        case E_WHITE_SQUARE_BUTTON: {
             auto insertionPoint = writer.getInsertionPoint();
             writer.writeInstruction(INS_GET_CLASS_FROM_INDEX, token);
             Type originalType = parseTypeDeclarative(typeContext, TypeDynamism::None);
@@ -924,7 +921,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, originalType, token.position(), insertionPoint);
             return originalType;
         }
-        case E_BLACK_SQUARE_BUTTON: {  // Producing
+        case E_BLACK_SQUARE_BUTTON: {
             auto insertionPoint = writer.getInsertionPoint();
             auto placeholder = writer.writeInstructionPlaceholder(token);
 
@@ -980,7 +977,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
             return type;
         }
-        case E_BEER_MUG: {  // Producing
+        case E_BEER_MUG: {
             auto insertionPoint = writer.getInsertionPoint();
             auto placeholder = writer.writeInstructionPlaceholder(token);
 
@@ -1007,7 +1004,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, t, token.position(), insertionPoint);
             return t;
         }
-        case E_CLINKING_BEER_MUGS: {  // Producing
+        case E_CLINKING_BEER_MUGS: {
             auto insertionPoint = writer.getInsertionPoint();
             writer.writeInstruction(INS_OPTIONAL_DISPATCH_METHOD, token);
 
@@ -1040,7 +1037,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, returnType, token.position(), insertionPoint);
             return returnType;
         }
-        case E_HOT_PEPPER: {  // Producing
+        case E_HOT_PEPPER: {
             writeBoxingAndTemporary(des, Type::callableIncomplete(), token.position());
             Function *function;
 
@@ -1085,7 +1082,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writer.writeInstruction(function->vtiForUse(), token);
             return function->type();
         }
-        case E_GRAPES: {  // Producing
+        case E_GRAPES: {
             writeBoxingAndTemporary(des, Type::callableIncomplete(), token.position());
             writer.writeInstruction(INS_CLOSURE, token);
 
@@ -1118,7 +1115,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             return function.type();
         }
-        case E_LOLLIPOP: {  // Producing
+        case E_LOLLIPOP: {
+            effect = true;
             auto insertionPoint = writer.getInsertionPoint();
             writer.writeInstruction(INS_EXECUTE_CALLABLE, token);
 
@@ -1139,7 +1137,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
             return rtype;
         }
-        case E_CHIPMUNK: {  // Producing
+        case E_CHIPMUNK: {
+            effect = true;
             auto insertionPoint = writer.getInsertionPoint();
             auto &nameToken = stream_.consumeToken();
 
@@ -1164,7 +1163,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
             return type;
         }
-        case E_LARGE_BLUE_DIAMOND: {  // Producing
+        case E_LARGE_BLUE_DIAMOND: {
             auto insertionPoint = writer.getInsertionPoint();
             auto placeholder = writer.writeInstructionPlaceholder(token);
             auto pair = parseTypeAsValue(typeContext, token, expectation);
@@ -1236,7 +1235,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
             return type;
         }
-        case E_DOUGHNUT: {  // Producing
+        case E_DOUGHNUT: {
+            effect = true;
             auto insertionPoint = writer.getInsertionPoint();
             auto &methodToken = stream_.consumeToken(TokenType::Identifier);
 
@@ -1268,7 +1268,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, rtype, token.position(), insertionPoint);
             return rtype;
         }
-        default: {  // Producing
+        default: {
+            effect = true;
             auto insertionPoint = writer.getInsertionPoint();
             auto placeholder = writer.writeInstructionPlaceholder(token);
 
@@ -1581,7 +1582,7 @@ void CallableParserAndGenerator::analyze() {
         }
 
         while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-            parseCoinInBlock();
+            parseStatement(stream_.consumeToken());
 
             if (returned && !stream_.nextTokenIs(E_WATERMELON)) {
                 compilerWarning(stream_.consumeToken(), "Dead code.");

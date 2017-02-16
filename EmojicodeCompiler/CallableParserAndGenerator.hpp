@@ -77,6 +77,8 @@ private:
     /** The this context in which this function operates. */
     TypeContext typeContext;
 
+    void parseStatement(const Token &token);
+
     Type parse(const Token &token, Type expectation, Destination &des);
     Type parse(const Token &token, Destination &des);
     /**
@@ -120,8 +122,6 @@ private:
     void writeBoxingAndTemporary(Destination des, Type returnType, SourcePosition p) const {
         writeBoxingAndTemporary(des, returnType, p, writer);
     }
-
-    void parseCoinInBlock();
 
     void copyVariableContent(ResolvedVariable var, SourcePosition p);
     void produceToVariable(ResolvedVariable var, SourcePosition p);
