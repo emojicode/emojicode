@@ -76,7 +76,7 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
         auto resolved = var.type.resolveOn(typeContext);
         if (inferGenericArguments) {
             writer.writeInstruction(resolved.size(), token);
-            auto des = Destination(DestinationMutability::Immutable, StorageType::Box);
+            auto des = Destination(DestinationMutability::Immutable, resolved.storageType());
             givenArgumentTypes.push_back(parse(stream_.consumeToken(), token, resolved, des, &genericArgsFinders));
         }
         else {
@@ -1434,7 +1434,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     }
                 }
 
-                if (token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE)) {
+                if (token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE) && type.valueType()->isPrimitive()) {
                     parse(stream_.consumeToken(), token, type,
                           Destination(DestinationMutability::Unknown, StorageType::Simple));
                     placeholder.write(INS_EQUAL_PRIMITIVE);
