@@ -123,9 +123,14 @@ private:
         writeBoxingAndTemporary(des, returnType, p, writer);
     }
 
+    Type parseMethodCall(const Token &token, Destination des, std::function<Type(Destination&)> callee);
+
+    /// Copies or takes a reference to the content of the given variable as needed to statisfy the requirement of @c des
+    /// @returns The type of the variable with @c isValueReference set appropriately.
+    Type takeVariable(ResolvedVariable rvar, Destination &des, SourcePosition p);
     void copyVariableContent(ResolvedVariable var, SourcePosition p);
-    void produceToVariable(ResolvedVariable var, SourcePosition p);
     void getVTReference(ResolvedVariable var, SourcePosition p);
+    void produceToVariable(ResolvedVariable var, SourcePosition p);
 
     void noReturnError(SourcePosition p);
     void noEffectWarning(const Token &warningToken);

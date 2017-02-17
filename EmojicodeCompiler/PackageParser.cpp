@@ -154,8 +154,6 @@ void PackageParser::reservedEmojis(const Token &token, const char *place) const 
         case E_CUSTARD:
         case E_DOUGHNUT:
         case E_SHORTCAKE:
-        case E_CHOCOLATE_BAR:
-        case E_COOKING:
         case E_COOKIE:
         case E_LOLLIPOP:
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS:

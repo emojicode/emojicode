@@ -384,7 +384,7 @@
 
   🐖 🔽 ➡️ Element 🍇
     🍦 sy 🍺 🐽 iteratee index
-    🍫 index
+    🍮➕ index 1
     🍎 sy
   🍉
 
@@ -415,7 +415,7 @@
 
   🐖 🔽 ➡️ 🍬Element 🍇
     🍦 sy 🐽 iteratee index
-    🍫 index
+    🍮➕ index 1
     🍎 sy
   🍉
 
@@ -428,7 +428,7 @@
     before having called 🔽 results in undefined behavior.
   🌮
   🐖 🚯  🍇
-    🍳 index
+    🍮➕ index 1
     🐨 iteratee index
   🍉
 
@@ -442,7 +442,7 @@
 
   🔐 🐖 🍶 ➡️ 🚂 🍇
     🍦 i index
-    🍫 index
+    🍮➕ index 1
     🍎 i
   🍉
 🍉
@@ -759,7 +759,7 @@
       🍊 ❎ 🍭 callback 🍺🐽 🐕 i 🍺 🐽 other i 🍇
         🍎 👎
       🍉
-      🍫 i
+      🍮➕ i 1
     🍉
     🍎 👍
   🍉

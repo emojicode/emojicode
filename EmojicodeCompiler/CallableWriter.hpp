@@ -15,6 +15,7 @@
 class CallableWriter;
 class Writer;
 class WriteLocation;
+class RecompilationPoint;
 
 class CallableWriterPlaceholder {
     friend CallableWriter;
@@ -62,6 +63,7 @@ class CallableWriter {
     friend CallableWriterPlaceholder;
     friend Writer;
     friend CallableWriterInsertionPoint;
+    friend RecompilationPoint;
 public:
     /** Writes a coin with the given value. */
     virtual void writeInstruction(EmojicodeInstruction value, SourcePosition p);

@@ -20,6 +20,7 @@
 #include "StringPool.hpp"
 #include "../EmojicodeInstructions.h"
 #include "CapturingCallableScoper.hpp"
+#include "RecompilationPoint.hpp"
 
 Type CallableParserAndGenerator::parse(const Token &token, const Token &parentToken, Type type,
                                        Destination des, std::vector<CommonTypeFinder> *ctargs) {
@@ -374,37 +375,74 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 return;
             }
             case E_CUSTARD: {
-                auto &varName = stream_.consumeToken(TokenType::Variable);
+                auto &nextTok = stream_.consumeToken();
 
-                Type type = Type::nothingness();
-                try {
-                    auto rvar = scoper.getVariable(varName.value(), varName.position());
+                if (nextTok.type() == TokenType::Identifier) {
+                    auto &varName = stream_.consumeToken(TokenType::Variable);
 
-                    rvar.variable.initialize(writer.writtenInstructions());
-                    rvar.variable.mutate(varName);
+                    auto var = scoper.getVariable(varName.value(), varName.position());
 
-                    produceToVariable(rvar, token);
+                    var.variable.uninitalizedError(varName);
+                    var.variable.mutate(varName);
 
-                    if (rvar.inInstanceScope && !typeContext.calleeType().isMutable()) {
-                        throw CompilerError(token.position(),
-                                            "Can’t mutate instance variable as method is not marked with 🖍.");
+                    produceToVariable(var, token);
+
+                    if (var.variable.type().type() == TypeContent::ValueType &&
+                        var.variable.type().valueType() == VT_INTEGER && stream_.nextTokenIs(TokenType::Integer)
+                        && stream_.nextToken().value() == EmojicodeString('1')) {
+                        if (nextTok.value()[0] == E_HEAVY_PLUS_SIGN) {
+                            writer.writeInstruction(INS_INCREMENT, token);
+                            stream_.consumeToken();
+                            return;
+                        }
+                        if (nextTok.value()[0] == E_HEAVY_MINUS_SIGN) {
+                            writer.writeInstruction(INS_DECREMENT, token);
+                            stream_.consumeToken();
+                            return;
+                        }
                     }
 
-                    type = rvar.variable.type();
-                    parse(stream_.consumeToken(), token, type,
-                          Destination(DestinationMutability::Mutable, type.storageType()));
-                }
-                catch (VariableNotFoundError &vne) {
-                    // Not declared, declaring as local variable
-                    writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
-
-                    auto placeholder = writer.writeInstructionPlaceholder(token);
-
                     auto destination = Destination(DestinationMutability::Mutable, StorageType::SimpleIfPossible);
-                    Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
-                    auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position());
-                    var.initialize(writer.writtenInstructions());
-                    placeholder.write(var.id());
+                    auto type = parseMethodCall(nextTok, destination, [this, var, &nextTok](Destination destination) {
+                        takeVariable(var, destination, nextTok.position());
+                        return var.variable.type();
+                    });
+                    if (!type.compatibleTo(var.variable.type(), typeContext)) {
+                        throw CompilerError(nextTok.position(), "Method %s returns incompatible type %s.",
+                                            nextTok.value().utf8().c_str(), type.toString(typeContext, true).c_str());
+                    }
+                }
+                else {
+                    Type type = Type::nothingness();
+                    try {
+                        auto rvar = scoper.getVariable(nextTok.value(), nextTok.position());
+
+                        rvar.variable.initialize(writer.writtenInstructions());
+                        rvar.variable.mutate(nextTok);
+
+                        produceToVariable(rvar, token);
+
+                        if (rvar.inInstanceScope && !typeContext.calleeType().isMutable()) {
+                            throw CompilerError(token.position(),
+                                                "Can’t mutate instance variable as method is not marked with 🖍.");
+                        }
+
+                        type = rvar.variable.type();
+                        parse(stream_.consumeToken(), token, type,
+                              Destination(DestinationMutability::Mutable, type.storageType()));
+                    }
+                    catch (VariableNotFoundError &vne) {
+                        // Not declared, declaring as local variable
+                        writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
+
+                        auto placeholder = writer.writeInstructionPlaceholder(token);
+
+                        auto destination = Destination(DestinationMutability::Mutable, StorageType::SimpleIfPossible);
+                        Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
+                        auto &var = scoper.currentScope().setLocalVariable(nextTok.value(), t, false, nextTok.position());
+                        var.initialize(writer.writtenInstructions());
+                        placeholder.write(var.id());
+                    }
                 }
                 return;
             }
@@ -424,29 +462,6 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
                 var.initialize(writer.writtenInstructions());
                 placeholder.write(var.id());
-                return;
-            }
-            case E_COOKING:
-            case E_CHOCOLATE_BAR: {
-                auto &varName = stream_.consumeToken(TokenType::Variable);
-
-                auto var = scoper.getVariable(varName.value(), varName.position());
-
-                var.variable.uninitalizedError(varName);
-                var.variable.mutate(varName);
-
-                if (!var.variable.type().compatibleTo(Type::integer(), typeContext)) {
-                    throw CompilerError(token, "%s can only operate on 🚂 variables.", token.value().utf8().c_str());
-                }
-
-                produceToVariable(var, token);
-
-                if (token.isIdentifier(E_COOKING)) {
-                    writer.writeInstruction(INS_DECREMENT, token);
-                }
-                else {
-                    writer.writeInstruction(INS_INCREMENT, token);
-                }
                 return;
             }
             case E_TANGERINE: {
@@ -696,24 +711,8 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Des
             auto rvar = scoper.getVariable(token.value(), token.position());
             rvar.variable.uninitalizedError(token);
 
-            auto storageType = des.simplify(rvar.variable.type());
-            auto returnType = rvar.variable.type();
-
-            if (storageType == rvar.variable.type().storageType() &&
-                des.isTemporaryReference() && rvar.variable.type().isValueReferenceWorthy()) {
-                getVTReference(rvar, token.position());
-                returnType.setValueReference();
-            }
-            else {
-                writeBoxingAndTemporary(des, returnType, token.position(), writer);
-                copyVariableContent(rvar, token.position());
-                if (des.isMutable()) {
-                    returnType.setMutable(true);
-                }
-            }
-
             des.setMutatedVariable(rvar.variable);
-            return returnType;
+            return takeVariable(rvar, des, token.position());
         }
         case TokenType::Identifier:
             return parseIdentifier(token, expectation, des);
@@ -726,6 +725,25 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Des
     throw std::logic_error("Cannot determine expression’s return type.");
 }
 
+Type CallableParserAndGenerator::takeVariable(ResolvedVariable rvar, Destination &des, SourcePosition p) {
+    auto storageType = des.simplify(rvar.variable.type());
+    auto returnType = rvar.variable.type();
+
+    if (storageType == rvar.variable.type().storageType() &&
+        des.isTemporaryReference() && rvar.variable.type().isValueReferenceWorthy()) {
+        getVTReference(rvar, p);
+        returnType.setValueReference();
+    }
+    else {
+        writeBoxingAndTemporary(des, returnType, p, writer);
+        copyVariableContent(rvar, p);
+        if (des.isMutable()) {
+            returnType.setMutable(true);
+        }
+    }
+    return returnType;
+}
+
 Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expectation, Destination &des) {
     switch (token.value()[0]) {
         case E_LEMON:
@@ -735,8 +753,6 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         case E_SHORTCAKE:
         case E_CUSTARD:
         case E_SOFT_ICE_CREAM:
-        case E_COOKING:
-        case E_CHOCOLATE_BAR:
         case E_TANGERINE:
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS:
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY:
@@ -1263,232 +1279,241 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         }
         default: {
             effect = true;
-            auto insertionPoint = writer.getInsertionPoint();
-            auto placeholder = writer.writeInstructionPlaceholder(token);
-
-            auto &tobject = stream_.consumeToken();
-            auto calleeBoxingInsertionPoint = writer.getInsertionPoint();
-            auto destination = Destination(DestinationMutability::Unknown, StorageType::NoAction);
-            Type rtype = parse(tobject, Type::nothingness(), destination);
-            Type type = rtype.resolveOnSuperArgumentsAndConstraints(typeContext);
-
-            if (type.optional()) {
-                throw CompilerError(token, "You cannot call methods on optionals.");
-            }
-
-            auto simpleDes = Destination(DestinationMutability::Unknown, StorageType::Simple);
-
-            Function *method;
-            if (type.type() == TypeContent::ValueType) {
-                if (type.valueType() == VT_BOOLEAN) {
-                    switch (token.value()[0]) {
-                        case E_NEGATIVE_SQUARED_CROSS_MARK:
-                            placeholder.write(INS_INVERT_BOOLEAN);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_PARTY_POPPER:
-                            placeholder.write(INS_OR_BOOLEAN);
-                            parse(stream_.consumeToken(), token, Type::boolean(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_CONFETTI_BALL:
-                            placeholder.write(INS_AND_BOOLEAN);
-                            parse(stream_.consumeToken(), token, Type::boolean(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                    }
-                }
-                else if (type.valueType() == VT_INTEGER) {
-                    switch (token.value()[0]) {
-                        case E_HEAVY_MINUS_SIGN:
-                            placeholder.write(INS_SUBTRACT_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_HEAVY_PLUS_SIGN:
-                            placeholder.write(INS_ADD_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_HEAVY_DIVISION_SIGN:
-                            placeholder.write(INS_DIVIDE_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_HEAVY_MULTIPLICATION_SIGN:
-                            placeholder.write(INS_MULTIPLY_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_LEFT_POINTING_TRIANGLE:
-                            placeholder.write(INS_LESS_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_RIGHT_POINTING_TRIANGLE:
-                            placeholder.write(INS_GREATER_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_LEFTWARDS_ARROW:
-                            placeholder.write(INS_LESS_OR_EQUAL_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_RIGHTWARDS_ARROW:
-                            placeholder.write(INS_GREATER_OR_EQUAL_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_PUT_LITTER_IN_ITS_SPACE:
-                            placeholder.write(INS_REMAINDER_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_HEAVY_LARGE_CIRCLE:
-                            placeholder.write(INS_BINARY_AND_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_ANGER_SYMBOL:
-                            placeholder.write(INS_BINARY_OR_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_CROSS_MARK:
-                            placeholder.write(INS_BINARY_XOR_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_NO_ENTRY_SIGN:
-                            placeholder.write(INS_BINARY_NOT_INTEGER);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_ROCKET:
-                            placeholder.write(INS_INT_TO_DOUBLE);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::doubl();
-                        case E_LEFT_POINTING_BACKHAND_INDEX:
-                            placeholder.write(INS_SHIFT_LEFT_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                        case E_RIGHT_POINTING_BACKHAND_INDEX:
-                            placeholder.write(INS_SHIFT_RIGHT_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::integer();
-                    }
-                }
-                else if (type.valueType() == VT_DOUBLE) {
-                    switch (token.value()[0]) {
-                        case E_FACE_WITH_STUCK_OUT_TONGUE:
-                            placeholder.write(INS_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_HEAVY_MINUS_SIGN:
-                            placeholder.write(INS_SUBTRACT_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::doubl();
-                        case E_HEAVY_PLUS_SIGN:
-                            placeholder.write(INS_ADD_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::doubl();
-                        case E_HEAVY_DIVISION_SIGN:
-                            placeholder.write(INS_DIVIDE_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::doubl();
-                        case E_HEAVY_MULTIPLICATION_SIGN:
-                            placeholder.write(INS_MULTIPLY_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::doubl();
-                        case E_LEFT_POINTING_TRIANGLE:
-                            placeholder.write(INS_LESS_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_RIGHT_POINTING_TRIANGLE:
-                            placeholder.write(INS_GREATER_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_LEFTWARDS_ARROW:
-                            placeholder.write(INS_LESS_OR_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_RIGHTWARDS_ARROW:
-                            placeholder.write(INS_GREATER_OR_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::boolean();
-                        case E_PUT_LITTER_IN_ITS_SPACE:
-                            placeholder.write(INS_REMAINDER_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
-                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                            return Type::doubl();
-                    }
-                }
-
-                if (token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE) && type.valueType()->isPrimitive()) {
-                    parse(stream_.consumeToken(), token, type,
-                          Destination(DestinationMutability::Unknown, StorageType::Simple));
-                    placeholder.write(INS_EQUAL_PRIMITIVE);
-                    writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                    return Type::boolean();
-                }
-            }
-            else if (type.type() == TypeContent::Enum && token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
-                auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
-                parse(stream_.consumeToken(), token, type, destination);  // Must be of the same type as the callee
-                placeholder.write(INS_EQUAL_PRIMITIVE);
-                writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
-                return Type::boolean();
-            }
-
-            writeBoxingAndTemporary(Destination::temporaryReference(), rtype, token.position(),
-                                    calleeBoxingInsertionPoint);
-
-            if (type.type() == TypeContent::ValueType) {
-                method = type.valueType()->getMethod(token, type, typeContext);
-                mutatingMethodCheck(method, type, destination, token);
-                placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
-                writer.writeInstruction(method->vtiForUse(), token);
-            }
-            else if (type.type() == TypeContent::Protocol) {
-                method = type.protocol()->getMethod(token, type, typeContext);
-                placeholder.write(INS_DISPATCH_PROTOCOL);
-                writer.writeInstruction(type.protocol()->index, token);
-                writer.writeInstruction(method->vtiForUse(), token);
-            }
-            else if (type.type() == TypeContent::Enum) {
-                method = type.eenum()->getMethod(token, type, typeContext);
-                placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
-                writer.writeInstruction(method->vtiForUse(), token);
-            }
-            else if (type.type() == TypeContent::Class) {
-                method = type.eclass()->getMethod(token, type, typeContext);
-                placeholder.write(INS_DISPATCH_METHOD);
-                writer.writeInstruction(method->vtiForUse(), token);
-            }
-            else {
-                auto typeString = type.toString(typeContext, true);
-                throw CompilerError(token, "You cannot call methods on %s.", typeString.c_str());
-            }
-
-            Type rt = parseFunctionCall(type, method, token);
-            scoper.popTemporaryScope();
-
-            writeBoxingAndTemporary(des, rt, token.position(), insertionPoint);
-            return rt;
+            return parseMethodCall(token, des, [this](Destination destination){
+                auto &tobject = stream_.consumeToken();
+                return parse(tobject, Type::nothingness(), destination);
+            });
         }
     }
     return Type::nothingness();
+}
+
+Type CallableParserAndGenerator::parseMethodCall(const Token &token, Destination des,
+                                                 std::function<Type(Destination&)> callee) {
+    auto insertionPoint = writer.getInsertionPoint();
+    auto placeholder = writer.writeInstructionPlaceholder(token);
+
+    auto recompilationPoint = RecompilationPoint(writer, stream_);
+    auto recompileWithSimple = [this, recompilationPoint, &callee]() {
+        recompilationPoint.restore();
+        auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
+        callee(destination);
+    };
+
+    auto destination = Destination::temporaryReference();
+    Type rtype = callee(destination);
+    Type type = rtype.resolveOnSuperArgumentsAndConstraints(typeContext);
+
+    if (type.optional()) {
+        throw CompilerError(token, "You cannot call methods on optionals.");
+    }
+
+    auto simpleDes = Destination(DestinationMutability::Unknown, StorageType::Simple);
+    Function *method;
+    if (type.type() == TypeContent::ValueType) {
+        if (type.valueType() == VT_BOOLEAN) {
+            switch (token.value()[0]) {
+                case E_NEGATIVE_SQUARED_CROSS_MARK:
+                    placeholder.write(INS_INVERT_BOOLEAN);
+                    recompileWithSimple();
+                    return Type::boolean();
+                case E_PARTY_POPPER:
+                    placeholder.write(INS_OR_BOOLEAN);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::boolean(), simpleDes);
+                    return Type::boolean();
+                case E_CONFETTI_BALL:
+                    placeholder.write(INS_AND_BOOLEAN);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::boolean(), simpleDes);
+                    return Type::boolean();
+            }
+        }
+        else if (type.valueType() == VT_INTEGER) {
+            switch (token.value()[0]) {
+                case E_HEAVY_MINUS_SIGN:
+                    placeholder.write(INS_SUBTRACT_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_HEAVY_PLUS_SIGN:
+                    placeholder.write(INS_ADD_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_HEAVY_DIVISION_SIGN:
+                    placeholder.write(INS_DIVIDE_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_HEAVY_MULTIPLICATION_SIGN:
+                    placeholder.write(INS_MULTIPLY_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_LEFT_POINTING_TRIANGLE:
+                    placeholder.write(INS_LESS_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::boolean();
+                case E_RIGHT_POINTING_TRIANGLE:
+                    placeholder.write(INS_GREATER_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::boolean();
+                case E_LEFTWARDS_ARROW:
+                    placeholder.write(INS_LESS_OR_EQUAL_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::boolean();
+                case E_RIGHTWARDS_ARROW:
+                    placeholder.write(INS_GREATER_OR_EQUAL_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::boolean();
+                case E_PUT_LITTER_IN_ITS_SPACE:
+                    placeholder.write(INS_REMAINDER_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_HEAVY_LARGE_CIRCLE:
+                    placeholder.write(INS_BINARY_AND_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_ANGER_SYMBOL:
+                    placeholder.write(INS_BINARY_OR_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_CROSS_MARK:
+                    placeholder.write(INS_BINARY_XOR_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_NO_ENTRY_SIGN:
+                    placeholder.write(INS_BINARY_NOT_INTEGER);
+                    recompileWithSimple();
+                    return Type::integer();
+                case E_ROCKET:
+                    placeholder.write(INS_INT_TO_DOUBLE);
+                    recompileWithSimple();
+                    return Type::doubl();
+                case E_LEFT_POINTING_BACKHAND_INDEX:
+                    placeholder.write(INS_SHIFT_LEFT_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+                case E_RIGHT_POINTING_BACKHAND_INDEX:
+                    placeholder.write(INS_SHIFT_RIGHT_INTEGER);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                    return Type::integer();
+            }
+        }
+        else if (type.valueType() == VT_DOUBLE) {
+            switch (token.value()[0]) {
+                case E_FACE_WITH_STUCK_OUT_TONGUE:
+                    placeholder.write(INS_EQUAL_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::boolean();
+                case E_HEAVY_MINUS_SIGN:
+                    placeholder.write(INS_SUBTRACT_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::doubl();
+                case E_HEAVY_PLUS_SIGN:
+                    placeholder.write(INS_ADD_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::doubl();
+                case E_HEAVY_DIVISION_SIGN:
+                    placeholder.write(INS_DIVIDE_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::doubl();
+                case E_HEAVY_MULTIPLICATION_SIGN:
+                    placeholder.write(INS_MULTIPLY_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::doubl();
+                case E_LEFT_POINTING_TRIANGLE:
+                    placeholder.write(INS_LESS_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::boolean();
+                case E_RIGHT_POINTING_TRIANGLE:
+                    placeholder.write(INS_GREATER_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::boolean();
+                case E_LEFTWARDS_ARROW:
+                    placeholder.write(INS_LESS_OR_EQUAL_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::boolean();
+                case E_RIGHTWARDS_ARROW:
+                    placeholder.write(INS_GREATER_OR_EQUAL_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::boolean();
+                case E_PUT_LITTER_IN_ITS_SPACE:
+                    placeholder.write(INS_REMAINDER_DOUBLE);
+                    recompileWithSimple();
+                    parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                    return Type::doubl();
+            }
+        }
+
+        if (token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE) && type.valueType()->isPrimitive()) {
+            recompileWithSimple();
+            parse(stream_.consumeToken(), token, type,
+                  Destination(DestinationMutability::Unknown, StorageType::Simple));
+            placeholder.write(INS_EQUAL_PRIMITIVE);
+
+            return Type::boolean();
+        }
+    }
+    else if (type.type() == TypeContent::Enum && token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
+        recompileWithSimple();
+        parse(stream_.consumeToken(), token, type, simpleDes);  // Must be of the same type as the callee
+        placeholder.write(INS_EQUAL_PRIMITIVE);
+        return Type::boolean();
+    }
+
+    if (type.type() == TypeContent::ValueType) {
+        method = type.valueType()->getMethod(token, type, typeContext);
+        mutatingMethodCheck(method, type, destination, token);
+        placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
+        writer.writeInstruction(method->vtiForUse(), token);
+    }
+    else if (type.type() == TypeContent::Protocol) {
+        method = type.protocol()->getMethod(token, type, typeContext);
+        placeholder.write(INS_DISPATCH_PROTOCOL);
+        writer.writeInstruction(type.protocol()->index, token);
+        writer.writeInstruction(method->vtiForUse(), token);
+    }
+    else if (type.type() == TypeContent::Enum) {
+        method = type.eenum()->getMethod(token, type, typeContext);
+        placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
+        writer.writeInstruction(method->vtiForUse(), token);
+    }
+    else if (type.type() == TypeContent::Class) {
+        method = type.eclass()->getMethod(token, type, typeContext);
+        placeholder.write(INS_DISPATCH_METHOD);
+        writer.writeInstruction(method->vtiForUse(), token);
+    }
+    else {
+        auto typeString = type.toString(typeContext, true);
+        throw CompilerError(token, "You cannot call methods on %s.", typeString.c_str());
+    }
+
+    Type rt = parseFunctionCall(type, method, token);
+    scoper.popTemporaryScope();
+
+    writeBoxingAndTemporary(des, rt, token.position(), insertionPoint);
+    return rt;
 }
 
 void CallableParserAndGenerator::noReturnError(SourcePosition p) {

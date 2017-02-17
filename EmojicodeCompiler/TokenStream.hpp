@@ -11,7 +11,10 @@
 
 #include "Token.hpp"
 
+class RecompilationPoint;
+
 class TokenStream {
+    friend RecompilationPoint;
     friend TokenStream lex(std::string);
 public:
     TokenStream() : currentToken_(nullptr) {};
@@ -26,6 +29,7 @@ public:
     bool nextTokenIs(TokenType type) const;
     /** Tests whether the next token is an identifier and the value’s first element matches the given character. */
     bool nextTokenIs(EmojicodeChar c) const;
+    const Token& nextToken() const { return *currentToken_->nextToken_; }
     /** 
      * Tests whether the end of the stream was not reached and the first element of the next token’s value does not
      * match the given character.
