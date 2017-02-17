@@ -173,7 +173,6 @@ void generateCode(Writer &writer) {
         Function::compilationQueue.pop();
     }
 
-    writer.writeByte(ByteCodeSpecificationVersion);
     writer.writeUInt16(Class::classes().size());
     writer.writeUInt16(Function::functionCount());
 
@@ -237,4 +236,6 @@ void generateCode(Writer &writer) {
         compileUnused(vt->initializerList());
         compileUnused(vt->typeMethodList());
     }
+
+    writer.finish();
 }

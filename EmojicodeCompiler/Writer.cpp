@@ -13,30 +13,30 @@
 #include "CallableWriter.hpp"
 
 void Writer::writeUInt16(uint16_t value) {
-    fputc(value, out);
-    fputc(value >> 8, out);
+    data_.push_back(value);
+    data_.push_back(value >> 8);
 }
 
 void Writer::writeEmojicodeChar(EmojicodeChar c) {
-    fputc(c, out);
-    fputc(c >> 8, out);
-    fputc(c >> 16, out);
-    fputc(c >> 24, out);
+    data_.push_back(c);
+    data_.push_back(c >> 8);
+    data_.push_back(c >> 16);
+    data_.push_back(c >> 24);
 }
 
 void Writer::writeInstruction(EmojicodeInstruction value) {
-    fputc(value, out);
-    fputc(value >> 8, out);
-    fputc(value >> 16, out);
-    fputc(value >> 24, out);
+    data_.push_back(value);
+    data_.push_back(value >> 8);
+    data_.push_back(value >> 16);
+    data_.push_back(value >> 24);
 }
 
 void Writer::writeByte(unsigned char c) {
-    fputc(c, out);
+    data_.push_back(c);
 }
 
 void Writer::writeBytes(const char *bytes, size_t count) {
-    fwrite(bytes, sizeof(char), count, out);
+    data_.append(bytes, count);
 }
 
 void Writer::writeFunction(Function *function) {
@@ -65,4 +65,9 @@ void Writer::writeFunction(Function *function) {
     for (auto coin : function->writer_.instructions_) {
         writeInstruction(coin);
     }
+}
+
+void Writer::finish() {
+    fputc(BYTE_CODE_VERSION, out_);
+    fwrite(data_.data(), sizeof(char), data_.size(), out_);
 }

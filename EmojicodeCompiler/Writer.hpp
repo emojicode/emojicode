@@ -25,7 +25,7 @@ class Writer {
     friend WriterPlaceholder<EmojicodeInstruction>;
     friend WriterPlaceholder<unsigned char>;
 public:
-    explicit Writer(FILE *outFile) : out(outFile) {};
+    explicit Writer(FILE *outFile) : out_(outFile) {};
 
     /** Must be used to write any uint16_t to the file */
     void writeUInt16(uint16_t value);
@@ -42,38 +42,51 @@ public:
 
     void writeFunction(Function *f);
 
+    /// Finishes the writing. The file is not ready to be used before this method was called.
+    void finish();
+
     /**
      * Writes a placeholder coin. To replace the placeholder use `writeInstructionAtPlaceholder`
      */
     template<typename T>
     WriterPlaceholder<T> writePlaceholder() {
-        off_t position = ftello(out);
+        auto i = data_.size();
         write((T)0);
-        return WriterPlaceholder<T>(*this, position);
+        return WriterPlaceholder<T>(*this, i);
     }
 private:
     void write(uint16_t v) { writeUInt16(v); };
     void write(uint32_t v) { writeEmojicodeChar(v); };
-    void write(unsigned char v) { writeByte(v); };
+    void write(uint8_t v) { writeByte(v); };
 
-    FILE *out;
+    FILE *out_;
+    std::string data_;
 };
 
 template <typename T>
 class WriterPlaceholder {
     friend Writer;
 public:
-    WriterPlaceholder(Writer &w, off_t position) : writer(w), position(position) {};
+    WriterPlaceholder(Writer &w, size_t index) : writer_(w), index_(index) {};
     /** Writes a coin with the given value */
     void write(T value) {
-        off_t oldPosition = ftello(writer.out);
-        fseek(writer.out, position, SEEK_SET);
-        writer.write(value);
-        fseek(writer.out, oldPosition, SEEK_SET);
+        if (std::is_same<T, uint8_t>::value) {
+            writer_.data_[index_] = value;
+        }
+        else if (std::is_same<T, uint16_t>::value) {
+            writer_.data_[index_] = static_cast<char>(value);
+            writer_.data_[index_ + 1] = static_cast<char>(value >> 8);
+        }
+        else if (std::is_same<T, uint32_t>::value) {
+            writer_.data_[index_] = static_cast<char>(value);
+            writer_.data_[index_ + 1] = static_cast<char>(value >> 8);
+            writer_.data_[index_ + 2] = static_cast<char>(value >> 16);
+            writer_.data_[index_ + 3] = static_cast<char>(value >> 24);
+        }
     }
 protected:
-    Writer &writer;
-    off_t position;
+    Writer &writer_;
+    size_t index_;
 };
 
 class WriterCoinsCountPlaceholder: private WriterPlaceholder<EmojicodeInstruction> {

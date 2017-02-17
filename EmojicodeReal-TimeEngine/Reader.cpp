@@ -255,9 +255,9 @@ void readPackage(FILE *in) {
 
 Function* readBytecode(FILE *in) {
     uint8_t version = fgetc(in);
-    if (version != ByteCodeSpecificationVersion) {
+    if (version != BYTE_CODE_VERSION) {
         error("The bytecode file (bcsv %d) is not compatible with this interpreter (bcsv %d).\n",
-              version, ByteCodeSpecificationVersion);
+              version, BYTE_CODE_VERSION);
     }
 
     DEBUG_LOG("Bytecode version %d", version);
