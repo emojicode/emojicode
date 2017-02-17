@@ -53,3 +53,9 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# gedit extension
+*~
+
+# Android
+/ndk-project
