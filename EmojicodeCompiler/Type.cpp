@@ -389,18 +389,17 @@ bool Type::requiresBox() const {
 
 bool Type::isValueReferenceWorthy() const {
     switch (type()) {
-        case TypeContent::ValueType:
-            return !(valueType()->isPrimitive() && storageType() == StorageType::Simple);
         case TypeContent::Callable:
         case TypeContent::Class:
         case TypeContent::Someobject:
-        case TypeContent::Enum:
         case TypeContent::Reference:
         case TypeContent::LocalReference:
         case TypeContent::Self:
             return storageType() != StorageType::Simple;
         case TypeContent::Nothingness:
             return false;
+        case TypeContent::ValueType:
+        case TypeContent::Enum:
         case TypeContent::Protocol:
         case TypeContent::Something:
             return true;

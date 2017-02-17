@@ -320,7 +320,7 @@ static void dataByAppendingData(Thread *thread, Value *destination) {
 
 void integerToString(Thread *thread, Value *destination) {
     EmojicodeInteger base = thread->getVariable(0).raw;
-    EmojicodeInteger n = thread->getThisContext().raw, a = std::abs(n);
+    EmojicodeInteger n = thread->getThisContext().value->raw, a = std::abs(n);
     bool negative = n < 0;
 
     EmojicodeInteger d = negative ? 2 : 1;
@@ -348,7 +348,7 @@ static void integerRandom(Thread *thread, Value *destination) {
 }
 
 static void integerAbsolute(Thread *thread, Value *destination) {
-    destination->raw = std::abs(thread->getThisContext().raw);
+    destination->raw = std::abs(thread->getThisContext().value->raw);
 }
 
 static void symbolToString(Thread *thread, Value *destination) {
@@ -358,17 +358,17 @@ static void symbolToString(Thread *thread, Value *destination) {
     string->length = 1;
     string->characters = co;
     thread->release(1);
-    ((EmojicodeChar *)string->characters->value)[0] = thread->getThisContext().character;
+    ((EmojicodeChar *)string->characters->value)[0] = thread->getThisContext().value->character;
     destination->object = stringObject;
 }
 
 static void symbolToInteger(Thread *thread, Value *destination) {
-    destination->raw = thread->getThisContext().character;
+    destination->raw = thread->getThisContext().value->character;
 }
 
 static void doubleToString(Thread *thread, Value *destination) {
     EmojicodeInteger precision = thread->getVariable(0).raw;
-    double d = thread->getThisContext().doubl;
+    double d = thread->getThisContext().value->doubl;
     double absD = std::abs(d);
 
     bool negative = d < 0;
@@ -409,59 +409,59 @@ static void doubleToString(Thread *thread, Value *destination) {
 }
 
 static void doubleSin(Thread *thread, Value *destination) {
-    destination->doubl = sin(thread->getThisContext().doubl);
+    destination->doubl = sin(thread->getThisContext().value->doubl);
 }
 
 static void doubleCos(Thread *thread, Value *destination) {
-    destination->doubl = cos(thread->getThisContext().doubl);
+    destination->doubl = cos(thread->getThisContext().value->doubl);
 }
 
 static void doubleTan(Thread *thread, Value *destination) {
-    destination->doubl = tan(thread->getThisContext().doubl);
+    destination->doubl = tan(thread->getThisContext().value->doubl);
 }
 
 static void doubleASin(Thread *thread, Value *destination) {
-    destination->doubl = asin(thread->getThisContext().doubl);
+    destination->doubl = asin(thread->getThisContext().value->doubl);
 }
 
 static void doubleACos(Thread *thread, Value *destination) {
-    destination->doubl = acos(thread->getThisContext().doubl);
+    destination->doubl = acos(thread->getThisContext().value->doubl);
 }
 
 static void doubleATan(Thread *thread, Value *destination) {
-    destination->doubl = atan(thread->getThisContext().doubl);
+    destination->doubl = atan(thread->getThisContext().value->doubl);
 }
 
 static void doublePow(Thread *thread, Value *destination) {
-    destination->doubl = pow(thread->getThisContext().doubl, thread->getVariable(0).doubl);
+    destination->doubl = pow(thread->getThisContext().value->doubl, thread->getVariable(0).doubl);
 }
 
 static void doubleSqrt(Thread *thread, Value *destination) {
-    destination->doubl = sqrt(thread->getThisContext().doubl);
+    destination->doubl = sqrt(thread->getThisContext().value->doubl);
 }
 
 static void doubleRound(Thread *thread, Value *destination) {
-    destination->raw = static_cast<EmojicodeInteger>(round(thread->getThisContext().doubl));
+    destination->raw = static_cast<EmojicodeInteger>(round(thread->getThisContext().value->doubl));
 }
 
 static void doubleCeil(Thread *thread, Value *destination) {
-    destination->raw = static_cast<EmojicodeInteger>(ceil(thread->getThisContext().doubl));
+    destination->raw = static_cast<EmojicodeInteger>(ceil(thread->getThisContext().value->doubl));
 }
 
 static void doubleFloor(Thread *thread, Value *destination) {
-    destination->raw = static_cast<EmojicodeInteger>(floor(thread->getThisContext().doubl));
+    destination->raw = static_cast<EmojicodeInteger>(floor(thread->getThisContext().value->doubl));
 }
 
 static void doubleLog2(Thread *thread, Value *destination) {
-    destination->doubl = log2(thread->getThisContext().doubl);
+    destination->doubl = log2(thread->getThisContext().value->doubl);
 }
 
 static void doubleLn(Thread *thread, Value *destination) {
-    destination->doubl = log(thread->getThisContext().doubl);
+    destination->doubl = log(thread->getThisContext().value->doubl);
 }
 
 static void doubleAbsolute(Thread *thread, Value *destination) {
-    destination->doubl = fabs(thread->getThisContext().doubl);
+    destination->doubl = fabs(thread->getThisContext().value->doubl);
 }
 
 // MARK: Callable
@@ -489,9 +489,6 @@ static void capturedMethodMark(Object *o) {
 //        mark(&c->callee.object);
 //    }
 }
-
-FunctionFunctionPointer integerMethodForName(EmojicodeChar name);
-FunctionFunctionPointer numberMethodForName(EmojicodeChar name);
 
 FunctionFunctionPointer sLinkingTable[] = {
     nullptr,

@@ -301,16 +301,9 @@ void CallableParserAndGenerator::parseIfExpression(const Token &token) {
         if (!box) writer.writeInstruction(t.size(), token.position());
     }
     else {
-        parse(stream_.consumeToken(TokenType::NoType), token, Type::boolean(), Destination::temporaryReference());
+        parse(stream_.consumeToken(TokenType::NoType), token, Type::boolean(),
+              Destination(DestinationMutability::Immutable, StorageType::Simple));
     }
-}
-
-std::pair<Type, Destination> CallableParserAndGenerator::parseMethodCallee() {
-    auto &tobject = stream_.consumeToken();
-    auto destination = Destination::temporaryReference();
-    Type type = parse(tobject, Type::nothingness(), destination).resolveOnSuperArgumentsAndConstraints(typeContext);
-
-    return std::make_pair(type, destination);
 }
 
 bool CallableParserAndGenerator::isSuperconstructorRequired() const {
@@ -489,7 +482,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 placeholder.write();
 
                 returned = fcr.returned();
-                
+
                 return;
             }
             case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
@@ -606,9 +599,9 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 writer.writeInstruction(initializer->vtiForUse(), token);
 
                 parseFunctionCall(typeContext.calleeType(), initializer, token);
-                
+
                 calledSuper = true;
-                
+
                 return;
             }
             case E_RED_APPLE: {
@@ -1005,37 +998,37 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             return t;
         }
         case E_CLINKING_BEER_MUGS: {
-            auto insertionPoint = writer.getInsertionPoint();
-            writer.writeInstruction(INS_OPTIONAL_DISPATCH_METHOD, token);
-
-            auto &methodToken = stream_.consumeToken();
-
-            auto calleePair = parseMethodCallee();
-            Type type = calleePair.first;
-
-            if (!type.optional()) {
-                throw CompilerError(token, "🍻 may only be used on 🍬.");
-            }
-
-            auto method = type.eclass()->getMethod(methodToken, type, typeContext);
-
-            if (type.type() == TypeContent::ValueType) {
-                mutatingMethodCheck(method, type, calleePair.second, token);
-            }
-
-            writer.writeInstruction(method->vtiForUse(), token);
-
-            auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
-            parseFunctionCall(type, method, token);
-
-            placeholder.write();
-
-            Type returnType = method->returnType.resolveOn(typeContext);
-            returnType.setOptional();
-            scoper.popTemporaryScope();
-
-            writeBoxingAndTemporary(des, returnType, token.position(), insertionPoint);
-            return returnType;
+//            auto insertionPoint = writer.getInsertionPoint();
+//            writer.writeInstruction(INS_OPTIONAL_DISPATCH_METHOD, token);
+//
+//            auto &methodToken = stream_.consumeToken();
+//
+//            auto calleePair = parseMethodCallee();
+//            Type type = calleePair.first;
+//
+//            if (!type.optional()) {
+//                throw CompilerError(token, "🍻 may only be used on 🍬.");
+//            }
+//
+//            auto method = type.eclass()->getMethod(methodToken, type, typeContext);
+//
+//            if (type.type() == TypeContent::ValueType) {
+//                mutatingMethodCheck(method, type, calleePair.second, token);
+//            }
+//
+//            writer.writeInstruction(method->vtiForUse(), token);
+//
+//            auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
+//            parseFunctionCall(type, method, token);
+//
+//            placeholder.write();
+//
+//            Type returnType = method->returnType.resolveOn(typeContext);
+//            returnType.setOptional();
+//            scoper.popTemporaryScope();
+//
+//            writeBoxingAndTemporary(des, returnType, token.position(), insertionPoint);
+//            return returnType;
         }
         case E_HOT_PEPPER: {
             writeBoxingAndTemporary(des, Type::callableIncomplete(), token.position());
@@ -1273,12 +1266,17 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             auto insertionPoint = writer.getInsertionPoint();
             auto placeholder = writer.writeInstructionPlaceholder(token);
 
-            auto calleePair = parseMethodCallee();
-            Type type = calleePair.first;
+            auto &tobject = stream_.consumeToken();
+            auto calleeBoxingInsertionPoint = writer.getInsertionPoint();
+            auto destination = Destination(DestinationMutability::Unknown, StorageType::NoAction);
+            Type rtype = parse(tobject, Type::nothingness(), destination);
+            Type type = rtype.resolveOnSuperArgumentsAndConstraints(typeContext);
 
             if (type.optional()) {
                 throw CompilerError(token, "You cannot call methods on optionals.");
             }
+
+            auto simpleDes = Destination(DestinationMutability::Unknown, StorageType::Simple);
 
             Function *method;
             if (type.type() == TypeContent::ValueType) {
@@ -1286,16 +1284,17 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     switch (token.value()[0]) {
                         case E_NEGATIVE_SQUARED_CROSS_MARK:
                             placeholder.write(INS_INVERT_BOOLEAN);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_PARTY_POPPER:
                             placeholder.write(INS_OR_BOOLEAN);
-                            parse(stream_.consumeToken(), token, Type::boolean(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::boolean(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_CONFETTI_BALL:
                             placeholder.write(INS_AND_BOOLEAN);
-                            parse(stream_.consumeToken(), token, Type::boolean(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::boolean(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                     }
                 }
@@ -1303,79 +1302,81 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     switch (token.value()[0]) {
                         case E_HEAVY_MINUS_SIGN:
                             placeholder.write(INS_SUBTRACT_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_HEAVY_PLUS_SIGN:
                             placeholder.write(INS_ADD_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_HEAVY_DIVISION_SIGN:
                             placeholder.write(INS_DIVIDE_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_HEAVY_MULTIPLICATION_SIGN:
                             placeholder.write(INS_MULTIPLY_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_LEFT_POINTING_TRIANGLE:
                             placeholder.write(INS_LESS_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_RIGHT_POINTING_TRIANGLE:
                             placeholder.write(INS_GREATER_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_LEFTWARDS_ARROW:
                             placeholder.write(INS_LESS_OR_EQUAL_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_RIGHTWARDS_ARROW:
                             placeholder.write(INS_GREATER_OR_EQUAL_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_PUT_LITTER_IN_ITS_SPACE:
                             placeholder.write(INS_REMAINDER_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_HEAVY_LARGE_CIRCLE:
                             placeholder.write(INS_BINARY_AND_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_ANGER_SYMBOL:
                             placeholder.write(INS_BINARY_OR_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_CROSS_MARK:
                             placeholder.write(INS_BINARY_XOR_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_NO_ENTRY_SIGN:
                             placeholder.write(INS_BINARY_NOT_INTEGER);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_ROCKET:
                             placeholder.write(INS_INT_TO_DOUBLE);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::doubl();
                         case E_LEFT_POINTING_BACKHAND_INDEX:
                             placeholder.write(INS_SHIFT_LEFT_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                         case E_RIGHT_POINTING_BACKHAND_INDEX:
                             placeholder.write(INS_SHIFT_RIGHT_INTEGER);
-                            parse(stream_.consumeToken(), token, Type::integer(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::integer(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::integer();
                     }
                 }
@@ -1383,53 +1384,53 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     switch (token.value()[0]) {
                         case E_FACE_WITH_STUCK_OUT_TONGUE:
                             placeholder.write(INS_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_HEAVY_MINUS_SIGN:
                             placeholder.write(INS_SUBTRACT_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::doubl();
                         case E_HEAVY_PLUS_SIGN:
                             placeholder.write(INS_ADD_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::doubl();
                         case E_HEAVY_DIVISION_SIGN:
                             placeholder.write(INS_DIVIDE_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::doubl();
                         case E_HEAVY_MULTIPLICATION_SIGN:
                             placeholder.write(INS_MULTIPLY_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::doubl();
                         case E_LEFT_POINTING_TRIANGLE:
                             placeholder.write(INS_LESS_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_RIGHT_POINTING_TRIANGLE:
                             placeholder.write(INS_GREATER_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_LEFTWARDS_ARROW:
                             placeholder.write(INS_LESS_OR_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_RIGHTWARDS_ARROW:
                             placeholder.write(INS_GREATER_OR_EQUAL_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::boolean();
                         case E_PUT_LITTER_IN_ITS_SPACE:
                             placeholder.write(INS_REMAINDER_DOUBLE);
-                            parse(stream_.consumeToken(), token, Type::doubl(),
-                                  Destination::temporaryReference());
+                            parse(stream_.consumeToken(), token, Type::doubl(), simpleDes);
+                            writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                             return Type::doubl();
                     }
                 }
@@ -1438,11 +1439,24 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     parse(stream_.consumeToken(), token, type,
                           Destination(DestinationMutability::Unknown, StorageType::Simple));
                     placeholder.write(INS_EQUAL_PRIMITIVE);
+                    writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
                     return Type::boolean();
                 }
+            }
+            else if (type.type() == TypeContent::Enum && token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
+                auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
+                parse(stream_.consumeToken(), token, type, destination);  // Must be of the same type as the callee
+                placeholder.write(INS_EQUAL_PRIMITIVE);
+                writeBoxingAndTemporary(simpleDes, rtype, token.position(), calleeBoxingInsertionPoint);
+                return Type::boolean();
+            }
 
+            writeBoxingAndTemporary(Destination::temporaryReference(), rtype, token.position(),
+                                    calleeBoxingInsertionPoint);
+
+            if (type.type() == TypeContent::ValueType) {
                 method = type.valueType()->getMethod(token, type, typeContext);
-                mutatingMethodCheck(method, type, calleePair.second, token);
+                mutatingMethodCheck(method, type, destination, token);
                 placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
                 writer.writeInstruction(method->vtiForUse(), token);
             }
@@ -1453,12 +1467,6 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 writer.writeInstruction(method->vtiForUse(), token);
             }
             else if (type.type() == TypeContent::Enum) {
-                if (token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
-                    auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
-                    parse(stream_.consumeToken(), token, type, destination);  // Must be of the same type as the callee
-                    placeholder.write(INS_EQUAL_PRIMITIVE);
-                    return Type::boolean();
-                }
                 method = type.eenum()->getMethod(token, type, typeContext);
                 placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
                 writer.writeInstruction(method->vtiForUse(), token);
@@ -1621,6 +1629,9 @@ void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, Cal
         if (function->mutating()) {
             contextType.setMutable(true);
         }
+        contextType.setValueReference();
+    }
+    else if (contextType.type() == TypeContent::Enum) {
         contextType.setValueReference();
     }
     auto sca = CallableParserAndGenerator(*function, function->package(), mode, TypeContext(contextType, function),
