@@ -597,21 +597,6 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             box->copyTo(destination);
             return;
         }
-        case INS_OPTIONAL_DISPATCH_METHOD: {
-            error("Optional dispatch not available");
-//            Value sth;
-//            produce(thread->consumeInstruction(), thread, &sth);
-//            EmojicodeInstruction vti = thread->consumeInstruction();
-//            EmojicodeInstruction count = thread->consumeInstruction();
-//            if (sth.value->raw == T_NOTHINGNESS) {
-//                destination->raw = 0;
-//                thread->currentStackFrame()->executionPointer += count;
-//                return;
-//            }
-//            destination->raw = 1;
-//            Function *method = sth.value[1].object->klass->methodsVtable[vti];
-//            performFunction(method, sth.value[1], thread, destination + 1);
-        }
         case INS_CONDITIONAL_PRODUCE_BOX: {
             Value sth;
             produce(thread->consumeInstruction(), thread, &sth);

@@ -1014,39 +1014,6 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, t, token.position(), insertionPoint);
             return t;
         }
-        case E_CLINKING_BEER_MUGS: {
-//            auto insertionPoint = writer.getInsertionPoint();
-//            writer.writeInstruction(INS_OPTIONAL_DISPATCH_METHOD, token);
-//
-//            auto &methodToken = stream_.consumeToken();
-//
-//            auto calleePair = parseMethodCallee();
-//            Type type = calleePair.first;
-//
-//            if (!type.optional()) {
-//                throw CompilerError(token, "🍻 may only be used on 🍬.");
-//            }
-//
-//            auto method = type.eclass()->getMethod(methodToken, type, typeContext);
-//
-//            if (type.type() == TypeContent::ValueType) {
-//                mutatingMethodCheck(method, type, calleePair.second, token);
-//            }
-//
-//            writer.writeInstruction(method->vtiForUse(), token);
-//
-//            auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
-//            parseFunctionCall(type, method, token);
-//
-//            placeholder.write();
-//
-//            Type returnType = method->returnType.resolveOn(typeContext);
-//            returnType.setOptional();
-//            scoper.popTemporaryScope();
-//
-//            writeBoxingAndTemporary(des, returnType, token.position(), insertionPoint);
-//            return returnType;
-        }
         case E_HOT_PEPPER: {
             writeBoxingAndTemporary(des, Type::callableIncomplete(), token.position());
             Function *function;

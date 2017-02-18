@@ -16,7 +16,7 @@ compilation_tests = [
     "castAny", "protocolClass", "protocolValueType", "protocolEnum",
     "variableInitAndScoping", "gcStressTest1", "gcStressTest2",
     "valueTypeCopySelf",
-    # chaining callable threads
+    # callable threads
 ]
 library_tests = [
     "stringTest", "primitives", "mathTest", "listTest", "rangeTest",

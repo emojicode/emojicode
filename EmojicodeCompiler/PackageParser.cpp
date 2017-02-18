@@ -160,7 +160,6 @@ void PackageParser::reservedEmojis(const Token &token, const char *place) const 
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY:
         case E_RED_APPLE:
         case E_BEER_MUG:
-        case E_CLINKING_BEER_MUGS:
         case E_LEMON:
         case E_GRAPES:
         case E_STRAWBERRY:
