@@ -1149,7 +1149,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         case E_CHIPMUNK: {
             effect = true;
             auto insertionPoint = writer.getInsertionPoint();
-            auto &nameToken = stream_.consumeToken();
+            auto &nameToken = stream_.consumeToken(TokenType::Identifier);
 
             if (mode != CallableParserAndGeneratorMode::ObjectMethod) {
                 throw CompilerError(token, "Not within an object-context.");
