@@ -124,10 +124,11 @@ Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool r
     while (t.type() == TypeContent::Reference && t.reference() < maxReferenceForSuper) {
         t = c->superGenericArguments()[t.reference()];
     }
-    while (t.type() == TypeContent::LocalReference) {
+    while (t.type() == TypeContent::LocalReference && typeContext.function() == t.localResolutionConstraint_) {
         t = typeContext.function()->genericArgumentConstraints[t.reference()];
     }
-    while (t.type() == TypeContent::Reference) {
+    while (t.type() == TypeContent::Reference
+           && typeContext.calleeType().typeDefinitionFunctional()->canBeUsedToResolve(t.resolutionConstraint_)) {
         t = typeContext.calleeType().typeDefinitionFunctional()->genericArgumentConstraints()[t.reference()];
     }
 
@@ -146,7 +147,8 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
         t = typeContext.calleeType();
     }
 
-    while (t.type() == TypeContent::LocalReference && typeContext.functionGenericArguments()) {
+    while (t.type() == TypeContent::LocalReference && typeContext.function() == t.localResolutionConstraint_
+           && typeContext.functionGenericArguments()) {
         t = (*typeContext.functionGenericArguments())[t.reference()];
     }
 

@@ -26,6 +26,7 @@ class Package;
 class TypeDefinitionFunctional;
 class TypeContext;
 class ValueType;
+class Function;
 struct CommonTypeFinder;
 
 enum class TypeContent {
@@ -85,6 +86,9 @@ public:
     /// to be suitable. (See @c canBeUsedToResolve).
     Type(TypeContent t, bool optional, int r, TypeDefinitionFunctional *resolutionConstraint)
         : reference_(r), resolutionConstraint_(resolutionConstraint), typeContent_(t), optional_(optional) {}
+    /// Creates a reference to the generic argument @c r which can be resolved to an argument given to @c function.
+    Type(TypeContent t, bool optional, int r, Function *function)
+        : reference_(r), localResolutionConstraint_(function), typeContent_(t), optional_(optional) {}
 
     static Type integer() { return Type(VT_INTEGER, false, false, false); }
     static Type boolean() { return Type(VT_BOOLEAN, false, false, false); }
@@ -194,6 +198,7 @@ private:
     union {
         TypeDefinition *typeDefinition_;
         TypeDefinitionFunctional *resolutionConstraint_;
+        Function *localResolutionConstraint_;
     };
     TypeContent typeContent_;
     bool optional_;

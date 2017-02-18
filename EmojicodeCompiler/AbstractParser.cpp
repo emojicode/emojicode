@@ -220,25 +220,25 @@ bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
     return usedSelf;
 }
 
-void AbstractParser::parseGenericArgumentsInDefinition(Function *p, TypeContext ct) {
+void AbstractParser::parseGenericArgumentsInDefinition(Function *function, TypeContext ct) {
     while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
         auto &variable = stream_.consumeToken(TokenType::Variable);
 
-        Type t = parseTypeDeclarative(p->owningType(), TypeDynamism::GenericTypeVariables, Type::nothingness(), nullptr,
-                                      true);
-        p->genericArgumentConstraints.push_back(t);
+        Type t = parseTypeDeclarative(function->owningType(), TypeDynamism::GenericTypeVariables, Type::nothingness(),
+                                      nullptr, true);
+        function->genericArgumentConstraints.push_back(t);
 
-        Type rType = Type(TypeContent::LocalReference, false, static_cast<int>(p->genericArgumentVariables.size()),
-                          nullptr);
+        Type rType = Type(TypeContent::LocalReference, false,
+                          static_cast<int>(function->genericArgumentVariables.size()), function);
 
-        if (p->genericArgumentVariables.count(variable.value())) {
+        if (function->genericArgumentVariables.count(variable.value())) {
             throw CompilerError(variable, "A generic argument variable with the same name is already in use.");
         }
-        p->genericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable.value(), rType));
+        function->genericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable.value(), rType));
     }
 }
 
-void AbstractParser::parseBody(Function *p, bool allowNative) {
+void AbstractParser::parseBody(Function *function, bool allowNative) {
     if (stream_.nextTokenIs(E_RADIO)) {
         auto &radio = stream_.consumeToken(TokenType::Identifier);
         if (!allowNative) {
@@ -249,11 +249,11 @@ void AbstractParser::parseBody(Function *p, bool allowNative) {
         if (index < 1 || index > UINT16_MAX) {
             throw CompilerError(indexToken.position(), "Linking Table Index is not in range.");
         }
-        p->setLinkingTableIndex(static_cast<int>(index));
+        function->setLinkingTableIndex(static_cast<int>(index));
     }
     else {
         stream_.requireIdentifier(E_GRAPES);
-        parseBody(p);
+        parseBody(function);
     }
 }
 

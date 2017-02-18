@@ -63,8 +63,9 @@ def compilation_test(name):
 
 
 def reject_test(filename):
-    completed = run(["./emojicodec", filename], stderr=DEVNULL)
-    if completed.returncode == 0:
+    completed = run(["./emojicodec", filename], stderr=PIPE)
+    output = completed.stderr.decode('utf-8')
+    if completed.returncode == 0 or output.count("🚨") != 1:
         fail_test(filename)
 
 
