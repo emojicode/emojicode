@@ -32,6 +32,7 @@ function offerSudo {
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo ""
     sudo "$self" "$binaries" "$packages" magicsudod
+    exit $?
   fi
   exit 1
 }
