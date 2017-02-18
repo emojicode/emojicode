@@ -419,6 +419,10 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
             case E_PIG: {
                 required.disallow();
                 canReturnNothingness.disallow();
+                if (typed.type() != TypeContent::Class) {
+                    override.disallow();
+                    final.disallow();
+                }
 
                 auto &methodName = stream_.consumeToken(TokenType::Identifier);
 
@@ -466,6 +470,9 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 staticOnType.disallow();
                 override.disallow();
                 mutating.disallow();
+                if (typed.type() != TypeContent::Class) {
+                    required.disallow();
+                }
 
                 if (typed.type() == TypeContent::Enum) {
                     throw CompilerError(token, "Enums cannot have custom initializers.");
