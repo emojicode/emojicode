@@ -227,6 +227,9 @@ int main(int argc, char * argv[]) {
 
             Writer writer = Writer(outPath);
             generateCode(writer);
+            if (!hasError) {
+                writer.finish();
+            }
         }
         catch (CompilerError &ce) {
             printError(ce);

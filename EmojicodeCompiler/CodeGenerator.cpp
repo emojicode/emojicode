@@ -236,6 +236,4 @@ void generateCode(Writer &writer) {
         compileUnused(vt->initializerList());
         compileUnused(vt->typeMethodList());
     }
-
-    writer.finish();
 }
