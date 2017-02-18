@@ -1,4 +1,4 @@
-VERSION = 0.3
+VERSION = 0.3.1
 
 CC ?= gcc
 CXX ?= g++
@@ -19,7 +19,7 @@ ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.c)
 ENGINE_OBJECTS = $(ENGINE_SOURCES:%.c=%.o)
 ENGINE_BINARY = emojicode
 
-PACKAGE_CFLAGS = -Ofast -iquote . -std=c11 -Wno-unused-result -fPIC
+PACKAGE_CFLAGS = -Ofast -iquote . -std=c11 -Wno-unused-result -fPIC -D_POSIX_C_SOURCE=200112L
 PACKAGE_LDFLAGS = -shared -fPIC
 ifeq ($(shell uname), Darwin)
 PACKAGE_LDFLAGS += -undefined dynamic_lookup
@@ -29,7 +29,7 @@ PACKAGES_DIR=DefaultPackages
 PACKAGES=files allegro sockets
 
 DIST_NAME=Emojicode-$(VERSION)-$(shell $(CC) -dumpmachine)
-DIST_BUILDS=builds
+DIST_BUILDS?=builds
 DIST=$(DIST_BUILDS)/$(DIST_NAME)
 
 TESTS_DIR=tests
