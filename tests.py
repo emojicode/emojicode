@@ -8,11 +8,12 @@ os.environ["EMOJICODE_PACKAGES_PATH"] = os.path.join(dist.path, "packages")
 
 compilation_tests = [
     "hello", "intTest", "if", "namespace", "enum", "enumMethod",
-    "enumTypeMethod", "unwrap", "assignmentByCall",
-    "conditionalProduce", "piglatin", "stringConcat", "extension", "class",
+    "enumTypeMethod", "unwrap", "assignmentByCall", "repeatWhile",
+    "conditionalProduce", "stringConcat", "classInheritance", "classOverride",
+    "classSuper", "extension", "piglatin", "class",
     "assignmentByCallInstanceVariable",
     "babyBottleInitializer", "valueType", "isNothingness", "downcastClass",
-    "protocolClass", "protocolValueType", "protocolEnum",
+    "castAny", "protocolClass", "protocolValueType", "protocolEnum",
     "variableInitAndScoping", "gcStressTest1", "gcStressTest2",
     "valueTypeCopySelf",
     # chaining callable threads

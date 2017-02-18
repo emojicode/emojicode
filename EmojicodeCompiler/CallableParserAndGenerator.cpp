@@ -972,7 +972,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 placeholder.write(INS_CAST_TO_PROTOCOL);
                 writer.writeInstruction(type.protocol()->index, token);
             }
-            else if (type.type() == TypeContent::ValueType && isStatic(pair.second)) {
+            else if ((type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum)
+                     && isStatic(pair.second)) {
                 assert(originalType.storageType() == StorageType::Box);
                 placeholder.write(INS_CAST_TO_VALUE_TYPE);
                 writer.writeInstruction(type.valueType()->boxIdentifier(), token);
