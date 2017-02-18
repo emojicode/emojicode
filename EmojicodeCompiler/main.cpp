@@ -162,7 +162,7 @@ void loadStandard(Package *_, SourcePosition errorPosition) {
 int main(int argc, char * argv[]) {
     try {
         const char *packageToReport = nullptr;
-        char *outPath = nullptr;
+        std::string outPath;
 
         const char *ppath;
         if ((ppath = getenv("EMOJICODE_PACKAGES_PATH"))) {
@@ -199,13 +199,16 @@ int main(int argc, char * argv[]) {
         }
 
         if (argc == 0) {
-            compilerWarning(SourcePosition(0, 0, ""), "No input files provided.");
+            compilerWarning(SourcePosition(0, 0, ""), "No input file provided.");
             return 1;
         }
+        else if (argc > 1) {
+            compilerWarning(SourcePosition(0, 0, ""), "Only the first file provided will be compiled.");
+        }
 
-        if (outPath == nullptr) {
-            outPath = strdup(argv[0]);
-            outPath[strlen(outPath) - 1] = 'b';
+        if (outPath.empty()) {
+            outPath = argv[0];
+            outPath[outPath.size() - 1] = 'b';
         }
 
         auto errorPosition = SourcePosition(0, 0, argv[0]);
@@ -213,30 +216,21 @@ int main(int argc, char * argv[]) {
         Package pkg = Package("_", errorPosition);
         pkg.setPackageVersion(PackageVersion(1, 0));
 
-        FILE *out = fopen(outPath, "wb");
-
         try {
             loadStandard(&pkg, errorPosition);
 
             pkg.parse(argv[0]);
 
-            if (!out || ferror(out)) {
-                throw CompilerError(errorPosition, "Couldn't write output file.");
-                return 1;
-            }
-
             if (!Function::foundStart) {
                 throw CompilerError(errorPosition, "No 🏁 block was found.");
             }
 
-            Writer writer = Writer(out);
+            Writer writer = Writer(outPath);
             generateCode(writer);
         }
         catch (CompilerError &ce) {
             printError(ce);
         }
-
-        fclose(out);
 
         if (packageToReport) {
             if (auto package = Package::findPackage(packageToReport)) {
@@ -252,7 +246,6 @@ int main(int argc, char * argv[]) {
         }
 
         if (hasError) {
-            unlink(outPath);
             return 1;
         }
     }

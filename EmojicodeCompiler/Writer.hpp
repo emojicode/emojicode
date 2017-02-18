@@ -25,7 +25,7 @@ class Writer {
     friend WriterPlaceholder<EmojicodeInstruction>;
     friend WriterPlaceholder<unsigned char>;
 public:
-    explicit Writer(FILE *outFile) : out_(outFile) {};
+    explicit Writer(const std::string &path) : path_(path) {};
 
     /** Must be used to write any uint16_t to the file */
     void writeUInt16(uint16_t value);
@@ -59,7 +59,7 @@ private:
     void write(uint32_t v) { writeEmojicodeChar(v); };
     void write(uint8_t v) { writeByte(v); };
 
-    FILE *out_;
+    const std::string &path_;
     std::string data_;
 };
 

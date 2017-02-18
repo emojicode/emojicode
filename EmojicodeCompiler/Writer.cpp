@@ -8,6 +8,7 @@
 
 #include "Writer.hpp"
 #include <iostream>
+#include <fstream>
 #include "CompilerError.hpp"
 #include "Function.hpp"
 #include "CallableWriter.hpp"
@@ -68,6 +69,12 @@ void Writer::writeFunction(Function *function) {
 }
 
 void Writer::finish() {
-    fputc(BYTE_CODE_VERSION, out_);
-    fwrite(data_.data(), sizeof(char), data_.size(), out_);
+    auto out = std::ofstream(path_, std::ios::binary | std::ios::out | std::ios::trunc);
+    if (out) {
+        out.put(BYTE_CODE_VERSION);
+        out.write(data_.data(), data_.size());
+    }
+    else {
+        throw CompilerError(SourcePosition(0, 0, ""), "Couldn't write output file %s.", path_.c_str());
+    }
 }
