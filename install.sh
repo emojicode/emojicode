@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-b=$(tput bold)
 n=$(tput sgr0)
 cyan=$(tput setaf 6)
 magenta=$(tput setaf 5)
@@ -9,59 +8,80 @@ r=$(tput setaf 1)
 binaries=${1:-"/usr/local/bin"}
 packages=${2:-"/usr/local/EmojicodePackages"}
 
-echo "${b}🙋  Hi, I’m the Emojicode installer!${n}"
+self=$0
+magicsudod=$3
 
-echo "${b}I’ll copy the ${cyan}Emojicode Compiler${n}${b} and ${magenta}Real-Time Engine${n}${b} to ${binaries}.${n}"
-echo "${b}Then I’ll copy the packages to ${packages}.${n}"
+if [[ "$magicsudod" == "magicsudod" ]]; then
+  echo "I’ve super user privileges now and will try to perform the installation."
+else
+  echo "👨‍💻  Hi, I’m the Emojicode Installer!"
 
-read -p "${b}If you want to proceed type Y. ➡️ ${n}" -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
+  echo "I’ll copy the ${cyan}Emojicode Compiler${n} and ${magenta}Real-Time Engine${n} to ${binaries}.${n}"
+  echo "Then I’ll copy the packages to ${packages}.${n}"
+fi
+
+function offerSudo {
+  if [[ "$magicsudod" == "magicsudod" ]]; then
+    exit 1
+  fi
+  if [ "$EUID" -eq 0 ]; then
+    exit 1
+  fi
+  echo "I can try to rerun myself with sudo."
+  read -p "If you wish me to do so type y. ➡️  " -n 1 -r
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo ""
+    sudo "$self" "$binaries" "$packages" magicsudod
+    exit $?
+  fi
+  exit 1
+}
+
+read -p "If you want to proceed type y. ➡️  " -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo
   if [[ ! -w $binaries ]] ; then
-    echo "${b}${r}${binaries} is not writeable from this user. Carefully try using sudo.${n}"
-    exit 1
+    echo "${r}${binaries} is not writeable from this user.${n}"
+    offerSudo
   fi
 
   if [[ ! -w $packages ]] ; then
     pp=$(dirname "$packages")
     if [[ ! -w $pp ]] ; then
-      echo "${b}${r}${pp} is not writeable from this user. Carefully try using sudo.${n}"
-      exit 1
+      echo "${r}${pp} is not writeable from this user.${n}"
+      offerSudo
     else
       if [[ ! -d $packages ]] ; then
-        echo "${b}Setting up packages directory in ${packages}${n}"
+        echo "Setting up packages directory in ${packages}${n}"
 
-        mkdir -p ${packages}
+        mkdir -p "$packages"
       else
-        echo "${b}${r}${packages} is not writeable from this user. Carefully try using sudo.${n}"
-        exit 1
+        echo "${r}${packages} is not writeable from this user.${n}"
+        offerSudo
       fi
     fi
   fi
 
   (
     set -e
-    echo "${b}Copying builds${n}"
+    echo "Copying builds${n}"
 
-    cp emojicode ${binaries}/emojicode
-    cp emojicodec ${binaries}/emojicodec
+    cp emojicode "$binaries/emojicode"
+    cp emojicodec "$binaries/emojicodec"
 
-    chmod 755 ${binaries}/emojicode ${binaries}/emojicodec
+    chmod 755 "$binaries/emojicode" "$binaries/emojicodec"
 
-    echo "${b}Copying packages${n}"
+    echo "Copying packages${n}"
 
-    rsync -rl --copy-dirlinks packages/ ${packages}
-    chmod -R 755 ${packages}
+    rsync -rl --copy-dirlinks packages/ "$packages"
+    chmod -R 755 "$packages"
   )
   if [ $? = 0 ]
   then
     tput setaf 2
-    echo "${b}✅  Emojicode was successfully installed.${n}"
+    echo "✅  Emojicode was successfully installed.${n}"
   else
-    echo "${b}${r}Installation failed. Please refer to the error above.${n}"
+    echo "${r}Installation failed. Please refer to the error above.${n}"
     exit 1
   fi
 fi
-
-
