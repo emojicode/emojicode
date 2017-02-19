@@ -10,10 +10,10 @@
 #include <cstring>
 #include <cmath>
 #include <utility>
+#include <algorithm>
 #include "EmojicodeString.h"
 #include "../utf8.h"
 #include "EmojicodeList.h"
-#include "algorithms.h"
 #include "Thread.hpp"
 
 EmojicodeInteger stringCompare(String *a, String *b) {
@@ -122,9 +122,11 @@ void stringIndexOf(Thread *thread, Value *destination) {
     String *string = static_cast<String *>(thread->getThisObject()->value);
     String *search = static_cast<String *>(thread->getVariable(0).object->value);
 
-    const void *location = findBytesInBytes(characters(string), string->length * sizeof(EmojicodeChar),
-                                            characters(search), search->length * sizeof(EmojicodeChar));
-    if (!location) {
+    auto last = characters(string) + string->length;
+    EmojicodeChar *location = std::search(characters(string), last, characters(search),
+                                          characters(search) + search->length);
+
+    if (location == last) {
         destination->makeNothingness();
     }
     else {

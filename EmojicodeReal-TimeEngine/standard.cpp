@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <thread>
+#include <algorithm>
 
 #include "Engine.hpp"
 #include "EmojicodeString.h"
@@ -21,7 +22,6 @@
 #include "EmojicodeString.h"
 #include "EmojicodeDictionary.h"
 #include "../utf8.h"
-#include "algorithms.h"
 #include "Thread.hpp"
 
 EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max) {
@@ -285,8 +285,9 @@ static void dataSlice(Thread *thread, Value *destination) {
 static void dataIndexOf(Thread *thread, Value *destination) {
     Data *data = static_cast<Data *>(thread->getThisObject()->value);
     Data *search = static_cast<Data *>(thread->getVariable(0).object->value);
-    const void *location = findBytesInBytes(data->bytes, data->length, search->bytes, search->length);
-    if (!location) {
+    auto last = data->bytes + data->length;
+    const void *location = std::search(data->bytes, last, search->bytes, search->bytes + search->length);
+    if (location == last) {
         destination->makeNothingness();
     }
     else {

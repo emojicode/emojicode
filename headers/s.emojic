@@ -818,9 +818,9 @@
   🌮
     Finds the first occurrences of *search* in the bytes represented by this
     instance. Search is done from left to right. Nothingness is returned if
-    *search* cannot be found.
+    *search* cannot be found. 0 is returned if *search* is empty.
   🌮
-  🐖 🔍 searchValue 📇 ➡️ 🍬🚂 📻 6
+  🐖 🔍 search 📇 ➡️ 🍬🚂 📻 6
   🌮
     Creates a new data object by with the bytes of this instance and *b*
     concatenated.
