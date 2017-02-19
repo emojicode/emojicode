@@ -6,6 +6,7 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include <algorithm>
 #include "CommonTypeFinder.hpp"
 #include "TypeContext.hpp"
 #include "TypeDefinitionFunctional.hpp"
