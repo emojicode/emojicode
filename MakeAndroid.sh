@@ -1,6 +1,9 @@
 #!/bin/bash
 
-PATH="/home/kirill/Android/Sdk/ndk-bundle:$PATH"
+# if the make file is unable to locate the location
+# of the ndk, uncomment the line bellow and set
+# the correct path to the android sdk, make sure ndk is installed
+#PATH="<path_to_android_sdk>/ndk-bundle:$PATH"
 
 if ! [ -x "$(command -v ndk-build -v)" ]; then
   echo 'Error: Unable to locate ndk-build, edit make file, or add to PATH' >&2
