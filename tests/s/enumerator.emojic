@@ -15,9 +15,7 @@
       🐻 testList name
     🍉
 
-    👴 ⛔️🐕 🦄 list testList 🍇 a 🔡 b 🔡 ➡️ 👌
-    👴   🍎 😜 a b
-    👴 🍉 🔤Array Equal False🔤
+    ⛔️🐕 😛 list testList 🔤List Explicit Iterator🔤
   🍉
 
   🐖 📇 🍇
@@ -25,13 +23,12 @@
     🍦 testList 🔷🍨🐚🚂🐸
 
     🔂 byte 🍡 data 🍇
+      😀🔡 byte 16
       🐻 testList byte
     🍉
 
-    👴 🍦 list 🍨0x44 0x61 0x66 0x74 0x20 0x50 0x75 0x6e 0x6b🍆
-    👴 ⛔️🐕 🦄 list testList 🍇 a 🚂 b 🚂 ➡️ 👌
-    👴   🍎 😛 a b
-    👴 🍉 🔤Array Equal False🔤s
+    🍦 list 🍨0x44 0x61 0x66 0x74 0x20 0x50 0x75 0x6e 0x6b🍆
+    ⛔️🐕 😛 list testList 🔤Data Explicit Iterator🔤
   🍉
 
   🐖 🤗 🍇
@@ -43,9 +40,7 @@
       🐻 testList 🍺 name
     🍉
 
-    👴 ⛔️🐕 🦄 list testList 🍇 a 🔡 b 🔡 ➡️ 👌
-    👴   🍎 😜 a b
-    👴 🍉 🔤Array Equal False🔤
+    ⛔️🐕 😛 list testList 🔤List 🌱 Iterator🔤
   🍉
 
   🐖 🤠 🍇
@@ -59,9 +54,7 @@
       🐻 testList name
     🍉
 
-    👴 ⛔️🐕 🦄 list testList 🍇 a 🔡 b 🔡 ➡️ 👌
-    👴   🍎 😜 a b
-    👴 🍉 🔤Array Equal False🔤
+    ⛔️🐕 😛 list testList 🔤List 🌳 Iterator🔤
   🍉
 
   ✒️ 🐖 🏁 🍇

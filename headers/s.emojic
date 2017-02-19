@@ -30,9 +30,25 @@
 🍉
 
 🌮
+  A type conforming to this protocol provides a method 😛 to determine whether
+  one of its instance is equal to an instance of type T, where T is normally the
+  type itself.
+🌮
+🐊 😛🐚T⚪️ 🍇
+  🌮 Whether this value and *other* are equal. 🌮
+  🐖 😛 other T ➡️ 👌
+🍉
+
+🐋 👌 🍇
+  🐊 😛🐚👌
+🍉
+
+🌮
   Integer
 🌮
 🌍 🕊 🚂 ⚪️ 🍇
+  🐊 😛🐚🚂
+
   🌮
     Returns a cryptographically secure random number that is greater than
     or equal to *min* and less than or equal to *max*.
@@ -112,6 +128,8 @@
   Double
 🌮
 🌍 🕊 🚀 ⚪️ 🍇
+  🐊 😛🐚🚀
+
   🌮 Whether this value and *other* are considered equal. 🌮
   🐖 😛 other 🐕 ➡️ 👌 🍇
     🍎 😛 🐕 other
@@ -249,6 +267,8 @@
   Symbol
 🌮
 🌍 🕊 🔣 ⚪️ 🍇
+  🐊 😛🐚🔣
+
   🌮 Whether this value and *other* are considered equal. 🌮
   🐖 😛 other 🐕 ➡️ 👌 🍇
     🍎 😛 🐕 other
@@ -299,7 +319,7 @@
 🍉
 
 🌮
-  A class whose instances shall be enumerable using the 🔂 loop must
+  A type whose instances shall be enumerable using the 🔂 loop must
   implement this protocol.
 🌮
 🌍 🐊 🔂🐚Element⚪️ 🍇
@@ -481,6 +501,7 @@
 🐋 🔡 🍇
   🐊 🔂🐚🔣
   🐊 🐽🐚🔣
+  🐊 😛🐚🔡
 
   🌮 Prompts the user for input. (via the standard input/output) 🌮
   🐈 😯 prompt 🔡 📻 80
@@ -743,23 +764,16 @@
     🍎 👍
   🍉
 
-  🌮
-    Tests whether this array and `other` are equal. Equality of two elements
-    is defined by `callback` which must return true if the first and the second
-    argument, which represent elements from this and the other array
-    respectively, are equal. `callback` is not necessarily called at all.
-  🌮
-  🐖 🦄 🐚A⚪️ other 🍨🐚A callback 🍇Element A➡️👌🍉 ➡️ 👌 🍇
+  🌮 Tests whether this array and `other` are equal. 🌮
+  🐖 😛 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
     🍊 ❎ 😛 🐔 🐕 🐔 other 🍇
       🍎 👎
     🍉
 
-    🍮 i 0
-    🔁 ◀️ i 🐔 other 🍇
-      🍊 ❎ 🍭 callback 🍺🐽 🐕 i 🍺 🐽 other i 🍇
+    🔂 i ⏩ 0 🐔 🐕 🍇
+      🍊 ❎ 😛 🍺🐽 other i 🍺 🐽 🐕 i 🍇
         🍎 👎
       🍉
-      🍮➕ i 1
     🍉
     🍎 👍
   🍉
@@ -773,6 +787,7 @@
 🐋 📇 🍇
   🐊 🐽🐚🚂
   🐊 🔂🐚🚂
+  🐊 😛🐚📇
 
   🌮 Returns 👍 if this is equal to b. 🌮
   🐖 😛 b 📇 ➡️ 👌 📻 1
