@@ -44,12 +44,14 @@ bool Function::enforcePromises(Function *super, TypeContext typeContext, Type su
                                 returnType.toString(typeContext, true).c_str(), name().utf8().c_str(),
                                 superSource.toString(typeContext, true).c_str());
         }
-        if (superReturnType.storageType() == StorageType::Box) {
+        if (superReturnType.storageType() == StorageType::Box && !protocol) {
             returnType.forceBox();
         }
-        if (returnType.optional() != superReturnType.optional()) {
-            throw CompilerError(position(), "Return type and super return type must both either be optional "
-                                "or non-optional.");
+        if (returnType.resolveOn(typeContext).storageType() != superReturnType.storageType()) {
+            if (protocol) {
+                return false;
+            }
+            throw CompilerError(position(), "Return and super return are storage incompatible.");
         }
 
         if (super->arguments.size() != arguments.size()) {
