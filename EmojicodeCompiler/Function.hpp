@@ -12,6 +12,7 @@
 #include <queue>
 #include <map>
 #include <vector>
+#include <numeric>
 #include <experimental/optional>
 #include "Token.hpp"
 #include "TokenStream.hpp"
@@ -73,6 +74,10 @@ public:
 
     EmojicodeString name() const { return name_; }
 
+    EmojicodeString protocolBoxingLayerName(EmojicodeString protocolName) {
+        return EmojicodeString({ protocolName[0], name()[0] });
+    }
+
     /** Whether the method is implemented natively and Run-Time Native Linking must occur. */
     bool isNative() const { return linkingTableIndex_ > 0; }
     unsigned int linkingTabelIndex() const { return linkingTableIndex_; }
@@ -114,7 +119,8 @@ public:
         super->registerOverrider(this);
     }
     /// Checks that no promises were broken and applies boxing if necessary.
-    void enforcePromises(Function *superFunction, TypeContext typeContext, Type superSource,
+    /// Returns false iff a value for protocol was given and the arguments or the return type are storage incompatible.
+    bool enforcePromises(Function *superFunction, TypeContext typeContext, Type superSource,
                          std::experimental::optional<TypeContext> protocol);
 
     void registerOverrider(Function *f) { overriders_.push_back(f); }
@@ -142,6 +148,11 @@ public:
 
     int fullSize() const { return fullSize_; }
     void setFullSize(int c) { fullSize_ = c; }
+    void setFullSizeFromArguments() {
+        fullSize_ = std::accumulate(arguments.begin(), arguments.end(), 0, [](int a, Argument b) {
+            return a + b.type.size();
+        });
+    }
 
     CallableWriter writer_;
     std::vector<FunctionObjectVariableInformation>& objectVariableInformation() { return objectVariableInformation_; }

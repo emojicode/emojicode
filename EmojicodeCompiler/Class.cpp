@@ -150,5 +150,5 @@ void Class::finalize() {
         methodVtiProvider_.offsetVti(superclass()->methodVtiProvider_.peekNext());
     }
 
-    TypeDefinitionFunctional::finalizeProtocols();
+    TypeDefinitionFunctional::finalizeProtocols(classType, &methodVtiProvider_);
 }

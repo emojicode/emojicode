@@ -20,6 +20,7 @@
 #include "CallableWriter.hpp"
 #include "CallableParserAndGeneratorMode.hpp"
 #include "Destination.hpp"
+#include "BoxingLayer.hpp"
 
 struct FlowControlReturn {
     int branches = 0;
@@ -137,6 +138,8 @@ private:
     void mutatingMethodCheck(Function *function, Type type, Destination des, SourcePosition p);
     bool typeIsEnumerable(Type type, Type *elementType);
     void flowControlBlock(bool block = true, std::function<void()> = nullptr);
+
+    void generateBoxingLayer(BoxingLayer *layer);
 
     void flowControlReturnEnd(FlowControlReturn &fcr);
 

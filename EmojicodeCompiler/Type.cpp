@@ -217,14 +217,14 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
     if (type() == TypeContent::Class && to.type() == TypeContent::Protocol) {
         for (Class *a = this->eclass(); a != nullptr; a = a->superclass()) {
             for (auto protocol : a->protocols()) {
-                if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
+                if (protocol.resolveOn(*this).compatibleTo(to.resolveOn(ct), ct, ctargs)) return true;
             }
         }
         return false;
     }
     if ((type() == TypeContent::ValueType || type() == TypeContent::Enum) && to.type() == TypeContent::Protocol) {
         for (auto protocol : typeDefinitionFunctional()->protocols()) {
-            if (protocol.resolveOn(*this).compatibleTo(to, ct, ctargs)) return true;
+            if (protocol.resolveOn(*this).compatibleTo(to.resolveOn(ct), ct, ctargs)) return true;
         }
         return false;
     }

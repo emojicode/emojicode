@@ -10,7 +10,7 @@
 #include "CallableWriter.hpp"
 #include "Token.hpp"
 
-void CallableWriter::writeInstruction(EmojicodeInstruction value, SourcePosition p) {
+void CallableWriter::writeInstruction(EmojicodeInstruction value) {
     instructions_.push_back(value);
 }
 

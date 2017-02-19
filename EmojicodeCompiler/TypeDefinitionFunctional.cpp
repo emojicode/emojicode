@@ -13,6 +13,7 @@
 #include "Function.hpp"
 #include "TypeContext.hpp"
 #include "Protocol.hpp"
+#include "BoxingLayer.hpp"
 
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Type constraint) {
     genericArgumentConstraints_.push_back(constraint);
@@ -163,13 +164,35 @@ void TypeDefinitionFunctional::finalize() {
     }
 }
 
-void TypeDefinitionFunctional::finalizeProtocols() {
+void TypeDefinitionFunctional::finalizeProtocols(Type type, VTIProvider *methodVtiProvider) {
     for (Type protocol : protocols()) {
         for (auto method : protocol.protocol()->methods()) {
-            Function *clm = lookupMethod(method->name());
-            if (clm) {
-                clm->assignVti();
-                method->registerOverrider(clm);
+            try {
+                Function *clm = lookupMethod(method->name());
+                if (clm == nullptr) {
+                    auto typeName = type.toString(Type::nothingness(), true);
+                    auto protocolName = protocol.toString(Type::nothingness(), true);
+                    throw CompilerError(position(), "%s does not agree to protocol %s: Method %s is missing.",
+                                        typeName.c_str(), protocolName.c_str(), method->name().utf8().c_str());
+                }
+
+                if (!clm->enforcePromises(method, type, protocol, TypeContext(protocol))) {
+                    auto bl = new BoxingLayer(clm, protocol.protocol()->name(), methodVtiProvider,
+                                              method->returnType.resolveOn(protocol), clm->position());
+                    for (auto arg : method->arguments) {
+                        bl->arguments.push_back(Argument(arg.variableName, arg.type.resolveOn(protocol)));
+                    }
+                    method->registerOverrider(bl);
+                    addMethod(bl);
+                    bl->assignVti();
+                }
+                else {
+                    method->registerOverrider(clm);
+                    clm->assignVti();
+                }
+            }
+            catch (CompilerError &ce) {
+                printError(ce);
             }
         }
     }

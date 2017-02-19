@@ -9,7 +9,6 @@
 #include "Function.hpp"
 #include <map>
 #include <stdexcept>
-#include <numeric>
 #include "Lexer.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
@@ -25,7 +24,7 @@ void Function::setLinkingTableIndex(int index) {
     linkingTableIndex_ = index;
 }
 
-void Function::enforcePromises(Function *super, TypeContext typeContext, Type superSource,
+bool Function::enforcePromises(Function *super, TypeContext typeContext, Type superSource,
                                std::experimental::optional<TypeContext> protocol) {
     try {
         if (super->final()) {
@@ -38,7 +37,7 @@ void Function::enforcePromises(Function *super, TypeContext typeContext, Type su
         }
 
         auto superReturnType = protocol ? super->returnType.resolveOn(*protocol, false) : super->returnType;
-        if (!returnType.compatibleTo(superReturnType, typeContext)) {
+        if (!returnType.resolveOn(typeContext).compatibleTo(superReturnType, typeContext)) {
             auto supername = superReturnType.toString(typeContext, true);
             auto thisname = returnType.toString(typeContext, true);
             throw CompilerError(position(), "Return type %s of %s is not compatible to the return type defined in %s.",
@@ -60,22 +59,25 @@ void Function::enforcePromises(Function *super, TypeContext typeContext, Type su
             // More general arguments are OK
             auto superArgumentType = protocol ? super->arguments[i].type.resolveOn(*protocol, false) :
             super->arguments[i].type;
-            if (!superArgumentType.compatibleTo(arguments[i].type, typeContext)) {
+            if (!superArgumentType.compatibleTo(arguments[i].type.resolveOn(typeContext), typeContext)) {
                 auto supertype = superArgumentType.toString(typeContext, true);
                 auto thisname = arguments[i].type.toString(typeContext, true);
                 throw CompilerError(position(),
                                     "Type %s of argument %d is not compatible with its %s argument type %s.",
                                     thisname.c_str(), i + 1, supertype.c_str());
             }
-            if (arguments[i].type.storageType() != superArgumentType.storageType()) {
-                throw CompilerError(position(), "Argument %d and super argument must both either be optional "
-                                    "or non-optional.", i + 1);
+            if (arguments[i].type.resolveOn(typeContext).storageType() != superArgumentType.storageType()) {
+                if (protocol) {
+                    return false;
+                }
+                throw CompilerError(position(), "Argument %d and super argument are storage incompatible.", i + 1);
             }
         }
     }
     catch (CompilerError &ce) {
         printError(ce);
     }
+    return true;
 }
 
 bool Function::checkOverride(Function *superFunction) const {
@@ -124,9 +126,7 @@ void Function::markUsed() {
         Function::compilationQueue.push(this);
     }
     else {
-        fullSize_ = std::accumulate(arguments.begin(), arguments.end(), 0, [](int a, Argument b) {
-            return a + b.type.size();
-        });
+        setFullSizeFromArguments();
     }
     for (Function *function : overriders_) {
         function->markUsed();

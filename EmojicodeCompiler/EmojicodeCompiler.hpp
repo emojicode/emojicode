@@ -34,6 +34,7 @@ class EmojicodeString: public std::basic_string<EmojicodeChar>  {
 public:
     EmojicodeString() : basic_string() {}
     explicit EmojicodeString(EmojicodeChar ch) : basic_string(1, ch) {}
+    explicit EmojicodeString(std::initializer_list<EmojicodeChar> ch) : basic_string(ch) {}
     std::string utf8() const;
 };
 

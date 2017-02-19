@@ -127,8 +127,8 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         if (!allowProtocolsUsingSelf && type.type() == TypeContent::Protocol && type.protocol()->usesSelf()) {
             auto typeStr = type.toString(ct, true);
             throw CompilerError(parsedType.token,
-                                         "Protocol %s can only be used as a generic constraint because it uses 🐓.",
-                                         typeStr.c_str());
+                                "Protocol %s can only be used as a generic constraint because it uses 🐓.",
+                                typeStr.c_str());
         }
 
         return type;
@@ -191,7 +191,7 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initial
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
         auto type = parseTypeDeclarative(ct, TypeDynamism::AllKinds, Type::nothingness(), &dynamism);
 
-        c->arguments.push_back(Argument(variableToken, type));
+        c->arguments.push_back(Argument(variableToken.value(), type));
 
         if (dynamism == TypeDynamism::Self) {
             usedSelf = true;
@@ -224,8 +224,8 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *function, TypeC
     while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
         auto &variable = stream_.consumeToken(TokenType::Variable);
 
-        Type t = parseTypeDeclarative(function->owningType(), TypeDynamism::GenericTypeVariables, Type::nothingness(),
-                                      nullptr, true);
+        Type t = parseTypeDeclarative(TypeContext(function->owningType(), function), TypeDynamism::GenericTypeVariables,
+                                      Type::nothingness(), nullptr, true);
         function->genericArgumentConstraints.push_back(t);
 
         Type rType = Type(TypeContent::LocalReference, false,

@@ -15,11 +15,11 @@
 #include "TokenStream.hpp"
 
 struct Argument {
-    Argument(const Token &n, Type t) : name(n), type(t) {}
+    Argument(EmojicodeString n, Type t) : variableName(n), type(t) {}
 
-    /** The name of the variable */
-    const Token &name;
-    /** The type */
+    /// The name of the variable
+    EmojicodeString variableName;
+    /// The type
     Type type;
 };
 

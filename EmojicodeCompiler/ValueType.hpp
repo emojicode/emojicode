@@ -12,6 +12,7 @@
 #include <vector>
 #include "TypeDefinitionFunctional.hpp"
 #include "VTIProvider.hpp"
+#include "Function.hpp"
 
 class ValueType : public TypeDefinitionFunctional {
 public:
@@ -28,6 +29,19 @@ public:
     int usedFunctionCount() const { return vtiProvider_.usedCount(); };
 
     virtual int size() const override { return primitive_ ? 1 : TypeDefinitionFunctional::size(); }
+
+    void addMethod(Function *method) override {
+        TypeDefinitionFunctional::addMethod(method);
+        method->package()->registerFunction(method);
+    }
+    void addInitializer(Initializer *initializer) override {
+        TypeDefinitionFunctional::addInitializer(initializer);
+        initializer->package()->registerFunction(initializer);
+    }
+    void addTypeMethod(Function *method) override {
+        TypeDefinitionFunctional::addTypeMethod(method);
+        method->package()->registerFunction(method);
+    }
 
     void makePrimitive() { primitive_ = true; }
     bool isPrimitive() { return primitive_; }

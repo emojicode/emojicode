@@ -72,22 +72,10 @@ void writeProtocolTable(Type type, Writer &writer) {
             writer.writeUInt16(protocol.protocol()->methods().size());
 
             for (auto method : protocol.protocol()->methods()) {
-                try {
-                    Function *clm = typeDefinitionFunctional->lookupMethod(method->name());
-                    if (clm == nullptr) {
-                        auto typeName = type.toString(Type::nothingness(), true);
-                        auto protocolName = protocol.toString(Type::nothingness(), true);
-                        throw CompilerError(typeDefinitionFunctional->position(),
-                                            "%s does not agree to protocol %s: Method %s is missing.",
-                                            typeName.c_str(), protocolName.c_str(), method->name().utf8().c_str());
-                    }
-
-                    writer.writeUInt16(clm->vtiForUse());
-                    clm->enforcePromises(method, type, protocol, TypeContext(protocol));
-                }
-                catch (CompilerError &ce) {
-                    printError(ce);
-                }
+                auto layerName = method->protocolBoxingLayerName(protocol.protocol()->name());
+                Function *clm = typeDefinitionFunctional->lookupMethod(layerName);
+                if (clm == nullptr) clm = typeDefinitionFunctional->lookupMethod(method->name());
+                writer.writeUInt16(clm->vtiForUse());
             }
         }
 
@@ -198,8 +186,9 @@ void generateCode(Writer &writer) {
     int smallestBoxIdentifier = UINT16_MAX;
     int biggestBoxIdentifier = 0;
     int vtWithProtocolsCount = 0;
-    auto countPlaceholder = writer.writePlaceholder<uint16_t>();
+    auto tableSizePlaceholder = writer.writePlaceholder<uint16_t>();
     auto smallestPlaceholder = writer.writePlaceholder<uint16_t>();
+    auto countPlaceholder = writer.writePlaceholder<uint16_t>();
     for (auto vt : ValueType::valueTypes()) {
         if (vt->protocols().size() > 0) {
             writer.writeUInt16(vt->boxIdentifier());
@@ -213,7 +202,8 @@ void generateCode(Writer &writer) {
             vtWithProtocolsCount++;
         }
     }
-    countPlaceholder.write(vtWithProtocolsCount > 0 ? biggestBoxIdentifier - smallestBoxIdentifier + 1 : 0);
+    countPlaceholder.write(vtWithProtocolsCount);
+    tableSizePlaceholder.write(vtWithProtocolsCount > 0 ? biggestBoxIdentifier - smallestBoxIdentifier + 1 : 0);
     smallestPlaceholder.write(smallestBoxIdentifier);
 
     writer.writeUInt16(theStringPool.strings().size());

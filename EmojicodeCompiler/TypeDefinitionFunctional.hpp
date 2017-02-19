@@ -14,6 +14,7 @@
 #include "TypeDefinition.hpp"
 #include "ScoperWithScope.hpp"
 #include "Type.hpp"
+#include "VTIProvider.hpp"
 
 class TypeContext;
 class Initializer;
@@ -95,7 +96,7 @@ public:
     /** Finalizes the instance variables.
      @warning All subclasses that override, this method must call this method. */
     void finalize() override;
-    void finalizeProtocols();
+    void finalizeProtocols(Type self, VTIProvider *methodVtiProvider);
 
     int size() const override { return static_cast<int>(scoper_.fullSize()); }
 

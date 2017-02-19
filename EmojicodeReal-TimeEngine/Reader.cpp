@@ -287,11 +287,10 @@ Function* readBytecode(FILE *in) {
 
     DEBUG_LOG("✅ Read all packages");
 
-    EmojicodeInstruction count = readUInt16(in);
-    protocolDispatchTableTable = new ProtocolDispatchTable[count];
+    uint16_t tableSize = readUInt16(in);
+    protocolDispatchTableTable = new ProtocolDispatchTable[tableSize];
     protocolDTTOffset = readUInt16(in);
-    DEBUG_LOG("%d value type protocols, starting from %d", count, protocolDTTOffset);
-    for (; count; count--) {
+    for (uint16_t count = readUInt16(in); count; count--) {
         DEBUG_LOG("➡️ Still %d value type protocol tables to load", count);
         auto index = readUInt16(in);
         readProtocolTable(protocolDispatchTableTable[index - protocolDTTOffset], functionTable, in);

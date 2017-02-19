@@ -18,7 +18,10 @@ enum class CallableParserAndGeneratorMode {
     /** A type method. */
     ClassMethod,
     /** A plain function without a context. (🏁) */
-    Function
+    Function,
+    /// A function which soley exists to unbox (generic) arguments passed to a protocol which the actual method does
+    /// expect in another storage type. The function is then of type BoxingLayer.
+    BoxingLayer,
 };
 
 #endif /* CallableParserAndGeneratorMode_h */

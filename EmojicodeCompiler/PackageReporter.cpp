@@ -111,7 +111,7 @@ void reportFunctionInformation(Function *p, ReturnManner returnm, bool last, Typ
 
         reportType("type", argument.type, tc);
         printf(",\"name\":");
-        printJSONStringToFile(argument.name.value().utf8().c_str(), stdout);
+        printJSONStringToFile(argument.variableName.utf8().c_str(), stdout);
         printf("}%s", i + 1 == p->arguments.size() ? "" : ",");
     }
     printf("]");

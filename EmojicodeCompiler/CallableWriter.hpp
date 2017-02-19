@@ -11,6 +11,7 @@
 
 #include <vector>
 #include "EmojicodeCompiler.hpp"
+#include "Token.hpp"
 
 class CallableWriter;
 class Writer;
@@ -66,7 +67,8 @@ class CallableWriter {
     friend RecompilationPoint;
 public:
     /** Writes a coin with the given value. */
-    virtual void writeInstruction(EmojicodeInstruction value, SourcePosition p);
+    void writeInstruction(EmojicodeInstruction value, SourcePosition p) { writeInstruction(value); }
+    virtual void writeInstruction(EmojicodeInstruction value);
     virtual void writeInstruction(std::initializer_list<EmojicodeInstruction> values);
 
     virtual InstructionCount writtenInstructions() { return instructions_.size(); }

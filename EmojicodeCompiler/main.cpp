@@ -130,11 +130,14 @@ Protocol* getStandardProtocol(EmojicodeString name, Package *_, SourcePosition e
     return type.protocol();
 }
 
-ValueType* getStandardValueType(EmojicodeString name, Package *_, SourcePosition errorPosition) {
+ValueType* getStandardValueType(EmojicodeString name, Package *_, SourcePosition errorPosition, unsigned int boxId) {
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::ValueType) {
         throw CompilerError(errorPosition, "s package value type %s is missing.", name.utf8().c_str());
+    }
+    if (type.boxIdentifier() != boxId) {
+        throw CompilerError(errorPosition, "s package value type %s has improper box id.", name.utf8().c_str());
     }
     return type.valueType();
 }
@@ -142,10 +145,10 @@ ValueType* getStandardValueType(EmojicodeString name, Package *_, SourcePosition
 void loadStandard(Package *_, SourcePosition errorPosition) {
     auto package = _->loadPackage("s", globalNamespace, errorPosition);
 
-    VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), _, errorPosition);
-    VT_BOOLEAN = getStandardValueType(EmojicodeString(E_OK_HAND_SIGN), _, errorPosition);
-    VT_SYMBOL = getStandardValueType(EmojicodeString(E_INPUT_SYMBOL_FOR_SYMBOLS), _, errorPosition);
-    VT_INTEGER = getStandardValueType(EmojicodeString(E_STEAM_LOCOMOTIVE), _, errorPosition);
+    VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), _, errorPosition, T_DOUBLE);
+    VT_BOOLEAN = getStandardValueType(EmojicodeString(E_OK_HAND_SIGN), _, errorPosition, T_BOOLEAN);
+    VT_SYMBOL = getStandardValueType(EmojicodeString(E_INPUT_SYMBOL_FOR_SYMBOLS), _, errorPosition, T_SYMBOL);
+    VT_INTEGER = getStandardValueType(EmojicodeString(E_STEAM_LOCOMOTIVE), _, errorPosition, T_INTEGER);
 
     CL_STRING = getStandardClass(EmojicodeString(0x1F521), _, errorPosition);
     CL_LIST = getStandardClass(EmojicodeString(0x1F368), _, errorPosition);

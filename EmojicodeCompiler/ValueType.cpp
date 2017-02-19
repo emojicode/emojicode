@@ -21,16 +21,13 @@ void ValueType::finalize() {
 
     for (auto f : methodList()) {
         f->setVtiProvider(&vtiProvider_);
-        f->package()->registerFunction(f);
     }
     for (auto f : typeMethodList()) {
         f->setVtiProvider(&vtiProvider_);
-        f->package()->registerFunction(f);
     }
     for (auto f : initializerList()) {
         f->setVtiProvider(&vtiProvider_);
-        f->package()->registerFunction(f);
     }
 
-    TypeDefinitionFunctional::finalizeProtocols();
+    TypeDefinitionFunctional::finalizeProtocols(Type(this, false, false, false), &vtiProvider_);
 }

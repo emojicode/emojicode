@@ -88,6 +88,7 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     }
 
     if (inferGenericArguments) {
+        auto typeContext = TypeContext(type, p, &genericArguments);
         for (size_t i = 0; i < genericArgsFinders.size(); i++) {
             auto commonType = genericArgsFinders[i].getCommonType(token);
             genericArguments.push_back(commonType);
@@ -1556,8 +1557,8 @@ void CallableParserAndGenerator::analyze() {
     try {
         Scope &methodScope = scoper.pushScope();
         for (auto variable : callable.arguments) {
-            auto &var = methodScope.setLocalVariable(variable.name.value(), variable.type, true,
-                                                     variable.name.position());
+            auto &var = methodScope.setLocalVariable(variable.variableName, variable.type, true,
+                                                     callable.position());
             var.initialize(writer.writtenInstructions());
         }
 
@@ -1605,15 +1606,44 @@ void CallableParserAndGenerator::analyze() {
         if (isSuperconstructorRequired()) {
             auto initializer = static_cast<Initializer &>(callable);
             if (!calledSuper && typeContext.calleeType().eclass()->superclass()) {
-                throw CompilerError(initializer.position(),
-                                             "Missing call to superinitializer in initializer %s.",
-                                             initializer.name().utf8().c_str());
+                throw CompilerError(initializer.position(), "Missing call to superinitializer in initializer %s.",
+                                    initializer.name().utf8().c_str());
             }
         }
     }
     catch (CompilerError &ce) {
         printError(ce);
     }
+}
+
+void CallableParserAndGenerator::generateBoxingLayer(BoxingLayer *layer) {
+    if (layer->destinationFunction()->returnType.type() != TypeContent::Nothingness) {
+        writer.writeInstruction(INS_RETURN);
+        writeBoxingAndTemporary(Destination(DestinationMutability::Immutable, layer->returnType.storageType()),
+                                layer->destinationFunction()->returnType, layer->position());
+    }
+    switch (layer->owningType().type()) {
+        case TypeContent::ValueType:
+        case TypeContent::Enum:
+            writer.writeInstruction(INS_CALL_CONTEXTED_FUNCTION);
+            break;
+        case TypeContent::Class:
+            writer.writeInstruction(INS_DISPATCH_METHOD);
+            break;
+        default:
+            throw std::logic_error("nonsensial BoxingLayer requested");
+    }
+    writer.writeInstruction(INS_GET_THIS);
+    writer.writeInstruction(layer->destinationFunction()->vtiForUse());
+    for (size_t i = 0; i < layer->destinationFunction()->arguments.size(); i++) {
+        auto arg = layer->destinationFunction()->arguments[i];
+        writer.writeInstruction(layer->arguments[i].type.size());
+        writeBoxingAndTemporary(Destination(DestinationMutability::Immutable, arg.type.storageType()),
+                                layer->arguments[i].type, layer->position());
+        auto variable = Variable(layer->arguments[i].type, i, true, EmojicodeString(), layer->position());
+        copyVariableContent(ResolvedVariable(variable, false), layer->position());
+    }
+    layer->setFullSizeFromArguments();
 }
 
 void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type contextType,
@@ -1627,8 +1657,13 @@ void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, Cal
     else if (contextType.type() == TypeContent::Enum) {
         contextType.setValueReference();
     }
+
     auto sca = CallableParserAndGenerator(*function, function->package(), mode, TypeContext(contextType, function),
                                           writer, scoper);
+    if (mode == CallableParserAndGeneratorMode::BoxingLayer) {
+        sca.generateBoxingLayer(static_cast<BoxingLayer *>(function));
+        return;
+    }
     sca.analyze();
     function->setFullSize(scoper.fullSize());
 }
