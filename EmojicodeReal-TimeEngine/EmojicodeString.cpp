@@ -229,9 +229,8 @@ void stringSplitByStringBridge(Thread *thread, Value *destination) {
     String *string = (String *)stringObject->value;
     listAppendDestination(listObject, thread)->copySingleValue(T_OBJECT, stringSubstring(firstAfterSeperator, string->length - firstAfterSeperator, thread));
 
-    Value list = thread->getVariable(1);
+    *destination = listObject;
     thread->release(1);
-    *destination = list;
 }
 
 void stringLengthBridge(Thread *thread, Value *destination) {
