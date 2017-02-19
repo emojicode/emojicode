@@ -9,17 +9,20 @@
 #ifndef CommonTypeFinder_hpp
 #define CommonTypeFinder_hpp
 
+#include <vector>
 #include "Type.hpp"
 #include "Token.hpp"
 
-struct CommonTypeFinder {
+class CommonTypeFinder {
+public:
     /** Tells the common type finder about the type of another element in the collection/data structure. */
     void addType(Type t, TypeContext typeContext);
     /** Returns the common type and issues a warning at @c warningToken if the common type is ambigious. */
-    Type getCommonType(const Token &warningToken) const;
+    Type getCommonType(SourcePosition p) const;
 private:
-    bool firstTypeFound = false;
-    Type commonType = Type::something();
+    bool firstTypeFound_ = false;
+    Type commonType_ = Type::something();
+    std::vector<Type> commonProtocols_;
 };
 
 

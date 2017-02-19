@@ -8,28 +8,61 @@
 
 #include "CommonTypeFinder.hpp"
 #include "TypeContext.hpp"
+#include "TypeDefinitionFunctional.hpp"
 
 void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
-    if (!firstTypeFound) {
-        commonType = t;
-        firstTypeFound = true;
+    if (!firstTypeFound_) {
+        commonType_ = t;
+        firstTypeFound_ = true;
+        if (t.canHaveProtocol()) commonProtocols_ = t.typeDefinitionFunctional()->protocols();
+        return;
     }
-    else if (!t.compatibleTo(commonType, typeContext)) {
-        if (commonType.compatibleTo(t, typeContext)) {
-            commonType = t;
+
+    if (!t.compatibleTo(commonType_, typeContext)) {
+        if (commonType_.compatibleTo(t, typeContext)) {
+            commonType_ = t;
         }
-        else if (t.type() == TypeContent::Class && commonType.type() == TypeContent::Class) {
-            commonType = Type::someobject();
+        else if (t.type() == TypeContent::Class && commonType_.type() == TypeContent::Class) {
+            commonType_ = Type::someobject();
         }
         else {
-            commonType = Type::something();
+            commonType_ = Type::something();
         }
+    }
+
+    if (commonProtocols_.size() > 0) {
+        if (!t.canHaveProtocol()) {
+            commonProtocols_.clear();
+            return;
+        }
+
+        auto &protocols = t.typeDefinitionFunctional()->protocols();
+        std::vector<Type> newCommonProtocols;
+        for (auto protocol : protocols) {
+            auto found = std::find_if(commonProtocols_.begin(), commonProtocols_.end(),
+                                      [protocol, typeContext](const Type &p) {
+                return protocol.identicalTo(p, typeContext, nullptr);
+            });
+            if (found != commonProtocols_.end()) {
+                newCommonProtocols.push_back(protocol);
+            }
+        }
+        commonProtocols_ = newCommonProtocols;
     }
 }
 
-Type CommonTypeFinder::getCommonType(const Token &warningToken) const {
-    if (!firstTypeFound) {
-        compilerWarning(warningToken, "Type is ambigious without more context.");
+Type CommonTypeFinder::getCommonType(SourcePosition p) const {
+    if (!firstTypeFound_) {
+        compilerWarning(p, "Type is ambigious without more context.");
     }
-    return commonType;
+    else if (commonType_.type() == TypeContent::Something || commonType_.type() == TypeContent::Someobject) {
+        if (commonProtocols_.size() > 0) {
+            return commonProtocols_.front();
+        }
+        else {
+            compilerWarning(p, "Common type was inferred to be %s.",
+                            commonType_.toString(Type::nothingness(), true).c_str());
+        }
+    }
+    return commonType_;
 }

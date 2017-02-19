@@ -27,7 +27,7 @@ class TypeDefinitionFunctional;
 class TypeContext;
 class ValueType;
 class Function;
-struct CommonTypeFinder;
+class CommonTypeFinder;
 
 enum class TypeContent {
     Class,
@@ -149,6 +149,9 @@ public:
     std::vector<Type> genericArguments;
     /// True if this type could have generic arguments.
     bool canHaveGenericArguments() const;
+
+    bool canHaveProtocol() { return type() == TypeContent::ValueType || type() == TypeContent::Class
+        || type() == TypeContent::Enum; }
 
     /// Forbids the usage of this instance of Type to resolve @c Self.
     Type& disableSelfResolving() { resolveSelfOn_ = false; return *this; }

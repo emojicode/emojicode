@@ -1,0 +1,62 @@
+🐊 💡 🍇
+  🐖 🔦 degree 🚀
+🍉
+
+🐊 📞 🍇
+  🐖 📞 number 🔡
+🍉
+
+🕊 📱 🍇
+  🐊 📞
+  🐊 💡
+
+  🐈 🆕 🍇🍉
+
+  🐖 🔦 degree 🚀 🍇
+    😀 🍪 🔤Turning on camera flash light at 🔤 🔡 degree 3 🍪
+  🍉
+
+  🐖 📞 number 🔡 🍇
+    😀 🍪 🔤Using cellular network to call 🔤 number 🍪
+  🍉
+🍉
+
+🐇 ☎️ 🍇
+  🐊 📞
+
+  🐈 🆕 🍇🍉
+
+  🐖 📞 number 🔡 🍇
+    😀 🍪 🔤From a landline, calling 🔤 number 🍪
+  🍉
+🍉
+
+🕊 🔦 🍇
+  🐊 💡
+
+  🐈 🆕 🍇🍉
+
+  🐖 🔦 degree 🚀 🍇
+    😀 🍪 🔤Turning on flashlight at 🔤 🔡 degree 3 🍪
+  🍉
+🍉
+
+🏁 🍇
+  🍦 stringList 🍨 🔤23456🔤 🔤12345643🔤 🍆
+  🍰 g 🍨🐚🔡
+  🍮 g stringList
+
+  🍦 mobilePhoneList 🍨 🔷📱🆕 🔷📱🆕 🍆
+  🍰 l 🍨🐚📱
+  🍮 l mobilePhoneList
+
+  🍦 phonableList 🍨 🔷📱🆕 🔷📱🆕 🔷☎️ 🆕 🍆
+  🍰 a 🍨🐚📞
+  🍮 a phonableList
+
+  🍦 flashlightableList 🍨 🔷📱🆕 🔷🔦🆕 🍆
+  🍰 b 🍨🐚💡
+  🍮 b flashlightableList
+
+  😀 🔤everything seems fine🔤
+🍉

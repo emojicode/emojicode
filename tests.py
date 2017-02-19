@@ -36,6 +36,7 @@ compilation_tests = [
     "protocolEnum",
     "protocolGenericLayerClass",
     "protocolGenericLayerValueType",
+    "commonType",
     "variableInitAndScoping",
     "gcStressTest1",
     "gcStressTest2",
