@@ -72,6 +72,15 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     else if (genericArguments.size() != p->genericArgumentVariables.size()) {
         throw CompilerError(token, "Too few generic arguments provided.");
     }
+    else {
+        for (size_t i = 0; i < genericArguments.size(); i++) {
+            if (!genericArguments[i].compatibleTo(p->genericArgumentConstraints[i], typeContext)) {
+                throw CompilerError(token, "Generic argument %d of type %s is not compatible to constraint %s.",
+                                    i + 1, genericArguments[i].toString(typeContext, true).c_str(),
+                                    p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
+            }
+        }
+    }
 
     for (auto var : p->arguments) {
         auto resolved = var.type.resolveOn(typeContext);
