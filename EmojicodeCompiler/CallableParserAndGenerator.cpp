@@ -412,7 +412,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                         }
                     }
 
-                    auto destination = Destination(DestinationMutability::Mutable, StorageType::SimpleIfPossible);
+                    auto destination = Destination(DestinationMutability::Mutable, var.variable.type().storageType());
                     auto type = parseMethodCall(nextTok, destination, [this, var, &nextTok](Destination destination) {
                         takeVariable(var, destination, nextTok.position());
                         return var.variable.type();
