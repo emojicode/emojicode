@@ -37,7 +37,7 @@ ParsedTypeName AbstractParser::parseTypeName() {
 }
 
 Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism, Type expectation,
-                                          TypeDynamism *dynamicType, bool allowProtocolsUsingSelf) {
+                                          TypeDynamism *dynamicType) {
     if (stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE)) {
         if (expectation.type() == TypeContent::Nothingness) {
             throw CompilerError(stream_.consumeToken(), "Cannot infer ⚫️.");
@@ -47,7 +47,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
     }
     if (stream_.nextTokenIs(E_WHITE_SQUARE_BUTTON)) {
         auto &token = stream_.consumeToken();
-        Type type = parseTypeDeclarative(ct, dynamism, expectation, dynamicType, allowProtocolsUsingSelf);
+        Type type = parseTypeDeclarative(ct, dynamism, expectation, dynamicType);
         if (!type.allowsMetaType() || type.meta()) {
             throw CompilerError(token, "Meta type of %s is restricted.", type.toString(ct, true).c_str());
         }
@@ -86,9 +86,9 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
                                      variableToken.value().utf8().c_str());
     }
     else if (stream_.nextTokenIs(E_DOG)) {
-        auto &ratToken = stream_.consumeToken(TokenType::Identifier);
+        auto &selfToken = stream_.consumeToken(TokenType::Identifier);
         if ((dynamism & TypeDynamism::Self) == TypeDynamism::None) {
-            throw CompilerError(ratToken, "🐕 not allowed here.");
+            throw CompilerError(selfToken, "🐕 not allowed here.");
         }
         if (dynamicType) *dynamicType = TypeDynamism::Self;
         return Type::self(optional);
@@ -123,13 +123,6 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         }
 
         parseGenericArgumentsForType(&type, ct, dynamism, parsedType.token);
-
-        if (!allowProtocolsUsingSelf && type.type() == TypeContent::Protocol && type.protocol()->usesSelf()) {
-            auto typeStr = type.toString(ct, true);
-            throw CompilerError(parsedType.token,
-                                "Protocol %s can only be used as a generic constraint because it uses 🐓.",
-                                typeStr.c_str());
-        }
 
         return type;
     }
@@ -175,8 +168,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
     }
 }
 
-bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initializer) {
-    bool usedSelf = false;
+void AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initializer) {
     bool argumentToVariable;
 
     while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {
@@ -189,13 +181,10 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initial
 
         TypeDynamism dynamism;
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
-        auto type = parseTypeDeclarative(ct, TypeDynamism::AllKinds, Type::nothingness(), &dynamism);
+        auto type = parseTypeDeclarative(ct, TypeDynamism::GenericTypeVariables, Type::nothingness(), &dynamism);
 
         c->arguments.push_back(Argument(variableToken.value(), type));
 
-        if (dynamism == TypeDynamism::Self) {
-            usedSelf = true;
-        }
         if (argumentToVariable) {
             static_cast<Initializer *>(c)->addArgumentToVariable(variableToken.value());
         }
@@ -204,20 +193,14 @@ bool AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initial
     if (c->arguments.size() > UINT8_MAX) {
         throw CompilerError(c->position(), "A function cannot take more than 255 arguments.");
     }
-    return usedSelf;
 }
 
-bool AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
-    bool usedSelf = false;
+void AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
     if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW)) {
         TypeDynamism dynamism;
 
-        c->returnType = parseTypeDeclarative(ct, TypeDynamism::AllKinds, Type::nothingness(), &dynamism);
-        if (dynamism == TypeDynamism::Self) {
-            usedSelf = true;
-        }
+        c->returnType = parseTypeDeclarative(ct, TypeDynamism::GenericTypeVariables, Type::nothingness(), &dynamism);
     }
-    return usedSelf;
 }
 
 void AbstractParser::parseGenericArgumentsInDefinition(Function *function, TypeContext ct) {
@@ -225,7 +208,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *function, TypeC
         auto &variable = stream_.consumeToken(TokenType::Variable);
 
         Type t = parseTypeDeclarative(TypeContext(function->owningType(), function), TypeDynamism::GenericTypeVariables,
-                                      Type::nothingness(), nullptr, true);
+                                      Type::nothingness(), nullptr);
         function->genericArgumentConstraints.push_back(t);
 
         Type rType = Type(TypeContent::LocalReference, false,

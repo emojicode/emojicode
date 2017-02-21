@@ -1075,7 +1075,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writer.writeInstruction(INS_CLOSURE, token);
 
             auto function = Closure(token.position());
-            parseArgumentList(&function, typeContext);
+            parseArgumentList(&function, typeContext, true);
             parseReturnType(&function, typeContext);
             parseBody(&function);
 

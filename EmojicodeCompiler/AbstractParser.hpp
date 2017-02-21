@@ -33,18 +33,12 @@ protected:
     ParsedTypeName parseTypeName();
     /** Reads a type name and stores it into the given pointers. */
     Type parseTypeDeclarative(TypeContext tc, TypeDynamism dynamism, Type expectation = Type::nothingness(),
-                              TypeDynamism *dynamicType = nullptr, bool allowProtocolsUsingSelf = false);
+                              TypeDynamism *dynamicType = nullptr);
 
-    /**
-     * Parses the arguments for a callable.
-     * @return Whether self was used.
-     */
-    bool parseArgumentList(Callable *c, TypeContext ct, bool initializer = false);
-    /**
-     * Parses the return type for this function if there is one specified.
-     * @return Whether self was used.
-     */
-    bool parseReturnType(Callable *c, TypeContext ct);
+    /// Parses the arguments for a callable.
+    void parseArgumentList(Callable *c, TypeContext ct, bool initializer = false);
+    /// Parses the return type for a function if there is one specified.
+    void parseReturnType(Callable *c, TypeContext ct);
     void parseGenericArgumentsInDefinition(Function *p, TypeContext ct);
     void parseBody(Callable *p);
     void parseBody(Function *p, bool allowNative);

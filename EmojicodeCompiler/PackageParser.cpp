@@ -203,8 +203,8 @@ ParsedTypeName PackageParser::parseAndValidateNewTypeName() {
 void PackageParser::parseGenericArgumentList(TypeDefinitionFunctional *typeDef, TypeContext tc) {
     while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
         auto &variable = stream_.consumeToken(TokenType::Variable);
-        auto constraintType = parseTypeDeclarative(tc, TypeDynamism::None, Type::nothingness(), nullptr, true);
-        typeDef->addGenericArgument(variable, constraintType);
+        auto constraint = parseTypeDeclarative(tc, TypeDynamism::GenericTypeVariables, Type::nothingness(), nullptr);
+        typeDef->addGenericArgument(variable, constraint);
     }
 }
 
@@ -248,11 +248,8 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
         auto method = new Function(methodName.value(), AccessLevel::Public, false, protocolType, package_,
                                    methodName.position(), false, documentation.get(), deprecated.set(), false,
                                    CallableParserAndGeneratorMode::ObjectMethod);
-        auto a = parseArgumentList(method, protocolType);
-        auto b = parseReturnType(method, protocolType);
-        if (a || b) {
-            protocol->setUsesSelf();
-        }
+        parseArgumentList(method, protocolType, false);
+        parseReturnType(method, protocolType);
 
         protocol->addMethod(method);
     }
@@ -406,7 +403,7 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 mutating.disallow();
 
                 Type type = parseTypeDeclarative(typed, TypeDynamism::GenericTypeVariables, Type::nothingness(),
-                                                 nullptr, true);
+                                                 nullptr);
 
                 if (type.type() != TypeContent::Protocol || type.optional()) {
                     throw CompilerError(token, "The given type is not a protocol.");
