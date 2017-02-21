@@ -90,8 +90,8 @@ struct Box {
     void makeNothingness() { type.raw = T_NOTHINGNESS; }
     void copySingleValue(EmojicodeInteger type, Value value) { this->type = type; value1 = value; }
     void copy(Value *value) {  *this = *reinterpret_cast<Box *>(value); }
-    void copyTo(Value *value) { *reinterpret_cast<Box *>(value) = *this; }
-    void copyContentTo(Value *value) { value[0] = value1; value[1] = value2; value[2] = value3; }
+    void copyTo(Value *value) const { *reinterpret_cast<Box *>(value) = *this; }
+    void copyContentTo(Value *value) const { value[0] = value1; value[1] = value2; value[2] = value3; }
 };
 
 #define STORAGE_BOX_VALUE_SIZE 4
