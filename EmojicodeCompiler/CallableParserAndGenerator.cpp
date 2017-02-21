@@ -438,8 +438,6 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                         }
 
                         type = rvar.variable.type();
-                        parse(stream_.consumeToken(), token, type,
-                              Destination(DestinationMutability::Mutable, type.storageType()));
                     }
                     catch (VariableNotFoundError &vne) {
                         // Not declared, declaring as local variable
@@ -452,7 +450,10 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                         auto &var = scoper.currentScope().setLocalVariable(nextTok.value(), t, false, nextTok.position());
                         var.initialize(writer.writtenInstructions());
                         placeholder.write(var.id());
+                        return;
                     }
+                    parse(stream_.consumeToken(), token, type,
+                          Destination(DestinationMutability::Mutable, type.storageType()));
                 }
                 return;
             }
