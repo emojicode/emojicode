@@ -41,7 +41,7 @@ Type::Type(ValueType *v, bool o, bool reference, bool isMutable)
 
 Type::Type(Class *c, bool o) : typeDefinition_(c), typeContent_(TypeContent::Class), optional_(o) {
     for (int i = 0; i < c->numberOfGenericArgumentsWithSuperArguments(); i++) {
-        genericArguments.push_back(Type(TypeContent::Reference, false, i, c));
+        genericArguments_.push_back(Type(TypeContent::Reference, false, i, c));
     }
 }
 
@@ -93,7 +93,7 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeConte
     TypeDefinitionFunctional *c = typeContext.calleeType().typeDefinitionFunctional();
     Type t = *this;
 
-    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
+    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
     while (t.type() == TypeContent::Reference && c->canBeUsedToResolve(t.resolutionConstraint_) &&
            t.reference() < maxReferenceForSuper) {
@@ -119,7 +119,7 @@ Type Type::resolveOnSuperArgumentsAndConstraints(TypeContext typeContext, bool r
         t = typeContext.calleeType();
     }
 
-    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->numberOfOwnGenericArguments();
+    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
     while (t.type() == TypeContent::Reference && t.reference() < maxReferenceForSuper) {
         t = c->superGenericArguments()[t.reference()];
@@ -155,7 +155,7 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
     if (typeContext.calleeType().canHaveGenericArguments()) {
         while (t.type() == TypeContent::Reference &&
                typeContext.calleeType().typeDefinitionFunctional()->canBeUsedToResolve(t.resolutionConstraint_)) {
-            Type tn = typeContext.calleeType().genericArguments[t.reference()];
+            Type tn = typeContext.calleeType().genericArguments_[t.reference()];
             if (tn.type() == TypeContent::Reference && tn.reference() == t.reference()
                 && tn.resolutionConstraint_ == t.resolutionConstraint_) {
                 break;
@@ -168,12 +168,12 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
 
     if (t.canHaveGenericArguments()) {
         for (int i = 0; i < t.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments(); i++) {
-            t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
+            t.genericArguments_[i] = t.genericArguments_[i].resolveOn(typeContext);
         }
     }
     else if (t.type() == TypeContent::Callable) {
-        for (int i = 0; i < t.genericArguments.size(); i++) {
-            t.genericArguments[i] = t.genericArguments[i].resolveOn(typeContext);
+        for (int i = 0; i < t.genericArguments_.size(); i++) {
+            t.genericArguments_[i] = t.genericArguments_[i].resolveOn(typeContext);
         }
     }
 
@@ -182,10 +182,10 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
 }
 
 bool Type::identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
-    if (to.typeDefinitionFunctional()->numberOfOwnGenericArguments()) {
-        for (int l = to.typeDefinitionFunctional()->numberOfOwnGenericArguments(),
+    if (to.typeDefinitionFunctional()->ownGenericArgumentVariables().size()) {
+        for (int l = to.typeDefinitionFunctional()->ownGenericArgumentVariables().size(),
              i = to.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
-            if (!this->genericArguments[i].identicalTo(to.genericArguments[i], ct, ctargs)) {
+            if (!this->genericArguments_[i].identicalTo(to.genericArguments_[i], ct, ctargs)) {
                 return false;
             }
         }
@@ -265,10 +265,10 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         return this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
     if (this->type() == TypeContent::Callable && to.type() == TypeContent::Callable) {
-        if (this->genericArguments[0].compatibleTo(to.genericArguments[0], ct, ctargs)
-            && to.genericArguments.size() == this->genericArguments.size()) {
-            for (int i = 1; i < to.genericArguments.size(); i++) {
-                if (!to.genericArguments[i].compatibleTo(this->genericArguments[i], ct, ctargs)) {
+        if (this->genericArguments_[0].compatibleTo(to.genericArguments_[0], ct, ctargs)
+            && to.genericArguments_.size() == this->genericArguments_.size()) {
+            for (size_t i = 1; i < to.genericArguments_.size(); i++) {
+                if (!to.genericArguments_[i].compatibleTo(this->genericArguments_[i], ct, ctargs)) {
                     return false;
                 }
             }
@@ -295,7 +295,7 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
                 return typeDefinitionFunctional() == to.typeDefinitionFunctional()
                 && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Callable:
-                return to.genericArguments.size() == this->genericArguments.size()
+                return to.genericArguments_.size() == this->genericArguments_.size()
                 && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Enum:
                 return eenum() == to.eenum();
@@ -522,13 +522,13 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
         case TypeContent::Callable:
             stringAppendEc(E_GRAPES, string);
 
-            for (int i = 1; i < type.genericArguments.size(); i++) {
-                typeName(type.genericArguments[i], typeContext, includePackageAndOptional, string);
+            for (int i = 1; i < type.genericArguments_.size(); i++) {
+                typeName(type.genericArguments_[i], typeContext, includePackageAndOptional, string);
             }
 
             stringAppendEc(E_RIGHTWARDS_ARROW, string);
             stringAppendEc(0xFE0F, string);
-            typeName(type.genericArguments[0], typeContext, includePackageAndOptional, string);
+            typeName(type.genericArguments_[0], typeContext, includePackageAndOptional, string);
             stringAppendEc(E_WATERMELON, string);
             return;
         case TypeContent::Reference: {
@@ -573,10 +573,10 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
 
     if (typeContext.calleeType().type() != TypeContent::Nothingness && type.canHaveGenericArguments()) {
         auto typeDef = type.typeDefinitionFunctional();
-        int offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->numberOfOwnGenericArguments();
-        for (int i = 0, l = typeDef->numberOfOwnGenericArguments(); i < l; i++) {
+        int offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->ownGenericArgumentVariables().size();
+        for (int i = 0, l = typeDef->ownGenericArgumentVariables().size(); i < l; i++) {
             stringAppendEc(E_SPIRAL_SHELL, string);
-            typeName(type.genericArguments[offset + i], typeContext, includePackageAndOptional, string);
+            typeName(type.genericArguments_[offset + i], typeContext, includePackageAndOptional, string);
         }
     }
 }

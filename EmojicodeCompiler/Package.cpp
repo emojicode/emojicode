@@ -62,7 +62,7 @@ Package* Package::findPackage(const std::string &name) {
     return it != packages_.end() ? it->second : nullptr;
 }
 
-bool Package::fetchRawType(ParsedTypeName ptn, Type *type) {
+bool Package::fetchRawType(ParsedType ptn, Type *type) {
     return fetchRawType(ptn.name, ptn.ns, ptn.optional, ptn.token.position(), type);
 }
 

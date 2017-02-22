@@ -23,13 +23,10 @@ public:
 
     bool canBeUsedToResolve(TypeDefinitionFunctional *a) const override;
     void addMethod(Function *method) override;
-    const std::vector<Function*>& methods() { return methodList_; };
 
     int size() const override { return 1; }
 private:
     static uint_fast16_t nextIndex;
-
-    bool usesSelf_ = false;
 };
 
 #endif /* Protocol_hpp */

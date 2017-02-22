@@ -69,9 +69,9 @@ void writeProtocolTable(Type type, Writer &writer) {
                 smallestProtocolIndex = protocol.protocol()->index;
             }
 
-            writer.writeUInt16(protocol.protocol()->methods().size());
+            writer.writeUInt16(protocol.protocol()->methodList().size());
 
-            for (auto method : protocol.protocol()->methods()) {
+            for (auto method : protocol.protocol()->methodList()) {
                 auto layerName = method->protocolBoxingLayerName(protocol.protocol()->name());
                 Function *clm = typeDefinitionFunctional->lookupMethod(layerName);
                 if (clm == nullptr) clm = typeDefinitionFunctional->lookupMethod(method->name());

@@ -28,6 +28,9 @@ class TypeContext;
 class ValueType;
 class Function;
 class CommonTypeFinder;
+class AbstractParser;
+class Callable;
+class Initializer;
 
 enum class TypeContent {
     Class,
@@ -77,6 +80,9 @@ inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
 /// Represents a Type Instance or an expectations of a Type Instance
 class Type {
     friend TypeDefinitionFunctional;
+    friend AbstractParser;
+    friend Callable;
+    friend Initializer;
 public:
     Type(Class *klass, bool optional);
     Type(Protocol *protocol, bool optional);
@@ -146,7 +152,10 @@ public:
     template <typename T, typename... Us>
     void objectVariableRecords(int index, std::vector<T> &information, Us... args) const;
 
-    std::vector<Type> genericArguments;
+    /// Returns the generic arguments with which this type was specialized.
+    const std::vector<Type>& genericArguments() { return genericArguments_; };
+    /// Allows to change a specific generic argument. @c index must be smaller than @c genericArguments().size()
+    void setGenericArgument(size_t index, Type value) { genericArguments_[index] = value; }
     /// True if this type could have generic arguments.
     bool canHaveGenericArguments() const;
 
@@ -162,7 +171,7 @@ public:
     /// constraint, thus only if the reference is inteded to be resolved on the given type. @c Self will only be
     /// resolved if @c disableSelfResolving() wasn’t called on the calleeType before.
     Type resolveOn(TypeContext contextType, bool resolveSelf = true) const;
-    /** 
+    /**
      * Used to get as mutch information about a reference type as possible without using the generic arguments of
      * the type context’s callee.
      * This method is intended to be used to determine type compatibility while e.g. compiling generic classes.
@@ -204,6 +213,7 @@ private:
         Function *localResolutionConstraint_;
     };
     TypeContent typeContent_;
+    std::vector<Type> genericArguments_;
     bool optional_;
     bool resolveSelfOn_ = true;
     bool meta_ = false;

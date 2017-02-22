@@ -38,7 +38,7 @@ bool CallableParserAndGenerator::typeIsEnumerable(Type type, Type *elementType) 
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
             for (auto protocol : a->protocols()) {
                 if (protocol.protocol() == PR_ENUMERATEABLE) {
-                    *elementType = protocol.resolveOn(type).genericArguments[0];
+                    *elementType = protocol.resolveOn(type).genericArguments()[0];
                     return true;
                 }
             }
@@ -799,13 +799,13 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 
             Type type = Type(CL_LIST, false);
             if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_LIST) {
-                auto listType = expectation.genericArguments[0];
+                auto listType = expectation.genericArguments()[0];
                 while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                     auto destination = Destination(DestinationMutability::Unknown, StorageType::Box);
                     parse(stream_.consumeToken(), token, listType, destination);
                 }
                 stream_.consumeToken(TokenType::Identifier);
-                type.genericArguments[0] = listType;
+                type.setGenericArgument(0, listType);
             }
             else {
                 CommonTypeFinder ct;
@@ -814,7 +814,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     ct.addType(parse(stream_.consumeToken(), destination), typeContext);
                 }
                 stream_.consumeToken(TokenType::Identifier);
-                type.genericArguments[0] = ct.getCommonType(token);
+                type.setGenericArgument(0, ct.getCommonType(token.position()));
             }
 
             placeholder.write();
@@ -828,7 +828,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             Type type = Type(CL_DICTIONARY, false);
 
             if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_DICTIONARY) {
-                auto listType = expectation.genericArguments[0];
+                auto listType = expectation.genericArguments()[0];
                 while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                     auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
                     parse(stream_.consumeToken(), token, Type(CL_STRING, false), destination);
@@ -836,7 +836,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     parse(stream_.consumeToken(), token, listType, destination);
                 }
                 stream_.consumeToken(TokenType::Identifier);
-                type.genericArguments[0] = listType;
+                type.setGenericArgument(0, listType);
             }
             else {
                 CommonTypeFinder ct;
@@ -847,7 +847,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     ct.addType(parse(stream_.consumeToken(), destination), typeContext);
                 }
                 stream_.consumeToken(TokenType::Identifier);
-                type.genericArguments[0] = ct.getCommonType(token);
+                type.setGenericArgument(0, ct.getCommonType(token.position()));
             }
 
             placeholder.write();
@@ -959,10 +959,10 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             }
 
             if (type.type() == TypeContent::Class) {
-                auto offset = type.eclass()->numberOfGenericArgumentsWithSuperArguments() - type.eclass()->numberOfOwnGenericArguments();
-                for (size_t i = 0; i < type.eclass()->numberOfOwnGenericArguments(); i++) {
-                    if (!type.eclass()->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments[i], type) ||
-                       !type.genericArguments[i].compatibleTo(type.eclass()->genericArgumentConstraints()[offset + i], type)) {
+                auto offset = type.eclass()->numberOfGenericArgumentsWithSuperArguments() - type.eclass()->ownGenericArgumentVariables().size();
+                for (size_t i = 0; i < type.eclass()->ownGenericArgumentVariables().size(); i++) {
+                    if (!type.eclass()->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments()[i], type) ||
+                       !type.genericArguments()[i].compatibleTo(type.eclass()->genericArgumentConstraints()[offset + i], type)) {
                         throw CompilerError(token, "Dynamic casts involving generic type arguments are not possible "
                                             "yet. Please specify the generic argument constraints of the class for "
                                             "compatibility with future versions.");
@@ -1115,13 +1115,13 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerError(token, "Given value is not callable.");
             }
 
-            for (int i = 1; i < type.genericArguments.size(); i++) {
-                writer.writeInstruction(type.genericArguments[i].size(), token);
-                parse(stream_.consumeToken(), token, type.genericArguments[i],
-                      Destination(DestinationMutability::Immutable, type.genericArguments[i].storageType()));
+            for (int i = 1; i < type.genericArguments().size(); i++) {
+                writer.writeInstruction(type.genericArguments()[i].size(), token);
+                parse(stream_.consumeToken(), token, type.genericArguments()[i],
+                      Destination(DestinationMutability::Immutable, type.genericArguments()[i].storageType()));
             }
 
-            auto rtype = type.genericArguments[0];
+            auto rtype = type.genericArguments()[0];
             writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
             return rtype;
         }

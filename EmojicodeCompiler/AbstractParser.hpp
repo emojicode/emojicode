@@ -14,8 +14,8 @@
 #include "Package.hpp"
 #include "Function.hpp"
 
-struct ParsedTypeName {
-    ParsedTypeName(EmojicodeString name, EmojicodeString ns, bool optional, const Token& token)
+struct ParsedType {
+    ParsedType(EmojicodeString name, EmojicodeString ns, bool optional, const Token& token)
         : name(name), ns(ns), optional(optional), token(token) {}
     EmojicodeString name;
     EmojicodeString ns;
@@ -29,8 +29,8 @@ protected:
     Package *package_;
     TokenStream stream_;
 
-    /** Reads a type name and stores it into the given pointers. */
-    ParsedTypeName parseTypeName();
+    /// Reads a type
+    ParsedType parseType();
     /** Reads a type name and stores it into the given pointers. */
     Type parseTypeDeclarative(TypeContext tc, TypeDynamism dynamism, Type expectation = Type::nothingness(),
                               TypeDynamism *dynamicType = nullptr);
@@ -42,7 +42,7 @@ protected:
     void parseGenericArgumentsInDefinition(Function *p, TypeContext ct);
     void parseBody(Callable *p);
     void parseBody(Function *p, bool allowNative);
-    void parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism, const Token& errorToken);
+    void parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism, SourcePosition p);
 };
 
 #endif /* AbstractParser_hpp */

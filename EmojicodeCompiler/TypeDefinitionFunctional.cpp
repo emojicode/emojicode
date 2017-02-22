@@ -18,17 +18,16 @@
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Type constraint) {
     genericArgumentConstraints_.push_back(constraint);
 
-    Type referenceType = Type(TypeContent::Reference, false, ownGenericArgumentCount_, this);
+    Type referenceType = Type(TypeContent::Reference, false, ownGenericArgumentVariables_.size(), this);
 
     if (ownGenericArgumentVariables_.count(variableName.value())) {
         throw CompilerError(variableName, "A generic argument variable with the same name is already in use.");
     }
     ownGenericArgumentVariables_.emplace(variableName.value(), referenceType);
-    ownGenericArgumentCount_++;
 }
 
 void TypeDefinitionFunctional::setSuperTypeDef(TypeDefinitionFunctional *superTypeDef) {
-    genericArgumentCount_ = ownGenericArgumentCount_ + superTypeDef->genericArgumentCount_;
+    genericArgumentCount_ = ownGenericArgumentVariables_.size() + superTypeDef->genericArgumentCount_;
     genericArgumentConstraints_.insert(genericArgumentConstraints_.begin(),
                                        superTypeDef->genericArgumentConstraints_.begin(),
                                        superTypeDef->genericArgumentConstraints_.end());
@@ -43,7 +42,7 @@ void TypeDefinitionFunctional::setSuperGenericArguments(std::vector<Type> superG
 }
 
 void TypeDefinitionFunctional::finalizeGenericArguments() {
-    genericArgumentCount_ = ownGenericArgumentCount_;
+    genericArgumentCount_ = ownGenericArgumentVariables_.size();
 }
 
 bool TypeDefinitionFunctional::fetchVariable(EmojicodeString name, bool optional, Type *destType) {
@@ -166,7 +165,7 @@ void TypeDefinitionFunctional::finalize() {
 
 void TypeDefinitionFunctional::finalizeProtocols(Type type, VTIProvider *methodVtiProvider) {
     for (Type protocol : protocols()) {
-        for (auto method : protocol.protocol()->methods()) {
+        for (auto method : protocol.protocol()->methodList()) {
             try {
                 Function *clm = lookupMethod(method->name());
                 if (clm == nullptr) {

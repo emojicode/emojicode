@@ -293,9 +293,9 @@ void reportPackage(Package *package) {
         reportDocumentation(protocol->documentation());
 
         printf("\"methods\":[");
-        for (size_t i = 0; i < protocol->methods().size(); i++) {
-            Function *method = protocol->methods()[i];
-            reportFunctionInformation(method, Return, i + 1 == protocol->methods().size(),
+        for (size_t i = 0; i < protocol->methodList().size(); i++) {
+            Function *method = protocol->methodList()[i];
+            reportFunctionInformation(method, Return, i + 1 == protocol->methodList().size(),
                                       TypeContext(Type(protocol, false)));
         }
         printf("]}");

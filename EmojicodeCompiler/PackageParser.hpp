@@ -28,7 +28,7 @@ private:
      */
     void reservedEmojis(const Token &token, const char *place) const;
     /** Parses a type name and validates that it is not already in use or an optional. */
-    ParsedTypeName parseAndValidateNewTypeName();
+    ParsedType parseAndValidateNewTypeName();
     /** Parses the definition list of generic arguments for a type. */
     void parseGenericArgumentList(TypeDefinitionFunctional *typeDef, TypeContext tc);
     

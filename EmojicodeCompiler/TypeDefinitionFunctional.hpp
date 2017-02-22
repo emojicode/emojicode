@@ -42,8 +42,6 @@ public:
     /** Must be called before the type is used but after the last generic argument was added. */
     void finalizeGenericArguments();
 
-    /** Returns the number of generic arguments this type takes when referenced to in Emojicode source code. */
-    uint16_t numberOfOwnGenericArguments() const { return ownGenericArgumentCount_; }
     /**
      * Returns the number of generic arguments a type of this type definition stores when initialized.
      * This therefore also includes all arguments to supertypedefinitions of this type.
@@ -64,11 +62,14 @@ public:
     const std::vector<Type>& superGenericArguments() const { return superGenericArguments_; }
     const std::vector<Type>& genericArgumentConstraints() const { return genericArgumentConstraints_; }
 
-    /** Returns a method by the given identifier token or issues an error if the method does not exist. */
+    /// Returns a method by the given identifier token or throws an exception if the method does not exist.
+    /// @throws CompilerError
     Function* getMethod(const Token &token, Type type, TypeContext typeContext);
-    /** Returns an initializer by the given identifier token or issues an error if the initializer does not exist. */
+    /// Returns an initializer by the given identifier token or throws an exception if the method does not exist.
+    /// @throws CompilerError
     Initializer* getInitializer(const Token &token, Type type, TypeContext typeContext);
-    /** Returns a method by the given identifier token or issues an error if the method does not exist. */
+    /// Returns a method by the given identifier token or throws an exception if the method does not exist.
+    /// @throws CompilerError
     Function* getTypeMethod(const Token &token, Type type, TypeContext typeContext);
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
@@ -121,13 +122,11 @@ protected:
 
     virtual void handleRequiredInitializer(Initializer *init);
 private:
-    /** The number of generic arguments including those from a super eclass. */
+    /// The number of generic arguments including those from a superclass.
     uint16_t genericArgumentCount_ = 0;
-    /** The number of generic arguments this eclass takes. */
-    uint16_t ownGenericArgumentCount_ = 0;
     /** The types for the generic arguments. */
     std::vector<Type> genericArgumentConstraints_;
-    /** The arguments for the classes from which this eclass inherits. */
+    /// The arguments for the classes from which this class inherits.
     std::vector<Type> superGenericArguments_;
     /** Generic type arguments as variables */
     std::map<EmojicodeString, Type> ownGenericArgumentVariables_;

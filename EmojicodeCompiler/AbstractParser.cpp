@@ -13,7 +13,7 @@
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 
-ParsedTypeName AbstractParser::parseTypeName() {
+ParsedType AbstractParser::parseType() {
     if (stream_.nextTokenIs(TokenType::Variable)) {
         throw CompilerError(stream_.consumeToken(TokenType::Variable), "Generic variables not allowed here.");
     }
@@ -33,7 +33,7 @@ ParsedTypeName AbstractParser::parseTypeName() {
     }
 
     auto &typeName = stream_.consumeToken(TokenType::Identifier);
-    return ParsedTypeName(typeName.value(), enamespace, optional, typeName);
+    return ParsedType(typeName.value(), enamespace, optional, typeName);
 }
 
 Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism, Type expectation,
@@ -97,14 +97,14 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         if (dynamicType) *dynamicType = TypeDynamism::None;
 
         Type t = Type::callableIncomplete(optional);
-        t.genericArguments.push_back(Type::nothingness());
+        t.genericArguments_.push_back(Type::nothingness());
 
         while (stream_.nextTokenIsEverythingBut(E_WATERMELON) && stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW)) {
-            t.genericArguments.push_back(parseTypeDeclarative(ct, dynamism));
+            t.genericArguments_.push_back(parseTypeDeclarative(ct, dynamism));
         }
 
         if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW)) {
-            t.genericArguments[0] = parseTypeDeclarative(ct, dynamism);
+            t.genericArguments_[0] = parseTypeDeclarative(ct, dynamism);
         }
 
         stream_.requireIdentifier(E_WATERMELON);
@@ -112,7 +112,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
     }
     else {
         if (dynamicType) *dynamicType = TypeDynamism::None;
-        auto parsedType = parseTypeName();
+        auto parsedType = parseType();
 
         parsedType.optional = optional;
 
@@ -128,14 +128,13 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
     }
 }
 
-void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism,
-                                                  const Token& errorToken) {
+void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism, SourcePosition p) {
     if (type->canHaveGenericArguments()) {
         auto typeDef = type->typeDefinitionFunctional();
-        auto offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->numberOfOwnGenericArguments();
-        type->genericArguments = std::vector<Type>(typeDef->superGenericArguments());
+        auto offset = typeDef->superGenericArguments().size();
+        type->genericArguments_ = typeDef->superGenericArguments();
 
-        if (typeDef->numberOfOwnGenericArguments()) {
+        if (typeDef->ownGenericArgumentVariables().size()) {
             int count = 0;
             while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
                 auto &token = stream_.consumeToken(TokenType::Identifier);
@@ -144,25 +143,24 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
 
                 auto i = count + offset;
                 if (typeDef->numberOfGenericArgumentsWithSuperArguments() <= i) {
-                    auto name = type->toString(ct, true);
-                    throw CompilerError(token, "Too many generic arguments provided for %s.", name.c_str());
+                    break;  // and throw an error below
                 }
                 if (!ta.compatibleTo(typeDef->genericArgumentConstraints()[i], ct)) {
                     auto thisName = typeDef->genericArgumentConstraints()[i].toString(ct, true);
                     auto thatName = ta.toString(ct, true);
                     throw CompilerError(token, "Generic argument for %s is not compatible to constraint %s.",
-                                                 thatName.c_str(), thisName.c_str());
+                                        thatName.c_str(), thisName.c_str());
                 }
 
-                type->genericArguments.push_back(ta);
+                type->genericArguments_.push_back(ta);
 
                 count++;
             }
 
-            if (count != typeDef->numberOfOwnGenericArguments()) {
+            if (count != typeDef->ownGenericArgumentVariables().size()) {
                 auto str = type->toString(Type::nothingness(), true);
-                throw CompilerError(errorToken, "Type %s requires %d generic arguments, but %d were given.",
-                                             str.c_str(), typeDef->numberOfOwnGenericArguments(), count);
+                throw CompilerError(p, "Type %s requires %d generic arguments, but %d were given.", str.c_str(),
+                                    typeDef->ownGenericArgumentVariables().size(), count);
             }
         }
     }

@@ -76,7 +76,7 @@ void PackageParser::parse() {
                 exported.disallow();
                 documentation.disallow();
 
-                auto parsedType = parseTypeName();
+                auto parsedType = parseType();
 
                 if (parsedType.optional) {
                     throw CompilerError(parsedType.token, "Optional types are not extendable.");
@@ -184,8 +184,8 @@ void PackageParser::reservedEmojis(const Token &token, const char *place) const 
     }
 }
 
-ParsedTypeName PackageParser::parseAndValidateNewTypeName() {
-    auto parsedTypeName = parseTypeName();
+ParsedType PackageParser::parseAndValidateNewTypeName() {
+    auto parsedTypeName = parseType();
 
     if (parsedTypeName.optional) {
         throw CompilerError(parsedTypeName.token, "🍬 cannot be declared as type.");
@@ -275,7 +275,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
 
     if (!stream_.nextTokenIs(E_GRAPES)) {
         auto classType = Type(eclass, false);  // New Type due to generic arguments now (partly) available.
-        auto parsedTypeName = parseTypeName();
+        auto parsedTypeName = parseType();
 
         Type type = Type::nothingness();
         if (!package_->fetchRawType(parsedTypeName, &type)) {
@@ -291,7 +291,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         eclass->setSuperclass(type.eclass());
         eclass->setSuperTypeDef(eclass->superclass());
         parseGenericArgumentsForType(&type, classType, TypeDynamism::GenericTypeVariables, parsedTypeName.token);
-        eclass->setSuperGenericArguments(type.genericArguments);
+        eclass->setSuperGenericArguments(type.genericArguments());
 
         if (eclass->superclass()->final()) {
             auto string = type.toString(classType, true);
