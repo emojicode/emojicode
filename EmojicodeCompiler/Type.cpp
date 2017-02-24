@@ -223,13 +223,10 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
         return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, ct, ctargs);
     }
     if (type() == TypeContent::MultiProtocol && to.type() == TypeContent::MultiProtocol) {
-        if (protocols().size() != to.protocols().size()) return false;
-        for (size_t i = 0; i < to.protocols().size(); i++) {
-            if (!protocols()[i].compatibleTo(to.protocols()[i], ct, ctargs)) {
-                return false;
-            }
-        }
-        return true;
+        return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
+                          [ct, ctargs](const Type &a, const Type &b) {
+                              return a.compatibleTo(b, ct, ctargs);
+                          });
     }
     if (to.type() == TypeContent::MultiProtocol) {
         return std::all_of(to.protocols().begin(), to.protocols().end(), [this, ct](const Type &p) {

@@ -40,11 +40,10 @@ void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
         auto &protocols = t.typeDefinitionFunctional()->protocols();
         std::vector<Type> newCommonProtocols;
         for (auto protocol : protocols) {
-            auto found = std::find_if(commonProtocols_.begin(), commonProtocols_.end(),
-                                      [protocol, typeContext](const Type &p) {
+            auto b = std::any_of(commonProtocols_.begin(), commonProtocols_.end(), [&protocol, &typeContext](const Type &p) {
                 return protocol.identicalTo(p, typeContext, nullptr);
             });
-            if (found != commonProtocols_.end()) {
+            if (b) {
                 newCommonProtocols.push_back(protocol);
             }
         }

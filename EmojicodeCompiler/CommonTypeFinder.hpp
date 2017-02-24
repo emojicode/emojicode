@@ -15,7 +15,7 @@
 
 class CommonTypeFinder {
 public:
-    /** Tells the common type finder about the type of another element in the collection/data structure. */
+    /// Tells the common type finder about the type of another element in the collection.
     void addType(Type t, TypeContext typeContext);
     /** Returns the common type and issues a warning at @c warningToken if the common type is ambigious. */
     Type getCommonType(SourcePosition p) const;
