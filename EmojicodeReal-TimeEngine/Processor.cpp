@@ -28,7 +28,7 @@ static bool runBlock(Thread *thread) {
     EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + length;
     while (thread->currentStackFrame()->executionPointer < end) {
         Box garbage;
-        produce(thread->consumeInstruction(), thread, &garbage.type);
+        produce(thread, &garbage.type);
 
         pauseForGC();
 
@@ -44,7 +44,7 @@ static void runFunctionPointerBlock(Thread *thread, uint32_t length) {
     EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + length;
     while (thread->currentStackFrame()->executionPointer < end) {
         Box garbage;
-        produce(thread->consumeInstruction(), thread, &garbage.type);
+        produce(thread, &garbage.type);
 
         pauseForGC();
 
@@ -57,7 +57,7 @@ static void runFunctionPointerBlock(Thread *thread, uint32_t length) {
 
 Class* readClass(Thread *thread) {
     Value sth;
-    produce(thread->consumeInstruction(), thread, &sth);
+    produce(thread, &sth);
     return sth.klass;
 }
 
@@ -140,7 +140,7 @@ bool performInitializer(Class *klass, Function *initializer, Object *object, Thr
         EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + initializer->block.instructionCount;
         while (thread->currentStackFrame()->executionPointer < end) {
             Value garbage;
-            produce(thread->consumeInstruction(), thread, &garbage);
+            produce(thread, &garbage);
 
             if (!returned.raw) {
                 thread->popStack();
@@ -166,11 +166,11 @@ void performFunction(Function *function, Value self, Thread *thread, Value *dest
     thread->popStack();
 }
 
-void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
-    switch ((EmojicodeInstructionConstants)coin) {
+void produce(Thread *thread, Value *destination) {
+    switch ((EmojicodeInstructionConstants)thread->consumeInstruction()) {
         case INS_DISPATCH_METHOD: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             performFunction(sth.object->klass->methodsVtable[vti], sth, thread, destination);
@@ -178,7 +178,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_DISPATCH_TYPE_METHOD: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             performFunction(sth.klass->methodsVtable[vti], sth, thread, destination);
@@ -186,7 +186,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_DISPATCH_PROTOCOL: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
 
             EmojicodeInstruction pti = thread->consumeInstruction();
             EmojicodeInstruction vti = thread->consumeInstruction();
@@ -212,7 +212,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_PRODUCE_TO_AND_GET_VT_REFERENCE: {
             Value *pd = thread->variableDestination(thread->consumeInstruction());
-            produce(thread->consumeInstruction(), thread, pd);
+            produce(thread, pd);
             destination->value = pd;
             return;
         }
@@ -230,7 +230,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_CALL_CONTEXTED_FUNCTION: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
 
             EmojicodeInstruction c = thread->consumeInstruction();
             performFunction(functionTable[c], sth, thread, destination);
@@ -243,30 +243,30 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_SIMPLE_OPTIONAL_PRODUCE:
             destination->raw = 1;
-            produce(thread->consumeInstruction(), thread, destination + 1);
+            produce(thread, destination + 1);
             return;
         case INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE: {
             Box box;
             EmojicodeInstruction size = thread->consumeInstruction();
-            produce(thread->consumeInstruction(), thread, &box.type);
+            produce(thread, &box.type);
             if (box.type.raw != T_NOTHINGNESS) std::memcpy(destination, &box.type, size * sizeof(Value));
             else destination->raw = 0;
             return;
         }
         case INS_SIMPLE_OPTIONAL_TO_BOX: {
             EmojicodeInstruction typeId = thread->consumeInstruction();
-            produce(thread->consumeInstruction(), thread, destination);
+            produce(thread, destination);
             if (destination->raw) destination->raw = typeId;  // First value non-zero means a value
             return;
         }
         case INS_BOX_PRODUCE:
             destination->raw = thread->consumeInstruction();
-            produce(thread->consumeInstruction(), thread, destination + 1);
+            produce(thread, destination + 1);
             return;
         case INS_UNBOX: {
             Box box;
             EmojicodeInstruction size = thread->consumeInstruction();
-            produce(thread->consumeInstruction(), thread, &box.type);
+            produce(thread, &box.type);
             std::memcpy(destination, &box.value1, size * sizeof(Value));
             return;
         }
@@ -283,7 +283,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_GET_CLASS_FROM_INSTANCE: {
             Value a;
-            produce(thread->consumeInstruction(), thread, &a);
+            produce(thread, &a);
             destination->klass = a.object->klass;
             return;
         }
@@ -319,18 +319,18 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             return;
         case INS_PRODUCE_WITH_STACK_DESTINATION: {
             EmojicodeInstruction index = thread->consumeInstruction();
-            produce(thread->consumeInstruction(), thread, thread->variableDestination(index));
+            produce(thread, thread->variableDestination(index));
             return;
         }
         case INS_PRODUCE_WITH_OBJECT_DESTINATION: {
             EmojicodeInstruction index = thread->consumeInstruction();
             Value *d = thread->getThisObject()->variableDestination(index);
-            produce(thread->consumeInstruction(), thread, d);
+            produce(thread, d);
             return;
         }
         case INS_PRODUCE_WITH_VT_DESTINATION: {
             Value *d = thread->getThisContext().value + thread->consumeInstruction();
-            produce(thread->consumeInstruction(), thread, d);
+            produce(thread, d);
             return;
         }
         case INS_INCREMENT:
@@ -370,7 +370,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         case INS_COPY_REFERENCE: {
             Value value;
             auto size = thread->consumeInstruction();
-            produce(thread->consumeInstruction(), thread, &value);
+            produce(thread, &value);
             std::memcpy(destination, value.value, sizeof(Value) * size);
             return;
         }
@@ -378,208 +378,208 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         case INS_EQUAL_PRIMITIVE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw == b.raw;
             return;
         }
         case INS_SUBTRACT_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw - b.raw;
             return;
         }
         case INS_ADD_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw + b.raw;
             return;
         }
         case INS_MULTIPLY_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw * b.raw;
             return;
         }
         case INS_DIVIDE_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw / b.raw;
             return;
         }
         case INS_REMAINDER_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw % b.raw;
             return;
         }
         case INS_INVERT_BOOLEAN: {
             Value a;
-            produce(thread->consumeInstruction(), thread, &a);
+            produce(thread, &a);
             destination->raw = !a.raw;
             return;
         }
         case INS_OR_BOOLEAN: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw || b.raw;
             return;
         }
         case INS_AND_BOOLEAN: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw && b.raw;
             return;
         }
         case INS_LESS_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw < b.raw;
             return;
         }
         case INS_GREATER_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw > b.raw;
             return;
         }
         case INS_GREATER_OR_EQUAL_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw >= b.raw;
             return;
         }
         case INS_LESS_OR_EQUAL_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw <= b.raw;
             return;
         }
         case INS_SAME_OBJECT: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.object == b.object;
             return;
         }
         case INS_IS_NOTHINGNESS: {
             Value a;
-            produce(thread->consumeInstruction(), thread, &a);
+            produce(thread, &a);
             destination->raw = a.value->raw == T_NOTHINGNESS;
             return;
         }
         case INS_EQUAL_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.doubl == b.doubl;
             return;
         }
         case INS_SUBTRACT_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->doubl = a.doubl - b.doubl;
             return;
         }
         case INS_ADD_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->doubl = a.doubl + b.doubl;
             return;
         }
         case INS_MULTIPLY_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->doubl = a.doubl * b.doubl;
             return;
         }
         case INS_DIVIDE_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->doubl = a.doubl / b.doubl;
             return;
         }
         case INS_LESS_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.doubl < b.doubl;
             return;
         }
         case INS_GREATER_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.doubl > b.doubl;
             return;
         }
         case INS_LESS_OR_EQUAL_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.doubl <= b.doubl;
             return;
         }
         case INS_GREATER_OR_EQUAL_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.doubl >= b.doubl;
             return;
         }
         case INS_REMAINDER_DOUBLE: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->doubl = fmod(a.doubl, b.doubl);
             return;
         }
         case INS_INT_TO_DOUBLE: {
             Value a;
-            produce(thread->consumeInstruction(), thread, &a);
+            produce(thread, &a);
             destination->doubl = a.raw;
             return;
         }
         case INS_UNWRAP_SIMPLE_OPTIONAL: {
             Value value;
-            produce(thread->consumeInstruction(), thread, &value);
+            produce(thread, &value);
             EmojicodeInteger n = thread->consumeInstruction();
             if (value.value->raw != T_NOTHINGNESS) {
                 std::memcpy(destination, value.value + 1, n * sizeof(Value));
@@ -591,7 +591,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_UNWRAP_BOX_OPTIONAL: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
             Box *box = reinterpret_cast<Box *>(sth.value);
             box->unwrapOptional();
             box->copyTo(destination);
@@ -599,7 +599,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_CONDITIONAL_PRODUCE_BOX: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
             Box *box = reinterpret_cast<Box *>(sth.value);
             EmojicodeInstruction index = thread->consumeInstruction();
             if ((destination->raw = (box->type.raw != T_NOTHINGNESS))) {
@@ -609,7 +609,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_CONDITIONAL_PRODUCE_SIMPLE_OPTIONAL: {
             Value value;
-            produce(thread->consumeInstruction(), thread, &value);
+            produce(thread, &value);
             EmojicodeInstruction index = thread->consumeInstruction();
             EmojicodeInstruction n = thread->consumeInstruction();
             if ((destination->raw = (value.value->raw != T_NOTHINGNESS))) {
@@ -631,14 +631,14 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             return;
         }
         case INS_DOWNCAST_TO_CLASS: {
-            produce(thread->consumeInstruction(), thread, destination + 1);
+            produce(thread, destination + 1);
             Class *klass = readClass(thread);
             destination->raw = destination[1].object->klass->inheritsFrom(klass);
             return;
         }
         case INS_CAST_TO_CLASS: {
             Box box;
-            produce(thread->consumeInstruction(), thread, &box.type);
+            produce(thread, &box.type);
             Class *klass = readClass(thread);
             if (box.type.raw == T_OBJECT && !box.isNothingness() && box.value1.object->klass->inheritsFrom(klass)) {
                 destination[0].raw = 1;
@@ -649,7 +649,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             return;
         }
         case INS_CAST_TO_PROTOCOL: {
-            produce(thread->consumeInstruction(), thread, destination);
+            produce(thread, destination);
             EmojicodeInstruction pi = thread->consumeInstruction();
             auto box = reinterpret_cast<Box *>(destination);
             if (!(!box->isNothingness() &&
@@ -661,7 +661,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_CAST_TO_VALUE_TYPE: {
             Box box;
-            produce(thread->consumeInstruction(), thread, &box.type);
+            produce(thread, &box.type);
             EmojicodeInstruction id = thread->consumeInstruction();
             if (box.type.raw != id) {
                 destination->makeNothingness();
@@ -679,9 +679,9 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
             while (thread->currentStackFrame()->executionPointer < end) {
                 Value key;
-                produce(thread->consumeInstruction(), thread, &key);
+                produce(thread, &key);
                 Box sth;
-                produce(thread->consumeInstruction(), thread, &sth.type);
+                produce(thread, &sth.type);
 
                 dictionaryPutVal(dico, key.object, sth, thread);
             }
@@ -694,7 +694,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
 
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
             while (thread->currentStackFrame()->executionPointer < end) {
-                produce(thread->consumeInstruction(), thread,
+                produce(thread,
                         reinterpret_cast<Value *>(listAppendDestination(list, thread)));
             }
 
@@ -711,7 +711,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
 
             for (int i = 0; i < stringCount; i++) {
                 Value v;
-                produce(thread->consumeInstruction(), thread, &v);
+                produce(thread, &v);
                 String *string = static_cast<String *>(v.object->value);
                 if (bufferSize - length < string->length) {
                     bufferSize += static_cast<size_t>(string->length) - (bufferSize - length);
@@ -735,57 +735,57 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         case INS_BINARY_AND_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw & b.raw;
             return;
         }
         case INS_BINARY_OR_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw | b.raw;
             return;
         }
         case INS_BINARY_XOR_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw ^ b.raw;
             return;
         }
         case INS_BINARY_NOT_INTEGER: {
             Value a;
-            produce(thread->consumeInstruction(), thread, &a);
+            produce(thread, &a);
             destination->raw = ~a.raw;
             return;
         }
         case INS_SHIFT_LEFT_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw << b.raw;
             return;
         }
         case INS_SHIFT_RIGHT_INTEGER: {
             Value a;
             Value b;
-            produce(thread->consumeInstruction(), thread, &a);
-            produce(thread->consumeInstruction(), thread, &b);
+            produce(thread, &a);
+            produce(thread, &b);
             destination->raw = a.raw >> b.raw;
             return;
         }
         case INS_RETURN:
-            produce(thread->consumeInstruction(), thread, thread->currentStackFrame()->destination);
+            produce(thread, thread->currentStackFrame()->destination);
             thread->currentStackFrame()->executionPointer = nullptr;
             return;
         case INS_REPEAT_WHILE: {
             EmojicodeInstruction *beginPosition = thread->currentStackFrame()->executionPointer;
             Value sth;
-            while (produce(thread->consumeInstruction(), thread, &sth), sth.raw) {
+            while (produce(thread, &sth), sth.raw) {
                 if (runBlock(thread)) {
                     return;
                 }
@@ -799,7 +799,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             EmojicodeInstruction *ifEnd = thread->currentStackFrame()->executionPointer + length;
 
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
             if (sth.raw) {  // Main if
                 if (runBlock(thread)) {
                     return;
@@ -812,7 +812,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
                 EmojicodeInstruction ins;
                 while ((ins = thread->consumeInstruction())) {
                     if (ins == 1) {  // Else If
-                        produce(thread->consumeInstruction(), thread, &sth);
+                        produce(thread, &sth);
                         if (sth.raw) {
                             if (runBlock(thread)) {
                                 return;
@@ -834,7 +834,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             EmojicodeInstruction variable = thread->consumeInstruction();
 
             Value losm;
-            produce(thread->consumeInstruction(), thread, &losm);
+            produce(thread, &losm);
 
             EmojicodeInstruction listObjectVariable = thread->consumeInstruction();
             *thread->variableDestination(listObjectVariable) = losm;
@@ -857,7 +857,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         case 0x66: {
             EmojicodeInstruction variable = thread->consumeInstruction();
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
             EmojicodeInstruction *begin = thread->currentStackFrame()->executionPointer;
             for (EmojicodeInteger i = sth.value[0].raw; i != sth.value[1].raw; i += sth.value[2].raw) {
                 thread->variableDestination(variable)->raw = i;
@@ -872,7 +872,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_EXECUTE_CALLABLE: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
             Object *callable = sth.object;
             if (callable->klass == CL_CAPTURED_FUNCTION_CALL) {
                 CapturedFunctionCall *cmc = static_cast<CapturedFunctionCall *>(callable->value);
@@ -935,7 +935,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_CAPTURE_METHOD: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
             Object *const &callee = thread->retain(sth.object);
 
             Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
@@ -950,7 +950,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_CAPTURE_TYPE_METHOD: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
 
             Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
             CapturedFunctionCall *cmc = static_cast<CapturedFunctionCall *>(cmco->value);
@@ -963,7 +963,7 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
         }
         case INS_CAPTURE_CONTEXTED_FUNCTION: {
             Value sth;
-            produce(thread->consumeInstruction(), thread, &sth);
+            produce(thread, &sth);
 
             Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
             CapturedFunctionCall *cmc = static_cast<CapturedFunctionCall *>(cmco->value);
@@ -976,5 +976,5 @@ void produce(EmojicodeInstruction coin, Thread *thread, Value *destination) {
             return;
         }
     }
-    error("Illegal bytecode instruction %X", coin);
+    error("Illegal bytecode instruction");
 }

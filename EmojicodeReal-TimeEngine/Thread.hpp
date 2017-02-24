@@ -59,7 +59,7 @@ public:
 
     /// Consumes the next instruction from the current stack frame’s execution pointer, i.e. returns the value to which
     /// the pointer currently points and increments the pointer.
-    EmojicodeInstruction consumeInstruction();
+    EmojicodeInstruction consumeInstruction() { return *(stack_->executionPointer++); }
 
     void markStack();
 

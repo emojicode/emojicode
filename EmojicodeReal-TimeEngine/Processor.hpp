@@ -12,6 +12,6 @@
 #include "Engine.hpp"
 
 void performFunction(Function *function, Value self, Thread *thread, Value *destination);
-void produce(EmojicodeInstruction coin, Thread *thread, Value *destination);
+void produce(Thread *thread, Value *destination);
 
 #endif /* Processor_hpp */

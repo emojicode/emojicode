@@ -91,7 +91,7 @@ void Thread::pushStack(Value self, int frameSize, int argCount, Function *functi
 
     for (int i = 0; i < argCount; i++) {
         EmojicodeInstruction copySize = consumeInstruction();
-        produce(consumeInstruction(), this, sf->variableDestination(0) + sf->argPushIndex);
+        produce(this, sf->variableDestination(0) + sf->argPushIndex);
         sf->argPushIndex += copySize;
     }
 
@@ -113,10 +113,6 @@ Object* Thread::getThisObject() const {
 
 Value Thread::getThisContext() const {
     return stack_->thisContext;
-}
-
-EmojicodeInstruction Thread::consumeInstruction() {
-    return *(stack_->executionPointer++);
 }
 
 void Thread::markStack() {
