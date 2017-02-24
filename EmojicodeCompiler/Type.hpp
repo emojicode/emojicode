@@ -34,6 +34,7 @@ class Initializer;
 
 enum class TypeContent {
     Class,
+    MultiProtocol,
     Protocol,
     Enum,
     ValueType,
@@ -95,6 +96,10 @@ public:
     /// Creates a reference to the generic argument @c r which can be resolved to an argument given to @c function.
     Type(TypeContent t, bool optional, int r, Function *function)
         : reference_(r), localResolutionConstraint_(function), typeContent_(t), optional_(optional) {}
+    Type(std::vector<Type> protocols, bool optional)
+        : typeContent_(TypeContent::MultiProtocol), genericArguments_(protocols), optional_(optional) {
+            sortMultiProtocolType();
+        }
 
     static Type integer() { return Type(VT_INTEGER, false, false, false); }
     static Type boolean() { return Type(VT_BOOLEAN, false, false, false); }
@@ -153,14 +158,17 @@ public:
     void objectVariableRecords(int index, std::vector<T> &information, Us... args) const;
 
     /// Returns the generic arguments with which this type was specialized.
-    const std::vector<Type>& genericArguments() { return genericArguments_; };
+    const std::vector<Type>& genericArguments() const { return genericArguments_; }
     /// Allows to change a specific generic argument. @c index must be smaller than @c genericArguments().size()
     void setGenericArgument(size_t index, Type value) { genericArguments_[index] = value; }
     /// True if this type could have generic arguments.
     bool canHaveGenericArguments() const;
 
-    bool canHaveProtocol() { return type() == TypeContent::ValueType || type() == TypeContent::Class
+    bool canHaveProtocol() const { return type() == TypeContent::ValueType || type() == TypeContent::Class
         || type() == TypeContent::Enum; }
+
+    /// Returns the protocol types of a MultiProtocol
+    const std::vector<Type>& protocols() const { return genericArguments_; }
 
     /// Forbids the usage of this instance of Type to resolve @c Self.
     Type& disableSelfResolving() { resolveSelfOn_ = false; return *this; }
@@ -224,6 +232,7 @@ private:
     void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
     bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
     Type resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeContext) const;
+    void sortMultiProtocolType();
 };
 
 #endif /* Type_hpp */

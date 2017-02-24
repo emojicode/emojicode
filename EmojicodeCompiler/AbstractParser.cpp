@@ -61,8 +61,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
     }
 
     if ((dynamism & TypeDynamism::GenericTypeVariables) != TypeDynamism::None &&
-        (ct.calleeType().canHaveGenericArguments() || ct.function()) &&
-        stream_.nextTokenIs(TokenType::Variable)) {
+        (ct.calleeType().canHaveGenericArguments() || ct.function()) && stream_.nextTokenIs(TokenType::Variable)) {
         if (dynamicType) *dynamicType = TypeDynamism::GenericTypeVariables;
 
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
@@ -83,7 +82,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         }
 
         throw CompilerError(variableToken, "No such generic type variable \"%s\".",
-                                     variableToken.value().utf8().c_str());
+                            variableToken.value().utf8().c_str());
     }
     else if (stream_.nextTokenIs(E_DOG)) {
         auto &selfToken = stream_.consumeToken(TokenType::Identifier);
@@ -92,6 +91,23 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         }
         if (dynamicType) *dynamicType = TypeDynamism::Self;
         return Type::self(optional);
+    }
+    else if (stream_.nextTokenIs(E_BENTO_BOX)) {
+        auto &bentoToken = stream_.consumeToken(TokenType::Identifier);
+        Type type = Type(TypeContent::MultiProtocol, optional);
+        while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
+            auto protocolType = parseTypeDeclarative(ct, dynamism);
+            if (protocolType.type() != TypeContent::Protocol || protocolType.optional() || protocolType.meta()) {
+                throw CompilerError(bentoToken, "🍱 may only consist of non-optional protocol types.");
+            }
+            type.genericArguments_.push_back(protocolType);
+        }
+        if (type.protocols().size() == 0) {
+            throw CompilerError(bentoToken, "An empty 🍱 is invalid.");
+        }
+        type.sortMultiProtocolType();
+        stream_.consumeToken(TokenType::Identifier);
+        return type;
     }
     else if (stream_.consumeTokenIf(E_GRAPES)) {
         if (dynamicType) *dynamicType = TypeDynamism::None;

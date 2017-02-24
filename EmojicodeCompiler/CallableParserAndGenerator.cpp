@@ -1288,7 +1288,7 @@ Type CallableParserAndGenerator::parseMethodCall(const Token &token, Destination
     }
 
     auto simpleDes = Destination(DestinationMutability::Unknown, StorageType::Simple);
-    Function *method;
+    Function *method = nullptr;
     if (type.type() == TypeContent::ValueType) {
         if (type.valueType() == VT_BOOLEAN) {
             switch (token.value()[0]) {
@@ -1472,6 +1472,20 @@ Type CallableParserAndGenerator::parseMethodCall(const Token &token, Destination
         placeholder.write(INS_DISPATCH_PROTOCOL);
         writer.writeInstruction(type.protocol()->index, token);
         writer.writeInstruction(method->vtiForUse(), token);
+    }
+    else if (type.type() == TypeContent::MultiProtocol) {
+        for (auto &protocol : type.protocols()) {
+            if ((method = protocol.protocol()->lookupMethod(token.value()))) {
+                placeholder.write(INS_DISPATCH_PROTOCOL);
+                writer.writeInstruction(protocol.protocol()->index, token);
+                writer.writeInstruction(method->vtiForUse(), token);
+                break;
+            }
+        }
+        if (!method) {
+            throw CompilerError(token, "No type in %s provides a method called %s.",
+                                type.toString(typeContext, true).c_str(), token.value().utf8().c_str());
+        }
     }
     else if (type.type() == TypeContent::Enum) {
         method = type.eenum()->getMethod(token, type, typeContext);

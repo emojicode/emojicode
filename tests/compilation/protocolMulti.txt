@@ -1,0 +1,4 @@
+Using radio network to call 2929294757
+Turning on spot light at 0.300
+Using cellular network to call 2929294757
+Turning on camera flash light at 0.300

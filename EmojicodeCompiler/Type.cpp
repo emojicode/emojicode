@@ -79,6 +79,12 @@ Type Type::copyWithoutOptional() const {
     return type;
 }
 
+void Type::sortMultiProtocolType() {
+    std::sort(genericArguments_.begin(), genericArguments_.end(), [](const Type &a, const Type &b) {
+        return a.protocol()->index < b.protocol()->index;
+    });
+}
+
 int Type::reference() const {
     if (type() != TypeContent::Reference && type() != TypeContent::LocalReference)
         throw std::domain_error("Tried to get reference from non-reference type");
@@ -167,12 +173,12 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
     if (optional) t.setOptional();
 
     if (t.canHaveGenericArguments()) {
-        for (int i = 0; i < t.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments(); i++) {
+        for (size_t i = 0; i < t.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments(); i++) {
             t.genericArguments_[i] = t.genericArguments_[i].resolveOn(typeContext);
         }
     }
     else if (t.type() == TypeContent::Callable) {
-        for (int i = 0; i < t.genericArguments_.size(); i++) {
+        for (size_t i = 0; i < t.genericArguments_.size(); i++) {
             t.genericArguments_[i] = t.genericArguments_[i].resolveOn(typeContext);
         }
     }
@@ -183,7 +189,7 @@ Type Type::resolveOn(TypeContext typeContext, bool resolveSelf) const {
 
 bool Type::identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const {
     if (to.typeDefinitionFunctional()->ownGenericArgumentVariables().size()) {
-        for (int l = to.typeDefinitionFunctional()->ownGenericArgumentVariables().size(),
+        for (size_t l = to.typeDefinitionFunctional()->ownGenericArgumentVariables().size(),
              i = to.typeDefinitionFunctional()->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
             if (!this->genericArguments_[i].identicalTo(to.genericArguments_[i], ct, ctargs)) {
                 return false;
@@ -213,6 +219,20 @@ bool Type::compatibleTo(Type to, TypeContext ct, std::vector<CommonTypeFinder> *
     if ((this->type() == TypeContent::Protocol && to.type() == TypeContent::Protocol) ||
         (this->type() == TypeContent::ValueType && to.type() == TypeContent::ValueType)) {
         return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, ct, ctargs);
+    }
+    if (type() == TypeContent::MultiProtocol && to.type() == TypeContent::MultiProtocol) {
+        if (protocols().size() != to.protocols().size()) return false;
+        for (size_t i = 0; i < to.protocols().size(); i++) {
+            if (!protocols()[i].compatibleTo(to.protocols()[i], ct, ctargs)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    if (to.type() == TypeContent::MultiProtocol) {
+        return std::all_of(to.protocols().begin(), to.protocols().end(), [this, ct](const Type &p) {
+            return compatibleTo(p, ct);
+        });
     }
     if (type() == TypeContent::Class && to.type() == TypeContent::Protocol) {
         for (Class *a = this->eclass(); a != nullptr; a = a->superclass()) {
@@ -308,6 +328,14 @@ bool Type::identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *c
             case TypeContent::Someobject:
             case TypeContent::Nothingness:
                 return true;
+            case TypeContent::MultiProtocol:
+                if (protocols().size() != to.protocols().size()) return false;
+                for (size_t i = 0; i < to.protocols().size(); i++) {
+                    if (!protocols()[i].identicalTo(to.protocols()[i], tc, ctargs)) {
+                        return false;
+                    }
+                }
+                return true;
         }
     }
     return false;
@@ -362,6 +390,7 @@ EmojicodeInstruction Type::boxIdentifier() const {
             break;
         case TypeContent::Nothingness:
         case TypeContent::Protocol:
+        case TypeContent::MultiProtocol:
         case TypeContent::Something:
         case TypeContent::Reference:
         case TypeContent::LocalReference:
@@ -385,6 +414,7 @@ bool Type::requiresBox() const {
         case TypeContent::Reference:
         case TypeContent::LocalReference:
         case TypeContent::Protocol:
+        case TypeContent::MultiProtocol:
             return true;
     }
 }
@@ -403,6 +433,7 @@ bool Type::isValueReferenceWorthy() const {
         case TypeContent::ValueType:
         case TypeContent::Enum:
         case TypeContent::Protocol:
+        case TypeContent::MultiProtocol:
         case TypeContent::Something:
             return true;
     }
@@ -435,6 +466,7 @@ void Type::objectVariableRecords(int index, std::vector<T> &information, Us... a
         case TypeContent::Someobject:
         case TypeContent::Callable:
         case TypeContent::Protocol:
+        case TypeContent::MultiProtocol:
         case TypeContent::Something:
         case TypeContent::Reference:
         case TypeContent::LocalReference:
@@ -477,6 +509,7 @@ std::string Type::typePackage() {
         case TypeContent::LocalReference:
         case TypeContent::Callable:
         case TypeContent::Self:
+        case TypeContent::MultiProtocol:  // should actually never come in here
             return "";
     }
 }
@@ -507,6 +540,13 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
         case TypeContent::ValueType:
             string.append(type.typeDefinition()->name().utf8());
             break;
+        case TypeContent::MultiProtocol:
+            string.append("🍱");
+            for (auto &protocol : type.protocols()) {
+                typeName(protocol, typeContext, includePackageAndOptional, string);
+            }
+            string.append("🍱");
+            return;
         case TypeContent::Nothingness:
             stringAppendEc(E_SPARKLES, string);
             return;
@@ -522,7 +562,7 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
         case TypeContent::Callable:
             stringAppendEc(E_GRAPES, string);
 
-            for (int i = 1; i < type.genericArguments_.size(); i++) {
+            for (size_t i = 1; i < type.genericArguments_.size(); i++) {
                 typeName(type.genericArguments_[i], typeContext, includePackageAndOptional, string);
             }
 
@@ -571,10 +611,11 @@ void Type::typeName(Type type, TypeContext typeContext, bool includePackageAndOp
             return;
     }
 
-    if (typeContext.calleeType().type() != TypeContent::Nothingness && type.canHaveGenericArguments()) {
+    if (type.canHaveGenericArguments()) {
         auto typeDef = type.typeDefinitionFunctional();
-        int offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->ownGenericArgumentVariables().size();
-        for (int i = 0, l = typeDef->ownGenericArgumentVariables().size(); i < l; i++) {
+        if (typeDef->ownGenericArgumentVariables().size() == 0) return;
+        size_t offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->ownGenericArgumentVariables().size();
+        for (size_t i = 0, l = typeDef->ownGenericArgumentVariables().size(); i < l; i++) {
             stringAppendEc(E_SPIRAL_SHELL, string);
             typeName(type.genericArguments_[offset + i], typeContext, includePackageAndOptional, string);
         }

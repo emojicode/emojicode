@@ -107,7 +107,8 @@ enum Emojis {
     E_BABY_BOTTLE = 0x1F37C,
     E_WHITE_CIRCLE = 0x26AA,
     E_CRAYON = 0x1F58D,
-    E_RADIO_BUTTON = 0x1F518
+    E_RADIO_BUTTON = 0x1F518,
+    E_BENTO_BOX = 0x1F371,
 };
 
 #endif /* Emojis_h */

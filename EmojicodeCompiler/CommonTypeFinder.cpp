@@ -6,8 +6,8 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <algorithm>
 #include "CommonTypeFinder.hpp"
+#include <algorithm>
 #include "TypeContext.hpp"
 #include "TypeDefinitionFunctional.hpp"
 
@@ -57,7 +57,10 @@ Type CommonTypeFinder::getCommonType(SourcePosition p) const {
         compilerWarning(p, "Type is ambigious without more context.");
     }
     else if (commonType_.type() == TypeContent::Something || commonType_.type() == TypeContent::Someobject) {
-        if (commonProtocols_.size() > 0) {
+        if (commonProtocols_.size() > 1) {
+            return Type(commonProtocols_, false);
+        }
+        else if (commonProtocols_.size() == 1) {
             return commonProtocols_.front();
         }
         else {
