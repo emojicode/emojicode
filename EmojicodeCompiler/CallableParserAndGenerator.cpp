@@ -541,7 +541,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                     var.initialize(writer.writtenInstructions());
                     auto destination = Destination::temporaryReference();
                     writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
-                    insertionPoint.insert({ 0x65, static_cast<unsigned int>(var.id()) });
+                    insertionPoint.insert({ INS_OPT_FOR_IN_LIST, static_cast<unsigned int>(var.id()) });
                     flowControlBlock(false);
                 }
                 else if (iteratee.type() == TypeContent::ValueType &&
@@ -552,7 +552,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                     var.initialize(writer.writtenInstructions());
                     auto destination = Destination::temporaryReference();
                     writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
-                    insertionPoint.insert({ 0x66, static_cast<unsigned int>(var.id()) });
+                    insertionPoint.insert({ INS_OPT_FOR_IN_RANGE, static_cast<unsigned int>(var.id()) });
                     flowControlBlock(false);
                 }
                 else if (typeIsEnumerable(iteratee, &itemType)) {
@@ -772,7 +772,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             throw CompilerError(token, "Unexpected statement %s.", token.value().utf8().c_str());
         case E_COOKIE: {
             writeBoxingAndTemporary(des, Type(CL_STRING, false), token.position());
-            writer.writeInstruction(0x52, token);
+            writer.writeInstruction(INS_OPT_STRING_CONCATENATE_LITERAL, token);
             auto placeholder = writer.writeInstructionPlaceholder(token);
 
             int stringCount = 0;
@@ -793,7 +793,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         }
         case E_ICE_CREAM: {
             writeBoxingAndTemporary(des, Type(CL_LIST, false), token.position());
-            writer.writeInstruction(0x51, token);
+            writer.writeInstruction(INS_OPT_LIST_LITERAL, token);
 
             auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
 
@@ -821,8 +821,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             return type;
         }
         case E_HONEY_POT: {
-            writeBoxingAndTemporary(des, Type(CL_LIST, false), token.position());
-            writer.writeInstruction(0x50, token);
+            writeBoxingAndTemporary(des, Type(CL_DICTIONARY, false), token.position());
+            writer.writeInstruction(INS_OPT_DICTIONARY_LITERAL, token);
 
             auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
             Type type = Type(CL_DICTIONARY, false);

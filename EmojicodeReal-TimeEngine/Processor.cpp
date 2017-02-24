@@ -672,7 +672,7 @@ void produce(Thread *thread, Value *destination) {
             }
             return;
         }
-        case 0x50: {
+        case INS_OPT_DICTIONARY_LITERAL: {
             Object *const &dico = thread->retain(newObject(CL_DICTIONARY));
             dictionaryInit(thread);
 
@@ -689,7 +689,7 @@ void produce(Thread *thread, Value *destination) {
             thread->release(1);
             return;
         }
-        case 0x51: {
+        case INS_OPT_LIST_LITERAL: {
             Object *const &list = thread->retain(newObject(CL_LIST));
 
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
@@ -702,7 +702,7 @@ void produce(Thread *thread, Value *destination) {
             thread->release(1);
             return;
         }
-        case 0x52: {
+        case INS_OPT_STRING_CONCATENATE_LITERAL: {
             EmojicodeInstruction stringCount = thread->consumeInstruction();
 
             size_t bufferSize = 10;
@@ -830,7 +830,7 @@ void produce(Thread *thread, Value *destination) {
             }
             return;
         }
-        case 0x65: {
+        case INS_OPT_FOR_IN_LIST: {
             EmojicodeInstruction variable = thread->consumeInstruction();
 
             Value losm;
@@ -854,7 +854,7 @@ void produce(Thread *thread, Value *destination) {
             passBlock(thread);
             return;
         }
-        case 0x66: {
+        case INS_OPT_FOR_IN_RANGE: {
             EmojicodeInstruction variable = thread->consumeInstruction();
             Value sth;
             produce(thread, &sth);
