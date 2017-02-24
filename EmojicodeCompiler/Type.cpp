@@ -6,8 +6,10 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
+#include "Type.hpp"
 #include <cstring>
 #include <vector>
+#include <algorithm>
 #include "Class.hpp"
 #include "Function.hpp"
 #include "../utf8.h"
