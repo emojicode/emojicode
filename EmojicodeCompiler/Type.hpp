@@ -29,7 +29,6 @@ class ValueType;
 class Function;
 class CommonTypeFinder;
 class AbstractParser;
-class Callable;
 class Initializer;
 
 enum class TypeContent {
@@ -82,8 +81,8 @@ inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
 class Type {
     friend TypeDefinitionFunctional;
     friend AbstractParser;
-    friend Callable;
     friend Initializer;
+    friend Function;
 public:
     Type(Class *klass, bool optional);
     Type(Protocol *protocol, bool optional);

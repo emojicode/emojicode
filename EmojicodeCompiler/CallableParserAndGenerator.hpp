@@ -46,7 +46,7 @@ class CallableParserAndGenerator : AbstractParser {
 public:
     static void writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type contextType,
                                         CallableScoper &scoper, CallableParserAndGeneratorMode mode);
-    CallableParserAndGenerator(Callable &callable, Package *p, CallableParserAndGeneratorMode mode,
+    CallableParserAndGenerator(Function &function, Package *p, CallableParserAndGeneratorMode mode,
                                TypeContext typeContext, CallableWriter &writer, CallableScoper &scoper);
 
     /** Performs the analyziation. */
@@ -58,7 +58,7 @@ public:
 private:
     CallableParserAndGeneratorMode mode;
     /** The callable which is processed. */
-    Callable &callable;
+    Function &callable;
     /** The writer used for writing the byte code. */
     CallableWriter &writer;
     /** The scoper responsible for scoping the function being compiled. */

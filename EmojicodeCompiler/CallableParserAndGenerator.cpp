@@ -1071,37 +1071,36 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             return function->type();
         }
         case E_GRAPES: {
-            writeBoxingAndTemporary(des, Type::callableIncomplete(), token.position());
-            writer.writeInstruction(INS_CLOSURE, token);
+            throw std::domain_error("Closures currently not available");
+//            writeBoxingAndTemporary(des, Type::callableIncomplete(), token.position());
+//            writer.writeInstruction(INS_CLOSURE, token);
 
-            auto function = Closure(token.position());
-            parseArgumentList(&function, typeContext, true);
-            parseReturnType(&function, typeContext);
-            parseBody(&function);
-
-            auto variableCountPlaceholder = writer.writeInstructionPlaceholder(token);
-            auto coinCountPlaceholder = writer.writeInstructionsCountPlaceholderCoin(token);
-
-            auto closureScoper = CapturingCallableScoper(scoper);
-
-            // TODO: Intializer
-            auto analyzer = CallableParserAndGenerator(function, package_, mode, typeContext, writer, closureScoper);
-            analyzer.analyze();
-
-            coinCountPlaceholder.write();
-            variableCountPlaceholder.write(closureScoper.fullSize());
-            writer.writeInstruction(static_cast<EmojicodeInstruction>(function.arguments.size())
-                                    | (analyzer.usedSelfInBody() ? 1 << 16 : 0), token);
-
-            writer.writeInstruction(static_cast<EmojicodeInstruction>(closureScoper.captures().size()), token);
-            writer.writeInstruction(closureScoper.captureSize(), token);
-            for (auto capture : closureScoper.captures()) {
-                writer.writeInstruction(capture.id, token);
-                writer.writeInstruction(capture.type.size(), token);
-                writer.writeInstruction(capture.captureId, token);
-            }
-
-            return function.type();
+//            auto function = Closure(token.position());
+//            parseArgumentList(&function, typeContext, true);
+//            parseReturnType(&function, typeContext);
+//            parseBody(&function);
+//
+//            auto variableCountPlaceholder = writer.writeInstructionPlaceholder(token);
+//            auto coinCountPlaceholder = writer.writeInstructionsCountPlaceholderCoin(token);
+//
+//            auto closureScoper = CapturingCallableScoper(scoper);
+//
+//            // TODO: Intializer
+//            auto analyzer = CallableParserAndGenerator(function, package_, mode, typeContext, writer, closureScoper);
+//            analyzer.analyze();
+//
+//            coinCountPlaceholder.write();
+//            variableCountPlaceholder.write(closureScoper.fullSize());
+//            writer.writeInstruction(static_cast<EmojicodeInstruction>(function.arguments.size())
+//                                    | (analyzer.usedSelfInBody() ? 1 << 16 : 0), token);
+//
+//            writer.writeInstruction(static_cast<EmojicodeInstruction>(closureScoper.captures().size()), token);
+//            writer.writeInstruction(closureScoper.captureSize(), token);
+//            for (auto capture : closureScoper.captures()) {
+//                writer.writeInstruction(capture.id, token);
+//                writer.writeInstruction(capture.type.size(), token);
+//                writer.writeInstruction(capture.captureId, token);
+//            }
         }
         case E_LOLLIPOP: {
             effect = true;
@@ -1563,7 +1562,7 @@ std::pair<Type, TypeAvailability> CallableParserAndGenerator::parseTypeAsValue(T
     return std::pair<Type, TypeAvailability>(ot, TypeAvailability::StaticAndUnavailable);
 }
 
-CallableParserAndGenerator::CallableParserAndGenerator(Callable &callable, Package *p,
+CallableParserAndGenerator::CallableParserAndGenerator(Function &callable, Package *p,
                                                        CallableParserAndGeneratorMode mode,
                                                        TypeContext typeContext, CallableWriter &writer,
                                                        CallableScoper &scoper)

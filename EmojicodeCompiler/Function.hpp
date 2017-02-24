@@ -17,7 +17,6 @@
 #include "Token.hpp"
 #include "TokenStream.hpp"
 #include "Type.hpp"
-#include "Callable.hpp"
 #include "CallableParserAndGeneratorMode.hpp"
 #include "CallableWriter.hpp"
 #include "Class.hpp"
@@ -28,9 +27,13 @@ enum class AccessLevel {
     Public, Private, Protected
 };
 
-class Closure: public Callable {
-public:
-    Closure(SourcePosition p) : Callable(p) {};
+struct Argument {
+    Argument(EmojicodeString n, Type t) : variableName(n), type(t) {}
+
+    /// The name of the variable
+    EmojicodeString variableName;
+    /// The type
+    Type type;
 };
 
 struct FunctionObjectVariableInformation : public ObjectVariableInformation {
@@ -44,7 +47,7 @@ struct FunctionObjectVariableInformation : public ObjectVariableInformation {
 };
 
 /** Functions are callables that belong to a class or value type as either method, type method or initializer. */
-class Function: public Callable {
+class Function {
     friend void Class::finalize();
     friend Protocol;
     friend void generateCode(Writer &writer);
@@ -60,7 +63,7 @@ public:
     Function(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, EmojicodeString documentationToken, bool deprecated, bool mutating,
              CallableParserAndGeneratorMode mode)
-    : Callable(p),
+    : position_(p),
     name_(name),
     final_(final),
     overriding_(overriding),
@@ -90,6 +93,20 @@ public:
     bool deprecated() const { return deprecated_; }
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
+
+    std::vector<Argument> arguments;
+    /** Return type of the method */
+    Type returnType = Type::nothingness();
+
+    /** Returns the position at which this callable was defined. */
+    const SourcePosition& position() const { return position_; }
+
+    /** Returns a copy of the token stream intended to be used to parse this callable. */
+    TokenStream tokenStream() const { return tokenStream_; }
+    void setTokenStream(TokenStream ts) { tokenStream_ = ts; }
+
+    /** The type of this callable when used as value. */
+    virtual Type type() const;
 
     /** Type to which this function belongs.
      This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
@@ -161,6 +178,8 @@ private:
     void setVti(int vti);
     void markUsed();
 
+    TokenStream tokenStream_;
+    SourcePosition position_;
     EmojicodeString name_;
     static int nextVti_;
     int vti_ = -1;

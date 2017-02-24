@@ -170,6 +170,15 @@ void Function::setVtiProvider(VTIProvider *provider) {
     vtiProvider_ = provider;
 }
 
+Type Function::type() const {
+    Type t = Type::callableIncomplete();
+    t.genericArguments_.push_back(returnType);
+    for (int i = 0; i < arguments.size(); i++) {
+        t.genericArguments_.push_back(arguments[i].type);
+    }
+    return t;
+}
+
 Type Initializer::type() const {
     Type t = Type::callableIncomplete();
     t.genericArguments_.push_back(Type(owningType().eclass(), canReturnNothingness));

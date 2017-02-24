@@ -42,7 +42,6 @@
 		E4BFB8DC1E12D8FB0037152E /* CapturingCallableScoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BFB8DA1E12D8FB0037152E /* CapturingCallableScoper.cpp */; };
 		E4C18C5B1DDA1FCF00B4B5D5 /* Scoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C18C591DDA1FCF00B4B5D5 /* Scoper.cpp */; };
 		E4C18C5E1DDA34AF00B4B5D5 /* ScoperWithScope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */; };
-		E4CE6FCF1D9C011200F32071 /* Callable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4CE6FCD1D9C011200F32071 /* Callable.cpp */; };
 		E4D1A9DE1D9C30E00031789A /* CallableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */; };
 		E4DF2B871E4602930006EA17 /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F71C8301A5009E7089 /* JSON.cpp */; };
 		E4E95F601C89CED20072ECEB /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
@@ -159,8 +158,6 @@
 		E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScoperWithScope.cpp; sourceTree = "<group>"; };
 		E4C18C5D1DDA34AF00B4B5D5 /* ScoperWithScope.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScoperWithScope.hpp; sourceTree = "<group>"; };
 		E4CE6FCC1D9BF55500F32071 /* CallableWriter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CallableWriter.hpp; sourceTree = "<group>"; };
-		E4CE6FCD1D9C011200F32071 /* Callable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Callable.cpp; sourceTree = "<group>"; };
-		E4CE6FCE1D9C011200F32071 /* Callable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Callable.hpp; sourceTree = "<group>"; };
 		E4CE6FD01D9C0E7A00F32071 /* CallableParserAndGeneratorMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CallableParserAndGeneratorMode.hpp; sourceTree = "<group>"; };
 		E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CallableWriter.cpp; sourceTree = "<group>"; };
 		E4E404071A5B2E4300034386 /* Emojicode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Emojicode; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -315,8 +312,6 @@
 			isa = PBXGroup;
 			children = (
 				E46B2F791CD7A32000447D91 /* Scoping */,
-				E4CE6FCE1D9C011200F32071 /* Callable.hpp */,
-				E4CE6FCD1D9C011200F32071 /* Callable.cpp */,
 				E47937221C3ACBEC00536258 /* Function.hpp */,
 				E479370D1C3A5B3200536258 /* Function.cpp */,
 				E4516F601E599B1600A87994 /* BoxingLayer.hpp */,
@@ -563,7 +558,6 @@
 				E42DC63A1E574645000BB3C7 /* RecompilationPoint.cpp in Sources */,
 				E46B2F781CD794D800447D91 /* PackageReporter.cpp in Sources */,
 				E4C18C5E1DDA34AF00B4B5D5 /* ScoperWithScope.cpp in Sources */,
-				E4CE6FCF1D9C011200F32071 /* Callable.cpp in Sources */,
 				E4B7AFFE1E0D8FF20095F956 /* EmojiTokenization.cpp in Sources */,
 				E46B2F7F1CD7A5A000447D91 /* Variable.cpp in Sources */,
 				E4516F611E599B1600A87994 /* BoxingLayer.cpp in Sources */,

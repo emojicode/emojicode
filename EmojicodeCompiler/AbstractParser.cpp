@@ -182,7 +182,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
     }
 }
 
-void AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initializer) {
+void AbstractParser::parseArgumentList(Function *function, TypeContext ct, bool initializer) {
     bool argumentToVariable;
 
     while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {
@@ -197,23 +197,23 @@ void AbstractParser::parseArgumentList(Callable *c, TypeContext ct, bool initial
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
         auto type = parseTypeDeclarative(ct, TypeDynamism::GenericTypeVariables, Type::nothingness(), &dynamism);
 
-        c->arguments.push_back(Argument(variableToken.value(), type));
+        function->arguments.push_back(Argument(variableToken.value(), type));
 
         if (argumentToVariable) {
-            static_cast<Initializer *>(c)->addArgumentToVariable(variableToken.value());
+            static_cast<Initializer *>(function)->addArgumentToVariable(variableToken.value());
         }
     }
 
-    if (c->arguments.size() > UINT8_MAX) {
-        throw CompilerError(c->position(), "A function cannot take more than 255 arguments.");
+    if (function->arguments.size() > UINT8_MAX) {
+        throw CompilerError(function->position(), "A function cannot take more than 255 arguments.");
     }
 }
 
-void AbstractParser::parseReturnType(Callable *c, TypeContext ct) {
+void AbstractParser::parseReturnType(Function *function, TypeContext ct) {
     if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW)) {
         TypeDynamism dynamism;
 
-        c->returnType = parseTypeDeclarative(ct, TypeDynamism::GenericTypeVariables, Type::nothingness(), &dynamism);
+        function->returnType = parseTypeDeclarative(ct, TypeDynamism::GenericTypeVariables, Type::nothingness(), &dynamism);
     }
 }
 
@@ -250,12 +250,12 @@ void AbstractParser::parseBody(Function *function, bool allowNative) {
     }
     else {
         stream_.requireIdentifier(E_GRAPES);
-        parseBody(function);
+        parseBodyBlock(function);
     }
 }
 
-void AbstractParser::parseBody(Callable *p) {
-    p->setTokenStream(stream_);
+void AbstractParser::parseBodyBlock(Function *function) {
+    function->setTokenStream(stream_);
 
     int depth = 0;
     while (true) {

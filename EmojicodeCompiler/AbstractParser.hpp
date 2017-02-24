@@ -36,12 +36,14 @@ protected:
                               TypeDynamism *dynamicType = nullptr);
 
     /// Parses the arguments for a callable.
-    void parseArgumentList(Callable *c, TypeContext ct, bool initializer = false);
+    void parseArgumentList(Function *function, TypeContext ct, bool initializer = false);
     /// Parses the return type for a function if there is one specified.
-    void parseReturnType(Callable *c, TypeContext ct);
+    void parseReturnType(Function *function, TypeContext ct);
     void parseGenericArgumentsInDefinition(Function *p, TypeContext ct);
-    void parseBody(Callable *p);
-    void parseBody(Function *p, bool allowNative);
+    /// Parses the body of a function which might either be a code block or a linking table index
+    void parseBody(Function *function, bool allowNative);
+    /// Parses the code block body of a function
+    void parseBodyBlock(Function *function);
     void parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism, SourcePosition p);
 };
 
