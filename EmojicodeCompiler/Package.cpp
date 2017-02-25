@@ -17,7 +17,7 @@
 std::vector<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
-Package* Package::loadPackage(std::string name, EmojicodeString ns, SourcePosition errorPosition) {
+Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns, SourcePosition errorPosition) {
     Package *package = findPackage(name);
 
     if (package) {
@@ -42,7 +42,7 @@ Package* Package::loadPackage(std::string name, EmojicodeString ns, SourcePositi
     return package;
 }
 
-void Package::parse(std::string path) {
+void Package::parse(const std::string &path) {
     packages_.emplace(name(), this);
 
     PackageParser(this, lex(path)).parse();
@@ -89,13 +89,13 @@ bool Package::fetchRawType(EmojicodeString name, EmojicodeString ns, bool option
 
     if (it != types_.end()) {
         auto xtype = it->second;
-        if (optional) xtype.setOptional();
+        if (optional) {
+            xtype.setOptional();
+        }
         *type = xtype;
         return true;
     }
-    else {
-        return false;
-    }
+    return false;
 }
 
 void Package::exportType(Type t, EmojicodeString name) {

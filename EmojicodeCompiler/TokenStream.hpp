@@ -15,7 +15,7 @@ class RecompilationPoint;
 
 class TokenStream {
     friend RecompilationPoint;
-    friend TokenStream lex(std::string);
+    friend TokenStream lex(const std::string &);
 public:
     TokenStream() : currentToken_(nullptr) {};
     /**

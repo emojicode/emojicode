@@ -140,10 +140,10 @@ public:
     Type copyWithoutOptional() const;
 
     /// Returns true if this type is compatible to the given other type.
-    bool compatibleTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
+    bool compatibleTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
     /// Whether this instance of Type is considered indentical to the other instance.
     /// Mainly used to determine compatibility of generics.
-    bool identicalTo(Type to, TypeContext tc, std::vector<CommonTypeFinder> *ctargs) const;
+    bool identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const;
 
     /// Returns the reference if the type is a @c Reference.
     /// @throws std::domain_error if the Type is not a reference.
@@ -177,21 +177,21 @@ public:
     /// the TypeContext’s @c calleeType implementation of @c canBeUsedToResolve returns true for the resolution
     /// constraint, thus only if the reference is inteded to be resolved on the given type. @c Self will only be
     /// resolved if @c disableSelfResolving() wasn’t called on the calleeType before.
-    Type resolveOn(TypeContext contextType, bool resolveSelf = true) const;
+    Type resolveOn(const TypeContext &typeContext, bool resolveSelf = true) const;
     /**
      * Used to get as mutch information about a reference type as possible without using the generic arguments of
      * the type context’s callee.
      * This method is intended to be used to determine type compatibility while e.g. compiling generic classes.
      */
-    Type resolveOnSuperArgumentsAndConstraints(TypeContext ct, bool resolveSelf = true) const;
+    Type resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext, bool resolveSelf = true) const;
     
     /// Returns the name of the package to which this type belongs.
     std::string typePackage();
     /// Returns a string representation of this type.
-    /// @param contextType The type context to be used when resolving generic argument names. Can be Nothingeness if the
+    /// @param typeContext The type context to be used when resolving generic argument names. Can be Nothingeness if the
     /// type is not in a context.
     /// @param optionalAndPackages Whether to include optional indicators and package names.
-    std::string toString(TypeContext contextType, bool optionalAndPackages) const;
+    std::string toString(const TypeContext &typeContext, bool optionalAndPackages) const;
     
     void setMeta(bool meta) { meta_ = meta; }
     bool meta() const { return meta_; }
@@ -228,9 +228,9 @@ private:
     bool mutable_ = true;
     /// Indicates that the value is boxed although the type would normally not require boxing. Used with generics
     bool forceBox_ = false;
-    void typeName(Type type, TypeContext typeContext, bool includePackageAndOptional, std::string &string) const;
-    bool identicalGenericArguments(Type to, TypeContext ct, std::vector<CommonTypeFinder> *ctargs) const;
-    Type resolveReferenceToBaseReferenceOnSuperArguments(TypeContext typeContext) const;
+    void typeName(Type type, const TypeContext &typeContext, bool includePackageAndOptional, std::string &string) const;
+    bool identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const;
+    Type resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const;
     void sortMultiProtocolType();
 };
 

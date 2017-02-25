@@ -106,13 +106,7 @@ bool isRegionalIndicator(EmojicodeChar ch) {
 
 bool isValidEmoji(EmojicodeString string) {
     if (string.size() == 1) {
-        if (isRegionalIndicator(string.front())) {
-            return false;
-        }
-        return true;
+        return !isRegionalIndicator(string.front());
     }
-    if (string.back() == 0x200D) {
-        return false;
-    }
-    return true;
+    return string.back() != 0x200D;
 }

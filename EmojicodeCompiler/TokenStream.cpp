@@ -24,22 +24,22 @@ const Token& TokenStream::consumeToken(TokenType type) {
 }
 
 bool TokenStream::hasMoreTokens() const {
-    return currentToken_->nextToken_;
+    return currentToken_->nextToken_ != nullptr;
 }
 
 bool TokenStream::nextTokenIs(TokenType type) const {
     const Token *nextToken = currentToken_->nextToken_;
-    return nextToken && nextToken->type() == type;
+    return nextToken != nullptr && nextToken->type() == type;
 }
 
 bool TokenStream::nextTokenIs(EmojicodeChar c) const {
     const Token *nextToken = currentToken_->nextToken_;
-    return nextToken && nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c;
+    return nextToken != nullptr && nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c;
 }
 
 bool TokenStream::nextTokenIsEverythingBut(EmojicodeChar c) const {
     const Token *nextToken = currentToken_->nextToken_;
-    return nextToken && !(nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c);
+    return nextToken != nullptr && !(nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c);
 }
 
 bool TokenStream::consumeTokenIf(EmojicodeChar c) {
@@ -53,8 +53,8 @@ bool TokenStream::consumeTokenIf(EmojicodeChar c) {
 const Token& TokenStream::requireIdentifier(EmojicodeChar ch) {
     auto &token = consumeToken(TokenType::Identifier);
     if (!token.isIdentifier(ch)) {
-        throw CompilerError(token, "Expected %s but found %s instead.", EmojicodeString(ch).utf8().c_str(),
-                                     token.value().utf8().c_str());
+        throw CompilerError(token.position(), "Expected %s but found %s instead.", EmojicodeString(ch).utf8().c_str(),
+                            token.value().utf8().c_str());
     }
     return token;
 }

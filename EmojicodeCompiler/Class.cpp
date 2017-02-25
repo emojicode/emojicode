@@ -45,7 +45,7 @@ bool Class::inheritsFrom(Class *from) const {
     return false;
 }
 
-Initializer* Class::lookupInitializer(EmojicodeString name) {
+Initializer* Class::lookupInitializer(const EmojicodeString &name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->initializers_.find(name);
         if (pos != eclass->initializers_.end()) {
@@ -58,7 +58,7 @@ Initializer* Class::lookupInitializer(EmojicodeString name) {
     return nullptr;
 }
 
-Function* Class::lookupMethod(EmojicodeString name) {
+Function* Class::lookupMethod(const EmojicodeString &name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->methods_.find(name);
         if (pos != eclass->methods_.end()) {
@@ -68,7 +68,7 @@ Function* Class::lookupMethod(EmojicodeString name) {
     return nullptr;
 }
 
-Function* Class::lookupTypeMethod(EmojicodeString name) {
+Function* Class::lookupTypeMethod(const EmojicodeString &name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->typeMethods_.find(name);
         if (pos != eclass->typeMethods_.end()) {
@@ -83,20 +83,20 @@ void Class::handleRequiredInitializer(Initializer *init) {
 }
 
 void Class::finalize() {
-    if (superclass()) {
+    if (superclass() != nullptr) {
         scoper_ = superclass()->scoper_;
         instanceScope().markInherited();
     }
 
     TypeDefinitionFunctional::finalize();
 
-    if (instanceVariables().size() == 0 && initializerList().size() == 0) {
+    if (instanceVariables().empty() && initializerList().empty()) {
         inheritsInitializers_ = true;
     }
 
     Type classType = Type(this, false);
 
-    if (superclass()) {
+    if (superclass() != nullptr) {
         for (auto method : superclass()->methodList()) {
             method->assignVti();
         }
@@ -109,7 +109,7 @@ void Class::finalize() {
     }
 
     for (auto method : methodList()) {
-        auto superMethod = superclass() ? superclass()->lookupMethod(method->name()) : nullptr;
+        auto superMethod = superclass() != nullptr ? superclass()->lookupMethod(method->name()) : nullptr;
 
         method->setVtiProvider(&methodVtiProvider_);
         if (method->checkOverride(superMethod)) {
@@ -118,7 +118,7 @@ void Class::finalize() {
         }
     }
     for (auto clMethod : typeMethodList()) {
-        auto superMethod = superclass() ? superclass()->lookupTypeMethod(clMethod->name()) : nullptr;
+        auto superMethod = superclass() != nullptr ? superclass()->lookupTypeMethod(clMethod->name()) : nullptr;
 
         clMethod->setVtiProvider(&methodVtiProvider_);
         if (clMethod->checkOverride(superMethod)) {
@@ -127,13 +127,13 @@ void Class::finalize() {
         }
     }
 
-    auto subRequiredInitializerNextVti = superclass() ? superclass()->requiredInitializers().size() : 0;
+    auto subRequiredInitializerNextVti = superclass() != nullptr ? superclass()->requiredInitializers().size() : 0;
     for (auto initializer : initializerList()) {
-        auto superInit = superclass() ? superclass()->lookupInitializer(initializer->name()) : nullptr;
+        auto superInit = superclass() != nullptr ? superclass()->lookupInitializer(initializer->name()) : nullptr;
 
         initializer->setVtiProvider(&initializerVtiProvider_);
         if (initializer->required) {
-            if (superInit && superInit->required) {
+            if (superInit != nullptr && superInit->required) {
                 initializer->override(superInit, classType, Type(superclass(), false));
                 initializerVtiProvider_.incrementVtiCount();
             }
@@ -144,7 +144,7 @@ void Class::finalize() {
         }
     }
 
-    if (superclass()) {
+    if (superclass() != nullptr) {
         initializerVtiProvider_.offsetVti(inheritsInitializers() ? superclass()->initializerVtiProvider_.peekNext() :
                                           static_cast<int>(requiredInitializers().size()));
         methodVtiProvider_.offsetVti(superclass()->methodVtiProvider_.peekNext());

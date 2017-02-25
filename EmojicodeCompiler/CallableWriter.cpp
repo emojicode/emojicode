@@ -20,23 +20,23 @@ void CallableWriter::writeInstruction(std::initializer_list<EmojicodeInstruction
     }
 }
 
-void CallableWriter::writeDoubleCoin(double val, SourcePosition p) {
+void CallableWriter::writeDoubleCoin(double val) {
     int exp = 0;
     double norm = std::frexp(val, &exp);
     int_least64_t scale = norm*PORTABLE_INTLEAST64_MAX;
 
-    writeInstruction(scale >> 32, p);
-    writeInstruction((EmojicodeInstruction)scale, p);
-    writeInstruction(exp, p);
+    writeInstruction(scale >> 32);
+    writeInstruction((EmojicodeInstruction)scale);
+    writeInstruction(exp);
 }
 
-CallableWriterPlaceholder CallableWriter::writeInstructionPlaceholder(SourcePosition p) {
-    writeInstruction(0, p);
+CallableWriterPlaceholder CallableWriter::writeInstructionPlaceholder() {
+    writeInstruction(0);
     return CallableWriterPlaceholder(this, instructions_.size() - 1);
 }
 
-CallableWriterCoinsCountPlaceholder CallableWriter::writeInstructionsCountPlaceholderCoin(SourcePosition p) {
-    writeInstruction(0, p);
+CallableWriterCoinsCountPlaceholder CallableWriter::writeInstructionsCountPlaceholderCoin() {
+    writeInstruction(0);
     return CallableWriterCoinsCountPlaceholder(this, instructions_.size() - 1, writtenInstructions());
 }
 

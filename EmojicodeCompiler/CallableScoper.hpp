@@ -38,7 +38,7 @@ public:
      * Retrieves a variable or throws a @c VariableNotFoundError if the variable is not found.
      * @returns A pair: The variable and whether the variable was found in the instance scope.
      */
-    virtual ResolvedVariable getVariable(const EmojicodeString &name, SourcePosition errorPosition);
+    virtual ResolvedVariable getVariable(const EmojicodeString &name, const SourcePosition &errorPosition);
 
     /** Returns the current sub scope. */
     Scope& currentScope();

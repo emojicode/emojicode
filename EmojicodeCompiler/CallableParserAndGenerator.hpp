@@ -94,7 +94,7 @@ private:
      * If the type, however, isn’t available at runtime (Enum, ValueType, Protocol) the parsed type (unresolved)
      * is returned and false are returned.
      */
-    std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, SourcePosition p,
+    std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, const SourcePosition &p,
                                                        Type expectation = Type::nothingness());
     /** Parses an identifier when occurring without context. */
     Type parseIdentifier(const Token &token, Type expectation, Destination &des);
@@ -113,31 +113,31 @@ private:
     /// @param object The instruction for an object instance variable.
     /// @param vt The instruction for a value type instance variable.
     void writeInstructionForStackOrInstance(bool inInstanceScope, EmojicodeInstruction stack,
-                                            EmojicodeInstruction object, EmojicodeInstruction vt, SourcePosition p);
+                                            EmojicodeInstruction object, EmojicodeInstruction vt);
 
     /// Writes the instructions necessary to wrap or unwrap in order to produce correctly to the given destination, and
     /// the instructions to store the return value at a temporary location on the stack, if the destination type of
     /// temporary type.
     /// @attention Makes @c returnType a reference if the returned value type is temporarily needed as reference.
-    void writeBoxingAndTemporary(Destination des, Type &returnType, SourcePosition p, WriteLocation location) const;
-    void writeBoxingAndTemporary(Destination des, Type returnType, SourcePosition p) const {
-        writeBoxingAndTemporary(des, returnType, p, writer);
+    void writeBoxingAndTemporary(Destination des, Type &returnType, WriteLocation location) const;
+    void writeBoxingAndTemporary(Destination des, Type returnType) const {
+        writeBoxingAndTemporary(des, returnType, writer);
     }
 
     Type parseMethodCall(const Token &token, Destination des, std::function<Type(Destination&)> callee);
 
     /// Copies or takes a reference to the content of the given variable as needed to statisfy the requirement of @c des
     /// @returns The type of the variable with @c isValueReference set appropriately.
-    Type takeVariable(ResolvedVariable rvar, Destination &des, SourcePosition p);
-    void copyVariableContent(ResolvedVariable var, SourcePosition p);
-    void getVTReference(ResolvedVariable var, SourcePosition p);
-    void produceToVariable(ResolvedVariable var, SourcePosition p);
+    Type takeVariable(ResolvedVariable rvar, Destination &des);
+    void copyVariableContent(ResolvedVariable var);
+    void getVTReference(ResolvedVariable var);
+    void produceToVariable(ResolvedVariable var);
 
-    void noReturnError(SourcePosition p);
+    void noReturnError(const SourcePosition &p);
     void noEffectWarning(const Token &warningToken);
-    void mutatingMethodCheck(Function *function, Type type, Destination des, SourcePosition p);
+    void mutatingMethodCheck(Function *function, Type type, Destination des, const SourcePosition &p);
     bool typeIsEnumerable(Type type, Type *elementType);
-    void flowControlBlock(bool block = true, std::function<void()> = nullptr);
+    void flowControlBlock(bool block = true, const std::function<void()> &bodyPredicate = nullptr);
 
     void generateBoxingLayer(BoxingLayer *layer);
 
@@ -149,7 +149,7 @@ private:
     bool hasInstanceScope() const;
     bool isOnlyNothingnessReturnAllowed() const;
 
-    void notStaticError(TypeAvailability t, SourcePosition p, const char *name);
+    void notStaticError(TypeAvailability t, const SourcePosition &p, const char *name);
     bool isStatic(TypeAvailability t) { return t == TypeAvailability::StaticAndUnavailable
         || t == TypeAvailability::StaticAndAvailabale; }
 };

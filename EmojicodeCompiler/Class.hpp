@@ -26,8 +26,7 @@ class Class : public TypeDefinitionFunctional {
 public:
     static const std::vector<Class *>& classes() { return classes_; }
 
-    Class(EmojicodeString name, Package *pkg, SourcePosition position,
-          const EmojicodeString &documentation, bool final);
+    Class(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &documentation, bool final);
 
     /** The class's superclass. @c nullptr if the class has no superclass. */
     Class* superclass() const { return superclass_; }
@@ -36,7 +35,7 @@ public:
 
     uint16_t index;
 
-    bool canBeUsedToResolve(TypeDefinitionFunctional *a) const override;
+    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const override;
 
     /** Returns true if @c a inherits from class @c from */
     bool inheritsFrom(Class *from) const;
@@ -49,11 +48,11 @@ public:
     const std::set<EmojicodeString>& requiredInitializers() const { return requiredInitializers_; }
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    Function* lookupMethod(EmojicodeString name) override;
+    Function* lookupMethod(const EmojicodeString &name) override;
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    Initializer* lookupInitializer(EmojicodeString name) override;
+    Initializer* lookupInitializer(const EmojicodeString &name) override;
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    Function* lookupTypeMethod(EmojicodeString name) override;
+    Function* lookupTypeMethod(const EmojicodeString &name) override;
 
     void finalize() override;
 
@@ -72,7 +71,7 @@ private:
     std::set<EmojicodeString> requiredInitializers_;
 
     bool final_;
-    bool inheritsInitializers_;
+    bool inheritsInitializers_ = false;
 
     ClassVTIProvider methodVtiProvider_;
     ClassVTIProvider initializerVtiProvider_;

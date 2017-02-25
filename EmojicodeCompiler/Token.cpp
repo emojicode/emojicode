@@ -10,9 +10,6 @@
 #include "CompilerError.hpp"
 #include "EmojiTokenization.hpp"
 
-SourcePosition::SourcePosition(const Token &token) : SourcePosition(token.position()) {
-}
-
 const char* Token::stringName() const {
     return stringNameForType(type());
 }

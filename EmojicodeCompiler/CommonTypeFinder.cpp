@@ -11,19 +11,21 @@
 #include "TypeContext.hpp"
 #include "TypeDefinitionFunctional.hpp"
 
-void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
+void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext) {
     if (!firstTypeFound_) {
-        commonType_ = t;
+        commonType_ = type;
         firstTypeFound_ = true;
-        if (t.canHaveProtocol()) commonProtocols_ = t.typeDefinitionFunctional()->protocols();
+        if (type.canHaveProtocol()) {
+            commonProtocols_ = type.typeDefinitionFunctional()->protocols();
+        }
         return;
     }
 
-    if (!t.compatibleTo(commonType_, typeContext)) {
-        if (commonType_.compatibleTo(t, typeContext)) {
-            commonType_ = t;
+    if (!type.compatibleTo(commonType_, typeContext)) {
+        if (commonType_.compatibleTo(type, typeContext)) {
+            commonType_ = type;
         }
-        else if (t.type() == TypeContent::Class && commonType_.type() == TypeContent::Class) {
+        else if (type.type() == TypeContent::Class && commonType_.type() == TypeContent::Class) {
             commonType_ = Type::someobject();
         }
         else {
@@ -31,15 +33,15 @@ void CommonTypeFinder::addType(Type t, TypeContext typeContext) {
         }
     }
 
-    if (commonProtocols_.size() > 0) {
-        if (!t.canHaveProtocol()) {
+    if (!commonProtocols_.empty()) {
+        if (!type.canHaveProtocol()) {
             commonProtocols_.clear();
             return;
         }
 
-        auto &protocols = t.typeDefinitionFunctional()->protocols();
+        auto &protocols = type.typeDefinitionFunctional()->protocols();
         std::vector<Type> newCommonProtocols;
-        for (auto protocol : protocols) {
+        for (auto &protocol : protocols) {
             auto b = std::any_of(commonProtocols_.begin(), commonProtocols_.end(), [&protocol, &typeContext](const Type &p) {
                 return protocol.identicalTo(p, typeContext, nullptr);
             });
@@ -59,13 +61,11 @@ Type CommonTypeFinder::getCommonType(SourcePosition p) const {
         if (commonProtocols_.size() > 1) {
             return Type(commonProtocols_, false);
         }
-        else if (commonProtocols_.size() == 1) {
+        if (commonProtocols_.size() == 1) {
             return commonProtocols_.front();
         }
-        else {
-            compilerWarning(p, "Common type was inferred to be %s.",
-                            commonType_.toString(Type::nothingness(), true).c_str());
-        }
+        compilerWarning(p, "Common type was inferred to be %s.",
+                        commonType_.toString(Type::nothingness(), true).c_str());
     }
     return commonType_;
 }

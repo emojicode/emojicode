@@ -25,15 +25,15 @@ public:
     const EmojicodeString& name() const { return string_; }
 
     /// The position at which this variable was defined
-    SourcePosition position() const { return position_; }
+    const SourcePosition& position() const { return position_; }
 
     /// Throws an error if the variable is not initalized.
     /// @throws CompilerError
-    void uninitalizedError(SourcePosition p) const;
+    void uninitalizedError(const SourcePosition &p) const;
 
     /// Marks the variable as mutated or issues an error if the variable is frozen.
     /// @throws CompilerError if the variable is frozen.
-    void mutate(SourcePosition p);
+    void mutate(const SourcePosition &p);
 
     /// Whether the variable was mutated since its definition.
     bool mutated() const { return mutated_; }

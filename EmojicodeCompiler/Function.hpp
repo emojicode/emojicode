@@ -9,17 +9,17 @@
 #ifndef Function_hpp
 #define Function_hpp
 
-#include <queue>
-#include <map>
-#include <vector>
-#include <numeric>
-#include <experimental/optional>
 #include "Token.hpp"
 #include "TokenStream.hpp"
 #include "Type.hpp"
 #include "CallableParserAndGeneratorMode.hpp"
 #include "CallableWriter.hpp"
 #include "Class.hpp"
+#include <queue>
+#include <map>
+#include <vector>
+#include <numeric>
+#include <experimental/optional>
 
 class VTIProvider;
 

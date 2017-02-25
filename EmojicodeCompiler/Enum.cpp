@@ -9,18 +9,16 @@
 #include "Enum.hpp"
 #include "CompilerError.hpp"
 
-std::pair<bool, long> Enum::getValueFor(EmojicodeString c) const {
+std::pair<bool, long> Enum::getValueFor(const EmojicodeString &c) const {
     auto it = map_.find(c);
     if (it == map_.end()) {
         return std::pair<bool, long>(false, 0);
     }
-    else {
-        return std::pair<bool, long>(true, it->second.first);
-    }
+    return std::pair<bool, long>(true, it->second.first);
 }
 
-void Enum::addValueFor(EmojicodeString c, SourcePosition position, EmojicodeString documentation) {
-    if (map_.count(c)) {
+void Enum::addValueFor(const EmojicodeString &c, const SourcePosition &position, EmojicodeString documentation) {
+    if (map_.count(c) > 0) {
         throw CompilerError(position, "Duplicate enum value.");
     }
     map_.emplace(c, std::pair<long, EmojicodeString>(valuesCounter++, documentation));

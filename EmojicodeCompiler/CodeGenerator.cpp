@@ -52,14 +52,14 @@ void generateCodeForFunction(Function *function, CallableWriter &w) {
 void writeProtocolTable(Type type, Writer &writer) {
     auto typeDefinitionFunctional = type.typeDefinitionFunctional();
     writer.writeUInt16(typeDefinitionFunctional->protocols().size());
-    if (typeDefinitionFunctional->protocols().size() > 0) {
+    if (!typeDefinitionFunctional->protocols().empty()) {
         auto biggestPlaceholder = writer.writePlaceholder<uint16_t>();
         auto smallestPlaceholder = writer.writePlaceholder<uint16_t>();
 
         uint_fast16_t smallestProtocolIndex = UINT_FAST16_MAX;
         uint_fast16_t biggestProtocolIndex = 0;
 
-        for (Type protocol : typeDefinitionFunctional->protocols()) {
+        for (const Type &protocol : typeDefinitionFunctional->protocols()) {
             writer.writeUInt16(protocol.protocol()->index);
 
             if (protocol.protocol()->index > biggestProtocolIndex) {
@@ -74,7 +74,9 @@ void writeProtocolTable(Type type, Writer &writer) {
             for (auto method : protocol.protocol()->methodList()) {
                 auto layerName = method->protocolBoxingLayerName(protocol.protocol()->name());
                 Function *clm = typeDefinitionFunctional->lookupMethod(layerName);
-                if (clm == nullptr) clm = typeDefinitionFunctional->lookupMethod(method->name());
+                if (clm == nullptr) {
+                    clm = typeDefinitionFunctional->lookupMethod(method->name());
+                }
                 writer.writeUInt16(clm->vtiForUse());
             }
         }
@@ -88,7 +90,7 @@ void writeClass(Type classType, Writer &writer) {
     auto eclass = classType.eclass();
 
     writer.writeEmojicodeChar(eclass->name()[0]);
-    if (eclass->superclass()) {
+    if (eclass->superclass() != nullptr) {
         writer.writeUInt16(eclass->superclass()->index);
     }
     else {
@@ -190,7 +192,7 @@ void generateCode(Writer &writer) {
     auto smallestPlaceholder = writer.writePlaceholder<uint16_t>();
     auto countPlaceholder = writer.writePlaceholder<uint16_t>();
     for (auto vt : ValueType::valueTypes()) {
-        if (vt->protocols().size() > 0) {
+        if (!vt->protocols().empty()) {
             writer.writeUInt16(vt->boxIdentifier());
             writeProtocolTable(Type(vt, false, false, false), writer);
             if (vt->boxIdentifier() < smallestBoxIdentifier) {

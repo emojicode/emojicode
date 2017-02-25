@@ -9,15 +9,15 @@
 #include "Variable.hpp"
 #include "CompilerError.hpp"
 
-void Variable::uninitalizedError(SourcePosition p) const {
+void Variable::uninitalizedError(const SourcePosition &p) const {
     if (initialized_ <= 0) {
-        throw CompilerError(position(), "Variable \"%s\" is possibly not initialized.", name().utf8().c_str());
+        throw CompilerError(p, "Variable \"%s\" is possibly not initialized.", name().utf8().c_str());
     }
 }
 
-void Variable::mutate(SourcePosition p) {
+void Variable::mutate(const SourcePosition &p) {
     if (frozen()) {
-        throw CompilerError(position(), "Cannot modify frozen variable \"%s\".", name().utf8().c_str());
+        throw CompilerError(p, "Cannot modify frozen variable \"%s\".", name().utf8().c_str());
     }
     mutated_ = true;
 }

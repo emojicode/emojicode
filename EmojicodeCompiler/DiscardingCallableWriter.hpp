@@ -16,7 +16,7 @@
 class DiscardingCallableWriter : public CallableWriter {
 public:
     DiscardingCallableWriter() : CallableWriter() {
-        CallableWriter::writeInstruction(0, SourcePosition(0, 0, ""));
+        CallableWriter::writeInstruction(0);
     }
     
 //    /** Writes a coin with the given value. */

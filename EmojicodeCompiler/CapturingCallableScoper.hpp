@@ -25,7 +25,7 @@ class CapturingCallableScoper : public CallableScoper {
 public:
     explicit CapturingCallableScoper(CallableScoper &captured)
         : CallableScoper(captured.instanceScope()), capturedScoper_(captured) {}
-    ResolvedVariable getVariable(const EmojicodeString &name, SourcePosition errorPosition) override;
+    ResolvedVariable getVariable(const EmojicodeString &name, const SourcePosition &errorPosition) override;
     const std::vector<VariableCapture>& captures() const { return captures_; }
     int captureSize() const { return captureSize_; }
 private:

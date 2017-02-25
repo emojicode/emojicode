@@ -7,8 +7,6 @@
 //
 
 #include "CallableParserAndGenerator.hpp"
-#include <cstdlib>
-#include <cassert>
 #include "Type.hpp"
 #include "Class.hpp"
 #include "Enum.hpp"
@@ -21,6 +19,8 @@
 #include "../EmojicodeInstructions.h"
 #include "CapturingCallableScoper.hpp"
 #include "RecompilationPoint.hpp"
+#include <cstdlib>
+#include <cassert>
 
 Type CallableParserAndGenerator::parse(const Token &token, const Token &parentToken, Type type,
                                        Destination des, std::vector<CommonTypeFinder> *ctargs) {
@@ -28,7 +28,7 @@ Type CallableParserAndGenerator::parse(const Token &token, const Token &parentTo
     if (!returnType.compatibleTo(type, typeContext, ctargs)) {
         auto cn = returnType.toString(typeContext, true);
         auto tn = type.toString(typeContext, true);
-        throw CompilerError(token, "%s is not compatible to %s.", cn.c_str(), tn.c_str());
+        throw CompilerError(token.position(), "%s is not compatible to %s.", cn.c_str(), tn.c_str());
     }
     return returnType;
 }
@@ -36,7 +36,7 @@ Type CallableParserAndGenerator::parse(const Token &token, const Token &parentTo
 bool CallableParserAndGenerator::typeIsEnumerable(Type type, Type *elementType) {
     if (type.type() == TypeContent::Class && !type.optional()) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
-            for (auto protocol : a->protocols()) {
+            for (auto &protocol : a->protocols()) {
                 if (protocol.protocol() == PR_ENUMERATEABLE) {
                     *elementType = protocol.resolveOn(type).genericArguments()[0];
                     return true;
@@ -56,26 +56,27 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     std::vector<CommonTypeFinder> genericArgsFinders;
     std::vector<Type> givenArgumentTypes;
 
-    p->deprecatedWarning(token);
+    p->deprecatedWarning(token.position());
 
     while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
         auto type = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
         genericArguments.push_back(type);
     }
 
-    auto inferGenericArguments = genericArguments.size() == 0 && p->genericArgumentVariables.size() > 0;
+    auto inferGenericArguments = genericArguments.empty() && !p->genericArgumentVariables.empty();
     auto typeContext = TypeContext(type, p, inferGenericArguments ? nullptr : &genericArguments);
 
     if (inferGenericArguments) {
         genericArgsFinders.resize(p->genericArgumentVariables.size());
     }
     else if (genericArguments.size() != p->genericArgumentVariables.size()) {
-        throw CompilerError(token, "Too few generic arguments provided.");
+        throw CompilerError(token.position(), "Too few generic arguments provided.");
     }
     else {
         for (size_t i = 0; i < genericArguments.size(); i++) {
             if (!genericArguments[i].compatibleTo(p->genericArgumentConstraints[i], typeContext)) {
-                throw CompilerError(token, "Generic argument %d of type %s is not compatible to constraint %s.",
+                throw CompilerError(token.position(),
+                                    "Generic argument %d of type %s is not compatible to constraint %s.",
                                     i + 1, genericArguments[i].toString(typeContext, true).c_str(),
                                     p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
             }
@@ -85,12 +86,12 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     for (auto var : p->arguments) {
         auto resolved = var.type.resolveOn(typeContext);
         if (inferGenericArguments) {
-            writer.writeInstruction(resolved.size(), token);
+            writer.writeInstruction(resolved.size());
             auto des = Destination(DestinationMutability::Immutable, resolved.storageType());
             givenArgumentTypes.push_back(parse(stream_.consumeToken(), token, resolved, des, &genericArgsFinders));
         }
         else {
-            writer.writeInstruction(resolved.size(), token);
+            writer.writeInstruction(resolved.size());
             parse(stream_.consumeToken(), token, resolved,
                   Destination(DestinationMutability::Immutable, resolved.storageType()));
         }
@@ -99,10 +100,10 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     if (inferGenericArguments) {
         auto typeContext = TypeContext(type, p, &genericArguments);
         for (size_t i = 0; i < genericArgsFinders.size(); i++) {
-            auto commonType = genericArgsFinders[i].getCommonType(token);
+            auto commonType = genericArgsFinders[i].getCommonType(token.position());
             genericArguments.push_back(commonType);
             if (!commonType.compatibleTo(p->genericArgumentConstraints[i], typeContext)) {
-                throw CompilerError(token,
+                throw CompilerError(token.position(),
                                     "Infered type %s for generic argument %d is not compatible to constraint %s.",
                                     commonType.toString(typeContext, true).c_str(), i + 1,
                                     p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
@@ -115,7 +116,7 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
             if (!givenTypen.compatibleTo(expectedType, typeContext)) {
                 auto cn = expectedType.toString(typeContext, true);
                 auto tn = givenTypen.toString(typeContext, true);
-                throw CompilerError(token, "%s is not compatible to %s.", cn.c_str(), tn.c_str());
+                throw CompilerError(token.position(), "%s is not compatible to %s.", cn.c_str(), tn.c_str());
             }
         }
     }
@@ -123,13 +124,13 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
     if (p->accessLevel() == AccessLevel::Private) {
         if (this->typeContext.calleeType().type() != p->owningType().type()
             || p->owningType().typeDefinition() != this->typeContext.calleeType().typeDefinition()) {
-            throw CompilerError(token, "%s is 🔒.", p->name().utf8().c_str());
+            throw CompilerError(token.position(), "%s is 🔒.", p->name().utf8().c_str());
         }
     }
     else if (p->accessLevel() == AccessLevel::Protected) {
         if (this->typeContext.calleeType().type() != p->owningType().type()
             || !this->typeContext.calleeType().eclass()->inheritsFrom(p->owningType().eclass())) {
-            throw CompilerError(token, "%s is 🔐.", p->name().utf8().c_str());
+            throw CompilerError(token.position(), "%s is 🔐.", p->name().utf8().c_str());
         }
     }
 
@@ -138,44 +139,43 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
 
 void CallableParserAndGenerator::writeInstructionForStackOrInstance(bool inInstanceScope, EmojicodeInstruction stack,
                                                                     EmojicodeInstruction object,
-                                                                    EmojicodeInstruction vt,
-                                                                    SourcePosition p) {
+                                                                    EmojicodeInstruction vt) {
     if (!inInstanceScope) {
-        writer.writeInstruction(stack, p);
+        writer.writeInstruction(stack);
     }
     else {
-        writer.writeInstruction(typeContext.calleeType().type() == TypeContent::ValueType ? vt : object, p);
+        writer.writeInstruction(typeContext.calleeType().type() == TypeContent::ValueType ? vt : object);
         usedSelf = true;
     }
 }
 
-void CallableParserAndGenerator::produceToVariable(ResolvedVariable var, SourcePosition p) {
+void CallableParserAndGenerator::produceToVariable(ResolvedVariable var) {
     writeInstructionForStackOrInstance(var.inInstanceScope, INS_PRODUCE_WITH_STACK_DESTINATION,
-                                       INS_PRODUCE_WITH_OBJECT_DESTINATION, INS_PRODUCE_WITH_VT_DESTINATION, p);
-    writer.writeInstruction(var.variable.id(), p);
+                                       INS_PRODUCE_WITH_OBJECT_DESTINATION, INS_PRODUCE_WITH_VT_DESTINATION);
+    writer.writeInstruction(var.variable.id());
 }
 
-void CallableParserAndGenerator::getVTReference(ResolvedVariable var, SourcePosition p) {
+void CallableParserAndGenerator::getVTReference(ResolvedVariable var) {
     writeInstructionForStackOrInstance(var.inInstanceScope, INS_GET_VT_REFERENCE_STACK, INS_GET_VT_REFERENCE_OBJECT,
-                                       INS_GET_VT_REFERENCE_VT, p);
-    writer.writeInstruction(var.variable.id(), p);
+                                       INS_GET_VT_REFERENCE_VT);
+    writer.writeInstruction(var.variable.id());
 }
 
-void CallableParserAndGenerator::copyVariableContent(ResolvedVariable var, SourcePosition p) {
+void CallableParserAndGenerator::copyVariableContent(ResolvedVariable var) {
     if (var.variable.type().size() == 1) {
         writeInstructionForStackOrInstance(var.inInstanceScope, INS_COPY_SINGLE_STACK, INS_COPY_SINGLE_OBJECT,
-                                           INS_COPY_SINGLE_VT, p);
-        writer.writeInstruction(var.variable.id(), p);
+                                           INS_COPY_SINGLE_VT);
+        writer.writeInstruction(var.variable.id());
     }
     else {
         writeInstructionForStackOrInstance(var.inInstanceScope, INS_COPY_WITH_SIZE_STACK, INS_COPY_WITH_SIZE_OBJECT,
-                                           INS_COPY_WITH_SIZE_VT, p);
-        writer.writeInstruction(var.variable.id(), p);
-        writer.writeInstruction(var.variable.type().size(), p);
+                                           INS_COPY_WITH_SIZE_VT);
+        writer.writeInstruction(var.variable.id());
+        writer.writeInstruction(var.variable.type().size());
     }
 }
 
-void CallableParserAndGenerator::flowControlBlock(bool pushScope, std::function<void()> bodyPredicate) {
+void CallableParserAndGenerator::flowControlBlock(bool pushScope, const std::function<void()> &bodyPredicate) {
     scoper.pushInitializationLevel();
 
     if (pushScope) {
@@ -184,10 +184,12 @@ void CallableParserAndGenerator::flowControlBlock(bool pushScope, std::function<
 
     flowControlDepth++;
 
-    auto &token = stream_.requireIdentifier(E_GRAPES);
+    stream_.requireIdentifier(E_GRAPES);
 
-    auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
-    if (bodyPredicate) bodyPredicate();
+    auto placeholder = writer.writeInstructionsCountPlaceholderCoin();
+    if (bodyPredicate) {
+        bodyPredicate();
+    }
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         parseStatement(stream_.consumeToken());
     }
@@ -196,8 +198,7 @@ void CallableParserAndGenerator::flowControlBlock(bool pushScope, std::function<
 
     effect = true;
 
-    scoper.popScopeAndRecommendFrozenVariables(static_cast<Function &>(callable).objectVariableInformation(),
-                                               writer.writtenInstructions());
+    scoper.popScopeAndRecommendFrozenVariables(callable.objectVariableInformation(), writer.writtenInstructions());
 
     scoper.popInitializationLevel();
     flowControlDepth--;
@@ -211,10 +212,13 @@ void CallableParserAndGenerator::flowControlReturnEnd(FlowControlReturn &fcr) {
     fcr.branches++;
 }
 
-void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &rtype, SourcePosition p,
-                                                         WriteLocation location) const {
-    if (rtype.type() == TypeContent::Nothingness) return;
-    if (des.simplify(rtype) == StorageType::NoAction) return;
+void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &rtype, WriteLocation location) const {
+    if (rtype.type() == TypeContent::Nothingness) {
+        return;
+    }
+    if (des.simplify(rtype) == StorageType::NoAction) {
+        return;
+    }
 
     auto insertionPoint = location.insertionPoint();
 
@@ -242,14 +246,16 @@ void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &
                 case StorageType::NoAction:
                     break;
                 case StorageType::SimpleOptional:
-                    if ((rtype.size() > 3 && !rtype.optional()) || rtype.size() > 4)
+                    if ((rtype.size() > 3 && !rtype.optional()) || rtype.size() > 4) {
                         throw std::logic_error("Beta: Cannot box " + rtype.toString(typeContext, true) + " due to its size.");
+                    }
                     rtype.forceBox();
                     location.write({ INS_SIMPLE_OPTIONAL_TO_BOX, EmojicodeInstruction(rtype.boxIdentifier()) });
                     break;
                 case StorageType::Simple:
-                    if ((rtype.size() > 3 && !rtype.optional()) || rtype.size() > 4)
+                    if ((rtype.size() > 3 && !rtype.optional()) || rtype.size() > 4) {
                         throw std::logic_error("Beta: Cannot box " + rtype.toString(typeContext, true) + " due to its size.");
+                    }
                     rtype.forceBox();
                     location.write({ INS_BOX_PRODUCE, EmojicodeInstruction(rtype.boxIdentifier()) });
                     break;
@@ -287,17 +293,17 @@ void CallableParserAndGenerator::writeBoxingAndTemporary(Destination des, Type &
 
 void CallableParserAndGenerator::parseIfExpression(const Token &token) {
     if (stream_.consumeTokenIf(E_SOFT_ICE_CREAM)) {
-        auto placeholder = writer.writeInstructionPlaceholder(token.position());
+        auto placeholder = writer.writeInstructionPlaceholder();
 
         auto &varName = stream_.consumeToken(TokenType::Variable);
         if (scoper.currentScope().hasLocalVariable(varName.value())) {
-            throw CompilerError(token, "Cannot redeclare variable.");
+            throw CompilerError(token.position(), "Cannot redeclare variable.");
         }
 
         auto destination = Destination::temporaryReference();
         Type t = parse(stream_.consumeToken(), destination);
         if (!t.optional()) {
-            throw CompilerError(token, "Condition assignment can only be used with optionals.");
+            throw CompilerError(token.position(), "Condition assignment can only be used with optionals.");
         }
 
         auto box = t.storageType() == StorageType::Box;
@@ -308,8 +314,10 @@ void CallableParserAndGenerator::parseIfExpression(const Token &token) {
 
         auto &variable = scoper.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
         variable.initialize(writer.writtenInstructions());
-        writer.writeInstruction(variable.id(), token.position());
-        if (!box) writer.writeInstruction(t.size(), token.position());
+        writer.writeInstruction(variable.id());
+        if (!box) {
+            writer.writeInstruction(t.size());
+        }
     }
     else {
         parse(stream_.consumeToken(TokenType::NoType), token, Type::boolean(),
@@ -347,11 +355,11 @@ bool CallableParserAndGenerator::isOnlyNothingnessReturnAllowed() const {
     mode == CallableParserAndGeneratorMode::ValueTypeInitializer;
 }
 
-void CallableParserAndGenerator::mutatingMethodCheck(Function *method, Type type, Destination des, SourcePosition p) {
+void CallableParserAndGenerator::mutatingMethodCheck(Function *method, Type type, Destination des,
+                                                     const SourcePosition &p) {
     if (method->mutating()) {
         if (!type.isMutable()) {
-            throw CompilerError(p, "%s was marked 🖍 but callee is not mutable.",
-                                         method->name().utf8().c_str());
+            throw CompilerError(p, "%s was marked 🖍 but callee is not mutable.", method->name().utf8().c_str());
         }
         des.mutateVariable(p);
     }
@@ -368,7 +376,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 auto &varName = stream_.consumeToken(TokenType::Variable);
 
                 if (scoper.currentScope().hasLocalVariable(varName.value())) {
-                    throw CompilerError(token, "Cannot redeclare variable.");
+                    throw CompilerError(token.position(), "Cannot redeclare variable.");
                 }
 
                 Type t = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
@@ -378,9 +386,9 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
 
                 if (t.optional()) {
                     var.initialize(writer.writtenInstructions());
-                    writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
-                    writer.writeInstruction(var.id(), token);
-                    writer.writeInstruction(INS_GET_NOTHINGNESS, token);
+                    writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION);
+                    writer.writeInstruction(var.id());
+                    writer.writeInstruction(INS_GET_NOTHINGNESS);
                 }
                 return;
             }
@@ -392,21 +400,21 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
 
                     auto var = scoper.getVariable(varName.value(), varName.position());
 
-                    var.variable.uninitalizedError(varName);
-                    var.variable.mutate(varName);
+                    var.variable.uninitalizedError(varName.position());
+                    var.variable.mutate(varName.position());
 
-                    produceToVariable(var, token);
+                    produceToVariable(var);
 
                     if (var.variable.type().type() == TypeContent::ValueType &&
                         var.variable.type().valueType() == VT_INTEGER && stream_.nextTokenIs(TokenType::Integer)
                         && stream_.nextToken().value() == EmojicodeString('1')) {
                         if (nextTok.value()[0] == E_HEAVY_PLUS_SIGN) {
-                            writer.writeInstruction(INS_INCREMENT, token);
+                            writer.writeInstruction(INS_INCREMENT);
                             stream_.consumeToken();
                             return;
                         }
                         if (nextTok.value()[0] == E_HEAVY_MINUS_SIGN) {
-                            writer.writeInstruction(INS_DECREMENT, token);
+                            writer.writeInstruction(INS_DECREMENT);
                             stream_.consumeToken();
                             return;
                         }
@@ -414,7 +422,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
 
                     auto destination = Destination(DestinationMutability::Mutable, var.variable.type().storageType());
                     auto type = parseMethodCall(nextTok, destination, [this, var, &nextTok](Destination destination) {
-                        takeVariable(var, destination, nextTok.position());
+                        takeVariable(var, destination);
                         return var.variable.type();
                     });
                     if (!type.compatibleTo(var.variable.type(), typeContext)) {
@@ -428,9 +436,9 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                         auto rvar = scoper.getVariable(nextTok.value(), nextTok.position());
 
                         rvar.variable.initialize(writer.writtenInstructions());
-                        rvar.variable.mutate(nextTok);
+                        rvar.variable.mutate(nextTok.position());
 
-                        produceToVariable(rvar, token);
+                        produceToVariable(rvar);
 
                         if (rvar.inInstanceScope && !typeContext.calleeType().isMutable()) {
                             throw CompilerError(token.position(),
@@ -441,9 +449,9 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                     }
                     catch (VariableNotFoundError &vne) {
                         // Not declared, declaring as local variable
-                        writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
+                        writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION);
 
-                        auto placeholder = writer.writeInstructionPlaceholder(token);
+                        auto placeholder = writer.writeInstructionPlaceholder();
 
                         auto destination = Destination(DestinationMutability::Mutable, StorageType::SimpleIfPossible);
                         Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
@@ -461,12 +469,12 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 auto &varName = stream_.consumeToken(TokenType::Variable);
 
                 if (scoper.currentScope().hasLocalVariable(varName.value())) {
-                    throw CompilerError(token, "Cannot redeclare variable.");
+                    throw CompilerError(token.position(), "Cannot redeclare variable.");
                 }
 
-                writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION, token);
+                writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION);
 
-                auto placeholder = writer.writeInstructionPlaceholder(token);
+                auto placeholder = writer.writeInstructionPlaceholder();
 
                 auto destination = Destination(DestinationMutability::Immutable, StorageType::SimpleIfPossible);
                 Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
@@ -476,9 +484,9 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 return;
             }
             case E_TANGERINE: {
-                writer.writeInstruction(INS_IF, token);
+                writer.writeInstruction(INS_IF);
 
-                auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
+                auto placeholder = writer.writeInstructionsCountPlaceholderCoin();
                 auto fcr = FlowControlReturn();
 
                 scoper.pushScope();
@@ -487,7 +495,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 flowControlReturnEnd(fcr);
 
                 while (stream_.consumeTokenIf(E_LEMON)) {
-                    writer.writeInstruction(0x1, token);
+                    writer.writeInstruction(0x1);
 
                     scoper.pushScope();
                     parseIfExpression(token);
@@ -496,12 +504,12 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 }
 
                 if (stream_.consumeTokenIf(E_STRAWBERRY)) {
-                    writer.writeInstruction(0x2, token);
+                    writer.writeInstruction(0x2);
                     flowControlBlock();
                     flowControlReturnEnd(fcr);
                 }
                 else {
-                    writer.writeInstruction(0x0, token);
+                    writer.writeInstruction(0x0);
                     fcr.branches++;  // The else branch always exists. Theoretically at least.
                 }
 
@@ -512,7 +520,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 return;
             }
             case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
-                writer.writeInstruction(INS_REPEAT_WHILE, token);
+                writer.writeInstruction(INS_REPEAT_WHILE);
 
                 parseIfExpression(token);
                 flowControlBlock();
@@ -534,13 +542,13 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_LIST) {
                     // If the iteratee is a list, the Real-Time Engine has some special sugar
                     int internalId = scoper.currentScope().allocateInternalVariable(iteratee);
-                    writer.writeInstruction(internalId, token);  // Internally needed
+                    writer.writeInstruction(internalId);  // Internally needed
                     auto type = Type(TypeContent::Reference, false, 0, CL_LIST).resolveOn(iteratee);
                     auto &var = scoper.currentScope().setLocalVariable(variableToken.value(), type,
                                                                        true, variableToken.position());
                     var.initialize(writer.writtenInstructions());
                     auto destination = Destination::temporaryReference();
-                    writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                    writeBoxingAndTemporary(destination, iteratee, insertionPoint);
                     insertionPoint.insert({ INS_OPT_FOR_IN_LIST, static_cast<unsigned int>(var.id()) });
                     flowControlBlock(false);
                 }
@@ -551,7 +559,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                                                                        variableToken.position());
                     var.initialize(writer.writtenInstructions());
                     auto destination = Destination::temporaryReference();
-                    writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                    writeBoxingAndTemporary(destination, iteratee, insertionPoint);
                     insertionPoint.insert({ INS_OPT_FOR_IN_RANGE, static_cast<unsigned int>(var.id()) });
                     flowControlBlock(false);
                 }
@@ -567,7 +575,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                     var.initialize(writer.writtenInstructions());
 
                     auto destination = Destination::temporaryReference(StorageType::Box);
-                    writeBoxingAndTemporary(destination, iteratee, token.position(), insertionPoint);
+                    writeBoxingAndTemporary(destination, iteratee, insertionPoint);
                     insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
                         static_cast<EmojicodeInstruction>(iteratorId), INS_DISPATCH_PROTOCOL,
                     });
@@ -588,7 +596,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 }
                 else {
                     auto iterateeString = iteratee.toString(typeContext, true);
-                    throw CompilerError(token, "%s does not conform to s🔂.", iterateeString.c_str());
+                    throw CompilerError(token.position(), "%s does not conform to s🔂.", iterateeString.c_str());
                 }
 
                 returned = false;
@@ -596,33 +604,35 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
             }
             case E_GOAT: {
                 if (!isSuperconstructorRequired()) {
-                    throw CompilerError(token, "🐐 can only be used inside initializers.");
+                    throw CompilerError(token.position(), "🐐 can only be used inside initializers.");
                 }
-                if (!typeContext.calleeType().eclass()->superclass()) {
-                    throw CompilerError(token, "🐐 can only be used if the eclass inherits from another.");
+                if (typeContext.calleeType().eclass()->superclass() == nullptr) {
+                    throw CompilerError(token.position(), "🐐 can only be used if the eclass inherits from another.");
                 }
                 if (calledSuper) {
-                    throw CompilerError(token, "You may not call more than one superinitializer.");
+                    throw CompilerError(token.position(), "You may not call more than one superinitializer.");
                 }
-                if (flowControlDepth) {
-                    throw CompilerError(token, "You may not put a call to a superinitializer in a flow control structure.");
+                if (flowControlDepth > 0) {
+                    throw CompilerError(token.position(),
+                                        "You may not put a call to a superinitializer in a flow control structure.");
                 }
 
-                scoper.instanceScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be "
+                scoper.instanceScope()->initializerUnintializedVariablesCheck(token.position(),
+                                                                              "Instance variable \"%s\" must be "
                                                                               "initialized before superinitializer.");
 
-                writer.writeInstruction(INS_SUPER_INITIALIZER, token);
+                writer.writeInstruction(INS_SUPER_INITIALIZER);
 
                 Class *eclass = typeContext.calleeType().eclass();
 
-                writer.writeInstruction(INS_GET_CLASS_FROM_INDEX, token);
-                writer.writeInstruction(eclass->superclass()->index, token);
+                writer.writeInstruction(INS_GET_CLASS_FROM_INDEX);
+                writer.writeInstruction(eclass->superclass()->index);
 
                 auto &initializerToken = stream_.consumeToken(TokenType::Identifier);
 
                 auto initializer = eclass->superclass()->getInitializer(initializerToken, Type(eclass, false), typeContext);
 
-                writer.writeInstruction(initializer->vtiForUse(), token);
+                writer.writeInstruction(initializer->vtiForUse());
 
                 parseFunctionCall(typeContext.calleeType(), initializer, token);
 
@@ -631,7 +641,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 return;
             }
             case E_RED_APPLE: {
-                writer.writeInstruction(INS_RETURN, token);
+                writer.writeInstruction(INS_RETURN);
 
                 if (isOnlyNothingnessReturnAllowed()) {
                     if (static_cast<Initializer &>(callable).canReturnNothingness) {
@@ -639,9 +649,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                               Destination(DestinationMutability::Unknown, StorageType::Simple));
                         return;
                     }
-                    else {
-                        throw CompilerError(token, "🍎 cannot be used inside an initializer.");
-                    }
+                    throw CompilerError(token.position(), "🍎 cannot be used inside an initializer.");
                 }
 
                 parse(stream_.consumeToken(), token, callable.returnType,
@@ -663,72 +671,71 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
 Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Destination &des) {
     switch (token.type()) {
         case TokenType::String: {
-            writeBoxingAndTemporary(des, Type(CL_STRING, false), token.position());
-            writer.writeInstruction(INS_GET_STRING_POOL, token);
-            writer.writeInstruction(StringPool::theStringPool().poolString(token.value()), token);
+            writeBoxingAndTemporary(des, Type(CL_STRING, false));
+            writer.writeInstruction(INS_GET_STRING_POOL);
+            writer.writeInstruction(StringPool::theStringPool().poolString(token.value()));
             return Type(CL_STRING, false);
         }
         case TokenType::BooleanTrue:
-            writeBoxingAndTemporary(des, Type::boolean(), token.position());
-            writer.writeInstruction(INS_GET_TRUE, token);
+            writeBoxingAndTemporary(des, Type::boolean());
+            writer.writeInstruction(INS_GET_TRUE);
             return Type::boolean();
         case TokenType::BooleanFalse:
-            writeBoxingAndTemporary(des, Type::boolean(), token.position());
-            writer.writeInstruction(INS_GET_FALSE, token);
+            writeBoxingAndTemporary(des, Type::boolean());
+            writer.writeInstruction(INS_GET_FALSE);
             return Type::boolean();
         case TokenType::Integer: {
-            long long value = std::stoll(token.value().utf8(), 0, 0);
+            long long value = std::stoll(token.value().utf8(), nullptr, 0);
 
             if (expectation.type() == TypeContent::ValueType && expectation.valueType() == VT_DOUBLE) {
-                writeBoxingAndTemporary(des, Type::doubl(), token.position());
-                writer.writeInstruction(INS_GET_DOUBLE, token);
-                writer.writeDoubleCoin(value, token);
+                writeBoxingAndTemporary(des, Type::doubl());
+                writer.writeInstruction(INS_GET_DOUBLE);
+                writer.writeDoubleCoin(value);
                 return Type::doubl();
             }
 
             if (std::llabs(value) > INT32_MAX) {
-                writeBoxingAndTemporary(des, Type::integer(), token.position());
-                writer.writeInstruction(INS_GET_64_INTEGER, token);
+                writeBoxingAndTemporary(des, Type::integer());
+                writer.writeInstruction(INS_GET_64_INTEGER);
 
-                writer.writeInstruction(value >> 32, token);
-                writer.writeInstruction(static_cast<EmojicodeInstruction>(value), token);
-
-                return Type::integer();
-            }
-            else {
-                writeBoxingAndTemporary(des, Type::integer(), token.position());
-                writer.writeInstruction(INS_GET_32_INTEGER, token);
-                value += INT32_MAX;
-                writer.writeInstruction(value, token);
+                writer.writeInstruction(value >> 32);
+                writer.writeInstruction(static_cast<EmojicodeInstruction>(value));
 
                 return Type::integer();
             }
+
+            writeBoxingAndTemporary(des, Type::integer());
+            writer.writeInstruction(INS_GET_32_INTEGER);
+            value += INT32_MAX;
+            writer.writeInstruction(value);
+
+            return Type::integer();
         }
         case TokenType::Double: {
-            writeBoxingAndTemporary(des, Type::doubl(), token.position());
-            writer.writeInstruction(INS_GET_DOUBLE, token);
+            writeBoxingAndTemporary(des, Type::doubl());
+            writer.writeInstruction(INS_GET_DOUBLE);
 
             double d = std::stod(token.value().utf8());
-            writer.writeDoubleCoin(d, token);
+            writer.writeDoubleCoin(d);
 
             return Type::doubl();
         }
         case TokenType::Symbol:
-            writeBoxingAndTemporary(des, Type::symbol(), token.position());
-            writer.writeInstruction(INS_GET_SYMBOL, token);
-            writer.writeInstruction(token.value()[0], token);
+            writeBoxingAndTemporary(des, Type::symbol());
+            writer.writeInstruction(INS_GET_SYMBOL);
+            writer.writeInstruction(token.value()[0]);
             return Type::symbol();
         case TokenType::Variable: {
             auto rvar = scoper.getVariable(token.value(), token.position());
-            rvar.variable.uninitalizedError(token);
+            rvar.variable.uninitalizedError(token.position());
 
             des.setMutatedVariable(rvar.variable);
-            return takeVariable(rvar, des, token.position());
+            return takeVariable(rvar, des);
         }
         case TokenType::Identifier:
             return parseIdentifier(token, expectation, des);
         case TokenType::DocumentationComment:
-            throw CompilerError(token, "Misplaced documentation comment.");
+            throw CompilerError(token.position(), "Misplaced documentation comment.");
         case TokenType::NoType:
         case TokenType::Comment:
             break;
@@ -736,18 +743,18 @@ Type CallableParserAndGenerator::parse(const Token &token, Type expectation, Des
     throw std::logic_error("Cannot determine expression’s return type.");
 }
 
-Type CallableParserAndGenerator::takeVariable(ResolvedVariable rvar, Destination &des, SourcePosition p) {
+Type CallableParserAndGenerator::takeVariable(ResolvedVariable rvar, Destination &des) {
     auto storageType = des.simplify(rvar.variable.type());
     auto returnType = rvar.variable.type();
 
     if (storageType == rvar.variable.type().storageType() &&
         des.isTemporaryReference() && rvar.variable.type().isValueReferenceWorthy()) {
-        getVTReference(rvar, p);
+        getVTReference(rvar);
         returnType.setValueReference();
     }
     else {
-        writeBoxingAndTemporary(des, returnType, p, writer);
-        copyVariableContent(rvar, p);
+        writeBoxingAndTemporary(des, returnType, writer);
+        copyVariableContent(rvar);
         if (des.isMutable()) {
             returnType.setMutable(true);
         }
@@ -769,11 +776,11 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY:
         case E_GOAT:
         case E_RED_APPLE:
-            throw CompilerError(token, "Unexpected statement %s.", token.value().utf8().c_str());
+            throw CompilerError(token.position(), "Unexpected statement %s.", token.value().utf8().c_str());
         case E_COOKIE: {
-            writeBoxingAndTemporary(des, Type(CL_STRING, false), token.position());
-            writer.writeInstruction(INS_OPT_STRING_CONCATENATE_LITERAL, token);
-            auto placeholder = writer.writeInstructionPlaceholder(token);
+            writeBoxingAndTemporary(des, Type(CL_STRING, false));
+            writer.writeInstruction(INS_OPT_STRING_CONCATENATE_LITERAL);
+            auto placeholder = writer.writeInstructionPlaceholder();
 
             int stringCount = 0;
 
@@ -785,17 +792,17 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             stream_.consumeToken(TokenType::Identifier);
 
             if (stringCount == 0) {
-                throw CompilerError(token, "An empty 🍪 is invalid.");
+                throw CompilerError(token.position(), "An empty 🍪 is invalid.");
             }
 
             placeholder.write(stringCount);
             return Type(CL_STRING, false);
         }
         case E_ICE_CREAM: {
-            writeBoxingAndTemporary(des, Type(CL_LIST, false), token.position());
-            writer.writeInstruction(INS_OPT_LIST_LITERAL, token);
+            writeBoxingAndTemporary(des, Type(CL_LIST, false));
+            writer.writeInstruction(INS_OPT_LIST_LITERAL);
 
-            auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
+            auto placeholder = writer.writeInstructionsCountPlaceholderCoin();
 
             Type type = Type(CL_LIST, false);
             if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_LIST) {
@@ -821,10 +828,10 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             return type;
         }
         case E_HONEY_POT: {
-            writeBoxingAndTemporary(des, Type(CL_DICTIONARY, false), token.position());
-            writer.writeInstruction(INS_OPT_DICTIONARY_LITERAL, token);
+            writeBoxingAndTemporary(des, Type(CL_DICTIONARY, false));
+            writer.writeInstruction(INS_OPT_DICTIONARY_LITERAL);
 
-            auto placeholder = writer.writeInstructionsCountPlaceholderCoin(token);
+            auto placeholder = writer.writeInstructionsCountPlaceholderCoin();
             Type type = Type(CL_DICTIONARY, false);
 
             if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_DICTIONARY) {
@@ -857,13 +864,13 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
             Type type = Type::nothingness();
             package_->fetchRawType(EmojicodeString(E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE), globalNamespace,
-                                   false, token, &type);
+                                   false, token.position(), &type);
 
-            writeBoxingAndTemporary(des, type, token.position(), writer);
+            writeBoxingAndTemporary(des, type, writer);
 
-            writer.writeInstruction(INS_INIT_VT, token);
+            writer.writeInstruction(INS_INIT_VT);
             auto initializer = type.valueType()->getInitializer(token, type, typeContext);
-            writer.writeInstruction(initializer->vtiForUse(), token);
+            writer.writeInstruction(initializer->vtiForUse());
 
             parseFunctionCall(type, initializer, token);
 
@@ -871,43 +878,44 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         }
         case E_DOG: {
             if (isSuperconstructorRequired() && !calledSuper &&
-                static_cast<Initializer &>(callable).owningType().eclass()->superclass()) {
-                throw CompilerError(token, "Attempt to use 🐕 before superinitializer call.");
+                callable.owningType().eclass()->superclass() != nullptr) {
+                throw CompilerError(token.position(), "Attempt to use 🐕 before superinitializer call.");
             }
             if (isFullyInitializedCheckRequired()) {
-                scoper.instanceScope()->initializerUnintializedVariablesCheck(token, "Instance variable \"%s\" must be "
+                scoper.instanceScope()->initializerUnintializedVariablesCheck(token.position(),
+                                                                              "Instance variable \"%s\" must be "
                                                                               "initialized before the use of 🐕.");
             }
 
             if (!isSelfAllowed()) {
-                throw CompilerError(token, "Illegal use of 🐕.");
+                throw CompilerError(token.position(), "Illegal use of 🐕.");
             }
 
             auto type = typeContext.calleeType();
-            writeBoxingAndTemporary(des, type, token.position(), writer);
+            writeBoxingAndTemporary(des, type, writer);
             usedSelf = true;
-            writer.writeInstruction(INS_GET_THIS, token);
+            writer.writeInstruction(INS_GET_THIS);
 
             return type;
         }
         case E_HIGH_VOLTAGE_SIGN: {
-            writer.writeInstruction(INS_GET_NOTHINGNESS, token);
+            writer.writeInstruction(INS_GET_NOTHINGNESS);
             return Type::nothingness();
         }
         case E_CLOUD: {
-            writeBoxingAndTemporary(des, Type::boolean(), token.position());
-            writer.writeInstruction(INS_IS_NOTHINGNESS, token);
+            writeBoxingAndTemporary(des, Type::boolean());
+            writer.writeInstruction(INS_IS_NOTHINGNESS);
             auto destination = Destination::temporaryReference();
             auto type = parse(stream_.consumeToken(), destination);
             if (!type.optional() && type.type() != TypeContent::Something) {
-                throw CompilerError(token, "☁️ can only be used on optionals and ⚪️.");
+                throw CompilerError(token.position(), "☁️ can only be used on optionals and ⚪️.");
             }
             scoper.popTemporaryScope();
             return Type::boolean();
         }
         case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE: {
-            writeBoxingAndTemporary(des, Type::boolean(), token.position());
-            writer.writeInstruction(INS_SAME_OBJECT, token);
+            writeBoxingAndTemporary(des, Type::boolean());
+            writer.writeInstruction(INS_SAME_OBJECT);
 
             auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
             parse(stream_.consumeToken(), token, Type::someobject(), destination);
@@ -917,45 +925,46 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         }
         case E_WHITE_LARGE_SQUARE: {
             auto insertionPoint = writer.getInsertionPoint();
-            writer.writeInstruction(INS_GET_CLASS_FROM_INSTANCE, token);
+            writer.writeInstruction(INS_GET_CLASS_FROM_INSTANCE);
             auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
             Type originalType = parse(stream_.consumeToken(), destination);
             if (!originalType.allowsMetaType()) {
                 auto string = originalType.toString(typeContext, true);
-                throw CompilerError(token, "Can’t get metatype of %s.", string.c_str());
+                throw CompilerError(token.position(), "Can’t get metatype of %s.", string.c_str());
             }
             originalType.setMeta(true);
-            writeBoxingAndTemporary(des, originalType, token.position(), insertionPoint);
+            writeBoxingAndTemporary(des, originalType, insertionPoint);
             return originalType;
         }
         case E_WHITE_SQUARE_BUTTON: {
             auto insertionPoint = writer.getInsertionPoint();
-            writer.writeInstruction(INS_GET_CLASS_FROM_INDEX, token);
+            writer.writeInstruction(INS_GET_CLASS_FROM_INDEX);
             Type originalType = parseTypeDeclarative(typeContext, TypeDynamism::None);
             if (!originalType.allowsMetaType()) {
                 auto string = originalType.toString(typeContext, true);
-                throw CompilerError(token, "Can’t get metatype of %s.", string.c_str());
+                throw CompilerError(token.position(), "Can’t get metatype of %s.", string.c_str());
             }
-            writer.writeInstruction(originalType.eclass()->index, token);
+            writer.writeInstruction(originalType.eclass()->index);
             originalType.setMeta(true);
-            writeBoxingAndTemporary(des, originalType, token.position(), insertionPoint);
+            writeBoxingAndTemporary(des, originalType, insertionPoint);
             return originalType;
         }
         case E_BLACK_SQUARE_BUTTON: {
             auto insertionPoint = writer.getInsertionPoint();
-            auto placeholder = writer.writeInstructionPlaceholder(token);
+            auto placeholder = writer.writeInstructionPlaceholder();
 
             auto destination = Destination(DestinationMutability::Unknown, StorageType::SimpleIfPossible);
             Type originalType = parse(stream_.consumeToken(), destination);
-            auto pair = parseTypeAsValue(typeContext, token);
+            auto pair = parseTypeAsValue(typeContext, token.position());
             auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
 
             if (originalType.compatibleTo(type, typeContext)) {
-                throw CompilerError(token, "Unnecessary cast.");
+                throw CompilerError(token.position(), "Unnecessary cast.");
             }
             else if (!type.compatibleTo(originalType, typeContext)) {
                 auto typeString = type.toString(typeContext, true);
-                throw CompilerError(token, "Cast to unrelated type %s will always fail.", typeString.c_str());
+                throw CompilerError(token.position(), "Cast to unrelated type %s will always fail.",
+                                    typeString.c_str());
             }
 
             if (type.type() == TypeContent::Class) {
@@ -963,9 +972,9 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 for (size_t i = 0; i < type.eclass()->ownGenericArgumentVariables().size(); i++) {
                     if (!type.eclass()->genericArgumentConstraints()[offset + i].compatibleTo(type.genericArguments()[i], type) ||
                        !type.genericArguments()[i].compatibleTo(type.eclass()->genericArgumentConstraints()[offset + i], type)) {
-                        throw CompilerError(token, "Dynamic casts involving generic type arguments are not possible "
-                                            "yet. Please specify the generic argument constraints of the class for "
-                                            "compatibility with future versions.");
+                        throw CompilerError(token.position(), "Dynamic casts involving generic type arguments are not "
+                                            "possible yet. Please specify the generic argument constraints of the "
+                                            "class for compatibility with future versions.");
                     }
                 }
 
@@ -981,33 +990,33 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             else if (type.type() == TypeContent::Protocol && isStatic(pair.second)) {
                 assert(originalType.storageType() == StorageType::Box);
                 placeholder.write(INS_CAST_TO_PROTOCOL);
-                writer.writeInstruction(type.protocol()->index, token);
+                writer.writeInstruction(type.protocol()->index);
             }
             else if ((type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum)
                      && isStatic(pair.second)) {
                 assert(originalType.storageType() == StorageType::Box);
                 placeholder.write(INS_CAST_TO_VALUE_TYPE);
-                writer.writeInstruction(type.valueType()->boxIdentifier(), token);
+                writer.writeInstruction(type.valueType()->boxIdentifier());
             }
             else {
                 auto typeString = pair.first.toString(typeContext, true);
-                throw CompilerError(token, "You cannot cast to %s.", typeString.c_str());
+                throw CompilerError(token.position(), "You cannot cast to %s.", typeString.c_str());
             }
 
             type.setOptional();
-            writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
+            writeBoxingAndTemporary(des, type, insertionPoint);
             return type;
         }
         case E_BEER_MUG: {
             auto insertionPoint = writer.getInsertionPoint();
-            auto placeholder = writer.writeInstructionPlaceholder(token);
+            auto placeholder = writer.writeInstructionPlaceholder();
 
             auto destination = Destination::temporaryReference();
             Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
             scoper.popTemporaryScope();
 
             if (!t.optional()) {
-                throw CompilerError(token, "🍺 can only be used with optionals.");
+                throw CompilerError(token.position(), "🍺 can only be used with optionals.");
             }
 
             assert(t.isValueReference());
@@ -1020,31 +1029,31 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             else {
                 placeholder.write(INS_UNWRAP_SIMPLE_OPTIONAL);
                 t = t.copyWithoutOptional();
-                writer.writeInstruction(t.size(), token.position());
+                writer.writeInstruction(t.size());
             }
-            writeBoxingAndTemporary(des, t, token.position(), insertionPoint);
+            writeBoxingAndTemporary(des, t, insertionPoint);
             return t;
         }
         case E_HOT_PEPPER: {
-            writeBoxingAndTemporary(des, Type::callableIncomplete(), token.position());
+            writeBoxingAndTemporary(des, Type::callableIncomplete());
             Function *function;
 
-            auto placeholder = writer.writeInstructionPlaceholder(token);
+            auto placeholder = writer.writeInstructionPlaceholder();
             if (stream_.consumeTokenIf(E_DOUGHNUT)) {
                 auto &methodName = stream_.consumeToken();
-                auto pair = parseTypeAsValue(typeContext, token);
+                auto pair = parseTypeAsValue(typeContext, token.position());
                 auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
 
                 if (type.type() == TypeContent::Class) {
                     placeholder.write(INS_CAPTURE_TYPE_METHOD);
                 }
                 else if (type.type() == TypeContent::ValueType) {
-                    notStaticError(pair.second, token, "Value Types");
+                    notStaticError(pair.second, token.position(), "Value Types");
                     placeholder.write(INS_CAPTURE_CONTEXTED_FUNCTION);
-                    writer.writeInstruction(INS_GET_NOTHINGNESS, token);
+                    writer.writeInstruction(INS_GET_NOTHINGNESS);
                 }
                 else {
-                    throw CompilerError(token, "You can’t capture method calls on this kind of type.");
+                    throw CompilerError(token.position(), "You can’t capture method calls on this kind of type.");
                 }
 
                 function = type.eclass()->getTypeMethod(methodName, type, typeContext);
@@ -1061,13 +1070,13 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                     placeholder.write(INS_CAPTURE_CONTEXTED_FUNCTION);
                 }
                 else {
-                    throw CompilerError(token, "You can’t capture method calls on this kind of type.");
+                    throw CompilerError(token.position(), "You can’t capture method calls on this kind of type.");
                 }
                 function = type.typeDefinitionFunctional()->getMethod(methodName, type, typeContext);
             }
 
-            function->deprecatedWarning(token);
-            writer.writeInstruction(function->vtiForUse(), token);
+            function->deprecatedWarning(token.position());
+            writer.writeInstruction(function->vtiForUse());
             return function->type();
         }
         case E_GRAPES: {
@@ -1105,23 +1114,23 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         case E_LOLLIPOP: {
             effect = true;
             auto insertionPoint = writer.getInsertionPoint();
-            writer.writeInstruction(INS_EXECUTE_CALLABLE, token);
+            writer.writeInstruction(INS_EXECUTE_CALLABLE);
 
             auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
             Type type = parse(stream_.consumeToken(), destination);
 
             if (type.type() != TypeContent::Callable) {
-                throw CompilerError(token, "Given value is not callable.");
+                throw CompilerError(token.position(), "Given value is not callable.");
             }
 
-            for (int i = 1; i < type.genericArguments().size(); i++) {
-                writer.writeInstruction(type.genericArguments()[i].size(), token);
+            for (size_t i = 1; i < type.genericArguments().size(); i++) {
+                writer.writeInstruction(type.genericArguments()[i].size());
                 parse(stream_.consumeToken(), token, type.genericArguments()[i],
                       Destination(DestinationMutability::Immutable, type.genericArguments()[i].storageType()));
             }
 
             auto rtype = type.genericArguments()[0];
-            writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
+            writeBoxingAndTemporary(des, type, insertionPoint);
             return rtype;
         }
         case E_CHIPMUNK: {
@@ -1130,63 +1139,62 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             auto &nameToken = stream_.consumeToken(TokenType::Identifier);
 
             if (mode != CallableParserAndGeneratorMode::ObjectMethod) {
-                throw CompilerError(token, "Not within an object-context.");
+                throw CompilerError(token.position(), "Not within an object-context.");
             }
 
             Class *superclass = typeContext.calleeType().eclass()->superclass();
 
             if (superclass == nullptr) {
-                throw CompilerError(token, "Class has no superclass.");
+                throw CompilerError(token.position(), "Class has no superclass.");
             }
 
             Function *method = superclass->getMethod(nameToken, Type(superclass, false), typeContext);
 
-            writer.writeInstruction(INS_DISPATCH_SUPER, token);
-            writer.writeInstruction(INS_GET_CLASS_FROM_INDEX, token);
-            writer.writeInstruction(superclass->index, token);
-            writer.writeInstruction(method->vtiForUse(), token);
+            writer.writeInstruction(INS_DISPATCH_SUPER);
+            writer.writeInstruction(INS_GET_CLASS_FROM_INDEX);
+            writer.writeInstruction(superclass->index);
+            writer.writeInstruction(method->vtiForUse());
 
             Type type = parseFunctionCall(typeContext.calleeType(), method, token);
-            writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
+            writeBoxingAndTemporary(des, type, insertionPoint);
             return type;
         }
         case E_LARGE_BLUE_DIAMOND: {
             auto insertionPoint = writer.getInsertionPoint();
-            auto placeholder = writer.writeInstructionPlaceholder(token);
-            auto pair = parseTypeAsValue(typeContext, token, expectation);
+            auto placeholder = writer.writeInstructionPlaceholder();
+            auto pair = parseTypeAsValue(typeContext, token.position(), expectation);
             auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
 
             auto &initializerName = stream_.consumeToken(TokenType::Identifier);
 
             if (type.optional()) {
-                throw CompilerError(token, "Optionals cannot be instantiated.");
+                throw CompilerError(token.position(), "Optionals cannot be instantiated.");
             }
 
             if (type.type() == TypeContent::Enum) {
-                notStaticError(pair.second, token, "Enums");
+                notStaticError(pair.second, token.position(), "Enums");
                 placeholder.write(INS_GET_32_INTEGER);
 
                 auto v = type.eenum()->getValueFor(initializerName.value());
                 if (!v.first) {
-                    throw CompilerError(initializerName, "%s does not have a member named %s.",
-                                                 type.eenum()->name().utf8().c_str(),
-                                                 initializerName.value().utf8().c_str());
+                    throw CompilerError(initializerName.position(), "%s does not have a member named %s.",
+                                        type.eenum()->name().utf8().c_str(), initializerName.value().utf8().c_str());
                 }
                 else if (v.second > UINT32_MAX) {
-                    writer.writeInstruction(v.second >> 32, token);
-                    writer.writeInstruction((EmojicodeInstruction)v.second, token);
+                    writer.writeInstruction(v.second >> 32);
+                    writer.writeInstruction((EmojicodeInstruction)v.second);
                 }
                 else {
-                    writer.writeInstruction((EmojicodeInstruction)v.second, token);
+                    writer.writeInstruction((EmojicodeInstruction)v.second);
                 }
             }
             else if (type.type() == TypeContent::ValueType) {
-                notStaticError(pair.second, token, "Value Types");
+                notStaticError(pair.second, token.position(), "Value Types");
 
                 placeholder.write(INS_INIT_VT);
 
                 auto initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
-                writer.writeInstruction(initializer->vtiForUse(), token);
+                writer.writeInstruction(initializer->vtiForUse());
 
                 parseFunctionCall(type, initializer, token);
                 if (initializer->canReturnNothingness) {
@@ -1199,13 +1207,13 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 Initializer *initializer = type.eclass()->getInitializer(initializerName, type, typeContext);
 
                 if (!isStatic(pair.second) && !initializer->required) {
-                    throw CompilerError(initializerName,
-                                                 "Only required initializers can be used with dynamic types.");
+                    throw CompilerError(initializerName.position(),
+                                        "Only required initializers can be used with dynamic types.");
                 }
 
-                initializer->deprecatedWarning(initializerName);
+                initializer->deprecatedWarning(initializerName.position());
 
-                writer.writeInstruction(initializer->vtiForUse(), token);
+                writer.writeInstruction(initializer->vtiForUse());
 
                 parseFunctionCall(type, initializer, token);
 
@@ -1214,12 +1222,12 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 }
             }
             else {
-                throw CompilerError(token, "The given type cannot be instantiated.");
+                throw CompilerError(token.position(), "The given type cannot be instantiated.");
             }
 
             type.unbox();
 
-            writeBoxingAndTemporary(des, type, token.position(), insertionPoint);
+            writeBoxingAndTemporary(des, type, insertionPoint);
             return type;
         }
         case E_DOUGHNUT: {
@@ -1227,32 +1235,32 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             auto insertionPoint = writer.getInsertionPoint();
             auto &methodToken = stream_.consumeToken(TokenType::Identifier);
 
-            auto placeholder = writer.writeInstructionPlaceholder(token);
-            auto pair = parseTypeAsValue(typeContext, token);
+            auto placeholder = writer.writeInstructionPlaceholder();
+            auto pair = parseTypeAsValue(typeContext, token.position());
             auto type = pair.first.resolveOnSuperArgumentsAndConstraints(typeContext);
 
             if (type.optional()) {
-                compilerWarning(token, "You cannot call optionals on 🍬.");
+                compilerWarning(token.position(), "You cannot call optionals on 🍬.");
             }
 
             Function *method;
             if (type.type() == TypeContent::Class) {
                 placeholder.write(INS_DISPATCH_TYPE_METHOD);
                 method = type.typeDefinitionFunctional()->getTypeMethod(methodToken, type, typeContext);
-                writer.writeInstruction(method->vtiForUse(), token);
+                writer.writeInstruction(method->vtiForUse());
             }
             else if ((type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum)
                      && isStatic(pair.second)) {
                 method = type.typeDefinitionFunctional()->getTypeMethod(methodToken, type, typeContext);
                 placeholder.write(INS_CALL_FUNCTION);
-                writer.writeInstruction(method->vtiForUse(), token);
+                writer.writeInstruction(method->vtiForUse());
             }
             else {
-                throw CompilerError(token, "You can’t call type methods on %s.",
+                throw CompilerError(token.position(), "You can’t call type methods on %s.",
                                     pair.first.toString(typeContext, true).c_str());
             }
             auto rtype = parseFunctionCall(type, method, token);
-            writeBoxingAndTemporary(des, rtype, token.position(), insertionPoint);
+            writeBoxingAndTemporary(des, rtype, insertionPoint);
             return rtype;
         }
         default: {
@@ -1269,7 +1277,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
 Type CallableParserAndGenerator::parseMethodCall(const Token &token, Destination des,
                                                  std::function<Type(Destination&)> callee) {
     auto insertionPoint = writer.getInsertionPoint();
-    auto placeholder = writer.writeInstructionPlaceholder(token);
+    auto placeholder = writer.writeInstructionPlaceholder();
 
     auto recompilationPoint = RecompilationPoint(writer, stream_);
     auto recompileWithSimple = [this, recompilationPoint, &callee]() {
@@ -1283,7 +1291,7 @@ Type CallableParserAndGenerator::parseMethodCall(const Token &token, Destination
     Type type = rtype.resolveOnSuperArgumentsAndConstraints(typeContext);
 
     if (type.optional()) {
-        throw CompilerError(token, "You cannot call methods on optionals.");
+        throw CompilerError(token.position(), "You cannot call methods on optionals.");
     }
 
     auto simpleDes = Destination(DestinationMutability::Unknown, StorageType::Simple);
@@ -1462,53 +1470,53 @@ Type CallableParserAndGenerator::parseMethodCall(const Token &token, Destination
 
     if (type.type() == TypeContent::ValueType) {
         method = type.valueType()->getMethod(token, type, typeContext);
-        mutatingMethodCheck(method, type, destination, token);
+        mutatingMethodCheck(method, type, destination, token.position());
         placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
-        writer.writeInstruction(method->vtiForUse(), token);
+        writer.writeInstruction(method->vtiForUse());
     }
     else if (type.type() == TypeContent::Protocol) {
         method = type.protocol()->getMethod(token, type, typeContext);
         placeholder.write(INS_DISPATCH_PROTOCOL);
-        writer.writeInstruction(type.protocol()->index, token);
-        writer.writeInstruction(method->vtiForUse(), token);
+        writer.writeInstruction(type.protocol()->index);
+        writer.writeInstruction(method->vtiForUse());
     }
     else if (type.type() == TypeContent::MultiProtocol) {
         for (auto &protocol : type.protocols()) {
-            if ((method = protocol.protocol()->lookupMethod(token.value()))) {
+            if ((method = protocol.protocol()->lookupMethod(token.value())) != nullptr) {
                 placeholder.write(INS_DISPATCH_PROTOCOL);
-                writer.writeInstruction(protocol.protocol()->index, token);
-                writer.writeInstruction(method->vtiForUse(), token);
+                writer.writeInstruction(protocol.protocol()->index);
+                writer.writeInstruction(method->vtiForUse());
                 break;
             }
         }
-        if (!method) {
-            throw CompilerError(token, "No type in %s provides a method called %s.",
+        if (method == nullptr) {
+            throw CompilerError(token.position(), "No type in %s provides a method called %s.",
                                 type.toString(typeContext, true).c_str(), token.value().utf8().c_str());
         }
     }
     else if (type.type() == TypeContent::Enum) {
         method = type.eenum()->getMethod(token, type, typeContext);
         placeholder.write(INS_CALL_CONTEXTED_FUNCTION);
-        writer.writeInstruction(method->vtiForUse(), token);
+        writer.writeInstruction(method->vtiForUse());
     }
     else if (type.type() == TypeContent::Class) {
         method = type.eclass()->getMethod(token, type, typeContext);
         placeholder.write(INS_DISPATCH_METHOD);
-        writer.writeInstruction(method->vtiForUse(), token);
+        writer.writeInstruction(method->vtiForUse());
     }
     else {
         auto typeString = type.toString(typeContext, true);
-        throw CompilerError(token, "You cannot call methods on %s.", typeString.c_str());
+        throw CompilerError(token.position(), "You cannot call methods on %s.", typeString.c_str());
     }
 
     Type rt = parseFunctionCall(type, method, token);
     scoper.popTemporaryScope();
 
-    writeBoxingAndTemporary(des, rt, token.position(), insertionPoint);
+    writeBoxingAndTemporary(des, rt, insertionPoint);
     return rt;
 }
 
-void CallableParserAndGenerator::noReturnError(SourcePosition p) {
+void CallableParserAndGenerator::noReturnError(const SourcePosition &p) {
     if (callable.returnType.type() != TypeContent::Nothingness && !returned) {
         throw CompilerError(p, "An explicit return is missing.");
     }
@@ -1516,17 +1524,17 @@ void CallableParserAndGenerator::noReturnError(SourcePosition p) {
 
 void CallableParserAndGenerator::noEffectWarning(const Token &warningToken) {
     if (!effect) {
-        compilerWarning(warningToken, "Statement seems to have no effect whatsoever.");
+        compilerWarning(warningToken.position(), "Statement seems to have no effect whatsoever.");
     }
 }
 
-void CallableParserAndGenerator::notStaticError(TypeAvailability t, SourcePosition p, const char *name) {
+void CallableParserAndGenerator::notStaticError(TypeAvailability t, const SourcePosition &p, const char *name) {
     if (!isStatic(t)) {
         throw CompilerError(p, "%s cannot be used dynamically.", name);
     }
 }
 
-std::pair<Type, TypeAvailability> CallableParserAndGenerator::parseTypeAsValue(TypeContext tc, SourcePosition p,
+std::pair<Type, TypeAvailability> CallableParserAndGenerator::parseTypeAsValue(TypeContext tc, const SourcePosition &p,
                                                                                Type expectation) {
     if (stream_.consumeTokenIf(E_BLACK_LARGE_SQUARE)) {
         auto destination = Destination(DestinationMutability::Unknown, StorageType::Simple);
@@ -1545,14 +1553,14 @@ std::pair<Type, TypeAvailability> CallableParserAndGenerator::parseTypeAsValue(T
         case TypeContent::Reference:
             throw CompilerError(p, "Generic Arguments are not yet available for reflection.");
         case TypeContent::Class:
-            writer.writeInstruction(INS_GET_CLASS_FROM_INDEX, p);
-            writer.writeInstruction(ot.eclass()->index, p);
+            writer.writeInstruction(INS_GET_CLASS_FROM_INDEX);
+            writer.writeInstruction(ot.eclass()->index);
             return std::pair<Type, TypeAvailability>(ot, TypeAvailability::StaticAndAvailabale);
         case TypeContent::Self:
             if (mode != CallableParserAndGeneratorMode::ClassMethod) {
                 throw CompilerError(p, "Illegal use of 🐕.");
             }
-            writer.writeInstruction(INS_GET_THIS, p);
+            writer.writeInstruction(INS_GET_THIS);
             return std::pair<Type, TypeAvailability>(ot, TypeAvailability::DynamicAndAvailabale);
         case TypeContent::LocalReference:
             throw CompilerError(p, "Function Generic Arguments are not available for reflection.");
@@ -1588,7 +1596,7 @@ void CallableParserAndGenerator::analyze() {
         if (isFullyInitializedCheckRequired()) {
             auto initializer = static_cast<Initializer &>(callable);
             for (auto &var : initializer.argumentsToVariables()) {
-                if (scoper.instanceScope()->hasLocalVariable(var) == 0) {
+                if (!scoper.instanceScope()->hasLocalVariable(var)) {
                     throw CompilerError(initializer.position(),
                                         "🍼 was applied to \"%s\" but no matching instance variable was found.",
                                         var.utf8().c_str());
@@ -1601,8 +1609,8 @@ void CallableParserAndGenerator::analyze() {
                                         var.utf8().c_str());
                 }
                 instanceVariable.initialize(writer.writtenInstructions());
-                produceToVariable(ResolvedVariable(instanceVariable, true), initializer.position());
-                copyVariableContent(ResolvedVariable(argumentVariable, false), initializer.position());
+                produceToVariable(ResolvedVariable(instanceVariable, true));
+                copyVariableContent(ResolvedVariable(argumentVariable, false));
             }
         }
 
@@ -1610,13 +1618,12 @@ void CallableParserAndGenerator::analyze() {
             parseStatement(stream_.consumeToken());
 
             if (returned && !stream_.nextTokenIs(E_WATERMELON)) {
-                compilerWarning(stream_.consumeToken(), "Dead code.");
+                compilerWarning(stream_.consumeToken().position(), "Dead code.");
                 break;
             }
         }
 
-        scoper.popScopeAndRecommendFrozenVariables(static_cast<Function &>(callable).objectVariableInformation(),
-                                                   writer.writtenInstructions());
+        scoper.popScopeAndRecommendFrozenVariables(callable.objectVariableInformation(), writer.writtenInstructions());
 
         if (isFullyInitializedCheckRequired()) {
             auto initializer = static_cast<Initializer &>(callable);
@@ -1628,7 +1635,7 @@ void CallableParserAndGenerator::analyze() {
         }
         if (isSuperconstructorRequired()) {
             auto initializer = static_cast<Initializer &>(callable);
-            if (!calledSuper && typeContext.calleeType().eclass()->superclass()) {
+            if (!calledSuper && typeContext.calleeType().eclass()->superclass() != nullptr) {
                 throw CompilerError(initializer.position(), "Missing call to superinitializer in initializer %s.",
                                     initializer.name().utf8().c_str());
             }
@@ -1643,7 +1650,7 @@ void CallableParserAndGenerator::generateBoxingLayer(BoxingLayer *layer) {
     if (layer->destinationFunction()->returnType.type() != TypeContent::Nothingness) {
         writer.writeInstruction(INS_RETURN);
         writeBoxingAndTemporary(Destination(DestinationMutability::Immutable, layer->returnType.storageType()),
-                                layer->destinationFunction()->returnType, layer->position());
+                                layer->destinationFunction()->returnType);
     }
     switch (layer->owningType().type()) {
         case TypeContent::ValueType:
@@ -1662,9 +1669,9 @@ void CallableParserAndGenerator::generateBoxingLayer(BoxingLayer *layer) {
         auto arg = layer->destinationFunction()->arguments[i];
         writer.writeInstruction(layer->arguments[i].type.size());
         writeBoxingAndTemporary(Destination(DestinationMutability::Immutable, arg.type.storageType()),
-                                layer->arguments[i].type, layer->position());
+                                layer->arguments[i].type);
         auto variable = Variable(layer->arguments[i].type, i, true, EmojicodeString(), layer->position());
-        copyVariableContent(ResolvedVariable(variable, false), layer->position());
+        copyVariableContent(ResolvedVariable(variable, false));
     }
     layer->setFullSizeFromArguments();
 }

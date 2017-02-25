@@ -9,10 +9,9 @@
 #ifndef Lexer_hpp
 #define Lexer_hpp
 
-#include "EmojicodeCompiler.hpp"
-#include "Token.hpp"
 #include "TokenStream.hpp"
+#include <string>
 
-TokenStream lex(std::string fileName);
+TokenStream lex(const std::string &path);
 
 #endif /* Lexer_hpp */

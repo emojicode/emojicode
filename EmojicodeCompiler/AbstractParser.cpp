@@ -15,7 +15,7 @@
 
 ParsedType AbstractParser::parseType() {
     if (stream_.nextTokenIs(TokenType::Variable)) {
-        throw CompilerError(stream_.consumeToken(TokenType::Variable), "Generic variables not allowed here.");
+        throw CompilerError(stream_.consumeToken().position(), "Generic variables not allowed here.");
     }
 
     bool optional = false;
@@ -36,11 +36,11 @@ ParsedType AbstractParser::parseType() {
     return ParsedType(typeName.value(), enamespace, optional, typeName);
 }
 
-Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism, Type expectation,
+Type AbstractParser::parseTypeDeclarative(const TypeContext &ct, TypeDynamism dynamism, Type expectation,
                                           TypeDynamism *dynamicType) {
     if (stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE)) {
         if (expectation.type() == TypeContent::Nothingness) {
-            throw CompilerError(stream_.consumeToken(), "Cannot infer ⚫️.");
+            throw CompilerError(stream_.consumeToken().position(), "Cannot infer ⚫️.");
         }
         stream_.consumeToken();
         return expectation.copyWithoutOptional();
@@ -49,7 +49,7 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         auto &token = stream_.consumeToken();
         Type type = parseTypeDeclarative(ct, dynamism, expectation, dynamicType);
         if (!type.allowsMetaType() || type.meta()) {
-            throw CompilerError(token, "Meta type of %s is restricted.", type.toString(ct, true).c_str());
+            throw CompilerError(token.position(), "Meta type of %s is restricted.", type.toString(ct, true).c_str());
         }
         type.setMeta(true);
         return type;
@@ -81,13 +81,13 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
             }
         }
 
-        throw CompilerError(variableToken, "No such generic type variable \"%s\".",
+        throw CompilerError(variableToken.position(), "No such generic type variable \"%s\".",
                             variableToken.value().utf8().c_str());
     }
     else if (stream_.nextTokenIs(E_DOG)) {
         auto &selfToken = stream_.consumeToken(TokenType::Identifier);
         if ((dynamism & TypeDynamism::Self) == TypeDynamism::None) {
-            throw CompilerError(selfToken, "🐕 not allowed here.");
+            throw CompilerError(selfToken.position(), "🐕 not allowed here.");
         }
         if (dynamicType) *dynamicType = TypeDynamism::Self;
         return Type::self(optional);
@@ -98,12 +98,12 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
         while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
             auto protocolType = parseTypeDeclarative(ct, dynamism);
             if (protocolType.type() != TypeContent::Protocol || protocolType.optional() || protocolType.meta()) {
-                throw CompilerError(bentoToken, "🍱 may only consist of non-optional protocol types.");
+                throw CompilerError(bentoToken.position(), "🍱 may only consist of non-optional protocol types.");
             }
             type.genericArguments_.push_back(protocolType);
         }
         if (type.protocols().size() == 0) {
-            throw CompilerError(bentoToken, "An empty 🍱 is invalid.");
+            throw CompilerError(bentoToken.position(), "An empty 🍱 is invalid.");
         }
         type.sortMultiProtocolType();
         stream_.consumeToken(TokenType::Identifier);
@@ -134,37 +134,38 @@ Type AbstractParser::parseTypeDeclarative(TypeContext ct, TypeDynamism dynamism,
 
         auto type = Type::nothingness();
         if (!package_->fetchRawType(parsedType, &type)) {
-            throw CompilerError(parsedType.token, "Could not find type %s in enamespace %s.",
+            throw CompilerError(parsedType.token.position(), "Could not find type %s in enamespace %s.",
                                          parsedType.name.utf8().c_str(), parsedType.ns.utf8().c_str());
         }
 
-        parseGenericArgumentsForType(&type, ct, dynamism, parsedType.token);
+        parseGenericArgumentsForType(&type, ct, dynamism, parsedType.token.position());
 
         return type;
     }
 }
 
-void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism, SourcePosition p) {
+void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,
+                                                  SourcePosition p) {
     if (type->canHaveGenericArguments()) {
         auto typeDef = type->typeDefinitionFunctional();
         auto offset = typeDef->superGenericArguments().size();
         type->genericArguments_ = typeDef->superGenericArguments();
 
-        if (typeDef->ownGenericArgumentVariables().size()) {
-            int count = 0;
+        if (!typeDef->ownGenericArgumentVariables().empty()) {
+            size_t count = 0;
             while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
                 auto &token = stream_.consumeToken(TokenType::Identifier);
 
-                Type ta = parseTypeDeclarative(ct, dynamism, Type::nothingness(), nullptr);
+                Type ta = parseTypeDeclarative(typeContext, dynamism, Type::nothingness(), nullptr);
 
                 auto i = count + offset;
                 if (typeDef->numberOfGenericArgumentsWithSuperArguments() <= i) {
                     break;  // and throw an error below
                 }
-                if (!ta.compatibleTo(typeDef->genericArgumentConstraints()[i], ct)) {
-                    auto thisName = typeDef->genericArgumentConstraints()[i].toString(ct, true);
-                    auto thatName = ta.toString(ct, true);
-                    throw CompilerError(token, "Generic argument for %s is not compatible to constraint %s.",
+                if (!ta.compatibleTo(typeDef->genericArgumentConstraints()[i], typeContext)) {
+                    auto thisName = typeDef->genericArgumentConstraints()[i].toString(typeContext, true);
+                    auto thatName = ta.toString(typeContext, true);
+                    throw CompilerError(token.position(), "Generic argument for %s is not compatible to constraint %s.",
                                         thatName.c_str(), thisName.c_str());
                 }
 
@@ -182,20 +183,21 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, TypeContext ct, Ty
     }
 }
 
-void AbstractParser::parseArgumentList(Function *function, TypeContext ct, bool initializer) {
+void AbstractParser::parseArgumentList(Function *function, const TypeContext &typeContext, bool initializer) {
     bool argumentToVariable;
 
     while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {
         if (argumentToVariable) {
             auto &token = stream_.consumeToken(TokenType::Identifier);
             if (!initializer) {
-                throw CompilerError(token, "🍼 can only be used with initializers.");
+                throw CompilerError(token.position(), "🍼 can only be used with initializers.");
             }
         }
 
         TypeDynamism dynamism;
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
-        auto type = parseTypeDeclarative(ct, TypeDynamism::GenericTypeVariables, Type::nothingness(), &dynamism);
+        auto type = parseTypeDeclarative(typeContext, TypeDynamism::GenericTypeVariables, Type::nothingness(),
+                                         &dynamism);
 
         function->arguments.push_back(Argument(variableToken.value(), type));
 
@@ -209,15 +211,16 @@ void AbstractParser::parseArgumentList(Function *function, TypeContext ct, bool 
     }
 }
 
-void AbstractParser::parseReturnType(Function *function, TypeContext ct) {
+void AbstractParser::parseReturnType(Function *function, const TypeContext &typeContext) {
     if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW)) {
         TypeDynamism dynamism;
 
-        function->returnType = parseTypeDeclarative(ct, TypeDynamism::GenericTypeVariables, Type::nothingness(), &dynamism);
+        function->returnType = parseTypeDeclarative(typeContext, TypeDynamism::GenericTypeVariables,
+                                                    Type::nothingness(), &dynamism);
     }
 }
 
-void AbstractParser::parseGenericArgumentsInDefinition(Function *function, TypeContext ct) {
+void AbstractParser::parseGenericArgumentsInDefinition(Function *function, const TypeContext &ct) {
     while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
         auto &variable = stream_.consumeToken(TokenType::Variable);
 
@@ -228,8 +231,9 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *function, TypeC
         Type rType = Type(TypeContent::LocalReference, false,
                           static_cast<int>(function->genericArgumentVariables.size()), function);
 
-        if (function->genericArgumentVariables.count(variable.value())) {
-            throw CompilerError(variable, "A generic argument variable with the same name is already in use.");
+        if (function->genericArgumentVariables.count(variable.value()) > 0) {
+            throw CompilerError(variable.position(),
+                                "A generic argument variable with the same name is already in use.");
         }
         function->genericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable.value(), rType));
     }
@@ -239,10 +243,10 @@ void AbstractParser::parseBody(Function *function, bool allowNative) {
     if (stream_.nextTokenIs(E_RADIO)) {
         auto &radio = stream_.consumeToken(TokenType::Identifier);
         if (!allowNative) {
-            throw CompilerError(radio, "Native code is not allowed in this context.");
+            throw CompilerError(radio.position(), "Native code is not allowed in this context.");
         }
         auto &indexToken = stream_.consumeToken(TokenType::Integer);
-        auto index = std::stoll(indexToken.value().utf8(), 0, 0);
+        auto index = std::stoll(indexToken.value().utf8(), nullptr, 0);
         if (index < 1 || index > UINT16_MAX) {
             throw CompilerError(indexToken.position(), "Linking Table Index is not in range.");
         }

@@ -240,7 +240,7 @@ void reportPackage(Package *package) {
 
         printf("\"conformsTo\":[");
         bool printedProtocol = false;
-        for (auto protocol : eclass->protocols()) {
+        for (auto &protocol : eclass->protocols()) {
             commaPrinter(&printedProtocol);
             reportType(nullptr, protocol, TypeContext(Type(eclass, false)));
         }

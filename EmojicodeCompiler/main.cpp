@@ -112,7 +112,7 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
     va_end(list);
 }
 
-Class* getStandardClass(EmojicodeString name, Package *_, SourcePosition errorPosition) {
+Class* getStandardClass(const EmojicodeString &name, Package *_, SourcePosition errorPosition) {
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Class) {
@@ -121,7 +121,7 @@ Class* getStandardClass(EmojicodeString name, Package *_, SourcePosition errorPo
     return type.eclass();
 }
 
-Protocol* getStandardProtocol(EmojicodeString name, Package *_, SourcePosition errorPosition) {
+Protocol* getStandardProtocol(const EmojicodeString &name, Package *_, SourcePosition errorPosition) {
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Protocol) {
@@ -130,7 +130,7 @@ Protocol* getStandardProtocol(EmojicodeString name, Package *_, SourcePosition e
     return type.protocol();
 }
 
-ValueType* getStandardValueType(EmojicodeString name, Package *_, SourcePosition errorPosition, unsigned int boxId) {
+ValueType* getStandardValueType(const EmojicodeString &name, Package *_, SourcePosition errorPosition, unsigned int boxId) {
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::ValueType) {
@@ -168,7 +168,7 @@ int main(int argc, char * argv[]) {
         std::string outPath;
 
         const char *ppath;
-        if ((ppath = getenv("EMOJICODE_PACKAGES_PATH"))) {
+        if ((ppath = getenv("EMOJICODE_PACKAGES_PATH")) != nullptr) {
             packageDirectory = ppath;
         }
 
@@ -205,7 +205,7 @@ int main(int argc, char * argv[]) {
             compilerWarning(SourcePosition(0, 0, ""), "No input file provided.");
             return 1;
         }
-        else if (argc > 1) {
+        if (argc > 1) {
             compilerWarning(SourcePosition(0, 0, ""), "Only the first file provided will be compiled.");
         }
 

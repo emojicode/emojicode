@@ -28,10 +28,7 @@ enum class TokenType {
     Symbol
 };
 
-class Token;
-
 struct SourcePosition {
-    SourcePosition(const Token &token);
     SourcePosition(size_t line, size_t character, std::string file) : line(line), character(character), file(file) {};
     size_t line;
     size_t character;
@@ -39,7 +36,7 @@ struct SourcePosition {
 };
 
 class Token {
-    friend TokenStream lex(std::string);
+    friend TokenStream lex(const std::string &);
     friend class TokenStream;
 public:
     Token(const Token&) = delete;

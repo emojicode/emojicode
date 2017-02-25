@@ -15,7 +15,7 @@ int ValueType::nextId = 3;
 void ValueType::finalize() {
     TypeDefinitionFunctional::finalize();
 
-    if (primitive_ && instanceVariables().size() > 0) {
+    if (primitive_ && !instanceVariables().empty()) {
         throw CompilerError(position(), "A value type marked with ⚪️ cannot have instance variables.");
     }
 

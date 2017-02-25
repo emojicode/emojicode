@@ -32,19 +32,19 @@ protected:
     /// Reads a type
     ParsedType parseType();
     /** Reads a type name and stores it into the given pointers. */
-    Type parseTypeDeclarative(TypeContext tc, TypeDynamism dynamism, Type expectation = Type::nothingness(),
+    Type parseTypeDeclarative(const TypeContext &typeContext, TypeDynamism dynamism, Type expectation = Type::nothingness(),
                               TypeDynamism *dynamicType = nullptr);
 
     /// Parses the arguments for a callable.
-    void parseArgumentList(Function *function, TypeContext ct, bool initializer = false);
+    void parseArgumentList(Function *function, const TypeContext &typeContext, bool initializer = false);
     /// Parses the return type for a function if there is one specified.
-    void parseReturnType(Function *function, TypeContext ct);
-    void parseGenericArgumentsInDefinition(Function *p, TypeContext ct);
+    void parseReturnType(Function *function, const TypeContext &typeContext);
+    void parseGenericArgumentsInDefinition(Function *p, const TypeContext &typeContext);
     /// Parses the body of a function which might either be a code block or a linking table index
     void parseBody(Function *function, bool allowNative);
     /// Parses the code block body of a function
     void parseBodyBlock(Function *function);
-    void parseGenericArgumentsForType(Type *type, TypeContext ct, TypeDynamism dynamism, SourcePosition p);
+    void parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism, SourcePosition p);
 };
 
 #endif /* AbstractParser_hpp */

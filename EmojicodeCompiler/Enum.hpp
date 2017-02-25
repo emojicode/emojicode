@@ -21,8 +21,8 @@ public:
             makePrimitive();
     }
 
-    std::pair<bool, long> getValueFor(EmojicodeString c) const;
-    void addValueFor(EmojicodeString c, SourcePosition position, EmojicodeString documentation);
+    std::pair<bool, long> getValueFor(const EmojicodeString &c) const;
+    void addValueFor(const EmojicodeString &c, const SourcePosition &position, EmojicodeString documentation);
 
     const std::map<EmojicodeString, std::pair<long, EmojicodeString>>& values() const { return map_; }
 

@@ -9,9 +9,9 @@
 #ifndef TypeContext_hpp
 #define TypeContext_hpp
 
-#include <vector>
 #include "Type.hpp"
 #include "CommonTypeFinder.hpp"
+#include <vector>
 
 class Function;
 

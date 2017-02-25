@@ -6,13 +6,13 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
+#include "Lexer.hpp"
+#include "../utf8.h"
+#include "CompilerError.hpp"
+#include "EmojiTokenization.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "../utf8.h"
-#include "Lexer.hpp"
-#include "CompilerError.hpp"
-#include "EmojiTokenization.hpp"
 
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
 
@@ -26,11 +26,13 @@ bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line) {
 }
 
 inline bool ends_with(std::string const & value, std::string const & ending) {
-    if (ending.size() > value.size()) return false;
+    if (ending.size() > value.size()) {
+        return false;
+    }
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-TokenStream lex(std::string path) {
+TokenStream lex(const std::string &path) {
     auto sourcePosition = SourcePosition(1, 0, path);
     Token *token = new Token(sourcePosition);
     TokenStream stream = TokenStream(token);

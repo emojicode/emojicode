@@ -121,7 +121,7 @@ void Function::markUsed() {
         return;
     }
     used_ = true;
-    if (vtiProvider_) {
+    if (vtiProvider_ != nullptr) {
         vtiProvider_->used();
     }
     if (!isNative()) {
@@ -164,7 +164,7 @@ bool Function::assigned() const {
 }
 
 void Function::setVtiProvider(VTIProvider *provider) {
-    if (vtiProvider_) {
+    if (vtiProvider_ != nullptr) {
         throw std::logic_error("You cannot reassign the VTI provider.");
     }
     vtiProvider_ = provider;
@@ -173,7 +173,7 @@ void Function::setVtiProvider(VTIProvider *provider) {
 Type Function::type() const {
     Type t = Type::callableIncomplete();
     t.genericArguments_.push_back(returnType);
-    for (int i = 0; i < arguments.size(); i++) {
+    for (size_t i = 0; i < arguments.size(); i++) {
         t.genericArguments_.push_back(arguments[i].type);
     }
     return t;

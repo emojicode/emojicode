@@ -20,8 +20,9 @@ void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Typ
 
     Type referenceType = Type(TypeContent::Reference, false, ownGenericArgumentVariables_.size(), this);
 
-    if (ownGenericArgumentVariables_.count(variableName.value())) {
-        throw CompilerError(variableName, "A generic argument variable with the same name is already in use.");
+    if (ownGenericArgumentVariables_.count(variableName.value()) > 0) {
+        throw CompilerError(variableName.position(),
+                            "A generic argument variable with the same name is already in use.");
     }
     ownGenericArgumentVariables_.emplace(variableName.value(), referenceType);
 }
@@ -45,18 +46,20 @@ void TypeDefinitionFunctional::finalizeGenericArguments() {
     genericArgumentCount_ = ownGenericArgumentVariables_.size();
 }
 
-bool TypeDefinitionFunctional::fetchVariable(EmojicodeString name, bool optional, Type *destType) {
+bool TypeDefinitionFunctional::fetchVariable(const EmojicodeString &name, bool optional, Type *destType) {
     auto it = ownGenericArgumentVariables_.find(name);
     if (it != ownGenericArgumentVariables_.end()) {
         Type type = it->second;
-        if (optional) type.setOptional();
+        if (optional) {
+            type.setOptional();
+        }
         *destType = type;
         return true;
     }
     return false;
 }
 
-Initializer* TypeDefinitionFunctional::lookupInitializer(EmojicodeString name) {
+Initializer* TypeDefinitionFunctional::lookupInitializer(const EmojicodeString &name) {
     auto pos = initializers_.find(name);
     if (pos != initializers_.end()) {
         return pos->second;
@@ -64,7 +67,7 @@ Initializer* TypeDefinitionFunctional::lookupInitializer(EmojicodeString name) {
     return nullptr;
 }
 
-Function* TypeDefinitionFunctional::lookupMethod(EmojicodeString name) {
+Function* TypeDefinitionFunctional::lookupMethod(const EmojicodeString &name) {
     auto pos = methods_.find(name);
     if (pos != methods_.end()) {
         return pos->second;
@@ -72,7 +75,7 @@ Function* TypeDefinitionFunctional::lookupMethod(EmojicodeString name) {
     return nullptr;
 }
 
-Function* TypeDefinitionFunctional::lookupTypeMethod(EmojicodeString name) {
+Function* TypeDefinitionFunctional::lookupTypeMethod(const EmojicodeString &name) {
     auto pos = typeMethods_.find(name);
     if (pos != typeMethods_.end()) {
         return pos->second;
@@ -80,36 +83,36 @@ Function* TypeDefinitionFunctional::lookupTypeMethod(EmojicodeString name) {
     return nullptr;
 }
 
-Initializer* TypeDefinitionFunctional::getInitializer(const Token &token, Type type, TypeContext typeContext) {
+Initializer* TypeDefinitionFunctional::getInitializer(const Token &token, Type type, const TypeContext &typeContext) {
     auto initializer = lookupInitializer(token.value());
     if (initializer == nullptr) {
         auto typeString = type.toString(typeContext, true);
-        throw CompilerError(token, "%s has no initializer %s.", typeString.c_str(),
+        throw CompilerError(token.position(), "%s has no initializer %s.", typeString.c_str(),
                                      token.value().utf8().c_str());
     }
     return initializer;
 }
 
-Function* TypeDefinitionFunctional::getMethod(const Token &token, Type type, TypeContext typeContext) {
+Function* TypeDefinitionFunctional::getMethod(const Token &token, Type type, const TypeContext &typeContext) {
     auto method = lookupMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        throw CompilerError(token, "%s has no method %s", eclass.c_str(), token.value().utf8().c_str());
+        throw CompilerError(token.position(), "%s has no method %s", eclass.c_str(), token.value().utf8().c_str());
     }
     return method;
 }
 
-Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, Type type, TypeContext typeContext) {
+Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, Type type, const TypeContext &typeContext) {
     auto method = lookupTypeMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
-        throw CompilerError(token, "%s has no type method %s", eclass.c_str(), token.value().utf8().c_str());
+        throw CompilerError(token.position(), "%s has no type method %s", eclass.c_str(), token.value().utf8().c_str());
     }
     return method;
 }
 
-void TypeDefinitionFunctional::addProtocol(Type type, SourcePosition p) {
-    for (auto protocol : protocols_) {
+void TypeDefinitionFunctional::addProtocol(Type type, const SourcePosition &p) {
+    for (auto &protocol : protocols_) {
         if (protocol.identicalTo(type, Type::nothingness(), nullptr)) {
             auto name = type.toString(Type::nothingness(), true);
             throw CompilerError(p, "Conformance to protocol %s was already declared.", name.c_str());
@@ -130,13 +133,13 @@ void TypeDefinitionFunctional::addMethod(Function *method) {
     methodList_.push_back(method);
 }
 
-void TypeDefinitionFunctional::addInitializer(Initializer *init) {
-    duplicateDeclarationCheck(init, initializers_, init->position());
-    initializers_[init->name()] = init;
-    initializerList_.push_back(init);
+void TypeDefinitionFunctional::addInitializer(Initializer *initializer) {
+    duplicateDeclarationCheck(initializer, initializers_, initializer->position());
+    initializers_[initializer->name()] = initializer;
+    initializerList_.push_back(initializer);
 
-    if (init->required) {
-        handleRequiredInitializer(init);
+    if (initializer->required) {
+        handleRequiredInitializer(initializer);
     }
 }
 
@@ -157,14 +160,14 @@ void TypeDefinitionFunctional::finalize() {
         throw CompilerError(position(), "You exceeded the limit of 65,536 instance variables.");
     }
 
-    if (instanceVariables().size() > 0 && initializerList().size() == 0) {
+    if (!instanceVariables().empty() && initializerList().empty()) {
         compilerWarning(position(), "Type defines %d instances variables but has no initializers.",
                         instanceVariables().size());
     }
 }
 
 void TypeDefinitionFunctional::finalizeProtocols(Type type, VTIProvider *methodVtiProvider) {
-    for (Type protocol : protocols()) {
+    for (const Type &protocol : protocols()) {
         for (auto method : protocol.protocol()->methodList()) {
             try {
                 Function *clm = lookupMethod(method->name());

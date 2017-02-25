@@ -51,7 +51,7 @@ public:
      * Tries to fetch the type reference type for the given generic variable name and stores it into @c type.
      * @returns Whether the variable could be found or not. @c type is untouched if @c false was returned.
      */
-    bool fetchVariable(EmojicodeString name, bool optional, Type *type);
+    bool fetchVariable(const EmojicodeString &name, bool optional, Type *destType);
     /*
      * Determines whether the given type reference resolution constraint allows the type to be
      * resolved on this type definition.
@@ -64,23 +64,23 @@ public:
 
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function* getMethod(const Token &token, Type type, TypeContext typeContext);
+    Function* getMethod(const Token &token, Type type, const TypeContext &typeContext);
     /// Returns an initializer by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Initializer* getInitializer(const Token &token, Type type, TypeContext typeContext);
+    Initializer* getInitializer(const Token &token, Type type, const TypeContext &typeContext);
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function* getTypeMethod(const Token &token, Type type, TypeContext typeContext);
+    Function* getTypeMethod(const Token &token, Type type, const TypeContext &typeContext);
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupMethod(EmojicodeString name);
+    virtual Function* lookupMethod(const EmojicodeString &name);
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    virtual Initializer* lookupInitializer(EmojicodeString name);
+    virtual Initializer* lookupInitializer(const EmojicodeString &name);
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupTypeMethod(EmojicodeString name);
+    virtual Function* lookupTypeMethod(const EmojicodeString &name);
 
     virtual void addMethod(Function *method);
-    virtual void addInitializer(Initializer *method);
+    virtual void addInitializer(Initializer *initializer);
     virtual void addTypeMethod(Function *method);
     void addInstanceVariable(const InstanceVariableDeclaration&);
 
@@ -90,7 +90,7 @@ public:
     const std::vector<InstanceVariableDeclaration>& instanceVariables() { return instanceVariables_; }
 
     /** Declares that this class agrees to the given protocol. */
-    void addProtocol(Type type, SourcePosition p);
+    void addProtocol(Type type, const SourcePosition &p);
     /** Returns a list of all protocols to which this class conforms. */
     const std::vector<Type>& protocols() const { return protocols_; };
 

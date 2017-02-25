@@ -40,7 +40,7 @@ public:
 
     void writeBytes(const char *bytes, size_t count);
 
-    void writeFunction(Function *f);
+    void writeFunction(Function *function);
 
     /// Finishes the writing. The file is not ready to be used before this method was called.
     void finish();

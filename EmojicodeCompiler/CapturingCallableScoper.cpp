@@ -9,7 +9,8 @@
 #include "CapturingCallableScoper.hpp"
 #include "VariableNotFoundError.hpp"
 
-ResolvedVariable CapturingCallableScoper::getVariable(const EmojicodeString &name, SourcePosition errorPosition) {
+ResolvedVariable CapturingCallableScoper::getVariable(const EmojicodeString &name,
+                                                      const SourcePosition & errorPosition) {
     try {
         return CallableScoper::getVariable(name, errorPosition);
     }

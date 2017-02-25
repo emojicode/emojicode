@@ -46,10 +46,10 @@ public:
      * circular dependencies.
      * @param name The name of the package to load.
      */
-    Package* loadPackage(std::string name, EmojicodeString ns, SourcePosition p);
+    Package* loadPackage(const std::string &name, const EmojicodeString &ns, SourcePosition p);
 
     Package(std::string n, SourcePosition p) : name_(n), position_(p) {}
-    void parse(const std::string path);
+    void parse(const std::string &path);
 
     bool finishedLoading() const { return finishedLoading_; }
     PackageVersion version() const { return version_; }

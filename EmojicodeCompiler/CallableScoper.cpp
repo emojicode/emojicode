@@ -41,13 +41,13 @@ Scope& CallableScoper::topmostLocalScope() {
     return scopes_.back();
 }
 
-ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, SourcePosition errorPosition) {
+ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, const SourcePosition &errorPosition) {
     for (Scope &scope : scopes_) {
         if (scope.hasLocalVariable(name)) {
             return ResolvedVariable(scope.getLocalVariable(name), false);
         }
     }
-    if (instanceScope_ && instanceScope_->hasLocalVariable(name)) {
+    if (instanceScope_ != nullptr && instanceScope_->hasLocalVariable(name)) {
         return ResolvedVariable(instanceScope_->getLocalVariable(name), true);
     }
     throw VariableNotFoundError(errorPosition, name);
@@ -57,7 +57,7 @@ void CallableScoper::pushInitializationLevel() {
     for (auto &scope : scopes_) {
         scope.pushInitializationLevel();
     }
-    if (instanceScope()) {
+    if (instanceScope() != nullptr) {
         instanceScope()->pushInitializationLevel();
     }
 }
@@ -66,7 +66,7 @@ void CallableScoper::popInitializationLevel() {
     for (auto &scope : scopes_) {
         scope.popInitializationLevel();
     }
-    if (instanceScope()) {
+    if (instanceScope() != nullptr) {
         instanceScope()->popInitializationLevel();
     }
 }
