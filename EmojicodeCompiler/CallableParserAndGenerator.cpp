@@ -375,12 +375,7 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
             case E_SHORTCAKE: {
                 auto &varName = stream_.consumeToken(TokenType::Variable);
 
-                if (scoper.currentScope().hasLocalVariable(varName.value())) {
-                    throw CompilerError(token.position(), "Cannot redeclare variable.");
-                }
-
                 Type t = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
-
 
                 auto &var = scoper.currentScope().setLocalVariable(varName.value(), t, false, varName.position());
 
@@ -467,10 +462,6 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
             }
             case E_SOFT_ICE_CREAM: {
                 auto &varName = stream_.consumeToken(TokenType::Variable);
-
-                if (scoper.currentScope().hasLocalVariable(varName.value())) {
-                    throw CompilerError(token.position(), "Cannot redeclare variable.");
-                }
 
                 writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION);
 
@@ -1080,36 +1071,31 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             return function->type();
         }
         case E_GRAPES: {
-            throw std::domain_error("Closures currently not available");
-//            writeBoxingAndTemporary(des, Type::callableIncomplete(), token.position());
-//            writer.writeInstruction(INS_CLOSURE, token);
+            auto function = new Function(EmojicodeString(E_GRAPES), AccessLevel::Public, true, callable.owningType(),
+                                         package_, token.position(), false, EmojicodeString(), false, false, mode);
+            parseArgumentList(function, typeContext, true);
+            parseReturnType(function, typeContext);
+            parseBodyBlock(function);
 
-//            auto function = Closure(token.position());
-//            parseArgumentList(&function, typeContext, true);
-//            parseReturnType(&function, typeContext);
-//            parseBody(&function);
-//
-//            auto variableCountPlaceholder = writer.writeInstructionPlaceholder(token);
-//            auto coinCountPlaceholder = writer.writeInstructionsCountPlaceholderCoin(token);
-//
-//            auto closureScoper = CapturingCallableScoper(scoper);
-//
-//            // TODO: Intializer
-//            auto analyzer = CallableParserAndGenerator(function, package_, mode, typeContext, writer, closureScoper);
-//            analyzer.analyze();
-//
-//            coinCountPlaceholder.write();
-//            variableCountPlaceholder.write(closureScoper.fullSize());
-//            writer.writeInstruction(static_cast<EmojicodeInstruction>(function.arguments.size())
-//                                    | (analyzer.usedSelfInBody() ? 1 << 16 : 0), token);
-//
-//            writer.writeInstruction(static_cast<EmojicodeInstruction>(closureScoper.captures().size()), token);
-//            writer.writeInstruction(closureScoper.captureSize(), token);
-//            for (auto capture : closureScoper.captures()) {
-//                writer.writeInstruction(capture.id, token);
-//                writer.writeInstruction(capture.type.size(), token);
-//                writer.writeInstruction(capture.captureId, token);
-//            }
+            function->setVtiProvider(&Function::pureFunctionsProvider);
+            package_->registerFunction(function);
+
+            auto closureScoper = CapturingCallableScoper(scoper);
+            auto analyzer = writeAndAnalyzeFunction(function, function->writer_, function->owningType(), closureScoper);
+
+            writeBoxingAndTemporary(des, Type::callableIncomplete());
+            writer.writeInstruction(INS_CLOSURE);
+            function->markUsed(false);
+            writer.writeInstruction(function->vtiForUse());
+            writer.writeInstruction(static_cast<EmojicodeInstruction>(closureScoper.captures().size()));
+            writer.writeInstruction(closureScoper.captureSize());
+            for (auto capture : closureScoper.captures()) {
+                writer.writeInstruction(capture.id);
+                writer.writeInstruction(capture.type.size());
+                writer.writeInstruction(capture.captureId);
+            }
+            writer.writeInstruction(analyzer.usedSelfInBody() ? 1 : 0);
+            return function->type();
         }
         case E_LOLLIPOP: {
             effect = true;
@@ -1593,6 +1579,8 @@ void CallableParserAndGenerator::analyze() {
             var.initialize(writer.writtenInstructions());
         }
 
+        scoper.postArgumentsHook();
+
         if (isFullyInitializedCheckRequired()) {
             auto initializer = static_cast<Initializer &>(callable);
             for (auto &var : initializer.argumentsToVariables()) {
@@ -1676,8 +1664,10 @@ void CallableParserAndGenerator::generateBoxingLayer(BoxingLayer *layer) {
     layer->setFullSizeFromArguments();
 }
 
-void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type contextType,
-                                                         CallableScoper &scoper, CallableParserAndGeneratorMode mode) {
+CallableParserAndGenerator CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function,
+                                                                               CallableWriter &writer,
+                                                                               Type contextType,
+                                                                               CallableScoper &scoper) {
     if (contextType.type() == TypeContent::ValueType) {
         if (function->mutating()) {
             contextType.setMutable(true);
@@ -1688,12 +1678,13 @@ void CallableParserAndGenerator::writeAndAnalyzeFunction(Function *function, Cal
         contextType.setValueReference();
     }
 
-    auto sca = CallableParserAndGenerator(*function, function->package(), mode, TypeContext(contextType, function),
-                                          writer, scoper);
-    if (mode == CallableParserAndGeneratorMode::BoxingLayer) {
+    auto sca = CallableParserAndGenerator(*function, function->package(), function->compilationMode(),
+                                          TypeContext(contextType, function), writer, scoper);
+    if (function->compilationMode() == CallableParserAndGeneratorMode::BoxingLayer) {
         sca.generateBoxingLayer(static_cast<BoxingLayer *>(function));
-        return;
+        return sca;
     }
     sca.analyze();
     function->setFullSize(scoper.fullSize());
+    return sca;
 }

@@ -44,8 +44,8 @@ enum class TypeAvailability {
 /** This class is repsonsible for compiling a @c Callable to bytecode. */
 class CallableParserAndGenerator : AbstractParser {
 public:
-    static void writeAndAnalyzeFunction(Function *function, CallableWriter &writer, Type contextType,
-                                        CallableScoper &scoper, CallableParserAndGeneratorMode mode);
+    static CallableParserAndGenerator writeAndAnalyzeFunction(Function *function, CallableWriter &writer,
+                                                              Type contextType, CallableScoper &scoper);
     CallableParserAndGenerator(Function &function, Package *p, CallableParserAndGeneratorMode mode,
                                TypeContext typeContext, CallableWriter &writer, CallableScoper &scoper);
 

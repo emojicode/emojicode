@@ -46,7 +46,7 @@ void generateCodeForFunction(Function *function, CallableWriter &w) {
         scoper = CallableScoper(&function->owningType().typeDefinitionFunctional()->instanceScope());
     }
     CallableParserAndGenerator::writeAndAnalyzeFunction(function, w, function->owningType().disableSelfResolving(),
-                                                        scoper, function->compilationMode());
+                                                        scoper);
 }
 
 void writeProtocolTable(Type type, Writer &writer) {
@@ -146,8 +146,7 @@ void generateCode(Writer &writer) {
     auto &theStringPool = StringPool::theStringPool();
     theStringPool.poolString(EmojicodeString());
 
-    ValueTypeVTIProvider provider;
-    Function::start->setVtiProvider(&provider);
+    Function::start->setVtiProvider(&Function::pureFunctionsProvider);
     Function::start->vtiForUse();
 
     for (auto vt : ValueType::valueTypes()) {  // Must be processed first, different sizes

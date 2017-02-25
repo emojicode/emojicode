@@ -16,6 +16,7 @@ struct VariableCapture {
     VariableCapture(int id, Type type, int captureId) : id(id), type(type), captureId(captureId) {}
     int id;
     Type type;
+    /// The ID of the variable copy in the Closure
     int captureId;
 };
 
@@ -27,11 +28,14 @@ public:
         : CallableScoper(captured.instanceScope()), capturedScoper_(captured) {}
     ResolvedVariable getVariable(const EmojicodeString &name, const SourcePosition &errorPosition) override;
     const std::vector<VariableCapture>& captures() const { return captures_; }
-    int captureSize() const { return captureSize_; }
+    size_t captureSize() const { return captureSize_; }
+
+    void postArgumentsHook() override;
 private:
     CallableScoper &capturedScoper_;
     std::vector<VariableCapture> captures_;
-    int captureSize_ = 0;
+    size_t captureSize_ = 0;
+    size_t captureId_;
 };
 
 #endif /* CapturingCallableScoper_hpp */

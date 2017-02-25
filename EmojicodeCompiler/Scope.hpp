@@ -24,8 +24,16 @@ public:
     void pushInitializationLevel();
     void popInitializationLevel();
 
-    /// Sets a variable in this scope.
-    Variable& setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos);
+    /// Sets a variable in this scope and returns it.
+    /// @throws CompilerError if a variable with this name already exists.
+    Variable& setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, const SourcePosition &pos);
+    /// Sets a variable in this scope with the given ID and returns it. No space will be reserved and scopes size won’t
+    /// be changed.
+    /// @warning Use this method only if you, for whatever reason, need to assign this variable a specific index which
+    /// was previously accordingly reserved.
+    /// @throws CompilerError if a variable with this name already exists.
+    Variable& setLocalVariableWithID(const EmojicodeString &variable, Type type, bool frozen, int id,
+                                     const SourcePosition &pos);
     /// Allocates a variable for internal use only and returns its ID.
     int allocateInternalVariable(Type type);
 

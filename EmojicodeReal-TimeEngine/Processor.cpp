@@ -78,7 +78,7 @@ void Box::unwrapOptional() const {
 void loadCapture(Closure *c, Thread *thread) {
     Value *cv = static_cast<Value *>(c->capturedVariables->value);
     CaptureInformation *infop = static_cast<CaptureInformation *>(c->capturesInformation->value);
-    for (int i = 0; i < c->captureCount; i++) {
+    for (unsigned int i = 0; i < c->captureCount; i++) {
         std::memcpy(thread->variableDestination(infop->destination), cv, infop->size * sizeof(Value));
         cv += infop->size;
         infop++;
@@ -107,16 +107,14 @@ void executeCallableExtern(Object *callable, Value *args, Thread *thread, Value 
     }
     else {
         Closure *c = static_cast<Closure *>(callable->value);
+        auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function, destination,
+                                       c->function->block.instructions);
 
-        // TODO: Won’t work with real vts
-        // TODO: WRONG nullptr
-        auto sf = thread->reserveFrame(c->thisContext, c->variableCount, nullptr, destination, c->block.instructions);
-        memcpy(sf->variableDestination(0), args, c->argumentCount * sizeof(Value));
+        memcpy(sf->variableDestination(0), args, c->function->argumentCount * sizeof(Value));
         thread->pushReservedFrame();
-
         loadCapture(c, thread);
 
-        runFunctionPointerBlock(thread, c->block.instructionCount);
+        runFunctionPointerBlock(thread, c->function->block.instructionCount);
     }
     thread->popStack();
 }
@@ -881,13 +879,12 @@ void produce(Thread *thread, Value *destination) {
             }
             else {
                 Closure *c = static_cast<Closure *>(callable->value);
-                // TODO: wrong nullptr
-                thread->pushStack(c->thisContext, c->variableCount, c->argumentCount, nullptr, destination,
-                                  c->block.instructions);
+                thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
+                                  destination, c->function->block.instructions);
 
                 loadCapture(c, thread);
 
-                runFunctionPointerBlock(thread, c->block.instructionCount);
+                runFunctionPointerBlock(thread, c->function->block.instructionCount);
                 thread->popStack();
                 return;
             }
@@ -897,14 +894,7 @@ void produce(Thread *thread, Value *destination) {
 
             Closure *c = static_cast<Closure *>(closure->value);
 
-            c->variableCount = thread->consumeInstruction();
-            c->block.instructionCount = thread->consumeInstruction();
-            c->block.instructions = thread->currentStackFrame()->executionPointer;
-            thread->currentStackFrame()->executionPointer += c->block.instructionCount;
-
-            EmojicodeInstruction argumentCount = thread->consumeInstruction();
-            c->argumentCount = argumentCount;
-
+            c->function = functionTable[thread->consumeInstruction()];
             c->captureCount = thread->consumeInstruction();
             EmojicodeInteger size = thread->consumeInstruction();
 
@@ -917,17 +907,18 @@ void produce(Thread *thread, Value *destination) {
 
             Value *t = static_cast<Value *>(c->capturedVariables->value);
             CaptureInformation *info = static_cast<CaptureInformation *>(c->capturesInformation->value);
-            for (int i = 0; i < c->captureCount; i++) {
-                EmojicodeInteger index = thread->consumeInstruction();
-                EmojicodeInteger size = thread->consumeInstruction();
+            for (unsigned int i = 0; i < c->captureCount; i++) {
+                EmojicodeInstruction index = thread->consumeInstruction();
+                EmojicodeInstruction size = thread->consumeInstruction();
                 info->destination = thread->consumeInstruction();
                 (info++)->size = size;
                 std::memcpy(t, thread->variableDestination(index), size * sizeof(Value));
                 t += size;
             }
 
-            if (argumentCount >> 16)
+            if (thread->consumeInstruction()) {
                 c->thisContext = thread->getThisContext();
+            }
 
             destination->object = closure;
             thread->release(1);

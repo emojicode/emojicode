@@ -55,6 +55,10 @@ public:
     static bool foundStart;
     static Function *start;
     static std::queue<Function *> compilationQueue;
+    /// The VTIProvider used for functions created by the compiler that do not belong to any type. E.g. the start flag
+    /// function, closures.
+    static ValueTypeVTIProvider pureFunctionsProvider;
+
     /** Returns a VTI for a function. */
     static int nextFunctionVti() { return nextVti_++; }
     /** Returns the number of funciton VTIs assigned. This should be equal to the number of compiled functions. */
@@ -151,6 +155,7 @@ public:
     /// Returns the VTI this function was assigned.
     /// @throws std::logic_error if the function wasn’t assigned a VTI
     int getVti() const;
+    void markUsed(bool addToCompilationQueue = true);
     /** Sets the @c VTIProvider which should be used to assign this method a VTI and to update the VTI counter. */
     void setVtiProvider(VTIProvider *provider);
     /// Whether the function was used.
@@ -176,7 +181,6 @@ public:
 private:
     /** Sets the VTI to @c vti and enters this functions into the list of functions to be compiled into the binary. */
     void setVti(int vti);
-    void markUsed();
 
     TokenStream tokenStream_;
     SourcePosition position_;

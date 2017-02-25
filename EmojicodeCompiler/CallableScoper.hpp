@@ -55,6 +55,9 @@ public:
 
     Scope& topmostLocalScope();
 
+    /// This method is called by the CallableParserAndGenerator after all arguments were set
+    virtual void postArgumentsHook() {}
+
     void pushTemporaryScope() { /* pushScope(); temporaryScopes_++; */ }
     void popTemporaryScope() {
 //        if (temporaryScopes_) {
@@ -65,10 +68,13 @@ public:
     void clearAllTemporaryScopes() {
         if (temporaryScopes_ > 0) throw std::logic_error("Not all temporary scoeps popped");
     }
+protected:
+    int maxInitializationLevel() const { return maxInitializationLevel_; }
 private:
     std::list<Scope> scopes_;
     Scope *instanceScope_ = nullptr;
     int temporaryScopes_ = 0;
+    int maxInitializationLevel_ = 1;
 };
 
 #endif /* CallableScoper_hpp */

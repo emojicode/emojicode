@@ -96,10 +96,8 @@ struct CaptureInformation {
 };
 
 struct Closure {
-    Block block;
-    uint8_t argumentCount;
-    uint8_t variableCount;
-    int captureCount;
+    Function *function;
+    unsigned int captureCount;
     Object *capturedVariables;
     Object *capturesInformation;
     Value thisContext;

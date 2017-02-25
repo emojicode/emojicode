@@ -30,13 +30,22 @@ void Scope::popInitializationLevel() {
     }
 }
 
-Variable& Scope::setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, SourcePosition pos) {
+Variable& Scope::setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, const SourcePosition &pos) {
     if (hasLocalVariable(variable)) {
-        return getLocalVariable(variable);
+        throw CompilerError(pos, "Cannot redeclare variable.");
     }
     int id = scoper_->reserveVariable(type.size());
     Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, pos)).first->second;
     size_ += type.size();
+    return v;
+}
+
+Variable& Scope::setLocalVariableWithID(const EmojicodeString &variable, Type type, bool frozen, int id,
+                                        const SourcePosition &pos) {
+    if (hasLocalVariable(variable)) {
+        throw CompilerError(pos, "Cannot redeclare variable.");
+    }
+    Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, pos)).first->second;
     return v;
 }
 

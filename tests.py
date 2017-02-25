@@ -40,10 +40,13 @@ compilation_tests = [
     "assignmentByCallProtocol",
     "commonType",
     "variableInitAndScoping",
+    "closureBasic",
+    "closureCapture",
+    "closureCaptureValueType",
     "gcStressTest1",
     "gcStressTest2",
     "valueTypeCopySelf",
-    # callable threads
+    # threads
 ]
 library_tests = [
     "stringTest", "primitives", "mathTest", "listTest", "rangeTest",

@@ -19,6 +19,7 @@ bool Function::foundStart = false;
 Function *Function::start;
 int Function::nextVti_ = 0;
 std::queue<Function*> Function::compilationQueue;
+ValueTypeVTIProvider Function::pureFunctionsProvider;
 
 void Function::setLinkingTableIndex(int index) {
     linkingTableIndex_ = index;
@@ -116,7 +117,7 @@ void Function::assignVti() {
     }
 }
 
-void Function::markUsed() {
+void Function::markUsed(bool addToCompilationQueue) {
     if (used_) {
         return;
     }
@@ -125,7 +126,9 @@ void Function::markUsed() {
         vtiProvider_->used();
     }
     if (!isNative()) {
-        Function::compilationQueue.push(this);
+        if (addToCompilationQueue) {
+            Function::compilationQueue.push(this);
+        }
     }
     else {
         setFullSizeFromArguments();

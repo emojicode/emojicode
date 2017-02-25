@@ -22,13 +22,12 @@ public:
     int fullSize() const { return size_; };
 protected:
     void reduceOffsetBy(int size);
+    int reserveVariable(int size);
 private:
     int nextOffset_ = 0;
     int size_ = 0;
 
     void syncSize();
-
-    int reserveVariable(int size);
 };
 
 #endif /* Scoper_hpp */

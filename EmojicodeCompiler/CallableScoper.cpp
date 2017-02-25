@@ -54,6 +54,7 @@ ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, const 
 }
 
 void CallableScoper::pushInitializationLevel() {
+    maxInitializationLevel_++;
     for (auto &scope : scopes_) {
         scope.pushInitializationLevel();
     }
@@ -63,6 +64,7 @@ void CallableScoper::pushInitializationLevel() {
 }
 
 void CallableScoper::popInitializationLevel() {
+    maxInitializationLevel_--;
     for (auto &scope : scopes_) {
         scope.popInitializationLevel();
     }

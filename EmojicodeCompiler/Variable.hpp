@@ -12,7 +12,10 @@
 #include "Type.hpp"
 #include "Token.hpp"
 
+class CapturingCallableScoper;
+
 class Variable {
+    friend CapturingCallableScoper;
 public:
     Variable(Type type, int id, bool frozen, const EmojicodeString &string, SourcePosition p)
         : type_(type), frozen_(frozen), string_(string), id_(id), position_(p) {}
