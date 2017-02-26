@@ -17,7 +17,6 @@
 
 Class *CL_STRING;
 Class *CL_LIST;
-Class *CL_ERROR;
 Class *CL_DATA;
 Class *CL_DICTIONARY;
 Class *CL_CAPTURED_FUNCTION_CALL;

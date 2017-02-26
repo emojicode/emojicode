@@ -22,7 +22,6 @@ class Thread;
 
 extern Class *CL_STRING;
 extern Class *CL_LIST;
-extern Class *CL_ERROR;
 extern Class *CL_DATA;
 extern Class *CL_DICTIONARY;
 extern Class *CL_CLOSURE;
@@ -109,13 +108,6 @@ struct Data {
     char *bytes;
     Object *bytesObject;
 };
-
-struct EmojicodeError {
-    const char *message;
-    EmojicodeInteger code;
-};
-
-extern Object* newError(const char *message, int code);
 
 // MARK: Callables
 

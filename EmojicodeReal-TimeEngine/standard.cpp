@@ -171,34 +171,6 @@ static void mutexTryLock(Thread *thread, Value *destination) {
     destination->raw = pthread_mutex_trylock(static_cast<pthread_mutex_t*>(thread->getThisObject()->value)) == 0;
 }
 
-// MARK: Error
-
-Object* newError(const char *message, int code) {
-    Object *o = newObject(CL_ERROR);
-
-    EmojicodeError* error = static_cast<EmojicodeError *>(o->value);
-    error->message = message;
-    error->code = code;
-
-    return o;
-}
-
-void initErrorBridge(Thread *thread, Value *destination) {
-    EmojicodeError *error = static_cast<EmojicodeError *>(thread->getThisObject()->value);
-    error->message = stringToChar(static_cast<String *>(thread->getVariable(0).object->value));
-    error->code = thread->getVariable(1).raw;
-}
-
-static void errorGetMessage(Thread *thread, Value *destination) {
-    EmojicodeError *error = static_cast<EmojicodeError *>(thread->getThisObject()->value);
-    destination->object = stringFromChar(error->message);
-}
-
-static void errorGetCode(Thread *thread, Value *destination) {
-    EmojicodeError *error = static_cast<EmojicodeError *>(thread->getThisObject()->value);
-    destination->raw = error->code;
-}
-
 // MARK: Data
 
 static void dataEqual(Thread *thread, Value *destination) {
@@ -575,9 +547,9 @@ FunctionFunctionPointer sLinkingTable[] = {
     stringGetInput,  //😮
     stringFromSymbolListBridge,  //🎙
     stringFromStringList,  //🍨
-    errorGetMessage,
-    errorGetCode,
-    initErrorBridge,
+    nullptr,
+    nullptr,
+    nullptr,
     initDictionaryBridge,
     bridgeDictionaryGet,  //🐽
     bridgeDictionaryRemove,  //🐨

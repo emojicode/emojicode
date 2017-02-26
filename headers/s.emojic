@@ -284,11 +284,6 @@
   language reference.](../../reference/the-s-package.html#-lists)
 🌮
 🌍 🐇 🍨🐚Element ⚪️ 🍇🍉
-🌮
-  A 🚨 instance represents an error. Many methods interacting with the operating
-  system will return an error on a failure.
-🌮
-🌍 🐇 🚨 🍇🍉
 🌮 📇 is an abstract interface to binary data. 🌮
 🌍 🐇 📇 🍇🍉
 🌮
@@ -830,18 +825,6 @@
   🐖 🍡 ➡️ 🌳🐚🚂 🍇
     🍎 🔷🌳🐚🚂🆕 🐕
   🍉
-🍉
-
-🐋 🚨 🍇
-  🌮 Create an error. 🌮
-  🐈 😮 message 🔡 code 🚂 📻 85
-  🌮
-    Returns the message associated with the error.
-    This is maybe an empty string.
-  🌮
-  🐖 😤 ➡️ 🔡 📻 83
-  🌮 Returns the code associated with the error. 🌮
-  🐖 😴 ➡️ 🚂 📻 82
 🍉
 
 🐋 🍯 🍇

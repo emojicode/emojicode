@@ -152,7 +152,6 @@ void loadStandard(Package *_, SourcePosition errorPosition) {
 
     CL_STRING = getStandardClass(EmojicodeString(0x1F521), _, errorPosition);
     CL_LIST = getStandardClass(EmojicodeString(0x1F368), _, errorPosition);
-    CL_ERROR = getStandardClass(EmojicodeString(0x1F6A8), _, errorPosition);
     CL_DATA = getStandardClass(EmojicodeString(0x1F4C7), _, errorPosition);
     CL_DICTIONARY = getStandardClass(EmojicodeString(0x1F36F), _, errorPosition);
 

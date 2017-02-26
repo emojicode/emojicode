@@ -279,10 +279,9 @@ Function* readBytecode(FILE *in) {
 
     CL_STRING = classTable[0];
     CL_LIST = classTable[1];
-    CL_ERROR = classTable[2];
-    CL_DATA = classTable[3];
-    CL_DICTIONARY = classTable[4];
-    CL_CLOSURE = classTable[5];
+    CL_DATA = classTable[2];
+    CL_DICTIONARY = classTable[3];
+    CL_CLOSURE = classTable[4];
 
     DEBUG_LOG("✅ Read all packages");
 
