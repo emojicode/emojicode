@@ -51,6 +51,21 @@ bool CallableParserAndGenerator::typeIsEnumerable(Type type, Type *elementType) 
     return false;
 }
 
+void CallableParserAndGenerator::checkAccessLevel(Function *function, const SourcePosition &p) const {
+    if (function->accessLevel() == AccessLevel::Private) {
+        if (typeContext.calleeType().type() != function->owningType().type()
+            || function->owningType().typeDefinition() != typeContext.calleeType().typeDefinition()) {
+            throw CompilerError(p, "%s is 🔒.", function->name().utf8().c_str());
+        }
+    }
+    else if (function->accessLevel() == AccessLevel::Protected) {
+        if (typeContext.calleeType().type() != function->owningType().type()
+            || !this->typeContext.calleeType().eclass()->inheritsFrom(function->owningType().eclass())) {
+            throw CompilerError(p, "%s is 🔐.", function->name().utf8().c_str());
+        }
+    }
+}
+
 Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const Token &token) {
     std::vector<Type> genericArguments;
     std::vector<CommonTypeFinder> genericArgsFinders;
@@ -120,20 +135,7 @@ Type CallableParserAndGenerator::parseFunctionCall(Type type, Function *p, const
             }
         }
     }
-
-    if (p->accessLevel() == AccessLevel::Private) {
-        if (this->typeContext.calleeType().type() != p->owningType().type()
-            || p->owningType().typeDefinition() != this->typeContext.calleeType().typeDefinition()) {
-            throw CompilerError(token.position(), "%s is 🔒.", p->name().utf8().c_str());
-        }
-    }
-    else if (p->accessLevel() == AccessLevel::Protected) {
-        if (this->typeContext.calleeType().type() != p->owningType().type()
-            || !this->typeContext.calleeType().eclass()->inheritsFrom(p->owningType().eclass())) {
-            throw CompilerError(token.position(), "%s is 🔐.", p->name().utf8().c_str());
-        }
-    }
-
+    checkAccessLevel(p, token.position());
     return p->returnType.resolveOn(typeContext);
 }
 
@@ -1059,13 +1061,16 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 }
                 else if (type.type() == TypeContent::ValueType) {
                     placeholder.write(INS_CAPTURE_CONTEXTED_FUNCTION);
+                    if (type.size() > 1) {
+                        throw CompilerError(token.position(), "Type not eligible for method capturing.");  // TODO: Improve
+                    }
                 }
                 else {
                     throw CompilerError(token.position(), "You can’t capture method calls on this kind of type.");
                 }
                 function = type.typeDefinitionFunctional()->getMethod(methodName, type, typeContext);
             }
-
+            checkAccessLevel(function, token.position());
             function->deprecatedWarning(token.position());
             writer.writeInstruction(function->vtiForUse());
             return function->type();

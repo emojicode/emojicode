@@ -85,11 +85,6 @@ extern int cliArgumentCount;
 
 extern const char *packageDirectory;
 
-struct CapturedFunctionCall {
-    Value callee;
-    Function *function;
-};
-
 struct CaptureInformation {
     int size;
     int destination;

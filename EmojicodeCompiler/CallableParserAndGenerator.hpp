@@ -136,6 +136,7 @@ private:
     void noReturnError(const SourcePosition &p);
     void noEffectWarning(const Token &warningToken);
     void mutatingMethodCheck(Function *function, Type type, Destination des, const SourcePosition &p);
+    void checkAccessLevel(Function *function, const SourcePosition &p) const;
     bool typeIsEnumerable(Type type, Type *elementType);
     void flowControlBlock(bool block = true, const std::function<void()> &bodyPredicate = nullptr);
 

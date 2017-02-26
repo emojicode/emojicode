@@ -25,7 +25,6 @@ extern Class *CL_LIST;
 extern Class *CL_ERROR;
 extern Class *CL_DATA;
 extern Class *CL_DICTIONARY;
-extern Class *CL_CAPTURED_FUNCTION_CALL;
 extern Class *CL_CLOSURE;
 extern Class *CL_ARRAY;
 

@@ -1,0 +1,27 @@
+🐇 🕵 🍇
+  🍰 name 🔡
+
+  🐈 🆕 🍼 name 🔡 🍇🍉
+
+  🐖 🏷 neuerName 🔡 🍇
+    🍮 name neuerName
+  🍉
+
+  🐖 😀 🍇
+    😀 name
+  🍉
+🍉
+
+
+🏁 🍇
+  🍦 append 🌶📝 🔤Florence🔤
+  😀 🍭 append 🔟!
+  😀 🍭 append 🔟?
+
+	🍦 d 🔷🕵🆕 🔤Miss Marple🔤
+	🍦 changeName 🌶🏷 d
+	🍦 printName 🌶😀d
+	🍭 printName
+	🍭 changeName 🔤Hercule Poirot🔤
+	🍭 printName
+🍉

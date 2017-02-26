@@ -43,6 +43,8 @@ compilation_tests = [
     "closureBasic",
     "closureCapture",
     "closureCaptureValueType",
+    "captureMethod",
+    "captureTypeMethod",
     "gcStressTest1",
     "gcStressTest2",
     "valueTypeCopySelf",

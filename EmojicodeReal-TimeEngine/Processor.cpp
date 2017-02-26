@@ -76,6 +76,9 @@ void Box::unwrapOptional() const {
 }
 
 void loadCapture(Closure *c, Thread *thread) {
+    if (c->captureCount == 0) {
+        return;
+    }
     Value *cv = static_cast<Value *>(c->capturedVariables->value);
     CaptureInformation *infop = static_cast<CaptureInformation *>(c->capturesInformation->value);
     for (unsigned int i = 0; i < c->captureCount; i++) {
@@ -86,34 +89,21 @@ void loadCapture(Closure *c, Thread *thread) {
 }
 
 void executeCallableExtern(Object *callable, Value *args, Thread *thread, Value *destination) {
-    if (callable->klass == CL_CAPTURED_FUNCTION_CALL) {
-        CapturedFunctionCall *cmc = static_cast<CapturedFunctionCall *>(callable->value);
-        Function *method = cmc->function;
-
-        if (method->native) {
-            auto sf = thread->reserveFrame(cmc->callee, method->frameSize, method, nullptr, nullptr);
-            std::memcpy(sf->variableDestination(0), args, method->argumentCount * sizeof(Value));
-            thread->pushReservedFrame();
-            method->handler(thread, destination);
-        }
-        else {
-            auto sf = thread->reserveFrame(cmc->callee, method->frameSize, method, destination,
-                                            method->block.instructions);
-            memcpy(sf->variableDestination(0), args, method->argumentCount * sizeof(Value));
-            thread->pushReservedFrame();
-
-            runFunctionPointerBlock(thread, method->block.instructionCount);
-        }
-    }
-    else {
-        Closure *c = static_cast<Closure *>(callable->value);
-        auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function, destination,
-                                       c->function->block.instructions);
-
-        memcpy(sf->variableDestination(0), args, c->function->argumentCount * sizeof(Value));
+    Closure *c = static_cast<Closure *>(callable->value);
+    if (c->function->native) {
+        auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
+                                       destination, nullptr);
+        std::memcpy(sf->variableDestination(0), args, c->function->argumentCount * sizeof(Value));
         thread->pushReservedFrame();
         loadCapture(c, thread);
-
+        c->function->handler(thread, destination);
+    }
+    else {
+        auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
+                                       destination, c->function->block.instructions);
+        std::memcpy(sf->variableDestination(0), args, c->function->argumentCount * sizeof(Value));
+        thread->pushReservedFrame();
+        loadCapture(c, thread);
         runFunctionPointerBlock(thread, c->function->block.instructionCount);
     }
     thread->popStack();
@@ -871,23 +861,22 @@ void produce(Thread *thread, Value *destination) {
         case INS_EXECUTE_CALLABLE: {
             Value sth;
             produce(thread, &sth);
-            Object *callable = sth.object;
-            if (callable->klass == CL_CAPTURED_FUNCTION_CALL) {
-                CapturedFunctionCall *cmc = static_cast<CapturedFunctionCall *>(callable->value);
-                performFunction(cmc->function, cmc->callee, thread, destination);
-                return;
+
+            Closure *c = static_cast<Closure *>(sth.object->value);
+            if (c->function->native) {
+                thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
+                                  destination, nullptr);
+                loadCapture(c, thread);
+                c->function->handler(thread, destination);
             }
             else {
-                Closure *c = static_cast<Closure *>(callable->value);
                 thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
                                   destination, c->function->block.instructions);
-
                 loadCapture(c, thread);
-
                 runFunctionPointerBlock(thread, c->function->block.instructionCount);
-                thread->popStack();
-                return;
             }
+            thread->popStack();
+            return;
         }
         case INS_CLOSURE: {
             Object *const &closure = thread->retain(newObject(CL_CLOSURE));
@@ -929,41 +918,41 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, &sth);
             Object *const &callee = thread->retain(sth.object);
 
-            Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
-            CapturedFunctionCall *cmc = static_cast<CapturedFunctionCall *>(cmco->value);
+            Object *closureObject = newObject(CL_CLOSURE);
+            Closure *closure = static_cast<Closure *>(closureObject->value);
 
             EmojicodeInstruction vti = thread->consumeInstruction();
-            cmc->function = callee->klass->methodsVtable[vti];
-            cmc->callee.object = callee;
+            closure->function = callee->klass->methodsVtable[vti];
+            closure->thisContext = callee;
             thread->release(1);
-            destination->object = cmco;
+            destination->object = closureObject;
             return;
         }
         case INS_CAPTURE_TYPE_METHOD: {
             Value sth;
             produce(thread, &sth);
 
-            Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
-            CapturedFunctionCall *cmc = static_cast<CapturedFunctionCall *>(cmco->value);
+            Object *closureObject = newObject(CL_CLOSURE);
+            Closure *closure = static_cast<Closure *>(closureObject->value);
 
             EmojicodeInstruction vti = thread->consumeInstruction();
-            cmc->function = sth.klass->methodsVtable[vti];
-            cmc->callee.klass = sth.klass;
-            destination->object = cmco;
+            closure->function = sth.klass->methodsVtable[vti];
+            closure->thisContext = sth;
+            destination->object = closureObject;
             return;
         }
         case INS_CAPTURE_CONTEXTED_FUNCTION: {
             Value sth;
             produce(thread, &sth);
 
-            Object *cmco = newObject(CL_CAPTURED_FUNCTION_CALL);
-            CapturedFunctionCall *cmc = static_cast<CapturedFunctionCall *>(cmco->value);
+            Object *closureObject = newObject(CL_CLOSURE);
+            Closure *closure = static_cast<Closure *>(closureObject->value);
 
             EmojicodeInstruction vti = thread->consumeInstruction();
-            cmc->function = functionTable[vti];
-            cmc->callee = sth;
+            closure->function = functionTable[vti];
+            closure->thisContext = sth;
 
-            destination->object = cmco;
+            destination->object = closureObject;
             return;
         }
     }

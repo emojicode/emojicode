@@ -468,26 +468,20 @@ static void doubleAbsolute(Thread *thread, Value *destination) {
 // MARK: Callable
 
 static void closureMark(Object *o) {
-    Closure *c = static_cast<Closure *>(o->value);
+// TODO: Add correct implementation!
+//    Closure *c = static_cast<Closure *>(o->value);
 //    if (isRealObject(c->thisContext)) {
 //        mark(&c->thisContext.object);
 //    }
-    mark(&c->capturedVariables);
-
-    Value *t = static_cast<Value *>(c->capturedVariables->value);
-    CaptureInformation *infop = static_cast<CaptureInformation *>(c->capturesInformation->value);
-//    for (int i = 0; i < c->captureCount; i++) {
+//    mark(&c->capturedVariables);
+//
+//    Value *t = static_cast<Value *>(c->capturedVariables->value);
+//    CaptureInformation *infop = static_cast<CaptureInformation *>(c->capturesInformation->value);
+//    for (unsigned int i = 0; i < c->captureCount; i++) {
 //        Value *s = t + (infop++)->destination;
 //        if (isRealObject(*s)) {
 //            mark(&s->object);
 //        }
-//    }
-}
-
-static void capturedMethodMark(Object *o) {
-    CapturedFunctionCall *c = static_cast<CapturedFunctionCall *>(o->value);
-//    if (isRealObject(c->callee)) {
-//        mark(&c->callee.object);
 //    }
 }
 
@@ -606,8 +600,6 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
             return sizeof(Data);
         case 0x1F347:
             return sizeof(Closure);
-        case 0x1F336:
-            return sizeof(CapturedFunctionCall);
         case 0x1f488:  //💈
             return sizeof(pthread_t);
         case 0x1f510:  //🔐
@@ -626,8 +618,6 @@ Marker markerPointerForClass(EmojicodeChar cl) {
             return stringMark;
         case 0x1F347:
             return closureMark;
-        case 0x1F336:
-            return capturedMethodMark;
         case 0x1F4C7:
             return dataMark;
     }
