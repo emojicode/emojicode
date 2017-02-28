@@ -230,7 +230,7 @@ void produce(Thread *thread, Value *destination) {
             return;
         }
         case INS_SIMPLE_OPTIONAL_PRODUCE:
-            destination->raw = 1;
+            destination->raw = T_OPTIONAL_VALUE;
             produce(thread, destination + 1);
             return;
         case INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE: {
@@ -238,7 +238,7 @@ void produce(Thread *thread, Value *destination) {
             EmojicodeInstruction size = thread->consumeInstruction();
             produce(thread, &box.type);
             if (box.type.raw != T_NOTHINGNESS) std::memcpy(destination, &box.type, size * sizeof(Value));
-            else destination->raw = 0;
+            else destination->raw = T_NOTHINGNESS;
             return;
         }
         case INS_SIMPLE_OPTIONAL_TO_BOX: {
@@ -303,7 +303,7 @@ void produce(Thread *thread, Value *destination) {
             destination->character = thread->consumeInstruction();
             return;
         case INS_GET_NOTHINGNESS:
-            destination->raw = 0;
+            destination->raw = T_NOTHINGNESS;
             return;
         case INS_PRODUCE_WITH_STACK_DESTINATION: {
             EmojicodeInstruction index = thread->consumeInstruction();
@@ -629,11 +629,11 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, &box.type);
             Class *klass = readClass(thread);
             if (box.type.raw == T_OBJECT && !box.isNothingness() && box.value1.object->klass->inheritsFrom(klass)) {
-                destination[0].raw = 1;
+                destination[0].raw = T_OPTIONAL_VALUE;
                 destination[1] = box.value1;
                 return;
             }
-            destination[0].raw = 0;
+            destination[0].raw = T_NOTHINGNESS;
             return;
         }
         case INS_CAST_TO_PROTOCOL: {
@@ -643,7 +643,7 @@ void produce(Thread *thread, Value *destination) {
             if (!(!box->isNothingness() &&
                   ((box->type.raw == T_OBJECT && box->value1.object->klass->protocolTable.conformsTo(pi)) ||
                     protocolDispatchTableTable[box->type.raw].conformsTo(pi)))) {
-                destination[0].raw = 0;
+                destination[0].raw = T_NOTHINGNESS;
             }
             return;
         }
@@ -655,7 +655,7 @@ void produce(Thread *thread, Value *destination) {
                 destination->makeNothingness();
             }
             else {
-                destination->raw = 1;
+                destination->raw = T_OPTIONAL_VALUE;
                 box.copyContentTo(destination + 1);
             }
             return;
