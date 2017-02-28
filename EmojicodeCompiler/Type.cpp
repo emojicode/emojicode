@@ -396,7 +396,7 @@ EmojicodeInstruction Type::boxIdentifier() const {
     switch (type()) {
         case TypeContent::ValueType:
         case TypeContent::Enum:
-            value = isValueReference() ? T_VT_REFERENCE : valueType()->boxIdentifier();
+            value = valueType()->boxIdentifier();
             break;
         case TypeContent::Callable:
         case TypeContent::Class:
