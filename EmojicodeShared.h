@@ -26,6 +26,7 @@ typedef uint32_t EmojicodeInstruction;
 #define T_NOTHINGNESS 0
 #define T_OBJECT 1
 #define T_OPTIONAL_VALUE 1
+#define T_ERROR 2
 
 #define T_BOOLEAN 3
 #define T_INTEGER 4

@@ -109,6 +109,10 @@ enum Emojis {
     E_CRAYON = 0x1F58D,
     E_RADIO_BUTTON = 0x1F518,
     E_BENTO_BOX = 0x1F371,
+    E_POLICE_CARS_LIGHT = 0x1F6A8,
+    E_METRO = 0x1F687,
+    E_TRAFFIC_LIGHT = 0x1F6A5,
+    E_AVOCADO = 0x1F951,
 };
 
 #endif /* Emojis_h */

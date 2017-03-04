@@ -512,6 +512,65 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
 
                 return;
             }
+            case E_AVOCADO: {
+                auto &variableToken = stream_.consumeToken(TokenType::Variable);
+
+                writer.writeInstruction(INS_PRODUCE_WITH_STACK_DESTINATION);
+                auto placeholder = writer.writeInstructionPlaceholder();
+
+                auto destination = Destination(DestinationMutability::Unknown, StorageType::SimpleIfPossible);
+                Type type = parse(stream_.consumeToken(), destination);
+
+                if (type.type() != TypeContent::Error) {
+                    throw CompilerError(token.position(), "🥑 can only be used with 🚨.");
+                }
+
+                auto &wrscope = scoper.pushScope();
+                int variableID = wrscope.allocateInternalVariable(type);
+                placeholder.write(variableID);
+
+                auto &scope = scoper.pushScope();
+
+                if (type.storageType() == StorageType::Box) {
+                    Type vtype = type.genericArguments()[1];
+                    vtype.forceBox();
+                    scope.setLocalVariableWithID(variableToken.value(), vtype, true, variableID,
+                                                 variableToken.position()).initialize(writer.writtenInstructions());
+
+                }
+                else if (type.genericArguments()[1].storageType() == StorageType::SimpleOptional) {
+                    scope.setLocalVariableWithID(variableToken.value(), type.genericArguments()[1], true, variableID,
+                                                 variableToken.position()).initialize(writer.writtenInstructions());
+                }
+                else {
+                    scope.setLocalVariableWithID(variableToken.value(), type.genericArguments()[1], true,
+                                                 variableID + 1, variableToken.position())
+                                                 .initialize(writer.writtenInstructions());
+                }
+
+                writer.writeInstruction(INS_IF);
+                auto countPlaceholder = writer.writeInstructionsCountPlaceholderCoin();
+                writer.writeInstruction(INS_INVERT_BOOLEAN);
+                writer.writeInstruction(INS_IS_ERROR);
+                writer.writeInstruction(INS_GET_VT_REFERENCE_STACK);
+                writer.writeInstruction(variableID);
+                flowControlBlock(false);
+                writer.writeInstruction(0x2);
+
+                stream_.requireIdentifier(E_STRAWBERRY);
+                auto &errorVariableToken = stream_.consumeToken(TokenType::Variable);
+
+                auto &errorScope = scoper.pushScope();
+                errorScope.setLocalVariableWithID(errorVariableToken.value(), type.genericArguments()[0], true,
+                                                  variableID + 1, errorVariableToken.position())
+                                                  .initialize(writer.writtenInstructions());
+                flowControlBlock(false);
+
+                scoper.popScopeAndRecommendFrozenVariables(callable.objectVariableInformation(),
+                                                           writer.writtenInstructions());
+                countPlaceholder.write();
+                return;
+            }
             case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
                 writer.writeInstruction(INS_REPEAT_WHILE);
 
@@ -632,6 +691,22 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 calledSuper = true;
 
                 return;
+            }
+            case E_POLICE_CARS_LIGHT: {
+                writer.writeInstruction(INS_ERROR);
+
+                if (isOnlyNothingnessReturnAllowed()) {
+                    throw CompilerError(token.position(), "🚨 not compatiable with initializers as of now.");
+                }
+                if (callable.returnType.type() != TypeContent::Error) {
+                    throw CompilerError(token.position(), "Function is not declared to return a 🚨.");
+                }
+
+                parse(stream_.consumeToken(), token, callable.returnType.genericArguments()[0],
+                      Destination(DestinationMutability::Immutable, StorageType::Simple));
+                returned = true;
+                return;
+
             }
             case E_RED_APPLE: {
                 writer.writeInstruction(INS_RETURN);
@@ -769,6 +844,8 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
         case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY:
         case E_GOAT:
         case E_RED_APPLE:
+        case E_POLICE_CARS_LIGHT:
+        case E_AVOCADO:
             throw CompilerError(token.position(), "Unexpected statement %s.", token.value().utf8().c_str());
         case E_COOKIE: {
             writeBoxingAndTemporary(des, Type(CL_STRING, false));
@@ -901,7 +978,18 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             auto destination = Destination::temporaryReference();
             auto type = parse(stream_.consumeToken(), destination);
             if (!type.optional() && type.type() != TypeContent::Something) {
-                throw CompilerError(token.position(), "☁️ can only be used on optionals and ⚪️.");
+                throw CompilerError(token.position(), "☁️ can only be used with optionals and ⚪️.");
+            }
+            scoper.popTemporaryScope();
+            return Type::boolean();
+        }
+        case E_TRAFFIC_LIGHT: {
+            writeBoxingAndTemporary(des, Type::boolean());
+            writer.writeInstruction(INS_IS_ERROR);
+            auto destination = Destination::temporaryReference();
+            auto type = parse(stream_.consumeToken(), destination);
+            if (type.type() != TypeContent::Error) {
+                throw CompilerError(token.position(), "🚥 can only be used with 🚨.");
             }
             scoper.popTemporaryScope();
             return Type::boolean();
@@ -1027,6 +1115,36 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
             writeBoxingAndTemporary(des, t, insertionPoint);
             return t;
         }
+        case E_METRO: {
+            auto insertionPoint = writer.getInsertionPoint();
+            auto placeholder = writer.writeInstructionPlaceholder();
+
+            auto destination = Destination::temporaryReference();
+            Type t = parse(stream_.consumeToken(), Type::nothingness(), destination);
+            scoper.popTemporaryScope();
+
+            if (t.type() != TypeContent::Error) {
+                throw CompilerError(token.position(), "🚇 can only be used with 🚨.");
+            }
+
+            assert(t.isValueReference());
+            t.setValueReference(false);
+
+            if (t.storageType() == StorageType::Box) {
+                placeholder.write(INS_ERROR_CHECK_BOX_OPTIONAL);
+                t = t.copyWithoutOptional();
+                t.forceBox();
+            }
+            else {
+                placeholder.write(INS_ERROR_CHECK_SIMPLE_OPTIONAL);
+                t = t.copyWithoutOptional();
+                writer.writeInstruction(t.size());
+            }
+            Type type = t.genericArguments()[1];
+            writeBoxingAndTemporary(des, type, insertionPoint);
+            return type;
+        }
+
         case E_HOT_PEPPER: {
             writeBoxingAndTemporary(des, Type::callableIncomplete());
             Function *function;

@@ -126,6 +126,7 @@
 		E46B2F7E1CD7A5A000447D91 /* Variable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Variable.hpp; sourceTree = "<group>"; };
 		E46B3F881D90411100969E53 /* CodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CodeGenerator.cpp; sourceTree = "<group>"; };
 		E46B3F891D90411100969E53 /* CodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CodeGenerator.hpp; sourceTree = "<group>"; };
+		E46C49701E633633003C40E5 /* tests.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = tests.py; sourceTree = "<group>"; };
 		E479370D1C3A5B3200536258 /* Function.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Function.cpp; sourceTree = "<group>"; };
 		E47937221C3ACBEC00536258 /* Function.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Function.hpp; sourceTree = "<group>"; };
 		E47E57E71D0D91D8006611EC /* ValueType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ValueType.cpp; sourceTree = "<group>"; };
@@ -354,6 +355,7 @@
 		E4E403FE1A5B2E4200034386 = {
 			isa = PBXGroup;
 			children = (
+				E46C49701E633633003C40E5 /* tests.py */,
 				E45FA2FD1AA0E11300F032A8 /* Shared */,
 				E4E404091A5B2E4300034386 /* Emojicode Real-Time Engine */,
 				E45FA2F41AA0D24200F032A8 /* EmojicodeCompiler */,
@@ -503,7 +505,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "";
+			shellScript = "# /usr/local/Cellar/llvm/3.9.1/bin/clang-tidy EmojicodeCompiler/*.cpp -checks=*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-cppcoreguidelines-pro-type-static-cast-downcast,-clang-analyzer-* -- -std=c++14";
 		};
 		E4FD1FAB1E3693FC00313733 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

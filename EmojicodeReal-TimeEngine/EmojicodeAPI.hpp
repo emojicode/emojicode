@@ -43,7 +43,7 @@ union Value {
     Class *klass;
     Value *value;
     void makeNothingness() { raw = T_NOTHINGNESS; }
-    void optionalSet(Value value) { raw = 1; this[1] = value; }
+    void optionalSet(Value value) { raw = T_OPTIONAL_VALUE; this[1] = value; }
 };
 
 #if __SIZEOF_DOUBLE__ != 8

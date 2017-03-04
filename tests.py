@@ -3,6 +3,7 @@ import glob
 import os
 import dist
 import sys
+import re
 
 os.environ["EMOJICODE_PACKAGES_PATH"] = os.path.join(dist.path, "packages")
 
@@ -45,6 +46,9 @@ compilation_tests = [
     "closureCaptureValueType",
     "captureMethod",
     "captureTypeMethod",
+    "errorIsError",
+    "errorPerfect",
+    "errorAvocado",
     "gcStressTest1",
     "gcStressTest2",
     "valueTypeCopySelf",
@@ -97,7 +101,7 @@ def compilation_test(name):
 def reject_test(filename):
     completed = run(["./emojicodec", filename], stderr=PIPE)
     output = completed.stderr.decode('utf-8')
-    if completed.returncode == 0 or output.count("🚨") != 1:
+    if completed.returncode == 0 or len(re.findall(r"^|\n🚨", output)) != 1:
         fail_test(filename)
 
 

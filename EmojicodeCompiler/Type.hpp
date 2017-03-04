@@ -46,7 +46,8 @@ enum class TypeContent {
     Reference,
     LocalReference,
     Callable,
-    Self
+    Self,
+    Error
 };
 
 struct ObjectVariableInformation {
@@ -106,6 +107,7 @@ public:
     static Type doubl() { return Type(VT_DOUBLE, false, false, false); }
     static Type something() { return Type(TypeContent::Something, false); }
     static Type nothingness() { return Type(TypeContent::Nothingness, false); }
+    static Type error() { return Type(TypeContent::Error, false); }
     static Type someobject(bool optional = false) { return Type(TypeContent::Someobject, optional); }
     static Type callableIncomplete(bool optional = false) { return Type(TypeContent::Callable, optional); }
     static Type self(bool optional = false) { return Type(TypeContent::Self, optional); }

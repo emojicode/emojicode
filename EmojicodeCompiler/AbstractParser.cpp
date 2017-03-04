@@ -109,9 +109,24 @@ Type AbstractParser::parseTypeDeclarative(const TypeContext &ct, TypeDynamism dy
         stream_.consumeToken(TokenType::Identifier);
         return type;
     }
+    else if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
+        auto &token = stream_.consumeToken(TokenType::Identifier);
+        Type errorType = parseTypeDeclarative(ct, dynamism);
+        if (errorType.type() != TypeContent::Enum || errorType.optional() || errorType.meta()) {
+            throw CompilerError(token.position(), "Error type must be a non-optional 🦃.");
+        }
+        if (optional) {
+            throw CompilerError(token.position(), "The error type itself cannot be an optional. "
+                                "Maybe you meant to make the contained type an optional?");
+        }
+        Type type = Type::error();
+        type.genericArguments_.emplace_back(errorType);
+        type.genericArguments_.emplace_back(parseTypeDeclarative(ct, dynamism));
+        return type;
+    }
     else if (stream_.consumeTokenIf(E_GRAPES)) {
         if (dynamicType) *dynamicType = TypeDynamism::None;
-
+        
         Type t = Type::callableIncomplete(optional);
         t.genericArguments_.push_back(Type::nothingness());
 

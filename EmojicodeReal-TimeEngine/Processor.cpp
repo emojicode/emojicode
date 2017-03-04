@@ -479,6 +479,12 @@ void produce(Thread *thread, Value *destination) {
             destination->raw = a.value->raw == T_NOTHINGNESS;
             return;
         }
+        case INS_IS_ERROR: {
+            Value a;
+            produce(thread, &a);
+            destination->raw = a.value->raw == T_ERROR;
+            return;
+        }
         case INS_EQUAL_DOUBLE: {
             Value a;
             Value b;
@@ -583,6 +589,30 @@ void produce(Thread *thread, Value *destination) {
             Box *box = reinterpret_cast<Box *>(sth.value);
             box->unwrapOptional();
             box->copyTo(destination);
+            return;
+        }
+        case INS_ERROR_CHECK_SIMPLE_OPTIONAL: {
+            Value value;
+            produce(thread, &value);
+            EmojicodeInteger n = thread->consumeInstruction();
+            if (value.value->raw != T_ERROR) {
+                std::memcpy(destination, value.value + 1, n * sizeof(Value));
+            }
+            else {
+                error("Unexpectedly found 🚨 with value %d.", value.value->raw);
+            }
+            return;
+        }
+        case INS_ERROR_CHECK_BOX_OPTIONAL: {
+            Value sth;
+            produce(thread, &sth);
+            Box *box = reinterpret_cast<Box *>(sth.value);
+            if (box->type.raw != T_ERROR) {
+                box->copyTo(destination);
+            }
+            else {
+                error("Unexpectedly found 🚨 with value %d.", box->value1.raw);
+            }
             return;
         }
         case INS_CONDITIONAL_PRODUCE_BOX: {
@@ -768,6 +798,11 @@ void produce(Thread *thread, Value *destination) {
         }
         case INS_RETURN:
             produce(thread, thread->currentStackFrame()->destination);
+            thread->currentStackFrame()->executionPointer = nullptr;
+            return;
+        case INS_ERROR:
+            thread->currentStackFrame()->destination->raw = T_ERROR;
+            produce(thread, thread->currentStackFrame()->destination + 1);
             thread->currentStackFrame()->executionPointer = nullptr;
             return;
         case INS_REPEAT_WHILE: {
