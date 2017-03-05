@@ -65,13 +65,12 @@ Object* stringSubstring(EmojicodeInteger from, EmojicodeInteger length, Thread *
     return ostro;
 }
 
-char* stringToChar(String *str) {
-    // Size needed for UTF8 representation
-    size_t ds = u8_codingsize(characters(str), str->length);
-    // Allocate space for the UTF8 string
-    char *utf8str = new char[ds + 1];
+const char* stringToCString(Object *str) {
+    auto string = static_cast<String *>(str->value);
+    size_t ds = u8_codingsize(characters(string), string->length);
+    char *utf8str = static_cast<char *>(newArray(ds + 1)->value);
     // Convert
-    size_t written = u8_toutf8(utf8str, ds, characters(str), str->length);
+    size_t written = u8_toutf8(utf8str, ds, characters(string), string->length);
     utf8str[written] = 0;
     return utf8str;
 }
@@ -94,10 +93,7 @@ Object* stringFromChar(const char *cstring) {
 }
 
 void stringPrintStdoutBrigde(Thread *thread, Value *destination) {
-    String *string = static_cast<String *>(thread->getThisObject()->value);
-    char *utf8str = stringToChar(string);
-    printf("%s\n", utf8str);
-    delete [] utf8str;
+    printf("%s\n", stringToCString(thread->getThisObject()));
 }
 
 void stringEqualBridge(Thread *thread, Value *destination) {
@@ -153,11 +149,8 @@ void stringTrimBridge(Thread *thread, Value *destination) {
 }
 
 void stringGetInput(Thread *thread, Value *destination) {
-    String *prompt = static_cast<String *>(thread->getVariable(0).object->value);
-    char *utf8str = stringToChar(prompt);
-    printf("%s\n", utf8str);
+    printf("%s\n", stringToCString(thread->getVariable(0).object));
     fflush(stdout);
-    delete [] utf8str;
 
     int bufferSize = 50, oldBufferSize = 0;
     Object *buffer = newArray(bufferSize);

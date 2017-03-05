@@ -165,6 +165,7 @@ typedef void (*Marker)(Object *self);
 
 /// The version of a package. Must follow semantic versioning 2.0 http://semver.org
 struct PackageVersion {
+    PackageVersion(uint16_t major, uint16_t minor) : major(major), minor(minor) {}
     /** The major version */
     uint16_t major;
     /** The minor version */
@@ -173,6 +174,6 @@ struct PackageVersion {
 
 }
 
-#define LinkingTable FunctionFunctionPointer linkingTable[] =
+#define LinkingTable Emojicode::FunctionFunctionPointer linkingTable[] =
 
 #endif /* EmojicodeAPI_h */

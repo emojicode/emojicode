@@ -46,15 +46,13 @@ static void systemExit(Thread *thread, Value *destination) {
 }
 
 static void systemGetEnv(Thread *thread, Value *destination) {
-    char* variableName = stringToChar(static_cast<String *>(thread->getVariable(0).object->value));
-    char* env = getenv(variableName);
+    char *env = getenv(stringToCString(thread->getVariable(0).object));
 
     if (!env) {
         destination->makeNothingness();
         return;
     }
 
-    delete [] variableName;
     destination->optionalSet(stringFromChar(env));
 }
 
@@ -87,9 +85,7 @@ static void systemArgs(Thread *thread, Value *destination) {
 }
 
 static void systemSystem(Thread *thread, Value *destination) {
-    char *command = stringToChar(static_cast<String *>(thread->getVariable(0).object->value));
-    FILE *f = popen(command, "r");
-    delete [] command;
+    FILE *f = popen(stringToCString(thread->getVariable(0).object), "r");
 
     if (!f) {
         destination->makeNothingness();

@@ -28,11 +28,10 @@ extern Object **stringPool;
 /** Compares if the value of @c a is equal to @c b. */
 bool stringEqual(String *a, String *b);
 
-/**
- * Converts the string to a UTF8 char array and returns it.
- * @warning You must take care of releasing the allocated memory by calling @c free.
- */
-char* stringToChar(String *str);
+/// Converts the string to a UTF8 char array and returns it.
+/// @warning The returned pointer points into an object allocated by the Emojicode memory manager. It must not be free’d
+/// and will not survive the imminent garbage collector cycle.
+const char* stringToCString(Object *str);
 
 /** Creates a string from a UTF8 C string. The string must be null terminated! */
 Object* stringFromChar(const char *cstring);
