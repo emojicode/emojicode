@@ -7,17 +7,20 @@
 //
 
 #include "Reader.hpp"
+#include "Engine.hpp"
+#include "Class.hpp"
+#include "String.h"
 #include <dlfcn.h>
 #include <cstring>
 #include <cstdlib>
-#include "Engine.hpp"
-#include "Class.hpp"
 
 #ifdef DEBUG
 #define DEBUG_LOG(format, ...) printf(format "\n", ##__VA_ARGS__)
 #else
 #define DEBUG_LOG(...)
 #endif
+
+namespace Emojicode {
 
 uint16_t readUInt16(FILE *in) {
     return ((uint16_t)fgetc(in)) | (fgetc(in) << 8);
@@ -313,4 +316,6 @@ Function* readBytecode(FILE *in) {
 
     DEBUG_LOG("✅ Program ready for execution");
     return functionTable[0];
+}
+
 }

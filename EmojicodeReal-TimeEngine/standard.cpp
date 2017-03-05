@@ -6,6 +6,14 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
+#include "standard.h"
+#include "Engine.hpp"
+#include "String.h"
+#include "List.h"
+#include "String.h"
+#include "Dictionary.h"
+#include "../utf8.h"
+#include "Thread.hpp"
 #include <inttypes.h>
 #include <time.h>
 #include <unistd.h>
@@ -16,13 +24,7 @@
 #include <thread>
 #include <algorithm>
 
-#include "Engine.hpp"
-#include "EmojicodeString.h"
-#include "EmojicodeList.h"
-#include "EmojicodeString.h"
-#include "EmojicodeDictionary.h"
-#include "../utf8.h"
-#include "Thread.hpp"
+namespace Emojicode {
 
 EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max) {
     uint_fast64_t z;
@@ -594,4 +596,6 @@ Marker markerPointerForClass(EmojicodeChar cl) {
             return dataMark;
     }
     return nullptr;
+}
+
 }

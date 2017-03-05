@@ -11,6 +11,8 @@
 
 #include "Engine.hpp"
 
+namespace Emojicode {
+
 #ifndef heapSize
 #define heapSize (512 * 1000 * 1000)  // 512 MB
 #endif
@@ -38,6 +40,8 @@ inline void markByObjectVariableRecord(ObjectVariableRecord &record, Value *va, 
                 index += record.variableIndex;
             break;
     }
+}
+
 }
 
 #endif /* Object_hpp */

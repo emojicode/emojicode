@@ -11,6 +11,8 @@
 
 #include "Engine.hpp"
 
+namespace Emojicode {
+
 struct Class {
     Class() {}
     explicit Class(void (*mark)(Object *)) : instanceVariableRecords(nullptr), mark(mark), size(0), valueSize(0) {}
@@ -35,5 +37,7 @@ struct Class {
     size_t size;
     size_t valueSize;
 };
+
+}
 
 #endif /* Class_hpp */

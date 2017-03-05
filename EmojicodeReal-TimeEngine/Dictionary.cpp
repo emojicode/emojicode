@@ -6,11 +6,13 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include <functional>
-#include "EmojicodeDictionary.h"
+#include "Dictionary.h"
 #include "EmojicodeAPI.hpp"
-#include "EmojicodeString.h"
+#include "String.h"
 #include "Thread.hpp"
+#include <functional>
+
+namespace Emojicode {
 
 #define FNV_PRIME_64 1099511628211
 #define FNV_OFFSET_64 14695981039346656037U
@@ -373,4 +375,6 @@ void bridgeDictionarySize(Thread *thread, Value *destination) {
 
 void initDictionaryBridge(Thread *thread, Value *destination) {
     dictionaryInit(thread);
+}
+
 }

@@ -11,7 +11,11 @@
 
 #include "Engine.hpp"
 
+namespace Emojicode {
+
 void performFunction(Function *function, Value self, Thread *thread, Value *destination);
 void produce(Thread *thread, Value *destination);
+
+}
 
 #endif /* Processor_hpp */

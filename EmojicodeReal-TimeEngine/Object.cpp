@@ -17,6 +17,8 @@
 #include "Thread.hpp"
 #include "Class.hpp"
 
+namespace Emojicode {
+
 size_t memoryUse = 0;
 bool zeroingNeeded = false;
 Byte *currentHeap;
@@ -209,4 +211,6 @@ void disallowGCAndPauseIfNeeded() {
     pauseThreadsCondition.wait(pausingThreadsCountLock, []{ return !pauseThreads; });
     pausingThreadsCount--;
     pausingThreadsCountCondition.notify_one();
+}
+
 }

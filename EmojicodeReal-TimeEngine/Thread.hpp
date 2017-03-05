@@ -11,7 +11,7 @@
 
 #include "Engine.hpp"
 
-class Thread;
+namespace Emojicode {
 
 struct StackFrame {
     StackFrame *returnPointer;
@@ -90,5 +90,7 @@ private:
     Object *retainList[100];
     Object **retainPointer = retainList;
 };
+
+}
 
 #endif /* Thread_hpp */

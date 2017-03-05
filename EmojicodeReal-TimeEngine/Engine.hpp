@@ -9,8 +9,10 @@
 #ifndef Emojicode_h
 #define Emojicode_h
 
-#include <cstdio>
 #include "EmojicodeAPI.hpp"
+#include <cstdio>
+
+namespace Emojicode {
 
 /// Used to signify the compiler that from the @c from -th instruction to the to @c to -th instruction the variable at
 /// index @c variableIndex contains an object reference.
@@ -108,5 +110,7 @@ typedef uint_fast32_t (*SizeForClassFunction)(Class *cl, EmojicodeChar name);
 extern FunctionFunctionPointer sLinkingTable[100];
 Marker markerPointerForClass(EmojicodeChar cl);
 uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name);
+
+}
 
 #endif /* Emojicode_h */

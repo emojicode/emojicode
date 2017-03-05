@@ -14,6 +14,8 @@
 #include "Processor.hpp"
 #include "Object.hpp"
 
+using namespace Emojicode;
+
 Thread *Thread::lastThread_ = nullptr;
 int Thread::threads_ = 0;
 std::mutex threadListMutex;

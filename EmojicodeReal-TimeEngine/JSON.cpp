@@ -8,9 +8,11 @@
 
 #include <cmath>
 #include "Engine.hpp"
-#include "EmojicodeDictionary.h"
-#include "EmojicodeList.h"
+#include "Dictionary.h"
+#include "List.h"
 #include "Thread.hpp"
+
+namespace Emojicode {
 
 enum JSONState {
     JSON_NONE = 0,
@@ -332,4 +334,6 @@ void parseJSON(Thread *thread, Box *destination) {
     }
     
     errorExit();
+}
+
 }

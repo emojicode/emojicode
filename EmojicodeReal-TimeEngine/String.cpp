@@ -6,15 +6,18 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
+#include "String.h"
+#include "../utf8.h"
+#include "List.h"
+#include "Thread.hpp"
+#include "standard.h"
 #include <ctype.h>
 #include <cstring>
 #include <cmath>
 #include <utility>
 #include <algorithm>
-#include "EmojicodeString.h"
-#include "../utf8.h"
-#include "EmojicodeList.h"
-#include "Thread.hpp"
+
+namespace Emojicode {
 
 EmojicodeInteger stringCompare(String *a, String *b) {
     if (a == b) {
@@ -576,4 +579,6 @@ void stringMark(Object *self) {
     if (string->characters) {
         mark(&string->characters);
     }
+}
+
 }

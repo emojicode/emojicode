@@ -651,9 +651,9 @@ void Type::typeName(Type type, const TypeContext &typeContext, bool includePacka
             return;
         }
 
-        for (auto &type : type.genericArguments()) {
+        for (auto &argumentType : type.genericArguments()) {
             string.append("🐚");
-            typeName(type, typeContext, includePackageAndOptional, string);
+            typeName(argumentType, typeContext, includePackageAndOptional, string);
         }
     }
 }

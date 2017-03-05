@@ -9,7 +9,9 @@
 #ifndef EmojicodeDictionary_h
 #define EmojicodeDictionary_h
 
-#include "EmojicodeString.h"
+#include "String.h"
+
+namespace Emojicode {
 
 /** Default initial capacity. MUST be a power of two, default: 8 */
 #define DICTIONARY_DEFAULT_INITIAL_CAPACITY (1 << 3)
@@ -82,5 +84,7 @@ void bridgeDictionaryKeys(Thread *thread, Value *destination);
 void bridgeDictionaryClear(Thread *thread, Value *destination);
 void bridgeDictionaryContains(Thread *thread, Value *destination);
 void bridgeDictionarySize(Thread *thread, Value *destination);
+
+}
 
 #endif /* EmojicodeDictionary_h */

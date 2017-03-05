@@ -11,6 +11,8 @@
 
 #include "EmojicodeAPI.hpp"
 
+namespace Emojicode {
+
 struct List {
     /** The number of elements in the list. */
     size_t count;
@@ -59,5 +61,7 @@ void listRemoveAllBridge(Thread *thread, Value *destination);
 void listSetBridge(Thread *thread, Value *destination);
 void listShuffleInPlaceBridge(Thread *thread, Value *destination);
 void listEnsureCapacityBridge(Thread *thread, Value *destination);
+
+}
 
 #endif /* EmojicodeList_h */

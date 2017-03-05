@@ -15,6 +15,14 @@
 #include "Object.hpp"
 #include "Reader.hpp"
 
+using namespace Emojicode;
+
+namespace Emojicode {
+
+#if __SIZEOF_DOUBLE__ != 8
+#warning Double does not match the size of an 64-bit integer
+#endif
+
 Class *CL_STRING;
 Class *CL_LIST;
 Class *CL_DATA;
@@ -49,6 +57,8 @@ Object **stringPool;
 
     va_end(list);
     abort();
+}
+
 }
 
 int main(int argc, char *argv[]) {

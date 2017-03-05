@@ -6,11 +6,14 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeList.h"
+#include "List.h"
+#include "String.h"
+#include "Thread.hpp"
+#include "standard.h"
 #include <cstring>
 #include <utility>
-#include "EmojicodeString.h"
-#include "Thread.hpp"
+
+namespace Emojicode {
 
 void expandListSize(Object *const &listObject) {
 #define initialSize 7
@@ -250,4 +253,6 @@ void initListWithCapacity(Thread *thread, Value *destination) {
     List *list = static_cast<List *>(thread->getThisObject()->value);
     list->capacity = capacity;
     list->items = n;
+}
+
 }

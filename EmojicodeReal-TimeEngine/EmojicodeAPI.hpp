@@ -9,8 +9,10 @@
 #ifndef EmojicodeAPI_h
 #define EmojicodeAPI_h
 
-#include <thread>
 #include "../EmojicodeShared.h"
+#include <cstddef>
+
+namespace Emojicode {
 
 typedef unsigned char Byte;
 typedef int_fast64_t EmojicodeInteger;
@@ -45,10 +47,6 @@ union Value {
     void makeNothingness() { raw = T_NOTHINGNESS; }
     void optionalSet(Value value) { raw = T_OPTIONAL_VALUE; this[1] = value; }
 };
-
-#if __SIZEOF_DOUBLE__ != 8
-#warning Double does not match the size of an 64-bit integer
-#endif
 
 struct Object {
     union {
@@ -93,21 +91,6 @@ struct Box {
 };
 
 #define STORAGE_BOX_VALUE_SIZE 4
-
-// MARK: Built In Classes
-
-struct String {
-    /** The number of code points in @c characters. Strings are not null terminated! */
-    EmojicodeInteger length;
-    /** The characters of this string. Strings are not null terminated! */
-    Object *characters;
-};
-
-struct Data {
-    EmojicodeInteger length;
-    char *bytes;
-    Object *bytesObject;
-};
 
 // MARK: Callables
 
@@ -188,14 +171,8 @@ struct PackageVersion {
     uint16_t minor;
 };
 
-#define LinkingTable FunctionFunctionPointer linkingTable[] =
+}
 
-/**
- * Generates a secure random number. The integer is either generated using arc4random_uniform if available
- * or by reading from @c /dev/urandmon.
- * @param min The minimal integer (inclusive).
- * @param max The maximal integer (inclusive).
- */
-extern EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max);
+#define LinkingTable FunctionFunctionPointer linkingTable[] =
 
 #endif /* EmojicodeAPI_h */

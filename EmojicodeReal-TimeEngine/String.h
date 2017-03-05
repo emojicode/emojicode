@@ -10,7 +10,16 @@
 #define EmojicodeString_h
 
 #include "EmojicodeAPI.hpp"
-#include "EmojicodeList.h"
+#include "List.h"
+
+namespace Emojicode {
+
+struct String {
+    /** The number of code points in @c characters. Strings are not null terminated! */
+    EmojicodeInteger length;
+    /** The characters of this string. Strings are not null terminated! */
+    Object *characters;
+};
 
 extern Object **stringPool;
 #define emptyString (stringPool[0])
@@ -61,5 +70,7 @@ void stringToDouble(Thread *thread, Value *destination);
 void stringToUppercase(Thread *thread, Value *destination);
 void stringToLowercase(Thread *thread, Value *destination);
 void stringCompareBridge(Thread *thread, Value *destination);
+
+}
 
 #endif /* EmojicodeString_h */

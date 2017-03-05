@@ -11,6 +11,8 @@
 
 #include "Engine.hpp"
 
+namespace Emojicode {
+
 /// Reads a bytecode file
 Function* readBytecode(FILE *in);
 
@@ -19,5 +21,7 @@ enum PackageLoadingState {
     PACKAGE_LOADING_FAILED, PACKAGE_HEADER_NOT_FOUND, PACKAGE_INAPPROPRIATE_MAJOR, PACKAGE_INAPPROPRIATE_MINOR,
     PACKAGE_LOADED
 };
+
+}
 
 #endif /* Reader_hpp */

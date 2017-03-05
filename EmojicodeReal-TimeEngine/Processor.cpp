@@ -14,9 +14,11 @@
 #include "../EmojicodeInstructions.h"
 #include "Thread.hpp"
 #include "Class.hpp"
-#include "EmojicodeList.h"
-#include "EmojicodeString.h"
-#include "EmojicodeDictionary.h"
+#include "List.h"
+#include "String.h"
+#include "Dictionary.h"
+
+namespace Emojicode {
 
 static void passBlock(Thread *thread) {
     thread->currentStackFrame()->executionPointer += thread->consumeInstruction();
@@ -992,4 +994,6 @@ void produce(Thread *thread, Value *destination) {
         }
     }
     error("Illegal bytecode instruction");
+}
+
 }
