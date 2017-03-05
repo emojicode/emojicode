@@ -74,7 +74,7 @@ public:
     /// Tries to fetch a type by its name and namespace and stores it into @c type.
     /// @returns Whether the type could be found or not. @c type is untouched if @c false was returned.
     bool fetchRawType(EmojicodeString name, EmojicodeString ns, bool opt, SourcePosition errorPosition, Type *type);
-    bool fetchRawType(ParsedType ptn, Type *type);
+    bool fetchRawType(ParsedType ptn, bool optional, Type *type);
 
     /** Returns the loaded packages in the order in which they were loaded. */
     static const std::vector<Package *>& packagesInOrder() { return packagesLoadingOrder_; };

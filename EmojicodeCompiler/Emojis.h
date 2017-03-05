@@ -113,6 +113,7 @@ enum Emojis {
     E_METRO = 0x1F687,
     E_TRAFFIC_LIGHT = 0x1F6A5,
     E_AVOCADO = 0x1F951,
+    E_TRIANGLE_POINTED_DOWN = 0x1F53B,
 };
 
 #endif /* Emojis_h */

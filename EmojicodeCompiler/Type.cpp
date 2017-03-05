@@ -63,7 +63,7 @@ ValueType* Type::valueType() const {
 }
 
 TypeDefinition* Type::typeDefinition() const  {
-    return static_cast<TypeDefinition *>(typeDefinition_);
+    return typeDefinition_;
 }
 
 bool Type::canHaveGenericArguments() const {
@@ -650,10 +650,10 @@ void Type::typeName(Type type, const TypeContext &typeContext, bool includePacka
         if (typeDef->ownGenericArgumentVariables().empty()) {
             return;
         }
-        size_t offset = typeDef->numberOfGenericArgumentsWithSuperArguments() - typeDef->ownGenericArgumentVariables().size();
-        for (size_t i = 0, l = typeDef->ownGenericArgumentVariables().size(); i < l; i++) {
+
+        for (auto &type : type.genericArguments()) {
             string.append("🐚");
-            typeName(type.genericArguments_[offset + i], typeContext, includePackageAndOptional, string);
+            typeName(type, typeContext, includePackageAndOptional, string);
         }
     }
 }

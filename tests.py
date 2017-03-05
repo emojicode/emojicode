@@ -40,6 +40,7 @@ compilation_tests = [
     "protocolMulti",
     "assignmentByCallProtocol",
     "commonType",
+    "typeAlias",
     "variableInitAndScoping",
     "closureBasic",
     "closureCapture",

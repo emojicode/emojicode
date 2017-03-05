@@ -18,9 +18,8 @@ ParsedType AbstractParser::parseType() {
         throw CompilerError(stream_.consumeToken().position(), "Generic variables not allowed here.");
     }
 
-    bool optional = false;
-    if (stream_.consumeTokenIf(E_CANDY)) {
-        optional = true;
+    if (stream_.nextTokenIs(E_CANDY)) {
+        throw CompilerError(stream_.consumeToken().position(), "Unexpected 🍬.");
     }
 
     EmojicodeString enamespace;
@@ -33,7 +32,7 @@ ParsedType AbstractParser::parseType() {
     }
 
     auto &typeName = stream_.consumeToken(TokenType::Identifier);
-    return ParsedType(typeName.value(), enamespace, optional, typeName);
+    return ParsedType(typeName.value(), enamespace, typeName);
 }
 
 Type AbstractParser::parseTypeDeclarative(const TypeContext &ct, TypeDynamism dynamism, Type expectation,
@@ -145,10 +144,8 @@ Type AbstractParser::parseTypeDeclarative(const TypeContext &ct, TypeDynamism dy
         if (dynamicType) *dynamicType = TypeDynamism::None;
         auto parsedType = parseType();
 
-        parsedType.optional = optional;
-
         auto type = Type::nothingness();
-        if (!package_->fetchRawType(parsedType, &type)) {
+        if (!package_->fetchRawType(parsedType, optional, &type)) {
             throw CompilerError(parsedType.token.position(), "Could not find type %s in enamespace %s.",
                                          parsedType.name.utf8().c_str(), parsedType.ns.utf8().c_str());
         }

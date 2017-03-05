@@ -15,11 +15,10 @@
 #include "Function.hpp"
 
 struct ParsedType {
-    ParsedType(EmojicodeString name, EmojicodeString ns, bool optional, const Token& token)
-        : name(name), ns(ns), optional(optional), token(token) {}
+    ParsedType(EmojicodeString name, EmojicodeString ns, const Token& token)
+        : name(name), ns(ns), token(token) {}
     EmojicodeString name;
     EmojicodeString ns;
-    bool optional;
     const Token& token;
 };
 

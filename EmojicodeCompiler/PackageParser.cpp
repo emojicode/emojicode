@@ -52,6 +52,14 @@ void PackageParser::parse() {
                     throw CompilerError(theToken.position(), "You may not set 📻 for the _ package.");
                 }
                 continue;
+            case E_TRIANGLE_POINTED_DOWN: {
+                ParsedType alias = parseType();
+                Type type = Type::nothingness();
+                package_->fetchRawType(parseType(), false, &type);
+
+                package_->registerType(type, alias.name, alias.ns, false);
+                continue;
+            }
             case E_CRYSTAL_BALL: {
                 final.disallow();
                 exported.disallow();
@@ -78,13 +86,9 @@ void PackageParser::parse() {
 
                 auto parsedType = parseType();
 
-                if (parsedType.optional) {
-                    throw CompilerError(parsedType.token.position(), "Optional types are not extendable.");
-                }
-
                 Type type = Type::nothingness();
 
-                if (!package_->fetchRawType(parsedType, &type)) {
+                if (!package_->fetchRawType(parsedType, false, &type)) {
                     throw CompilerError(parsedType.token.position(), "Class does not exist.");
                 }
                 if (type.type() != TypeContent::Class && type.type() != TypeContent::ValueType) {
@@ -188,12 +192,8 @@ void PackageParser::reservedEmojis(const Token &token, const char *place) const 
 ParsedType PackageParser::parseAndValidateNewTypeName() {
     auto parsedTypeName = parseType();
 
-    if (parsedTypeName.optional) {
-        throw CompilerError(parsedTypeName.token.position(), "🍬 cannot be declared as type.");
-    }
-
     Type type = Type::nothingness();
-    if (package_->fetchRawType(parsedTypeName, &type)) {
+    if (package_->fetchRawType(parsedTypeName, false, &type)) {
         auto str = type.toString(Type::nothingness(), true);
         throw CompilerError(parsedTypeName.token.position(), "Type %s is already defined.", str.c_str());
     }
@@ -279,14 +279,11 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         auto parsedTypeName = parseType();
 
         Type type = Type::nothingness();
-        if (!package_->fetchRawType(parsedTypeName, &type)) {
+        if (!package_->fetchRawType(parsedTypeName, false, &type)) {
             throw CompilerError(parsedTypeName.token.position(), "Superclass type does not exist.");
         }
         if (type.type() != TypeContent::Class) {
             throw CompilerError(parsedTypeName.token.position(), "The superclass must be a class.");
-        }
-        if (type.optional()) {
-            throw CompilerError(parsedTypeName.token.position(), "An 🍬 is not a valid superclass.");
         }
 
         eclass->setSuperclass(type.eclass());
