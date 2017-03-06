@@ -183,6 +183,7 @@ void stringGetInput(Thread *thread, Value *destination) {
     string->characters = chars;
 
     u8_toucs(characters(string), len, static_cast<char *>(buffer->value), bufferUsedSize);
+    *destination = thread->getThisContext();
 }
 
 void stringSplitByStringBridge(Thread *thread, Value *destination) {
@@ -367,6 +368,7 @@ void stringFromSymbolListBridge(Thread *thread, Value *destination) {
     List *list = static_cast<List *>(thread->getVariable(0).object->value);
 
     initStringFromSymbolList(str, list);
+    *destination = thread->getThisContext();
 }
 
 void stringFromStringList(Thread *thread, Value *destination) {
@@ -406,6 +408,7 @@ void stringFromStringList(Thread *thread, Value *destination) {
             }
         }
     }
+    *destination = thread->getThisContext();
 }
 
 std::pair<EmojicodeInteger, bool> charactersToInteger(EmojicodeChar *characters, EmojicodeInteger base,

@@ -111,38 +111,6 @@ void executeCallableExtern(Object *callable, Value *args, Thread *thread, Value 
     thread->popStack();
 }
 
-bool performInitializer(Class *klass, Function *initializer, Object *object, Thread *thread) {
-    Value returned = EmojicodeInteger(1);
-    if (initializer->native) {
-        thread->pushStack(object, initializer->frameSize, initializer->argumentCount, initializer,
-                          &returned, nullptr);
-        initializer->handler(thread, &returned);
-
-        if (!returned.raw) {
-            thread->popStack();
-            return false;
-        }
-    }
-    else {
-        thread->pushStack(Value(object), initializer->frameSize, initializer->argumentCount, initializer,
-                          &returned, initializer->block.instructions);
-
-        EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + initializer->block.instructionCount;
-        while (thread->currentStackFrame()->executionPointer < end) {
-            Value garbage;
-            produce(thread, &garbage);
-
-            if (!returned.raw) {
-                thread->popStack();
-                return false;
-            }
-        }
-    }
-    object = thread->getThisObject();
-    thread->popStack();
-    return true;
-}
-
 void performFunction(Function *function, Value self, Thread *thread, Value *destination) {
     if (function->native) {
         thread->pushStack(self, function->frameSize, function->argumentCount, function, destination, nullptr);
@@ -196,8 +164,7 @@ void produce(Thread *thread, Value *destination) {
             Class *klass = readClass(thread);
             Object *object = newObject(klass);
             Function *initializer = klass->initializersVtable[thread->consumeInstruction()];
-            performInitializer(klass, initializer, object, thread);
-            destination->object = object;
+            performFunction(initializer, object, thread, destination);
             return;
         }
         case INS_PRODUCE_TO_AND_GET_VT_REFERENCE: {
@@ -647,7 +614,7 @@ void produce(Thread *thread, Value *destination) {
             EmojicodeInstruction vti = thread->consumeInstruction();
             Function *initializer = klass->initializersVtable[vti];
 
-            performInitializer(klass, initializer, o, thread);
+            performFunction(initializer, o, thread, destination);
             return;
         }
         case INS_DOWNCAST_TO_CLASS: {
@@ -714,8 +681,7 @@ void produce(Thread *thread, Value *destination) {
 
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
             while (thread->currentStackFrame()->executionPointer < end) {
-                produce(thread,
-                        reinterpret_cast<Value *>(listAppendDestination(list, thread)));
+                produce(thread, reinterpret_cast<Value *>(listAppendDestination(list, thread)));
             }
 
             destination->object = list;

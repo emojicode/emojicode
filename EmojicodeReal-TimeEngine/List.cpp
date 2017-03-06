@@ -245,6 +245,7 @@ void listEnsureCapacityBridge(Thread *thread, Value *destination) {
 
 void initListEmptyBridge(Thread *thread, Value *destination) {
     // The Real-Time Engine guarantees pre-nulled objects.
+    *destination = thread->getThisContext();
 }
 
 void initListWithCapacity(Thread *thread, Value *destination) {
@@ -253,6 +254,7 @@ void initListWithCapacity(Thread *thread, Value *destination) {
     List *list = static_cast<List *>(thread->getThisObject()->value);
     list->capacity = capacity;
     list->items = n;
+    *destination = thread->getThisContext();
 }
 
 }

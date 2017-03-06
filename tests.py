@@ -30,6 +30,7 @@ compilation_tests = [
     "babyBottleInitializer",
     "valueType",
     "isNothingness",
+    "nothingnessInitializer",
     "downcastClass",
     "castAny",
     "protocolClass",

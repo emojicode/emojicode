@@ -375,6 +375,7 @@ void bridgeDictionarySize(Thread *thread, Value *destination) {
 
 void initDictionaryBridge(Thread *thread, Value *destination) {
     dictionaryInit(thread);
+    *destination = thread->getThisContext();
 }
 
 }

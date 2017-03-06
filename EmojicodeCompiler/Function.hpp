@@ -213,6 +213,9 @@ public:
     required(r),
     canReturnNothingness(crn) {
         returnType = owningType;
+        if (canReturnNothingness) {
+            returnType.setOptional();
+        }
     }
 
     bool required;

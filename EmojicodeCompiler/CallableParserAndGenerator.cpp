@@ -1734,6 +1734,13 @@ void CallableParserAndGenerator::analyze() {
             }
         }
 
+        if (mode == CallableParserAndGeneratorMode::ObjectInitializer) {
+            writer.writeInstruction(INS_RETURN);
+            writeBoxingAndTemporary(Destination(DestinationMutability::Unknown, callable.returnType.storageType()),
+                                    typeContext.calleeType());
+            writer.writeInstruction(INS_GET_THIS);
+        }
+
         scoper.popScopeAndRecommendFrozenVariables(callable.objectVariableInformation(), writer.writtenInstructions());
 
         if (isFullyInitializedCheckRequired()) {

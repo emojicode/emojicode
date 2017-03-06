@@ -145,10 +145,12 @@ void threadStart(Object *callable, Thread thread) {
 static void initThread(Thread *thread, Value *destination) {
     Thread newThread = Thread();
     std::thread(threadStart, thread->getVariable(0).object, newThread);
+    *destination = thread->getThisContext();
 }
 
 static void initMutex(Thread *thread, Value *destination) {
     pthread_mutex_init(static_cast<pthread_mutex_t*>(thread->getThisObject()->value), nullptr);
+    *destination = thread->getThisContext();
 }
 
 static void mutexLock(Thread *thread, Value *destination) {
