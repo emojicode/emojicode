@@ -10,31 +10,32 @@
 
 🐇 💯 👈 🍇
   ✒️ 🐖 🏁 🍇
-    😀 🔤Hallo🔤
+    🍦 readFile 🍺🔷📄📜 🔤fileTest_testFile.txt🔤
 
-    🍮 file 🔷📄📜 🔤tests/s/fileTest_testFile.txt🔤
+    ⛔️🐕 😛 🍺 🔡 🚇 📓 readFile 5 🔤Lorem🔤 🔤Read test🔤
 
-    ⛔️🐕 ❎☁️ file 🔤Not nothingness🔤
-    ⛔️🐕 😛 🍺 🔡 🍺 📓 🍺 file 5 🔤Lorem🔤 🔤Read test🔤
+    🔛 readFile 12
 
-    🔛 🍺 file 12
+    ⛔️🐕 😛 🍺 🔡 🚇 📓 readFile 5 🔤dolor🔤 🔤Read after seek🔤
 
-    ⛔️🐕 😛 🍺 🔡 🍺 📓 🍺 file 5 🔤dolor🔤 🔤Read after seek🔤
+    🍩🔫📑 🔤fileTest_writeTest.txt🔤
 
-    🍩🔫📑 🔤tests/s/fileTest_writeTest.txt🔤
+    🙅 readFile
 
-    🍮 file 🔷📄📝 🔤tests/s/fileTest_writeTest.txt🔤
+    🍦 file 🍺🔷📄📝 🔤fileTest_writeTest.txt🔤
 
-    ⛔️🐕 ❎☁️ file 🔤Write not nothingness🔤
+    ✏️  file 📇🔤Hello Theo.🔤
+    💧 file
 
-    ✏️ 🍺file 📇🔤Hello Theo.🔤
+    ⛔️🐕 😛 🍺 🔡 🚇 🍩📇📄 🔤fileTest_writeTest.txt🔤 🔤Hello Theo.🔤 🔤Write succeeded🔤
 
-    ⛔️🐕 😛 🍺 🔡 🍺 🍩📇📄 🔤tests/s/fileTest_writeTest.txt🔤 🔤Hello Theo.🔤 🔤Write succeeded🔤
+    🔛 file 6
 
-    🔛 🍺 file 6
+    ✏️ file 📇🔤Hubertus.🔤
+    💧 file
 
-    ✏️ 🍺file 📇🔤Hubertus.🔤
+    ⛔️🐕 😛 🍺 🔡 🚇 🍩📇📄 🔤fileTest_writeTest.txt🔤 🔤Hello Hubertus.🔤 🔤Seek and write succeeded🔤
 
-    ⛔️🐕 😛 🍺 🔡 🍺🍩📇📄 🔤tests/s/fileTest_writeTest.txt🔤 🔤Hello Hubertus.🔤 🔤Seek and write succeeded🔤
+    🙅 file
   🍉
 🍉

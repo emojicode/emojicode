@@ -6,22 +6,29 @@
 //  Copyright (c) 2016 Theo Weidmann. All rights reserved.
 //
 
-#define _XOPEN_SOURCE 500
-#include "EmojicodeAPI.h"
-#include "EmojicodeString.h"
+#include "../../EmojicodeReal-TimeEngine/EmojicodeAPI.hpp"
+#include "../../EmojicodeReal-TimeEngine/Thread.hpp"
+#include "../../EmojicodeReal-TimeEngine/String.h"
+#include "../../EmojicodeReal-TimeEngine/standard.h"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <string.h>
 #include <unistd.h>
 
-static Class *CL_SOCKET;
+using Emojicode::Thread;
+using Emojicode::Value;
+using Emojicode::String;
+using Emojicode::Data;
+using Emojicode::stringToCString;
 
-PackageVersion getVersion() {
-    return (PackageVersion){0, 1};
+static Emojicode::Class *CL_SOCKET;
+
+Emojicode::PackageVersion getVersion(){
+    return Emojicode::PackageVersion(0, 1);
 }
 
-void serverInitWithPort(Thread *thread, Something *destination) {
+void serverInitWithPort(Thread *thread, Value *destination) {
     int listenerDescriptor = socket(PF_INET, SOCK_STREAM, 0);
     if (listenerDescriptor == -1) {
         stackGetThisObject(thread)->value = NULL;
@@ -30,9 +37,9 @@ void serverInitWithPort(Thread *thread, Something *destination) {
     
     struct sockaddr_in name;
     name.sin_family = PF_INET;
-    name.sin_port = htons(stackGetVariable(0, thread).raw);
+    name.sin_port = htons(thread->getVariable(0).raw);
     name.sin_addr.s_addr = htonl(INADDR_ANY);
-    
+
     int reuse = 1;
     if (setsockopt(listenerDescriptor, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(int)) == -1 ||
         bind(listenerDescriptor, (struct sockaddr *)&name, sizeof(name)) == -1 ||
@@ -44,7 +51,7 @@ void serverInitWithPort(Thread *thread, Something *destination) {
     *(int *)stackGetThisObject(thread)->value = listenerDescriptor;
 }
 
-void serverAccept(Thread *thread, Something *destination) {
+void serverAccept(Thread *thread, Value *destination) {
     int listenerDescriptor = *(int *)stackGetThisObject(thread)->value;
     struct sockaddr_storage clientAddress;
     unsigned int addressSize = sizeof(clientAddress);
@@ -57,10 +64,10 @@ void serverAccept(Thread *thread, Something *destination) {
     
     Object *socket = newObject(CL_SOCKET);
     *(int *)socket->value = connectionAddress;
-    *destination = somethingObject(socket);
+    *destination = ValueObject(socket);
 }
 
-void socketSendData(Thread *thread, Something *destination) {
+void socketSendData(Thread *thread, Value *destination) {
     int connectionAddress = *(int *)stackGetThisObject(thread)->value;
     Data *data = stackGetVariable(0, thread).object->value;
     if (send(connectionAddress, data->bytes, data->length, 0) == -1) {
@@ -71,13 +78,13 @@ void socketSendData(Thread *thread, Something *destination) {
     }
 }
 
-void socketClose(Thread *thread, Something *destination) {
+void socketClose(Thread *thread, Value *destination) {
     int connectionAddress = *(int *)stackGetThisObject(thread)->value;
     close(connectionAddress);
     *destination = NOTHINGNESS;
 }
 
-void socketReadBytes(Thread *thread, Something *destination) {
+void socketReadBytes(Thread *thread, Value *destination) {
     int connectionAddress = *(int *)stackGetThisObject(thread)->value;
     EmojicodeInteger n = unwrapInteger(stackGetVariable(0, thread));
     
@@ -90,7 +97,7 @@ void socketReadBytes(Thread *thread, Something *destination) {
         return;
     }
     
-    stackPush(somethingObject(bytesObject), 0, 0, thread);
+    stackPush(ValueObject(bytesObject), 0, 0, thread);
     
     Object *obj = newObject(CL_DATA);
     Data *data = obj->value;
@@ -99,10 +106,10 @@ void socketReadBytes(Thread *thread, Something *destination) {
     data->bytes = data->bytesObject->value;
     
     stackPop(thread);
-    *destination = somethingObject(obj);
+    *destination = ValueObject(obj);
 }
 
-void socketInitWithHost(Thread *thread, Something *destination) {
+void socketInitWithHost(Thread *thread, Value *destination) {
     char *string = stringToChar(stackGetVariable(0, thread).object->value);
 
     struct hostent *server = gethostbyname(string);

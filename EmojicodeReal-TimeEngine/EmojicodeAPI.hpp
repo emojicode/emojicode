@@ -46,6 +46,8 @@ union Value {
     Value *value;
     void makeNothingness() { raw = T_NOTHINGNESS; }
     void optionalSet(Value value) { raw = T_OPTIONAL_VALUE; this[1] = value; }
+    void storeError(EmojicodeInteger error) { raw = T_ERROR; this[1] = error; }
+    void setValueForError(Value value) { raw = T_OPTIONAL_VALUE; this[1] = value; }
 };
 
 struct Object {

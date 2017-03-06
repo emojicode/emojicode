@@ -8,25 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		E4A797E21D37DFBE0048DA41 /* allegro.c in Sources */ = {isa = PBXBuildFile; fileRef = E4A797E01D37DCC20048DA41 /* allegro.c */; };
-		E4CF872B1D2D3512006B3B0F /* EmojicodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */; };
-		E4CF872C1D2D3512006B3B0F /* EmojicodeString.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */; };
-		E4CF87341D2D38E0006B3B0F /* sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = E4CF87311D2D356F006B3B0F /* sockets.c */; };
-		E4E10B8B1ACA994B0072B4C8 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = E4E10B7F1ACA989B0072B4C8 /* files.c */; };
-		E4E10B8E1ACAAE240072B4C8 /* EmojicodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */; };
-		E4E10B8F1ACAAE240072B4C8 /* EmojicodeString.h in Headers */ = {isa = PBXBuildFile; fileRef = E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */; };
+		E4CF87341D2D38E0006B3B0F /* sockets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4CF87311D2D356F006B3B0F /* sockets.cpp */; };
+		E4E10B8B1ACA994B0072B4C8 /* files.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4E10B7F1ACA989B0072B4C8 /* files.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E4A797DE1D37DC8D0048DA41 /* allegro.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = allegro.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4A797E01D37DCC20048DA41 /* allegro.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = allegro.c; path = allegro/allegro.c; sourceTree = "<group>"; };
 		E4CF87301D2D3512006B3B0F /* sockets.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = sockets.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4CF87311D2D356F006B3B0F /* sockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sockets.c; path = sockets/sockets.c; sourceTree = "<group>"; };
-		E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeDictionary.h; path = ../EmojicodeDictionary.h; sourceTree = "<group>"; };
-		E4E10B7F1ACA989B0072B4C8 /* files.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = files.c; path = files/files.c; sourceTree = "<group>"; };
-		E4E10B811ACA98AC0072B4C8 /* EmojicodeAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeAPI.h; path = ../EmojicodeAPI.h; sourceTree = "<group>"; };
+		E4CF87311D2D356F006B3B0F /* sockets.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sockets.cpp; path = sockets/sockets.cpp; sourceTree = "<group>"; };
+		E4E10B7F1ACA989B0072B4C8 /* files.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = files.cpp; path = files/files.cpp; sourceTree = "<group>"; };
 		E4E10B871ACA98EE0072B4C8 /* files.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = files.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeList.h; path = ../EmojicodeList.h; sourceTree = "<group>"; };
-		E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EmojicodeString.h; path = ../EmojicodeString.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +57,7 @@
 		E4CF87331D2D3575006B3B0F /* sockets */ = {
 			isa = PBXGroup;
 			children = (
-				E4CF87311D2D356F006B3B0F /* sockets.c */,
+				E4CF87311D2D356F006B3B0F /* sockets.cpp */,
 			);
 			name = sockets;
 			sourceTree = "<group>";
@@ -73,10 +65,6 @@
 		E4E10B6E1ACA983B0072B4C8 = {
 			isa = PBXGroup;
 			children = (
-				E4E10B811ACA98AC0072B4C8 /* EmojicodeAPI.h */,
-				E4E10B8C1ACAAE240072B4C8 /* EmojicodeList.h */,
-				E4E10B8D1ACAAE240072B4C8 /* EmojicodeString.h */,
-				E4DA68691AE6C367003158CA /* EmojicodeDictionary.h */,
 				E4A797DF1D37DCA00048DA41 /* allegro */,
 				E4E10B7E1ACA98900072B4C8 /* Files */,
 				E4CF87331D2D3575006B3B0F /* sockets */,
@@ -97,7 +85,7 @@
 		E4E10B7E1ACA98900072B4C8 /* Files */ = {
 			isa = PBXGroup;
 			children = (
-				E4E10B7F1ACA989B0072B4C8 /* files.c */,
+				E4E10B7F1ACA989B0072B4C8 /* files.cpp */,
 			);
 			name = Files;
 			sourceTree = "<group>";
@@ -116,8 +104,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4CF872B1D2D3512006B3B0F /* EmojicodeList.h in Headers */,
-				E4CF872C1D2D3512006B3B0F /* EmojicodeString.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,8 +111,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4E10B8E1ACAAE240072B4C8 /* EmojicodeList.h in Headers */,
-				E4E10B8F1ACAAE240072B4C8 /* EmojicodeString.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,7 +214,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4CF87341D2D38E0006B3B0F /* sockets.c in Sources */,
+				E4CF87341D2D38E0006B3B0F /* sockets.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,7 +222,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4E10B8B1ACA994B0072B4C8 /* files.c in Sources */,
+				E4E10B8B1ACA994B0072B4C8 /* files.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

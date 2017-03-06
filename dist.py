@@ -8,7 +8,7 @@ version = "0.5.0-dev"
 packages = [("files", 0)]
 dist_name = "Emojicode-{0}-{1}-{2}".format(version, platform.system(),
                                            platform.machine())
-path = dist_name
+path = os.path.abspath(dist_name)
 
 
 def make_dir(path):
@@ -28,14 +28,17 @@ if __name__ == "__main__":
         dir_path = os.path.join(path, "packages", package)
         make_dir(dir_path)
         shutil.copy2(os.path.join(source, "headers", package + ".emojic"),
-                     os.path.join(path, "packages", package, "header.emojic"))
+                     os.path.join(dir_path, "header.emojic"))
+        shutil.copy2(package + ".so", os.path.join(dir_path, package + ".so"))
+
         symlink_name = os.path.join(path, "packages",
                                     "{0}-v{1}".format(package, version))
         if os.path.exists(symlink_name):
             os.unlink(symlink_name)
         os.symlink(package, symlink_name)
-        # TODO: Copy binaries
 
     shutil.copy2("emojicode", os.path.join(path, "emojicode"))
     shutil.copy2("emojicodec", os.path.join(path, "emojicodec"))
-    shutil.make_archive(dist_name, "gztar", path)
+
+    if len(sys.argv) > 2 and sys.argv[2] == "archive":
+        shutil.make_archive(dist_name, "gztar", path)
