@@ -128,12 +128,13 @@ void socketDestruct(void *d) {
 Emojicode::PackageVersion version(0, 1);
 
 LinkingTable {
-    [1] = serverAccept,
-    [2] = socketSendData,
-    [3] = socketClose,
-    [4] = socketReadBytes,
-    [5] = socketInitWithHost,
-    [6] = serverInitWithPort,
+    nullptr,
+    serverAccept,
+    socketSendData,
+    socketClose,
+    socketReadBytes,
+    socketInitWithHost,
+    serverInitWithPort,
 };
 
 extern "C" Emojicode::Marker markerPointerForClass(EmojicodeChar cl) {
