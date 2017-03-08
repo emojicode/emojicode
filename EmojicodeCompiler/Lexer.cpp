@@ -149,7 +149,8 @@ TokenStream lex(const std::string &path) {
                     continue;
                 case TokenType::Variable:
                     // A variable can consist of everything except for whitespaces and identifiers (that is emojis)
-                    if (detectWhitespace(c, &sourcePosition.character, &sourcePosition.line) || isEmoji(c)) {
+                    // isWhitespace used here because if it is whitespace, the detection will take place below
+                    if (isWhitespace(c) || isEmoji(c)) {
                         nextToken = true;
                     }
                     else {
