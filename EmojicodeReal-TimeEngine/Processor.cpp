@@ -25,14 +25,14 @@ static void passBlock(Thread *thread) {
 }
 
 static bool runBlock(Thread *thread) {
+    pauseForGC();
+
     EmojicodeInstruction length = thread->consumeInstruction();  // Length of the block
 
     EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + length;
     while (thread->currentStackFrame()->executionPointer < end) {
         Box garbage;
         produce(thread, &garbage.type);
-
-        pauseForGC();
 
         if (thread->currentStackFrame()->executionPointer == nullptr) {
             return true;
@@ -43,12 +43,12 @@ static bool runBlock(Thread *thread) {
 }
 
 static void runFunctionPointerBlock(Thread *thread, uint32_t length) {
+    pauseForGC();
+
     EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + length;
     while (thread->currentStackFrame()->executionPointer < end) {
         Box garbage;
         produce(thread, &garbage.type);
-
-        pauseForGC();
 
         if (thread->currentStackFrame()->executionPointer == nullptr) {
             return;
