@@ -296,7 +296,7 @@ LinkingTable {
     fileFlush,
 };
 
-extern "C" Emojicode::Marker markerPointerForClass(EmojicodeChar cl){
+extern "C" Emojicode::Marker markerPointerForClass(EmojicodeChar cl) {
     return NULL;
 }
 
