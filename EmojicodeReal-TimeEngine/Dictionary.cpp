@@ -341,7 +341,7 @@ void bridgeDictionaryKeys(Thread *thread, Value *destination) {
 
     List *newList = static_cast<List *>(listObject->value);
     newList->capacity = dict->size;
-    Object *items = newArray(sizeof(Value) * dict->size);
+    Object *items = newArray(sizeof(Box) * dict->size);
     static_cast<List *>(listObject->value)->items = items;
 
     for (size_t i = 0, l = dict->bucketsCounter; i < l; i++) {
