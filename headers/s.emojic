@@ -917,11 +917,6 @@
   🐖 🛂 📻 11
   🌮
     Suspends the calling thread from execution for at least the number of
-    seconds specified by the argument *seconds*.
-  🌮
-  🐇🐖 ⏳ seconds 🚂 📻 9
-  🌮
-    Suspends the calling thread from execution for at least the number of
     microseconds specified by the argument *microseconds*.
   🌮
   🐇🐖 ⏲ microseconds 🚂 📻 10

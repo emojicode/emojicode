@@ -126,25 +126,22 @@ static void systemSystem(Thread *thread, Value *destination) {
 
 static void threadJoin(Thread *thread, Value *destination) {
     allowGC();
-    pthread_join(*(pthread_t *)((Object *)thread->getThisObject())->value, nullptr);  // TODO: GC?!
+    auto cthread = static_cast<std::thread *>(thread->getThisObject()->value);
+    cthread->join();  // TODO: GC?!
     disallowGCAndPauseIfNeeded();
-}
-
-static void threadSleep(Thread *thread, Value *destination) {
-    sleep((unsigned int)thread->getVariable(0).raw);
 }
 
 static void threadSleepMicroseconds(Thread *thread, Value *destination) {
     std::this_thread::sleep_for(std::chrono::microseconds(thread->getVariable(0).raw));
 }
 
-void threadStart(Object *callable, Thread thread) {
+void threadStart(Object *callable) {
+    Thread thread = Thread();
     executeCallableExtern(callable, nullptr, &thread, nullptr);
 }
 
 static void initThread(Thread *thread, Value *destination) {
-    Thread newThread = Thread();
-    std::thread(threadStart, thread->getVariable(0).object, newThread);
+    *static_cast<std::thread *>(thread->getThisObject()->value) = std::thread(threadStart, thread->getVariable(0).object);
     *destination = thread->getThisContext();
 }
 
@@ -469,7 +466,7 @@ FunctionFunctionPointer sLinkingTable[] = {
     dataByAppendingData,  // 📝
     //💈
     initThread,
-    threadSleep,  //⏳
+    nullptr,
     threadSleepMicroseconds,  // ⏲
     threadJoin,  // 🛂
     //🔐
@@ -573,7 +570,7 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
         case 0x1F347:
             return sizeof(Closure);
         case 0x1f488:  //💈
-            return sizeof(pthread_t);
+            return sizeof(std::thread);
         case 0x1f510:  //🔐
             return sizeof(pthread_mutex_t);
     }

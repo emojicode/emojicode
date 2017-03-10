@@ -53,7 +53,7 @@ compilation_tests = [
     "gcStressTest2",
     "valueTypeCopySelf",
     "includer",
-    # threads
+    "threads",
 ]
 library_tests = [
     "stringTest", "primitives", "mathTest", "listTest", "rangeTest",
