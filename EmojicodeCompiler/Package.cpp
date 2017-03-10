@@ -17,12 +17,12 @@
 std::vector<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
-Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns, SourcePosition errorPosition) {
+Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns, const SourcePosition &p) {
     Package *package = findPackage(name);
 
     if (package) {
         if (!package->finishedLoading()) {
-            throw CompilerError(errorPosition,
+            throw CompilerError(p,
                                          "Circular dependency detected: %s (loaded first) and %s depend on each other.",
                                          this->name().c_str(), name.c_str());
         }
@@ -30,15 +30,15 @@ Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns
     else {
         auto path = packageDirectory + "/" + name + "/header.emojic";
 
-        package = new Package(name, errorPosition);
+        package = new Package(name, p);
 
         if (name != "s") {
-            package->loadPackage("s", globalNamespace, errorPosition);
+            package->loadPackage("s", globalNamespace, p);
         }
         package->parse(path);
     }
 
-    package->loadInto(this, ns, errorPosition);
+    package->loadInto(this, ns, p);
     return package;
 }
 
@@ -66,7 +66,8 @@ bool Package::fetchRawType(ParsedType ptn, bool optional, Type *type) {
     return fetchRawType(ptn.name, ptn.ns, optional, ptn.token.position(), type);
 }
 
-bool Package::fetchRawType(EmojicodeString name, EmojicodeString ns, bool optional, SourcePosition ep, Type *type) {
+bool Package::fetchRawType(EmojicodeString name, EmojicodeString ns, bool optional, const SourcePosition &ep,
+                           Type *type) {
     if (ns == globalNamespace && ns.size() == 1) {
         switch (name.front()) {
             case E_MEDIUM_WHITE_CIRCLE:
@@ -98,24 +99,27 @@ bool Package::fetchRawType(EmojicodeString name, EmojicodeString ns, bool option
     return false;
 }
 
-void Package::exportType(Type t, EmojicodeString name) {
+void Package::exportType(Type t, EmojicodeString name, const SourcePosition &p) {
     if (finishedLoading()) {
         throw std::logic_error("The package did already finish loading. No more types can be exported.");
+    }
+    if (std::any_of(exportedTypes_.begin(), exportedTypes_.end(), [&name](auto &type) { return type.name == name; })) {
+        throw CompilerError(p, "A type named %s was already exported.", name.utf8().c_str());
     }
     exportedTypes_.push_back(ExportedType(t, name));
 }
 
-void Package::registerType(Type t, EmojicodeString name, EmojicodeString ns, bool exportFromPackage) {
+void Package::registerType(Type t, EmojicodeString name, EmojicodeString ns, bool exportFromPkg, const SourcePosition &p) {
     EmojicodeString key = EmojicodeString(ns);
     key.append(name);
     types_.emplace(key, t);
 
-    if (exportFromPackage) {
-        exportType(t, name);
+    if (exportFromPkg) {
+        exportType(t, name, p);
     }
 }
 
-void Package::loadInto(Package *destinationPackage, EmojicodeString ns, SourcePosition p) const {
+void Package::loadInto(Package *destinationPackage, EmojicodeString ns, const SourcePosition &p) const {
     for (auto exported : exportedTypes_) {
         Type type = Type::nothingness();
         if (destinationPackage->fetchRawType(exported.name, ns, false, p, &type)) {
@@ -123,6 +127,6 @@ void Package::loadInto(Package *destinationPackage, EmojicodeString ns, SourcePo
                                          exported.name.utf8().c_str());
         }
 
-        destinationPackage->registerType(exported.type, exported.name, ns, false);
+        destinationPackage->registerType(exported.type, exported.name, ns, false, p);
     }
 }

@@ -57,7 +57,7 @@ void PackageParser::parse() {
                 Type type = Type::nothingness();
                 package_->fetchRawType(parseType(), false, &type);
 
-                package_->registerType(type, alias.name, alias.ns, false);
+                package_->registerType(type, alias.name, alias.ns, false, theToken.position());
                 continue;
             }
             case E_CRYSTAL_BALL: {
@@ -233,7 +233,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
     stream_.requireIdentifier(E_GRAPES);
 
     auto protocolType = Type(protocol, false);
-    package_->registerType(protocolType, parsedTypeName.name, parsedTypeName.ns, exported);
+    package_->registerType(protocolType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
 
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         auto documentation = Documentation().parse(&stream_);
@@ -263,7 +263,7 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
     Enum *eenum = new Enum(parsedTypeName.name, package_, theToken.position(), documentation);
 
     auto type = Type(eenum, false);
-    package_->registerType(type, parsedTypeName.name, parsedTypeName.ns, exported);
+    package_->registerType(type, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
     parseTypeDefinitionBody(type, nullptr, true);
 }
 
@@ -303,7 +303,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
     }
 
     auto classType = Type(eclass, false);  // New Type due to generic arguments now available.
-    package_->registerType(classType, parsedTypeName.name, parsedTypeName.ns, exported);
+    package_->registerType(classType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
     package_->registerClass(eclass);
 
     std::set<EmojicodeString> requiredInitializers;
@@ -334,7 +334,7 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
     parseGenericArgumentList(valueType, valueTypeContent);
     valueType->finalizeGenericArguments();
 
-    package_->registerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported);
+    package_->registerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
     parseTypeDefinitionBody(valueTypeContent, nullptr, true);
 }
 

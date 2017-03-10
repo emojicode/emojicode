@@ -46,7 +46,7 @@ public:
      * circular dependencies.
      * @param name The name of the package to load.
      */
-    Package* loadPackage(const std::string &name, const EmojicodeString &ns, SourcePosition p);
+    Package* loadPackage(const std::string &name, const EmojicodeString &ns, const SourcePosition &p);
 
     Package(std::string n, SourcePosition p) : name_(n), position_(p) {}
     void parse(const std::string &path);
@@ -62,10 +62,10 @@ public:
 
     const SourcePosition& position() const { return position_; }
 
-    void exportType(Type t, EmojicodeString name);
+    void exportType(Type t, EmojicodeString name, const SourcePosition &p);
     void registerClass(Class *cl) { classes_.push_back(cl); }
     void registerFunction(Function *function) { functions_.push_back(function); }
-    void registerType(Type t, EmojicodeString name, EmojicodeString ns, bool exportFromPackage);
+    void registerType(Type t, EmojicodeString name, EmojicodeString ns, bool exportFromPkg, const SourcePosition &p);
 
     const std::vector<Class *>& classes() const { return classes_; };
     const std::vector<Function *> functions() const { return functions_; }
@@ -73,7 +73,7 @@ public:
 
     /// Tries to fetch a type by its name and namespace and stores it into @c type.
     /// @returns Whether the type could be found or not. @c type is untouched if @c false was returned.
-    bool fetchRawType(EmojicodeString name, EmojicodeString ns, bool opt, SourcePosition errorPosition, Type *type);
+    bool fetchRawType(EmojicodeString name, EmojicodeString ns, bool opt, const SourcePosition &errorPosition, Type *type);
     bool fetchRawType(ParsedType ptn, bool optional, Type *type);
 
     /** Returns the loaded packages in the order in which they were loaded. */
@@ -85,7 +85,7 @@ public:
     const EmojicodeString& documentation() const { return documentation_; }
     void setDocumentation(const EmojicodeString &doc) { documentation_ = doc; }
 private:
-    void loadInto(Package *destinationPackage, EmojicodeString ns, SourcePosition p) const;
+    void loadInto(Package *destinationPackage, EmojicodeString ns, const SourcePosition &p) const;
 
     std::string name_;
     PackageVersion version_ = PackageVersion(0, 0);
