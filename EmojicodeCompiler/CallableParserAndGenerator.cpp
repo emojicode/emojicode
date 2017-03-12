@@ -696,7 +696,14 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 writer.writeInstruction(INS_ERROR);
 
                 if (isOnlyNothingnessReturnAllowed()) {
-                    throw CompilerError(token.position(), "🚨 not compatiable with initializers as of now.");
+                    auto &initializer = static_cast<Initializer &>(callable);
+                    if (!initializer.errorProne()) {
+                        throw CompilerError(token.position(), "Initializer is not declared error-prone.");
+                    }
+                    parse(stream_.consumeToken(), token, initializer.errorType(),
+                          Destination(DestinationMutability::Immutable, StorageType::Simple));
+                    returned = true;
+                    return;
                 }
                 if (callable.returnType.type() != TypeContent::Error) {
                     throw CompilerError(token.position(), "Function is not declared to return a 🚨.");
@@ -712,11 +719,6 @@ void CallableParserAndGenerator::parseStatement(const Token &token) {
                 writer.writeInstruction(INS_RETURN);
 
                 if (isOnlyNothingnessReturnAllowed()) {
-                    if (static_cast<Initializer &>(callable).canReturnNothingness) {
-                        parse(stream_.consumeToken(), token, Type::nothingness(),
-                              Destination(DestinationMutability::Unknown, StorageType::Simple));
-                        return;
-                    }
                     throw CompilerError(token.position(), "🍎 cannot be used inside an initializer.");
                 }
 
@@ -1280,6 +1282,7 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 throw CompilerError(token.position(), "Optionals cannot be instantiated.");
             }
 
+            Initializer *initializer;
             if (type.type() == TypeContent::Enum) {
                 notStaticError(pair.second, token.position(), "Enums");
                 placeholder.write(INS_GET_32_INTEGER);
@@ -1296,26 +1299,26 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 else {
                     writer.writeInstruction((EmojicodeInstruction)v.second);
                 }
+                type.unbox();
+                writeBoxingAndTemporary(des, type, insertionPoint);
+                return type;
             }
             else if (type.type() == TypeContent::ValueType) {
                 notStaticError(pair.second, token.position(), "Value Types");
 
                 placeholder.write(INS_INIT_VT);
 
-                auto initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
+                initializer = type.valueType()->getInitializer(initializerName, type, typeContext);
                 writer.writeInstruction(initializer->vtiForUse());
 
                 parseFunctionCall(type, initializer, token);
-                if (initializer->canReturnNothingness) {
-                    type.setOptional();
-                }
             }
             else if (type.type() == TypeContent::Class) {
                 placeholder.write(INS_NEW_OBJECT);
 
-                Initializer *initializer = type.eclass()->getInitializer(initializerName, type, typeContext);
+                initializer = type.eclass()->getInitializer(initializerName, type, typeContext);
 
-                if (!isStatic(pair.second) && !initializer->required) {
+                if (!isStatic(pair.second) && !initializer->required()) {
                     throw CompilerError(initializerName.position(),
                                         "Only required initializers can be used with dynamic types.");
                 }
@@ -1325,19 +1328,14 @@ Type CallableParserAndGenerator::parseIdentifier(const Token &token, Type expect
                 writer.writeInstruction(initializer->vtiForUse());
 
                 parseFunctionCall(type, initializer, token);
-
-                if (initializer->canReturnNothingness) {
-                    type.setOptional();
-                }
             }
             else {
                 throw CompilerError(token.position(), "The given type cannot be instantiated.");
             }
 
-            type.unbox();
-
-            writeBoxingAndTemporary(des, type, insertionPoint);
-            return type;
+            auto constructedType = initializer->constructedType(type);
+            writeBoxingAndTemporary(des, constructedType, insertionPoint);
+            return constructedType;
         }
         case E_DOUGHNUT: {
             effect = true;

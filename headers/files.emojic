@@ -87,7 +87,7 @@
 
     You cannot read from a file opened with this initializer.
   🌮
-  🍬 🐈 📝 message 🔡 📻 21
+  🐈🚨🌧 📝 message 🔡 📻 21
   🌮
     Opens the file at the given path for reading. The file pointer is set to the
     beginning of the file.
@@ -98,7 +98,7 @@
 
     You cannot write to a file opened with this initializer.
   🌮
-  🍬 🐈 📜 message 🔡 📻 22
+  🐈🚨🌧 📜 message 🔡 📻 22
 
   🌮 Write the data at the current file pointer position. 🌮
   🐖 ✏️ data 📇 ➡️ 🍬🌧 📻 17

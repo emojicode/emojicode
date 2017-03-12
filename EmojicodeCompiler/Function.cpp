@@ -182,11 +182,3 @@ Type Function::type() const {
     return t;
 }
 
-Type Initializer::type() const {
-    Type t = Type::callableIncomplete();
-    t.genericArguments_.push_back(Type(owningType().eclass(), canReturnNothingness));
-    for (size_t i = 0; i < arguments.size(); i++) {
-        t.genericArguments_.push_back(arguments[i].type);
-    }
-    return t;
-}

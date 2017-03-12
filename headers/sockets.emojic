@@ -42,6 +42,13 @@
 🔮 0 1
 📻
 
+🌍 🦃 ⛈ 🍇
+  🌮 Permission denied 🌮
+  🔘 🚧
+  🌮 File exists 🌮
+  🔘 🗿
+🍉
+
 🌮
   🏄 represents a socket that listens for clients on a given port.
 🌮
@@ -53,7 +60,7 @@
     Opens a socket to *address*. *address* can be a host name which will be
     resolved.
   🌮
-  🍬🐈 🆕 host 🔡 socket 🚂 📻 5
+  🐈🚨⛈ 🆕 host 🔡 socket 🚂 📻 5
 
   🌮
     Sends the given data to the peer. Returns true if the data was successfully
@@ -79,7 +86,7 @@
     This initializer returns Nothingness if the socket can’t be bound to the
     given port.
   🌮
-  🍬🐈 🆕 port 🚂 📻 6
+  🐈🚨⛈ 🆕 port 🚂 📻 6
 
   🌮
     Waits until a client wants to connect to this socket and returns a socket

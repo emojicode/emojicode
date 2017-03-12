@@ -110,10 +110,7 @@ Type AbstractParser::parseTypeDeclarative(const TypeContext &ct, TypeDynamism dy
     }
     else if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
         auto &token = stream_.consumeToken(TokenType::Identifier);
-        Type errorType = parseTypeDeclarative(ct, dynamism);
-        if (errorType.type() != TypeContent::Enum || errorType.optional() || errorType.meta()) {
-            throw CompilerError(token.position(), "Error type must be a non-optional 🦃.");
-        }
+        Type errorType = parseErrorEnumType(ct, dynamism, token.position());
         if (optional) {
             throw CompilerError(token.position(), "The error type itself cannot be an optional. "
                                 "Maybe you meant to make the contained type an optional?");
@@ -154,6 +151,14 @@ Type AbstractParser::parseTypeDeclarative(const TypeContext &ct, TypeDynamism dy
 
         return type;
     }
+}
+
+Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p) {
+    auto errorType = parseTypeDeclarative(typeContext, dynamism);
+    if (errorType.type() != TypeContent::Enum || errorType.optional() || errorType.meta()) {
+        throw CompilerError(p, "Error type must be a non-optional 🦃.");
+    }
+    return errorType;
 }
 
 void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,

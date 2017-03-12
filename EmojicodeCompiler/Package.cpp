@@ -6,13 +6,14 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include "Package.hpp"
+#include "PackageParser.hpp"
+#include "CompilerError.hpp"
 #include <cstring>
 #include <list>
 #include <string>
 #include <map>
-#include "Package.hpp"
-#include "PackageParser.hpp"
-#include "CompilerError.hpp"
+#include <algorithm>
 
 std::vector<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;

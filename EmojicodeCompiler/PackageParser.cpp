@@ -6,7 +6,6 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <cstring>
 #include "PackageParser.hpp"
 #include "Class.hpp"
 #include "Function.hpp"
@@ -15,6 +14,8 @@
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 #include "../utf8.h"
+#include <cstring>
+#include <experimental/optional>
 
 void PackageParser::parse() {
     while (stream_.hasMoreTokens()) {
@@ -353,7 +354,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
         auto staticOnType = Attribute<E_RABBIT>().parse(&stream_);
         auto mutating = Attribute<E_CRAYON>().parse(&stream_);
         auto required = Attribute<E_KEY>().parse(&stream_);
-        auto canReturnNothingness = Attribute<E_CANDY>().parse(&stream_);
 
         auto &token = stream_.consumeToken(TokenType::Identifier);
         switch (token.value()[0]) {
@@ -362,7 +362,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 override.disallow();
                 final.disallow();
                 required.disallow();
-                canReturnNothingness.disallow();
                 deprecated.disallow();
                 documentation.disallow();
                 mutating.disallow();
@@ -382,7 +381,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 override.disallow();
                 final.disallow();
                 required.disallow();
-                canReturnNothingness.disallow();
                 deprecated.disallow();
                 mutating.disallow();
 
@@ -395,7 +393,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 override.disallow();
                 final.disallow();
                 required.disallow();
-                canReturnNothingness.disallow();
                 deprecated.disallow();
                 documentation.disallow();
                 mutating.disallow();
@@ -412,7 +409,6 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
             }
             case E_PIG: {
                 required.disallow();
-                canReturnNothingness.disallow();
                 if (typed.type() != TypeContent::Class) {
                     override.disallow();
                     final.disallow();
@@ -461,6 +457,19 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                 break;
             }
             case E_CAT: {
+                if (typed.type() == TypeContent::Enum) {
+                    throw CompilerError(token.position(), "Enums cannot have custom initializers.");
+                }
+
+                std::experimental::optional<Type> errorType = std::experimental::nullopt;
+                if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
+                    if (typed.type() != TypeContent::Class) {
+                        throw CompilerError(token.position(), "Only classes can have error-prone initializers.");
+                    }
+                    auto &token = stream_.consumeToken(TokenType::Identifier);
+                    errorType = parseErrorEnumType(typed, TypeDynamism::None, token.position());
+                }
+
                 staticOnType.disallow();
                 override.disallow();
                 mutating.disallow();
@@ -468,14 +477,10 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                     required.disallow();
                 }
 
-                if (typed.type() == TypeContent::Enum) {
-                    throw CompilerError(token.position(), "Enums cannot have custom initializers.");
-                }
-
                 EmojicodeString name = stream_.consumeToken(TokenType::Identifier).value();
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), typed, package_,
                                                            token.position(), override.set(), documentation.get(),
-                                                           deprecated.set(), required.set(), canReturnNothingness.set(),
+                                                           deprecated.set(), required.set(), errorType,
                                                            typed.type() == TypeContent::Class ?
                                                            CallableParserAndGeneratorMode::ObjectInitializer :
                                                            CallableParserAndGeneratorMode::ValueTypeInitializer);

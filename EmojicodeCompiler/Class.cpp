@@ -132,8 +132,8 @@ void Class::finalize() {
         auto superInit = superclass() != nullptr ? superclass()->lookupInitializer(initializer->name()) : nullptr;
 
         initializer->setVtiProvider(&initializerVtiProvider_);
-        if (initializer->required) {
-            if (superInit != nullptr && superInit->required) {
+        if (initializer->required()) {
+            if (superInit != nullptr && superInit->required()) {
                 initializer->override(superInit, classType, Type(superclass(), false));
                 initializerVtiProvider_.incrementVtiCount();
             }

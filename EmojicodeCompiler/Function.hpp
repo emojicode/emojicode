@@ -109,8 +109,8 @@ public:
     TokenStream tokenStream() const { return tokenStream_; }
     void setTokenStream(TokenStream ts) { tokenStream_ = ts; }
 
-    /** The type of this callable when used as value. */
-    virtual Type type() const;
+    /// The type of this function when used as value.
+    Type type() const;
 
     /** Type to which this function belongs.
      This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
@@ -208,24 +208,34 @@ class Initializer: public Function {
 public:
     Initializer(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated, bool r,
-                bool crn, CallableParserAndGeneratorMode mode)
+                std::experimental::optional<Type> errorType, CallableParserAndGeneratorMode mode)
     : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, true, mode),
-    required(r),
-    canReturnNothingness(crn) {
-        returnType = owningType;
-        if (canReturnNothingness) {
-            returnType.setOptional();
-        }
+    required_(r),
+    errorType_(errorType) {
+        returnType = Type::nothingness();
     }
 
-    bool required;
-    bool canReturnNothingness;
+    /// Whether all subclassess are required to implement this initializer as well. Never true for non-class types.
+    bool required() const { return required_; }
+    /// Whether this initalizer might return an error.
+    bool errorProne() const { return static_cast<bool>(errorType_); }
+    const Type& errorType() const { return *errorType_; }
 
-    Type type() const override;
-
+    /// Returns the actual type constructed with this initializer for the given initialized type @c type
+    Type constructedType(Type type) {
+        type.unbox();
+        if (errorType_) {
+            Type errorType = Type::error();
+            errorType.genericArguments_ = { *errorType_, type };
+            return errorType;
+        }
+        return type;
+    }
     void addArgumentToVariable(const EmojicodeString &string) { argumentsToVariables_.push_back(string); }
     const std::vector<EmojicodeString>& argumentsToVariables() const { return argumentsToVariables_; }
 private:
+    bool required_;
+    std::experimental::optional<Type> errorType_;
     std::vector<EmojicodeString> argumentsToVariables_;
 };
 

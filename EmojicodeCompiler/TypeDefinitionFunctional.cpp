@@ -138,7 +138,7 @@ void TypeDefinitionFunctional::addInitializer(Initializer *initializer) {
     initializers_[initializer->name()] = initializer;
     initializerList_.push_back(initializer);
 
-    if (initializer->required) {
+    if (initializer->required()) {
         handleRequiredInitializer(initializer);
     }
 }

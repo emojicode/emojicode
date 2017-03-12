@@ -177,7 +177,7 @@ void reportPackage(Package *package) {
         printf("\"initializers\":[");
         for (size_t i = 0; i < vt->initializerList().size(); i++) {
             Initializer *initializer = vt->initializerList()[i];
-            reportFunctionInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
+            reportFunctionInformation(initializer, initializer->errorProne() ? CanReturnNothingness : NoReturn,
                                       i + 1 == vt->initializerList().size(), TypeContext(vttype, initializer));
         }
         printf("],");
@@ -224,7 +224,7 @@ void reportPackage(Package *package) {
         printf("\"initializers\":[");
         for (size_t i = 0; i < eclass->initializerList().size(); i++) {
             Initializer *initializer = eclass->initializerList()[i];
-            reportFunctionInformation(initializer, initializer->canReturnNothingness ? CanReturnNothingness : NoReturn,
+            reportFunctionInformation(initializer, initializer->errorProne() ? CanReturnNothingness : NoReturn,
                                       i + 1 == eclass->initializerList().size(),
                                       TypeContext(Type(eclass, false), initializer));
         }

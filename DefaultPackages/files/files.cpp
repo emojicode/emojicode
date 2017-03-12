@@ -205,10 +205,10 @@ void fileOpenWithMode(Thread *thread, Value *destination, const char *mode) {
     FILE *f = fopen(stringToCString(thread->getVariable(0).object), mode);
     if (f) {
         file(thread->getThisObject()) = f;
-        destination->optionalSet(thread->getThisContext());
+        destination->setValueForError(thread->getThisContext());
     }
     else {
-        destination->makeNothingness();
+        destination->storeError(errnoToError());
     }
 }
 

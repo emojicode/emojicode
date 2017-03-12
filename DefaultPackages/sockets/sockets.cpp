@@ -15,6 +15,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <unistd.h>
+#include <cerrno>
 
 using Emojicode::Thread;
 using Emojicode::Value;
@@ -24,10 +25,20 @@ using Emojicode::stringToCString;
 
 static Emojicode::Class *CL_SOCKET;
 
+Emojicode::EmojicodeInteger errnoToError() {
+    switch (errno) {
+        case EACCES:
+            return 0;
+        case EEXIST:
+            return 1;
+    }
+    return 0;
+}
+
 void serverInitWithPort(Thread *thread, Value *destination) {
     int listenerDescriptor = socket(PF_INET, SOCK_STREAM, 0);
     if (listenerDescriptor == -1) {
-        destination->makeNothingness();
+        destination->storeError(errnoToError());
         return;
     }
     
@@ -40,12 +51,12 @@ void serverInitWithPort(Thread *thread, Value *destination) {
     if (setsockopt(listenerDescriptor, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(int)) == -1 ||
         bind(listenerDescriptor, (struct sockaddr *)&name, sizeof(name)) == -1 ||
         listen(listenerDescriptor, 10) == -1) {
-        destination->makeNothingness();
+        destination->storeError(errnoToError());
         return;
     }
     
     *(int *)thread->getThisObject()->value = listenerDescriptor;
-    destination->optionalSet(thread->getThisObject());
+    destination->setValueForError(thread->getThisObject());
 }
 
 void serverAccept(Thread *thread, Value *destination) {
@@ -101,7 +112,7 @@ void socketReadBytes(Thread *thread, Value *destination) {
 void socketInitWithHost(Thread *thread, Value *destination) {
     struct hostent *server = gethostbyname(Emojicode::stringToCString(thread->getVariable(0).object));
     if (!server) {
-        destination->makeNothingness();
+        destination->storeError(errnoToError());
         return;
     }
 
@@ -113,11 +124,11 @@ void socketInitWithHost(Thread *thread, Value *destination) {
 
     int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
     if (socketDescriptor == -1 || connect(socketDescriptor, (struct sockaddr *) &address, sizeof(address)) == -1) {
-        destination->makeNothingness();
+        destination->storeError(errnoToError());
         return;
     }
     *(int *)thread->getThisObject()->value = socketDescriptor;
-    destination->optionalSet(thread->getThisObject());
+    destination->setValueForError(thread->getThisObject());
 }
 
 void socketDestruct(void *d) {

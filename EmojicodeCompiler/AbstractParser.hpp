@@ -44,6 +44,9 @@ protected:
     /// Parses the code block body of a function
     void parseBodyBlock(Function *function);
     void parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism, SourcePosition p);
+
+    /// Parses and validates the error type
+    Type parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p);
 };
 
 #endif /* AbstractParser_hpp */
