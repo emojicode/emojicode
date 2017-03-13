@@ -13,10 +13,6 @@ enum class StorageType {
     Simple,
     SimpleOptional,
     Box,
-    /// Value should be unboxed if possible
-    SimpleIfPossible,
-    /// No boxing of any kind should be performed, the caller will perform boxing itself.
-    NoAction,
 };
 
 #endif /* StorageType_hpp */

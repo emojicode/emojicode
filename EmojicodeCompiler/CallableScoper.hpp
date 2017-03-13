@@ -55,7 +55,7 @@ public:
 
     Scope& topmostLocalScope();
 
-    /// This method is called by the CallableParserAndGenerator after all arguments were set
+    /// This method is called by the FunctionPAG after all arguments were set
     virtual void postArgumentsHook() {}
 
     void pushTemporaryScope() { /* pushScope(); temporaryScopes_++; */ }

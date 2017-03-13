@@ -47,7 +47,8 @@ enum class TypeContent {
     LocalReference,
     Callable,
     Self,
-    Error
+    Error,
+    StorageExpectation,
 };
 
 struct ObjectVariableInformation {
@@ -100,7 +101,7 @@ public:
         : typeContent_(TypeContent::MultiProtocol), genericArguments_(protocols), optional_(optional) {
             sortMultiProtocolType();
         }
-
+    
     static Type integer() { return Type(VT_INTEGER, false, false, false); }
     static Type boolean() { return Type(VT_BOOLEAN, false, false, false); }
     static Type symbol() { return Type(VT_SYMBOL, false, false, false); }
@@ -200,10 +201,10 @@ public:
 
     /// Returns true if this represents a reference to (a) value(s) of the type represented by this instance.
     /// Values to which references point are normally located on the stack.
-    bool isValueReference() const { return vtReference_; }
-    void setValueReference(bool v = true) { vtReference_ = v; }
+    bool isReference() const { return isReference_; }
+    void setReference(bool v = true) { isReference_ = v; }
     /// Returns true if it makes sense to pass this value with the given storage type per reference to avoid copying.
-    bool isValueReferenceWorthy() const;
+    bool isReferenceWorthy() const;
     /// Returns true if the type requires a box to store important dynamic type information.
     /// A protocol box, for instance, requires a box to store dynamic type information, while
     /// class instances may, of course, be unboxed.
@@ -212,7 +213,12 @@ public:
 
     bool isMutable() const { return mutable_; }
     void setMutable(bool b) { mutable_ = b; }
+
     bool allowsMetaType();
+protected:
+    Type(bool isReference, bool forceBox, bool isMutable)
+        : typeContent_(TypeContent::StorageExpectation), optional_(false), isReference_(isReference),
+          mutable_(isMutable), forceBox_(forceBox) {}
 private:
     Type(TypeContent t, bool o) : typeContent_(t), optional_(o) {}
     int reference_;
@@ -226,10 +232,11 @@ private:
     bool optional_;
     bool resolveSelfOn_ = true;
     bool meta_ = false;
-    bool vtReference_ = false;
+    bool isReference_ = false;
     bool mutable_ = true;
     /// Indicates that the value is boxed although the type would normally not require boxing. Used with generics
     bool forceBox_ = false;
+
     void typeName(Type type, const TypeContext &typeContext, bool includePackageAndOptional, std::string &string) const;
     bool identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const;
     Type resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const;

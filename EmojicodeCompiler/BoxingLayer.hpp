@@ -18,7 +18,7 @@ public:
                 SourcePosition p)
     : Function(function->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
                function->owningType(), function->package(), p, false, EmojicodeString(), false, false,
-               CallableParserAndGeneratorMode::BoxingLayer), destinationFunction_(function) {
+               FunctionPAGMode::BoxingLayer), destinationFunction_(function) {
         setVtiProvider(provider);
         returnType = preturnType;
     }

@@ -136,7 +136,7 @@ void PackageParser::parse() {
                 auto function = new Function(EmojicodeString(E_CHEQUERED_FLAG), AccessLevel::Public, false,
                                              Type::nothingness(), package_, theToken.position(), false,
                                              documentation.get(), false, false,
-                                             CallableParserAndGeneratorMode::Function);
+                                             FunctionPAGMode::Function);
                 parseReturnType(function, Type::nothingness());
                 if (function->returnType.type() != TypeContent::Nothingness &&
                     !function->returnType.compatibleTo(Type::integer(), Type::nothingness())) {
@@ -249,7 +249,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
 
         auto method = new Function(methodName.value(), AccessLevel::Public, false, protocolType, package_,
                                    methodName.position(), false, documentation.get(), deprecated.set(), false,
-                                   CallableParserAndGeneratorMode::ObjectMethod);
+                                   FunctionPAGMode::ObjectMethod);
         parseArgumentList(method, protocolType, false);
         parseReturnType(method, protocolType);
 
@@ -421,8 +421,8 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                     auto *typeMethod = new Function(methodName.value(), accessLevel, final.set(), typed, package_,
                                                     token.position(), override.set(), documentation.get(),
                                                     deprecated.set(), true, typed.type() == TypeContent::Class ?
-                                                    CallableParserAndGeneratorMode::ClassMethod :
-                                                    CallableParserAndGeneratorMode::Function);
+                                                    FunctionPAGMode::ClassMethod :
+                                                    FunctionPAGMode::Function);
                     auto context = TypeContext(typed, typeMethod);
                     parseGenericArgumentsInDefinition(typeMethod, context);
                     parseArgumentList(typeMethod, context);
@@ -444,8 +444,8 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                     auto *method = new Function(methodName.value(), accessLevel, final.set(), typed,
                                                 package_, token.position(), override.set(), documentation.get(),
                                                 deprecated.set(), isMutating, typed.type() == TypeContent::Class ?
-                                                CallableParserAndGeneratorMode::ObjectMethod :
-                                                CallableParserAndGeneratorMode::ValueTypeMethod);
+                                                FunctionPAGMode::ObjectMethod :
+                                                FunctionPAGMode::ValueTypeMethod);
                     auto context = TypeContext(typed, method);
                     parseGenericArgumentsInDefinition(method, context);
                     parseArgumentList(method, context);
@@ -482,8 +482,8 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
                                                            token.position(), override.set(), documentation.get(),
                                                            deprecated.set(), required.set(), errorType,
                                                            typed.type() == TypeContent::Class ?
-                                                           CallableParserAndGeneratorMode::ObjectInitializer :
-                                                           CallableParserAndGeneratorMode::ValueTypeInitializer);
+                                                           FunctionPAGMode::ObjectInitializer :
+                                                           FunctionPAGMode::ValueTypeInitializer);
                 auto context = TypeContext(typed, initializer);
                 parseGenericArgumentsInDefinition(initializer, context);
                 parseArgumentList(initializer, context, true);

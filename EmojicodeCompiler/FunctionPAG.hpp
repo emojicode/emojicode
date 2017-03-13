@@ -1,13 +1,13 @@
 //
-//  CallableParserAndGenerator.hpp
+//  FunctionPAG.hpp
 //  Emojicode
 //
 //  Created by Theo Weidmann on 05/01/16.
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#ifndef CallableParserAndGenerator_hpp
-#define CallableParserAndGenerator_hpp
+#ifndef FunctionPAG_hpp
+#define FunctionPAG_hpp
 
 #include <utility>
 #include <vector>
@@ -18,9 +18,9 @@
 #include "AbstractParser.hpp"
 #include "TypeContext.hpp"
 #include "CallableWriter.hpp"
-#include "CallableParserAndGeneratorMode.hpp"
-#include "Destination.hpp"
+#include "FunctionPAGMode.hpp"
 #include "BoxingLayer.hpp"
+#include "TypeExpectation.hpp"
 
 struct FlowControlReturn {
     int branches = 0;
@@ -41,12 +41,13 @@ enum class TypeAvailability {
     StaticAndUnavailable,
 };
 
-/** This class is repsonsible for compiling a @c Callable to bytecode. */
-class CallableParserAndGenerator : AbstractParser {
+/// This class is responsible to parse and compile (abbreviated PAG) all functions to byte code.
+/// One instance of @c FunctionPAG can compile exactly one function.
+class FunctionPAG : AbstractParser {
 public:
-    static CallableParserAndGenerator writeAndAnalyzeFunction(Function *function, CallableWriter &writer,
+    static FunctionPAG writeAndAnalyzeFunction(Function *function, CallableWriter &writer,
                                                               Type contextType, CallableScoper &scoper);
-    CallableParserAndGenerator(Function &function, Package *p, CallableParserAndGeneratorMode mode,
+    FunctionPAG(Function &function, Package *p, FunctionPAGMode mode,
                                TypeContext typeContext, CallableWriter &writer, CallableScoper &scoper);
 
     /** Performs the analyziation. */
@@ -54,9 +55,9 @@ public:
     /** Whether self was used in the callable body. */
     bool usedSelfInBody() const { return usedSelf; }
 
-    static bool hasInstanceScope(CallableParserAndGeneratorMode mode);
+    static bool hasInstanceScope(FunctionPAGMode mode);
 private:
-    CallableParserAndGeneratorMode mode;
+    FunctionPAGMode mode;
     /** The callable which is processed. */
     Function &callable;
     /** The writer used for writing the byte code. */
@@ -80,14 +81,12 @@ private:
 
     void parseStatement(const Token &token);
 
-    Type parse(const Token &token, Type expectation, Destination &des);
-    Type parse(const Token &token, Destination &des);
+    Type parse(const Token &token, TypeExpectation &&expectation);
     /**
      * Same as @c parse. This method however forces the returned type to be a type compatible to @c type.
      * @param token The token to evaluate.
      */
-    Type parse(const Token &token, const Token &parentToken, Type type, Destination des,
-               std::vector<CommonTypeFinder>* = nullptr);
+    Type parse(const Token &token, const Token &parentToken, Type type, std::vector<CommonTypeFinder>* = nullptr);
     /**
      * Parses a type name and writes instructions to fetch it at runtime. If everything goes well, the parsed
      * type (unresolved) and true are returned.
@@ -95,9 +94,9 @@ private:
      * is returned and false are returned.
      */
     std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, const SourcePosition &p,
-                                                       Type expectation = Type::nothingness());
+                                                       const TypeExpectation &expectation);
     /** Parses an identifier when occurring without context. */
-    Type parseIdentifier(const Token &token, Type expectation, Destination &des);
+    Type parseIdentifier(const Token &token, const TypeExpectation &expectation);
     /** Parses the expression for an if statement. */
     void parseIfExpression(const Token &token);
     /**
@@ -119,23 +118,24 @@ private:
     /// the instructions to store the return value at a temporary location on the stack, if the destination type of
     /// temporary type.
     /// @attention Makes @c returnType a reference if the returned value type is temporarily needed as reference.
-    void writeBoxingAndTemporary(Destination des, Type &returnType, WriteLocation location) const;
-    void writeBoxingAndTemporary(Destination des, Type returnType) const {
-        writeBoxingAndTemporary(des, returnType, writer);
+    void writeBoxingAndTemporary(const TypeExpectation &expectation, Type &returnType, WriteLocation location) const;
+    void writeBoxingAndTemporary(const TypeExpectation &expectation, Type returnType) const {
+        writeBoxingAndTemporary(expectation, returnType, writer);
     }
 
-    Type parseMethodCall(const Token &token, Destination des, std::function<Type(Destination&)> callee);
+    Type parseMethodCall(const Token &token, const TypeExpectation &expectation,
+                         std::function<Type(const TypeExpectation&)> callee);
 
     /// Copies or takes a reference to the content of the given variable as needed to statisfy the requirement of @c des
-    /// @returns The type of the variable with @c isValueReference set appropriately.
-    Type takeVariable(ResolvedVariable rvar, Destination &des);
+    /// @returns The type of the variable with @c isReference set appropriately.
+    Type takeVariable(ResolvedVariable rvar, const TypeExpectation &expectation);
     void copyVariableContent(ResolvedVariable var);
     void getVTReference(ResolvedVariable var);
     void produceToVariable(ResolvedVariable var);
 
     void noReturnError(const SourcePosition &p);
     void noEffectWarning(const Token &warningToken);
-    void mutatingMethodCheck(Function *function, Type type, Destination des, const SourcePosition &p);
+    void mutatingMethodCheck(Function *function, Type type, const TypeExpectation &expectation, const SourcePosition &p);
     void checkAccessLevel(Function *function, const SourcePosition &p) const;
     bool typeIsEnumerable(Type type, Type *elementType);
     void flowControlBlock(bool block = true, const std::function<void()> &bodyPredicate = nullptr);
@@ -155,4 +155,4 @@ private:
         || t == TypeAvailability::StaticAndAvailabale; }
 };
 
-#endif /* CallableParserAndGenerator_hpp */
+#endif /* FunctionPAG_hpp */

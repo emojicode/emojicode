@@ -12,7 +12,7 @@
 #include "Token.hpp"
 #include "TokenStream.hpp"
 #include "Type.hpp"
-#include "CallableParserAndGeneratorMode.hpp"
+#include "FunctionPAGMode.hpp"
 #include "CallableWriter.hpp"
 #include "Class.hpp"
 #include <queue>
@@ -66,7 +66,7 @@ public:
 
     Function(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, EmojicodeString documentationToken, bool deprecated, bool mutating,
-             CallableParserAndGeneratorMode mode)
+             FunctionPAGMode mode)
     : position_(p),
     name_(name),
     final_(final),
@@ -166,7 +166,7 @@ public:
     /// Whether the function mutates the callee. Only relevant for value type instance methods.
     bool mutating() const { return mutating_; }
 
-    CallableParserAndGeneratorMode compilationMode() const { return compilationMode_; }
+    FunctionPAGMode compilationMode() const { return compilationMode_; }
 
     int fullSize() const { return fullSize_; }
     void setFullSize(int c) { fullSize_ = c; }
@@ -198,7 +198,7 @@ private:
     Package *package_;
     EmojicodeString documentation_;
     VTIProvider *vtiProvider_ = nullptr;
-    CallableParserAndGeneratorMode compilationMode_;
+    FunctionPAGMode compilationMode_;
     int fullSize_ = -1;
     std::vector<Function*> overriders_;
     std::vector<FunctionObjectVariableInformation> objectVariableInformation_;
@@ -208,7 +208,7 @@ class Initializer: public Function {
 public:
     Initializer(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated, bool r,
-                std::experimental::optional<Type> errorType, CallableParserAndGeneratorMode mode)
+                std::experimental::optional<Type> errorType, FunctionPAGMode mode)
     : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, true, mode),
     required_(r),
     errorType_(errorType) {

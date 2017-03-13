@@ -429,6 +429,8 @@ EmojicodeInstruction Type::boxIdentifier() const {
         case TypeContent::Self:
         case TypeContent::Error:
             return 0;  // This can only be executed in the case of a semantic error, return any value
+        case TypeContent::StorageExpectation:
+            throw std::logic_error("Box identifier for StorageExpectation");
     }
     return meta() ? (value | META_MASK) : value;
 }
@@ -442,6 +444,7 @@ bool Type::requiresBox() const {
         case TypeContent::Someobject:
         case TypeContent::Self:
         case TypeContent::Nothingness:
+        case TypeContent::StorageExpectation:
             return false;
         case TypeContent::Error:
             return genericArguments()[1].storageType() == StorageType::Box;
@@ -454,7 +457,7 @@ bool Type::requiresBox() const {
     }
 }
 
-bool Type::isValueReferenceWorthy() const {
+bool Type::isReferenceWorthy() const {
     switch (type()) {
         case TypeContent::Callable:
         case TypeContent::Class:
@@ -472,6 +475,8 @@ bool Type::isValueReferenceWorthy() const {
         case TypeContent::Something:
         case TypeContent::Error:
             return true;
+        case TypeContent::StorageExpectation:
+            throw std::logic_error("isReferenceWorthy for StorageExpectation");
     }
 }
 
@@ -549,6 +554,8 @@ std::string Type::typePackage() {
         case TypeContent::MultiProtocol:  // should actually never come in here
         case TypeContent::Error:
             return "";
+        case TypeContent::StorageExpectation:
+            throw std::logic_error("typePackage for StorageExpectation");
     }
 }
 

@@ -1,15 +1,15 @@
 //
-//  CallableParserAndGeneratorMode.hpp
+//  FunctionPAGMode.hpp
 //  Emojicode
 //
 //  Created by Theo Weidmann on 28/09/2016.
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#ifndef CallableParserAndGeneratorMode_h
-#define CallableParserAndGeneratorMode_h
+#ifndef FunctionPAGMode_h
+#define FunctionPAGMode_h
 
-enum class CallableParserAndGeneratorMode {
+enum class FunctionPAGMode {
     ObjectMethod,
     ObjectInitializer,
     /** A function with a context. (e.g. a value type method) */
@@ -24,4 +24,4 @@ enum class CallableParserAndGeneratorMode {
     BoxingLayer,
 };
 
-#endif /* CallableParserAndGeneratorMode_h */
+#endif /* FunctionPAGMode_h */

@@ -9,7 +9,7 @@
 #include "CodeGenerator.hpp"
 #include <cstring>
 #include <vector>
-#include "CallableParserAndGenerator.hpp"
+#include "FunctionPAG.hpp"
 #include "Protocol.hpp"
 #include "CallableScoper.hpp"
 #include "Class.hpp"
@@ -42,10 +42,10 @@ void compileUnused(const std::vector<T *> &functions) {
 }
 void generateCodeForFunction(Function *function, CallableWriter &w) {
     CallableScoper scoper = CallableScoper();
-    if (CallableParserAndGenerator::hasInstanceScope(function->compilationMode())) {
+    if (FunctionPAG::hasInstanceScope(function->compilationMode())) {
         scoper = CallableScoper(&function->owningType().typeDefinitionFunctional()->instanceScope());
     }
-    CallableParserAndGenerator::writeAndAnalyzeFunction(function, w, function->owningType().disableSelfResolving(),
+    FunctionPAG::writeAndAnalyzeFunction(function, w, function->owningType().disableSelfResolving(),
                                                         scoper);
 }
 

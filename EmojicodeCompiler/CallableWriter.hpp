@@ -57,7 +57,7 @@ private:
 
 /**
  * The callable writer is responsible for storing the bytecode generated for a callable. It is normally used in
- * conjunction with a @c CallableParserAndGenerator instance.
+ * conjunction with a @c FunctionPAG instance.
  */
 class CallableWriter {
     friend CallableWriterPlaceholder;
