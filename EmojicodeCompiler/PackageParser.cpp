@@ -331,7 +331,7 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
         valueType->makePrimitive();
     }
 
-    auto valueTypeContent = Type(valueType, false, false);
+    auto valueTypeContent = Type(valueType, false);
     parseGenericArgumentList(valueType, valueTypeContent);
     valueType->finalizeGenericArguments();
 

@@ -6,24 +6,25 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <cstring>
-#include <vector>
-#include <list>
-#include <map>
+#include "PackageReporter.hpp"
 #include "../utf8.h"
 #include "Function.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
-#include "PackageReporter.hpp"
 #include "TypeContext.hpp"
 #include "ValueType.hpp"
+#include "TypeDefinitionFunctional.hpp"
+#include <cstring>
+#include <vector>
+#include <list>
+#include <map>
 
-enum ReturnManner {
+enum class ReturnKind {
     Return,
     NoReturn,
-    CanReturnNothingness
+    ErrorProneInitializer
 };
 
 void reportDocumentation(const EmojicodeString &documentation) {
@@ -36,28 +37,27 @@ void reportDocumentation(const EmojicodeString &documentation) {
     putc(',', stdout);
 }
 
-void reportType(const char *key, Type type, TypeContext tc) {
+void reportType(const Type &type, const TypeContext &tc) {
     auto returnTypeName = type.toString(tc, false);
-
-    if (key) {
-        printf("\"%s\":{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
-               key, type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
-    }
-    else {
-        printf("{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
-               type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
-    }
+    printf("{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
+           type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
 }
 
-void commaPrinter(bool *b) {
-    if (*b) {
-        putc(',', stdout);
+class CommaPrinter {
+public:
+    CommaPrinter() {}
+    void print() {
+        if (printedFirst_) {
+            putc(',', stdout);
+        }
+        printedFirst_ = true;
     }
-    *b = true;
-}
+private:
+    bool printedFirst_ = false;
+};
 
 void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Type> constraints,
-                            size_t superCount, TypeContext tc) {
+                            size_t superCount, const TypeContext &tc) {
     printf("\"genericArguments\":[");
 
     auto gans = std::vector<EmojicodeString>(map.size());
@@ -65,59 +65,145 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
         gans[it.second.reference() - superCount] = it.first;
     }
 
-    auto reported = false;
-
+    CommaPrinter printer;
     for (size_t i = 0; i < gans.size(); i++) {
+        printer.print();
         auto gan = gans[i];
-        commaPrinter(&reported);
         printf("{\"name\":");
         printJSONStringToFile(gan.utf8().c_str(), stdout);
-        printf(",");
-        reportType("constraint", constraints[i], tc);
+        printf(",\"constraint\":");
+        reportType(constraints[i], tc);
         printf("}");
     }
 
     printf("],");
 }
 
-void reportFunctionInformation(Function *p, ReturnManner returnm, bool last, TypeContext tc) {
-    printf("{");
-    printf("\"name\":\"%s\",", p->name().utf8().c_str());
-    if (p->accessLevel() == AccessLevel::Private) {
-        printf("\"access\":\"🔒\",");
-    }
-    else if (p->accessLevel() == AccessLevel::Protected) {
-        printf("\"access\":\"🔐\",");
-    }
-    else {
-        printf("\"access\":\"🔓\",");
+void reportFunction(Function *function, ReturnKind returnKind, const TypeContext &tc) {
+    printf("{\"name\":\"%s\",", function->name().utf8().c_str());
+    switch (function->accessLevel()) {
+        case AccessLevel::Private:
+            printf("\"access\":\"🔒\",");
+            break;
+        case AccessLevel::Protected:
+            printf("\"access\":\"🔐\",");
+            break;
+        case AccessLevel::Public:
+            printf("\"access\":\"🔓\",");
+            break;
     }
 
-    if (returnm == Return) {
-        reportType("returnType", p->returnType, tc);
+    if (returnKind == ReturnKind::Return) {
+        printf("\"returnType\":");
+        reportType(function->returnType, tc);
         putc(',', stdout);
     }
-    else if (returnm == CanReturnNothingness) {
-        printf("\"canReturnNothingness\":true,");
+    else if (returnKind == ReturnKind::ErrorProneInitializer) {
+        printf("\"errorType\":");
+        reportType(static_cast<Initializer *>(function)->errorType(), tc);
+        putc(',', stdout);
     }
 
-    reportGenericArguments(p->genericArgumentVariables, p->genericArgumentConstraints, 0, tc);
-    reportDocumentation(p->documentation());
+    reportGenericArguments(function->genericArgumentVariables, function->genericArgumentConstraints, 0, tc);
+    reportDocumentation(function->documentation());
 
     printf("\"arguments\":[");
-    for (int i = 0; i < p->arguments.size(); i++) {
-        printf("{");
-        auto argument = p->arguments[i];
-
-        reportType("type", argument.type, tc);
+    CommaPrinter printer;
+    for (auto &argument : function->arguments) {
+        printer.print();
+        printf("{\"type\":");
+        reportType(argument.type, tc);
         printf(",\"name\":");
         printJSONStringToFile(argument.variableName.utf8().c_str(), stdout);
-        printf("}%s", i + 1 == p->arguments.size() ? "" : ",");
+        printf("}");
     }
-    printf("]");
-
-    printf("}%s", last ? "" : ",");
+    printf("]}");
 }
+
+template <typename T>
+class TypeDefinitionReporter {
+public:
+    explicit TypeDefinitionReporter(T *typeDef) : typeDef_(typeDef) {}
+
+    void report() const {
+        reportBasics();
+        printf("}");
+    }
+protected:
+    T *typeDef_;
+
+    virtual void reportBasics() const {
+        printf("{\"name\": \"%s\",", typeDef_->name().utf8().c_str());
+
+        printf("\"conformsTo\":[");
+        CommaPrinter printer;
+        for (auto &protocol : typeDef_->protocols()) {
+            printer.print();
+            reportType(protocol, TypeContext(Type(typeDef_, false)));
+        }
+        printf("],");
+
+        reportGenericArguments(typeDef_->ownGenericArgumentVariables(), typeDef_->genericArgumentConstraints(),
+                               typeDef_->superGenericArguments().size(), TypeContext(Type(typeDef_, false)));
+        reportDocumentation(typeDef_->documentation());
+
+        printf("\"methods\":[");
+        printFunctions(typeDef_->methodList());
+        printf("],");
+
+        printf("\"initializers\":[");
+        CommaPrinter initializerPrinter;
+        for (auto initializer : typeDef_->initializerList()) {
+            initializerPrinter.print();
+            reportFunction(initializer, initializer->errorProne() ? ReturnKind::ErrorProneInitializer
+                           : ReturnKind::NoReturn, TypeContext(Type(typeDef_, false), initializer));
+        }
+        printf("],");
+
+        printf("\"typeMethods\":[");
+        printFunctions(typeDef_->typeMethodList());
+        printf("]");
+    }
+
+    void printFunctions(const std::vector<Function *> &functions) const {
+        CommaPrinter printer;
+        for (auto function : functions) {
+            printer.print();
+            reportFunction(function, ReturnKind::Return, TypeContext(Type(typeDef_, false), function));
+        }
+    }
+};
+
+class ClassReporter : public TypeDefinitionReporter<Class> {
+public:
+    explicit ClassReporter(Class *klass) : TypeDefinitionReporter(klass) {}
+
+    void reportBasics() const override {
+        TypeDefinitionReporter::reportBasics();
+        if (typeDef_->superclass() != nullptr) {
+            printf(",\"superclass\":{\"package\":\"%s\",\"name\":\"%s\"}",
+                   typeDef_->superclass()->package()->name().c_str(), typeDef_->superclass()->name().utf8().c_str());
+        }
+    }
+};
+
+class EnumReporter : public TypeDefinitionReporter<Enum> {
+public:
+    explicit EnumReporter(Enum *enumeration) : TypeDefinitionReporter(enumeration) {}
+
+    void reportBasics() const override {
+        TypeDefinitionReporter::reportBasics();
+        printf(",\"values\":[");
+        CommaPrinter printer;
+        for (auto it : typeDef_->values()) {
+            printer.print();
+            printf("{");
+            reportDocumentation(it.second.second);
+            printf("\"value\":\"%s\"}", it.first.utf8().c_str());
+        }
+        printf("]");
+    }
+};
 
 void reportPackage(Package *package) {
     std::list<Enum *> enums;
@@ -145,161 +231,37 @@ void reportPackage(Package *package) {
     }
 
     printf("{");
+    reportDocumentation(package->documentation());
 
-    printf("\"documentation\":");
-    printJSONStringToFile(package->documentation().utf8().c_str(), stdout);
-
-    bool printedValueType = false;
-    printf(",\"valueTypes\":[");
-    for (auto vt : valueTypes) {
-        auto vttype = Type(vt, false, false);
-        auto vtcontext = TypeContext(vttype);
-        if (printedValueType) {
-            putchar(',');
-        }
-        printedValueType = true;
-
-        printf("{");
-
-        printf("\"name\":\"%s\",", vt->name().utf8().c_str());
-
-        reportGenericArguments(vt->ownGenericArgumentVariables(), vt->genericArgumentConstraints(),
-                               vt->superGenericArguments().size(), vtcontext);
-        reportDocumentation(vt->documentation());
-
-        printf("\"methods\":[");
-        for (size_t i = 0; i < vt->methodList().size(); i++) {
-            Function *method = vt->methodList()[i];
-            reportFunctionInformation(method, Return, i + 1 == vt->methodList().size(), TypeContext(vttype, method));
-        }
-        printf("],");
-
-        printf("\"initializers\":[");
-        for (size_t i = 0; i < vt->initializerList().size(); i++) {
-            Initializer *initializer = vt->initializerList()[i];
-            reportFunctionInformation(initializer, initializer->errorProne() ? CanReturnNothingness : NoReturn,
-                                      i + 1 == vt->initializerList().size(), TypeContext(vttype, initializer));
-        }
-        printf("],");
-
-        printf("\"classMethods\":[");
-        for (size_t i = 0; i < vt->typeMethodList().size(); i++) {
-            Function *classMethod = vt->typeMethodList()[i];
-            reportFunctionInformation(classMethod, Return, vt->typeMethodList().size() == i + 1,
-                                      TypeContext(vttype, classMethod));
-        }
-        printf("]}");
+    printf("\"valueTypes\":[");
+    CommaPrinter valueTypePrinter;
+    for (auto valueType : valueTypes) {
+        valueTypePrinter.print();
+        TypeDefinitionReporter<ValueType>(valueType).report();
     }
     printf("],");
 
-    bool printedClass = false;
+    CommaPrinter classPrinter;
     printf("\"classes\":[");
-    for (auto eclass : classes) {
-        if (printedClass) {
-            putchar(',');
-        }
-        printedClass = true;
-
-        printf("{");
-
-        printf("\"name\": \"%s\",", eclass->name().utf8().c_str());
-
-        reportGenericArguments(eclass->ownGenericArgumentVariables(), eclass->genericArgumentConstraints(),
-                               eclass->superGenericArguments().size(), TypeContext(Type(eclass, false)));
-        reportDocumentation(eclass->documentation());
-
-        if (eclass->superclass()) {
-            printf("\"superclass\":{\"package\":\"%s\",\"name\":\"%s\"},",
-                   eclass->superclass()->package()->name().c_str(), eclass->superclass()->name().utf8().c_str());
-        }
-
-        printf("\"methods\":[");
-        for (size_t i = 0; i < eclass->methodList().size(); i++) {
-            Function *method = eclass->methodList()[i];
-            reportFunctionInformation(method, Return, i + 1 == eclass->methodList().size(),
-                                      TypeContext(Type(eclass, false), method));
-        }
-        printf("],");
-
-        printf("\"initializers\":[");
-        for (size_t i = 0; i < eclass->initializerList().size(); i++) {
-            Initializer *initializer = eclass->initializerList()[i];
-            reportFunctionInformation(initializer, initializer->errorProne() ? CanReturnNothingness : NoReturn,
-                                      i + 1 == eclass->initializerList().size(),
-                                      TypeContext(Type(eclass, false), initializer));
-        }
-        printf("],");
-
-        printf("\"classMethods\":[");
-        for (size_t i = 0; i < eclass->typeMethodList().size(); i++) {
-            Function *classMethod = eclass->typeMethodList()[i];
-            reportFunctionInformation(classMethod, Return, eclass->typeMethodList().size() == i + 1,
-                                      TypeContext(Type(eclass, false), classMethod));
-        }
-        printf("],");
-
-        printf("\"conformsTo\":[");
-        bool printedProtocol = false;
-        for (auto &protocol : eclass->protocols()) {
-            commaPrinter(&printedProtocol);
-            reportType(nullptr, protocol, TypeContext(Type(eclass, false)));
-        }
-        printf("]}");
+    for (auto klass : classes) {
+        classPrinter.print();
+        ClassReporter(klass).report();
     }
     printf("],");
 
     printf("\"enums\": [");
-    bool printedEnum = false;
-    for (auto eenum : enums) {
-        if (printedEnum) {
-            putchar(',');
-        }
-        printf("{");
-
-        printedEnum = true;
-
-        printf("\"name\":\"%s\",", eenum->name().utf8().c_str());
-
-        reportDocumentation(eenum->documentation());
-
-        bool printedValue = false;
-        printf("\"values\":[");
-        for (auto it : eenum->values()) {
-            if (printedValue) {
-                putchar(',');
-            }
-            printedValue = true;
-            printf("{");
-            reportDocumentation(it.second.second);
-            printf("\"value\":\"%s\"}", it.first.utf8().c_str());
-        }
-        printf("]}");
+    CommaPrinter enumPrinter;
+    for (auto enumeration : enums) {
+        enumPrinter.print();
+        EnumReporter(enumeration).report();
     }
     printf("],");
 
     printf("\"protocols\":[");
-    bool printedProtocol = false;
+    CommaPrinter protocolPrinter;
     for (auto protocol : protocols) {
-        if (printedProtocol) {
-            putchar(',');
-        }
-        printedProtocol = true;
-        printf("{");
-
-        printf("\"name\":\"%s\",", protocol->name().utf8().c_str());
-
-        reportGenericArguments(protocol->ownGenericArgumentVariables(), protocol->genericArgumentConstraints(),
-                               protocol->superGenericArguments().size(), Type(protocol, false));
-        reportDocumentation(protocol->documentation());
-
-        printf("\"methods\":[");
-        for (size_t i = 0; i < protocol->methodList().size(); i++) {
-            Function *method = protocol->methodList()[i];
-            reportFunctionInformation(method, Return, i + 1 == protocol->methodList().size(),
-                                      TypeContext(Type(protocol, false)));
-        }
-        printf("]}");
+        protocolPrinter.print();
+        TypeDefinitionReporter<Protocol>(protocol).report();
     }
-    printf("]");
-    printf("}");
+    printf("]}");
 }

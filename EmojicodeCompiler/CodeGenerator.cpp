@@ -192,7 +192,7 @@ void generateCode(Writer &writer) {
     for (auto vt : ValueType::valueTypes()) {
         if (!vt->protocols().empty()) {
             writer.writeUInt16(vt->boxIdentifier());
-            writeProtocolTable(Type(vt, false, false), writer);
+            writeProtocolTable(Type(vt, false), writer);
             if (vt->boxIdentifier() < smallestBoxIdentifier) {
                 smallestBoxIdentifier = vt->boxIdentifier();
             }

@@ -29,5 +29,5 @@ void ValueType::finalize() {
         f->setVtiProvider(&vtiProvider_);
     }
 
-    TypeDefinitionFunctional::finalizeProtocols(Type(this, false, false), &vtiProvider_);
+    TypeDefinitionFunctional::finalizeProtocols(Type(this, false), &vtiProvider_);
 }

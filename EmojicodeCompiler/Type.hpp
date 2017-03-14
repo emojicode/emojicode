@@ -89,7 +89,7 @@ public:
     Type(Class *klass, bool optional);
     Type(Protocol *protocol, bool optional);
     Type(Enum *enumeration, bool optional);
-    Type(ValueType *valueType, bool optional, bool isMutable);
+    Type(ValueType *valueType, bool optional);
     /// Creates a reference to the generic argument @c r which can only be resolved on types which declare themselves
     /// to be suitable. (See @c canBeUsedToResolve).
     Type(TypeContent t, bool optional, int r, TypeDefinitionFunctional *resolutionConstraint)
@@ -102,10 +102,10 @@ public:
             sortMultiProtocolType();
         }
     
-    static Type integer() { return Type(VT_INTEGER, false, false); }
-    static Type boolean() { return Type(VT_BOOLEAN, false, false); }
-    static Type symbol() { return Type(VT_SYMBOL, false, false); }
-    static Type doubl() { return Type(VT_DOUBLE, false, false); }
+    static Type integer() { return Type(VT_INTEGER, false); }
+    static Type boolean() { return Type(VT_BOOLEAN, false); }
+    static Type symbol() { return Type(VT_SYMBOL, false); }
+    static Type doubl() { return Type(VT_DOUBLE, false); }
     static Type something() { return Type(TypeContent::Something, false); }
     static Type nothingness() { return Type(TypeContent::Nothingness, false); }
     static Type error() { return Type(TypeContent::Error, false); }
@@ -189,7 +189,7 @@ public:
     Type resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext, bool resolveSelf = true) const;
     
     /// Returns the name of the package to which this type belongs.
-    std::string typePackage();
+    std::string typePackage() const;
     /// Returns a string representation of this type.
     /// @param typeContext The type context to be used when resolving generic argument names. Can be Nothingeness if the
     /// type is not in a context.

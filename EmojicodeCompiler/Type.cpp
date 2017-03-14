@@ -36,8 +36,8 @@ Type::Type(Protocol *protocol, bool o) : typeDefinition_(protocol), typeContent_
 Type::Type(Enum *enumeration, bool o) : typeDefinition_(enumeration), typeContent_(TypeContent::Enum), optional_(o) {
 }
 
-Type::Type(ValueType *valueType, bool o, bool isMutable)
-: typeDefinition_(valueType), typeContent_(TypeContent::ValueType), optional_(o), mutable_(isMutable) {
+Type::Type(ValueType *valueType, bool o)
+: typeDefinition_(valueType), typeContent_(TypeContent::ValueType), optional_(o), mutable_(false) {
 }
 
 Type::Type(Class *c, bool o) : typeDefinition_(c), typeContent_(TypeContent::Class), optional_(o) {
@@ -537,7 +537,7 @@ template void Type::objectVariableRecords(int, std::vector<FunctionObjectVariabl
 
 // MARK: Type Visulisation
 
-std::string Type::typePackage() {
+std::string Type::typePackage() const {
     switch (this->type()) {
         case TypeContent::Class:
         case TypeContent::ValueType:
