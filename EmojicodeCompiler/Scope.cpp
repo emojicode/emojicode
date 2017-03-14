@@ -13,8 +13,12 @@
 
 void Scope::setVariableInitialization(bool initd) {
     for (auto &it : map_) {
-        if (initd) it.second.initialize(0);
-        else it.second.uninitialize();
+        if (initd) {
+            it.second.initialize(0);
+        }
+        else {
+            it.second.uninitialize();
+        }
     }
 }
 
@@ -30,26 +34,27 @@ void Scope::popInitializationLevel() {
     }
 }
 
-Variable& Scope::setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, const SourcePosition &pos) {
+Variable& Scope::setLocalVariable(const EmojicodeString &variable, const Type &type, bool frozen,
+                                  const SourcePosition &p) {
     if (hasLocalVariable(variable)) {
-        throw CompilerError(pos, "Cannot redeclare variable.");
+        throw CompilerError(p, "Cannot redeclare variable.");
     }
     int id = scoper_->reserveVariable(type.size());
-    Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, pos)).first->second;
+    Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, p)).first->second;
     size_ += type.size();
     return v;
 }
 
-Variable& Scope::setLocalVariableWithID(const EmojicodeString &variable, Type type, bool frozen, int id,
-                                        const SourcePosition &pos) {
+Variable& Scope::setLocalVariableWithID(const EmojicodeString &variable, const Type &type, bool frozen, int id,
+                                        const SourcePosition &p) {
     if (hasLocalVariable(variable)) {
-        throw CompilerError(pos, "Cannot redeclare variable.");
+        throw CompilerError(p, "Cannot redeclare variable.");
     }
-    Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, pos)).first->second;
+    Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, p)).first->second;
     return v;
 }
 
-int Scope::allocateInternalVariable(Type type) {
+int Scope::allocateInternalVariable(const Type &type) {
     int id = scoper_->reserveVariable(type.size());
     size_ += type.size();
     return id;
@@ -63,7 +68,7 @@ bool Scope::hasLocalVariable(const EmojicodeString &variable) const {
     return map_.count(variable) > 0;
 }
 
-void Scope::initializerUnintializedVariablesCheck(SourcePosition p, const char *errorMessage) {
+void Scope::initializerUnintializedVariablesCheck(const SourcePosition &p, const char *errorMessage) {
     for (auto &it : map_) {
         Variable &cv = it.second;
         if (!cv.initialized() && !cv.type().optional() && !cv.inherited()) {

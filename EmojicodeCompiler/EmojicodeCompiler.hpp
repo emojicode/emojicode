@@ -53,7 +53,7 @@ extern ValueType *VT_DOUBLE;
 using InstructionCount = unsigned int;
 
 /** Issues a compiler warning. The compilation is continued afterwards. */
-void compilerWarning(SourcePosition p, const char *err, ...);
+void compilerWarning(const SourcePosition &p, const char *err, ...);
 /** Prints the given error and stores that an error was raised during compilation. */
 void printError(const CompilerError &ce);
 /** Prints the string as escaped JSON string to the given file. */

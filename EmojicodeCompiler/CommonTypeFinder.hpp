@@ -18,7 +18,7 @@ public:
     /// Tells the common type finder about the type of another element in the collection.
     void addType(const Type &type, const TypeContext &typeContext);
     /** Returns the common type and issues a warning at @c warningToken if the common type is ambigious. */
-    Type getCommonType(SourcePosition p) const;
+    Type getCommonType(const SourcePosition &p) const;
 private:
     bool firstTypeFound_ = false;
     Type commonType_ = Type::something();

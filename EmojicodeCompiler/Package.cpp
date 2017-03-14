@@ -21,7 +21,7 @@ std::map<std::string, Package *> Package::packages_;
 Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns, const SourcePosition &p) {
     Package *package = findPackage(name);
 
-    if (package) {
+    if (package != nullptr) {
         if (!package->finishedLoading()) {
             throw CompilerError(p,
                                          "Circular dependency detected: %s (loaded first) and %s depend on each other.",
@@ -67,13 +67,13 @@ bool Package::fetchRawType(ParsedType ptn, bool optional, Type *type) {
     return fetchRawType(ptn.name, ptn.ns, optional, ptn.token.position(), type);
 }
 
-bool Package::fetchRawType(EmojicodeString name, EmojicodeString ns, bool optional, const SourcePosition &ep,
-                           Type *type) {
+bool Package::fetchRawType(const EmojicodeString &name, const EmojicodeString &ns, bool optional,
+                           const SourcePosition &p, Type *type) {
     if (ns == globalNamespace && ns.size() == 1) {
         switch (name.front()) {
             case E_MEDIUM_WHITE_CIRCLE:
                 if (optional) {
-                    throw CompilerError(ep, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
+                    throw CompilerError(p, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
                 }
                 *type = Type::something();
                 return true;
@@ -81,7 +81,7 @@ bool Package::fetchRawType(EmojicodeString name, EmojicodeString ns, bool option
                 *type = Type::someobject(optional);
                 return true;
             case E_SPARKLES:
-                throw CompilerError(ep, "The Nothingness type may not be referenced to.");
+                throw CompilerError(p, "The Nothingness type may not be referenced to.");
         }
     }
 
@@ -110,7 +110,8 @@ void Package::exportType(Type t, EmojicodeString name, const SourcePosition &p) 
     exportedTypes_.push_back(ExportedType(t, name));
 }
 
-void Package::registerType(Type t, EmojicodeString name, EmojicodeString ns, bool exportFromPkg, const SourcePosition &p) {
+void Package::registerType(Type t, const EmojicodeString &name, const EmojicodeString &ns, bool exportFromPkg,
+                           const SourcePosition &p) {
     EmojicodeString key = EmojicodeString(ns);
     key.append(name);
     types_.emplace(key, t);
@@ -120,7 +121,7 @@ void Package::registerType(Type t, EmojicodeString name, EmojicodeString ns, boo
     }
 }
 
-void Package::loadInto(Package *destinationPackage, EmojicodeString ns, const SourcePosition &p) const {
+void Package::loadInto(Package *destinationPackage, const EmojicodeString &ns, const SourcePosition &p) const {
     for (auto exported : exportedTypes_) {
         Type type = Type::nothingness();
         if (destinationPackage->fetchRawType(exported.name, ns, false, p, &type)) {

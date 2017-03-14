@@ -6,15 +6,15 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include <vector>
-#include <map>
-#include <utility>
 #include "EmojicodeCompiler.hpp"
 #include "CompilerError.hpp"
 #include "Class.hpp"
 #include "Function.hpp"
 #include "Lexer.hpp"
 #include "TypeContext.hpp"
+#include <utility>
+#include <vector>
+#include <map>
 
 std::vector<Class *> Class::classes_;
 

@@ -9,10 +9,10 @@
 #ifndef ValueType_hpp
 #define ValueType_hpp
 
-#include <vector>
 #include "TypeDefinitionFunctional.hpp"
 #include "VTIProvider.hpp"
 #include "Function.hpp"
+#include <vector>
 
 class ValueType : public TypeDefinitionFunctional {
 public:

@@ -7,9 +7,9 @@
 //
 
 #include "CallableScoper.hpp"
-#include <map>
 #include "VariableNotFoundError.hpp"
 #include "Function.hpp"
+#include <map>
 
 Scope& CallableScoper::currentScope() {
     return scopes_.front();

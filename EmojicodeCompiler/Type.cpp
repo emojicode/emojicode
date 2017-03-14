@@ -30,14 +30,14 @@ ValueType *VT_SYMBOL;
 ValueType *VT_INTEGER;
 ValueType *VT_DOUBLE;
 
-Type::Type(Protocol *p, bool o) : typeDefinition_(p), typeContent_(TypeContent::Protocol), optional_(o)  {
+Type::Type(Protocol *protocol, bool o) : typeDefinition_(protocol), typeContent_(TypeContent::Protocol), optional_(o) {
 }
 
-Type::Type(Enum *e, bool o) : typeDefinition_(e), typeContent_(TypeContent::Enum), optional_(o) {
+Type::Type(Enum *enumeration, bool o) : typeDefinition_(enumeration), typeContent_(TypeContent::Enum), optional_(o) {
 }
 
-Type::Type(ValueType *v, bool o, bool reference, bool isMutable)
-: typeDefinition_(v), typeContent_(TypeContent::ValueType), optional_(o), mutable_(isMutable) {
+Type::Type(ValueType *valueType, bool o, bool isMutable)
+: typeDefinition_(valueType), typeContent_(TypeContent::ValueType), optional_(o), mutable_(isMutable) {
 }
 
 Type::Type(Class *c, bool o) : typeDefinition_(c), typeContent_(TypeContent::Class), optional_(o) {

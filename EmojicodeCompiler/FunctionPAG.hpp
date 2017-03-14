@@ -45,25 +45,21 @@ enum class TypeAvailability {
 /// One instance of @c FunctionPAG can compile exactly one function.
 class FunctionPAG : AbstractParser {
 public:
-    static FunctionPAG writeAndAnalyzeFunction(Function *function, CallableWriter &writer,
-                                                              Type contextType, CallableScoper &scoper);
-    FunctionPAG(Function &function, Package *p, FunctionPAGMode mode,
-                               TypeContext typeContext, CallableWriter &writer, CallableScoper &scoper);
+    FunctionPAG(Function &function, Type contextType, CallableWriter &writer, CallableScoper &scoper);
+    /// Parses the function and compiles it to bytecode. The bytecode is appended to the writer. 
+    void compile();
 
-    /** Performs the analyziation. */
-    void analyze();
     /** Whether self was used in the callable body. */
     bool usedSelfInBody() const { return usedSelf; }
 
     static bool hasInstanceScope(FunctionPAGMode mode);
 private:
-    FunctionPAGMode mode;
-    /** The callable which is processed. */
-    Function &callable;
-    /** The writer used for writing the byte code. */
-    CallableWriter &writer;
-    /** The scoper responsible for scoping the function being compiled. */
-    CallableScoper &scoper;
+    /// The function to compile
+    Function &function_;
+    /// The writer to which the byte code will be written
+    CallableWriter &writer_;
+    /// The scoper responsible for scoping the function being compiled.
+    CallableScoper &scoper_;
 
     /** The flow control depth. */
     int flowControlDepth = 0;
@@ -93,8 +89,8 @@ private:
      * If the type, however, isn’t available at runtime (Enum, ValueType, Protocol) the parsed type (unresolved)
      * is returned and false are returned.
      */
-    std::pair<Type, TypeAvailability> parseTypeAsValue(TypeContext tc, const SourcePosition &p,
-                                                       const TypeExpectation &expectation);
+    std::pair<Type, TypeAvailability> parseTypeAsValue(const SourcePosition &p,  const TypeExpectation &expectation);
+    
     /** Parses an identifier when occurring without context. */
     Type parseIdentifier(const Token &token, const TypeExpectation &expectation);
     /** Parses the expression for an if statement. */
@@ -104,7 +100,7 @@ private:
      * infering them if necessary.
      * @param type The type for the type context, therefore the type on which this function was called.
      */
-    Type parseFunctionCall(Type type, Function *p, const Token &token);
+    Type parseFunctionCall(const Type &type, Function *p, const Token &token);
 
     /// Writes instructions necessary to peform an action on a variable.
     /// @param inInstanceScope Whether the value is in the instance or on the stack.
@@ -120,7 +116,7 @@ private:
     /// @attention Makes @c returnType a reference if the returned value type is temporarily needed as reference.
     void writeBoxingAndTemporary(const TypeExpectation &expectation, Type &returnType, WriteLocation location) const;
     void writeBoxingAndTemporary(const TypeExpectation &expectation, Type returnType) const {
-        writeBoxingAndTemporary(expectation, returnType, writer);
+        writeBoxingAndTemporary(expectation, returnType, writer_);
     }
 
     Type parseMethodCall(const Token &token, const TypeExpectation &expectation,
@@ -133,14 +129,29 @@ private:
     void getVTReference(ResolvedVariable var);
     void produceToVariable(ResolvedVariable var);
 
+    TypeContext typeContextForType(Type contextType) {
+        if (contextType.type() == TypeContent::ValueType) {
+            if (function_.mutating()) {
+                contextType.setMutable(true);
+            }
+            contextType.setReference();
+        }
+        else if (contextType.type() == TypeContent::Enum) {
+            contextType.setReference();
+        }
+
+        return TypeContext(contextType, &function_);
+    }
+
     void noReturnError(const SourcePosition &p);
     void noEffectWarning(const Token &warningToken);
-    void mutatingMethodCheck(Function *function, Type type, const TypeExpectation &expectation, const SourcePosition &p);
+    void mutatingMethodCheck(Function *method, const Type &type, const TypeExpectation &expectation,
+                             const SourcePosition &p);
     void checkAccessLevel(Function *function, const SourcePosition &p) const;
     bool typeIsEnumerable(Type type, Type *elementType);
     void flowControlBlock(bool block = true, const std::function<void()> &bodyPredicate = nullptr);
 
-    void generateBoxingLayer(BoxingLayer *layer);
+    void generateBoxingLayer(BoxingLayer &layer);
 
     void flowControlReturnEnd(FlowControlReturn &fcr);
 

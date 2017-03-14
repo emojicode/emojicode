@@ -45,11 +45,10 @@ void generateCodeForFunction(Function *function, CallableWriter &w) {
     if (FunctionPAG::hasInstanceScope(function->compilationMode())) {
         scoper = CallableScoper(&function->owningType().typeDefinitionFunctional()->instanceScope());
     }
-    FunctionPAG::writeAndAnalyzeFunction(function, w, function->owningType().disableSelfResolving(),
-                                                        scoper);
+    FunctionPAG(*function, function->owningType().disableSelfResolving(), w, scoper).compile();
 }
 
-void writeProtocolTable(Type type, Writer &writer) {
+void writeProtocolTable(const Type &type, Writer &writer) {
     auto typeDefinitionFunctional = type.typeDefinitionFunctional();
     writer.writeUInt16(typeDefinitionFunctional->protocols().size());
     if (!typeDefinitionFunctional->protocols().empty()) {
@@ -86,7 +85,7 @@ void writeProtocolTable(Type type, Writer &writer) {
     }
 }
 
-void writeClass(Type classType, Writer &writer) {
+void writeClass(const Type &classType, Writer &writer) {
     auto eclass = classType.eclass();
 
     writer.writeEmojicodeChar(eclass->name()[0]);
@@ -193,7 +192,7 @@ void generateCode(Writer &writer) {
     for (auto vt : ValueType::valueTypes()) {
         if (!vt->protocols().empty()) {
             writer.writeUInt16(vt->boxIdentifier());
-            writeProtocolTable(Type(vt, false, false, false), writer);
+            writeProtocolTable(Type(vt, false, false), writer);
             if (vt->boxIdentifier() < smallestBoxIdentifier) {
                 smallestBoxIdentifier = vt->boxIdentifier();
             }

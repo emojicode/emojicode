@@ -128,7 +128,7 @@ public:
     Package* package() const { return package_; }
 
     /// Issues a warning at the given position if the function is deprecated.
-    void deprecatedWarning(SourcePosition position) const;
+    void deprecatedWarning(const SourcePosition &p) const;
 
     /// Returns true if the method is validly overriding a method or false if it does not override.
     /// @throws CompilerError if the override is improper, e.g. implicit
@@ -141,7 +141,7 @@ public:
     }
     /// Checks that no promises were broken and applies boxing if necessary.
     /// Returns false iff a value for protocol was given and the arguments or the return type are storage incompatible.
-    bool enforcePromises(Function *superFunction, TypeContext typeContext, Type superSource,
+    bool enforcePromises(Function *super, const TypeContext &typeContext, const Type &superSource,
                          std::experimental::optional<TypeContext> protocol);
 
     void registerOverrider(Function *f) { overriders_.push_back(f); }

@@ -316,7 +316,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
 
     parseTypeDefinitionBody(classType, &requiredInitializers, true);
 
-    if (requiredInitializers.size()) {
+    if (!requiredInitializers.empty()) {
         throw CompilerError(eclass->position(), "Required initializer %s was not implemented.",
                                      (*requiredInitializers.begin()).utf8().c_str());
     }
@@ -331,7 +331,7 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
         valueType->makePrimitive();
     }
 
-    auto valueTypeContent = Type(valueType, false, false, false);
+    auto valueTypeContent = Type(valueType, false, false);
     parseGenericArgumentList(valueType, valueTypeContent);
     valueType->finalizeGenericArguments();
 

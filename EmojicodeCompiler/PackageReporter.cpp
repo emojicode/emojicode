@@ -152,7 +152,7 @@ void reportPackage(Package *package) {
     bool printedValueType = false;
     printf(",\"valueTypes\":[");
     for (auto vt : valueTypes) {
-        auto vttype = Type(vt, false, false, false);
+        auto vttype = Type(vt, false, false);
         auto vtcontext = TypeContext(vttype);
         if (printedValueType) {
             putchar(',');

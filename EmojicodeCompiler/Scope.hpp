@@ -26,16 +26,16 @@ public:
 
     /// Sets a variable in this scope and returns it.
     /// @throws CompilerError if a variable with this name already exists.
-    Variable& setLocalVariable(const EmojicodeString &variable, Type type, bool frozen, const SourcePosition &pos);
+    Variable& setLocalVariable(const EmojicodeString &variable, const Type &type, bool frozen, const SourcePosition &p);
     /// Sets a variable in this scope with the given ID and returns it. No space will be reserved and scopes size won’t
     /// be changed.
     /// @warning Use this method only if you, for whatever reason, need to assign this variable a specific index which
     /// was previously accordingly reserved.
     /// @throws CompilerError if a variable with this name already exists.
-    Variable& setLocalVariableWithID(const EmojicodeString &variable, Type type, bool frozen, int id,
-                                     const SourcePosition &pos);
+    Variable& setLocalVariableWithID(const EmojicodeString &variable, const Type &type, bool frozen, int id,
+                                     const SourcePosition &p);
     /// Allocates a variable for internal use only and returns its ID.
-    int allocateInternalVariable(Type type);
+    int allocateInternalVariable(const Type &type);
 
     /**
      * Retrieves a variable form the scope or returns @c nullptr.
@@ -49,7 +49,7 @@ public:
      * @params errorMessage The error message that will probably be issued. It should include @c %s for the name
      of the variable.
      */
-    void initializerUnintializedVariablesCheck(SourcePosition p, const char *errorMessage);
+    void initializerUnintializedVariablesCheck(const SourcePosition &p, const char *errorMessage);
 
     /**
      * Emits a warning for each non-frozen variable that has not been mutated.

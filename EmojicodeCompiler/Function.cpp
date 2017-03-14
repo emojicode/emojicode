@@ -9,6 +9,7 @@
 #include "Function.hpp"
 #include <map>
 #include <stdexcept>
+#include <algorithm>
 #include "Lexer.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
@@ -25,7 +26,7 @@ void Function::setLinkingTableIndex(int index) {
     linkingTableIndex_ = index;
 }
 
-bool Function::enforcePromises(Function *super, TypeContext typeContext, Type superSource,
+bool Function::enforcePromises(Function *super, const TypeContext &typeContext, const Type &superSource,
                                std::experimental::optional<TypeContext> protocol) {
     try {
         if (super->final()) {
@@ -85,20 +86,20 @@ bool Function::enforcePromises(Function *super, TypeContext typeContext, Type su
 
 bool Function::checkOverride(Function *superFunction) const {
     if (overriding()) {
-        if (!superFunction || superFunction->accessLevel() == AccessLevel::Private) {
+        if (superFunction == nullptr || superFunction->accessLevel() == AccessLevel::Private) {
             throw CompilerError(position(), "%s was declared ✒️ but does not override anything.",
                                 name().utf8().c_str());
         }
         return true;
     }
 
-    if (superFunction && superFunction->accessLevel() != AccessLevel::Private) {
+    if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
         throw CompilerError(position(), "If you want to override %s add ✒️.", name().utf8().c_str());
     }
     return false;
 }
 
-void Function::deprecatedWarning(SourcePosition p) const {
+void Function::deprecatedWarning(const SourcePosition &p) const {
     if (deprecated()) {
         if (documentation().size() > 0) {
             compilerWarning(p,
@@ -175,9 +176,10 @@ void Function::setVtiProvider(VTIProvider *provider) {
 
 Type Function::type() const {
     Type t = Type::callableIncomplete();
+    t.genericArguments_.reserve(arguments.size() + 1);
     t.genericArguments_.push_back(returnType);
-    for (size_t i = 0; i < arguments.size(); i++) {
-        t.genericArguments_.push_back(arguments[i].type);
+    for (auto &argument : arguments) {
+        t.genericArguments_.push_back(argument.type);
     }
     return t;
 }

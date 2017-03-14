@@ -6,9 +6,9 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <cmath>
 #include "CallableWriter.hpp"
 #include "Token.hpp"
+#include <cmath>
 
 void CallableWriter::writeInstruction(EmojicodeInstruction value) {
     instructions_.push_back(value);
@@ -26,7 +26,7 @@ void CallableWriter::writeDoubleCoin(double val) {
     int_least64_t scale = norm*PORTABLE_INTLEAST64_MAX;
 
     writeInstruction(scale >> 32);
-    writeInstruction((EmojicodeInstruction)scale);
+    writeInstruction(static_cast<EmojicodeInstruction>(scale));
     writeInstruction(exp);
 }
 

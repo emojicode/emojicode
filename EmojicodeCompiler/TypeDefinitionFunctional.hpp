@@ -36,7 +36,7 @@ public:
      * @param variableName The name which is used to refer to this argument.
      * @param constraint The constraint that applies to the types passed.
      */
-    void addGenericArgument(const Token &variableName, Type constraint);
+    void addGenericArgument(const Token &variableName, const Type &constraint);
     void setSuperTypeDef(TypeDefinitionFunctional *superTypeDef);
     void setSuperGenericArguments(std::vector<Type> superGenericArguments);
     /** Must be called before the type is used but after the last generic argument was added. */
@@ -64,13 +64,13 @@ public:
 
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function* getMethod(const Token &token, Type type, const TypeContext &typeContext);
+    Function* getMethod(const Token &token, const Type &type, const TypeContext &typeContext);
     /// Returns an initializer by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Initializer* getInitializer(const Token &token, Type type, const TypeContext &typeContext);
+    Initializer* getInitializer(const Token &token, const Type &type, const TypeContext &typeContext);
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function* getTypeMethod(const Token &token, Type type, const TypeContext &typeContext);
+    Function* getTypeMethod(const Token &token, const Type &type, const TypeContext &typeContext);
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     virtual Function* lookupMethod(const EmojicodeString &name);
@@ -90,14 +90,14 @@ public:
     const std::vector<InstanceVariableDeclaration>& instanceVariables() { return instanceVariables_; }
 
     /** Declares that this class agrees to the given protocol. */
-    void addProtocol(Type type, const SourcePosition &p);
+    void addProtocol(const Type &type, const SourcePosition &p);
     /** Returns a list of all protocols to which this class conforms. */
     const std::vector<Type>& protocols() const { return protocols_; };
 
     /** Finalizes the instance variables.
      @warning All subclasses that override, this method must call this method. */
     void finalize() override;
-    void finalizeProtocols(Type self, VTIProvider *methodVtiProvider);
+    void finalizeProtocols(const Type &self, VTIProvider *methodVtiProvider);
 
     int size() const override { return static_cast<int>(scoper_.fullSize()); }
 

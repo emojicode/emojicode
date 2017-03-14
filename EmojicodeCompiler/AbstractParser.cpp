@@ -101,7 +101,7 @@ Type AbstractParser::parseTypeDeclarative(const TypeContext &ct, TypeDynamism dy
             }
             type.genericArguments_.push_back(protocolType);
         }
-        if (type.protocols().size() == 0) {
+        if (type.protocols().empty()) {
             throw CompilerError(bentoToken.position(), "An empty 🍱 is invalid.");
         }
         type.sortMultiProtocolType();

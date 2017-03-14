@@ -15,7 +15,7 @@
 #include "Protocol.hpp"
 #include "BoxingLayer.hpp"
 
-void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, Type constraint) {
+void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, const Type &constraint) {
     genericArgumentConstraints_.push_back(constraint);
 
     Type referenceType = Type(TypeContent::Reference, false, ownGenericArgumentVariables_.size(), this);
@@ -39,7 +39,7 @@ void TypeDefinitionFunctional::setSuperTypeDef(TypeDefinitionFunctional *superTy
 }
 
 void TypeDefinitionFunctional::setSuperGenericArguments(std::vector<Type> superGenericArguments) {
-    superGenericArguments_ = superGenericArguments;
+    superGenericArguments_ = std::move(superGenericArguments);
 }
 
 void TypeDefinitionFunctional::finalizeGenericArguments() {
@@ -83,7 +83,7 @@ Function* TypeDefinitionFunctional::lookupTypeMethod(const EmojicodeString &name
     return nullptr;
 }
 
-Initializer* TypeDefinitionFunctional::getInitializer(const Token &token, Type type, const TypeContext &typeContext) {
+Initializer* TypeDefinitionFunctional::getInitializer(const Token &token, const Type &type, const TypeContext &typeContext) {
     auto initializer = lookupInitializer(token.value());
     if (initializer == nullptr) {
         auto typeString = type.toString(typeContext, true);
@@ -93,7 +93,7 @@ Initializer* TypeDefinitionFunctional::getInitializer(const Token &token, Type t
     return initializer;
 }
 
-Function* TypeDefinitionFunctional::getMethod(const Token &token, Type type, const TypeContext &typeContext) {
+Function* TypeDefinitionFunctional::getMethod(const Token &token, const Type &type, const TypeContext &typeContext) {
     auto method = lookupMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
@@ -102,7 +102,7 @@ Function* TypeDefinitionFunctional::getMethod(const Token &token, Type type, con
     return method;
 }
 
-Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, Type type, const TypeContext &typeContext) {
+Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, const Type &type, const TypeContext &typeContext) {
     auto method = lookupTypeMethod(token.value());
     if (method == nullptr) {
         auto eclass = type.toString(typeContext, true);
@@ -111,7 +111,7 @@ Function* TypeDefinitionFunctional::getTypeMethod(const Token &token, Type type,
     return method;
 }
 
-void TypeDefinitionFunctional::addProtocol(Type type, const SourcePosition &p) {
+void TypeDefinitionFunctional::addProtocol(const Type &type, const SourcePosition &p) {
     for (auto &protocol : protocols_) {
         if (protocol.identicalTo(type, Type::nothingness(), nullptr)) {
             auto name = type.toString(Type::nothingness(), true);
@@ -166,7 +166,7 @@ void TypeDefinitionFunctional::finalize() {
     }
 }
 
-void TypeDefinitionFunctional::finalizeProtocols(Type type, VTIProvider *methodVtiProvider) {
+void TypeDefinitionFunctional::finalizeProtocols(const Type &type, VTIProvider *methodVtiProvider) {
     for (const Type &protocol : protocols()) {
         for (auto method : protocol.protocol()->methodList()) {
             try {

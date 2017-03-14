@@ -53,7 +53,7 @@ void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext)
     }
 }
 
-Type CommonTypeFinder::getCommonType(SourcePosition p) const {
+Type CommonTypeFinder::getCommonType(const SourcePosition &p) const {
     if (!firstTypeFound_) {
         compilerWarning(p, "Type is ambigious without more context.");
     }

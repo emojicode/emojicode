@@ -22,7 +22,7 @@ public:
     TypeContext(Type callee, Function *p, std::vector<Type> *args)
         : calleeType_(callee), function_(p), functionGenericArguments_(args) {};
 
-    Type calleeType() const { return calleeType_; }
+    const Type& calleeType() const { return calleeType_; }
     Function* function() const { return function_; }
     std::vector<Type>* functionGenericArguments() const { return functionGenericArguments_; }
 private:

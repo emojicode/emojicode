@@ -6,14 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include <libgen.h>
-#include <getopt.h>
-#include <unistd.h>
-#include <cstring>
-#include <cstdlib>
-#include <vector>
-#include "CodeGenerator.hpp"
 #include "Writer.hpp"
+#include "CodeGenerator.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "CompilerError.hpp"
@@ -21,6 +15,12 @@
 #include "ValueType.hpp"
 #include "Function.hpp"
 #include "../utf8.h"
+#include <libgen.h>
+#include <getopt.h>
+#include <unistd.h>
+#include <cstring>
+#include <cstdlib>
+#include <vector>
 
 std::string EmojicodeString::utf8() const {
     std::string string;
@@ -89,7 +89,7 @@ void printError(const CompilerError &ce) {
     printedErrorOrWarning = true;
 }
 
-void compilerWarning(SourcePosition p, const char *err, ...) {
+void compilerWarning(const SourcePosition &p, const char *err, ...) {
     va_list list;
     va_start(list, err);
 
@@ -112,7 +112,7 @@ void compilerWarning(SourcePosition p, const char *err, ...) {
     va_end(list);
 }
 
-Class* getStandardClass(const EmojicodeString &name, Package *_, SourcePosition errorPosition) {
+Class* getStandardClass(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Class) {
@@ -121,7 +121,7 @@ Class* getStandardClass(const EmojicodeString &name, Package *_, SourcePosition 
     return type.eclass();
 }
 
-Protocol* getStandardProtocol(const EmojicodeString &name, Package *_, SourcePosition errorPosition) {
+Protocol* getStandardProtocol(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::Protocol) {
@@ -130,7 +130,8 @@ Protocol* getStandardProtocol(const EmojicodeString &name, Package *_, SourcePos
     return type.protocol();
 }
 
-ValueType* getStandardValueType(const EmojicodeString &name, Package *_, SourcePosition errorPosition, unsigned int boxId) {
+ValueType* getStandardValueType(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition,
+                                unsigned int boxId) {
     Type type = Type::nothingness();
     _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
     if (type.type() != TypeContent::ValueType) {
@@ -142,7 +143,7 @@ ValueType* getStandardValueType(const EmojicodeString &name, Package *_, SourceP
     return type.valueType();
 }
 
-void loadStandard(Package *_, SourcePosition errorPosition) {
+void loadStandard(Package *_, const SourcePosition &errorPosition) {
     auto package = _->loadPackage("s", globalNamespace, errorPosition);
 
     VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), _, errorPosition, T_DOUBLE);
