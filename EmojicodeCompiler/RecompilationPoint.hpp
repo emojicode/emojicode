@@ -17,18 +17,18 @@
 class RecompilationPoint {
 public:
     RecompilationPoint(CallableWriter &writer, TokenStream &stream)
-    : writerSize_(writer.instructions_.size()), writer_(writer), token_(stream.currentToken_), stream_(stream) {}
+    : writerSize_(writer.instructions_.size()), writer_(writer), index_(stream.index_), stream_(stream) {}
     /// Restores the token stream and callable writer to the state they had when the RecompilationPoint was created.
     /// @warning All CallableWriterInsertionPoints and CallableWriterPlaceholders created after the creation of the
     /// RecompilationPoint are invalidated!
     void restore() const {
-        stream_.currentToken_ = token_;
+        stream_.index_ = index_;
         writer_.instructions_.resize(writerSize_);
     }
 private:
     size_t writerSize_;
     CallableWriter &writer_;
-    const Token *token_;
+    size_t index_;
     TokenStream &stream_;
 };
 

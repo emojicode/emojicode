@@ -7,9 +7,9 @@
 //
 
 #include "CommonTypeFinder.hpp"
-#include <algorithm>
 #include "TypeContext.hpp"
 #include "TypeDefinitionFunctional.hpp"
+#include <algorithm>
 
 void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext) {
     if (!firstTypeFound_) {

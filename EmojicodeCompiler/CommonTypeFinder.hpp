@@ -9,9 +9,9 @@
 #ifndef CommonTypeFinder_hpp
 #define CommonTypeFinder_hpp
 
-#include <vector>
 #include "Type.hpp"
 #include "Token.hpp"
+#include <vector>
 
 class CommonTypeFinder {
 public:

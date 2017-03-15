@@ -11,40 +11,23 @@
 
 const Token& TokenStream::consumeToken(TokenType type) {
     if (!hasMoreTokens()) {
-        throw CompilerError(currentToken_->position(), "Unexpected end of program.");
+        throw CompilerError(nextToken().position(), "Unexpected end of program.");
     }
 
-    currentToken_ = currentToken_->nextToken_;
-
-    if (type != TokenType::NoType && currentToken_->type() != type) {
-        throw CompilerError(currentToken_->position(), "Expected token %s but instead found %s.",
-                                     Token::stringNameForType(type), currentToken_->stringName());
+    if (type != TokenType::NoType && nextToken().type() != type) {
+        throw CompilerError(nextToken().position(), "Expected token %s but instead found %s.",
+                                     Token::stringNameForType(type), nextToken().stringName());
     }
-    return *currentToken_;
-}
-
-bool TokenStream::hasMoreTokens() const {
-    return currentToken_->nextToken_ != nullptr;
-}
-
-bool TokenStream::nextTokenIs(TokenType type) const {
-    const Token *nextToken = currentToken_->nextToken_;
-    return nextToken != nullptr && nextToken->type() == type;
-}
-
-bool TokenStream::nextTokenIs(EmojicodeChar c) const {
-    const Token *nextToken = currentToken_->nextToken_;
-    return nextToken != nullptr && nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c;
+    return (*tokens_)[index_++];
 }
 
 bool TokenStream::nextTokenIsEverythingBut(EmojicodeChar c) const {
-    const Token *nextToken = currentToken_->nextToken_;
-    return nextToken != nullptr && !(nextToken->type() == TokenType::Identifier && nextToken->value()[0] == c);
+    return hasMoreTokens() && !(nextToken().type() == TokenType::Identifier && nextToken().value()[0] == c);
 }
 
 bool TokenStream::consumeTokenIf(EmojicodeChar c) {
     if (nextTokenIs(c)) {
-        currentToken_ = currentToken_->nextToken_;
+        index_++;
         return true;
     }
     return false;

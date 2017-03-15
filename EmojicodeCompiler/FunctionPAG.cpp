@@ -1708,6 +1708,7 @@ void FunctionPAG::compile() {
         printError(ce);
     }
     function_.setFullSize(scoper_.fullSize());
+    function_.setTokenStream(TokenStream());  // Replace the token stream to hopefully release memory
 }
 
 void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
@@ -1741,7 +1742,4 @@ void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
 
 FunctionPAG::FunctionPAG(Function &function, Type contextType, CallableWriter &writer, CallableScoper &scoper)
     : AbstractParser(function.package(), function.tokenStream()), function_(function), writer_(writer), scoper_(scoper),
-    typeContext(typeContextForType(contextType))
-{
-
-}
+    typeContext(typeContextForType(contextType)) {}

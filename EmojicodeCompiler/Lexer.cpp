@@ -10,6 +10,7 @@
 #include "../utf8.h"
 #include "CompilerError.hpp"
 #include "EmojiTokenization.hpp"
+#include <memory>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,11 +34,6 @@ inline bool ends_with(std::string const & value, std::string const & ending) {
 }
 
 TokenStream lex(const std::string &path) {
-    auto sourcePosition = SourcePosition(1, 0, path);
-    Token *token = new Token(sourcePosition);
-    TokenStream stream = TokenStream(token);
-    token = new Token(sourcePosition, token);
-
     if (!ends_with(path, ".emojic")) {
         throw CompilerError(SourcePosition(0, 0, path),
                             "Emojicode files must be suffixed with .emojic: %s", path.c_str());
@@ -61,27 +57,31 @@ TokenStream lex(const std::string &path) {
     stringBuffer << f.rdbuf();
     auto string = stringBuffer.str();
 
+    auto sourcePosition = SourcePosition(1, 0, path);
+    auto tokens = std::make_shared<std::vector<Token>>();
+    tokens->emplace_back(sourcePosition);
+    
     while (i < string.size()) {
         size_t delta = i;
         c = u8_nextchar(string.c_str(), &i);
         sourcePosition.character += i - delta;
 
         if (!nextToken) {
-            switch (token->type()) {
+            switch (tokens->back().type()) {
                 case TokenType::Identifier:
                     if (foundZWJ && isEmoji(c)) {
-                        token->value_.push_back(c);
+                        tokens->back().value_.push_back(c);
                         foundZWJ = false;
                         continue;
                     }
-                    else if ((isEmojiModifier(c) && isEmojiModifierBase(token->value_.back())) ||
-                             (isRegionalIndicator(c) && token->value().size() == 1 &&
-                              isRegionalIndicator(token->value().front()))) {
-                                 token->value_.push_back(c);
+                    else if ((isEmojiModifier(c) && isEmojiModifierBase(tokens->back().value_.back())) ||
+                             (isRegionalIndicator(c) && tokens->back().value().size() == 1 &&
+                              isRegionalIndicator(tokens->back().value().front()))) {
+                                 tokens->back().value_.push_back(c);
                                  continue;
                              }
                     else if (c == 0x200D) {
-                        token->value_.push_back(c);
+                        tokens->back().value_.push_back(c);
                         foundZWJ = true;
                         continue;
                     }
@@ -94,11 +94,11 @@ TokenStream lex(const std::string &path) {
                     detectWhitespace(c, &sourcePosition.character, &sourcePosition.line);
                     if (oneLineComment) {
                         if (isNewline()) {
-                            token->type_ = TokenType::NoType;
+                            tokens->back().type_ = TokenType::NoType;
                         }
                     }
                     else if (c == E_OLDER_WOMAN) {
-                        token->type_ = TokenType::NoType;
+                        tokens->back().type_ = TokenType::NoType;
                     }
                     continue;
                 case TokenType::DocumentationComment:
@@ -107,7 +107,7 @@ TokenStream lex(const std::string &path) {
                         nextToken = true;
                     }
                     else {
-                        token->value_.push_back(c);
+                        tokens->back().value_.push_back(c);
                     }
                     continue;
                 case TokenType::String:
@@ -115,16 +115,16 @@ TokenStream lex(const std::string &path) {
                         switch (c) {
                             case E_INPUT_SYMBOL_LATIN_LETTERS:
                             case E_CROSS_MARK:
-                                token->value_.push_back(c);
+                                tokens->back().value_.push_back(c);
                                 break;
                             case 'n':
-                                token->value_.push_back('\n');
+                                tokens->back().value_.push_back('\n');
                                 break;
                             case 't':
-                                token->value_.push_back('\t');
+                                tokens->back().value_.push_back('\t');
                                 break;
                             case 'r':
-                                token->value_.push_back('\r');
+                                tokens->back().value_.push_back('\r');
                                 break;
                             default: {
                                 char tc[5] = {0, 0, 0, 0, 0};
@@ -144,7 +144,7 @@ TokenStream lex(const std::string &path) {
                     }
                     else {
                         detectWhitespace(c, &sourcePosition.character, &sourcePosition.line);
-                        token->value_.push_back(c);
+                        tokens->back().value_.push_back(c);
                     }
                     continue;
                 case TokenType::Variable:
@@ -154,23 +154,23 @@ TokenStream lex(const std::string &path) {
                         nextToken = true;
                     }
                     else {
-                        token->value_.push_back(c);
+                        tokens->back().value_.push_back(c);
                         continue;
                     }
                     break;
                 case TokenType::Integer:
                     if (('0' <= c && c <= '9') || (((64 < c && c < 71) || (96 < c && c < 103)) && isHex)) {
-                        token->value_.push_back(c);
+                        tokens->back().value_.push_back(c);
                         continue;
                     }
                     else if (c == '.') {
-                        token->type_ = TokenType::Double;
-                        token->value_.push_back(c);
+                        tokens->back().type_ = TokenType::Double;
+                        tokens->back().value_.push_back(c);
                         continue;
                     }
-                    else if ((c == 'x' || c == 'X') && token->value_.size() == 1 && token->value_[0] == '0') {
+                    else if ((c == 'x' || c == 'X') && tokens->back().value_.size() == 1 && tokens->back().value_[0] == '0') {
                         isHex = true;
-                        token->value_.push_back(c);
+                        tokens->back().value_.push_back(c);
                         continue;
                     }
                     else if (c == '_') {
@@ -182,7 +182,7 @@ TokenStream lex(const std::string &path) {
                     break;
                 case TokenType::Double:
                     if ('0' <= c && c <= '9') {
-                        token->value_.push_back(c);
+                        tokens->back().value_.push_back(c);
                         continue;
                     }
                     else {
@@ -190,7 +190,7 @@ TokenStream lex(const std::string &path) {
                     }
                     break;
                 case TokenType::Symbol:
-                    token->value_.push_back(c);
+                    tokens->back().value_.push_back(c);
                     nextToken = true;
                     continue;
                 default:
@@ -202,51 +202,51 @@ TokenStream lex(const std::string &path) {
             continue;
         }
         if (nextToken) {
-            token->validate();
-            token = new Token(sourcePosition, token);
+            tokens->back().validate();
+            tokens->emplace_back(sourcePosition);
             nextToken = false;
         }
 
         if (c == E_INPUT_SYMBOL_LATIN_LETTERS) {
-            token->type_ = TokenType::String;
+            tokens->back().type_ = TokenType::String;
         }
         else if (c == E_OLDER_WOMAN || c == E_OLDER_MAN) {
-            token->type_ = TokenType::Comment;
+            tokens->back().type_ = TokenType::Comment;
             oneLineComment = (c == E_OLDER_MAN);
         }
         else if (c == E_TACO) {
-            token->type_ = TokenType::DocumentationComment;
+            tokens->back().type_ = TokenType::DocumentationComment;
         }
         else if (('0' <= c && c <= '9') || c == '-' || c == '+') {
-            token->type_ = TokenType::Integer;
-            token->value_.push_back(c);
+            tokens->back().type_ = TokenType::Integer;
+            tokens->back().value_.push_back(c);
 
             isHex = false;
         }
         else if (c == E_THUMBS_UP_SIGN || c == E_THUMBS_DOWN_SIGN) {
-            token->type_ = (c == E_THUMBS_UP_SIGN) ? TokenType::BooleanTrue : TokenType::BooleanFalse;
+            tokens->back().type_ = (c == E_THUMBS_UP_SIGN) ? TokenType::BooleanTrue : TokenType::BooleanFalse;
             nextToken = true;
         }
         else if (c == E_KEYCAP_10) {
-            token->type_ = TokenType::Symbol;
+            tokens->back().type_ = TokenType::Symbol;
         }
         else if (isEmoji(c)) {
-            token->type_ = TokenType::Identifier;
-            token->value_.push_back(c);
+            tokens->back().type_ = TokenType::Identifier;
+            tokens->back().value_.push_back(c);
         }
         else {
-            token->type_ = TokenType::Variable;
-            token->value_.push_back(c);
+            tokens->back().type_ = TokenType::Variable;
+            tokens->back().value_.push_back(c);
         }
     }
 
-    if (!nextToken && token->type() == TokenType::String) {
-        throw CompilerError(token->position(), "Expected 🔤 but found end of file instead.");
+    if (!nextToken && tokens->back().type() == TokenType::String) {
+        throw CompilerError(tokens->back().position(), "Expected 🔤 but found end of file instead.");
     }
-    if (!nextToken && token->type() == TokenType::Comment && !oneLineComment) {
-        throw CompilerError(token->position(), "Expected 👵 but found end of file instead.");
+    if (!nextToken && tokens->back().type() == TokenType::Comment && !oneLineComment) {
+        throw CompilerError(tokens->back().position(), "Expected 👵 but found end of file instead.");
     }
-    token->validate();
+    tokens->back().validate();
 
-    return stream;
+    return TokenStream(tokens);
 }

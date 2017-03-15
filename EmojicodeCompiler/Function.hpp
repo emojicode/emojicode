@@ -106,7 +106,7 @@ public:
     const SourcePosition& position() const { return position_; }
 
     /** Returns a copy of the token stream intended to be used to parse this callable. */
-    TokenStream tokenStream() const { return tokenStream_; }
+    const TokenStream& tokenStream() const { return tokenStream_; }
     void setTokenStream(TokenStream ts) { tokenStream_ = ts; }
 
     /// The type of this function when used as value.

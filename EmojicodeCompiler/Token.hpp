@@ -37,13 +37,8 @@ struct SourcePosition {
 
 class Token {
     friend TokenStream lex(const std::string &);
-    friend class TokenStream;
 public:
-    Token(const Token&) = delete;
     explicit Token(SourcePosition p) : position_(p) {}
-    Token(SourcePosition p, Token *prevToken) : position_(p) {
-        if (prevToken) prevToken->nextToken_ = this;
-    }
 
     /** Returns the position at which this token was defined. */
     const SourcePosition& position() const { return position_; }
@@ -63,7 +58,6 @@ public:
 private:
     SourcePosition position_;
     TokenType type_ = TokenType::NoType;
-    Token *nextToken_ = nullptr;
     EmojicodeString value_;
 };
 
