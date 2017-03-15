@@ -7,14 +7,14 @@
 //
 
 #include "Function.hpp"
-#include <map>
-#include <stdexcept>
-#include <algorithm>
 #include "Lexer.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "TypeContext.hpp"
 #include "VTIProvider.hpp"
+#include <map>
+#include <stdexcept>
+#include <algorithm>
 
 bool Function::foundStart = false;
 Function *Function::start;

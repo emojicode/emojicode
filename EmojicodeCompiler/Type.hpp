@@ -43,8 +43,8 @@ enum class TypeContent {
     /** Any Object */
     Someobject,
     /** Used with generics */
-    Reference,
-    LocalReference,
+    GenericVariable,
+    LocalGenericVariable,
     Callable,
     Self,
     Error,
@@ -90,13 +90,12 @@ public:
     Type(Protocol *protocol, bool optional);
     Type(Enum *enumeration, bool optional);
     Type(ValueType *valueType, bool optional);
-    /// Creates a reference to the generic argument @c r which can only be resolved on types which declare themselves
-    /// to be suitable. (See @c canBeUsedToResolve).
-    Type(TypeContent t, bool optional, int r, TypeDefinitionFunctional *resolutionConstraint)
-        : reference_(r), resolutionConstraint_(resolutionConstraint), typeContent_(t), optional_(optional) {}
-    /// Creates a reference to the generic argument @c r which can be resolved to an argument given to @c function.
-    Type(TypeContent t, bool optional, int r, Function *function)
-        : reference_(r), localResolutionConstraint_(function), typeContent_(t), optional_(optional) {}
+    /// Creates a generic variable to the generic argument @c r.
+    Type(TypeContent t, bool optional, size_t r, TypeDefinitionFunctional *resolutionConstraint)
+        : typeContent_(t), genericArgumentIndex_(r), resolutionConstraint_(resolutionConstraint), optional_(optional) {}
+    /// Creates a local generic variable (generic function) to the generic argument @c r.
+    Type(TypeContent t, bool optional, size_t r, Function *function)
+        : typeContent_(t), genericArgumentIndex_(r), localResolutionConstraint_(function), optional_(optional) {}
     Type(std::vector<Type> protocols, bool optional)
         : typeContent_(TypeContent::MultiProtocol), genericArguments_(protocols), optional_(optional) {
             sortMultiProtocolType();
@@ -116,7 +115,6 @@ public:
     /** Returns the type of this type. Whether it’s an integer, class, etc. */
     TypeContent type() const { return typeContent_; }
 
-    /** Returns the represented TypeDefinitionWithGenerics by using a cast. */
     TypeDefinitionFunctional* typeDefinitionFunctional() const;
     Class* eclass() const;
     Protocol* protocol() const;
@@ -137,10 +135,7 @@ public:
 
     /// True if the type is an optional.
     bool optional() const { return optional_; }
-    /// Marks this type as optional.
-    void setOptional() { optional_ = true; }
-    /// Returns a copy of this type but with @c optional set to @c false.
-    Type copyWithoutOptional() const;
+    void setOptional(bool o = true) { optional_ = o; }
 
     /// Returns true if this type is compatible to the given other type.
     bool compatibleTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
@@ -148,9 +143,9 @@ public:
     /// Mainly used to determine compatibility of generics.
     bool identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const;
 
-    /// Returns the reference if the type is a @c Reference.
-    /// @throws std::domain_error if the Type is not a reference.
-    int reference() const;
+    /// Returns the generic variable index if the type is a @c GenericVariable or @c LocalGenericVariable.
+    /// @throws std::domain_error if the Type is not a generic variable.
+    size_t genericVariableIndex() const;
 
     /// Appends all records necessary to inform the garbage collector about any object variables inside this type at
     /// index @c index to the end of @c information by constructing an instance of @c T with a constructors as
@@ -174,11 +169,11 @@ public:
 
     /// Forbids the usage of this instance of Type to resolve @c Self.
     Type& disableSelfResolving() { resolveSelfOn_ = false; return *this; }
-    /// Tries to resolve this type to a non-refrence type by using the generic arguments provided in the TypeContext.
-    /// This method also tries to resolve generic arguments to non-reference types recursively.
-    /// This method can resolve @c Self, @c References and @c LocalReferences. @c References will only be resolved if
-    /// the TypeContext’s @c calleeType implementation of @c canBeUsedToResolve returns true for the resolution
-    /// constraint, thus only if the reference is inteded to be resolved on the given type. @c Self will only be
+    /// Tries to resolve this type to a non-generic-variable type by using the generic arguments provided in the
+    /// TypeContext. This method also tries to resolve generic arguments to non-generic-variable types recursively.
+    /// This method can resolve @c Self, @c References and @c LocalReferences. @c GenericVariable will only be resolved
+    /// if the TypeContext’s @c calleeType implementation of @c canBeUsedToResolve returns true for the resolution
+    /// constraint, thus only if the generic variable is inteded to be resolved on the given type. @c Self will only be
     /// resolved if @c disableSelfResolving() wasn’t called on the calleeType before.
     Type resolveOn(const TypeContext &typeContext, bool resolveSelf = true) const;
     /**
@@ -198,6 +193,7 @@ public:
     
     void setMeta(bool meta) { meta_ = meta; }
     bool meta() const { return meta_; }
+    bool allowsMetaType();
 
     /// Returns true if this represents a reference to (a) value(s) of the type represented by this instance.
     /// Values to which references point are normally located on the stack.
@@ -213,21 +209,20 @@ public:
 
     bool isMutable() const { return mutable_; }
     void setMutable(bool b) { mutable_ = b; }
-
-    bool allowsMetaType();
 protected:
     Type(bool isReference, bool forceBox, bool isMutable)
         : typeContent_(TypeContent::StorageExpectation), optional_(false), isReference_(isReference),
           mutable_(isMutable), forceBox_(forceBox) {}
 private:
     Type(TypeContent t, bool o) : typeContent_(t), optional_(o) {}
-    int reference_;
+    TypeContent typeContent_;
+
+    size_t genericArgumentIndex_;
     union {
         TypeDefinition *typeDefinition_;
         TypeDefinitionFunctional *resolutionConstraint_;
         Function *localResolutionConstraint_;
     };
-    TypeContent typeContent_;
     std::vector<Type> genericArguments_;
     bool optional_;
     bool resolveSelfOn_ = true;

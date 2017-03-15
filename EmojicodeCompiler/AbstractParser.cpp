@@ -42,7 +42,8 @@ Type AbstractParser::parseTypeDeclarative(const TypeContext &ct, TypeDynamism dy
             throw CompilerError(stream_.consumeToken().position(), "Cannot infer ⚫️.");
         }
         stream_.consumeToken();
-        return expectation.copyWithoutOptional();
+        expectation.setOptional(false);
+        return expectation;
     }
     if (stream_.nextTokenIs(E_WHITE_SQUARE_BUTTON)) {
         auto &token = stream_.consumeToken();
@@ -245,7 +246,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *function, const
                                       Type::nothingness(), nullptr);
         function->genericArgumentConstraints.push_back(t);
 
-        Type rType = Type(TypeContent::LocalReference, false,
+        Type rType = Type(TypeContent::LocalGenericVariable, false,
                           static_cast<int>(function->genericArgumentVariables.size()), function);
 
         if (function->genericArgumentVariables.count(variable.value()) > 0) {

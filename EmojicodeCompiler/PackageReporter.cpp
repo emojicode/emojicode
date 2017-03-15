@@ -62,7 +62,7 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
 
     auto gans = std::vector<EmojicodeString>(map.size());
     for (auto it : map) {
-        gans[it.second.reference() - superCount] = it.first;
+        gans[it.second.genericVariableIndex() - superCount] = it.first;
     }
 
     CommaPrinter printer;

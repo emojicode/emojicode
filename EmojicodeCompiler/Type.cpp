@@ -15,9 +15,9 @@
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 #include "ValueType.hpp"
-#include <cstring>
 #include <vector>
 #include <algorithm>
+#include <cstring>
 
 Class *CL_STRING;
 Class *CL_LIST;
@@ -30,19 +30,19 @@ ValueType *VT_SYMBOL;
 ValueType *VT_INTEGER;
 ValueType *VT_DOUBLE;
 
-Type::Type(Protocol *protocol, bool o) : typeDefinition_(protocol), typeContent_(TypeContent::Protocol), optional_(o) {
+Type::Type(Protocol *protocol, bool o) : typeContent_(TypeContent::Protocol), typeDefinition_(protocol), optional_(o) {
 }
 
-Type::Type(Enum *enumeration, bool o) : typeDefinition_(enumeration), typeContent_(TypeContent::Enum), optional_(o) {
+Type::Type(Enum *enumeration, bool o) : typeContent_(TypeContent::Enum), typeDefinition_(enumeration), optional_(o) {
 }
 
 Type::Type(ValueType *valueType, bool o)
-: typeDefinition_(valueType), typeContent_(TypeContent::ValueType), optional_(o), mutable_(false) {
+: typeContent_(TypeContent::ValueType), typeDefinition_(valueType), optional_(o), mutable_(false) {
 }
 
-Type::Type(Class *c, bool o) : typeDefinition_(c), typeContent_(TypeContent::Class), optional_(o) {
+Type::Type(Class *c, bool o) : typeContent_(TypeContent::Class), typeDefinition_(c), optional_(o) {
     for (int i = 0; i < c->numberOfGenericArgumentsWithSuperArguments(); i++) {
-        genericArguments_.push_back(Type(TypeContent::Reference, false, i, c));
+        genericArguments_.push_back(Type(TypeContent::GenericVariable, false, i, c));
     }
 }
 
@@ -74,23 +74,17 @@ TypeDefinitionFunctional* Type::typeDefinitionFunctional() const {
     return static_cast<TypeDefinitionFunctional *>(typeDefinition_);
 }
 
-Type Type::copyWithoutOptional() const {
-    Type type = *this;
-    type.optional_ = false;
-    return type;
-}
-
 void Type::sortMultiProtocolType() {
     std::sort(genericArguments_.begin(), genericArguments_.end(), [](const Type &a, const Type &b) {
         return a.protocol()->index < b.protocol()->index;
     });
 }
 
-int Type::reference() const {
-    if (type() != TypeContent::Reference && type() != TypeContent::LocalReference) {
+size_t Type::genericVariableIndex() const {
+    if (type() != TypeContent::GenericVariable && type() != TypeContent::LocalGenericVariable) {
         throw std::domain_error("Tried to get reference from non-reference type");
     }
-    return reference_;
+    return genericArgumentIndex_;
 }
 
 bool Type::allowsMetaType() {
@@ -103,10 +97,10 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &ty
 
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeContent::Reference && c->canBeUsedToResolve(t.resolutionConstraint_) &&
-           t.reference() < maxReferenceForSuper) {
-        Type tn = c->superGenericArguments()[t.reference()];
-        if (tn.type() == TypeContent::Reference && tn.reference() == t.reference()
+    while (t.type() == TypeContent::GenericVariable && c->canBeUsedToResolve(t.resolutionConstraint_) &&
+           t.genericVariableIndex() < maxReferenceForSuper) {
+        Type tn = c->superGenericArguments()[t.genericVariableIndex()];
+        if (tn.type() == TypeContent::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
             && tn.resolutionConstraint_ == t.resolutionConstraint_) {
             break;
         }
@@ -133,15 +127,15 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext,
 
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeContent::Reference && t.reference() < maxReferenceForSuper) {
-        t = c->superGenericArguments()[t.reference()];
+    while (t.type() == TypeContent::GenericVariable && t.genericVariableIndex() < maxReferenceForSuper) {
+        t = c->superGenericArguments()[t.genericVariableIndex()];
     }
-    while (t.type() == TypeContent::LocalReference && typeContext.function() == t.localResolutionConstraint_) {
-        t = typeContext.function()->genericArgumentConstraints[t.reference()];
+    while (t.type() == TypeContent::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_) {
+        t = typeContext.function()->genericArgumentConstraints[t.genericVariableIndex()];
     }
-    while (t.type() == TypeContent::Reference
+    while (t.type() == TypeContent::GenericVariable
            && typeContext.calleeType().typeDefinitionFunctional()->canBeUsedToResolve(t.resolutionConstraint_)) {
-        t = typeContext.calleeType().typeDefinitionFunctional()->genericArgumentConstraints()[t.reference()];
+        t = typeContext.calleeType().typeDefinitionFunctional()->genericArgumentConstraints()[t.genericVariableIndex()];
     }
 
     if (optional) {
@@ -165,16 +159,16 @@ Type Type::resolveOn(const TypeContext &typeContext, bool resolveSelf) const {
         t = typeContext.calleeType();
     }
 
-    while (t.type() == TypeContent::LocalReference && typeContext.function() == t.localResolutionConstraint_
-           && typeContext.functionGenericArguments()) {
-        t = (*typeContext.functionGenericArguments())[t.reference()];
+    while (t.type() == TypeContent::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_
+           && typeContext.functionGenericArguments() != nullptr) {
+        t = (*typeContext.functionGenericArguments())[t.genericVariableIndex()];
     }
 
     if (typeContext.calleeType().canHaveGenericArguments()) {
-        while (t.type() == TypeContent::Reference &&
+        while (t.type() == TypeContent::GenericVariable &&
                typeContext.calleeType().typeDefinitionFunctional()->canBeUsedToResolve(t.resolutionConstraint_)) {
-            Type tn = typeContext.calleeType().genericArguments_[t.reference()];
-            if (tn.type() == TypeContent::Reference && tn.reference() == t.reference()
+            Type tn = typeContext.calleeType().genericArguments_[t.genericVariableIndex()];
+            if (tn.type() == TypeContent::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
                 && tn.resolutionConstraint_ == t.resolutionConstraint_) {
                 break;
             }
@@ -278,24 +272,25 @@ bool Type::compatibleTo(Type to, const TypeContext &ct, std::vector<CommonTypeFi
     if (this->type() == TypeContent::Enum && to.type() == TypeContent::Enum) {
         return this->eenum() == to.eenum();
     }
-    if ((this->type() == TypeContent::Reference && to.type() == TypeContent::Reference) ||
-        (this->type() == TypeContent::LocalReference && to.type() == TypeContent::LocalReference)) {
-        return (this->reference() == to.reference() && this->resolutionConstraint_ == to.resolutionConstraint_) ||
+    if ((this->type() == TypeContent::GenericVariable && to.type() == TypeContent::GenericVariable) ||
+        (this->type() == TypeContent::LocalGenericVariable && to.type() == TypeContent::LocalGenericVariable)) {
+        return (this->genericVariableIndex() == to.genericVariableIndex() &&
+                this->resolutionConstraint_ == to.resolutionConstraint_) ||
         this->resolveOnSuperArgumentsAndConstraints(ct)
         .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
-    if (this->type() == TypeContent::Reference) {
+    if (this->type() == TypeContent::GenericVariable) {
         return this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
-    if (to.type() == TypeContent::Reference) {
+    if (to.type() == TypeContent::GenericVariable) {
         return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
-    if (this->type() == TypeContent::LocalReference) {
+    if (this->type() == TypeContent::LocalGenericVariable) {
         return ctargs != nullptr || this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
-    if (to.type() == TypeContent::LocalReference) {
+    if (to.type() == TypeContent::LocalGenericVariable) {
         if (ctargs != nullptr) {
-            (*ctargs)[to.reference()].addType(*this, ct);
+            (*ctargs)[to.genericVariableIndex()].addType(*this, ct);
             return true;
         }
         return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
@@ -326,8 +321,8 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
     if (optional() != to.optional()) {
         return false;
     }
-    if (ctargs != nullptr && to.type() == TypeContent::LocalReference) {
-        (*ctargs)[to.reference()].addType(*this, tc);
+    if (ctargs != nullptr && to.type() == TypeContent::LocalGenericVariable) {
+        (*ctargs)[to.genericVariableIndex()].addType(*this, tc);
         return true;
     }
 
@@ -343,10 +338,10 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
                 && identicalGenericArguments(to, tc, ctargs);
             case TypeContent::Enum:
                 return eenum() == to.eenum();
-            case TypeContent::Reference:
-            case TypeContent::LocalReference:
-                return resolveReferenceToBaseReferenceOnSuperArguments(tc).reference() ==
-                to.resolveReferenceToBaseReferenceOnSuperArguments(tc).reference();
+            case TypeContent::GenericVariable:
+            case TypeContent::LocalGenericVariable:
+                return resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex() ==
+                to.resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex();
             case TypeContent::Self:
             case TypeContent::Something:
             case TypeContent::Someobject:
@@ -358,6 +353,8 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeContent::MultiProtocol:
                 return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
                                   [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
+            case TypeContent::StorageExpectation:
+                return false;
         }
     }
     return false;
@@ -424,8 +421,8 @@ EmojicodeInstruction Type::boxIdentifier() const {
         case TypeContent::Protocol:
         case TypeContent::MultiProtocol:
         case TypeContent::Something:
-        case TypeContent::Reference:
-        case TypeContent::LocalReference:
+        case TypeContent::GenericVariable:
+        case TypeContent::LocalGenericVariable:
         case TypeContent::Self:
         case TypeContent::Error:
             return 0;  // This can only be executed in the case of a semantic error, return any value
@@ -449,8 +446,8 @@ bool Type::requiresBox() const {
         case TypeContent::Error:
             return genericArguments()[1].storageType() == StorageType::Box;
         case TypeContent::Something:
-        case TypeContent::Reference:
-        case TypeContent::LocalReference:
+        case TypeContent::GenericVariable:
+        case TypeContent::LocalGenericVariable:
         case TypeContent::Protocol:
         case TypeContent::MultiProtocol:
             return true;
@@ -462,8 +459,8 @@ bool Type::isReferenceWorthy() const {
         case TypeContent::Callable:
         case TypeContent::Class:
         case TypeContent::Someobject:
-        case TypeContent::Reference:
-        case TypeContent::LocalReference:
+        case TypeContent::GenericVariable:
+        case TypeContent::LocalGenericVariable:
         case TypeContent::Self:
             return storageType() != StorageType::Simple;
         case TypeContent::Nothingness:
@@ -509,8 +506,8 @@ void Type::objectVariableRecords(int index, std::vector<T> &information, Us... a
         case TypeContent::Protocol:
         case TypeContent::MultiProtocol:
         case TypeContent::Something:
-        case TypeContent::Reference:
-        case TypeContent::LocalReference:
+        case TypeContent::GenericVariable:
+        case TypeContent::LocalGenericVariable:
         case TypeContent::Error:
             switch (storageType()) {
                 case StorageType::SimpleOptional:
@@ -527,6 +524,7 @@ void Type::objectVariableRecords(int index, std::vector<T> &information, Us... a
             }
         case TypeContent::Enum:
         case TypeContent::Nothingness:
+        case TypeContent::StorageExpectation:
             return;  // Can't be object pointer
     }
 }
@@ -547,8 +545,8 @@ std::string Type::typePackage() const {
         case TypeContent::Nothingness:
         case TypeContent::Something:
         case TypeContent::Someobject:
-        case TypeContent::Reference:
-        case TypeContent::LocalReference:
+        case TypeContent::GenericVariable:
+        case TypeContent::LocalGenericVariable:
         case TypeContent::Callable:
         case TypeContent::Self:
         case TypeContent::MultiProtocol:  // should actually never come in here
@@ -614,41 +612,43 @@ void Type::typeName(Type type, const TypeContext &typeContext, bool includePacka
             typeName(type.genericArguments_[0], typeContext, includePackageAndOptional, string);
             typeName(type.genericArguments_[1], typeContext, includePackageAndOptional, string);
             return;
-        case TypeContent::Reference: {
+        case TypeContent::GenericVariable: {
             if (typeContext.calleeType().type() == TypeContent::Class) {
                 Class *eclass = typeContext.calleeType().eclass();
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables()) {
-                        if (it.second.reference() == type.reference()) {
+                        if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
                             string.append(it.first.utf8());
                             return;
                         }
                     }
-                } while ((eclass = eclass->superclass()));
+                } while ((eclass = eclass->superclass()) != nullptr);
             }
             else if (typeContext.calleeType().canHaveGenericArguments()) {
                 for (auto it : typeContext.calleeType().typeDefinitionFunctional()->ownGenericArgumentVariables()) {
-                    if (it.second.reference() == type.reference()) {
+                    if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
                         string.append(it.first.utf8());
                         return;
                     }
                 }
             }
 
-            string.append("T" + std::to_string(type.reference()) + "?");
+            string.append("T" + std::to_string(type.genericVariableIndex()) + "?");
             return;
         }
-        case TypeContent::LocalReference:
-            if (typeContext.function()) {
+        case TypeContent::LocalGenericVariable:
+            if (typeContext.function() != nullptr) {
                 for (auto it : typeContext.function()->genericArgumentVariables) {
-                    if (it.second.reference() == type.reference()) {
+                    if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
                         string.append(it.first.utf8());
                         return;
                     }
                 }
             }
 
-            string.append("L" + std::to_string(type.reference()) + "?");
+            string.append("L" + std::to_string(type.genericVariableIndex()) + "?");
+            return;
+        case TypeContent::StorageExpectation:
             return;
     }
 

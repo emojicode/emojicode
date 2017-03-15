@@ -44,7 +44,7 @@ bool FunctionPAG::typeIsEnumerable(Type type, Type *elementType) {
         }
     }
     else if (type.type() == TypeContent::Protocol && type.protocol() == PR_ENUMERATEABLE) {
-        *elementType = Type(TypeContent::Reference, false, 0, type.protocol()).resolveOn(type);
+        *elementType = Type(TypeContent::GenericVariable, false, 0, type.protocol()).resolveOn(type);
         return true;
     }
     return false;
@@ -299,7 +299,7 @@ void FunctionPAG::parseIfExpression(const Token &token) {
         placeholder.write(box ? INS_CONDITIONAL_PRODUCE_BOX : INS_CONDITIONAL_PRODUCE_SIMPLE_OPTIONAL);
 
         t.setReference(false);
-        t = t.copyWithoutOptional();
+        t.setOptional(false);
 
         auto &variable = scoper_.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
         variable.initialize(writer_.writtenInstructions());
@@ -572,7 +572,7 @@ void FunctionPAG::parseStatement(const Token &token) {
                     // If the iteratee is a list, the Real-Time Engine has some special sugar
                     int internalId = scoper_.currentScope().allocateInternalVariable(iteratee);
                     writer_.writeInstruction(internalId);  // Internally needed
-                    auto type = Type(TypeContent::Reference, false, 0, CL_LIST).resolveOn(iteratee);
+                    auto type = Type(TypeContent::GenericVariable, false, 0, CL_LIST).resolveOn(iteratee);
                     auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), type,
                                                                        true, variableToken.position());
                     var.initialize(writer_.writtenInstructions());
@@ -747,7 +747,7 @@ Type FunctionPAG::parse(const Token &token, TypeExpectation &&expectation) {
             writeBoxingAndTemporary(expectation, Type::integer());
             writer_.writeInstruction(INS_GET_32_INTEGER);
             value += INT32_MAX;
-            writer_.writeInstruction(value);
+            writer_.writeInstruction(static_cast<EmojicodeInstruction>(value));
 
             return Type::integer();
         }
@@ -847,7 +847,7 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
 
             Type type = Type(CL_LIST, false);
             if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_LIST) {
-                auto elementType = Type(TypeContent::Reference, false, 0, expectation.eclass()).resolveOn(expectation);
+                auto elementType = Type(TypeContent::GenericVariable, false, 0, expectation.eclass()).resolveOn(expectation);
                 while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                     parse(stream_.consumeToken(), token, TypeExpectation(elementType));
                 }
@@ -874,7 +874,7 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
             Type type = Type(CL_DICTIONARY, false);
 
             if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_DICTIONARY) {
-                auto elementType = Type(TypeContent::Reference, false, 0, expectation.eclass()).resolveOn(expectation);
+                auto elementType = Type(TypeContent::GenericVariable, false, 0, expectation.eclass()).resolveOn(expectation);
                 while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                     parse(stream_.consumeToken(), token, TypeExpectation(Type(CL_STRING, false)));
                     parse(stream_.consumeToken(), token, TypeExpectation(elementType));
@@ -1064,11 +1064,11 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
 
             if (t.storageType() == StorageType::Box) {
                 placeholder.write(INS_UNWRAP_BOX_OPTIONAL);
-                t = t.copyWithoutOptional();
+                t.setOptional(false);
             }
             else {
                 placeholder.write(INS_UNWRAP_SIMPLE_OPTIONAL);
-                t = t.copyWithoutOptional();
+                t.setOptional(false);
                 writer_.writeInstruction(t.size());
             }
             writeBoxingAndTemporary(expectation, t, insertionPoint);
@@ -1090,12 +1090,12 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
 
             if (t.storageType() == StorageType::Box) {
                 placeholder.write(INS_ERROR_CHECK_BOX_OPTIONAL);
-                t = t.copyWithoutOptional();
+                t.setOptional(false);
                 t.forceBox();
             }
             else {
                 placeholder.write(INS_ERROR_CHECK_SIMPLE_OPTIONAL);
-                t = t.copyWithoutOptional();
+                t.setOptional(false);
                 writer_.writeInstruction(t.size());
             }
             Type type = t.genericArguments()[1];
@@ -1611,7 +1611,7 @@ std::pair<Type, TypeAvailability> FunctionPAG::parseTypeAsValue(const SourcePosi
     }
     Type ot = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds, expectation);
     switch (ot.type()) {
-        case TypeContent::Reference:
+        case TypeContent::GenericVariable:
             throw CompilerError(p, "Generic Arguments are not yet available for reflection.");
         case TypeContent::Class:
             writer_.writeInstruction(INS_GET_CLASS_FROM_INDEX);
@@ -1623,7 +1623,7 @@ std::pair<Type, TypeAvailability> FunctionPAG::parseTypeAsValue(const SourcePosi
             }
             writer_.writeInstruction(INS_GET_THIS);
             return std::pair<Type, TypeAvailability>(ot, TypeAvailability::DynamicAndAvailabale);
-        case TypeContent::LocalReference:
+        case TypeContent::LocalGenericVariable:
             throw CompilerError(p, "Function Generic Arguments are not available for reflection.");
         default:
             break;

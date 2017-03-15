@@ -238,7 +238,7 @@ int main(int argc, char * argv[]) {
             printError(ce);
         }
 
-        if (packageToReport) {
+        if (packageToReport != nullptr) {
             if (auto package = Package::findPackage(packageToReport)) {
                 reportPackage(package);
             }

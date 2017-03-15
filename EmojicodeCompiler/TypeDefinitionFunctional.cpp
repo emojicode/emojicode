@@ -18,7 +18,7 @@
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, const Type &constraint) {
     genericArgumentConstraints_.push_back(constraint);
 
-    Type referenceType = Type(TypeContent::Reference, false, ownGenericArgumentVariables_.size(), this);
+    Type referenceType = Type(TypeContent::GenericVariable, false, ownGenericArgumentVariables_.size(), this);
 
     if (ownGenericArgumentVariables_.count(variableName.value()) > 0) {
         throw CompilerError(variableName.position(),
@@ -34,7 +34,7 @@ void TypeDefinitionFunctional::setSuperTypeDef(TypeDefinitionFunctional *superTy
                                        superTypeDef->genericArgumentConstraints_.end());
 
     for (auto &genericArg : ownGenericArgumentVariables_) {
-        genericArg.second.reference_ += superTypeDef->genericArgumentCount_;
+        genericArg.second.genericArgumentIndex_ += superTypeDef->genericArgumentCount_;
     }
 }
 
@@ -182,7 +182,7 @@ void TypeDefinitionFunctional::finalizeProtocols(const Type &type, VTIProvider *
                     auto bl = new BoxingLayer(clm, protocol.protocol()->name(), methodVtiProvider,
                                               method->returnType.resolveOn(protocol), clm->position());
                     for (auto arg : method->arguments) {
-                        bl->arguments.push_back(Argument(arg.variableName, arg.type.resolveOn(protocol)));
+                        bl->arguments.emplace_back(arg.variableName, arg.type.resolveOn(protocol));
                     }
                     method->registerOverrider(bl);
                     addMethod(bl);
