@@ -10,21 +10,49 @@
 #define BoxingLayer_hpp
 
 #include "EmojicodeCompiler.hpp"
+#include "Type.hpp"
 #include "Function.hpp"
 
 class BoxingLayer : public Function {
 public:
-    BoxingLayer(Function *function, EmojicodeString protocolName, VTIProvider *provider, const Type &preturnType,
-                SourcePosition p)
-    : Function(function->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
-               function->owningType(), function->package(), p, false, EmojicodeString(), false, false,
-               FunctionPAGMode::BoxingLayer), destinationFunction_(function) {
+    /// Creates a boxing layer for a protocol function.
+    /// @parameter destinationFunction That function that should be called by the boxing layer. The "actual" method.
+    BoxingLayer(Function *destinationFunction, EmojicodeString protocolName, VTIProvider *provider,
+                const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
+    : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
+               destinationFunction->owningType(), destinationFunction->package(), p, false, EmojicodeString(), false,
+               false, FunctionPAGMode::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
+        destinationFunction_(destinationFunction) {
         setVtiProvider(provider);
-        returnType = preturnType;
+        this->arguments = arguments;
+        this->returnType = returnType;
+
+        destinationArgumentTypes_.reserve(destinationFunction->arguments.size());
+        for (auto &arg : destinationFunction->arguments) {
+            destinationArgumentTypes_.emplace_back(arg.type);
+        }
     }
+    /// Creates a boxing layer for a callable. The argument/return conversions will be performed and
+    /// INS_EXECUTE_CALLABLE callable will be applied to the this context.
+    BoxingLayer(const std::vector<Type> &destinationArgumentTypes, const Type &destinationReturnType, Package *pkg,
+                const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
+    : Function(EmojicodeString(), AccessLevel::Private, true,
+               Type::callableIncomplete(), pkg, p, false, EmojicodeString(), false, false,
+               FunctionPAGMode::BoxingLayer), destinationArgumentTypes_(destinationArgumentTypes),
+      destinationReturnType_(destinationReturnType) {
+        setVtiProvider(&Function::pureFunctionsProvider);
+        this->returnType = returnType;
+        this->arguments = arguments;
+    }
+
+    const std::vector<Type>& destinationArgumentTypes() const { return destinationArgumentTypes_; }
+    const Type& destinationReturnType() const { return destinationReturnType_; }
+    /// Returns the function whill will be called. Returns @c nullptr if this is a callable boxing layer.
     Function* destinationFunction() const { return destinationFunction_; }
 private:
-    Function *destinationFunction_;
+    std::vector<Type> destinationArgumentTypes_;
+    Type destinationReturnType_;
+    Function *destinationFunction_ = nullptr;
 };
 
 #endif /* BoxingLayer_hpp */

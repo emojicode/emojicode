@@ -14,6 +14,7 @@
 #include "TypeContext.hpp"
 #include "Protocol.hpp"
 #include "BoxingLayer.hpp"
+#include <algorithm>
 
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, const Type &constraint) {
     genericArgumentConstraints_.push_back(constraint);
@@ -179,11 +180,13 @@ void TypeDefinitionFunctional::finalizeProtocols(const Type &type, VTIProvider *
                 }
 
                 if (!clm->enforcePromises(method, type, protocol, TypeContext(protocol))) {
-                    auto bl = new BoxingLayer(clm, protocol.protocol()->name(), methodVtiProvider,
-                                              method->returnType.resolveOn(protocol), clm->position());
-                    for (auto arg : method->arguments) {
-                        bl->arguments.emplace_back(arg.variableName, arg.type.resolveOn(protocol));
+                    auto arguments = std::vector<Argument>();
+                    arguments.reserve(method->arguments.size());
+                    for (auto &arg : method->arguments) {
+                        arguments.emplace_back(arg.variableName, arg.type.resolveOn(protocol));
                     }
+                    auto bl = new BoxingLayer(clm, protocol.protocol()->name(), methodVtiProvider, arguments,
+                                              method->returnType.resolveOn(protocol), clm->position());
                     method->registerOverrider(bl);
                     addMethod(bl);
                     bl->assignVti();

@@ -12,6 +12,7 @@
 #include "Enum.hpp"
 #include "Protocol.hpp"
 #include "Function.hpp"
+#include "BoxingLayer.hpp"
 #include "ValueType.hpp"
 #include "CommonTypeFinder.hpp"
 #include "VariableNotFoundError.hpp"
@@ -21,6 +22,7 @@
 #include "RecompilationPoint.hpp"
 #include <cstdlib>
 #include <cassert>
+#include <algorithm>
 
 Type FunctionPAG::parse(const Token &token, const Token &parentToken, Type type, std::vector<CommonTypeFinder> *ctargs) {
     auto returnType = ctargs ? parse(token, TypeExpectation(type.isReference(), type.requiresBox(), false)) : parse(token, TypeExpectation(type));
@@ -67,26 +69,42 @@ void FunctionPAG::checkAccessLevel(Function *function, const SourcePosition &p) 
 
 Type FunctionPAG::parseFunctionCall(const Type &type, Function *p, const Token &token) {
     std::vector<Type> genericArguments;
-    std::vector<CommonTypeFinder> genericArgsFinders;
-    std::vector<Type> givenArgumentTypes;
-
-    p->deprecatedWarning(token.position());
-
     while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
-        auto type = parseTypeDeclarative(typeContext, TypeDynamism::AllKinds);
-        genericArguments.push_back(type);
+        genericArguments.push_back(parseTypeDeclarative(typeContext, TypeDynamism::AllKinds));
     }
 
     auto inferGenericArguments = genericArguments.empty() && !p->genericArgumentVariables.empty();
     auto typeContext = TypeContext(type, p, inferGenericArguments ? nullptr : &genericArguments);
 
     if (inferGenericArguments) {
+        std::vector<CommonTypeFinder> genericArgsFinders;
         genericArgsFinders.resize(p->genericArgumentVariables.size());
-    }
-    else if (genericArguments.size() != p->genericArgumentVariables.size()) {
-        throw CompilerError(token.position(), "Too few generic arguments provided.");
+
+        auto recompilationPoint = RecompilationPoint(writer_, stream_);
+        for (auto var : p->arguments) {
+            auto resolved = var.type.resolveOn(typeContext);
+            parse(stream_.consumeToken(), token, resolved, &genericArgsFinders);
+        }
+
+        typeContext = TypeContext(type, p, &genericArguments);
+
+        for (size_t i = 0; i < genericArgsFinders.size(); i++) {
+            auto commonType = genericArgsFinders[i].getCommonType(token.position());
+            if (!commonType.compatibleTo(p->genericArgumentConstraints[i], typeContext)) {
+                throw CompilerError(token.position(),
+                                    "Infered type %s for generic argument %d is not compatible to constraint %s.",
+                                    commonType.toString(typeContext, true).c_str(), i + 1,
+                                    p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
+            }
+            genericArguments.push_back(commonType);
+        }
+
+        recompilationPoint.restore();
     }
     else {
+        if (genericArguments.size() != p->genericArgumentVariables.size()) {
+            throw CompilerError(token.position(), "Too few generic arguments provided.");
+        }
         for (size_t i = 0; i < genericArguments.size(); i++) {
             if (!genericArguments[i].compatibleTo(p->genericArgumentConstraints[i], typeContext)) {
                 throw CompilerError(token.position(),
@@ -99,39 +117,11 @@ Type FunctionPAG::parseFunctionCall(const Type &type, Function *p, const Token &
 
     for (auto var : p->arguments) {
         auto resolved = var.type.resolveOn(typeContext);
-        if (inferGenericArguments) {
-            writer_.writeInstruction(resolved.size());
-            givenArgumentTypes.push_back(parse(stream_.consumeToken(), token, resolved, &genericArgsFinders));
-        }
-        else {
-            writer_.writeInstruction(resolved.size());
-            parse(stream_.consumeToken(), token, resolved);
-        }
+        writer_.writeInstruction(resolved.size());
+        parse(stream_.consumeToken(), token, resolved);
     }
 
-    if (inferGenericArguments) {
-        auto typeContext = TypeContext(type, p, &genericArguments);
-        for (size_t i = 0; i < genericArgsFinders.size(); i++) {
-            auto commonType = genericArgsFinders[i].getCommonType(token.position());
-            genericArguments.push_back(commonType);
-            if (!commonType.compatibleTo(p->genericArgumentConstraints[i], typeContext)) {
-                throw CompilerError(token.position(),
-                                    "Infered type %s for generic argument %d is not compatible to constraint %s.",
-                                    commonType.toString(typeContext, true).c_str(), i + 1,
-                                    p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
-            }
-        }
-        typeContext = TypeContext(type, p, &genericArguments);
-        for (size_t i = 0; i < givenArgumentTypes.size(); i++) {
-            auto givenTypen = givenArgumentTypes[i];
-            auto expectedType = p->arguments[i].type.resolveOn(typeContext);
-            if (!givenTypen.compatibleTo(expectedType, typeContext)) {
-                auto cn = expectedType.toString(typeContext, true);
-                auto tn = givenTypen.toString(typeContext, true);
-                throw CompilerError(token.position(), "%s is not compatible to %s.", cn.c_str(), tn.c_str());
-            }
-        }
-    }
+    p->deprecatedWarning(token.position());
     checkAccessLevel(p, token.position());
     return p->returnType.resolveOn(typeContext);
 }
@@ -217,6 +207,29 @@ void FunctionPAG::writeBoxingAndTemporary(const TypeExpectation &expectation, Ty
     }
     if (!expectation.shouldPerformBoxing()) {
         return;
+    }
+
+    if (expectation.type() == TypeContent::Callable && rtype.type() == TypeContent::Callable &&
+        expectation.genericArguments().size() == rtype.genericArguments().size()) {
+        auto mismatch = std::mismatch(expectation.genericArguments().begin(), expectation.genericArguments().end(),
+                                      rtype.genericArguments().begin(), [](const Type &a, const Type &b) {
+                                          return a.storageType() == b.storageType();
+                                      });
+        if (mismatch.first != expectation.genericArguments().end()) {
+            auto arguments = std::vector<Argument>();
+            arguments.reserve(expectation.genericArguments().size() - 1);
+            for (auto argumentType = expectation.genericArguments().begin() + 1;
+                 argumentType != expectation.genericArguments().end(); argumentType++) {
+                arguments.emplace_back(EmojicodeString(), *argumentType);
+            }
+            auto destinationArgTypes = std::vector<Type>(rtype.genericArguments().begin() + 1,
+                                                         rtype.genericArguments().end());
+            auto boxingLayer = new BoxingLayer(destinationArgTypes, rtype.genericArguments()[0],
+                                               function_.package(), arguments,
+                                               expectation.genericArguments()[0], function_.position());
+            function_.package()->registerFunction(boxingLayer);
+            location.write({ INS_CLOSURE_BOX, static_cast<EmojicodeInstruction>(boxingLayer->vtiForUse()) });
+        }
     }
 
     auto insertionPoint = location.insertionPoint();
@@ -685,7 +698,6 @@ void FunctionPAG::parseStatement(const Token &token) {
                 parse(stream_.consumeToken(), token, function_.returnType.genericArguments()[0]);
                 returned = true;
                 return;
-
             }
             case E_RED_APPLE: {
                 writer_.writeInstruction(INS_RETURN);
@@ -1165,7 +1177,7 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
             auto pag = FunctionPAG(*function, function->owningType(), function->writer_, closureScoper);
             pag.compile();
 
-            writeBoxingAndTemporary(expectation, Type::callableIncomplete());
+            auto insertionPoint = writer_.getInsertionPoint();
             writer_.writeInstruction(INS_CLOSURE);
             function->markUsed(false);
             writer_.writeInstruction(function->vtiForUse());
@@ -1177,7 +1189,9 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
                 writer_.writeInstruction(capture.captureId);
             }
             writer_.writeInstruction(pag.usedSelfInBody() ? 1 : 0);
-            return function->type();
+            auto type = function->type();
+            writeBoxingAndTemporary(expectation, type, insertionPoint);
+            return type;
         }
         case E_LOLLIPOP: {
             effect = true;
@@ -1196,7 +1210,7 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
             }
 
             auto rtype = type.genericArguments()[0];
-            writeBoxingAndTemporary(expectation, type, insertionPoint);
+            writeBoxingAndTemporary(expectation, rtype, insertionPoint);
             return rtype;
         }
         case E_CHIPMUNK: {
@@ -1328,7 +1342,7 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
         }
         default: {
             effect = true;
-            return parseMethodCall(token, expectation, [this](const TypeExpectation &expectation){
+            return parseMethodCall(token, expectation, [this](const TypeExpectation &expectation) {
                 auto &tobject = stream_.consumeToken();
                 return parse(tobject, TypeExpectation(expectation));
             });
@@ -1712,28 +1726,37 @@ void FunctionPAG::compile() {
 }
 
 void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
-    if (layer.destinationFunction()->returnType.type() != TypeContent::Nothingness) {
+    if (layer.destinationReturnType().type() != TypeContent::Nothingness) {
         writer_.writeInstruction(INS_RETURN);
-        writeBoxingAndTemporary(TypeExpectation(layer.returnType), layer.destinationFunction()->returnType);
+        writeBoxingAndTemporary(TypeExpectation(layer.returnType), layer.destinationReturnType());
     }
-    switch (layer.owningType().type()) {
-        case TypeContent::ValueType:
-        case TypeContent::Enum:
-            writer_.writeInstruction(INS_CALL_CONTEXTED_FUNCTION);
-            break;
-        case TypeContent::Class:
-            writer_.writeInstruction(INS_DISPATCH_METHOD);
-            break;
-        default:
-            throw std::logic_error("nonsensial BoxingLayer requested");
+    if (layer.owningType().type() == TypeContent::Callable) {
+        writer_.writeInstruction({ INS_EXECUTE_CALLABLE, INS_GET_THIS });
     }
-    writer_.writeInstruction(INS_GET_THIS);
-    writer_.writeInstruction(layer.destinationFunction()->vtiForUse());
-    for (size_t i = 0; i < layer.destinationFunction()->arguments.size(); i++) {
-        auto arg = layer.destinationFunction()->arguments[i];
-        writer_.writeInstruction(layer.arguments[i].type.size());
-        writeBoxingAndTemporary(TypeExpectation(arg.type), layer.arguments[i].type);
-        auto variable = Variable(layer.arguments[i].type, i, true, EmojicodeString(), layer.position());
+    else {
+        switch (layer.owningType().type()) {
+            case TypeContent::ValueType:
+            case TypeContent::Enum:
+                writer_.writeInstruction(INS_CALL_CONTEXTED_FUNCTION);
+                break;
+            case TypeContent::Class:
+                writer_.writeInstruction(INS_DISPATCH_METHOD);
+                break;
+            case TypeContent::Callable:
+                break;
+            default:
+                throw std::logic_error("nonsensial BoxingLayer requested");
+        }
+        writer_.writeInstruction(INS_GET_THIS);
+        writer_.writeInstruction(layer.destinationFunction()->vtiForUse());
+    }
+    size_t variableIndex = 0;
+    for (size_t i = 0; i < layer.destinationArgumentTypes().size(); i++) {
+        auto &argType = layer.destinationArgumentTypes()[i];
+        writer_.writeInstruction(argType.size());
+        writeBoxingAndTemporary(TypeExpectation(argType), layer.arguments[i].type);
+        auto variable = Variable(layer.arguments[i].type, variableIndex, true, EmojicodeString(), layer.position());
+        variableIndex += layer.arguments[i].type.size();
         copyVariableContent(ResolvedVariable(variable, false));
     }
     layer.setFullSizeFromArguments();

@@ -137,7 +137,7 @@ static void threadSleepMicroseconds(Thread *thread, Value *destination) {
 
 void threadStart(Object *callable) {
     Thread thread = Thread();
-    executeCallableExtern(callable, nullptr, &thread, nullptr);
+    executeCallableExtern(callable, nullptr, 0, &thread, nullptr);
 }
 
 static void initThread(Thread *thread, Value *destination) {

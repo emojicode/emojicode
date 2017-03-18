@@ -97,7 +97,7 @@ struct Box {
 // MARK: Callables
 
 /** You can use this function to call a callable object. It’s internally Garbage-Collector safe. */
-extern void executeCallableExtern(Object *callable, Value *args, Thread *thread, Value *destination);
+extern void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Thread *thread, Value *destination);
 
 
 // MARK: Primitive Objects

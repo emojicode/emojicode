@@ -90,12 +90,12 @@ void loadCapture(Closure *c, Thread *thread) {
     }
 }
 
-void executeCallableExtern(Object *callable, Value *args, Thread *thread, Value *destination) {
+void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Thread *thread, Value *destination) {
     Closure *c = static_cast<Closure *>(callable->value);
     if (c->function->native) {
         auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
                                        destination, nullptr);
-        std::memcpy(sf->variableDestination(0), args, c->function->argumentCount * sizeof(Value));
+        std::memcpy(sf->variableDestination(0), args, argsSize);
         thread->pushReservedFrame();
         loadCapture(c, thread);
         c->function->handler(thread, destination);
@@ -103,7 +103,7 @@ void executeCallableExtern(Object *callable, Value *args, Thread *thread, Value 
     else {
         auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
                                        destination, c->function->block.instructions);
-        std::memcpy(sf->variableDestination(0), args, c->function->argumentCount * sizeof(Value));
+        std::memcpy(sf->variableDestination(0), args, argsSize);
         thread->pushReservedFrame();
         loadCapture(c, thread);
         runFunctionPointerBlock(thread, c->function->block.instructionCount);
@@ -914,6 +914,16 @@ void produce(Thread *thread, Value *destination) {
 
             destination->object = closure;
             thread->release(1);
+            return;
+        }
+        case INS_CLOSURE_BOX: {
+            Object *closure = newObject(CL_CLOSURE);
+
+            Closure *c = static_cast<Closure *>(closure->value);
+
+            c->function = functionTable[thread->consumeInstruction()];
+            produce(thread, &c->thisContext);
+            destination->object = closure;
             return;
         }
         case INS_CAPTURE_METHOD: {

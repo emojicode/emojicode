@@ -11,6 +11,7 @@
 #include "Thread.hpp"
 #include "standard.h"
 #include <cstring>
+#include <algorithm>
 #include <utility>
 
 namespace Emojicode {
@@ -144,50 +145,16 @@ void listInsertBridge(Thread *thread, Value *destination) {
     list->elements()[index].copy(thread->variableDestination(1));
 }
 
-void listQSort(Thread *thread, size_t off, size_t n) {
-    if (n < 2)
-        return;
-
-    Box *items = ((List *)thread->getThisObject()->value)->elements() + off;
-    Box pivot = items[n / 2];
-    size_t i, j;
-
-    for (i = 0, j = n - 1; ; i++, j--) {
-        while (true) {
-            Value args[2 * STORAGE_BOX_VALUE_SIZE];
-            items[i].copyTo(args);
-            pivot.copyTo(args + STORAGE_BOX_VALUE_SIZE);
-            Value c;
-            executeCallableExtern(thread->getVariable(0).object, args, thread, &c);
-            items = ((List *)thread->getThisObject()->value)->elements() + off;
-            if (c.raw >= 0) break;
-            i++;
-        }
-
-        while (true) {
-            Value args[2 * STORAGE_BOX_VALUE_SIZE];
-            items[i].copyTo(args);
-            pivot.copyTo(args + STORAGE_BOX_VALUE_SIZE);
-            Value c;
-            executeCallableExtern(thread->getVariable(0).object, args, thread, &c);
-            items = ((List *)thread->getThisObject()->value)->elements() + off;
-            if (c.raw >= 0) break;
-            j--;
-        }
-
-        if (i >= j)
-            break;
-
-        std::swap(items[i], items[j]);
-    }
-
-    listQSort(thread, off, i);
-    listQSort(thread, off + i, n - i);
-}
-
 void listSort(Thread *thread, Value *destination) {
     List *list = static_cast<List *>(thread->getThisObject()->value);
-    listQSort(thread, 0, list->count);
+    std::sort(list->elements(), list->elements() + list->count, [thread](const Box &a, const Box &b) {
+        Value args[2 * STORAGE_BOX_VALUE_SIZE];
+        a.copyTo(args);
+        b.copyTo(args + STORAGE_BOX_VALUE_SIZE);
+        Value c;
+        executeCallableExtern(thread->getVariable(0).object, args, sizeof(args), thread, &c);
+        return c.raw < 0;
+    });
 }
 
 void listFromListBridge(Thread *thread, Value *destination) {
