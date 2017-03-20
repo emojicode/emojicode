@@ -44,7 +44,7 @@ CallableWriterInsertionPoint CallableWriter::getInsertionPoint() {
     return CallableWriterInsertionPoint(this, instructions_.size());
 }
 
-void CallableWriterPlaceholder::write(EmojicodeInstruction value) {
+void CallableWriterPlaceholder::write(EmojicodeInstruction value) const {
     writer_->instructions_[index_] = value;
 }
 

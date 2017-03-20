@@ -1050,6 +1050,7 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
                 assert(originalType.storageType() == StorageType::Box);
                 placeholder.write(INS_CAST_TO_VALUE_TYPE);
                 writer_.writeInstruction(type.valueType()->boxIdentifier());
+                type.forceBox();
             }
             else {
                 auto typeString = pair.first.toString(typeContext, true);
@@ -1361,6 +1362,17 @@ Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &exp
         recompilationPoint.restore();
         callee(TypeExpectation(false, false, false));
     };
+    auto writePrimitiveMethod = [this, &placeholder, &insertionPoint, &expectation,
+                                 &recompileWithSimple](EmojicodeInstruction instruction, Type returnType,
+                                 std::experimental::optional<Type> argument) {
+        placeholder.write(instruction);
+        recompileWithSimple();
+        writeBoxingAndTemporary(expectation, returnType, insertionPoint);
+        if (argument) {
+            parse(stream_.consumeToken(), function_.tokenStream().nextToken(), TypeExpectation(*argument));
+        }
+        return returnType;
+    };
 
     auto calleeExpectation = TypeExpectation(true, false);
     Type rtype = callee(calleeExpectation);
@@ -1375,155 +1387,71 @@ Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &exp
         if (type.valueType() == VT_BOOLEAN) {
             switch (token.value()[0]) {
                 case E_NEGATIVE_SQUARED_CROSS_MARK:
-                    placeholder.write(INS_INVERT_BOOLEAN);
-                    recompileWithSimple();
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_INVERT_BOOLEAN, Type::boolean(), std::experimental::nullopt);
                 case E_PARTY_POPPER:
-                    placeholder.write(INS_OR_BOOLEAN);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::boolean()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_OR_BOOLEAN, Type::boolean(), Type::boolean());
                 case E_CONFETTI_BALL:
-                    placeholder.write(INS_AND_BOOLEAN);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::boolean()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_AND_BOOLEAN, Type::boolean(), Type::boolean());
             }
         }
         else if (type.valueType() == VT_INTEGER) {
             switch (token.value()[0]) {
                 case E_HEAVY_MINUS_SIGN:
-                    placeholder.write(INS_SUBTRACT_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_SUBTRACT_INTEGER, Type::integer(), Type::integer());
                 case E_HEAVY_PLUS_SIGN:
-                    placeholder.write(INS_ADD_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_ADD_INTEGER, Type::integer(), Type::integer());
                 case E_HEAVY_DIVISION_SIGN:
-                    placeholder.write(INS_DIVIDE_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_DIVIDE_INTEGER, Type::integer(), Type::integer());
                 case E_HEAVY_MULTIPLICATION_SIGN:
-                    placeholder.write(INS_MULTIPLY_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_MULTIPLY_INTEGER, Type::integer(), Type::integer());
                 case E_LEFT_POINTING_TRIANGLE:
-                    placeholder.write(INS_LESS_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_LESS_INTEGER, Type::boolean(), Type::integer());
                 case E_RIGHT_POINTING_TRIANGLE:
-                    placeholder.write(INS_GREATER_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_GREATER_INTEGER, Type::boolean(), Type::integer());
                 case E_LEFTWARDS_ARROW:
-                    placeholder.write(INS_LESS_OR_EQUAL_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_LESS_OR_EQUAL_INTEGER, Type::boolean(), Type::integer());
                 case E_RIGHTWARDS_ARROW:
-                    placeholder.write(INS_GREATER_OR_EQUAL_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_GREATER_OR_EQUAL_INTEGER, Type::boolean(), Type::integer());
                 case E_PUT_LITTER_IN_ITS_SPACE:
-                    placeholder.write(INS_REMAINDER_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_REMAINDER_INTEGER, Type::integer(), Type::integer());
                 case E_HEAVY_LARGE_CIRCLE:
-                    placeholder.write(INS_BINARY_AND_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_BINARY_AND_INTEGER, Type::integer(), Type::integer());
                 case E_ANGER_SYMBOL:
-                    placeholder.write(INS_BINARY_OR_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_BINARY_OR_INTEGER, Type::integer(), Type::integer());
                 case E_CROSS_MARK:
-                    placeholder.write(INS_BINARY_XOR_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_BINARY_XOR_INTEGER, Type::integer(), Type::integer());
                 case E_NO_ENTRY_SIGN:
-                    placeholder.write(INS_BINARY_NOT_INTEGER);
-                    recompileWithSimple();
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_BINARY_NOT_INTEGER, Type::integer(), std::experimental::nullopt);
                 case E_ROCKET:
-                    placeholder.write(INS_INT_TO_DOUBLE);
-                    recompileWithSimple();
-                    return Type::doubl();
+                    return writePrimitiveMethod(INS_INT_TO_DOUBLE, Type::doubl(), std::experimental::nullopt);
                 case E_LEFT_POINTING_BACKHAND_INDEX:
-                    placeholder.write(INS_SHIFT_LEFT_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_SHIFT_LEFT_INTEGER, Type::integer(), Type::integer());
                 case E_RIGHT_POINTING_BACKHAND_INDEX:
-                    placeholder.write(INS_SHIFT_RIGHT_INTEGER);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::integer()));
-                    return Type::integer();
+                    return writePrimitiveMethod(INS_SHIFT_RIGHT_INTEGER, Type::integer(), Type::integer());
             }
         }
         else if (type.valueType() == VT_DOUBLE) {
             switch (token.value()[0]) {
                 case E_FACE_WITH_STUCK_OUT_TONGUE:
-                    placeholder.write(INS_EQUAL_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_EQUAL_DOUBLE, Type::boolean(), Type::doubl());
                 case E_HEAVY_MINUS_SIGN:
-                    placeholder.write(INS_SUBTRACT_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::doubl();
+                    return writePrimitiveMethod(INS_SUBTRACT_DOUBLE, Type::doubl(), Type::doubl());
                 case E_HEAVY_PLUS_SIGN:
-                    placeholder.write(INS_ADD_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::doubl();
+                    return writePrimitiveMethod(INS_ADD_DOUBLE, Type::doubl(), Type::doubl());
                 case E_HEAVY_DIVISION_SIGN:
-                    placeholder.write(INS_DIVIDE_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::doubl();
+                    return writePrimitiveMethod(INS_DIVIDE_DOUBLE, Type::doubl(), Type::doubl());
                 case E_HEAVY_MULTIPLICATION_SIGN:
-                    placeholder.write(INS_MULTIPLY_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::doubl();
+                    return writePrimitiveMethod(INS_MULTIPLY_DOUBLE, Type::doubl(), Type::doubl());
                 case E_LEFT_POINTING_TRIANGLE:
-                    placeholder.write(INS_LESS_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_LESS_DOUBLE, Type::boolean(), Type::doubl());
                 case E_RIGHT_POINTING_TRIANGLE:
-                    placeholder.write(INS_GREATER_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_GREATER_DOUBLE, Type::boolean(), Type::doubl());
                 case E_LEFTWARDS_ARROW:
-                    placeholder.write(INS_LESS_OR_EQUAL_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_LESS_OR_EQUAL_DOUBLE, Type::boolean(), Type::doubl());
                 case E_RIGHTWARDS_ARROW:
-                    placeholder.write(INS_GREATER_OR_EQUAL_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::boolean();
+                    return writePrimitiveMethod(INS_GREATER_OR_EQUAL_DOUBLE, Type::boolean(), Type::doubl());
                 case E_PUT_LITTER_IN_ITS_SPACE:
-                    placeholder.write(INS_REMAINDER_DOUBLE);
-                    recompileWithSimple();
-                    parse(stream_.consumeToken(), token, TypeExpectation(Type::doubl()));
-                    return Type::doubl();
+                    return writePrimitiveMethod(INS_REMAINDER_DOUBLE, Type::doubl(), Type::doubl());
             }
         }
 

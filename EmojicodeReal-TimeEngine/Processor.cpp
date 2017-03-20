@@ -632,7 +632,7 @@ void produce(Thread *thread, Value *destination) {
                 destination[1] = box.value1;
                 return;
             }
-            destination[0].raw = T_NOTHINGNESS;
+            destination->makeNothingness();
             return;
         }
         case INS_CAST_TO_PROTOCOL: {
@@ -642,20 +642,15 @@ void produce(Thread *thread, Value *destination) {
             if (!(!box->isNothingness() &&
                   ((box->type.raw == T_OBJECT && box->value1.object->klass->protocolTable.conformsTo(pi)) ||
                     protocolDispatchTableTable[box->type.raw].conformsTo(pi)))) {
-                destination[0].raw = T_NOTHINGNESS;
+                destination->makeNothingness();
             }
             return;
         }
         case INS_CAST_TO_VALUE_TYPE: {
-            Box box;
-            produce(thread, &box.type);
+            produce(thread, destination);
             EmojicodeInstruction id = thread->consumeInstruction();
-            if (box.type.raw != id) {
+            if (destination->raw != id) {
                 destination->makeNothingness();
-            }
-            else {
-                destination->raw = T_OPTIONAL_VALUE;
-                box.copyContentTo(destination + 1);
             }
             return;
         }

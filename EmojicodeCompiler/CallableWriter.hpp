@@ -20,7 +20,7 @@ class RecompilationPoint;
 class CallableWriterPlaceholder {
     friend CallableWriter;
 public:
-    void write(EmojicodeInstruction value);
+    void write(EmojicodeInstruction value) const;
 protected:
     CallableWriterPlaceholder(CallableWriter *writer, size_t index) : writer_(writer), index_(index) {}
     CallableWriter *writer_;
