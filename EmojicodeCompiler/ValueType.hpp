@@ -47,6 +47,8 @@ public:
     bool isPrimitive() { return primitive_; }
 
     int boxIdentifier() const { return id_; }
+
+    static int maxBoxIndetifier() { return nextId - 1; }
 private:
     static int nextId;
     static std::vector<ValueType *> valueTypes_;

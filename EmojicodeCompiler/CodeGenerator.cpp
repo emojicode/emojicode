@@ -102,6 +102,13 @@ void writeClass(const Type &classType, Writer &writer) {
     writer.writeByte(eclass->inheritsInitializers() ? 1 : 0);
     writer.writeUInt16(eclass->fullInitializerCount());
 
+    if (eclass->fullInitializerCount() > 65535) {
+        throw CompilerError(eclass->position(), "More than 65535 initializers in class.");
+    }
+    if (eclass->fullMethodCount() > 65535) {
+        throw CompilerError(eclass->position(), "More than 65535 methods in class.");
+    }
+
     writer.writeUInt16(eclass->usedMethodCount());
     writer.writeUInt16(eclass->usedInitializerCount());
 
@@ -161,13 +168,17 @@ void generateCode(Writer &writer) {
         Function::compilationQueue.pop();
     }
 
+    if (ValueType::maxBoxIndetifier() > 2147483647) {
+        throw CompilerError(SourcePosition(0, 0, ""), "More than 2147483647 box identifiers in use.");
+    }
+
     writer.writeUInt16(Class::classes().size());
     writer.writeUInt16(Function::functionCount());
 
     auto pkgCount = Package::packagesInOrder().size();
 
-    if (pkgCount > 256) {
-        throw CompilerError(Package::packagesInOrder().back()->position(), "You exceeded the maximum of 256 packages.");
+    if (pkgCount > 255) {
+        throw CompilerError(Package::packagesInOrder().back()->position(), "You exceeded the maximum of 255 packages.");
     }
 
     writer.writeByte(pkgCount);
