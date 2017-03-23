@@ -133,6 +133,8 @@ public:
     void unbox() { forceBox_ = false; if (requiresBox()) throw std::logic_error("Cannot unbox!"); }
     void forceBox() { forceBox_ = true; }
 
+    bool remotelyStored() const { return (size() > 3 && !optional()) || size() > 4; }
+
     /// True if the type is an optional.
     bool optional() const { return optional_; }
     void setOptional(bool o = true) { optional_ = o; }

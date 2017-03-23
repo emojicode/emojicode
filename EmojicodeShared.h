@@ -33,7 +33,7 @@ typedef uint32_t EmojicodeInstruction;
 #define T_DOUBLE 5
 #define T_SYMBOL 6
 
-#define META_MASK 0x100000000
+#define REMOTE_MASK (1 << 31)
 
 /**
  * @defined(isWhitespace)

@@ -5,3 +5,4 @@ You ordered a 23kg croissant filled with chocolate
 Christopher
 I like milk
 Croissant
+You ordered a 2kg pita filled with 2 tomatoes and 200g of chicken.

@@ -32,7 +32,7 @@ inline void markByObjectVariableRecord(ObjectVariableRecord &record, Value *va, 
                 mark(&va[record.variableIndex].object);
             break;
         case ObjectVariableType::Box:
-            if (va[record.variableIndex].raw == T_OBJECT)
+            if (va[record.variableIndex].raw == T_OBJECT || (va[record.variableIndex].raw & REMOTE_MASK) != 0)
                 mark(&va[record.variableIndex + 1].object);
             break;
         case ObjectVariableType::ConditionalSkip:

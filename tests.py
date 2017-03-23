@@ -40,6 +40,7 @@ compilation_tests = [
     "commonType",
     "typeAlias",
     "variableInitAndScoping",
+    "valueTypeRemoteAdditional",
     "closureBasic",
     "closureCapture",
     "closureCaptureValueType",

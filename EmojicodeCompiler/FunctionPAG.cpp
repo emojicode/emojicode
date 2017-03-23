@@ -242,7 +242,14 @@ void FunctionPAG::writeBoxingAndTemporary(const TypeExpectation &expectation, Ty
                 case StorageType::Box:
                     rtype.unbox();
                     rtype.setOptional();
-                    location.write({ INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE, EmojicodeInstruction(rtype.size()) });
+                    if (rtype.remotelyStored()) {
+                        location.write({ INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE_REMOTE,
+                            static_cast<EmojicodeInstruction>(rtype.size() - 1) });
+                    }
+                    else {
+                        location.write({ INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE,
+                            static_cast<EmojicodeInstruction>(rtype.size()) });
+                    }
                     break;
                 case StorageType::Simple:
                     location.write({ INS_SIMPLE_OPTIONAL_PRODUCE });
@@ -254,18 +261,27 @@ void FunctionPAG::writeBoxingAndTemporary(const TypeExpectation &expectation, Ty
                 case StorageType::Box:
                     break;
                 case StorageType::SimpleOptional:
-                    if ((rtype.size() > 3 && !rtype.optional()) || rtype.size() > 4) {
-                        throw std::logic_error("Beta: Cannot box " + rtype.toString(typeContext, true) + " due to its size.");
+                    if (rtype.remotelyStored()) {
+                        location.write({ INS_SIMPLE_OPTIONAL_TO_BOX_REMOTE,
+                            static_cast<EmojicodeInstruction>(rtype.boxIdentifier()),
+                            static_cast<EmojicodeInstruction>(rtype.size() - 1) });
+                    }
+                    else {
+                        location.write({ INS_SIMPLE_OPTIONAL_TO_BOX,
+                            static_cast<EmojicodeInstruction>(rtype.boxIdentifier()) });
                     }
                     rtype.forceBox();
-                    location.write({ INS_SIMPLE_OPTIONAL_TO_BOX, EmojicodeInstruction(rtype.boxIdentifier()) });
                     break;
                 case StorageType::Simple:
-                    if ((rtype.size() > 3 && !rtype.optional()) || rtype.size() > 4) {
-                        throw std::logic_error("Beta: Cannot box " + rtype.toString(typeContext, true) + " due to its size.");
+                    if (rtype.remotelyStored()) {
+                        location.write({ INS_BOX_PRODUCE_REMOTE,
+                            static_cast<EmojicodeInstruction>(rtype.boxIdentifier()),
+                            static_cast<EmojicodeInstruction>(rtype.size()) });
+                    }
+                    else {
+                        location.write({ INS_BOX_PRODUCE, static_cast<EmojicodeInstruction>(rtype.boxIdentifier()) });
                     }
                     rtype.forceBox();
-                    location.write({ INS_BOX_PRODUCE, EmojicodeInstruction(rtype.boxIdentifier()) });
                     break;
             }
             break;
@@ -276,7 +292,12 @@ void FunctionPAG::writeBoxingAndTemporary(const TypeExpectation &expectation, Ty
                     break;
                 case StorageType::Box:
                     rtype.unbox();
-                    location.write({ INS_UNBOX, EmojicodeInstruction(rtype.size()) });
+                    if (rtype.remotelyStored()) {
+                        location.write({ INS_UNBOX_REMOTE, static_cast<EmojicodeInstruction>(rtype.size()) });
+                    }
+                    else {
+                        location.write({ INS_UNBOX, static_cast<EmojicodeInstruction>(rtype.size()) });
+                    }
                     break;
             }
             break;
@@ -290,7 +311,7 @@ void FunctionPAG::writeBoxingAndTemporary(const TypeExpectation &expectation, Ty
     }
     else if (rtype.isReference() && !expectation.isReference()) {
         rtype.setReference(false);
-        insertionPoint.insert({ INS_COPY_REFERENCE, EmojicodeInstruction(rtype.size()) });
+        insertionPoint.insert({ INS_COPY_REFERENCE, static_cast<EmojicodeInstruction>(rtype.size()) });
     }
 }
 
@@ -1049,7 +1070,7 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
                      && isStatic(pair.second)) {
                 assert(originalType.storageType() == StorageType::Box);
                 placeholder.write(INS_CAST_TO_VALUE_TYPE);
-                writer_.writeInstruction(type.valueType()->boxIdentifier());
+                writer_.writeInstruction(type.boxIdentifier());
                 type.forceBox();
             }
             else {

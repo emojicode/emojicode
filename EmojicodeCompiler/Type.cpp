@@ -429,7 +429,7 @@ EmojicodeInstruction Type::boxIdentifier() const {
         case TypeContent::StorageExpectation:
             throw std::logic_error("Box identifier for StorageExpectation");
     }
-    return meta() ? (value | META_MASK) : value;
+    return remotelyStored() ? value | REMOTE_MASK : value;
 }
 
 bool Type::requiresBox() const {
@@ -508,7 +508,7 @@ void Type::objectVariableRecords(int index, std::vector<T> &information, Us... a
         case TypeContent::Something:
         case TypeContent::GenericVariable:
         case TypeContent::LocalGenericVariable:
-        case TypeContent::Error:
+        case TypeContent::Error:  // Is or may be an object pointer
             switch (storageType()) {
                 case StorageType::SimpleOptional:
                     information.push_back(T(index + 1, index, ObjectVariableType::Condition, args...));

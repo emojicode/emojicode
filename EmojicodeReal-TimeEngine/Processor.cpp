@@ -227,6 +227,46 @@ void produce(Thread *thread, Value *destination) {
             std::memcpy(destination, &box.value1, size * sizeof(Value));
             return;
         }
+        case INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE_REMOTE: {
+            Box box;
+            EmojicodeInstruction size = thread->consumeInstruction();
+            produce(thread, &box.type);
+            if (box.type.raw != T_NOTHINGNESS) {
+                destination->raw = T_OPTIONAL_VALUE;
+                std::memcpy(destination + 1, static_cast<Value *>(box.value1.object->value), size * sizeof(Value));
+            }
+            else {
+                destination->raw = T_NOTHINGNESS;
+            }
+            return;
+        }
+        case INS_SIMPLE_OPTIONAL_TO_BOX_REMOTE: {
+            EmojicodeInstruction typeId = thread->consumeInstruction();
+            auto size = thread->consumeInstruction();
+            destination[1].object = newArray((size + 1) * sizeof(Value));
+            auto value = static_cast<Value *>(destination[1].object->value);
+            produce(thread, value);
+            if (value->raw != T_NOTHINGNESS) {
+                destination->raw = typeId;
+                std::memmove(value, value + 1, size * sizeof(Value));
+            }
+            else {
+                destination->raw = T_NOTHINGNESS;
+            }
+            return;
+        }
+        case INS_BOX_PRODUCE_REMOTE:
+            destination->raw = thread->consumeInstruction();
+            destination[1].object = newArray(thread->consumeInstruction() * sizeof(Value));
+            produce(thread, static_cast<Value *>(destination[1].object->value));
+            return;
+        case INS_UNBOX_REMOTE: {
+            Box box;
+            EmojicodeInstruction size = thread->consumeInstruction();
+            produce(thread, &box.type);
+            std::memcpy(destination, static_cast<Value *>(box.value1.object->value), size * sizeof(Value));
+            return;
+        }
         case INS_GET_VT_REFERENCE_STACK:
             destination->value = thread->variableDestination(thread->consumeInstruction());
             return;
