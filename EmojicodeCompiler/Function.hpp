@@ -9,12 +9,14 @@
 #ifndef Function_hpp
 #define Function_hpp
 
+#include "CompilerError.hpp"
 #include "Token.hpp"
 #include "TokenStream.hpp"
 #include "Type.hpp"
 #include "FunctionPAGMode.hpp"
 #include "CallableWriter.hpp"
 #include "Class.hpp"
+#include <algorithm>
 #include <queue>
 #include <map>
 #include <vector>
@@ -231,7 +233,13 @@ public:
         }
         return type;
     }
-    void addArgumentToVariable(const EmojicodeString &string) { argumentsToVariables_.push_back(string); }
+    void addArgumentToVariable(const EmojicodeString &string, const SourcePosition &p) {
+        auto find = std::find(argumentsToVariables_.begin(), argumentsToVariables_.end(), string);
+        if (find != argumentsToVariables_.end()) {
+            throw CompilerError(p, "Instance variable initialized with 🍼 more than once.");
+        }
+        argumentsToVariables_.push_back(string);
+    }
     const std::vector<EmojicodeString>& argumentsToVariables() const { return argumentsToVariables_; }
 private:
     bool required_;

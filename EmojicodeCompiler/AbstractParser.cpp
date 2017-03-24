@@ -220,7 +220,7 @@ void AbstractParser::parseArgumentList(Function *function, const TypeContext &ty
         function->arguments.push_back(Argument(variableToken.value(), type));
 
         if (argumentToVariable) {
-            static_cast<Initializer *>(function)->addArgumentToVariable(variableToken.value());
+            static_cast<Initializer *>(function)->addArgumentToVariable(variableToken.value(), variableToken.position());
         }
     }
 
