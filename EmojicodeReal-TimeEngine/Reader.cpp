@@ -302,13 +302,13 @@ Function* readBytecode(FILE *in) {
     stringPool = new Object*[stringPoolCount];
     for (int i = 0; i < stringPoolCount; i++) {
         Object *o = newObject(CL_STRING);
-        String *string = static_cast<String *>(o->value);
+        String *string = o->val<String>();
 
         string->length = readUInt16(in);
-        string->characters = newArray(string->length * sizeof(EmojicodeChar));
+        string->charactersObject = newArray(string->length * sizeof(EmojicodeChar));
 
         for (int j = 0; j < string->length; j++) {
-            ((EmojicodeChar*)string->characters->value)[j] = readEmojicodeChar(in);
+            string->characters()[j] = readEmojicodeChar(in);
         }
 
         stringPool[i] = o;

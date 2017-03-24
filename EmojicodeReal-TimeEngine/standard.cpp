@@ -70,11 +70,11 @@ static void systemTime(Thread *thread, Value *destination) {
 static void systemArgs(Thread *thread, Value *destination) {
     Object *const &listObject = thread->retain(newObject(CL_LIST));
 
-    List *newList = static_cast<List *>(listObject->value);
+    List *newList = listObject->val<List>();
     newList->capacity = cliArgumentCount;
     Object *items = newArray(sizeof(Value) * cliArgumentCount);
 
-    static_cast<List *>(listObject->value)->items = items;
+    listObject->val<List>()->items = items;
 
     for (int i = 0; i < cliArgumentCount; i++) {
         listAppendDestination(listObject, thread)->copySingleValue(T_OBJECT, stringFromChar(cliArguments[i]));
@@ -96,8 +96,8 @@ static void systemSystem(Thread *thread, Value *destination) {
     int bufferSize = 50;
     Object *buffer = newArray(bufferSize);
 
-    while (fgets((char *)buffer->value + bufferUsedSize, bufferSize - (int)bufferUsedSize, f) != nullptr) {
-        bufferUsedSize = strlen(static_cast<char *>(buffer->value));
+    while (fgets(buffer->val<char>() + bufferUsedSize, bufferSize - (int)bufferUsedSize, f) != nullptr) {
+        bufferUsedSize = strlen(buffer->val<char>());
 
         if (bufferSize - bufferUsedSize < 2) {
             bufferSize *= 2;
@@ -105,19 +105,19 @@ static void systemSystem(Thread *thread, Value *destination) {
         }
     }
 
-    bufferUsedSize = strlen(static_cast<char *>(buffer->value));
+    bufferUsedSize = strlen(buffer->val<char>());
 
-    EmojicodeInteger len = u8_strlen_l(static_cast<char *>(buffer->value), bufferUsedSize);
+    EmojicodeInteger len = u8_strlen_l(buffer->val<char>(), bufferUsedSize);
 
     Object *const &so = thread->retain(newObject(CL_STRING));
-    String *string = static_cast<String *>(so->value);
+    String *string = so->val<String>();
     string->length = len;
 
     Object *chars = newArray(len * sizeof(EmojicodeChar));
-    string = static_cast<String *>(so->value);
-    string->characters = chars;
+    string = so->val<String>();
+    string->charactersObject = chars;
 
-    u8_toucs(characters(string), len, static_cast<char *>(buffer->value), bufferUsedSize);
+    u8_toucs(string->characters(), len, buffer->val<char>(), bufferUsedSize);
     thread->release(1);
     destination->object = so;
 }
@@ -126,7 +126,7 @@ static void systemSystem(Thread *thread, Value *destination) {
 
 static void threadJoin(Thread *thread, Value *destination) {
     allowGC();
-    auto cthread = static_cast<std::thread *>(thread->getThisObject()->value);
+    auto cthread = thread->getThisObject()->val<std::thread>();
     cthread->join();  // TODO: GC?!
     disallowGCAndPauseIfNeeded();
 }
@@ -141,17 +141,17 @@ void threadStart(Object *callable) {
 }
 
 static void initThread(Thread *thread, Value *destination) {
-    *static_cast<std::thread *>(thread->getThisObject()->value) = std::thread(threadStart, thread->getVariable(0).object);
+    *thread->getThisObject()->val<std::thread>() = std::thread(threadStart, thread->getVariable(0).object);
     *destination = thread->getThisContext();
 }
 
 static void initMutex(Thread *thread, Value *destination) {
-    pthread_mutex_init(static_cast<pthread_mutex_t*>(thread->getThisObject()->value), nullptr);
+    pthread_mutex_init(thread->getThisObject()->val<pthread_mutex_t>(), nullptr);
     *destination = thread->getThisContext();
 }
 
 static void mutexLock(Thread *thread, Value *destination) {
-    while (pthread_mutex_trylock(static_cast<pthread_mutex_t*>(thread->getThisObject()->value)) != 0) {
+    while (pthread_mutex_trylock(thread->getThisObject()->val<pthread_mutex_t>()) != 0) {
         // TODO: Obviously stupid, but this is the only safe way. If pthread_mutex_lock was used,
         // the thread would be block, and the GC could cause a deadlock. allowGC, however, would
         // allow moving this mutex – obviously not a good idea either when using pthread_mutex_lock.
@@ -161,18 +161,18 @@ static void mutexLock(Thread *thread, Value *destination) {
 }
 
 static void mutexUnlock(Thread *thread, Value *destination) {
-    pthread_mutex_unlock(static_cast<pthread_mutex_t*>(thread->getThisObject()->value));
+    pthread_mutex_unlock(thread->getThisObject()->val<pthread_mutex_t>());
 }
 
 static void mutexTryLock(Thread *thread, Value *destination) {
-    destination->raw = pthread_mutex_trylock(static_cast<pthread_mutex_t*>(thread->getThisObject()->value)) == 0;
+    destination->raw = pthread_mutex_trylock(thread->getThisObject()->val<pthread_mutex_t>()) == 0;
 }
 
 // MARK: Data
 
 static void dataEqual(Thread *thread, Value *destination) {
-    Data *d = static_cast<Data *>(thread->getThisObject()->value);
-    Data *b = static_cast<Data *>(thread->getVariable(0).object->value);
+    Data *d = thread->getThisObject()->val<Data>();
+    Data *b = thread->getVariable(0).object->val<Data>();
 
     if (d->length != b->length) {
         destination->raw = 0;
@@ -183,20 +183,19 @@ static void dataEqual(Thread *thread, Value *destination) {
 }
 
 static void dataSize(Thread *thread, Value *destination) {
-    Data *d = static_cast<Data *>(thread->getThisObject()->value);
-    destination->raw = d->length;
+    destination->raw = thread->getThisObject()->val<Data>()->length;
 }
 
 static void dataMark(Object *o) {
-    Data *d = static_cast<Data *>(o->value);
+    Data *d = o->val<Data>();
     if (d->bytesObject) {
         mark(&d->bytesObject);
-        d->bytes = static_cast<char *>(d->bytesObject->value);
+        d->bytes = d->bytesObject->val<char>();
     }
 }
 
 static void dataGetByte(Thread *thread, Value *destination) {
-    Data *d = static_cast<Data *>(thread->getThisObject()->value);
+    Data *d = thread->getThisObject()->val<Data>();
 
     EmojicodeInteger index = thread->getVariable(0).raw;
     if (index < 0) {
@@ -211,7 +210,7 @@ static void dataGetByte(Thread *thread, Value *destination) {
 }
 
 static void dataToString(Thread *thread, Value *destination) {
-    Data *data = static_cast<Data *>(thread->getThisObject()->value);
+    Data *data = thread->getThisObject()->val<Data>();
     if (!u8_isvalid(data->bytes, data->length)) {
         destination->makeNothingness();
         return;
@@ -221,18 +220,18 @@ static void dataToString(Thread *thread, Value *destination) {
     Object *const &characters = thread->retain(newArray(len * sizeof(EmojicodeChar)));
 
     Object *sto = newObject(CL_STRING);
-    String *string = static_cast<String *>(sto->value);
+    String *string = sto->val<String>();
     string->length = len;
-    string->characters = characters;
+    string->charactersObject = characters;
     thread->release(1);
-    u8_toucs(characters(string), len, data->bytes, data->length);
+    u8_toucs(string->characters(), len, data->bytes, data->length);
     destination->optionalSet(sto);
 }
 
 static void dataSlice(Thread *thread, Value *destination) {
     Object *ooData = newObject(CL_DATA);
-    Data *oData = static_cast<Data *>(ooData->value);
-    Data *data = static_cast<Data *>(thread->getThisObject()->value);
+    Data *oData = ooData->val<Data>();
+    Data *data = thread->getThisObject()->val<Data>();
 
     EmojicodeInteger from = thread->getVariable(0).raw;
     if (from >= data->length) {
@@ -252,8 +251,8 @@ static void dataSlice(Thread *thread, Value *destination) {
 }
 
 static void dataIndexOf(Thread *thread, Value *destination) {
-    Data *data = static_cast<Data *>(thread->getThisObject()->value);
-    Data *search = static_cast<Data *>(thread->getVariable(0).object->value);
+    Data *data = thread->getThisObject()->val<Data>();
+    Data *search = thread->getVariable(0).object->val<Data>();
     auto last = data->bytes + data->length;
     const void *location = std::search(data->bytes, last, search->bytes, search->bytes + search->length);
     if (location == last) {
@@ -265,22 +264,22 @@ static void dataIndexOf(Thread *thread, Value *destination) {
 }
 
 static void dataByAppendingData(Thread *thread, Value *destination) {
-    Data *data = static_cast<Data *>(thread->getThisObject()->value);
-    Data *b = static_cast<Data *>(thread->getVariable(0).object->value);
+    Data *data = thread->getThisObject()->val<Data>();
+    Data *b = thread->getVariable(0).object->val<Data>();
 
     size_t size = data->length + b->length;
     Object *const &newBytes = thread->retain(newArray(size));
 
-    b = static_cast<Data *>(thread->getVariable(0).object->value);
-    data = static_cast<Data *>(thread->getThisObject()->value);
+    b = thread->getVariable(0).object->val<Data>();
+    data = thread->getThisObject()->val<Data>();
 
-    memcpy(newBytes->value, data->bytes, data->length);
-    memcpy(static_cast<Byte *>(newBytes->value) + data->length, b->bytes, b->length);
+    std::memcpy(newBytes->val<char>(), data->bytes, data->length);
+    std::memcpy(newBytes->val<char>() + data->length, b->bytes, b->length);
 
     Object *ooData = newObject(CL_DATA);
-    Data *oData = static_cast<Data *>(ooData->value);
+    Data *oData = ooData->val<Data>();
     oData->bytesObject = newBytes;
-    oData->bytes = static_cast<char *>(oData->bytesObject->value);
+    oData->bytes = oData->bytesObject->val<char>();
     oData->length = size;
     thread->release(1);
     destination->object = ooData;
@@ -299,11 +298,11 @@ void integerToString(Thread *thread, Value *destination) {
     Object *const &co = thread->retain(newArray(d * sizeof(EmojicodeChar)));
 
     Object *stringObject = newObject(CL_STRING);
-    String *string = static_cast<String *>(stringObject->value);
+    String *string = stringObject->val<String>();
     string->length = d;
-    string->characters = co;
+    string->charactersObject = co;
 
-    EmojicodeChar *characters = characters(string) + d;
+    EmojicodeChar *characters = string->characters() + d;
     do
         *--characters =  "0123456789abcdefghijklmnopqrstuvxyz"[a % base % 35];
     while (a /= base);
@@ -324,11 +323,11 @@ static void integerAbsolute(Thread *thread, Value *destination) {
 static void symbolToString(Thread *thread, Value *destination) {
     Object *co = thread->retain(newArray(sizeof(EmojicodeChar)));
     Object *stringObject = newObject(CL_STRING);
-    String *string = static_cast<String *>(stringObject->value);
+    String *string = stringObject->val<String>();
     string->length = 1;
-    string->characters = co;
+    string->charactersObject = co;
     thread->release(1);
-    ((EmojicodeChar *)string->characters->value)[0] = thread->getThisContext().value->character;
+    string->characters()[0] = thread->getThisContext().value->character;
     destination->object = stringObject;
 }
 
@@ -356,11 +355,11 @@ static void doubleToString(Thread *thread, Value *destination) {
 
     Object *const &co = thread->retain(newArray(length * sizeof(EmojicodeChar)));
     Object *stringObject = newObject(CL_STRING);
-    String *string = static_cast<String *>(stringObject->value);
+    String *string = stringObject->val<String>();
     string->length = length;
-    string->characters = co;
+    string->charactersObject = co;
     thread->release(1);
-    EmojicodeChar *characters = characters(string) + length;
+    EmojicodeChar *characters = string->characters() + length;
 
     for (size_t i = precision; i > 0; i--) {
         *--characters =  (unsigned char) (fmod(absD * pow(10, i), 10.0)) % 10 + '0';

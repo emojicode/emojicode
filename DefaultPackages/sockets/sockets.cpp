@@ -55,12 +55,12 @@ void serverInitWithPort(Thread *thread, Value *destination) {
         return;
     }
     
-    *(int *)thread->getThisObject()->value = listenerDescriptor;
+    *thread->getThisObject()->val<int>() = listenerDescriptor;
     destination->setValueForError(thread->getThisObject());
 }
 
 void serverAccept(Thread *thread, Value *destination) {
-    int listenerDescriptor = *(int *)thread->getThisObject()->value;
+    int listenerDescriptor = *thread->getThisObject()->val<int>();
     struct sockaddr_storage clientAddress;
     unsigned int addressSize = sizeof(clientAddress);
     int connectionAddress = accept(listenerDescriptor, (struct sockaddr *)&clientAddress, &addressSize);
@@ -71,27 +71,27 @@ void serverAccept(Thread *thread, Value *destination) {
     }
     
     Emojicode::Object *socket = newObject(CL_SOCKET);
-    *(int *)socket->value = connectionAddress;
+    *socket->val<int>() = connectionAddress;
     destination->optionalSet(socket);
 }
 
 void socketSendData(Thread *thread, Value *destination) {
-    int connectionAddress = *(int *)thread->getThisObject()->value;
-    Data *data = static_cast<Data *>(thread->getVariable(0).object->value);
+    int connectionAddress = *thread->getThisObject()->val<int>();
+    Data *data = thread->getVariable(0).object->val<Data>();
     destination->raw = send(connectionAddress, data->bytes, data->length, 0) == -1;
 }
 
 void socketClose(Thread *thread, Value *destination) {
-    int connectionAddress = *(int *)thread->getThisObject()->value;
+    int connectionAddress = *thread->getThisObject()->val<int>();
     close(connectionAddress);
 }
 
 void socketReadBytes(Thread *thread, Value *destination) {
-    int connectionAddress = *(int *)thread->getThisObject()->value;
+    int connectionAddress = *thread->getThisObject()->val<int>();
     Emojicode::EmojicodeInteger n = thread->getVariable(0).raw;
     
     Emojicode::Object *const &bytesObject = thread->retain(Emojicode::newArray(n));
-    size_t read = recv(connectionAddress, bytesObject->value, n, 0);
+    size_t read = recv(connectionAddress, bytesObject->val<char>(), n, 0);
     
     if (read < 1) {
         thread->release(1);
@@ -100,10 +100,10 @@ void socketReadBytes(Thread *thread, Value *destination) {
     }
     
     Emojicode::Object *obj = newObject(Emojicode::CL_DATA);
-    Data *data = static_cast<Data *>(obj->value);
+    Data *data = obj->val<Data>();
     data->length = read;
     data->bytesObject = bytesObject;
-    data->bytes = static_cast<char *>(data->bytesObject->value);
+    data->bytes = data->bytesObject->val<char>();
 
     thread->release(1);
     destination->optionalSet(obj);
@@ -127,7 +127,7 @@ void socketInitWithHost(Thread *thread, Value *destination) {
         destination->storeError(errnoToError());
         return;
     }
-    *(int *)thread->getThisObject()->value = socketDescriptor;
+    *thread->getThisObject()->val<int>() = socketDescriptor;
     destination->setValueForError(thread->getThisObject());
 }
 

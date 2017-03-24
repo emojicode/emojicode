@@ -24,7 +24,7 @@ struct List {
      */
     Object *items;
 
-    Box* elements() const { return static_cast<Box *>(items->value); }
+    Box* elements() const { return items->val<Box>(); }
 };
 
 /// Prepares the list for a new element to be added to the end and returns a pointer to where the new element should be

@@ -139,7 +139,7 @@ void fileDataPut(Thread *thread, Value *destination) {
         return;
     }
 
-    Data *d = static_cast<Data *>(thread->getVariable(1).object->value);
+    Data *d = thread->getVariable(1).object->val<Data>();
 
     fwrite(d->bytes, 1, d->length, file);
 
@@ -160,7 +160,7 @@ void fileDataGet(Thread *thread, Value *destination) {
     state = fseek(file, 0, SEEK_SET);
 
     Emojicode::Object *const &bytesObject = thread->retain(Emojicode::newArray(length));
-    fread(bytesObject->value, 1, length, file);
+    fread(bytesObject->val<char>(), 1, length, file);
     if (ferror(file)) {
         fclose(file);
         thread->release(1);
@@ -170,16 +170,16 @@ void fileDataGet(Thread *thread, Value *destination) {
     fclose(file);
 
     Emojicode::Object *obj = Emojicode::newObject(Emojicode::CL_DATA);
-    Data *data = static_cast<Data *>(obj->value);
+    Data *data = obj->val<Data>();
     data->length = length;
     data->bytesObject = bytesObject;
-    data->bytes = static_cast<char *>(bytesObject->value);
+    data->bytes = bytesObject->val<char>();
 
     thread->release(1);
     destination->setValueForError(obj);
 }
 
-#define file(obj) (*((FILE**)(obj)->value))
+#define file(obj) (*(obj)->val<FILE*>())
 
 void fileStdinGet(Thread *thread, Value *destination) {
     Emojicode::Object *obj = newObject(thread->getThisContext().klass);
@@ -222,7 +222,7 @@ void fileForReading(Thread *thread, Value *destination) {
 
 void fileWriteData(Thread *thread, Value *destination) {
     FILE *f = file(thread->getThisObject());
-    Data *d = static_cast<Data *>(thread->getVariable(0).object->value);
+    Data *d = thread->getVariable(0).object->val<Data>();
 
     fwrite(d->bytes, 1, d->length, f);
     nothingnessOrErrorEnum(ferror(f) == 0, destination);
@@ -233,7 +233,7 @@ void fileReadData(Thread *thread, Value *destination) {
     Emojicode::EmojicodeInteger n = thread->getVariable(0).raw;
 
     Emojicode::Object *const &bytesObject = thread->retain(Emojicode::newArray(n));
-    fread(bytesObject->value, 1, n, f);
+    fread(bytesObject->val<char>(), 1, n, f);
     if (ferror(f) != 0) {
         destination->storeError(errnoToError());
         thread->release(1);
@@ -241,10 +241,10 @@ void fileReadData(Thread *thread, Value *destination) {
     }
 
     Emojicode::Object *obj = Emojicode::newObject(Emojicode::CL_DATA);
-    Data *data = static_cast<Data *>(obj->value);
+    Data *data = obj->val<Data>();
     data->length = n;
     data->bytesObject = bytesObject;
-    data->bytes = static_cast<char *>(bytesObject->value);
+    data->bytes = bytesObject->val<char>();
 
     destination->setValueForError(obj);
     thread->release(1);

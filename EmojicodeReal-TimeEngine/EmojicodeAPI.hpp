@@ -59,12 +59,11 @@ struct Object {
     };
     /** The size of this object: the size of the Object struct and the value area. */
     size_t size;
-    /**
-     * A pointer to the allocated @c value area. This area is as large as specified in the class.
-     * @warning Never change the content of this variable as the Garbage Collector updates this field
-     * in each cycle.
-     */
-    void *value;
+
+    template <typename T>
+    inline T* val() {
+        return reinterpret_cast<T*>(this + 1);
+    }
 
     inline Value* variableDestination(EmojicodeInstruction index) {
         return reinterpret_cast<Value *>(reinterpret_cast<Byte *>(this) + sizeof(Object) + sizeof(Value) * index);

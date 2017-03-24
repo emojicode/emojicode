@@ -35,7 +35,7 @@ std::mutex allocationMutex;
 std::condition_variable pauseThreadsCondition;
 std::condition_variable pausingThreadsCountCondition;
 
-Object* emojicodeMalloc(size_t size) {
+Object* allocateObject(size_t size) {
     // We must obtain this mutex lock first to avoid a race condition on pauseThreads
     std::unique_lock<std::mutex> lock(allocationMutex);
     pauseForGC();
@@ -51,7 +51,7 @@ Object* emojicodeMalloc(size_t size) {
     return reinterpret_cast<Object *>(block);
 }
 
-Object* emojicodeRealloc(Object *ptr, size_t oldSize, size_t newSize) {
+Object* resizeObject(Object *ptr, size_t oldSize, size_t newSize) {
     // We must obtain this mutex lock first to avoid a race condition on pauseThreads
     std::unique_lock<std::mutex> lock(allocationMutex);
     pauseForGC();
@@ -61,23 +61,17 @@ Object* emojicodeRealloc(Object *ptr, size_t oldSize, size_t newSize) {
         return ptr;
     }
     lock.unlock();
-    Object *block = emojicodeMalloc(newSize);
+    Object *block = allocateObject(newSize);
     std::memcpy(block, ptr, oldSize);
     return block;
 }
 
-static Object* newObjectWithSizeInternal(Class *klass, size_t size) {
-    size_t fullSize = sizeof(Object) + size;
-    Object *object = emojicodeMalloc(fullSize);
+Object* newObject(Class *klass) {
+    size_t fullSize = sizeof(Object) + klass->size;
+    Object *object = allocateObject(fullSize);
     object->size = fullSize;
     object->klass = klass;
-    object->value = ((Byte *)object) + sizeof(Object) + (klass->size - klass->valueSize);
-
     return object;
-}
-
-Object* newObject(Class *klass) {
-    return newObjectWithSizeInternal(klass, klass->size);
 }
 
 size_t sizeCalculationWithOverflowProtection(size_t items, size_t itemSize) {
@@ -91,19 +85,16 @@ size_t sizeCalculationWithOverflowProtection(size_t items, size_t itemSize) {
 
 Object* newArray(size_t size) {
     size_t fullSize = sizeof(Object) + size;
-    Object *object = emojicodeMalloc(fullSize);
+    Object *object = allocateObject(fullSize);
     object->size = fullSize;
     object->klass = CL_ARRAY;
-    object->value = ((Byte *)object) + sizeof(Object);
-
     return object;
 }
 
 Object* resizeArray(Object *array, size_t size) {
     size_t fullSize = sizeof(Object) + size;
-    Object *object = emojicodeRealloc(array, array->size, fullSize);
+    Object *object = resizeObject(array, array->size, fullSize);
     object->size = fullSize;
-    object->value = ((Byte *)object) + sizeof(Object);
     return object;
 }
 
@@ -115,7 +106,7 @@ void allocateHeap() {
     otherHeap = currentHeap + (heapSize / 2);
 }
 
-bool inNewHeap(Object *o) {
+inline bool inNewHeap(Object *o) {
     return currentHeap <= reinterpret_cast<Byte *>(o) && reinterpret_cast<Byte *>(o) < currentHeap + heapSize / 2;
 }
 
@@ -131,8 +122,6 @@ void mark(Object **oPointer) {
 
     std::memcpy(newObject, oldObject, oldObject->size);
 
-    newObject->value = reinterpret_cast<Byte *>(newObject) + sizeof(Object)
-                        + oldObject->klass->size - oldObject->klass->valueSize;
     oldObject->newLocation = newObject;
     *oPointer = newObject;
 }

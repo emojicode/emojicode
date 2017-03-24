@@ -15,15 +15,16 @@
 namespace Emojicode {
 
 struct String {
-    /** The number of code points in @c characters. Strings are not null terminated! */
+    /// The number of characters. Strings are not null terminated.
     EmojicodeInteger length;
-    /** The characters of this string. Strings are not null terminated! */
-    Object *characters;
+    /// The characters (Unicode Codepoints, @c EmojicodeChar) of this string.
+    Object *charactersObject;
+
+    EmojicodeChar* characters() { return charactersObject->val<EmojicodeChar>(); }
 };
 
 extern Object **stringPool;
 #define emptyString (stringPool[0])
-#define characters(string) ((EmojicodeChar*)(string)->characters->value)
 
 /** Compares if the value of @c a is equal to @c b. */
 bool stringEqual(String *a, String *b);

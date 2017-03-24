@@ -81,8 +81,8 @@ void loadCapture(Closure *c, Thread *thread) {
     if (c->captureCount == 0) {
         return;
     }
-    Value *cv = static_cast<Value *>(c->capturedVariables->value);
-    CaptureInformation *infop = static_cast<CaptureInformation *>(c->capturesInformation->value);
+    Value *cv = c->capturedVariables->val<Value>();
+    CaptureInformation *infop = c->capturesInformation->val<CaptureInformation>();
     for (unsigned int i = 0; i < c->captureCount; i++) {
         std::memcpy(thread->variableDestination(infop->destination), cv, infop->size * sizeof(Value));
         cv += infop->size;
@@ -91,7 +91,7 @@ void loadCapture(Closure *c, Thread *thread) {
 }
 
 void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Thread *thread, Value *destination) {
-    Closure *c = static_cast<Closure *>(callable->value);
+    Closure *c = callable->val<Closure>();
     if (c->function->native) {
         auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
                                        destination, nullptr);
@@ -233,7 +233,7 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, &box.type);
             if (box.type.raw != T_NOTHINGNESS) {
                 destination->raw = T_OPTIONAL_VALUE;
-                std::memcpy(destination + 1, static_cast<Value *>(box.value1.object->value), size * sizeof(Value));
+                std::memcpy(destination + 1, box.value1.object->val<Value>(), size * sizeof(Value));
             }
             else {
                 destination->raw = T_NOTHINGNESS;
@@ -244,7 +244,7 @@ void produce(Thread *thread, Value *destination) {
             EmojicodeInstruction typeId = thread->consumeInstruction();
             auto size = thread->consumeInstruction();
             destination[1].object = newArray((size + 1) * sizeof(Value));
-            auto value = static_cast<Value *>(destination[1].object->value);
+            auto value = destination[1].object->val<Value>();
             produce(thread, value);
             if (value->raw != T_NOTHINGNESS) {
                 destination->raw = typeId;
@@ -258,13 +258,13 @@ void produce(Thread *thread, Value *destination) {
         case INS_BOX_PRODUCE_REMOTE:
             destination->raw = thread->consumeInstruction();
             destination[1].object = newArray(thread->consumeInstruction() * sizeof(Value));
-            produce(thread, static_cast<Value *>(destination[1].object->value));
+            produce(thread, destination[1].object->val<Value>());
             return;
         case INS_UNBOX_REMOTE: {
             Box box;
             EmojicodeInstruction size = thread->consumeInstruction();
             produce(thread, &box.type);
-            std::memcpy(destination, static_cast<Value *>(box.value1.object->value), size * sizeof(Value));
+            std::memcpy(destination, box.value1.object->val<Value>(), size * sizeof(Value));
             return;
         }
         case INS_GET_VT_REFERENCE_STACK:
@@ -733,21 +733,21 @@ void produce(Thread *thread, Value *destination) {
             for (int i = 0; i < stringCount; i++) {
                 Value v;
                 produce(thread, &v);
-                String *string = static_cast<String *>(v.object->value);
+                String *string = v.object->val<String>();
                 if (bufferSize - length < string->length) {
                     bufferSize += static_cast<size_t>(string->length) - (bufferSize - length);
                     thread->release(1);
                     characters = std::ref(thread->retain(resizeArray(characters, bufferSize * sizeof(EmojicodeChar))));
                 }
-                EmojicodeChar *dest = static_cast<EmojicodeChar *>(characters.get()->value) + length;
-                std::memcpy(dest, string->characters->value, string->length * sizeof(EmojicodeChar));
+                EmojicodeChar *dest = characters.get()->val<EmojicodeChar>() + length;
+                std::memcpy(dest, string->characters(), string->length * sizeof(EmojicodeChar));
                 length += string->length;
             }
 
             Object *object = newObject(CL_STRING);
-            String *string = static_cast<String *>(object->value);
+            String *string = object->val<String>();
             string->length = length;
-            string->characters = characters;
+            string->charactersObject = characters;
 
             destination->object = object;
             thread->release(1);
@@ -864,11 +864,11 @@ void produce(Thread *thread, Value *destination) {
 
             EmojicodeInstruction listObjectVariable = thread->consumeInstruction();
             *thread->variableDestination(listObjectVariable) = losm;
-            List *list = static_cast<List *>(losm.object->value);
+            List *list = losm.object->val<List>();
 
             EmojicodeInstruction *begin = thread->currentStackFrame()->executionPointer;
 
-            for (size_t i = 0; i < (list = static_cast<List *>(thread->getVariable(listObjectVariable).object->value))->count; i++) {
+            for (size_t i = 0; i < (list = thread->getVariable(listObjectVariable).object->val<List>())->count; i++) {
                 list->elements()[i].copyTo(thread->variableDestination(variable));
                 reinterpret_cast<Box *>(thread->variableDestination(variable))->unwrapOptional();
 
@@ -900,7 +900,7 @@ void produce(Thread *thread, Value *destination) {
             Value sth;
             produce(thread, &sth);
 
-            Closure *c = static_cast<Closure *>(sth.object->value);
+            Closure *c = sth.object->val<Closure>();
             if (c->function->native) {
                 thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
                                   destination, nullptr);
@@ -919,21 +919,21 @@ void produce(Thread *thread, Value *destination) {
         case INS_CLOSURE: {
             Object *const &closure = thread->retain(newObject(CL_CLOSURE));
 
-            Closure *c = static_cast<Closure *>(closure->value);
+            Closure *c = closure->val<Closure>();
 
             c->function = functionTable[thread->consumeInstruction()];
             c->captureCount = thread->consumeInstruction();
             EmojicodeInteger size = thread->consumeInstruction();
 
             Object *captures = newArray(sizeof(Value) * size);
-            c = static_cast<Closure *>(closure->value);
+            c = closure->val<Closure>();
             c->capturedVariables = captures;
             Object *infoo = newArray(sizeof(CaptureInformation) * c->captureCount);
-            c = static_cast<Closure *>(closure->value);
+            c = closure->val<Closure>();
             c->capturesInformation = infoo;
 
-            Value *t = static_cast<Value *>(c->capturedVariables->value);
-            CaptureInformation *info = static_cast<CaptureInformation *>(c->capturesInformation->value);
+            Value *t = c->capturedVariables->val<Value>();
+            CaptureInformation *info = c->capturesInformation->val<CaptureInformation>();
             for (unsigned int i = 0; i < c->captureCount; i++) {
                 EmojicodeInstruction index = thread->consumeInstruction();
                 EmojicodeInstruction size = thread->consumeInstruction();
@@ -954,7 +954,7 @@ void produce(Thread *thread, Value *destination) {
         case INS_CLOSURE_BOX: {
             Object *closure = newObject(CL_CLOSURE);
 
-            Closure *c = static_cast<Closure *>(closure->value);
+            Closure *c = closure->val<Closure>();
 
             c->function = functionTable[thread->consumeInstruction()];
             produce(thread, &c->thisContext);
@@ -967,7 +967,7 @@ void produce(Thread *thread, Value *destination) {
             Object *const &callee = thread->retain(sth.object);
 
             Object *closureObject = newObject(CL_CLOSURE);
-            Closure *closure = static_cast<Closure *>(closureObject->value);
+            Closure *closure = closureObject->val<Closure>();
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             closure->function = callee->klass->methodsVtable[vti];
@@ -981,7 +981,7 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, &sth);
 
             Object *closureObject = newObject(CL_CLOSURE);
-            Closure *closure = static_cast<Closure *>(closureObject->value);
+            Closure *closure = closureObject->val<Closure>();
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             closure->function = sth.klass->methodsVtable[vti];
@@ -994,7 +994,7 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, &sth);
 
             Object *closureObject = newObject(CL_CLOSURE);
-            Closure *closure = static_cast<Closure *>(closureObject->value);
+            Closure *closure = closureObject->val<Closure>();
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             closure->function = functionTable[vti];

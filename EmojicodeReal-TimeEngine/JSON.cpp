@@ -54,7 +54,7 @@ struct JSONStackFrame {
 #define jsonMaxDepth 256
 
 void parseJSON(Thread *thread, Box *destination) {
-    const size_t length = ((String*)thread->getThisObject()->value)->length;
+    const size_t length = thread->getThisObject()->val<String>()->length;
     JSONStackFrame stack[jsonMaxDepth];
     JSONStackFrame *stackLimit = stack + jsonMaxDepth - 1;
     JSONStackFrame *stackCurrent = stack;
@@ -71,7 +71,7 @@ void parseJSON(Thread *thread, Box *destination) {
             errorExit();
         }
 
-        c = characters((String *)thread->getThisObject()->value)[i++];
+        c = thread->getThisObject()->val<String>()->characters()[i++];
 
         switch (stackCurrent->state) {
             case JSON_STRING:
@@ -81,8 +81,7 @@ void parseJSON(Thread *thread, Box *destination) {
                         continue;
                     case '"': {
                         auto &stringObject = thread->retain(newObject(CL_STRING));
-                        initStringFromSymbolList(static_cast<String *>(stringObject->value),
-                                                 static_cast<List *>((*stackCurrent->object)->value));
+                        initStringFromSymbolList(stringObject->val<String>(), (*stackCurrent->object)->val<List>());
                         thread->release(1);
                         backValue = Box(T_OBJECT, stringObject);
                         popTheStack();
@@ -106,7 +105,7 @@ void parseJSON(Thread *thread, Box *destination) {
                         appendEscape('r', '\r')
                         appendEscape('t', '\t')
                     case 'u': {
-                        EmojicodeChar *chars = characters((String *)thread->getThisObject()->value);
+                        EmojicodeChar *chars = thread->getThisObject()->val<String>()->characters();
                         EmojicodeInteger x = 0, high = 0;
                         while (true) {
                             for (size_t e = i + 4; i < e; i++) {
