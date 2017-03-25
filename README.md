@@ -1,4 +1,4 @@
-# Emojicode [![Build Status](https://travis-ci.org/emojicode/emojicode.svg?branch=master)](https://travis-ci.org/emojicode/emojicode) [![Join the chat at https://gitter.im/emojicode/emojicode](https://badges.gitter.im/emojicode/emojicode.svg)](https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Emojicode ![Codeship](https://app.codeship.com/projects/edbc3220-f394-0134-fad2-66135ababc06/status) [![Join the chat at https://gitter.im/emojicode/emojicode](https://badges.gitter.im/emojicode/emojicode.svg)](https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Emojicode is an open source, high-level, multi-paradigm
 programming language consisting of emojis. It features Object-Orientation, Optionals, Generics and Closures.
