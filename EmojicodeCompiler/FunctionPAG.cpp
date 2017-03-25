@@ -1054,6 +1054,9 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
 
                 if (originalType.type() == TypeContent::Someobject || originalType.type() == TypeContent::Class) {
                     placeholder.write(INS_DOWNCAST_TO_CLASS);
+                    if (originalType.optional()) {
+                        throw CompilerError(token.position(), "Downcast on classes with optionals not possible.");
+                    }
                     assert(originalType.storageType() == StorageType::Simple && originalType.size() == 1);
                 }
                 else {
