@@ -1478,6 +1478,9 @@ Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &exp
                     return writePrimitiveMethod(INS_REMAINDER_DOUBLE, Type::doubl(), Type::doubl());
             }
         }
+        else if (type.valueType() == VT_SYMBOL && token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE)) {
+            return writePrimitiveMethod(INS_EQUAL_SYMBOL, Type::boolean(), Type::symbol());
+        }
 
         if (token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE) && type.valueType()->isPrimitive()) {
             recompileWithSimple();

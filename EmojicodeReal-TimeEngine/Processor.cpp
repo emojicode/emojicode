@@ -380,6 +380,14 @@ void produce(Thread *thread, Value *destination) {
             destination->raw = a.raw == b.raw;
             return;
         }
+        case INS_EQUAL_SYMBOL: {
+            Value a;
+            Value b;
+            produce(thread, &a);
+            produce(thread, &b);
+            destination->raw = a.character == b.character;
+            return;
+        }
         case INS_SUBTRACT_INTEGER: {
             Value a;
             Value b;
