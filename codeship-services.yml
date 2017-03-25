@@ -1,0 +1,10 @@
+clang_test:
+  build:
+    image: emojicode
+    dockerfile: DockerfileClang
+  cached: true
+gcc_test:
+  build:
+    image: emojicodegcc
+    dockerfile: DockerfileGCC
+  cached: true

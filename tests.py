@@ -99,7 +99,7 @@ def compilation_test(name):
     completed = run([emojicode, binary_path], stdout=PIPE)
     exp_path = os.path.join(dist.source, "tests", "compilation", name + ".txt")
     output = completed.stdout.decode('utf-8')
-    if output != open(exp_path, "r").read():
+    if output != open(exp_path, "r", encoding='utf-8').read():
         print(output)
         fail_test(name)
 

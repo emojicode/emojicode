@@ -1,0 +1,12 @@
+FROM ubuntu:16.10
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y ninja-build python3 clang-3.9 cmake
+
+RUN mkdir /app
+WORKDIR /app
+
+COPY . ./
+
+ENV CC clang-3.9
+ENV CXX clang++-3.9
+ENV PYTHONIOENCODING utf8
