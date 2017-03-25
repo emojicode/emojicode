@@ -696,7 +696,7 @@ void produce(Thread *thread, Value *destination) {
         }
         case INS_OPT_DICTIONARY_LITERAL: {
             Object *const &dico = thread->retain(newObject(CL_DICTIONARY));
-            dictionaryInit(thread);
+            dictionaryInit(dico->val<EmojicodeDictionary>());
 
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
             while (thread->currentStackFrame()->executionPointer < end) {

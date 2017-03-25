@@ -75,7 +75,7 @@ void dictionaryMark(Object *dict);
 void initDictionaryBridge(Thread *thread, Value *destination);
 
 /** @warning GC-invoking */
-void dictionaryInit(Thread *thread);
+void dictionaryInit(EmojicodeDictionary *dict);
 
 void bridgeDictionarySet(Thread *thread, Value *destination);
 void bridgeDictionaryGet(Thread *thread, Value *destination);

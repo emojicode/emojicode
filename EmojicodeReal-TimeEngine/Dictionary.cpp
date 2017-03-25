@@ -283,8 +283,7 @@ size_t dictionaryClear(EmojicodeDictionary *dict) {
     return sizeBefore;
 }
 
-void dictionaryInit(Thread *thread) {
-    EmojicodeDictionary *dict = thread->getThisObject()->val<EmojicodeDictionary>();
+void dictionaryInit(EmojicodeDictionary *dict) {
     dict->loadFactor = DICTIONARY_DEFAULT_LOAD_FACTOR;
 }
 
@@ -373,7 +372,7 @@ void bridgeDictionarySize(Thread *thread, Value *destination) {
 }
 
 void initDictionaryBridge(Thread *thread, Value *destination) {
-    dictionaryInit(thread);
+    dictionaryInit(thread->getThisObject()->val<EmojicodeDictionary>());
     *destination = thread->getThisContext();
 }
 

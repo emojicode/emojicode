@@ -266,11 +266,8 @@ void parseJSON(Thread *thread, Box *destination) {
                     }
                     case '{': {
                         stackCurrent->state = JSON_OBJECT_KEY;
-                        thread->pushStack(newObject(CL_DICTIONARY), 1, 0, nullptr, nullptr, nullptr);
-                        dictionaryInit(thread);
-                        Object *o = thread->getThisObject();
-                        thread->popStack();
-                        stackCurrent->object = &thread->retain(o);
+                        stackCurrent->object = &thread->retain(newObject(CL_DICTIONARY));
+                        dictionaryInit((*stackCurrent->object)->val<EmojicodeDictionary>());
                         break;
                     }
                     case '[': {
