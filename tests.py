@@ -32,6 +32,7 @@ compilation_tests = [
     "downcastClass",
     "castAny",
     "protocolClass",
+    "protocolSubclass",
     "protocolValueType",
     "protocolEnum",
     "protocolGenericLayerClass",

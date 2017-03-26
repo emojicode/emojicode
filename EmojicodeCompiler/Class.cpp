@@ -12,6 +12,7 @@
 #include "Function.hpp"
 #include "Lexer.hpp"
 #include "TypeContext.hpp"
+#include <algorithm>
 #include <utility>
 #include <vector>
 #include <map>
@@ -83,9 +84,22 @@ void Class::handleRequiredInitializer(Initializer *init) {
 }
 
 void Class::finalize() {
+    Type classType = Type(this, false);
+
     if (superclass() != nullptr) {
         scoper_ = superclass()->scoper_;
         instanceScope().markInherited();
+        protocols_.reserve(superclass()->protocols().size());
+        for (auto &protocol : superclass()->protocols()) {
+            auto find = std::find_if(protocols_.begin(), protocols_.end(), [&classType, &protocol](const Type &a) {
+                return a.identicalTo(protocol, classType, nullptr);
+            });
+            if (find != protocols_.end()) {
+                throw CompilerError(position(), "Superclass already declared conformance to %s.",
+                                    protocol.toString(classType, true).c_str());
+            }
+            protocols_.emplace_back(protocol);
+        }
     }
 
     TypeDefinitionFunctional::finalize();
@@ -93,8 +107,6 @@ void Class::finalize() {
     if (instanceVariables().empty() && initializerList().empty()) {
         inheritsInitializers_ = true;
     }
-
-    Type classType = Type(this, false);
 
     if (superclass() != nullptr) {
         for (auto method : superclass()->methodList()) {
