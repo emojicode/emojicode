@@ -13,6 +13,18 @@
 
 class ScoperWithScope : public Scoper {
 public:
+    ScoperWithScope() {}
+    ScoperWithScope& operator=(ScoperWithScope &other) {
+        if (this != &other) {
+            Scoper::operator=(other);
+            scope_ = other.scope_;
+            scope_.setScoper(this);
+        }
+        return *this;
+    }
+    ScoperWithScope(ScoperWithScope &sws) : scope_(sws.scope_) {
+        scope_.setScoper(this);
+    }
     Scope& scope() { return scope_; }
 private:
     Scope scope_ = Scope(this);

@@ -65,6 +65,8 @@ public:
             pair.second.setInherited();
         }
     }
+
+    void setScoper(Scoper *scoper) { scoper_ = scoper; }
 private:
     std::map<EmojicodeString, Variable> map_;
     int size_ = 0;
