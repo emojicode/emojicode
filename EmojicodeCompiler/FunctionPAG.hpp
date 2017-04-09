@@ -93,8 +93,8 @@ private:
     
     /** Parses an identifier when occurring without context. */
     Type parseIdentifier(const Token &token, const TypeExpectation &expectation);
-    /** Parses the expression for an if statement. */
-    void parseIfExpression(const Token &token);
+    /// Parses a condition as used by if, while etc.
+    CallableWriter parseCondition(const Token &token, bool temporaryWriter);
     /**
      * Parses a function call. This method takes care of parsing all arguments as well as generic arguments and of
      * infering them if necessary.
@@ -148,7 +148,7 @@ private:
     void mutatingMethodCheck(Function *method, const Type &type, const TypeExpectation &expectation,
                              const SourcePosition &p);
     void checkAccessLevel(Function *function, const SourcePosition &p) const;
-    bool typeIsEnumerable(Type type, Type *elementType);
+    bool typeIsEnumerable(const Type &type, Type *elementType);
     void flowControlBlock(bool block = true, const std::function<void()> &bodyPredicate = nullptr);
 
     void generateBoxingLayer(BoxingLayer &layer);

@@ -20,56 +20,27 @@
 
 namespace Emojicode {
 
-static void passBlock(Thread *thread) {
-    thread->currentStackFrame()->executionPointer += thread->consumeInstruction();
-}
-
-static bool runBlock(Thread *thread) {
+inline void runFunctionPointerBlock(Thread *thread) {
     pauseForGC();
 
-    EmojicodeInstruction length = thread->consumeInstruction();  // Length of the block
-
-    EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + length;
-    while (thread->currentStackFrame()->executionPointer < end) {
+    while (thread->currentStackFrame()->executionPointer) {
         Box garbage;
         produce(thread, &garbage.type);
-
-        if (thread->currentStackFrame()->executionPointer == nullptr) {
-            return true;
-        }
     }
-
-    return false;
 }
 
-static void runFunctionPointerBlock(Thread *thread, uint32_t length) {
-    pauseForGC();
-
-    EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + length;
-    while (thread->currentStackFrame()->executionPointer < end) {
-        Box garbage;
-        produce(thread, &garbage.type);
-
-        if (thread->currentStackFrame()->executionPointer == nullptr) {
-            return;
-        }
-    }
-    return;
-}
-
-Class* readClass(Thread *thread) {
+inline Class* readClass(Thread *thread) {
     Value sth;
     produce(thread, &sth);
     return sth.klass;
 }
 
-static double readDouble(Thread *thread) {
+inline double readDouble(Thread *thread) {
     EmojicodeInteger scale = ((EmojicodeInteger)thread->consumeInstruction() << 32) ^ thread->consumeInstruction();
     EmojicodeInteger exp = thread->consumeInstruction();
 
     return ldexp(static_cast<double>(scale)/PORTABLE_INTLEAST64_MAX, static_cast<int>(exp));
 }
-
 
 void Box::unwrapOptional() const {
     if (isNothingness()) {
@@ -106,7 +77,7 @@ void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Threa
         std::memcpy(sf->variableDestination(0), args, argsSize);
         thread->pushReservedFrame();
         loadCapture(c, thread);
-        runFunctionPointerBlock(thread, c->function->block.instructionCount);
+        runFunctionPointerBlock(thread);
     }
     thread->popStack();
 }
@@ -119,7 +90,7 @@ void performFunction(Function *function, Value self, Thread *thread, Value *dest
     else {
         thread->pushStack(self, function->frameSize, function->argumentCount, function, destination,
                           function->block.instructions);
-        runFunctionPointerBlock(thread, function->block.instructionCount);
+        runFunctionPointerBlock(thread);
     }
     thread->popStack();
 }
@@ -816,94 +787,61 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, thread->currentStackFrame()->destination + 1);
             thread->currentStackFrame()->executionPointer = nullptr;
             return;
-        case INS_REPEAT_WHILE: {
-            EmojicodeInstruction *beginPosition = thread->currentStackFrame()->executionPointer;
-            Value sth;
-            while (produce(thread, &sth), sth.raw) {
-                if (runBlock(thread)) {
-                    return;
-                }
-                thread->currentStackFrame()->executionPointer = beginPosition;
-            }
-            passBlock(thread);
+        case INS_RETURN_WITHOUT_VALUE:
+            thread->currentStackFrame()->executionPointer = nullptr;
             return;
-        }
-        case INS_IF: {
-            EmojicodeInstruction length = thread->consumeInstruction();
-            EmojicodeInstruction *ifEnd = thread->currentStackFrame()->executionPointer + length;
-
+        case INS_JUMP_FORWARD:
+            thread->currentStackFrame()->executionPointer += thread->consumeInstruction();
+            return;
+        case INS_JUMP_FORWARD_IF: {
             Value sth;
             produce(thread, &sth);
-            if (sth.raw) {  // Main if
-                if (runBlock(thread)) {
-                    return;
-                }
-                thread->currentStackFrame()->executionPointer = ifEnd;
+            if (sth.raw) {
+                thread->currentStackFrame()->executionPointer += thread->consumeInstruction();
             }
             else {
-                passBlock(thread);
-
-                EmojicodeInstruction ins;
-                while ((ins = thread->consumeInstruction())) {
-                    if (ins == 1) {  // Else If
-                        produce(thread, &sth);
-                        if (sth.raw) {
-                            if (runBlock(thread)) {
-                                return;
-                            }
-                            thread->currentStackFrame()->executionPointer = ifEnd;
-                            return;
-                        }
-                        passBlock(thread);
-                    }
-                    else {  // Else
-                        runBlock(thread);
-                        return;
-                    }
-                }
+                thread->consumeInstruction();
             }
             return;
         }
-        case INS_OPT_FOR_IN_LIST: {
-            EmojicodeInstruction variable = thread->consumeInstruction();
-
-            Value losm;
-            produce(thread, &losm);
-
-            EmojicodeInstruction listObjectVariable = thread->consumeInstruction();
-            *thread->variableDestination(listObjectVariable) = losm;
-            List *list = losm.object->val<List>();
-
-            EmojicodeInstruction *begin = thread->currentStackFrame()->executionPointer;
-
-            for (size_t i = 0; i < (list = thread->getVariable(listObjectVariable).object->val<List>())->count; i++) {
-                list->elements()[i].copyTo(thread->variableDestination(variable));
-                reinterpret_cast<Box *>(thread->variableDestination(variable))->unwrapOptional();
-
-                if (runBlock(thread)) {
-                    return;
-                }
-                thread->currentStackFrame()->executionPointer = begin;
-            }
-            passBlock(thread);
-            return;
-        }
-        case INS_OPT_FOR_IN_RANGE: {
-            EmojicodeInstruction variable = thread->consumeInstruction();
+        case INS_JUMP_BACKWARD_IF: {
             Value sth;
             produce(thread, &sth);
-            EmojicodeInstruction *begin = thread->currentStackFrame()->executionPointer;
-            for (EmojicodeInteger i = sth.value[0].raw; i != sth.value[1].raw; i += sth.value[2].raw) {
-                thread->variableDestination(variable)->raw = i;
-
-                if (runBlock(thread)) {
-                    return;
-                }
-                thread->currentStackFrame()->executionPointer = begin;
+            if (sth.raw) {
+                auto a = thread->consumeInstruction();
+                thread->currentStackFrame()->executionPointer -= a;
             }
-            passBlock(thread);
+            else {
+                thread->consumeInstruction();
+            }
             return;
         }
+        case INS_JUMP_FORWARD_IF_NOT: {
+            Value sth;
+            produce(thread, &sth);
+            if (!sth.raw) {
+                thread->currentStackFrame()->executionPointer += thread->consumeInstruction();
+            }
+            else {
+                thread->consumeInstruction();
+            }
+            return;
+        }
+        case INS_JUMP_BACKWARD_IF_NOT: {
+            Value sth;
+            produce(thread, &sth);
+            if (!sth.raw) {
+                thread->currentStackFrame()->executionPointer -= thread->consumeInstruction();
+            }
+            else {
+                thread->consumeInstruction();
+            }
+            return;
+        }
+        case INS_OPT_FOR_IN_LIST:
+            error("INS_OPT_FOR_IN_LIST");
+        case INS_OPT_FOR_IN_RANGE:
+            error("INS_OPT_FOR_IN_RANGE");
         case INS_EXECUTE_CALLABLE: {
             Value sth;
             produce(thread, &sth);
@@ -919,7 +857,7 @@ void produce(Thread *thread, Value *destination) {
                 thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
                                   destination, c->function->block.instructions);
                 loadCapture(c, thread);
-                runFunctionPointerBlock(thread, c->function->block.instructionCount);
+                runFunctionPointerBlock(thread);
             }
             thread->popStack();
             return;

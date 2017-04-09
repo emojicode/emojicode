@@ -9,8 +9,9 @@
 #ifndef CallableWriter_h
 #define CallableWriter_h
 
-#include <vector>
 #include "EmojicodeCompiler.hpp"
+#include <stdexcept>
+#include <vector>
 
 class CallableWriter;
 class Writer;
@@ -75,6 +76,11 @@ public:
     virtual CallableWriterCoinsCountPlaceholder writeInstructionsCountPlaceholderCoin();
 
     virtual CallableWriterInsertionPoint getInsertionPoint();
+
+    virtual void writeWriter(const CallableWriter &writer) {
+        if (&writer == this) throw std::invalid_argument("Attempt to write writer into itself");
+        instructions_.insert(instructions_.end(), writer.instructions_.begin(), writer.instructions_.end());
+    }
 
     /** Must be used to write any double to the file. */
     virtual void writeDoubleCoin(double val);

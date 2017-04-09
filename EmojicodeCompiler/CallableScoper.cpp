@@ -30,9 +30,25 @@ void CallableScoper::popScopeAndRecommendFrozenVariables(std::vector<FunctionObj
         }
     }
     scopes_.pop_front();
+
+    maxInitializationLevel_--;
+    for (auto &scope : scopes_) {
+        scope.popInitializationLevel();
+    }
+    if (instanceScope() != nullptr) {
+        instanceScope()->popInitializationLevel();
+    }
 }
 
 Scope& CallableScoper::pushScope() {
+    maxInitializationLevel_++;
+    for (auto &scope : scopes_) {
+        scope.pushInitializationLevel();
+    }
+    if (instanceScope() != nullptr) {
+        instanceScope()->pushInitializationLevel();
+    }
+
     scopes_.push_front(Scope(this));
     return scopes_.front();
 }
@@ -51,24 +67,4 @@ ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, const 
         return ResolvedVariable(instanceScope_->getLocalVariable(name), true);
     }
     throw VariableNotFoundError(errorPosition, name);
-}
-
-void CallableScoper::pushInitializationLevel() {
-    maxInitializationLevel_++;
-    for (auto &scope : scopes_) {
-        scope.pushInitializationLevel();
-    }
-    if (instanceScope() != nullptr) {
-        instanceScope()->pushInitializationLevel();
-    }
-}
-
-void CallableScoper::popInitializationLevel() {
-    maxInitializationLevel_--;
-    for (auto &scope : scopes_) {
-        scope.popInitializationLevel();
-    }
-    if (instanceScope() != nullptr) {
-        instanceScope()->popInitializationLevel();
-    }
 }

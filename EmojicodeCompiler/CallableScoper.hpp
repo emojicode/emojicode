@@ -29,11 +29,6 @@ public:
     CallableScoper() {};
     explicit CallableScoper(Scope *instanceScope) : instanceScope_(instanceScope) {};
 
-    /// Pushes the initialization level of all scopes inclusive the instance scope if available
-    void pushInitializationLevel();
-    /// Pops the initialization level of all scopes inclusive the instance scope if available
-    void popInitializationLevel();
-
     /**
      * Retrieves a variable or throws a @c VariableNotFoundError if the variable is not found.
      * @returns A pair: The variable and whether the variable was found in the instance scope.
