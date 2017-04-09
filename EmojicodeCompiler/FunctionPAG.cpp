@@ -1672,6 +1672,7 @@ void FunctionPAG::compile() {
                 }
                 instanceVariable.initialize(writer_.count());
                 produceToVariable(ResolvedVariable(instanceVariable, true));
+                writeBoxingAndTemporary(TypeExpectation(instanceVariable.type()), argumentVariable.type());
                 copyVariableContent(ResolvedVariable(argumentVariable, false));
             }
         }
