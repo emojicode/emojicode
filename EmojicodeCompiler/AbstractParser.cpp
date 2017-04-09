@@ -6,12 +6,12 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <map>
-#include <vector>
 #include "AbstractParser.hpp"
 #include "Function.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
+#include <vector>
+#include <map>
 
 ParsedType AbstractParser::parseType() {
     if (stream_.nextTokenIs(TokenType::Variable)) {

@@ -30,7 +30,7 @@
 		E479370E1C3A5B3200536258 /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E479370D1C3A5B3200536258 /* Function.cpp */; };
 		E47E57E91D0D91D8006611EC /* ValueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47E57E71D0D91D8006611EC /* ValueType.cpp */; };
 		E4805DC81CD2729200B1282B /* CommonTypeFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */; };
-		E48228D41DBD0C5500216039 /* DiscardingCallableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48228D21DBD0C5500216039 /* DiscardingCallableWriter.cpp */; };
+		E48228D41DBD0C5500216039 /* DiscardingFunctionWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48228D21DBD0C5500216039 /* DiscardingFunctionWriter.cpp */; };
 		E48228D71DBFD41400216039 /* VTIProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48228D51DBFD41400216039 /* VTIProvider.cpp */; };
 		E489774F1CD2899E00207633 /* StringPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E489774D1CD2899E00207633 /* StringPool.cpp */; };
 		E4B7AFFE1E0D8FF20095F956 /* EmojiTokenization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B7AFFC1E0D8FF20095F956 /* EmojiTokenization.cpp */; };
@@ -42,7 +42,7 @@
 		E4BFB8DC1E12D8FB0037152E /* CapturingCallableScoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4BFB8DA1E12D8FB0037152E /* CapturingCallableScoper.cpp */; };
 		E4C18C5B1DDA1FCF00B4B5D5 /* Scoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C18C591DDA1FCF00B4B5D5 /* Scoper.cpp */; };
 		E4C18C5E1DDA34AF00B4B5D5 /* ScoperWithScope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */; };
-		E4D1A9DE1D9C30E00031789A /* CallableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */; };
+		E4D1A9DE1D9C30E00031789A /* FunctionWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4D1A9DD1D9C30E00031789A /* FunctionWriter.cpp */; };
 		E4DF2B871E4602930006EA17 /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F71C8301A5009E7089 /* JSON.cpp */; };
 		E4E95F601C89CED20072ECEB /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
 		E4EB362B1AA2254700675B52 /* Lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EB36291AA2254700675B52 /* Lexer.cpp */; };
@@ -95,7 +95,7 @@
 		E40704211CDE15750075FBFE /* TypeContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TypeContext.hpp; sourceTree = "<group>"; };
 		E425EE9F1A6433A700F3A62B /* EmojicodeAPI.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; name = EmojicodeAPI.hpp; path = "EmojicodeReal-TimeEngine/EmojicodeAPI.hpp"; sourceTree = SOURCE_ROOT; };
 		E42DC6381E574645000BB3C7 /* RecompilationPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecompilationPoint.cpp; sourceTree = "<group>"; };
-		E42DC6391E574645000BB3C7 /* RecompilationPoint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RecompilationPoint.hpp; sourceTree = "<group>"; };
+		E42DC6391E574645000BB3C7 /* RecompilationPoint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = RecompilationPoint.hpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E43387CA1C41308500B23165 /* Class.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Class.hpp; sourceTree = "<group>"; };
 		E4395B481E7594FB00814FFF /* TypeExpectation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TypeExpectation.cpp; sourceTree = "<group>"; };
 		E4395B491E7594FB00814FFF /* TypeExpectation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TypeExpectation.hpp; sourceTree = "<group>"; };
@@ -118,24 +118,24 @@
 		E469A5811CD512A10012D60E /* CompilerError.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CompilerError.hpp; sourceTree = "<group>"; };
 		E46A072D1C3C243D003DE2CD /* Lexer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Lexer.hpp; sourceTree = "<group>"; };
 		E46A072E1C3C79E5003DE2CD /* FunctionPAG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = FunctionPAG.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		E46A072F1C3C79E5003DE2CD /* FunctionPAG.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FunctionPAG.hpp; sourceTree = "<group>"; };
+		E46A072F1C3C79E5003DE2CD /* FunctionPAG.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = FunctionPAG.hpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E46B2F761CD794D800447D91 /* PackageReporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PackageReporter.cpp; sourceTree = "<group>"; };
 		E46B2F771CD794D800447D91 /* PackageReporter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PackageReporter.hpp; sourceTree = "<group>"; };
 		E46B2F7A1CD7A32B00447D91 /* Scope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scope.cpp; sourceTree = "<group>"; };
 		E46B2F7B1CD7A32B00447D91 /* Scope.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scope.hpp; sourceTree = "<group>"; };
 		E46B2F7D1CD7A5A000447D91 /* Variable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Variable.cpp; sourceTree = "<group>"; };
 		E46B2F7E1CD7A5A000447D91 /* Variable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Variable.hpp; sourceTree = "<group>"; };
-		E46B3F881D90411100969E53 /* CodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CodeGenerator.cpp; sourceTree = "<group>"; };
+		E46B3F881D90411100969E53 /* CodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = CodeGenerator.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E46B3F891D90411100969E53 /* CodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CodeGenerator.hpp; sourceTree = "<group>"; };
 		E46C49701E633633003C40E5 /* tests.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = tests.py; sourceTree = "<group>"; };
 		E479370D1C3A5B3200536258 /* Function.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Function.cpp; sourceTree = "<group>"; };
-		E47937221C3ACBEC00536258 /* Function.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Function.hpp; sourceTree = "<group>"; };
+		E47937221C3ACBEC00536258 /* Function.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = Function.hpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E47E57E71D0D91D8006611EC /* ValueType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ValueType.cpp; sourceTree = "<group>"; };
 		E47E57E81D0D91D8006611EC /* ValueType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ValueType.hpp; sourceTree = "<group>"; };
 		E4805DC61CD2729200B1282B /* CommonTypeFinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommonTypeFinder.cpp; sourceTree = "<group>"; };
 		E4805DC71CD2729200B1282B /* CommonTypeFinder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CommonTypeFinder.hpp; sourceTree = "<group>"; };
-		E48228D21DBD0C5500216039 /* DiscardingCallableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiscardingCallableWriter.cpp; sourceTree = "<group>"; };
-		E48228D31DBD0C5500216039 /* DiscardingCallableWriter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DiscardingCallableWriter.hpp; sourceTree = "<group>"; };
+		E48228D21DBD0C5500216039 /* DiscardingFunctionWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = DiscardingFunctionWriter.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		E48228D31DBD0C5500216039 /* DiscardingFunctionWriter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = DiscardingFunctionWriter.hpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E48228D51DBFD41400216039 /* VTIProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VTIProvider.cpp; sourceTree = "<group>"; };
 		E48228D61DBFD41400216039 /* VTIProvider.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VTIProvider.hpp; sourceTree = "<group>"; };
 		E489774D1CD2899E00207633 /* StringPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPool.cpp; sourceTree = "<group>"; };
@@ -159,14 +159,14 @@
 		E4C18C5A1DDA1FCF00B4B5D5 /* Scoper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scoper.hpp; sourceTree = "<group>"; };
 		E4C18C5C1DDA34AF00B4B5D5 /* ScoperWithScope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScoperWithScope.cpp; sourceTree = "<group>"; };
 		E4C18C5D1DDA34AF00B4B5D5 /* ScoperWithScope.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScoperWithScope.hpp; sourceTree = "<group>"; };
-		E4CE6FCC1D9BF55500F32071 /* CallableWriter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CallableWriter.hpp; sourceTree = "<group>"; };
+		E4CE6FCC1D9BF55500F32071 /* FunctionWriter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = FunctionWriter.hpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E4CE6FD01D9C0E7A00F32071 /* FunctionPAGMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FunctionPAGMode.hpp; sourceTree = "<group>"; };
-		E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CallableWriter.cpp; sourceTree = "<group>"; };
+		E4D1A9DD1D9C30E00031789A /* FunctionWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = FunctionWriter.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E4E404071A5B2E4300034386 /* Emojicode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Emojicode; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4E404141A5B2E8F00034386 /* Engine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; name = Engine.hpp; path = "EmojicodeReal-TimeEngine/Engine.hpp"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		E4EB36291AA2254700675B52 /* Lexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Lexer.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		E4EB4A851AA315ED00FF4CED /* Writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Writer.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
-		E4EB4A861AA315ED00FF4CED /* Writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Writer.hpp; sourceTree = "<group>"; };
+		E4EB4A861AA315ED00FF4CED /* Writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = Writer.hpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E4EB4A881AA3166400FF4CED /* EmojicodeCompiler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = EmojicodeCompiler.hpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E4EC747D1E1D87F9007A22AA /* Thread.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Thread.hpp; path = "EmojicodeReal-TimeEngine/Thread.hpp"; sourceTree = SOURCE_ROOT; };
 		E4EC747E1E1D9644007A22AA /* Processor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Processor.cpp; path = "EmojicodeReal-TimeEngine/Processor.cpp"; sourceTree = SOURCE_ROOT; };
@@ -271,10 +271,10 @@
 				E46B3F881D90411100969E53 /* CodeGenerator.cpp */,
 				E4EB4A861AA315ED00FF4CED /* Writer.hpp */,
 				E4EB4A851AA315ED00FF4CED /* Writer.cpp */,
-				E4CE6FCC1D9BF55500F32071 /* CallableWriter.hpp */,
-				E4D1A9DD1D9C30E00031789A /* CallableWriter.cpp */,
-				E48228D31DBD0C5500216039 /* DiscardingCallableWriter.hpp */,
-				E48228D21DBD0C5500216039 /* DiscardingCallableWriter.cpp */,
+				E4CE6FCC1D9BF55500F32071 /* FunctionWriter.hpp */,
+				E4D1A9DD1D9C30E00031789A /* FunctionWriter.cpp */,
+				E48228D31DBD0C5500216039 /* DiscardingFunctionWriter.hpp */,
+				E48228D21DBD0C5500216039 /* DiscardingFunctionWriter.cpp */,
 				E4CE6FD01D9C0E7A00F32071 /* FunctionPAGMode.hpp */,
 				E42DC6391E574645000BB3C7 /* RecompilationPoint.hpp */,
 				E42DC6381E574645000BB3C7 /* RecompilationPoint.cpp */,
@@ -507,7 +507,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# /usr/local/Cellar/llvm/3.9.1/bin/clang-tidy EmojicodeCompiler/*.cpp -checks=*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-cppcoreguidelines-pro-type-static-cast-downcast,-clang-analyzer-* -- -std=c++14";
+			shellScript = "/usr/local/Cellar/llvm/4.0.0/bin/clang-tidy EmojicodeCompiler/*.cpp -checks=*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-cppcoreguidelines-pro-type-static-cast-downcast,-clang-analyzer-* -- -std=c++14";
 		};
 		E4FD1FAB1E3693FC00313733 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -548,10 +548,10 @@
 				E46B3F8A1D90411100969E53 /* CodeGenerator.cpp in Sources */,
 				E46B2F7C1CD7A32B00447D91 /* Scope.cpp in Sources */,
 				E4BFB8DC1E12D8FB0037152E /* CapturingCallableScoper.cpp in Sources */,
-				E48228D41DBD0C5500216039 /* DiscardingCallableWriter.cpp in Sources */,
+				E48228D41DBD0C5500216039 /* DiscardingFunctionWriter.cpp in Sources */,
 				E4EB4A871AA315ED00FF4CED /* Writer.cpp in Sources */,
 				E45FA2F61AA0D24200F032A8 /* main.cpp in Sources */,
-				E4D1A9DE1D9C30E00031789A /* CallableWriter.cpp in Sources */,
+				E4D1A9DE1D9C30E00031789A /* FunctionWriter.cpp in Sources */,
 				E407041F1CDE0D7D0075FBFE /* VariableNotFoundError.cpp in Sources */,
 				E46395241CAEB49D001461C1 /* Package.cpp in Sources */,
 				E4BB24D41CD0FF6C003CC098 /* Enum.cpp in Sources */,

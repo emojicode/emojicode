@@ -28,7 +28,7 @@ enum class ReturnKind {
 };
 
 void reportDocumentation(const EmojicodeString &documentation) {
-    if (documentation.size() == 0) {
+    if (documentation.empty()) {
         return;
     }
 
@@ -45,7 +45,7 @@ void reportType(const Type &type, const TypeContext &tc) {
 
 class CommaPrinter {
 public:
-    CommaPrinter() {}
+    CommaPrinter() = default;
     void print() {
         if (printedFirst_) {
             putc(',', stdout);

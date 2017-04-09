@@ -11,7 +11,7 @@
 #include <fstream>
 #include "CompilerError.hpp"
 #include "Function.hpp"
-#include "CallableWriter.hpp"
+#include "FunctionWriter.hpp"
 
 void Writer::writeUInt16(uint16_t value) {
     data_.push_back(value);
@@ -61,7 +61,7 @@ void Writer::writeFunction(Function *function) {
     }
     writeUInt16(0);
 
-    writeInstruction(static_cast<EmojicodeInstruction>(function->writer_.writtenInstructions()));
+    writeInstruction(static_cast<EmojicodeInstruction>(function->writer_.count()));
 
     for (auto coin : function->writer_.instructions_) {
         writeInstruction(coin);

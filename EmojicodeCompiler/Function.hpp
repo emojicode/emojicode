@@ -14,7 +14,7 @@
 #include "TokenStream.hpp"
 #include "Type.hpp"
 #include "FunctionPAGMode.hpp"
-#include "CallableWriter.hpp"
+#include "FunctionWriter.hpp"
 #include "Class.hpp"
 #include <algorithm>
 #include <queue>
@@ -178,7 +178,7 @@ public:
         });
     }
 
-    CallableWriter writer_;
+    FunctionWriter writer_;
     std::vector<FunctionObjectVariableInformation>& objectVariableInformation() { return objectVariableInformation_; }
 private:
     /** Sets the VTI to @c vti and enters this functions into the list of functions to be compiled into the binary. */

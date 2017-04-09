@@ -17,7 +17,7 @@
 #include "CallableScoper.hpp"
 #include "AbstractParser.hpp"
 #include "TypeContext.hpp"
-#include "CallableWriter.hpp"
+#include "FunctionWriter.hpp"
 #include "FunctionPAGMode.hpp"
 #include "BoxingLayer.hpp"
 #include "TypeExpectation.hpp"
@@ -45,7 +45,7 @@ enum class TypeAvailability {
 /// One instance of @c FunctionPAG can compile exactly one function.
 class FunctionPAG : AbstractParser {
 public:
-    FunctionPAG(Function &function, Type contextType, CallableWriter &writer, CallableScoper &scoper);
+    FunctionPAG(Function &function, Type contextType, FunctionWriter &writer, CallableScoper &scoper);
     /// Parses the function and compiles it to bytecode. The bytecode is appended to the writer. 
     void compile();
 
@@ -57,7 +57,7 @@ private:
     /// The function to compile
     Function &function_;
     /// The writer to which the byte code will be written
-    CallableWriter &writer_;
+    FunctionWriter &writer_;
     /// The scoper responsible for scoping the function being compiled.
     CallableScoper &scoper_;
 
@@ -94,7 +94,7 @@ private:
     /** Parses an identifier when occurring without context. */
     Type parseIdentifier(const Token &token, const TypeExpectation &expectation);
     /// Parses a condition as used by if, while etc.
-    CallableWriter parseCondition(const Token &token, bool temporaryWriter);
+    FunctionWriter parseCondition(const Token &token, bool temporaryWriter);
     /**
      * Parses a function call. This method takes care of parsing all arguments as well as generic arguments and of
      * infering them if necessary.

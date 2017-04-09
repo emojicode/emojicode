@@ -31,7 +31,7 @@ void Class::setSuperclass(Class *eclass) {
 }
 
 bool Class::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const {
-    if (Class *cl = dynamic_cast<Class *>(resolutionConstraint)) {
+    if (auto cl = dynamic_cast<Class *>(resolutionConstraint)) {
         return inheritsFrom(cl);
     }
     return false;

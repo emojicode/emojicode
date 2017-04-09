@@ -16,7 +16,7 @@
 #include "EmojicodeCompiler.hpp"
 #include "StringPool.hpp"
 #include "ValueType.hpp"
-#include "DiscardingCallableWriter.hpp"
+#include "DiscardingFunctionWriter.hpp"
 #include "TypeDefinitionFunctional.hpp"
 
 template <typename T>
@@ -35,12 +35,12 @@ template <typename T>
 void compileUnused(const std::vector<T *> &functions) {
     for (auto function : functions) {
         if (!function->used() && !function->isNative()) {
-            DiscardingCallableWriter writer = DiscardingCallableWriter();
+            DiscardingFunctionWriter writer = DiscardingFunctionWriter();
             generateCodeForFunction(function, writer);
         }
     }
 }
-void generateCodeForFunction(Function *function, CallableWriter &w) {
+void generateCodeForFunction(Function *function, FunctionWriter &w) {
     CallableScoper scoper = CallableScoper();
     if (FunctionPAG::hasInstanceScope(function->compilationMode())) {
         scoper = CallableScoper(&function->owningType().typeDefinitionFunctional()->instanceScope());
