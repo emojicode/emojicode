@@ -1408,9 +1408,9 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
         }
         default: {
             effect = true;
-            return parseMethodCall(token, expectation, [this](const TypeExpectation &expectation) {
+            return parseMethodCall(token, expectation, [this](TypeExpectation &expectation) {
                 auto &tobject = stream_.consumeToken();
-                return parse(tobject, TypeExpectation(expectation));
+                return parse(tobject, std::move(expectation));
             });
         }
     }
@@ -1418,14 +1418,15 @@ Type FunctionPAG::parseIdentifier(const Token &token, const TypeExpectation &exp
 }
 
 Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &expectation,
-                                  std::function<Type(const TypeExpectation &)> callee) {
+                                  std::function<Type(TypeExpectation &)> callee) {
     auto insertionPoint = writer_.getInsertionPoint();
     auto placeholder = writer_.writeInstructionPlaceholder();
 
     auto recompilationPoint = RecompilationPoint(writer_, stream_);
     auto recompileWithSimple = [this, recompilationPoint, &callee]() {
         recompilationPoint.restore();
-        callee(TypeExpectation(false, false, false));
+        auto simpleExpectation = TypeExpectation(false, false, false);
+        callee(simpleExpectation);
     };
     auto writePrimitiveMethod = [this, &placeholder, &insertionPoint, &expectation,
                                  &recompileWithSimple](EmojicodeInstruction instruction, Type returnType,

@@ -120,7 +120,7 @@ private:
     }
 
     Type parseMethodCall(const Token &token, const TypeExpectation &expectation,
-                         std::function<Type(const TypeExpectation&)> callee);
+                         std::function<Type(TypeExpectation&)> callee);
 
     /// Copies or takes a reference to the content of the given variable as needed to statisfy the requirement of @c des
     /// @returns The type of the variable with @c isReference set appropriately.

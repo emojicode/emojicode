@@ -28,6 +28,8 @@ compilation_tests = [
     "assignmentByCallInstanceVariable",
     "babyBottleInitializer",
     "valueType",
+    "valueTypeSelf",
+    "valueTypeMutate",
     "isNothingness",
     "downcastClass",
     "castAny",
@@ -56,6 +58,7 @@ compilation_tests = [
     "gcStressTest1",
     "gcStressTest2",
     "valueTypeCopySelf",
+    "valueTypeBoxCopySelf",
     "includer",
     "threads",
 ]
