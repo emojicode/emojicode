@@ -125,6 +125,10 @@ void produce(Thread *thread, Value *destination) {
                 Object *o = sth.value[1].object;
                 performFunction(o->klass->protocolTable.dispatch(pti, vti), sth.value[1], thread, destination);
             }
+            else if ((type & REMOTE_MASK) != 0) {
+                performFunction(protocolDispatchTableTable[(type & ~REMOTE_MASK) - protocolDTTOffset].dispatch(pti, vti),
+                                sth.value[1].object->val<Value>(), thread, destination);
+            }
             else {
                 performFunction(protocolDispatchTableTable[type - protocolDTTOffset].dispatch(pti, vti),
                                 sth.value + 1, thread, destination);

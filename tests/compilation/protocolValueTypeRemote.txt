@@ -1,0 +1,4 @@
+Pizza name: Romana
+is extra large
+is extra hot
+tomato, mozzarella, anchovies
