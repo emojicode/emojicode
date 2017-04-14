@@ -10,7 +10,7 @@
 
 EmojicodeInstruction StringPool::poolString(const EmojicodeString &string) {
     for (size_t i = 0; i < strings_.size(); i++) {
-        if (strings_[i].compare(string) == 0) {
+        if (strings_[i] == string) {
             return static_cast<EmojicodeInstruction>(i);
         }
     }

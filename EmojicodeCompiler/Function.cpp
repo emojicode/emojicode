@@ -101,7 +101,7 @@ bool Function::checkOverride(Function *superFunction) const {
 
 void Function::deprecatedWarning(const SourcePosition &p) const {
     if (deprecated()) {
-        if (documentation().size() > 0) {
+        if (!documentation().empty()) {
             compilerWarning(p,
                             "%s is deprecated. Please refer to the documentation for further information:\n%s",
                             name().utf8().c_str(), documentation().utf8().c_str());

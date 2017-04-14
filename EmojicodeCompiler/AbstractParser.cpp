@@ -10,8 +10,8 @@
 #include "Function.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
-#include <vector>
 #include <map>
+#include <vector>
 
 ParsedType AbstractParser::parseType() {
     if (stream_.nextTokenIs(TokenType::Variable)) {

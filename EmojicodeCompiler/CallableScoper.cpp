@@ -6,8 +6,8 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include "CallableScoper.hpp"
 #include "VariableNotFoundError.hpp"
+#include "CallableScoper.hpp"
 #include "Function.hpp"
 #include <map>
 
