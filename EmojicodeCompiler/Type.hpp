@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include "EmojicodeCompiler.hpp"
 #include "StorageType.hpp"
+#include <tuple>
 
 /** The Emoji representing the standard ("global") namespace. */
 const EmojicodeString globalNamespace = EmojicodeString(E_LARGE_RED_CIRCLE);
