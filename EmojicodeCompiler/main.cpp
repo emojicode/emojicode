@@ -146,10 +146,11 @@ ValueType* getStandardValueType(const EmojicodeString &name, Package *_, const S
 void loadStandard(Package *_, const SourcePosition &errorPosition) {
     auto package = _->loadPackage("s", globalNamespace, errorPosition);
 
-    VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), _, errorPosition, T_DOUBLE);
+    // Order of the following calls is important as they will cause Box IDs to be assigned
     VT_BOOLEAN = getStandardValueType(EmojicodeString(E_OK_HAND_SIGN), _, errorPosition, T_BOOLEAN);
-    VT_SYMBOL = getStandardValueType(EmojicodeString(E_INPUT_SYMBOL_FOR_SYMBOLS), _, errorPosition, T_SYMBOL);
     VT_INTEGER = getStandardValueType(EmojicodeString(E_STEAM_LOCOMOTIVE), _, errorPosition, T_INTEGER);
+    VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), _, errorPosition, T_DOUBLE);
+    VT_SYMBOL = getStandardValueType(EmojicodeString(E_INPUT_SYMBOL_FOR_SYMBOLS), _, errorPosition, T_SYMBOL);
 
     CL_STRING = getStandardClass(EmojicodeString(0x1F521), _, errorPosition);
     CL_LIST = getStandardClass(EmojicodeString(0x1F368), _, errorPosition);

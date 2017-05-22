@@ -1,4 +1,4 @@
-//
+  //
 //  CodeGenerator.hpp
 //  Emojicode
 //

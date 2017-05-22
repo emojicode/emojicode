@@ -174,6 +174,9 @@ Type pagCast(const Token &token, const TypeExpectation &expectation, FunctionPAG
         }
     }
     else if (type.type() == TypeContent::Protocol && isStatic(pair.second)) {
+        if (!type.genericArguments().empty()) {
+            throw CompilerError(token.position(), "Cannot cast to generic protocols.");
+        }
         assert(originalType.storageType() == StorageType::Box);
         placeholder.write(INS_CAST_TO_PROTOCOL);
         functionPag.writer().writeInstruction(type.protocol()->index);

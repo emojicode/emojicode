@@ -21,7 +21,9 @@ public:
 
     uint_fast16_t index;
 
-    bool canBeUsedToResolve(TypeDefinitionFunctional *a) const override;
+    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const override {
+        return resolutionConstraint == this;
+    }
     void addMethod(Function *method) override;
 
     int size() const override { return 1; }

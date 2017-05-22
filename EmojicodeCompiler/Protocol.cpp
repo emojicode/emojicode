@@ -24,7 +24,3 @@ void Protocol::addMethod(Function *method) {
     method->setVti(static_cast<int>(methodList_.size()));
     TypeDefinitionFunctional::addMethod(method);
 }
-
-bool Protocol::canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const {
-    return resolutionConstraint == this;
-}

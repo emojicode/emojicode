@@ -20,6 +20,7 @@
 		E4478C671B7B8CB400291BD9 /* Type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4478C661B7B8CB400291BD9 /* Type.cpp */; };
 		E449AF6C1CCCC0A200492FC0 /* PackageParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E449AF6A1CCCC0A200492FC0 /* PackageParser.cpp */; };
 		E4516F611E599B1600A87994 /* BoxingLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4516F5F1E599B1600A87994 /* BoxingLayer.cpp */; };
+		E45652A81EA202BC001D6323 /* BoxIDProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45652A61EA202BC001D6323 /* BoxIDProvider.cpp */; };
 		E45DB8141CB44D7500AE6FBE /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45DB8131CB44D7500AE6FBE /* Thread.cpp */; };
 		E45FA2F61AA0D24200F032A8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45FA2F51AA0D24200F032A8 /* main.cpp */; };
 		E46395241CAEB49D001461C1 /* Package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E46395221CAEB49D001461C1 /* Package.cpp */; };
@@ -115,6 +116,8 @@
 		E4516F601E599B1600A87994 /* BoxingLayer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BoxingLayer.hpp; sourceTree = "<group>"; };
 		E45570ED1E1C08D50093B52B /* List.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = List.h; path = "EmojicodeReal-TimeEngine/List.h"; sourceTree = SOURCE_ROOT; };
 		E455BC671B5BEB82002411C8 /* EmojicodeShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeShared.h; sourceTree = "<group>"; };
+		E45652A61EA202BC001D6323 /* BoxIDProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxIDProvider.cpp; sourceTree = "<group>"; };
+		E45652A71EA202BC001D6323 /* BoxIDProvider.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BoxIDProvider.hpp; sourceTree = "<group>"; };
 		E45DB8131CB44D7500AE6FBE /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Thread.cpp; path = "EmojicodeReal-TimeEngine/Thread.cpp"; sourceTree = SOURCE_ROOT; };
 		E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EmojicodeCompiler; sourceTree = BUILT_PRODUCTS_DIR; };
 		E45FA2F51AA0D24200F032A8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = main.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
@@ -361,6 +364,8 @@
 				E4BB24D21CD0FF6C003CC098 /* Enum.cpp */,
 				E48228D61DBFD41400216039 /* VTIProvider.hpp */,
 				E48228D51DBFD41400216039 /* VTIProvider.cpp */,
+				E45652A71EA202BC001D6323 /* BoxIDProvider.hpp */,
+				E45652A61EA202BC001D6323 /* BoxIDProvider.cpp */,
 			);
 			name = "Type Definitions";
 			sourceTree = "<group>";
@@ -519,7 +524,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/Cellar/llvm/4.0.0/bin/clang-tidy EmojicodeCompiler/*.cpp -checks=*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-cppcoreguidelines-pro-type-static-cast-downcast,-clang-analyzer-* -- -std=c++14";
+			shellScript = "#/usr/local/Cellar/llvm/4.0.0_1/bin/clang-tidy EmojicodeCompiler/*.cpp -checks=*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-cppcoreguidelines-pro-type-static-cast-downcast,-clang-analyzer-* -- -std=c++14";
 		};
 		E4FD1FAB1E3693FC00313733 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -552,6 +557,7 @@
 				E4BB24C61CD0E2C2003CC098 /* AbstractParser.cpp in Sources */,
 				E40704221CDE15750075FBFE /* TypeContext.cpp in Sources */,
 				E4BB24D11CD0FC90003CC098 /* Protocol.cpp in Sources */,
+				E45652A81EA202BC001D6323 /* BoxIDProvider.cpp in Sources */,
 				E4478C671B7B8CB400291BD9 /* Type.cpp in Sources */,
 				E407041C1CDE048A0075FBFE /* CallableScoper.cpp in Sources */,
 				E489774F1CD2899E00207633 /* StringPool.cpp in Sources */,

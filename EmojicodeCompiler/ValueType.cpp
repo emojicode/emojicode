@@ -10,7 +10,6 @@
 #include "Function.hpp"
 
 std::vector<ValueType *> ValueType::valueTypes_;
-int ValueType::nextId = 3;
 
 void ValueType::finalize() {
     TypeDefinitionFunctional::finalize();

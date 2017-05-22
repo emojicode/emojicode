@@ -211,6 +211,11 @@ public:
 
     bool isMutable() const { return mutable_; }
     void setMutable(bool b) { mutable_ = b; }
+
+    inline bool operator<(const Type &rhs) const {
+        return std::tie(typeContent_, optional_, meta_, typeDefinition_)
+                < std::tie(rhs.typeContent_, rhs.optional_, rhs.meta_, rhs.typeDefinition_);
+    }
 protected:
     Type(bool isReference, bool forceBox, bool isMutable)
         : typeContent_(TypeContent::StorageExpectation), optional_(false), isReference_(isReference),

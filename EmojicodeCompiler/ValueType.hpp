@@ -12,9 +12,10 @@
 #include "TypeDefinitionFunctional.hpp"
 #include "VTIProvider.hpp"
 #include "Function.hpp"
+#include "BoxIDProvider.hpp"
 #include <vector>
 
-class ValueType : public TypeDefinitionFunctional {
+class ValueType : public TypeDefinitionFunctional, public BoxIDProvider {
 public:
     static const std::vector<ValueType *>& valueTypes() { return valueTypes_; }
 
@@ -22,8 +23,6 @@ public:
         : TypeDefinitionFunctional(name, p, pos, documentation) {
         valueTypes_.push_back(this);
     }
-
-    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const override { return false; }
 
     void finalize() override;
     int usedFunctionCount() const { return vtiProvider_.usedCount(); };
@@ -43,18 +42,16 @@ public:
         method->package()->registerFunction(method);
     }
 
+    bool canBeUsedToResolve(TypeDefinitionFunctional *resolutionConstraint) const override {
+        return resolutionConstraint == this;
+    }
+
     void makePrimitive() { primitive_ = true; }
     bool isPrimitive() { return primitive_; }
-
-    int boxIdentifier() const { return id_; }
-
-    static int maxBoxIndetifier() { return nextId - 1; }
 private:
-    static int nextId;
     static std::vector<ValueType *> valueTypes_;
     ValueTypeVTIProvider vtiProvider_;
     bool primitive_ = false;
-    int id_ = nextId++;
 };
 
 #endif /* ValueType_hpp */

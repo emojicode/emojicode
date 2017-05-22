@@ -48,8 +48,7 @@ void generateCodeForFunction(Function *function, FunctionWriter &w) {
     FunctionPAG(*function, function->owningType().disableSelfResolving(), w, scoper).compile();
 }
 
-void writeProtocolTable(const Type &type, Writer &writer) {
-    auto typeDefinitionFunctional = type.typeDefinitionFunctional();
+void writeProtocolTable(TypeDefinitionFunctional *typeDefinitionFunctional, Writer &writer) {
     writer.writeUInt16(typeDefinitionFunctional->protocols().size());
     if (!typeDefinitionFunctional->protocols().empty()) {
         auto biggestPlaceholder = writer.writePlaceholder<uint16_t>();
@@ -116,7 +115,7 @@ void writeClass(const Type &classType, Writer &writer) {
     writeUsed(eclass->typeMethodList(), writer);
     writeUsed(eclass->initializerList(), writer);
 
-    writeProtocolTable(classType, writer);
+    writeProtocolTable(eclass, writer);
 
     std::vector<ObjectVariableInformation> information;
     for (auto variable : eclass->instanceScope().map()) {
@@ -168,7 +167,7 @@ void generateCode(Writer &writer) {
         Function::compilationQueue.pop();
     }
 
-    if (ValueType::maxBoxIndetifier() > 2147483647) {
+    if (BoxIDProvider::maxBoxIndetifier() > 2147483647) {
         throw CompilerError(SourcePosition(0, 0, ""), "More than 2147483647 box identifiers in use.");
     }
 
@@ -194,23 +193,25 @@ void generateCode(Writer &writer) {
         placeholder.write(writeUsed(pkg->functions(), writer));
     }
 
-    int smallestBoxIdentifier = UINT16_MAX;
-    int biggestBoxIdentifier = 0;
+    uint32_t smallestBoxIdentifier = UINT16_MAX;
+    uint32_t biggestBoxIdentifier = 0;
     int vtWithProtocolsCount = 0;
     auto tableSizePlaceholder = writer.writePlaceholder<uint16_t>();
     auto smallestPlaceholder = writer.writePlaceholder<uint16_t>();
     auto countPlaceholder = writer.writePlaceholder<uint16_t>();
     for (auto vt : ValueType::valueTypes()) {
         if (!vt->protocols().empty()) {
-            writer.writeUInt16(vt->boxIdentifier());
-            writeProtocolTable(Type(vt, false), writer);
-            if (vt->boxIdentifier() < smallestBoxIdentifier) {
-                smallestBoxIdentifier = vt->boxIdentifier();
+            for (auto idPair : vt->genericIds()) {
+                writer.writeUInt16(idPair.second);
+                writeProtocolTable(vt, writer);
+                if (idPair.second < smallestBoxIdentifier) {
+                    smallestBoxIdentifier = idPair.second;
+                }
+                if (idPair.second > biggestBoxIdentifier) {
+                    biggestBoxIdentifier = idPair.second;
+                }
+                vtWithProtocolsCount++;
             }
-            if (vt->boxIdentifier() > biggestBoxIdentifier) {
-                biggestBoxIdentifier = vt->boxIdentifier();
-            }
-            vtWithProtocolsCount++;
         }
     }
     countPlaceholder.write(vtWithProtocolsCount);

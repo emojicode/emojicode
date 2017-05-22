@@ -38,10 +38,13 @@ Type::Type(Enum *enumeration, bool o) : typeContent_(TypeContent::Enum), typeDef
 
 Type::Type(ValueType *valueType, bool o)
 : typeContent_(TypeContent::ValueType), typeDefinition_(valueType), optional_(o), mutable_(false) {
+    for (size_t i = 0; i < valueType->numberOfGenericArgumentsWithSuperArguments(); i++) {
+        genericArguments_.push_back(Type(TypeContent::GenericVariable, false, i, valueType));
+    }
 }
 
 Type::Type(Class *c, bool o) : typeContent_(TypeContent::Class), typeDefinition_(c), optional_(o) {
-    for (int i = 0; i < c->numberOfGenericArgumentsWithSuperArguments(); i++) {
+    for (size_t i = 0; i < c->numberOfGenericArgumentsWithSuperArguments(); i++) {
         genericArguments_.push_back(Type(TypeContent::GenericVariable, false, i, c));
     }
 }
@@ -67,7 +70,7 @@ TypeDefinition* Type::typeDefinition() const  {
 }
 
 bool Type::canHaveGenericArguments() const {
-    return type() == TypeContent::Class || type() == TypeContent::Protocol;
+    return type() == TypeContent::Class || type() == TypeContent::Protocol || type() == TypeContent::ValueType;
 }
 
 TypeDefinitionFunctional* Type::typeDefinitionFunctional() const {
@@ -410,7 +413,7 @@ EmojicodeInstruction Type::boxIdentifier() const {
     switch (type()) {
         case TypeContent::ValueType:
         case TypeContent::Enum:
-            value = valueType()->boxIdentifier();
+            value = valueType()->boxIdFor(genericArguments_);
             break;
         case TypeContent::Callable:
         case TypeContent::Class:
