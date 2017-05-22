@@ -125,7 +125,7 @@ void Class::finalize() {
 
         method->setVtiProvider(&methodVtiProvider_);
         if (method->checkOverride(superMethod)) {
-            method->override(superMethod, classType, Type(superclass(), false));
+            method->override(superMethod, classType, classType);
             methodVtiProvider_.incrementVtiCount();
         }
     }
@@ -134,7 +134,7 @@ void Class::finalize() {
 
         clMethod->setVtiProvider(&methodVtiProvider_);
         if (clMethod->checkOverride(superMethod)) {
-            clMethod->override(superMethod, classType, Type(superclass(), false));
+            clMethod->override(superMethod, classType, classType);
             methodVtiProvider_.incrementVtiCount();
         }
     }
@@ -146,7 +146,7 @@ void Class::finalize() {
         initializer->setVtiProvider(&initializerVtiProvider_);
         if (initializer->required()) {
             if (superInit != nullptr && superInit->required()) {
-                initializer->override(superInit, classType, Type(superclass(), false));
+                initializer->override(superInit, classType, classType);
                 initializerVtiProvider_.incrementVtiCount();
             }
             else {

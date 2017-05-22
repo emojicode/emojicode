@@ -125,7 +125,7 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext,
         t = typeContext.calleeType();
     }
 
-    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - - c->ownGenericArgumentVariables().size();
+    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
     while (t.type() == TypeContent::GenericVariable && t.genericVariableIndex() < maxReferenceForSuper) {
         t = c->superGenericArguments()[t.genericVariableIndex()];

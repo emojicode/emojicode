@@ -44,6 +44,8 @@ compilation_tests = [
     "assignmentByCallProtocol",
     "commonType",
     "typeAlias",
+    "generics",
+    "genericProtocol",
     "variableInitAndScoping",
     "valueTypeRemoteAdditional",
     "closureBasic",
