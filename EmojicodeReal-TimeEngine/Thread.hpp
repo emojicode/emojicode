@@ -61,6 +61,32 @@ public:
     /// the pointer currently points and increments the pointer.
     EmojicodeInstruction consumeInstruction() { return *(stack_->executionPointer++); }
 
+    /// Leaves the function currently executed. Effectively sets the execution pointer of
+    /// the current stack frame to the null pointer.
+    void returnFromFunction() { stack_->executionPointer = nullptr; }
+    /// Leaves the function and sets the value of the return destination to the given value.
+    void returnFromFunction(Value value) {
+        *stack_->destination = value;
+        returnFromFunction();
+    }
+    /// Leaves the function and sets the value of the return destination to Nothingness. (See @c makeNothingness())
+    void returnNothingnessFromFunction() {
+        stack_->destination->makeNothingness();
+        returnFromFunction();
+    }
+    /// Leaves the function and sets the value of the return destination to the given value. The destination is treated
+    /// as optional. (See @c optionalSet())
+    void returnOEValueFromFunction(Value value) {
+        stack_->destination->optionalSet(value);
+        returnFromFunction();
+    }
+    /// Leaves the function and sets the value of the return destination to an error with the given value.
+    void returnErrorFromFunction(EmojicodeInteger error) {
+        stack_->destination->storeError(error);
+        returnFromFunction();
+    }
+
+
     void markStack();
 
     StackFrame* currentStackFrame() const { return stack_; }

@@ -33,6 +33,7 @@ extern Class *CL_ARRAY;
 union Value {
     /// Returns an undefined Value
     Value() {}
+    Value(bool raw) : raw(raw) {}
     Value(EmojicodeInteger raw) : raw(raw) {}
     Value(EmojicodeChar raw) : character(raw) {}
     Value(Object *object) : object(object) {}
@@ -160,7 +161,7 @@ extern void allowGC();
  */
 extern void disallowGCAndPauseIfNeeded();
 
-typedef void (*FunctionFunctionPointer)(Thread *thread, Value *destination);
+typedef void (*FunctionFunctionPointer)(Thread *thread);
 typedef void (*Marker)(Object *self);
 
 /// The version of a package. Must follow semantic versioning 2.0 http://semver.org

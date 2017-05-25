@@ -40,34 +40,33 @@ EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max) 
     return (z % (max - min + 1)) + min;
 }
 
-static void systemExit(Thread *thread, Value *destination) {
+static void systemExit(Thread *thread) {
     EmojicodeInteger state = thread->getVariable(0).raw;
     exit((int)state);
 }
 
-static void systemGetEnv(Thread *thread, Value *destination) {
+static void systemGetEnv(Thread *thread) {
     char *env = getenv(stringToCString(thread->getVariable(0).object));
 
     if (!env) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
 
-    destination->optionalSet(stringFromChar(env));
+    thread->returnOEValueFromFunction(stringFromChar(env));
 }
 
-static void systemCWD(Thread *thread, Value *destination) {
+static void systemCWD(Thread *thread) {
     char path[1050];
     getcwd(path, sizeof(path));
-
-    destination->object = stringFromChar(path);
+    thread->returnFromFunction(stringFromChar(path));
 }
 
-static void systemTime(Thread *thread, Value *destination) {
-    destination->raw = time(nullptr);
+static void systemTime(Thread *thread) {
+    thread->returnFromFunction(static_cast<EmojicodeInteger>(time(nullptr)));
 }
 
-static void systemArgs(Thread *thread, Value *destination) {
+static void systemArgs(Thread *thread) {
     Object *const &listObject = thread->retain(newObject(CL_LIST));
 
     List *newList = listObject->val<List>();
@@ -81,14 +80,14 @@ static void systemArgs(Thread *thread, Value *destination) {
     }
 
     thread->release(1);
-    destination->object = listObject;
+    thread->returnFromFunction(listObject);
 }
 
-static void systemSystem(Thread *thread, Value *destination) {
+static void systemSystem(Thread *thread) {
     FILE *f = popen(stringToCString(thread->getVariable(0).object), "r");
 
     if (!f) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
 
@@ -119,20 +118,22 @@ static void systemSystem(Thread *thread, Value *destination) {
 
     u8_toucs(string->characters(), len, buffer->val<char>(), bufferUsedSize);
     thread->release(1);
-    destination->object = so;
+    thread->returnFromFunction(so);
 }
 
 //MARK: Threads
 
-static void threadJoin(Thread *thread, Value *destination) {
+static void threadJoin(Thread *thread) {
     allowGC();
     auto cthread = thread->getThisObject()->val<std::thread>();
     cthread->join();  // TODO: GC?!
     disallowGCAndPauseIfNeeded();
+    thread->returnFromFunction();
 }
 
-static void threadSleepMicroseconds(Thread *thread, Value *destination) {
+static void threadSleepMicroseconds(Thread *thread) {
     std::this_thread::sleep_for(std::chrono::microseconds(thread->getVariable(0).raw));
+    thread->returnFromFunction();
 }
 
 void threadStart(Object *callable) {
@@ -140,17 +141,17 @@ void threadStart(Object *callable) {
     executeCallableExtern(callable, nullptr, 0, &thread, nullptr);
 }
 
-static void initThread(Thread *thread, Value *destination) {
+static void initThread(Thread *thread) {
     *thread->getThisObject()->val<std::thread>() = std::thread(threadStart, thread->getVariable(0).object);
-    *destination = thread->getThisContext();
+    thread->returnFromFunction(thread->getThisContext());
 }
 
-static void initMutex(Thread *thread, Value *destination) {
+static void initMutex(Thread *thread) {
     pthread_mutex_init(thread->getThisObject()->val<pthread_mutex_t>(), nullptr);
-    *destination = thread->getThisContext();
+    thread->returnFromFunction(thread->getThisContext());
 }
 
-static void mutexLock(Thread *thread, Value *destination) {
+static void mutexLock(Thread *thread) {
     while (pthread_mutex_trylock(thread->getThisObject()->val<pthread_mutex_t>()) != 0) {
         // TODO: Obviously stupid, but this is the only safe way. If pthread_mutex_lock was used,
         // the thread would be block, and the GC could cause a deadlock. allowGC, however, would
@@ -158,32 +159,34 @@ static void mutexLock(Thread *thread, Value *destination) {
         pauseForGC();
         usleep(10);
     }
+    thread->returnFromFunction();
 }
 
-static void mutexUnlock(Thread *thread, Value *destination) {
+static void mutexUnlock(Thread *thread) {
     pthread_mutex_unlock(thread->getThisObject()->val<pthread_mutex_t>());
+    thread->returnFromFunction();
 }
 
-static void mutexTryLock(Thread *thread, Value *destination) {
-    destination->raw = pthread_mutex_trylock(thread->getThisObject()->val<pthread_mutex_t>()) == 0;
+static void mutexTryLock(Thread *thread) {
+    thread->returnFromFunction(pthread_mutex_trylock(thread->getThisObject()->val<pthread_mutex_t>()) == 0);
 }
 
 // MARK: Data
 
-static void dataEqual(Thread *thread, Value *destination) {
+static void dataEqual(Thread *thread) {
     Data *d = thread->getThisObject()->val<Data>();
     Data *b = thread->getVariable(0).object->val<Data>();
 
     if (d->length != b->length) {
-        destination->raw = 0;
+        thread->returnFromFunction(false);
         return;
     }
 
-    destination->raw = memcmp(d->bytes, b->bytes, d->length) == 0;
+    thread->returnFromFunction(memcmp(d->bytes, b->bytes, d->length) == 0);
 }
 
-static void dataSize(Thread *thread, Value *destination) {
-    destination->raw = thread->getThisObject()->val<Data>()->length;
+static void dataSize(Thread *thread) {
+    thread->returnFromFunction(thread->getThisObject()->val<Data>()->length);
 }
 
 static void dataMark(Object *o) {
@@ -194,7 +197,7 @@ static void dataMark(Object *o) {
     }
 }
 
-static void dataGetByte(Thread *thread, Value *destination) {
+static void dataGetByte(Thread *thread) {
     Data *d = thread->getThisObject()->val<Data>();
 
     EmojicodeInteger index = thread->getVariable(0).raw;
@@ -202,17 +205,17 @@ static void dataGetByte(Thread *thread, Value *destination) {
         index += d->length;
     }
     if (index < 0 || d->length <= index) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
 
-    destination->optionalSet(EmojicodeInteger(d->bytes[index]));
+    thread->returnOEValueFromFunction(EmojicodeInteger(d->bytes[index]));
 }
 
-static void dataToString(Thread *thread, Value *destination) {
+static void dataToString(Thread *thread) {
     Data *data = thread->getThisObject()->val<Data>();
     if (!u8_isvalid(data->bytes, data->length)) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
 
@@ -225,17 +228,17 @@ static void dataToString(Thread *thread, Value *destination) {
     string->charactersObject = characters;
     thread->release(1);
     u8_toucs(string->characters(), len, data->bytes, data->length);
-    destination->optionalSet(sto);
+    thread->returnOEValueFromFunction(sto);
 }
 
-static void dataSlice(Thread *thread, Value *destination) {
+static void dataSlice(Thread *thread) {
     Object *ooData = newObject(CL_DATA);
     Data *oData = ooData->val<Data>();
     Data *data = thread->getThisObject()->val<Data>();
 
     EmojicodeInteger from = thread->getVariable(0).raw;
     if (from >= data->length) {
-        destination->object = ooData;
+        thread->returnFromFunction(ooData);
         return;
     }
 
@@ -247,23 +250,23 @@ static void dataSlice(Thread *thread, Value *destination) {
     oData->bytesObject = data->bytesObject;
     oData->bytes = data->bytes + from;
     oData->length = l;
-    destination->object = ooData;
+    thread->returnFromFunction(ooData);
 }
 
-static void dataIndexOf(Thread *thread, Value *destination) {
+static void dataIndexOf(Thread *thread) {
     Data *data = thread->getThisObject()->val<Data>();
     Data *search = thread->getVariable(0).object->val<Data>();
     auto last = data->bytes + data->length;
     const void *location = std::search(data->bytes, last, search->bytes, search->bytes + search->length);
     if (location == last) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
     }
     else {
-        destination->optionalSet(EmojicodeInteger((Byte *)location - (Byte *)data->bytes));
+        thread->returnOEValueFromFunction(EmojicodeInteger((Byte *)location - (Byte *)data->bytes));
     }
 }
 
-static void dataByAppendingData(Thread *thread, Value *destination) {
+static void dataByAppendingData(Thread *thread) {
     Data *data = thread->getThisObject()->val<Data>();
     Data *b = thread->getVariable(0).object->val<Data>();
 
@@ -282,12 +285,12 @@ static void dataByAppendingData(Thread *thread, Value *destination) {
     oData->bytes = oData->bytesObject->val<char>();
     oData->length = size;
     thread->release(1);
-    destination->object = ooData;
+    thread->returnFromFunction(ooData);
 }
 
 // MARK: Integer
 
-void integerToString(Thread *thread, Value *destination) {
+void integerToString(Thread *thread) {
     EmojicodeInteger base = thread->getVariable(0).raw;
     EmojicodeInteger n = thread->getThisContext().value->raw, a = std::abs(n);
     bool negative = n < 0;
@@ -309,18 +312,19 @@ void integerToString(Thread *thread, Value *destination) {
 
     if (negative) characters[-1] = '-';
     thread->release(1);
-    destination->object = stringObject;
+    thread->returnFromFunction(stringObject);
 }
 
-static void integerRandom(Thread *thread, Value *destination) {
+static void integerRandom(Thread *thread) {
     thread->getThisContext().value->raw = secureRandomNumber(thread->getVariable(0).raw, thread->getVariable(1).raw);
+    thread->returnFromFunction();
 }
 
-static void integerAbsolute(Thread *thread, Value *destination) {
-    destination->raw = std::abs(thread->getThisContext().value->raw);
+static void integerAbsolute(Thread *thread) {
+    thread->returnFromFunction(std::abs(thread->getThisContext().value->raw));
 }
 
-static void symbolToString(Thread *thread, Value *destination) {
+static void symbolToString(Thread *thread) {
     Object *co = thread->retain(newArray(sizeof(EmojicodeChar)));
     Object *stringObject = newObject(CL_STRING);
     String *string = stringObject->val<String>();
@@ -328,14 +332,14 @@ static void symbolToString(Thread *thread, Value *destination) {
     string->charactersObject = co;
     thread->release(1);
     string->characters()[0] = thread->getThisContext().value->character;
-    destination->object = stringObject;
+    thread->returnFromFunction(stringObject);
 }
 
-static void symbolToInteger(Thread *thread, Value *destination) {
-    destination->raw = thread->getThisContext().value->character;
+static void symbolToInteger(Thread *thread) {
+    thread->returnFromFunction(static_cast<EmojicodeInteger>(thread->getThisContext().value->character));
 }
 
-static void doubleToString(Thread *thread, Value *destination) {
+static void doubleToString(Thread *thread) {
     EmojicodeInteger precision = thread->getVariable(0).raw;
     double d = thread->getThisContext().value->doubl;
     double absD = std::abs(d);
@@ -374,63 +378,63 @@ static void doubleToString(Thread *thread, Value *destination) {
     }
 
     if (negative) characters[-1] = '-';
-    destination->object = stringObject;
+    thread->returnFromFunction(stringObject);
 }
 
-static void doubleSin(Thread *thread, Value *destination) {
-    destination->doubl = sin(thread->getThisContext().value->doubl);
+static void doubleSin(Thread *thread) {
+    thread->returnFromFunction(sin(thread->getThisContext().value->doubl));
 }
 
-static void doubleCos(Thread *thread, Value *destination) {
-    destination->doubl = cos(thread->getThisContext().value->doubl);
+static void doubleCos(Thread *thread) {
+    thread->returnFromFunction(cos(thread->getThisContext().value->doubl));
 }
 
-static void doubleTan(Thread *thread, Value *destination) {
-    destination->doubl = tan(thread->getThisContext().value->doubl);
+static void doubleTan(Thread *thread) {
+    thread->returnFromFunction(tan(thread->getThisContext().value->doubl));
 }
 
-static void doubleASin(Thread *thread, Value *destination) {
-    destination->doubl = asin(thread->getThisContext().value->doubl);
+static void doubleASin(Thread *thread) {
+    thread->returnFromFunction(asin(thread->getThisContext().value->doubl));
 }
 
-static void doubleACos(Thread *thread, Value *destination) {
-    destination->doubl = acos(thread->getThisContext().value->doubl);
+static void doubleACos(Thread *thread) {
+    thread->returnFromFunction(acos(thread->getThisContext().value->doubl));
 }
 
-static void doubleATan(Thread *thread, Value *destination) {
-    destination->doubl = atan(thread->getThisContext().value->doubl);
+static void doubleATan(Thread *thread) {
+    thread->returnFromFunction(atan(thread->getThisContext().value->doubl));
 }
 
-static void doublePow(Thread *thread, Value *destination) {
-    destination->doubl = pow(thread->getThisContext().value->doubl, thread->getVariable(0).doubl);
+static void doublePow(Thread *thread) {
+    thread->returnFromFunction(pow(thread->getThisContext().value->doubl, thread->getVariable(0).doubl));
 }
 
-static void doubleSqrt(Thread *thread, Value *destination) {
-    destination->doubl = sqrt(thread->getThisContext().value->doubl);
+static void doubleSqrt(Thread *thread) {
+    thread->returnFromFunction(sqrt(thread->getThisContext().value->doubl));
 }
 
-static void doubleRound(Thread *thread, Value *destination) {
-    destination->raw = static_cast<EmojicodeInteger>(round(thread->getThisContext().value->doubl));
+static void doubleRound(Thread *thread) {
+    thread->returnFromFunction(static_cast<EmojicodeInteger>(round(thread->getThisContext().value->doubl)));
 }
 
-static void doubleCeil(Thread *thread, Value *destination) {
-    destination->raw = static_cast<EmojicodeInteger>(ceil(thread->getThisContext().value->doubl));
+static void doubleCeil(Thread *thread) {
+    thread->returnFromFunction(static_cast<EmojicodeInteger>(ceil(thread->getThisContext().value->doubl)));
 }
 
-static void doubleFloor(Thread *thread, Value *destination) {
-    destination->raw = static_cast<EmojicodeInteger>(floor(thread->getThisContext().value->doubl));
+static void doubleFloor(Thread *thread) {
+    thread->returnFromFunction(static_cast<EmojicodeInteger>(floor(thread->getThisContext().value->doubl)));
 }
 
-static void doubleLog2(Thread *thread, Value *destination) {
-    destination->doubl = log2(thread->getThisContext().value->doubl);
+static void doubleLog2(Thread *thread) {
+    thread->returnFromFunction(log2(thread->getThisContext().value->doubl));
 }
 
-static void doubleLn(Thread *thread, Value *destination) {
-    destination->doubl = log(thread->getThisContext().value->doubl);
+static void doubleLn(Thread *thread) {
+    thread->returnFromFunction(log(thread->getThisContext().value->doubl));
 }
 
-static void doubleAbsolute(Thread *thread, Value *destination) {
-    destination->doubl = fabs(thread->getThisContext().value->doubl);
+static void doubleAbsolute(Thread *thread) {
+    thread->returnFromFunction(fabs(thread->getThisContext().value->doubl));
 }
 
 // MARK: Callable

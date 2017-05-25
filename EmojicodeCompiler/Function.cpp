@@ -12,6 +12,7 @@
 #include "EmojicodeCompiler.hpp"
 #include "TypeContext.hpp"
 #include "VTIProvider.hpp"
+#include "../EmojicodeInstructions.h"
 #include <map>
 #include <stdexcept>
 #include <algorithm>
@@ -132,8 +133,10 @@ void Function::markUsed(bool addToCompilationQueue) {
         }
     }
     else {
+        writer_.writeInstruction(INS_TRANSFER_CONTROL_TO_NATIVE);
         setFullSizeFromArguments();
     }
+
     for (Function *function : overriders_) {
         function->markUsed();
     }

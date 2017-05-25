@@ -55,11 +55,8 @@ void Writer::writeFunction(Function *function) {
 
     writeUInt16(function->fullSize());
 
-    if (function->isNative()) {
-        writeUInt16(function->linkingTabelIndex());
-        return;
-    }
-    writeUInt16(0);
+
+    writeUInt16(function->isNative() ? function->linkingTabelIndex() : 0);
 
     writeInstruction(static_cast<EmojicodeInstruction>(function->writer_.count()));
 

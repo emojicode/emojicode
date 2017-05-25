@@ -29,32 +29,32 @@ typedef uint64_t EmojicodeDictionaryHash;
 typedef struct {
     /** The user specified key. */
     Object *key;
-    
+
     /** The user specified value. */
     Box value;
-    
+
     /** The cached hash for the key. Calculated on item addition. */
     EmojicodeDictionaryHash hash;
-    
+
     /** EmojicodeDictionary stores a bucket's elements in a linked list. */
     Object *next;
-    
+
 } EmojicodeDictionaryNode;
 
 /** Structure for the Emojicode standard Dictionary. The implementation is similar to Java's Hashmap. */
 typedef struct {
     /** An array with pointers to linked lists. Initializes when the first item is inserted. */
     Object *buckets;
-    
+
     /** Length of buckets array. */
     size_t bucketsCounter;
-    
+
     /** The number of items stored in this dictionary. Used for determining whether to resize. */
     size_t size;
-    
+
     /** When size * loadFactor >= bucketsCounter the dictionary doubles the amount of buckets */
     float loadFactor;
-    
+
     /** Stores the next threshold for resizing. Is 0 until first resize when item is inserted. */
     size_t nextThreshold;
 } EmojicodeDictionary;
@@ -72,18 +72,18 @@ bool dictionaryContains(EmojicodeDictionary *dict, Object *key);
 
 void dictionaryMark(Object *dict);
 
-void initDictionaryBridge(Thread *thread, Value *destination);
+void initDictionaryBridge(Thread *thread);
 
 /** @warning GC-invoking */
 void dictionaryInit(EmojicodeDictionary *dict);
 
-void bridgeDictionarySet(Thread *thread, Value *destination);
-void bridgeDictionaryGet(Thread *thread, Value *destination);
-void bridgeDictionaryRemove(Thread *thread, Value *destination);
-void bridgeDictionaryKeys(Thread *thread, Value *destination);
-void bridgeDictionaryClear(Thread *thread, Value *destination);
-void bridgeDictionaryContains(Thread *thread, Value *destination);
-void bridgeDictionarySize(Thread *thread, Value *destination);
+void bridgeDictionarySet(Thread *thread);
+void bridgeDictionaryGet(Thread *thread);
+void bridgeDictionaryRemove(Thread *thread);
+void bridgeDictionaryKeys(Thread *thread);
+void bridgeDictionaryClear(Thread *thread);
+void bridgeDictionaryContains(Thread *thread);
+void bridgeDictionarySize(Thread *thread);
 
 }
 

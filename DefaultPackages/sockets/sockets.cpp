@@ -35,13 +35,13 @@ Emojicode::EmojicodeInteger errnoToError() {
     return 0;
 }
 
-void serverInitWithPort(Thread *thread, Value *destination) {
+void serverInitWithPort(Thread *thread) {
     int listenerDescriptor = socket(PF_INET, SOCK_STREAM, 0);
     if (listenerDescriptor == -1) {
-        destination->storeError(errnoToError());
+        thread->returnErrorFromFunction(errnoToError());
         return;
     }
-    
+
     struct sockaddr_in name;
     name.sin_family = PF_INET;
     name.sin_port = htons(thread->getVariable(0).raw);
@@ -51,54 +51,55 @@ void serverInitWithPort(Thread *thread, Value *destination) {
     if (setsockopt(listenerDescriptor, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(int)) == -1 ||
         bind(listenerDescriptor, (struct sockaddr *)&name, sizeof(name)) == -1 ||
         listen(listenerDescriptor, 10) == -1) {
-        destination->storeError(errnoToError());
+        thread->returnErrorFromFunction(errnoToError());
         return;
     }
-    
+
     *thread->getThisObject()->val<int>() = listenerDescriptor;
-    destination->setValueForError(thread->getThisObject());
+    thread->returnOEValueFromFunction(thread->getThisObject());
 }
 
-void serverAccept(Thread *thread, Value *destination) {
+void serverAccept(Thread *thread) {
     int listenerDescriptor = *thread->getThisObject()->val<int>();
     struct sockaddr_storage clientAddress;
     unsigned int addressSize = sizeof(clientAddress);
     int connectionAddress = accept(listenerDescriptor, (struct sockaddr *)&clientAddress, &addressSize);
-    
+
     if (connectionAddress == -1) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
-    
+
     Emojicode::Object *socket = newObject(CL_SOCKET);
     *socket->val<int>() = connectionAddress;
-    destination->optionalSet(socket);
+    thread->returnOEValueFromFunction(socket);
 }
 
-void socketSendData(Thread *thread, Value *destination) {
+void socketSendData(Thread *thread) {
     int connectionAddress = *thread->getThisObject()->val<int>();
     Data *data = thread->getVariable(0).object->val<Data>();
-    destination->raw = send(connectionAddress, data->bytes, data->length, 0) == -1;
+    thread->returnFromFunction(send(connectionAddress, data->bytes, data->length, 0) == -1);
 }
 
-void socketClose(Thread *thread, Value *destination) {
+void socketClose(Thread *thread) {
     int connectionAddress = *thread->getThisObject()->val<int>();
     close(connectionAddress);
+    thread->returnFromFunction();
 }
 
-void socketReadBytes(Thread *thread, Value *destination) {
+void socketReadBytes(Thread *thread) {
     int connectionAddress = *thread->getThisObject()->val<int>();
     Emojicode::EmojicodeInteger n = thread->getVariable(0).raw;
-    
+
     Emojicode::Object *const &bytesObject = thread->retain(Emojicode::newArray(n));
     size_t read = recv(connectionAddress, bytesObject->val<char>(), n, 0);
-    
+
     if (read < 1) {
         thread->release(1);
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
-    
+
     Emojicode::Object *obj = newObject(Emojicode::CL_DATA);
     Data *data = obj->val<Data>();
     data->length = read;
@@ -106,13 +107,13 @@ void socketReadBytes(Thread *thread, Value *destination) {
     data->bytes = data->bytesObject->val<char>();
 
     thread->release(1);
-    destination->optionalSet(obj);
+    thread->returnOEValueFromFunction(obj);
 }
 
-void socketInitWithHost(Thread *thread, Value *destination) {
+void socketInitWithHost(Thread *thread) {
     struct hostent *server = gethostbyname(Emojicode::stringToCString(thread->getVariable(0).object));
     if (!server) {
-        destination->storeError(errnoToError());
+        thread->returnErrorFromFunction(errnoToError());
         return;
     }
 
@@ -124,15 +125,11 @@ void socketInitWithHost(Thread *thread, Value *destination) {
 
     int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
     if (socketDescriptor == -1 || connect(socketDescriptor, (struct sockaddr *) &address, sizeof(address)) == -1) {
-        destination->storeError(errnoToError());
+        thread->returnErrorFromFunction(errnoToError());
         return;
     }
     *thread->getThisObject()->val<int>() = socketDescriptor;
-    destination->setValueForError(thread->getThisObject());
-}
-
-void socketDestruct(void *d) {
-    close(*(int *)d);
+    thread->returnOEValueFromFunction(thread->getThisObject());
 }
 
 Emojicode::PackageVersion version(0, 1);

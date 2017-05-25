@@ -39,19 +39,17 @@ struct Block {
 struct Function {
     /// Number of arguments taken by this function
     int argumentCount;
-    /// Whether the method is native
-    bool native;
+
     /// The frame size needed to execute this function.
     int frameSize;
 
     FunctionObjectVariableRecord *objectVariableRecords;
     unsigned int objectVariableRecordsCount;
 
-    union {
-        /** FunctionPointer pointer to execute the method. */
-        FunctionFunctionPointer handler;
-        Block block;
-    };
+    Block block;
+
+    /// A native function connect to this function
+    FunctionFunctionPointer handler;
 };
 
 struct ProtocolDispatchTable {

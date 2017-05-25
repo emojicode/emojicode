@@ -47,20 +47,20 @@ void listRelease(void *l);
 /** List marker for the GC */
 void listMark(Object *self);
 
-void initListEmptyBridge(Thread *thread, Value *destination);
-void initListWithCapacity(Thread *thread, Value *destination);
-void listCountBridge(Thread *thread, Value *destination);
-void listAppendBridge(Thread *thread, Value *destination);
-void listGetBridge(Thread *thread, Value *destination);
-void listRemoveBridge(Thread *thread, Value *destination);
-void listPopBridge(Thread *thread, Value *destination);
-void listInsertBridge(Thread *thread, Value *destination);
-void listSort(Thread *thread, Value *destination);
-void listFromListBridge(Thread *thread, Value *destination);
-void listRemoveAllBridge(Thread *thread, Value *destination);
-void listSetBridge(Thread *thread, Value *destination);
-void listShuffleInPlaceBridge(Thread *thread, Value *destination);
-void listEnsureCapacityBridge(Thread *thread, Value *destination);
+void initListEmptyBridge(Thread *thread);
+void initListWithCapacity(Thread *thread);
+void listCountBridge(Thread *thread);
+void listAppendBridge(Thread *thread);
+void listGetBridge(Thread *thread);
+void listRemoveBridge(Thread *thread);
+void listPopBridge(Thread *thread);
+void listInsertBridge(Thread *thread);
+void listSort(Thread *thread);
+void listFromListBridge(Thread *thread);
+void listRemoveAllBridge(Thread *thread);
+void listSetBridge(Thread *thread);
+void listShuffleInPlaceBridge(Thread *thread);
+void listEnsureCapacityBridge(Thread *thread);
 
 }
 

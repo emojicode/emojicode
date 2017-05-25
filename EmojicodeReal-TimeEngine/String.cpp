@@ -92,17 +92,18 @@ Object* stringFromChar(const char *cstring) {
     return stro;
 }
 
-void stringPrintStdoutBrigde(Thread *thread, Value *destination) {
+void stringPrintStdoutBrigde(Thread *thread) {
     printf("%s\n", stringToCString(thread->getThisObject()));
+    thread->returnFromFunction();
 }
 
-void stringEqualBridge(Thread *thread, Value *destination) {
+void stringEqualBridge(Thread *thread) {
     String *a = thread->getThisObject()->val<String>();
     String *b = thread->getVariable(0).object->val<String>();
-    destination->raw = stringEqual(a, b);
+    thread->returnFromFunction(stringEqual(a, b));
 }
 
-void stringSubstringBridge(Thread *thread, Value *destination) {
+void stringSubstringBridge(Thread *thread) {
     EmojicodeInteger from = thread->getVariable(0).raw;
     EmojicodeInteger length = thread->getVariable(1).raw;
     String *string = thread->getThisObject()->val<String>();
@@ -114,10 +115,10 @@ void stringSubstringBridge(Thread *thread, Value *destination) {
         length = (EmojicodeInteger)string->length + length;
     }
 
-    destination->object = stringSubstring(from, length, thread);
+    thread->returnFromFunction(stringSubstring(from, length, thread));
 }
 
-void stringIndexOf(Thread *thread, Value *destination) {
+void stringIndexOf(Thread *thread) {
     String *string = thread->getThisObject()->val<String>();
     String *search = thread->getVariable(0).object->val<String>();
 
@@ -126,14 +127,14 @@ void stringIndexOf(Thread *thread, Value *destination) {
                                           search->characters() + search->length);
 
     if (location == last) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
     }
     else {
-        destination->optionalSet(static_cast<EmojicodeInteger>(location - string->characters()));
+        thread->returnOEValueFromFunction(static_cast<EmojicodeInteger>(location - string->characters()));
     }
 }
 
-void stringTrimBridge(Thread *thread, Value *destination) {
+void stringTrimBridge(Thread *thread) {
     String *string = thread->getThisObject()->val<String>();
 
     EmojicodeInteger start = 0;
@@ -145,10 +146,10 @@ void stringTrimBridge(Thread *thread, Value *destination) {
     while (stop > 0 && isWhitespace(string->characters()[stop]))
         stop--;
 
-    destination->object = stringSubstring(start, stop - start + 1, thread);
+    thread->returnFromFunction(stringSubstring(start, stop - start + 1, thread));
 }
 
-void stringGetInput(Thread *thread, Value *destination) {
+void stringGetInput(Thread *thread) {
     printf("%s\n", stringToCString(thread->getVariable(0).object));
     fflush(stdout);
 
@@ -183,10 +184,10 @@ void stringGetInput(Thread *thread, Value *destination) {
     string->charactersObject = chars;
 
     u8_toucs(string->characters(), len, buffer->val<char>(), bufferUsedSize);
-    *destination = thread->getThisContext();
+    thread->returnFromFunction(thread->getThisContext());
 }
 
-void stringSplitByStringBridge(Thread *thread, Value *destination) {
+void stringSplitByStringBridge(Thread *thread) {
     Object *const &listObject = thread->retain(newObject(CL_LIST));
 
     EmojicodeInteger firstOfSeperator = 0, seperatorIndex = 0, firstAfterSeperator = 0;
@@ -228,20 +229,20 @@ void stringSplitByStringBridge(Thread *thread, Value *destination) {
     String *string = stringObject->val<String>();
     listAppendDestination(listObject, thread)->copySingleValue(T_OBJECT, stringSubstring(firstAfterSeperator, string->length - firstAfterSeperator, thread));
 
-    *destination = listObject;
     thread->release(1);
+    thread->returnFromFunction(listObject);
 }
 
-void stringLengthBridge(Thread *thread, Value *destination) {
-    destination->raw = thread->getThisObject()->val<String>()->length;
+void stringLengthBridge(Thread *thread) {
+    thread->returnFromFunction(thread->getThisObject()->val<String>()->length);
 }
 
-void stringUTF8LengthBridge(Thread *thread, Value *destination) {
+void stringUTF8LengthBridge(Thread *thread) {
     String *str = thread->getThisObject()->val<String>();
-    destination->raw = u8_codingsize(str->characters(), str->length);
+    thread->returnFromFunction(static_cast<EmojicodeInteger>(u8_codingsize(str->characters(), str->length)));
 }
 
-void stringByAppendingSymbolBridge(Thread *thread, Value *destination) {
+void stringByAppendingSymbolBridge(Thread *thread) {
     String *string = thread->getThisObject()->val<String>();
     Object *const &co = thread->retain(newArray((string->length + 1) * sizeof(EmojicodeChar)));
 
@@ -256,45 +257,46 @@ void stringByAppendingSymbolBridge(Thread *thread, Value *destination) {
 
     ostr->characters()[string->length] = thread->getVariable(0).character;
 
-    destination->object = ostro;
     thread->release(1);
+    thread->returnFromFunction(ostro);
 }
 
-void stringSymbolAtBridge(Thread *thread, Value *destination) {
+void stringSymbolAtBridge(Thread *thread) {
     EmojicodeInteger index = thread->getVariable(0).raw;
     String *str = thread->getThisObject()->val<String>();
     if (index >= str->length) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
 
-    destination->optionalSet(str->characters()[index]);
+    thread->returnOEValueFromFunction(str->characters()[index]);
 }
 
-void stringBeginsWithBridge(Thread *thread, Value *destination) {
+void stringBeginsWithBridge(Thread *thread) {
     String *a = thread->getThisObject()->val<String>();
     String *with = thread->getVariable(0).object->val<String>();
     if (a->length < with->length) {
-        destination->raw = 0;
+        thread->returnFromFunction(false);
         return;
     }
 
-    destination->raw = std::memcmp(a->characters(), with->characters(), with->length * sizeof(EmojicodeChar)) == 0;
+    thread->returnFromFunction(std::memcmp(a->characters(), with->characters(),
+                                           with->length * sizeof(EmojicodeChar)) == 0);
 }
 
-void stringEndsWithBridge(Thread *thread, Value *destination) {
+void stringEndsWithBridge(Thread *thread) {
     String *a = thread->getThisObject()->val<String>();
     String *end = thread->getVariable(0).object->val<String>();
     if (a->length < end->length) {
-        destination->raw = 0;
+        thread->returnFromFunction(false);
         return;
     }
 
-    destination->raw = std::memcmp(a->characters() + (a->length - end->length),
-                                   end->characters(), end->length * sizeof(EmojicodeChar)) == 0;
+    thread->returnFromFunction(std::memcmp(a->characters() + (a->length - end->length),
+                                           end->characters(), end->length * sizeof(EmojicodeChar)) == 0);
 }
 
-void stringSplitBySymbolBridge(Thread *thread, Value *destination) {
+void stringSplitBySymbolBridge(Thread *thread) {
     EmojicodeChar separator = thread->getVariable(0).character;
     Object *const &list = thread->retain(newObject(CL_LIST));
 
@@ -312,10 +314,10 @@ void stringSplitBySymbolBridge(Thread *thread, Value *destination) {
                                     stringSubstring(from, stringObject->val<String>()->length - from, thread));
 
     thread->release(1);
-    destination->object = list;
+    thread->returnFromFunction(list);
 }
 
-void stringToData(Thread *thread, Value *destination) {
+void stringToData(Thread *thread) {
     String *str = thread->getThisObject()->val<String>();
 
     size_t ds = u8_codingsize(str->characters(), str->length);
@@ -332,21 +334,22 @@ void stringToData(Thread *thread, Value *destination) {
     d->bytes = d->bytesObject->val<char>();
 
     thread->release(1);
-    destination->object = o;
+    thread->returnFromFunction(o);
 }
 
-void stringToCharacterList(Thread *thread, Value *destination) {
+void stringToCharacterList(Thread *thread) {
     String *str = thread->getThisObject()->val<String>();
     Object *list = newObject(CL_LIST);
 
     for (size_t i = 0; i < str->length; i++) {
         listAppendDestination(list, thread)->copySingleValue(T_SYMBOL, str->characters()[i]);
     }
-    destination->object = list;
+    thread->returnFromFunction(list);
 }
 
-void stringJSON(Thread *thread, Value *destination) {
-    parseJSON(thread, reinterpret_cast<Box *>(destination));
+void stringJSON(Thread *thread) {
+    parseJSON(thread, reinterpret_cast<Box *>(thread->currentStackFrame()->destination));
+    thread->returnFromFunction();
 }
 
 void initStringFromSymbolList(String *str, List *list) {
@@ -361,13 +364,13 @@ void initStringFromSymbolList(String *str, List *list) {
     }
 }
 
-void stringFromSymbolListBridge(Thread *thread, Value *destination) {
+void stringFromSymbolListBridge(Thread *thread) {
     String *str = thread->getThisObject()->val<String>();
     initStringFromSymbolList(str, thread->getVariable(0).object->val<List>());
-    *destination = thread->getThisContext();
+    thread->returnFromFunction(thread->getThisContext());
 }
 
-void stringFromStringList(Thread *thread, Value *destination) {
+void stringFromStringList(Thread *thread) {
     size_t stringSize = 0;
     size_t appendLocation = 0;
 
@@ -406,7 +409,7 @@ void stringFromStringList(Thread *thread, Value *destination) {
             }
         }
     }
-    *destination = thread->getThisContext();
+    thread->returnFromFunction(thread->getThisContext());
 }
 
 std::pair<EmojicodeInteger, bool> charactersToInteger(EmojicodeChar *characters, EmojicodeInteger base,
@@ -448,20 +451,24 @@ std::pair<EmojicodeInteger, bool> charactersToInteger(EmojicodeChar *characters,
     return std::make_pair(x, true);
 }
 
-void stringToInteger(Thread *thread, Value *destination) {
+void stringToInteger(Thread *thread) {
     EmojicodeInteger base = thread->getVariable(0).raw;
     String *string = thread->getThisObject()->val<String>();
 
     auto pair = charactersToInteger(string->characters(), base, string->length);
-    if (pair.second) destination->optionalSet(pair.first);
-    else destination->makeNothingness();
+    if (pair.second) {
+        thread->returnOEValueFromFunction(pair.first);
+    }
+    else {
+        thread->returnNothingnessFromFunction();
+    }
 }
 
-void stringToDouble(Thread *thread, Value *destination) {
+void stringToDouble(Thread *thread) {
     String *string = thread->getThisObject()->val<String>();
 
     if (string->length == 0) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
 
@@ -476,14 +483,15 @@ void stringToDouble(Thread *thread, Value *destination) {
     if (characters[0] == '-') {
         sign = false;
         i++;
-    } else if (characters[0] == '+') {
+    }
+    else if (characters[0] == '+') {
         i++;
     }
 
     for (; i < string->length; i++) {
         if (characters[i] == '.') {
             if (foundSeparator) {
-                destination->makeNothingness();
+                thread->returnNothingnessFromFunction();
                 return;
             } else {
                 foundSeparator = true;
@@ -493,7 +501,7 @@ void stringToDouble(Thread *thread, Value *destination) {
         if (characters[i] == 'e' || characters[i] == 'E') {
             auto exponent = charactersToInteger(characters + i + 1, 10, string->length - i - 1);
             if (!exponent.second) {
-                destination->makeNothingness();
+                thread->returnNothingnessFromFunction();
                 return;
             } else {
                 d *= pow(10, exponent.first);
@@ -508,13 +516,13 @@ void stringToDouble(Thread *thread, Value *destination) {
             }
             foundDigit = true;
         } else {
-            destination->makeNothingness();
+            thread->returnNothingnessFromFunction();
             return;
         }
     }
 
     if (!foundDigit) {
-        destination->makeNothingness();
+        thread->returnNothingnessFromFunction();
         return;
     }
 
@@ -523,10 +531,10 @@ void stringToDouble(Thread *thread, Value *destination) {
     if (!sign) {
         d *= -1;
     }
-    destination->optionalSet(d);
+    thread->returnOEValueFromFunction(d);
 }
 
-void stringToUppercase(Thread *thread, Value *destination) {
+void stringToUppercase(Thread *thread) {
     Object *const &o = thread->retain(newObject(CL_STRING));
     size_t length = thread->getThisObject()->val<String>()->length;
 
@@ -541,10 +549,10 @@ void stringToUppercase(Thread *thread, Value *destination) {
         else news->characters()[i] = c;
     }
     thread->release(1);
-    destination->object = o;
+    thread->returnFromFunction(o);
 }
 
-void stringToLowercase(Thread *thread, Value *destination) {
+void stringToLowercase(Thread *thread) {
     Object *const &o = thread->retain(newObject(CL_STRING));
     size_t length = thread->getThisObject()->val<String>()->length;
 
@@ -559,13 +567,13 @@ void stringToLowercase(Thread *thread, Value *destination) {
         else news->characters()[i] = c;
     }
     thread->release(1);
-    destination->object = o;
+    thread->returnFromFunction(o);
 }
 
-void stringCompareBridge(Thread *thread, Value *destination) {
+void stringCompareBridge(Thread *thread) {
     String *a = thread->getThisObject()->val<String>();
     String *b = thread->getVariable(0).object->val<String>();
-    destination->raw = stringCompare(a, b);
+    thread->returnFromFunction(stringCompare(a, b));
 }
 
 void stringMark(Object *self) {

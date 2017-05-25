@@ -92,22 +92,21 @@ void readFunction(Function **table, FILE *in, FunctionFunctionPointer *linkingTa
     function->frameSize = readUInt16(in);
     uint16_t native = readUInt16(in);
     if (native) {
-        DEBUG_LOG("Function is native");
-        function->native = true;
+        DEBUG_LOG("Function has native function");
         function->handler = linkingTable[native];
     }
-    else {
-        function->native = false;
-        function->block.instructionCount = readEmojicodeChar(in);
 
-        function->block.instructions = new EmojicodeInstruction[function->block.instructionCount];
-        for (unsigned int i = 0; i < function->block.instructionCount; i++) {
-            function->block.instructions[i] = readInstruction(in);
-        }
 
-        DEBUG_LOG("Read block with %d coins and %d local variable(s)", function->block.instructionCount,
-                  function->frameSize);
+    function->block.instructionCount = readEmojicodeChar(in);
+
+    function->block.instructions = new EmojicodeInstruction[function->block.instructionCount];
+    for (unsigned int i = 0; i < function->block.instructionCount; i++) {
+        function->block.instructions[i] = readInstruction(in);
     }
+
+    DEBUG_LOG("Read block with %d coins and %d local variable(s)", function->block.instructionCount,
+              function->frameSize);
+
     table[vti] = function;
 }
 

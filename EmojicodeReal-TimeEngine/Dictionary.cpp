@@ -312,28 +312,31 @@ void dictionaryMark(Object *object) {
 
 //MARK: Bridges
 
-void bridgeDictionarySet(Thread *thread, Value *destination) {
+void bridgeDictionarySet(Thread *thread) {
     dictionaryPutVal(thread->getThisObject(), thread->getVariable(0).object,
                      *reinterpret_cast<Box *>(thread->variableDestination(1)), thread);
+    thread->returnFromFunction();
 }
 
-void bridgeDictionaryGet(Thread *thread, Value *destination) {
+void bridgeDictionaryGet(Thread *thread) {
     Object *key = thread->getVariable(0).object;
     EmojicodeDictionary *dictionary = thread->getThisObject()->val<EmojicodeDictionary>();
     EmojicodeDictionaryNode *node = dictionaryGetNode(dictionary, dictionaryHash(dictionary, key), key);
     if (node == nullptr) {
-        destination->raw = T_NOTHINGNESS;
+        thread->returnNothingnessFromFunction();
     }
     else {
-        node->value.copyTo(destination);
+        node->value.copyTo(thread->currentStackFrame()->destination);
+        thread->returnFromFunction();
     }
 }
 
-void bridgeDictionaryRemove(Thread *thread, Value *destination) {
+void bridgeDictionaryRemove(Thread *thread) {
     dictionaryRemove(thread->getThisObject()->val<EmojicodeDictionary>(), thread->getVariable(0).object, thread);
+    thread->returnFromFunction();
 }
 
-void bridgeDictionaryKeys(Thread *thread, Value *destination) {
+void bridgeDictionaryKeys(Thread *thread) {
     Object *const &listObject = thread->retain(newObject(CL_LIST));
 
     EmojicodeDictionary *dict = thread->getThisObject()->val<EmojicodeDictionary>();
@@ -355,25 +358,26 @@ void bridgeDictionaryKeys(Thread *thread, Value *destination) {
     }
 
     thread->release(1);
-    destination->object = listObject;
+    thread->returnFromFunction(listObject);
 }
 
-void bridgeDictionaryClear(Thread *thread, Value *destination) {
-    destination->raw = static_cast<EmojicodeInteger>(dictionaryClear(thread->getThisObject()->val<EmojicodeDictionary>()));
+void bridgeDictionaryClear(Thread *thread) {
+    auto c = static_cast<EmojicodeInteger>(dictionaryClear(thread->getThisObject()->val<EmojicodeDictionary>()));
+    thread->returnFromFunction(c);
 }
 
-void bridgeDictionaryContains(Thread *thread, Value *destination) {
+void bridgeDictionaryContains(Thread *thread) {
     Object *key = thread->getVariable(0).object;
-    destination->raw = dictionaryContains(thread->getThisObject()->val<EmojicodeDictionary>(), key);
+    thread->returnFromFunction(dictionaryContains(thread->getThisObject()->val<EmojicodeDictionary>(), key));
 }
 
-void bridgeDictionarySize(Thread *thread, Value *destination) {
-    destination->raw = static_cast<EmojicodeInteger>(thread->getThisObject()->val<EmojicodeDictionary>()->size);
+void bridgeDictionarySize(Thread *thread) {
+    thread->returnFromFunction(static_cast<EmojicodeInteger>(thread->getThisObject()->val<EmojicodeDictionary>()->size));
 }
 
-void initDictionaryBridge(Thread *thread, Value *destination) {
+void initDictionaryBridge(Thread *thread) {
     dictionaryInit(thread->getThisObject()->val<EmojicodeDictionary>());
-    *destination = thread->getThisContext();
+    thread->returnFromFunction(thread->getThisContext());
 }
 
 }

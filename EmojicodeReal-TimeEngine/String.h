@@ -37,7 +37,7 @@ const char* stringToCString(Object *str);
 /** Creates a string from a UTF8 C string. The string must be null terminated! */
 Object* stringFromChar(const char *cstring);
 
-/** 
+/**
  * Tries to parse the string in the this-slot on the stack as JSON.
  */
 void parseJSON(Thread *thread, Box *destination);
@@ -46,30 +46,30 @@ void stringMark(Object *self);
 
 void initStringFromSymbolList(String *string, List *list);
 
-void stringPrintStdoutBrigde(Thread *thread, Value *destination);
-void stringEqualBridge(Thread *thread, Value *destination);
-void stringSubstringBridge(Thread *thread, Value *destination);
-void stringIndexOf(Thread *thread, Value *destination);
-void stringTrimBridge(Thread *thread, Value *destination);
-void stringGetInput(Thread *thread, Value *destination);
-void stringSplitByStringBridge(Thread *thread, Value *destination);
-void stringLengthBridge(Thread *thread, Value *destination);
-void stringUTF8LengthBridge(Thread *thread, Value *destination);
-void stringByAppendingSymbolBridge(Thread *thread, Value *destination);
-void stringSymbolAtBridge(Thread *thread, Value *destination);
-void stringBeginsWithBridge(Thread *thread, Value *destination);
-void stringEndsWithBridge(Thread *thread, Value *destination);
-void stringSplitBySymbolBridge(Thread *thread, Value *destination);
-void stringToData(Thread *thread, Value *destination);
-void stringToCharacterList(Thread *thread, Value *destination);
-void stringJSON(Thread *thread, Value *destination);
-void stringFromSymbolListBridge(Thread *thread, Value *destination);
-void stringFromStringList(Thread *thread, Value *destination);
-void stringToInteger(Thread *thread, Value *destination);
-void stringToDouble(Thread *thread, Value *destination);
-void stringToUppercase(Thread *thread, Value *destination);
-void stringToLowercase(Thread *thread, Value *destination);
-void stringCompareBridge(Thread *thread, Value *destination);
+void stringPrintStdoutBrigde(Thread *thread);
+void stringEqualBridge(Thread *thread);
+void stringSubstringBridge(Thread *thread);
+void stringIndexOf(Thread *thread);
+void stringTrimBridge(Thread *thread);
+void stringGetInput(Thread *thread);
+void stringSplitByStringBridge(Thread *thread);
+void stringLengthBridge(Thread *thread);
+void stringUTF8LengthBridge(Thread *thread);
+void stringByAppendingSymbolBridge(Thread *thread);
+void stringSymbolAtBridge(Thread *thread);
+void stringBeginsWithBridge(Thread *thread);
+void stringEndsWithBridge(Thread *thread);
+void stringSplitBySymbolBridge(Thread *thread);
+void stringToData(Thread *thread);
+void stringToCharacterList(Thread *thread);
+void stringJSON(Thread *thread);
+void stringFromSymbolListBridge(Thread *thread);
+void stringFromStringList(Thread *thread);
+void stringToInteger(Thread *thread);
+void stringToDouble(Thread *thread);
+void stringToUppercase(Thread *thread);
+void stringToLowercase(Thread *thread);
+void stringCompareBridge(Thread *thread);
 
 }
 

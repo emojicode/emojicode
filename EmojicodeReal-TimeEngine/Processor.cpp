@@ -63,35 +63,19 @@ void loadCapture(Closure *c, Thread *thread) {
 
 void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Thread *thread, Value *destination) {
     Closure *c = callable->val<Closure>();
-    if (c->function->native) {
-        auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
-                                       destination, nullptr);
-        std::memcpy(sf->variableDestination(0), args, argsSize);
-        thread->pushReservedFrame();
-        loadCapture(c, thread);
-        c->function->handler(thread, destination);
-    }
-    else {
-        auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
-                                       destination, c->function->block.instructions);
-        std::memcpy(sf->variableDestination(0), args, argsSize);
-        thread->pushReservedFrame();
-        loadCapture(c, thread);
-        runFunctionPointerBlock(thread);
-    }
+    auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
+                                   destination, c->function->block.instructions);
+    std::memcpy(sf->variableDestination(0), args, argsSize);
+    thread->pushReservedFrame();
+    loadCapture(c, thread);
+    runFunctionPointerBlock(thread);
     thread->popStack();
 }
 
 void performFunction(Function *function, Value self, Thread *thread, Value *destination) {
-    if (function->native) {
-        thread->pushStack(self, function->frameSize, function->argumentCount, function, destination, nullptr);
-        function->handler(thread, destination);
-    }
-    else {
-        thread->pushStack(self, function->frameSize, function->argumentCount, function, destination,
-                          function->block.instructions);
-        runFunctionPointerBlock(thread);
-    }
+    thread->pushStack(self, function->frameSize, function->argumentCount, function, destination,
+                      function->block.instructions);
+    runFunctionPointerBlock(thread);
     thread->popStack();
 }
 
@@ -784,15 +768,15 @@ void produce(Thread *thread, Value *destination) {
         }
         case INS_RETURN:
             produce(thread, thread->currentStackFrame()->destination);
-            thread->currentStackFrame()->executionPointer = nullptr;
+            thread->returnFromFunction();
             return;
         case INS_ERROR:
             thread->currentStackFrame()->destination->raw = T_ERROR;
             produce(thread, thread->currentStackFrame()->destination + 1);
-            thread->currentStackFrame()->executionPointer = nullptr;
+            thread->returnFromFunction();
             return;
         case INS_RETURN_WITHOUT_VALUE:
-            thread->currentStackFrame()->executionPointer = nullptr;
+            thread->returnFromFunction();
             return;
         case INS_JUMP_FORWARD:
             thread->currentStackFrame()->executionPointer += thread->consumeInstruction();
@@ -842,6 +826,9 @@ void produce(Thread *thread, Value *destination) {
             }
             return;
         }
+        case INS_TRANSFER_CONTROL_TO_NATIVE:
+            thread->currentStackFrame()->function->handler(thread);
+            return;
         case INS_OPT_FOR_IN_LIST:
             error("INS_OPT_FOR_IN_LIST");
         case INS_OPT_FOR_IN_RANGE:
@@ -851,18 +838,10 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, &sth);
 
             Closure *c = sth.object->val<Closure>();
-            if (c->function->native) {
-                thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
-                                  destination, nullptr);
-                loadCapture(c, thread);
-                c->function->handler(thread, destination);
-            }
-            else {
-                thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
-                                  destination, c->function->block.instructions);
-                loadCapture(c, thread);
-                runFunctionPointerBlock(thread);
-            }
+            thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
+                              destination, c->function->block.instructions);
+            loadCapture(c, thread);
+            runFunctionPointerBlock(thread);
             thread->popStack();
             return;
         }
