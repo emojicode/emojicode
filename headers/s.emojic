@@ -727,8 +727,7 @@
   🐖 🦁 comparator 🍇Element Element➡️🚂🍉 📻 53
 
   🌮
-    Shuffles the list in place using the Fisher Yates algorithm. The shuffle can
-    be considered secure on any BSD or Linux system.
+    Shuffles the list in place.
   🌮
   🐖 🐹 📻 51
 

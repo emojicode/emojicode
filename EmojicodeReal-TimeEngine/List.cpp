@@ -13,6 +13,7 @@
 #include <cstring>
 #include <algorithm>
 #include <utility>
+#include <random>
 
 namespace Emojicode {
 
@@ -205,13 +206,10 @@ void listSetBridge(Thread *thread) {
 
 void listShuffleInPlaceBridge(Thread *thread) {
     List *list = thread->getThisObject()->val<List>();
-    EmojicodeInteger i, n = (EmojicodeInteger)list->count;
-    Box tmp;
 
-    for (i = n - 1; i > 0; i--) {
-        EmojicodeInteger newIndex = secureRandomNumber(0, i);
-        std::swap(list->elements()[i], list->elements()[newIndex]);
-    }
+    auto rng = std::mt19937_64(std::random_device()());
+    std::shuffle(list->elements(), list->elements() + list->count, rng);
+
     thread->returnFromFunction();
 }
 
