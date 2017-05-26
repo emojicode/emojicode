@@ -6,11 +6,11 @@
 //  Copyright © 2015 Theo Weidmann. All rights reserved.
 //
 
-#include <cmath>
 #include "Engine.hpp"
 #include "Dictionary.h"
 #include "List.h"
 #include "Thread.hpp"
+#include <cmath>
 
 namespace Emojicode {
 
@@ -116,18 +116,22 @@ void parseJSON(Thread *thread, Box *destination) {
                                 c = chars[i];
                                 x *= 16;
 
-                                if ('0' <= c && c <= '9')
+                                if ('0' <= c && c <= '9') {
                                     x += c - '0';
-                                else if ('A' <= c && c <= 'F')
+                                }
+                                else if ('A' <= c && c <= 'F') {
                                     x += c - 'A' + 10;
-                                else if ('a' <= c && c <= 'f')
+                                }
+                                else if ('a' <= c && c <= 'f') {
                                     x += c - 'a' + 10;
+                                }
                                 else {
                                     errorExit();
                                 }
                             }
-                            if (high)
+                            if (high > 0) {
                                 x = (high << 10) + x + 0x10000 - (0xD800 << 10) - 0xDC00;
+                            }
                             else if (0xD800 <= x && x <= 0xDBFF) {
                                 if (i + 2 >= length || chars[i++] != '\\' || chars[i++] != 'u') {
                                     errorExit();
@@ -178,7 +182,9 @@ void parseJSON(Thread *thread, Box *destination) {
             case JSON_EXPONENT:
             case JSON_EXPONENT_NEGATIVE:
                 stackCurrent->state++;
-                if (c == '+') continue;
+                if (c == '+') {
+                    continue;
+                }
             case JSON_EXPONENT_NO_PLUS:
             case JSON_EXPONENT_NO_PLUS_NEGATIVE:
                 stackCurrent->state++;
@@ -332,4 +338,4 @@ void parseJSON(Thread *thread, Box *destination) {
     errorExit();
 }
 
-}
+}  // namespace Emojicode

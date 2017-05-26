@@ -7,23 +7,23 @@
 //
 
 #include "standard.h"
+#include "../utf8.h"
+#include "Dictionary.h"
 #include "Engine.hpp"
-#include "String.h"
 #include "List.h"
 #include "String.h"
-#include "Dictionary.h"
-#include "../utf8.h"
+#include "String.h"
 #include "Thread.hpp"
-#include <inttypes.h>
-#include <time.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <cstring>
-#include <cstdlib>
-#include <cmath>
-#include <thread>
 #include <algorithm>
+#include <cinttypes>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <pthread.h>
 #include <random>
+#include <thread>
+#include <unistd.h>
 
 namespace Emojicode {
 
@@ -56,7 +56,7 @@ static void systemTime(Thread *thread) {
 static void systemArgs(Thread *thread) {
     Object *const &listObject = thread->retain(newObject(CL_LIST));
 
-    List *newList = listObject->val<List>();
+    auto *newList = listObject->val<List>();
     newList->capacity = cliArgumentCount;
     Object *items = newArray(sizeof(Value) * cliArgumentCount);
 
@@ -73,7 +73,7 @@ static void systemArgs(Thread *thread) {
 static void systemSystem(Thread *thread) {
     FILE *f = popen(stringToCString(thread->getVariable(0).object), "r");
 
-    if (!f) {
+    if (f == nullptr) {
         thread->returnNothingnessFromFunction();
         return;
     }
@@ -96,7 +96,7 @@ static void systemSystem(Thread *thread) {
     EmojicodeInteger len = u8_strlen_l(buffer->val<char>(), bufferUsedSize);
 
     Object *const &so = thread->retain(newObject(CL_STRING));
-    String *string = so->val<String>();
+    auto *string = so->val<String>();
     string->length = len;
 
     Object *chars = newArray(len * sizeof(EmojicodeChar));
@@ -161,8 +161,8 @@ static void mutexTryLock(Thread *thread) {
 // MARK: Data
 
 static void dataEqual(Thread *thread) {
-    Data *d = thread->getThisObject()->val<Data>();
-    Data *b = thread->getVariable(0).object->val<Data>();
+    auto *d = thread->getThisObject()->val<Data>();
+    auto *b = thread->getVariable(0).object->val<Data>();
 
     if (d->length != b->length) {
         thread->returnFromFunction(false);
@@ -177,7 +177,7 @@ static void dataSize(Thread *thread) {
 }
 
 static void dataMark(Object *o) {
-    Data *d = o->val<Data>();
+    auto *d = o->val<Data>();
     if (d->bytesObject) {
         mark(&d->bytesObject);
         d->bytes = d->bytesObject->val<char>();
@@ -185,7 +185,7 @@ static void dataMark(Object *o) {
 }
 
 static void dataGetByte(Thread *thread) {
-    Data *d = thread->getThisObject()->val<Data>();
+    auto *d = thread->getThisObject()->val<Data>();
 
     EmojicodeInteger index = thread->getVariable(0).raw;
     if (index < 0) {
@@ -200,8 +200,8 @@ static void dataGetByte(Thread *thread) {
 }
 
 static void dataToString(Thread *thread) {
-    Data *data = thread->getThisObject()->val<Data>();
-    if (!u8_isvalid(data->bytes, data->length)) {
+    auto *data = thread->getThisObject()->val<Data>();
+    if (u8_isvalid(data->bytes, data->length) == 0) {
         thread->returnNothingnessFromFunction();
         return;
     }
@@ -210,7 +210,7 @@ static void dataToString(Thread *thread) {
     Object *const &characters = thread->retain(newArray(len * sizeof(EmojicodeChar)));
 
     Object *sto = newObject(CL_STRING);
-    String *string = sto->val<String>();
+    auto *string = sto->val<String>();
     string->length = len;
     string->charactersObject = characters;
     thread->release(1);
@@ -220,8 +220,8 @@ static void dataToString(Thread *thread) {
 
 static void dataSlice(Thread *thread) {
     Object *ooData = newObject(CL_DATA);
-    Data *oData = ooData->val<Data>();
-    Data *data = thread->getThisObject()->val<Data>();
+    auto *oData = ooData->val<Data>();
+    auto *data = thread->getThisObject()->val<Data>();
 
     EmojicodeInteger from = thread->getVariable(0).raw;
     if (from >= data->length) {
@@ -241,8 +241,8 @@ static void dataSlice(Thread *thread) {
 }
 
 static void dataIndexOf(Thread *thread) {
-    Data *data = thread->getThisObject()->val<Data>();
-    Data *search = thread->getVariable(0).object->val<Data>();
+    auto *data = thread->getThisObject()->val<Data>();
+    auto *search = thread->getVariable(0).object->val<Data>();
     auto last = data->bytes + data->length;
     const void *location = std::search(data->bytes, last, search->bytes, search->bytes + search->length);
     if (location == last) {
@@ -254,8 +254,8 @@ static void dataIndexOf(Thread *thread) {
 }
 
 static void dataByAppendingData(Thread *thread) {
-    Data *data = thread->getThisObject()->val<Data>();
-    Data *b = thread->getVariable(0).object->val<Data>();
+    auto *data = thread->getThisObject()->val<Data>();
+    auto *b = thread->getVariable(0).object->val<Data>();
 
     size_t size = data->length + b->length;
     Object *const &newBytes = thread->retain(newArray(size));
@@ -267,7 +267,7 @@ static void dataByAppendingData(Thread *thread) {
     std::memcpy(newBytes->val<char>() + data->length, b->bytes, b->length);
 
     Object *ooData = newObject(CL_DATA);
-    Data *oData = ooData->val<Data>();
+    auto *oData = ooData->val<Data>();
     oData->bytesObject = newBytes;
     oData->bytes = oData->bytesObject->val<char>();
     oData->length = size;
@@ -283,21 +283,25 @@ void integerToString(Thread *thread) {
     bool negative = n < 0;
 
     EmojicodeInteger d = negative ? 2 : 1;
-    while (n /= base) d++;
+    while (n /= base) {
+        d++;
+    }
 
     Object *const &co = thread->retain(newArray(d * sizeof(EmojicodeChar)));
 
     Object *stringObject = newObject(CL_STRING);
-    String *string = stringObject->val<String>();
+    auto *string = stringObject->val<String>();
     string->length = d;
     string->charactersObject = co;
 
     EmojicodeChar *characters = string->characters() + d;
-    do
+    do {
         *--characters =  "0123456789abcdefghijklmnopqrstuvxyz"[a % base % 35];
-    while (a /= base);
+    } while (a /= base);
 
-    if (negative) characters[-1] = '-';
+    if (negative) {
+        characters[-1] = '-';
+    }
     thread->release(1);
     thread->returnFromFunction(stringObject);
 }
@@ -324,7 +328,7 @@ static void integerAbsolute(Thread *thread) {
 static void symbolToString(Thread *thread) {
     Object *co = thread->retain(newArray(sizeof(EmojicodeChar)));
     Object *stringObject = newObject(CL_STRING);
-    String *string = stringObject->val<String>();
+    auto *string = stringObject->val<String>();
     string->length = 1;
     string->charactersObject = co;
     thread->release(1);
@@ -356,14 +360,14 @@ static void doubleToString(Thread *thread) {
 
     Object *const &co = thread->retain(newArray(length * sizeof(EmojicodeChar)));
     Object *stringObject = newObject(CL_STRING);
-    String *string = stringObject->val<String>();
+    auto *string = stringObject->val<String>();
     string->length = length;
     string->charactersObject = co;
     thread->release(1);
     EmojicodeChar *characters = string->characters() + length;
 
     for (size_t i = precision; i > 0; i--) {
-        *--characters =  (unsigned char) (fmod(absD * pow(10, i), 10.0)) % 10 + '0';
+        *--characters = static_cast<unsigned char>(fmod(absD * pow(10, i), 10.0)) % 10 + '0';
     }
 
     if (precision != 0) {
@@ -371,10 +375,12 @@ static void doubleToString(Thread *thread) {
     }
 
     for (size_t i = 0; i < iLength; i++) {
-        *--characters =  (unsigned char) (fmod(absD / pow(10, i), 10.0)) % 10 + '0';
+        *--characters =  static_cast<unsigned char>(fmod(absD / pow(10, i), 10.0)) % 10 + '0';
     }
 
-    if (negative) characters[-1] = '-';
+    if (negative) {
+        characters[-1] = '-';
+    }
     thread->returnFromFunction(stringObject);
 }
 
@@ -598,4 +604,4 @@ Marker markerPointerForClass(EmojicodeChar cl) {
     return nullptr;
 }
 
-}
+}  // namespace Emojicode

@@ -7,15 +7,15 @@
 //
 
 #include "Object.hpp"
-#include <cstring>
-#include <cstdlib>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <algorithm>
+#include "Class.hpp"
 #include "Engine.hpp"
 #include "Thread.hpp"
-#include "Class.hpp"
+#include <algorithm>
+#include <condition_variable>
+#include <cstdlib>
+#include <cstring>
+#include <mutex>
+#include <thread>
 
 namespace Emojicode {
 
@@ -117,7 +117,7 @@ void mark(Object **oPointer) {
         return;
     }
 
-    Object *newObject = reinterpret_cast<Object *>(currentHeap + memoryUse);
+    auto *newObject = reinterpret_cast<Object *>(currentHeap + memoryUse);
     memoryUse += oldObject->size;
 
     std::memcpy(newObject, oldObject, oldObject->size);
@@ -157,7 +157,9 @@ void gc(std::unique_lock<std::mutex> &allocationLock) {
             markByObjectVariableRecord(record, object->variableDestination(0), i);
         }
 
-        if (object->klass->mark) object->klass->mark(object);
+        if (object->klass->mark != nullptr) {
+            object->klass->mark(object);
+        }
         byte += object->size;
     }
 
@@ -202,4 +204,4 @@ void disallowGCAndPauseIfNeeded() {
     pausingThreadsCountCondition.notify_one();
 }
 
-}
+}  // namespace Emojicode

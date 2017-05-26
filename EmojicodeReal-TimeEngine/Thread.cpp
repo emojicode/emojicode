@@ -7,12 +7,12 @@
 //
 
 #include "Thread.hpp"
-#include <cstring>
-#include <cstdlib>
-#include <thread>
-#include <mutex>
-#include "Processor.hpp"
 #include "Object.hpp"
+#include "Processor.hpp"
+#include <cstdlib>
+#include <cstring>
+#include <mutex>
+#include <thread>
 
 using namespace Emojicode;
 
@@ -29,7 +29,7 @@ int Thread::threads() {
 }
 
 Thread::Thread() {
-#define stackSize (sizeof(StackFrame) + 10 * sizeof(Value)) * 10000
+#define stackSize ((sizeof(StackFrame) + 10 * sizeof(Value)) * 10000)
     stackLimit_ = static_cast<StackFrame *>(calloc(stackSize, 1));
     if (!stackLimit_) {
         error("Could not allocate stack!");
@@ -40,7 +40,7 @@ Thread::Thread() {
     std::lock_guard<std::mutex> threadListLock(threadListMutex);
     threadBefore_ = lastThread_;
     threadAfter_ = nullptr;
-    if (lastThread_) {
+    if (lastThread_ != nullptr) {
         lastThread_->threadAfter_ = this;
     }
     lastThread_ = this;
@@ -52,9 +52,15 @@ Thread::~Thread() {
     Thread *before = this->threadBefore_;
     Thread *after = this->threadAfter_;
 
-    if (before) before->threadAfter_ = after;
-    if (after) after->threadBefore_ = before;
-    else lastThread_ = before;
+    if (before) {
+        before->threadAfter_ = after;
+    }
+    if (after) {
+        after->threadBefore_ = before;
+    }
+    else {
+        lastThread_ = before;
+    }
 
     threads_--;
 
@@ -63,7 +69,7 @@ Thread::~Thread() {
 
 StackFrame* Thread::reserveFrame(Value self, int size, Function *function, Value *destination,
                             EmojicodeInstruction *executionPointer) {
-    StackFrame *sf = (StackFrame *)((Byte *)futureStack_ - (sizeof(StackFrame) + sizeof(Value) * size));
+    auto *sf = (StackFrame *)((Byte *)futureStack_ - (sizeof(StackFrame) + sizeof(Value) * size));
     if (sf < stackLimit_) {
         error("Your program triggerd a stack overflow!");
     }

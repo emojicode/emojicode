@@ -7,13 +7,13 @@
 //
 
 #include "Engine.hpp"
-#include <cstdarg>
-#include <cstdlib>
-#include "Thread.hpp"
-#include "Processor.hpp"
 #include "Class.hpp"
 #include "Object.hpp"
+#include "Processor.hpp"
 #include "Reader.hpp"
+#include "Thread.hpp"
+#include <cstdarg>
+#include <cstdlib>
 
 using namespace Emojicode;
 
@@ -59,13 +59,14 @@ Object **stringPool;
     abort();
 }
 
-}
+}  // namespace Emojicode
 
 int main(int argc, char *argv[]) {
     cliArgumentCount = argc;
     cliArguments = argv;
-    const char *ppath;
-    if ((ppath = getenv("EMOJICODE_PACKAGES_PATH"))) {
+
+    const char *ppath = getenv("EMOJICODE_PACKAGES_PATH");
+    if (ppath != nullptr) {
         packageDirectory = ppath;
     }
 

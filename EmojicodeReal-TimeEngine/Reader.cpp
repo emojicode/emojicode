@@ -7,12 +7,12 @@
 //
 
 #include "Reader.hpp"
-#include "Engine.hpp"
 #include "Class.hpp"
+#include "Engine.hpp"
 #include "String.h"
-#include <dlfcn.h>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
+#include <dlfcn.h>
 
 #ifdef DEBUG
 #define DEBUG_LOG(format, ...) printf(format "\n", ##__VA_ARGS__)
@@ -44,24 +44,25 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
 
     free(path);
 
-    if (!package)
+    if (package == nullptr) {
         return PACKAGE_LOADING_FAILED;
+    }
 
     *linkingTable = static_cast<FunctionFunctionPointer *>(dlsym(package, "linkingTable"));
-    *mpfc = (MarkerPointerForClass)(dlsym(package, "markerPointerForClass"));
-    *sfch = (SizeForClassFunction)(dlsym(package, "sizeForClass"));
+    *mpfc = reinterpret_cast<MarkerPointerForClass>(dlsym(package, "markerPointerForClass"));
+    *sfch = reinterpret_cast<SizeForClassFunction>(dlsym(package, "sizeForClass"));
 
     PackageVersion pv = *static_cast<PackageVersion *>(dlsym(package, "version"));
 
-    if (!*linkingTable)
+    if (!*linkingTable) {
         return PACKAGE_LOADING_FAILED;
-
-    if (pv.major != major)
+    }
+    if (pv.major != major) {
         return PACKAGE_INAPPROPRIATE_MAJOR;
-
-    if (pv.minor < minor)
+    }
+    if (pv.minor < minor) {
         return PACKAGE_INAPPROPRIATE_MINOR;
-
+    }
     return PACKAGE_LOADED;
 }
 
@@ -72,7 +73,7 @@ char* packageError() {
 void readFunction(Function **table, FILE *in, FunctionFunctionPointer *linkingTable) {
     uint16_t vti = readUInt16(in);
 
-    Function *function = static_cast<Function *>(malloc(sizeof(Function)));
+    auto *function = static_cast<Function *>(malloc(sizeof(Function)));
     function->argumentCount = fgetc(in);
 
     DEBUG_LOG("*️⃣ Reading function with vti %d and takes %d argument(s)", vti, function->argumentCount);
@@ -91,11 +92,10 @@ void readFunction(Function **table, FILE *in, FunctionFunctionPointer *linkingTa
 
     function->frameSize = readUInt16(in);
     uint16_t native = readUInt16(in);
-    if (native) {
+    if (native != 0) {
         DEBUG_LOG("Function has native function");
         function->handler = linkingTable[native];
     }
-
 
     function->block.instructionCount = readEmojicodeChar(in);
 
@@ -149,7 +149,7 @@ void readPackage(FILE *in) {
     SizeForClassFunction sfch;
 
     uint_fast8_t packageNameLength = fgetc(in);
-    if (!packageNameLength) {
+    if (packageNameLength == 0) {
         DEBUG_LOG("Package does not have native binary");
         linkingTable = sLinkingTable;
         mpfc = markerPointerForClass;
@@ -157,7 +157,7 @@ void readPackage(FILE *in) {
     }
     else {
         DEBUG_LOG("Package has native binary");
-        char *name = new char[packageNameLength];
+        auto name = new char[packageNameLength];
         fread(name, sizeof(char), packageNameLength, in);
 
         uint16_t major = readUInt16(in);
@@ -180,11 +180,11 @@ void readPackage(FILE *in) {
         delete [] name;
     }
 
-    for (int classCount = readUInt16(in); classCount; classCount--) {
+    for (int classCount = readUInt16(in); classCount > 0; classCount--) {
         DEBUG_LOG("➡️ Still %d class(es) to load", classCount);
         EmojicodeChar name = readEmojicodeChar(in);
 
-        Class *klass = new Class;
+        auto *klass = new Class;
         classTable[classNextIndex++] = klass;
 
         DEBUG_LOG("Loading class %X into %p", name, klass);
@@ -249,7 +249,7 @@ void readPackage(FILE *in) {
         DEBUG_LOG("Read %d object variable records", klass->instanceVariableRecordsCount);
     }
 
-    for (int functionCount = readUInt16(in); functionCount; functionCount--) {
+    for (int functionCount = readUInt16(in); functionCount > 0; functionCount--) {
         DEBUG_LOG("➡️ Still %d functions to come", functionCount);
         readFunction(functionTable, in, linkingTable);
     }
@@ -301,7 +301,7 @@ Function* readBytecode(FILE *in) {
     stringPool = new Object*[stringPoolCount];
     for (int i = 0; i < stringPoolCount; i++) {
         Object *o = newObject(CL_STRING);
-        String *string = o->val<String>();
+        auto *string = o->val<String>();
 
         string->length = readUInt16(in);
         string->charactersObject = newArray(string->length * sizeof(EmojicodeChar));
@@ -317,4 +317,4 @@ Function* readBytecode(FILE *in) {
     return functionTable[0];
 }
 
-}
+}  // namespace Emojicode

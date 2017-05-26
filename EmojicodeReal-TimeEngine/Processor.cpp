@@ -7,16 +7,16 @@
 //
 
 #include "Processor.hpp"
+#include "../EmojicodeInstructions.h"
+#include "Class.hpp"
+#include "Dictionary.h"
+#include "List.h"
+#include "String.h"
+#include "Thread.hpp"
 #include <cmath>
 #include <cstring>
 #include <functional>
 #include <thread>
-#include "../EmojicodeInstructions.h"
-#include "Thread.hpp"
-#include "Class.hpp"
-#include "List.h"
-#include "String.h"
-#include "Dictionary.h"
 
 namespace Emojicode {
 
@@ -52,8 +52,8 @@ void loadCapture(Closure *c, Thread *thread) {
     if (c->captureCount == 0) {
         return;
     }
-    Value *cv = c->capturedVariables->val<Value>();
-    CaptureInformation *infop = c->capturesInformation->val<CaptureInformation>();
+    auto *cv = c->capturedVariables->val<Value>();
+    auto *infop = c->capturesInformation->val<CaptureInformation>();
     for (unsigned int i = 0; i < c->captureCount; i++) {
         std::memcpy(thread->variableDestination(infop->destination), cv, infop->size * sizeof(Value));
         cv += infop->size;
@@ -62,7 +62,7 @@ void loadCapture(Closure *c, Thread *thread) {
 }
 
 void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Thread *thread, Value *destination) {
-    Closure *c = callable->val<Closure>();
+    auto *c = callable->val<Closure>();
     auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
                                    destination, c->function->block.instructions);
     std::memcpy(sf->variableDestination(0), args, argsSize);
@@ -80,7 +80,7 @@ void performFunction(Function *function, Value self, Thread *thread, Value *dest
 }
 
 void produce(Thread *thread, Value *destination) {
-    switch ((EmojicodeInstructionConstants)thread->consumeInstruction()) {
+    switch (static_cast<EmojicodeInstructionConstants>(thread->consumeInstruction())) {
         case INS_DISPATCH_METHOD: {
             Value sth;
             produce(thread, &sth);
@@ -165,14 +165,20 @@ void produce(Thread *thread, Value *destination) {
             Box box;
             EmojicodeInstruction size = thread->consumeInstruction();
             produce(thread, &box.type);
-            if (box.type.raw != T_NOTHINGNESS) std::memcpy(destination, &box.type, size * sizeof(Value));
-            else destination->raw = T_NOTHINGNESS;
+            if (box.type.raw != T_NOTHINGNESS) {
+                std::memcpy(destination, &box.type, size * sizeof(Value));
+            }
+            else {
+                destination->raw = T_NOTHINGNESS;
+            }
             return;
         }
         case INS_SIMPLE_OPTIONAL_TO_BOX: {
             EmojicodeInstruction typeId = thread->consumeInstruction();
             produce(thread, destination);
-            if (destination->raw) destination->raw = typeId;  // First value non-zero means a value
+            if (destination->raw != 0) {  // First value non-zero means a value
+                destination->raw = typeId;
+            }
             return;
         }
         case INS_BOX_PRODUCE:
@@ -562,7 +568,7 @@ void produce(Thread *thread, Value *destination) {
         case INS_UNWRAP_BOX_OPTIONAL: {
             Value sth;
             produce(thread, &sth);
-            Box *box = reinterpret_cast<Box *>(sth.value);
+            auto *box = reinterpret_cast<Box *>(sth.value);
             box->unwrapOptional();
             box->copyTo(destination);
             return;
@@ -582,7 +588,7 @@ void produce(Thread *thread, Value *destination) {
         case INS_ERROR_CHECK_BOX_OPTIONAL: {
             Value sth;
             produce(thread, &sth);
-            Box *box = reinterpret_cast<Box *>(sth.value);
+            auto *box = reinterpret_cast<Box *>(sth.value);
             if (box->type.raw != T_ERROR) {
                 box->copyTo(destination);
             }
@@ -594,7 +600,7 @@ void produce(Thread *thread, Value *destination) {
         case INS_CONDITIONAL_PRODUCE_BOX: {
             Value sth;
             produce(thread, &sth);
-            Box *box = reinterpret_cast<Box *>(sth.value);
+            auto *box = reinterpret_cast<Box *>(sth.value);
             EmojicodeInstruction index = thread->consumeInstruction();
             if ((destination->raw = (box->type.raw != T_NOTHINGNESS))) {
                 box->copyTo(thread->variableDestination(index));
@@ -700,7 +706,7 @@ void produce(Thread *thread, Value *destination) {
             for (int i = 0; i < stringCount; i++) {
                 Value v;
                 produce(thread, &v);
-                String *string = v.object->val<String>();
+                auto *string = v.object->val<String>();
                 if (bufferSize - length < string->length) {
                     bufferSize += static_cast<size_t>(string->length) - (bufferSize - length);
                     thread->release(1);
@@ -712,7 +718,7 @@ void produce(Thread *thread, Value *destination) {
             }
 
             Object *object = newObject(CL_STRING);
-            String *string = object->val<String>();
+            auto *string = object->val<String>();
             string->length = length;
             string->charactersObject = characters;
 
@@ -837,7 +843,7 @@ void produce(Thread *thread, Value *destination) {
             Value sth;
             produce(thread, &sth);
 
-            Closure *c = sth.object->val<Closure>();
+            auto *c = sth.object->val<Closure>();
             thread->pushStack(c->thisContext, c->function->frameSize, c->function->argumentCount, c->function,
                               destination, c->function->block.instructions);
             loadCapture(c, thread);
@@ -848,7 +854,7 @@ void produce(Thread *thread, Value *destination) {
         case INS_CLOSURE: {
             Object *const &closure = thread->retain(newObject(CL_CLOSURE));
 
-            Closure *c = closure->val<Closure>();
+            auto *c = closure->val<Closure>();
 
             c->function = functionTable[thread->consumeInstruction()];
             c->captureCount = thread->consumeInstruction();
@@ -861,8 +867,8 @@ void produce(Thread *thread, Value *destination) {
             c = closure->val<Closure>();
             c->capturesInformation = infoo;
 
-            Value *t = c->capturedVariables->val<Value>();
-            CaptureInformation *info = c->capturesInformation->val<CaptureInformation>();
+            auto *t = c->capturedVariables->val<Value>();
+            auto *info = c->capturesInformation->val<CaptureInformation>();
             for (unsigned int i = 0; i < c->captureCount; i++) {
                 EmojicodeInstruction index = thread->consumeInstruction();
                 EmojicodeInstruction size = thread->consumeInstruction();
@@ -883,7 +889,7 @@ void produce(Thread *thread, Value *destination) {
         case INS_CLOSURE_BOX: {
             Object *closure = newObject(CL_CLOSURE);
 
-            Closure *c = closure->val<Closure>();
+            auto *c = closure->val<Closure>();
 
             c->function = functionTable[thread->consumeInstruction()];
             produce(thread, &c->thisContext);
@@ -896,7 +902,7 @@ void produce(Thread *thread, Value *destination) {
             Object *const &callee = thread->retain(sth.object);
 
             Object *closureObject = newObject(CL_CLOSURE);
-            Closure *closure = closureObject->val<Closure>();
+            auto *closure = closureObject->val<Closure>();
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             closure->function = callee->klass->methodsVtable[vti];
@@ -910,7 +916,7 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, &sth);
 
             Object *closureObject = newObject(CL_CLOSURE);
-            Closure *closure = closureObject->val<Closure>();
+            auto *closure = closureObject->val<Closure>();
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             closure->function = sth.klass->methodsVtable[vti];
@@ -923,7 +929,7 @@ void produce(Thread *thread, Value *destination) {
             produce(thread, &sth);
 
             Object *closureObject = newObject(CL_CLOSURE);
-            Closure *closure = closureObject->val<Closure>();
+            auto *closure = closureObject->val<Closure>();
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             closure->function = functionTable[vti];

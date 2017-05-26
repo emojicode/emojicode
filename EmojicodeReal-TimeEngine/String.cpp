@@ -11,11 +11,11 @@
 #include "List.h"
 #include "Thread.hpp"
 #include "standard.h"
-#include <ctype.h>
-#include <cstring>
-#include <cmath>
-#include <utility>
 #include <algorithm>
+#include <cctype>
+#include <cmath>
+#include <cstring>
+#include <utility>
 
 namespace Emojicode {
 
@@ -36,7 +36,7 @@ bool stringEqual(String *a, String *b) {
 
 /** @warning GC-invoking */
 Object* stringSubstring(EmojicodeInteger from, EmojicodeInteger length, Thread *thread) {
-    String *string = thread->getThisObject()->val<String>();
+    auto *string = thread->getThisObject()->val<String>();
     if (from >= string->length) {
         length = 0;
         from = 0;
@@ -53,7 +53,7 @@ Object* stringSubstring(EmojicodeInteger from, EmojicodeInteger length, Thread *
     Object *const &co = thread->retain(newArray(length * sizeof(EmojicodeChar)));
 
     Object *ostro = newObject(CL_STRING);
-    String *ostr = ostro->val<String>();
+    auto *ostr = ostro->val<String>();
 
     ostr->length = length;
     ostr->charactersObject = co;
@@ -68,7 +68,7 @@ Object* stringSubstring(EmojicodeInteger from, EmojicodeInteger length, Thread *
 const char* stringToCString(Object *str) {
     auto string = str->val<String>();
     size_t ds = u8_codingsize(string->characters(), string->length);
-    char *utf8str = newArray(ds + 1)->val<char>();
+    auto *utf8str = newArray(ds + 1)->val<char>();
     // Convert
     size_t written = u8_toutf8(utf8str, ds, string->characters(), string->length);
     utf8str[written] = 0;
@@ -83,7 +83,7 @@ Object* stringFromChar(const char *cstring) {
     }
 
     Object *stro = newObject(CL_STRING);
-    String *string = stro->val<String>();
+    auto *string = stro->val<String>();
     string->length = len;
     string->charactersObject = newArray(len * sizeof(EmojicodeChar));
 
@@ -98,29 +98,29 @@ void stringPrintStdoutBrigde(Thread *thread) {
 }
 
 void stringEqualBridge(Thread *thread) {
-    String *a = thread->getThisObject()->val<String>();
-    String *b = thread->getVariable(0).object->val<String>();
+    auto *a = thread->getThisObject()->val<String>();
+    auto *b = thread->getVariable(0).object->val<String>();
     thread->returnFromFunction(stringEqual(a, b));
 }
 
 void stringSubstringBridge(Thread *thread) {
     EmojicodeInteger from = thread->getVariable(0).raw;
     EmojicodeInteger length = thread->getVariable(1).raw;
-    String *string = thread->getThisObject()->val<String>();
+    auto *string = thread->getThisObject()->val<String>();
 
     if (from < 0) {
-        from = (EmojicodeInteger)string->length + from;
+        from = string->length + from;
     }
     if (length < 0) {
-        length = (EmojicodeInteger)string->length + length;
+        length = string->length + length;
     }
 
     thread->returnFromFunction(stringSubstring(from, length, thread));
 }
 
 void stringIndexOf(Thread *thread) {
-    String *string = thread->getThisObject()->val<String>();
-    String *search = thread->getVariable(0).object->val<String>();
+    auto *string = thread->getThisObject()->val<String>();
+    auto *search = thread->getVariable(0).object->val<String>();
 
     auto last = string->characters() + string->length;
     EmojicodeChar *location = std::search(string->characters(), last, search->characters(),
@@ -135,16 +135,18 @@ void stringIndexOf(Thread *thread) {
 }
 
 void stringTrimBridge(Thread *thread) {
-    String *string = thread->getThisObject()->val<String>();
+    auto *string = thread->getThisObject()->val<String>();
 
     EmojicodeInteger start = 0;
     EmojicodeInteger stop = string->length - 1;
 
-    while (start < string->length && isWhitespace(string->characters()[start]))
+    while (start < string->length && isWhitespace(string->characters()[start])) {
         start++;
+    }
 
-    while (stop > 0 && isWhitespace(string->characters()[stop]))
+    while (stop > 0 && isWhitespace(string->characters()[stop])) {
         stop--;
+    }
 
     thread->returnFromFunction(stringSubstring(start, stop - start + 1, thread));
 }
@@ -176,7 +178,7 @@ void stringGetInput(Thread *thread) {
 
     EmojicodeInteger len = u8_strlen_l(buffer->val<char>(), bufferUsedSize);
 
-    String *string = thread->getThisObject()->val<String>();
+    auto *string = thread->getThisObject()->val<String>();
     string->length = len;
 
     Object *chars = newArray(len * sizeof(EmojicodeChar));
@@ -226,7 +228,7 @@ void stringSplitByStringBridge(Thread *thread) {
     }
 
     Object *stringObject = thread->getThisObject();
-    String *string = stringObject->val<String>();
+    auto *string = stringObject->val<String>();
     listAppendDestination(listObject, thread)->copySingleValue(T_OBJECT, stringSubstring(firstAfterSeperator, string->length - firstAfterSeperator, thread));
 
     thread->release(1);
@@ -238,16 +240,16 @@ void stringLengthBridge(Thread *thread) {
 }
 
 void stringUTF8LengthBridge(Thread *thread) {
-    String *str = thread->getThisObject()->val<String>();
+    auto *str = thread->getThisObject()->val<String>();
     thread->returnFromFunction(static_cast<EmojicodeInteger>(u8_codingsize(str->characters(), str->length)));
 }
 
 void stringByAppendingSymbolBridge(Thread *thread) {
-    String *string = thread->getThisObject()->val<String>();
+    auto *string = thread->getThisObject()->val<String>();
     Object *const &co = thread->retain(newArray((string->length + 1) * sizeof(EmojicodeChar)));
 
     Object *ostro = newObject(CL_STRING);
-    String *ostr = ostro->val<String>();
+    auto *ostr = ostro->val<String>();
     string = thread->getThisObject()->val<String>();
 
     ostr->length = string->length + 1;
@@ -263,7 +265,7 @@ void stringByAppendingSymbolBridge(Thread *thread) {
 
 void stringSymbolAtBridge(Thread *thread) {
     EmojicodeInteger index = thread->getVariable(0).raw;
-    String *str = thread->getThisObject()->val<String>();
+    auto *str = thread->getThisObject()->val<String>();
     if (index >= str->length) {
         thread->returnNothingnessFromFunction();
         return;
@@ -273,8 +275,8 @@ void stringSymbolAtBridge(Thread *thread) {
 }
 
 void stringBeginsWithBridge(Thread *thread) {
-    String *a = thread->getThisObject()->val<String>();
-    String *with = thread->getVariable(0).object->val<String>();
+    auto *a = thread->getThisObject()->val<String>();
+    auto *with = thread->getVariable(0).object->val<String>();
     if (a->length < with->length) {
         thread->returnFromFunction(false);
         return;
@@ -285,8 +287,8 @@ void stringBeginsWithBridge(Thread *thread) {
 }
 
 void stringEndsWithBridge(Thread *thread) {
-    String *a = thread->getThisObject()->val<String>();
-    String *end = thread->getVariable(0).object->val<String>();
+    auto *a = thread->getThisObject()->val<String>();
+    auto *end = thread->getVariable(0).object->val<String>();
     if (a->length < end->length) {
         thread->returnFromFunction(false);
         return;
@@ -318,7 +320,7 @@ void stringSplitBySymbolBridge(Thread *thread) {
 }
 
 void stringToData(Thread *thread) {
-    String *str = thread->getThisObject()->val<String>();
+    auto *str = thread->getThisObject()->val<String>();
 
     size_t ds = u8_codingsize(str->characters(), str->length);
 
@@ -328,7 +330,7 @@ void stringToData(Thread *thread) {
     u8_toutf8(bytesObject->val<char>(), ds, str->characters(), str->length);
 
     Object *o = newObject(CL_DATA);
-    Data *d = o->val<Data>();
+    auto *d = o->val<Data>();
     d->length = ds;
     d->bytesObject = bytesObject;
     d->bytes = d->bytesObject->val<char>();
@@ -338,7 +340,7 @@ void stringToData(Thread *thread) {
 }
 
 void stringToCharacterList(Thread *thread) {
-    String *str = thread->getThisObject()->val<String>();
+    auto *str = thread->getThisObject()->val<String>();
     Object *list = newObject(CL_LIST);
 
     for (size_t i = 0; i < str->length; i++) {
@@ -359,13 +361,15 @@ void initStringFromSymbolList(String *str, List *list) {
 
     for (size_t i = 0; i < count; i++) {
         Box b = list->elements()[i];
-        if (b.isNothingness()) break;
+        if (b.isNothingness()) {
+            break;
+        }
         str->characters()[i] = b.value1.character;
     }
 }
 
 void stringFromSymbolListBridge(Thread *thread) {
-    String *str = thread->getThisObject()->val<String>();
+    auto *str = thread->getThisObject()->val<String>();
     initStringFromSymbolList(str, thread->getVariable(0).object->val<List>());
     thread->returnFromFunction(thread->getThisContext());
 }
@@ -375,8 +379,8 @@ void stringFromStringList(Thread *thread) {
     size_t appendLocation = 0;
 
     {
-        List *list = thread->getVariable(0).object->val<List>();
-        String *glue = thread->getVariable(1).object->val<String>();
+        auto *list = thread->getVariable(0).object->val<List>();
+        auto *glue = thread->getVariable(1).object->val<String>();
 
         for (size_t i = 0; i < list->count; i++) {
             stringSize += list->elements()[i].value1.object->val<String>()->length;
@@ -390,15 +394,15 @@ void stringFromStringList(Thread *thread) {
     Object *co = newArray(stringSize * sizeof(EmojicodeChar));
 
     {
-        List *list = thread->getVariable(0).object->val<List>();
-        String *glue = thread->getVariable(1).object->val<String>();
+        auto *list = thread->getVariable(0).object->val<List>();
+        auto *glue = thread->getVariable(1).object->val<String>();
 
-        String *string = thread->getThisObject()->val<String>();
+        auto *string = thread->getThisObject()->val<String>();
         string->length = stringSize;
         string->charactersObject = co;
 
         for (size_t i = 0; i < list->count; i++) {
-            String *aString = list->elements()[i].value1.object->val<String>();
+            auto *aString = list->elements()[i].value1.object->val<String>();
             std::memcpy(string->characters() + appendLocation, aString->characters(),
                         aString->length * sizeof(EmojicodeChar));
             appendLocation += aString->length;
@@ -412,7 +416,7 @@ void stringFromStringList(Thread *thread) {
     thread->returnFromFunction(thread->getThisContext());
 }
 
-std::pair<EmojicodeInteger, bool> charactersToInteger(EmojicodeChar *characters, EmojicodeInteger base,
+std::pair<EmojicodeInteger, bool> charactersToInteger(const EmojicodeChar *characters, EmojicodeInteger base,
                                                       EmojicodeInteger length) {
     if (length == 0) {
         return std::make_pair(0, false);
@@ -453,7 +457,7 @@ std::pair<EmojicodeInteger, bool> charactersToInteger(EmojicodeChar *characters,
 
 void stringToInteger(Thread *thread) {
     EmojicodeInteger base = thread->getVariable(0).raw;
-    String *string = thread->getThisObject()->val<String>();
+    auto *string = thread->getThisObject()->val<String>();
 
     auto pair = charactersToInteger(string->characters(), base, string->length);
     if (pair.second) {
@@ -465,7 +469,7 @@ void stringToInteger(Thread *thread) {
 }
 
 void stringToDouble(Thread *thread) {
-    String *string = thread->getThisObject()->val<String>();
+    auto *string = thread->getThisObject()->val<String>();
 
     if (string->length == 0) {
         thread->returnNothingnessFromFunction();
@@ -493,19 +497,17 @@ void stringToDouble(Thread *thread) {
             if (foundSeparator) {
                 thread->returnNothingnessFromFunction();
                 return;
-            } else {
-                foundSeparator = true;
-                continue;
             }
+            foundSeparator = true;
+            continue;
         }
         if (characters[i] == 'e' || characters[i] == 'E') {
             auto exponent = charactersToInteger(characters + i + 1, 10, string->length - i - 1);
             if (!exponent.second) {
                 thread->returnNothingnessFromFunction();
                 return;
-            } else {
-                d *= pow(10, exponent.first);
             }
+            d *= pow(10, exponent.first);
             break;
         }
         if ('0' <= characters[i] && characters[i] <= '9') {
@@ -539,14 +541,18 @@ void stringToUppercase(Thread *thread) {
     size_t length = thread->getThisObject()->val<String>()->length;
 
     Object *characters = newArray(length * sizeof(EmojicodeChar));
-    String *news = o->val<String>();
+    auto *news = o->val<String>();
     news->charactersObject = characters;
     news->length = length;
-    String *os = thread->getThisObject()->val<String>();
+    auto *os = thread->getThisObject()->val<String>();
     for (size_t i = 0; i < length; i++) {
         EmojicodeChar c = os->characters()[i];
-        if (c <= 'z') news->characters()[i] = toupper(c);
-        else news->characters()[i] = c;
+        if (c <= 'z') {
+            news->characters()[i] = toupper(c);
+        }
+        else {
+            news->characters()[i] = c;
+        }
     }
     thread->release(1);
     thread->returnFromFunction(o);
@@ -557,22 +563,26 @@ void stringToLowercase(Thread *thread) {
     size_t length = thread->getThisObject()->val<String>()->length;
 
     Object *characters = newArray(length * sizeof(EmojicodeChar));
-    String *news = o->val<String>();
+    auto *news = o->val<String>();
     news->charactersObject = characters;
     news->length = length;
-    String *os = thread->getThisObject()->val<String>();
+    auto *os = thread->getThisObject()->val<String>();
     for (size_t i = 0; i < length; i++) {
         EmojicodeChar c = os->characters()[i];
-        if (c <= 'z') news->characters()[i] = tolower(c);
-        else news->characters()[i] = c;
+        if (c <= 'z') {
+            news->characters()[i] = tolower(c);
+        }
+        else {
+            news->characters()[i] = c;
+        }
     }
     thread->release(1);
     thread->returnFromFunction(o);
 }
 
 void stringCompareBridge(Thread *thread) {
-    String *a = thread->getThisObject()->val<String>();
-    String *b = thread->getVariable(0).object->val<String>();
+    auto *a = thread->getThisObject()->val<String>();
+    auto *b = thread->getVariable(0).object->val<String>();
     thread->returnFromFunction(stringCompare(a, b));
 }
 
@@ -583,4 +593,4 @@ void stringMark(Object *self) {
     }
 }
 
-}
+}  // namespace Emojicode
