@@ -47,38 +47,38 @@ bool nothingnessOrErrorEnum(bool success, Thread *thread) {
 }
 
 void filesMkdir(Thread *thread) {
-    int state = mkdir(stringToCString(thread->getVariable(0).object), 0755);
+    int state = mkdir(stringToCString(thread->variable(0).object), 0755);
     nothingnessOrErrorEnum(state == 0, thread);
 }
 
 void filesSymlink(Thread *thread) {
-    int state = symlink(stringToCString(thread->getVariable(0).object), stringToCString(thread->getVariable(1).object));
+    int state = symlink(stringToCString(thread->variable(0).object), stringToCString(thread->variable(1).object));
     nothingnessOrErrorEnum(state == 0, thread);
 }
 
 void filesFileExists(Thread *thread) {
-    thread->returnFromFunction(access(stringToCString(thread->getVariable(0).object), F_OK) == 0);
+    thread->returnFromFunction(access(stringToCString(thread->variable(0).object), F_OK) == 0);
 }
 
 void filesIsReadable(Thread *thread) {
-    thread->returnFromFunction(access(stringToCString(thread->getVariable(0).object), R_OK) == 0);
+    thread->returnFromFunction(access(stringToCString(thread->variable(0).object), R_OK) == 0);
 }
 
 void filesIsWriteable(Thread *thread) {
-    thread->returnFromFunction(access(stringToCString(thread->getVariable(0).object), W_OK) == 0);
+    thread->returnFromFunction(access(stringToCString(thread->variable(0).object), W_OK) == 0);
 }
 
 void filesIsExecuteable(Thread *thread) {
-    thread->returnFromFunction(access(stringToCString(thread->getVariable(0).object), X_OK) == 0);
+    thread->returnFromFunction(access(stringToCString(thread->variable(0).object), X_OK) == 0);
 }
 
 void filesRemove(Thread *thread) {
-    int state = remove(stringToCString(thread->getVariable(0).object));
+    int state = remove(stringToCString(thread->variable(0).object));
     nothingnessOrErrorEnum(state == 0, thread);
 }
 
 void filesRmdir(Thread *thread) {
-    int state = rmdir(stringToCString(thread->getVariable(0).object));
+    int state = rmdir(stringToCString(thread->variable(0).object));
     nothingnessOrErrorEnum(state == 0, thread);
 }
 
@@ -99,14 +99,14 @@ int filesRecursiveRmdirHelper(const char *fpath, const struct stat *sb, int type
 }
 
 void filesRecursiveRmdir(Thread *thread) {
-    int state = nftw(stringToCString(thread->getVariable(0).object), filesRecursiveRmdirHelper,
+    int state = nftw(stringToCString(thread->variable(0).object), filesRecursiveRmdirHelper,
                      64, FTW_DEPTH | FTW_PHYS);
     nothingnessOrErrorEnum(state == 0, thread);
 }
 
 void filesSize(Thread *thread) {
     struct stat st;
-    int state = stat(stringToCString(thread->getVariable(0).object), &st);
+    int state = stat(stringToCString(thread->variable(0).object), &st);
 
     if (state == 0) {
         thread->returnOEValueFromFunction(st.st_size);
@@ -118,7 +118,7 @@ void filesSize(Thread *thread) {
 
 void filesRealpath(Thread *thread) {
     char path[PATH_MAX];
-    char *x = realpath(stringToCString(thread->getVariable(0).object), path);
+    char *x = realpath(stringToCString(thread->variable(0).object), path);
 
     if (x != nullptr) {
         thread->returnOEValueFromFunction(Emojicode::stringFromChar(path));
@@ -133,13 +133,13 @@ void filesRealpath(Thread *thread) {
 //Shortcuts
 
 void fileDataPut(Thread *thread) {
-    FILE *file = fopen(stringToCString(thread->getVariable(0).object), "wb");
+    FILE *file = fopen(stringToCString(thread->variable(0).object), "wb");
 
     if (nothingnessOrErrorEnum(file != NULL, thread)) {
         return;
     }
 
-    Data *d = thread->getVariable(1).object->val<Data>();
+    Data *d = thread->variable(1).object->val<Data>();
 
     fwrite(d->bytes, 1, d->length, file);
 
@@ -148,7 +148,7 @@ void fileDataPut(Thread *thread) {
 }
 
 void fileDataGet(Thread *thread) {
-    FILE *file = fopen(stringToCString(thread->getVariable(0).object), "rb");
+    FILE *file = fopen(stringToCString(thread->variable(0).object), "rb");
 
     if (file == NULL) {
         thread->returnErrorFromFunction(errnoToError());
@@ -182,19 +182,19 @@ void fileDataGet(Thread *thread) {
 #define file(obj) (*(obj)->val<FILE*>())
 
 void fileStdinGet(Thread *thread) {
-    Emojicode::Object *obj = newObject(thread->getThisContext().klass);
+    Emojicode::Object *obj = newObject(thread->thisContext().klass);
     file(obj) = stdin;
     thread->returnFromFunction(obj);
 }
 
 void fileStdoutGet(Thread *thread) {
-    Emojicode::Object *obj = newObject(thread->getThisContext().klass);
+    Emojicode::Object *obj = newObject(thread->thisContext().klass);
     file(obj) = stdout;
     thread->returnFromFunction(obj);
 }
 
 void fileStderrGet(Thread *thread) {
-    Emojicode::Object *obj = newObject(thread->getThisContext().klass);
+    Emojicode::Object *obj = newObject(thread->thisContext().klass);
     file(obj) = stderr;
     thread->returnFromFunction(obj);
 }
@@ -202,10 +202,10 @@ void fileStderrGet(Thread *thread) {
 // Constructors
 
 void fileOpenWithMode(Thread *thread, const char *mode) {
-    FILE *f = fopen(stringToCString(thread->getVariable(0).object), mode);
+    FILE *f = fopen(stringToCString(thread->variable(0).object), mode);
     if (f) {
-        file(thread->getThisObject()) = f;
-        thread->returnOEValueFromFunction(thread->getThisContext());
+        file(thread->thisObject()) = f;
+        thread->returnOEValueFromFunction(thread->thisContext());
     }
     else {
         thread->returnErrorFromFunction(errnoToError());
@@ -221,16 +221,16 @@ void fileForReading(Thread *thread) {
 }
 
 void fileWriteData(Thread *thread) {
-    FILE *f = file(thread->getThisObject());
-    Data *d = thread->getVariable(0).object->val<Data>();
+    FILE *f = file(thread->thisObject());
+    Data *d = thread->variable(0).object->val<Data>();
 
     fwrite(d->bytes, 1, d->length, f);
     nothingnessOrErrorEnum(ferror(f) == 0, thread);
 }
 
 void fileReadData(Thread *thread) {
-    FILE *f = file(thread->getThisObject());
-    Emojicode::EmojicodeInteger n = thread->getVariable(0).raw;
+    FILE *f = file(thread->thisObject());
+    Emojicode::EmojicodeInteger n = thread->variable(0).raw;
 
     auto bytesObject = thread->retain(Emojicode::newArray(n));
     fread(bytesObject->val<char>(), 1, n, f);
@@ -251,22 +251,22 @@ void fileReadData(Thread *thread) {
 }
 
 void fileSeekTo(Thread *thread) {
-    fseek(file(thread->getThisObject()), thread->getVariable(0).raw, SEEK_SET);
+    fseek(file(thread->thisObject()), thread->variable(0).raw, SEEK_SET);
     thread->returnFromFunction();
 }
 
 void fileSeekToEnd(Thread *thread) {
-    fseek(file(thread->getThisObject()), 0, SEEK_END);
+    fseek(file(thread->thisObject()), 0, SEEK_END);
     thread->returnFromFunction();
 }
 
 void fileClose(Thread *thread) {
-    fclose(file(thread->getThisObject()));
+    fclose(file(thread->thisObject()));
     thread->returnFromFunction();
 }
 
 void fileFlush(Thread *thread) {
-    fflush(file(thread->getThisObject()));
+    fflush(file(thread->thisObject()));
     thread->returnFromFunction();
 }
 

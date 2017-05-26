@@ -141,7 +141,7 @@ void produce(Thread *thread, Value *destination) {
             Class *klass = readClass(thread);
             EmojicodeInstruction vti = thread->consumeInstruction();
 
-            performFunction(klass->methodsVtable[vti], thread->getThisContext(), thread, destination);
+            performFunction(klass->methodsVtable[vti], thread->thisContext(), thread, destination);
             return;
         }
         case INS_CALL_CONTEXTED_FUNCTION: {
@@ -236,11 +236,11 @@ void produce(Thread *thread, Value *destination) {
             destination->value = thread->variableDestination(thread->consumeInstruction());
             return;
         case INS_GET_VT_REFERENCE_OBJECT: {
-            destination->value = thread->getThisObject()->variableDestination(thread->consumeInstruction());
+            destination->value = thread->thisObject()->variableDestination(thread->consumeInstruction());
             return;
         }
         case INS_GET_VT_REFERENCE_VT: {
-            destination->value = thread->getThisContext().value + thread->consumeInstruction();
+            destination->value = thread->thisContext().value + thread->consumeInstruction();
             return;
         }
         case INS_GET_CLASS_FROM_INSTANCE: {
@@ -286,12 +286,12 @@ void produce(Thread *thread, Value *destination) {
         }
         case INS_PRODUCE_WITH_OBJECT_DESTINATION: {
             EmojicodeInstruction index = thread->consumeInstruction();
-            Value *d = thread->getThisObject()->variableDestination(index);
+            Value *d = thread->thisObject()->variableDestination(index);
             produce(thread, d);
             return;
         }
         case INS_PRODUCE_WITH_VT_DESTINATION: {
-            Value *d = thread->getThisContext().value + thread->consumeInstruction();
+            Value *d = thread->thisContext().value + thread->consumeInstruction();
             produce(thread, d);
             return;
         }
@@ -302,7 +302,7 @@ void produce(Thread *thread, Value *destination) {
             destination->raw--;
             return;
         case INS_COPY_SINGLE_STACK:
-            *destination = thread->getVariable(thread->consumeInstruction());
+            *destination = thread->variable(thread->consumeInstruction());
             return;
         case INS_COPY_WITH_SIZE_STACK: {
             EmojicodeInstruction index = thread->consumeInstruction();
@@ -312,20 +312,20 @@ void produce(Thread *thread, Value *destination) {
         }
         case INS_COPY_SINGLE_OBJECT: {
             EmojicodeInstruction index = thread->consumeInstruction();
-            *destination = *thread->getThisObject()->variableDestination(index);
+            *destination = *thread->thisObject()->variableDestination(index);
             return;
         }
         case INS_COPY_WITH_SIZE_OBJECT: {
             EmojicodeInstruction index = thread->consumeInstruction();
-            Value *source = thread->getThisObject()->variableDestination(index);
+            Value *source = thread->thisObject()->variableDestination(index);
             std::memcpy(destination, source, sizeof(Value) * thread->consumeInstruction());
             return;
         }
         case INS_COPY_SINGLE_VT:
-            *destination = thread->getThisContext().value[thread->consumeInstruction()];
+            *destination = thread->thisContext().value[thread->consumeInstruction()];
             return;
         case INS_COPY_WITH_SIZE_VT: {
-            Value *source = thread->getThisContext().value + thread->consumeInstruction();
+            Value *source = thread->thisContext().value + thread->consumeInstruction();
             std::memcpy(destination, source, sizeof(Value) * thread->consumeInstruction());
             return;
         }
@@ -618,11 +618,11 @@ void produce(Thread *thread, Value *destination) {
             return;
         }
         case INS_GET_THIS:
-            *destination = thread->getThisContext();
+            *destination = thread->thisContext();
             return;
         case INS_SUPER_INITIALIZER: {
             Class *klass = readClass(thread);
-            Object *o = thread->getThisObject();
+            Object *o = thread->thisObject();
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             Function *initializer = klass->initializersVtable[vti];
@@ -879,7 +879,7 @@ void produce(Thread *thread, Value *destination) {
             }
 
             if (thread->consumeInstruction()) {
-                c->thisContext = thread->getThisContext();
+                c->thisContext = thread->thisContext();
             }
 
             destination->object = closure.unretainedPointer();

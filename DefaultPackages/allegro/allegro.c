@@ -57,16 +57,16 @@ static int redundantMain(int argc, char **argv) {
 }
 
 Something appInit(Thread *e) {
-    emojicodeMain = stackGetVariable(0, e);
+    emojicodeMain = stackvariable(0, e);
     thread = e;
     al_run_main(0, NULL, redundantMain);
     return NOTHINGNESS;
 }
 
 void displayInitWithDimensions(Thread *thread) {
-    int w = (int)stackGetVariable(0, thread).raw;
-    int h = (int)stackGetVariable(1, thread).raw;
-    display(stackGetThisObject(thread)) = al_create_display(w, h);
+    int w = (int)stackvariable(0, thread).raw;
+    int h = (int)stackvariable(1, thread).raw;
+    display(stackthisObject(thread)) = al_create_display(w, h);
 }
 
 void displayDe(void *v) {
@@ -79,169 +79,169 @@ Something appFlip(Thread *thread) {
 }
 
 Something appDrawLine(Thread *thread) {
-    float x1 = (float)stackGetVariable(0, thread).doubl;
-    float y1 = (float)stackGetVariable(1, thread).doubl;
-    float x2 = (float)stackGetVariable(2, thread).doubl;
-    float y2 = (float)stackGetVariable(3, thread).doubl;
-    float t = (float)stackGetVariable(5, thread).doubl;
-    al_draw_line(x1, y1, x2, y2, color(stackGetVariable(4, thread).object), t);
+    float x1 = (float)stackvariable(0, thread).doubl;
+    float y1 = (float)stackvariable(1, thread).doubl;
+    float x2 = (float)stackvariable(2, thread).doubl;
+    float y2 = (float)stackvariable(3, thread).doubl;
+    float t = (float)stackvariable(5, thread).doubl;
+    al_draw_line(x1, y1, x2, y2, color(stackvariable(4, thread).object), t);
     return NOTHINGNESS;
 }
 
 Something appDrawTriangle(Thread *thread) {
-    float x1 = (float)stackGetVariable(0, thread).doubl;
-    float y1 = (float)stackGetVariable(1, thread).doubl;
-    float x2 = (float)stackGetVariable(2, thread).doubl;
-    float y2 = (float)stackGetVariable(3, thread).doubl;
-    float x3 = (float)stackGetVariable(4, thread).doubl;
-    float y3 = (float)stackGetVariable(5, thread).doubl;
-    float t = (float)stackGetVariable(7, thread).doubl;
-    al_draw_triangle(x1, y1, x2, y2, x3, y3, color(stackGetVariable(6, thread).object), t);
+    float x1 = (float)stackvariable(0, thread).doubl;
+    float y1 = (float)stackvariable(1, thread).doubl;
+    float x2 = (float)stackvariable(2, thread).doubl;
+    float y2 = (float)stackvariable(3, thread).doubl;
+    float x3 = (float)stackvariable(4, thread).doubl;
+    float y3 = (float)stackvariable(5, thread).doubl;
+    float t = (float)stackvariable(7, thread).doubl;
+    al_draw_triangle(x1, y1, x2, y2, x3, y3, color(stackvariable(6, thread).object), t);
     return NOTHINGNESS;
 }
 
 Something appDrawFilledTriangle(Thread *thread) {
-    float x1 = (float)stackGetVariable(0, thread).doubl;
-    float y1 = (float)stackGetVariable(1, thread).doubl;
-    float x2 = (float)stackGetVariable(2, thread).doubl;
-    float y2 = (float)stackGetVariable(3, thread).doubl;
-    float x3 = (float)stackGetVariable(4, thread).doubl;
-    float y3 = (float)stackGetVariable(5, thread).doubl;
-    al_draw_filled_triangle(x1, y1, x2, y2, x3, y3, color(stackGetVariable(6, thread).object));
+    float x1 = (float)stackvariable(0, thread).doubl;
+    float y1 = (float)stackvariable(1, thread).doubl;
+    float x2 = (float)stackvariable(2, thread).doubl;
+    float y2 = (float)stackvariable(3, thread).doubl;
+    float x3 = (float)stackvariable(4, thread).doubl;
+    float y3 = (float)stackvariable(5, thread).doubl;
+    al_draw_filled_triangle(x1, y1, x2, y2, x3, y3, color(stackvariable(6, thread).object));
     return NOTHINGNESS;
 }
 
 Something displaySetTitle(Thread *thread) {
-    char *title = stringToChar(stackGetVariable(0, thread).object->value);
-    al_set_window_title(display(stackGetThisObject(thread)), title);
+    char *title = stringToChar(stackvariable(0, thread).object->value);
+    al_set_window_title(display(stackthisObject(thread)), title);
     free(title);
     return NOTHINGNESS;
 }
 
 Something appDrawRectangle(Thread *thread) {
-    float x1 = (float)stackGetVariable(0, thread).doubl;
-    float y1 = (float)stackGetVariable(1, thread).doubl;
-    float x2 = (float)stackGetVariable(2, thread).doubl;
-    float y2 = (float)stackGetVariable(3, thread).doubl;
-    float t = (float)stackGetVariable(5, thread).doubl;
-    al_draw_rectangle(x1, y1, x2, y2, color(stackGetVariable(4, thread).object), t);
+    float x1 = (float)stackvariable(0, thread).doubl;
+    float y1 = (float)stackvariable(1, thread).doubl;
+    float x2 = (float)stackvariable(2, thread).doubl;
+    float y2 = (float)stackvariable(3, thread).doubl;
+    float t = (float)stackvariable(5, thread).doubl;
+    al_draw_rectangle(x1, y1, x2, y2, color(stackvariable(4, thread).object), t);
     return NOTHINGNESS;
 }
 
 Something appDrawFilledRectangle(Thread *thread) {
-    float x1 = (float)stackGetVariable(0, thread).doubl;
-    float y1 = (float)stackGetVariable(1, thread).doubl;
-    float x2 = (float)stackGetVariable(2, thread).doubl;
-    float y2 = (float)stackGetVariable(3, thread).doubl;
-    al_draw_filled_rectangle(x1, y1, x2, y2, color(stackGetVariable(4, thread).object));
+    float x1 = (float)stackvariable(0, thread).doubl;
+    float y1 = (float)stackvariable(1, thread).doubl;
+    float x2 = (float)stackvariable(2, thread).doubl;
+    float y2 = (float)stackvariable(3, thread).doubl;
+    al_draw_filled_rectangle(x1, y1, x2, y2, color(stackvariable(4, thread).object));
     return NOTHINGNESS;
 }
 
 Something appClear(Thread *thread) {
-    al_clear_to_color(color(stackGetVariable(0, thread).object));
+    al_clear_to_color(color(stackvariable(0, thread).object));
     return NOTHINGNESS;
 }
 
 Something appDrawCircle(Thread *thread) {
-    float cx = (float)stackGetVariable(0, thread).doubl;
-    float cy = (float)stackGetVariable(1, thread).doubl;
-    float r = (float)stackGetVariable(2, thread).doubl;
-    float t = (float)stackGetVariable(4, thread).doubl;
-    al_draw_circle(cx, cy, r, color(stackGetVariable(3, thread).object), t);
+    float cx = (float)stackvariable(0, thread).doubl;
+    float cy = (float)stackvariable(1, thread).doubl;
+    float r = (float)stackvariable(2, thread).doubl;
+    float t = (float)stackvariable(4, thread).doubl;
+    al_draw_circle(cx, cy, r, color(stackvariable(3, thread).object), t);
     return NOTHINGNESS;
 }
 
 Something appDrawFilledCircle(Thread *thread) {
-    float cx = (float)stackGetVariable(0, thread).doubl;
-    float cy = (float)stackGetVariable(1, thread).doubl;
-    float r = (float)stackGetVariable(2, thread).doubl;
-    al_draw_filled_circle(cx, cy, r, color(stackGetVariable(3, thread).object));
+    float cx = (float)stackvariable(0, thread).doubl;
+    float cy = (float)stackvariable(1, thread).doubl;
+    float r = (float)stackvariable(2, thread).doubl;
+    al_draw_filled_circle(cx, cy, r, color(stackvariable(3, thread).object));
     return NOTHINGNESS;
 }
 
 Something appDrawRoundedRectangle(Thread *thread) {
-    float x1 = (float)stackGetVariable(0, thread).doubl;
-    float y1 = (float)stackGetVariable(1, thread).doubl;
-    float x2 = (float)stackGetVariable(2, thread).doubl;
-    float y2 = (float)stackGetVariable(3, thread).doubl;
-    float rx = (float)stackGetVariable(4, thread).doubl;
-    float ry = (float)stackGetVariable(5, thread).doubl;
-    float t = (float)stackGetVariable(7, thread).doubl;
-    al_draw_rounded_rectangle(x1, y1, x2, y2, rx, ry, color(stackGetVariable(6, thread).object), t);
+    float x1 = (float)stackvariable(0, thread).doubl;
+    float y1 = (float)stackvariable(1, thread).doubl;
+    float x2 = (float)stackvariable(2, thread).doubl;
+    float y2 = (float)stackvariable(3, thread).doubl;
+    float rx = (float)stackvariable(4, thread).doubl;
+    float ry = (float)stackvariable(5, thread).doubl;
+    float t = (float)stackvariable(7, thread).doubl;
+    al_draw_rounded_rectangle(x1, y1, x2, y2, rx, ry, color(stackvariable(6, thread).object), t);
     return NOTHINGNESS;
 }
 
 Something appDrawFilledRoundedRectangle(Thread *thread) {
-    float x1 = (float)stackGetVariable(0, thread).doubl;
-    float y1 = (float)stackGetVariable(1, thread).doubl;
-    float x2 = (float)stackGetVariable(2, thread).doubl;
-    float y2 = (float)stackGetVariable(3, thread).doubl;
-    float rx = (float)stackGetVariable(4, thread).doubl;
-    float ry = (float)stackGetVariable(5, thread).doubl;
-    al_draw_filled_rounded_rectangle(x1, y1, x2, y2, rx, ry, color(stackGetVariable(6, thread).object));
+    float x1 = (float)stackvariable(0, thread).doubl;
+    float y1 = (float)stackvariable(1, thread).doubl;
+    float x2 = (float)stackvariable(2, thread).doubl;
+    float y2 = (float)stackvariable(3, thread).doubl;
+    float rx = (float)stackvariable(4, thread).doubl;
+    float ry = (float)stackvariable(5, thread).doubl;
+    al_draw_filled_rounded_rectangle(x1, y1, x2, y2, rx, ry, color(stackvariable(6, thread).object));
     return NOTHINGNESS;
 }
 
 Something appDrawBitmap(Thread *thread) {
-    ALLEGRO_BITMAP *bmp = bitmap(stackGetVariable(0, thread).object);
-    float dx = (float)stackGetVariable(1, thread).doubl;
-    float dy = (float)stackGetVariable(2, thread).doubl;
+    ALLEGRO_BITMAP *bmp = bitmap(stackvariable(0, thread).object);
+    float dx = (float)stackvariable(1, thread).doubl;
+    float dy = (float)stackvariable(2, thread).doubl;
     al_draw_bitmap(bmp, dx, dy, 0);
     return NOTHINGNESS;
 }
 
 Something appDrawScaledBitmap(Thread *thread) {
-    ALLEGRO_BITMAP *bmp = bitmap(stackGetVariable(0, thread).object);
-    float sx = (float)stackGetVariable(1, thread).doubl;
-    float sy = (float)stackGetVariable(2, thread).doubl;
-    float sw = (float)stackGetVariable(3, thread).doubl;
-    float sh = (float)stackGetVariable(4, thread).doubl;
-    float dx = (float)stackGetVariable(5, thread).doubl;
-    float dy = (float)stackGetVariable(6, thread).doubl;
-    float dw = (float)stackGetVariable(7, thread).doubl;
-    float dh = (float)stackGetVariable(8, thread).doubl;
+    ALLEGRO_BITMAP *bmp = bitmap(stackvariable(0, thread).object);
+    float sx = (float)stackvariable(1, thread).doubl;
+    float sy = (float)stackvariable(2, thread).doubl;
+    float sw = (float)stackvariable(3, thread).doubl;
+    float sh = (float)stackvariable(4, thread).doubl;
+    float dx = (float)stackvariable(5, thread).doubl;
+    float dy = (float)stackvariable(6, thread).doubl;
+    float dw = (float)stackvariable(7, thread).doubl;
+    float dh = (float)stackvariable(8, thread).doubl;
     al_draw_scaled_bitmap(bmp, sx, sy, sw, sh, dx, dy, dw, dh, 0);
     return NOTHINGNESS;
 }
 
 Something appDrawText(Thread *thread) {
-    ALLEGRO_FONT *font = font(stackGetVariable(0, thread).object);
-    char *text = stringToChar(stackGetVariable(4, thread).object->value);
-    float x = (float)stackGetVariable(2, thread).doubl;
-    float y = (float)stackGetVariable(3, thread).doubl;
-    al_draw_text(font, color(stackGetVariable(1, thread).object), x, y, (int)stackGetVariable(5, thread).raw, text);
+    ALLEGRO_FONT *font = font(stackvariable(0, thread).object);
+    char *text = stringToChar(stackvariable(4, thread).object->value);
+    float x = (float)stackvariable(2, thread).doubl;
+    float y = (float)stackvariable(3, thread).doubl;
+    al_draw_text(font, color(stackvariable(1, thread).object), x, y, (int)stackvariable(5, thread).raw, text);
     free(text);
     return NOTHINGNESS;
 }
 
 Something appSetTargetBitmap(Thread *thread) {
-    ALLEGRO_BITMAP *bmp = bitmap(stackGetVariable(0, thread).object);
+    ALLEGRO_BITMAP *bmp = bitmap(stackvariable(0, thread).object);
     al_set_target_bitmap(bmp);
     return NOTHINGNESS;
 }
 
 Something appSetTargetBackbuffer(Thread *thread) {
-    ALLEGRO_DISPLAY *display = display(stackGetVariable(0, thread).object);
+    ALLEGRO_DISPLAY *display = display(stackvariable(0, thread).object);
     al_set_target_backbuffer(display);
     return NOTHINGNESS;
 }
 
 void colorInitRGBA(Thread *thread) {
-    int r = (int)stackGetVariable(0, thread).raw;
-    int g = (int)stackGetVariable(1, thread).raw;
-    int b = (int)stackGetVariable(2, thread).raw;
-    int a = (int)stackGetVariable(3, thread).raw;
-    color(stackGetThisObject(thread)) = al_map_rgba(r, g, b, a);
+    int r = (int)stackvariable(0, thread).raw;
+    int g = (int)stackvariable(1, thread).raw;
+    int b = (int)stackvariable(2, thread).raw;
+    int a = (int)stackvariable(3, thread).raw;
+    color(stackthisObject(thread)) = al_map_rgba(r, g, b, a);
 }
 
 void bitmapInitFile(Thread *thread) {
-    char *path = stringToChar(stackGetVariable(0, thread).object->value);
+    char *path = stringToChar(stackvariable(0, thread).object->value);
     ALLEGRO_BITMAP *bmp = al_load_bitmap(path);
     if (bmp) {
-        bitmap(stackGetThisObject(thread)) = bmp;
+        bitmap(stackthisObject(thread)) = bmp;
     }
     else {
-        stackGetThisObject(thread)->value = NULL;
+        stackthisObject(thread)->value = NULL;
     }
     free(path);
 }
@@ -251,23 +251,23 @@ void bitmapDe(void *v) {
 }
 
 void bitmapInitSize(Thread *thread) {
-    ALLEGRO_BITMAP *bmp = al_create_bitmap((int)stackGetVariable(0, thread).raw, (int)stackGetVariable(1, thread).raw);
+    ALLEGRO_BITMAP *bmp = al_create_bitmap((int)stackvariable(0, thread).raw, (int)stackvariable(1, thread).raw);
     if (bmp) {
-        bitmap(stackGetThisObject(thread)) = bmp;
+        bitmap(stackthisObject(thread)) = bmp;
     }
     else {
-        stackGetThisObject(thread)->value = NULL;
+        stackthisObject(thread)->value = NULL;
     }
 }
 
 void fontInitFile(Thread *thread) {
-    char *path = stringToChar(stackGetVariable(0, thread).object->value);
-    ALLEGRO_FONT *font = al_load_ttf_font(path, (int)stackGetVariable(1, thread).raw, 0);
+    char *path = stringToChar(stackvariable(0, thread).object->value);
+    ALLEGRO_FONT *font = al_load_ttf_font(path, (int)stackvariable(1, thread).raw, 0);
     if (font) {
-        font(stackGetThisObject(thread)) = font;
+        font(stackthisObject(thread)) = font;
     }
     else {
-        stackGetThisObject(thread)->value = NULL;
+        stackthisObject(thread)->value = NULL;
     }
     free(path);
 }
@@ -277,7 +277,7 @@ void fontDe(void *v) {
 }
 
 void eventQueueInit(Thread *thread) {
-    eventQueue(stackGetThisObject(thread)) = al_create_event_queue();
+    eventQueue(stackthisObject(thread)) = al_create_event_queue();
 }
 
 void eventQueueDe(void *v) {
@@ -286,7 +286,7 @@ void eventQueueDe(void *v) {
 
 Something eventQueueWait(Thread *thread) {
     Object *event = newObject(CL_EVENT);
-    al_wait_for_event(eventQueue(stackGetThisObject(thread)), event->value);
+    al_wait_for_event(eventQueue(stackthisObject(thread)), event->value);
     switch (event(event).type) {
         case ALLEGRO_EVENT_KEY_CHAR:
             event->class = CL_EVENT_KEY_CHAR;
@@ -316,50 +316,50 @@ Something eventQueueWait(Thread *thread) {
 }
 
 Something eventQueueRegisterMouse(Thread *thread) {
-    al_register_event_source(eventQueue(stackGetThisObject(thread)), al_get_mouse_event_source());
+    al_register_event_source(eventQueue(stackthisObject(thread)), al_get_mouse_event_source());
     return NOTHINGNESS;
 }
 
 Something eventQueueRegisterKeyboard(Thread *thread) {
-    al_register_event_source(eventQueue(stackGetThisObject(thread)), al_get_keyboard_event_source());
+    al_register_event_source(eventQueue(stackthisObject(thread)), al_get_keyboard_event_source());
     return NOTHINGNESS;
 }
 
 Something eventQueueRegisterTimer(Thread *thread) {
-    al_register_event_source(eventQueue(stackGetThisObject(thread)),
-                             al_get_timer_event_source(timer(stackGetVariable(0, thread).object)));
+    al_register_event_source(eventQueue(stackthisObject(thread)),
+                             al_get_timer_event_source(timer(stackvariable(0, thread).object)));
     return NOTHINGNESS;
 }
 
 Something keyboardEventKeycode(Thread *thread) {
-    return somethingInteger(event(stackGetThisObject(thread)).keyboard.keycode);
+    return somethingInteger(event(stackthisObject(thread)).keyboard.keycode);
 }
 
 Something keyboardEventSymbol(Thread *thread) {
-    EmojicodeInteger symbol = event(stackGetThisObject(thread)).keyboard.unichar;
+    EmojicodeInteger symbol = event(stackthisObject(thread)).keyboard.unichar;
     return symbol < 1 ? NOTHINGNESS : somethingSymbol(symbol);
 }
 
 Something keyboardEventRepeated(Thread *thread) {
-    return somethingBoolean(event(stackGetThisObject(thread)).keyboard.repeat);
+    return somethingBoolean(event(stackthisObject(thread)).keyboard.repeat);
 }
 
 Something mouseAxesEventX(Thread *thread) {
-    return somethingDouble(event(stackGetThisObject(thread)).mouse.x);
+    return somethingDouble(event(stackthisObject(thread)).mouse.x);
 }
 
 Something mouseAxesEventY(Thread *thread) {
-    return somethingDouble(event(stackGetThisObject(thread)).mouse.y);
+    return somethingDouble(event(stackthisObject(thread)).mouse.y);
 }
 
 void sampleInitFile(Thread *thread) {
-    char *path = stringToChar(stackGetVariable(0, thread).object->value);
+    char *path = stringToChar(stackvariable(0, thread).object->value);
     ALLEGRO_SAMPLE *sample = al_load_sample(path);
     if (sample) {
-        sample(stackGetThisObject(thread)) = sample;
+        sample(stackthisObject(thread)) = sample;
     }
     else {
-        stackGetThisObject(thread)->value = NULL;
+        stackthisObject(thread)->value = NULL;
     }
     free(path);
 }
@@ -369,31 +369,31 @@ void sampleDe(void *v) {
 }
 
 Something samplePlay(Thread *thread) {
-    ALLEGRO_SAMPLE *sample = sample(stackGetThisObject(thread));
-    float gain = (float)stackGetVariable(0, thread).doubl;
-    float pan = (float)stackGetVariable(1, thread).doubl;
-    float speed = (float)stackGetVariable(2, thread).doubl;
+    ALLEGRO_SAMPLE *sample = sample(stackthisObject(thread));
+    float gain = (float)stackvariable(0, thread).doubl;
+    float pan = (float)stackvariable(1, thread).doubl;
+    float speed = (float)stackvariable(2, thread).doubl;
     al_reserve_samples(1);
     al_play_sample(sample, gain, pan, speed, ALLEGRO_PLAYMODE_ONCE, NULL);
     return NOTHINGNESS;
 }
 
 void timerInit(Thread *thread) {
-    timer(stackGetThisObject(thread)) = al_create_timer(stackGetVariable(0, thread).doubl);
+    timer(stackthisObject(thread)) = al_create_timer(stackvariable(0, thread).doubl);
 }
 
 Something timerStart(Thread *thread) {
-    al_start_timer(timer(stackGetThisObject(thread)));
+    al_start_timer(timer(stackthisObject(thread)));
     return NOTHINGNESS;
 }
 
 Something timerStop(Thread *thread) {
-    al_stop_timer(timer(stackGetThisObject(thread)));
+    al_stop_timer(timer(stackthisObject(thread)));
     return NOTHINGNESS;
 }
 
 Something timerResume(Thread *thread) {
-    al_resume_timer(timer(stackGetThisObject(thread)));
+    al_resume_timer(timer(stackthisObject(thread)));
     return NOTHINGNESS;
 }
 

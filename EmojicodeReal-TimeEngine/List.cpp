@@ -37,7 +37,7 @@ void expandListSize(RetainedObjectPointer listObject) {
 }
 
 void listEnsureCapacity(Thread *thread, size_t size) {
-    auto *list = thread->getThisObject()->val<List>();
+    auto *list = thread->thisObject()->val<List>();
     if (list->capacity < size) {
         Object *object;
         if (list->capacity == 0) {
@@ -46,7 +46,7 @@ void listEnsureCapacity(Thread *thread, size_t size) {
         else {
             object = resizeArray(list->items, sizeCalculationWithOverflowProtection(size, sizeof(Box)));
         }
-        list = thread->getThisObject()->val<List>();
+        list = thread->thisObject()->val<List>();
         list->items = object;
         list->capacity = size;
     }
@@ -75,7 +75,7 @@ Box* listAppendDestination(RetainedObjectPointer listObject, Thread *thread) {
 }
 
 void listCountBridge(Thread *thread) {
-    thread->returnFromFunction(static_cast<EmojicodeInteger>(thread->getThisObject()->val<List>()->count));
+    thread->returnFromFunction(static_cast<EmojicodeInteger>(thread->thisObject()->val<List>()->count));
 }
 
 void listAppendBridge(Thread *thread) {
@@ -85,8 +85,8 @@ void listAppendBridge(Thread *thread) {
 }
 
 void listGetBridge(Thread *thread) {
-    auto *list = thread->getThisObject()->val<List>();
-    EmojicodeInteger index = thread->getVariable(0).raw;
+    auto *list = thread->thisObject()->val<List>();
+    EmojicodeInteger index = thread->variable(0).raw;
     if (index < 0) {
         index += list->count;
     }
@@ -99,8 +99,8 @@ void listGetBridge(Thread *thread) {
 }
 
 void listRemoveBridge(Thread *thread) {
-    auto *list = thread->getThisObject()->val<List>();
-    EmojicodeInteger index = thread->getVariable(0).raw;
+    auto *list = thread->thisObject()->val<List>();
+    EmojicodeInteger index = thread->variable(0).raw;
     if (index < 0) {
         index += list->count;
     }
@@ -114,7 +114,7 @@ void listRemoveBridge(Thread *thread) {
 }
 
 void listPopBridge(Thread *thread) {
-    auto *list = thread->getThisObject()->val<List>();
+    auto *list = thread->thisObject()->val<List>();
     if (list->count == 0) {
         thread->returnNothingnessFromFunction();
         return;
@@ -127,8 +127,8 @@ void listPopBridge(Thread *thread) {
 }
 
 void listInsertBridge(Thread *thread) {
-    EmojicodeInteger index = thread->getVariable(0).raw;
-    auto *list = thread->getThisObject()->val<List>();
+    EmojicodeInteger index = thread->variable(0).raw;
+    auto *list = thread->thisObject()->val<List>();
 
     if (index < 0) {
         index += list->count;
@@ -142,7 +142,7 @@ void listInsertBridge(Thread *thread) {
         expandListSize(thread->thisObjectAsRetained());
     }
 
-    list = thread->getThisObject()->val<List>();
+    list = thread->thisObject()->val<List>();
 
     std::memmove(list->elements() + index + 1, list->elements() + index, sizeof(Box) * (list->count++ - index));
     list->elements()[index].copy(thread->variableDestination(1));
@@ -150,13 +150,13 @@ void listInsertBridge(Thread *thread) {
 }
 
 void listSort(Thread *thread) {
-    auto *list = thread->getThisObject()->val<List>();
+    auto *list = thread->thisObject()->val<List>();
     std::sort(list->elements(), list->elements() + list->count, [thread](const Box &a, const Box &b) {
         Value args[2 * STORAGE_BOX_VALUE_SIZE];
         a.copyTo(args);
         b.copyTo(args + STORAGE_BOX_VALUE_SIZE);
         Value c;
-        executeCallableExtern(thread->getVariable(0).object, args, sizeof(args), thread, &c);
+        executeCallableExtern(thread->variable(0).object, args, sizeof(args), thread, &c);
         return c.raw < 0;
     });
     thread->returnFromFunction();
@@ -166,14 +166,14 @@ void listFromListBridge(Thread *thread) {
     auto listO = thread->retain(newObject(CL_LIST));
 
     auto *list = listO->val<List>();
-    auto *originalList = thread->getThisObject()->val<List>();
+    auto *originalList = thread->thisObject()->val<List>();
 
     list->count = originalList->count;
     list->capacity = originalList->capacity;
 
     Object *items = newArray(sizeof(Box) * originalList->capacity);
     list = listO->val<List>();
-    originalList = thread->getThisObject()->val<List>();
+    originalList = thread->thisObject()->val<List>();
     list->items = items;
 
     std::memcpy(list->elements(), originalList->elements(), originalList->count * sizeof(Box));
@@ -182,18 +182,18 @@ void listFromListBridge(Thread *thread) {
 }
 
 void listRemoveAllBridge(Thread *thread) {
-    auto *list = thread->getThisObject()->val<List>();
+    auto *list = thread->thisObject()->val<List>();
     std::memset(list->elements(), 0, list->count * sizeof(Box));
     list->count = 0;
     thread->returnFromFunction();
 }
 
 void listSetBridge(Thread *thread) {
-    EmojicodeInteger index = thread->getVariable(0).raw;
-    auto *list = thread->getThisObject()->val<List>();
+    EmojicodeInteger index = thread->variable(0).raw;
+    auto *list = thread->thisObject()->val<List>();
 
     listEnsureCapacity(thread, index + 1);
-    list = thread->getThisObject()->val<List>();
+    list = thread->thisObject()->val<List>();
 
     if (list->count <= index) {
         list->count = index + 1;
@@ -204,7 +204,7 @@ void listSetBridge(Thread *thread) {
 }
 
 void listShuffleInPlaceBridge(Thread *thread) {
-    auto *list = thread->getThisObject()->val<List>();
+    auto *list = thread->thisObject()->val<List>();
 
     auto rng = std::mt19937_64(std::random_device()());
     std::shuffle(list->elements(), list->elements() + list->count, rng);
@@ -213,21 +213,21 @@ void listShuffleInPlaceBridge(Thread *thread) {
 }
 
 void listEnsureCapacityBridge(Thread *thread) {
-    listEnsureCapacity(thread, thread->getVariable(0).raw);
+    listEnsureCapacity(thread, thread->variable(0).raw);
 }
 
 void initListEmptyBridge(Thread *thread) {
     // The Real-Time Engine guarantees pre-nulled objects.
-    thread->returnFromFunction(thread->getThisContext());
+    thread->returnFromFunction(thread->thisContext());
 }
 
 void initListWithCapacity(Thread *thread) {
-    EmojicodeInteger capacity = thread->getVariable(0).raw;
+    EmojicodeInteger capacity = thread->variable(0).raw;
     Object *n = newArray(sizeCalculationWithOverflowProtection(capacity, sizeof(Box)));
-    auto *list = thread->getThisObject()->val<List>();
+    auto *list = thread->thisObject()->val<List>();
     list->capacity = capacity;
     list->items = n;
-    thread->returnFromFunction(thread->getThisContext());
+    thread->returnFromFunction(thread->thisContext());
 }
 
 }  // namespace Emojicode

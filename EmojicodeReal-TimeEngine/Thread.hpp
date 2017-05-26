@@ -11,6 +11,7 @@
 
 #include "Engine.hpp"
 #include "RetainedObjectPointer.hpp"
+#include <mutex>
 
 namespace Emojicode {
 
@@ -29,12 +30,8 @@ struct StackFrame {
 
 class Thread {
 public:
-    static Thread* lastThread();
-    /// The number of threads currently active
-    static int threads();
+    friend void gc(std::unique_lock<std::mutex> &);
 
-    /// Creates a new thread
-    Thread();
     /// Pops the stack associated with this thread
     void popStack();
     /// Pushes a new stack frame
@@ -43,20 +40,22 @@ public:
     /// Pushes the reserved stack frame onto the stack
     void pushReservedFrame();
 
-    /** Returns the value on which the method was called. */
-    Value getThisContext() const;
-    /** Returns the object on which the method was called. */
-    Object* getThisObject() const;
-
     /// Reserves a new stack frame which can later be pushed with @c stackPushReservedFrame
     /// @returns A pointer to the memory reserved for the variables.
     StackFrame* reserveFrame(Value self, int size, Function *function, Value *destination,
                              EmojicodeInstruction *executionPointer);
 
-    /// Gets the content of the variable at the specific index from the stack associated with this thread
-    Value getVariable(int index) const;
-    /// Gets a pointer to the variable at the specific index from the stack associated with this thread
+    StackFrame* currentStackFrame() const { return stack_; }
+
+    /// Returns the content of the variable slot at the specific index from the stack associated with this thread
+    Value variable(int index) const { return *variableDestination(index); }
+    /// Returns a pointer to the variable slot at the specific index from the stack associated with this thread
     Value* variableDestination(int index) const { return stack_->variableDestination(index); }
+
+    /// Returns the value on which the method was called.
+    Value thisContext() const { return stack_->thisContext; }
+    /** Returns the object on which the method was called. */
+    Object* thisObject() const { return stack_->thisContext.object; }
 
     /// Consumes the next instruction from the current stack frame’s execution pointer, i.e. returns the value to which
     /// the pointer currently points and increments the pointer.
@@ -86,11 +85,6 @@ public:
         stack_->destination->storeError(error);
         returnFromFunction();
     }
-
-
-    void markStack();
-
-    StackFrame* currentStackFrame() const { return stack_; }
 
     Thread* threadBefore() const { return threadBefore_; }
 
@@ -122,12 +116,19 @@ public:
         return RetainedObjectPointer(&variableDestination(index)->object);
     }
 
+    /// Creates a new thread
+    Thread();
+    ~Thread();
+private:
+    void markStack();
     void markRetainList() const {
         for (Object **pointer = retainPointer - 1; pointer >= retainList; pointer--) mark(pointer);
     }
 
-    ~Thread();
-private:
+    static Thread* lastThread();
+    /// The number of threads currently active
+    static int threads();
+
     static Thread *lastThread_;
     static int threads_;
 

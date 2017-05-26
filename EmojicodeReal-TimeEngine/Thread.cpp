@@ -11,7 +11,6 @@
 #include "Processor.hpp"
 #include <cstdlib>
 #include <cstring>
-#include <mutex>
 #include <thread>
 
 using namespace Emojicode;
@@ -109,18 +108,6 @@ void Thread::pushStack(Value self, int frameSize, int argCount, Function *functi
 void Thread::popStack() {
     futureStack_ = stack_->returnFutureStack;
     stack_ = stack_->returnPointer;
-}
-
-Value Thread::getVariable(int index) const {
-    return *variableDestination(index);
-}
-
-Object* Thread::getThisObject() const {
-    return stack_->thisContext.object;
-}
-
-Value Thread::getThisContext() const {
-    return stack_->thisContext;
 }
 
 void Thread::markStack() {
