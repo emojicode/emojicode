@@ -10,6 +10,7 @@
 #define EmojicodeList_h
 
 #include "EmojicodeAPI.hpp"
+#include "RetainedObjectPointer.hpp"
 
 namespace Emojicode {
 
@@ -29,7 +30,7 @@ struct List {
 
 /// Prepares the list for a new element to be added to the end and returns a pointer to where the new element should be
 /// copied.
-Box* listAppendDestination(Object *lo, Thread *thread);
+Box* listAppendDestination(RetainedObjectPointer listObject, Thread *thread);
 
 /**
  * Creates a list by copying all references from @c cpdList.

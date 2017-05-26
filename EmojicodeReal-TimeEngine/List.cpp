@@ -17,7 +17,7 @@
 
 namespace Emojicode {
 
-void expandListSize(Object *const &listObject) {
+void expandListSize(RetainedObjectPointer listObject) {
 #define initialSize 7
     auto *list = listObject->val<List>();
     if (list->capacity == 0) {
@@ -65,9 +65,8 @@ void listMark(Object *self) {
     }
 }
 
-Box* listAppendDestination(Object *lo, Thread *thread) {
-    Object *const &listObject = thread->retain(lo);
-    auto *list = lo->val<List>();
+Box* listAppendDestination(RetainedObjectPointer listObject, Thread *thread) {
+    auto *list = listObject->val<List>();
     if (list->capacity - list->count == 0) {
         expandListSize(listObject);
     }
@@ -81,7 +80,8 @@ void listCountBridge(Thread *thread) {
 }
 
 void listAppendBridge(Thread *thread) {
-    *listAppendDestination(thread->getThisObject(), thread) = *reinterpret_cast<Box *>(thread->variableDestination(0));
+    *listAppendDestination(thread->thisObjectAsRetained(),
+                           thread) = *reinterpret_cast<Box *>(thread->variableDestination(0));
     thread->returnFromFunction();
 }
 
@@ -140,8 +140,7 @@ void listInsertBridge(Thread *thread) {
     }
 
     if (list->capacity - list->count == 0) {
-        Object *&object = thread->currentStackFrame()->thisContext.object;
-        expandListSize(object);
+        expandListSize(thread->thisObjectAsRetained());
     }
 
     list = thread->getThisObject()->val<List>();
@@ -165,7 +164,7 @@ void listSort(Thread *thread) {
 }
 
 void listFromListBridge(Thread *thread) {
-    Object *const &listO = thread->retain(newObject(CL_LIST));
+    auto listO = thread->retain(newObject(CL_LIST));
 
     auto *list = listO->val<List>();
     auto *originalList = thread->getThisObject()->val<List>();
@@ -180,7 +179,7 @@ void listFromListBridge(Thread *thread) {
 
     std::memcpy(list->elements(), originalList->elements(), originalList->count * sizeof(Box));
     thread->release(1);
-    thread->returnFromFunction(listO);
+    thread->returnFromFunction(listO.unretainedPointer());
 }
 
 void listRemoveAllBridge(Thread *thread) {
@@ -197,8 +196,9 @@ void listSetBridge(Thread *thread) {
     listEnsureCapacity(thread, index + 1);
     list = thread->getThisObject()->val<List>();
 
-    if (list->count <= index)
+    if (list->count <= index) {
         list->count = index + 1;
+    }
 
     list->elements()[index].copy(thread->variableDestination(1));
     thread->returnFromFunction();

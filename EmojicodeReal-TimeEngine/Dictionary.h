@@ -59,7 +59,7 @@ typedef struct {
     size_t nextThreshold;
 } EmojicodeDictionary;
 
-void dictionaryPutVal(Object *dicto, Object *key, Box value, Thread *thread);
+void dictionaryPutVal(RetainedObjectPointer dictionaryObject, Object *key, Box value, Thread *thread);
 
 /** Remove an item by keyString as key */
 void dictionaryRemove(EmojicodeDictionary *dict, Object *key, Thread *thread);

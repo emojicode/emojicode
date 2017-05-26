@@ -10,6 +10,7 @@
 #define Thread_hpp
 
 #include "Engine.hpp"
+#include "RetainedObjectPointer.hpp"
 
 namespace Emojicode {
 
@@ -93,8 +94,26 @@ public:
 
     Thread* threadBefore() const { return threadBefore_; }
 
-    Object* const& retain(Object *object) { *retainPointer = object; return *(retainPointer++); }
+    /// Retains the given object.
+    /// This method is used in native function code to "retain" an object, i.e. to prevent the object from being
+    /// deallocated by the garbage collector and to keep a pointer to it.
+    /// @warning You must retain all objects which you wish to keep, before you perform a potentially garbage-collector
+    /// invoking operation. As well, you must "release" the object before your function returns by calling @c release().
+    /// @returns A @c RetainedObjectPointer pointing to the retained object.
+    RetainedObjectPointer retain(Object *object) {
+        *retainPointer = object;
+        return RetainedObjectPointer(retainPointer++);
+    }
+    /// Release @c n objects previously retained by @c retain().
+    /// @warning Releasing more objects than you retained leads to undefined behavior.
     void release(int n) { retainPointer -= n; }
+    /// Returns the this object as a retained object pointer. This method is only provided to allow convenient passing
+    /// of the this object as retained object pointer. The this object itself is, of course, retained already in the
+    /// stack frame and calls to @c thisObject() will always return a valid object pointer.
+    /// @attention Unlike after a call to @c retain() you must not call @c release() for a call to this method.
+    RetainedObjectPointer thisObjectAsRetained() {
+        return RetainedObjectPointer(&stack_->thisContext.object);
+    }
 
     void markRetainList() const {
         for (Object **pointer = retainPointer - 1; pointer >= retainList; pointer--) mark(pointer);

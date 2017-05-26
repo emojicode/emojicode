@@ -10,7 +10,6 @@
 #include "EmojicodeAPI.hpp"
 #include "String.h"
 #include "Thread.hpp"
-#include <functional>
 
 namespace Emojicode {
 
@@ -77,7 +76,7 @@ Object* dictionaryNewNode(EmojicodeDictionaryHash hash, Object *key, Box value, 
     return nodeo;
 }
 
-void dictionaryResize(Object *const &dictObject, Thread *thread) {
+void dictionaryResize(RetainedObjectPointer dictObject, Thread *thread) {
     auto *dict = dictObject->val<EmojicodeDictionary>();
 
     Object *oldBuckoo = dict->buckets;
@@ -170,9 +169,8 @@ void dictionaryResize(Object *const &dictObject, Thread *thread) {
     }
 }
 
-void dictionaryPutVal(Object *dicto, Object *key, Box value, Thread *thread) {
-    Object *const &dictionaryObject = thread->retain(dicto);
-    EmojicodeDictionaryHash hash = dictionaryHash(dicto->val<EmojicodeDictionary>(), key);
+void dictionaryPutVal(RetainedObjectPointer dictionaryObject, Object *key, Box value, Thread *thread) {
+    EmojicodeDictionaryHash hash = dictionaryHash(dictionaryObject->val<EmojicodeDictionary>(), key);
 
     auto *dict = dictionaryObject->val<EmojicodeDictionary>();
 
@@ -223,7 +221,6 @@ void dictionaryPutVal(Object *dicto, Object *key, Box value, Thread *thread) {
     if (++dict->size > dict->nextThreshold) {
         dictionaryResize(dictionaryObject, thread);
     }
-    thread->release(1);
 }
 
 EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Object *key, Thread *thread) {
@@ -313,7 +310,7 @@ void dictionaryMark(Object *object) {
 //MARK: Bridges
 
 void bridgeDictionarySet(Thread *thread) {
-    dictionaryPutVal(thread->getThisObject(), thread->getVariable(0).object,
+    dictionaryPutVal(thread->thisObjectAsRetained(), thread->getVariable(0).object,
                      *reinterpret_cast<Box *>(thread->variableDestination(1)), thread);
     thread->returnFromFunction();
 }
@@ -337,7 +334,7 @@ void bridgeDictionaryRemove(Thread *thread) {
 }
 
 void bridgeDictionaryKeys(Thread *thread) {
-    Object *const &listObject = thread->retain(newObject(CL_LIST));
+    auto listObject = thread->retain(newObject(CL_LIST));
 
     auto *dict = thread->getThisObject()->val<EmojicodeDictionary>();
 
@@ -347,18 +344,22 @@ void bridgeDictionaryKeys(Thread *thread) {
 
     for (size_t i = 0, l = dict->bucketsCounter; i < l; i++) {
         auto **bucko = thread->getThisObject()->val<EmojicodeDictionary>()->buckets->val<Object*>();
-        auto nodeo = std::ref(thread->retain(bucko[i]));
-        while (nodeo) {
+        auto nodeo = thread->retain(bucko[i]);
+        while (true) {
             listAppendDestination(listObject, thread)->copySingleValue(T_OBJECT,
-                                                                       nodeo.get()->val<EmojicodeDictionaryNode>()->key);
+                                                                       nodeo->val<EmojicodeDictionaryNode>()->key);
             thread->release(1);
-            nodeo = std::ref(thread->retain(nodeo.get()->val<EmojicodeDictionaryNode>()->next));
+            auto next = nodeo->val<EmojicodeDictionaryNode>()->next;
+            if (next == nullptr) {
+                break;
+            }
+            nodeo = thread->retain(next);
         }
         thread->release(1);
     }
 
     thread->release(1);
-    thread->returnFromFunction(listObject);
+    thread->returnFromFunction(listObject.unretainedPointer());
 }
 
 void bridgeDictionaryClear(Thread *thread) {

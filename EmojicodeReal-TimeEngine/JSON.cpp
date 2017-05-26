@@ -33,18 +33,18 @@ struct JSONStackFrame {
 
     EmojicodeInteger integer;
     int numberDigitsFraction;
-    Object *const *object;
-    Object *const *secondaryObject;
+    RetainedObjectPointer object = nullptr;
+    RetainedObjectPointer secondaryObject = nullptr;
 };
 
 #define errorExit() destination->makeNothingness(); return;
 #define upgrade(now, expect, ec) case now: if (c == ec) { stackCurrent->state = now ## expect; continue; } else { errorExit(); }
 #define upgradeReturn(now, ec, r) case now: if (c == ec) { backValue = r; popTheStack(); } else { errorExit(); }
-#define appendEscape(seq, c) case seq: *listAppendDestination(*stackCurrent->object, thread) = Box(T_SYMBOL, EmojicodeChar(c)); continue;
+#define appendEscape(seq, c) case seq: *listAppendDestination(stackCurrent->object, thread) = Box(T_SYMBOL, EmojicodeChar(c)); continue;
 #define whitespaceCase case '\t': case '\n': case '\r': case ' ':
-#define popTheStack() if (stackCurrent->secondaryObject) thread->release(1); if (stackCurrent->object) thread->release(1); stackCurrent--; continue;
+#define popTheStack() if (stackCurrent->secondaryObject.unretainedPointer()) thread->release(1); if (stackCurrent->object.unretainedPointer()) thread->release(1); stackCurrent--; continue;
 #define pushTheStack() stackCurrent++; if (stackCurrent > stackLimit) { errorExit(); } stackCurrent->state = JSON_NONE; stackCurrent->secondaryObject = nullptr; stackCurrent->object = nullptr; continue;
-#define returnArray() backValue = Box(T_OBJECT, *stackCurrent->object); popTheStack();
+#define returnArray() backValue = Box(T_OBJECT, stackCurrent->object.unretainedPointer()); popTheStack();
 #define integerValue() Box(T_INTEGER, (stackCurrent->state == JSON_NUMBER_NEGATIVE) ? -stackCurrent->integer : stackCurrent->integer)
 
 #define _doubleInternalValue() ((double)stackCurrent->integer/pow(10, stackCurrent->numberDigitsFraction))
@@ -80,17 +80,17 @@ void parseJSON(Thread *thread, Box *destination) {
                         stackCurrent->state = JSON_STRING_ESCAPE;
                         continue;
                     case '"': {
-                        auto &stringObject = thread->retain(newObject(CL_STRING));
-                        initStringFromSymbolList(stringObject->val<String>(), (*stackCurrent->object)->val<List>());
+                        auto stringObject = thread->retain(newObject(CL_STRING));
+                        initStringFromSymbolList(stringObject->val<String>(), stackCurrent->object->val<List>());
                         thread->release(1);
-                        backValue = Box(T_OBJECT, stringObject);
+                        backValue = Box(T_OBJECT, stringObject.unretainedPointer());
                         popTheStack();
                     }
                     default:
                         if (c <= 0x1F) {
                             errorExit();
                         }
-                        *listAppendDestination(*stackCurrent->object, thread) = Box(T_SYMBOL, c);
+                        *listAppendDestination(stackCurrent->object, thread) = Box(T_SYMBOL, c);
                         continue;
                 }
             case JSON_STRING_ESCAPE:
@@ -142,7 +142,7 @@ void parseJSON(Thread *thread, Box *destination) {
                             }
                             break;
                         }
-                        *listAppendDestination(*stackCurrent->object, thread) = Box(T_SYMBOL, x);
+                        *listAppendDestination(stackCurrent->object, thread) = Box(T_SYMBOL, x);
                         continue;
                     }
                 }
@@ -206,7 +206,7 @@ void parseJSON(Thread *thread, Box *destination) {
                 stackCurrent->state = JSON_ARRAY_BACK_VALUE;
                 pushTheStack();
             case JSON_ARRAY_BACK_VALUE:
-                *listAppendDestination(*stackCurrent->object, thread) = backValue;
+                *listAppendDestination(stackCurrent->object, thread) = backValue;
 
                 switch (c) {
                     case ',':
@@ -227,7 +227,7 @@ void parseJSON(Thread *thread, Box *destination) {
                 if (backValue.type.raw != T_OBJECT || backValue.value1.object->klass != CL_STRING) {
                     errorExit();
                 }
-                stackCurrent->secondaryObject = &thread->retain(backValue.value1.object);
+                stackCurrent->secondaryObject = thread->retain(backValue.value1.object);
 
                 switch (c) {
                     case ':':
@@ -239,14 +239,15 @@ void parseJSON(Thread *thread, Box *destination) {
                         errorExit();
                 }
             case JSON_OBJECT_VALUE_BACK_VALUE:
-                dictionaryPutVal(*stackCurrent->object, *stackCurrent->secondaryObject, backValue, thread);
+                dictionaryPutVal(stackCurrent->object, stackCurrent->secondaryObject.unretainedPointer(),
+                                 backValue, thread);
 
                 switch (c) {
                     case ',':
                         stackCurrent->state = JSON_OBJECT_KEY;
                         continue;
                     case '}':
-                        backValue = Box(T_OBJECT, *stackCurrent->object);
+                        backValue = Box(T_OBJECT, stackCurrent->object.unretainedPointer());
                         popTheStack();
                         whitespaceCase
                         continue;
@@ -267,18 +268,18 @@ void parseJSON(Thread *thread, Box *destination) {
                 switch (c) {
                     case '"': {
                         stackCurrent->state = JSON_STRING;
-                        stackCurrent->object = &thread->retain(newObject(CL_LIST));
+                        stackCurrent->object = thread->retain(newObject(CL_LIST));
                         break;
                     }
                     case '{': {
                         stackCurrent->state = JSON_OBJECT_KEY;
-                        stackCurrent->object = &thread->retain(newObject(CL_DICTIONARY));
-                        dictionaryInit((*stackCurrent->object)->val<EmojicodeDictionary>());
+                        stackCurrent->object = thread->retain(newObject(CL_DICTIONARY));
+                        dictionaryInit(stackCurrent->object->val<EmojicodeDictionary>());
                         break;
                     }
                     case '[': {
                         stackCurrent->state = JSON_ARRAY_FIRST;
-                        stackCurrent->object = &thread->retain(newObject(CL_LIST));
+                        stackCurrent->object = thread->retain(newObject(CL_LIST));
                         break;
                     }
                     case 't':

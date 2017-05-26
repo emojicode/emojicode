@@ -54,7 +54,7 @@ static void systemTime(Thread *thread) {
 }
 
 static void systemArgs(Thread *thread) {
-    Object *const &listObject = thread->retain(newObject(CL_LIST));
+    auto listObject = thread->retain(newObject(CL_LIST));
 
     auto *newList = listObject->val<List>();
     newList->capacity = cliArgumentCount;
@@ -67,7 +67,7 @@ static void systemArgs(Thread *thread) {
     }
 
     thread->release(1);
-    thread->returnFromFunction(listObject);
+    thread->returnFromFunction(listObject.unretainedPointer());
 }
 
 static void systemSystem(Thread *thread) {
@@ -95,7 +95,7 @@ static void systemSystem(Thread *thread) {
 
     EmojicodeInteger len = u8_strlen_l(buffer->val<char>(), bufferUsedSize);
 
-    Object *const &so = thread->retain(newObject(CL_STRING));
+    auto so = thread->retain(newObject(CL_STRING));
     auto *string = so->val<String>();
     string->length = len;
 
@@ -105,7 +105,7 @@ static void systemSystem(Thread *thread) {
 
     u8_toucs(string->characters(), len, buffer->val<char>(), bufferUsedSize);
     thread->release(1);
-    thread->returnFromFunction(so);
+    thread->returnFromFunction(so.unretainedPointer());
 }
 
 //MARK: Threads
@@ -207,12 +207,12 @@ static void dataToString(Thread *thread) {
     }
 
     EmojicodeInteger len = u8_strlen_l(data->bytes, data->length);
-    Object *const &characters = thread->retain(newArray(len * sizeof(EmojicodeChar)));
+    auto characters = thread->retain(newArray(len * sizeof(EmojicodeChar)));
 
     Object *sto = newObject(CL_STRING);
     auto *string = sto->val<String>();
     string->length = len;
-    string->charactersObject = characters;
+    string->charactersObject = characters.unretainedPointer();
     thread->release(1);
     u8_toucs(string->characters(), len, data->bytes, data->length);
     thread->returnOEValueFromFunction(sto);
@@ -258,7 +258,7 @@ static void dataByAppendingData(Thread *thread) {
     auto *b = thread->getVariable(0).object->val<Data>();
 
     size_t size = data->length + b->length;
-    Object *const &newBytes = thread->retain(newArray(size));
+    auto newBytes = thread->retain(newArray(size));
 
     b = thread->getVariable(0).object->val<Data>();
     data = thread->getThisObject()->val<Data>();
@@ -268,7 +268,7 @@ static void dataByAppendingData(Thread *thread) {
 
     Object *ooData = newObject(CL_DATA);
     auto *oData = ooData->val<Data>();
-    oData->bytesObject = newBytes;
+    oData->bytesObject = newBytes.unretainedPointer();
     oData->bytes = oData->bytesObject->val<char>();
     oData->length = size;
     thread->release(1);
@@ -287,12 +287,12 @@ void integerToString(Thread *thread) {
         d++;
     }
 
-    Object *const &co = thread->retain(newArray(d * sizeof(EmojicodeChar)));
+    auto co = thread->retain(newArray(d * sizeof(EmojicodeChar)));
 
     Object *stringObject = newObject(CL_STRING);
     auto *string = stringObject->val<String>();
     string->length = d;
-    string->charactersObject = co;
+    string->charactersObject = co.unretainedPointer();
 
     EmojicodeChar *characters = string->characters() + d;
     do {
@@ -326,11 +326,11 @@ static void integerAbsolute(Thread *thread) {
 }
 
 static void symbolToString(Thread *thread) {
-    Object *co = thread->retain(newArray(sizeof(EmojicodeChar)));
+    auto co = thread->retain(newArray(sizeof(EmojicodeChar)));
     Object *stringObject = newObject(CL_STRING);
     auto *string = stringObject->val<String>();
     string->length = 1;
-    string->charactersObject = co;
+    string->charactersObject = co.unretainedPointer();
     thread->release(1);
     string->characters()[0] = thread->getThisContext().value->character;
     thread->returnFromFunction(stringObject);
@@ -358,11 +358,11 @@ static void doubleToString(Thread *thread) {
     }
     length += iLength;
 
-    Object *const &co = thread->retain(newArray(length * sizeof(EmojicodeChar)));
+    auto co = thread->retain(newArray(length * sizeof(EmojicodeChar)));
     Object *stringObject = newObject(CL_STRING);
     auto *string = stringObject->val<String>();
     string->length = length;
-    string->charactersObject = co;
+    string->charactersObject = co.unretainedPointer();
     thread->release(1);
     EmojicodeChar *characters = string->characters() + length;
 

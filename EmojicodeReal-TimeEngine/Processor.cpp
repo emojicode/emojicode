@@ -668,7 +668,7 @@ void produce(Thread *thread, Value *destination) {
             return;
         }
         case INS_OPT_DICTIONARY_LITERAL: {
-            Object *const &dico = thread->retain(newObject(CL_DICTIONARY));
+            auto dico = thread->retain(newObject(CL_DICTIONARY));
             dictionaryInit(dico->val<EmojicodeDictionary>());
 
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
@@ -680,19 +680,19 @@ void produce(Thread *thread, Value *destination) {
 
                 dictionaryPutVal(dico, key.object, sth, thread);
             }
-            destination->object = dico;
+            destination->object = dico.unretainedPointer();
             thread->release(1);
             return;
         }
         case INS_OPT_LIST_LITERAL: {
-            Object *const &list = thread->retain(newObject(CL_LIST));
+            auto list = thread->retain(newObject(CL_LIST));
 
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
             while (thread->currentStackFrame()->executionPointer < end) {
                 produce(thread, reinterpret_cast<Value *>(listAppendDestination(list, thread)));
             }
 
-            destination->object = list;
+            destination->object = list.unretainedPointer();
             thread->release(1);
             return;
         }
@@ -701,18 +701,19 @@ void produce(Thread *thread, Value *destination) {
 
             size_t bufferSize = 10;
             size_t length = 0;
-            auto characters = std::ref(thread->retain(newArray(bufferSize * sizeof(EmojicodeChar))));
+            auto characters = thread->retain(newArray(bufferSize * sizeof(EmojicodeChar)));
 
-            for (int i = 0; i < stringCount; i++) {
+            for (EmojicodeInstruction i = 0; i < stringCount; i++) {
                 Value v;
                 produce(thread, &v);
                 auto *string = v.object->val<String>();
                 if (bufferSize - length < string->length) {
                     bufferSize += static_cast<size_t>(string->length) - (bufferSize - length);
                     thread->release(1);
-                    characters = std::ref(thread->retain(resizeArray(characters, bufferSize * sizeof(EmojicodeChar))));
+                    characters = thread->retain(resizeArray(characters.unretainedPointer(),
+                                                            bufferSize * sizeof(EmojicodeChar)));
                 }
-                EmojicodeChar *dest = characters.get()->val<EmojicodeChar>() + length;
+                EmojicodeChar *dest = characters->val<EmojicodeChar>() + length;
                 std::memcpy(dest, string->characters(), string->length * sizeof(EmojicodeChar));
                 length += string->length;
             }
@@ -720,7 +721,7 @@ void produce(Thread *thread, Value *destination) {
             Object *object = newObject(CL_STRING);
             auto *string = object->val<String>();
             string->length = length;
-            string->charactersObject = characters;
+            string->charactersObject = characters.unretainedPointer();
 
             destination->object = object;
             thread->release(1);
@@ -852,7 +853,7 @@ void produce(Thread *thread, Value *destination) {
             return;
         }
         case INS_CLOSURE: {
-            Object *const &closure = thread->retain(newObject(CL_CLOSURE));
+            auto closure = thread->retain(newObject(CL_CLOSURE));
 
             auto *c = closure->val<Closure>();
 
@@ -882,7 +883,7 @@ void produce(Thread *thread, Value *destination) {
                 c->thisContext = thread->getThisContext();
             }
 
-            destination->object = closure;
+            destination->object = closure.unretainedPointer();
             thread->release(1);
             return;
         }
@@ -899,14 +900,14 @@ void produce(Thread *thread, Value *destination) {
         case INS_CAPTURE_METHOD: {
             Value sth;
             produce(thread, &sth);
-            Object *const &callee = thread->retain(sth.object);
+            auto callee = thread->retain(sth.object);
 
             Object *closureObject = newObject(CL_CLOSURE);
             auto *closure = closureObject->val<Closure>();
 
             EmojicodeInstruction vti = thread->consumeInstruction();
             closure->function = callee->klass->methodsVtable[vti];
-            closure->thisContext = callee;
+            closure->thisContext = callee.unretainedPointer();
             thread->release(1);
             destination->object = closureObject;
             return;

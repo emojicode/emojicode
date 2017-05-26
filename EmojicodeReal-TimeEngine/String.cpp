@@ -50,13 +50,13 @@ Object* stringSubstring(EmojicodeInteger from, EmojicodeInteger length, Thread *
         return emptyString;
     }
 
-    Object *const &co = thread->retain(newArray(length * sizeof(EmojicodeChar)));
+    auto co = thread->retain(newArray(length * sizeof(EmojicodeChar)));
 
     Object *ostro = newObject(CL_STRING);
     auto *ostr = ostro->val<String>();
 
     ostr->length = length;
-    ostr->charactersObject = co;
+    ostr->charactersObject = co.unretainedPointer();
 
     std::memcpy(ostr->characters(), thread->getThisObject()->val<String>()->characters() + from,
                 length * sizeof(EmojicodeChar));
@@ -190,7 +190,7 @@ void stringGetInput(Thread *thread) {
 }
 
 void stringSplitByStringBridge(Thread *thread) {
-    Object *const &listObject = thread->retain(newObject(CL_LIST));
+    auto listObject = thread->retain(newObject(CL_LIST));
 
     EmojicodeInteger firstOfSeperator = 0, seperatorIndex = 0, firstAfterSeperator = 0;
 
@@ -232,7 +232,7 @@ void stringSplitByStringBridge(Thread *thread) {
     listAppendDestination(listObject, thread)->copySingleValue(T_OBJECT, stringSubstring(firstAfterSeperator, string->length - firstAfterSeperator, thread));
 
     thread->release(1);
-    thread->returnFromFunction(listObject);
+    thread->returnFromFunction(listObject.unretainedPointer());
 }
 
 void stringLengthBridge(Thread *thread) {
@@ -246,14 +246,14 @@ void stringUTF8LengthBridge(Thread *thread) {
 
 void stringByAppendingSymbolBridge(Thread *thread) {
     auto *string = thread->getThisObject()->val<String>();
-    Object *const &co = thread->retain(newArray((string->length + 1) * sizeof(EmojicodeChar)));
+    auto co = thread->retain(newArray((string->length + 1) * sizeof(EmojicodeChar)));
 
     Object *ostro = newObject(CL_STRING);
     auto *ostr = ostro->val<String>();
     string = thread->getThisObject()->val<String>();
 
     ostr->length = string->length + 1;
-    ostr->charactersObject = co;
+    ostr->charactersObject = co.unretainedPointer();
 
     std::memcpy(ostr->characters(), string->characters(), string->length * sizeof(EmojicodeChar));
 
@@ -300,7 +300,7 @@ void stringEndsWithBridge(Thread *thread) {
 
 void stringSplitBySymbolBridge(Thread *thread) {
     EmojicodeChar separator = thread->getVariable(0).character;
-    Object *const &list = thread->retain(newObject(CL_LIST));
+    auto list = thread->retain(newObject(CL_LIST));
 
     EmojicodeInteger from = 0;
 
@@ -316,7 +316,7 @@ void stringSplitBySymbolBridge(Thread *thread) {
                                     stringSubstring(from, stringObject->val<String>()->length - from, thread));
 
     thread->release(1);
-    thread->returnFromFunction(list);
+    thread->returnFromFunction(list.unretainedPointer());
 }
 
 void stringToData(Thread *thread) {
@@ -324,7 +324,7 @@ void stringToData(Thread *thread) {
 
     size_t ds = u8_codingsize(str->characters(), str->length);
 
-    Object *const &bytesObject = thread->retain(newArray(ds));
+    auto bytesObject = thread->retain(newArray(ds));
 
     str = thread->getThisObject()->val<String>();
     u8_toutf8(bytesObject->val<char>(), ds, str->characters(), str->length);
@@ -332,7 +332,7 @@ void stringToData(Thread *thread) {
     Object *o = newObject(CL_DATA);
     auto *d = o->val<Data>();
     d->length = ds;
-    d->bytesObject = bytesObject;
+    d->bytesObject = bytesObject.unretainedPointer();
     d->bytes = d->bytesObject->val<char>();
 
     thread->release(1);
@@ -341,12 +341,13 @@ void stringToData(Thread *thread) {
 
 void stringToCharacterList(Thread *thread) {
     auto *str = thread->getThisObject()->val<String>();
-    Object *list = newObject(CL_LIST);
+    auto list = thread->retain(newObject(CL_LIST));
 
     for (size_t i = 0; i < str->length; i++) {
         listAppendDestination(list, thread)->copySingleValue(T_SYMBOL, str->characters()[i]);
     }
-    thread->returnFromFunction(list);
+
+    thread->returnFromFunction(list.unretainedPointer());
 }
 
 void stringJSON(Thread *thread) {
@@ -537,7 +538,7 @@ void stringToDouble(Thread *thread) {
 }
 
 void stringToUppercase(Thread *thread) {
-    Object *const &o = thread->retain(newObject(CL_STRING));
+    auto o = thread->retain(newObject(CL_STRING));
     size_t length = thread->getThisObject()->val<String>()->length;
 
     Object *characters = newArray(length * sizeof(EmojicodeChar));
@@ -555,11 +556,11 @@ void stringToUppercase(Thread *thread) {
         }
     }
     thread->release(1);
-    thread->returnFromFunction(o);
+    thread->returnFromFunction(o.unretainedPointer());
 }
 
 void stringToLowercase(Thread *thread) {
-    Object *const &o = thread->retain(newObject(CL_STRING));
+    auto o = thread->retain(newObject(CL_STRING));
     size_t length = thread->getThisObject()->val<String>()->length;
 
     Object *characters = newArray(length * sizeof(EmojicodeChar));
@@ -577,7 +578,7 @@ void stringToLowercase(Thread *thread) {
         }
     }
     thread->release(1);
-    thread->returnFromFunction(o);
+    thread->returnFromFunction(o.unretainedPointer());
 }
 
 void stringCompareBridge(Thread *thread) {
