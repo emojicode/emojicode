@@ -13,15 +13,6 @@
 
 namespace Emojicode {
 
-/**
- * Generates a secure random number. The integer is either generated using arc4random_uniform if available
- * or by reading from @c /dev/urandmon.
- * @param min The minimal integer (inclusive).
- * @param max The maximal integer (inclusive).
- * @deprecated Use @c std::rand instead.
- */
-[[deprecated]] extern EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max);
-
 struct Data {
     EmojicodeInteger length;
     char *bytes;

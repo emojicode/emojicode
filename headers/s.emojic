@@ -49,12 +49,6 @@
 🌍 🕊 🚂 ⚪️ 🍇
   🐊 😛🐚🚂
 
-  🌮
-    Returns a cryptographically secure random number that is greater than
-    or equal to *min* and less than or equal to *max*.
-  🌮
-  🐈 🎰 min 🚂 max 🚂 📻 17
-
   🌮 Whether this value and *other* are considered equal. 🌮
   🐖 😛 other 🚂 ➡️ 👌 🍇
     🍎 😛 🐕 other
@@ -959,4 +953,26 @@
     could be locked.
   🌮
   🐖 🔐 ➡️ 👌 📻 15
+🍉
+
+🌮
+  🎰 is a pseudo-random number generator. The default implementation relies on
+  the Mersenne Twister algorithm.
+🌮
+🌍 🐇 🎰 🍇
+  🌮
+    Creates a new generator and seeds it with a random value, if possible using
+    hardware entropy.
+  🌮
+  🐈 🆕 📻 94
+  🌮
+    Generates an integer. Integers are uniformly distributed on the
+    closed interval `[a, b]`.
+  🌮
+  🐖 🚂 a 🚂 b 🚂 ➡️ 🚂 📻 95
+  🌮
+    Generates a double, where doubles are uniformly distributed on the interval
+    `[0, 1)`.
+  🌮
+  🐖 🚀 ➡️ 🚀 📻 96
 🍉

@@ -23,22 +23,9 @@
 #include <cmath>
 #include <thread>
 #include <algorithm>
+#include <random>
 
 namespace Emojicode {
-
-EmojicodeInteger secureRandomNumber(EmojicodeInteger min, EmojicodeInteger max) {
-    uint_fast64_t z;
-
-#if defined __FreeBSD__ || defined __APPLE__ || defined __OpenBSD__ || defined __NetBSD__
-    arc4random_buf(&z, sizeof(z));
-#else
-    FILE *fp = fopen("/dev/urandom", "r");
-    fread(&z, 1, sizeof(z), fp);
-    fclose(fp);
-#endif
-
-    return (z % (max - min + 1)) + min;
-}
 
 static void systemExit(Thread *thread) {
     EmojicodeInteger state = thread->getVariable(0).raw;
@@ -315,9 +302,19 @@ void integerToString(Thread *thread) {
     thread->returnFromFunction(stringObject);
 }
 
-static void integerRandom(Thread *thread) {
-    thread->getThisContext().value->raw = secureRandomNumber(thread->getVariable(0).raw, thread->getVariable(1).raw);
-    thread->returnFromFunction();
+static void initPrngWithoutSeed(Thread *thread) {
+    *thread->getThisObject()->val<std::mt19937_64>() = std::mt19937_64(std::random_device()());
+    thread->returnFromFunction(thread->getThisContext());
+}
+
+static void prngIntegerUniform(Thread *thread) {
+    auto dist = std::uniform_int_distribution<EmojicodeInteger>(thread->getVariable(0).raw, thread->getVariable(1).raw);
+    thread->returnFromFunction(dist(*thread->getThisObject()->val<std::mt19937_64>()));
+}
+
+static void prngDoubleUniform(Thread *thread) {
+    auto dist = std::uniform_real_distribution<double>();
+    thread->returnFromFunction(dist(*thread->getThisObject()->val<std::mt19937_64>()));
 }
 
 static void integerAbsolute(Thread *thread) {
@@ -479,7 +476,7 @@ FunctionFunctionPointer sLinkingTable[] = {
     mutexTryLock,  // 🔐
     //🚂
     integerToString,  // 🔡
-    integerRandom,  // 🎰
+    nullptr,  // 🎰
     integerAbsolute,  // 🏧
     doubleSin,  //📓
     doubleCos,  //📕
@@ -558,6 +555,9 @@ FunctionFunctionPointer sLinkingTable[] = {
     bridgeDictionaryClear,  //🐗
     bridgeDictionaryContains,  //🐣
     bridgeDictionarySize,  //🐔
+    initPrngWithoutSeed,
+    prngIntegerUniform,
+    prngDoubleUniform,
 };
 
 uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
@@ -576,6 +576,8 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
             return sizeof(std::thread);
         case 0x1f510:  //🔐
             return sizeof(pthread_mutex_t);
+        case 0x1f3b0:
+            return sizeof(std::mt19937_64);
     }
     return 0;
 }
