@@ -344,18 +344,20 @@ void bridgeDictionaryKeys(Thread *thread) {
 
     for (size_t i = 0, l = dict->bucketsCounter; i < l; i++) {
         auto **bucko = thread->getThisObject()->val<EmojicodeDictionary>()->buckets->val<Object*>();
-        auto nodeo = thread->retain(bucko[i]);
-        while (true) {
-            listAppendDestination(listObject, thread)->copySingleValue(T_OBJECT,
-                                                                       nodeo->val<EmojicodeDictionaryNode>()->key);
-            thread->release(1);
-            auto next = nodeo->val<EmojicodeDictionaryNode>()->next;
-            if (next == nullptr) {
-                break;
+        if (bucko[i] != nullptr) {
+            auto nodeo = thread->retain(bucko[i]);
+            while (true) {
+                listAppendDestination(listObject, thread)->copySingleValue(T_OBJECT,
+                                                                           nodeo->val<EmojicodeDictionaryNode>()->key);
+                auto next = nodeo->val<EmojicodeDictionaryNode>()->next;
+                if (next == nullptr) {
+                    break;
+                }
+                thread->release(1);
+                nodeo = thread->retain(next);
             }
-            nodeo = thread->retain(next);
+            thread->release(1);
         }
-        thread->release(1);
     }
 
     thread->release(1);

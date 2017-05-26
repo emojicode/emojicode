@@ -71,7 +71,6 @@ Box* listAppendDestination(RetainedObjectPointer listObject, Thread *thread) {
         expandListSize(listObject);
     }
     list = listObject->val<List>();
-    thread->release(1);
     return list->elements() + list->count++;
 }
 
