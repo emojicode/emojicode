@@ -675,10 +675,9 @@ void produce(Thread *thread, Value *destination) {
             while (thread->currentStackFrame()->executionPointer < end) {
                 Value key;
                 produce(thread, &key);
-                Box sth;
-                produce(thread, &sth.type);
-
-                dictionaryPutVal(dico, key.object, sth, thread);
+                auto keyObject = thread->retain(key.object);
+                produce(thread, reinterpret_cast<Value *>(dictionaryPutVal(dico, keyObject, thread)));
+                thread->release(1);
             }
             destination->object = dico.unretainedPointer();
             thread->release(1);

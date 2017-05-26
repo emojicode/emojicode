@@ -114,6 +114,13 @@ public:
     RetainedObjectPointer thisObjectAsRetained() {
         return RetainedObjectPointer(&stack_->thisContext.object);
     }
+    /// Returns the object pointer in the given variable slot as retained object pointer. This method is only provided
+    /// to allow convenient passing of the object pointer as retained object pointer as variables are naturally always
+    /// retained.
+    /// @attention Unlike after a call to @c retain() you must not call @c release() for a call to this method.
+    RetainedObjectPointer variableObjectPointerAsRetained(int index) {
+        return RetainedObjectPointer(&variableDestination(index)->object);
+    }
 
     void markRetainList() const {
         for (Object **pointer = retainPointer - 1; pointer >= retainList; pointer--) mark(pointer);

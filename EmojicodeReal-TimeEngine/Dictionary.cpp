@@ -15,7 +15,8 @@ namespace Emojicode {
 
 #define FNV_PRIME_64 1099511628211
 #define FNV_OFFSET_64 14695981039346656037U
-EmojicodeDictionaryHash fnv64(const char *k, size_t length) {
+EmojicodeDictionaryHash fnv64(const void *input, size_t length) {
+    auto k = reinterpret_cast<const char*>(input);
     EmojicodeDictionaryHash hash = FNV_OFFSET_64;
     for (size_t i = 0; i < length; i++) {
         hash = hash ^ k[i];
@@ -24,22 +25,24 @@ EmojicodeDictionaryHash fnv64(const char *k, size_t length) {
     return hash;
 }
 
-EmojicodeDictionaryHash dictionaryHash(EmojicodeDictionary *dict, Object *key) {
-    #define hashString(keyString) fnv64((char*)keyString->characters(), ((keyString)->length) * sizeof(EmojicodeChar))
-    return hashString(key->val<String>());
+EmojicodeDictionaryHash dictionaryHash(Object *key) {
+    auto string = key->val<String>();
+    return fnv64(string->characters(), (string->length) * sizeof(EmojicodeChar));
 }
 
-bool dictionaryKeyEqual(EmojicodeDictionary *dict, Object *key1, Object *key2) {
+bool dictionaryKeyEqual(Object *key1, Object *key2) {
     return stringEqual(key1->val<String>(), key2->val<String>());
 }
 
-bool dictionaryKeyHashEqual(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash1,
-                            EmojicodeDictionaryHash hash2, Object *key1, Object *key2) {
-    return (hash1 == hash2) && dictionaryKeyEqual(dict, key1, key2);
+bool dictionaryKeyHashEqual(EmojicodeDictionaryHash hash1, EmojicodeDictionaryHash hash2, Object *key1, Object *key2) {
+    return (hash1 == hash2) && dictionaryKeyEqual(key1, key2);
 }
 
 // MARK: Internal dictionary
-EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Object *key) {
+
+EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, Object *key) {
+    auto hash = dictionaryHash(key);
+
     EmojicodeDictionaryNode *e;
     Object** bucko;
     size_t n = 0;
@@ -49,13 +52,13 @@ EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeD
             Object *firsto = bucko[hash & (n - 1)];
             if (firsto != nullptr) {
                 e = firsto->val<EmojicodeDictionaryNode>();
-                if (dictionaryKeyHashEqual(dict, hash, e->hash, key, e->key)) {
+                if (dictionaryKeyHashEqual(hash, e->hash, key, e->key)) {
                     return e;
                 }
                 Object *eo;
-                while ((eo = e->next)) {
+                while ((eo = e->next) != nullptr) {
                     e = eo->val<EmojicodeDictionaryNode>();
-                    if (dictionaryKeyHashEqual(dict, hash, e->hash, key, e->key)) {
+                    if (dictionaryKeyHashEqual(hash, e->hash, key, e->key)) {
                         return e;
                     }
                 }
@@ -65,18 +68,17 @@ EmojicodeDictionaryNode* dictionaryGetNode(EmojicodeDictionary *dict, EmojicodeD
     return nullptr;
 }
 
-Object* dictionaryNewNode(EmojicodeDictionaryHash hash, Object *key, Box value, Object *next, Thread *thread) {
+Object* dictionaryNewNode(EmojicodeDictionaryHash hash, RetainedObjectPointer key) {
     Object *nodeo = newArray(sizeof(EmojicodeDictionaryNode));
     auto *node = nodeo->val<EmojicodeDictionaryNode>();
 
     node->hash = hash;
-    node->key = key;
-    node->value = value;
-    node->next = next;
+    node->key = key.unretainedPointer();
+    node->next = nullptr;
     return nodeo;
 }
 
-void dictionaryResize(RetainedObjectPointer dictObject, Thread *thread) {
+void dictionaryResize(RetainedObjectPointer dictObject) {
     auto *dict = dictObject->val<EmojicodeDictionary>();
 
     Object *oldBuckoo = dict->buckets;
@@ -102,7 +104,7 @@ void dictionaryResize(RetainedObjectPointer dictObject, Thread *thread) {
     }
 
     if (newThr == 0) {
-        float ft = (float) newCap * dict->loadFactor;
+        float ft = static_cast<float>(newCap) * dict->loadFactor;
         newThr = (newCap < DICTIONARY_MAXIMUM_CAPACTIY && ft < (float)DICTIONARY_MAXIMUM_CAPACTIY) ? (size_t)ft : DICTIONARY_MAXIMUM_CAPACTIY_THRESHOLD;
     }
 
@@ -169,43 +171,40 @@ void dictionaryResize(RetainedObjectPointer dictObject, Thread *thread) {
     }
 }
 
-void dictionaryPutVal(RetainedObjectPointer dictionaryObject, Object *key, Box value, Thread *thread) {
-    EmojicodeDictionaryHash hash = dictionaryHash(dictionaryObject->val<EmojicodeDictionary>(), key);
+Box* dictionaryPutVal(RetainedObjectPointer dictionaryObject, RetainedObjectPointer key, Thread *thread) {
+    EmojicodeDictionaryHash hash = dictionaryHash(key.unretainedPointer());
 
-    auto *dict = dictionaryObject->val<EmojicodeDictionary>();
-
-    if (dict->buckets == nullptr || dict->bucketsCounter == 0) {
-        dictionaryResize(dictionaryObject, thread);
-        dict = dictionaryObject->val<EmojicodeDictionary>();
+    auto *dictionary = dictionaryObject->val<EmojicodeDictionary>();
+    if (dictionary->buckets == nullptr || dictionary->bucketsCounter == 0) {
+        dictionaryResize(dictionaryObject);
+        dictionary = dictionaryObject->val<EmojicodeDictionary>();
     }
 
-    auto **bucko = dict->buckets->val<Object *>();
-    size_t n = dict->bucketsCounter, i = 0;
+    auto **buckets = dictionary->buckets->val<Object *>();
+    size_t n = dictionary->bucketsCounter, i = (hash & (n - 1));
 
-    Object *po;
+    RetainedObjectPointer destination = nullptr;
 
-    if ((po = bucko[i = (hash & (n - 1))]) == nullptr) {
-        bucko[i] = dictionaryNewNode(hash, key, value, nullptr, thread);
-        dict = dictionaryObject->val<EmojicodeDictionary>();
-    }
-    else {
+    Object *po = buckets[i];
+    if (po != nullptr) {
         auto *p = po->val<EmojicodeDictionaryNode>();
         Object *eo = nullptr;
-        if (dictionaryKeyHashEqual(dict, hash, p->hash, key, p->key)) {
+        if (dictionaryKeyHashEqual(hash, p->hash, key.unretainedPointer(), p->key)) {
             eo = po;
         }
         else {
             for (int binCount = 0; ; ++binCount) {
                 if (p->next == nullptr) {
-                    p->next = dictionaryNewNode(hash, key, value, nullptr, thread);
-                    dict = dictionaryObject->val<EmojicodeDictionary>();
+                    p->next = dictionaryNewNode(hash, key);
+                    destination = thread->retain(p->next);
+                    dictionary = dictionaryObject->val<EmojicodeDictionary>();
                     eo = nullptr;
                     break;
                 }
                 eo = p->next;
                 auto *e = eo->val<EmojicodeDictionaryNode>();
 
-                if (dictionaryKeyHashEqual(dict, hash, e->hash, key, e->key)) {
+                if (dictionaryKeyHashEqual(hash, e->hash, key.unretainedPointer(), e->key)) {
                     break;
                 }
                 p = e;
@@ -213,32 +212,39 @@ void dictionaryPutVal(RetainedObjectPointer dictionaryObject, Object *key, Box v
         }
         if (eo != nullptr) {  // existing mapping for key
             auto *e = eo->val<EmojicodeDictionaryNode>();
-            e->value = value;
-            return;
+            return &e->value;
         }
     }
-
-    if (++dict->size > dict->nextThreshold) {
-        dictionaryResize(dictionaryObject, thread);
+    else {
+        buckets[i] = dictionaryNewNode(hash, key);
+        destination = thread->retain(buckets[i]);
+        dictionary = dictionaryObject->val<EmojicodeDictionary>();
     }
+
+    if (++dictionary->size > dictionary->nextThreshold) {
+        dictionaryResize(dictionaryObject);
+    }
+    thread->release(1);
+    return &destination->val<EmojicodeDictionaryNode>()->value;
 }
 
-EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, EmojicodeDictionaryHash hash, Object *key, Thread *thread) {
+void dictionaryRemove(EmojicodeDictionary *dictionary, Object *key) {
+    auto hash = dictionaryHash(key);
     size_t n = 0, index = 0;
-    if (dict->buckets != nullptr && (n = dict->bucketsCounter) > 0) {
-        auto **bucko = dict->buckets->val<Object*>();
+    if (dictionary->buckets != nullptr && (n = dictionary->bucketsCounter) > 0) {
+        auto **bucko = dictionary->buckets->val<Object*>();
         Object *po = bucko[index = hash & (n - 1)];
         if (po != nullptr) {
             auto *p = po->val<EmojicodeDictionaryNode>();
             EmojicodeDictionaryNode *node = nullptr;
-            if (dictionaryKeyHashEqual(dict, hash, p->hash, key, p->key)) {
+            if (dictionaryKeyHashEqual(hash, p->hash, key, p->key)) {
                 node = p;
             }
             else {
                 Object *nexto = p->next;
-                while (nexto) {
+                while (nexto != nullptr) {
                     auto *e = nexto->val<EmojicodeDictionaryNode>();
-                    if (dictionaryKeyHashEqual(dict, hash, e->hash, key, e->key)) {
+                    if (dictionaryKeyHashEqual(hash, e->hash, key, e->key)) {
                         node = e;
                         break;
                     }
@@ -246,29 +252,17 @@ EmojicodeDictionaryNode* dictionaryRemoveNode(EmojicodeDictionary *dict, Emojico
                     nexto = e->next;
                 }
             }
-            if(node != nullptr) {
+            if (node != nullptr) {
                 if (node == p) {
                     bucko[index] = node->next;
                 }
                 else {
                     p->next = node->next;
                 }
-                dict->size--;
-                return node;
+                dictionary->size--;
             }
         }
     }
-    return nullptr;
-}
-
-
-// MARK: Bridge -> Dictionary interface
-void dictionaryRemove(EmojicodeDictionary *dict, Object *key, Thread *thread) {
-    dictionaryRemoveNode(dict, dictionaryHash(dict, key), key, thread);
-}
-
-bool dictionaryContains(EmojicodeDictionary *dict, Object *key) {
-    return dictionaryGetNode(dict, dictionaryHash(dict, key), key) != nullptr;
 }
 
 size_t dictionaryClear(EmojicodeDictionary *dict) {
@@ -307,18 +301,18 @@ void dictionaryMark(Object *object) {
 //    }
 }
 
-//MARK: Bridges
+// MARK: Bridges
 
 void bridgeDictionarySet(Thread *thread) {
-    dictionaryPutVal(thread->thisObjectAsRetained(), thread->getVariable(0).object,
-                     *reinterpret_cast<Box *>(thread->variableDestination(1)), thread);
+    dictionaryPutVal(thread->thisObjectAsRetained(),
+                     thread->variableObjectPointerAsRetained(0), thread)->copy(thread->variableDestination(1));
     thread->returnFromFunction();
 }
 
 void bridgeDictionaryGet(Thread *thread) {
     Object *key = thread->getVariable(0).object;
     auto *dictionary = thread->getThisObject()->val<EmojicodeDictionary>();
-    EmojicodeDictionaryNode *node = dictionaryGetNode(dictionary, dictionaryHash(dictionary, key), key);
+    EmojicodeDictionaryNode *node = dictionaryGetNode(dictionary, key);
     if (node == nullptr) {
         thread->returnNothingnessFromFunction();
     }
@@ -329,7 +323,7 @@ void bridgeDictionaryGet(Thread *thread) {
 }
 
 void bridgeDictionaryRemove(Thread *thread) {
-    dictionaryRemove(thread->getThisObject()->val<EmojicodeDictionary>(), thread->getVariable(0).object, thread);
+    dictionaryRemove(thread->getThisObject()->val<EmojicodeDictionary>(), thread->getVariable(0).object);
     thread->returnFromFunction();
 }
 
@@ -371,7 +365,8 @@ void bridgeDictionaryClear(Thread *thread) {
 
 void bridgeDictionaryContains(Thread *thread) {
     Object *key = thread->getVariable(0).object;
-    thread->returnFromFunction(dictionaryContains(thread->getThisObject()->val<EmojicodeDictionary>(), key));
+    auto dictionary = thread->getThisObject()->val<EmojicodeDictionary>();
+    thread->returnFromFunction(dictionaryGetNode(dictionary, key) != nullptr);
 }
 
 void bridgeDictionarySize(Thread *thread) {
@@ -383,4 +378,4 @@ void initDictionaryBridge(Thread *thread) {
     thread->returnFromFunction(thread->getThisContext());
 }
 
-}
+}  // namespace Emojicode

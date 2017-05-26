@@ -15,18 +15,15 @@ namespace Emojicode {
 
 /** Default initial capacity. MUST be a power of two, default: 8 */
 #define DICTIONARY_DEFAULT_INITIAL_CAPACITY (1 << 3)
-
 /** Factor for determining whether the dictionary should be resized. */
 #define DICTIONARY_DEFAULT_LOAD_FACTOR (0.75f)
-
 #define DICTIONARY_MAXIMUM_CAPACTIY (1 << 30)
-
 #define DICTIONARY_MAXIMUM_CAPACTIY_THRESHOLD (1 << 16)
 
 typedef uint64_t EmojicodeDictionaryHash;
 
 /** The datastructure with the key-value pair */
-typedef struct {
+struct EmojicodeDictionaryNode {
     /** The user specified key. */
     Object *key;
 
@@ -38,11 +35,10 @@ typedef struct {
 
     /** EmojicodeDictionary stores a bucket's elements in a linked list. */
     Object *next;
-
-} EmojicodeDictionaryNode;
+};
 
 /** Structure for the Emojicode standard Dictionary. The implementation is similar to Java's Hashmap. */
-typedef struct {
+struct EmojicodeDictionary {
     /** An array with pointers to linked lists. Initializes when the first item is inserted. */
     Object *buckets;
 
@@ -57,24 +53,18 @@ typedef struct {
 
     /** Stores the next threshold for resizing. Is 0 until first resize when item is inserted. */
     size_t nextThreshold;
-} EmojicodeDictionary;
+};
 
-void dictionaryPutVal(RetainedObjectPointer dictionaryObject, Object *key, Box value, Thread *thread);
+/// Prepares the dictionary for a new value and returns a pointer to where the new value should be copied.
+/// @warning Garbage collector invoking
+Box* dictionaryPutVal(RetainedObjectPointer dictionaryObject, RetainedObjectPointer key, Thread *thread);
+/// Removes the key and the associated value from the dictionary, if the key @c key is in the dictionary.
+void dictionaryRemove(EmojicodeDictionary *dictionary, Object *key);
 
-/** Remove an item by keyString as key */
-void dictionaryRemove(EmojicodeDictionary *dict, Object *key, Thread *thread);
-
-/** Get an item by keyString as key */
-Value dictionaryLookup(EmojicodeDictionary *dict, Object *key, Thread *thread);
-
-/** Check whether a key is in the dictionary */
-bool dictionaryContains(EmojicodeDictionary *dict, Object *key);
 
 void dictionaryMark(Object *dict);
 
 void initDictionaryBridge(Thread *thread);
-
-/** @warning GC-invoking */
 void dictionaryInit(EmojicodeDictionary *dict);
 
 void bridgeDictionarySet(Thread *thread);

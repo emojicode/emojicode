@@ -239,8 +239,7 @@ void parseJSON(Thread *thread, Box *destination) {
                         errorExit();
                 }
             case JSON_OBJECT_VALUE_BACK_VALUE:
-                dictionaryPutVal(stackCurrent->object, stackCurrent->secondaryObject.unretainedPointer(),
-                                 backValue, thread);
+                *dictionaryPutVal(stackCurrent->object, stackCurrent->secondaryObject, thread) = backValue;
 
                 switch (c) {
                     case ',':
