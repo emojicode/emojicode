@@ -159,7 +159,7 @@ void fileDataGet(Thread *thread) {
     long length = ftell(file);
     state = fseek(file, 0, SEEK_SET);
 
-    Emojicode::Object *const &bytesObject = thread->retain(Emojicode::newArray(length));
+    auto bytesObject = thread->retain(Emojicode::newArray(length));
     fread(bytesObject->val<char>(), 1, length, file);
     if (ferror(file)) {
         fclose(file);
@@ -172,7 +172,7 @@ void fileDataGet(Thread *thread) {
     Emojicode::Object *obj = Emojicode::newObject(Emojicode::CL_DATA);
     Data *data = obj->val<Data>();
     data->length = length;
-    data->bytesObject = bytesObject;
+    data->bytesObject = bytesObject.unretainedPointer();
     data->bytes = bytesObject->val<char>();
 
     thread->release(1);
@@ -232,7 +232,7 @@ void fileReadData(Thread *thread) {
     FILE *f = file(thread->getThisObject());
     Emojicode::EmojicodeInteger n = thread->getVariable(0).raw;
 
-    Emojicode::Object *const &bytesObject = thread->retain(Emojicode::newArray(n));
+    auto bytesObject = thread->retain(Emojicode::newArray(n));
     fread(bytesObject->val<char>(), 1, n, f);
     if (ferror(f) != 0) {
         thread->returnErrorFromFunction(errnoToError());
@@ -243,7 +243,7 @@ void fileReadData(Thread *thread) {
     Emojicode::Object *obj = Emojicode::newObject(Emojicode::CL_DATA);
     Data *data = obj->val<Data>();
     data->length = n;
-    data->bytesObject = bytesObject;
+    data->bytesObject = bytesObject.unretainedPointer();
     data->bytes = bytesObject->val<char>();
 
     thread->returnOEValueFromFunction(obj);

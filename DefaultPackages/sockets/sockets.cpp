@@ -91,7 +91,7 @@ void socketReadBytes(Thread *thread) {
     int connectionAddress = *thread->getThisObject()->val<int>();
     Emojicode::EmojicodeInteger n = thread->getVariable(0).raw;
 
-    Emojicode::Object *const &bytesObject = thread->retain(Emojicode::newArray(n));
+    auto bytesObject = thread->retain(Emojicode::newArray(n));
     size_t read = recv(connectionAddress, bytesObject->val<char>(), n, 0);
 
     if (read < 1) {
@@ -103,7 +103,7 @@ void socketReadBytes(Thread *thread) {
     Emojicode::Object *obj = newObject(Emojicode::CL_DATA);
     Data *data = obj->val<Data>();
     data->length = read;
-    data->bytesObject = bytesObject;
+    data->bytesObject = bytesObject.unretainedPointer();
     data->bytes = data->bytesObject->val<char>();
 
     thread->release(1);
