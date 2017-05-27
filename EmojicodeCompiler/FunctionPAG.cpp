@@ -662,15 +662,14 @@ void FunctionPAG::parseStatement() {
 //                }
                 if (typeIsEnumerable(iteratee, &itemType)) {
                     auto iteratorMethodIndex = PR_ENUMERATEABLE->lookupMethod(EmojicodeString(E_DANGO))->vtiForUse();
-
-                    auto &iteratorVar = scoper_.currentScope().setLocalVariable(EmojicodeString(),
-                                                                                Type(PR_ENUMERATOR, false),
-                                                                                true, token.position());
+                    auto &iteratorScope = scoper_.pushScope();
+                    auto &iteratorVar = iteratorScope.setLocalVariable(EmojicodeString(), Type(PR_ENUMERATOR, false),
+                                                                       true, token.position());
                     auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
                     auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
 
-                    auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), itemType, true,
-                                                                        variableToken.position());
+                    auto &var = iteratorScope.setLocalVariable(variableToken.value(), itemType, true,
+                                                               variableToken.position());
 
                     insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
                         static_cast<EmojicodeInstruction>(iteratorVar.id()), INS_DISPATCH_PROTOCOL,
@@ -683,7 +682,7 @@ void FunctionPAG::parseStatement() {
                     writer_.writeInstruction(INS_JUMP_FORWARD);
                     auto placeholder = writer_.writeInstructionsCountPlaceholderCoin();
                     auto delta = writer_.count();
-                    flowControlBlock(false, [this, iteratorVar, &var, nextVTI]{
+                    flowControlBlock(true, [this, iteratorVar, &var, nextVTI]{
                         var.initialize(writer_.count());
                         writer_.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
                             static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL,
@@ -699,7 +698,7 @@ void FunctionPAG::parseStatement() {
                         static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
                         static_cast<EmojicodeInstruction>(moreVTI) });
                     writer_.writeInstruction(writer_.count() - delta + 1);
-                    
+                    scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
                 }
                 else {
                     auto iterateeString = iteratee.toString(typeContext_, true);
