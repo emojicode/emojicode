@@ -30,7 +30,7 @@ struct StackFrame {
 
 class Thread {
 public:
-    friend void gc(std::unique_lock<std::mutex> &);
+    friend void gc(std::unique_lock<std::mutex> &, size_t);
 
     /// Pops the stack associated with this thread
     void popStack();

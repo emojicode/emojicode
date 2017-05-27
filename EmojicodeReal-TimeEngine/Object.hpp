@@ -21,6 +21,10 @@ namespace Emojicode {
 /// @warning Obviously, you should not call it anywhere else!
 void allocateHeap();
 
+/// This method pauses the thread as if the garbage collector requested it.
+/// @warning You should normally not call this method.
+inline void performPauseForGC();
+
 template <typename T>
 inline void markByObjectVariableRecord(ObjectVariableRecord &record, Value *va, T &index) {
     switch (record.type) {
