@@ -629,8 +629,6 @@ void FunctionPAG::parseStatement() {
                 return;
             }
             case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
-                scoper_.pushScope();
-
                 auto &variableToken = stream_.consumeToken(TokenType::Variable);
 
                 auto insertionPoint = writer_.getInsertionPoint();
@@ -668,8 +666,9 @@ void FunctionPAG::parseStatement() {
                     auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
                     auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
 
-                    auto &var = iteratorScope.setLocalVariable(variableToken.value(), itemType, true,
-                                                               variableToken.position());
+                    scoper_.pushScope();
+                    auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), itemType, true,
+                                                                        variableToken.position());
 
                     insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
                         static_cast<EmojicodeInstruction>(iteratorVar.id()), INS_DISPATCH_PROTOCOL,
@@ -682,7 +681,7 @@ void FunctionPAG::parseStatement() {
                     writer_.writeInstruction(INS_JUMP_FORWARD);
                     auto placeholder = writer_.writeInstructionsCountPlaceholderCoin();
                     auto delta = writer_.count();
-                    flowControlBlock(true, [this, iteratorVar, &var, nextVTI]{
+                    flowControlBlock(false, [this, iteratorVar, &var, nextVTI]{
                         var.initialize(writer_.count());
                         writer_.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
                             static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL,
