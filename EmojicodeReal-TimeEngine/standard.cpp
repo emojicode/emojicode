@@ -15,6 +15,7 @@
 #include "String.h"
 #include "Thread.hpp"
 #include "Object.hpp"
+#include "ThreadsManager.hpp"
 #include <algorithm>
 #include <cinttypes>
 #include <cmath>
@@ -127,11 +128,11 @@ static void threadSleepMicroseconds(Thread *thread) {
 void threadStart(Thread *thread, RetainedObjectPointer callable) {
     thread->release(1);
     executeCallableExtern(callable.unretainedPointer(), nullptr, 0, thread, nullptr);
-    delete thread;
+    ThreadsManager::deallocateThread(thread);
 }
 
 static void initThread(Thread *thread) {
-    auto newThread = new Thread();
+    auto newThread = ThreadsManager::allocateThread();
     auto callable = thread->variable(0).object;
     *thread->thisObject()->val<std::thread>() = std::thread(threadStart, newThread, newThread->retain(callable));
     thread->returnFromFunction(thread->thisContext());

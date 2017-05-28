@@ -20,6 +20,7 @@
 		E4452EFC1E2A33C80064E324 /* Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F31C83018F009E7089 /* Dictionary.cpp */; };
 		E4478C671B7B8CB400291BD9 /* Type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4478C661B7B8CB400291BD9 /* Type.cpp */; };
 		E449AF6C1CCCC0A200492FC0 /* PackageParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E449AF6A1CCCC0A200492FC0 /* PackageParser.cpp */; };
+		E44BE1531EDAB899003744BA /* ThreadsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E44BE1511EDAB899003744BA /* ThreadsManager.cpp */; };
 		E4516F611E599B1600A87994 /* BoxingLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4516F5F1E599B1600A87994 /* BoxingLayer.cpp */; };
 		E45652A81EA202BC001D6323 /* BoxIDProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45652A61EA202BC001D6323 /* BoxIDProvider.cpp */; };
 		E45DB8141CB44D7500AE6FBE /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45DB8131CB44D7500AE6FBE /* Thread.cpp */; };
@@ -115,6 +116,8 @@
 		E4478C661B7B8CB400291BD9 /* Type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Type.cpp; sourceTree = "<group>"; };
 		E449AF6A1CCCC0A200492FC0 /* PackageParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PackageParser.cpp; sourceTree = "<group>"; };
 		E449AF6B1CCCC0A200492FC0 /* PackageParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PackageParser.hpp; sourceTree = "<group>"; };
+		E44BE1511EDAB899003744BA /* ThreadsManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadsManager.cpp; path = "EmojicodeReal-TimeEngine/ThreadsManager.cpp"; sourceTree = SOURCE_ROOT; };
+		E44BE1521EDAB899003744BA /* ThreadsManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ThreadsManager.hpp; path = "EmojicodeReal-TimeEngine/ThreadsManager.hpp"; sourceTree = SOURCE_ROOT; };
 		E4516F5F1E599B1600A87994 /* BoxingLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxingLayer.cpp; sourceTree = "<group>"; };
 		E4516F601E599B1600A87994 /* BoxingLayer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BoxingLayer.hpp; sourceTree = "<group>"; };
 		E45570ED1E1C08D50093B52B /* List.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = List.h; path = "EmojicodeReal-TimeEngine/List.h"; sourceTree = SOURCE_ROOT; };
@@ -403,6 +406,8 @@
 				E4EC747E1E1D9644007A22AA /* Processor.cpp */,
 				E42207461ED81DDD006A1305 /* RetainedObjectPointer.hpp */,
 				E42207451ED81DDD006A1305 /* RetainedObjectPointer.cpp */,
+				E44BE1521EDAB899003744BA /* ThreadsManager.hpp */,
+				E44BE1511EDAB899003744BA /* ThreadsManager.cpp */,
 				E4EC747D1E1D87F9007A22AA /* Thread.hpp */,
 				E45DB8131CB44D7500AE6FBE /* Thread.cpp */,
 				E4F8EE731E48E068006CF7EA /* Class.hpp */,
@@ -529,7 +534,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/Cellar/llvm/4.0.0_1/bin/clang-tidy EmojicodeCompiler/*.cpp -checks=*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-cppcoreguidelines-pro-type-static-cast-downcast,-clang-analyzer-* -- -std=c++14";
+			shellScript = "#/usr/local/Cellar/llvm/4.0.0_1/bin/clang-tidy EmojicodeCompiler/*.cpp -checks=*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-cppcoreguidelines-pro-type-static-cast-downcast,-clang-analyzer-* -- -std=c++14";
 		};
 		E4FD1FAB1E3693FC00313733 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -601,6 +606,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4EEB9EE1C83015A009E7089 /* Class.cpp in Sources */,
+				E44BE1531EDAB899003744BA /* ThreadsManager.cpp in Sources */,
 				E4EEB9F01C83016C009E7089 /* Engine.cpp in Sources */,
 				E4EC74811E1E67C0007A22AA /* List.cpp in Sources */,
 				E4EEB9FF1C8301E7009E7089 /* Object.cpp in Sources */,

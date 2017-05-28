@@ -11,6 +11,7 @@
 
 #include "Engine.hpp"
 #include "RetainedObjectPointer.hpp"
+#include "ThreadsManager.hpp"
 #include <mutex>
 
 namespace Emojicode {
@@ -31,6 +32,9 @@ struct StackFrame {
 class Thread {
 public:
     friend void gc(std::unique_lock<std::mutex> &, size_t);
+    friend Thread* ThreadsManager::allocateThread();
+    friend void ThreadsManager::deallocateThread(Thread *thread);
+    friend Thread* ThreadsManager::nextThread(Thread *thread);
 
     /// Pops the stack associated with this thread
     void popStack();
@@ -86,8 +90,6 @@ public:
         returnFromFunction();
     }
 
-    Thread* threadBefore() const { return threadBefore_; }
-
     /// Retains the given object.
     /// This method is used in native function code to "retain" an object, i.e. to prevent the object from being
     /// deallocated by the garbage collector and to keep a pointer to it.
@@ -115,22 +117,14 @@ public:
     RetainedObjectPointer variableObjectPointerAsRetained(int index) {
         return RetainedObjectPointer(&variableDestination(index)->object);
     }
-
-    /// Creates a new thread
+private:
     Thread();
     ~Thread();
-private:
+
     void markStack();
     void markRetainList() const {
         for (Object **pointer = retainPointer - 1; pointer >= retainList; pointer--) mark(pointer);
     }
-
-    static Thread* lastThread();
-    /// The number of threads currently active
-    static int threads();
-
-    static Thread *lastThread_;
-    static int threads_;
 
     StackFrame *stackLimit_;
     StackFrame *stackBottom_;

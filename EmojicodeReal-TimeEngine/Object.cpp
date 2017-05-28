@@ -29,8 +29,8 @@ void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace);
 
 size_t gcThreshold = heapSize / 2;
 
-int pausingThreadsCount = 0;
-bool pauseThreads = false;  // Must only be set after a garbageCollectionMutex lock was obtained
+unsigned int pausingThreadsCount = 0;
+std::atomic_bool pauseThreads(false);
 std::mutex pausingThreadsCountMutex;
 std::mutex garbageCollectionMutex;
 std::condition_variable pauseThreadsCondition;
@@ -137,14 +137,17 @@ void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace) {
     auto pausingThreadsCountLock = std::unique_lock<std::mutex>(pausingThreadsCountMutex);
     pausingThreadsCount++;
 
-    pausingThreadsCountCondition.wait(pausingThreadsCountLock, []{ return pausingThreadsCount == Thread::threads(); });
+    pausingThreadsCountCondition.wait(pausingThreadsCountLock, []{
+        return pausingThreadsCount == ThreadsManager::threadsCount();
+    });
 
     std::swap(currentHeap, otherHeap);
 
     size_t oldMemoryUse = memoryUse;
     memoryUse = 0;
 
-    for (Thread *thread = Thread::lastThread(); thread != nullptr; thread = thread->threadBefore()) {
+    std::lock_guard<std::mutex> threadListLock(ThreadsManager::threadListMutex);
+    for (Thread *thread = ThreadsManager::anyThread(); thread != nullptr; thread = ThreadsManager::nextThread(thread)) {
         thread->markStack();
         thread->markRetainList();
     }

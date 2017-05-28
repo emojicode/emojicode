@@ -15,18 +15,6 @@
 
 using namespace Emojicode;
 
-Thread *Thread::lastThread_ = nullptr;
-int Thread::threads_ = 0;
-std::mutex threadListMutex;
-
-Thread* Thread::lastThread() {
-    return lastThread_;
-}
-
-int Thread::threads() {
-    return threads_;
-}
-
 Thread::Thread() {
 #define stackSize ((sizeof(StackFrame) + 10 * sizeof(Value)) * 10000)
     stackLimit_ = static_cast<StackFrame *>(calloc(stackSize, 1));
@@ -35,34 +23,9 @@ Thread::Thread() {
     }
     stackBottom_ = reinterpret_cast<StackFrame *>(reinterpret_cast<Byte *>(stackLimit_) + stackSize - 1);
     this->futureStack_ = this->stack_ = this->stackBottom_;
-
-    std::lock_guard<std::mutex> threadListLock(threadListMutex);
-    threadBefore_ = lastThread_;
-    threadAfter_ = nullptr;
-    if (lastThread_ != nullptr) {
-        lastThread_->threadAfter_ = this;
-    }
-    lastThread_ = this;
-    threads_++;
 }
 
 Thread::~Thread() {
-    std::lock_guard<std::mutex> threadListLock(threadListMutex);
-    Thread *before = this->threadBefore_;
-    Thread *after = this->threadAfter_;
-
-    if (before) {
-        before->threadAfter_ = after;
-    }
-    if (after) {
-        after->threadBefore_ = before;
-    }
-    else {
-        lastThread_ = before;
-    }
-
-    threads_--;
-
     free(stackLimit_);
 }
 

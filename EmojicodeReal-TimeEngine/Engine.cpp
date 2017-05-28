@@ -12,6 +12,7 @@
 #include "Processor.hpp"
 #include "Reader.hpp"
 #include "Thread.hpp"
+#include "ThreadsManager.hpp"
 #include <cstdarg>
 #include <cstdlib>
 
@@ -79,12 +80,12 @@ int main(int argc, char *argv[]) {
         error("File couldn't be opened.");
     }
 
-    Thread mainThread = Thread();
+    Thread *mainThread = ThreadsManager::allocateThread();
 
     allocateHeap();
 
     Function *handler = readBytecode(f);
     Value sth = EmojicodeInteger(0);
-    performFunction(handler, Value(), &mainThread, &sth);
+    performFunction(handler, Value(), mainThread, &sth);
     return static_cast<int>(sth.raw);
 }
