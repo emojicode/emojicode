@@ -666,10 +666,6 @@ void FunctionPAG::parseStatement() {
                     auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
                     auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
 
-                    scoper_.pushScope();
-                    auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), itemType, true,
-                                                                        variableToken.position());
-
                     insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
                         static_cast<EmojicodeInstruction>(iteratorVar.id()), INS_DISPATCH_PROTOCOL,
                     });
@@ -681,6 +677,10 @@ void FunctionPAG::parseStatement() {
                     writer_.writeInstruction(INS_JUMP_FORWARD);
                     auto placeholder = writer_.writeInstructionsCountPlaceholderCoin();
                     auto delta = writer_.count();
+
+                    scoper_.pushScope();
+                    auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), itemType, true,
+                                                                        variableToken.position());
                     flowControlBlock(false, [this, iteratorVar, &var, nextVTI]{
                         var.initialize(writer_.count());
                         writer_.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
@@ -971,12 +971,24 @@ Type FunctionPAG::parseExprIdentifier(const Token &token, const TypeExpectation 
             writer_.writeInstruction(function->vtiForUse());
             writer_.writeInstruction(static_cast<EmojicodeInstruction>(closureScoper.captures().size()));
             writer_.writeInstruction(closureScoper.captureSize());
+
+            auto objectVariableInformation = std::vector<ObjectVariableInformation>();
+            objectVariableInformation.reserve(closureScoper.captures().size());
+            int index = 0;
             for (auto capture : closureScoper.captures()) {
                 writer_.writeInstruction(capture.id);
                 writer_.writeInstruction(capture.type.size());
                 writer_.writeInstruction(capture.captureId);
+                capture.type.objectVariableRecords(index, objectVariableInformation);
+                index += capture.type.size();
+            }
+            writer_.writeInstruction(objectVariableInformation.size());
+            for (auto &record : objectVariableInformation) {
+                writer_.writeInstruction((record.conditionIndex << 16) | static_cast<uint16_t>(record.index));
+                writer_.writeInstruction(static_cast<uint16_t>(record.type));
             }
             writer_.writeInstruction(pag.usedSelfInBody() ? 1 : 0);
+
             auto type = function->type();
             box(expectation, type, insertionPoint);
             return type;
