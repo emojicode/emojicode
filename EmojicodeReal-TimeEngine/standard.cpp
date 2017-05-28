@@ -14,6 +14,7 @@
 #include "String.h"
 #include "String.h"
 #include "Thread.hpp"
+#include "Object.hpp"
 #include <algorithm>
 #include <cinttypes>
 #include <cmath>
@@ -123,13 +124,16 @@ static void threadSleepMicroseconds(Thread *thread) {
     thread->returnFromFunction();
 }
 
-void threadStart(Object *callable) {
-    Thread thread = Thread();
-    executeCallableExtern(callable, nullptr, 0, &thread, nullptr);
+void threadStart(Thread *thread, RetainedObjectPointer callable) {
+    thread->release(1);
+    executeCallableExtern(callable.unretainedPointer(), nullptr, 0, thread, nullptr);
+    delete thread;
 }
 
 static void initThread(Thread *thread) {
-    *thread->thisObject()->val<std::thread>() = std::thread(threadStart, thread->variable(0).object);
+    auto newThread = new Thread();
+    auto callable = thread->variable(0).object;
+    *thread->thisObject()->val<std::thread>() = std::thread(threadStart, newThread, newThread->retain(callable));
     thread->returnFromFunction(thread->thisContext());
 }
 
@@ -443,21 +447,18 @@ static void doubleAbsolute(Thread *thread) {
 // MARK: Callable
 
 static void closureMark(Object *o) {
-// TODO: Add correct implementation!
-//    Closure *c = static_cast<Closure *>(o->value);
-//    if (isRealObject(c->thisContext)) {
-//        mark(&c->thisContext.object);
-//    }
-//    mark(&c->capturedVariables);
-//
-//    Value *t = static_cast<Value *>(c->capturedVariables->value);
-//    CaptureInformation *infop = static_cast<CaptureInformation *>(c->capturesInformation->value);
-//    for (unsigned int i = 0; i < c->captureCount; i++) {
-//        Value *s = t + (infop++)->destination;
-//        if (isRealObject(*s)) {
-//            mark(&s->object);
-//        }
-//    }
+    auto c = o->val<Closure>();
+    if (c->thisContext.object != nullptr) {
+        mark(&c->thisContext.object);
+    }
+    mark(&c->capturedVariables);
+    mark(&c->capturesInformation);
+
+    auto value = c->capturedVariables->val<Value>();
+    auto records = c->capturesInformation->val<ObjectVariableRecord>();
+    for (size_t i = 0; i < c->recordsCount; i++) {
+        markByObjectVariableRecord(records[i], value, i);
+    }
 }
 
 FunctionFunctionPointer sLinkingTable[] = {

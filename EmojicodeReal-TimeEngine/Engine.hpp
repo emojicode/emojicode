@@ -93,8 +93,10 @@ struct CaptureInformation {
 struct Closure {
     Function *function;
     unsigned int captureCount;
+    unsigned int recordsCount;
     Object *capturedVariables;
     Object *capturesInformation;
+    Object *objectVariableRecords;
     Value thisContext;
 };
 

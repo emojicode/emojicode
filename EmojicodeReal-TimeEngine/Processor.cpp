@@ -878,6 +878,19 @@ void produce(Thread *thread, Value *destination) {
                 t += size;
             }
 
+            auto recordCount = thread->consumeInstruction();
+            c->recordsCount = recordCount;
+            Object *objectVariableRecordsObject = newArray(sizeof(ObjectVariableRecord) * recordCount);
+            closure->val<Closure>()->objectVariableRecords = objectVariableRecordsObject;
+
+            auto objectVariableRecords = objectVariableRecordsObject->val<ObjectVariableRecord>();
+            for (unsigned int i = 0; i < recordCount; i++) {
+                auto value = thread->consumeInstruction();
+                objectVariableRecords[i].variableIndex = static_cast<uint16_t>(value);
+                objectVariableRecords[i].condition = static_cast<uint16_t>(value >> 16);
+                objectVariableRecords[i].type = static_cast<ObjectVariableType>(thread->consumeInstruction());
+            }
+
             if (thread->consumeInstruction()) {
                 c->thisContext = thread->thisContext();
             }
