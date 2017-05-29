@@ -2,6 +2,7 @@ import platform
 import shutil
 import os
 import sys
+import subprocess
 
 source = sys.argv[1]
 version = "0.5.0-dev"
@@ -42,3 +43,6 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 2 and sys.argv[2] == "archive":
         shutil.make_archive(dist_name, "gztar", path)
+    if len(sys.argv) > 2 and sys.argv[2] == "install":
+        bash = "cd " + path + " && yes | " + os.path.join(path, "install.sh")
+        subprocess.run(["bash", "-c", bash])
