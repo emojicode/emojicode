@@ -45,6 +45,7 @@ struct Function {
 
     FunctionObjectVariableRecord *objectVariableRecords;
     unsigned int objectVariableRecordsCount;
+    bool objectContext;
 
     Block block;
 

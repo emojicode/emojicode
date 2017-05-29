@@ -12,6 +12,7 @@
 #include "CompilerError.hpp"
 #include "Function.hpp"
 #include "FunctionWriter.hpp"
+#include "FunctionPAGMode.hpp"
 
 void Writer::writeUInt16(uint16_t value) {
     data_.push_back(value);
@@ -52,6 +53,9 @@ void Writer::writeFunction(Function *function) {
         writeInstruction(info.from);
         writeInstruction(info.to);
     }
+
+    writeByte(function->compilationMode() == FunctionPAGMode::ObjectMethod ||
+              function->compilationMode() == FunctionPAGMode::ObjectInitializer);
 
     writeUInt16(function->fullSize());
 

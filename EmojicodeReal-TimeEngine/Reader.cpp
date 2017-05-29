@@ -88,6 +88,8 @@ void readFunction(Function **table, FILE *in, FunctionFunctionPointer *linkingTa
         function->objectVariableRecords[i].to = readInstruction(in);
     }
 
+    function->objectContext = fgetc(in);
+
     DEBUG_LOG("Read %d object variable records", function->objectVariableRecordsCount);
 
     function->frameSize = readUInt16(in);
