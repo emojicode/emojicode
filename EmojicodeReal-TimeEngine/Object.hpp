@@ -29,7 +29,9 @@ template <typename T>
 inline void markByObjectVariableRecord(ObjectVariableRecord &record, Value *va, T &index) {
     switch (record.type) {
         case ObjectVariableType::Simple:
-            mark(&va[record.variableIndex].object);
+            if (va[record.variableIndex].object) {
+                mark(&va[record.variableIndex].object);
+            }
             break;
         case ObjectVariableType::Condition:
             if (va[record.condition].raw)
