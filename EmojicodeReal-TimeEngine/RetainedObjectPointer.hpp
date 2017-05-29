@@ -9,11 +9,12 @@
 #ifndef RetainedObjectPointer_hpp
 #define RetainedObjectPointer_hpp
 
-#include "EmojicodeAPI.hpp"
+#include <cstddef>
 
 namespace Emojicode {
 
 class Thread;
+struct Object;
 
 class RetainedObjectPointer {
 public:
@@ -31,10 +32,14 @@ public:
     Object* unretainedPointer() const {
         return *retainListPointer_;
     }
+    /// Sets the pointer to point and retain to @c object.
+    void operator=(Object *object) {
+        *retainListPointer_ = object;
+    }
 private:
     static Object *nullobject;
     explicit RetainedObjectPointer(Object **retainListPointer) : retainListPointer_(retainListPointer) {}
-    Object *const *retainListPointer_;
+    Object **retainListPointer_;
 };
 
 }  // namespace Emojicode

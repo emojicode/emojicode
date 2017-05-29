@@ -347,8 +347,7 @@ void bridgeDictionaryKeys(Thread *thread) {
                 if (next == nullptr) {
                     break;
                 }
-                thread->release(1);
-                nodeo = thread->retain(next);
+                nodeo = next;
             }
             thread->release(1);
         }

@@ -82,7 +82,7 @@ static void systemSystem(Thread *thread) {
 
     size_t bufferUsedSize = 0;
     int bufferSize = 50;
-    Object *buffer = newArray(bufferSize);
+    auto buffer = thread->retain(newArray(bufferSize));
 
     while (fgets(buffer->val<char>() + bufferUsedSize, bufferSize - (int)bufferUsedSize, f) != nullptr) {
         bufferUsedSize = strlen(buffer->val<char>());
@@ -106,7 +106,7 @@ static void systemSystem(Thread *thread) {
     string->charactersObject = chars;
 
     u8_toucs(string->characters(), len, buffer->val<char>(), bufferUsedSize);
-    thread->release(1);
+    thread->release(2);
     thread->returnFromFunction(so.unretainedPointer());
 }
 
