@@ -164,6 +164,9 @@ extern void disallowGCAndPauseIfNeeded();
 typedef void (*FunctionFunctionPointer)(Thread *thread);
 typedef void (*Marker)(Object *self);
 
+#undef major
+#undef minor
+
 /// The version of a package. Must follow semantic versioning 2.0 http://semver.org
 struct PackageVersion {
     PackageVersion(uint16_t major, uint16_t minor) : major(major), minor(minor) {}
