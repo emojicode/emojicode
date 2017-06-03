@@ -173,7 +173,7 @@ void stringGetInput(Thread *thread) {
 
         oldBufferSize = bufferSize - 1;
         bufferSize *= 2;
-        buffer = resizeArray(buffer, bufferSize);
+        buffer = resizeArray(buffer, bufferSize, thread);
     }
 
     EmojicodeInteger len = u8_strlen_l(buffer->val<char>(), bufferUsedSize);

@@ -17,7 +17,7 @@
 
 namespace Emojicode {
 
-void expandListSize(RetainedObjectPointer listObject) {
+void expandListSize(RetainedObjectPointer listObject, Thread *thread) {
 #define initialSize 7
     auto *list = listObject->val<List>();
     if (list->capacity == 0) {
@@ -28,7 +28,7 @@ void expandListSize(RetainedObjectPointer listObject) {
     }
     else {
         size_t newSize = list->capacity + (list->capacity >> 1);
-        Object *object = resizeArray(list->items, sizeCalculationWithOverflowProtection(newSize, sizeof(Box)));
+        Object *object = resizeArray(list->items, sizeCalculationWithOverflowProtection(newSize, sizeof(Box)), thread);
         list = listObject->val<List>();
         list->items = object;
         list->capacity = newSize;
@@ -44,7 +44,7 @@ void listEnsureCapacity(Thread *thread, size_t size) {
             object = newArray(sizeCalculationWithOverflowProtection(size, sizeof(Box)));
         }
         else {
-            object = resizeArray(list->items, sizeCalculationWithOverflowProtection(size, sizeof(Box)));
+            object = resizeArray(list->items, sizeCalculationWithOverflowProtection(size, sizeof(Box)), thread);
         }
         list = thread->thisObject()->val<List>();
         list->items = object;
@@ -68,7 +68,7 @@ void listMark(Object *self) {
 Box* listAppendDestination(RetainedObjectPointer listObject, Thread *thread) {
     auto *list = listObject->val<List>();
     if (list->capacity - list->count == 0) {
-        expandListSize(listObject);
+        expandListSize(listObject, thread);
     }
     list = listObject->val<List>();
     return list->elements() + list->count++;
@@ -139,7 +139,7 @@ void listInsertBridge(Thread *thread) {
     }
 
     if (list->capacity - list->count == 0) {
-        expandListSize(thread->thisObjectAsRetained());
+        expandListSize(thread->thisObjectAsRetained(), thread);
     }
 
     list = thread->thisObject()->val<List>();

@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Object.hpp"
+#include "Memory.hpp"
 #include "Class.hpp"
 #include "Engine.hpp"
 #include "Thread.hpp"
@@ -36,11 +36,15 @@ std::mutex garbageCollectionMutex;
 std::condition_variable pauseThreadsCondition;
 std::condition_variable pausingThreadsCountCondition;
 
-Object* allocateObject(size_t size) {
+inline Object* allocateObject(size_t size, Object **keep = nullptr, Thread *thread = nullptr) {
     pauseForGC();
     size_t index;
     if ((index = memoryUse.fetch_add(size)) + size > gcThreshold) {
         memoryUse -= size;
+        RetainedObjectPointer rop = nullptr;
+        if (keep) {
+            rop = thread->retain(*keep);
+        }
         std::unique_lock<std::mutex> lock(garbageCollectionMutex, std::try_to_lock);
         if (lock.owns_lock()) {  // OK, this thread is now the garbage collector
             gc(lock, size);
@@ -49,12 +53,20 @@ Object* allocateObject(size_t size) {
             while (!pauseThreads);
             performPauseForGC();
         }
+        if (keep) {
+            *keep = rop.unretainedPointer();
+            thread->release(1);
+        }
         return allocateObject(size);
     }
     return reinterpret_cast<Object *>(currentHeap + index);
 }
 
-Object* resizeObject(Object *ptr, size_t oldSize, size_t newSize) {
+inline bool inNewHeap(Object *o) {
+    return currentHeap <= reinterpret_cast<Byte *>(o) && reinterpret_cast<Byte *>(o) < currentHeap + heapSize / 2;
+}
+
+Object* resizeObject(Object *ptr, size_t newSize, Thread *thread) {
     auto expectation = reinterpret_cast<size_t>(ptr) - reinterpret_cast<size_t>(currentHeap);
     size_t index = memoryUse;
     if (index + newSize <= gcThreshold && memoryUse.compare_exchange_weak(expectation, index + newSize)) {
@@ -63,8 +75,8 @@ Object* resizeObject(Object *ptr, size_t oldSize, size_t newSize) {
         return ptr;
     }
 
-    Object *block = allocateObject(newSize);
-    std::memcpy(block, ptr, oldSize);
+    Object *block = allocateObject(newSize, &ptr, thread);
+    std::memcpy(block, ptr, ptr->size);
     return block;
 }
 
@@ -93,9 +105,9 @@ Object* newArray(size_t size) {
     return object;
 }
 
-Object* resizeArray(Object *array, size_t size) {
+Object* resizeArray(Object *array, size_t size, Thread *thread) {
     size_t fullSize = sizeof(Object) + size;
-    Object *object = resizeObject(array, array->size, fullSize);
+    Object *object = resizeObject(array, fullSize, thread);
     object->size = fullSize;
     return object;
 }
@@ -108,12 +120,11 @@ void allocateHeap() {
     otherHeap = currentHeap + (heapSize / 2);
 }
 
-inline bool inNewHeap(Object *o) {
-    return currentHeap <= reinterpret_cast<Byte *>(o) && reinterpret_cast<Byte *>(o) < currentHeap + heapSize / 2;
-}
-
 void mark(Object **oPointer) {
     Object *oldObject = *oPointer;
+#ifdef DEBUG
+    if (inNewHeap(oldObject)) throw;
+#endif
     if (inNewHeap(oldObject->newLocation)) {
         *oPointer = oldObject->newLocation;
         return;
@@ -173,6 +184,10 @@ void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace) {
     if (oldMemoryUse == memoryUse) {
         error("Terminating program due to too high memory pressure.");
     }
+
+#ifdef DEBUG
+    std::memset(otherHeap, 0, heapSize / 2);
+#endif
 
     if (zeroingNeeded) {
         std::memset(currentHeap + memoryUse, 0, (heapSize / 2) - memoryUse);

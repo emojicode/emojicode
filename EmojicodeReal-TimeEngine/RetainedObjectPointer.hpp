@@ -36,6 +36,7 @@ public:
     void operator=(Object *object) {
         *retainListPointer_ = object;
     }
+    void operator=(std::nullptr_t) = delete;
 private:
     static Object *nullobject;
     explicit RetainedObjectPointer(Object **retainListPointer) : retainListPointer_(retainListPointer) {}

@@ -14,7 +14,7 @@
 #include "String.h"
 #include "String.h"
 #include "Thread.hpp"
-#include "Object.hpp"
+#include "Memory.hpp"
 #include "ThreadsManager.hpp"
 #include <algorithm>
 #include <cinttypes>
@@ -89,7 +89,7 @@ static void systemSystem(Thread *thread) {
 
         if (bufferSize - bufferUsedSize < 2) {
             bufferSize *= 2;
-            buffer = resizeArray(buffer, bufferSize);
+            buffer = resizeArray(buffer.unretainedPointer(), bufferSize, thread);
         }
     }
 

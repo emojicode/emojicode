@@ -43,7 +43,7 @@ struct JSONStackFrame {
 #define appendEscape(seq, c) case seq: *listAppendDestination(stackCurrent->object, thread) = Box(T_SYMBOL, EmojicodeChar(c)); continue;
 #define whitespaceCase case '\t': case '\n': case '\r': case ' ':
 #define popTheStack() if (stackCurrent->secondaryObject.unretainedPointer()) thread->release(1); if (stackCurrent->object.unretainedPointer()) thread->release(1); stackCurrent--; continue;
-#define pushTheStack() stackCurrent++; if (stackCurrent > stackLimit) { errorExit(); } stackCurrent->state = JSON_NONE; stackCurrent->secondaryObject = nullptr; stackCurrent->object = nullptr; continue;
+#define pushTheStack() stackCurrent++; if (stackCurrent > stackLimit) { errorExit(); } stackCurrent->state = JSON_NONE; stackCurrent->secondaryObject = RetainedObjectPointer(nullptr); stackCurrent->object = RetainedObjectPointer(nullptr); continue;
 #define returnArray() backValue = Box(T_OBJECT, stackCurrent->object.unretainedPointer()); popTheStack();
 #define integerValue() Box(T_INTEGER, (stackCurrent->state == JSON_NUMBER_NEGATIVE) ? -stackCurrent->integer : stackCurrent->integer)
 
@@ -63,8 +63,8 @@ void parseJSON(Thread *thread, Box *destination) {
     size_t i = 0;
 
     stackCurrent->state = JSON_NONE;
-    stackCurrent->object = nullptr;
-    stackCurrent->secondaryObject = nullptr;
+    stackCurrent->object = RetainedObjectPointer(nullptr);
+    stackCurrent->secondaryObject = RetainedObjectPointer(nullptr);
 
     while (i < length) {
         if (stackCurrent < stack) {

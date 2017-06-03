@@ -8,7 +8,7 @@
 
 #include "Engine.hpp"
 #include "Class.hpp"
-#include "Object.hpp"
+#include "Memory.hpp"
 #include "Processor.hpp"
 #include "Reader.hpp"
 #include "Thread.hpp"

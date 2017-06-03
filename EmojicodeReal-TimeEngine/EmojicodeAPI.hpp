@@ -10,6 +10,7 @@
 #define EmojicodeAPI_h
 
 #include "../EmojicodeShared.h"
+#include "RetainedObjectPointer.hpp"
 #include <cstddef>
 
 namespace Emojicode {
@@ -63,10 +64,16 @@ struct Object {
 
     template <typename T>
     inline T* val() {
+#ifdef DEBUG 
+        if (size == 0 && klass == nullptr) throw;
+#endif
         return reinterpret_cast<T*>(this + 1);
     }
 
     inline Value* variableDestination(EmojicodeInstruction index) {
+#ifdef DEBUG
+        if (size == 0 && klass == nullptr) throw;
+#endif
         return reinterpret_cast<Value *>(reinterpret_cast<Byte *>(this) + sizeof(Object) + sizeof(Value) * index);
     }
 };
@@ -129,7 +136,7 @@ extern Object* newArray(size_t size);
  * @returns A pointer to the resized array.
  * @warning GC-invoking
  */
-extern Object* resizeArray(Object *array, size_t size);
+extern Object* resizeArray(Object *array, size_t size, Thread *thread);
 
 
 // MARK: Garbage Collection

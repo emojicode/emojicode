@@ -7,7 +7,7 @@
 //
 
 #include "Thread.hpp"
-#include "Object.hpp"
+#include "Memory.hpp"
 #include "Processor.hpp"
 #include <cstdlib>
 #include <cstring>

@@ -107,14 +107,14 @@ public:
     /// of the this object as retained object pointer. The this object itself is, of course, retained already in the
     /// stack frame and calls to @c thisObject() will always return a valid object pointer.
     /// @attention Unlike after a call to @c retain() you must not call @c release() for a call to this method.
-    RetainedObjectPointer thisObjectAsRetained() {
+    RetainedObjectPointer thisObjectAsRetained() const {
         return RetainedObjectPointer(&stack_->thisContext.object);
     }
     /// Returns the object pointer in the given variable slot as retained object pointer. This method is only provided
     /// to allow convenient passing of the object pointer as retained object pointer as variables are naturally always
     /// retained.
     /// @attention Unlike after a call to @c retain() you must not call @c release() for a call to this method.
-    RetainedObjectPointer variableObjectPointerAsRetained(int index) {
+    RetainedObjectPointer variableObjectPointerAsRetained(int index) const {
         return RetainedObjectPointer(&variableDestination(index)->object);
     }
 private:
