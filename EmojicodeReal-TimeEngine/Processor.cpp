@@ -705,16 +705,16 @@ void produce(Thread *thread, Value *destination) {
             for (EmojicodeInstruction i = 0; i < stringCount; i++) {
                 Value v;
                 produce(thread, &v);
-                auto *string = v.object->val<String>();
-                if (bufferSize - length < string->length) {
-                    bufferSize += static_cast<size_t>(string->length) - (bufferSize - length);
-                    thread->release(1);
-                    characters = thread->retain(resizeArray(characters.unretainedPointer(),
-                                                            bufferSize * sizeof(EmojicodeChar)));
+                auto stringObject = thread->retain(v.object);
+                if (bufferSize - length < stringObject->val<String>()->length) {
+                    bufferSize += static_cast<size_t>(stringObject->val<String>()->length) - (bufferSize - length);
+                    characters = resizeArray(characters.unretainedPointer(), bufferSize * sizeof(EmojicodeChar), thread);
                 }
                 EmojicodeChar *dest = characters->val<EmojicodeChar>() + length;
+                auto string = stringObject->val<String>();
                 std::memcpy(dest, string->characters(), string->length * sizeof(EmojicodeChar));
-                length += string->length;
+                length += stringObject->val<String>()->length;
+                thread->release(1);
             }
 
             Object *object = newObject(CL_STRING);
