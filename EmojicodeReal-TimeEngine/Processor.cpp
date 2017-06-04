@@ -686,9 +686,11 @@ void produce(Thread *thread, Value *destination) {
         case INS_OPT_LIST_LITERAL: {
             auto list = thread->retain(newObject(CL_LIST));
 
+            EmojicodeInstruction variableSlot = thread->consumeInstruction();
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
             while (thread->currentStackFrame()->executionPointer < end) {
-                produce(thread, reinterpret_cast<Value *>(listAppendDestination(list, thread)));
+                produce(thread, thread->variableDestination(variableSlot));
+                listAppendDestination(list, thread)->copy(thread->variableDestination(variableSlot));
             }
 
             destination->object = list.unretainedPointer();

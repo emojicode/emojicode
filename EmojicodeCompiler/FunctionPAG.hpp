@@ -55,6 +55,11 @@ private:
     TokenStream& stream() override { return stream_; }
     Package* package() override { return package_; }
     FunctionPAGMode mode() const override { return function_.compilationMode(); }
+    CallableScoper& scoper() override { return scoper_; }
+
+    void popScope() override {
+        scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
+    }
 
     /** The flow control depth. */
     int flowControlDepth = 0;

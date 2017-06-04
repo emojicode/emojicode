@@ -14,6 +14,7 @@
 #include "CommonTypeFinder.hpp"
 #include "TypeAvailability.hpp"
 #include "FunctionPAGMode.hpp"
+#include "CallableScoper.hpp"
 
 class FunctionPAGInterface {
 public:
@@ -44,6 +45,10 @@ public:
 
     virtual Type parseTypeDeclarative(const TypeContext &typeContext, TypeDynamism dynamism,
                                       Type expectation = Type::nothingness(), TypeDynamism *dynamicType = nullptr) = 0;
+
+    /// Returns the scoper that is used to scope the function.
+    virtual CallableScoper& scoper() = 0;
+    virtual void popScope() = 0;
 };
 
 #endif /* FunctionPAGInterface_hpp */
