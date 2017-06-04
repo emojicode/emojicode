@@ -1,0 +1,1564 @@
+Burger name: Double Bacon0
+Bacon, Tomato
+Sauce barbecue0 12ml Hot: 0.3000000000
+Burger name: Triple Burger0
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli0 20ml Hot: 1.0000000000
+Burger name: Cheeseburger0
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger0
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon20000
+Bacon, Tomato
+Sauce barbecue20000 12ml Hot: 0.3000000000
+Burger name: Triple Burger30000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli30000 20ml Hot: 1.0000000000
+Burger name: Double Bacon40000
+Bacon, Tomato
+Sauce barbecue40000 12ml Hot: 0.3000000000
+Burger name: Standard Burger50000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon60000
+Bacon, Tomato
+Sauce barbecue60000 12ml Hot: 0.3000000000
+Burger name: Triple Burger60000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli60000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger70000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon80000
+Bacon, Tomato
+Sauce barbecue80000 12ml Hot: 0.3000000000
+Burger name: Triple Burger90000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli90000 20ml Hot: 1.0000000000
+Burger name: Double Bacon100000
+Bacon, Tomato
+Sauce barbecue100000 12ml Hot: 0.3000000000
+Burger name: Standard Burger100000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon120000
+Bacon, Tomato
+Sauce barbecue120000 12ml Hot: 0.3000000000
+Burger name: Triple Burger120000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli120000 20ml Hot: 1.0000000000
+Burger name: Double Bacon140000
+Bacon, Tomato
+Sauce barbecue140000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger140000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger150000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli150000 20ml Hot: 1.0000000000
+Burger name: Standard Burger150000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon160000
+Bacon, Tomato
+Sauce barbecue160000 12ml Hot: 0.3000000000
+Burger name: Double Bacon180000
+Bacon, Tomato
+Sauce barbecue180000 12ml Hot: 0.3000000000
+Burger name: Triple Burger180000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli180000 20ml Hot: 1.0000000000
+Burger name: Double Bacon200000
+Bacon, Tomato
+Sauce barbecue200000 12ml Hot: 0.3000000000
+Burger name: Standard Burger200000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger210000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli210000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger210000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon220000
+Bacon, Tomato
+Sauce barbecue220000 12ml Hot: 0.3000000000
+Burger name: Double Bacon240000
+Bacon, Tomato
+Sauce barbecue240000 12ml Hot: 0.3000000000
+Burger name: Triple Burger240000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli240000 20ml Hot: 1.0000000000
+Burger name: Standard Burger250000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon260000
+Bacon, Tomato
+Sauce barbecue260000 12ml Hot: 0.3000000000
+Burger name: Triple Burger270000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli270000 20ml Hot: 1.0000000000
+Burger name: Double Bacon280000
+Bacon, Tomato
+Sauce barbecue280000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger280000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon300000
+Bacon, Tomato
+Sauce barbecue300000 12ml Hot: 0.3000000000
+Burger name: Triple Burger300000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli300000 20ml Hot: 1.0000000000
+Burger name: Standard Burger300000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon320000
+Bacon, Tomato
+Sauce barbecue320000 12ml Hot: 0.3000000000
+Burger name: Triple Burger330000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli330000 20ml Hot: 1.0000000000
+Burger name: Double Bacon340000
+Bacon, Tomato
+Sauce barbecue340000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger350000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger350000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon360000
+Bacon, Tomato
+Sauce barbecue360000 12ml Hot: 0.3000000000
+Burger name: Triple Burger360000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli360000 20ml Hot: 1.0000000000
+Burger name: Double Bacon380000
+Bacon, Tomato
+Sauce barbecue380000 12ml Hot: 0.3000000000
+Burger name: Triple Burger390000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli390000 20ml Hot: 1.0000000000
+Burger name: Double Bacon400000
+Bacon, Tomato
+Sauce barbecue400000 12ml Hot: 0.3000000000
+Burger name: Standard Burger400000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon420000
+Bacon, Tomato
+Sauce barbecue420000 12ml Hot: 0.3000000000
+Burger name: Triple Burger420000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli420000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger420000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon440000
+Bacon, Tomato
+Sauce barbecue440000 12ml Hot: 0.3000000000
+Burger name: Triple Burger450000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli450000 20ml Hot: 1.0000000000
+Burger name: Standard Burger450000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon460000
+Bacon, Tomato
+Sauce barbecue460000 12ml Hot: 0.3000000000
+Burger name: Double Bacon480000
+Bacon, Tomato
+Sauce barbecue480000 12ml Hot: 0.3000000000
+Burger name: Triple Burger480000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli480000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger490000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon500000
+Bacon, Tomato
+Sauce barbecue500000 12ml Hot: 0.3000000000
+Burger name: Standard Burger500000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger510000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli510000 20ml Hot: 1.0000000000
+Burger name: Double Bacon520000
+Bacon, Tomato
+Sauce barbecue520000 12ml Hot: 0.3000000000
+Burger name: Double Bacon540000
+Bacon, Tomato
+Sauce barbecue540000 12ml Hot: 0.3000000000
+Burger name: Triple Burger540000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli540000 20ml Hot: 1.0000000000
+Burger name: Standard Burger550000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon560000
+Bacon, Tomato
+Sauce barbecue560000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger560000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger570000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli570000 20ml Hot: 1.0000000000
+Burger name: Double Bacon580000
+Bacon, Tomato
+Sauce barbecue580000 12ml Hot: 0.3000000000
+Burger name: Double Bacon600000
+Bacon, Tomato
+Sauce barbecue600000 12ml Hot: 0.3000000000
+Burger name: Triple Burger600000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli600000 20ml Hot: 1.0000000000
+Burger name: Standard Burger600000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon620000
+Bacon, Tomato
+Sauce barbecue620000 12ml Hot: 0.3000000000
+Burger name: Triple Burger630000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli630000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger630000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon640000
+Bacon, Tomato
+Sauce barbecue640000 12ml Hot: 0.3000000000
+Burger name: Standard Burger650000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon660000
+Bacon, Tomato
+Sauce barbecue660000 12ml Hot: 0.3000000000
+Burger name: Triple Burger660000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli660000 20ml Hot: 1.0000000000
+Burger name: Double Bacon680000
+Bacon, Tomato
+Sauce barbecue680000 12ml Hot: 0.3000000000
+Burger name: Triple Burger690000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli690000 20ml Hot: 1.0000000000
+Burger name: Double Bacon700000
+Bacon, Tomato
+Sauce barbecue700000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger700000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger700000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon720000
+Bacon, Tomato
+Sauce barbecue720000 12ml Hot: 0.3000000000
+Burger name: Triple Burger720000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli720000 20ml Hot: 1.0000000000
+Burger name: Double Bacon740000
+Bacon, Tomato
+Sauce barbecue740000 12ml Hot: 0.3000000000
+Burger name: Triple Burger750000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli750000 20ml Hot: 1.0000000000
+Burger name: Standard Burger750000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon760000
+Bacon, Tomato
+Sauce barbecue760000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger770000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon780000
+Bacon, Tomato
+Sauce barbecue780000 12ml Hot: 0.3000000000
+Burger name: Triple Burger780000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli780000 20ml Hot: 1.0000000000
+Burger name: Double Bacon800000
+Bacon, Tomato
+Sauce barbecue800000 12ml Hot: 0.3000000000
+Burger name: Standard Burger800000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger810000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli810000 20ml Hot: 1.0000000000
+Burger name: Double Bacon820000
+Bacon, Tomato
+Sauce barbecue820000 12ml Hot: 0.3000000000
+Burger name: Double Bacon840000
+Bacon, Tomato
+Sauce barbecue840000 12ml Hot: 0.3000000000
+Burger name: Triple Burger840000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli840000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger840000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger850000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon860000
+Bacon, Tomato
+Sauce barbecue860000 12ml Hot: 0.3000000000
+Burger name: Triple Burger870000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli870000 20ml Hot: 1.0000000000
+Burger name: Double Bacon880000
+Bacon, Tomato
+Sauce barbecue880000 12ml Hot: 0.3000000000
+Burger name: Double Bacon900000
+Bacon, Tomato
+Sauce barbecue900000 12ml Hot: 0.3000000000
+Burger name: Triple Burger900000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli900000 20ml Hot: 1.0000000000
+Burger name: Standard Burger900000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Cheeseburger910000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon920000
+Bacon, Tomato
+Sauce barbecue920000 12ml Hot: 0.3000000000
+Burger name: Triple Burger930000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli930000 20ml Hot: 1.0000000000
+Burger name: Double Bacon940000
+Bacon, Tomato
+Sauce barbecue940000 12ml Hot: 0.3000000000
+Burger name: Standard Burger950000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon960000
+Bacon, Tomato
+Sauce barbecue960000 12ml Hot: 0.3000000000
+Burger name: Triple Burger960000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli960000 20ml Hot: 1.0000000000
+Burger name: Double Bacon980000
+Bacon, Tomato
+Sauce barbecue980000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger980000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger990000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli990000 20ml Hot: 1.0000000000
+Burger name: Double Bacon0
+Bacon, Tomato
+Sauce barbecue0 12ml Hot: 0.3000000000
+Burger name: Triple Burger0
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli0 20ml Hot: 1.0000000000
+Burger name: Cheeseburger0
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger0
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon20000
+Bacon, Tomato
+Sauce barbecue20000 12ml Hot: 0.3000000000
+Burger name: Triple Burger30000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli30000 20ml Hot: 1.0000000000
+Burger name: Double Bacon40000
+Bacon, Tomato
+Sauce barbecue40000 12ml Hot: 0.3000000000
+Burger name: Standard Burger50000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon60000
+Bacon, Tomato
+Sauce barbecue60000 12ml Hot: 0.3000000000
+Burger name: Triple Burger60000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli60000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger70000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon80000
+Bacon, Tomato
+Sauce barbecue80000 12ml Hot: 0.3000000000
+Burger name: Triple Burger90000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli90000 20ml Hot: 1.0000000000
+Burger name: Double Bacon100000
+Bacon, Tomato
+Sauce barbecue100000 12ml Hot: 0.3000000000
+Burger name: Standard Burger100000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon120000
+Bacon, Tomato
+Sauce barbecue120000 12ml Hot: 0.3000000000
+Burger name: Triple Burger120000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli120000 20ml Hot: 1.0000000000
+Burger name: Double Bacon140000
+Bacon, Tomato
+Sauce barbecue140000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger140000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger150000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli150000 20ml Hot: 1.0000000000
+Burger name: Standard Burger150000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon160000
+Bacon, Tomato
+Sauce barbecue160000 12ml Hot: 0.3000000000
+Burger name: Double Bacon180000
+Bacon, Tomato
+Sauce barbecue180000 12ml Hot: 0.3000000000
+Burger name: Triple Burger180000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli180000 20ml Hot: 1.0000000000
+Burger name: Double Bacon200000
+Bacon, Tomato
+Sauce barbecue200000 12ml Hot: 0.3000000000
+Burger name: Standard Burger200000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger210000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli210000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger210000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon220000
+Bacon, Tomato
+Sauce barbecue220000 12ml Hot: 0.3000000000
+Burger name: Double Bacon240000
+Bacon, Tomato
+Sauce barbecue240000 12ml Hot: 0.3000000000
+Burger name: Triple Burger240000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli240000 20ml Hot: 1.0000000000
+Burger name: Standard Burger250000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon260000
+Bacon, Tomato
+Sauce barbecue260000 12ml Hot: 0.3000000000
+Burger name: Triple Burger270000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli270000 20ml Hot: 1.0000000000
+Burger name: Double Bacon280000
+Bacon, Tomato
+Sauce barbecue280000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger280000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon300000
+Bacon, Tomato
+Sauce barbecue300000 12ml Hot: 0.3000000000
+Burger name: Triple Burger300000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli300000 20ml Hot: 1.0000000000
+Burger name: Standard Burger300000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon320000
+Bacon, Tomato
+Sauce barbecue320000 12ml Hot: 0.3000000000
+Burger name: Triple Burger330000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli330000 20ml Hot: 1.0000000000
+Burger name: Double Bacon340000
+Bacon, Tomato
+Sauce barbecue340000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger350000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger350000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon360000
+Bacon, Tomato
+Sauce barbecue360000 12ml Hot: 0.3000000000
+Burger name: Triple Burger360000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli360000 20ml Hot: 1.0000000000
+Burger name: Double Bacon380000
+Bacon, Tomato
+Sauce barbecue380000 12ml Hot: 0.3000000000
+Burger name: Triple Burger390000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli390000 20ml Hot: 1.0000000000
+Burger name: Double Bacon400000
+Bacon, Tomato
+Sauce barbecue400000 12ml Hot: 0.3000000000
+Burger name: Standard Burger400000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon420000
+Bacon, Tomato
+Sauce barbecue420000 12ml Hot: 0.3000000000
+Burger name: Triple Burger420000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli420000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger420000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon440000
+Bacon, Tomato
+Sauce barbecue440000 12ml Hot: 0.3000000000
+Burger name: Triple Burger450000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli450000 20ml Hot: 1.0000000000
+Burger name: Standard Burger450000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon460000
+Bacon, Tomato
+Sauce barbecue460000 12ml Hot: 0.3000000000
+Burger name: Double Bacon480000
+Bacon, Tomato
+Sauce barbecue480000 12ml Hot: 0.3000000000
+Burger name: Triple Burger480000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli480000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger490000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon500000
+Bacon, Tomato
+Sauce barbecue500000 12ml Hot: 0.3000000000
+Burger name: Standard Burger500000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger510000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli510000 20ml Hot: 1.0000000000
+Burger name: Double Bacon520000
+Bacon, Tomato
+Sauce barbecue520000 12ml Hot: 0.3000000000
+Burger name: Double Bacon540000
+Bacon, Tomato
+Sauce barbecue540000 12ml Hot: 0.3000000000
+Burger name: Triple Burger540000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli540000 20ml Hot: 1.0000000000
+Burger name: Standard Burger550000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon560000
+Bacon, Tomato
+Sauce barbecue560000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger560000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger570000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli570000 20ml Hot: 1.0000000000
+Burger name: Double Bacon580000
+Bacon, Tomato
+Sauce barbecue580000 12ml Hot: 0.3000000000
+Burger name: Double Bacon600000
+Bacon, Tomato
+Sauce barbecue600000 12ml Hot: 0.3000000000
+Burger name: Triple Burger600000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli600000 20ml Hot: 1.0000000000
+Burger name: Standard Burger600000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon620000
+Bacon, Tomato
+Sauce barbecue620000 12ml Hot: 0.3000000000
+Burger name: Triple Burger630000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli630000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger630000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon640000
+Bacon, Tomato
+Sauce barbecue640000 12ml Hot: 0.3000000000
+Burger name: Standard Burger650000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon660000
+Bacon, Tomato
+Sauce barbecue660000 12ml Hot: 0.3000000000
+Burger name: Triple Burger660000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli660000 20ml Hot: 1.0000000000
+Burger name: Double Bacon680000
+Bacon, Tomato
+Sauce barbecue680000 12ml Hot: 0.3000000000
+Burger name: Triple Burger690000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli690000 20ml Hot: 1.0000000000
+Burger name: Double Bacon700000
+Bacon, Tomato
+Sauce barbecue700000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger700000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger700000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon720000
+Bacon, Tomato
+Sauce barbecue720000 12ml Hot: 0.3000000000
+Burger name: Triple Burger720000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli720000 20ml Hot: 1.0000000000
+Burger name: Double Bacon740000
+Bacon, Tomato
+Sauce barbecue740000 12ml Hot: 0.3000000000
+Burger name: Triple Burger750000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli750000 20ml Hot: 1.0000000000
+Burger name: Standard Burger750000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon760000
+Bacon, Tomato
+Sauce barbecue760000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger770000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon780000
+Bacon, Tomato
+Sauce barbecue780000 12ml Hot: 0.3000000000
+Burger name: Triple Burger780000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli780000 20ml Hot: 1.0000000000
+Burger name: Double Bacon800000
+Bacon, Tomato
+Sauce barbecue800000 12ml Hot: 0.3000000000
+Burger name: Standard Burger800000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger810000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli810000 20ml Hot: 1.0000000000
+Burger name: Double Bacon820000
+Bacon, Tomato
+Sauce barbecue820000 12ml Hot: 0.3000000000
+Burger name: Double Bacon840000
+Bacon, Tomato
+Sauce barbecue840000 12ml Hot: 0.3000000000
+Burger name: Triple Burger840000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli840000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger840000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger850000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon860000
+Bacon, Tomato
+Sauce barbecue860000 12ml Hot: 0.3000000000
+Burger name: Triple Burger870000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli870000 20ml Hot: 1.0000000000
+Burger name: Double Bacon880000
+Bacon, Tomato
+Sauce barbecue880000 12ml Hot: 0.3000000000
+Burger name: Double Bacon900000
+Bacon, Tomato
+Sauce barbecue900000 12ml Hot: 0.3000000000
+Burger name: Triple Burger900000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli900000 20ml Hot: 1.0000000000
+Burger name: Standard Burger900000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Cheeseburger910000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon920000
+Bacon, Tomato
+Sauce barbecue920000 12ml Hot: 0.3000000000
+Burger name: Triple Burger930000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli930000 20ml Hot: 1.0000000000
+Burger name: Double Bacon940000
+Bacon, Tomato
+Sauce barbecue940000 12ml Hot: 0.3000000000
+Burger name: Standard Burger950000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon960000
+Bacon, Tomato
+Sauce barbecue960000 12ml Hot: 0.3000000000
+Burger name: Triple Burger960000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli960000 20ml Hot: 1.0000000000
+Burger name: Double Bacon980000
+Bacon, Tomato
+Sauce barbecue980000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger980000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger990000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli990000 20ml Hot: 1.0000000000
+Burger name: Double Bacon0
+Bacon, Tomato
+Sauce barbecue0 12ml Hot: 0.3000000000
+Burger name: Triple Burger0
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli0 20ml Hot: 1.0000000000
+Burger name: Cheeseburger0
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger0
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon20000
+Bacon, Tomato
+Sauce barbecue20000 12ml Hot: 0.3000000000
+Burger name: Triple Burger30000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli30000 20ml Hot: 1.0000000000
+Burger name: Double Bacon40000
+Bacon, Tomato
+Sauce barbecue40000 12ml Hot: 0.3000000000
+Burger name: Standard Burger50000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon60000
+Bacon, Tomato
+Sauce barbecue60000 12ml Hot: 0.3000000000
+Burger name: Triple Burger60000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli60000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger70000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon80000
+Bacon, Tomato
+Sauce barbecue80000 12ml Hot: 0.3000000000
+Burger name: Triple Burger90000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli90000 20ml Hot: 1.0000000000
+Burger name: Double Bacon100000
+Bacon, Tomato
+Sauce barbecue100000 12ml Hot: 0.3000000000
+Burger name: Standard Burger100000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon120000
+Bacon, Tomato
+Sauce barbecue120000 12ml Hot: 0.3000000000
+Burger name: Triple Burger120000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli120000 20ml Hot: 1.0000000000
+Burger name: Double Bacon140000
+Bacon, Tomato
+Sauce barbecue140000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger140000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger150000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli150000 20ml Hot: 1.0000000000
+Burger name: Standard Burger150000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon160000
+Bacon, Tomato
+Sauce barbecue160000 12ml Hot: 0.3000000000
+Burger name: Double Bacon180000
+Bacon, Tomato
+Sauce barbecue180000 12ml Hot: 0.3000000000
+Burger name: Triple Burger180000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli180000 20ml Hot: 1.0000000000
+Burger name: Double Bacon200000
+Bacon, Tomato
+Sauce barbecue200000 12ml Hot: 0.3000000000
+Burger name: Standard Burger200000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger210000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli210000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger210000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon220000
+Bacon, Tomato
+Sauce barbecue220000 12ml Hot: 0.3000000000
+Burger name: Double Bacon240000
+Bacon, Tomato
+Sauce barbecue240000 12ml Hot: 0.3000000000
+Burger name: Triple Burger240000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli240000 20ml Hot: 1.0000000000
+Burger name: Standard Burger250000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon260000
+Bacon, Tomato
+Sauce barbecue260000 12ml Hot: 0.3000000000
+Burger name: Triple Burger270000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli270000 20ml Hot: 1.0000000000
+Burger name: Double Bacon280000
+Bacon, Tomato
+Sauce barbecue280000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger280000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon300000
+Bacon, Tomato
+Sauce barbecue300000 12ml Hot: 0.3000000000
+Burger name: Triple Burger300000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli300000 20ml Hot: 1.0000000000
+Burger name: Standard Burger300000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon320000
+Bacon, Tomato
+Sauce barbecue320000 12ml Hot: 0.3000000000
+Burger name: Triple Burger330000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli330000 20ml Hot: 1.0000000000
+Burger name: Double Bacon340000
+Bacon, Tomato
+Sauce barbecue340000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger350000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger350000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon360000
+Bacon, Tomato
+Sauce barbecue360000 12ml Hot: 0.3000000000
+Burger name: Triple Burger360000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli360000 20ml Hot: 1.0000000000
+Burger name: Double Bacon380000
+Bacon, Tomato
+Sauce barbecue380000 12ml Hot: 0.3000000000
+Burger name: Triple Burger390000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli390000 20ml Hot: 1.0000000000
+Burger name: Double Bacon400000
+Bacon, Tomato
+Sauce barbecue400000 12ml Hot: 0.3000000000
+Burger name: Standard Burger400000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon420000
+Bacon, Tomato
+Sauce barbecue420000 12ml Hot: 0.3000000000
+Burger name: Triple Burger420000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli420000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger420000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon440000
+Bacon, Tomato
+Sauce barbecue440000 12ml Hot: 0.3000000000
+Burger name: Triple Burger450000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli450000 20ml Hot: 1.0000000000
+Burger name: Standard Burger450000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon460000
+Bacon, Tomato
+Sauce barbecue460000 12ml Hot: 0.3000000000
+Burger name: Double Bacon480000
+Bacon, Tomato
+Sauce barbecue480000 12ml Hot: 0.3000000000
+Burger name: Triple Burger480000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli480000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger490000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon500000
+Bacon, Tomato
+Sauce barbecue500000 12ml Hot: 0.3000000000
+Burger name: Standard Burger500000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger510000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli510000 20ml Hot: 1.0000000000
+Burger name: Double Bacon520000
+Bacon, Tomato
+Sauce barbecue520000 12ml Hot: 0.3000000000
+Burger name: Double Bacon540000
+Bacon, Tomato
+Sauce barbecue540000 12ml Hot: 0.3000000000
+Burger name: Triple Burger540000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli540000 20ml Hot: 1.0000000000
+Burger name: Standard Burger550000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon560000
+Bacon, Tomato
+Sauce barbecue560000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger560000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger570000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli570000 20ml Hot: 1.0000000000
+Burger name: Double Bacon580000
+Bacon, Tomato
+Sauce barbecue580000 12ml Hot: 0.3000000000
+Burger name: Double Bacon600000
+Bacon, Tomato
+Sauce barbecue600000 12ml Hot: 0.3000000000
+Burger name: Triple Burger600000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli600000 20ml Hot: 1.0000000000
+Burger name: Standard Burger600000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon620000
+Bacon, Tomato
+Sauce barbecue620000 12ml Hot: 0.3000000000
+Burger name: Triple Burger630000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli630000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger630000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon640000
+Bacon, Tomato
+Sauce barbecue640000 12ml Hot: 0.3000000000
+Burger name: Standard Burger650000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon660000
+Bacon, Tomato
+Sauce barbecue660000 12ml Hot: 0.3000000000
+Burger name: Triple Burger660000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli660000 20ml Hot: 1.0000000000
+Burger name: Double Bacon680000
+Bacon, Tomato
+Sauce barbecue680000 12ml Hot: 0.3000000000
+Burger name: Triple Burger690000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli690000 20ml Hot: 1.0000000000
+Burger name: Double Bacon700000
+Bacon, Tomato
+Sauce barbecue700000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger700000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger700000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon720000
+Bacon, Tomato
+Sauce barbecue720000 12ml Hot: 0.3000000000
+Burger name: Triple Burger720000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli720000 20ml Hot: 1.0000000000
+Burger name: Double Bacon740000
+Bacon, Tomato
+Sauce barbecue740000 12ml Hot: 0.3000000000
+Burger name: Triple Burger750000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli750000 20ml Hot: 1.0000000000
+Burger name: Standard Burger750000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon760000
+Bacon, Tomato
+Sauce barbecue760000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger770000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon780000
+Bacon, Tomato
+Sauce barbecue780000 12ml Hot: 0.3000000000
+Burger name: Triple Burger780000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli780000 20ml Hot: 1.0000000000
+Burger name: Double Bacon800000
+Bacon, Tomato
+Sauce barbecue800000 12ml Hot: 0.3000000000
+Burger name: Standard Burger800000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger810000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli810000 20ml Hot: 1.0000000000
+Burger name: Double Bacon820000
+Bacon, Tomato
+Sauce barbecue820000 12ml Hot: 0.3000000000
+Burger name: Double Bacon840000
+Bacon, Tomato
+Sauce barbecue840000 12ml Hot: 0.3000000000
+Burger name: Triple Burger840000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli840000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger840000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger850000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon860000
+Bacon, Tomato
+Sauce barbecue860000 12ml Hot: 0.3000000000
+Burger name: Triple Burger870000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli870000 20ml Hot: 1.0000000000
+Burger name: Double Bacon880000
+Bacon, Tomato
+Sauce barbecue880000 12ml Hot: 0.3000000000
+Burger name: Double Bacon900000
+Bacon, Tomato
+Sauce barbecue900000 12ml Hot: 0.3000000000
+Burger name: Triple Burger900000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli900000 20ml Hot: 1.0000000000
+Burger name: Standard Burger900000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Cheeseburger910000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon920000
+Bacon, Tomato
+Sauce barbecue920000 12ml Hot: 0.3000000000
+Burger name: Triple Burger930000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli930000 20ml Hot: 1.0000000000
+Burger name: Double Bacon940000
+Bacon, Tomato
+Sauce barbecue940000 12ml Hot: 0.3000000000
+Burger name: Standard Burger950000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon960000
+Bacon, Tomato
+Sauce barbecue960000 12ml Hot: 0.3000000000
+Burger name: Triple Burger960000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli960000 20ml Hot: 1.0000000000
+Burger name: Double Bacon980000
+Bacon, Tomato
+Sauce barbecue980000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger980000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger990000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli990000 20ml Hot: 1.0000000000
+Burger name: Double Bacon0
+Bacon, Tomato
+Sauce barbecue0 12ml Hot: 0.3000000000
+Burger name: Triple Burger0
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli0 20ml Hot: 1.0000000000
+Burger name: Cheeseburger0
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger0
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon20000
+Bacon, Tomato
+Sauce barbecue20000 12ml Hot: 0.3000000000
+Burger name: Triple Burger30000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli30000 20ml Hot: 1.0000000000
+Burger name: Double Bacon40000
+Bacon, Tomato
+Sauce barbecue40000 12ml Hot: 0.3000000000
+Burger name: Standard Burger50000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon60000
+Bacon, Tomato
+Sauce barbecue60000 12ml Hot: 0.3000000000
+Burger name: Triple Burger60000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli60000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger70000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon80000
+Bacon, Tomato
+Sauce barbecue80000 12ml Hot: 0.3000000000
+Burger name: Triple Burger90000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli90000 20ml Hot: 1.0000000000
+Burger name: Double Bacon100000
+Bacon, Tomato
+Sauce barbecue100000 12ml Hot: 0.3000000000
+Burger name: Standard Burger100000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon120000
+Bacon, Tomato
+Sauce barbecue120000 12ml Hot: 0.3000000000
+Burger name: Triple Burger120000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli120000 20ml Hot: 1.0000000000
+Burger name: Double Bacon140000
+Bacon, Tomato
+Sauce barbecue140000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger140000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger150000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli150000 20ml Hot: 1.0000000000
+Burger name: Standard Burger150000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon160000
+Bacon, Tomato
+Sauce barbecue160000 12ml Hot: 0.3000000000
+Burger name: Double Bacon180000
+Bacon, Tomato
+Sauce barbecue180000 12ml Hot: 0.3000000000
+Burger name: Triple Burger180000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli180000 20ml Hot: 1.0000000000
+Burger name: Double Bacon200000
+Bacon, Tomato
+Sauce barbecue200000 12ml Hot: 0.3000000000
+Burger name: Standard Burger200000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger210000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli210000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger210000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon220000
+Bacon, Tomato
+Sauce barbecue220000 12ml Hot: 0.3000000000
+Burger name: Double Bacon240000
+Bacon, Tomato
+Sauce barbecue240000 12ml Hot: 0.3000000000
+Burger name: Triple Burger240000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli240000 20ml Hot: 1.0000000000
+Burger name: Standard Burger250000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon260000
+Bacon, Tomato
+Sauce barbecue260000 12ml Hot: 0.3000000000
+Burger name: Triple Burger270000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli270000 20ml Hot: 1.0000000000
+Burger name: Double Bacon280000
+Bacon, Tomato
+Sauce barbecue280000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger280000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon300000
+Bacon, Tomato
+Sauce barbecue300000 12ml Hot: 0.3000000000
+Burger name: Triple Burger300000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli300000 20ml Hot: 1.0000000000
+Burger name: Standard Burger300000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon320000
+Bacon, Tomato
+Sauce barbecue320000 12ml Hot: 0.3000000000
+Burger name: Triple Burger330000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli330000 20ml Hot: 1.0000000000
+Burger name: Double Bacon340000
+Bacon, Tomato
+Sauce barbecue340000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger350000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger350000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon360000
+Bacon, Tomato
+Sauce barbecue360000 12ml Hot: 0.3000000000
+Burger name: Triple Burger360000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli360000 20ml Hot: 1.0000000000
+Burger name: Double Bacon380000
+Bacon, Tomato
+Sauce barbecue380000 12ml Hot: 0.3000000000
+Burger name: Triple Burger390000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli390000 20ml Hot: 1.0000000000
+Burger name: Double Bacon400000
+Bacon, Tomato
+Sauce barbecue400000 12ml Hot: 0.3000000000
+Burger name: Standard Burger400000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon420000
+Bacon, Tomato
+Sauce barbecue420000 12ml Hot: 0.3000000000
+Burger name: Triple Burger420000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli420000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger420000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon440000
+Bacon, Tomato
+Sauce barbecue440000 12ml Hot: 0.3000000000
+Burger name: Triple Burger450000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli450000 20ml Hot: 1.0000000000
+Burger name: Standard Burger450000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon460000
+Bacon, Tomato
+Sauce barbecue460000 12ml Hot: 0.3000000000
+Burger name: Double Bacon480000
+Bacon, Tomato
+Sauce barbecue480000 12ml Hot: 0.3000000000
+Burger name: Triple Burger480000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli480000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger490000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon500000
+Bacon, Tomato
+Sauce barbecue500000 12ml Hot: 0.3000000000
+Burger name: Standard Burger500000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger510000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli510000 20ml Hot: 1.0000000000
+Burger name: Double Bacon520000
+Bacon, Tomato
+Sauce barbecue520000 12ml Hot: 0.3000000000
+Burger name: Double Bacon540000
+Bacon, Tomato
+Sauce barbecue540000 12ml Hot: 0.3000000000
+Burger name: Triple Burger540000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli540000 20ml Hot: 1.0000000000
+Burger name: Standard Burger550000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon560000
+Bacon, Tomato
+Sauce barbecue560000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger560000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger570000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli570000 20ml Hot: 1.0000000000
+Burger name: Double Bacon580000
+Bacon, Tomato
+Sauce barbecue580000 12ml Hot: 0.3000000000
+Burger name: Double Bacon600000
+Bacon, Tomato
+Sauce barbecue600000 12ml Hot: 0.3000000000
+Burger name: Triple Burger600000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli600000 20ml Hot: 1.0000000000
+Burger name: Standard Burger600000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon620000
+Bacon, Tomato
+Sauce barbecue620000 12ml Hot: 0.3000000000
+Burger name: Triple Burger630000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli630000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger630000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon640000
+Bacon, Tomato
+Sauce barbecue640000 12ml Hot: 0.3000000000
+Burger name: Standard Burger650000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon660000
+Bacon, Tomato
+Sauce barbecue660000 12ml Hot: 0.3000000000
+Burger name: Triple Burger660000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli660000 20ml Hot: 1.0000000000
+Burger name: Double Bacon680000
+Bacon, Tomato
+Sauce barbecue680000 12ml Hot: 0.3000000000
+Burger name: Triple Burger690000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli690000 20ml Hot: 1.0000000000
+Burger name: Double Bacon700000
+Bacon, Tomato
+Sauce barbecue700000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger700000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger700000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon720000
+Bacon, Tomato
+Sauce barbecue720000 12ml Hot: 0.3000000000
+Burger name: Triple Burger720000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli720000 20ml Hot: 1.0000000000
+Burger name: Double Bacon740000
+Bacon, Tomato
+Sauce barbecue740000 12ml Hot: 0.3000000000
+Burger name: Triple Burger750000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli750000 20ml Hot: 1.0000000000
+Burger name: Standard Burger750000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon760000
+Bacon, Tomato
+Sauce barbecue760000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger770000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon780000
+Bacon, Tomato
+Sauce barbecue780000 12ml Hot: 0.3000000000
+Burger name: Triple Burger780000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli780000 20ml Hot: 1.0000000000
+Burger name: Double Bacon800000
+Bacon, Tomato
+Sauce barbecue800000 12ml Hot: 0.3000000000
+Burger name: Standard Burger800000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Triple Burger810000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli810000 20ml Hot: 1.0000000000
+Burger name: Double Bacon820000
+Bacon, Tomato
+Sauce barbecue820000 12ml Hot: 0.3000000000
+Burger name: Double Bacon840000
+Bacon, Tomato
+Sauce barbecue840000 12ml Hot: 0.3000000000
+Burger name: Triple Burger840000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli840000 20ml Hot: 1.0000000000
+Burger name: Cheeseburger840000
+Cheese
+Drink: Lemonade
+Burger name: Standard Burger850000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon860000
+Bacon, Tomato
+Sauce barbecue860000 12ml Hot: 0.3000000000
+Burger name: Triple Burger870000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli870000 20ml Hot: 1.0000000000
+Burger name: Double Bacon880000
+Bacon, Tomato
+Sauce barbecue880000 12ml Hot: 0.3000000000
+Burger name: Double Bacon900000
+Bacon, Tomato
+Sauce barbecue900000 12ml Hot: 0.3000000000
+Burger name: Triple Burger900000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli900000 20ml Hot: 1.0000000000
+Burger name: Standard Burger900000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Cheeseburger910000
+Cheese
+Drink: Lemonade
+Burger name: Double Bacon920000
+Bacon, Tomato
+Sauce barbecue920000 12ml Hot: 0.3000000000
+Burger name: Triple Burger930000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli930000 20ml Hot: 1.0000000000
+Burger name: Double Bacon940000
+Bacon, Tomato
+Sauce barbecue940000 12ml Hot: 0.3000000000
+Burger name: Standard Burger950000
+Egg, Salad, Bacon, Cucumber
+Drink: Coke
+Burger name: Double Bacon960000
+Bacon, Tomato
+Sauce barbecue960000 12ml Hot: 0.3000000000
+Burger name: Triple Burger960000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli960000 20ml Hot: 1.0000000000
+Burger name: Double Bacon980000
+Bacon, Tomato
+Sauce barbecue980000 12ml Hot: 0.3000000000
+Burger name: Cheeseburger980000
+Cheese
+Drink: Lemonade
+Burger name: Triple Burger990000
+Onion, Salad, Tomato
+Drink: Coke
+Sauce chilli990000 20ml Hot: 1.0000000000
