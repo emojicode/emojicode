@@ -69,7 +69,8 @@ Type pagListLiteral(const Token &token, const TypeExpectation &expectation, Func
         }
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, ct.getCommonType(token.position()));
-        auto &var = scope.setLocalVariable(EmojicodeString(), type.genericArguments()[0], true, token.position());
+        auto varType = Type(TypeContent::GenericVariable, false, 0, CL_LIST).resolveOn(type);
+        auto &var = scope.setLocalVariable(EmojicodeString(), varType, true, token.position());
         var.initialize(initCount);
         variablePlaceholder.write(var.id());
     }
@@ -83,9 +84,14 @@ Type pagDictionaryLiteral(const Token &token, const TypeExpectation &expectation
     functionPag.box(expectation, Type(CL_DICTIONARY, false));
     functionPag.writer().writeInstruction(INS_OPT_DICTIONARY_LITERAL);
 
-    auto placeholder = functionPag.writer().writeInstructionsCountPlaceholderCoin();
-    Type type = Type(CL_DICTIONARY, false);
+    auto &scope = functionPag.scoper().pushScope();
 
+    auto variablePlaceholder = functionPag.writer().writeInstructionPlaceholder();
+    auto placeholder = functionPag.writer().writeInstructionsCountPlaceholderCoin();
+
+    auto initCount = functionPag.writer().count();
+
+    Type type = Type(CL_DICTIONARY, false);
     if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_DICTIONARY) {
         auto elementType = Type(TypeContent::GenericVariable, false, 0, expectation.eclass()).resolveOn(expectation);
         while (functionPag.stream().nextTokenIsEverythingBut(E_AUBERGINE)) {
@@ -94,6 +100,9 @@ Type pagDictionaryLiteral(const Token &token, const TypeExpectation &expectation
         }
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, elementType);
+        auto &var = scope.setLocalVariable(EmojicodeString(), elementType, true, token.position());
+        var.initialize(initCount);
+        variablePlaceholder.write(var.id());
     }
     else {
         CommonTypeFinder ct;
@@ -103,9 +112,13 @@ Type pagDictionaryLiteral(const Token &token, const TypeExpectation &expectation
         }
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, ct.getCommonType(token.position()));
+        auto &var = scope.setLocalVariable(EmojicodeString(), type.genericArguments()[0], true, token.position());
+        var.initialize(initCount);
+        variablePlaceholder.write(var.id());
     }
 
     placeholder.write();
+    functionPag.popScope();
     return type;
 }
 

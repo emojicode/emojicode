@@ -671,12 +671,14 @@ void produce(Thread *thread, Value *destination) {
             auto dico = thread->retain(newObject(CL_DICTIONARY));
             dictionaryInit(dico->val<EmojicodeDictionary>());
 
+            EmojicodeInstruction variableSlot = thread->consumeInstruction();
             EmojicodeInstruction *end = thread->currentStackFrame()->executionPointer + thread->consumeInstruction();
             while (thread->currentStackFrame()->executionPointer < end) {
                 Value key;
                 produce(thread, &key);
                 auto keyObject = thread->retain(key.object);
-                produce(thread, reinterpret_cast<Value *>(dictionaryPutVal(dico, keyObject, thread)));
+                produce(thread, thread->variableDestination(variableSlot));
+                dictionaryPutVal(dico, keyObject, thread)->copy(thread->variableDestination(variableSlot));
                 thread->release(1);
             }
             destination->object = dico.unretainedPointer();
