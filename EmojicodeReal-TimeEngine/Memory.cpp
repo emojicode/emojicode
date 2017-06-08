@@ -139,6 +139,29 @@ void mark(Object **oPointer) {
     *oPointer = newObject;
 }
 
+inline bool inOldHeap(Value *o) {
+    return otherHeap <= reinterpret_cast<Byte *>(o) && reinterpret_cast<Byte *>(o) < otherHeap + heapSize / 2;
+}
+
+void markValueReference(Value **valuePointer) {
+    if (!inOldHeap(*valuePointer)) {
+        return;
+    }
+    auto b = reinterpret_cast<Byte *>(*valuePointer);
+
+    Byte *byte = otherHeap;
+    while (true) {
+        auto object = reinterpret_cast<Object *>(byte);
+        if (b < byte + object->size) {
+            auto offset = b - byte;
+            mark(&object);
+            *valuePointer = reinterpret_cast<Value *>(reinterpret_cast<Byte *>(object) + offset);
+            return;
+        }
+        byte += object->size;
+    }
+}
+
 void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace) {
     pauseThreads = true;
     if (minSpace > gcThreshold) {

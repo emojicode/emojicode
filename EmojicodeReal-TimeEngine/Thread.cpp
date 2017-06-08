@@ -76,8 +76,15 @@ void Thread::popStack() {
 void Thread::markStack() {
     for (auto frame = futureStack_; frame < stackBottom_; frame = frame->returnFutureStack) {
         unsigned int delta = frame->executionPointer ? frame->executionPointer - frame->function->block.instructions : 0;
-        if (frame->function->objectContext) {
-            mark(&frame->thisContext.object);
+        switch (frame->function->context) {
+            case ContextType::Object:
+                mark(&frame->thisContext.object);
+                break;
+            case ContextType::ValueReference:
+                markValueReference(&frame->thisContext.value);
+                break;
+            default:
+                break;
         }
         for (unsigned int i = 0; i < frame->function->objectVariableRecordsCount; i++) {
             auto record = frame->function->objectVariableRecords[i];

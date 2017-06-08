@@ -54,9 +54,7 @@ void Writer::writeFunction(Function *function) {
         writeInstruction(info.to);
     }
 
-    writeByte(function->compilationMode() == FunctionPAGMode::ObjectMethod ||
-              function->compilationMode() == FunctionPAGMode::ObjectInitializer);
-
+    writeByte(static_cast<unsigned char>(function->contextType()));
     writeUInt16(function->fullSize());
 
 

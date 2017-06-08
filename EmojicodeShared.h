@@ -54,4 +54,10 @@ enum class ObjectVariableType {
     ConditionalSkip = 3
 };
 
+enum class ContextType {
+    None = 0,
+    Object = 1,
+    ValueReference = 2,
+};
+
 #endif /* EmojicodeShared_h */

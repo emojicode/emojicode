@@ -170,6 +170,25 @@ public:
 
     FunctionPAGMode compilationMode() const { return compilationMode_; }
 
+    virtual ContextType contextType() const {
+        switch (compilationMode()) {
+            case FunctionPAGMode::ObjectMethod:
+            case FunctionPAGMode::ObjectInitializer:
+                return ContextType::Object;
+                break;
+            case FunctionPAGMode::ValueTypeMethod:
+            case FunctionPAGMode::ValueTypeInitializer:
+                return ContextType::ValueReference;
+                break;
+            case FunctionPAGMode::ClassMethod:
+            case FunctionPAGMode::Function:
+                return ContextType::None;
+                break;
+            case FunctionPAGMode::BoxingLayer:
+                throw std::logic_error("contextType for BoxingLayer called on Function class");
+        }
+    }
+
     int fullSize() const { return fullSize_; }
     void setFullSize(int c) { fullSize_ = c; }
     void setFullSizeFromArguments() {

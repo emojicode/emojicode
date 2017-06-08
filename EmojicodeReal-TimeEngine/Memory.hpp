@@ -48,6 +48,8 @@ inline void markByObjectVariableRecord(ObjectVariableRecord &record, Value *va, 
     }
 }
 
+void markValueReference(Value **valuePointer);
+
 }
 
 #endif /* Object_hpp */

@@ -45,6 +45,13 @@ public:
         this->arguments = arguments;
     }
 
+    ContextType contextType() const override {
+        if (owningType().type() == TypeContent::Callable) {
+            return ContextType::Object;
+        }
+        return destinationFunction()->contextType();
+    }
+
     const std::vector<Type>& destinationArgumentTypes() const { return destinationArgumentTypes_; }
     const Type& destinationReturnType() const { return destinationReturnType_; }
     /// Returns the function whill will be called. Returns @c nullptr if this is a callable boxing layer.
