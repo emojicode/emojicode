@@ -62,7 +62,7 @@ compilation_tests = [
     "errorInitializer",
     "gcStressTest1",
     "gcStressTest2",
-    # "gcStressTest3",
+    "gcStressTest3",
     "valueTypeCopySelf",
     "valueTypeBoxCopySelf",
     "includer",

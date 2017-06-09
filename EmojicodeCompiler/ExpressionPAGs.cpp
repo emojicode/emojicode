@@ -48,30 +48,44 @@ Type pagListLiteral(const Token &token, const TypeExpectation &expectation, Func
     auto variablePlaceholder = functionPag.writer().writeInstructionPlaceholder();
     auto placeholder = functionPag.writer().writeInstructionsCountPlaceholderCoin();
 
-    auto initCount = functionPag.writer().count();
+    bool hasInitCount = false;
+    InstructionCount initCount = 0;
 
     Type type = Type(CL_LIST, false);
     if (expectation.type() == TypeContent::Class && expectation.eclass() == CL_LIST) {
         auto elementType = Type(TypeContent::GenericVariable, false, 0, expectation.eclass()).resolveOn(expectation);
         while (functionPag.stream().nextTokenIsEverythingBut(E_AUBERGINE)) {
             functionPag.parseTypeSafeExpr(elementType);
+            if (!hasInitCount) {
+                initCount = functionPag.writer().count();
+                hasInitCount = true;
+            }
         }
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, elementType);
         auto &var = scope.setLocalVariable(EmojicodeString(), elementType, true, token.position());
-        var.initialize(initCount);
+        if (hasInitCount) {
+            var.initialize(initCount);
+        }
         variablePlaceholder.write(var.id());
     }
     else {
         CommonTypeFinder ct;
         while (functionPag.stream().nextTokenIsEverythingBut(E_AUBERGINE)) {
             ct.addType(functionPag.parseExpr(TypeExpectation(false, true, false)), functionPag.typeContext());
+            if (!hasInitCount) {
+                initCount = functionPag.writer().count();
+                hasInitCount = true;
+            }
         }
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, ct.getCommonType(token.position()));
         auto varType = Type(TypeContent::GenericVariable, false, 0, CL_LIST).resolveOn(type);
         auto &var = scope.setLocalVariable(EmojicodeString(), varType, true, token.position());
         var.initialize(initCount);
+        if (hasInitCount) {
+            var.initialize(initCount);
+        }
         variablePlaceholder.write(var.id());
     }
 

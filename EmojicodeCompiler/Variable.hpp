@@ -50,7 +50,7 @@ public:
     void initialize(InstructionCount position) {
         if (!initialized()) {
             initialized_ = 1;
-            initializationPosition_ = position;
+            initializationPosition_ = position + 1;
         }
     }
     void uninitialize() { initialized_ = 0; }
