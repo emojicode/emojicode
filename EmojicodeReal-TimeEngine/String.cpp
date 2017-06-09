@@ -93,7 +93,29 @@ Object* stringFromChar(const char *cstring) {
 }
 
 void stringPrintStdoutBrigde(Thread *thread) {
-    printf("%s\n", stringToCString(thread->thisObject()));
+    auto *string = thread->thisObject()->val<String>();
+    for (size_t i = 0; i < string->length; i++) {
+        EmojicodeChar ch = string->characters()[i];
+        if (ch < 0x80) {
+            putc(ch, stdout);
+        }
+        else if (ch < 0x800) {
+            putc((ch>>6) | 0xC0, stdout);
+            putc((ch & 0x3F) | 0x80, stdout);
+        }
+        else if (ch < 0x10000) {
+            putc(((ch>>12) | 0xE0), stdout);
+            putc(((ch>>6) & 0x3F) | 0x80, stdout);
+            putc((ch & 0x3F) | 0x80, stdout);
+        }
+        else {
+            putc((ch>>18) | 0xF0, stdout);
+            putc(((ch>>12) & 0x3F) | 0x80, stdout);
+            putc(((ch>>6) & 0x3F) | 0x80, stdout);
+            putc((ch & 0x3F) | 0x80, stdout);
+        }
+    }
+    putc('\n', stdout);
     thread->returnFromFunction();
 }
 
