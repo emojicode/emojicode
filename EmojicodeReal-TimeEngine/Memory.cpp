@@ -37,11 +37,21 @@ std::condition_variable pauseThreadsCondition;
 std::condition_variable pausingThreadsCountCondition;
 
 inline Object* allocateObject(size_t size, Object **keep = nullptr, Thread *thread = nullptr) {
-    pauseForGC();
+    RetainedObjectPointer rop = nullptr;
+    if (pauseThreads) {
+        if (keep) {
+            rop = thread->retain(*keep);
+        }
+        performPauseForGC();
+        if (keep) {
+            *keep = rop.unretainedPointer();
+            thread->release(1);
+        }
+    }
+
     size_t index;
     if ((index = memoryUse.fetch_add(size)) + size > gcThreshold) {
         memoryUse -= size;
-        RetainedObjectPointer rop = nullptr;
         if (keep) {
             rop = thread->retain(*keep);
         }
@@ -209,7 +219,7 @@ void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace) {
     }
 
 #ifdef DEBUG
-    std::memset(otherHeap, 0, heapSize / 2);
+    std::memset(otherHeap, 0xFF, heapSize / 2);
 #endif
 
     if (zeroingNeeded) {
