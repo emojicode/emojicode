@@ -32,20 +32,6 @@ struct List {
 /// copied.
 Box* listAppendDestination(RetainedObjectPointer listObject, Thread *thread);
 
-/**
- * Creates a list by copying all references from @c cpdList.
- */
-Object* listFromList(List *cpdList);
-
-/**
- * Shuffles the list in place by using the Fisher Yates alogrithm.
- */
-void listShuffleInPlace(List *list);
-
-/** Releases list @c l */
-void listRelease(void *l);
-
-/** List marker for the GC */
 void listMark(Object *self);
 
 void initListEmptyBridge(Thread *thread);
