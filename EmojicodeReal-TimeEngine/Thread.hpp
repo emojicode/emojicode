@@ -122,8 +122,8 @@ private:
     ~Thread();
 
     void markStack();
-    void markRetainList() const {
-        for (Object **pointer = retainPointer - 1; pointer >= retainList; pointer--) mark(pointer);
+    void markRetainList() {
+        for (Object **pointer = retainList; pointer < retainPointer; pointer++) mark(pointer);
     }
 
     StackFrame *stackLimit_;
