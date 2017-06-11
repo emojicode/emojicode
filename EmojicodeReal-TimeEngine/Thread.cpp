@@ -16,12 +16,12 @@
 using namespace Emojicode;
 
 Thread::Thread() {
-#define stackSize ((sizeof(StackFrame) + 10 * sizeof(Value)) * 10000)
+#define stackSize (sizeof(StackFrame) * 1000000)
     stackLimit_ = static_cast<StackFrame *>(calloc(stackSize, 1));
     if (!stackLimit_) {
         error("Could not allocate stack!");
     }
-    stackBottom_ = reinterpret_cast<StackFrame *>(reinterpret_cast<Byte *>(stackLimit_) + stackSize - 1);
+    stackBottom_ = reinterpret_cast<StackFrame *>(reinterpret_cast<Byte *>(stackLimit_) + stackSize);
     this->futureStack_ = this->stack_ = this->stackBottom_;
 }
 
@@ -31,7 +31,8 @@ Thread::~Thread() {
 
 StackFrame* Thread::reserveFrame(Value self, int size, Function *function, Value *destination,
                             EmojicodeInstruction *executionPointer) {
-    auto *sf = (StackFrame *)((Byte *)futureStack_ - (sizeof(StackFrame) + sizeof(Value) * size));
+    size_t fullSize = sizeof(StackFrame) + sizeof(Value) * size;
+    auto *sf = (StackFrame *)((Byte *)futureStack_ - (fullSize + (fullSize % alignof(StackFrame))));
     if (sf < stackLimit_) {
         error("Your program triggerd a stack overflow!");
     }

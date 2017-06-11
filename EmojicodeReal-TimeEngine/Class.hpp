@@ -34,6 +34,8 @@ struct Class {
     /** Marker FunctionPointer for GC */
     void (*mark)(Object *self);
 
+    /// The exact size of the object when allocated.
+    /// Equivalent to @c alignSize(valueSize + size for instance variables + sizeof(Object))
     size_t size;
     size_t valueSize;
 };

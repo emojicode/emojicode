@@ -10,6 +10,7 @@
 #include "Class.hpp"
 #include "Engine.hpp"
 #include "String.h"
+#include "Memory.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <dlfcn.h>
@@ -238,7 +239,7 @@ void readPackage(FILE *in) {
         klass->mark = mpfc(name);
         size_t size = sfch(klass, name);
         klass->valueSize = klass->superclass && klass->superclass->valueSize ? klass->superclass->valueSize : size;
-        klass->size = klass->valueSize + instanceVariableCount * sizeof(Value);
+        klass->size = alignSize(sizeof(Object) + klass->valueSize + instanceVariableCount * sizeof(Value));
 
         klass->instanceVariableRecordsCount = readUInt16(in);
         klass->instanceVariableRecords = new FunctionObjectVariableRecord[klass->instanceVariableRecordsCount];

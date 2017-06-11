@@ -91,9 +91,8 @@ Object* resizeObject(Object *ptr, size_t newSize, Thread *thread) {
 }
 
 Object* newObject(Class *klass) {
-    size_t fullSize = sizeof(Object) + klass->size;
-    Object *object = allocateObject(fullSize);
-    object->size = fullSize;
+    Object *object = allocateObject(klass->size);
+    object->size = klass->size;
     object->klass = klass;
     return object;
 }
@@ -108,7 +107,7 @@ size_t sizeCalculationWithOverflowProtection(size_t items, size_t itemSize) {
 }
 
 Object* newArray(size_t size) {
-    size_t fullSize = sizeof(Object) + size;
+    size_t fullSize = alignSize(sizeof(Object) + size);
     Object *object = allocateObject(fullSize);
     object->size = fullSize;
     object->klass = CL_ARRAY;
@@ -116,7 +115,7 @@ Object* newArray(size_t size) {
 }
 
 Object* resizeArray(Object *array, size_t size, Thread *thread) {
-    size_t fullSize = sizeof(Object) + size;
+    size_t fullSize = alignSize(sizeof(Object) + size);
     Object *object = resizeObject(array, fullSize, thread);
     object->size = fullSize;
     return object;

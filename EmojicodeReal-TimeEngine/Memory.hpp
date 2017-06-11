@@ -14,8 +14,12 @@
 namespace Emojicode {
 
 #ifndef heapSize
-#define heapSize (512 * 1000 * 1000)  // 512 MB
+#define heapSize (512 * 1024 * 1024)  // 512 MB
 #endif
+
+inline size_t alignSize(size_t size) {
+    return size + (size % alignof(Object));
+}
 
 /// This method is called during the initialization of the Engine.
 /// @warning Obviously, you should not call it anywhere else!
