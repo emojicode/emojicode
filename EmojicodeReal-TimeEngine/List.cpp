@@ -190,10 +190,8 @@ void listRemoveAllBridge(Thread *thread) {
 
 void listSetBridge(Thread *thread) {
     EmojicodeInteger index = thread->variable(0).raw;
-    auto *list = thread->thisObject()->val<List>();
-
     listEnsureCapacity(thread, index + 1);
-    list = thread->thisObject()->val<List>();
+    auto *list = thread->thisObject()->val<List>();
 
     if (list->count <= index) {
         list->count = index + 1;
