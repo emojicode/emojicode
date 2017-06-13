@@ -123,7 +123,9 @@ private:
 
     void markStack();
     void markRetainList() {
-        for (Object **pointer = retainList; pointer < retainPointer; pointer++) mark(pointer);
+        for (Object **pointer = retainList; pointer < retainPointer; pointer++) {
+            mark(pointer);
+        }
     }
 
     StackFrame *stackLimit_;
@@ -135,7 +137,7 @@ private:
     Thread *threadAfter_;
 
     Object *retainList[100];
-    Object **retainPointer = retainList;
+    Object **retainPointer = &retainList[0];
 };
 
 }
