@@ -39,11 +39,11 @@ std::condition_variable pausingThreadsCountCondition;
 inline Object* allocateObject(size_t size, Object **keep = nullptr, Thread *thread = nullptr) {
     RetainedObjectPointer rop = nullptr;
     if (pauseThreads) {
-        if (keep) {
+        if (keep != nullptr) {
             rop = thread->retain(*keep);
         }
         performPauseForGC();
-        if (keep) {
+        if (keep != nullptr) {
             *keep = rop.unretainedPointer();
             thread->release(1);
         }
@@ -52,7 +52,7 @@ inline Object* allocateObject(size_t size, Object **keep = nullptr, Thread *thre
     size_t index;
     if ((index = memoryUse.fetch_add(size)) + size > gcThreshold) {
         memoryUse -= size;
-        if (keep) {
+        if (keep != nullptr) {
             rop = thread->retain(*keep);
         }
         std::unique_lock<std::mutex> lock(garbageCollectionMutex, std::try_to_lock);
@@ -63,7 +63,7 @@ inline Object* allocateObject(size_t size, Object **keep = nullptr, Thread *thre
             while (!pauseThreads);
             performPauseForGC();
         }
-        if (keep) {
+        if (keep != nullptr) {
             *keep = rop.unretainedPointer();
             thread->release(1);
         }
@@ -77,13 +77,13 @@ inline bool inNewHeap(Object *o) {
 }
 
 Object* resizeObject(Object *ptr, size_t newSize, Thread *thread) {
-    auto expectation = reinterpret_cast<size_t>(ptr) - reinterpret_cast<size_t>(currentHeap);
-    size_t index = memoryUse;
-    if (index + newSize <= gcThreshold && memoryUse.compare_exchange_weak(expectation, index + newSize)) {
-        // memoryUse equaled the expectation, therefore no allocation has happend in the meantime, index still
-        // represented the value of memory use and it was leigtimate to replace memoryUse’s value with index + newSize
-        return ptr;
-    }
+//    auto expectation = reinterpret_cast<size_t>(ptr) - reinterpret_cast<size_t>(currentHeap);
+//    size_t index = memoryUse;
+//    if (index + newSize <= gcThreshold && memoryUse.compare_exchange_weak(expectation, index + newSize)) {
+//        // memoryUse equaled the expectation, therefore no allocation has happend in the meantime, index still
+//        // represented the value of memory use and it was leigtimate to replace memoryUse’s value with index + newSize
+//        return ptr;
+//    }
 
     Object *block = allocateObject(newSize, &ptr, thread);
     std::memcpy(block, ptr, ptr->size);

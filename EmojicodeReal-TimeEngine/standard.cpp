@@ -113,9 +113,9 @@ static void systemSystem(Thread *thread) {
 //MARK: Threads
 
 static void threadJoin(Thread *thread) {
+    auto cthread = *thread->thisObject()->val<std::thread*>();
     allowGC();
-    auto cthread = thread->thisObject()->val<std::thread>();
-    cthread->join();  // TODO: GC?!
+    cthread->join();
     disallowGCAndPauseIfNeeded();
     thread->returnFromFunction();
 }
@@ -134,7 +134,8 @@ void threadStart(Thread *thread, RetainedObjectPointer callable) {
 static void initThread(Thread *thread) {
     auto newThread = ThreadsManager::allocateThread();
     auto callable = thread->variable(0).object;
-    *thread->thisObject()->val<std::thread>() = std::thread(threadStart, newThread, newThread->retain(callable));
+    // TODO: leak below
+    *thread->thisObject()->val<std::thread*>() = new std::thread(threadStart, newThread, newThread->retain(callable));
     thread->returnFromFunction(thread->thisContext());
 }
 
@@ -581,7 +582,7 @@ uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
         case 0x1F347:
             return sizeof(Closure);
         case 0x1f488:  //💈
-            return sizeof(std::thread);
+            return sizeof(std::thread*);
         case 0x1f510:  //🔐
             return sizeof(pthread_mutex_t);
         case 0x1f3b0:

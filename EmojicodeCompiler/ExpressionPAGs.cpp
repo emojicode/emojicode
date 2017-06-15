@@ -65,7 +65,7 @@ Type pagListLiteral(const Token &token, const TypeExpectation &expectation, Func
         type.setGenericArgument(0, elementType);
         auto &var = scope.setLocalVariable(EmojicodeString(), elementType, true, token.position());
         if (hasInitCount) {
-            var.initialize(initCount);
+            var.initialize(initCount - 1);
         }
         variablePlaceholder.write(var.id());
     }
@@ -84,7 +84,7 @@ Type pagListLiteral(const Token &token, const TypeExpectation &expectation, Func
         auto &var = scope.setLocalVariable(EmojicodeString(), varType, true, token.position());
         var.initialize(initCount);
         if (hasInitCount) {
-            var.initialize(initCount);
+            var.initialize(initCount - 1);
         }
         variablePlaceholder.write(var.id());
     }
@@ -115,7 +115,7 @@ Type pagDictionaryLiteral(const Token &token, const TypeExpectation &expectation
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, elementType);
         auto &var = scope.setLocalVariable(EmojicodeString(), elementType, true, token.position());
-        var.initialize(initCount);
+        var.initialize(initCount - 1);
         variablePlaceholder.write(var.id());
     }
     else {
@@ -127,7 +127,7 @@ Type pagDictionaryLiteral(const Token &token, const TypeExpectation &expectation
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, ct.getCommonType(token.position()));
         auto &var = scope.setLocalVariable(EmojicodeString(), type.genericArguments()[0], true, token.position());
-        var.initialize(initCount);
+        var.initialize(initCount - 1);
         variablePlaceholder.write(var.id());
     }
 

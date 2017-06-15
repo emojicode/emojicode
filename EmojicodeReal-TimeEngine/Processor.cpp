@@ -158,8 +158,8 @@ void produce(Thread *thread, Value *destination) {
             return;
         }
         case INS_SIMPLE_OPTIONAL_PRODUCE:
-            destination->raw = T_OPTIONAL_VALUE;
             produce(thread, destination + 1);
+            destination->raw = T_OPTIONAL_VALUE;
             return;
         case INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE: {
             Box box;
@@ -181,10 +181,12 @@ void produce(Thread *thread, Value *destination) {
             }
             return;
         }
-        case INS_BOX_PRODUCE:
-            destination->raw = thread->consumeInstruction();
+        case INS_BOX_PRODUCE: {
+            auto id = thread->consumeInstruction();
             produce(thread, destination + 1);
+            destination->raw = id;
             return;
+        }
         case INS_UNBOX: {
             Box box;
             EmojicodeInstruction size = thread->consumeInstruction();
