@@ -4,6 +4,9 @@ project(Emojicode)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_STANDARD 11)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -DDEBUG=1 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
+
 if(heapSize)
   add_definitions(-DheapSize=${heapSize})
 endif()
@@ -14,12 +17,12 @@ endif()
 
 file(GLOB EMOJICODE_SOURCES "EmojicodeReal-TimeEngine/*")
 add_executable(emojicode ${EMOJICODE_SOURCES} utf8.c utf8.h)
-target_compile_options(emojicode PUBLIC -Ofast -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
+target_compile_options(emojicode PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 target_link_libraries(emojicode dl pthread)
 
 file(GLOB EMOJICODEC_SOURCES "EmojicodeCompiler/*")
 add_executable(emojicodec ${EMOJICODEC_SOURCES} utf8.c utf8.h)
-target_compile_options(emojicodec PUBLIC -Ofast -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
+target_compile_options(emojicodec PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 
 if(APPLE)
   set(CMAKE_SHARED_MODULE_CREATE_CXX_FLAGS "${CMAKE_SHARED_MODULE_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
