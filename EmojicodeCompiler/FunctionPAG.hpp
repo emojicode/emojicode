@@ -36,7 +36,8 @@ struct FlowControlReturn {
 class FunctionPAG final : AbstractParser, private FunctionPAGInterface {
 public:
     FunctionPAG(Function &function, Type contextType, FunctionWriter &writer, CallableScoper &scoper);
-    /// Parses the function and compiles it to bytecode. The bytecode is appended to the writer. 
+
+    /// Parses the function and compiles it to bytecode. The bytecode is appended to the writer.
     void compile();
 
     /** Whether self was used in the callable body. */
@@ -90,7 +91,10 @@ private:
     Type parseTypeSafeExpr(Type type, std::vector<CommonTypeFinder>* = nullptr) override;
 
     std::pair<Type, TypeAvailability> parseTypeAsValue(const SourcePosition &p,  const TypeExpectation &expectation) override;
-    
+
+    Scope& setArgumentVariables();
+    void compileCode(Scope &methodScope);
+
     /// Parses an expression identifier
     Type parseExprIdentifier(const Token &token, const TypeExpectation &expectation);
     

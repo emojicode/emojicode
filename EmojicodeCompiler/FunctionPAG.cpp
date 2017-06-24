@@ -228,7 +228,8 @@ void FunctionPAG::box(const TypeExpectation &expectation, Type &rtype, WriteLoca
             arguments.reserve(expectation.genericArguments().size() - 1);
             for (auto argumentType = expectation.genericArguments().begin() + 1;
                  argumentType != expectation.genericArguments().end(); argumentType++) {
-                arguments.emplace_back(EmojicodeString(), *argumentType);
+                arguments.emplace_back(EmojicodeString(expectation.genericArguments().end() - argumentType),
+                                       *argumentType);
             }
             auto destinationArgTypes = std::vector<Type>(rtype.genericArguments().begin() + 1,
                                                          rtype.genericArguments().end());
@@ -1224,88 +1225,101 @@ std::pair<Type, TypeAvailability> FunctionPAG::parseTypeAsValue(const SourcePosi
     return std::pair<Type, TypeAvailability>(ot, TypeAvailability::StaticAndUnavailable);
 }
 
-void FunctionPAG::compile() {
-    if (function_.compilationMode() == FunctionPAGMode::BoxingLayer) {
-        generateBoxingLayer(static_cast<BoxingLayer &>(function_));
-        return;
+Scope& FunctionPAG::setArgumentVariables() {
+    Scope &methodScope = scoper_.pushScope();
+    for (auto variable : function_.arguments) {
+        auto &var = methodScope.setLocalVariable(variable.variableName, variable.type, true,
+                                                 function_.position());
+        var.initializeAbsolutely();
     }
 
+    scoper_.postArgumentsHook();
+    return methodScope;
+}
+
+void FunctionPAG::compileCode(Scope &methodScope) {
     if (hasInstanceScope()) {
         scoper_.instanceScope()->setVariableInitialization(!isFullyInitializedCheckRequired());
     }
-    try {
-        Scope &methodScope = scoper_.pushScope();
-        for (auto variable : function_.arguments) {
-            auto &var = methodScope.setLocalVariable(variable.variableName, variable.type, true,
-                                                     function_.position());
-            var.initialize(writer_.count());
-        }
 
-        scoper_.postArgumentsHook();
-
-        if (isFullyInitializedCheckRequired()) {
-            auto initializer = static_cast<Initializer &>(function_);
-            for (auto &var : initializer.argumentsToVariables()) {
-                if (!scoper_.instanceScope()->hasLocalVariable(var)) {
-                    throw CompilerError(initializer.position(),
-                                        "🍼 was applied to \"%s\" but no matching instance variable was found.",
-                                        var.utf8().c_str());
-                }
-                auto &instanceVariable = scoper_.instanceScope()->getLocalVariable(var);
-                auto &argumentVariable = methodScope.getLocalVariable(var);
-                if (!argumentVariable.type().compatibleTo(instanceVariable.type(), typeContext_)) {
-                    throw CompilerError(initializer.position(),
-                                        "🍼 was applied to \"%s\" but instance variable has incompatible type.",
-                                        var.utf8().c_str());
-                }
-                instanceVariable.initialize(writer_.count());
-                produceToVariable(ResolvedVariable(instanceVariable, true));
-                box(TypeExpectation(instanceVariable.type()), argumentVariable.type());
-                copyVariableContent(ResolvedVariable(argumentVariable, false));
+    if (isFullyInitializedCheckRequired()) {
+        auto initializer = static_cast<Initializer &>(function_);
+        for (auto &var : initializer.argumentsToVariables()) {
+            if (!scoper_.instanceScope()->hasLocalVariable(var)) {
+                throw CompilerError(initializer.position(),
+                                    "🍼 was applied to \"%s\" but no matching instance variable was found.",
+                                    var.utf8().c_str());
             }
-        }
-
-        while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-            parseStatement();
-
-            if (returned && !stream_.nextTokenIs(E_WATERMELON)) {
-                compilerWarning(stream_.consumeToken().position(), "Dead code.");
-                break;
+            auto &instanceVariable = scoper_.instanceScope()->getLocalVariable(var);
+            auto &argumentVariable = methodScope.getLocalVariable(var);
+            if (!argumentVariable.type().compatibleTo(instanceVariable.type(), typeContext_)) {
+                throw CompilerError(initializer.position(),
+                                    "🍼 was applied to \"%s\" but instance variable has incompatible type.",
+                                    var.utf8().c_str());
             }
+            instanceVariable.initialize(writer_.count());
+            produceToVariable(ResolvedVariable(instanceVariable, true));
+            box(TypeExpectation(instanceVariable.type()), argumentVariable.type());
+            copyVariableContent(ResolvedVariable(argumentVariable, false));
         }
+    }
 
-        if (function_.compilationMode() == FunctionPAGMode::ObjectInitializer) {
-            writer_.writeInstruction(INS_RETURN);
-            box(TypeExpectation(function_.returnType), typeContext_.calleeType());
-            writer_.writeInstruction(INS_GET_THIS);
+    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
+        parseStatement();
+
+        if (returned && !stream_.nextTokenIs(E_WATERMELON)) {
+            compilerWarning(stream_.consumeToken().position(), "Dead code.");
+            break;
         }
-        else if (function_.compilationMode() == FunctionPAGMode::ValueTypeInitializer) {
+    }
+
+    if (function_.compilationMode() == FunctionPAGMode::ObjectInitializer) {
+        writer_.writeInstruction(INS_RETURN);
+        box(TypeExpectation(function_.returnType), typeContext_.calleeType());
+        writer_.writeInstruction(INS_GET_THIS);
+    }
+    else if (function_.compilationMode() == FunctionPAGMode::ValueTypeInitializer) {
+        writer_.writeInstruction(INS_RETURN_WITHOUT_VALUE);
+    }
+
+    if (isFullyInitializedCheckRequired()) {
+        auto initializer = static_cast<Initializer &>(function_);
+        scoper_.instanceScope()->initializerUnintializedVariablesCheck(initializer.position(),
+                                                                       "Instance variable \"%s\" must be initialized.");
+    }
+    else if (!returned) {
+        if (function_.returnType.type() != TypeContent::Nothingness) {
+            throw CompilerError(function_.position(), "An explicit return is missing.");
+        }
+        else {
             writer_.writeInstruction(INS_RETURN_WITHOUT_VALUE);
         }
+    }
 
-        if (isFullyInitializedCheckRequired()) {
-            auto initializer = static_cast<Initializer &>(function_);
-            scoper_.instanceScope()->initializerUnintializedVariablesCheck(initializer.position(),
-                                                                          "Instance variable \"%s\" must be initialized.");
+    if (isSuperconstructorRequired()) {
+        auto initializer = static_cast<Initializer &>(function_);
+        if (!calledSuper && typeContext_.calleeType().eclass()->superclass() != nullptr) {
+            throw CompilerError(initializer.position(), "Missing call to superinitializer in initializer %s.",
+                                initializer.name().utf8().c_str());
         }
-        else if (!returned) {
-            if (function_.returnType.type() != TypeContent::Nothingness) {
-                throw CompilerError(function_.position(), "An explicit return is missing.");
-            }
-            else {
-                writer_.writeInstruction(INS_RETURN_WITHOUT_VALUE);
-            }
+    }
+}
+
+void FunctionPAG::compile() {
+    try {
+        Scope &methodScope = setArgumentVariables();
+
+        if (function_.compilationMode() == FunctionPAGMode::BoxingLayer) {
+            generateBoxingLayer(static_cast<BoxingLayer &>(function_));
+        }
+        else if (function_.isNative()) {
+            writer_.writeInstruction(INS_TRANSFER_CONTROL_TO_NATIVE);
+        }
+        else {
+            compileCode(methodScope);
         }
 
         scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
-
-        if (isSuperconstructorRequired()) {
-            auto initializer = static_cast<Initializer &>(function_);
-            if (!calledSuper && typeContext_.calleeType().eclass()->superclass() != nullptr) {
-                throw CompilerError(initializer.position(), "Missing call to superinitializer in initializer %s.",
-                                    initializer.name().utf8().c_str());
-            }
-        }
     }
     catch (CompilerError &ce) {
         printError(ce);
@@ -1348,7 +1362,6 @@ void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
         variableIndex += layer.arguments[i].type.size();
         copyVariableContent(ResolvedVariable(variable, false));
     }
-    layer.setFullSizeFromArguments();
     if (layer.destinationReturnType().type() == TypeContent::Nothingness) {
         writer_.writeInstruction(INS_RETURN_WITHOUT_VALUE);
     }

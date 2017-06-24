@@ -12,7 +12,6 @@
 #include "EmojicodeCompiler.hpp"
 #include "TypeContext.hpp"
 #include "VTIProvider.hpp"
-#include "../EmojicodeInstructions.h"
 #include <map>
 #include <stdexcept>
 #include <algorithm>
@@ -127,14 +126,9 @@ void Function::markUsed(bool addToCompilationQueue) {
     if (vtiProvider_ != nullptr) {
         vtiProvider_->used();
     }
-    if (!isNative()) {
-        if (addToCompilationQueue) {
-            Function::compilationQueue.push(this);
-        }
-    }
-    else {
-        writer_.writeInstruction(INS_TRANSFER_CONTROL_TO_NATIVE);
-        setFullSizeFromArguments();
+
+    if (addToCompilationQueue) {
+        Function::compilationQueue.push(this);
     }
 
     for (Function *function : overriders_) {

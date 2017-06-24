@@ -53,6 +53,12 @@ public:
             initializationPosition_ = position + 1;
         }
     }
+    void initializeAbsolutely() {
+        if (!initialized()) {
+            initialized_ = 1;
+            initializationPosition_ = 0;
+        }
+    }
     void uninitialize() { initialized_ = 0; }
     void popInitializationLevel() { if (initialized()) initialized_--; }
     void pushInitializationLevel() { if (initialized()) initialized_++; }

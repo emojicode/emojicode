@@ -191,11 +191,6 @@ public:
 
     int fullSize() const { return fullSize_; }
     void setFullSize(int c) { fullSize_ = c; }
-    void setFullSizeFromArguments() {
-        fullSize_ = std::accumulate(arguments.begin(), arguments.end(), 0, [](int a, Argument b) {
-            return a + b.type.size();
-        });
-    }
 
     FunctionWriter writer_;
     std::vector<FunctionObjectVariableInformation>& objectVariableInformation() { return objectVariableInformation_; }
