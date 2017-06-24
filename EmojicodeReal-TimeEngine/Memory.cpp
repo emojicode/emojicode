@@ -72,7 +72,7 @@ inline Object* allocateObject(size_t size, Object **keep = nullptr, Thread *thre
     return reinterpret_cast<Object *>(currentHeap + index);
 }
 
-inline bool inNewHeap(Object *o) {
+inline bool inCurrentHeap(Object *o) {
     return currentHeap <= reinterpret_cast<Byte *>(o) && reinterpret_cast<Byte *>(o) < currentHeap + heapSize / 2;
 }
 
@@ -131,10 +131,7 @@ void allocateHeap() {
 
 void mark(Object **oPointer) {
     Object *oldObject = *oPointer;
-#ifdef DEBUG
-    if (inNewHeap(oldObject)) throw;
-#endif
-    if (inNewHeap(oldObject->newLocation)) {
+    if (inCurrentHeap(oldObject->newLocation)) {
         *oPointer = oldObject->newLocation;
         return;
     }
