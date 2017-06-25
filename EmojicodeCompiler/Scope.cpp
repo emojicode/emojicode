@@ -8,8 +8,8 @@
 
 #include "Scope.hpp"
 #include "CompilerError.hpp"
-#include "TypeDefinition.hpp"
 #include "Scoper.hpp"
+#include "TypeDefinition.hpp"
 
 void Scope::setVariableInitialization(bool initd) {
     for (auto &it : map_) {

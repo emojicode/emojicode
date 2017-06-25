@@ -7,13 +7,13 @@
 //
 
 #include "Package.hpp"
-#include "PackageParser.hpp"
 #include "CompilerError.hpp"
+#include "PackageParser.hpp"
+#include <algorithm>
 #include <cstring>
 #include <list>
-#include <string>
 #include <map>
-#include <algorithm>
+#include <string>
 
 std::vector<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;

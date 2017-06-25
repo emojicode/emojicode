@@ -6,8 +6,8 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <cstdarg>
 #include "CompilerError.hpp"
+#include <cstdarg>
 
 CompilerError::CompilerError(SourcePosition p, const char *err, ...) : position_(p) {
     va_list list;

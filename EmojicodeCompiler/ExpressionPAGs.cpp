@@ -7,15 +7,15 @@
 //
 
 #include "ExpressionPAGs.hpp"
-#include "FunctionPAGInterface.hpp"
-#include "TypeExpectation.hpp"
-#include "Type.hpp"
 #include "../EmojicodeInstructions.h"
-#include "CompilerError.hpp"
 #include "Class.hpp"
-#include "ValueType.hpp"
-#include "Protocol.hpp"
+#include "CompilerError.hpp"
 #include "Enum.hpp"
+#include "FunctionPAGInterface.hpp"
+#include "Protocol.hpp"
+#include "Type.hpp"
+#include "TypeExpectation.hpp"
+#include "ValueType.hpp"
 #include <cassert>
 
 Type pagConcatenateLiteral(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag) {

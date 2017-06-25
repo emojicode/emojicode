@@ -8,18 +8,18 @@
 
 #include "PackageReporter.hpp"
 #include "../utf8.h"
-#include "Function.hpp"
 #include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Enum.hpp"
+#include "Function.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
-#include "ValueType.hpp"
 #include "TypeDefinitionFunctional.hpp"
+#include "ValueType.hpp"
 #include <cstring>
-#include <vector>
 #include <list>
 #include <map>
+#include <vector>
 
 enum class ReturnKind {
     Return,

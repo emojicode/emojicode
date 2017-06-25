@@ -7,19 +7,19 @@
 //
 
 #include "Writer.hpp"
-#include "CodeGenerator.hpp"
+#include "../utf8.h"
 #include "Class.hpp"
-#include "EmojicodeCompiler.hpp"
+#include "CodeGenerator.hpp"
 #include "CompilerError.hpp"
+#include "EmojicodeCompiler.hpp"
+#include "Function.hpp"
 #include "PackageReporter.hpp"
 #include "ValueType.hpp"
-#include "Function.hpp"
-#include "../utf8.h"
-#include <libgen.h>
-#include <getopt.h>
-#include <unistd.h>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
+#include <getopt.h>
+#include <libgen.h>
+#include <unistd.h>
 #include <vector>
 
 std::string EmojicodeString::utf8() const {

@@ -10,9 +10,9 @@
 #include "../utf8.h"
 #include "CompilerError.hpp"
 #include "EmojiTokenization.hpp"
-#include <memory>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <memory>
 #include <sstream>
 
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)

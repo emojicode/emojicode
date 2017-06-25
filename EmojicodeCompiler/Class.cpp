@@ -7,15 +7,15 @@
 //
 
 #include "EmojicodeCompiler.hpp"
-#include "CompilerError.hpp"
 #include "Class.hpp"
+#include "CompilerError.hpp"
 #include "Function.hpp"
 #include "Lexer.hpp"
 #include "TypeContext.hpp"
 #include <algorithm>
+#include <map>
 #include <utility>
 #include <vector>
-#include <map>
 
 std::vector<Class *> Class::classes_;
 

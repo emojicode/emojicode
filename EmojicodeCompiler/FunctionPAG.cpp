@@ -7,23 +7,23 @@
 //
 
 #include "FunctionPAG.hpp"
-#include "ExpressionPAGs.hpp"
-#include "Type.hpp"
-#include "Class.hpp"
-#include "Enum.hpp"
-#include "Protocol.hpp"
-#include "Function.hpp"
-#include "BoxingLayer.hpp"
-#include "ValueType.hpp"
-#include "CommonTypeFinder.hpp"
-#include "VariableNotFoundError.hpp"
-#include "StringPool.hpp"
 #include "../EmojicodeInstructions.h"
+#include "BoxingLayer.hpp"
 #include "CapturingCallableScoper.hpp"
+#include "Class.hpp"
+#include "CommonTypeFinder.hpp"
+#include "Enum.hpp"
+#include "ExpressionPAGs.hpp"
+#include "Function.hpp"
+#include "Protocol.hpp"
 #include "RecompilationPoint.hpp"
-#include <cstdlib>
-#include <cassert>
+#include "StringPool.hpp"
+#include "Type.hpp"
+#include "ValueType.hpp"
+#include "VariableNotFoundError.hpp"
 #include <algorithm>
+#include <cassert>
+#include <cstdlib>
 
 Type FunctionPAG::parseTypeSafeExpr(Type type, std::vector<CommonTypeFinder> *ctargs) {
     auto token = stream_.consumeToken();

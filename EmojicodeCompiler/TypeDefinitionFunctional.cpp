@@ -7,13 +7,13 @@
 //
 
 #include "TypeDefinitionFunctional.hpp"
+#include "BoxingLayer.hpp"
 #include "CompilerError.hpp"
+#include "Function.hpp"
+#include "Protocol.hpp"
 #include "Token.hpp"
 #include "Type.hpp"
-#include "Function.hpp"
 #include "TypeContext.hpp"
-#include "Protocol.hpp"
-#include "BoxingLayer.hpp"
 #include <algorithm>
 
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, const Type &constraint) {

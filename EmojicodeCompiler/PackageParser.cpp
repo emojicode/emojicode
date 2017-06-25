@@ -7,13 +7,13 @@
 //
 
 #include "PackageParser.hpp"
+#include "../utf8.h"
 #include "Class.hpp"
-#include "Function.hpp"
 #include "Enum.hpp"
-#include "ValueType.hpp"
+#include "Function.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
-#include "../utf8.h"
+#include "ValueType.hpp"
 #include <cstring>
 #include <experimental/optional>
 

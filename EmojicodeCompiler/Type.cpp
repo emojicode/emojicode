@@ -7,17 +7,17 @@
 //
 
 #include "Type.hpp"
-#include "Class.hpp"
-#include "Function.hpp"
 #include "../utf8.h"
+#include "Class.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Enum.hpp"
+#include "Function.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 #include "ValueType.hpp"
-#include <vector>
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 Class *CL_STRING;
 Class *CL_LIST;

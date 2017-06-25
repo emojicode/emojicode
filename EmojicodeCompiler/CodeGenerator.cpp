@@ -7,17 +7,17 @@
 //
 
 #include "CodeGenerator.hpp"
-#include <cstring>
-#include <vector>
-#include "FunctionPAG.hpp"
-#include "Protocol.hpp"
 #include "CallableScoper.hpp"
 #include "Class.hpp"
-#include "EmojicodeCompiler.hpp"
-#include "StringPool.hpp"
-#include "ValueType.hpp"
 #include "DiscardingFunctionWriter.hpp"
+#include "EmojicodeCompiler.hpp"
+#include "FunctionPAG.hpp"
+#include "Protocol.hpp"
+#include "StringPool.hpp"
 #include "TypeDefinitionFunctional.hpp"
+#include "ValueType.hpp"
+#include <cstring>
+#include <vector>
 
 template <typename T>
 int writeUsed(const std::vector<T *> &functions, Writer &writer) {

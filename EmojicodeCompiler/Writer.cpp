@@ -7,12 +7,12 @@
 //
 
 #include "Writer.hpp"
-#include <iostream>
-#include <fstream>
 #include "CompilerError.hpp"
 #include "Function.hpp"
-#include "FunctionWriter.hpp"
 #include "FunctionPAGMode.hpp"
+#include "FunctionWriter.hpp"
+#include <fstream>
+#include <iostream>
 
 void Writer::writeUInt16(uint16_t value) {
     data_.push_back(value);
