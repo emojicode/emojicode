@@ -758,7 +758,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -767,7 +766,7 @@
 		E4E404101A5B2E4400034386 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
+				COPY_PHASE_STRIP = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

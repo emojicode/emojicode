@@ -33,8 +33,8 @@ struct JSONStackFrame {
 
     EmojicodeInteger integer;
     int numberDigitsFraction;
-    RetainedObjectPointer object = nullptr;
-    RetainedObjectPointer secondaryObject = nullptr;
+    RetainedObjectPointer object = RetainedObjectPointer(nullptr);
+    RetainedObjectPointer secondaryObject = RetainedObjectPointer(nullptr);
 };
 
 #define errorExit() destination->makeNothingness(); return;

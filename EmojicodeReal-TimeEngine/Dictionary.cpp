@@ -183,7 +183,7 @@ Box* dictionaryPutVal(RetainedObjectPointer dictionaryObject, RetainedObjectPoin
     auto **buckets = dictionary->buckets->val<Object *>();
     size_t n = dictionary->bucketsCounter, i = (hash & (n - 1));
 
-    RetainedObjectPointer destination = nullptr;
+    RetainedObjectPointer destination(nullptr);
 
     Object *po = buckets[i];
     if (po != nullptr) {

@@ -37,7 +37,7 @@ std::condition_variable pauseThreadsCondition;
 std::condition_variable pausingThreadsCountCondition;
 
 inline Object* allocateObject(size_t size, Object **keep = nullptr, Thread *thread = nullptr) {
-    RetainedObjectPointer rop = nullptr;
+    RetainedObjectPointer rop(nullptr);
     if (pauseThreads) {
         if (keep != nullptr) {
             rop = thread->retain(*keep);

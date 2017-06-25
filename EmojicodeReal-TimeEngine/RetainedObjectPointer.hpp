@@ -19,7 +19,7 @@ struct Object;
 class RetainedObjectPointer {
 public:
     /// Constructs a RetainedObjectPointer that will always evaluate to @c nullptr.
-    RetainedObjectPointer(std::nullptr_t n) : retainListPointer_(&nullobject) {}
+    explicit RetainedObjectPointer(std::nullptr_t n) : retainListPointer_(&nullobject) {}
     friend Thread;
     /// Accesses the object this pointer points to.
     Object* operator->() const {
