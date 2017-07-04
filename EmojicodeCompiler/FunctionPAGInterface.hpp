@@ -16,6 +16,8 @@
 #include "FunctionPAGMode.hpp"
 #include "CallableScoper.hpp"
 
+namespace EmojicodeCompiler {
+
 class FunctionPAGInterface {
 public:
     virtual FunctionWriter& writer() = 0;
@@ -50,5 +52,7 @@ public:
     virtual CallableScoper& scoper() = 0;
     virtual void popScope() = 0;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* FunctionPAGInterface_hpp */

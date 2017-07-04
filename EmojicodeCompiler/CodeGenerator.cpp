@@ -19,6 +19,8 @@
 #include <cstring>
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 template <typename T>
 int writeUsed(const std::vector<T *> &functions, Writer &writer) {
     int counter = 0;
@@ -239,3 +241,5 @@ void generateCode(Writer &writer) {
         compileUnused(vt->typeMethodList());
     }
 }
+
+};  // namespace EmojicodeCompiler

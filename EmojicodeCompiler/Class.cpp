@@ -17,6 +17,8 @@
 #include <utility>
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 std::vector<Class *> Class::classes_;
 
 Class::Class(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &documentation, bool final)
@@ -164,3 +166,5 @@ void Class::finalize() {
 
     TypeDefinitionFunctional::finalizeProtocols(classType, &methodVtiProvider_);
 }
+
+};  // namespace EmojicodeCompiler

@@ -16,6 +16,8 @@
 #include "Type.hpp"
 #include "VTIProvider.hpp"
 
+namespace EmojicodeCompiler {
+
 class TypeContext;
 class Initializer;
 class Function;
@@ -134,5 +136,6 @@ private:
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 };
 
+};  // namespace EmojicodeCompiler
 
 #endif /* TypeDefinitionFunctional_hpp */

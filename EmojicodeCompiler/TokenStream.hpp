@@ -13,6 +13,8 @@
 #include <memory>
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 class RecompilationPoint;
 
 class TokenStream {
@@ -52,5 +54,7 @@ private:
     std::shared_ptr<std::vector<Token>> tokens_;
     size_t index_ = 0;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* TokenStream_hpp */

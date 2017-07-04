@@ -13,6 +13,8 @@
 #include <map>
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 ParsedType AbstractParser::parseType() {
     if (stream_.nextTokenIs(TokenType::Variable)) {
         throw CompilerError(stream_.consumeToken().position(), "Generic variables not allowed here.");
@@ -293,3 +295,5 @@ void AbstractParser::parseBodyBlock(Function *function) {
         }
     }
 }
+
+};  // namespace EmojicodeCompiler

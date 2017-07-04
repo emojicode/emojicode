@@ -8,6 +8,8 @@
 
 #include "EmojiTokenization.hpp"
 
+namespace EmojicodeCompiler {
+
 bool isEmoji(EmojicodeChar ch) {
     return (/* ch == 0x0023 || ch == 0x002A || (0x0030 <= ch && ch <= 0x0039) || */
             ch == 0x00A9 || ch == 0x00AE || ch == 0x203C ||
@@ -110,3 +112,5 @@ bool isValidEmoji(EmojicodeString string) {
     }
     return string.back() != 0x200D;
 }
+
+};  // namespace EmojicodeCompiler

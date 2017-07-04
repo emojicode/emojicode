@@ -14,6 +14,8 @@
 #include "Package.hpp"
 #include "Function.hpp"
 
+namespace EmojicodeCompiler {
+
 struct ParsedType {
     ParsedType(EmojicodeString name, EmojicodeString ns, const Token& token)
         : name(name), ns(ns), token(token) {}
@@ -48,5 +50,7 @@ protected:
     /// Parses and validates the error type
     Type parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p);
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* AbstractParser_hpp */

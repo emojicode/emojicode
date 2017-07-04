@@ -14,6 +14,8 @@
 #include "CompilerError.hpp"
 #include "Token.hpp"
 
+namespace EmojicodeCompiler {
+
 class TypeDefinition {
 public:
     /** Returns a documentation token documenting this type definition or @c nullptr. */
@@ -47,5 +49,7 @@ private:
     EmojicodeString documentation_;
     SourcePosition position_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* TypeDefinition_hpp */

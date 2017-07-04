@@ -12,6 +12,8 @@
 #include <string>
 #include "EmojicodeCompiler.hpp"
 
+namespace EmojicodeCompiler {
+
 class TokenStream;
 
 enum class TokenType {
@@ -60,5 +62,7 @@ private:
     TokenType type_ = TokenType::NoType;
     EmojicodeString value_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Token_hpp */

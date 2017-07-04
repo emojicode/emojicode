@@ -8,6 +8,8 @@
 
 #include "StringPool.hpp"
 
+namespace EmojicodeCompiler {
+
 EmojicodeInstruction StringPool::poolString(const EmojicodeString &string) {
     for (size_t i = 0; i < strings_.size(); i++) {
         if (strings_[i] == string) {
@@ -18,3 +20,5 @@ EmojicodeInstruction StringPool::poolString(const EmojicodeString &string) {
     strings_.push_back(string);
     return static_cast<EmojicodeInstruction>(strings_.size() - 1);
 }
+
+};  // namespace EmojicodeCompiler

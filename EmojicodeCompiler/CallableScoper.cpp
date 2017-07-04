@@ -11,6 +11,8 @@
 #include "Function.hpp"
 #include <map>
 
+namespace EmojicodeCompiler {
+
 Scope& CallableScoper::currentScope() {
     return scopes_.front();
 }
@@ -68,3 +70,5 @@ ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, const 
     }
     throw VariableNotFoundError(errorPosition, name);
 }
+
+};  // namespace EmojicodeCompiler

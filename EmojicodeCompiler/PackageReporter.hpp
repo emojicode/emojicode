@@ -11,6 +11,10 @@
 
 #include "Package.hpp"
 
+namespace EmojicodeCompiler {
+
 void reportPackage(Package *package);
+
+};  // namespace EmojicodeCompiler
 
 #endif /* PackageReporter_hpp */

@@ -8,4 +8,8 @@
 
 #include "BoxIDProvider.hpp"
 
+namespace EmojicodeCompiler {
+
 uint32_t BoxIDProvider::boxIds = 3;
+
+};  // namespace EmojicodeCompiler

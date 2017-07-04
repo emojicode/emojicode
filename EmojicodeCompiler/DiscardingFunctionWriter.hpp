@@ -12,6 +12,8 @@
 #include "FunctionWriter.hpp"
 #include "Token.hpp"
 
+namespace EmojicodeCompiler {
+
 /** A subclass of @c FunctionWriter that discards all input. */
 class DiscardingFunctionWriter : public FunctionWriter {
 public:
@@ -28,5 +30,7 @@ public:
 //    /** Must be used to write any double to the file. */
 //    virtual void writeDoubleCoin(double val, SourcePosition p) override {}
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* DiscardingFunctionWriter_hpp */

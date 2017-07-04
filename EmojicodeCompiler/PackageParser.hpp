@@ -17,6 +17,8 @@
 
 #include <set>
 
+namespace EmojicodeCompiler {
+
 class PackageParser : AbstractParser {
 public:
     PackageParser(Package *pkg, TokenStream stream) : AbstractParser(pkg, stream) {}
@@ -89,5 +91,7 @@ private:
     bool found_ = false;
     SourcePosition position_ = SourcePosition(0, 0, "");
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* PackageParser_hpp */

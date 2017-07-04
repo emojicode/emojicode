@@ -11,10 +11,14 @@
 
 #include "CompilerError.hpp"
 
+namespace EmojicodeCompiler {
+
 class VariableNotFoundError: public CompilerError {
 public:
     VariableNotFoundError(SourcePosition p, const EmojicodeString &name)
         : CompilerError(p, "Variable \"%s\" not defined.", name.utf8().c_str()) {};
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* VariableNotFoundError_hpp */

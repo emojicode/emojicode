@@ -16,6 +16,8 @@
 #include "TypeContext.hpp"
 #include <algorithm>
 
+namespace EmojicodeCompiler {
+
 void TypeDefinitionFunctional::addGenericArgument(const Token &variableName, const Type &constraint) {
     genericArgumentConstraints_.push_back(constraint);
 
@@ -202,3 +204,5 @@ void TypeDefinitionFunctional::finalizeProtocols(const Type &type, VTIProvider *
         }
     }
 }
+
+};  // namespace EmojicodeCompiler

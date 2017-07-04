@@ -14,6 +14,8 @@
 #include "EmojicodeCompiler.hpp"
 #include "ValueType.hpp"
 
+namespace EmojicodeCompiler {
+
 class Enum : public ValueType {
 public:
     Enum(EmojicodeString name, Package *package, SourcePosition position, const EmojicodeString &documentation)
@@ -33,5 +35,7 @@ private:
     std::map<EmojicodeString, std::pair<long, EmojicodeString>> map_;
     long valuesCounter = 0;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Enum_hpp */

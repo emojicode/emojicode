@@ -15,6 +15,8 @@
 #include "TypeDefinitionFunctional.hpp"
 #include "TypeContext.hpp"
 
+namespace EmojicodeCompiler {
+
 class Protocol : public TypeDefinitionFunctional {
 public:
     Protocol(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &string);
@@ -30,5 +32,7 @@ public:
 private:
     static uint_fast16_t nextIndex;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Protocol_hpp */

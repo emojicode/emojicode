@@ -23,6 +23,8 @@
 #include <numeric>
 #include <experimental/optional>
 
+namespace EmojicodeCompiler {
+
 class VTIProvider;
 
 enum class AccessLevel {
@@ -260,5 +262,7 @@ private:
     std::experimental::optional<Type> errorType_;
     std::vector<EmojicodeString> argumentsToVariables_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Function_hpp */

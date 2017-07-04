@@ -12,6 +12,8 @@
 #include <vector>
 #include "EmojicodeCompiler.hpp"
 
+namespace EmojicodeCompiler {
+
 class StringPool {
 public:
     /** Returns the globaly used string pool. */
@@ -35,5 +37,7 @@ private:
     StringPool() {};
     std::vector<EmojicodeString> strings_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* StringPool_hpp */

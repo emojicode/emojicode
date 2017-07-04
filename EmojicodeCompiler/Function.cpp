@@ -16,6 +16,8 @@
 #include <map>
 #include <stdexcept>
 
+namespace EmojicodeCompiler {
+
 bool Function::foundStart = false;
 Function *Function::start;
 int Function::nextVti_ = 0;
@@ -181,3 +183,4 @@ Type Function::type() const {
     return t;
 }
 
+};  // namespace EmojicodeCompiler

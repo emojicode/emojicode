@@ -12,6 +12,8 @@
 #include "Type.hpp"
 #include "Variable.hpp"
 
+namespace EmojicodeCompiler {
+
 enum class ExpectationMode {
     /// The value must be (un)boxed to match the expectation’s storage type exactly.
     Convert,
@@ -61,5 +63,7 @@ private:
     ExpectationMode expectationMode_ = ExpectationMode::NoAction;
     Variable *originVariable_ = nullptr;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* TypeExpectation_hpp */

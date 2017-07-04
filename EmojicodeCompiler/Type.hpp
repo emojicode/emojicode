@@ -16,6 +16,8 @@
 #include "StorageType.hpp"
 #include <tuple>
 
+namespace EmojicodeCompiler {
+
 /** The Emoji representing the standard ("global") namespace. */
 const EmojicodeString globalNamespace = EmojicodeString(E_LARGE_RED_CIRCLE);
 
@@ -245,5 +247,7 @@ private:
     Type resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const;
     void sortMultiProtocolType();
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Type_hpp */

@@ -9,6 +9,8 @@
 #include "Enum.hpp"
 #include "CompilerError.hpp"
 
+namespace EmojicodeCompiler {
+
 std::pair<bool, long> Enum::getValueFor(const EmojicodeString &c) const {
     auto it = map_.find(c);
     if (it == map_.end()) {
@@ -23,3 +25,5 @@ void Enum::addValueFor(const EmojicodeString &c, const SourcePosition &position,
     }
     map_.emplace(c, std::pair<long, EmojicodeString>(valuesCounter++, documentation));
 }
+
+};  // namespace EmojicodeCompiler

@@ -22,6 +22,8 @@
 #include <unistd.h>
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 std::string EmojicodeString::utf8() const {
     std::string string;
     string.resize(u8_codingsize(c_str(), size()));
@@ -162,6 +164,19 @@ void loadStandard(Package *_, const SourcePosition &errorPosition) {
 
     package->setRequiresBinary(false);
 }
+
+}
+
+using EmojicodeCompiler::compilerWarning;
+using EmojicodeCompiler::outputJSON;
+using EmojicodeCompiler::packageDirectory;
+using EmojicodeCompiler::SourcePosition;
+using EmojicodeCompiler::Package;
+using EmojicodeCompiler::hasError;
+using EmojicodeCompiler::Function;
+using EmojicodeCompiler::Writer;
+using EmojicodeCompiler::PackageVersion;
+using EmojicodeCompiler::CompilerError;
 
 int main(int argc, char * argv[]) {
     try {

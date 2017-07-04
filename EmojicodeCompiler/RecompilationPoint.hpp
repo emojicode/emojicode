@@ -12,6 +12,8 @@
 #include "FunctionWriter.hpp"
 #include "TokenStream.hpp"
 
+namespace EmojicodeCompiler {
+
 /// Allows the state of the token stream and the callable writer to be stored, to which they will be restored upon
 /// request. This is helpful when part of the code needs to be recompiled under different settings.
 class RecompilationPoint {
@@ -31,5 +33,7 @@ private:
     size_t index_;
     TokenStream &stream_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* RecompilationPoint_hpp */

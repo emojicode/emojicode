@@ -11,6 +11,8 @@
 
 #include "Scope.hpp"
 
+namespace EmojicodeCompiler {
+
 class Scoper {
     friend Scope;
 public:
@@ -29,5 +31,7 @@ private:
 
     void syncSize();
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Scoper_hpp */

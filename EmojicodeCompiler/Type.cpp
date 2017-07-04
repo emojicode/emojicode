@@ -19,6 +19,8 @@
 #include <cstring>
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 Class *CL_STRING;
 Class *CL_LIST;
 Class *CL_DATA;
@@ -673,3 +675,5 @@ std::string Type::toString(const TypeContext &typeContext, bool optionalAndPacka
     typeName(*this, typeContext, optionalAndPackages, string);
     return string;
 }
+
+};  // namespace EmojicodeCompiler

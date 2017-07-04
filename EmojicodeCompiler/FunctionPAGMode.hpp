@@ -9,6 +9,8 @@
 #ifndef FunctionPAGMode_h
 #define FunctionPAGMode_h
 
+namespace EmojicodeCompiler {
+
 enum class FunctionPAGMode {
     ObjectMethod,
     ObjectInitializer,
@@ -23,5 +25,7 @@ enum class FunctionPAGMode {
     /// expect in another storage type. The function is then of type BoxingLayer.
     BoxingLayer,
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* FunctionPAGMode_h */

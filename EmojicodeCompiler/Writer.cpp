@@ -14,6 +14,8 @@
 #include <fstream>
 #include <iostream>
 
+namespace EmojicodeCompiler {
+
 void Writer::writeUInt16(uint16_t value) {
     data_.push_back(value);
     data_.push_back(value >> 8);
@@ -77,3 +79,5 @@ void Writer::finish() {
         throw CompilerError(SourcePosition(0, 0, ""), "Couldn't write output file %s.", path_.c_str());
     }
 }
+
+};  // namespace EmojicodeCompiler

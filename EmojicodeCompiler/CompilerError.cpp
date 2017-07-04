@@ -9,6 +9,8 @@
 #include "CompilerError.hpp"
 #include <cstdarg>
 
+namespace EmojicodeCompiler {
+
 CompilerError::CompilerError(SourcePosition p, const char *err, ...) : position_(p) {
     va_list list;
     va_start(list, err);
@@ -17,3 +19,5 @@ CompilerError::CompilerError(SourcePosition p, const char *err, ...) : position_
 
     va_end(list);
 }
+
+};  // namespace EmojicodeCompiler

@@ -9,8 +9,12 @@
 #include "TypeAvailability.hpp"
 #include "CompilerError.hpp"
 
+namespace EmojicodeCompiler {
+
 void notStaticError(TypeAvailability t, const SourcePosition &p, const char *name) {
     if (!isStatic(t)) {
         throw CompilerError(p, "%s cannot be used dynamically.", name);
     }
 }
+
+};  // namespace EmojicodeCompiler

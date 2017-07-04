@@ -9,6 +9,8 @@
 #ifndef ExpressionPAGs_hpp
 #define ExpressionPAGs_hpp
 
+namespace EmojicodeCompiler {
+
 class Token;
 class TypeExpectation;
 class FunctionPAGInterface;
@@ -31,5 +33,7 @@ Type pagTypeMethod(const Token &token, const TypeExpectation &expectation, Funct
 Type pagInstatiation(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag);
 Type pagSuperMethod(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag);
 Type pagIdentityCheck(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag);
+
+};  // namespace EmojicodeCompiler
 
 #endif /* ExpressionPAGs_hpp */

@@ -20,6 +20,8 @@
 #include "Scope.hpp"
 #include "VTIProvider.hpp"
 
+namespace EmojicodeCompiler {
+
 class Type;
 
 class Class : public TypeDefinitionFunctional {
@@ -80,5 +82,7 @@ private:
 
     void handleRequiredInitializer(Initializer *init) override;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Class_hpp */

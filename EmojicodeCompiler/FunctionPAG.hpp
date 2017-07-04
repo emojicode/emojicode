@@ -24,6 +24,8 @@
 #include "FunctionPAGInterface.hpp"
 #include "TypeAvailability.hpp"
 
+namespace EmojicodeCompiler {
+
 struct FlowControlReturn {
     int branches = 0;
     int branchReturns = 0;
@@ -171,5 +173,7 @@ private:
         return AbstractParser::parseTypeDeclarative(typeContext, dynamism, expectation, dynamicType);
     }
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* FunctionPAG_hpp */

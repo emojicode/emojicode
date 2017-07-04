@@ -13,6 +13,8 @@
 #include "Type.hpp"
 #include "Function.hpp"
 
+namespace EmojicodeCompiler {
+
 class BoxingLayer : public Function {
 public:
     /// Creates a boxing layer for a protocol function.
@@ -61,5 +63,7 @@ private:
     Type destinationReturnType_;
     Function *destinationFunction_ = nullptr;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* BoxingLayer_hpp */

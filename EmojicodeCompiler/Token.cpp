@@ -10,6 +10,8 @@
 #include "CompilerError.hpp"
 #include "EmojiTokenization.hpp"
 
+namespace EmojicodeCompiler {
+
 const char* Token::stringName() const {
     return stringNameForType(type());
 }
@@ -65,3 +67,5 @@ void Token::validate() const {
 bool Token::isIdentifier(EmojicodeChar ch) const {
     return type() == TokenType::Identifier && value_.size() == 1 && value_[0] == ch;
 }
+
+};  // namespace EmojicodeCompiler

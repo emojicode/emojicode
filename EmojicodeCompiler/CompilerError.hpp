@@ -12,6 +12,8 @@
 #include <exception>
 #include "Token.hpp"
 
+namespace EmojicodeCompiler {
+
 class CompilerError: public std::exception {
 public:
     CompilerError(SourcePosition p, const char *err, ...);
@@ -21,5 +23,7 @@ private:
     SourcePosition position_;
     char error_[450];
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* CompilerError_hpp */

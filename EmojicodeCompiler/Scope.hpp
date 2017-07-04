@@ -13,6 +13,8 @@
 #include "Token.hpp"
 #include "Variable.hpp"
 
+namespace EmojicodeCompiler {
+
 class Scoper;
 
 class Scope {
@@ -72,5 +74,7 @@ private:
     int size_ = 0;
     Scoper *scoper_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Scope_hpp */

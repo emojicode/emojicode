@@ -15,6 +15,8 @@
 #include <map>
 #include <string>
 
+namespace EmojicodeCompiler {
+
 std::vector<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
@@ -132,3 +134,5 @@ void Package::loadInto(Package *destinationPackage, const EmojicodeString &ns, c
         destinationPackage->registerType(exported.type, exported.name, ns, false, p);
     }
 }
+
+};  // namespace EmojicodeCompiler

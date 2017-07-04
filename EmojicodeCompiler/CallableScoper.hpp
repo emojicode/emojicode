@@ -15,6 +15,8 @@
 #include "EmojicodeCompiler.hpp"
 #include "Variable.hpp"
 
+namespace EmojicodeCompiler {
+
 struct ResolvedVariable {
     ResolvedVariable(Variable &variable, bool inInstanceScope) : variable(variable), inInstanceScope(inInstanceScope) {}
     Variable &variable;
@@ -71,5 +73,7 @@ private:
     int temporaryScopes_ = 0;
     int maxInitializationLevel_ = 1;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* CallableScoper_hpp */

@@ -9,6 +9,8 @@
 #include "Protocol.hpp"
 #include "Function.hpp"
 
+namespace EmojicodeCompiler {
+
 uint_fast16_t Protocol::nextIndex = 0;
 
 Protocol::Protocol(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &string)
@@ -24,3 +26,5 @@ void Protocol::addMethod(Function *method) {
     method->setVti(static_cast<int>(methodList_.size()));
     TypeDefinitionFunctional::addMethod(method);
 }
+
+};  // namespace EmojicodeCompiler

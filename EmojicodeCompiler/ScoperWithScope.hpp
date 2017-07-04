@@ -11,6 +11,8 @@
 
 #include "Scoper.hpp"
 
+namespace EmojicodeCompiler {
+
 class ScoperWithScope : public Scoper {
 public:
     ScoperWithScope() {}
@@ -29,5 +31,7 @@ public:
 private:
     Scope scope_ = Scope(this);
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* ScoperWithScope_hpp */

@@ -12,6 +12,8 @@
 #include <vector>
 #include "CallableScoper.hpp"
 
+namespace EmojicodeCompiler {
+
 struct VariableCapture {
     VariableCapture(int id, Type type, int captureId) : id(id), type(type), captureId(captureId) {}
     int id;
@@ -37,5 +39,7 @@ private:
     size_t captureSize_ = 0;
     size_t captureId_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* CapturingCallableScoper_hpp */

@@ -15,6 +15,8 @@
 #include <memory>
 #include <sstream>
 
+namespace EmojicodeCompiler {
+
 #define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
 
 bool detectWhitespace(EmojicodeChar c, size_t *col, size_t *line) {
@@ -250,3 +252,5 @@ TokenStream lex(const std::string &path) {
 
     return TokenStream(tokens);
 }
+
+};  // namespace EmojicodeCompiler

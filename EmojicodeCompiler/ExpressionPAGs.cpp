@@ -18,6 +18,8 @@
 #include "ValueType.hpp"
 #include <cassert>
 
+namespace EmojicodeCompiler {
+
 Type pagConcatenateLiteral(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag) {
     functionPag.box(expectation, Type(CL_STRING, false));
     functionPag.writer().writeInstruction(INS_OPT_STRING_CONCATENATE_LITERAL);
@@ -525,3 +527,5 @@ Type pagIdentityCheck(const Token &token, const TypeExpectation &expectation, Fu
     
     return Type::boolean();
 }
+
+};  // namespace EmojicodeCompiler

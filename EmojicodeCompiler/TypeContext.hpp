@@ -13,6 +13,8 @@
 #include "CommonTypeFinder.hpp"
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 class Function;
 
 class TypeContext {
@@ -30,5 +32,7 @@ private:
     Function *function_ = nullptr;
     std::vector<Type> *functionGenericArguments_ = nullptr;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* TypeContext_hpp */

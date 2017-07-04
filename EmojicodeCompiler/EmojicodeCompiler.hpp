@@ -9,11 +9,13 @@
 #ifndef EmojicodeCompiler_hpp
 #define EmojicodeCompiler_hpp
 
-#define EmojicodeCompiler
+#define EmojicodeCompiler_hpp
 
 #include <string>
 #include "../EmojicodeShared.h"
 #include "Emojis.h"
+
+namespace EmojicodeCompiler {
 
 class TypeDefinition;
 class TypeDefinitionFunctional;
@@ -58,5 +60,7 @@ void compilerWarning(const SourcePosition &p, const char *err, ...);
 void printError(const CompilerError &ce);
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
+
+};  // namespace EmojicodeCompiler
 
 #endif /* EmojicodeCompiler_hpp */

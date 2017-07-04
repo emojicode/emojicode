@@ -9,10 +9,14 @@
 #ifndef StorageType_hpp
 #define StorageType_hpp
 
+namespace EmojicodeCompiler {
+
 enum class StorageType {
     Simple,
     SimpleOptional,
     Box,
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* StorageType_hpp */

@@ -9,6 +9,8 @@
 #ifndef TypeAvailability_hpp
 #define TypeAvailability_hpp
 
+namespace EmojicodeCompiler {
+
 struct SourcePosition;
 
 enum class TypeAvailability {
@@ -28,5 +30,7 @@ void notStaticError(TypeAvailability t, const SourcePosition &p, const char *nam
 inline bool isStatic(TypeAvailability t) {
     return t == TypeAvailability::StaticAndUnavailable || t == TypeAvailability::StaticAndAvailabale;
 }
+
+};  // namespace EmojicodeCompiler
 
 #endif /* TypeAvailability_hpp */

@@ -11,6 +11,8 @@
 
 #include "EmojicodeCompiler.hpp"
 
+namespace EmojicodeCompiler {
+
 template <typename T>
 class WriterPlaceholder;
 class WriterCoinsCountPlaceholder;
@@ -98,5 +100,7 @@ private:
         : WriterPlaceholder(w, position), oWrittenCoins(count) {};
     uint32_t oWrittenCoins;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Writer_hpp */

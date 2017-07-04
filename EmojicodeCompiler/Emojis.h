@@ -9,6 +9,8 @@
 #ifndef Emojis_h
 #define Emojis_h
 
+namespace EmojicodeCompiler {
+
 enum Emojis {
     E_LARGE_RED_CIRCLE = 0x1F534,
     E_GRAPES = 0x1F347,
@@ -115,5 +117,7 @@ enum Emojis {
     E_AVOCADO = 0x1F951,
     E_TRIANGLE_POINTED_DOWN = 0x1F53B,
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Emojis_h */

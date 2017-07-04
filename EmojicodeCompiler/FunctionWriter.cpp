@@ -10,6 +10,8 @@
 #include "Token.hpp"
 #include <cmath>
 
+namespace EmojicodeCompiler {
+
 void FunctionWriter::writeInstruction(EmojicodeInstruction value) {
     instructions_.push_back(value);
 }
@@ -61,3 +63,5 @@ void FunctionWriterInsertionPoint::insert(std::initializer_list<EmojicodeInstruc
     writer_->instructions_.insert(writer_->instructions_.begin() + index_, values);
     index_ += values.size();
 }
+
+};  // namespace EmojicodeCompiler

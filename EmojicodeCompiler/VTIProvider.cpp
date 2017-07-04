@@ -9,7 +9,11 @@
 #include "VTIProvider.hpp"
 #include "Function.hpp"
 
+namespace EmojicodeCompiler {
+
 int ValueTypeVTIProvider::next() {
     vtiCount_++;
     return Function::nextFunctionVti();
 }
+
+};  // namespace EmojicodeCompiler

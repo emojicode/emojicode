@@ -9,6 +9,8 @@
 #ifndef VTIProvider_hpp
 #define VTIProvider_hpp
 
+namespace EmojicodeCompiler {
+
 /** The VTIProvider is repsonsible for managing the VTI a TypeDefinition assigns to its function
     members. */
 class VTIProvider {
@@ -45,5 +47,7 @@ public:
 private:
     int vtiCount_ = 0;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* VTIProvider_hpp */

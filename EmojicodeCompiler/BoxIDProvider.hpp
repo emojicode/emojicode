@@ -13,6 +13,8 @@
 #include <vector>
 #include <map>
 
+namespace EmojicodeCompiler {
+
 class BoxIDProvider {
 public:
     uint32_t boxIdFor(const std::vector<Type> &genericArguments) {
@@ -29,5 +31,7 @@ private:
     static uint32_t boxIds;
     std::map<std::vector<Type>, uint32_t> genericIds_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* BoxIDProvider_hpp */

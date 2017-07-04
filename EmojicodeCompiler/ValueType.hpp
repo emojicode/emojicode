@@ -15,6 +15,8 @@
 #include "BoxIDProvider.hpp"
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 class ValueType : public TypeDefinitionFunctional, public BoxIDProvider {
 public:
     static const std::vector<ValueType *>& valueTypes() { return valueTypes_; }
@@ -53,5 +55,7 @@ private:
     ValueTypeVTIProvider vtiProvider_;
     bool primitive_ = false;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* ValueType_hpp */

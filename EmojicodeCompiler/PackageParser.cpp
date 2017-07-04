@@ -17,6 +17,8 @@
 #include <cstring>
 #include <experimental/optional>
 
+namespace EmojicodeCompiler {
+
 void PackageParser::parse() {
     while (stream_.hasMoreTokens()) {
         auto documentation = Documentation().parse(&stream_);
@@ -502,3 +504,5 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
     }
     stream_.consumeToken(TokenType::Identifier);
 }
+
+};  // namespace EmojicodeCompiler

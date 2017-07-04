@@ -11,6 +11,8 @@
 #include "Scoper.hpp"
 #include "TypeDefinition.hpp"
 
+namespace EmojicodeCompiler {
+
 void Scope::setVariableInitialization(bool initd) {
     for (auto &it : map_) {
         if (initd) {
@@ -87,3 +89,5 @@ void Scope::recommendFrozenVariables() const {
         }
     }
 }
+
+};  // namespace EmojicodeCompiler

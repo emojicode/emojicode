@@ -12,6 +12,8 @@
 #include "../EmojicodeShared.h"
 #include "EmojicodeCompiler.hpp"
 
+namespace EmojicodeCompiler {
+
 /// Whether the character is an emoji or not. This method acts in conformance with Unicode Emoji v4.0, except for that
 /// this method does not return true for #, *, and digits from 0 to 9.
 /// http://unicode.org/emoji/charts/emoji-list.html and http://www.unicode.org/Public/emoji/4.0//emoji-data.txt
@@ -28,4 +30,7 @@ bool isRegionalIndicator(EmojicodeChar ch);
 
 bool isValidEmoji(EmojicodeString string);
 
+};  // namespace EmojicodeCompiler
+
 #endif /* EmojiTokenization_hpp */
+

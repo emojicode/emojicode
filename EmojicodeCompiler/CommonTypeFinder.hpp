@@ -13,6 +13,8 @@
 #include "Token.hpp"
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 class CommonTypeFinder {
 public:
     /// Tells the common type finder about the type of another element in the collection.
@@ -25,5 +27,6 @@ private:
     std::vector<Type> commonProtocols_;
 };
 
+};  // namespace EmojicodeCompiler
 
 #endif /* CommonTypeFinder_hpp */

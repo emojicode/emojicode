@@ -13,6 +13,8 @@
 #include <stdexcept>
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 class FunctionWriter;
 class Writer;
 class WriteLocation;
@@ -106,5 +108,7 @@ private:
     FunctionWriterInsertionPoint insertionPoint_;
     FunctionWriter *writer_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* FunctionWriter_h */

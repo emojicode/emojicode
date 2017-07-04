@@ -12,6 +12,8 @@
 #include "Type.hpp"
 #include "Token.hpp"
 
+namespace EmojicodeCompiler {
+
 class CapturingCallableScoper;
 
 class Variable {
@@ -80,5 +82,7 @@ private:
 
     SourcePosition position_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Variable_hpp */

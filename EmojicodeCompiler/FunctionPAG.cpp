@@ -25,6 +25,8 @@
 #include <cassert>
 #include <cstdlib>
 
+namespace EmojicodeCompiler {
+
 Type FunctionPAG::parseTypeSafeExpr(Type type, std::vector<CommonTypeFinder> *ctargs) {
     auto token = stream_.consumeToken();
     auto returnType = ctargs ? parseExprToken(token, TypeExpectation(type.isReference(), type.requiresBox(), false)) :
@@ -1371,3 +1373,5 @@ void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
 FunctionPAG::FunctionPAG(Function &function, Type contextType, FunctionWriter &writer, CallableScoper &scoper)
     : AbstractParser(function.package(), function.tokenStream()), function_(function), writer_(writer), scoper_(scoper),
     typeContext_(typeContextForType(std::move(contextType))) {}
+
+};  // namespace EmojicodeCompiler

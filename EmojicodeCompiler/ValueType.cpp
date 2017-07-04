@@ -9,6 +9,8 @@
 #include "ValueType.hpp"
 #include "Function.hpp"
 
+namespace EmojicodeCompiler {
+
 std::vector<ValueType *> ValueType::valueTypes_;
 
 void ValueType::finalize() {
@@ -30,3 +32,5 @@ void ValueType::finalize() {
 
     TypeDefinitionFunctional::finalizeProtocols(Type(this, false), &vtiProvider_);
 }
+
+};  // namespace EmojicodeCompiler

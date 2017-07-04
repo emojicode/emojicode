@@ -16,6 +16,8 @@
 #include "Type.hpp"
 #include "Token.hpp"
 
+namespace EmojicodeCompiler {
+
 class Function;
 
 #undef major
@@ -105,5 +107,7 @@ private:
 
     EmojicodeString documentation_;
 };
+
+};  // namespace EmojicodeCompiler
 
 #endif /* Package_hpp */

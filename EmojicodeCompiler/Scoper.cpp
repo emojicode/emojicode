@@ -8,6 +8,8 @@
 
 #include "Scoper.hpp"
 
+namespace EmojicodeCompiler {
+
 void Scoper::syncSize() {
     if (nextOffset_ > size_) {
         size_ = nextOffset_;
@@ -24,3 +26,5 @@ int Scoper::reserveVariable(int size) {
 void Scoper::reduceOffsetBy(int size) {
     nextOffset_ -= size;
 }
+
+};  // namespace EmojicodeCompiler

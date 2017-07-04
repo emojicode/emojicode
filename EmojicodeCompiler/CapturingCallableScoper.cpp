@@ -9,6 +9,8 @@
 #include "CapturingCallableScoper.hpp"
 #include "VariableNotFoundError.hpp"
 
+namespace EmojicodeCompiler {
+
 ResolvedVariable CapturingCallableScoper::getVariable(const EmojicodeString &name,
                                                       const SourcePosition &errorPosition) {
     try {
@@ -31,3 +33,5 @@ ResolvedVariable CapturingCallableScoper::getVariable(const EmojicodeString &nam
 void CapturingCallableScoper::postArgumentsHook() {
     captureId_ = reserveVariable(capturedScoper_.fullSize());
 }
+
+};  // namespace EmojicodeCompiler

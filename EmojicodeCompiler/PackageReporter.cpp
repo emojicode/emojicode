@@ -21,6 +21,8 @@
 #include <map>
 #include <vector>
 
+namespace EmojicodeCompiler {
+
 enum class ReturnKind {
     Return,
     NoReturn,
@@ -265,3 +267,5 @@ void reportPackage(Package *package) {
     }
     printf("]}");
 }
+
+};  // namespace EmojicodeCompiler

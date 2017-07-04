@@ -11,6 +11,8 @@
 #include "TypeDefinitionFunctional.hpp"
 #include <algorithm>
 
+namespace EmojicodeCompiler {
+
 void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext) {
     if (!firstTypeFound_) {
         commonType_ = type;
@@ -69,3 +71,5 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p) const {
     }
     return commonType_;
 }
+
+};  // namespace EmojicodeCompiler

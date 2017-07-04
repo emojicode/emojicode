@@ -214,9 +214,7 @@ void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace) {
         error("Terminating program due to too high memory pressure.");
     }
 
-#ifdef DEBUG
-    std::memset(otherHeap, 0xFF, heapSize / 2);
-#endif
+//    std::memset(otherHeap, 0xAA, heapSize / 2);
 
     if (zeroingNeeded) {
         std::memset(currentHeap + memoryUse, 0, (heapSize / 2) - memoryUse);

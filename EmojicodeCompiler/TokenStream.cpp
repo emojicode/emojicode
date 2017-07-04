@@ -9,6 +9,8 @@
 #include "TokenStream.hpp"
 #include "CompilerError.hpp"
 
+namespace EmojicodeCompiler {
+
 const Token& TokenStream::consumeToken(TokenType type) {
     if (!hasMoreTokens()) {
         throw CompilerError(nextToken().position(), "Unexpected end of program.");
@@ -41,3 +43,5 @@ const Token& TokenStream::requireIdentifier(EmojicodeChar ch) {
     }
     return token;
 }
+
+};  // namespace EmojicodeCompiler
