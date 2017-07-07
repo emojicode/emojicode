@@ -184,8 +184,6 @@ void FunctionPAG::flowControlBlock(bool pushScope, const std::function<void()> &
         scoper_.pushScope();
     }
 
-    flowControlDepth++;
-
     stream_.requireIdentifier(E_GRAPES);
 
     if (bodyPredicate) {
@@ -199,16 +197,6 @@ void FunctionPAG::flowControlBlock(bool pushScope, const std::function<void()> &
     effect = true;
 
     scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
-
-    flowControlDepth--;
-}
-
-void FunctionPAG::flowControlReturnEnd(FlowControlReturn &fcr) {
-    if (returned) {
-        fcr.branchReturns++;
-        returned = false;
-    }
-    fcr.branches++;
 }
 
 void FunctionPAG::box(const TypeExpectation &expectation, Type &rtype, WriteLocation location) const {
@@ -515,10 +503,10 @@ void FunctionPAG::parseStatement() {
                 // This list will contain all placeholders that need to be replaced with a relative jump value
                 // to jump past the whole if
                 auto endPlaceholders = std::vector<std::pair<InstructionCount, FunctionWriterPlaceholder>>();
-                auto fcr = FlowControlReturn();
 
                 std::experimental::optional<FunctionWriterCountPlaceholder> placeholder;
                 do {
+                    pathAnalyser.beginBranch();
                     if (placeholder) {
                         writer_.writeInstruction(INS_JUMP_FORWARD);
                         auto endPlaceholder = writer_.writeInstructionPlaceholder();
@@ -531,10 +519,11 @@ void FunctionPAG::parseStatement() {
                     parseCondition(token, false);
                     placeholder = writer_.writeInstructionsCountPlaceholderCoin();
                     flowControlBlock(false);
-                    flowControlReturnEnd(fcr);
+                    pathAnalyser.endBranch();
                 } while (stream_.consumeTokenIf(E_LEMON));
 
                 if (stream_.consumeTokenIf(E_STRAWBERRY)) {
+                    pathAnalyser.beginBranch();
                     // Jump past the else block if the last if evaluated to true, this line is skipped above for true
                     writer_.writeInstruction(INS_JUMP_FORWARD);
                     auto elseCountPlaceholder = writer_.writeInstructionsCountPlaceholderCoin();
@@ -542,18 +531,19 @@ void FunctionPAG::parseStatement() {
                     placeholder->write();
                     flowControlBlock();
                     elseCountPlaceholder.write();
-                    flowControlReturnEnd(fcr);
+                    pathAnalyser.endBranch();
+                    pathAnalyser.endMutualExclusiveBranches();
                 }
                 else {
                     placeholder->write();
-                    fcr.branches++;  // The else branch always exists. Theoretically at least.
+                    // If there’s no else clause we can throw away the incidents right away as none of them could have
+                    // been executed and nothing can be concluded
+                    pathAnalyser.endUncertainBranches();
                 }
 
                 for (auto endPlaceholder : endPlaceholders) {
                     endPlaceholder.second.write(writer_.count() - endPlaceholder.first);
                 }
-
-                returned = fcr.returned();
                 return;
             }
             case E_AVOCADO: {
@@ -621,6 +611,9 @@ void FunctionPAG::parseStatement() {
 
                 auto conditionWriter = parseCondition(token, true);
                 auto delta = writer_.count();
+
+                pathAnalyser.beginBranch();
+
                 flowControlBlock();
                 placeholder.write();
 
@@ -628,7 +621,8 @@ void FunctionPAG::parseStatement() {
                 writer_.writeWriter(conditionWriter);
                 writer_.writeInstruction(writer_.count() - delta + 1);
 
-                returned = false;
+                pathAnalyser.endBranch();
+                pathAnalyser.endUncertainBranches();
                 return;
             }
             case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
@@ -661,53 +655,56 @@ void FunctionPAG::parseStatement() {
 //                    insertionPoint.insert({ INS_OPT_FOR_IN_RANGE, static_cast<unsigned int>(var.id()) });
 //                    flowControlBlock(false);
 //                }
-                if (typeIsEnumerable(iteratee, &itemType)) {
-                    auto iteratorMethodIndex = PR_ENUMERATEABLE->lookupMethod(EmojicodeString(E_DANGO))->vtiForUse();
-                    auto &iteratorScope = scoper_.pushScope();
-                    auto &iteratorVar = iteratorScope.setLocalVariable(EmojicodeString(), Type(PR_ENUMERATOR, false),
-                                                                       true, token.position());
-                    auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
-                    auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
-
-                    insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
-                        static_cast<EmojicodeInstruction>(iteratorVar.id()), INS_DISPATCH_PROTOCOL,
-                    });
-                    box(TypeExpectation(true, true, false), iteratee, insertionPoint);
-                    iteratorVar.initialize(writer_.count());
-                    writer_.writeInstruction({ static_cast<EmojicodeInstruction>(PR_ENUMERATEABLE->index),
-                        static_cast<EmojicodeInstruction>(iteratorMethodIndex)
-                    });
-                    writer_.writeInstruction(INS_JUMP_FORWARD);
-                    auto placeholder = writer_.writeInstructionsCountPlaceholderCoin();
-                    auto delta = writer_.count();
-
-                    scoper_.pushScope();
-                    auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), itemType, true,
-                                                                        variableToken.position());
-                    flowControlBlock(false, [this, iteratorVar, &var, nextVTI]{
-                        var.initialize(writer_.count());
-                        writer_.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
-                            static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL,
-                            INS_GET_VT_REFERENCE_STACK,
-                            static_cast<EmojicodeInstruction>(iteratorVar.id()),
-                            static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
-                            static_cast<EmojicodeInstruction>(nextVTI)
-                        });
-                    });
-                    placeholder.write();
-                    writer_.writeInstruction({ INS_JUMP_BACKWARD_IF, INS_DISPATCH_PROTOCOL,
-                        INS_GET_VT_REFERENCE_STACK, static_cast<EmojicodeInstruction>(iteratorVar.id()),
-                        static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
-                        static_cast<EmojicodeInstruction>(moreVTI) });
-                    writer_.writeInstruction(writer_.count() - delta + 1);
-                    scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
-                }
-                else {
+                if (!typeIsEnumerable(iteratee, &itemType)) {
                     auto iterateeString = iteratee.toString(typeContext_, true);
                     throw CompilerError(token.position(), "%s does not conform to s🔂.", iterateeString.c_str());
                 }
 
-                returned = false;
+                auto iteratorMethodIndex = PR_ENUMERATEABLE->lookupMethod(EmojicodeString(E_DANGO))->vtiForUse();
+                auto &iteratorScope = scoper_.pushScope();
+                auto &iteratorVar = iteratorScope.setLocalVariable(EmojicodeString(), Type(PR_ENUMERATOR, false),
+                                                                   true, token.position());
+                auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
+                auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
+
+                insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
+                    static_cast<EmojicodeInstruction>(iteratorVar.id()), INS_DISPATCH_PROTOCOL,
+                });
+                box(TypeExpectation(true, true, false), iteratee, insertionPoint);
+                iteratorVar.initialize(writer_.count());
+                writer_.writeInstruction({ static_cast<EmojicodeInstruction>(PR_ENUMERATEABLE->index),
+                    static_cast<EmojicodeInstruction>(iteratorMethodIndex)
+                });
+                writer_.writeInstruction(INS_JUMP_FORWARD);
+                auto placeholder = writer_.writeInstructionsCountPlaceholderCoin();
+                auto delta = writer_.count();
+
+                scoper_.pushScope();
+                auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), itemType, true,
+                                                                    variableToken.position());
+
+                pathAnalyser.beginBranch();
+
+                flowControlBlock(false, [this, iteratorVar, &var, nextVTI]{
+                    var.initialize(writer_.count());
+                    writer_.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
+                        static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL,
+                        INS_GET_VT_REFERENCE_STACK,
+                        static_cast<EmojicodeInstruction>(iteratorVar.id()),
+                        static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
+                        static_cast<EmojicodeInstruction>(nextVTI)
+                    });
+                });
+                placeholder.write();
+                writer_.writeInstruction({ INS_JUMP_BACKWARD_IF, INS_DISPATCH_PROTOCOL,
+                    INS_GET_VT_REFERENCE_STACK, static_cast<EmojicodeInstruction>(iteratorVar.id()),
+                    static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
+                    static_cast<EmojicodeInstruction>(moreVTI) });
+                writer_.writeInstruction(writer_.count() - delta + 1);
+                scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
+
+                pathAnalyser.endBranch();
+                pathAnalyser.endUncertainBranches();
                 return;
             }
             case E_GOAT: {
@@ -717,12 +714,8 @@ void FunctionPAG::parseStatement() {
                 if (typeContext_.calleeType().eclass()->superclass() == nullptr) {
                     throw CompilerError(token.position(), "🐐 can only be used if the eclass inherits from another.");
                 }
-                if (calledSuper) {
-                    throw CompilerError(token.position(), "You may not call more than one superinitializer.");
-                }
-                if (flowControlDepth > 0) {
-                    throw CompilerError(token.position(),
-                                        "You may not put a call to a superinitializer in a flow control structure.");
+                if (pathAnalyser.hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
+                    throw CompilerError(token.position(), "Superinitializer might have already been called.");
                 }
 
                 scoper_.instanceScope()->initializerUnintializedVariablesCheck(token.position(),
@@ -744,8 +737,7 @@ void FunctionPAG::parseStatement() {
 
                 parseFunctionCall(typeContext_.calleeType(), initializer, token);
 
-                calledSuper = true;
-
+                pathAnalyser.recordIncident(PathAnalyserIncident::CalledSuperInitializer);
                 return;
             }
             case E_POLICE_CARS_LIGHT: {
@@ -757,7 +749,7 @@ void FunctionPAG::parseStatement() {
                         throw CompilerError(token.position(), "Initializer is not declared error-prone.");
                     }
                     parseTypeSafeExpr(initializer.errorType());
-                    returned = true;
+                    pathAnalyser.recordIncident(PathAnalyserIncident::Returned);
                     return;
                 }
                 if (function_.returnType.type() != TypeContent::Error) {
@@ -765,7 +757,7 @@ void FunctionPAG::parseStatement() {
                 }
 
                 parseTypeSafeExpr(function_.returnType.genericArguments()[0]);
-                returned = true;
+                pathAnalyser.recordIncident(PathAnalyserIncident::Returned);
                 return;
             }
             case E_RED_APPLE: {
@@ -776,7 +768,7 @@ void FunctionPAG::parseStatement() {
                 }
 
                 parseTypeSafeExpr(function_.returnType);
-                returned = true;
+                pathAnalyser.recordIncident(PathAnalyserIncident::Returned);
                 return;
             }
         }
@@ -910,7 +902,7 @@ Type FunctionPAG::parseExprIdentifier(const Token &token, const TypeExpectation 
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR:
             return pagRangeLiteral(token, expectation, *this);
         case E_DOG: {
-            if (isSuperconstructorRequired() && !calledSuper &&
+            if (isSuperconstructorRequired() && !pathAnalyser.hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
                 function_.owningType().eclass()->superclass() != nullptr) {
                 throw CompilerError(token.position(), "Attempt to use 🐕 before superinitializer call.");
             }
@@ -1269,7 +1261,7 @@ void FunctionPAG::compileCode(Scope &methodScope) {
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         parseStatement();
 
-        if (returned && !stream_.nextTokenIs(E_WATERMELON)) {
+        if (pathAnalyser.hasCertainly(PathAnalyserIncident::Returned) && !stream_.nextTokenIs(E_WATERMELON)) {
             compilerWarning(stream_.consumeToken().position(), "Dead code.");
             break;
         }
@@ -1289,7 +1281,7 @@ void FunctionPAG::compileCode(Scope &methodScope) {
         scoper_.instanceScope()->initializerUnintializedVariablesCheck(initializer.position(),
                                                                        "Instance variable \"%s\" must be initialized.");
     }
-    else if (!returned) {
+    else if (!pathAnalyser.hasCertainly(PathAnalyserIncident::Returned)) {
         if (function_.returnType.type() != TypeContent::Nothingness) {
             throw CompilerError(function_.position(), "An explicit return is missing.");
         }
@@ -1300,9 +1292,14 @@ void FunctionPAG::compileCode(Scope &methodScope) {
 
     if (isSuperconstructorRequired()) {
         auto initializer = static_cast<Initializer &>(function_);
-        if (!calledSuper && typeContext_.calleeType().eclass()->superclass() != nullptr) {
-            throw CompilerError(initializer.position(), "Missing call to superinitializer in initializer %s.",
-                                initializer.name().utf8().c_str());
+        if (typeContext_.calleeType().eclass()->superclass() != nullptr &&
+            !pathAnalyser.hasCertainly(PathAnalyserIncident::CalledSuperInitializer)) {
+            if (pathAnalyser.hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
+                throw CompilerError(initializer.position(), "Superinitializer is potentially not called.");
+            }
+            else {
+                throw CompilerError(initializer.position(), "Superinitializer is not called.");
+            }
         }
     }
 }

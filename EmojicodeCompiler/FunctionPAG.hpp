@@ -23,15 +23,9 @@
 #include "TypeExpectation.hpp"
 #include "FunctionPAGInterface.hpp"
 #include "TypeAvailability.hpp"
+#include "PathAnalyser.hpp"
 
 namespace EmojicodeCompiler {
-
-struct FlowControlReturn {
-    int branches = 0;
-    int branchReturns = 0;
-
-    bool returned() { return branches == branchReturns; }
-};
 
 /// This class is responsible to parse and compile (abbreviated PAG) all functions to byte code.
 /// One instance of @c FunctionPAG can compile exactly one function.
@@ -54,6 +48,8 @@ private:
     /// The scoper responsible for scoping the function being compiled.
     CallableScoper &scoper_;
 
+    PathAnalyser pathAnalyser;
+
     FunctionWriter& writer() override { return writer_; }
     TokenStream& stream() override { return stream_; }
     Package* package() override { return package_; }
@@ -64,20 +60,13 @@ private:
         scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
     }
 
-    /** The flow control depth. */
-    int flowControlDepth = 0;
-
     /// Whether the statment has an effect.
     bool effect = false;
     
     void makeEffective() override { effect = true; }
 
-    /** Whether the function in compilation has returned. */
-    bool returned = false;
     /** Whether the this context or an instance variable has been acessed. */
     bool usedSelf = false;
-    /** Whether the superinitializer has been called (always false if the function is not an intializer). */
-    bool calledSuper = false;
 
     /** The this context in which this function operates. */
     TypeContext typeContext_;
@@ -159,8 +148,6 @@ private:
     void flowControlBlock(bool block = true, const std::function<void()> &bodyPredicate = nullptr);
 
     void generateBoxingLayer(BoxingLayer &layer);
-
-    void flowControlReturnEnd(FlowControlReturn &fcr);
 
     bool isSuperconstructorRequired() const;
     bool isFullyInitializedCheckRequired() const;
