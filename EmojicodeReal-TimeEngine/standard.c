@@ -499,8 +499,14 @@ static Something doubleFloor(Thread *thread) {
 }
 
 static Something doubleLog2(Thread *thread) {
-    return somethingDouble(log2(stackGetThisContext(thread).doubl));
+#if defined __ANDROID__
+	// Android has no log2x, using log10x/log2
+	return somethingDouble(log(stackGetThisContext(thread).doubl)/log(2));
+#else
+	return somethingDouble(log2(stackGetThisContext(thread).doubl));
+#endif
 }
+
 
 static Something doubleLn(Thread *thread) {
     return somethingDouble(log(stackGetThisContext(thread).doubl));
