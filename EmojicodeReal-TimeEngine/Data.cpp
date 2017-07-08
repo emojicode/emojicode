@@ -11,6 +11,7 @@
 #include "Thread.hpp"
 #include "../utf8.h"
 #include <algorithm>
+#include <cstring>
 
 namespace Emojicode {
 
