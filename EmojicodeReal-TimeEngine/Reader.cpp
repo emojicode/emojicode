@@ -9,7 +9,7 @@
 #include "Reader.hpp"
 #include "Class.hpp"
 #include "Engine.hpp"
-#include "String.h"
+#include "String.hpp"
 #include "Memory.hpp"
 #include <cstdlib>
 #include <cstring>

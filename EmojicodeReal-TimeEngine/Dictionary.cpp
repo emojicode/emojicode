@@ -6,9 +6,10 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Dictionary.h"
+#include "Dictionary.hpp"
 #include "EmojicodeAPI.hpp"
-#include "String.h"
+#include "String.hpp"
+#include "List.hpp"
 #include "Thread.hpp"
 
 namespace Emojicode {

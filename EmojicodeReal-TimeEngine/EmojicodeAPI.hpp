@@ -10,7 +10,6 @@
 #define EmojicodeAPI_h
 
 #include "../EmojicodeShared.h"
-#include "RetainedObjectPointer.hpp"
 #include <cstddef>
 
 namespace Emojicode {

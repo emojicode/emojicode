@@ -9,9 +9,9 @@
 #include "Processor.hpp"
 #include "../EmojicodeInstructions.h"
 #include "Class.hpp"
-#include "Dictionary.h"
-#include "List.h"
-#include "String.h"
+#include "Dictionary.hpp"
+#include "List.hpp"
+#include "String.hpp"
 #include "Thread.hpp"
 #include <cmath>
 #include <cstring>

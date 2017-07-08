@@ -8,8 +8,8 @@
 
 #include "../../EmojicodeReal-TimeEngine/EmojicodeAPI.hpp"
 #include "../../EmojicodeReal-TimeEngine/Thread.hpp"
-#include "../../EmojicodeReal-TimeEngine/String.h"
-#include "../../EmojicodeReal-TimeEngine/standard.h"
+#include "../../EmojicodeReal-TimeEngine/String.hpp"
+#include "../../EmojicodeReal-TimeEngine/Data.hpp"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>

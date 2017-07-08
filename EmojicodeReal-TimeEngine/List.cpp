@@ -6,10 +6,9 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "List.h"
-#include "String.h"
+#include "List.hpp"
+#include "String.hpp"
 #include "Thread.hpp"
-#include "standard.h"
 #include <algorithm>
 #include <cstring>
 #include <random>

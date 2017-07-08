@@ -6,11 +6,11 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "String.h"
+#include "String.hpp"
 #include "../utf8.h"
-#include "List.h"
+#include "List.hpp"
+#include "Data.hpp"
 #include "Thread.hpp"
-#include "standard.h"
 #include <algorithm>
 #include <cctype>
 #include <cmath>

@@ -7,8 +7,8 @@
 //
 
 #include "Engine.hpp"
-#include "Dictionary.h"
-#include "List.h"
+#include "Dictionary.hpp"
+#include "List.hpp"
 #include "Thread.hpp"
 #include <cmath>
 

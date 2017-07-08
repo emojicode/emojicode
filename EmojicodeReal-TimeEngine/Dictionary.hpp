@@ -9,7 +9,8 @@
 #ifndef EmojicodeDictionary_h
 #define EmojicodeDictionary_h
 
-#include "String.h"
+#include "String.hpp"
+#include "RetainedObjectPointer.hpp"
 
 namespace Emojicode {
 

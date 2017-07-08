@@ -10,7 +10,6 @@
 #define EmojicodeString_h
 
 #include "EmojicodeAPI.hpp"
-#include "List.h"
 
 namespace Emojicode {
 
@@ -43,6 +42,8 @@ Object* stringFromChar(const char *cstring);
 void parseJSON(Thread *thread, Box *destination);
 
 void stringMark(Object *self);
+
+struct List;
 
 void initStringFromSymbolList(String *string, List *list);
 
