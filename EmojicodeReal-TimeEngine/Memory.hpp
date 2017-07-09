@@ -18,7 +18,7 @@ namespace Emojicode {
 #endif
 
 inline size_t alignSize(size_t size) {
-    return size + (size % alignof(Object));
+    return size + alignof(Object) - (size % alignof(Object));
 }
 
 /// This method is called during the initialization of the Engine.
