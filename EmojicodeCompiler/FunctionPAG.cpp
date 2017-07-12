@@ -312,7 +312,7 @@ void FunctionPAG::box(const TypeExpectation &expectation, Type &rtype, WriteLoca
         rtype.setReference(false);
         Type ptype = rtype;
         ptype.unbox();
-        writer_.writeInstruction({ INS_COPY_REFERENCE, static_cast<EmojicodeInstruction>(ptype.size()) });
+        writer_.writeInstruction({ INS_COPY_FROM_REFERENCE, static_cast<EmojicodeInstruction>(ptype.size()) });
     }
 }
 
@@ -632,29 +632,6 @@ void FunctionPAG::parseStatement() {
                 Type iteratee = parseExpr(TypeExpectation());
 
                 Type itemType = Type::nothingness();
-
-//                if (iteratee.type() == TypeContent::Class && iteratee.eclass() == CL_LIST) {
-//                    // If the iteratee is a list, the Real-Time Engine has some special sugar
-//                    int internalId = scoper_.currentScope().allocateInternalVariable(iteratee);
-//                    writer_.writeInstruction(internalId);  // Internally needed
-//                    auto type = Type(TypeContent::GenericVariable, false, 0, CL_LIST).resolveOn(iteratee);
-//                    auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), type,
-//                                                                       true, variableToken.position());
-//                    var.initialize(writer_.count());
-//                    box(TypeExpectation(true, false), iteratee, insertionPoint);
-//                    insertionPoint.insert({ INS_OPT_FOR_IN_LIST, static_cast<unsigned int>(var.id()) });
-//                    flowControlBlock(false);
-//                }
-//                else if (iteratee.type() == TypeContent::ValueType &&
-//                         iteratee.valueType()->name()[0] == E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE) {
-//                    // If the iteratee is a range, the Real-Time Engine also has some special sugar
-//                    auto &var = scoper_.currentScope().setLocalVariable(variableToken.value(), Type::integer(), true,
-//                                                                       variableToken.position());
-//                    var.initialize(writer_.count());
-//                    box(TypeExpectation(true, false), iteratee, insertionPoint);
-//                    insertionPoint.insert({ INS_OPT_FOR_IN_RANGE, static_cast<unsigned int>(var.id()) });
-//                    flowControlBlock(false);
-//                }
                 if (!typeIsEnumerable(iteratee, &itemType)) {
                     auto iterateeString = iteratee.toString(typeContext_, true);
                     throw CompilerError(token.position(), "%s does not conform to s🔂.", iterateeString.c_str());
@@ -919,7 +896,7 @@ Type FunctionPAG::parseExprIdentifier(const Token &token, const TypeExpectation 
             auto type = typeContext_.calleeType();
             box(expectation, type, writer_);
             usedSelf = true;
-            writer_.writeInstruction(INS_GET_THIS);
+            writer_.writeInstruction(INS_THIS);
 
             return type;
         }
@@ -1209,7 +1186,7 @@ std::pair<Type, TypeAvailability> FunctionPAG::parseTypeAsValue(const SourcePosi
             if (function_.compilationMode() != FunctionPAGMode::ClassMethod) {
                 throw CompilerError(p, "Illegal use of 🐕.");
             }
-            writer_.writeInstruction(INS_GET_THIS);
+            writer_.writeInstruction(INS_THIS);
             return std::pair<Type, TypeAvailability>(ot, TypeAvailability::DynamicAndAvailabale);
         case TypeContent::LocalGenericVariable:
             throw CompilerError(p, "Function Generic Arguments are not available for reflection.");
@@ -1270,7 +1247,7 @@ void FunctionPAG::compileCode(Scope &methodScope) {
     if (function_.compilationMode() == FunctionPAGMode::ObjectInitializer) {
         writer_.writeInstruction(INS_RETURN);
         box(TypeExpectation(function_.returnType), typeContext_.calleeType());
-        writer_.writeInstruction(INS_GET_THIS);
+        writer_.writeInstruction(INS_THIS);
     }
     else if (function_.compilationMode() == FunctionPAGMode::ValueTypeInitializer) {
         writer_.writeInstruction(INS_RETURN_WITHOUT_VALUE);
@@ -1333,7 +1310,7 @@ void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
         box(TypeExpectation(layer.returnType), layer.destinationReturnType());
     }
     if (layer.owningType().type() == TypeContent::Callable) {
-        writer_.writeInstruction({ INS_EXECUTE_CALLABLE, INS_GET_THIS });
+        writer_.writeInstruction({ INS_EXECUTE_CALLABLE, INS_THIS });
     }
     else {
         switch (layer.owningType().type()) {
@@ -1349,7 +1326,7 @@ void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
             default:
                 throw std::logic_error("nonsensial BoxingLayer requested");
         }
-        writer_.writeInstruction(INS_GET_THIS);
+        writer_.writeInstruction(INS_THIS);
         writer_.writeInstruction(layer.destinationFunction()->vtiForUse());
     }
     size_t variableIndex = 0;

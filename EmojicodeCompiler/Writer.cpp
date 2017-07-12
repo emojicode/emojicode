@@ -11,6 +11,7 @@
 #include "Function.hpp"
 #include "FunctionPAGMode.hpp"
 #include "FunctionWriter.hpp"
+#include "../EmojicodeInstructions.h"
 #include <fstream>
 #include <iostream>
 
@@ -72,7 +73,7 @@ void Writer::writeFunction(Function *function) {
 void Writer::finish() {
     auto out = std::ofstream(path_, std::ios::binary | std::ios::out | std::ios::trunc);
     if (out) {
-        out.put(BYTE_CODE_VERSION);
+        out.put(kByteCodeVersion);
         out.write(data_.data(), data_.size());
     }
     else {

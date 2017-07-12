@@ -80,7 +80,7 @@ void performFunction(Function *function, Value self, Thread *thread, Value *dest
 }
 
 void produce(Thread *thread, Value *destination) {
-    switch (static_cast<EmojicodeInstructionConstants>(thread->consumeInstruction())) {
+    switch (static_cast<Instructions>(thread->consumeInstruction())) {
         case INS_DISPATCH_METHOD: {
             Value sth;
             produce(thread, &sth);
@@ -331,7 +331,7 @@ void produce(Thread *thread, Value *destination) {
             std::memcpy(destination, source, sizeof(Value) * thread->consumeInstruction());
             return;
         }
-        case INS_COPY_REFERENCE: {
+        case INS_COPY_FROM_REFERENCE: {
             Value value;
             auto size = thread->consumeInstruction();
             produce(thread, &value);
@@ -619,7 +619,7 @@ void produce(Thread *thread, Value *destination) {
             }
             return;
         }
-        case INS_GET_THIS:
+        case INS_THIS:
             *destination = thread->thisContext();
             return;
         case INS_SUPER_INITIALIZER: {
@@ -842,10 +842,6 @@ void produce(Thread *thread, Value *destination) {
         case INS_TRANSFER_CONTROL_TO_NATIVE:
             thread->currentStackFrame()->function->handler(thread);
             return;
-        case INS_OPT_FOR_IN_LIST:
-            error("INS_OPT_FOR_IN_LIST");
-        case INS_OPT_FOR_IN_RANGE:
-            error("INS_OPT_FOR_IN_RANGE");
         case INS_EXECUTE_CALLABLE: {
             Value sth;
             produce(thread, &sth);

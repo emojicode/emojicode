@@ -11,6 +11,7 @@
 #include "Engine.hpp"
 #include "String.hpp"
 #include "Memory.hpp"
+#include "../EmojicodeInstructions.h"
 #include <cstdlib>
 #include <cstring>
 #include <dlfcn.h>
@@ -260,9 +261,9 @@ void readPackage(FILE *in) {
 
 Function* readBytecode(FILE *in) {
     uint8_t version = fgetc(in);
-    if (version != BYTE_CODE_VERSION) {
+    if (version != kByteCodeVersion) {
         error("The bytecode file (bcsv %d) is not compatible with this interpreter (bcsv %d).\n",
-              version, BYTE_CODE_VERSION);
+              version, kByteCodeVersion);
     }
 
     DEBUG_LOG("Bytecode version %d", version);
