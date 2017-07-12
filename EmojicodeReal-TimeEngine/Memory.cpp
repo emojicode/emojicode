@@ -224,11 +224,11 @@ void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace) {
     }
 
     pausingThreadsCount--;
-    pausingThreadsCountLock.unlock();
     pauseThreads = false;
-
     garbageCollectionLock.unlock();
+
     pauseThreadsCondition.notify_all();
+    pausingThreadsCountLock.unlock();
 }
 
 void pauseForGC() {
