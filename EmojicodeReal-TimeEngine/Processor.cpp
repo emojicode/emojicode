@@ -712,8 +712,9 @@ void produce(Thread *thread, Value *destination) {
                 Value v;
                 produce(thread, &v);
                 auto stringObject = thread->retain(v.object);
-                if (bufferSize - length < stringObject->val<String>()->length) {
-                    bufferSize += static_cast<size_t>(stringObject->val<String>()->length) - (bufferSize - length);
+                auto size = static_cast<size_t>(stringObject->val<String>()->length);
+                if (bufferSize - length < size) {
+                    bufferSize += size - (bufferSize - length);
                     characters = resizeArray(characters.unretainedPointer(), bufferSize * sizeof(EmojicodeChar), thread);
                 }
                 EmojicodeChar *dest = characters->val<EmojicodeChar>() + length;
