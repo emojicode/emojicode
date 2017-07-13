@@ -154,7 +154,7 @@ void listSort(Thread *thread) {
         a.copyTo(args);
         b.copyTo(args + STORAGE_BOX_VALUE_SIZE);
         Value c;
-        executeCallableExtern(thread->variable(0).object, args, sizeof(args), thread, &c);
+        executeCallableExtern(thread->variable(0).object, args, sizeof(args) / sizeof(Value), thread, &c);
         return c.raw < 0;
     });
     thread->returnFromFunction();
