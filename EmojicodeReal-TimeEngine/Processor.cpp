@@ -65,7 +65,7 @@ void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Threa
     auto *c = callable->val<Closure>();
     auto sf = thread->reserveFrame(c->thisContext, c->function->frameSize, c->function,
                                    destination, c->function->block.instructions);
-    std::memcpy(sf->variableDestination(0), args, argsSize);
+    std::memcpy(sf->variableDestination(0), args, argsSize * sizeof(Value));
     thread->pushReservedFrame();
     loadCapture(c, thread);
     runFunctionPointerBlock(thread);
