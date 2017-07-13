@@ -583,7 +583,7 @@ void produce(Thread *thread, Value *destination) {
                 std::memcpy(destination, value.value + 1, n * sizeof(Value));
             }
             else {
-                error("Unexpectedly found 🚨 with value %d.", value.value->raw);
+                error("Unexpectedly found 🚨 with value %d.", value.value[1].raw);
             }
             return;
         }
