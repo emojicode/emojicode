@@ -11,6 +11,7 @@
 #include "String.hpp"
 #include "List.hpp"
 #include "Thread.hpp"
+#include "Memory.hpp"
 
 namespace Emojicode {
 
@@ -280,26 +281,24 @@ void dictionaryInit(EmojicodeDictionary *dict) {
 }
 
 void dictionaryMark(Object *object) {
-//    EmojicodeDictionary *dict = static_cast<EmojicodeDictionary *>(object->value);
-//
-//    if(dict->buckets == nullptr){
-//        return;
-//    }
-//    mark(&dict->buckets);
-//
-//    Object **buckets = static_cast<Object **>(dict->buckets->value);
-//    for (size_t i = 0; i < dict->bucketsCounter; i++) {
-//        Object **eo = &buckets[i];
-//        while (*(eo)) {
-//            mark(eo);
-//            EmojicodeDictionaryNode *e = static_cast<EmojicodeDictionaryNode *>((*eo)->value);
-//            mark(&(e->key));
-//            if (isRealObject(e->value)){
-//                mark(&(e->value.object));
-//            }
-//            eo = &(e->next);
-//        }
-//    }
+    auto dict = object->val<EmojicodeDictionary>();
+
+    if (dict->buckets == nullptr) {
+        return;
+    }
+    mark(&dict->buckets);
+
+    auto buckets = dict->buckets->val<Object*>();
+    for (size_t i = 0; i < dict->bucketsCounter; i++) {
+        Object **eo = &buckets[i];
+        while (*(eo)) {
+            mark(eo);
+            EmojicodeDictionaryNode *e = (*eo)->val<EmojicodeDictionaryNode>();
+            mark(&(e->key));
+            markBox(&e->value);
+            eo = &(e->next);
+        }
+    }
 }
 
 // MARK: Bridges

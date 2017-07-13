@@ -168,6 +168,15 @@ void markValueReference(Value **valuePointer) {
     }
 }
 
+void markBox(Box *box) {
+    if (box->type.raw == T_OBJECT) {
+        mark(&box->value1.object);
+    }
+    else if ((box->type.raw & REMOTE_MASK) != 0) {
+        mark(&box->value1.object);
+    }
+}
+
 void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace) {
     pauseThreads = true;
     if (minSpace > gcThreshold) {

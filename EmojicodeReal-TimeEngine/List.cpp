@@ -9,6 +9,7 @@
 #include "List.hpp"
 #include "String.hpp"
 #include "Thread.hpp"
+#include "Memory.hpp"
 #include <algorithm>
 #include <cstring>
 #include <random>
@@ -58,9 +59,7 @@ void listMark(Object *self) {
         mark(&list->items);
     }
     for (size_t i = 0; i < list->count; i++) {
-        if (list->elements()[i].type.raw == T_OBJECT) {
-           mark(&list->elements()[i].value1.object);
-        }
+        markBox(&list->elements()[i]);
     }
 }
 

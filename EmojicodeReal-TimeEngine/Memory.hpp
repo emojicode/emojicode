@@ -53,6 +53,7 @@ inline void markByObjectVariableRecord(ObjectVariableRecord &record, Value *va, 
 }
 
 void markValueReference(Value **valuePointer);
+void markBox(Box *box);
 
 }
 
