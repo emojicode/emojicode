@@ -4,20 +4,49 @@
 🌮
   🎨 represents a color.
 🌮
-🌍 🐇 🎨 🍇
+🌍 🕊 🎨 🍇
+  🍰 r 🚂
+  🍰 g 🚂
+  🍰 b 🚂
+  🍰 a 🚂
+
   🌮
     Creates a color from the given RGBA. *r*, *g*, *b* and *a* must be a value
     from 0 to 255.
   🌮
-  🐈 🆕 r 🚂 g 🚂 b 🚂 a 🚂 📻
+  🐈 🆕 🍼 r 🚂 🍼 g 🚂 🍼 b 🚂 🍼 a 🚂 🍇🍉
+🍉
+
+🌮 Errors 🌮
+🌍 🦃 🥓 🍇
+  🌮 Indicates a generic error. 🌮
+  🔘⁉️
+  🌮 Permission denied 🌮
+  🔘 🚧
+  🌮 File exists 🌮
+  🔘 🗿
+  🌮 Not enough space. 🌮
+  🔘 🐁
+  🌮 Function not supported. 🌮
+  🔘 🙅
+  🌮 Mathematics argument out of domain of function. 🌮
+  🔘 ➗
+  🌮 Invalid argument. 🌮
+  🔘 🚯
+  🌮 Illegal byte sequence. 🌮
+  🔘 🛃
+  🌮 Result too large. 🌮
+  🔘 🗻
+  🌮 Operation not permitted. 🌮
+  🔘 🚷
 🍉
 
 🌮 🖼 represents a bitmap. 🌮
 🌍 🐇 🖼 🍇
   🌮 Creates a bitmap from the image at the given path. 🌮
-  🍬🐈 📄 path 🔡 📻
+  🐈 🚨🥓 📄 path 🔡 📻 18
   🌮 Creates a bitmap with the given height and width. 🌮
-  🍬🐈 🆕 width 🚂 height 🚂 📻
+  🐈 🚨🥓 🆕 width 🚂 height 🚂 📻 19
 🍉
 
 🌮
@@ -33,17 +62,17 @@
     you instead want to specify the size as the total height of glyphs in
     pixels, pass it as a negative value.
   🌮
-  🍬🐈 📄 path 🔡 size 🚂 📻
+  🐈 🚨🥓 📄 path 🔡 size 🚂 📻 20
 🍉
 
 🌮 ⚖ provides values to align text 🌮
 🌍 🦃 ⚖ 🍇
   🌮 Aligns text to the left. 🌮
-  ⬅️
+  🔘⬅️
   🌮 Centers the text. 🌮
-  ↔️
+  🔘↔️
   🌮 Aligns text to the right. 🌮
-  ➡️
+  🔘➡️
 🍉
 
 🌮 🎉 represents an event. You’ll always receive subclasses of this class. 🌮
@@ -52,34 +81,34 @@
 🌮 📩 is an event that occurs when a character was typed on the keyboard. 🌮
 🌍 🐇 📩 🎉 🍇
   🌮 Returns the keycode associated with this event. 🌮
-  🐖 📟 ➡️ 🚂 📻
+  🐖 📟 ➡️ 🚂 📻 34
   🌮
     Returns the symbol that was typed. This may be ✨ if the pressed key cannot
     be represented as a symbol, e.g. if an arrow key was pressed.
   🌮
-  🐖 🔣 ➡️ 🍬🔣 📻
+  🐖 🔣 ➡️ 🍬🔣 📻 35
   🌮 Whether the character was repeated. 🌮
-  🐖 🔃 ➡️ 👌 📻
+  🐖 🔃 ➡️ 👌 📻 36
 🍉
 
 🌮 📥 is an event that occurs when a keyboard key was pressed. 🌮
 🌍 🐇 📥 🎉 🍇
   🌮 Returns the keycode associated with this event. 🌮
-  🐖 📟 ➡️ 🚂 📻
+  🐖 📟 ➡️ 🚂 📻 34
 🍉
 
 🌮 📤 is an event that occurs when a keyboard key was released. 🌮
 🌍 🐇 📤 🎉 🍇
   🌮 Returns the keycode associated with this event. 🌮
-  🐖 📟 ➡️ 🚂 📻
+  🐖 📟 ➡️ 🚂 📻 34
 🍉
 
 🌮 🖱 is a mouse event. You’ll always receive subclasses of this class. 🌮
 🌍 🐇 🖱 🎉 🍇
   🌮 Returns the x coordinate. 🌮
-  🐖 👉 ➡️ 🚀 📻
+  🐖 👉 ➡️ 🚀 📻 37
   🌮 Returns the y coordinate. 🌮
-  🐖 👇 ➡️ 🚀 📻
+  🐖 👇 ➡️ 🚀 📻 38
 🍉
 
 🌮 ❇️ is an event that occurs when one or more mouse axis changed. 🌮
@@ -104,26 +133,26 @@
     Creates a new, stopped timer that ticks every *seconds* seconds.
     Seconds must be positive.
   🌮
-  🐈 🆕 seconds 🚀 📻
+  🐈 🆕 seconds 🚀 📻 21
   🌮
     Starts the timer. From then, the timer's counter will increment at a
     constant rate, and it will begin generating events. Starting a timer that
     is already started does nothing.
   🌮
-  🐖 🏁 📻
+  🐖 🏁 📻 22
   🌮
     Resume the timer specified. From then, the timer's counter will increment at
     a constant rate, and it will begin generating events. Resuming a timer
     that is already started does nothing. Resuming a stopped timer will not
     reset the timer's counter.
   🌮
-  🐖 🚦 📻
+  🐖 🚦 📻 23
   🌮
     Stop the timer specified. The timer's counter will stop incrementing and it
     will stop generating events. Stopping a timer that is already stopped does
     nothing.
   🌮
-  🐖 ⛔️ 📻
+  🐖 ⛔️ 📻 24
 🍉
 
 🌮
@@ -134,15 +163,15 @@
 🌮
 🌍 🐇 🗃 🍇
   🌮 Creates a new, empty event queue. 🌮
-  🐈 🆕 📻
+  🐈 🆕 📻 25
   🌮 Waits for an event and returns it. 🌮
-  🐖 ⏳ ➡️ 🎉 📻
+  🐖 ⏳ ➡️ 🎉 📻 26
   🌮 Registers the mouse as an event source. 🌮
-  🐖 🖱 📻
+  🐖 🖱 📻 27
   🌮 Registers the keyboard as an event source. 🌮
-  🐖 ⌨️ 📻
+  🐖 ⌨️ 📻 28
   🌮 Registers a ⏲ instance as an event source. 🌮
-  🐖 ⏲ timer ⏲ 📻
+  🐖 ⏲ timer ⏲ 📻 29
 🍉
 
 🌮 🎶 represents an audio sample. 🌮
@@ -152,9 +181,9 @@
     libraries are available, the full set of recognised extensions is: .wav,
     .flac, .ogg, .it, .mod, .s3m, .xm.
   🌮
-  🍬🐈 📄 path 🔡 📻
+  🐈 🚨🥓 📄 path 🔡 📻 30
   🌮 Starts playing the sample. 🌮
-  🐖 🏁 volume 🚀 pan 🚀 speed 🚀 📻
+  🐖 🏁 volume 🚀 pan 🚀 speed 🚀 📻 31
 🍉
 
 🌮
@@ -166,9 +195,9 @@
 🌮
 🌍 🐇 📺 🍇
   🌮 Creates a display with the given width and height. 🌮
-  🍬🐈 🆕 width 🚂 height 🚂 📻
+  🐈 🆕 width 🚂 height 🚂 📻 32
   🌮 Sets the the title of the window. 🌮
-  🐖 🏷 title 🔡 📻
+  🐖 🏷 title 🔡 📻 33
 🍉
 
 🌮
@@ -177,99 +206,100 @@
 🌍 🐇 🏔 🍇
   🌮
     You must call this method before using any of the other methods as it
-    initializes the system.
+    initializes the system. The callback will be called and passed an instance
+    of 🏔 once the application is ready.
   🌮
-  🐇🐖 🙋 main 🍇🍉 📻
+  🐇🐖 🙋 main 🍇🏔🍉 📻 1
 
   🌮
     *Flips* the drawing target display. Copies or updates the front and back
     buffers so that what has been drawn previously on the drawing target display
     becomes visible on screen.
   🌮
-  🐇🐖 🎦 📻
+  🐖 🎦 📻 2
 
   🌮 Sets *bitmap* as the current drawing target. 🌮
-  🐇🐖 🏓 bitmap 🖼 📻
+  🐖 🏓 bitmap 🖼 📻 3
 
   🌮
     Sets the bitmap acting as backbuffer of *display* as the current drawing
     target.
   🌮
-  🐇🐖 🏏 display 📺 📻
+  🐖 🏏 display 📺 📻 4
 
   🌮 Fills the entire drawing target with the given color. 🌮
-  🐇🐖 🚿 color 🎨 📻
+  🐖 🚿 color 🎨 📻 5
 
   🌮
     Draws a line between the two points ((*x1*|*y1*) and (*x2*|*y2*)).
   🌮
-  🐇🐖 🖍 x1 🚀 y1 🚀 x2 🚀 y2 🚀 color 🎨 thickness 🚀 📻
+  🐖 🖍 x1 🚀 y1 🚀 x2 🚀 y2 🚀 thickness 🚀 color 🎨 📻 6
 
   🌮
     Draws an outlined triangle between the given three points ((*x1*|*y1*),
     (*x2*|*y2*) and (*x3*|*y3*)).
   🌮
-  🐇🐖 📐 x1 🚀 y1 🚀 x2 🚀 y2 🚀 x3 🚀 y3 🚀 color 🎨 thickness 🚀 📻
+  🐖 📐 x1 🚀 y1 🚀 x2 🚀 y2 🚀 x3 🚀 y3 🚀 thickness 🚀 color 🎨 📻 7
 
   🌮
     Draws a filled triangle between the given three points ((*x1*|*y1*),
     (*x2*|*y2*) and (*x3*|*y3*)).
   🌮
-  🐇🐖 🚩 x1 🚀 y1 🚀 x2 🚀 y2 🚀 x3 🚀 y3 🚀 color 🎨 📻
+  🐖 🚩 x1 🚀 y1 🚀 x2 🚀 y2 🚀 x3 🚀 y3 🚀 color 🎨 📻 8
 
   🌮
     Draws an outlined rectangle between the two points ((*x1*|*y1*) and
     (*x2*|*y2*)) which are the upper left and lower right point of the rectangle
     respectively.
   🌮
-  🐇🐖 📋 x1 🚀 y1 🚀 x2 🚀 y2 🚀 color 🎨 thickness 🚀 📻
+  🐖 📋 x1 🚀 y1 🚀 x2 🚀 y2 🚀 thickness 🚀 color 🎨 📻 9
 
   🌮
     Draws a filled rectangle between the two points ((*x1*|*y1*) and
     (*x2*|*y2*)) which are the upper left and lower right point of the rectangle
     respectively.
   🌮
-  🐇🐖 🗄 x1 🚀 y1 🚀 x2 🚀 y2 🚀 color 🎨 📻
+  🐖 🗄 x1 🚀 y1 🚀 x2 🚀 y2 🚀 color 🎨 📻 10
 
   🌮
     Draws an outlined circle. The center of the circle is the given point
     ((*x1*|*y1*) and the radius is *r*.
   🌮
-  🐇🐖 ⚽️ x1 🚀 y1 🚀 r 🚀 color 🎨 thickness 🚀 📻
+  🐖 ⚽️ x1 🚀 y1 🚀 r 🚀 thickness 🚀 color 🎨 📻 11
 
   🌮
     Draws a filled circle. The center of the circle is the given point
     (*x1*|*y1*) and the radius is *r*.
   🌮
-  🐇🐖 🏀 x1 🚀 y1 🚀 r 🚀 color 🎨 📻
+  🐖 🏀 x1 🚀 y1 🚀 r 🚀 color 🎨 📻 12
 
   🌮
     Draws an outlined rectangle with rounded corners between the two points
     ((*x1*|*y1*) and (*x2*|*y2*)) which are the upper left and lower right point
     of the rectangle respectively.
   🌮
-  🐇🐖 🏉 x1 🚀 y1 🚀 x2 🚀 y2 🚀 rx 🚀 ry 🚀 color 🎨 thickness 🚀 📻
+  🐖 🏉 x1 🚀 y1 🚀 x2 🚀 y2 🚀 rx 🚀 ry 🚀 thickness 🚀 color 🎨 📻 13
 
   🌮
     Draws a filled rectangle with rounded corners between the two points
     ((*x1*|*y1*) and (*x2*|*y2*)) which are the upper left and lower right point
     of the rectangle respectively.
   🌮
-  🐇🐖 🏈 x1 🚀 y1 🚀 x2 🚀 y2 🚀 rx 🚀 ry 🚀 color 🎨 📻
+  🐖 🏈 x1 🚀 y1 🚀 x2 🚀 y2 🚀 rx 🚀 ry 🚀 color 🎨 📻 14
 
   🌮
     Draws the given bitmap at the given location.
   🌮
-  🐇🐖 📼 bitmap 🖼 dx 🚀 dy 🚀 📻
+  🐖 📼 bitmap 🖼 dx 🚀 dy 🚀 📻 15
 
   🌮
     Draws a scaled and cropped version of the given bitmap at the given
     location.
   🌮
-  🐇🐖 💽 bitmap 🖼 sx 🚀 sy 🚀 sw 🚀 sh 🚀 dx 🚀 dy 🚀 dw 🚀 dh 🚀 📻
+  🐖 💽 bitmap 🖼 sx 🚀 sy 🚀 sw 🚀 sh 🚀 dx 🚀 dy 🚀 dw 🚀 dh 🚀 📻 16
 
   🌮
     Draws the given text at the given position in the given font and color.
   🌮
-  🐇🐖 🔡 font 🕉 color 🎨 x 🚀 y 🚀 text 🔡 align ⚖ 📻
+  🐖 🔡 font 🕉 text 🔡 x 🚀 y 🚀 align ⚖ color 🎨 📻 17
 🍉

@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E4A797E21D37DFBE0048DA41 /* allegro.c in Sources */ = {isa = PBXBuildFile; fileRef = E4A797E01D37DCC20048DA41 /* allegro.c */; };
+		E4A797E21D37DFBE0048DA41 /* allegro.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4A797E01D37DCC20048DA41 /* allegro.cpp */; };
 		E4CF87341D2D38E0006B3B0F /* sockets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4CF87311D2D356F006B3B0F /* sockets.cpp */; };
 		E4E10B8B1ACA994B0072B4C8 /* files.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4E10B7F1ACA989B0072B4C8 /* files.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E4A797DE1D37DC8D0048DA41 /* allegro.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = allegro.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4A797E01D37DCC20048DA41 /* allegro.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = allegro.c; path = allegro/allegro.c; sourceTree = "<group>"; };
+		E4A797E01D37DCC20048DA41 /* allegro.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = allegro.cpp; path = allegro/allegro.cpp; sourceTree = "<group>"; };
 		E4CF87301D2D3512006B3B0F /* sockets.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = sockets.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4CF87311D2D356F006B3B0F /* sockets.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sockets.cpp; path = sockets/sockets.cpp; sourceTree = "<group>"; };
 		E4E10B7F1ACA989B0072B4C8 /* files.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = files.cpp; path = files/files.cpp; sourceTree = "<group>"; };
@@ -49,7 +49,7 @@
 		E4A797DF1D37DCA00048DA41 /* allegro */ = {
 			isa = PBXGroup;
 			children = (
-				E4A797E01D37DCC20048DA41 /* allegro.c */,
+				E4A797E01D37DCC20048DA41 /* allegro.cpp */,
 			);
 			name = allegro;
 			sourceTree = "<group>";
@@ -206,7 +206,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4A797E21D37DFBE0048DA41 /* allegro.c in Sources */,
+				E4A797E21D37DFBE0048DA41 /* allegro.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
