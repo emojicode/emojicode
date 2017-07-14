@@ -23,9 +23,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <pthread.h>
 #include <random>
 #include <thread>
+#include <mutex>
 #include <unistd.h>
 
 namespace Emojicode {
@@ -141,28 +141,25 @@ static void initThread(Thread *thread) {
 }
 
 static void initMutex(Thread *thread) {
-    pthread_mutex_init(thread->thisObject()->val<pthread_mutex_t>(), nullptr);
+    *thread->thisObject()->val<std::mutex*>() = new std::mutex();
+    registerForDeinitialization(thread->thisObject());
     thread->returnFromFunction(thread->thisContext());
 }
 
 static void mutexLock(Thread *thread) {
-    while (pthread_mutex_trylock(thread->thisObject()->val<pthread_mutex_t>()) != 0) {
-        // TODO: Obviously stupid, but this is the only safe way. If pthread_mutex_lock was used,
-        // the thread would be block, and the GC could cause a deadlock. allowGC, however, would
-        // allow moving this mutex – obviously not a good idea either when using pthread_mutex_lock.
-        pauseForGC();
-        usleep(10);
-    }
+    allowGC();
+    (*thread->thisObject()->val<std::mutex*>())->lock();
+    disallowGCAndPauseIfNeeded();
     thread->returnFromFunction();
 }
 
 static void mutexUnlock(Thread *thread) {
-    pthread_mutex_unlock(thread->thisObject()->val<pthread_mutex_t>());
+    (*thread->thisObject()->val<std::mutex*>())->unlock();
     thread->returnFromFunction();
 }
 
 static void mutexTryLock(Thread *thread) {
-    thread->returnFromFunction(pthread_mutex_trylock(thread->thisObject()->val<pthread_mutex_t>()) == 0);
+    thread->returnFromFunction((*thread->thisObject()->val<std::mutex*>())->try_lock());
 }
 
 // MARK: Integer
@@ -484,7 +481,10 @@ void sPrepareClass(Class *klass, EmojicodeChar name) {
             };
             break;
         case 0x1f510:  //🔐
-            klass->valueSize = sizeof(pthread_mutex_t);
+            klass->valueSize = sizeof(std::mutex*);
+            klass->deinit = [](Object *o) {
+                delete *o->val<std::mutex*>();
+            };
             break;
         case 0x1f3b0:
             klass->valueSize = sizeof(std::mt19937_64);
