@@ -505,4 +505,4 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
     stream_.consumeToken(TokenType::Identifier);
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

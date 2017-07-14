@@ -34,6 +34,6 @@ private:
     TokenStream &stream_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* RecompilationPoint_hpp */

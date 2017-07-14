@@ -16,4 +16,4 @@ int ValueTypeVTIProvider::next() {
     return Function::nextFunctionVti();
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

@@ -167,4 +167,4 @@ void Class::finalize() {
     TypeDefinitionFunctional::finalizeProtocols(classType, &methodVtiProvider_);
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

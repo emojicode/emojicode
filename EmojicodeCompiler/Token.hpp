@@ -63,6 +63,6 @@ private:
     EmojicodeString value_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Token_hpp */

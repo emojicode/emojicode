@@ -24,4 +24,4 @@ void Variable::mutate(const SourcePosition &p) {
     mutated_ = true;
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

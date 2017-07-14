@@ -27,4 +27,4 @@ void Scoper::reduceOffsetBy(int size) {
     nextOffset_ -= size;
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

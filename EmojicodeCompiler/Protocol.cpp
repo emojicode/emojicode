@@ -27,4 +27,4 @@ void Protocol::addMethod(Function *method) {
     TypeDefinitionFunctional::addMethod(method);
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

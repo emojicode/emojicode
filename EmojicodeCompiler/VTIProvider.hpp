@@ -48,6 +48,6 @@ private:
     int vtiCount_ = 0;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* VTIProvider_hpp */

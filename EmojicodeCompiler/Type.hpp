@@ -248,6 +248,6 @@ private:
     void sortMultiProtocolType();
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Type_hpp */

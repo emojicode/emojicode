@@ -26,6 +26,6 @@ enum class FunctionPAGMode {
     BoxingLayer,
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* FunctionPAGMode_h */

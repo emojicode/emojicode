@@ -253,4 +253,4 @@ TokenStream lex(const std::string &path) {
     return TokenStream(tokens);
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

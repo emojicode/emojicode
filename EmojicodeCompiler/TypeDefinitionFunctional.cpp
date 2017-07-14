@@ -205,4 +205,4 @@ void TypeDefinitionFunctional::finalizeProtocols(const Type &type, VTIProvider *
     }
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

@@ -16,6 +16,6 @@ namespace EmojicodeCompiler {
 /** Generates the bytecode for the program and writes with the given writer. */
 void generateCode(Writer &writer);
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* CodeGenerator_hpp */

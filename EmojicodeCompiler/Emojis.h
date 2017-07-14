@@ -118,6 +118,6 @@ enum Emojis {
     E_TRIANGLE_POINTED_DOWN = 0x1F53B,
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Emojis_h */

@@ -56,6 +56,6 @@ private:
     bool primitive_ = false;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* ValueType_hpp */

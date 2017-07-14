@@ -64,6 +64,6 @@ private:
     Variable *originVariable_ = nullptr;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* TypeExpectation_hpp */

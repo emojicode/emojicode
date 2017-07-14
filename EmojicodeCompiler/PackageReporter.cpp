@@ -268,4 +268,4 @@ void reportPackage(Package *package) {
     printf("]}");
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

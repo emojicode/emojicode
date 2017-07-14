@@ -32,6 +32,6 @@ private:
     std::map<std::vector<Type>, uint32_t> genericIds_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* BoxIDProvider_hpp */

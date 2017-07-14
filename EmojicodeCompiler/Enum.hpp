@@ -36,6 +36,6 @@ private:
     long valuesCounter = 0;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Enum_hpp */

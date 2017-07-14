@@ -12,4 +12,4 @@ namespace EmojicodeCompiler {
 
 uint32_t BoxIDProvider::boxIds = 3;
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

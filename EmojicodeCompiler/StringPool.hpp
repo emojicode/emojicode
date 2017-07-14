@@ -38,6 +38,6 @@ private:
     std::vector<EmojicodeString> strings_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* StringPool_hpp */

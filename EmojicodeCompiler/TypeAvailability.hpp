@@ -31,6 +31,6 @@ inline bool isStatic(TypeAvailability t) {
     return t == TypeAvailability::StaticAndUnavailable || t == TypeAvailability::StaticAndAvailabale;
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* TypeAvailability_hpp */

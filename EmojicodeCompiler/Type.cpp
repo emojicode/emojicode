@@ -676,4 +676,4 @@ std::string Type::toString(const TypeContext &typeContext, bool optionalAndPacka
     return string;
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

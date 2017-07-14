@@ -32,6 +32,6 @@ private:
     Scope scope_ = Scope(this);
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* ScoperWithScope_hpp */

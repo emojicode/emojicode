@@ -92,6 +92,6 @@ private:
     SourcePosition position_ = SourcePosition(0, 0, "");
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* PackageParser_hpp */

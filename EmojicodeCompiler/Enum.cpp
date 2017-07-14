@@ -26,4 +26,4 @@ void Enum::addValueFor(const EmojicodeString &c, const SourcePosition &position,
     map_.emplace(c, std::pair<long, EmojicodeString>(valuesCounter++, documentation));
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

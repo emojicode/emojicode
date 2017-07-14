@@ -81,6 +81,6 @@ private:
     Branch *currentBranch_ = &mainBranch_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* PathAnalyser_hpp */

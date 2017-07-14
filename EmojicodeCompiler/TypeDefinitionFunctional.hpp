@@ -136,6 +136,6 @@ private:
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* TypeDefinitionFunctional_hpp */

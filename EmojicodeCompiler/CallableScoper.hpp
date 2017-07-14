@@ -74,6 +74,6 @@ private:
     int maxInitializationLevel_ = 1;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* CallableScoper_hpp */

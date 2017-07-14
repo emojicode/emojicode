@@ -50,6 +50,6 @@ private:
     SourcePosition position_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* TypeDefinition_hpp */

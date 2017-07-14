@@ -108,6 +108,6 @@ private:
     EmojicodeString documentation_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Package_hpp */

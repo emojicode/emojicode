@@ -64,4 +64,4 @@ void FunctionWriterInsertionPoint::insert(std::initializer_list<EmojicodeInstruc
     index_ += values.size();
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

@@ -40,6 +40,6 @@ private:
     size_t captureId_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* CapturingCallableScoper_hpp */

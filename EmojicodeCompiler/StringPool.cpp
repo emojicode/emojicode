@@ -21,4 +21,4 @@ EmojicodeInstruction StringPool::poolString(const EmojicodeString &string) {
     return static_cast<EmojicodeInstruction>(strings_.size() - 1);
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

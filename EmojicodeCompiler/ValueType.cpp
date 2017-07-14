@@ -33,4 +33,4 @@ void ValueType::finalize() {
     TypeDefinitionFunctional::finalizeProtocols(Type(this, false), &vtiProvider_);
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

@@ -242,4 +242,4 @@ void generateCode(Writer &writer) {
     }
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

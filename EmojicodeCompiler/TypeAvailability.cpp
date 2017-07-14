@@ -17,4 +17,4 @@ void notStaticError(TypeAvailability t, const SourcePosition &p, const char *nam
     }
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

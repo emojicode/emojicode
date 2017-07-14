@@ -1348,4 +1348,4 @@ FunctionPAG::FunctionPAG(Function &function, Type contextType, FunctionWriter &w
     : AbstractParser(function.package(), function.tokenStream()), function_(function), writer_(writer), scoper_(scoper),
     typeContext_(typeContextForType(std::move(contextType))) {}
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

@@ -44,4 +44,4 @@ const Token& TokenStream::requireIdentifier(EmojicodeChar ch) {
     return token;
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

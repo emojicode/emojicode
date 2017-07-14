@@ -75,6 +75,6 @@ private:
     Scoper *scoper_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Scope_hpp */

@@ -90,4 +90,4 @@ void Scope::recommendFrozenVariables() const {
     }
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

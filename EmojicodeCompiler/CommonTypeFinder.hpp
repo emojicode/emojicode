@@ -27,6 +27,6 @@ private:
     std::vector<Type> commonProtocols_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* CommonTypeFinder_hpp */

@@ -19,6 +19,6 @@ public:
         : CompilerError(p, "Variable \"%s\" not defined.", name.utf8().c_str()) {};
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* VariableNotFoundError_hpp */

@@ -33,6 +33,6 @@ private:
     std::vector<Type> *functionGenericArguments_ = nullptr;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* TypeContext_hpp */

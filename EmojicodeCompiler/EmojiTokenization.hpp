@@ -30,7 +30,7 @@ bool isRegionalIndicator(EmojicodeChar ch);
 
 bool isValidEmoji(EmojicodeString string);
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* EmojiTokenization_hpp */
 

@@ -20,4 +20,4 @@ CompilerError::CompilerError(SourcePosition p, const char *err, ...) : position_
     va_end(list);
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

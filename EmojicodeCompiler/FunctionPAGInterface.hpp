@@ -53,6 +53,6 @@ public:
     virtual void popScope() = 0;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* FunctionPAGInterface_hpp */

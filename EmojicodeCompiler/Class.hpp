@@ -83,6 +83,6 @@ private:
     void handleRequiredInitializer(Initializer *init) override;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Class_hpp */

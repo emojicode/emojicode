@@ -15,6 +15,6 @@ namespace EmojicodeCompiler {
 
 void reportPackage(Package *package);
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* PackageReporter_hpp */

@@ -528,4 +528,4 @@ Type pagIdentityCheck(const Token &token, const TypeExpectation &expectation, Fu
     return Type::boolean();
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

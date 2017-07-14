@@ -32,6 +32,6 @@ private:
     void syncSize();
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Scoper_hpp */

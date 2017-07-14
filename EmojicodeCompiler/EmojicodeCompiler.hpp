@@ -61,6 +61,6 @@ void printError(const CompilerError &ce);
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* EmojicodeCompiler_hpp */

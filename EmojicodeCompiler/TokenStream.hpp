@@ -55,6 +55,6 @@ private:
     size_t index_ = 0;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* TokenStream_hpp */

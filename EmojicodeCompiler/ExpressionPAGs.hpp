@@ -34,6 +34,6 @@ Type pagInstatiation(const Token &token, const TypeExpectation &expectation, Fun
 Type pagSuperMethod(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag);
 Type pagIdentityCheck(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag);
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* ExpressionPAGs_hpp */

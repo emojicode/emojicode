@@ -64,6 +64,6 @@ private:
     Function *destinationFunction_ = nullptr;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* BoxingLayer_hpp */

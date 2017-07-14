@@ -71,4 +71,4 @@ ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, const 
     throw VariableNotFoundError(errorPosition, name);
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

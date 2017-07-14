@@ -101,6 +101,6 @@ private:
     uint32_t oWrittenCoins;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Writer_hpp */

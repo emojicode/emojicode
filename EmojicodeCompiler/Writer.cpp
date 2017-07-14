@@ -81,4 +81,4 @@ void Writer::finish() {
     }
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

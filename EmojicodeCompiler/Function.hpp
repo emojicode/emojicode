@@ -263,6 +263,6 @@ private:
     std::vector<EmojicodeString> argumentsToVariables_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Function_hpp */

@@ -161,6 +161,6 @@ private:
     }
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* FunctionPAG_hpp */

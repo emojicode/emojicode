@@ -135,4 +135,4 @@ void Package::loadInto(Package *destinationPackage, const EmojicodeString &ns, c
     }
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

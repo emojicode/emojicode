@@ -72,4 +72,4 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p) const {
     return commonType_;
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

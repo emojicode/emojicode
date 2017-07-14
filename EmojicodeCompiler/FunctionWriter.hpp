@@ -109,6 +109,6 @@ private:
     FunctionWriter *writer_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* FunctionWriter_h */

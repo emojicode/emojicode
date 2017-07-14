@@ -33,6 +33,6 @@ private:
     static uint_fast16_t nextIndex;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Protocol_hpp */

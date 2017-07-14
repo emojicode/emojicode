@@ -183,4 +183,4 @@ Type Function::type() const {
     return t;
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

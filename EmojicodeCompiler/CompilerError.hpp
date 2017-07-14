@@ -24,6 +24,6 @@ private:
     char error_[450];
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* CompilerError_hpp */

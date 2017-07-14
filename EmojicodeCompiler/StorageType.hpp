@@ -17,6 +17,6 @@ enum class StorageType {
     Box,
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* StorageType_hpp */

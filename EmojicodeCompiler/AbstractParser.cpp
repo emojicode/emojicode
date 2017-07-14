@@ -296,4 +296,4 @@ void AbstractParser::parseBodyBlock(Function *function) {
     }
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

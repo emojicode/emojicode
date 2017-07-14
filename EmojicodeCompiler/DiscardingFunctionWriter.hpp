@@ -31,6 +31,6 @@ public:
 //    virtual void writeDoubleCoin(double val, SourcePosition p) override {}
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* DiscardingFunctionWriter_hpp */

@@ -34,4 +34,4 @@ void CapturingCallableScoper::postArgumentsHook() {
     captureId_ = reserveVariable(capturedScoper_.fullSize());
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler

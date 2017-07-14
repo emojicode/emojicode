@@ -16,6 +16,6 @@ namespace EmojicodeCompiler {
 
 TokenStream lex(const std::string &path);
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif /* Lexer_hpp */

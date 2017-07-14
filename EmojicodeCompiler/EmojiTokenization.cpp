@@ -113,4 +113,4 @@ bool isValidEmoji(EmojicodeString string) {
     return string.back() != 0x200D;
 }
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
