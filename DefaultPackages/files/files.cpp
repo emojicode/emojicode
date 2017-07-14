@@ -10,6 +10,7 @@
 #include "../../EmojicodeReal-TimeEngine/Thread.hpp"
 #include "../../EmojicodeReal-TimeEngine/String.hpp"
 #include "../../EmojicodeReal-TimeEngine/Data.hpp"
+#include "../../EmojicodeReal-TimeEngine/Class.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <cerrno>
@@ -300,14 +301,10 @@ LinkingTable {
     fileFlush,
 };
 
-extern "C" Emojicode::Marker markerPointerForClass(EmojicodeChar cl) {
-    return NULL;
-}
-
-extern "C" uint_fast32_t sizeForClass(Emojicode::Class *cl, EmojicodeChar name) {
+extern "C" void prepareClass(Emojicode::Class *klass, EmojicodeChar name) {
     switch (name) {
         case 0x1F4C4:
-            return sizeof(FILE*);
+            klass->valueSize = sizeof(FILE*);
+            break;
     }
-    return 0;
 }

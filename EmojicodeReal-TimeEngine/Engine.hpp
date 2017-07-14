@@ -105,12 +105,10 @@ struct Closure {
 /// This function must only be used when recovery is impossible, i.e. unwrapping Nothingness, unknown instruction etc.
 [[noreturn]] void error(const char *err, ...);
 
-typedef Marker (*MarkerPointerForClass)(EmojicodeChar cl);
-typedef uint_fast32_t (*SizeForClassFunction)(Class *cl, EmojicodeChar name);
+typedef void (*PrepareClassFunction)(Class *cl, EmojicodeChar name);
 
 extern FunctionFunctionPointer sLinkingTable[100];
-Marker markerPointerForClass(EmojicodeChar cl);
-uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name);
+void sPrepareClass(Class *klass, EmojicodeChar name);
 
 }
 

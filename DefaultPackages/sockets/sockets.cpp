@@ -10,6 +10,7 @@
 #include "../../EmojicodeReal-TimeEngine/Thread.hpp"
 #include "../../EmojicodeReal-TimeEngine/String.hpp"
 #include "../../EmojicodeReal-TimeEngine/Data.hpp"
+#include "../../EmojicodeReal-TimeEngine/Class.hpp"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -144,17 +145,14 @@ LinkingTable {
     serverInitWithPort,
 };
 
-extern "C" Emojicode::Marker markerPointerForClass(EmojicodeChar cl) {
-    return NULL;
-}
-
-extern "C" uint_fast32_t sizeForClass(Emojicode::Class *cl, EmojicodeChar name) {
+extern "C" void prepareClass(Emojicode::Class *klass, EmojicodeChar name) {
     switch (name) {
         case 0x1f3c4: //🏄
-            return sizeof(int);
+            klass->valueSize = sizeof(int);
+            break;
         case 0x1f4de: //📞
-            CL_SOCKET = cl;
-            return sizeof(int);
+            CL_SOCKET = klass;
+            klass->valueSize = sizeof(int);
+            break;
     }
-    return 0;
 }

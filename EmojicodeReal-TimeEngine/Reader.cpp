@@ -37,8 +37,7 @@ EmojicodeInstruction readInstruction(FILE *in) {
 }
 
 PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor,
-                                FunctionFunctionPointer **linkingTable, MarkerPointerForClass *mpfc,
-                                SizeForClassFunction *sfch) {
+                                FunctionFunctionPointer **linkingTable, PrepareClassFunction *prepareClass) {
     char *path;
     asprintf(&path, "%s/%s-v%d/%s.%s", packageDirectory, name, major, name, "so");
 
@@ -51,8 +50,7 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
     }
 
     *linkingTable = static_cast<FunctionFunctionPointer *>(dlsym(package, "linkingTable"));
-    *mpfc = reinterpret_cast<MarkerPointerForClass>(dlsym(package, "markerPointerForClass"));
-    *sfch = reinterpret_cast<SizeForClassFunction>(dlsym(package, "sizeForClass"));
+    *prepareClass = reinterpret_cast<PrepareClassFunction>(dlsym(package, "prepareClass"));
 
     PackageVersion pv = *static_cast<PackageVersion *>(dlsym(package, "version"));
 
@@ -149,15 +147,13 @@ void readPackage(FILE *in) {
     static uint16_t classNextIndex = 0;
 
     FunctionFunctionPointer *linkingTable;
-    MarkerPointerForClass mpfc;
-    SizeForClassFunction sfch;
+    PrepareClassFunction prepareClass;
 
     uint_fast8_t packageNameLength = fgetc(in);
     if (packageNameLength == 0) {
         DEBUG_LOG("Package does not have native binary");
         linkingTable = sLinkingTable;
-        mpfc = markerPointerForClass;
-        sfch = sizeForClass;
+        prepareClass = sPrepareClass;
     }
     else {
         DEBUG_LOG("Package has native binary");
@@ -169,7 +165,7 @@ void readPackage(FILE *in) {
 
         DEBUG_LOG("Package is named %s and has version %d.%d.x", name, major, minor);
 
-        PackageLoadingState s = packageLoad(name, major, minor, &linkingTable, &mpfc, &sfch);
+        PackageLoadingState s = packageLoad(name, major, minor, &linkingTable, &prepareClass);
 
         if (s == PACKAGE_INAPPROPRIATE_MAJOR) {
             error("Installed version of package \"%s\" is incompatible with required version %d.%d. (How did you made Emojicode load this version of the package?!)", name, major, minor);
@@ -237,14 +233,15 @@ void readPackage(FILE *in) {
 
         readProtocolTable(klass->protocolTable, klass->methodsVtable, in);
 
-        klass->mark = mpfc(name);
-        size_t size = sfch(klass, name);
-        klass->valueSize = klass->superclass && klass->superclass->valueSize ? klass->superclass->valueSize : size;
+        if (klass->superclass && klass->superclass->valueSize) {
+            klass->valueSize = klass->superclass->valueSize;  // Allow inheritance from class with value, e.g. list
+        }
+        prepareClass(klass, name);
         klass->size = alignSize(sizeof(Object) + klass->valueSize + instanceVariableCount * sizeof(Value));
 
         klass->instanceVariableRecordsCount = readUInt16(in);
         klass->instanceVariableRecords = new FunctionObjectVariableRecord[klass->instanceVariableRecordsCount];
-        for (int i = 0; i < klass->instanceVariableRecordsCount; i++) {
+        for (size_t i = 0; i < klass->instanceVariableRecordsCount; i++) {
             klass->instanceVariableRecords[i].variableIndex = readUInt16(in);
             klass->instanceVariableRecords[i].condition = readUInt16(in);
             klass->instanceVariableRecords[i].type = static_cast<ObjectVariableType>(readUInt16(in));

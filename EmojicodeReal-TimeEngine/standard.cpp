@@ -16,6 +16,7 @@
 #include "Thread.hpp"
 #include "ThreadsManager.hpp"
 #include "Memory.hpp"
+#include "Class.hpp"
 #include <algorithm>
 #include <cinttypes>
 #include <cmath>
@@ -134,8 +135,8 @@ void threadStart(Thread *thread, RetainedObjectPointer callable) {
 static void initThread(Thread *thread) {
     auto newThread = ThreadsManager::allocateThread();
     auto callable = thread->variable(0).object;
-    // TODO: leak below
     *thread->thisObject()->val<std::thread*>() = new std::thread(threadStart, newThread, newThread->retain(callable));
+    registerForDeinitialization(thread->thisObject());
     thread->returnFromFunction(thread->thisContext());
 }
 
@@ -452,42 +453,43 @@ FunctionFunctionPointer sLinkingTable[] = {
     prngDoubleUniform,
 };
 
-uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
+void sPrepareClass(Class *klass, EmojicodeChar name) {
     switch (name) {
         case 0x1F521:
-            return sizeof(String);
+            klass->valueSize = sizeof(String);
+            klass->mark = stringMark;
+            break;
         case 0x1F368:
-            return sizeof(List);
+            klass->valueSize = sizeof(List);
+            klass->mark = listMark;
+            break;
         case 0x1F36F:
-            return sizeof(EmojicodeDictionary);
+            klass->valueSize = sizeof(EmojicodeDictionary);
+            klass->mark = dictionaryMark;
+            break;
         case 0x1F4C7:
-            return sizeof(Data);
+            klass->valueSize = sizeof(Data);
+            klass->mark = dataMark;
+            break;
         case 0x1F347:
-            return sizeof(Closure);
+            klass->valueSize = sizeof(Closure);
+            klass->mark = closureMark;
+            break;
         case 0x1f488:  //💈
-            return sizeof(std::thread*);
+            klass->valueSize = sizeof(std::thread*);
+            klass->deinit = [](Object *o) {
+                auto thread = *o->val<std::thread*>();
+                thread->detach();
+                delete thread;
+            };
+            break;
         case 0x1f510:  //🔐
-            return sizeof(pthread_mutex_t);
+            klass->valueSize = sizeof(pthread_mutex_t);
+            break;
         case 0x1f3b0:
-            return sizeof(std::mt19937_64);
+            klass->valueSize = sizeof(std::mt19937_64);
+            break;
     }
-    return 0;
-}
-
-Marker markerPointerForClass(EmojicodeChar cl) {
-    switch (cl) {
-        case 0x1F368:  // List
-            return listMark;
-        case 0x1F36F:  // Dictionary
-            return dictionaryMark;
-        case 0x1F521:
-            return stringMark;
-        case 0x1F347:
-            return closureMark;
-        case 0x1F4C7:
-            return dataMark;
-    }
-    return nullptr;
 }
 
 }  // namespace Emojicode

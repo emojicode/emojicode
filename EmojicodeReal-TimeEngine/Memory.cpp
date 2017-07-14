@@ -25,6 +25,11 @@ bool zeroingNeeded = false;
 Byte *currentHeap;
 Byte *otherHeap;
 
+Object **deinitializationList;
+std::atomic_size_t deinitializationListIndex(0);
+std::atomic_size_t deinitializationListSize(7);
+std::mutex deinitializationListResizeMutex;
+
 void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace);
 
 size_t gcThreshold = heapSize / 2;
@@ -121,12 +126,25 @@ Object* resizeArray(Object *array, size_t size, Thread *thread) {
     return object;
 }
 
+void registerForDeinitialization(Object *object) {
+    if (deinitializationListSize == deinitializationListIndex) {
+        std::lock_guard<std::mutex> lock(deinitializationListResizeMutex);
+        if (deinitializationListSize == deinitializationListIndex) {
+            auto newList = new Object*[deinitializationListSize * 2];
+            std::memcpy(newList, deinitializationList, sizeof(Object*) * deinitializationListIndex);
+            deinitializationList = newList;
+        }
+    }
+    deinitializationList[deinitializationListIndex++] = object;
+}
+
 void allocateHeap() {
     currentHeap = static_cast<Byte *>(calloc(heapSize, 1));
-    if (!currentHeap) {
+    if (currentHeap == nullptr) {
         error("Cannot allocate heap!");
     }
     otherHeap = currentHeap + (heapSize / 2);
+    deinitializationList = new Object*[7];
 }
 
 void mark(Object **oPointer) {
@@ -231,6 +249,17 @@ void gc(std::unique_lock<std::mutex> &garbageCollectionLock, size_t minSpace) {
     else {
         zeroingNeeded = true;
     }
+
+    size_t place = 0;
+    for (size_t i = 0; i < deinitializationListIndex; i++) {
+        if (inCurrentHeap(deinitializationList[i]->newLocation)) {
+            deinitializationList[place++] = deinitializationList[i]->newLocation;
+        }
+        else {
+            deinitializationList[i]->klass->deinit(deinitializationList[i]);
+        }
+    }
+    deinitializationListIndex = place;
 
     pausingThreadsCount--;
     pauseThreads = false;

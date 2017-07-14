@@ -17,7 +17,7 @@ struct Class {
     Class() {}
     explicit Class(void (*mark)(Object *)) : instanceVariableRecords(nullptr), mark(mark), size(0), valueSize(0) {}
 
-    /** Returns true if @c a inherits from class @c from */
+    /// Returns true if @c a inherits from class @c from
     bool inheritsFrom(Class *from) const;
 
     Function **methodsVtable;
@@ -26,13 +26,14 @@ struct Class {
     ProtocolDispatchTable protocolTable;
 
     /** The class’s superclass */
-    struct Class *superclass;
+    Class *superclass;
 
     ObjectVariableRecord *instanceVariableRecords;
     unsigned int instanceVariableRecordsCount;
 
     /** Marker FunctionPointer for GC */
-    void (*mark)(Object *self);
+    void (*mark)(Object *self) = nullptr;
+    void (*deinit)(Object *self);
 
     /// The exact size of the object when allocated.
     /// Equivalent to @c alignSize(valueSize + size for instance variables + sizeof(Object))

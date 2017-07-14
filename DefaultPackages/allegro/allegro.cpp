@@ -9,6 +9,7 @@
 #include "../../EmojicodeReal-TimeEngine/EmojicodeAPI.hpp"
 #include "../../EmojicodeReal-TimeEngine/String.hpp"
 #include "../../EmojicodeReal-TimeEngine/Thread.hpp"
+#include "../../EmojicodeReal-TimeEngine/Class.hpp"
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_audio.h>
@@ -477,52 +478,54 @@ LinkingTable {
     mouseAxesEventY,
 };
 
-extern "C" Emojicode::Marker markerPointerForClass(EmojicodeChar  /*cl*/) {
-    return nullptr;
-}
-
-extern "C" uint_fast32_t sizeForClass(Class *cl, EmojicodeChar name) {
+extern "C" void prepareClass(Class *klass, EmojicodeChar name) {
     switch (name) {
         case 0x1f3d4:
-            CL_APPLICATION = cl;
-            return 0;
+            CL_APPLICATION = klass;
+            break;
         case 0x1f4fa: //📺
-            return sizeof(ALLEGRO_DISPLAY*);
+            klass->valueSize = sizeof(ALLEGRO_DISPLAY*);
+            break;
         case 0x1f3a8: //🎨
-            return sizeof(ALLEGRO_COLOR);
+            klass->valueSize = sizeof(ALLEGRO_COLOR);
+            break;
         case 0x1f5bc: //🖼
-            CL_BITMAP = cl;
-            return sizeof(ALLEGRO_BITMAP*);
+            CL_BITMAP = klass;
+            klass->valueSize = sizeof(ALLEGRO_BITMAP*);
+            break;
         case 0x1f549: //🕉
-            return sizeof(ALLEGRO_FONT*);
+            klass->valueSize = sizeof(ALLEGRO_FONT*);
+            break;
         case 0x1f5c3: //🗃
-            return sizeof(ALLEGRO_EVENT_QUEUE*);
+            klass->valueSize = sizeof(ALLEGRO_EVENT_QUEUE*);
+            break;
         case 0x1f389: //🎉
-            CL_EVENT = cl;
-            return sizeof(ALLEGRO_EVENT);
+            CL_EVENT = klass;
+            klass->valueSize = sizeof(ALLEGRO_EVENT);
+            break;
         case 0x1f4e9: //📩
-            CL_EVENT_KEY_CHAR = cl;
+            CL_EVENT_KEY_CHAR = klass;
             break;
         case 0x1f4e4: //📤
-            CL_EVENT_KEY_UP = cl;
+            CL_EVENT_KEY_UP = klass;
             break;
         case 0x1f4e5: //📥
-            CL_EVENT_KEY_DOWN = cl;
+            CL_EVENT_KEY_DOWN = klass;
             break;
         case 0x2747: //❇
-            CL_EVENT_MOUSE_AXES = cl;
+            CL_EVENT_MOUSE_AXES = klass;
             break;
         case 0x1f51b: //🔛
-            CL_EVENT_MOUSE_DOWN = cl;
+            CL_EVENT_MOUSE_DOWN = klass;
             break;
         case 0x1f51d: //🔝
-            CL_EVENT_MOUSE_UP = cl;
+            CL_EVENT_MOUSE_UP = klass;
             break;
         case 0x1f6ce: //🛎
-            CL_EVENT_TIMER = cl;
+            CL_EVENT_TIMER = klass;
             break;
         case 0x1f3b6: //🎶
-            return sizeof(ALLEGRO_SAMPLE*);
+            klass->valueSize = sizeof(ALLEGRO_SAMPLE*);
+            break;
     }
-    return 0;
 }
