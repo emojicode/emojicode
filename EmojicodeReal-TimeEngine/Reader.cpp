@@ -233,9 +233,8 @@ void readPackage(FILE *in) {
 
         readProtocolTable(klass->protocolTable, klass->methodsVtable, in);
 
-        if (klass->superclass && klass->superclass->valueSize) {
-            klass->valueSize = klass->superclass->valueSize;  // Allow inheritance from class with value, e.g. list
-        }
+        // Allow inheritance from class with value, e.g. list
+        klass->valueSize = klass->superclass && klass->superclass->valueSize ? klass->superclass->valueSize : 0;
         prepareClass(klass, name);
         klass->size = alignSize(sizeof(Object) + klass->valueSize + instanceVariableCount * sizeof(Value));
 
