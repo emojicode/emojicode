@@ -7,22 +7,20 @@
 //
 
 #include "../../EmojicodeReal-TimeEngine/EmojicodeAPI.hpp"
-#include "../../EmojicodeReal-TimeEngine/Thread.hpp"
-#include "../../EmojicodeReal-TimeEngine/String.hpp"
-#include "../../EmojicodeReal-TimeEngine/Data.hpp"
 #include "../../EmojicodeReal-TimeEngine/Class.hpp"
+#include "../../EmojicodeReal-TimeEngine/Data.hpp"
+#include "../../EmojicodeReal-TimeEngine/String.hpp"
+#include "../../EmojicodeReal-TimeEngine/Thread.hpp"
+#include <cerrno>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
-#include <cerrno>
+#include <cstring>
+#include <ftw.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <cstring>
-#include <climits>
-#include <ftw.h>
 
 using Emojicode::Thread;
-using Emojicode::Value;
-using Emojicode::String;
 using Emojicode::Data;
 using Emojicode::stringToCString;
 
@@ -41,10 +39,10 @@ bool nothingnessOrErrorEnum(bool success, Thread *thread) {
         thread->returnNothingnessFromFunction();
         return false;
     }
-    else {
+    
         thread->returnErrorFromFunction(errnoToError());
         return true;
-    }
+    
 }
 
 void filesMkdir(Thread *thread) {
@@ -83,7 +81,7 @@ void filesRmdir(Thread *thread) {
     nothingnessOrErrorEnum(state == 0, thread);
 }
 
-int filesRecursiveRmdirHelper(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf){
+int filesRecursiveRmdirHelper(const char *fpath, const struct stat * /*sb*/, int typeflag, struct FTW * /*ftwbuf*/){
     int state;
 
     if (typeflag == FTW_F || typeflag == FTW_SL || typeflag == FTW_SLN) {
@@ -106,7 +104,7 @@ void filesRecursiveRmdir(Thread *thread) {
 }
 
 void filesSize(Thread *thread) {
-    struct stat st;
+    struct stat st{};
     int state = stat(stringToCString(thread->variable(0).object), &st);
 
     if (state == 0) {
@@ -136,11 +134,11 @@ void filesRealpath(Thread *thread) {
 void fileDataPut(Thread *thread) {
     FILE *file = fopen(stringToCString(thread->variable(0).object), "wb");
 
-    if (nothingnessOrErrorEnum(file != NULL, thread)) {
+    if (nothingnessOrErrorEnum(file != nullptr, thread)) {
         return;
     }
 
-    Data *d = thread->variable(1).object->val<Data>();
+    auto *d = thread->variable(1).object->val<Data>();
 
     fwrite(d->bytes, 1, d->length, file);
 
@@ -151,7 +149,7 @@ void fileDataPut(Thread *thread) {
 void fileDataGet(Thread *thread) {
     FILE *file = fopen(stringToCString(thread->variable(0).object), "rb");
 
-    if (file == NULL) {
+    if (file == nullptr) {
         thread->returnErrorFromFunction(errnoToError());
         return;
     }
@@ -162,7 +160,7 @@ void fileDataGet(Thread *thread) {
 
     auto bytesObject = thread->retain(Emojicode::newArray(length));
     fread(bytesObject->val<char>(), 1, length, file);
-    if (ferror(file)) {
+    if (ferror(file) != 0) {
         fclose(file);
         thread->release(1);
         thread->returnNothingnessFromFunction();
@@ -171,7 +169,7 @@ void fileDataGet(Thread *thread) {
     fclose(file);
 
     Emojicode::Object *obj = Emojicode::newObject(Emojicode::CL_DATA);
-    Data *data = obj->val<Data>();
+    auto *data = obj->val<Data>();
     data->length = length;
     data->bytesObject = bytesObject.unretainedPointer();
     data->bytes = bytesObject->val<char>();
@@ -204,7 +202,7 @@ void fileStderrGet(Thread *thread) {
 
 void fileOpenWithMode(Thread *thread, const char *mode) {
     FILE *f = fopen(stringToCString(thread->variable(0).object), mode);
-    if (f) {
+    if (f != nullptr) {
         file(thread->thisObject()) = f;
         thread->returnOEValueFromFunction(thread->thisContext());
     }
@@ -223,7 +221,7 @@ void fileForReading(Thread *thread) {
 
 void fileWriteData(Thread *thread) {
     FILE *f = file(thread->thisObject());
-    Data *d = thread->variable(0).object->val<Data>();
+    auto *d = thread->variable(0).object->val<Data>();
 
     fwrite(d->bytes, 1, d->length, f);
     nothingnessOrErrorEnum(ferror(f) == 0, thread);
@@ -242,7 +240,7 @@ void fileReadData(Thread *thread) {
     }
 
     Emojicode::Object *obj = Emojicode::newObject(Emojicode::CL_DATA);
-    Data *data = obj->val<Data>();
+    auto *data = obj->val<Data>();
     data->length = n;
     data->bytesObject = bytesObject.unretainedPointer();
     data->bytes = bytesObject->val<char>();
