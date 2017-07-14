@@ -1,4 +1,4 @@
-# Emojicode ![Codeship](https://app.codeship.com/projects/edbc3220-f394-0134-fad2-66135ababc06/status) [![Join the chat at https://gitter.im/emojicode/emojicode](https://badges.gitter.im/emojicode/emojicode.svg)](https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Emojicode [ ![Codeship Status for emojicode/emojicode](https://app.codeship.com/projects/edbc3220-f394-0134-fad2-66135ababc06/status?branch=master)](https://app.codeship.com/projects/209932) [![Join the chat at https://gitter.im/emojicode/emojicode](https://badges.gitter.im/emojicode/emojicode.svg)](https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Emojicode is an open source, high-level, multi-paradigm
 programming language consisting of emojis. It features Object-Orientation, Optionals, Generics and Closures.
@@ -19,22 +19,24 @@ Follow Emojicode’s Twitter account
 
 ## 🔨 Building from source
 
-If you don’t want to use the prebuilt binaries, you can of course also build
-Emojicode from source.
+If you don’t want to use the prebuilt binaries or want to work on Emojicode, you
+can of course also build Emojicode from source.
 
 **These build instructions only apply to the latest code in the master branch.
 To build previous versions, please consult the according README.md by cloning
 the repository and checking out a version: `git checkout v0.3`**
 
+### Building locally
+
 Prerequisites (earlier versions might work but are not tested):
 
 - clang and clang++ 3.9 or newer, or
 - gcc and g++ 5.4 or newer
-- CMake 3.5.1 and (preferably) Ninja
-- Python 3.5.2 or above to pack for distribution and run tests
+- CMake 3.5.1 or newer and (preferably) Ninja
+- Python 3.5.2 or newer (for tests and packaging)
 - Allegro 5 to compile the allegro package
   - `sudo apt-get install liballegro5-dev` on Debian/Ubuntu
-  - `brew install allegro` on OS X
+  - `brew install allegro` on macOS
 
 Steps:
 
@@ -46,24 +48,20 @@ Steps:
    cd emojicode
    ```
 
-2.  Create a `build` directory and run CMake in it:
+2. Create a `build` directory and run CMake in it:
 
-  ```
-  mkdir build
-  cd build
-  cmake .. -GNinja
-  ```
+   ```
+   mkdir build
+   cd build
+   cmake .. -GNinja
+   ```
 
-  You can specify the heap size in bytes, which defaults to 512MB, with
-  `-DheapSize` and the default package search path with
-  `-DdefaultPackagesDirectory` like so:
+   You can specify the heap size in bytes, which defaults to 512MB, with
+   `-DheapSize` and the default package search path with
+   `-DdefaultPackagesDirectory`.
 
-  ```
-  cmake -DheapSize=128000000 -DdefaultPackagesDirectory=/opt/strange/place .. -GNinja
-  ```
-
-  You can of course also run CMake in another directory or use another build
-  system than Ninja. Refer to the CMake documentation for more information.
+   You can of course also run CMake in another directory or use another build
+   system than Ninja. Refer to the CMake documentation for more information.
 
 3. Build the Compiler and Real-Time Engine:
 
@@ -77,7 +75,59 @@ Steps:
    ninja tests
    ```
 
-   and take the distribution package created inside the build directory.
+5. The binaries are ready for use!
+   You can the perform a magic installation right away
+
+   ```
+   ninja magicinstall
+   ```
+
+   or just package the binaries and headers properly
+
+   ```
+   ninja dist
+   ```
+
+   To create a distribution archive you must call the dist script yourself
+   (e.g. `python3 ../dist.py .. archive`).
+
+### Building in Docker container
+
+This repository comes with two Dockerfiles `DockerfileClang` and
+`DockerfileGCC`, which are used by our continuous integration service. However,
+you can also use them to build Emojicode.
+
+Prerequisites:
+- Docker
+
+Steps:
+
+1. Clone Emojicode (or download the source code and extract it) and navigate
+  into it:
+
+   ```
+   git clone https://github.com/emojicode/emojicode
+   cd emojicode
+   ```
+2. Build and create a container
+
+   ```
+   docker build -f DockerfileClang -t emojicode_clang .
+   docker create --name emojicontainer -ti emojicode_clang bash
+   ```
+
+3. Start and enter the container:
+
+   ```
+   docker start -ai emojicontainer
+   ```
+
+4. You can now build Emojicode:
+
+   ```
+   mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests
+   ```
+
 
 ## 📝 Contributions
 
