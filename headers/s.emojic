@@ -451,22 +451,12 @@
     before having called 🔽 results in undefined behavior.
   🌮
   🐖 🚯  🍇
-    🍮➕ index 1
+    🍮➖ index 1
     🐨 iteratee index
   🍉
 
   🐖 🍡 ➡️ 🍡🐚🍬Element 🍇
     🍎 🐕
-  🍉
-
-  🔐 🐖 🍚 ➡️ 🍨🐚Element 🍇
-    🍎 iteratee
-  🍉
-
-  🔐 🐖 🍶 ➡️ 🚂 🍇
-    🍦 i index
-    🍮➕ index 1
-    🍎 i
   🍉
 🍉
 
