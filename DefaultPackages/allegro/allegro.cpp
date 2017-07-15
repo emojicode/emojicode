@@ -10,6 +10,7 @@
 #include "../../EmojicodeReal-TimeEngine/String.hpp"
 #include "../../EmojicodeReal-TimeEngine/Thread.hpp"
 #include "../../EmojicodeReal-TimeEngine/Class.hpp"
+#include "../../EmojicodeReal-TimeEngine/Memory.hpp"
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_audio.h>
@@ -103,11 +104,8 @@ void displayInitWithDimensions(Thread *thread) {
     int w = static_cast<int>(thread->variable(0).raw);
     int h = static_cast<int>(thread->variable(1).raw);
     display(thread->thisObject()) = al_create_display(w, h);
+    Emojicode::registerForDeinitialization(thread->thisObject());
     thread->returnFromFunction(thread->thisContext());
-}
-
-void displayDe(void *v) {
-    al_destroy_display(*reinterpret_cast<ALLEGRO_DISPLAY **>(v));
 }
 
 void appFlip(Thread *thread) {
@@ -267,6 +265,7 @@ void bitmapInitFile(Thread *thread) {
     ALLEGRO_BITMAP *bmp = al_load_bitmap(path);
     if (bmp != nullptr) {
         bitmap(thread->thisObject()) = bmp;
+        Emojicode::registerForDeinitialization(thread->thisObject());
         thread->returnOEValueFromFunction(thread->thisContext());
     }
     else {
@@ -274,14 +273,11 @@ void bitmapInitFile(Thread *thread) {
     }
 }
 
-void bitmapDe(void *v) {
-    al_destroy_bitmap(*reinterpret_cast<ALLEGRO_BITMAP **>(v));
-}
-
 void bitmapInitSize(Thread *thread) {
     ALLEGRO_BITMAP *bmp = al_create_bitmap(static_cast<int>(thread->variable(0).raw), static_cast<int>(thread->variable(1).raw));
     if (bmp != nullptr) {
         bitmap(thread->thisObject()) = bmp;
+        Emojicode::registerForDeinitialization(thread->thisObject());
         thread->returnOEValueFromFunction(thread->thisContext());
     }
     else {
@@ -294,6 +290,7 @@ void fontInitFile(Thread *thread) {
     ALLEGRO_FONT *font = al_load_ttf_font(path, static_cast<int>(thread->variable(1).raw), 0);
     if (font != nullptr) {
         font(thread->thisObject()) = font;
+        Emojicode::registerForDeinitialization(thread->thisObject());
         thread->returnOEValueFromFunction(thread->thisContext());
     }
     else {
@@ -301,17 +298,10 @@ void fontInitFile(Thread *thread) {
     }
 }
 
-void fontDe(void *v) {
-    al_destroy_font(*reinterpret_cast<ALLEGRO_FONT **>(v));
-}
-
 void eventQueueInit(Thread *thread) {
     eventQueue(thread->thisObject()) = al_create_event_queue();
+    Emojicode::registerForDeinitialization(thread->thisObject());
     thread->returnFromFunction(thread->thisContext());
-}
-
-void eventQueueDe(void *v) {
-    al_destroy_event_queue(*reinterpret_cast<ALLEGRO_EVENT_QUEUE **>(v));
 }
 
 void eventQueueWait(Thread *thread) {
@@ -395,15 +385,12 @@ void sampleInitFile(Thread *thread) {
     ALLEGRO_SAMPLE *sample = al_load_sample(path);
     if (sample != nullptr) {
         sample(thread->thisObject()) = sample;
+        Emojicode::registerForDeinitialization(thread->thisObject());
         thread->returnOEValueFromFunction(thread->thisContext());
     }
     else {
         thread->returnErrorFromFunction(errnoToError());
     }
-}
-
-void sampleDe(void *v) {
-    al_destroy_sample(*reinterpret_cast<ALLEGRO_SAMPLE **>(v));
 }
 
 void samplePlay(Thread *thread) {
@@ -485,19 +472,28 @@ extern "C" void prepareClass(Class *klass, EmojicodeChar name) {
             break;
         case 0x1f4fa: //📺
             klass->valueSize = sizeof(ALLEGRO_DISPLAY*);
-            break;
-        case 0x1f3a8: //🎨
-            klass->valueSize = sizeof(ALLEGRO_COLOR);
+            klass->deinit = [](Object *object) {
+                al_destroy_display(*object->val<ALLEGRO_DISPLAY *>());
+            };
             break;
         case 0x1f5bc: //🖼
             CL_BITMAP = klass;
             klass->valueSize = sizeof(ALLEGRO_BITMAP*);
+            klass->deinit = [](Object *object) {
+                al_destroy_bitmap(*object->val<ALLEGRO_BITMAP *>());
+            };
             break;
         case 0x1f549: //🕉
             klass->valueSize = sizeof(ALLEGRO_FONT*);
+            klass->deinit = [](Object *object) {
+                al_destroy_font(*object->val<ALLEGRO_FONT *>());
+            };
             break;
         case 0x1f5c3: //🗃
             klass->valueSize = sizeof(ALLEGRO_EVENT_QUEUE*);
+            klass->deinit = [](Object *object) {
+                al_destroy_event_queue(*object->val<ALLEGRO_EVENT_QUEUE *>());
+            };
             break;
         case 0x1f389: //🎉
             CL_EVENT = klass;
@@ -526,6 +522,9 @@ extern "C" void prepareClass(Class *klass, EmojicodeChar name) {
             break;
         case 0x1f3b6: //🎶
             klass->valueSize = sizeof(ALLEGRO_SAMPLE*);
+            klass->deinit = [](Object *object) {
+                al_destroy_sample(*object->val<ALLEGRO_SAMPLE *>());
+            };
             break;
     }
 }
