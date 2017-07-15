@@ -133,6 +133,7 @@ void registerForDeinitialization(Object *object) {
             auto newList = new Object*[deinitializationListSize * 2];
             std::memcpy(newList, deinitializationList, sizeof(Object*) * deinitializationListIndex);
             deinitializationList = newList;
+            deinitializationListSize = deinitializationListSize * 2;
         }
     }
     deinitializationList[deinitializationListIndex++] = object;
