@@ -435,7 +435,7 @@ Type pagInstatiation(const Token &token, const TypeExpectation &expectation, Fun
             functionPag.writer().writeInstruction(static_cast<EmojicodeInstruction>(v.second));
         }
         else {
-            functionPag.writer().writeInstruction(static_cast<EmojicodeInstruction>(v.second));
+            functionPag.writer().writeInstruction(static_cast<EmojicodeInstruction>(v.second + INT32_MAX));
         }
         type.unbox();
         functionPag.box(expectation, type, insertionPoint);
