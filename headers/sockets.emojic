@@ -42,11 +42,28 @@
 🔮 0 1
 📻
 
+🌮 Errors 🌮
 🌍 🦃 ⛈ 🍇
+  🌮 Indicates a generic error. 🌮
+  🔘⁉️
   🌮 Permission denied 🌮
   🔘 🚧
   🌮 File exists 🌮
   🔘 🗿
+  🌮 Not enough space. 🌮
+  🔘 🐁
+  🌮 Function not supported. 🌮
+  🔘 🙅
+  🌮 Mathematics argument out of domain of function. 🌮
+  🔘 ➗
+  🌮 Invalid argument. 🌮
+  🔘 🚯
+  🌮 Illegal byte sequence. 🌮
+  🔘 🛃
+  🌮 Result too large. 🌮
+  🔘 🗻
+  🌮 Operation not permitted. 🌮
+  🔘 🚷
 🍉
 
 🌮

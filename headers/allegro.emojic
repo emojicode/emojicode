@@ -18,7 +18,7 @@
 🍉
 
 🌮 Errors 🌮
-🌍 🦃 🥓 🍇
+🌍 🦃 🌩 🍇
   🌮 Indicates a generic error. 🌮
   🔘⁉️
   🌮 Permission denied 🌮
@@ -44,9 +44,9 @@
 🌮 🖼 represents a bitmap. 🌮
 🌍 🐇 🖼 🍇
   🌮 Creates a bitmap from the image at the given path. 🌮
-  🐈 🚨🥓 📄 path 🔡 📻 18
+  🐈 🚨🌩 📄 path 🔡 📻 18
   🌮 Creates a bitmap with the given height and width. 🌮
-  🐈 🚨🥓 🆕 width 🚂 height 🚂 📻 19
+  🐈 🚨🌩 🆕 width 🚂 height 🚂 📻 19
 🍉
 
 🌮
@@ -62,7 +62,7 @@
     you instead want to specify the size as the total height of glyphs in
     pixels, pass it as a negative value.
   🌮
-  🐈 🚨🥓 📄 path 🔡 size 🚂 📻 20
+  🐈 🚨🌩 📄 path 🔡 size 🚂 📻 20
 🍉
 
 🌮 ⚖ provides values to align text 🌮
@@ -181,7 +181,7 @@
     libraries are available, the full set of recognised extensions is: .wav,
     .flac, .ogg, .it, .mod, .s3m, .xm.
   🌮
-  🐈 🚨🥓 📄 path 🔡 📻 30
+  🐈 🚨🌩 📄 path 🔡 📻 30
   🌮 Starts playing the sample. 🌮
   🐖 🏁 volume 🚀 pan 🚀 speed 🚀 📻 31
 🍉

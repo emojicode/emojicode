@@ -27,9 +27,23 @@ using Emojicode::stringToCString;
 Emojicode::EmojicodeInteger errnoToError() {
     switch (errno) {
         case EACCES:
-            return 0;
-        case EEXIST:
             return 1;
+        case EEXIST:
+            return 2;
+        case ENOMEM:
+            return 3;
+        case ENOSYS:
+            return 4;
+        case EDOM:
+            return 5;
+        case EINVAL:
+            return 6;
+        case EILSEQ:
+            return 7;
+        case ERANGE:
+            return 8;
+        case EPERM:
+            return 9;
     }
     return 0;
 }

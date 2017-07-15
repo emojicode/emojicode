@@ -7,20 +7,18 @@
 //
 
 #include "../../EmojicodeReal-TimeEngine/EmojicodeAPI.hpp"
-#include "../../EmojicodeReal-TimeEngine/Thread.hpp"
-#include "../../EmojicodeReal-TimeEngine/String.hpp"
-#include "../../EmojicodeReal-TimeEngine/Data.hpp"
 #include "../../EmojicodeReal-TimeEngine/Class.hpp"
-#include <sys/socket.h>
+#include "../../EmojicodeReal-TimeEngine/Data.hpp"
+#include "../../EmojicodeReal-TimeEngine/String.hpp"
+#include "../../EmojicodeReal-TimeEngine/Thread.hpp"
 #include <arpa/inet.h>
-#include <netdb.h>
-#include <string.h>
-#include <unistd.h>
 #include <cerrno>
+#include <netdb.h>
+#include <cstring>
+#include <sys/socket.h>
+#include <unistd.h>
 
 using Emojicode::Thread;
-using Emojicode::Value;
-using Emojicode::String;
 using Emojicode::Data;
 using Emojicode::stringToCString;
 
@@ -29,9 +27,23 @@ static Emojicode::Class *CL_SOCKET;
 Emojicode::EmojicodeInteger errnoToError() {
     switch (errno) {
         case EACCES:
-            return 0;
-        case EEXIST:
             return 1;
+        case EEXIST:
+            return 2;
+        case ENOMEM:
+            return 3;
+        case ENOSYS:
+            return 4;
+        case EDOM:
+            return 5;
+        case EINVAL:
+            return 6;
+        case EILSEQ:
+            return 7;
+        case ERANGE:
+            return 8;
+        case EPERM:
+            return 9;
     }
     return 0;
 }
@@ -43,14 +55,14 @@ void serverInitWithPort(Thread *thread) {
         return;
     }
 
-    struct sockaddr_in name;
+    struct sockaddr_in name{};
     name.sin_family = PF_INET;
     name.sin_port = htons(thread->variable(0).raw);
     name.sin_addr.s_addr = htonl(INADDR_ANY);
 
     int reuse = 1;
-    if (setsockopt(listenerDescriptor, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(int)) == -1 ||
-        bind(listenerDescriptor, (struct sockaddr *)&name, sizeof(name)) == -1 ||
+    if (setsockopt(listenerDescriptor, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&reuse), sizeof(int)) == -1 ||
+        bind(listenerDescriptor, reinterpret_cast<struct sockaddr *>(&name), sizeof(name)) == -1 ||
         listen(listenerDescriptor, 10) == -1) {
         thread->returnErrorFromFunction(errnoToError());
         return;
@@ -62,9 +74,9 @@ void serverInitWithPort(Thread *thread) {
 
 void serverAccept(Thread *thread) {
     int listenerDescriptor = *thread->thisObject()->val<int>();
-    struct sockaddr_storage clientAddress;
+    struct sockaddr_storage clientAddress{};
     unsigned int addressSize = sizeof(clientAddress);
-    int connectionAddress = accept(listenerDescriptor, (struct sockaddr *)&clientAddress, &addressSize);
+    int connectionAddress = accept(listenerDescriptor, reinterpret_cast<struct sockaddr *>(&clientAddress), &addressSize);
 
     if (connectionAddress == -1) {
         thread->returnNothingnessFromFunction();
@@ -78,7 +90,7 @@ void serverAccept(Thread *thread) {
 
 void socketSendData(Thread *thread) {
     int connectionAddress = *thread->thisObject()->val<int>();
-    Data *data = thread->variable(0).object->val<Data>();
+    auto *data = thread->variable(0).object->val<Data>();
     thread->returnFromFunction(send(connectionAddress, data->bytes, data->length, 0) == -1);
 }
 
@@ -102,7 +114,7 @@ void socketReadBytes(Thread *thread) {
     }
 
     Emojicode::Object *obj = newObject(Emojicode::CL_DATA);
-    Data *data = obj->val<Data>();
+    auto *data = obj->val<Data>();
     data->length = read;
     data->bytesObject = bytesObject.unretainedPointer();
     data->bytes = data->bytesObject->val<char>();
@@ -113,19 +125,19 @@ void socketReadBytes(Thread *thread) {
 
 void socketInitWithHost(Thread *thread) {
     struct hostent *server = gethostbyname(Emojicode::stringToCString(thread->variable(0).object));
-    if (!server) {
+    if (server == nullptr) {
         thread->returnErrorFromFunction(errnoToError());
         return;
     }
 
-    struct sockaddr_in address;
+    struct sockaddr_in address{};
     memset(&address, 0, sizeof(address));
     memcpy(&address.sin_addr.s_addr, server->h_addr_list[0], server->h_length);
     address.sin_family = PF_INET;
     address.sin_port = htons(thread->variable(1).raw);
 
     int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
-    if (socketDescriptor == -1 || connect(socketDescriptor, (struct sockaddr *) &address, sizeof(address)) == -1) {
+    if (socketDescriptor == -1 || connect(socketDescriptor, reinterpret_cast<struct sockaddr *>( &address), sizeof(address)) == -1) {
         thread->returnErrorFromFunction(errnoToError());
         return;
     }
