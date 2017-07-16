@@ -99,7 +99,7 @@ void PackageParser::parse() {
                 }
 
                 // Native extensions are allowed if the class was defined in this package.
-                parseTypeDefinitionBody(type, nullptr, type.eclass()->package() == package_);
+                parseTypeDefinitionBody(type, nullptr, type.typeDefinitionFunctional()->package() == package_);
 
                 continue;
             }
