@@ -42,6 +42,7 @@ const char *packageDirectory = defaultPackagesDirectory;
 Class **classTable;
 Function **functionTable;
 ProtocolDispatchTable *protocolDispatchTableTable;
+BoxObjectVariableRecords *boxObjectVariableRecordTable;
 uint32_t protocolDTTOffset;
 
 uint_fast16_t stringPoolCount;

@@ -12,6 +12,7 @@
 namespace EmojicodeCompiler {
 
 std::vector<ValueType *> ValueType::valueTypes_;
+std::vector<std::vector<ObjectVariableInformation>> ValueType::boxObjectVariableInformation_(3);
 
 void ValueType::finalize() {
     TypeDefinitionFunctional::finalize();

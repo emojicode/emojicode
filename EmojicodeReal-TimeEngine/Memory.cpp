@@ -193,6 +193,16 @@ void markBox(Box *box) {
     }
     else if ((box->type.raw & REMOTE_MASK) != 0) {
         mark(&box->value1.object);
+        auto bvr = boxObjectVariableRecordTable[(box->type.raw & ~REMOTE_MASK)];
+        for (size_t i = 0; i < bvr.count; i++) {
+            markByObjectVariableRecord(bvr.records[i], box->value1.object->val<Value>(), i);
+        }
+    }
+    else {
+        auto bvr = boxObjectVariableRecordTable[box->type.raw];
+        for (size_t i = 0; i < bvr.count; i++) {
+            markByObjectVariableRecord(bvr.records[i], &box->value1, i);
+        }
     }
 }
 

@@ -63,6 +63,7 @@ compilation_tests = [
     "gcStressTest1",
     "gcStressTest2",
     "gcStressTest3",
+    "gcStressTest4",
     "valueTypeCopySelf",
     "valueTypeBoxCopySelf",
     "includer",

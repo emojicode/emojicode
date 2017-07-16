@@ -296,6 +296,18 @@ Function* readBytecode(FILE *in) {
         readProtocolTable(protocolDispatchTableTable[index - protocolDTTOffset], functionTable, in);
     }
 
+    size_t n = readInstruction(in);
+    boxObjectVariableRecordTable = new BoxObjectVariableRecords[n];
+    for (size_t i = 0; i < n; i++) {
+        boxObjectVariableRecordTable[i].count = readUInt16(in);
+        boxObjectVariableRecordTable[i].records = new ObjectVariableRecord[boxObjectVariableRecordTable[i].count];
+        for (size_t j = 0; j < boxObjectVariableRecordTable[i].count; j++) {
+            boxObjectVariableRecordTable[i].records[j].variableIndex = readUInt16(in);
+            boxObjectVariableRecordTable[i].records[j].condition = readUInt16(in);
+            boxObjectVariableRecordTable[i].records[j].type = static_cast<ObjectVariableType>(readUInt16(in));
+        }
+    }
+
     stringPoolCount = readUInt16(in);
     DEBUG_LOG("Reading string pool with %d strings", stringPoolCount);
     stringPool = new Object*[stringPoolCount];

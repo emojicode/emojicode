@@ -169,7 +169,7 @@ void generateCode(Writer &writer) {
         Function::compilationQueue.pop();
     }
 
-    if (BoxIDProvider::maxBoxIndetifier() > 2147483647) {
+    if (ValueType::maxBoxIndetifier() > 2147483647) {
         throw CompilerError(SourcePosition(0, 0, ""), "More than 2147483647 box identifiers in use.");
     }
 
@@ -219,6 +219,18 @@ void generateCode(Writer &writer) {
     countPlaceholder.write(vtWithProtocolsCount);
     tableSizePlaceholder.write(vtWithProtocolsCount > 0 ? biggestBoxIdentifier - smallestBoxIdentifier + 1 : 0);
     smallestPlaceholder.write(smallestBoxIdentifier);
+
+    auto binfo = ValueType::boxObjectVariableInformation();
+    writer.writeInstruction(binfo.size());
+    for (auto information : binfo) {
+        writer.writeUInt16(information.size());
+
+        for (auto info : information) {
+            writer.writeUInt16(info.index);
+            writer.writeUInt16(info.conditionIndex);
+            writer.writeUInt16(static_cast<uint16_t>(info.type));
+        }
+    }
 
     writer.writeUInt16(theStringPool.strings().size());
     for (auto string : theStringPool.strings()) {

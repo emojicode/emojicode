@@ -29,6 +29,11 @@ public:
     int to;
 };
 
+struct BoxObjectVariableRecords {
+    unsigned int count;
+    ObjectVariableRecord *records;
+};
+
 struct Block {
     /// A pointer to the first instruction
     EmojicodeInstruction *instructions;
@@ -77,6 +82,8 @@ extern Function **functionTable;
 /// The global protocol dispatch table table for value types
 extern ProtocolDispatchTable *protocolDispatchTableTable;
 extern uint32_t protocolDTTOffset;
+
+extern BoxObjectVariableRecords *boxObjectVariableRecordTable;
 
 extern uint_fast16_t stringPoolCount;
 extern Object **stringPool;
