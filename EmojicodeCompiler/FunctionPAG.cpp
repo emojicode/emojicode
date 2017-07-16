@@ -838,7 +838,7 @@ Type FunctionPAG::takeVariable(ResolvedVariable rvar, const TypeExpectation &exp
     auto returnType = rvar.variable.type();
 
     if (storageType == rvar.variable.type().storageType() &&
-        expectation.isReference() && rvar.variable.type().isReferenceWorthy()) {
+        expectation.isReference() && rvar.variable.type().isReferencable()) {
         getVTReference(rvar);
         returnType.setReference();
     }

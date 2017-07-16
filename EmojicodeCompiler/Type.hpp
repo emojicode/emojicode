@@ -205,7 +205,7 @@ public:
     bool isReference() const { return isReference_; }
     void setReference(bool v = true) { isReference_ = v; }
     /// Returns true if it makes sense to pass this value with the given storage type per reference to avoid copying.
-    bool isReferenceWorthy() const;
+    bool isReferencable() const;
     /// Returns true if the type requires a box to store important dynamic type information.
     /// A protocol box, for instance, requires a box to store dynamic type information, while
     /// class instances may, of course, be unboxed.

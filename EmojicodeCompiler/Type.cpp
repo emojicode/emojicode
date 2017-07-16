@@ -459,7 +459,7 @@ bool Type::requiresBox() const {
     }
 }
 
-bool Type::isReferenceWorthy() const {
+bool Type::isReferencable() const {
     switch (type()) {
         case TypeContent::Callable:
         case TypeContent::Class:
