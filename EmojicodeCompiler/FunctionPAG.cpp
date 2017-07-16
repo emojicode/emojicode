@@ -302,7 +302,7 @@ void FunctionPAG::box(const TypeExpectation &expectation, Type &rtype, WriteLoca
             break;
     }
 
-    if (!rtype.isReference() && expectation.isReference() && rtype.isReferenceWorthy()) {
+    if (!rtype.isReference() && expectation.isReference() && rtype.isReferencable()) {
         scoper_.pushTemporaryScope();
         int destinationID = scoper_.currentScope().allocateInternalVariable(rtype);
         insertionPoint.insert({ INS_PRODUCE_TO_AND_GET_VT_REFERENCE, EmojicodeInstruction(destinationID) });
