@@ -191,6 +191,7 @@ void FunctionPAG::flowControlBlock(bool pushScope, const std::function<void()> &
     }
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         parseStatement();
+        scoper_.clearTemporaryScope();
     }
     stream_.consumeToken();
 
@@ -341,6 +342,7 @@ FunctionWriter FunctionPAG::parseCondition(const Token &token, bool temporaryWri
         t.setReference(false);
         t.setOptional(false);
 
+        scoper_.clearTemporaryScope();
         auto &variable = scoper_.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
         variable.initialize(writer_.count());
         writer_.writeInstruction(variable.id());
@@ -763,7 +765,6 @@ void FunctionPAG::parseStatement() {
     effect = false;
     auto type = parseExprToken(token, TypeExpectation(true, false, false));
     noEffectWarning(token);
-    scoper_.clearTemporaryScope();
 }
 
 Type FunctionPAG::parseExprToken(const Token &token, TypeExpectation &&expectation) {
@@ -1243,6 +1244,7 @@ void FunctionPAG::compileCode(Scope &methodScope) {
 
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
         parseStatement();
+        scoper_.clearTemporaryScope();
 
         if (pathAnalyser.hasCertainly(PathAnalyserIncident::Returned) && !stream_.nextTokenIs(E_WATERMELON)) {
             compilerWarning(stream_.consumeToken().position(), "Dead code.");
