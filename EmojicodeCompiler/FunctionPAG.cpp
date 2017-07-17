@@ -748,6 +748,12 @@ void FunctionPAG::parseStatement() {
                 return;
             }
             case E_RED_APPLE: {
+                if (function_.returnType.type() == TypeContent::Nothingness) {
+                    pathAnalyser.recordIncident(PathAnalyserIncident::Returned);
+                    writer_.writeInstruction(INS_RETURN_WITHOUT_VALUE);
+                    return;
+                }
+
                 writer_.writeInstruction(INS_RETURN);
 
                 if (isOnlyNothingnessReturnAllowed()) {
