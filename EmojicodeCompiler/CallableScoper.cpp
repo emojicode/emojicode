@@ -13,12 +13,7 @@
 
 namespace EmojicodeCompiler {
 
-Scope& CallableScoper::currentScope() {
-    return scopes_.front();
-}
-
-void CallableScoper::popScopeAndRecommendFrozenVariables(std::vector<FunctionObjectVariableInformation> &info,
-                                                         InstructionCount count) {
+void CallableScoper::popScope(InstructionCount count) {
     auto &scope = currentScope();
     scope.recommendFrozenVariables();
     reduceOffsetBy(static_cast<int>(scope.size()));
@@ -26,7 +21,7 @@ void CallableScoper::popScopeAndRecommendFrozenVariables(std::vector<FunctionObj
     for (Scope &scope : scopes_) {
         for (auto variable : scope.map()) {
             if (variable.second.initializationLevel() == 1) {
-                variable.second.type().objectVariableRecords(variable.second.id(), info,
+                variable.second.type().objectVariableRecords(variable.second.id(), *info_,
                                                              variable.second.initializationPosition(), count);
             }
         }
@@ -43,6 +38,9 @@ void CallableScoper::popScopeAndRecommendFrozenVariables(std::vector<FunctionObj
 }
 
 Scope& CallableScoper::pushScope() {
+    if (pushedTemporaryScope_) {
+        throw std::logic_error("Pushing on temporary scope");
+    }
     maxInitializationLevel_++;
     for (auto &scope : scopes_) {
         scope.pushInitializationLevel();
@@ -53,10 +51,6 @@ Scope& CallableScoper::pushScope() {
 
     scopes_.push_front(Scope(this));
     return scopes_.front();
-}
-
-Scope& CallableScoper::topmostLocalScope() {
-    return scopes_.back();
 }
 
 ResolvedVariable CallableScoper::getVariable(const EmojicodeString &name, const SourcePosition &errorPosition) {

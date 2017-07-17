@@ -56,10 +56,6 @@ private:
     FunctionPAGMode mode() const override { return function_.compilationMode(); }
     CallableScoper& scoper() override { return scoper_; }
 
-    void popScope() override {
-        scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
-    }
-
     /// Whether the statment has an effect.
     bool effect = false;
     

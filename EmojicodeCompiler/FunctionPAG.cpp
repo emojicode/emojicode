@@ -196,7 +196,7 @@ void FunctionPAG::flowControlBlock(bool pushScope, const std::function<void()> &
 
     effect = true;
 
-    scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
+    scoper_.popScope(writer_.count());
 }
 
 void FunctionPAG::box(const TypeExpectation &expectation, Type &rtype, WriteLocation location) const {
@@ -304,8 +304,9 @@ void FunctionPAG::box(const TypeExpectation &expectation, Type &rtype, WriteLoca
 
     if (!rtype.isReference() && expectation.isReference() && rtype.isReferencable()) {
         scoper_.pushTemporaryScope();
-        int destinationID = scoper_.currentScope().allocateInternalVariable(rtype);
-        insertionPoint.insert({ INS_PRODUCE_TO_AND_GET_VT_REFERENCE, EmojicodeInstruction(destinationID) });
+        auto &variable = scoper_.currentScope().setLocalInternalVariable(rtype, function_.position());
+        insertionPoint.insert({ INS_PRODUCE_TO_AND_GET_VT_REFERENCE, EmojicodeInstruction(variable.id()) });
+        variable.initialize(writer_.count());
         rtype.setReference();
     }
     else if (rtype.isReference() && !expectation.isReference()) {
@@ -353,6 +354,7 @@ FunctionWriter FunctionPAG::parseCondition(const Token &token, bool temporaryWri
     if (temporaryWriter) {
         std::swap(writer_, writer);
     }
+    scoper_.clearTemporaryScope();
     return writer;
 }
 
@@ -477,6 +479,7 @@ void FunctionPAG::parseStatement() {
                         auto placeholder = writer_.writeInstructionPlaceholder();
 
                         Type t = parseExpr(TypeExpectation(false, true));
+                        scoper_.clearTemporaryScope();
                         auto &var = scoper_.currentScope().setLocalVariable(nextTok.value(), t, false, nextTok.position());
                         var.initialize(writer_.count());
                         placeholder.write(var.id());
@@ -494,6 +497,7 @@ void FunctionPAG::parseStatement() {
                 auto placeholder = writer_.writeInstructionPlaceholder();
 
                 Type t = parseExpr(TypeExpectation(false, false));
+                scoper_.clearTemporaryScope();
                 auto &var = scoper_.currentScope().setLocalVariable(varName.value(), t, true, varName.position());
                 var.initialize(writer_.count());
                 placeholder.write(var.id());
@@ -559,8 +563,10 @@ void FunctionPAG::parseStatement() {
                 }
 
                 auto &wrscope = scoper_.pushScope();
-                int variableID = wrscope.allocateInternalVariable(type);
+                int variableID = wrscope.setLocalInternalVariable(type, variableToken.position()).id();
                 placeholder.write(variableID);
+                // Intentionally not initializing. The GC can not be invoked between here and the initialization of
+                // the user-facing variables below.
 
                 auto &scope = scoper_.pushScope();
 
@@ -601,8 +607,7 @@ void FunctionPAG::parseStatement() {
                 flowControlBlock(false);
                 skipElsePlaceholder.write();
 
-                scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(),
-                                                           writer_.count());
+                scoper_.popScope(writer_.count());
                 return;
             }
             case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
@@ -627,6 +632,9 @@ void FunctionPAG::parseStatement() {
             }
             case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
                 auto &variableToken = stream_.consumeToken(TokenType::Variable);
+                auto &iteratorScope = scoper_.pushScope();
+                auto &iteratorVar = iteratorScope.setLocalVariable(EmojicodeString(), Type(PR_ENUMERATOR, false),
+                                                                   true, token.position());
 
                 auto insertionPoint = writer_.getInsertionPoint();
                 Type iteratee = parseExpr(TypeExpectation());
@@ -638,9 +646,6 @@ void FunctionPAG::parseStatement() {
                 }
 
                 auto iteratorMethodIndex = PR_ENUMERATEABLE->lookupMethod(EmojicodeString(E_DANGO))->vtiForUse();
-                auto &iteratorScope = scoper_.pushScope();
-                auto &iteratorVar = iteratorScope.setLocalVariable(EmojicodeString(), Type(PR_ENUMERATOR, false),
-                                                                   true, token.position());
                 auto nextVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_DOWN_POINTING_SMALL_RED_TRIANGLE))->vtiForUse();
                 auto moreVTI = PR_ENUMERATOR->lookupMethod(EmojicodeString(E_RED_QUESTION_MARK))->vtiForUse();
 
@@ -649,6 +654,9 @@ void FunctionPAG::parseStatement() {
                 });
                 box(TypeExpectation(true, true, false), iteratee, insertionPoint);
                 iteratorVar.initialize(writer_.count());
+
+                scoper_.clearTemporaryScope();
+
                 writer_.writeInstruction({ static_cast<EmojicodeInstruction>(PR_ENUMERATEABLE->index),
                     static_cast<EmojicodeInstruction>(iteratorMethodIndex)
                 });
@@ -678,7 +686,7 @@ void FunctionPAG::parseStatement() {
                     static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
                     static_cast<EmojicodeInstruction>(moreVTI) });
                 writer_.writeInstruction(writer_.count() - delta + 1);
-                scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
+                scoper_.popScope(writer_.count());
 
                 pathAnalyser.endBranch();
                 pathAnalyser.endUncertainBranches();
@@ -755,7 +763,7 @@ void FunctionPAG::parseStatement() {
     effect = false;
     auto type = parseExprToken(token, TypeExpectation(true, false, false));
     noEffectWarning(token);
-    scoper_.clearAllTemporaryScopes();
+    scoper_.clearTemporaryScope();
 }
 
 Type FunctionPAG::parseExprToken(const Token &token, TypeExpectation &&expectation) {
@@ -1149,8 +1157,6 @@ Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &exp
     }
 
     Type rt = parseFunctionCall(type, method, token);
-    scoper_.popTemporaryScope();
-
     box(expectation, rt, insertionPoint);
     return rt;
 }
@@ -1295,7 +1301,7 @@ void FunctionPAG::compile() {
             compileCode(methodScope);
         }
 
-        scoper_.popScopeAndRecommendFrozenVariables(function_.objectVariableInformation(), writer_.count());
+        scoper_.popScope(writer_.count());
     }
     catch (CompilerError &ce) {
         printError(ce);
@@ -1346,6 +1352,8 @@ void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
 
 FunctionPAG::FunctionPAG(Function &function, Type contextType, FunctionWriter &writer, CallableScoper &scoper)
     : AbstractParser(function.package(), function.tokenStream()), function_(function), writer_(writer), scoper_(scoper),
-    typeContext_(typeContextForType(std::move(contextType))) {}
+    typeContext_(typeContextForType(std::move(contextType))) {
+        scoper_.setVariableInformation(&function_.objectVariableInformation());
+    }
 
 }  // namespace EmojicodeCompiler

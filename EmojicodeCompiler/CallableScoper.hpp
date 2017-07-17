@@ -29,49 +29,63 @@ struct FunctionObjectVariableInformation;
 class CallableScoper : public Scoper {
 public:
     CallableScoper() {};
+    CallableScoper(const Scoper&) = delete;
     explicit CallableScoper(Scope *instanceScope) : instanceScope_(instanceScope) {};
 
-    /**
-     * Retrieves a variable or throws a @c VariableNotFoundError if the variable is not found.
-     * @returns A pair: The variable and whether the variable was found in the instance scope.
-     */
+    /// Retrieves a variable or throws a @c VariableNotFoundError if the variable is not found.
     virtual ResolvedVariable getVariable(const EmojicodeString &name, const SourcePosition &errorPosition);
 
-    /** Returns the current sub scope. */
-    Scope& currentScope();
+    /// Returns the current subscope.
+    Scope& currentScope() {
+        return scopes_.front();
+    }
 
-    /** Pushes a new subscope and returns a reference to it. */
+    /// Pushes a new subscope and returns a reference to it.
     Scope& pushScope();
 
-    /** Pops the current scope and calls @c recommendFrozenVariables on it. */
-    void popScopeAndRecommendFrozenVariables(std::vector<FunctionObjectVariableInformation> &info,
-                                             InstructionCount count);
+    /// Pops the current scope and calls @c recommendFrozenVariables on it.
+    void popScope(InstructionCount count);
 
     /// Returns the instance scope or @c nullptr
     Scope* instanceScope() const { return instanceScope_; }
 
-    Scope& topmostLocalScope();
+    /// Returns the topmost local scope, i.e. the one in which all other locals scopes are subscopes.
+    Scope& topmostLocalScope() {
+        return scopes_.back();
+    }
 
     /// This method is called by the FunctionPAG after all arguments were set
     virtual void postArgumentsHook() {}
 
-    void pushTemporaryScope() { /* pushScope(); temporaryScopes_++; */ }
-    void popTemporaryScope() {
-//        if (temporaryScopes_) {
-//            popScopeAndRecommendFrozenVariables();
-//            temporaryScopes_--;
-//        }
+    Scope& pushTemporaryScope() {
+        if (pushedTemporaryScope_) {
+            return currentScope();
+        }
+        scopes_.emplace_front(Scope(this));
+        pushedTemporaryScope_ = true;
+        return currentScope();
     }
-    void clearAllTemporaryScopes() {
-        if (temporaryScopes_ > 0) throw std::logic_error("Not all temporary scoeps popped");
+
+    void clearTemporaryScope() {
+        if (!pushedTemporaryScope_) {
+            return;
+        }
+        pushedTemporaryScope_ = false;
+        reduceOffsetBy(static_cast<int>(scopes_.front().size()));
+        scopes_.pop_front();
+    }
+
+    void setVariableInformation(std::vector<FunctionObjectVariableInformation> *info) {
+        info_ = info;
     }
 protected:
     int maxInitializationLevel() const { return maxInitializationLevel_; }
 private:
     std::list<Scope> scopes_;
     Scope *instanceScope_ = nullptr;
-    int temporaryScopes_ = 0;
+    bool pushedTemporaryScope_ = false;
     int maxInitializationLevel_ = 1;
+    std::vector<FunctionObjectVariableInformation> *info_ = nullptr;
 };
 
 }  // namespace EmojicodeCompiler

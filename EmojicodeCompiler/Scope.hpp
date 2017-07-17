@@ -35,15 +35,19 @@ public:
     /// was previously accordingly reserved.
     /// @throws CompilerError if a variable with this name already exists.
     Variable& setLocalVariableWithID(const EmojicodeString &variable, const Type &type, bool frozen, int id,
-                                     const SourcePosition &p);
-    /// Allocates a variable for internal use only and returns its ID.
-    int allocateInternalVariable(const Type &type);
+                                    const SourcePosition &p);
 
-    /**
-     * Retrieves a variable form the scope or returns @c nullptr.
-     */
-    Variable& getLocalVariable(const EmojicodeString &variable);
+    /// Creates an internal variable for the given type. It will be marked as mutated and non-frozen.
+    Variable& setLocalInternalVariable(const Type &type, const SourcePosition &p) {
+        auto &var = setLocalVariable(internalName(), type, false, p);
+        var.mutate(p);
+        return var;
+    }
 
+    /// Retrieves a variable form the scope. Use @c hasLocalVariable to determine whether the variable with this name
+    /// is in this scope.
+    Variable& getLocalVariable(const EmojicodeString &varable);
+    /// Returns true if a variable with the name @c variable is set in this scope.
     bool hasLocalVariable(const EmojicodeString &variable) const;
 
     /**
@@ -53,9 +57,7 @@ public:
      */
     void initializerUnintializedVariablesCheck(const SourcePosition &p, const char *errorMessage);
 
-    /**
-     * Emits a warning for each non-frozen variable that has not been mutated.
-     */
+    /// Emits a warning for each non-frozen variable that has not been mutated.
     void recommendFrozenVariables() const;
 
     size_t size() const { return size_; }
@@ -70,8 +72,21 @@ public:
 
     void setScoper(Scoper *scoper) { scoper_ = scoper; }
 private:
+    /// Returns a name for an internal variable
+    EmojicodeString internalName() {
+        auto string = EmojicodeString(E_LOCK);
+        auto number = std::to_string(internalCount_++);
+        string.resize(number.size() + 1);
+        auto stringData = &string[1];
+        for (auto numberChar : number) {
+            *stringData++ = numberChar;
+        }
+        return string;
+    }
+
     std::map<EmojicodeString, Variable> map_;
     int size_ = 0;
+    int internalCount_ = 0;
     Scoper *scoper_;
 };
 

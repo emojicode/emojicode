@@ -50,7 +50,6 @@ public:
 
     /// Returns the scoper that is used to scope the function.
     virtual CallableScoper& scoper() = 0;
-    virtual void popScope() = 0;
 };
 
 }  // namespace EmojicodeCompiler

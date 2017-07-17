@@ -45,7 +45,7 @@ Type pagListLiteral(const Token &token, const TypeExpectation &expectation, Func
     functionPag.box(expectation, Type(CL_LIST, false));
     functionPag.writer().writeInstruction(INS_OPT_LIST_LITERAL);
 
-    auto &scope = functionPag.scoper().pushScope();
+    auto &scope = functionPag.scoper().pushTemporaryScope();
 
     auto variablePlaceholder = functionPag.writer().writeInstructionPlaceholder();
     auto placeholder = functionPag.writer().writeInstructionsCountPlaceholderCoin();
@@ -65,7 +65,7 @@ Type pagListLiteral(const Token &token, const TypeExpectation &expectation, Func
         }
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, elementType);
-        auto &var = scope.setLocalVariable(EmojicodeString(), elementType, true, token.position());
+        auto &var = scope.setLocalInternalVariable(elementType, token.position());
         if (hasInitCount) {
             var.initialize(initCount - 1);
         }
@@ -83,7 +83,7 @@ Type pagListLiteral(const Token &token, const TypeExpectation &expectation, Func
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, ct.getCommonType(token.position()));
         auto varType = Type(TypeContent::GenericVariable, false, 0, CL_LIST).resolveOn(type);
-        auto &var = scope.setLocalVariable(EmojicodeString(), varType, true, token.position());
+        auto &var = scope.setLocalInternalVariable(varType, token.position());
         var.initialize(initCount);
         if (hasInitCount) {
             var.initialize(initCount - 1);
@@ -92,7 +92,6 @@ Type pagListLiteral(const Token &token, const TypeExpectation &expectation, Func
     }
 
     placeholder.write();
-    functionPag.popScope();
     return type;
 }
 
@@ -100,7 +99,7 @@ Type pagDictionaryLiteral(const Token &token, const TypeExpectation &expectation
     functionPag.box(expectation, Type(CL_DICTIONARY, false));
     functionPag.writer().writeInstruction(INS_OPT_DICTIONARY_LITERAL);
 
-    auto &scope = functionPag.scoper().pushScope();
+    auto &scope = functionPag.scoper().pushTemporaryScope();
 
     auto variablePlaceholder = functionPag.writer().writeInstructionPlaceholder();
     auto placeholder = functionPag.writer().writeInstructionsCountPlaceholderCoin();
@@ -116,7 +115,7 @@ Type pagDictionaryLiteral(const Token &token, const TypeExpectation &expectation
         }
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, elementType);
-        auto &var = scope.setLocalVariable(EmojicodeString(), elementType, true, token.position());
+        auto &var = scope.setLocalInternalVariable(elementType, token.position());
         var.initialize(initCount - 1);
         variablePlaceholder.write(var.id());
     }
@@ -128,13 +127,12 @@ Type pagDictionaryLiteral(const Token &token, const TypeExpectation &expectation
         }
         functionPag.stream().consumeToken(TokenType::Identifier);
         type.setGenericArgument(0, ct.getCommonType(token.position()));
-        auto &var = scope.setLocalVariable(EmojicodeString(), type.genericArguments()[0], true, token.position());
+        auto &var = scope.setLocalInternalVariable(type.genericArguments()[0], token.position());
         var.initialize(initCount - 1);
         variablePlaceholder.write(var.id());
     }
 
     placeholder.write();
-    functionPag.popScope();
     return type;
 }
 

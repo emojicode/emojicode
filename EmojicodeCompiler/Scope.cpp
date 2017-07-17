@@ -56,12 +56,6 @@ Variable& Scope::setLocalVariableWithID(const EmojicodeString &variable, const T
     return v;
 }
 
-int Scope::allocateInternalVariable(const Type &type) {
-    int id = scoper_->reserveVariable(type.size());
-    size_ += type.size();
-    return id;
-}
-
 Variable& Scope::getLocalVariable(const EmojicodeString &variable) {
     return map_.find(variable)->second;
 }
