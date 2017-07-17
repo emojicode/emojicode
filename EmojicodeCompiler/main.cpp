@@ -15,6 +15,7 @@
 #include "Function.hpp"
 #include "PackageReporter.hpp"
 #include "ValueType.hpp"
+#include "InformationDesk.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <getopt.h>
@@ -177,11 +178,13 @@ using EmojicodeCompiler::Function;
 using EmojicodeCompiler::Writer;
 using EmojicodeCompiler::PackageVersion;
 using EmojicodeCompiler::CompilerError;
+using EmojicodeCompiler::InformationDesk;
 
 int main(int argc, char * argv[]) {
     try {
         const char *packageToReport = nullptr;
         std::string outPath;
+        std::string sizeVariable;
 
         const char *ppath;
         if ((ppath = getenv("EMOJICODE_PACKAGES_PATH")) != nullptr) {
@@ -189,7 +192,7 @@ int main(int argc, char * argv[]) {
         }
 
         signed char ch;
-        while ((ch = getopt(argc, argv, "vrjR:o:")) != -1) {
+        while ((ch = getopt(argc, argv, "vrjR:o:S:")) != -1) {
             switch (ch) {
                 case 'v':
                     puts("Emojicode 0.3. Built with 💚 by Theo Weidmann.");
@@ -205,6 +208,9 @@ int main(int argc, char * argv[]) {
                     break;
                 case 'j':
                     outputJSON = true;
+                    break;
+                case 'S':
+                    sizeVariable = optarg;
                     break;
                 default:
                     break;
@@ -261,6 +267,10 @@ int main(int argc, char * argv[]) {
             else {
                 compilerWarning(errorPosition, "Report for package %s failed as it was not loaded.", packageToReport);
             }
+        }
+
+        if (!sizeVariable.empty()) {
+            InformationDesk(&pkg).sizeOfVariable(sizeVariable);
         }
 
         if (outputJSON) {

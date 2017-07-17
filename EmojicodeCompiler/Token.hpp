@@ -38,7 +38,7 @@ struct SourcePosition {
 };
 
 class Token {
-    friend TokenStream lex(const std::string &);
+    friend TokenStream lexString(const std::string &, SourcePosition);
 public:
     explicit Token(SourcePosition p) : position_(p) {}
 

@@ -46,6 +46,15 @@ TokenStream lex(const std::string &path) {
         throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file %s.", path.c_str());
     }
 
+    std::stringstream stringBuffer;
+    stringBuffer << f.rdbuf();
+    auto string = stringBuffer.str();
+
+    auto sourcePosition = SourcePosition(1, 0, path);
+    return lexString(string, sourcePosition);
+}
+
+TokenStream lexString(const std::string &string, SourcePosition sourcePosition) {
     EmojicodeChar c;
     size_t i = 0;
 
@@ -55,11 +64,6 @@ TokenStream lex(const std::string &path) {
     bool escapeSequence = false;
     bool foundZWJ = false;
 
-    std::stringstream stringBuffer;
-    stringBuffer << f.rdbuf();
-    auto string = stringBuffer.str();
-
-    auto sourcePosition = SourcePosition(1, 0, path);
     auto tokens = std::make_shared<std::vector<Token>>();
     tokens->emplace_back(sourcePosition);
     

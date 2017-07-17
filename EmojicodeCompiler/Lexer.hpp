@@ -15,6 +15,7 @@
 namespace EmojicodeCompiler {
 
 TokenStream lex(const std::string &path);
+TokenStream lexString(const std::string &string, SourcePosition sourcePosition);
 
 }  // namespace EmojicodeCompiler
 

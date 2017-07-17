@@ -137,7 +137,7 @@ void socketInitWithHost(Thread *thread) {
     address.sin_port = htons(thread->variable(1).raw);
 
     int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
-    if (socketDescriptor == -1 || connect(socketDescriptor, reinterpret_cast<struct sockaddr *>( &address), sizeof(address)) == -1) {
+    if (socketDescriptor == -1 || connect(socketDescriptor, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) == -1) {
         thread->returnErrorFromFunction(errnoToError());
         return;
     }
