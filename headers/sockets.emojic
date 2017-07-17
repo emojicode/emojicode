@@ -5,11 +5,15 @@
   The following is a very basic example of opening a TCP socket to make an HTTP request and print
   the first 140 characters of the response.
   ```
-  🍦 socket 🍺 🔷📞🆕 🔤www.emojicode.org🔤 80
-  💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: www.emojicode.org❌r❌n❌r❌n🔤
+  📦 sockets 🔴
 
-  🍦 data 🍺 👂 socket 140
-  😀 🍺 🔡 data
+  🏁 🍇
+    🍦 socket 🚇 🔷📞🆕 🔤www.emojicode.org🔤 80
+    💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: www.emojicode.org❌r❌n❌r❌n🔤
+
+    🍦 data 🍺 👂 socket 140
+    😀 🍺 🔡 data
+  🍉
   ```
 
   At the time of writing this, the above code would return something similar to:
@@ -17,26 +21,33 @@
   HTTP/1.1 200 OK
   Server: GitHub.com
   Content-Type: text/html; charset=utf-8
-  Last-Modified: Sat, 26 Nov 2016 20:52:04 GMT
+  Last-Modified: Thu, 13 Apr 2017 16:49:52 GMT
   Access-Control-Al
   ```
 
   Here we’ve an example of a minimal echo-server that listens on port 8728. The server simply sends
   back a copy of the data it received.
   ```
-  🍦 server 🍺 🔷🏄🆕 8728
+  📦 sockets 🔴
 
-  🔁 👍 🍇
-    🍦 clientSocket 🍺 🙋 server
+  👴 Simple echo server listening on port 8728
+  🏁 🍇
+    🍦 server 🚇 🔷🏄🆕 8728
+
     🔁 👍 🍇
-      🍦 readData 👂 clientSocket 50
-      🍊🍦 data readData 🍇
-        💬 clientSocket data
+      🍦 clientSocket 🍺 🙋 server
+      🔁 👍 🍇
+        🍦 readData 👂 clientSocket 50
+        🍊🍦 data readData 🍇
+          👴 We’ve read 50 bytes and send them back
+          💬 clientSocket data
+        🍉
       🍉
     🍉
   🍉
   ```
-  Of course, the code above is very minimal and incomplete. For example, it can handle only one
+
+  Of course, the code above is minimal and incomplete. For example, it can handle only one
   connection.
 🌮
 🔮 0 1

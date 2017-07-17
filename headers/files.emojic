@@ -1,3 +1,8 @@
+🌮
+  The files packages provides an API to interact with the file system. Files can
+  be read, written to and deleted. Moreover, the [[📑]] class provides class
+  methods to work with directories, create symbolic links etc.
+🌮
 🔮 0 1
 📻
 
