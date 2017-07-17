@@ -195,7 +195,7 @@ int main(int argc, char * argv[]) {
         while ((ch = getopt(argc, argv, "vrjR:o:S:")) != -1) {
             switch (ch) {
                 case 'v':
-                    puts("Emojicode 0.3. Built with 💚 by Theo Weidmann.");
+                    puts("Emojicode 0.5. Created by Theo Weidmann.");
                     return 0;
                 case 'R':
                     packageToReport = optarg;

@@ -22,10 +22,6 @@ Follow Emojicode’s Twitter account
 If you don’t want to use the prebuilt binaries or want to work on Emojicode, you
 can of course also build Emojicode from source.
 
-**These build instructions only apply to the latest code in the master branch.
-To build previous versions, please consult the according README.md by cloning
-the repository and checking out a version: `git checkout v0.3`**
-
 ### Building locally
 
 Prerequisites (earlier versions might work but are not tested):
@@ -47,6 +43,9 @@ Steps:
    git clone https://github.com/emojicode/emojicode
    cd emojicode
    ```
+
+   If you want to build the latest stable version, check it out first. E.g.
+   `git checkout v0.5`.
 
 2. Create a `build` directory and run CMake in it:
 

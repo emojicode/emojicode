@@ -5,7 +5,7 @@ import sys
 import subprocess
 
 source = sys.argv[1]
-version = "0.5.0-dev"
+version = "0.5.0"
 packages = [("files", 0), ("sockets", 0), ("allegro", 0)]
 dist_name = "Emojicode-{0}-{1}-{2}".format(version, platform.system(),
                                            platform.machine())
