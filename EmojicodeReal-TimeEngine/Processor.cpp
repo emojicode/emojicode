@@ -79,6 +79,10 @@ void performFunction(Function *function, Value self, Thread *thread, Value *dest
     thread->popStack();
 }
 
+inline EmojicodeInteger normalizedBoxType(EmojicodeInteger type) {
+    return (type & REMOTE_MASK) != 0 ? (type & ~REMOTE_MASK) : type;
+}
+
 void produce(Thread *thread, Value *destination) {
     switch (static_cast<Instructions>(thread->consumeInstruction())) {
         case INS_DISPATCH_METHOD: {
@@ -656,7 +660,7 @@ void produce(Thread *thread, Value *destination) {
             auto box = reinterpret_cast<Box *>(destination);
             if (!(!box->isNothingness() &&
                   ((box->type.raw == T_OBJECT && box->value1.object->klass->protocolTable.conformsTo(pi)) ||
-                    protocolDispatchTableTable[box->type.raw].conformsTo(pi)))) {
+                    protocolDispatchTableTable[normalizedBoxType(box->type.raw) - protocolDTTOffset].conformsTo(pi)))) {
                 destination->makeNothingness();
             }
             return;
