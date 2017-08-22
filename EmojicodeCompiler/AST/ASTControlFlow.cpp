@@ -39,7 +39,7 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
     }
 }
 
-void ASTIf::generate(FnCodeGenerator *fncg) {
+void ASTIf::generate(FnCodeGenerator *fncg) const {
     // This list will contain all placeholders that need to be replaced with a relative jump value
     // to jump past the whole if
     auto endPlaceholders = std::vector<std::pair<InstructionCount, FunctionWriterPlaceholder>>();
@@ -91,7 +91,7 @@ void ASTRepeatWhile::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().endUncertainBranches();
 }
 
-void ASTRepeatWhile::generate(FnCodeGenerator *fncg) {
+void ASTRepeatWhile::generate(FnCodeGenerator *fncg) const {
     fncg->scoper().pushScope();
     fncg->wr().writeInstruction(INS_JUMP_FORWARD);
     auto placeholder = fncg->wr().writeInstructionsCountPlaceholderCoin();
@@ -145,7 +145,7 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
     analyser->scoper().popScope();
 }
 
-void ASTErrorHandler::generate(FnCodeGenerator *fncg) {
+void ASTErrorHandler::generate(FnCodeGenerator *fncg) const {
     value_->generate(fncg);
     fncg->scoper().pushScope();
     auto &var = fncg->scoper().declareVariable(varId_, value_->expressionType());
@@ -196,7 +196,7 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().endUncertainBranches();
 }
 
-void ASTForIn::generate(FnCodeGenerator *fncg) {
+void ASTForIn::generate(FnCodeGenerator *fncg) const {
     fncg->scoper().pushScope();
 
     auto callCG = CallCodeGenerator(fncg, INS_DISPATCH_PROTOCOL);

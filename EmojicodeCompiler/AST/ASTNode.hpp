@@ -32,7 +32,7 @@ private:
 
 class ASTVariable {
 protected:
-    bool inInstanceScope() { return inInstanceScope_; }
+    bool inInstanceScope() const { return inInstanceScope_; }
     VariableID varId() { return varId_; }
     void copyVariableAstInfo(const ResolvedVariable &, SemanticAnalyser *analyser);
 protected:

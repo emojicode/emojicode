@@ -24,7 +24,7 @@ void ASTInitableCreator::setVtDestination(VariableID varId, bool inInstanceScope
     }
 }
 
-void ASTInitableCreator::generate(FnCodeGenerator *fncg) {
+void ASTInitableCreator::generate(FnCodeGenerator *fncg) const {
     if (noAction_) {
         expr_->generate(fncg);
     }
@@ -38,7 +38,7 @@ void ASTVariableDeclaration::analyse(SemanticAnalyser *analyser) {
     id_ = var.id();
 }
 
-void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) {
+void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
     auto &var = fncg->scoper().declareVariable(id_, type_);
     if (type_.optional()) {
         fncg->wr().writeInstruction(INS_GET_NOTHINGNESS);
@@ -74,14 +74,14 @@ void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
     }
 }
 
-CGScoper::Variable& ASTVariableAssignmentDecl::generateGetVariable(FnCodeGenerator *fncg) {
+CGScoper::Variable& ASTVariableAssignmentDecl::generateGetVariable(FnCodeGenerator *fncg) const {
     if (declare_) {
         return fncg->scoper().declareVariable(varId_, expr_->expressionType());
     }
     return inInstanceScope() ? fncg->instanceScoper().getVariable(varId_) : fncg->scoper().getVariable(varId_);
 }
 
-void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) {
+void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
 
     auto &var = generateGetVariable(fncg);
@@ -106,7 +106,7 @@ void ASTFrozenDeclaration::analyse(SemanticAnalyser *analyser) {
     setVtDestination(var.id(), false, true);
 }
 
-void ASTFrozenDeclaration::generateAssignment(FnCodeGenerator *fncg) {
+void ASTFrozenDeclaration::generateAssignment(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
 
     auto &var = fncg->scoper().declareVariable(id_, expr_->expressionType());

@@ -21,7 +21,7 @@ class FnCodeGenerator;
 
 class ASTStatement : public ASTNode {
 public:
-    virtual void generate(FnCodeGenerator *) = 0;
+    virtual void generate(FnCodeGenerator *) const = 0;
     virtual void analyse(SemanticAnalyser *) = 0;
 protected:
     using ASTNode::ASTNode;
@@ -40,7 +40,7 @@ public:
     }
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 
     const std::vector<std::shared_ptr<ASTStatement>>& nodes() const { return stmts_; }
 private:
@@ -51,7 +51,7 @@ class ASTExprStatement final : public ASTStatement {
 public:
     void analyse(SemanticAnalyser *analyser) override;
 
-    void generate(FnCodeGenerator *fncg) override {
+    void generate(FnCodeGenerator *fncg) const override {
         expr_->generate(fncg);
     }
 
@@ -65,7 +65,7 @@ public:
     ASTReturn(const std::shared_ptr<ASTExpr> &value, const SourcePosition &p) : ASTStatement(p), value_(value) {}
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 protected:
     std::shared_ptr<ASTExpr> value_;
 };
@@ -75,7 +75,7 @@ public:
     using ASTReturn::ASTReturn;
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 private:
     bool boxed_ = false;
 };
@@ -86,7 +86,7 @@ public:
                         const SourcePosition &p) : ASTStatement(p), name_(name), arguments_(arguments) {}
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 private:
     EmojicodeString name_;
     ASTArguments arguments_;

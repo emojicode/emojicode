@@ -19,9 +19,9 @@ protected:
     std::shared_ptr<ASTExpr> expr_;
 
     void setVtDestination(VariableID varId, bool inInstanceScope, bool declare);
-    virtual void generateAssignment(FnCodeGenerator *) = 0;
+    virtual void generateAssignment(FnCodeGenerator *) const = 0;
 private:
-    void generate(FnCodeGenerator *) override final;
+    void generate(FnCodeGenerator *) const override final;
     bool noAction_ = false;
 };
 
@@ -31,7 +31,7 @@ public:
     : ASTStatement(p), varName_(name), type_(type) {}
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 private:
     EmojicodeString varName_;
     Type type_;
@@ -43,13 +43,13 @@ public:
     ASTVariableAssignmentDecl(const EmojicodeString &name, const std::shared_ptr<ASTExpr> &e,
                               const SourcePosition &p) : ASTInitableCreator(e, p), varName_(name) {}
     void analyse(SemanticAnalyser *analyser) override;
-    void generateAssignment(FnCodeGenerator *) override;
+    void generateAssignment(FnCodeGenerator *) const override;
 protected:
     EmojicodeString varName_;
 private:
     bool declare_ = false;
 
-    CGScoper::Variable& generateGetVariable(FnCodeGenerator *fncg);
+    CGScoper::Variable& generateGetVariable(FnCodeGenerator *fncg) const;
 };
 
 class ASTInstanceVariableAssignment final : public ASTVariableAssignmentDecl {
@@ -64,7 +64,7 @@ public:
                          const SourcePosition &p) : ASTInitableCreator(e, p), varName_(name) {}
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generateAssignment(FnCodeGenerator *) override;
+    void generateAssignment(FnCodeGenerator *) const override;
 private:
     EmojicodeString varName_;
     VariableID id_;

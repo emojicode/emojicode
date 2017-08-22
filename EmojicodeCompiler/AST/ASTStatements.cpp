@@ -23,7 +23,7 @@ void ASTBlock::analyse(SemanticAnalyser *analyser) {
     }
 }
 
-void ASTBlock::generate(FnCodeGenerator *fncg) {
+void ASTBlock::generate(FnCodeGenerator *fncg) const {
     for (auto &stmt : stmts_) {
         stmt->generate(fncg);
     }
@@ -47,7 +47,7 @@ void ASTReturn::analyse(SemanticAnalyser *analyser) {
     analyser->expectType(analyser->function()->returnType, &value_);
 }
 
-void ASTReturn::generate(FnCodeGenerator *fncg) {
+void ASTReturn::generate(FnCodeGenerator *fncg) const {
     if (value_) {
         value_->generate(fncg);
     }
@@ -74,7 +74,7 @@ void ASTRaise::analyse(SemanticAnalyser *analyser) {
     analyser->expectType(analyser->function()->returnType.genericArguments()[0], &value_);
 }
 
-void ASTRaise::generate(FnCodeGenerator *fncg) {
+void ASTRaise::generate(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_PUSH_ERROR);
     value_->generate(fncg);
     if (boxed_) {
@@ -108,7 +108,7 @@ void ASTSuperinitializer::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
 }
 
-void ASTSuperinitializer::generate(FnCodeGenerator *fncg) {
+void ASTSuperinitializer::generate(FnCodeGenerator *fncg) const {
     SuperInitializerCallCodeGenerator(fncg, INS_SUPER_INITIALIZER).generate(superType_, arguments_, name_);
     fncg->wr().writeInstruction(INS_POP);
 }

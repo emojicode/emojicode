@@ -20,7 +20,7 @@ public:
     void addBlock(const ASTBlock &ptr) { blocks_.emplace_back(ptr); }
 
     void analyse(SemanticAnalyser *) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 
     bool hasElse() const { return conditions_.size() < blocks_.size(); }
 private:
@@ -34,7 +34,7 @@ public:
     : ASTStatement(p), condition_(condition), block_(block) {}
 
     void analyse(SemanticAnalyser *) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 private:
     std::shared_ptr<ASTExpr> condition_;
     ASTBlock block_;
@@ -47,7 +47,7 @@ public:
     : ASTStatement(p), iteratee_(iteratee), block_(block), varName_(varName) {}
 
     void analyse(SemanticAnalyser *) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 private:
     std::shared_ptr<ASTExpr> iteratee_;
     ASTBlock block_;
@@ -66,7 +66,7 @@ public:
     valueVarName_(varNameValue), errorVarName_(varNameError) {}
 
     void analyse(SemanticAnalyser *) override;
-    void generate(FnCodeGenerator *) override;
+    void generate(FnCodeGenerator *) const override;
 private:
     std::shared_ptr<ASTExpr> value_;
     bool valueIsBoxed_;
