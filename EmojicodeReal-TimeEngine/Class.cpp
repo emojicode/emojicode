@@ -8,7 +8,7 @@
 
 #include "Class.hpp"
 
-using namespace Emojicode;
+namespace Emojicode {
 
 bool Class::inheritsFrom(Class *from) const {
     for (const Class *a = this; a != nullptr; a = a->superclass) {
@@ -18,3 +18,5 @@ bool Class::inheritsFrom(Class *from) const {
     }
     return false;
 }
+
+}  // namespace Emojicode

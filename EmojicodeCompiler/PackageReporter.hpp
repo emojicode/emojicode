@@ -9,7 +9,7 @@
 #ifndef PackageReporter_hpp
 #define PackageReporter_hpp
 
-#include "Package.hpp"
+#include "Parsing/Package.hpp"
 
 namespace EmojicodeCompiler {
 

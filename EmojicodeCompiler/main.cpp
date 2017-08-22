@@ -6,16 +6,15 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Writer.hpp"
+#include "Generation/Writer.hpp"
 #include "../utf8.h"
-#include "Class.hpp"
-#include "CodeGenerator.hpp"
+#include "Types/Class.hpp"
+#include "Generation/CodeGenerator.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
 #include "PackageReporter.hpp"
-#include "ValueType.hpp"
-#include "InformationDesk.hpp"
+#include "Types/ValueType.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <getopt.h>
@@ -115,58 +114,7 @@ void compilerWarning(const SourcePosition &p, const char *err, ...) {
     va_end(list);
 }
 
-Class* getStandardClass(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition) {
-    Type type = Type::nothingness();
-    _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TypeContent::Class) {
-        throw CompilerError(errorPosition, "s package class %s is missing.", name.utf8().c_str());
-    }
-    return type.eclass();
-}
-
-Protocol* getStandardProtocol(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition) {
-    Type type = Type::nothingness();
-    _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TypeContent::Protocol) {
-        throw CompilerError(errorPosition, "s package protocol %s is missing.", name.utf8().c_str());
-    }
-    return type.protocol();
-}
-
-ValueType* getStandardValueType(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition,
-                                unsigned int boxId) {
-    Type type = Type::nothingness();
-    _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TypeContent::ValueType) {
-        throw CompilerError(errorPosition, "s package value type %s is missing.", name.utf8().c_str());
-    }
-    if (type.boxIdentifier() != boxId) {
-        throw CompilerError(errorPosition, "s package value type %s has improper box id.", name.utf8().c_str());
-    }
-    return type.valueType();
-}
-
-void loadStandard(Package *_, const SourcePosition &errorPosition) {
-    auto package = _->loadPackage("s", globalNamespace, errorPosition);
-
-    // Order of the following calls is important as they will cause Box IDs to be assigned
-    VT_BOOLEAN = getStandardValueType(EmojicodeString(E_OK_HAND_SIGN), _, errorPosition, T_BOOLEAN);
-    VT_INTEGER = getStandardValueType(EmojicodeString(E_STEAM_LOCOMOTIVE), _, errorPosition, T_INTEGER);
-    VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), _, errorPosition, T_DOUBLE);
-    VT_SYMBOL = getStandardValueType(EmojicodeString(E_INPUT_SYMBOL_FOR_SYMBOLS), _, errorPosition, T_SYMBOL);
-
-    CL_STRING = getStandardClass(EmojicodeString(0x1F521), _, errorPosition);
-    CL_LIST = getStandardClass(EmojicodeString(0x1F368), _, errorPosition);
-    CL_DATA = getStandardClass(EmojicodeString(0x1F4C7), _, errorPosition);
-    CL_DICTIONARY = getStandardClass(EmojicodeString(0x1F36F), _, errorPosition);
-
-    PR_ENUMERATOR = getStandardProtocol(EmojicodeString(0x1F361), _, errorPosition);
-    PR_ENUMERATEABLE = getStandardProtocol(EmojicodeString(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), _, errorPosition);
-
-    package->setRequiresBinary(false);
-}
-
-}
+} // namespace EmojicodeCompiler
 
 using EmojicodeCompiler::compilerWarning;
 using EmojicodeCompiler::outputJSON;
@@ -178,7 +126,7 @@ using EmojicodeCompiler::Function;
 using EmojicodeCompiler::Writer;
 using EmojicodeCompiler::PackageVersion;
 using EmojicodeCompiler::CompilerError;
-using EmojicodeCompiler::InformationDesk;
+//using EmojicodeCompiler::InformationDesk;
 
 int main(int argc, char * argv[]) {
     try {
@@ -242,17 +190,17 @@ int main(int argc, char * argv[]) {
         pkg.setPackageVersion(PackageVersion(1, 0));
 
         try {
-            loadStandard(&pkg, errorPosition);
-
+            pkg.loadPackage("s", EmojicodeCompiler::globalNamespace, errorPosition);
+            pkg.setRequiresBinary(false);
             pkg.parse(argv[0]);
 
             if (!Function::foundStart) {
                 throw CompilerError(errorPosition, "No 🏁 block was found.");
             }
 
-            Writer writer = Writer(outPath);
-            generateCode(writer);
             if (!hasError) {
+                Writer writer = Writer(outPath);
+                generateCode(&writer);
                 writer.finish();
             }
         }
@@ -270,7 +218,7 @@ int main(int argc, char * argv[]) {
         }
 
         if (!sizeVariable.empty()) {
-            InformationDesk(&pkg).sizeOfVariable(sizeVariable);
+//            InformationDesk(&pkg).sizeOfVariable(sizeVariable);
         }
 
         if (outputJSON) {

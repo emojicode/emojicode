@@ -9,18 +9,18 @@
 🌮
 🌍 🕊 👌 ⚪️ 🍇
   🌮 Whether this value and *other* are considered equal. 🌮
-  🐖 😛 other 👌 ➡️ 👌 🍇
-    🍎 😛 🐕 other
+  🐖 🙌 other 👌 ➡️ 👌 🍇
+    🍎 🐕 🙌 other
   🍉
 
   🌮 Logical and. Returns true if both, the receiver and other, are true. 🌮
-  🐖 🎊 other 👌 ➡️ 👌 🍇
-    🍎 🎊 🐕 other
+  🐖 🤝 other 👌 ➡️ 👌 🍇
+    🍎 🐕 🤝 other
   🍉
 
   🌮 Logical or. Returns true if the receiver or other or both are true. 🌮
-  🐖 🎉 other 👌 ➡️ 👌 🍇
-    🍎 🎉 🐕 other
+  🐖 👐 other 👌 ➡️ 👌 🍇
+    🍎 🐕 👐 other
   🍉
 
   🌮
@@ -28,7 +28,7 @@
     boolean is true.
   🌮
   🐖 ❎ ➡️ 👌 🍇
-    🍎 ❎ 🐕
+    🍎 ❎🐕❗️
   🍉
 🍉
 
@@ -39,7 +39,7 @@
 🌮
 🌍 🐊 😛🐚T⚪️ 🍇
   🌮 Whether this value and *other* are equal. 🌮
-  🐖 😛 other T ➡️ 👌
+  🐖 🙌 other T ➡️ 👌
 🍉
 
 🐋 👌 🍇
@@ -53,69 +53,69 @@
   🐊 😛🐚🚂
 
   🌮 Whether this value and *other* are considered equal. 🌮
-  🐖 😛 other 🚂 ➡️ 👌 🍇
-    🍎 😛 🐕 other
+  🐖 🙌 other 🚂 ➡️ 👌 🍇
+    🍎 🐕 🙌 other
   🍉
 
   🌮 Returns the receiver minus *other*. 🌮
   🐖 ➖ other 🚂 ➡️ 🚂 🍇
-    🍎 ➖ 🐕 other
+    🍎 🐕 ➖ other
   🍉
   🌮 Returns the receiver plus *other*. 🌮
   🐖 ➕ other 🚂 ➡️ 🚂 🍇
-    🍎 ➕ 🐕 other
+    🍎 🐕 ➕ other
   🍉
   🌮 Returns the receiver divided by *other*. 🌮
   🐖 ➗ other 🚂 ➡️ 🚂 🍇
-    🍎 ➗ 🐕 other
+    🍎 🐕 ➗ other
   🍉
   🌮 Returns the receiver multiplied by *other*. 🌮
   🐖 ✖️ other 🚂 ➡️ 🚂 🍇
-    🍎 ✖️ 🐕 other
+    🍎 🐕 ✖️ other
   🍉
   🌮 Returns the receiver modulus *other*. 🌮
   🐖 🚮 other 🚂 ➡️ 🚂 🍇
-    🍎 🚮 🐕 other
+    🍎 🐕 🚮 other
   🍉
   🌮 Returns true if the receiver is smaller than *other*. 🌮
   🐖 ◀️ other 🚂 ➡️ 👌 🍇
-    🍎 ◀️ 🐕 other
+    🍎 🐕 ◀️ other
   🍉
   🌮 Returns true if the receiver is greater than *other*. 🌮
   🐖 ▶️ other 🚂 ➡️ 👌 🍇
-    🍎 ▶️ 🐕 other
+    🍎 🐕 ▶️ other
   🍉
   🌮 Returns true if the receiver is smaller than or equal to *other*. 🌮
   🐖 ⬅️ other 🚂 ➡️ 👌 🍇
-    🍎 ⬅️ 🐕 other
+    🍎 🐕 ⬅️ other
   🍉
   🌮 Returns true if the receiver is greater than or equal to *other*. 🌮
   🐖 ➡️ other 🚂 ➡️ 👌 🍇
-    🍎 ➡️ 🐕 other
+    🍎 🐕 ➡️ other
   🍉
   🌮 Returns this integer AND *other*. 🌮
   🐖 ⭕️ other 🚂 ➡️ 🚂 🍇
-    🍎 ⭕️ 🐕 other
+    🍎 🐕 ⭕️ other
   🍉
   🌮 Returns this integer OR *other*. 🌮
   🐖 💢 other 🚂 ➡️ 🚂 🍇
-    🍎 💢 🐕 other
+    🍎 🐕 💢 other
   🍉
   🌮 Returns this integer XOR *other*. 🌮
   🐖 ❌ other 🚂 ➡️ 🚂 🍇
-    🍎 ❌ 🐕 other
+    🍎 🐕 ❌ other
   🍉
   🌮 Returns NOT applied to this integer. 🌮
   🐖 🚫 ➡️ 🚂 🍇
-    🍎 🚫 🐕
+    🍎 🚫 🐕 ❗️
   🍉
   🌮 Shifts this integer by *n* bits to the left. 🌮
   🐖 👈 n 🚂 ➡️ 🚂 🍇
-    🍎 👈 🐕 n
+    🍎 🐕 👈 n
   🍉
   🌮 Shifts this integer by *n* bits to the right. 🌮
   🐖 👉 n 🚂 ➡️ 🚂 🍇
-    🍎 👉 🐕 n
+    🍎 🐕 👉 n
   🍉
   🌮 Returns the absolute value of this 🚂. 🌮
   🐖 🏧 ➡️ 🚂 📻 18
@@ -128,25 +128,25 @@
   🐊 😛🐚🚀
 
   🌮 Whether this value and *other* are considered equal. 🌮
-  🐖 😛 other 🚀 ➡️ 👌 🍇
-    🍎 😛 🐕 other
+  🐖 🙌 other 🚀 ➡️ 👌 🍇
+    🍎 🐕 🙌 other
   🍉
 
   🌮 Returns the receiver minus *other*. 🌮
   🐖 ➖ other 🚀 ➡️ 🚀 🍇
-    🍎 ➖ 🐕 other
+    🍎 🐕 ➖ other
   🍉
   🌮 Returns the receiver plus *other*. 🌮
   🐖 ➕ other 🚀 ➡️ 🚀 🍇
-    🍎 ➕ 🐕 other
+    🍎 🐕 ➕ other
   🍉
   🌮 Returns the receiver divided by *other*. 🌮
   🐖 ➗ other 🚀 ➡️ 🚀 🍇
-    🍎 ➗ 🐕 other
+    🍎 🐕 ➗ other
   🍉
   🌮 Returns the receiver multiplied by *other*. 🌮
   🐖 ✖️ other 🚀 ➡️ 🚀 🍇
-    🍎 ✖️ 🐕 other
+    🍎 🐕 ✖️ other
   🍉
   🌮
     Returns the floating-point remainder of the division operation
@@ -154,23 +154,23 @@
     will always have the same sign as the receiver.
   🌮
   🐖 🚮 other 🚀 ➡️ 🚀 🍇
-    🍎 🚮 🐕 other
+    🍎 🐕 🚮 other
   🍉
   🌮 Returns true if the receiver is smaller than *other*. 🌮
   🐖 ◀️ other 🚀 ➡️ 👌 🍇
-    🍎 ◀️ 🐕 other
+    🍎 🐕 ◀️ other
   🍉
   🌮 Returns true if the receiver is greater than *other*. 🌮
   🐖 ▶️ other 🚀 ➡️ 👌 🍇
-    🍎 ▶️ 🐕 other
+    🍎 🐕 ▶️ other
   🍉
   🌮 Returns true if the receiver is smaller than or equal to *other*. 🌮
   🐖 ⬅️ other 🚀 ➡️ 👌 🍇
-    🍎 ⬅️ 🐕 other
+    🍎 🐕 ⬅️ other
   🍉
   🌮 Returns true if the receiver is greater than or equal to *other*. 🌮
   🐖 ➡️ other 🚀 ➡️ 👌 🍇
-    🍎 ➡️ 🐕 other
+    🍎 🐕 ➡️ other
   🍉
 
   🌮 Returns the absolute value of this 🚀. 🌮
@@ -267,8 +267,8 @@
   🐊 😛🐚🔣
 
   🌮 Whether this value and *other* are considered equal. 🌮
-  🐖 😛 other 🔣 ➡️ 👌 🍇
-    🍎 😛 🐕 other
+  🐖 🙌 other 🔣 ➡️ 👌 🍇
+    🍎 🐕 🙌 other
   🍉
 🍉
 
@@ -350,13 +350,13 @@
   🍉
 
   🐖 🔽 ➡️ Element 🍇
-    🍦 sy 🍺 🐽 iteratee index
-    🍮➕ index 1
+    🍦 sy 🍺 🐽 iteratee ❕index❗️
+    🍮 index ➕ 1
     🍎 sy
   🍉
 
   🐖 ❓ ➡️ 👌 🍇
-    🍎 ◀️ index 🐔 iteratee
+    🍎 index ◀️ 🐔 iteratee❗️
   🍉
 
   🐖 🍡 ➡️ 🍡🐚Element 🍇
@@ -382,7 +382,7 @@
   🌮
   🐈 ⏩ 🍼 start 🚂 🍼 stop 🚂 🍇
     🍮 step 1
-    🍊 ◀️ stop start 🍇
+    🍊 stop ◀️ start 🍇
       🍮 step -1
     🍉
   🍉
@@ -398,14 +398,14 @@
     Nothingness is returned.
   🌮
   🐖 🐽 n 🚂 ➡️ 🍬🚂 🍇
-    🍦 v ➕ start ✖️ n step
-    🍊 ◀️ step 0 🍇
-      🍊 🎊 ◀️ stop v ⬅️ v start 🍇
+    🍦 v start ➕ n ✖️ step
+    🍊 step ◀️ 0 🍇
+      🍊 stop ◀️ v 👐 v ⬅️ start 🍇
         🍎 v
       🍉
     🍉
     🍓 🍇
-      🍊 🎊 ⬅️ start v ◀️ v stop 🍇
+      🍊 start ⬅️ v 👐 v ◀️ stop 🍇
         🍎 v
       🍉
     🍉
@@ -414,12 +414,12 @@
 
   🌮 Returns the number of numbers in this range. 🌮
   🐖 🐔 ➡️ 🚂 🍇
-    🍎 ➗➖ stop start step
+    🍎 stop ➖ start ➗ step
   🍉
 
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
   🐖 🍡 ➡️ 🌳🐚🚂 🍇
-    🍎 🔷🌳🐚🚂🆕 🐕
+    🍎 🔷🌳🐚🚂🆕 ❕🐕❗️
   🍉
 🍉
 
@@ -440,13 +440,13 @@
   🍉
 
   🐖 🔽 ➡️ 🍬Element 🍇
-    🍦 sy 🐽 iteratee index
-    🍮➕ index 1
+    🍦 sy 🐽 iteratee ❕index❗️
+    🍮 index ➕ 1
     🍎 sy
   🍉
 
   🐖 ❓ ➡️ 👌 🍇
-    🍎 ◀️ index 🐔 iteratee
+    🍎 index ◀️ 🐔 iteratee❗️
   🍉
 
   🌮
@@ -454,8 +454,8 @@
     before having called 🔽 results in undefined behavior.
   🌮
   🐖 🚯  🍇
-    🍮➖ index 1
-    🐨 iteratee index
+    🍮 index ➖ 1
+    🐨 iteratee ❕index❗️
   🍉
 
   🐖 🍡 ➡️ 🍡🐚🍬Element 🍇
@@ -475,7 +475,7 @@
 
   🌮 Returns the double representation of this integer. 🌮
   🐖 🚀 ➡️ 🚀 🍇
-    🍎 🚀 🐕
+    🍎 🚀 🐕❗️
   🍉
 🍉
 
@@ -515,7 +515,7 @@
   🐖 😀 📻 59
 
   🌮 Returns 👍 if this 🔡 is equal to b. 🌮
-  🐖 😛 b 🔡 ➡️ 👌📻 60
+  🐖 🙌 b 🔡 ➡️ 👌📻 60
 
   🌮
     Compares this string to `b` and returns -1, 0, or 1 depending on whether
@@ -629,7 +629,27 @@
 
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
   🐖 🍡 ➡️ 🌳🐚🔣 🍇
-    🍎 🔷🌳🐚🔣🆕 🐕
+    🍎 🔷🌳🐚🔣🆕❕🐕❗️
+  🍉
+🍉
+
+🌍 🐇 🔠 🍇
+  🍰 symbols 🍨🐚🔣
+
+  🐈 🆕 🍇
+    🍮 symbols 🔷🍨🐚🔣🐸❗️
+  🍉
+
+  🐈 🐧 capacity 🚂 🍇
+    🍮 symbols 🔷🍨🐚🔣🐧❕ capacity❗️
+  🍉
+
+  🐖 🐻 string 🔡 🍇
+    🐥 symbols❕🎶 string❗️❗️
+  🍉
+
+  🐖 🔡 ➡️  🔡 🍇
+    🍎 🔷🔡🎙❕symbols❗️
   🍉
 🍉
 
@@ -680,6 +700,9 @@
   🌮 Returns the number of items in the list. 🌮
   🐖 🐔 ➡️ 🚂 📻 49
 
+  🌮 Appends the content of `list` to this list. 🌮
+  🐖 🐥 list 🍨🐚Element 📻 97
+
   🌮
     Removes the last item from the list and returns it in `O(1)`.
     If the list is empty ✨ is returned.
@@ -723,9 +746,9 @@
     value to the end of a new list.
   🌮
   🐖 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
-    🍦 g 🔷🍨🐚A🐧 🐔 🐕
+    🍦 g 🔷🍨🐚A🐧 ❕🐔 🐕❗️❗️
     🔂 element 🐕 🍇
-      🐻 g 🍭 callback element
+      🐻 g❕callback⁉️❕element❗️❗️
     🍉
     🍎 g
   🍉
@@ -735,10 +758,10 @@
     `callback`.
   🌮
   🐖 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
-    🍦 g 🔷🍨🐚Element🐸
+    🍦 g 🔷🍨🐚Element🐸❗️
     🔂 element 🐕 🍇
-      🍊 🍭 callback element 🍇
-        🐻 g element
+      🍊 callback⁉️❕element❗️ 🍇
+        🐻 g❕element❗️
       🍉
     🍉
     🍎 g
@@ -752,7 +775,7 @@
   🌮
   🐖 🐯 callback 🍇Element➡️👌🍉 ➡️ 👌 🍇
     🔂 element 🐕 🍇
-      🍊 ❎ 🍭 callback element 🍇
+      🍊 ❎ callback⁉️❕element❗️ ❗️ 🍇
         🍎 👎
       🍉
     🍉
@@ -761,12 +784,12 @@
 
   🌮 Tests whether this array and `other` are equal. 🌮
   🐖 😛 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
-    🍊 ❎ 😛 🐔 🐕 🐔 other 🍇
+    🍊 ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
       🍎 👎
     🍉
 
-    🔂 i ⏩ 0 🐔 🐕 🍇
-      🍊 ❎ 😛 🍺🐽 other i 🍺 🐽 🐕 i 🍇
+    🔂 i 🔷⏩⏩❕ 0 🐔🐕❗️ ❗️ 🍇
+      🍊 ❎ 🍺🐽 other❕i❗️ 🙌 🍺 🐽 🐕❕ i❗️ ❗️ 🍇
         🍎 👎
       🍉
     🍉
@@ -775,7 +798,7 @@
 
   🌮 Returns an iterator to iterate over the elements of this list. 🌮
   🐖 🍡 ➡️ 🌳🐚Element 🍇
-    🍎 🔷⚫️🆕 🐕
+    🍎 🔷⚫️🆕❕🐕❗️
   🍉
 🍉
 
@@ -785,7 +808,7 @@
   🐊 😛🐚📇
 
   🌮 Returns 👍 if this is equal to b. 🌮
-  🐖 😛 b 📇 ➡️ 👌 📻 1
+  🐖 🙌 b 📇 ➡️ 👌 📻 1
   🌮 Returns the number of bytes represented by this instance. 🌮
   🐖 🐔 ➡️ 🚂 📻 2
   🌮
@@ -824,7 +847,7 @@
 
   🌮 Returns an iterator to iterate over the bytes of this data object. 🌮
   🐖 🍡 ➡️ 🌳🐚🚂 🍇
-    🍎 🔷🌳🐚🚂🆕 🐕
+    🍎 🔷🌳🐚🚂🆕❕🐕❗️
   🍉
 🍉
 

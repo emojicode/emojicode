@@ -13,20 +13,25 @@
 #include "RetainedObjectPointer.hpp"
 #include "ThreadsManager.hpp"
 #include <mutex>
+#include <cstring>
 
 namespace Emojicode {
 
 struct StackFrame {
     StackFrame *returnPointer;
-    StackFrame *returnFutureStack;
-    Value *destination;
     EmojicodeInstruction *executionPointer;
     Function *function;
-    unsigned int argPushIndex;
 
     Value thisContext;  // This must always be the very last field!
 
     Value* variableDestination(int index) { return &thisContext + index + 1; }
+};
+
+struct Interruption {
+    friend Thread;
+private:
+    explicit Interruption(StackFrame *returnPointer) : returnPointer(returnPointer) {}
+    StackFrame *returnPointer;
 };
 
 class Thread {
@@ -37,17 +42,10 @@ public:
     friend Thread* ThreadsManager::nextThread(Thread *thread);
 
     /// Pops the stack associated with this thread
-    void popStack();
+    void popStackFrame();
     /// Pushes a new stack frame
-    void pushStack(Value self, int frameSize, int argCount, Function *function, Value *destination,
-                   EmojicodeInstruction *executionPointer);
-    /// Pushes the reserved stack frame onto the stack
-    void pushReservedFrame();
-
-    /// Reserves a new stack frame which can later be pushed with @c stackPushReservedFrame
     /// @returns A pointer to the memory reserved for the variables.
-    StackFrame* reserveFrame(Value self, int size, Function *function, Value *destination,
-                             EmojicodeInstruction *executionPointer);
+    StackFrame* pushStackFrame(Value self, bool copyArgs, Function *function);
 
     StackFrame* currentStackFrame() const { return stack_; }
 
@@ -65,28 +63,46 @@ public:
     /// the pointer currently points and increments the pointer.
     EmojicodeInstruction consumeInstruction() { return *(stack_->executionPointer++); }
 
+    bool interrupt() const { return stack_->returnPointer == nullptr; }
+    Interruption configureInterruption() {
+        auto p = stack_->returnPointer;
+        stack_->returnPointer = nullptr;
+        return Interruption(p);
+    }
+    void deconfigureInterruption(Interruption interrupt) {
+        stack_->returnPointer = interrupt.returnPointer;
+        popStackFrame();
+    }
+
     /// Leaves the function currently executed. Effectively sets the execution pointer of
     /// the current stack frame to the null pointer.
-    void returnFromFunction() { stack_->executionPointer = nullptr; }
+    void returnFromFunction() { popStackFrame(); }
     /// Leaves the function and sets the value of the return destination to the given value.
     void returnFromFunction(Value value) {
-        *stack_->destination = value;
+        pushOpr(value);
+        returnFromFunction();
+    }
+    /// Leaves the function and sets the value of the return destination to the given value.
+    void returnFromFunction(Box value) {
+        pushOpr(&value.type, kBoxValueSize);
         returnFromFunction();
     }
     /// Leaves the function and sets the value of the return destination to Nothingness. (See @c makeNothingness())
     void returnNothingnessFromFunction() {
-        stack_->destination->makeNothingness();
+        pushOpr(T_NOTHINGNESS);
         returnFromFunction();
     }
     /// Leaves the function and sets the value of the return destination to the given value. The destination is treated
     /// as optional. (See @c optionalSet())
     void returnOEValueFromFunction(Value value) {
-        stack_->destination->optionalSet(value);
+        pushOpr(T_OPTIONAL_VALUE);
+        pushOpr(value);
         returnFromFunction();
     }
     /// Leaves the function and sets the value of the return destination to an error with the given value.
     void returnErrorFromFunction(EmojicodeInteger error) {
-        stack_->destination->storeError(error);
+        pushOpr(T_ERROR);
+        pushOpr(error);
         returnFromFunction();
     }
 
@@ -117,6 +133,33 @@ public:
     RetainedObjectPointer variableObjectPointerAsRetained(int index) const {
         return RetainedObjectPointer(&variableDestination(index)->object);
     }
+
+    void debugOprStack();
+
+    void pushOpr(Value value) { *(rstackPointer_++) = value; }
+    void pushOpr(Value *value, size_t n) { std::memcpy(rstackPointer_, value, n * sizeof(Value)); rstackPointer_ += n; }
+    void popThenPushOpr(size_t pop, size_t pushOffset, size_t push) {
+        std::memmove(rstackPointer_ - pop, rstackPointer_ - pop + pushOffset, push * sizeof(Value));
+        rstackPointer_ -= pop - push;
+    }
+    void pushPointerOpr(size_t n) { rstackPointer_ += n; }
+    Value popOpr() {
+#ifdef DEBUG
+        if (rstackPointer_ - 1 < rstack_) throw "stack underflow";
+#endif
+        return *(--rstackPointer_);
+    }
+    /// Pops a @c n Emojicode words large structure and returns a pointer to it.
+    /// @attention The pointer stays valid until the next call to @c pushOpr
+    Value* popOpr(size_t n) {
+#ifdef DEBUG
+        if (rstackPointer_ - n < rstack_) throw "stack underflow";
+#endif
+        rstackPointer_ -= n;
+        return rstackPointer_;
+    }
+
+    Value* pointerOpr() { return rstackPointer_; }
 private:
     Thread();
     ~Thread();
@@ -131,13 +174,15 @@ private:
     StackFrame *stackLimit_;
     StackFrame *stackBottom_;
     StackFrame *stack_;
-    StackFrame *futureStack_;
 
     Thread *threadBefore_;
     Thread *threadAfter_;
 
     Object *retainList[100];
     Object **retainPointer = &retainList[0];
+
+    Value rstack_[32];
+    Value *rstackPointer_ = &rstack_[0];
 };
 
 }

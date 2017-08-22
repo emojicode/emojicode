@@ -18,7 +18,6 @@ typedef unsigned char Byte;
 typedef int_fast64_t EmojicodeInteger;
 
 struct Class;
-struct List;
 struct Object;
 class Thread;
 
@@ -29,7 +28,7 @@ extern Class *CL_DICTIONARY;
 extern Class *CL_CLOSURE;
 extern Class *CL_ARRAY;
 
-/// A one-Emojicode-word large value without type information.
+/// A one-Emojicode-word large value.
 union Value {
     /// Returns an undefined Value
     Value() {}
@@ -38,6 +37,7 @@ union Value {
     Value(EmojicodeChar raw) : character(raw) {}
     Value(Object *object) : object(object) {}
     Value(Value *value) : value(value) {}
+    Value(Class *klass) : klass(klass) {}
     Value(double doubl) : doubl(doubl) {}
     EmojicodeInteger raw;
     EmojicodeChar character;
@@ -45,10 +45,6 @@ union Value {
     Object *object;
     Class *klass;
     Value *value;
-    void makeNothingness() { raw = T_NOTHINGNESS; }
-    void optionalSet(Value value) { raw = T_OPTIONAL_VALUE; this[1] = value; }
-    void storeError(EmojicodeInteger error) { raw = T_ERROR; this[1] = error; }
-    void setValueForError(Value value) { raw = T_OPTIONAL_VALUE; this[1] = value; }
 };
 
 struct Object {
@@ -77,6 +73,9 @@ struct Object {
     }
 };
 
+const int kBoxValueSize = 4;
+
+/// Convenience wrapper for box storage.
 /// Used to store a value when the type of the value is not known at compile time.
 struct Box {
     Box(EmojicodeInteger type, Value value1) : type(type), value1(value1) {}
@@ -88,21 +87,17 @@ struct Box {
     Value value3;
     /// Returns true if this Box contains Nothingness
     bool isNothingness() const { return type.raw == T_NOTHINGNESS; }
-    /// Aborts the program if this Box contains Nothingness
-    void unwrapOptional() const;
     /// Makes this Box contain Nothingness
     void makeNothingness() { type.raw = T_NOTHINGNESS; }
     void copySingleValue(EmojicodeInteger type, Value value) { this->type = type; value1 = value; }
     void copy(Value *value) {  *this = *reinterpret_cast<Box *>(value); }
-    void copyTo(Value *value) const { *reinterpret_cast<Box *>(value) = *this; }
+    [[deprecated]] void copyTo(Value *value) const { *reinterpret_cast<Box *>(value) = *this; }
 };
-
-#define STORAGE_BOX_VALUE_SIZE 4
 
 // MARK: Callables
 
 /** You can use this function to call a callable object. It’s internally Garbage-Collector safe. */
-extern void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Thread *thread, Value *destination);
+extern void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Thread *thread);
 
 
 // MARK: Primitive Objects

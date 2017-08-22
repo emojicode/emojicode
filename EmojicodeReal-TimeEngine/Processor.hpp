@@ -13,8 +13,7 @@
 
 namespace Emojicode {
 
-void performFunction(Function *function, Value self, Thread *thread, Value *destination);
-void produce(Thread *thread, Value *destination);
+void execute(Thread *thread);
 
 }
 

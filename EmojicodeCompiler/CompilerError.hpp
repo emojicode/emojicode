@@ -10,7 +10,7 @@
 #define CompilerError_hpp
 
 #include <exception>
-#include "Token.hpp"
+#include "Lex/SourcePosition.hpp"
 
 namespace EmojicodeCompiler {
 

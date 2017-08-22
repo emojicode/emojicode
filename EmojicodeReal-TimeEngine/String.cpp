@@ -350,11 +350,6 @@ void stringToCharacterList(Thread *thread) {
     thread->returnFromFunction(list.unretainedPointer());
 }
 
-void stringJSON(Thread *thread) {
-    parseJSON(thread, reinterpret_cast<Box *>(thread->currentStackFrame()->destination));
-    thread->returnFromFunction();
-}
-
 void initStringFromSymbolList(String *str, List *list) {
     size_t count = list->count;
     str->length = count;
@@ -589,7 +584,7 @@ void stringCompareBridge(Thread *thread) {
 
 void stringMark(Object *self) {
     auto string = self->val<String>();
-    if (string->charactersObject) {
+    if (string->charactersObject != nullptr) {
         mark(&string->charactersObject);
     }
 }

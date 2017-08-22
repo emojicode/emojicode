@@ -3,6 +3,13 @@
 Emojicode is an open source, high-level, multi-paradigm
 programming language consisting of emojis. It features Object-Orientation, Optionals, Generics and Closures.
 
+## 👩‍🔬💥💡 Major Changes Ahead 🔥⚠️🚱
+
+**The Emojicode source is undergoing some major changes. Expect things to be
+broken in master. [Check out the 0.5 branch for stable
+code.](https://github.com/emojicode/emojicode/tree/emojicode-0.5)**
+
+
 ## 🏁 Getting Started
 
 To learn more about the language and get started quickly visit Emojicode’s

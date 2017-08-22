@@ -9,18 +9,18 @@
 #ifndef InformationDesk_hpp
 #define InformationDesk_hpp
 
-#include "AbstractParser.hpp"
+#include "Parsing/AbstractParser.hpp"
 #include <string>
 
 namespace EmojicodeCompiler {
     
-    class InformationDesk : public AbstractParser {
-    public:
-        InformationDesk(Package *_pkg) : AbstractParser(_pkg, TokenStream()) {}
-        void sizeOfVariable(const std::string &string);
-    private:
-        void inform();
-    };
+//class InformationDesk : public AbstractParser {
+//public:
+//    InformationDesk(Package *_pkg) : AbstractParser(_pkg, TokenStream()) {}
+//    void sizeOfVariable(const std::string &string);
+//private:
+//    void inform();
+//};
 
 }  // namespace EmojicodeCompiler
 

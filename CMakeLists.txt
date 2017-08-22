@@ -15,12 +15,12 @@ if(defaultPackagesDirectory)
   add_definitions(-DdefaultPackagesDirectory="${defaultPackagesDirectory}")
 endif()
 
-file(GLOB EMOJICODE_SOURCES "EmojicodeReal-TimeEngine/*")
+file(GLOB_RECURSE EMOJICODE_SOURCES "EmojicodeReal-TimeEngine/*")
 add_executable(emojicode ${EMOJICODE_SOURCES} utf8.c utf8.h)
 target_compile_options(emojicode PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 target_link_libraries(emojicode dl pthread)
 
-file(GLOB EMOJICODEC_SOURCES "EmojicodeCompiler/*")
+file(GLOB_RECURSE EMOJICODEC_SOURCES "EmojicodeCompiler/*")
 add_executable(emojicodec ${EMOJICODEC_SOURCES} utf8.c utf8.h)
 target_compile_options(emojicodec PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 

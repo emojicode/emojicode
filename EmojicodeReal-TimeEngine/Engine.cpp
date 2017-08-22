@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     }
 
     FILE *f = fopen(argv[1], "rb");
-    if (!f || ferror(f)) {
+    if (f == nullptr || ferror(f) > 0) {
         error("File couldn't be opened.");
     }
 
@@ -86,7 +86,8 @@ int main(int argc, char *argv[]) {
     allocateHeap();
 
     Function *handler = readBytecode(f);
-    Value sth = EmojicodeInteger(0);
-    performFunction(handler, Value(), mainThread, &sth);
-    return static_cast<int>(sth.raw);
+    mainThread->pushStackFrame(Value(), false, handler);
+    mainThread->configureInterruption();
+    execute(mainThread);
+    return 0; // static_cast<int>(mainThread->rstackPop().raw);
 }

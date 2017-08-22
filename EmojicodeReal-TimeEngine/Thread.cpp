@@ -22,60 +22,55 @@ Thread::Thread() {
         error("Could not allocate stack!");
     }
     stackBottom_ = reinterpret_cast<StackFrame *>(reinterpret_cast<Byte *>(stackLimit_) + stackSize);
-    this->futureStack_ = this->stack_ = this->stackBottom_;
+    this->stack_ = this->stackBottom_;
 }
 
 Thread::~Thread() {
     free(stackLimit_);
 }
 
-StackFrame* Thread::reserveFrame(Value self, int size, Function *function, Value *destination,
-                            EmojicodeInstruction *executionPointer) {
-    size_t fullSize = sizeof(StackFrame) + sizeof(Value) * size;
-    auto *sf = (StackFrame *)((Byte *)futureStack_ - (fullSize + (fullSize % alignof(StackFrame))));
+void Thread::debugOprStack() {
+    if (rstackPointer_ < rstack_) {
+        puts("Stack underflow!");
+        return;
+    }
+    puts("                           ☚ Stack Pointer");
+    for (auto p = rstackPointer_ - 1; p >= rstack_; p--) {
+        puts(  "╔═════════════════════════╗");
+        printf("║%12lld "            "%12p║\n", p->raw, p->object);
+        puts(  "╚═════════════════════════╝");
+    }
+    puts("┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅");
+}
+
+StackFrame* Thread::pushStackFrame(Value self, bool copyArgs, Function *function) {
+    size_t fullSize = sizeof(StackFrame) + sizeof(Value) * function->frameSize;
+
+    auto *sf = (StackFrame *)((Byte *)stack_ - (fullSize + (fullSize % alignof(StackFrame))));
     if (sf < stackLimit_) {
         error("Your program triggerd a stack overflow!");
     }
 
     sf->thisContext = self;
     sf->returnPointer = stack_;
-    sf->returnFutureStack = futureStack_;
-    sf->executionPointer = executionPointer;
-    sf->destination = destination;
+    sf->executionPointer = function->block.instructions;
     sf->function = function;
 
-    futureStack_ = sf;
-
-    return sf;
-}
-
-void Thread::pushReservedFrame() {
-    futureStack_->argPushIndex = UINT32_MAX;
-    stack_ = futureStack_;
-}
-
-void Thread::pushStack(Value self, int frameSize, int argCount, Function *function, Value *destination,
-                       EmojicodeInstruction *executionPointer) {
-    StackFrame *sf = reserveFrame(self, frameSize, function, destination, executionPointer);
-
-    sf->argPushIndex = 0;
-
-    for (int i = 0; i < argCount; i++) {
+    if (copyArgs) {
         EmojicodeInstruction copySize = consumeInstruction();
-        produce(this, sf->variableDestination(0) + sf->argPushIndex);
-        sf->argPushIndex += copySize;
+        std::memcpy(sf->variableDestination(0), popOpr(copySize), copySize * sizeof(Value));
     }
 
-    pushReservedFrame();
+    stack_ = sf;
+    return stack_;
 }
 
-void Thread::popStack() {
-    futureStack_ = stack_->returnFutureStack;
+void Thread::popStackFrame() {
     stack_ = stack_->returnPointer;
 }
 
 void Thread::markStack() {
-    for (auto frame = futureStack_; frame < stackBottom_; frame = frame->returnFutureStack) {
+    for (auto frame = stack_; frame < stackBottom_; frame = frame->returnPointer) {
         unsigned int delta = frame->executionPointer ? frame->executionPointer - frame->function->block.instructions : 0;
         switch (frame->function->context) {
             case ContextType::Object:
@@ -89,7 +84,7 @@ void Thread::markStack() {
         }
         for (unsigned int i = 0; i < frame->function->objectVariableRecordsCount; i++) {
             auto record = frame->function->objectVariableRecords[i];
-            if (record.from <= delta && delta <= record.to && record.variableIndex < frame->argPushIndex) {
+            if (record.from <= delta && delta <= record.to) {
                 markByObjectVariableRecord(record, frame->variableDestination(0), i);
             }
         }

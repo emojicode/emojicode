@@ -10,22 +10,24 @@
 #define Function_hpp
 
 #include "CompilerError.hpp"
-#include "Token.hpp"
-#include "TokenStream.hpp"
-#include "Type.hpp"
-#include "FunctionPAGMode.hpp"
-#include "FunctionWriter.hpp"
-#include "Class.hpp"
+
+#include "Lex/TokenStream.hpp"
+#include "Types/Type.hpp"
+#include "FunctionType.hpp"
+#include "Generation/FunctionWriter.hpp"
+#include "Types/Class.hpp"
 #include <algorithm>
 #include <queue>
 #include <map>
 #include <vector>
 #include <numeric>
+#include <memory>
 #include <experimental/optional>
 
 namespace EmojicodeCompiler {
 
 class VTIProvider;
+class ASTBlock;
 
 enum class AccessLevel {
     Public, Private, Protected
@@ -40,48 +42,22 @@ struct Argument {
     Type type;
 };
 
-struct FunctionObjectVariableInformation : public ObjectVariableInformation {
-    FunctionObjectVariableInformation(int index, ObjectVariableType type, InstructionCount from, InstructionCount to)
-        : ObjectVariableInformation(index, type), from(from), to(to) {}
-    FunctionObjectVariableInformation(int index, int condition, ObjectVariableType type, InstructionCount from,
-                                      InstructionCount to)
-        : ObjectVariableInformation(index, condition, type), from(from), to(to) {}
-    int from;
-    int to;
-};
-
 /** Functions are callables that belong to a class or value type as either method, type method or initializer. */
 class Function {
-    friend void Class::finalize();
+    friend void Class::prepareForCG();
     friend Protocol;
     friend void generateCode(Writer &writer);
 public:
     static bool foundStart;
     static Function *start;
     static std::queue<Function *> compilationQueue;
-    /// The VTIProvider used for functions created by the compiler that do not belong to any type. E.g. the start flag
-    /// function, closures.
-    static ValueTypeVTIProvider pureFunctionsProvider;
-
-    /** Returns a VTI for a function. */
-    static int nextFunctionVti() { return nextVti_++; }
-    /** Returns the number of funciton VTIs assigned. This should be equal to the number of compiled functions. */
-    static int functionCount() { return nextVti_; }
+    static std::queue<Function *> analysisQueue;
 
     Function(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
-             bool overriding, EmojicodeString documentationToken, bool deprecated, bool mutating,
-             FunctionPAGMode mode)
-    : position_(p),
-    name_(name),
-    final_(final),
-    overriding_(overriding),
-    deprecated_(deprecated),
-    mutating_(mutating),
-    access_(level),
-    owningType_(owningType),
-    package_(package),
-    documentation_(documentationToken),
-    compilationMode_(mode) {}
+             bool overriding, EmojicodeString documentationToken, bool deprecated, bool mutating, FunctionType type)
+    : position_(p), name_(name), final_(final), overriding_(overriding), deprecated_(deprecated), mutating_(mutating),
+    access_(level), owningType_(owningType), package_(package), documentation_(documentationToken),
+    functionType_(type) {}
 
     EmojicodeString name() const { return name_; }
 
@@ -109,16 +85,13 @@ public:
     /** Returns the position at which this callable was defined. */
     const SourcePosition& position() const { return position_; }
 
-    /** Returns a copy of the token stream intended to be used to parse this callable. */
-    const TokenStream& tokenStream() const { return tokenStream_; }
-    void setTokenStream(TokenStream ts) { tokenStream_ = ts; }
-
     /// The type of this function when used as value.
     Type type() const;
 
     /** Type to which this function belongs.
      This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
     Type owningType() const { return owningType_; }
+    void setOwningType(const Type &type) { owningType_ = type; }
 
     const EmojicodeString& documentation() const { return documentation_; }
 
@@ -127,109 +100,119 @@ public:
     /** Generic type arguments as variables */
     std::map<EmojicodeString, Type> genericArgumentVariables;
 
-    /** The namespace in which the function was defined.
-     This does not necessarily match the package of @c owningType. */
+    /// The package in which the function was defined.
+    /// This does not necessarily match the package of @c owningType.
     Package* package() const { return package_; }
 
     /// Issues a warning at the given position if the function is deprecated.
     void deprecatedWarning(const SourcePosition &p) const;
 
-    /// Returns true if the method is validly overriding a method or false if it does not override.
-    /// @throws CompilerError if the override is improper, e.g. implicit
-    bool checkOverride(Function *superFunction) const;
-    /// Makes this method properly inherit from @c super.
-    void override(Function *super, Type superSource, Type typeContext) {
-        enforcePromises(super, typeContext, superSource, std::experimental::nullopt);
-        setVti(super->getVti());
-        super->registerOverrider(this);
-    }
     /// Checks that no promises were broken and applies boxing if necessary.
-    /// Returns false iff a value for protocol was given and the arguments or the return type are storage incompatible.
+    /// @returns false iff a value for protocol was given and the arguments or the return type are storage incompatible.
+    /// This indicates that a BoxingLayer must be created.
     bool enforcePromises(Function *super, const TypeContext &typeContext, const Type &superSource,
                          std::experimental::optional<TypeContext> protocol);
 
     void registerOverrider(Function *f) { overriders_.push_back(f); }
 
-    /** Returns the VTI for this function or fetches one by calling the VTI Assigner and marks the function as used.
-     @warning This method must only be called if the function will be needed at run-time and
-     should be assigned a VTI. */
+    /// Returns the VTI for this function. If the function is yet to be assigned a VTI, a VTI is obtained from the
+    /// VTI provider. If the function was not marked used, it will be.
+    /// This function is a shortcut to calling @c assignVti and @c setUsed and then getting the VTI.
+    /// @warning This method must only be called if the function will be needed at run-time and
+    /// should be assigned a VTI.
     int vtiForUse();
-    /// Assigns this method a VTI without marking it as used.
-    void assignVti();
+
+    /** Sets the @c VTIProvider which should be used to assign this method a VTI and to update the VTI counter. */
+    void setVtiProvider(VTIProvider *provider);
+    /// Sets the VTI to the given value.
+    void setVti(int vti);
     /// Returns the VTI this function was assigned.
     /// @throws std::logic_error if the function wasn’t assigned a VTI
     int getVti() const;
-    void markUsed(bool addToCompilationQueue = true);
-    /** Sets the @c VTIProvider which should be used to assign this method a VTI and to update the VTI counter. */
-    void setVtiProvider(VTIProvider *provider);
-    /// Whether the function was used.
+    /// Marks this function as used. Propagates to all overriders.
+    virtual void setUsed(bool enqueue = true);
+    /// @returns Whether the function was used.
     bool used() const { return used_; }
-    /// Whether the function was assigned a VTI
-    bool assigned() const;
+    /// Assigns this method a VTI without marking it as used. Propagates to all overriders.
+    virtual void assignVti();
+    /// @returns Whether the function was assigned a VTI.
+    virtual bool assigned() const;
+
+    TypeContext typeContext() {
+        auto type = owningType();
+        if (type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum) {
+            type.setReference();
+        }
+        return TypeContext(type, this);
+    }
 
     /// Whether the function mutates the callee. Only relevant for value type instance methods.
     bool mutating() const { return mutating_; }
 
-    FunctionPAGMode compilationMode() const { return compilationMode_; }
+    FunctionType functionType() const { return functionType_; }
+    void setFunctionType(FunctionType type) { functionType_ = type; }
 
     virtual ContextType contextType() const {
-        switch (compilationMode()) {
-            case FunctionPAGMode::ObjectMethod:
-            case FunctionPAGMode::ObjectInitializer:
+        switch (functionType()) {
+            case FunctionType::ObjectMethod:
+            case FunctionType::ObjectInitializer:
                 return ContextType::Object;
                 break;
-            case FunctionPAGMode::ValueTypeMethod:
-            case FunctionPAGMode::ValueTypeInitializer:
+            case FunctionType::ValueTypeMethod:
+            case FunctionType::ValueTypeInitializer:
                 return ContextType::ValueReference;
                 break;
-            case FunctionPAGMode::ClassMethod:
-            case FunctionPAGMode::Function:
+            case FunctionType::ClassMethod:
+            case FunctionType::Function:
                 return ContextType::None;
                 break;
-            case FunctionPAGMode::BoxingLayer:
+            case FunctionType::BoxingLayer:
                 throw std::logic_error("contextType for BoxingLayer called on Function class");
         }
     }
+
+    void setAst(const std::shared_ptr<ASTBlock> &ast) { ast_ = ast; }
+    const std::shared_ptr<ASTBlock>& ast() const { return ast_; }
 
     int fullSize() const { return fullSize_; }
     void setFullSize(int c) { fullSize_ = c; }
 
     FunctionWriter writer_;
     std::vector<FunctionObjectVariableInformation>& objectVariableInformation() { return objectVariableInformation_; }
+    size_t variableCount() const { return variableCount_; }
+    void setVariableCount(size_t variableCount) { variableCount_ = variableCount; }
+protected:
+    std::vector<Function*> overriders_;
+    bool used_ = false;
 private:
-    /** Sets the VTI to @c vti and enters this functions into the list of functions to be compiled into the binary. */
-    void setVti(int vti);
-
-    TokenStream tokenStream_;
+    std::shared_ptr<ASTBlock> ast_;
     SourcePosition position_;
     EmojicodeString name_;
-    static int nextVti_;
     int vti_ = -1;
     bool final_;
     bool overriding_;
     bool deprecated_;
     bool mutating_;
-    bool used_ = false;
     unsigned int linkingTableIndex_ = 0;
     AccessLevel access_;
     Type owningType_;
     Package *package_;
     EmojicodeString documentation_;
     VTIProvider *vtiProvider_ = nullptr;
-    FunctionPAGMode compilationMode_;
-    int fullSize_ = -1;
-    std::vector<Function*> overriders_;
+    FunctionType functionType_;
+    size_t variableCount_ = 0;
+
     std::vector<FunctionObjectVariableInformation> objectVariableInformation_;
+    int fullSize_ = -1;
 };
 
-class Initializer: public Function {
+class Initializer : public Function {
 public:
     Initializer(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated, bool r,
-                std::experimental::optional<Type> errorType, FunctionPAGMode mode)
+                std::experimental::optional<Type> errorType, FunctionType mode)
     : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, true, mode),
-    required_(r),
-    errorType_(errorType) {
+    required_(r), errorType_(errorType) {
         returnType = Type::nothingness();
     }
 

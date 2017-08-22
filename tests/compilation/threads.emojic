@@ -15,28 +15,28 @@
 🍉
 
 🏁 🍇
-  🍦 threads 🔷🍨🐚💈🐸
+  🍦 threads 🔷🍨🐚💈🐸❗️
 
-  🍦 account 🔷🏦🆕
+  🍦 account 🔷🏦🆕❗️
 
-  🍦 mutex 🔷🔐🆕
+  🍦 mutex 🔷🔐🆕❗️
 
-  🔂 i ⏩ 0 10 🍇
-    🐻 threads 🔷💈🆕 🍇
-      🔂 j ⏩ 0 5 🍇
-        🔒 mutex
-        🍊 ➡️ 💶 account 10 🍇
-          😀 🔤Money, money, money – Must be funny🔤
-          💸 account 10
+  🔂 i 🔷⏩⏩❕0 10❗️ 🍇
+    🐻 threads ❕🔷💈🆕❕🍇
+      🔂 j 🔷⏩⏩❕0 5❗️ 🍇
+        🔒 mutex❗️
+        🍊 💶 account❗️ ➡️ 10 🍇
+          😀 🔤Money, money, money – Must be funny🔤❗️
+          💸 account ❕10❗️
         🍉
-        🔓 mutex
+        🔓 mutex❗️
       🍉
-    🍉
+    🍉❗️❗️
   🍉
 
   🔂 thread threads 🍇
-    🛂 thread
+    🛂 thread❗️
   🍉
 
-  😀 🔡 💶 account 10 👴 Print the balance
+  😀 🔡 💶 account❗️ ❕10❗️❗️ 👴 Print the balance
 🍉

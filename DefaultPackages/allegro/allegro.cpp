@@ -89,7 +89,7 @@ static int redundantMain(int  /*argc*/, char ** /*argv*/) {
     al_install_audio();
     al_init_acodec_addon();
     Value args[] = {Value(Emojicode::newObject(CL_APPLICATION))};
-    executeCallableExtern(emojicodeMain, args, 1, thread, nullptr);
+    executeCallableExtern(emojicodeMain, args, 1, thread);
     return 0;
 }
 

@@ -10,8 +10,10 @@
 #define BoxingLayer_hpp
 
 #include "EmojicodeCompiler.hpp"
-#include "Type.hpp"
+#include "Types/Type.hpp"
+#include "FunctionType.hpp"
 #include "Function.hpp"
+#include "Generation/STIProvider.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -19,20 +21,19 @@ class BoxingLayer : public Function {
 public:
     /// Creates a boxing layer for a protocol function.
     /// @parameter destinationFunction That function that should be called by the boxing layer. The "actual" method.
-    BoxingLayer(Function *destinationFunction, EmojicodeString protocolName, VTIProvider *provider,
+    BoxingLayer(Function *destinationFunction, EmojicodeString protocolName,
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
     : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
                destinationFunction->owningType(), destinationFunction->package(), p, false, EmojicodeString(), false,
-               false, FunctionPAGMode::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
+               false, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
         destinationFunction_(destinationFunction) {
-        setVtiProvider(provider);
         this->arguments = arguments;
         this->returnType = returnType;
 
         destinationArgumentTypes_.reserve(destinationFunction->arguments.size());
         for (auto &arg : destinationFunction->arguments) {
             destinationArgumentTypes_.emplace_back(arg.type);
-        }
+        }                                                                                           
     }
     /// Creates a boxing layer for a callable. The argument/return conversions will be performed and
     /// INS_EXECUTE_CALLABLE callable will be applied to the this context.
@@ -40,9 +41,9 @@ public:
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
     : Function(EmojicodeString(), AccessLevel::Private, true,
                Type::callableIncomplete(), pkg, p, false, EmojicodeString(), false, false,
-               FunctionPAGMode::BoxingLayer), destinationArgumentTypes_(destinationArgumentTypes),
+               FunctionType::BoxingLayer), destinationArgumentTypes_(destinationArgumentTypes),
       destinationReturnType_(destinationReturnType) {
-        setVtiProvider(&Function::pureFunctionsProvider);
+          setVtiProvider(&STIProvider::globalStiProvider);
         this->returnType = returnType;
         this->arguments = arguments;
     }

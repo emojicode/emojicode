@@ -9,6 +9,7 @@ compilation_tests = [
     "hello",
     "intTest",
     "if",
+    "vars",
     "namespace",
     "enum",
     "enumMethod",
@@ -18,6 +19,7 @@ compilation_tests = [
     "repeatWhile",
     "conditionalProduce",
     "stringConcat",
+    "babyBottleInitializer",
     "classInheritance",
     "classOverride",
     "classSuper",
@@ -26,7 +28,6 @@ compilation_tests = [
     "piglatin",
     "class",
     "assignmentByCallInstanceVariable",
-    "babyBottleInitializer",
     "valueType",
     "valueTypeSelf",
     "valueTypeMutate",
@@ -53,6 +54,7 @@ compilation_tests = [
     "valueTypeRemoteAdditional",
     "closureBasic",
     "closureCapture",
+    "closureCaptureThis",
     "closureCaptureValueType",
     "captureMethod",
     "captureTypeMethod",
@@ -60,14 +62,14 @@ compilation_tests = [
     "errorPerfect",
     "errorAvocado",
     "errorInitializer",
-    "gcStressTest1",
-    "gcStressTest2",
-    "gcStressTest3",
-    "gcStressTest4",
+    # "gcStressTest1",
+    # "gcStressTest2",
+    # "gcStressTest3",
+    # "gcStressTest4",
     "valueTypeCopySelf",
     "valueTypeBoxCopySelf",
     "includer",
-    "threads",
+    # "threads",
 ]
 library_tests = [
     "stringTest", "primitives", "mathTest", "listTest", "rangeTest",
@@ -127,11 +129,11 @@ def reject_test(filename):
 
 for test in compilation_tests:
     compilation_test(test)
-for test in reject_tests:
-    reject_test(test)
-os.chdir(os.path.join(dist.source, "tests", "s"))
-for test in library_tests:
-    library_test(test)
+# for test in reject_tests:
+#     reject_test(test)
+# os.chdir(os.path.join(dist.source, "tests", "s"))
+# for test in library_tests:
+#     library_test(test)
 
 if len(failed_tests) == 0:
     print("✅ ✅  All tests passed.")

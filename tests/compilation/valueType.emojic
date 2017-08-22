@@ -3,12 +3,12 @@
   🍰 zahl 🚂
 
   🐈 🆕 🍼 abc 🔡 zahlIn 🚂 🍇
-    🍮 zahl ➕ zahlIn 4
+    🍮 zahl zahlIn ➕ 4
   🍉
 
   🐖 😀 🍇
-    😀 abc
-    😀 🔡 zahl 10
+    😀 abc ❗️
+    😀 🔡 zahl ❕10❗️ ❗️
   🍉
 🍉
 
@@ -29,12 +29,12 @@
   🍰 blume1 🌸
 
   🐈 🆕 name 🔡  🍇
-    🍮 blume1 🔷🌸🆕 name
-    🍮 blume2 🔷🌼🆕 🍪 name 🔤_2🔤 🍪 4
+    🍮 blume1 🔷🌸🆕❕name ❗️
+    🍮 blume2 🔷🌼🆕❕🍪 name 🔤_2🔤 🍪 4  ❗️
   🍉
 
   🐖 🍐 ➡️ 🔡 🍇
-    🍎 🤣 blume1
+    🍎 🤣 blume1  ❗️
   🍉
 
   🐖 🌼 ➡️ 🌼 🍇
@@ -62,33 +62,33 @@
   🍰 blume2 🌼
 
   🐈 🆕 name 🔡 🍇
-    🍮 blume1 🔷⚫️🆕 name
-    🍮 blume2 🔷⚫️🆕 🔤sport🔤 192
+    🍮 blume1 🔷⚫️🆕❕ name ❗️
+    🍮 blume2 🔷⚫️🆕❕🔤sport🔤 192  ❗️
   🍉
 
   🐖 🥐 ➡️ 🔡 🍇
-    🍎 🍐 blume1
+    🍎 🍐 blume1❗️
   🍉
 
   🐖 🌼 ➡️ ⚖️ 🍇
-    🍎 🔷⚫️🆕 blume2 🌼 blume1
+    🍎 🔷⚫️🆕❕blume2 🌼 blume1 ❗️ ❗️
   🍉
 🍉
 
 🏁 🍇
-  🍦 ph 🔷🌼🆕 🔤Philadelphia🔤 32
-  🍦 mi 🔷🌸🆕 🔤Miami🔤
-  😀 ph
-  😀 🤣 mi
+  🍦 ph 🔷🌼🆕❕🔤Philadelphia🔤 32 ❗️
+  🍦 mi 🔷🌸🆕❕🔤Miami🔤 ❗️
+  😀 ph ❗️
+  😀 🤣 mi ❗️ ❗️
 
-  😀 🍐 🔷💐🆕 🔤NY🔤
-  🍦 la 🔷💐🆕 🔤LA🔤
-  😀 🍐 la
-  😀 🌼 la
+  😀 🍐 🔷💐🆕❕🔤NY🔤  ❗️  ❗️  ❗️
+  🍦 la 🔷💐🆕❕🔤LA🔤  ❗️
+  😀 🍐 la  ❗️ ❗️
+  😀 🌼 la  ❗️ ❗️
 
-  🍦 fl 🔷🌷🆕 🔤FL🔤
-  😀 🥐 fl
-  🍦 bothFlowers 🌼 fl
-  😀 🌗 bothFlowers
-  😀 🌓 bothFlowers
+  🍦 fl 🔷🌷🆕❕🔤FL🔤 ❗️
+  😀 🥐 fl ❗️ ❗️
+  🍦 bothFlowers 🌼 fl ❗️
+  😀 🌗 bothFlowers ❗️ ❗️
+  😀 🌓 bothFlowers ❗️ ❗️
 🍉

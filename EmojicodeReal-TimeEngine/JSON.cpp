@@ -37,9 +37,9 @@ struct JSONStackFrame {
     RetainedObjectPointer secondaryObject = RetainedObjectPointer(nullptr);
 };
 
-#define errorExit() destination->makeNothingness(); return;
-#define upgrade(now, expect, ec) case now: if (c == ec) { stackCurrent->state = now ## expect; continue; } else { errorExit(); }
-#define upgradeReturn(now, ec, r) case now: if (c == ec) { backValue = r; popTheStack(); } else { errorExit(); }
+#define errorExit() thread->returnNothingnessFromFunction(); return;
+#define upgrade(now, expect, ec) case now: if (c == (ec)) { stackCurrent->state = now ## expect; continue; } else { errorExit(); }
+#define upgradeReturn(now, ec, r) case now: if (c == (ec)) { backValue = r; popTheStack(); } else { errorExit(); }
 #define appendEscape(seq, c) case seq: *listAppendDestination(stackCurrent->object, thread) = Box(T_SYMBOL, EmojicodeChar(c)); continue;
 #define whitespaceCase case '\t': case '\n': case '\r': case ' ':
 #define popTheStack() if (stackCurrent->secondaryObject.unretainedPointer()) thread->release(1); if (stackCurrent->object.unretainedPointer()) thread->release(1); stackCurrent--; continue;
@@ -53,7 +53,7 @@ struct JSONStackFrame {
 
 #define jsonMaxDepth 256
 
-void parseJSON(Thread *thread, Box *destination) {
+void stringJSON(Thread *thread) {
     const size_t length = thread->thisObject()->val<String>()->length;
     JSONStackFrame stack[jsonMaxDepth];
     JSONStackFrame *stackLimit = stack + jsonMaxDepth - 1;
@@ -319,11 +319,11 @@ void parseJSON(Thread *thread, Box *destination) {
         switch (stackCurrent->state) {
             case JSON_DOUBLE:
             case JSON_DOUBLE_NEGATIVE:
-                *destination = doubleValue();
+                thread->returnFromFunction(doubleValue());
                 return;
             case JSON_NUMBER:
             case JSON_NUMBER_NEGATIVE:
-                *destination = integerValue();
+                thread->returnFromFunction(integerValue());
                 return;
             default:
                 break;
@@ -331,7 +331,7 @@ void parseJSON(Thread *thread, Box *destination) {
     }
 
     if (stackCurrent < stack) {
-        *destination = backValue;
+        thread->returnFromFunction(backValue);
         return;
     }
     

@@ -15,7 +15,8 @@ namespace Emojicode {
 
 struct Class {
     Class() {}
-    explicit Class(void (*mark)(Object *)) : instanceVariableRecords(nullptr), mark(mark), size(0), valueSize(0) {}
+    explicit Class(void (*mark)(Object *)) noexcept
+    : instanceVariableRecords(nullptr), mark(mark), size(0), valueSize(0) {}
 
     /// Returns true if @c a inherits from class @c from
     bool inheritsFrom(Class *from) const;

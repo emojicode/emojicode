@@ -17,12 +17,8 @@
 
 namespace EmojicodeCompiler {
 
-class TypeDefinition;
-class TypeDefinitionFunctional;
 class Class;
 class Protocol;
-class Enum;
-class Token;
 class Type;
 class Package;
 class CompilerError;
@@ -31,6 +27,8 @@ class ValueType;
 struct SourcePosition;
 
 extern std::string packageDirectory;
+
+using InstructionCount = unsigned int;
 
 class EmojicodeString: public std::basic_string<EmojicodeChar>  {
 public:
@@ -51,8 +49,6 @@ extern ValueType *VT_BOOLEAN;
 extern ValueType *VT_SYMBOL;
 extern ValueType *VT_INTEGER;
 extern ValueType *VT_DOUBLE;
-
-using InstructionCount = unsigned int;
 
 /** Issues a compiler warning. The compilation is continued afterwards. */
 void compilerWarning(const SourcePosition &p, const char *err, ...);

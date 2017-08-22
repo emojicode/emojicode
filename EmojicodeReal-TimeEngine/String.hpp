@@ -36,11 +36,6 @@ const char* stringToCString(Object *str);
 /** Creates a string from a UTF8 C string. The string must be null terminated! */
 Object* stringFromChar(const char *cstring);
 
-/**
- * Tries to parse the string in the this-slot on the stack as JSON.
- */
-void parseJSON(Thread *thread, Box *destination);
-
 void stringMark(Object *self);
 
 struct List;

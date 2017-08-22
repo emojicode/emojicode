@@ -25,8 +25,8 @@ public:
 
 class FunctionObjectVariableRecord : public ObjectVariableRecord {
 public:
-    int from;
-    int to;
+    unsigned int from;
+    unsigned int to;
 };
 
 struct BoxObjectVariableRecords {
@@ -100,10 +100,10 @@ struct CaptureInformation {
 
 struct Closure {
     Function *function;
-    unsigned int captureCount;
+    unsigned int captureSize;
+    unsigned int captureDestination;
     unsigned int recordsCount;
     Object *capturedVariables;
-    Object *capturesInformation;
     Object *objectVariableRecords;
     Value thisContext;
 };

@@ -33,7 +33,7 @@ void dataSize(Thread *thread) {
 
 void dataMark(Object *o) {
     auto *d = o->val<Data>();
-    if (d->bytesObject) {
+    if (d->bytesObject != nullptr) {
         mark(&d->bytesObject);
         d->bytes = d->bytesObject->val<char>();
     }

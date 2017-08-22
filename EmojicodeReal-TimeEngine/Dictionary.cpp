@@ -18,11 +18,10 @@ namespace Emojicode {
 #define FNV_PRIME_64 1099511628211
 #define FNV_OFFSET_64 14695981039346656037U
 EmojicodeDictionaryHash fnv64(const void *input, size_t length) {
-    auto k = reinterpret_cast<const char*>(input);
+    auto k = static_cast<const char*>(input);
     EmojicodeDictionaryHash hash = FNV_OFFSET_64;
     for (size_t i = 0; i < length; i++) {
-        hash = hash ^ k[i];
-        hash = hash * FNV_PRIME_64;
+        hash = (hash ^ k[i]) * FNV_PRIME_64;
     }
     return hash;
 }
@@ -291,9 +290,9 @@ void dictionaryMark(Object *object) {
     auto buckets = dict->buckets->val<Object*>();
     for (size_t i = 0; i < dict->bucketsCounter; i++) {
         Object **eo = &buckets[i];
-        while (*(eo)) {
+        while (*(eo) != nullptr) {
             mark(eo);
-            EmojicodeDictionaryNode *e = (*eo)->val<EmojicodeDictionaryNode>();
+            auto *e = (*eo)->val<EmojicodeDictionaryNode>();
             mark(&(e->key));
             markBox(&e->value);
             eo = &(e->next);
@@ -317,8 +316,7 @@ void bridgeDictionaryGet(Thread *thread) {
         thread->returnNothingnessFromFunction();
     }
     else {
-        node->value.copyTo(thread->currentStackFrame()->destination);
-        thread->returnFromFunction();
+        thread->returnFromFunction(node->value);
     }
 }
 

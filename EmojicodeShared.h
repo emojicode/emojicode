@@ -21,10 +21,10 @@ typedef uint32_t EmojicodeInstruction;
 #define defaultPackagesDirectory "/usr/local/EmojicodePackages"
 #endif
 
-#define T_NOTHINGNESS 0
+#define T_NOTHINGNESS static_cast<EmojicodeInteger>(0)
 #define T_OBJECT 1
-#define T_OPTIONAL_VALUE 1
-#define T_ERROR 2
+#define T_OPTIONAL_VALUE static_cast<EmojicodeInteger>(1)
+#define T_ERROR static_cast<EmojicodeInteger>(2)
 
 #define T_BOOLEAN 3
 #define T_INTEGER 4

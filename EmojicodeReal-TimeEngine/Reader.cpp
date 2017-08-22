@@ -54,7 +54,7 @@ PackageLoadingState packageLoad(const char *name, uint16_t major, uint16_t minor
 
     PackageVersion pv = *static_cast<PackageVersion *>(dlsym(package, "version"));
 
-    if (!*linkingTable) {
+    if (*linkingTable == nullptr) {
         return PACKAGE_LOADING_FAILED;
     }
     if (pv.major != major) {
@@ -80,7 +80,7 @@ void readFunction(Function **table, FILE *in, FunctionFunctionPointer *linkingTa
 
     function->objectVariableRecordsCount = readUInt16(in);
     function->objectVariableRecords = new FunctionObjectVariableRecord[function->objectVariableRecordsCount];
-    for (int i = 0; i < function->objectVariableRecordsCount; i++) {
+    for (unsigned int i = 0; i < function->objectVariableRecordsCount; i++) {
         function->objectVariableRecords[i].variableIndex = readUInt16(in);
         function->objectVariableRecords[i].condition = readUInt16(in);
         function->objectVariableRecords[i].type = static_cast<ObjectVariableType>(readUInt16(in));
@@ -102,8 +102,29 @@ void readFunction(Function **table, FILE *in, FunctionFunctionPointer *linkingTa
     function->block.instructionCount = readEmojicodeChar(in);
 
     function->block.instructions = new EmojicodeInstruction[function->block.instructionCount];
+#ifdef DEBUG
+    int numberPrint = 0;
+#endif
     for (unsigned int i = 0; i < function->block.instructionCount; i++) {
         function->block.instructions[i] = readInstruction(in);
+#ifdef DEBUG
+        if (numberPrint == 0) {
+            printf("%4d: ", i);
+            auto ins = static_cast<Instructions>(function->block.instructions[i]);
+            pinsname(ins);
+            printf(" ");
+            numberPrint = inscount(ins);
+            if (numberPrint == 0) {
+                puts("");
+            }
+        }
+        else {
+            printf("%d ", function->block.instructions[i]);
+            if (--numberPrint == 0) {
+                puts("");
+            }
+        }
+#endif
     }
 
     DEBUG_LOG("Read block with %d coins and %d local variable(s)", function->block.instructionCount,
@@ -275,7 +296,7 @@ Function* readBytecode(FILE *in) {
     DEBUG_LOG("%d function(s) on the whole", functionCount);
 
     for (int i = 0, l = fgetc(in); i < l; i++) {
-        DEBUG_LOG("Reading package %d of %d", i + 1, l);
+        DEBUG_LOG("📦 Reading package %d of %d", i + 1, l);
         readPackage(in);
     }
 
@@ -290,7 +311,7 @@ Function* readBytecode(FILE *in) {
     uint16_t tableSize = readUInt16(in);
     protocolDispatchTableTable = new ProtocolDispatchTable[tableSize];
     protocolDTTOffset = readUInt16(in);
-    for (uint16_t count = readUInt16(in); count; count--) {
+    for (uint16_t count = readUInt16(in); count > 0; count--) {
         DEBUG_LOG("➡️ Still %d value type protocol tables to load", count);
         auto index = readUInt16(in);
         readProtocolTable(protocolDispatchTableTable[index - protocolDTTOffset], functionTable, in);

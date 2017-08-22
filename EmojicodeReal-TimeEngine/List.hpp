@@ -48,6 +48,7 @@ void listRemoveAllBridge(Thread *thread);
 void listSetBridge(Thread *thread);
 void listShuffleInPlaceBridge(Thread *thread);
 void listEnsureCapacityBridge(Thread *thread);
+void listAppendList(Thread *thread);
 
 }
 

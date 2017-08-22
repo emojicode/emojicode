@@ -11,7 +11,7 @@
 
 namespace EmojicodeCompiler {
 
-CompilerError::CompilerError(SourcePosition p, const char *err, ...) : position_(p) {
+CompilerError::CompilerError(SourcePosition p, const char *err, ...) : position_(std::move(p)) {
     va_list list;
     va_start(list, err);
 

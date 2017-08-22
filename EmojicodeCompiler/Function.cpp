@@ -9,9 +9,8 @@
 #include "Function.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
-#include "Lexer.hpp"
-#include "TypeContext.hpp"
-#include "VTIProvider.hpp"
+#include "Types/TypeContext.hpp"
+#include "Generation/VTIProvider.hpp"
 #include <algorithm>
 #include <map>
 #include <stdexcept>
@@ -20,9 +19,8 @@ namespace EmojicodeCompiler {
 
 bool Function::foundStart = false;
 Function *Function::start;
-int Function::nextVti_ = 0;
 std::queue<Function*> Function::compilationQueue;
-ValueTypeVTIProvider Function::pureFunctionsProvider;
+std::queue<Function*> Function::analysisQueue;
 
 void Function::setLinkingTableIndex(int index) {
     linkingTableIndex_ = index;
@@ -33,20 +31,20 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
     try {
         if (super->final()) {
             throw CompilerError(position(), "%s’s implementation of %s was marked 🔏.",
-                                superSource.toString(typeContext, true).c_str(), name().utf8().c_str());
+                                superSource.toString(typeContext).c_str(), name().utf8().c_str());
         }
         if (this->accessLevel() != super->accessLevel()) {
             throw CompilerError(position(), "Access level of %s’s implementation of %s doesn‘t match.",
-                                superSource.toString(typeContext, true).c_str(), name().utf8().c_str());
+                                superSource.toString(typeContext).c_str(), name().utf8().c_str());
         }
 
         auto superReturnType = protocol ? super->returnType.resolveOn(*protocol, false) : super->returnType;
         if (!returnType.resolveOn(typeContext).compatibleTo(superReturnType, typeContext)) {
-            auto supername = superReturnType.toString(typeContext, true);
-            auto thisname = returnType.toString(typeContext, true);
+            auto supername = superReturnType.toString(typeContext);
+            auto thisname = returnType.toString(typeContext);
             throw CompilerError(position(), "Return type %s of %s is not compatible to the return type defined in %s.",
-                                returnType.toString(typeContext, true).c_str(), name().utf8().c_str(),
-                                superSource.toString(typeContext, true).c_str());
+                                returnType.toString(typeContext).c_str(), name().utf8().c_str(),
+                                superSource.toString(typeContext).c_str());
         }
         if (superReturnType.storageType() == StorageType::Box && !protocol) {
             returnType.forceBox();
@@ -66,8 +64,8 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
             auto superArgumentType = protocol ? super->arguments[i].type.resolveOn(*protocol, false) :
             super->arguments[i].type;
             if (!superArgumentType.compatibleTo(arguments[i].type.resolveOn(typeContext), typeContext)) {
-                auto supertype = superArgumentType.toString(typeContext, true);
-                auto thisname = arguments[i].type.toString(typeContext, true);
+                auto supertype = superArgumentType.toString(typeContext);
+                auto thisname = arguments[i].type.toString(typeContext);
                 throw CompilerError(position(),
                                     "Type %s of argument %d is not compatible with its %s argument type %s.",
                                     thisname.c_str(), i + 1, supertype.c_str());
@@ -86,26 +84,10 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
     return true;
 }
 
-bool Function::checkOverride(Function *superFunction) const {
-    if (overriding()) {
-        if (superFunction == nullptr || superFunction->accessLevel() == AccessLevel::Private) {
-            throw CompilerError(position(), "%s was declared ✒️ but does not override anything.",
-                                name().utf8().c_str());
-        }
-        return true;
-    }
-
-    if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
-        throw CompilerError(position(), "If you want to override %s add ✒️.", name().utf8().c_str());
-    }
-    return false;
-}
-
 void Function::deprecatedWarning(const SourcePosition &p) const {
     if (deprecated()) {
         if (!documentation().empty()) {
-            compilerWarning(p,
-                            "%s is deprecated. Please refer to the documentation for further information:\n%s",
+            compilerWarning(p, "%s is deprecated. Please refer to the documentation for further information:\n%s",
                             name().utf8().c_str(), documentation().utf8().c_str());
         }
         else {
@@ -117,34 +99,30 @@ void Function::deprecatedWarning(const SourcePosition &p) const {
 void Function::assignVti() {
     if (!assigned()) {
         setVti(vtiProvider_->next());
+        for (Function *function : overriders_) {
+            function->assignVti();
+        }
     }
 }
 
-void Function::markUsed(bool addToCompilationQueue) {
-    if (used_) {
-        return;
-    }
-    used_ = true;
-    if (vtiProvider_ != nullptr) {
-        vtiProvider_->used();
-    }
-
-    if (addToCompilationQueue) {
-        Function::compilationQueue.push(this);
-    }
-
-    for (Function *function : overriders_) {
-        function->markUsed();
+void Function::setUsed(bool enqueue) {
+    if (!used_) {
+        used_ = true;
+        if (vtiProvider_) {
+            vtiProvider_->used();
+        }
+        if (enqueue) {
+            Function::compilationQueue.emplace(this);
+        }
+        for (Function *function : overriders_) {
+            function->setUsed();
+        }
     }
 }
 
 int Function::vtiForUse() {
-    if (!assigned()) {
-        setVti(vtiProvider_->next());
-    }
-    if (!used_) {
-        markUsed();
-    }
+    assignVti();
+    setUsed();
     return vti_;
 }
 

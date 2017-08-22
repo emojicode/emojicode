@@ -50,7 +50,6 @@ void listEnsureCapacity(Thread *thread, size_t size) {
         list->items = object;
         list->capacity = size;
     }
-    thread->returnFromFunction();
 }
 
 void listMark(Object *self) {
@@ -70,6 +69,15 @@ Box* listAppendDestination(RetainedObjectPointer listObject, Thread *thread) {
     }
     list = listObject->val<List>();
     return list->elements() + list->count++;
+}
+
+void listAppendList(Thread *thread) {
+    auto *copyList = thread->variable(0).object->val<List>();
+    listEnsureCapacity(thread, thread->thisObject()->val<List>()->count + copyList->count);
+    auto *list = thread->thisObject()->val<List>();
+    copyList = thread->variable(0).object->val<List>();
+    std::memcpy(list->elements() + list->count, copyList->elements(), copyList->count * sizeof(Box));
+    list->count += copyList->count;
 }
 
 void listCountBridge(Thread *thread) {
@@ -92,8 +100,7 @@ void listGetBridge(Thread *thread) {
         thread->returnNothingnessFromFunction();
         return;
     }
-    list->elements()[index].copyTo(thread->currentStackFrame()->destination);
-    thread->returnFromFunction();
+    thread->returnFromFunction(list->elements()[index]);
 }
 
 void listRemoveBridge(Thread *thread) {
@@ -120,8 +127,7 @@ void listPopBridge(Thread *thread) {
     size_t index = --list->count;
     Box v = list->elements()[index];
     list->elements()[index].makeNothingness();
-    v.copyTo(thread->currentStackFrame()->destination);
-    thread->returnFromFunction();
+    thread->returnFromFunction(v);
 }
 
 void listInsertBridge(Thread *thread) {
@@ -150,11 +156,11 @@ void listInsertBridge(Thread *thread) {
 void listSort(Thread *thread) {
     auto *list = thread->thisObject()->val<List>();
     std::sort(list->elements(), list->elements() + list->count, [thread](const Box &a, const Box &b) {
-        Value args[2 * STORAGE_BOX_VALUE_SIZE];
+        Value args[2 * kBoxValueSize];
         a.copyTo(args);
-        b.copyTo(args + STORAGE_BOX_VALUE_SIZE);
+        b.copyTo(args + kBoxValueSize);
         Value c;
-        executeCallableExtern(thread->variable(0).object, args, sizeof(args) / sizeof(Value), thread, &c);
+        executeCallableExtern(thread->variable(0).object, args, sizeof(args) / sizeof(Value), thread);
         return c.raw < 0;
     });
     thread->returnFromFunction();
@@ -210,6 +216,7 @@ void listShuffleInPlaceBridge(Thread *thread) {
 
 void listEnsureCapacityBridge(Thread *thread) {
     listEnsureCapacity(thread, thread->variable(0).raw);
+    thread->returnFromFunction();
 }
 
 void initListEmptyBridge(Thread *thread) {
