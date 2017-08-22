@@ -17,9 +17,7 @@
 
 namespace EmojicodeCompiler {
 
-#define isNewline() (c == 0x0A || c == 0x2028 || c == 0x2029)
-
-bool Lexer::detectWhitespace(EmojicodeChar c) {
+bool Lexer::detectWhitespace() {
     if (isNewline()) {
         sourcePosition_.character = 0;
         sourcePosition_.line++;
@@ -72,14 +70,14 @@ void Lexer::nextCharOrEnd() {
 TokenStream Lexer::lex() {
     nextCharOrEnd();
     while (continue_) {
-        if (detectWhitespace(c)) {
+        if (detectWhitespace()) {
             nextCharOrEnd();
             continue;
         }
 
         tokens_.emplace_back(sourcePosition_);
 
-        TokenState state = beginToken(c, &tokens_.back()) ? TokenState::Continues : TokenState::Ended;
+        TokenState state = beginToken(&tokens_.back()) ? TokenState::Continues : TokenState::Ended;
         while (true) {
             if (state == TokenState::NextBegun) {
                 tokens_.back().validate();
@@ -96,7 +94,8 @@ TokenStream Lexer::lex() {
                 break;
             }
             nextChar();
-            state = continueToken(c, &tokens_.back());
+            detectWhitespace();
+            state = continueToken(&tokens_.back());
         }
     }
 
@@ -108,7 +107,7 @@ void Lexer::singleToken(Token *token, TokenType type, EmojicodeChar c) {
     token->value_.push_back(c);
 }
 
-bool Lexer::beginToken(EmojicodeChar c, Token *token) {
+bool Lexer::beginToken(Token *token) {
     switch (c) {
         case E_INPUT_SYMBOL_LATIN_LETTERS:
             token->type_ = TokenType::String;
@@ -175,7 +174,7 @@ bool Lexer::beginToken(EmojicodeChar c, Token *token) {
     return true;
 }
 
-Lexer::TokenState Lexer::continueToken(EmojicodeChar c, Token *token) {
+Lexer::TokenState Lexer::continueToken(Token *token) {
     switch (token->type()) {
         case TokenType::Identifier:
             if (foundZWJ_ && isEmoji(c)) {
@@ -198,7 +197,6 @@ Lexer::TokenState Lexer::continueToken(EmojicodeChar c, Token *token) {
             }
             return TokenState::NextBegun;
         case TokenType::SinglelineComment:
-            detectWhitespace(c);
             if (isNewline()) {
                 return TokenState::Discard;
             }
@@ -209,7 +207,6 @@ Lexer::TokenState Lexer::continueToken(EmojicodeChar c, Token *token) {
             }
             return TokenState::Continues;
         case TokenType::DocumentationComment:
-            detectWhitespace(c);
             if (c == E_TACO) {
                 return TokenState::Ended;
             }
@@ -247,7 +244,6 @@ Lexer::TokenState Lexer::continueToken(EmojicodeChar c, Token *token) {
                 return TokenState::Ended;
             }
 
-            detectWhitespace(c);
             token->value_.push_back(c);
             return TokenState::Continues;
         case TokenType::Variable:

@@ -30,12 +30,14 @@ private:
     SourcePosition sourcePosition_ = SourcePosition(1, 0, "");
     /// Checks for a whitespace character and updates ::sourcePosition_.
     /// @returns True if @c is whitespace according to isWhitespace().
-    bool detectWhitespace(EmojicodeChar c);
+    bool detectWhitespace();
     /// Called if a new character is available and beginToken returned true and all previous calls for this token
     /// returned TokenState::Continues.
-    TokenState continueToken(EmojicodeChar c, Token *token);
+    TokenState continueToken(Token *token);
 
-    bool beginToken(EmojicodeChar c, Token *token);
+    bool isNewline() { return c == 0x0A || c == 0x2028 || c == 0x2029; }
+
+    bool beginToken(Token *token);
 
     void nextChar();
     bool hasMoreChars() { return i_ < string_.size(); }
