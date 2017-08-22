@@ -9,8 +9,9 @@
 #ifndef ValueType_hpp
 #define ValueType_hpp
 
-#include "TypeDefinition.hpp"
 #include "../Generation/STIProvider.hpp"
+#include "TypeDefinition.hpp"
+#include <utility>
 #include <vector>
 
 namespace EmojicodeCompiler {
@@ -20,7 +21,7 @@ public:
     static const std::vector<ValueType *>& valueTypes() { return valueTypes_; }
 
     ValueType(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
-        : TypeDefinition(name, p, pos, documentation) {
+        : TypeDefinition(std::move(name), p, std::move(pos), documentation) {
         valueTypes_.push_back(this);
     }
 
@@ -29,7 +30,7 @@ public:
     void prepareForCG() override;
     int usedFunctionCount() const { return vtiProvider_.usedCount(); };
 
-    virtual int size() const override { return primitive_ ? 1 : TypeDefinition::size(); }
+    int size() const override { return primitive_ ? 1 : TypeDefinition::size(); }
 
     void addMethod(Function *method) override;
     void addInitializer(Initializer *initializer) override;

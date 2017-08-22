@@ -9,8 +9,8 @@
 #ifndef TypeExpectation_hpp
 #define TypeExpectation_hpp
 
-#include "Type.hpp"
 #include "../Scoping/Variable.hpp"
+#include "Type.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -39,14 +39,12 @@ public:
     /// the most unboxed value as indicated by a storage type of @c StorageType::SimpleIfPossible.
     /// @returns The storage type to which the value can be unboxed or the original storage type if the value should
     /// not be unboxed.
-    StorageType simplifyType(Type type) const {
+    StorageType simplifyType(const Type& type) const {
         if (expectationMode_ == ExpectationMode::Simplify) {
             if (type.requiresBox()) {
                 return StorageType::Box;
             }
-            else {
-                return type.optional() ? StorageType::SimpleOptional : StorageType::Simple;
-            }
+            return type.optional() ? StorageType::SimpleOptional : StorageType::Simple;
         }
         return storageType();
     }

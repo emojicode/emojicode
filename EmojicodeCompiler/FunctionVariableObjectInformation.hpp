@@ -23,6 +23,6 @@ struct FunctionObjectVariableInformation : public ObjectVariableInformation {
     int to;
 };
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* FunctionVariableObjectInformation_hpp */

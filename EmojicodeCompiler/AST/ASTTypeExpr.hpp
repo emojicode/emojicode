@@ -9,8 +9,10 @@
 #ifndef ASTTypeExpr_hpp
 #define ASTTypeExpr_hpp
 
-#include "ASTNode.hpp"
+#include <utility>
+
 #include "ASTExpr.hpp"
+#include "ASTNode.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -24,8 +26,8 @@ protected:
 
 class ASTTypeFromExpr final : public ASTTypeExpr {
 public:
-    ASTTypeFromExpr(const std::shared_ptr<ASTExpr> &value, const SourcePosition &p)
-    : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p), expr_(value) {}
+    ASTTypeFromExpr(std::shared_ptr<ASTExpr> value, const SourcePosition &p)
+    : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p), expr_(std::move(value)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -34,8 +36,8 @@ private:
 
 class ASTStaticType : public ASTTypeExpr {
 public:
-    ASTStaticType(const Type &type, TypeAvailability av, const SourcePosition &p)
-    : ASTTypeExpr(av, p), type_(type) {}
+    ASTStaticType(Type type, TypeAvailability av, const SourcePosition &p)
+    : ASTTypeExpr(av, p), type_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 protected:
@@ -44,17 +46,17 @@ protected:
 
 class ASTInferType final : public ASTStaticType {
 public:
-    ASTInferType(const SourcePosition &p) : ASTStaticType(Type::nothingness(), TypeAvailability::StaticAndUnavailable, p) {}
+    explicit ASTInferType(const SourcePosition &p) : ASTStaticType(Type::nothingness(), TypeAvailability::StaticAndUnavailable, p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
 };
 
 class ASTThisType final : public ASTTypeExpr {
 public:
-    ASTThisType(const SourcePosition &p) : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p) {}
+    explicit ASTThisType(const SourcePosition &p) : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 };
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* ASTTypeExpr_hpp */

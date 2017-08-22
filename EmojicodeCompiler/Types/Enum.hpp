@@ -9,17 +9,17 @@
 #ifndef Enum_hpp
 #define Enum_hpp
 
-#include <map>
-#include <utility>
 #include "../EmojicodeCompiler.hpp"
 #include "ValueType.hpp"
+#include <map>
+#include <utility>
 
 namespace EmojicodeCompiler {
 
 class Enum : public ValueType {
 public:
     Enum(EmojicodeString name, Package *package, SourcePosition position, const EmojicodeString &documentation)
-        : ValueType(name, package, position, documentation) {
+        : ValueType(std::move(name), package, std::move(position), documentation) {
             makePrimitive();
     }
 
@@ -33,7 +33,7 @@ public:
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 private:
     std::map<EmojicodeString, std::pair<long, EmojicodeString>> map_;
-    long valuesCounter = 0;
+    long nextValue_ = 0;
 };
 
 }  // namespace EmojicodeCompiler

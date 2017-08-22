@@ -31,6 +31,6 @@ private:
     std::function<void(FnCodeGenerator*)> function_;
 };
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* ASTProxyExpr_hpp */

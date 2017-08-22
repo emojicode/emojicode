@@ -9,11 +9,11 @@
 #ifndef Protocol_hpp
 #define Protocol_hpp
 
-#include <vector>
-#include <map>
 #include "../Parsing/Package.hpp"
-#include "TypeDefinition.hpp"
 #include "TypeContext.hpp"
+#include "TypeDefinition.hpp"
+#include <map>
+#include <vector>
 
 namespace EmojicodeCompiler {
 

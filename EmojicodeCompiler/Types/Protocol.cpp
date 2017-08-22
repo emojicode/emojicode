@@ -8,8 +8,8 @@
 
 #include "Protocol.hpp"
 
-#include <utility>
 #include "../Function.hpp"
+#include <utility>
 
 namespace EmojicodeCompiler {
 

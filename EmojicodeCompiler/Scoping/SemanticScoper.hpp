@@ -28,7 +28,7 @@ class Function;
 /** Manages the scoping of a callable. */
 class SemanticScoper {
 public:
-    SemanticScoper() {};
+    SemanticScoper() = default;
     explicit SemanticScoper(Scope *instanceScope) : instanceScope_(instanceScope) {};
 
     static SemanticScoper scoperForFunction(Function *function);

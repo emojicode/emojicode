@@ -8,12 +8,12 @@
 
 #include "Generation/Writer.hpp"
 #include "../utf8.h"
-#include "Types/Class.hpp"
-#include "Generation/CodeGenerator.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
+#include "Generation/CodeGenerator.hpp"
 #include "PackageReporter.hpp"
+#include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
 #include <cstdlib>
 #include <cstring>

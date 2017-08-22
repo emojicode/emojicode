@@ -9,6 +9,8 @@
 #ifndef ASTLiterals_hpp
 #define ASTLiterals_hpp
 
+#include <utility>
+
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
@@ -17,7 +19,7 @@ class SemanticAnalyser;
 
 class ASTStringLiteral final : public ASTExpr {
 public:
-    ASTStringLiteral(const EmojicodeString &value, const SourcePosition &p) : ASTExpr(p), value_(value) {}
+    ASTStringLiteral(EmojicodeString value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -28,14 +30,14 @@ private:
 class ASTBooleanFalse final : public ASTExpr {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    ASTBooleanFalse(const SourcePosition &p) : ASTExpr(p) {}
+    explicit ASTBooleanFalse(const SourcePosition &p) : ASTExpr(p) {}
     void generateExpr(FnCodeGenerator *fncg) const override;
 };
 
 class ASTBooleanTrue final : public ASTExpr {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    ASTBooleanTrue(const SourcePosition &p) : ASTExpr(p) {}
+    explicit ASTBooleanTrue(const SourcePosition &p) : ASTExpr(p) {}
     void generateExpr(FnCodeGenerator *fncg) const override;
 };
 
@@ -69,7 +71,7 @@ private:
 
 class ASTConcatenateLiteral final : public ASTExpr {
 public:
-    ASTConcatenateLiteral(const SourcePosition &p) : ASTExpr(p) {}
+    explicit ASTConcatenateLiteral(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     void generateExpr(FnCodeGenerator *fncg) const override;
@@ -81,7 +83,7 @@ private:
 
 class ASTListLiteral final : public ASTExpr {
 public:
-    ASTListLiteral(const SourcePosition &p) : ASTExpr(p) {}
+    explicit ASTListLiteral(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     void generateExpr(FnCodeGenerator *fncg) const override;
@@ -115,6 +117,6 @@ public:
     void generateExpr(FnCodeGenerator *fncg) const override;
 };
 
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* ASTLiterals_hpp */

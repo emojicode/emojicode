@@ -9,15 +9,17 @@
 #ifndef VariableNotFoundError_hpp
 #define VariableNotFoundError_hpp
 
-#include "../EmojicodeCompiler.hpp"
+#include <utility>
+
 #include "../CompilerError.hpp"
+#include "../EmojicodeCompiler.hpp"
 
 namespace EmojicodeCompiler {
 
 class VariableNotFoundError: public CompilerError {
 public:
     VariableNotFoundError(SourcePosition p, const EmojicodeString &name)
-        : CompilerError(p, "Variable \"%s\" not defined.", name.utf8().c_str()) {};
+        : CompilerError(std::move(p), "Variable \"%s\" not defined.", name.utf8().c_str()) {};
 };
 
 }  // namespace EmojicodeCompiler

@@ -9,8 +9,8 @@
 #ifndef TokenStream_hpp
 #define TokenStream_hpp
 
-#include "Token.hpp"
 #include "../CompilerError.hpp"
+#include "Token.hpp"
 #include <vector>
 
 namespace EmojicodeCompiler {
@@ -21,7 +21,7 @@ class TokenStream {
     friend RecompilationPoint;
     friend TokenStream lex(const std::string &);
 public:
-    TokenStream(std::vector<Token> tokens) : tokens_(std::move(tokens)) {}
+    explicit TokenStream(std::vector<Token> tokens) : tokens_(std::move(tokens)) {}
 
     /**
      * Returns the next token if it matches the given type. If it does not match or the end of the stream was reached

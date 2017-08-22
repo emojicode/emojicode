@@ -9,9 +9,10 @@
 #ifndef Token_hpp
 #define Token_hpp
 
+#include "../EmojicodeCompiler.hpp"
 #include "SourcePosition.hpp"
 #include <string>
-#include "../EmojicodeCompiler.hpp"
+#include <utility>
 
 namespace EmojicodeCompiler {
 
@@ -37,7 +38,7 @@ enum class TokenType {
 class Token {
     friend TokenStream lexString(const std::string &, SourcePosition);
 public:
-    explicit Token(SourcePosition p) : position_(p) {}
+    explicit Token(SourcePosition p) : position_(std::move(p)) {}
 
     /** Returns the position at which this token was defined. */
     const SourcePosition& position() const { return position_; }

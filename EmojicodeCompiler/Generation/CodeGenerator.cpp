@@ -9,16 +9,16 @@
 #include "CodeGenerator.hpp"
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
+#include "../Initializer.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include "../Types/ValueType.hpp"
-#include "../Initializer.hpp"
 #include "FnCodeGenerator.hpp"
 #include "StringPool.hpp"
+#include <algorithm>
 #include <cstring>
 #include <vector>
-#include <algorithm>
 
 namespace EmojicodeCompiler {
 

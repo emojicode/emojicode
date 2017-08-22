@@ -12,10 +12,10 @@
 #include <cstdint>
 
 /// A Unicode codepoint
-typedef uint32_t EmojicodeChar;
+using EmojicodeChar = uint32_t;
 
 /// A byte-code instruction
-typedef uint32_t EmojicodeInstruction;
+using EmojicodeInstruction = uint32_t;
 
 #ifndef defaultPackagesDirectory
 #define defaultPackagesDirectory "/usr/local/EmojicodePackages"
@@ -33,13 +33,11 @@ typedef uint32_t EmojicodeInstruction;
 
 #define REMOTE_MASK (1 << 31)
 
-/**
- * @defined(isWhitespace)
- * @discussion Inserts a test if @c c is a whitespace
- * http://www.unicode.org/Public/6.3.0/ucd/PropList.txt
- * @param c The character to test
- */
-#define isWhitespace(c) ((0x9 <= c && c <= 0xD) || c == 0x20 || c == 0x85 || c == 0xA0 || c == 0x1680 || (0x2000 <= c && c <= 0x200A) || c == 0x2028 || c== 0x2029 || c == 0x2029 || c == 0x202F || c == 0x205F || c == 0x3000 || c == 0xFE0F)
+/// @returns True if @c c is a whitespace character. See http://www.unicode.org/Public/6.3.0/ucd/PropList.txt
+inline bool isWhitespace(EmojicodeChar c) {
+    return (0x9 <= c && c <= 0xD) || c == 0x20 || c == 0x85 || c == 0xA0 || c == 0x1680 || (0x2000 <= c && c <= 0x200A)
+    || c == 0x2028 || c== 0x2029 || c == 0x2029 || c == 0x202F || c == 0x205F || c == 0x3000 || c == 0xFE0F;
+}
 
 #define PORTABLE_INTLEAST64_MAX ((int_least64_t)9223372036854775807)
 

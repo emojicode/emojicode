@@ -9,11 +9,11 @@
 #ifndef CGScoper_hpp
 #define CGScoper_hpp
 
-#include "../Types/Type.hpp"
 #include "../FunctionVariableObjectInformation.hpp"
+#include "../Types/Type.hpp"
 #include "VariableID.hpp"
-#include <vector>
 #include <cassert>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
@@ -42,7 +42,7 @@ public:
         }
     };
 
-    CGScoper(size_t variables) : variables_(variables, Variable()) {}
+    explicit CGScoper(size_t variables) : variables_(variables, Variable()) {}
 
     void resizeVariables(size_t to) {
         variables_.resize(to, Variable());
@@ -85,7 +85,7 @@ public:
     unsigned int nextIndex() const { return nextIndex_; }
 private:
     struct Scope {
-        Scope (size_t minIndex) : minIndex(minIndex), maxIndex(minIndex) {}
+        explicit Scope (size_t minIndex) : minIndex(minIndex), maxIndex(minIndex) {}
 
         void updateMax(unsigned int x) { if (x > maxIndex) maxIndex = x; }
 
@@ -116,6 +116,6 @@ private:
     unsigned int size_ = 0;
 };
 
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* CGScoper_hpp */

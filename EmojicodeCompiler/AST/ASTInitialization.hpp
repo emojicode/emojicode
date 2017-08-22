@@ -9,6 +9,8 @@
 #ifndef ASTInitialization_hpp
 #define ASTInitialization_hpp
 
+#include <utility>
+
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
@@ -38,9 +40,9 @@ public:
         Enum, ValueType, Class
     };
 
-    ASTInitialization(const EmojicodeString &name, const std::shared_ptr<ASTTypeExpr> &type,
-                      const ASTArguments &args, const SourcePosition &p)
-    : ASTExpr(p), name_(name), typeExpr_(type), args_(args) {}
+    ASTInitialization(EmojicodeString name, std::shared_ptr<ASTTypeExpr> type,
+                      ASTArguments args, const SourcePosition &p)
+    : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 
@@ -54,6 +56,6 @@ private:
     ASTArguments args_;
 };
 
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* ASTInitialization_hpp */

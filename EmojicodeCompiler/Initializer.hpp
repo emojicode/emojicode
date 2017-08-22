@@ -9,6 +9,8 @@
 #ifndef Initializer_hpp
 #define Initializer_hpp
 
+#include <utility>
+
 #include "Function.hpp"
 
 namespace EmojicodeCompiler {
@@ -18,8 +20,8 @@ public:
     Initializer(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated, bool r,
                 std::experimental::optional<Type> errorType, FunctionType mode)
-    : Function(name, level, final, owningType, package, p, overriding, documentationToken, deprecated, true, mode),
-    required_(r), errorType_(errorType) {
+    : Function(std::move(name), level, final, std::move(owningType), package, std::move(p), overriding, std::move(documentationToken), deprecated, true, mode),
+    required_(r), errorType_(std::move(errorType)) {
         returnType = Type::nothingness();
     }
 

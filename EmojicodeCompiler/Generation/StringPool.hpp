@@ -9,8 +9,8 @@
 #ifndef StringPool_hpp
 #define StringPool_hpp
 
-#include <vector>
 #include "../EmojicodeCompiler.hpp"
+#include <vector>
 
 namespace EmojicodeCompiler {
 

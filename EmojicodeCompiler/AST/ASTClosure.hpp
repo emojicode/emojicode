@@ -9,8 +9,8 @@
 #ifndef ASTClosure_hpp
 #define ASTClosure_hpp
 
-#include "ASTExpr.hpp"
 #include "../Scoping/CapturingSemanticScoper.hpp"
+#include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -26,6 +26,6 @@ private:
     bool captureSelf_ = false;
 };
 
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* ASTClosure_hpp */

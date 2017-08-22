@@ -9,18 +9,18 @@
 #ifndef SemanticAnalyser_hpp
 #define SemanticAnalyser_hpp
 
-#include "../AST/ASTStatements.hpp"
 #include "../AST/ASTExpr.hpp"
+#include "../AST/ASTStatements.hpp"
 #include "../AST/ASTTypeExpr.hpp"
-#include "PathAnalyser.hpp"
+#include "../CompilerError.hpp"
+#include "../FunctionType.hpp"
 #include "../Scoping/SemanticScoper.hpp"
 #include "../Types/Type.hpp"
-#include "../Types/TypeExpectation.hpp"
 #include "../Types/TypeContext.hpp"
-#include "../FunctionType.hpp"
-#include "../CompilerError.hpp"
-#include <utility>
+#include "../Types/TypeExpectation.hpp"
+#include "PathAnalyser.hpp"
 #include <memory>
+#include <utility>
 
 namespace EmojicodeCompiler {
 
@@ -28,7 +28,7 @@ class ASTArguments;
 
 class SemanticAnalyser {
 public:
-    SemanticAnalyser(Function *function)
+    explicit SemanticAnalyser(Function *function)
     : scoper_(std::make_unique<SemanticScoper>(SemanticScoper::scoperForFunction(function))),
     typeContext_(function->typeContext()), function_(function) {}
     SemanticAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper)
@@ -99,6 +99,6 @@ private:
     bool callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType);
 };
 
-}  // namespace Emojicode
+}  // namespace EmojicodeCompiler
 
 #endif /* SemanticAnalyser_hpp */

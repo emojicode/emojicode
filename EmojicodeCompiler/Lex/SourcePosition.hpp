@@ -10,11 +10,12 @@
 #define SourcePosition_hpp
 
 #include <string>
+#include <utility>
 
 namespace EmojicodeCompiler {
 
 struct SourcePosition {
-    SourcePosition(size_t line, size_t character, std::string file) : line(line), character(character), file(file) {};
+    SourcePosition(size_t line, size_t character, std::string file) : line(line), character(character), file(std::move(file)) {};
     size_t line;
     size_t character;
     std::string file;

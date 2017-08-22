@@ -1,0 +1,27 @@
+Checks: '*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-clang-analyzer-*,-readability-redundant-declaration,-google-readability-todo,-llvm-header-guard,-misc-unused-parameters,-google-runtime-int,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-readability-named-parameter'
+#Checks: '-*,performance-unnecessary-value-param,llvm-namespace-comment'
+# modernize-pass-by-value,modernize-use-using,readability-braces-around-statement,google-explicit-constructor,llvm-include-order
+HeaderFilterRegex: '.*'
+CheckOptions:
+  - key: readability-identifier-naming.GlobalConstantPrefix
+    value: 'k'
+  - key: readability-identifier-naming.PrivateMemberSuffix
+    value: '_'
+  - key: readability-identifier-naming.ProtectedMemberSuffix
+    value: '_'
+  - key: readability-identifier-naming.ProtectedMemberSuffix
+    value: '_'
+  - key: readability-identifier-naming.LocalVariableCase
+    value: 'camelBack'
+  - key: readability-identifier-naming.ClassCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.EnumCase
+    value: 'CamelCase'
+  - key: readability-function-size.BranchThreshold
+    value: 5
+  - key: readability-function-size.LineThreshold
+    value: 40
+  - key: readability-identifier-naming.PublicMemberSuffix
+    value: ''
+  - key: readability-identifier-naming.GlobalVariableCase
+    value: 'UPPER_CASE'

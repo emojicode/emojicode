@@ -9,26 +9,28 @@
 #ifndef ASTVariables_hpp
 #define ASTVariables_hpp
 
+#include <utility>
+
 #include "ASTStatements.hpp"
 
 namespace EmojicodeCompiler {
 
 class ASTInitableCreator : public ASTStatement {
 protected:
-    ASTInitableCreator(const std::shared_ptr<ASTExpr> &e, const SourcePosition &p) : ASTStatement(p), expr_(e) {}
+    ASTInitableCreator(std::shared_ptr<ASTExpr> e, const SourcePosition &p) : ASTStatement(p), expr_(std::move(e)) {}
     std::shared_ptr<ASTExpr> expr_;
 
     void setVtDestination(VariableID varId, bool inInstanceScope, bool declare);
     virtual void generateAssignment(FnCodeGenerator *) const = 0;
 private:
-    void generate(FnCodeGenerator *) const override final;
+    void generate(FnCodeGenerator *) const final;
     bool noAction_ = false;
 };
 
 class ASTVariableDeclaration final : public ASTStatement {
 public:
-    ASTVariableDeclaration(const Type &type, const EmojicodeString &name, const SourcePosition &p)
-    : ASTStatement(p), varName_(name), type_(type) {}
+    ASTVariableDeclaration(Type type, EmojicodeString name, const SourcePosition &p)
+    : ASTStatement(p), varName_(std::move(name)), type_(std::move(type)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
@@ -40,8 +42,8 @@ private:
 
 class ASTVariableAssignmentDecl : public ASTVariable, public ASTInitableCreator {
 public:
-    ASTVariableAssignmentDecl(const EmojicodeString &name, const std::shared_ptr<ASTExpr> &e,
-                              const SourcePosition &p) : ASTInitableCreator(e, p), varName_(name) {}
+    ASTVariableAssignmentDecl(EmojicodeString name, const std::shared_ptr<ASTExpr> &e,
+                              const SourcePosition &p) : ASTInitableCreator(e, p), varName_(std::move(name)) {}
     void analyse(SemanticAnalyser *analyser) override;
     void generateAssignment(FnCodeGenerator *) const override;
 protected:
@@ -60,8 +62,8 @@ public:
 
 class ASTFrozenDeclaration final : public ASTInitableCreator {
 public:
-    ASTFrozenDeclaration(const EmojicodeString &name, const std::shared_ptr<ASTExpr> &e,
-                         const SourcePosition &p) : ASTInitableCreator(e, p), varName_(name) {}
+    ASTFrozenDeclaration(EmojicodeString name, const std::shared_ptr<ASTExpr> &e,
+                         const SourcePosition &p) : ASTInitableCreator(e, p), varName_(std::move(name)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
     void generateAssignment(FnCodeGenerator *) const override;
@@ -70,7 +72,6 @@ private:
     VariableID id_;
 };
 
-
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* ASTVariables_hpp */

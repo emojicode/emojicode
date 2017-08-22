@@ -9,12 +9,14 @@
 #ifndef FunctionParser_hpp
 #define FunctionParser_hpp
 
-#include "../Parsing/OperatorHelper.hpp"
-#include "AbstractParser.hpp"
-#include "../Lex/TokenStream.hpp"
-#include "../Types/TypeContext.hpp"
-#include "../AST/ASTStatements.hpp"
+#include <utility>
+
 #include "../AST/ASTExpr.hpp"
+#include "../AST/ASTStatements.hpp"
+#include "../Lex/TokenStream.hpp"
+#include "../Parsing/OperatorHelper.hpp"
+#include "../Types/TypeContext.hpp"
+#include "AbstractParser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -22,7 +24,7 @@ class ASTNode;
 
 class FunctionParser : AbstractParser {
 public:
-    FunctionParser(Package *pkg, TokenStream &stream, const TypeContext &context) : AbstractParser(pkg, stream), typeContext_(context) {}
+    FunctionParser(Package *pkg, TokenStream &stream, TypeContext context) : AbstractParser(pkg, stream), typeContext_(std::move(context)) {}
     std::shared_ptr<ASTBlock> parse();
 private:
     TypeContext typeContext_;
@@ -59,6 +61,6 @@ private:
     int peakOperatorPrecedence();
 };
 
-}  // namespace Emojicode
+}  // namespace EmojicodeCompiler
 
 #endif /* FunctionParser_hpp */

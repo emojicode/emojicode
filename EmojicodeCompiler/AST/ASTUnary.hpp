@@ -9,14 +9,16 @@
 #ifndef ASTUnary_hpp
 #define ASTUnary_hpp
 
-#include "ASTExpr.hpp"
+#include <utility>
+
 #include "../Generation/FnCodeGenerator.hpp"
+#include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
 
 class ASTUnary : public ASTExpr {
 public:
-    ASTUnary(const std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTExpr(p), value_(value) {}
+    ASTUnary(std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
 protected:
     void generateHelper(FnCodeGenerator *fncg, EmojicodeInstruction instruction) const {
         value_->generate(fncg);
@@ -55,6 +57,6 @@ public:
     void generateExpr(FnCodeGenerator *fncg) const override;
 };
 
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* ASTUnary_hpp */

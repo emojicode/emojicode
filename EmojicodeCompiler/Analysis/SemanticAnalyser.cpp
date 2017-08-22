@@ -12,12 +12,12 @@
 #include "../AST/ASTVariables.hpp"
 #include "../BoxingLayer.hpp"
 #include "../Function.hpp"
+#include "../Initializer.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
 #include "../Types/CommonTypeFinder.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
-#include "../Initializer.hpp"
 #include "BoxingLayerBuilder.hpp"
 #include "SemanticAnalyser.hpp"
 #include <memory>

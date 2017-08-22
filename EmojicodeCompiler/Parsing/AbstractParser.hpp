@@ -9,16 +9,18 @@
 #ifndef AbstractParser_hpp
 #define AbstractParser_hpp
 
+#include <utility>
+
+#include "../Function.hpp"
 #include "../Lex/Token.hpp"
 #include "../Lex/TokenStream.hpp"
 #include "Package.hpp"
-#include "../Function.hpp"
 
 namespace EmojicodeCompiler {
 
 struct TypeIdentifier {
     TypeIdentifier(EmojicodeString name, EmojicodeString ns, const Token& token)
-        : name(name), ns(ns), token(token) {}
+        : name(std::move(name)), ns(std::move(ns)), token(token) {}
     EmojicodeString name;
     EmojicodeString ns;
     const Token& token;

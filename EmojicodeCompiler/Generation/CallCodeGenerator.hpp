@@ -9,11 +9,11 @@
 #ifndef CallCodeGenerator_hpp
 #define CallCodeGenerator_hpp
 
-#include "FnCodeGenerator.hpp"
-#include "../AST/ASTInitialization.hpp"
 #include "../AST/ASTExpr.hpp"
-#include "../Types/Protocol.hpp"
+#include "../AST/ASTInitialization.hpp"
 #include "../Initializer.hpp"
+#include "../Types/Protocol.hpp"
+#include "FnCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -67,7 +67,7 @@ protected:
 
 class VTInitializationCallCodeGenerator : private InitializationCallCodeGenerator {
 public:
-    VTInitializationCallCodeGenerator(FnCodeGenerator *fncg)
+    explicit VTInitializationCallCodeGenerator(FnCodeGenerator *fncg)
     : InitializationCallCodeGenerator(fncg, INS_CALL_CONTEXTED_FUNCTION) {}
 
     void generate(const std::shared_ptr<ASTVTInitDest> &dest, const Type &type, const ASTArguments &args,
@@ -94,7 +94,7 @@ public:
 
 class CallableCallCodeGenerator : public CallCodeGenerator {
 public:
-    CallableCallCodeGenerator(FnCodeGenerator *fncg) : CallCodeGenerator(fncg, 0) {}
+    explicit CallableCallCodeGenerator(FnCodeGenerator *fncg) : CallCodeGenerator(fncg, 0) {}
 protected:
     void writeInstructions(EmojicodeInstruction argSize, const Type &type, const EmojicodeString &name) override {
         fncg()->wr().writeInstruction(INS_EXECUTE_CALLABLE);
@@ -105,7 +105,7 @@ protected:
 class SuperCallCodeGenerator : private CallCodeGenerator {
 public:
     using CallCodeGenerator::CallCodeGenerator;
-    void generate(Type superType, const ASTArguments &args, const EmojicodeString &name) {
+    void generate(const Type& superType, const ASTArguments &args, const EmojicodeString &name) {
         auto argSize = generateArguments(args);
         fncg()->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
         fncg()->wr().writeInstruction(superType.eclass()->index);

@@ -131,7 +131,9 @@ enum Instructions {
     INS_CLOSURE_BOX = 0x95,
 };
 
-#include <stdio.h>
+#ifdef DEBUG
+
+#include <cstdio>
 
 inline void pinsname(Instructions i) {switch(i) {
     case INS_DISPATCH_METHOD: printf("INS_DISPATCH_METHOD"); return;
@@ -340,5 +342,7 @@ inline int inscount(Instructions i) {switch(i) {
     case INS_PUSH_STACK_REFERENCE_N_BACK: return 1;
     case INS_POP: return 0;
 }}
+
+#endif
 
 #endif /* EmojicodeInstructions_h */

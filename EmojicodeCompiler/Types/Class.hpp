@@ -9,17 +9,17 @@
 #ifndef Class_hpp
 #define Class_hpp
 
+#include "../FunctionType.hpp"
+#include "../Generation/VTIProvider.hpp"
+#include "../Parsing/Package.hpp"
+#include "../Scoping/Scope.hpp"
+#include "../Scoping/Variable.hpp"
+#include "../Types/TypeContext.hpp"
+#include "TypeDefinition.hpp"
 #include <list>
-#include <vector>
 #include <map>
 #include <set>
-#include "TypeDefinition.hpp"
-#include "../Parsing/Package.hpp"
-#include "../Types/TypeContext.hpp"
-#include "../Scoping/Variable.hpp"
-#include "../Scoping/Scope.hpp"
-#include "../Generation/VTIProvider.hpp"
-#include "../FunctionType.hpp"
+#include <vector>
 
 namespace EmojicodeCompiler {
 

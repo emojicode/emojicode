@@ -49,7 +49,7 @@ public:
     template<typename T>
     WriterPlaceholder<T> writePlaceholder() {
         auto i = data_.size();
-        write((T)0);
+        write(static_cast<T>(0));
         return WriterPlaceholder<T>(*this, i);
     }
 private:

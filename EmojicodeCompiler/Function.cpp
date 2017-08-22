@@ -9,8 +9,8 @@
 #include "Function.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
-#include "Types/TypeContext.hpp"
 #include "Generation/VTIProvider.hpp"
+#include "Types/TypeContext.hpp"
 #include <algorithm>
 #include <map>
 #include <stdexcept>

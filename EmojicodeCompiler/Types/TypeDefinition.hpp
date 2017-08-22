@@ -9,23 +9,24 @@
 #ifndef TypeDefinition_hpp
 #define TypeDefinition_hpp
 
-#include <vector>
-#include <map>
-#include <functional>
-#include "Type.hpp"
-#include "../Scoping/Scope.hpp"
-#include "../Scoping/CGScoper.hpp"
-#include "../Generation/VTIProvider.hpp"
-#include "../EmojicodeCompiler.hpp"
 #include "../CompilerError.hpp"
+#include "../EmojicodeCompiler.hpp"
+#include "../Generation/VTIProvider.hpp"
 #include "../Lex/SourcePosition.hpp"
+#include "../Scoping/CGScoper.hpp"
+#include "../Scoping/Scope.hpp"
+#include "Type.hpp"
+#include <functional>
+#include <map>
+#include <utility>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
 struct InstanceVariableDeclaration {
     InstanceVariableDeclaration() = delete;
     InstanceVariableDeclaration(EmojicodeString name, Type type, SourcePosition pos)
-    : name(name), type(type), position(pos) {}
+    : name(std::move(name)), type(std::move(type)), position(std::move(pos)) {}
     EmojicodeString name;
     Type type;
     SourcePosition position;
@@ -128,8 +129,8 @@ public:
     Scope& instanceScope() { return scope_; }
     CGScoper& cgScoper() { return cgScoper_; }
 protected:
-    TypeDefinition(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
-    : name_(name), package_(p), documentation_(documentation), position_(std::move(pos))  {}
+    TypeDefinition(EmojicodeString name, Package *p, SourcePosition pos, EmojicodeString documentation)
+    : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(std::move(pos))  {}
 
     std::map<EmojicodeString, Function *> methods_;
     std::map<EmojicodeString, Function *> typeMethods_;

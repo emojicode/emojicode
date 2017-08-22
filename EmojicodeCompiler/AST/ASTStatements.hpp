@@ -9,10 +9,12 @@
 #ifndef ASTStatements_hpp
 #define ASTStatements_hpp
 
-#include "ASTNode.hpp"
-#include "ASTExpr.hpp"
-#include "../Types/TypeExpectation.hpp"
+#include <utility>
+
 #include "../Scoping/CGScoper.hpp"
+#include "../Types/TypeExpectation.hpp"
+#include "ASTExpr.hpp"
+#include "ASTNode.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -29,7 +31,7 @@ protected:
 
 class ASTBlock final : public ASTStatement {
 public:
-    ASTBlock(const SourcePosition &p) : ASTStatement(p) {}
+    explicit ASTBlock(const SourcePosition &p) : ASTStatement(p) {}
 
     void appendNode(const std::shared_ptr<ASTStatement> &node) {
         stmts_.emplace_back(node);
@@ -55,14 +57,14 @@ public:
         expr_->generate(fncg);
     }
 
-    ASTExprStatement(const std::shared_ptr<ASTExpr> &expr, const SourcePosition &p) : ASTStatement(p), expr_(expr) {}
+    ASTExprStatement(std::shared_ptr<ASTExpr> expr, const SourcePosition &p) : ASTStatement(p), expr_(std::move(expr)) {}
 private:
     std::shared_ptr<ASTExpr> expr_;
 };
 
 class ASTReturn : public ASTStatement {
 public:
-    ASTReturn(const std::shared_ptr<ASTExpr> &value, const SourcePosition &p) : ASTStatement(p), value_(value) {}
+    ASTReturn(std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTStatement(p), value_(std::move(value)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
@@ -82,8 +84,8 @@ private:
 
 class ASTSuperinitializer final : public ASTStatement {
 public:
-    ASTSuperinitializer(const EmojicodeString &name, const ASTArguments &arguments,
-                        const SourcePosition &p) : ASTStatement(p), name_(name), arguments_(arguments) {}
+    ASTSuperinitializer(EmojicodeString name, ASTArguments arguments,
+                        const SourcePosition &p) : ASTStatement(p), name_(std::move(name)), arguments_(std::move(arguments)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
@@ -93,6 +95,6 @@ private:
     Type superType_ = Type::nothingness();
 };
     
-}
+} // namespace EmojicodeCompiler
 
 #endif /* ASTStatements_hpp */

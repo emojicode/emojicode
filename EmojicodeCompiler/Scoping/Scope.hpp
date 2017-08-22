@@ -9,16 +9,16 @@
 #ifndef Scope_hpp
 #define Scope_hpp
 
-#include <map>
 #include "../Lex/SourcePosition.hpp"
 #include "Variable.hpp"
 #include "VariableID.hpp"
+#include <map>
 
 namespace EmojicodeCompiler {
 
 class Scope {
 public:
-    Scope(unsigned int variableId) : maxVariableId_(variableId) {}
+    explicit Scope(unsigned int variableId) : maxVariableId_(variableId) {}
 
     void setVariableInitialization(bool initd);
     void pushInitializationLevel();

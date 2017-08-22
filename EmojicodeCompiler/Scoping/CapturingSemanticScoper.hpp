@@ -9,13 +9,14 @@
 #ifndef CapturingCallableScoper_hpp
 #define CapturingCallableScoper_hpp
 
-#include <vector>
 #include "SemanticScoper.hpp"
+#include <utility>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
 struct VariableCapture {
-    VariableCapture(VariableID id, Type type, VariableID captureId) : sourceId(id), type(type), captureId(captureId) {}
+    VariableCapture(VariableID id, Type type, VariableID captureId) : sourceId(id), type(std::move(type)), captureId(captureId) {}
     VariableID sourceId;
     Type type;
     /// The ID of the variable copy in the Closure

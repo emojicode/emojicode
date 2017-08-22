@@ -9,11 +9,11 @@
 #ifndef BoxingLayerBuilder_hpp
 #define BoxingLayerBuilder_hpp
 
-#include "../BoxingLayer.hpp"
 #include "../AST/ASTExpr.hpp"
-#include "../AST/ASTStatements.hpp"
 #include "../AST/ASTLiterals.hpp"
 #include "../AST/ASTMethod.hpp"
+#include "../AST/ASTStatements.hpp"
+#include "../BoxingLayer.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -21,6 +21,6 @@ namespace EmojicodeCompiler {
 /// @attention The layer must be semantically analysed and transformed!
 void buildBoxingLayerAst(BoxingLayer *layer);
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* BoxingLayerBuilder_hpp */

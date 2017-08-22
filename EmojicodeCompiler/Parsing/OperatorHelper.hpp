@@ -41,6 +41,6 @@ OperatorType operatorType(const EmojicodeString &);
 EmojicodeString operatorName(OperatorType);
 const int kPrefixPrecedence = 11;
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* OperatorHelper_hpp */

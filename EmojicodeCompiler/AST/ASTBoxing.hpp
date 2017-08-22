@@ -9,14 +9,16 @@
 #ifndef ASTBoxing_hpp
 #define ASTBoxing_hpp
 
+#include <utility>
+
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
 
 class ASTBoxing : public ASTExpr {
 public:
-    ASTBoxing(const std::shared_ptr<ASTExpr> &expr, const Type &exprType,
-              const SourcePosition &p) : ASTExpr(p), expr_(expr) {
+    ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType,
+              const SourcePosition &p) : ASTExpr(p), expr_(std::move(expr)) {
         setExpressionType(exprType);
     }
 protected:
@@ -75,6 +77,6 @@ private:
     VariableID varId_;
 };
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* ASTBoxing_hpp */

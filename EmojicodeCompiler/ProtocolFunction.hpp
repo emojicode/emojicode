@@ -26,6 +26,6 @@ private:
     bool assigned_ = false;
 };
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* ProtocolFunction_hpp */

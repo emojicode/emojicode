@@ -9,8 +9,8 @@
 #ifndef CommonTypeFinder_hpp
 #define CommonTypeFinder_hpp
 
-#include "../Types/Type.hpp"
 #include "../Lex/SourcePosition.hpp"
+#include "../Types/Type.hpp"
 #include <vector>
 
 namespace EmojicodeCompiler {

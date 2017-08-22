@@ -10,17 +10,17 @@
 #define FnCodeGenerator_hpp
 
 #include "../../EmojicodeInstructions.h"
-#include "FunctionWriter.hpp"
-#include "../Function.hpp"
 #include "../AST/ASTNode.hpp"
+#include "../Function.hpp"
 #include "../Scoping/CGScoper.hpp"
+#include "FunctionWriter.hpp"
 #include <memory>
 
 namespace EmojicodeCompiler {
 
 class FnCodeGenerator {
 public:
-    FnCodeGenerator(Function *function)
+    explicit FnCodeGenerator(Function *function)
     : fn_(function), scoper_(function->variableCount()),
     instanceScoper_(function->owningType().type() != TypeType::Nothingness ?
                     &function->owningType().typeDefinition()->cgScoper() : nullptr) {}
@@ -90,6 +90,6 @@ private:
     void generateBoxingLayer();
 };
 
-}  // namespace Emojicode
+}  // namespace EmojicodeCompiler
 
 #endif /* FnCodeGenerator_hpp */

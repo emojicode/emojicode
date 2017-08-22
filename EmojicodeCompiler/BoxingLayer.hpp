@@ -9,11 +9,13 @@
 #ifndef BoxingLayer_hpp
 #define BoxingLayer_hpp
 
+#include <utility>
+
 #include "EmojicodeCompiler.hpp"
-#include "Types/Type.hpp"
-#include "FunctionType.hpp"
 #include "Function.hpp"
+#include "FunctionType.hpp"
 #include "Generation/STIProvider.hpp"
+#include "Types/Type.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -23,7 +25,7 @@ public:
     /// @parameter destinationFunction That function that should be called by the boxing layer. The "actual" method.
     BoxingLayer(Function *destinationFunction, EmojicodeString protocolName,
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
-    : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
+    : Function(destinationFunction->protocolBoxingLayerName(std::move(protocolName)), AccessLevel::Private, true,
                destinationFunction->owningType(), destinationFunction->package(), p, false, EmojicodeString(), false,
                false, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
         destinationFunction_(destinationFunction) {
@@ -37,12 +39,12 @@ public:
     }
     /// Creates a boxing layer for a callable. The argument/return conversions will be performed and
     /// INS_EXECUTE_CALLABLE callable will be applied to the this context.
-    BoxingLayer(const std::vector<Type> &destinationArgumentTypes, const Type &destinationReturnType, Package *pkg,
+    BoxingLayer(std::vector<Type> destinationArgumentTypes, Type destinationReturnType, Package *pkg,
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
     : Function(EmojicodeString(), AccessLevel::Private, true,
                Type::callableIncomplete(), pkg, p, false, EmojicodeString(), false, false,
-               FunctionType::BoxingLayer), destinationArgumentTypes_(destinationArgumentTypes),
-      destinationReturnType_(destinationReturnType) {
+               FunctionType::BoxingLayer), destinationArgumentTypes_(std::move(destinationArgumentTypes)),
+      destinationReturnType_(std::move(destinationReturnType)) {
           setVtiProvider(&STIProvider::globalStiProvider);
         this->returnType = returnType;
         this->arguments = arguments;

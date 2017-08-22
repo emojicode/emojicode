@@ -9,11 +9,11 @@
 #ifndef PackageParser_hpp
 #define PackageParser_hpp
 
-#include "Package.hpp"
+#include "../../utf8.h"
+#include "../CompilerError.hpp"
 #include "../Lex/Lexer.hpp"
 #include "AbstractParser.hpp"
-#include "../CompilerError.hpp"
-#include "../../utf8.h"
+#include "Package.hpp"
 
 #include <set>
 

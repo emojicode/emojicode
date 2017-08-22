@@ -9,8 +9,8 @@
 #ifndef ClosureCodeGenerator_hpp
 #define ClosureCodeGenerator_hpp
 
-#include "FnCodeGenerator.hpp"
 #include "../Scoping/CapturingSemanticScoper.hpp"
+#include "FnCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -27,6 +27,6 @@ private:
     size_t captureDestIndex_ = 0;
 };
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* ClosureCodeGenerator_hpp */

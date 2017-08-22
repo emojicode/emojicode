@@ -9,8 +9,10 @@
 #ifndef ASTExpr_hpp
 #define ASTExpr_hpp
 
-#include "ASTNode.hpp"
+#include <utility>
+
 #include "../Parsing/OperatorHelper.hpp"
+#include "ASTNode.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -22,7 +24,7 @@ class CGScoper;
 
 class ASTExpr : public ASTNode {
 public:
-    ASTExpr(const SourcePosition &p) : ASTNode(p) {}
+    explicit ASTExpr(const SourcePosition &p) : ASTNode(p) {}
     /// Set after semantic analysis and transformation.
     /// Iff this node represents an expression type this type is the exact type produced by this node.
     const Type& expressionType() const { return expressionType_; }
@@ -40,7 +42,7 @@ private:
 
 class ASTGetVariable final : public ASTExpr, public ASTVariable {
 public:
-    ASTGetVariable(const EmojicodeString &name, const SourcePosition &p) : ASTExpr(p), name_(name) {}
+    ASTGetVariable(EmojicodeString name, const SourcePosition &p) : ASTExpr(p), name_(std::move(name)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 
@@ -54,7 +56,7 @@ private:
 
 class ASTMetaTypeInstantiation final : public ASTExpr {
 public:
-    ASTMetaTypeInstantiation(const Type &type, const SourcePosition &p) : ASTExpr(p), type_(type) {}
+    ASTMetaTypeInstantiation(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -63,7 +65,7 @@ private:
 
 class ASTArguments final : public ASTNode {
 public:
-    ASTArguments(const SourcePosition &p) : ASTNode(p) {}
+    explicit ASTArguments(const SourcePosition &p) : ASTNode(p) {}
     void addGenericArgument(const Type &type) { genericArguments_.emplace_back(type); }
     std::vector<Type>& genericArguments() { return genericArguments_; }
     void addArguments(const std::shared_ptr<ASTExpr> &arg) { arguments_.emplace_back(arg); }
@@ -76,8 +78,8 @@ private:
 
 class ASTCast final : public ASTExpr {
 public:
-    ASTCast(const std::shared_ptr<ASTExpr> &value, const std::shared_ptr<ASTTypeExpr> &type,
-            const SourcePosition &p) : ASTExpr(p), value_(value), typeExpr_(type) {}
+    ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTTypeExpr> type,
+            const SourcePosition &p) : ASTExpr(p), value_(std::move(value)), typeExpr_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -91,8 +93,8 @@ private:
 
 class ASTCallableCall final : public ASTExpr {
 public:
-    ASTCallableCall(const std::shared_ptr<ASTExpr> &value, const ASTArguments &args,
-                    const SourcePosition &p) : ASTExpr(p), callable_(value), args_(args) {}
+    ASTCallableCall(std::shared_ptr<ASTExpr> value, ASTArguments args,
+                    const SourcePosition &p) : ASTExpr(p), callable_(std::move(value)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -102,8 +104,8 @@ private:
 
 class ASTSuperMethod final : public ASTExpr {
 public:
-    ASTSuperMethod(const EmojicodeString &name, const ASTArguments &args, const SourcePosition &p)
-    : ASTExpr(p), name_(name), args_(args) {}
+    ASTSuperMethod(EmojicodeString name, ASTArguments args, const SourcePosition &p)
+    : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -114,8 +116,8 @@ private:
 
 class ASTCaptureMethod final : public ASTExpr {
 public:
-    ASTCaptureMethod(const EmojicodeString &name, const std::shared_ptr<ASTExpr> &callee, const SourcePosition &p)
-    : ASTExpr(p), name_(name), callee_(callee) {}
+    ASTCaptureMethod(EmojicodeString name, std::shared_ptr<ASTExpr> callee, const SourcePosition &p)
+    : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -125,8 +127,8 @@ private:
 
 class ASTCaptureTypeMethod final : public ASTExpr {
 public:
-    ASTCaptureTypeMethod(const EmojicodeString &name, const std::shared_ptr<ASTTypeExpr> &callee,
-                         const SourcePosition &p) : ASTExpr(p), name_(name), callee_(callee) {}
+    ASTCaptureTypeMethod(EmojicodeString name, std::shared_ptr<ASTTypeExpr> callee,
+                         const SourcePosition &p) : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -137,9 +139,9 @@ private:
 
 class ASTTypeMethod final : public ASTExpr {
 public:
-    ASTTypeMethod(const EmojicodeString &name, const std::shared_ptr<ASTTypeExpr> &callee,
-                  const ASTArguments &args, const SourcePosition &p)
-    : ASTExpr(p), name_(name), callee_(callee), args_(args) {}
+    ASTTypeMethod(EmojicodeString name, std::shared_ptr<ASTTypeExpr> callee,
+                  ASTArguments args, const SourcePosition &p)
+    : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -151,8 +153,8 @@ private:
 
 class ASTConditionalAssignment final : public ASTExpr {
 public:
-    ASTConditionalAssignment(const EmojicodeString &varName, const std::shared_ptr<ASTExpr> &expr,
-                             const SourcePosition &p) : ASTExpr(p), varName_(varName), expr_(expr) {}
+    ASTConditionalAssignment(EmojicodeString varName, std::shared_ptr<ASTExpr> expr,
+                             const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
@@ -161,6 +163,6 @@ private:
     VariableID varId_;
 };
     
-}
+} // namespace EmojicodeCompiler
 
 #endif /* ASTExpr_hpp */

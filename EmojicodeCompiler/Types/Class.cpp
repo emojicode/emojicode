@@ -8,8 +8,8 @@
 
 #include "../EmojicodeCompiler.hpp"
 #include "../CompilerError.hpp"
-#include "../Initializer.hpp"
 #include "../Function.hpp"
+#include "../Initializer.hpp"
 #include "Class.hpp"
 #include "TypeContext.hpp"
 #include <algorithm>

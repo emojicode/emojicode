@@ -9,6 +9,8 @@
 #ifndef ASTControlFlow_hpp
 #define ASTControlFlow_hpp
 
+#include <utility>
+
 #include "ASTStatements.hpp"
 
 namespace EmojicodeCompiler {
@@ -30,8 +32,8 @@ private:
 
 class ASTRepeatWhile final : public ASTStatement {
 public:
-    ASTRepeatWhile(const std::shared_ptr<ASTExpr> &condition, const ASTBlock &block, const SourcePosition &p)
-    : ASTStatement(p), condition_(condition), block_(block) {}
+    ASTRepeatWhile(std::shared_ptr<ASTExpr> condition, ASTBlock block, const SourcePosition &p)
+    : ASTStatement(p), condition_(std::move(condition)), block_(std::move(block)) {}
 
     void analyse(SemanticAnalyser *) override;
     void generate(FnCodeGenerator *) const override;
@@ -42,9 +44,9 @@ private:
 
 class ASTForIn final : public ASTStatement {
 public:
-    ASTForIn(const std::shared_ptr<ASTExpr> &iteratee, const EmojicodeString &varName, const ASTBlock &block,
+    ASTForIn(std::shared_ptr<ASTExpr> iteratee, EmojicodeString varName, ASTBlock block,
              const SourcePosition &p)
-    : ASTStatement(p), iteratee_(iteratee), block_(block), varName_(varName) {}
+    : ASTStatement(p), iteratee_(std::move(iteratee)), block_(std::move(block)), varName_(std::move(varName)) {}
 
     void analyse(SemanticAnalyser *) override;
     void generate(FnCodeGenerator *) const override;
@@ -59,17 +61,17 @@ private:
 
 class ASTErrorHandler final : public ASTStatement {
 public:
-    ASTErrorHandler(const std::shared_ptr<ASTExpr> &value, const EmojicodeString &varNameValue,
-                    const EmojicodeString &varNameError, const ASTBlock &valueBlock, const ASTBlock &errorBlock,
+    ASTErrorHandler(std::shared_ptr<ASTExpr> value, EmojicodeString varNameValue,
+                    EmojicodeString varNameError, ASTBlock valueBlock, ASTBlock errorBlock,
                     const SourcePosition &p)
-    : ASTStatement(p), value_(value), valueBlock_(valueBlock), errorBlock_(errorBlock),
-    valueVarName_(varNameValue), errorVarName_(varNameError) {}
+    : ASTStatement(p), value_(std::move(value)), valueBlock_(std::move(valueBlock)), errorBlock_(std::move(errorBlock)),
+    valueVarName_(std::move(varNameValue)), errorVarName_(std::move(varNameError)) {}
 
     void analyse(SemanticAnalyser *) override;
     void generate(FnCodeGenerator *) const override;
 private:
     std::shared_ptr<ASTExpr> value_;
-    bool valueIsBoxed_;
+    bool valueIsBoxed_ = false;
     VariableID varId_;
     ASTBlock valueBlock_;
     Type valueType_ = Type::nothingness();
@@ -78,6 +80,6 @@ private:
     EmojicodeString errorVarName_;
 };
 
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* ASTControlFlow_hpp */

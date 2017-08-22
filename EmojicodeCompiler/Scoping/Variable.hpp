@@ -9,8 +9,10 @@
 #ifndef Variable_hpp
 #define Variable_hpp
 
-#include "../Types/Type.hpp"
+#include <utility>
+
 #include "../Lex/SourcePosition.hpp"
+#include "../Types/Type.hpp"
 #include "VariableID.hpp"
 
 namespace EmojicodeCompiler {
@@ -20,8 +22,8 @@ class CapturingSemanticScoper;
 class Variable {
     friend CapturingSemanticScoper;
 public:
-    Variable(Type type, VariableID id, bool frozen, const EmojicodeString &string, SourcePosition p)
-        : type_(type), frozen_(frozen), string_(string), id_(id), position_(p) {}
+    Variable(Type type, VariableID id, bool frozen, EmojicodeString string, SourcePosition p)
+        : type_(std::move(type)), frozen_(frozen), string_(std::move(string)), id_(id), position_(std::move(p)) {}
     /// The type of the variable.
     const Type type() const { return type_; }
 

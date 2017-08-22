@@ -32,6 +32,6 @@ bool isSelfAllowed(FunctionType);
 bool hasInstanceScope(FunctionType);
 bool isOnlyNothingnessReturnAllowed(FunctionType);
 
-}  // namespace Emojicode
+}  // namespace EmojicodeCompiler
 
 #endif /* FunctionType_hpp */

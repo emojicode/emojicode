@@ -9,11 +9,12 @@
 #ifndef ASTNode_hpp
 #define ASTNode_hpp
 
-#include "../Types/Type.hpp"
-#include "../Types/TypeAvailability.hpp"
 #include "../Lex/SourcePosition.hpp"
 #include "../Scoping/VariableID.hpp"
+#include "../Types/Type.hpp"
+#include "../Types/TypeAvailability.hpp"
 #include <memory>
+#include <utility>
 
 namespace EmojicodeCompiler {
 
@@ -22,7 +23,7 @@ class SemanticAnalyser;
 
 class ASTNode {
 public:
-    ASTNode(const SourcePosition &p) : sourcePosition_(p) {}
+    explicit ASTNode(SourcePosition p) : sourcePosition_(std::move(p)) {}
 
     /// The source position that caused this node to be created
     const SourcePosition& position() const { return sourcePosition_; }
@@ -40,6 +41,6 @@ protected:
     VariableID varId_;
 };
 
-}  // namespace Emojicode
+}  // namespace EmojicodeCompiler
 
 #endif /* ASTNode_hpp */

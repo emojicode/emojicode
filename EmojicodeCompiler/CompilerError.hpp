@@ -9,8 +9,8 @@
 #ifndef CompilerError_hpp
 #define CompilerError_hpp
 
-#include <exception>
 #include "Lex/SourcePosition.hpp"
+#include <exception>
 
 namespace EmojicodeCompiler {
 

@@ -9,13 +9,14 @@
 #ifndef Package_hpp
 #define Package_hpp
 
-#include <vector>
+#include "../EmojicodeCompiler.hpp"
+#include "../Lex/SourcePosition.hpp"
+#include "../Types/Extension.hpp"
+#include "../Types/Type.hpp"
 #include <array>
 #include <map>
-#include "../EmojicodeCompiler.hpp"
-#include "../Types/Type.hpp"
-#include "../Types/Extension.hpp"
-#include "../Lex/SourcePosition.hpp"
+#include <utility>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
@@ -33,7 +34,7 @@ struct PackageVersion {
 };
 
 struct ExportedType {
-    ExportedType(Type t, EmojicodeString n) : type(t), name(n) {}
+    ExportedType(Type t, EmojicodeString n) : type(std::move(t)), name(std::move(n)) {}
 
     Type type;
     EmojicodeString name;
@@ -51,7 +52,7 @@ public:
      */
     Package* loadPackage(const std::string &name, const EmojicodeString &ns, const SourcePosition &p);
 
-    Package(std::string n, SourcePosition p) : name_(n), position_(std::move(p)) {}
+    Package(std::string n, SourcePosition p) : name_(std::move(n)), position_(std::move(p)) {}
     void parse(const std::string &path);
 
     bool finishedLoading() const { return finishedLoading_; }

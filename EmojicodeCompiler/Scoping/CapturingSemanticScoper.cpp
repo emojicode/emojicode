@@ -22,7 +22,7 @@ ResolvedVariable CapturingSemanticScoper::getVariable(const EmojicodeString &nam
         auto &captureVariable = topmostLocalScope().declareVariableWithId(variable.name(), variable.type(), true,
                                                                           VariableID(captureId_++), errorPosition);
         captureVariable.initialized_ = maxInitializationLevel();
-        captures_.push_back(VariableCapture(variable.id(), variable.type(), captureVariable.id()));
+        captures_.emplace_back(VariableCapture(variable.id(), variable.type(), captureVariable.id()));
         return ResolvedVariable(captureVariable, false);
     }
 }

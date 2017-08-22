@@ -8,8 +8,8 @@
 
 #include "PackageParser.hpp"
 #include "../../utf8.h"
-#include "../Initializer.hpp"
 #include "../Function.hpp"
+#include "../Initializer.hpp"
 #include "../ProtocolFunction.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Enum.hpp"

@@ -24,16 +24,16 @@ public:
 
     int next() override;
 protected:
-    STIProvider() {}
+    STIProvider() = default;
 private:
     static int nextVti_;
 };
 
 class ValueTypeVTIProvider : public STIProvider {
 public:
-    ValueTypeVTIProvider() : STIProvider() {}
+    ValueTypeVTIProvider() = default;
 };
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* STIProvider_hpp */

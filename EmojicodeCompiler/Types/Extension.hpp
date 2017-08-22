@@ -34,6 +34,6 @@ private:
     VTIProvider* protocolMethodVtiProvider() override { return nullptr; }
 };
 
-}
+} // namespace EmojicodeCompiler
 
 #endif /* Extension_hpp */

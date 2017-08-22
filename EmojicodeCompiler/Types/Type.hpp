@@ -9,12 +9,13 @@
 #ifndef Type_hpp
 #define Type_hpp
 
-#include <vector>
-#include <string>
-#include <stdexcept>
 #include "../EmojicodeCompiler.hpp"
 #include "StorageType.hpp"
+#include <stdexcept>
+#include <string>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
@@ -85,7 +86,7 @@ public:
     Type(TypeType t, bool optional, size_t r, Function *function)
         : typeContent_(t), genericArgumentIndex_(r), localResolutionConstraint_(function), optional_(optional) {}
     Type(std::vector<Type> protocols, bool optional)
-        : typeContent_(TypeType::MultiProtocol), genericArguments_(protocols), optional_(optional) {
+        : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)), optional_(optional) {
             sortMultiProtocolType();
         }
     
@@ -146,7 +147,7 @@ public:
     /// Returns the generic arguments with which this type was specialized.
     const std::vector<Type>& genericArguments() const { return genericArguments_; }
     /// Allows to change a specific generic argument. @c index must be smaller than @c genericArguments().size()
-    void setGenericArgument(size_t index, Type value) { genericArguments_[index] = value; }
+    void setGenericArgument(size_t index, Type value) { genericArguments_[index] = std::move(value); }
     /// True if this type could have generic arguments.
     bool canHaveGenericArguments() const;
 

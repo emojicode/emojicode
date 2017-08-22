@@ -33,6 +33,6 @@ private:
     unsigned int id_;
 };
     
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* VariableID_hpp */

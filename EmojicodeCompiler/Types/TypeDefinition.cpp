@@ -7,11 +7,11 @@
 //
 
 #include "TypeDefinition.hpp"
-#include "../Initializer.hpp"
 #include "../Analysis/BoxingLayerBuilder.hpp"
 #include "../BoxingLayer.hpp"
 #include "../CompilerError.hpp"
 #include "../Function.hpp"
+#include "../Initializer.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/Type.hpp"
 #include "../Types/TypeContext.hpp"

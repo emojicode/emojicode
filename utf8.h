@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-#include <stddef.h>
 #include <stdarg.h>
+#include <stddef.h>
 #include <stdint.h>
 
 extern int locale_is_utf8;

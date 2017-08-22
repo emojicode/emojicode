@@ -9,20 +9,22 @@
 #ifndef ASTBinaryOperator_hpp
 #define ASTBinaryOperator_hpp
 
+#include <utility>
+
 #include "ASTMethod.hpp"
 
 namespace EmojicodeCompiler {
 
 class ASTBinaryOperator : public ASTMethodable {
 public:
-    ASTBinaryOperator(OperatorType op, const std::shared_ptr<ASTExpr> &left, const std::shared_ptr<ASTExpr> &right,
-                      const SourcePosition &p) : ASTMethodable(p), operator_(op), left_(left), right_(right) {}
+    ASTBinaryOperator(OperatorType op, std::shared_ptr<ASTExpr> left, std::shared_ptr<ASTExpr> right,
+                      const SourcePosition &p) : ASTMethodable(p), operator_(op), left_(std::move(left)), right_(std::move(right)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
 private:
     struct BuiltIn {
-        BuiltIn(Type type) : returnType(type), swap(false) {}
-        BuiltIn(Type type, bool swap) : returnType(type), swap(swap) {}
+        BuiltIn(Type type) : returnType(std::move(type)), swap(false) {}
+        BuiltIn(Type type, bool swap) : returnType(std::move(type)), swap(swap) {}
         Type returnType;
         bool swap;
     };
@@ -35,6 +37,6 @@ private:
     std::shared_ptr<ASTExpr> right_;
 };
 
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* ASTBinaryOperator_hpp */

@@ -11,18 +11,19 @@
 
 #include "CompilerError.hpp"
 
-#include "Lex/TokenStream.hpp"
-#include "Types/Type.hpp"
 #include "FunctionType.hpp"
 #include "Generation/FunctionWriter.hpp"
+#include "Lex/TokenStream.hpp"
 #include "Types/Class.hpp"
+#include "Types/Type.hpp"
 #include <algorithm>
-#include <queue>
-#include <map>
-#include <vector>
-#include <numeric>
-#include <memory>
 #include <experimental/optional>
+#include <map>
+#include <memory>
+#include <numeric>
+#include <queue>
+#include <utility>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
@@ -34,7 +35,7 @@ enum class AccessLevel {
 };
 
 struct Argument {
-    Argument(EmojicodeString n, Type t) : variableName(n), type(t) {}
+    Argument(EmojicodeString n, Type t) : variableName(std::move(n)), type(std::move(t)) {}
 
     /// The name of the variable
     EmojicodeString variableName;
@@ -55,8 +56,8 @@ public:
 
     Function(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, EmojicodeString documentationToken, bool deprecated, bool mutating, FunctionType type)
-    : position_(p), name_(name), final_(final), overriding_(overriding), deprecated_(deprecated), mutating_(mutating),
-    access_(level), owningType_(owningType), package_(package), documentation_(documentationToken),
+    : position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding), deprecated_(deprecated), mutating_(mutating),
+    access_(level), owningType_(std::move(owningType)), package_(package), documentation_(std::move(documentationToken)),
     functionType_(type) {}
 
     EmojicodeString name() const { return name_; }

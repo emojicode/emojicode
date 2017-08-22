@@ -11,9 +11,9 @@
 
 #define EmojicodeCompiler_hpp
 
-#include <string>
 #include "../EmojicodeShared.h"
 #include "Emojis.h"
+#include <string>
 
 namespace EmojicodeCompiler {
 
@@ -32,9 +32,9 @@ using InstructionCount = unsigned int;
 
 class EmojicodeString: public std::basic_string<EmojicodeChar>  {
 public:
-    EmojicodeString() : basic_string() {}
+    EmojicodeString() {}
     explicit EmojicodeString(EmojicodeChar ch) : basic_string(1, ch) {}
-    explicit EmojicodeString(std::initializer_list<EmojicodeChar> ch) : basic_string(ch) {}
+    EmojicodeString(std::initializer_list<EmojicodeChar> ch) : basic_string(ch) {}
     std::string utf8() const;
 };
 

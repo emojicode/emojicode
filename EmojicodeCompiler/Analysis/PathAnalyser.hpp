@@ -10,9 +10,9 @@
 #define PathAnalyser_hpp
 
 #include "../EmojicodeCompiler.hpp"
-#include <vector>
 #include <algorithm>
 #include <cassert>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
@@ -24,7 +24,7 @@ enum class PathAnalyserIncident {
 
 class PathAnalyser {
     struct Branch {
-        Branch(Branch *parent) : parent(parent) {}
+        explicit Branch(Branch *parent) : parent(parent) {}
         Branch *parent;
         std::vector<PathAnalyserIncident> certainIncidents;
         std::vector<PathAnalyserIncident> potentialIncidents;
