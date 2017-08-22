@@ -13,6 +13,7 @@
 #include "../AST/ASTInitialization.hpp"
 #include "../AST/ASTExpr.hpp"
 #include "../Types/Protocol.hpp"
+#include "../Initializer.hpp"
 
 namespace EmojicodeCompiler {
 

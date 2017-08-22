@@ -15,7 +15,7 @@ namespace EmojicodeCompiler {
 
 Type ASTIsNothigness::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(true, false), &value_);
-    if (!type.optional() && type.type() != TypeContent::Something) {
+    if (!type.optional() && type.type() != TypeType::Something) {
         throw CompilerError(position(), "☁️ can only be used with optionals and ⚪️.");
     }
     return Type::boolean();
@@ -27,7 +27,7 @@ void ASTIsNothigness::generateExpr(FnCodeGenerator *fncg) const {
 
 Type ASTIsError::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(true, false), &value_);
-    if (type.type() != TypeContent::Error) {
+    if (type.type() != TypeType::Error) {
         throw CompilerError(position(), "🚥 can only be used with 🚨.");
     }
     return Type::boolean();
@@ -47,7 +47,7 @@ Type ASTUnwrap::analyse(SemanticAnalyser *analyser, const TypeExpectation &expec
         t.setOptional(false);
         return t;
     }
-    if (t.type() == TypeContent::Error) {
+    if (t.type() == TypeType::Error) {
         error_ = true;
         return t.genericArguments()[1];
     }

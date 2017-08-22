@@ -49,7 +49,7 @@ public:
     }
 
     ContextType contextType() const override {
-        if (owningType().type() == TypeContent::Callable) {
+        if (owningType().type() == TypeType::Callable) {
             return ContextType::Object;
         }
         return destinationFunction()->contextType();

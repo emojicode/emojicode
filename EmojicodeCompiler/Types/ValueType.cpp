@@ -7,6 +7,7 @@
 //
 
 #include "ValueType.hpp"
+#include "../Initializer.hpp"
 #include "../Function.hpp"
 
 namespace EmojicodeCompiler {
@@ -28,6 +29,21 @@ void ValueType::prepareForCG() {
     eachFunction([this](auto *function) {
         function->setVtiProvider(&vtiProvider_);
     });
+}
+
+void ValueType::addMethod(Function *method) {
+    TypeDefinition::addMethod(method);
+    method->package()->registerFunction(method);
+}
+
+void ValueType::addInitializer(Initializer *initializer) {
+    TypeDefinition::addInitializer(initializer);
+    initializer->package()->registerFunction(initializer);
+}
+    
+void ValueType::addTypeMethod(Function *method) {
+    TypeDefinition::addTypeMethod(method);
+    method->package()->registerFunction(method);
 }
 
 }  // namespace EmojicodeCompiler

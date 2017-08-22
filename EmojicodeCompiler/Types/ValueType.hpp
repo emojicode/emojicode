@@ -11,7 +11,6 @@
 
 #include "TypeDefinition.hpp"
 #include "../Generation/STIProvider.hpp"
-#include "../Function.hpp"
 #include <vector>
 
 namespace EmojicodeCompiler {
@@ -32,18 +31,9 @@ public:
 
     virtual int size() const override { return primitive_ ? 1 : TypeDefinition::size(); }
 
-    void addMethod(Function *method) override {
-        TypeDefinition::addMethod(method);
-        method->package()->registerFunction(method);
-    }
-    void addInitializer(Initializer *initializer) override {
-        TypeDefinition::addInitializer(initializer);
-        initializer->package()->registerFunction(initializer);
-    }
-    void addTypeMethod(Function *method) override {
-        TypeDefinition::addTypeMethod(method);
-        method->package()->registerFunction(method);
-    }
+    void addMethod(Function *method) override;
+    void addInitializer(Initializer *initializer) override;
+    void addTypeMethod(Function *method) override;
 
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;

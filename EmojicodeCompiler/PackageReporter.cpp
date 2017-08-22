@@ -16,6 +16,7 @@
 #include "Types/TypeContext.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/ValueType.hpp"
+#include "Initializer.hpp"
 #include <cstring>
 #include <list>
 #include <map>
@@ -215,16 +216,16 @@ void reportPackage(Package *package) {
 
     for (auto exported : package->exportedTypes()) {
         switch (exported.type.type()) {
-            case TypeContent::Class:
+            case TypeType::Class:
                 classes.push_back(exported.type.eclass());
                 break;
-            case TypeContent::Enum:
+            case TypeType::Enum:
                 enums.push_back(exported.type.eenum());
                 break;
-            case TypeContent::Protocol:
+            case TypeType::Protocol:
                 protocols.push_back(exported.type.protocol());
                 break;
-            case TypeContent::ValueType:
+            case TypeType::ValueType:
                 valueTypes.push_back(exported.type.valueType());
                 break;
             default:

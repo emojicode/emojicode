@@ -46,7 +46,7 @@ void ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
 Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
-    if (type.type() == TypeContent::Enum) {
+    if (type.type() == TypeType::Enum) {
         initType_ = InitType::Enum;
         notStaticError(typeExpr_->availability(), position(), "Enums");
 
@@ -58,7 +58,7 @@ Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectatio
         return type;
     }
 
-    if (type.type() == TypeContent::ValueType) {
+    if (type.type() == TypeType::ValueType) {
         initType_ = InitType::ValueType;
         type.setMutable(expectation.isMutable());
         notStaticError(typeExpr_->availability(), position(), "Value Types");

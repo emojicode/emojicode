@@ -7,6 +7,7 @@
 //
 
 #include "TypeDefinition.hpp"
+#include "../Initializer.hpp"
 #include "../Analysis/BoxingLayerBuilder.hpp"
 #include "../BoxingLayer.hpp"
 #include "../CompilerError.hpp"
@@ -22,7 +23,7 @@ void TypeDefinition::addGenericArgument(const EmojicodeString &variableName, con
                                         const SourcePosition &p) {
     genericArgumentConstraints_.push_back(constraint);
 
-    Type referenceType = Type(TypeContent::GenericVariable, false, ownGenericArgumentVariables_.size(), this);
+    Type referenceType = Type(TypeType::GenericVariable, false, ownGenericArgumentVariables_.size(), this);
 
     if (ownGenericArgumentVariables_.count(variableName) > 0) {
         throw CompilerError(p, "A generic argument variable with the same name is already in use.");

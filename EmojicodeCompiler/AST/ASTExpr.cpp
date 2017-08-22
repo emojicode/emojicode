@@ -64,12 +64,12 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
         throw CompilerError(position(), "Cast to unrelated type %s will always fail.", typeString.c_str());
     }
 
-    if (type.type() == TypeContent::Class) {
+    if (type.type() == TypeType::Class) {
         if (!type.genericArguments().empty()) {
             throw CompilerError(position(), "Class casts with generic arguments are not available.");
         }
 
-        if (originalType.type() == TypeContent::Someobject || originalType.type() == TypeContent::Class) {
+        if (originalType.type() == TypeType::Someobject || originalType.type() == TypeType::Class) {
             if (originalType.optional()) {
                 throw CompilerError(position(), "Downcast on classes with optionals not possible.");
             }
@@ -81,14 +81,14 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
             assert(originalType.storageType() == StorageType::Box);
         }
     }
-    else if (type.type() == TypeContent::Protocol && isStatic(typeExpr_->availability())) {
+    else if (type.type() == TypeType::Protocol && isStatic(typeExpr_->availability())) {
         if (!type.genericArguments().empty()) {
             throw CompilerError(position(), "Cannot cast to generic protocols.");
         }
         castType_ = CastType::ToProtocol;
         assert(originalType.storageType() == StorageType::Box);
     }
-    else if ((type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum)
+    else if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum)
              && isStatic(typeExpr_->availability())) {
         castType_ = CastType::ToValueType;
         assert(originalType.storageType() == StorageType::Box);
@@ -158,10 +158,10 @@ Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
     }
 
     Function *method;
-    if (type.type() == TypeContent::Class) {
+    if (type.type() == TypeType::Class) {
         method = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), position());
     }
-    else if ((type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum)
+    else if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum)
              && isStatic(callee_->availability())) {
         method = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), position());
         valueType_ = true;
@@ -200,7 +200,7 @@ void ASTSuperMethod::generateExpr(FnCodeGenerator *fncg) const {
 
 Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false, false), &callable_);
-    if (type.type() != TypeContent::Callable) {
+    if (type.type() != TypeType::Callable) {
         throw CompilerError(position(), "Given value is not callable.");
     }
     for (size_t i = 1; i < type.genericArguments().size(); i++) {
@@ -233,7 +233,7 @@ Type ASTCaptureTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpecta
     analyser->validateMethodCapturability(type, position());
     auto function = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), position());
     function->deprecatedWarning(position());
-    contextedFunction_ = type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum;
+    contextedFunction_ = type.type() == TypeType::ValueType || type.type() == TypeType::Enum;
     return function->type();
 }
 

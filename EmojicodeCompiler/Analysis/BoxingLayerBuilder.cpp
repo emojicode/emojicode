@@ -20,7 +20,7 @@ void buildBoxingLayerAst(BoxingLayer *layer) {
     }
 
     std::shared_ptr<ASTExpr> expr;
-    if (layer->owningType().type() == TypeContent::Callable) {
+    if (layer->owningType().type() == TypeType::Callable) {
         expr = std::make_shared<ASTCallableCall>(std::make_shared<ASTThis>(p), args, p);
     }
     else {
@@ -28,7 +28,7 @@ void buildBoxingLayerAst(BoxingLayer *layer) {
     }
 
     std::shared_ptr<ASTBlock> block = std::make_shared<ASTBlock>(p);
-    if (layer->returnType.type() == TypeContent::Nothingness) {
+    if (layer->returnType.type() == TypeType::Nothingness) {
         block->appendNode(std::make_shared<ASTExprStatement>(expr, p));
     }
     else {

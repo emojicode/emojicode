@@ -42,7 +42,7 @@ void ASTBooleanFalse::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Type ASTNumberLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeContent::ValueType && expectation.valueType() == VT_DOUBLE
+    if (expectation.type() == TypeType::ValueType && expectation.valueType() == VT_DOUBLE
         && type_ == NumberType::Integer) {
         type_ = NumberType::Double;
         doubleValue_ = integerValue_;
@@ -154,7 +154,7 @@ void ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Type ASTConcatenateLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    analyser->function()->package()->fetchRawType(EmojicodeString(0x1F520), globalNamespace,
+    analyser->function()->package()->fetchRawType(EmojicodeString(0x1F520), kDefaultNamespace,
                                                   false, position(), &type_);
 
     analyser->scoper().pushTemporaryScope();

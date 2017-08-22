@@ -7,6 +7,7 @@
 //
 
 #include "AbstractParser.hpp"
+#include "../Initializer.hpp"
 #include "../Function.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeContext.hpp"
@@ -30,7 +31,7 @@ TypeIdentifier AbstractParser::parseTypeIdentifier() {
         enamespace = stream_.consumeToken(TokenType::Identifier).value();
     }
     else {
-        enamespace = globalNamespace;
+        enamespace = kDefaultNamespace;
     }
 
     auto &typeName = stream_.consumeToken(TokenType::Identifier);
@@ -91,10 +92,10 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
     }
     else if (stream_.nextTokenIs(E_BENTO_BOX)) {
         auto &bentoToken = stream_.consumeToken(TokenType::Identifier);
-        Type type = Type(TypeContent::MultiProtocol, optional);
+        Type type = Type(TypeType::MultiProtocol, optional);
         while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
             auto protocolType = parseType(typeContext, dynamism);
-            if (protocolType.type() != TypeContent::Protocol || protocolType.optional() || protocolType.meta()) {
+            if (protocolType.type() != TypeType::Protocol || protocolType.optional() || protocolType.meta()) {
                 throw CompilerError(bentoToken.position(), "🍱 may only consist of non-optional protocol types.");
             }
             type.genericArguments_.push_back(protocolType);
@@ -150,7 +151,7 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
 
 Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p) {
     auto errorType = parseType(typeContext, dynamism);
-    if (errorType.type() != TypeContent::Enum || errorType.optional() || errorType.meta()) {
+    if (errorType.type() != TypeType::Enum || errorType.optional() || errorType.meta()) {
         throw CompilerError(p, "Error type must be a non-optional 🦃.");
     }
     return errorType;
@@ -234,7 +235,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *function, const
         Type t = parseType(function->typeContext(), TypeDynamism::GenericTypeVariables);
         function->genericArgumentConstraints.push_back(t);
 
-        Type rType = Type(TypeContent::LocalGenericVariable, false,
+        Type rType = Type(TypeType::LocalGenericVariable, false,
                           static_cast<int>(function->genericArgumentVariables.size()), function);
 
         if (function->genericArgumentVariables.count(variable.value()) > 0) {

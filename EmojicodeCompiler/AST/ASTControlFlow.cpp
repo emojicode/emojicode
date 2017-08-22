@@ -109,7 +109,7 @@ void ASTRepeatWhile::generate(FnCodeGenerator *fncg) const {
 void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
     Type type = analyser->expect(TypeExpectation(false, false), &value_);
 
-    if (type.type() != TypeContent::Error) {
+    if (type.type() != TypeType::Error) {
         throw CompilerError(position(), "🥑 can only be used with 🚨.");
     }
 

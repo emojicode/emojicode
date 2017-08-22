@@ -72,12 +72,12 @@ public:
     bool typeIsEnumerable(const Type &type, Type *elementType);
 
     void validateMethodCapturability(const Type &type, const SourcePosition &p) const {
-        if (type.type() == TypeContent::ValueType) {
+        if (type.type() == TypeType::ValueType) {
             if (type.size() > 1) {
                 throw CompilerError(p, "Type not eligible for method capturing.");
             }
         }
-        else if (type.type() != TypeContent::Class) {
+        else if (type.type() != TypeType::Class) {
             throw CompilerError(p, "You can’t capture method calls on this kind of type.");
         }
     }

@@ -24,6 +24,25 @@ struct TypeIdentifier {
     const Token& token;
 };
 
+enum class TypeDynamism {
+    /** No dynamism is allowed or no dynamism was used. */
+    None = 0,
+    /** No kind of dynamism is allowed. This value never comes from a call to @c parseAndFetchType . */
+    AllKinds = 0b11,
+    /** Generic Variables are allowed or were used. */
+    GenericTypeVariables = 0b1,
+    /** Self is allowed or was used. */
+    Self = 0b10
+};
+
+inline TypeDynamism operator&(TypeDynamism a, TypeDynamism b) {
+    return static_cast<TypeDynamism>(static_cast<int>(a) & static_cast<int>(b));
+}
+
+inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
+    return static_cast<TypeDynamism>(static_cast<int>(a) | static_cast<int>(b));
+}
+
 class AbstractParser {
 protected:
     AbstractParser(Package *pkg, TokenStream &stream) : package_(pkg), stream_(stream) {};
@@ -39,8 +58,9 @@ protected:
     void parseArgumentList(Function *function, const TypeContext &typeContext, bool initializer = false);
     /// Parses the return type for a function if there is one specified.
     void parseReturnType(Function *function, const TypeContext &typeContext);
-    void parseGenericArgumentsInDefinition(Function *p, const TypeContext &typeContext);
-    void parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p);
+    void parseGenericArgumentsInDefinition(Function *function, const TypeContext &typeContext);
+    void parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,
+                                      const SourcePosition &p);
 
     /// Parses and validates the error type
     Type parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p);

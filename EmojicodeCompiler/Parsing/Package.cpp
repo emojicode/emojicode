@@ -24,8 +24,8 @@ namespace EmojicodeCompiler {
 
 Class* getStandardClass(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::nothingness();
-    _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TypeContent::Class) {
+    _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
+    if (type.type() != TypeType::Class) {
         throw CompilerError(errorPosition, "s package class %s is missing.", name.utf8().c_str());
     }
     return type.eclass();
@@ -33,8 +33,8 @@ Class* getStandardClass(const EmojicodeString &name, Package *_, const SourcePos
 
 Protocol* getStandardProtocol(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::nothingness();
-    _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TypeContent::Protocol) {
+    _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
+    if (type.type() != TypeType::Protocol) {
         throw CompilerError(errorPosition, "s package protocol %s is missing.", name.utf8().c_str());
     }
     return type.protocol();
@@ -43,8 +43,8 @@ Protocol* getStandardProtocol(const EmojicodeString &name, Package *_, const Sou
 ValueType* getStandardValueType(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition,
                                 unsigned int boxId) {
     Type type = Type::nothingness();
-    _->fetchRawType(name, globalNamespace, false, errorPosition, &type);
-    if (type.type() != TypeContent::ValueType) {
+    _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
+    if (type.type() != TypeType::ValueType) {
         throw CompilerError(errorPosition, "s package value type %s is missing.", name.utf8().c_str());
     }
     if (type.boxIdentifier() != boxId) {
@@ -87,7 +87,7 @@ Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns
         package = new Package(name, p);
 
         if (name != "s") {
-            package->loadPackage("s", globalNamespace, p);
+            package->loadPackage("s", kDefaultNamespace, p);
         }
 
         package->parse(path);
@@ -167,7 +167,7 @@ bool Package::fetchRawType(TypeIdentifier ptn, bool optional, Type *type) {
 
 bool Package::fetchRawType(const EmojicodeString &name, const EmojicodeString &ns, bool optional,
                            const SourcePosition &p, Type *type) {
-    if (ns == globalNamespace && ns.size() == 1) {
+    if (ns == kDefaultNamespace && ns.size() == 1) {
         switch (name.front()) {
             case E_MEDIUM_WHITE_CIRCLE:
                 if (optional) {

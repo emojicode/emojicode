@@ -36,7 +36,7 @@ void ASTExprStatement::analyse(SemanticAnalyser *analyser)  {
 
 void ASTReturn::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
-    if (analyser->function()->returnType.type() == TypeContent::Nothingness) {
+    if (analyser->function()->returnType.type() == TypeType::Nothingness) {
         return;
     }
 
@@ -65,7 +65,7 @@ void ASTRaise::analyse(SemanticAnalyser *analyser) {
         return;
     }
 
-    if (analyser->function()->returnType.type() != TypeContent::Error) {
+    if (analyser->function()->returnType.type() != TypeType::Error) {
         throw CompilerError(position(), "Function is not declared to return a 🚨.");
     }
 

@@ -17,6 +17,7 @@
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
+#include "../Initializer.hpp"
 #include "BoxingLayerBuilder.hpp"
 #include "SemanticAnalyser.hpp"
 #include <memory>
@@ -72,7 +73,7 @@ void SemanticAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
         root->appendNode(std::make_shared<ASTReturn>(nullptr, root->position()));
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
-        if (function_->returnType.type() != TypeContent::Nothingness) {
+        if (function_->returnType.type() != TypeType::Nothingness) {
             throw CompilerError(function_->position(), "An explicit return is missing.");
         }
         else {
@@ -173,7 +174,7 @@ std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, const Type &type, 
 }
 
 bool SemanticAnalyser::callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) {
-    if (expectation.type() == TypeContent::Callable && exprType.type() == TypeContent::Callable &&
+    if (expectation.type() == TypeType::Callable && exprType.type() == TypeType::Callable &&
         expectation.genericArguments().size() == exprType.genericArguments().size()) {
         auto mismatch = std::mismatch(expectation.genericArguments().begin(), expectation.genericArguments().end(),
                                       exprType.genericArguments().begin(), [](const Type &a, const Type &b) {
@@ -186,7 +187,7 @@ bool SemanticAnalyser::callableBoxingRequired(const TypeExpectation &expectation
 
 Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     (*node)->setExpressionType(exprType);
-    if (exprType.type() == TypeContent::ValueType && !exprType.isReference() && expectation.isMutable()) {
+    if (exprType.type() == TypeType::ValueType && !exprType.isReference() && expectation.isMutable()) {
         exprType.setMutable(true);
     }
     if (!expectation.shouldPerformBoxing()) {
@@ -230,7 +231,7 @@ Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, st
                     insertNode<ASTBoxToSimpleOptional>(node, exprType);
                     break;
                 case StorageType::Simple:
-                    if (expectation.type() != TypeContent::Error) {
+                    if (expectation.type() != TypeType::Error) {
                         exprType.setOptional();
                     }
                     else {
@@ -290,11 +291,11 @@ Type SemanticAnalyser::expect(const TypeExpectation &expectation, std::shared_pt
 }
 
 bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
-    if (type.type() == TypeContent::Class && !type.optional()) {
+    if (type.type() == TypeType::Class && !type.optional()) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
                 if (protocol.protocol() == PR_ENUMERATEABLE) {
-                    auto itemType = Type(TypeContent::GenericVariable, false, 0, PR_ENUMERATEABLE);
+                    auto itemType = Type(TypeType::GenericVariable, false, 0, PR_ENUMERATEABLE);
                     *elementType = itemType.resolveOn(protocol.resolveOn(type));
                     return true;
                 }
@@ -304,14 +305,14 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
     else if (type.canHaveProtocol() && !type.optional()) {
         for (auto &protocol : type.typeDefinition()->protocols()) {
             if (protocol.protocol() == PR_ENUMERATEABLE) {
-                auto itemType = Type(TypeContent::GenericVariable, false, 0, PR_ENUMERATEABLE);
+                auto itemType = Type(TypeType::GenericVariable, false, 0, PR_ENUMERATEABLE);
                 *elementType = itemType.resolveOn(protocol.resolveOn(type));
                 return true;
             }
         }
     }
-    else if (type.type() == TypeContent::Protocol && type.protocol() == PR_ENUMERATEABLE) {
-        *elementType = Type(TypeContent::GenericVariable, false, 0, type.protocol()).resolveOn(type);
+    else if (type.type() == TypeType::Protocol && type.protocol() == PR_ENUMERATEABLE) {
+        *elementType = Type(TypeType::GenericVariable, false, 0, type.protocol()).resolveOn(type);
         return true;
     }
     return false;

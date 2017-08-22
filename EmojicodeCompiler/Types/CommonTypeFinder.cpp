@@ -27,7 +27,7 @@ void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext)
         if (commonType_.compatibleTo(type, typeContext)) {
             commonType_ = type;
         }
-        else if (type.type() == TypeContent::Class && commonType_.type() == TypeContent::Class) {
+        else if (type.type() == TypeType::Class && commonType_.type() == TypeType::Class) {
             commonType_ = Type::someobject();
         }
         else {
@@ -59,7 +59,7 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p) const {
     if (!firstTypeFound_) {
         compilerWarning(p, "Type is ambigious without more context.");
     }
-    else if (commonType_.type() == TypeContent::Something || commonType_.type() == TypeContent::Someobject) {
+    else if (commonType_.type() == TypeType::Something || commonType_.type() == TypeType::Someobject) {
         if (commonProtocols_.size() > 1) {
             return Type(commonProtocols_, false);
         }

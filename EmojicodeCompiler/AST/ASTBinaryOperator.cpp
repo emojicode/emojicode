@@ -53,7 +53,7 @@ void ASTBinaryOperator::generateExpr(FnCodeGenerator *fncg) const {
 std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveOperator(SemanticAnalyser *analyser,
                                                                                         const Type &type) {
     bool swap = false;
-    if ((type.type() == TypeContent::ValueType || type.type() == TypeContent::Enum) &&
+    if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum) &&
         type.valueType()->isPrimitive()) {
         if (type.valueType() == VT_DOUBLE) {
             switch (operator_) {

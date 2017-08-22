@@ -13,13 +13,13 @@
 namespace EmojicodeCompiler {
 
 Type ASTInferType::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeContent::StorageExpectation || expectation.type() == TypeContent::Nothingness) {
+    if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::Nothingness) {
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
     auto type = expectation;
     type.setOptional(false);
     type_ = type;
-    availability_ = expectation.type() == TypeContent::Class ? TypeAvailability::StaticAndAvailabale
+    availability_ = expectation.type() == TypeType::Class ? TypeAvailability::StaticAndAvailabale
     : TypeAvailability::StaticAndAvailabale;
     return type;
 }
@@ -45,7 +45,7 @@ Type ASTStaticType::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
 }
 
 void ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
-    if (type_.type() == TypeContent::Class) {
+    if (type_.type() == TypeType::Class) {
         fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
         fncg->wr().writeInstruction(type_.eclass()->index);
     }

@@ -18,8 +18,9 @@
 
 namespace EmojicodeCompiler {
 
-/** The Emoji representing the standard ("global") namespace. */
-const EmojicodeString globalNamespace = EmojicodeString(E_LARGE_RED_CIRCLE);
+/// The identifier value representing the default namespace.
+const EmojicodeString kDefaultNamespace = EmojicodeString(E_LARGE_RED_CIRCLE);
+const int kBoxValueSize = 4;
 
 class TypeDefinition;
 class Enum;
@@ -35,7 +36,7 @@ class AbstractParser;
 class Initializer;
 class Extension;
 
-enum class TypeContent {
+enum class TypeType {
     Class,
     MultiProtocol,
     Protocol,
@@ -65,27 +66,6 @@ struct ObjectVariableInformation {
     ObjectVariableType type;
 };
 
-enum class TypeDynamism {
-    /** No dynamism is allowed or no dynamism was used. */
-    None = 0,
-    /** No kind of dynamism is allowed. This value never comes from a call to @c parseAndFetchType . */
-    AllKinds = 0b11,
-    /** Generic Variables are allowed or were used. */
-    GenericTypeVariables = 0b1,
-    /** Self is allowed or was used. */
-    Self = 0b10
-};
-
-inline TypeDynamism operator&(TypeDynamism a, TypeDynamism b) {
-    return static_cast<TypeDynamism>(static_cast<int>(a) & static_cast<int>(b));
-}
-
-inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
-    return static_cast<TypeDynamism>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-const int kBoxValueSize = 4;
-
 /// Represents a Type Instance or an expectations of a Type Instance
 class Type {
     friend TypeDefinition;
@@ -99,13 +79,13 @@ public:
     Type(ValueType *valueType, bool optional);
     explicit Type(Extension *extension);
     /// Creates a generic variable to the generic argument @c r.
-    Type(TypeContent t, bool optional, size_t r, TypeDefinition *resolutionConstraint)
+    Type(TypeType t, bool optional, size_t r, TypeDefinition *resolutionConstraint)
         : typeContent_(t), genericArgumentIndex_(r), typeDefinition_(resolutionConstraint), optional_(optional) {}
     /// Creates a local generic variable (generic function) to the generic argument @c r.
-    Type(TypeContent t, bool optional, size_t r, Function *function)
+    Type(TypeType t, bool optional, size_t r, Function *function)
         : typeContent_(t), genericArgumentIndex_(r), localResolutionConstraint_(function), optional_(optional) {}
     Type(std::vector<Type> protocols, bool optional)
-        : typeContent_(TypeContent::MultiProtocol), genericArguments_(protocols), optional_(optional) {
+        : typeContent_(TypeType::MultiProtocol), genericArguments_(protocols), optional_(optional) {
             sortMultiProtocolType();
         }
     
@@ -113,15 +93,15 @@ public:
     static Type boolean() { return Type(VT_BOOLEAN, false); }
     static Type symbol() { return Type(VT_SYMBOL, false); }
     static Type doubl() { return Type(VT_DOUBLE, false); }
-    static Type something() { return Type(TypeContent::Something, false); }
-    static Type nothingness() { return Type(TypeContent::Nothingness, false); }
-    static Type error() { return Type(TypeContent::Error, false); }
-    static Type someobject(bool optional = false) { return Type(TypeContent::Someobject, optional); }
-    static Type callableIncomplete(bool optional = false) { return Type(TypeContent::Callable, optional); }
-    static Type self(bool optional = false) { return Type(TypeContent::Self, optional); }
+    static Type something() { return Type(TypeType::Something, false); }
+    static Type nothingness() { return Type(TypeType::Nothingness, false); }
+    static Type error() { return Type(TypeType::Error, false); }
+    static Type someobject(bool optional = false) { return Type(TypeType::Someobject, optional); }
+    static Type callableIncomplete(bool optional = false) { return Type(TypeType::Callable, optional); }
+    static Type self(bool optional = false) { return Type(TypeType::Self, optional); }
     
-    /** Returns the type of this type. Whether it’s an integer, class, etc. */
-    TypeContent type() const { return typeContent_; }
+    /// @returns The type of this type, i.e. Protocol, Class instance etc.
+    TypeType type() const { return typeContent_; }
 
     Class* eclass() const;
     Protocol* protocol() const;
@@ -170,8 +150,8 @@ public:
     /// True if this type could have generic arguments.
     bool canHaveGenericArguments() const;
 
-    bool canHaveProtocol() const { return type() == TypeContent::ValueType || type() == TypeContent::Class
-        || type() == TypeContent::Enum; }
+    bool canHaveProtocol() const { return type() == TypeType::ValueType || type() == TypeType::Class
+        || type() == TypeType::Enum; }
 
     /// Returns the protocol types of a MultiProtocol
     const std::vector<Type>& protocols() const { return genericArguments_; }
@@ -224,11 +204,11 @@ public:
     }
 protected:
     Type(bool isReference, bool forceBox, bool isMutable)
-        : typeContent_(TypeContent::StorageExpectation), optional_(false), isReference_(isReference),
+        : typeContent_(TypeType::StorageExpectation), optional_(false), isReference_(isReference),
           mutable_(isMutable), forceBox_(forceBox) {}
 private:
-    Type(TypeContent t, bool o) : typeContent_(t), optional_(o) {}
-    TypeContent typeContent_;
+    Type(TypeType t, bool o) : typeContent_(t), optional_(o) {}
+    TypeType typeContent_;
 
     size_t genericArgumentIndex_;
     union {

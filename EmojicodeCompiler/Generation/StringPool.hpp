@@ -34,7 +34,7 @@ public:
     /** Returns a vector of all strings in the order in which they must appear in the pool at run-time. */
     const std::vector<EmojicodeString>& strings() const { return strings_; }
 private:
-    StringPool() {};
+    StringPool() = default;
     std::vector<EmojicodeString> strings_;
 };
 

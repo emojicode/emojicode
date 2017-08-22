@@ -8,6 +8,7 @@
 
 #include "PackageParser.hpp"
 #include "../../utf8.h"
+#include "../Initializer.hpp"
 #include "../Function.hpp"
 #include "../ProtocolFunction.hpp"
 #include "../Types/Class.hpp"
@@ -96,7 +97,7 @@ void PackageParser::parse() {
                 if (!package_->fetchRawType(parsedType, false, &type)) {
                     throw CompilerError(parsedType.token.position(), "Type does not exist.");
                 }
-                if (type.type() != TypeContent::Class && type.type() != TypeContent::ValueType) {
+                if (type.type() != TypeType::Class && type.type() != TypeType::ValueType) {
                     throw CompilerError(parsedType.token.position(), "Only classes and value types are extendable.");
                 }
 
@@ -146,7 +147,7 @@ void PackageParser::parse() {
                                              documentation.get(), false, false,
                                              FunctionType::Function);
                 parseReturnType(function, Type::nothingness());
-                if (function->returnType.type() != TypeContent::Nothingness &&
+                if (function->returnType.type() != TypeType::Nothingness &&
                     !function->returnType.compatibleTo(Type::integer(), Type::nothingness())) {
                     throw CompilerError(theToken.position(), "🏁 must either return ✨ or 🚂.");
                 }
@@ -292,7 +293,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         if (!package_->fetchRawType(parsedTypeName, false, &type)) {
             throw CompilerError(parsedTypeName.token.position(), "Superclass type does not exist.");
         }
-        if (type.type() != TypeContent::Class) {
+        if (type.type() != TypeType::Class) {
             throw CompilerError(parsedTypeName.token.position(), "The superclass must be a class.");
         }
 
@@ -353,7 +354,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
     stream_.requireIdentifier(E_GRAPES);
 
     auto owningType = typed;
-    if (typed.type() == TypeContent::Extension) {
+    if (typed.type() == TypeType::Extension) {
         owningType = dynamic_cast<Extension *>(typed.typeDefinition())->extendedType();
     }
 
@@ -378,7 +379,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
                 documentation.disallow();
                 mutating.disallow();
 
-                if (typed.type() == TypeContent::Enum) {
+                if (typed.type() == TypeType::Enum) {
                     throw CompilerError(token.position(), "Enums cannot have instance variable.");
                 }
 
@@ -411,7 +412,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
 
                 Type type = parseType(typed, TypeDynamism::GenericTypeVariables);
 
-                if (type.type() != TypeContent::Protocol || type.optional()) {
+                if (type.type() != TypeType::Protocol || type.optional()) {
                     throw CompilerError(token.position(), "The given type is not a protocol.");
                 }
 
@@ -420,7 +421,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
             }
             case E_PIG: {
                 required.disallow();
-                if (typed.type() != TypeContent::Class) {
+                if (typed.type() != TypeType::Class) {
                     override.disallow();
                     final.disallow();
                 }
@@ -431,7 +432,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
                     mutating.disallow();
                     auto *typeMethod = new Function(methodName.value(), accessLevel, final.set(), owningType, package_,
                                                     token.position(), override.set(), documentation.get(),
-                                                    deprecated.set(), true, typed.type() == TypeContent::Class ?
+                                                    deprecated.set(), true, typed.type() == TypeType::Class ?
                                                     FunctionType::ClassMethod :
                                                     FunctionType::Function);
                     auto context = TypeContext(typed, typeMethod);
@@ -444,7 +445,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
                 }
                 else {
                     auto isMutating = true;
-                    if (typed.type() == TypeContent::ValueType) {
+                    if (typed.type() == TypeType::ValueType) {
                         isMutating = mutating.set();
                     }
                     else {
@@ -454,7 +455,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
 
                     auto *method = new Function(methodName.value(), accessLevel, final.set(), owningType,
                                                 package_, token.position(), override.set(), documentation.get(),
-                                                deprecated.set(), isMutating, typed.type() == TypeContent::Class ?
+                                                deprecated.set(), isMutating, typed.type() == TypeType::Class ?
                                                 FunctionType::ObjectMethod :
                                                 FunctionType::ValueTypeMethod);
                     auto context = TypeContext(typed, method);
@@ -468,13 +469,13 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
                 break;
             }
             case E_CAT: {
-                if (typed.type() == TypeContent::Enum) {
+                if (typed.type() == TypeType::Enum) {
                     throw CompilerError(token.position(), "Enums cannot have custom initializers.");
                 }
 
                 std::experimental::optional<Type> errorType = std::experimental::nullopt;
                 if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
-                    if (typed.type() != TypeContent::Class) {
+                    if (typed.type() != TypeType::Class) {
                         throw CompilerError(token.position(), "Only classes can have error-prone initializers.");
                     }
                     auto &token = stream_.consumeToken(TokenType::Identifier);
@@ -484,7 +485,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
                 staticOnType.disallow();
                 override.disallow();
                 mutating.disallow();
-                if (typed.type() != TypeContent::Class) {
+                if (typed.type() != TypeType::Class) {
                     required.disallow();
                 }
 
@@ -492,7 +493,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), owningType, package_,
                                                            token.position(), override.set(), documentation.get(),
                                                            deprecated.set(), required.set(), errorType,
-                                                           typed.type() == TypeContent::Class ?
+                                                           typed.type() == TypeType::Class ?
                                                            FunctionType::ObjectInitializer :
                                                            FunctionType::ValueTypeInitializer);
                 auto context = TypeContext(typed, initializer);

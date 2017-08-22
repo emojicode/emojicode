@@ -32,25 +32,25 @@ ValueType *VT_SYMBOL;
 ValueType *VT_INTEGER;
 ValueType *VT_DOUBLE;
 
-Type::Type(Protocol *protocol, bool o) : typeContent_(TypeContent::Protocol), typeDefinition_(protocol), optional_(o) {
+Type::Type(Protocol *protocol, bool o) : typeContent_(TypeType::Protocol), typeDefinition_(protocol), optional_(o) {
 }
 
-Type::Type(Enum *enumeration, bool o) : typeContent_(TypeContent::Enum), typeDefinition_(enumeration), optional_(o) {
+Type::Type(Enum *enumeration, bool o) : typeContent_(TypeType::Enum), typeDefinition_(enumeration), optional_(o) {
 }
 
-Type::Type(Extension *extension) : typeContent_(TypeContent::Extension), typeDefinition_(extension), optional_(false) {
+Type::Type(Extension *extension) : typeContent_(TypeType::Extension), typeDefinition_(extension), optional_(false) {
 }
 
 Type::Type(ValueType *valueType, bool o)
-: typeContent_(TypeContent::ValueType), typeDefinition_(valueType), optional_(o), mutable_(false) {
+: typeContent_(TypeType::ValueType), typeDefinition_(valueType), optional_(o), mutable_(false) {
     for (size_t i = 0; i < valueType->numberOfGenericArgumentsWithSuperArguments(); i++) {
-        genericArguments_.emplace_back(TypeContent::GenericVariable, false, i, valueType);
+        genericArguments_.emplace_back(TypeType::GenericVariable, false, i, valueType);
     }
 }
 
-Type::Type(Class *c, bool o) : typeContent_(TypeContent::Class), typeDefinition_(c), optional_(o) {
+Type::Type(Class *c, bool o) : typeContent_(TypeType::Class), typeDefinition_(c), optional_(o) {
     for (size_t i = 0; i < c->numberOfGenericArgumentsWithSuperArguments(); i++) {
-        genericArguments_.emplace_back(TypeContent::GenericVariable, false, i, c);
+        genericArguments_.emplace_back(TypeType::GenericVariable, false, i, c);
     }
 }
 
@@ -75,7 +75,7 @@ TypeDefinition* Type::typeDefinition() const  {
 }
 
 bool Type::canHaveGenericArguments() const {
-    return type() == TypeContent::Class || type() == TypeContent::Protocol || type() == TypeContent::ValueType;
+    return type() == TypeType::Class || type() == TypeType::Protocol || type() == TypeType::ValueType;
 }
 
 void Type::sortMultiProtocolType() {
@@ -85,14 +85,14 @@ void Type::sortMultiProtocolType() {
 }
 
 size_t Type::genericVariableIndex() const {
-    if (type() != TypeContent::GenericVariable && type() != TypeContent::LocalGenericVariable) {
+    if (type() != TypeType::GenericVariable && type() != TypeType::LocalGenericVariable) {
         throw std::domain_error("Tried to get reference from non-reference type");
     }
     return genericArgumentIndex_;
 }
 
 bool Type::allowsMetaType() const {
-    return type() == TypeContent::Class || type() == TypeContent::Enum || type() == TypeContent::ValueType;
+    return type() == TypeType::Class || type() == TypeType::Enum || type() == TypeType::ValueType;
 }
 
 Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const {
@@ -101,10 +101,10 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &ty
 
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeContent::GenericVariable && c->canBeUsedToResolve(t.typeDefinition()) &&
+    while (t.type() == TypeType::GenericVariable && c->canBeUsedToResolve(t.typeDefinition()) &&
            t.genericVariableIndex() < maxReferenceForSuper) {
         Type tn = c->superGenericArguments()[t.genericVariableIndex()];
-        if (tn.type() == TypeContent::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
+        if (tn.type() == TypeType::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
             && tn.typeDefinition() == t.typeDefinition()) {
             break;
         }
@@ -114,30 +114,30 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &ty
 }
 
 Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext, bool resolveSelf) const {
-    if (typeContext.calleeType().type() == TypeContent::Nothingness) {
+    if (typeContext.calleeType().type() == TypeType::Nothingness) {
         return *this;
     }
     TypeDefinition *c = typeContext.calleeType().typeDefinition();
     Type t = *this;
-    if (type() == TypeContent::Nothingness) {
+    if (type() == TypeType::Nothingness) {
         return t;
     }
     bool optional = t.optional();
     bool box = t.storageType() == StorageType::Box;
 
-    if (resolveSelf && t.type() == TypeContent::Self) {
+    if (resolveSelf && t.type() == TypeType::Self) {
         t = typeContext.calleeType();
     }
 
     auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeContent::GenericVariable && t.genericVariableIndex() < maxReferenceForSuper) {
+    while (t.type() == TypeType::GenericVariable && t.genericVariableIndex() < maxReferenceForSuper) {
         t = c->superGenericArguments()[t.genericVariableIndex()];
     }
-    while (t.type() == TypeContent::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_) {
+    while (t.type() == TypeType::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_) {
         t = typeContext.function()->genericArgumentConstraints[t.genericVariableIndex()];
     }
-    while (t.type() == TypeContent::GenericVariable
+    while (t.type() == TypeType::GenericVariable
            && typeContext.calleeType().typeDefinition()->canBeUsedToResolve(t.typeDefinition())) {
         t = typeContext.calleeType().typeDefinition()->genericArgumentConstraints()[t.genericVariableIndex()];
     }
@@ -153,26 +153,26 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext,
 
 Type Type::resolveOn(const TypeContext &typeContext, bool resolveSelf) const {
     Type t = *this;
-    if (type() == TypeContent::Nothingness) {
+    if (type() == TypeType::Nothingness) {
         return t;
     }
     bool optional = t.optional();
     bool box = t.storageType() == StorageType::Box;
 
-    if (resolveSelf && t.type() == TypeContent::Self && typeContext.calleeType().resolveSelfOn_) {
+    if (resolveSelf && t.type() == TypeType::Self && typeContext.calleeType().resolveSelfOn_) {
         t = typeContext.calleeType();
     }
 
-    while (t.type() == TypeContent::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_
+    while (t.type() == TypeType::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_
            && typeContext.functionGenericArguments() != nullptr) {
         t = (*typeContext.functionGenericArguments())[t.genericVariableIndex()];
     }
 
     if (typeContext.calleeType().canHaveGenericArguments()) {
-        while (t.type() == TypeContent::GenericVariable &&
+        while (t.type() == TypeType::GenericVariable &&
                typeContext.calleeType().typeDefinition()->canBeUsedToResolve(t.typeDefinition())) {
             Type tn = typeContext.calleeType().genericArguments_[t.genericVariableIndex()];
-            if (tn.type() == TypeContent::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
+            if (tn.type() == TypeType::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
                 && tn.typeDefinition() == t.typeDefinition()) {
                 break;
             }
@@ -189,7 +189,7 @@ Type Type::resolveOn(const TypeContext &typeContext, bool resolveSelf) const {
             t.genericArguments_[i] = t.genericArguments_[i].resolveOn(typeContext);
         }
     }
-    else if (t.type() == TypeContent::Callable) {
+    else if (t.type() == TypeType::Callable) {
         for (Type &genericArgument : t.genericArguments_) {
             genericArgument = genericArgument.resolveOn(typeContext);
         }
@@ -214,11 +214,11 @@ bool Type::identicalGenericArguments(Type to, const TypeContext &typeContext, st
 }
 
 bool Type::compatibleTo(Type to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const {
-    if (type() == TypeContent::Error) {
-        return to.type() == TypeContent::Error && genericArguments()[0].identicalTo(to.genericArguments()[0], ct, ctargs)
+    if (type() == TypeType::Error) {
+        return to.type() == TypeType::Error && genericArguments()[0].identicalTo(to.genericArguments()[0], ct, ctargs)
                 && genericArguments()[1].compatibleTo(to.genericArguments()[1], ct);
     }
-    if (to.type() == TypeContent::Something) {
+    if (to.type() == TypeType::Something) {
         return true;
     }
     if (to.meta_ != meta_) {
@@ -228,31 +228,31 @@ bool Type::compatibleTo(Type to, const TypeContext &ct, std::vector<CommonTypeFi
         return false;
     }
 
-    if (to.type() == TypeContent::Someobject && this->type() == TypeContent::Class) {
+    if (to.type() == TypeType::Someobject && this->type() == TypeType::Class) {
         return true;
     }
-    if (to.type() == TypeContent::Error) {
+    if (to.type() == TypeType::Error) {
         return compatibleTo(to.genericArguments()[1], ct);
     }
-    if (this->type() == TypeContent::Class && to.type() == TypeContent::Class) {
+    if (this->type() == TypeType::Class && to.type() == TypeType::Class) {
         return this->eclass()->inheritsFrom(to.eclass()) && identicalGenericArguments(to, ct, ctargs);
     }
-    if ((this->type() == TypeContent::Protocol && to.type() == TypeContent::Protocol) ||
-        (this->type() == TypeContent::ValueType && to.type() == TypeContent::ValueType)) {
+    if ((this->type() == TypeType::Protocol && to.type() == TypeType::Protocol) ||
+        (this->type() == TypeType::ValueType && to.type() == TypeType::ValueType)) {
         return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, ct, ctargs);
     }
-    if (type() == TypeContent::MultiProtocol && to.type() == TypeContent::MultiProtocol) {
+    if (type() == TypeType::MultiProtocol && to.type() == TypeType::MultiProtocol) {
         return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
                           [ct, ctargs](const Type &a, const Type &b) {
                               return a.compatibleTo(b, ct, ctargs);
                           });
     }
-    if (to.type() == TypeContent::MultiProtocol) {
+    if (to.type() == TypeType::MultiProtocol) {
         return std::all_of(to.protocols().begin(), to.protocols().end(), [this, ct](const Type &p) {
             return compatibleTo(p, ct);
         });
     }
-    if (type() == TypeContent::Class && to.type() == TypeContent::Protocol) {
+    if (type() == TypeType::Class && to.type() == TypeType::Protocol) {
         for (Class *a = this->eclass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
                 if (protocol.resolveOn(*this).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
@@ -262,7 +262,7 @@ bool Type::compatibleTo(Type to, const TypeContext &ct, std::vector<CommonTypeFi
         }
         return false;
     }
-    if ((type() == TypeContent::ValueType || type() == TypeContent::Enum) && to.type() == TypeContent::Protocol) {
+    if ((type() == TypeType::ValueType || type() == TypeType::Enum) && to.type() == TypeType::Protocol) {
         for (auto &protocol : typeDefinition()->protocols()) {
             if (protocol.resolveOn(*this).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
                 return true;
@@ -270,42 +270,42 @@ bool Type::compatibleTo(Type to, const TypeContext &ct, std::vector<CommonTypeFi
         }
         return false;
     }
-    if (this->type() == TypeContent::Nothingness) {
-        return to.optional() || to.type() == TypeContent::Nothingness;
+    if (this->type() == TypeType::Nothingness) {
+        return to.optional() || to.type() == TypeType::Nothingness;
     }
-    if (this->type() == TypeContent::Enum && to.type() == TypeContent::Enum) {
+    if (this->type() == TypeType::Enum && to.type() == TypeType::Enum) {
         return this->eenum() == to.eenum();
     }
-    if ((this->type() == TypeContent::GenericVariable && to.type() == TypeContent::GenericVariable) ||
-        (this->type() == TypeContent::LocalGenericVariable && to.type() == TypeContent::LocalGenericVariable)) {
+    if ((this->type() == TypeType::GenericVariable && to.type() == TypeType::GenericVariable) ||
+        (this->type() == TypeType::LocalGenericVariable && to.type() == TypeType::LocalGenericVariable)) {
         return (this->genericVariableIndex() == to.genericVariableIndex() &&
                 this->typeDefinition() == to.typeDefinition()) ||
         this->resolveOnSuperArgumentsAndConstraints(ct)
         .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
-    if (this->type() == TypeContent::GenericVariable) {
+    if (this->type() == TypeType::GenericVariable) {
         return this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
-    if (to.type() == TypeContent::GenericVariable) {
+    if (to.type() == TypeType::GenericVariable) {
         return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
-    if (this->type() == TypeContent::LocalGenericVariable) {
+    if (this->type() == TypeType::LocalGenericVariable) {
         return ctargs != nullptr || this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
-    if (to.type() == TypeContent::LocalGenericVariable) {
+    if (to.type() == TypeType::LocalGenericVariable) {
         if (ctargs != nullptr) {
             (*ctargs)[to.genericVariableIndex()].addType(*this, ct);
             return true;
         }
         return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(ct), ct, ctargs);
     }
-    if (to.type() == TypeContent::Self) {
+    if (to.type() == TypeType::Self) {
         return this->type() == to.type();
     }
-    if (this->type() == TypeContent::Self) {
+    if (this->type() == TypeType::Self) {
         return this->resolveOnSuperArgumentsAndConstraints(ct).compatibleTo(to, ct, ctargs);
     }
-    if (this->type() == TypeContent::Callable && to.type() == TypeContent::Callable) {
+    if (this->type() == TypeType::Callable && to.type() == TypeType::Callable) {
         if (this->genericArguments_[0].compatibleTo(to.genericArguments_[0], ct, ctargs)
             && to.genericArguments_.size() == this->genericArguments_.size()) {
             for (size_t i = 1; i < to.genericArguments_.size(); i++) {
@@ -325,40 +325,40 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
     if (optional() != to.optional()) {
         return false;
     }
-    if (ctargs != nullptr && to.type() == TypeContent::LocalGenericVariable) {
+    if (ctargs != nullptr && to.type() == TypeType::LocalGenericVariable) {
         (*ctargs)[to.genericVariableIndex()].addType(*this, tc);
         return true;
     }
 
     if (type() == to.type()) {
         switch (type()) {
-            case TypeContent::Class:
-            case TypeContent::Protocol:
-            case TypeContent::ValueType:
+            case TypeType::Class:
+            case TypeType::Protocol:
+            case TypeType::ValueType:
                 return typeDefinition() == to.typeDefinition()
                 && identicalGenericArguments(to, tc, ctargs);
-            case TypeContent::Callable:
+            case TypeType::Callable:
                 return to.genericArguments_.size() == this->genericArguments_.size()
                 && identicalGenericArguments(to, tc, ctargs);
-            case TypeContent::Enum:
+            case TypeType::Enum:
                 return eenum() == to.eenum();
-            case TypeContent::GenericVariable:
-            case TypeContent::LocalGenericVariable:
+            case TypeType::GenericVariable:
+            case TypeType::LocalGenericVariable:
                 return resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex() ==
                 to.resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex();
-            case TypeContent::Self:
-            case TypeContent::Something:
-            case TypeContent::Someobject:
-            case TypeContent::Nothingness:
+            case TypeType::Self:
+            case TypeType::Something:
+            case TypeType::Someobject:
+            case TypeType::Nothingness:
                 return true;
-            case TypeContent::Error:
+            case TypeType::Error:
                 return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, ctargs) &&
                 genericArguments_[1].identicalTo(to.genericArguments_[1], tc, ctargs);
-            case TypeContent::MultiProtocol:
+            case TypeType::MultiProtocol:
                 return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
                                   [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
-            case TypeContent::StorageExpectation:
-            case TypeContent::Extension:
+            case TypeType::StorageExpectation:
+            case TypeType::Extension:
                 return false;
         }
     }
@@ -375,20 +375,20 @@ int Type::size() const {
             basesize = 1;
         case StorageType::Simple:
             switch (type()) {
-                case TypeContent::ValueType:
-                case TypeContent::Enum:
+                case TypeType::ValueType:
+                case TypeType::Enum:
                     return basesize + typeDefinition()->size();
-                case TypeContent::Callable:
-                case TypeContent::Class:
-                case TypeContent::Someobject:
-                case TypeContent::Self:
+                case TypeType::Callable:
+                case TypeType::Class:
+                case TypeType::Someobject:
+                case TypeType::Self:
                     return basesize + 1;
-                case TypeContent::Error:
+                case TypeType::Error:
                     if (genericArguments()[1].storageType() == StorageType::SimpleOptional) {
                         return std::max(2, genericArguments()[1].size());
                     }
                     return std::max(1, genericArguments()[1].size()) + basesize;
-                case TypeContent::Nothingness:
+                case TypeType::Nothingness:
                     return 1;
                 default:
                     throw std::logic_error("Type is wrongly simply stored");
@@ -404,7 +404,7 @@ StorageType Type::storageType() const {
     if (forceBox_ || requiresBox()) {
         return StorageType::Box;
     }
-    if (type() == TypeContent::Error) {
+    if (type() == TypeType::Error) {
         return StorageType::SimpleOptional;
     }
     return optional() ? StorageType::SimpleOptional : StorageType::Simple;
@@ -413,26 +413,26 @@ StorageType Type::storageType() const {
 EmojicodeInstruction Type::boxIdentifier() const {
     EmojicodeInstruction value;
     switch (type()) {
-        case TypeContent::ValueType:
-        case TypeContent::Enum:
+        case TypeType::ValueType:
+        case TypeType::Enum:
             value = valueType()->boxIdFor(genericArguments_);
             break;
-        case TypeContent::Callable:
-        case TypeContent::Class:
-        case TypeContent::Someobject:
+        case TypeType::Callable:
+        case TypeType::Class:
+        case TypeType::Someobject:
             value = T_OBJECT;
             break;
-        case TypeContent::Nothingness:
-        case TypeContent::Protocol:
-        case TypeContent::MultiProtocol:
-        case TypeContent::Something:
-        case TypeContent::GenericVariable:
-        case TypeContent::LocalGenericVariable:
-        case TypeContent::Self:
-        case TypeContent::Error:
+        case TypeType::Nothingness:
+        case TypeType::Protocol:
+        case TypeType::MultiProtocol:
+        case TypeType::Something:
+        case TypeType::GenericVariable:
+        case TypeType::LocalGenericVariable:
+        case TypeType::Self:
+        case TypeType::Error:
             return 0;  // This can only be executed in the case of a semantic error, return any value
-        case TypeContent::StorageExpectation:
-        case TypeContent::Extension:
+        case TypeType::StorageExpectation:
+        case TypeType::Extension:
             throw std::logic_error("Box identifier for StorageExpectation/Extension");
     }
     return remotelyStored() ? value | REMOTE_MASK : value;
@@ -440,47 +440,47 @@ EmojicodeInstruction Type::boxIdentifier() const {
 
 bool Type::requiresBox() const {
     switch (type()) {
-        case TypeContent::ValueType:
-        case TypeContent::Enum:
-        case TypeContent::Callable:
-        case TypeContent::Class:
-        case TypeContent::Someobject:
-        case TypeContent::Self:
-        case TypeContent::Nothingness:
-        case TypeContent::StorageExpectation:
-        case TypeContent::Extension:
+        case TypeType::ValueType:
+        case TypeType::Enum:
+        case TypeType::Callable:
+        case TypeType::Class:
+        case TypeType::Someobject:
+        case TypeType::Self:
+        case TypeType::Nothingness:
+        case TypeType::StorageExpectation:
+        case TypeType::Extension:
             return false;
-        case TypeContent::Error:
+        case TypeType::Error:
             return genericArguments()[1].storageType() == StorageType::Box;
-        case TypeContent::Something:
-        case TypeContent::GenericVariable:
-        case TypeContent::LocalGenericVariable:
-        case TypeContent::Protocol:
-        case TypeContent::MultiProtocol:
+        case TypeType::Something:
+        case TypeType::GenericVariable:
+        case TypeType::LocalGenericVariable:
+        case TypeType::Protocol:
+        case TypeType::MultiProtocol:
             return true;
     }
 }
 
 bool Type::isReferencable() const {
     switch (type()) {
-        case TypeContent::Callable:
-        case TypeContent::Class:
-        case TypeContent::Someobject:
-        case TypeContent::GenericVariable:
-        case TypeContent::LocalGenericVariable:
-        case TypeContent::Self:
+        case TypeType::Callable:
+        case TypeType::Class:
+        case TypeType::Someobject:
+        case TypeType::GenericVariable:
+        case TypeType::LocalGenericVariable:
+        case TypeType::Self:
             return storageType() != StorageType::Simple;
-        case TypeContent::Nothingness:
+        case TypeType::Nothingness:
             return false;
-        case TypeContent::ValueType:
-        case TypeContent::Enum:
-        case TypeContent::Protocol:
-        case TypeContent::MultiProtocol:
-        case TypeContent::Something:
-        case TypeContent::Error:
+        case TypeType::ValueType:
+        case TypeType::Enum:
+        case TypeType::Protocol:
+        case TypeType::MultiProtocol:
+        case TypeType::Something:
+        case TypeType::Error:
             return true;
-        case TypeContent::StorageExpectation:
-        case TypeContent::Extension:
+        case TypeType::StorageExpectation:
+        case TypeType::Extension:
             throw std::logic_error("isReferenceWorthy for StorageExpectation/Extension");
     }
 }
@@ -488,7 +488,7 @@ bool Type::isReferencable() const {
 template <typename T, typename... Us>
 void Type::objectVariableRecords(int index, std::vector<T> *information, Us... args) const {
     switch (type()) {
-        case TypeContent::ValueType: {
+        case TypeType::ValueType: {
             if (storageType() == StorageType::Box) {
                 information->push_back(T(index, ObjectVariableType::Box, args...));
                 return;
@@ -507,16 +507,16 @@ void Type::objectVariableRecords(int index, std::vector<T> *information, Us... a
             }
             return;
         }
-        case TypeContent::Class:
-        case TypeContent::Self:
-        case TypeContent::Someobject:
-        case TypeContent::Callable:
-        case TypeContent::Protocol:
-        case TypeContent::MultiProtocol:
-        case TypeContent::Something:
-        case TypeContent::GenericVariable:
-        case TypeContent::LocalGenericVariable:
-        case TypeContent::Error:  // Is or may be an object pointer
+        case TypeType::Class:
+        case TypeType::Self:
+        case TypeType::Someobject:
+        case TypeType::Callable:
+        case TypeType::Protocol:
+        case TypeType::MultiProtocol:
+        case TypeType::Something:
+        case TypeType::GenericVariable:
+        case TypeType::LocalGenericVariable:
+        case TypeType::Error:  // Is or may be an object pointer
             switch (storageType()) {
                 case StorageType::SimpleOptional:
                     information->push_back(T(index + 1, index, ObjectVariableType::Condition, args...));
@@ -530,10 +530,10 @@ void Type::objectVariableRecords(int index, std::vector<T> *information, Us... a
                 default:
                     throw std::domain_error("invalid storage type");
             }
-        case TypeContent::Enum:
-        case TypeContent::Nothingness:
-        case TypeContent::StorageExpectation:
-        case TypeContent::Extension:
+        case TypeType::Enum:
+        case TypeType::Nothingness:
+        case TypeType::StorageExpectation:
+        case TypeType::Extension:
             return;  // Can't be object pointer
     }
 }
@@ -546,23 +546,23 @@ template void Type::objectVariableRecords(int, std::vector<FunctionObjectVariabl
 
 std::string Type::typePackage() const {
     switch (this->type()) {
-        case TypeContent::Class:
-        case TypeContent::ValueType:
-        case TypeContent::Protocol:
-        case TypeContent::Enum:
+        case TypeType::Class:
+        case TypeType::ValueType:
+        case TypeType::Protocol:
+        case TypeType::Enum:
             return this->typeDefinition()->package()->name();
-        case TypeContent::Nothingness:
-        case TypeContent::Something:
-        case TypeContent::Someobject:
-        case TypeContent::GenericVariable:
-        case TypeContent::LocalGenericVariable:
-        case TypeContent::Callable:
-        case TypeContent::Self:
-        case TypeContent::MultiProtocol:  // should actually never come in here
-        case TypeContent::Error:
+        case TypeType::Nothingness:
+        case TypeType::Something:
+        case TypeType::Someobject:
+        case TypeType::GenericVariable:
+        case TypeType::LocalGenericVariable:
+        case TypeType::Callable:
+        case TypeType::Self:
+        case TypeType::MultiProtocol:  // should actually never come in here
+        case TypeType::Error:
             return "";
-        case TypeContent::StorageExpectation:
-        case TypeContent::Extension:
+        case TypeType::StorageExpectation:
+        case TypeType::Extension:
             throw std::logic_error("typePackage for StorageExpectation/Extension");
     }
 }
@@ -580,32 +580,32 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
     string.append(type.typePackage());
 
     switch (type.type()) {
-        case TypeContent::Class:
-        case TypeContent::Protocol:
-        case TypeContent::Enum:
-        case TypeContent::ValueType:
+        case TypeType::Class:
+        case TypeType::Protocol:
+        case TypeType::Enum:
+        case TypeType::ValueType:
             string.append(type.typeDefinition()->name().utf8());
             break;
-        case TypeContent::MultiProtocol:
+        case TypeType::MultiProtocol:
             string.append("🍱");
             for (auto &protocol : type.protocols()) {
                 typeName(protocol, typeContext, string);
             }
             string.append("🍱");
             return;
-        case TypeContent::Nothingness:
+        case TypeType::Nothingness:
             string.append("✨");
             return;
-        case TypeContent::Something:
+        case TypeType::Something:
             string.append("⚪️");
             return;
-        case TypeContent::Someobject:
+        case TypeType::Someobject:
             string.append("🔵");
             return;
-        case TypeContent::Self:
+        case TypeType::Self:
             string.append("🐕");
             return;
-        case TypeContent::Callable:
+        case TypeType::Callable:
             string.append("🍇");
 
             for (size_t i = 1; i < type.genericArguments_.size(); i++) {
@@ -616,13 +616,13 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             typeName(type.genericArguments_[0], typeContext, string);
             string.append("🍉");
             return;
-        case TypeContent::Error:
+        case TypeType::Error:
             string.append("🚨");
             typeName(type.genericArguments_[0], typeContext, string);
             typeName(type.genericArguments_[1], typeContext, string);
             return;
-        case TypeContent::GenericVariable: {
-            if (typeContext.calleeType().type() == TypeContent::Class) {
+        case TypeType::GenericVariable: {
+            if (typeContext.calleeType().type() == TypeType::Class) {
                 Class *eclass = typeContext.calleeType().eclass();
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables()) {
@@ -645,7 +645,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             string.append("T" + std::to_string(type.genericVariableIndex()) + "?");
             return;
         }
-        case TypeContent::LocalGenericVariable:
+        case TypeType::LocalGenericVariable:
             if (typeContext.function() != nullptr) {
                 for (auto it : typeContext.function()->genericArgumentVariables) {
                     if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
@@ -657,8 +657,8 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
 
             string.append("L" + std::to_string(type.genericVariableIndex()) + "?");
             return;
-        case TypeContent::StorageExpectation:
-        case TypeContent::Extension:
+        case TypeType::StorageExpectation:
+        case TypeType::Extension:
             return;
     }
 

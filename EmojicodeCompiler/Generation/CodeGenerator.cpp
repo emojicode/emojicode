@@ -13,6 +13,7 @@
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include "../Types/ValueType.hpp"
+#include "../Initializer.hpp"
 #include "FnCodeGenerator.hpp"
 #include "StringPool.hpp"
 #include <cstring>

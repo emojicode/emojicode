@@ -310,13 +310,13 @@ std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition 
     }
     Type ot = parseType(typeContext_, TypeDynamism::AllKinds);
     switch (ot.type()) {
-        case TypeContent::GenericVariable:
+        case TypeType::GenericVariable:
             throw CompilerError(p, "Generic Arguments are not yet available for reflection.");
-        case TypeContent::Class:
+        case TypeType::Class:
             return std::make_shared<ASTStaticType>(ot, TypeAvailability::StaticAndAvailabale, p);
-        case TypeContent::Self:
+        case TypeType::Self:
             return std::make_shared<ASTThisType>(p);
-        case TypeContent::LocalGenericVariable:
+        case TypeType::LocalGenericVariable:
             throw CompilerError(p, "Function Generic Arguments are not available for reflection.");
         default:
             break;

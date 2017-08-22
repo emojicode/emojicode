@@ -15,14 +15,12 @@ namespace EmojicodeCompiler {
 
 template <typename T>
 class WriterPlaceholder;
-class WriterCoinsCountPlaceholder;
 class Function;
 
 /**
  * The writer finally writes all types to the byte file.
  */
 class Writer {
-    friend WriterCoinsCountPlaceholder;
     friend WriterPlaceholder<uint16_t>;
     friend WriterPlaceholder<EmojicodeInstruction>;
     friend WriterPlaceholder<unsigned char>;
@@ -47,9 +45,7 @@ public:
     /// Finishes the writing. The file is not ready to be used before this method was called.
     void finish();
 
-    /**
-     * Writes a placeholder coin. To replace the placeholder use `writeInstructionAtPlaceholder`
-     */
+    /// Writes a placeholder. See @c WriterPlaceholder for more information.
     template<typename T>
     WriterPlaceholder<T> writePlaceholder() {
         auto i = data_.size();
@@ -89,16 +85,6 @@ public:
 protected:
     Writer &writer_;
     size_t index_;
-};
-
-class WriterCoinsCountPlaceholder: private WriterPlaceholder<EmojicodeInstruction> {
-    friend Writer;
-public:
-    void write();
-private:
-    WriterCoinsCountPlaceholder(Writer &w, off_t position, uint32_t count)
-        : WriterPlaceholder(w, position), oWrittenCoins(count) {};
-    uint32_t oWrittenCoins;
 };
 
 }  // namespace EmojicodeCompiler

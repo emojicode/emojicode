@@ -190,7 +190,7 @@ int main(int argc, char * argv[]) {
         pkg.setPackageVersion(PackageVersion(1, 0));
 
         try {
-            pkg.loadPackage("s", EmojicodeCompiler::globalNamespace, errorPosition);
+            pkg.loadPackage("s", EmojicodeCompiler::kDefaultNamespace, errorPosition);
             pkg.setRequiresBinary(false);
             pkg.parse(argv[0]);
 

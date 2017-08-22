@@ -26,7 +26,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const Emojicod
     Type type = analyser->expect(TypeExpectation(true, false), &callee)
     .resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
 
-    if (type.type() == TypeContent::MultiProtocol) {
+    if (type.type() == TypeType::MultiProtocol) {
         for (auto &protocol : type.protocols()) {
             Function *method;
             if ((method = protocol.protocol()->lookupMethod(name)) != nullptr) {
@@ -41,7 +41,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const Emojicod
 
     auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), position());
 
-    if (type.type() == TypeContent::ValueType) {
+    if (type.type() == TypeType::ValueType) {
         if (method->mutating()) {
             if (!type.isMutable()) {
                 throw CompilerError(position(), "%s was marked 🖍 but callee is not mutable.",
@@ -53,13 +53,13 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const Emojicod
         }
         instruction_ = INS_CALL_CONTEXTED_FUNCTION;
     }
-    else if (type.type() == TypeContent::Protocol) {
+    else if (type.type() == TypeType::Protocol) {
         instruction_ = INS_DISPATCH_PROTOCOL;
     }
-    else if (type.type() == TypeContent::Enum) {
+    else if (type.type() == TypeType::Enum) {
         instruction_ = INS_CALL_CONTEXTED_FUNCTION;
     }
-    else if (type.type() == TypeContent::Class) {
+    else if (type.type() == TypeType::Class) {
         instruction_ = INS_DISPATCH_METHOD;
     }
     else {
