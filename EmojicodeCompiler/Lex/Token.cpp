@@ -20,7 +20,8 @@ const char* Token::stringNameForType(TokenType type) {
     switch (type) {
         case TokenType::NoType: return "NoType";
         case TokenType::String: return "String";
-        case TokenType::Comment: return "Comment";
+        case TokenType::MultilineComment: return "MultilineComment";
+        case TokenType::SinglelineComment: return "SinglelineComment";
         case TokenType::DocumentationComment: return "DocumentationComment";
         case TokenType::Integer: return "Integer";
         case TokenType::Double: return "Double";

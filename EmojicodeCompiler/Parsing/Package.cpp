@@ -100,7 +100,7 @@ Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns
 void Package::parse(const std::string &path) {
     packages_.emplace(name(), this);
 
-    PackageParser(this, lex(path)).parse();
+    PackageParser(this, Lexer::lexFile(path)).parse();
 
     if (!validVersion()) {
         throw CompilerError(SourcePosition(0, 0, path), "Package %s does not provide a valid version.",

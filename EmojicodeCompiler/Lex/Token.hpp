@@ -16,12 +16,13 @@
 
 namespace EmojicodeCompiler {
 
-class TokenStream;
+class Lexer;
 
 enum class TokenType {
     NoType,
     String,
-    Comment,
+    MultilineComment,
+    SinglelineComment,
     DocumentationComment,
     Integer,
     Double,
@@ -36,7 +37,7 @@ enum class TokenType {
 };
 
 class Token {
-    friend TokenStream lexString(const std::string &, SourcePosition);
+    friend Lexer;
 public:
     explicit Token(SourcePosition p) : position_(std::move(p)) {}
 

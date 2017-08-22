@@ -131,7 +131,7 @@ void PackageParser::parse() {
                     fileString = relativePath.substr(0, lastSlash) + "/" + fileString;
                 }
 
-                PackageParser(package_, lex(fileString)).parse();
+                PackageParser(package_, Lexer::lexFile(fileString)).parse();
 
                 continue;
             }
