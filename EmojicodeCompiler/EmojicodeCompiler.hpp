@@ -32,7 +32,7 @@ using InstructionCount = unsigned int;
 
 class EmojicodeString: public std::basic_string<EmojicodeChar>  {
 public:
-    EmojicodeString() {}
+    EmojicodeString() = default;
     explicit EmojicodeString(EmojicodeChar ch) : basic_string(1, ch) {}
     EmojicodeString(std::initializer_list<EmojicodeChar> ch) : basic_string(ch) {}
     std::string utf8() const;

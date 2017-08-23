@@ -67,7 +67,8 @@ struct ObjectVariableInformation {
     ObjectVariableType type;
 };
 
-/// Represents a Type Instance or an expectations of a Type Instance
+/// Represents the type of variable, an argument or the return value of a Function such as a method, an initializer,
+/// or type method.
 class Type {
     friend TypeDefinition;
     friend AbstractParser;

@@ -55,8 +55,8 @@ private:
         Double, Integer
     };
 
-    double doubleValue_;
-    int64_t integerValue_;
+    double doubleValue_ = 0;
+    int64_t integerValue_ = 0;
     NumberType type_;
 };
 

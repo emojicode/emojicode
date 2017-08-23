@@ -84,36 +84,43 @@ Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns
     else {
         auto path = packageDirectory + "/" + name + "/header.emojic";
 
-        package = new Package(name, p);
-
-        if (name != "s") {
-            package->loadPackage("s", kDefaultNamespace, p);
-        }
-
-        package->parse(path);
+        package = new Package(name, path);
+        package->compile();
     }
 
     package->loadInto(this, ns, p);
     return package;
 }
 
-void Package::parse(const std::string &path) {
+void Package::compile() {
+    if (name_ != "s") {
+        loadPackage("s", kDefaultNamespace, position());
+    }
+
+    parse();
+    analyse();
+
+    finishedLoading_ = true;
+}
+
+void Package::parse() {
     packages_.emplace(name(), this);
 
-    PackageParser(this, Lexer::lexFile(path)).parse();
+    PackageParser(this, Lexer::lexFile(mainFile_)).parse();
 
     if (!validVersion()) {
-        throw CompilerError(SourcePosition(0, 0, path), "Package %s does not provide a valid version.",
-                                     name().c_str());
+        throw CompilerError(position(), "Package %s does not provide a valid version.", name().c_str());
     }
 
     if (name_ == "s") {
-        loadStandard(this, position_);
+        loadStandard(this, position());
         requiresNativeBinary_ = false;
     }
 
     packagesLoadingOrder_.push_back(this);
+}
 
+void Package::analyse() {
     for (auto vt : valueTypes_) {
         vt->prepareForSemanticAnalysis();
     }
@@ -140,8 +147,6 @@ void Package::parse(const std::string &path) {
         }
         Function::analysisQueue.pop();
     }
-
-    finishedLoading_ = true;
 }
 
 void Package::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) {
@@ -208,8 +213,8 @@ void Package::exportType(Type t, EmojicodeString name, const SourcePosition &p) 
     exportedTypes_.emplace_back(t, name);
 }
 
-void Package::registerType(Type t, const EmojicodeString &name, const EmojicodeString &ns, bool exportFromPkg,
-                           const SourcePosition &p) {
+void Package::offerType(Type t, const EmojicodeString &name, const EmojicodeString &ns, bool exportFromPkg,
+                          const SourcePosition &p) {
     EmojicodeString key = EmojicodeString(ns);
     key.append(name);
     types_.emplace(key, t);
@@ -223,11 +228,12 @@ void Package::loadInto(Package *destinationPackage, const EmojicodeString &ns, c
     for (auto exported : exportedTypes_) {
         Type type = Type::nothingness();
         if (destinationPackage->fetchRawType(exported.name, ns, false, p, &type)) {
-            throw CompilerError(p, "Package %s could not be loaded into namespace %s of package %s: %s collides with a type of the same name in the same namespace.", name().c_str(), ns.utf8().c_str(), destinationPackage->name().c_str(),
-                                         exported.name.utf8().c_str());
+            throw CompilerError(p, "Package %s could not be loaded into namespace %s of package %s: %s collides with "\
+                                "a type of the same name in the same namespace.", name().c_str(), ns.utf8().c_str(),
+                                destinationPackage->name().c_str(), exported.name.utf8().c_str());
         }
 
-        destinationPackage->registerType(exported.type, exported.name, ns, false, p);
+        destinationPackage->offerType(exported.type, exported.name, ns, false, p);
     }
 }
 

@@ -184,18 +184,15 @@ int main(int argc, char * argv[]) {
             outPath[outPath.size() - 1] = 'b';
         }
 
-        auto errorPosition = SourcePosition(0, 0, argv[0]);
-
-        Package pkg = Package("_", errorPosition);
-        pkg.setPackageVersion(PackageVersion(1, 0));
+        Package underscorePackage = Package("_", argv[0]);
+        underscorePackage.setPackageVersion(PackageVersion(1, 0));
+        underscorePackage.setRequiresBinary(false);
 
         try {
-            pkg.loadPackage("s", EmojicodeCompiler::kDefaultNamespace, errorPosition);
-            pkg.setRequiresBinary(false);
-            pkg.parse(argv[0]);
+            underscorePackage.compile();
 
             if (!Function::foundStart) {
-                throw CompilerError(errorPosition, "No 🏁 block was found.");
+                throw CompilerError(underscorePackage.position(), "No 🏁 block was found.");
             }
 
             if (!hasError) {
@@ -213,7 +210,8 @@ int main(int argc, char * argv[]) {
                 reportPackage(package);
             }
             else {
-                compilerWarning(errorPosition, "Report for package %s failed as it was not loaded.", packageToReport);
+                compilerWarning(SourcePosition(0, 0, ""), "Report for package %s failed as it was not loaded.",
+                                packageToReport);
             }
         }
 
