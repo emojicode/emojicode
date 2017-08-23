@@ -10,20 +10,20 @@
 #define AbstractParser_hpp
 
 #include <utility>
-
-#include "../Function.hpp"
-#include "../Lex/Token.hpp"
+#include "../Types/TypeContext.hpp"
 #include "../Lex/TokenStream.hpp"
-#include "Package.hpp"
 
 namespace EmojicodeCompiler {
 
+class Function;
+class Package;
+
 struct TypeIdentifier {
-    TypeIdentifier(EmojicodeString name, EmojicodeString ns, const Token& token)
-        : name(std::move(name)), ns(std::move(ns)), token(token) {}
+    TypeIdentifier(EmojicodeString name, EmojicodeString ns, SourcePosition p)
+    : name(std::move(name)), ns(std::move(ns)), position(std::move(p)) {}
     EmojicodeString name;
     EmojicodeString ns;
-    const Token& token;
+    SourcePosition position;
 };
 
 enum class TypeDynamism {

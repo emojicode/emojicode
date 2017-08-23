@@ -35,7 +35,7 @@ TypeIdentifier AbstractParser::parseTypeIdentifier() {
     }
 
     auto &typeName = stream_.consumeToken(TokenType::Identifier);
-    return TypeIdentifier(typeName.value(), enamespace, typeName);
+    return TypeIdentifier(typeName.value(), enamespace, typeName.position());
 }
 
 Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dynamism) {
@@ -140,11 +140,11 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
 
         auto type = Type::nothingness();
         if (!package_->fetchRawType(parsedType, optional, &type)) {
-            throw CompilerError(parsedType.token.position(), "Could not find type %s in enamespace %s.",
+            throw CompilerError(parsedType.position, "Could not find type %s in enamespace %s.",
                                 parsedType.name.utf8().c_str(), parsedType.ns.utf8().c_str());
         }
 
-        parseGenericArgumentsForType(&type, typeContext, dynamism, parsedType.token.position());
+        parseGenericArgumentsForType(&type, typeContext, dynamism, parsedType.position);
         return type;
     }
 }

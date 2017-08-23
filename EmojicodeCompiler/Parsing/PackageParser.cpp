@@ -95,10 +95,10 @@ void PackageParser::parse() {
                 Type type = Type::nothingness();
 
                 if (!package_->fetchRawType(parsedType, false, &type)) {
-                    throw CompilerError(parsedType.token.position(), "Type does not exist.");
+                    throw CompilerError(parsedType.position, "Type does not exist.");
                 }
                 if (type.type() != TypeType::Class && type.type() != TypeType::ValueType) {
-                    throw CompilerError(parsedType.token.position(), "Only classes and value types are extendable.");
+                    throw CompilerError(parsedType.position, "Only classes and value types are extendable.");
                 }
 
                 auto extension = Extension(type, package_, theToken.position(), documentation.get());
@@ -205,7 +205,7 @@ TypeIdentifier PackageParser::parseAndValidateNewTypeName() {
     Type type = Type::nothingness();
     if (package_->fetchRawType(parsedTypeName, false, &type)) {
         auto str = type.toString(Type::nothingness());
-        throw CompilerError(parsedTypeName.token.position(), "Type %s is already defined.", str.c_str());
+        throw CompilerError(parsedTypeName.position, "Type %s is already defined.", str.c_str());
     }
 
     return parsedTypeName;
@@ -291,21 +291,21 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
 
         Type type = Type::nothingness();
         if (!package_->fetchRawType(parsedTypeName, false, &type)) {
-            throw CompilerError(parsedTypeName.token.position(), "Superclass type does not exist.");
+            throw CompilerError(parsedTypeName.position, "Superclass type does not exist.");
         }
         if (type.type() != TypeType::Class) {
-            throw CompilerError(parsedTypeName.token.position(), "The superclass must be a class.");
+            throw CompilerError(parsedTypeName.position, "The superclass must be a class.");
         }
 
         eclass->setSuperclass(type.eclass());
         eclass->setSuperTypeDef(eclass->superclass());
         parseGenericArgumentsForType(&type, classType, TypeDynamism::GenericTypeVariables,
-                                     parsedTypeName.token.position());
+                                     parsedTypeName.position);
         eclass->setSuperGenericArguments(type.genericArguments());
 
         if (eclass->superclass()->final()) {
             auto string = type.toString(classType);
-            throw CompilerError(parsedTypeName.token.position(),
+            throw CompilerError(parsedTypeName.position,
                                 "%s can’t be used as superclass as it was marked with 🔏.", string.c_str());
         }
     }

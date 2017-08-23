@@ -167,7 +167,7 @@ Package* Package::findPackage(const std::string &name) {
 }
 
 bool Package::fetchRawType(TypeIdentifier ptn, bool optional, Type *type) {
-    return fetchRawType(ptn.name, ptn.ns, optional, ptn.token.position(), type);
+    return fetchRawType(ptn.name, ptn.ns, optional, ptn.position, type);
 }
 
 bool Package::fetchRawType(const EmojicodeString &name, const EmojicodeString &ns, bool optional,
