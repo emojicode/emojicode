@@ -24,6 +24,7 @@ public:
 
     void generateExpr(FnCodeGenerator *fncg) const override;
     void initialize(FnCodeGenerator *fncg);
+    void toCode(std::stringstream &stream) const override {}
 
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
 private:
@@ -45,6 +46,7 @@ public:
     : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 
     void setDestination(const std::shared_ptr<ASTVTInitDest> &vtInitable) { vtDestination_ = vtInitable; }
     InitType initType() { return initType_; }

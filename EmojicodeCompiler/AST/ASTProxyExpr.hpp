@@ -10,6 +10,7 @@
 #define ASTProxyExpr_hpp
 
 #include "ASTExpr.hpp"
+#include <sstream>
 #include <functional>
 
 namespace EmojicodeCompiler {
@@ -27,6 +28,7 @@ public:
     void generateExpr(FnCodeGenerator *fncg) const override {
         function_(fncg);
     }
+    void toCode(std::stringstream &stream) const override {}
 private:
     std::function<void(FnCodeGenerator*)> function_;
 };

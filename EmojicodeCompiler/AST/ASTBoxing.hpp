@@ -10,7 +10,7 @@
 #define ASTBoxing_hpp
 
 #include <utility>
-
+#include <sstream>
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
@@ -29,48 +29,56 @@ class ASTBoxToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override {}
 };
 
 class ASTSimpleToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override {}
 };
 
 class ASTSimpleOptionalToBox final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override {}
 };
 
 class ASTSimpleToBox final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override {}
 };
 
 class ASTBoxToSimple final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override {}
 };
 
 class ASTDereference final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override {}
 };
 
 class ASTCallableBox final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override {}
 };
 
 class ASTStoreTemporarily final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override {}
 public:
     void setVarId(VariableID id) { varId_ = id; }
 private:

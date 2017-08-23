@@ -32,6 +32,7 @@ class ASTIsNothigness final : public ASTUnary {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 };
 
 class ASTIsError final : public ASTUnary {
@@ -39,6 +40,7 @@ class ASTIsError final : public ASTUnary {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 };
 
 class ASTUnwrap final : public ASTUnary {
@@ -46,6 +48,7 @@ class ASTUnwrap final : public ASTUnary {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     bool error_ = false;
 };
@@ -55,6 +58,7 @@ class ASTMetaTypeFromInstance final : public ASTUnary {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 };
 
 }  // namespace EmojicodeCompiler

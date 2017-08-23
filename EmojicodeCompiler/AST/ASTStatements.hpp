@@ -25,6 +25,7 @@ class ASTStatement : public ASTNode {
 public:
     virtual void generate(FnCodeGenerator *) const = 0;
     virtual void analyse(SemanticAnalyser *) = 0;
+    virtual void toCode(std::stringstream &stream, unsigned int indentation) const = 0;
 protected:
     using ASTNode::ASTNode;
 };
@@ -43,6 +44,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
+    void toCode(std::stringstream &stream, unsigned int indentation) const override;
 
     const std::vector<std::shared_ptr<ASTStatement>>& nodes() const { return stmts_; }
 private:
@@ -56,6 +58,7 @@ public:
     void generate(FnCodeGenerator *fncg) const override {
         expr_->generate(fncg);
     }
+    void toCode(std::stringstream &stream, unsigned int indentation) const override;
 
     ASTExprStatement(std::shared_ptr<ASTExpr> expr, const SourcePosition &p) : ASTStatement(p), expr_(std::move(expr)) {}
 private:
@@ -68,6 +71,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
+    void toCode(std::stringstream &stream, unsigned int indentation) const override;
 protected:
     std::shared_ptr<ASTExpr> value_;
 };
@@ -78,6 +82,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
+    void toCode(std::stringstream &stream, unsigned int indentation) const override;
 private:
     bool boxed_ = false;
 };
@@ -89,6 +94,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
+    void toCode(std::stringstream &stream, unsigned int indentation) const override;
 private:
     EmojicodeString name_;
     ASTArguments arguments_;

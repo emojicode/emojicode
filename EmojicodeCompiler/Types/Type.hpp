@@ -179,7 +179,7 @@ public:
     /// Returns a string representation of this type.
     /// @param typeContext The type context to be used when resolving generic argument names. Can be Nothingeness if the
     /// type is not in a context.
-    std::string toString(const TypeContext &typeContext) const;
+    std::string toString(const TypeContext &typeContext, bool package = true) const;
     
     void setMeta(bool meta) { meta_ = meta; }
     bool meta() const { return meta_; }
@@ -226,7 +226,7 @@ private:
     /// Indicates that the value is boxed although the type would normally not require boxing. Used with generics
     bool forceBox_ = false;
 
-    void typeName(Type type, const TypeContext &typeContext, std::string &string) const;
+    void typeName(Type type, const TypeContext &typeContext, std::string &string, bool package) const;
     bool identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const;
     Type resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const;
     void sortMultiProtocolType();

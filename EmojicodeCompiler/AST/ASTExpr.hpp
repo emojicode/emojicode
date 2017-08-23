@@ -33,6 +33,7 @@ public:
 
     void generate(FnCodeGenerator *fncg) const;
     virtual Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) = 0;
+    virtual void toCode(std::stringstream &stream) const = 0;
 protected:
     virtual void generateExpr(FnCodeGenerator *fncg) const = 0;
 private:
@@ -45,6 +46,7 @@ public:
     ASTGetVariable(EmojicodeString name, const SourcePosition &p) : ASTExpr(p), name_(std::move(name)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 
     void setReference() { reference_ = true; }
     bool reference() { return reference_; }
@@ -59,6 +61,7 @@ public:
     ASTMetaTypeInstantiation(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     Type type_;
 };
@@ -71,6 +74,7 @@ public:
     void addArguments(const std::shared_ptr<ASTExpr> &arg) { arguments_.emplace_back(arg); }
     std::vector<std::shared_ptr<ASTExpr>>& arguments() { return arguments_; }
     const std::vector<std::shared_ptr<ASTExpr>>& arguments() const { return arguments_; }
+    void toCode(std::stringstream &stream) const;
 private:
     std::vector<Type> genericArguments_;
     std::vector<std::shared_ptr<ASTExpr>> arguments_;
@@ -82,6 +86,7 @@ public:
             const SourcePosition &p) : ASTExpr(p), value_(std::move(value)), typeExpr_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     enum class CastType {
         ClassDowncast, ToClass, ToProtocol, ToValueType,
@@ -97,6 +102,7 @@ public:
                     const SourcePosition &p) : ASTExpr(p), callable_(std::move(value)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     std::shared_ptr<ASTExpr> callable_;
     ASTArguments args_;
@@ -108,6 +114,7 @@ public:
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     EmojicodeString name_;
     Type calleeType_ = Type::nothingness();
@@ -120,6 +127,7 @@ public:
     : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     EmojicodeString name_;
     std::shared_ptr<ASTExpr> callee_;
@@ -131,6 +139,7 @@ public:
                          const SourcePosition &p) : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     EmojicodeString name_;
     std::shared_ptr<ASTTypeExpr> callee_;
@@ -144,6 +153,7 @@ public:
     : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     bool valueType_ = false;
     EmojicodeString name_;
@@ -157,6 +167,7 @@ public:
                              const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(std::stringstream &stream) const override;
 private:
     EmojicodeString varName_;
     std::shared_ptr<ASTExpr> expr_;

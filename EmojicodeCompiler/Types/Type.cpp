@@ -567,7 +567,7 @@ std::string Type::typePackage() const {
     }
 }
 
-void Type::typeName(Type type, const TypeContext &typeContext, std::string &string) const {
+void Type::typeName(Type type, const TypeContext &typeContext, std::string &string, bool package) const {
     if (type.meta_) {
         string.append("🔳");
     }
@@ -577,7 +577,9 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
         string.append("🍬");
     }
 
-    string.append(type.typePackage());
+    if (package) {
+        string.append(type.typePackage());
+    }
 
     switch (type.type()) {
         case TypeType::Class:
@@ -589,7 +591,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
         case TypeType::MultiProtocol:
             string.append("🍱");
             for (auto &protocol : type.protocols()) {
-                typeName(protocol, typeContext, string);
+                typeName(protocol, typeContext, string, package);
             }
             string.append("🍱");
             return;
@@ -609,17 +611,17 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             string.append("🍇");
 
             for (size_t i = 1; i < type.genericArguments_.size(); i++) {
-                typeName(type.genericArguments_[i], typeContext, string);
+                typeName(type.genericArguments_[i], typeContext, string, package);
             }
 
             string.append("➡️");
-            typeName(type.genericArguments_[0], typeContext, string);
+            typeName(type.genericArguments_[0], typeContext, string, package);
             string.append("🍉");
             return;
         case TypeType::Error:
             string.append("🚨");
-            typeName(type.genericArguments_[0], typeContext, string);
-            typeName(type.genericArguments_[1], typeContext, string);
+            typeName(type.genericArguments_[0], typeContext, string, package);
+            typeName(type.genericArguments_[1], typeContext, string, package);
             return;
         case TypeType::GenericVariable: {
             if (typeContext.calleeType().type() == TypeType::Class) {
@@ -670,14 +672,14 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
 
         for (auto &argumentType : type.genericArguments()) {
             string.append("🐚");
-            typeName(argumentType, typeContext, string);
+            typeName(argumentType, typeContext, string, package);
         }
     }
 }
 
-std::string Type::toString(const TypeContext &typeContext) const {
+std::string Type::toString(const TypeContext &typeContext, bool package) const {
     std::string string;
-    typeName(*this, typeContext, string);
+    typeName(*this, typeContext, string, package);
     return string;
 }
 

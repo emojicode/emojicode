@@ -34,6 +34,7 @@ public:
               const ASTArguments &args, const SourcePosition &p)
     : ASTMethodable(p, args), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    void toCode(std::stringstream &stream) const override;
 private:
     void generateExpr(FnCodeGenerator *fncg) const override;
     EmojicodeString name_;

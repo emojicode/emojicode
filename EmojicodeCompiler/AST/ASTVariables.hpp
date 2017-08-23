@@ -10,7 +10,7 @@
 #define ASTVariables_hpp
 
 #include <utility>
-
+#include <sstream>
 #include "ASTStatements.hpp"
 
 namespace EmojicodeCompiler {
@@ -34,6 +34,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
+    void toCode(std::stringstream &stream, unsigned int indentation) const override;
 private:
     EmojicodeString varName_;
     Type type_;
@@ -46,6 +47,7 @@ public:
                               const SourcePosition &p) : ASTInitableCreator(e, p), varName_(std::move(name)) {}
     void analyse(SemanticAnalyser *analyser) override;
     void generateAssignment(FnCodeGenerator *) const override;
+    void toCode(std::stringstream &stream, unsigned int indentation) const override;
 protected:
     EmojicodeString varName_;
 private:
@@ -58,6 +60,7 @@ class ASTInstanceVariableAssignment final : public ASTVariableAssignmentDecl {
 public:
     using ASTVariableAssignmentDecl::ASTVariableAssignmentDecl;
     void analyse(SemanticAnalyser *analyser) override;
+    void toCode(std::stringstream &stream, unsigned int indentation) const override {}
 };
 
 class ASTFrozenDeclaration final : public ASTInitableCreator {
@@ -67,6 +70,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generateAssignment(FnCodeGenerator *) const override;
+    void toCode(std::stringstream &stream, unsigned int indentation) const override;
 private:
     EmojicodeString varName_;
     VariableID id_;
