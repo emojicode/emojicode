@@ -1,28 +1,25 @@
-# Emojicode [ ![Codeship Status for emojicode/emojicode](https://app.codeship.com/projects/edbc3220-f394-0134-fad2-66135ababc06/status?branch=master)](https://app.codeship.com/projects/209932) [![Join the chat at https://gitter.im/emojicode/emojicode](https://badges.gitter.im/emojicode/emojicode.svg)](https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Emojicode [ ![Codeship Status for emojicode/emojicode][image-1]][1] [![Join the chat at https://gitter.im/emojicode/emojicode][image-2]][2]
 
 Emojicode is an open source, high-level, multi-paradigm
 programming language consisting of emojis. It features Object-Orientation, Optionals, Generics and Closures.
 
 ## 👩‍🔬💥💡 Major Changes Ahead 🔥⚠️🚱
 
-**The Emojicode source is undergoing some major changes. Expect things to be
-broken in master. [Check out the 0.5 branch for stable
-code.](https://github.com/emojicode/emojicode/tree/emojicode-0.5)**
-
+The Emojicode source is undergoing some major changes. Expect things to be broken in master. [Check out the 0.5 branch for stable code.][3]
 
 ## 🏁 Getting Started
 
-To learn more about the language and get started quickly visit Emojicode’s
-[documentation](http://www.emojicode.org/docs).
+To learn more about the language and get started quickly visit Emojicode’s [documentation][4].
 
-You can easily install Emojicode from our stable prebuilt binaries.
-[See Installing Emojicode](http://www.emojicode.org/docs/guides/install.html)
-for instructions.
+You can easily install Emojicode from our stable prebuilt binaries. [See Installing Emojicode][5] for instructions.
 
-## 🗞 Staying up to date
+We highly recommend to follow Emojicode’s Twitter account [@Real\_Emojicode][6] to stay up with the latest.
 
-Follow Emojicode’s Twitter account
-[@Real_Emojicode](https://twitter.com/Real_Emojicode).
+## 📝 Contribute
+
+Want to improve something? Great! First of all, please be nice and helpful.
+
+If you want to actively help develop the next version of Emojicode, Emojicode 0.6, have a look at [“The 🛣 to Emojicode 0.6”][7]. We are looking for people like you to help us refine the syntax.
 
 ## 🔨 Building from source
 
@@ -134,22 +131,24 @@ Steps:
    mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests
    ```
 
-
-## 📝 Contributions
-
-Want to improve something? Great! First of all, please be nice and helpful.
-You can help in lots of ways, like reporting bugs, fixing bugs, improving the
-documentation, suggesting new features, or implementing new features.
-
-Whatever you want to do, please look for an existing issue or create a new one
-to discuss your plans briefly.
-
 ## 📃 License
 
-Emojicode [is licensed under the Artistic License 2.0](LICENSE).
+Emojicode [is licensed under the Artistic License 2.0][8].
 If you don’t want to read the whole license, here’s a summary without legal force:
 
 - You are allowed to download, use, copy, publish and distribute Emojicode.
 - You are allowed to create modified versions of Emojicode but you may only distribute them on some conditions.
 -  The license contains a grant of patent rights and does not allow you to use any trademark, service mark, tradename, or logo.
 - Emojicode comes with absolutely no warranty.
+
+[1]:	https://app.codeship.com/projects/209932
+[2]:	https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[3]:	https://github.com/emojicode/emojicode/tree/emojicode-0.5
+[4]:	http://www.emojicode.org/docs
+[5]:	http://www.emojicode.org/docs/guides/install.html
+[6]:	https://twitter.com/Real_Emojicode
+[7]:	https://github.com/emojicode/emojicode/blob/master/0.6.md#help-improving-emojicodes-syntax-
+[8]:	LICENSE
+
+[image-1]:	https://app.codeship.com/projects/edbc3220-f394-0134-fad2-66135ababc06/status?branch=master
+[image-2]:	https://badges.gitter.im/emojicode/emojicode.svg
