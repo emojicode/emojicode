@@ -16,7 +16,7 @@ Type ASTInferType::analyse(SemanticAnalyser *analyser, const TypeExpectation &ex
     if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::Nothingness) {
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
-    auto type = expectation;
+    Type type = expectation.copyType();
     type.setOptional(false);
     type_ = type;
     availability_ = expectation.type() == TypeType::Class ? TypeAvailability::StaticAndAvailabale

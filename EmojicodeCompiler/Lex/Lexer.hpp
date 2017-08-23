@@ -31,13 +31,20 @@ private:
     /// Checks for a whitespace character and updates ::sourcePosition_.
     /// @returns True if @c is whitespace according to isWhitespace().
     bool detectWhitespace();
-    /// Called if a new character is available and beginToken returned true and all previous calls for this token
+
+    /// Called if a new code point is available.
+    /// @returns True if the token continues (e.g. a string) or false if the token ended (i.e. it only consits of this
+    /// single code point).
+    bool beginToken(Token *token);
+    /// Called if a new code point is available and beginToken returned true and all previous calls for this token
     /// returned TokenState::Continues.
     TokenState continueToken(Token *token);
+    /// Reads exactly one token.
+    /// This method calls nextChar() as necessary. On return, ::codePoint_ already contains the next code point for
+    /// another call to beginToken(), if ::continue_ is true.
+    void readToken(Token *token);
 
-    bool isNewline() { return c == 0x0A || c == 0x2028 || c == 0x2029; }
-
-    bool beginToken(Token *token);
+    bool isNewline() { return codePoint_ == 0x0A || codePoint_ == 0x2028 || codePoint_ == 0x2029; }
 
     void nextChar();
     bool hasMoreChars() { return i_ < string_.size(); }
@@ -50,7 +57,7 @@ private:
     bool foundZWJ_ = false;
 
     bool continue_ = true;
-    EmojicodeChar c;
+    EmojicodeChar codePoint_ = 0;
 
     std::string string_;
     size_t i_ = 0;

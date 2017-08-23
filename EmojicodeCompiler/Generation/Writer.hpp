@@ -50,14 +50,14 @@ public:
     WriterPlaceholder<T> writePlaceholder() {
         auto i = data_.size();
         write(static_cast<T>(0));
-        return WriterPlaceholder<T>(*this, i);
+        return WriterPlaceholder<T>(this, i);
     }
 private:
     void write(uint16_t v) { writeUInt16(v); };
     void write(uint32_t v) { writeEmojicodeChar(v); };
     void write(uint8_t v) { writeByte(v); };
 
-    const std::string &path_;
+    const std::string path_;
     std::string data_;
 };
 
@@ -65,25 +65,25 @@ template <typename T>
 class WriterPlaceholder {
     friend Writer;
 public:
-    WriterPlaceholder(Writer &w, size_t index) : writer_(w), index_(index) {};
+    WriterPlaceholder(Writer *w, size_t index) : writer_(w), index_(index) {};
     /** Writes a coin with the given value */
     void write(T value) {
         if (std::is_same<T, uint8_t>::value) {
-            writer_.data_[index_] = value;
+            writer_->data_[index_] = value;
         }
         else if (std::is_same<T, uint16_t>::value) {
-            writer_.data_[index_] = static_cast<char>(value);
-            writer_.data_[index_ + 1] = static_cast<char>(value >> 8);
+            writer_->data_[index_] = static_cast<char>(value);
+            writer_->data_[index_ + 1] = static_cast<char>(value >> 8);
         }
         else if (std::is_same<T, uint32_t>::value) {
-            writer_.data_[index_] = static_cast<char>(value);
-            writer_.data_[index_ + 1] = static_cast<char>(value >> 8);
-            writer_.data_[index_ + 2] = static_cast<char>(value >> 16);
-            writer_.data_[index_ + 3] = static_cast<char>(value >> 24);
+            writer_->data_[index_] = static_cast<char>(value);
+            writer_->data_[index_ + 1] = static_cast<char>(value >> 8);
+            writer_->data_[index_ + 2] = static_cast<char>(value >> 16);
+            writer_->data_[index_ + 3] = static_cast<char>(value >> 24);
         }
     }
 protected:
-    Writer &writer_;
+    Writer *writer_;
     size_t index_;
 };
 

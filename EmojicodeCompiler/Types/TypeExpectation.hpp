@@ -33,7 +33,9 @@ public:
     TypeExpectation(bool isReference, bool forceBox, bool isMutable)
         : Type(isReference, forceBox, isMutable), expectationMode_(ExpectationMode::Convert) {}
     /// Creates a type expectation with mode "no action".
-    TypeExpectation() : Type(false, false, false), expectationMode_(ExpectationMode::NoAction) {}
+    TypeExpectation() : Type(false, false, false) {}
+
+    Type copyType() const { return *this; }
 
     /// Returns the storage type to which the value of the given type should be unboxed, if the destination expects
     /// the most unboxed value as indicated by a storage type of @c StorageType::SimpleIfPossible.

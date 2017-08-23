@@ -235,8 +235,8 @@ Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, st
                         exprType.setOptional();
                     }
                     else {
-                        auto prty = exprType;
-                        exprType = expectation;
+                        Type prty = exprType;
+                        exprType = expectation.copyType();
                         exprType.setGenericArgument(1, prty);
                     }
                     insertNode<ASTSimpleToSimpleOptional>(node, exprType);
