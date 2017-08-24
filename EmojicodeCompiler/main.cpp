@@ -14,14 +14,14 @@
 #include "PackageReporter.hpp"
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
+#include <codecvt>
 #include <cstdlib>
 #include <cstring>
 #include <getopt.h>
 #include <libgen.h>
+#include <locale>
 #include <unistd.h>
 #include <vector>
-#include <codecvt>
-#include <locale>
 
 namespace EmojicodeCompiler {
 
@@ -80,12 +80,12 @@ void printError(const CompilerError &ce) {
                 printedErrorOrWarning ? ",": "", ce.position().line, ce.position().character);
         printJSONStringToFile(ce.position().file.c_str(), stderr);
         fprintf(stderr, ", \"message\":");
-        printJSONStringToFile(ce.error(), stderr);
+        printJSONStringToFile(ce.message().c_str(), stderr);
         fprintf(stderr, "}\n");
     }
     else {
         fprintf(stderr, "🚨 line %zu column %zu %s: %s\n", ce.position().line, ce.position().character,
-                ce.position().file.c_str(), ce.error());
+                ce.position().file.c_str(), ce.message().c_str());
     }
     printedErrorOrWarning = true;
 }

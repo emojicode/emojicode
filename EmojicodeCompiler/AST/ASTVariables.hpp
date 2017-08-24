@@ -9,9 +9,9 @@
 #ifndef ASTVariables_hpp
 #define ASTVariables_hpp
 
-#include <utility>
-#include <sstream>
 #include "ASTStatements.hpp"
+#include <sstream>
+#include <utility>
 
 namespace EmojicodeCompiler {
 

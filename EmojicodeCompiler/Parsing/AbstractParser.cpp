@@ -46,7 +46,7 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
         auto &token = stream_.consumeToken();
         Type type = parseType(typeContext, dynamism);
         if (!type.allowsMetaType() || type.meta()) {
-            throw CompilerError(token.position(), "Meta type of %s is restricted.", type.toString(typeContext).c_str());
+            throw CompilerError(token.position(), "Meta type of ", type.toString(typeContext), " is restricted.");
         }
         type.setMeta(true);
         return type;
@@ -80,8 +80,8 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
             }
         }
 
-        throw CompilerError(variableToken.position(), "No such generic type variable \"%s\".",
-                            utf8(variableToken.value()).c_str());
+        throw CompilerError(variableToken.position(), "No such generic type variable \"", utf8(variableToken.value()),
+                            "\".");
     }
     else if (stream_.nextTokenIs(E_DOG)) {
         auto &selfToken = stream_.consumeToken(TokenType::Identifier);
@@ -140,8 +140,8 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
 
         auto type = Type::nothingness();
         if (!package_->fetchRawType(parsedType, optional, &type)) {
-            throw CompilerError(parsedType.position, "Could not find type %s in enamespace %s.",
-                                utf8(parsedType.name).c_str(), utf8(parsedType.ns).c_str());
+            throw CompilerError(parsedType.position, "Could not find type ", utf8(parsedType.name), " in namespace ",
+                                utf8(parsedType.ns), ".");
         }
 
         parseGenericArgumentsForType(&type, typeContext, dynamism, parsedType.position);
@@ -178,8 +178,8 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
                 if (!ta.compatibleTo(typeDef->genericArgumentConstraints()[i], typeContext)) {
                     auto thisName = typeDef->genericArgumentConstraints()[i].toString(typeContext);
                     auto thatName = ta.toString(typeContext);
-                    throw CompilerError(token.position(), "Generic argument for %s is not compatible to constraint %s.",
-                                        thatName.c_str(), thisName.c_str());
+                    throw CompilerError(token.position(), "Generic argument for ", thatName,
+                                        " is not compatible to constraint ", thisName, ".");
                 }
 
                 type->genericArguments_.push_back(ta);
@@ -189,8 +189,8 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
 
             if (count != typeDef->ownGenericArgumentVariables().size()) {
                 auto str = type->toString(Type::nothingness());
-                throw CompilerError(p, "Type %s requires %d generic arguments, but %d were given.", str.c_str(),
-                                    typeDef->ownGenericArgumentVariables().size(), count);
+                throw CompilerError(p, "Type ", str, " requires ", typeDef->ownGenericArgumentVariables().size(),
+                                    " generic arguments, but ", count, " were given.");
             }
         }
     }

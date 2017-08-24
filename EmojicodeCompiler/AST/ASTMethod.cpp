@@ -35,8 +35,8 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
                 return analyser->analyseFunctionCall(&args_, protocol, method);
             }
         }
-        throw CompilerError(position(), "No type in %s provides a method called %s.",
-                            type.toString(analyser->typeContext()).c_str(), utf8(name).c_str());
+        throw CompilerError(position(), "No type in ", type.toString(analyser->typeContext()),
+                            " provides a method called ", utf8(name), ".");
     }
 
     auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), position());
@@ -44,8 +44,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     if (type.type() == TypeType::ValueType) {
         if (method->mutating()) {
             if (!type.isMutable()) {
-                throw CompilerError(position(), "%s was marked 🖍 but callee is not mutable.",
-                                    utf8(method->name()).c_str());
+                throw CompilerError(position(), utf8(method->name()), " was marked 🖍 but callee is not mutable.");
             }
             auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee);
             assert(varNode != nullptr && varNode->reference());
@@ -64,7 +63,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     }
     else {
         auto typeString = type.toString(analyser->typeContext());
-        throw CompilerError(position(), "You cannot call methods on %s.", typeString.c_str());
+        throw CompilerError(position(), "You cannot call methods on ", typeString, ".");
     }
     return analyser->analyseFunctionCall(&args_, type, method);
 }

@@ -9,11 +9,11 @@
 #include "Lexer.hpp"
 #include "../CompilerError.hpp"
 #include "EmojiTokenization.hpp"
+#include <codecvt>
 #include <fstream>
 #include <iostream>
-#include <memory>
 #include <locale>
-#include <codecvt>
+#include <memory>
 
 namespace EmojicodeCompiler {
 
@@ -35,13 +35,12 @@ inline bool endsWith(const std::string &value, const std::string &ending) {
 
 TokenStream Lexer::lexFile(const std::string &path) {
     if (!endsWith(path, ".emojic")) {
-        throw CompilerError(SourcePosition(0, 0, path),
-                            "Emojicode files must be suffixed with .emojic: %s", path.c_str());
+        throw CompilerError(SourcePosition(0, 0, path), "Emojicode files must be suffixed with .emojic: ", path);
     }
 
     std::ifstream f(path, std::ios_base::binary | std::ios_base::in);
     if (f.fail()) {
-        throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file %s.", path.c_str());
+        throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file ", path, ".");
     }
 
     auto string = std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
@@ -232,8 +231,8 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
                         token->value_.push_back('\r');
                         break;
                     default: {
-                        throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌%s.",
-                                            utf8(std::u32string(1, codePoint())).c_str());
+                        throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌",
+                                            utf8(std::u32string(1, codePoint())), ".");
                     }
                 }
 

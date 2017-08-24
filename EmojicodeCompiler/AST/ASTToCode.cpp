@@ -7,19 +7,19 @@
 //
 
 #include "ASTToCode.hpp"
-#include "ASTExpr.hpp"
-#include "ASTTypeExpr.hpp"
-#include "ASTStatements.hpp"
+#include "../Parsing/OperatorHelper.hpp"
+#include "../Types/Type.hpp"
+#include "ASTBinaryOperator.hpp"
+#include "ASTClosure.hpp"
 #include "ASTControlFlow.hpp"
+#include "ASTExpr.hpp"
+#include "ASTInitialization.hpp"
 #include "ASTLiterals.hpp"
+#include "ASTMethod.hpp"
+#include "ASTStatements.hpp"
+#include "ASTTypeExpr.hpp"
 #include "ASTUnary.hpp"
 #include "ASTVariables.hpp"
-#include "ASTMethod.hpp"
-#include "ASTBinaryOperator.hpp"
-#include "ASTInitialization.hpp"
-#include "ASTClosure.hpp"
-#include "../Types/Type.hpp"
-#include "../Parsing/OperatorHelper.hpp"
 #include <sstream>
 
 namespace EmojicodeCompiler {
@@ -297,4 +297,4 @@ void ASTBinaryOperator::toCode(std::stringstream &stream) const {
     right_->toCode(stream);
 }
 
-}
+} // namespace EmojicodeCompiler

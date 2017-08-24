@@ -35,16 +35,14 @@ void SemanticAnalyser::analyse() {
         auto initializer = dynamic_cast<Initializer *>(function_);
         for (auto &var : initializer->argumentsToVariables()) {
             if (!scoper_->instanceScope()->hasLocalVariable(var)) {
-                throw CompilerError(initializer->position(),
-                                    "🍼 was applied to \"%s\" but no matching instance variable was found.",
-                                    utf8(var).c_str());
+                throw CompilerError(initializer->position(), "🍼 was applied to \"", utf8(var),
+                                    "\" but no matching instance variable was found.");
             }
             auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var);
             auto &argumentVariable = methodScope.getLocalVariable(var);
             if (!argumentVariable.type().compatibleTo(instanceVariable.type(), typeContext_)) {
-                throw CompilerError(initializer->position(),
-                                    "🍼 was applied to \"%s\" but instance variable has incompatible type.",
-                                    utf8(var).c_str());
+                throw CompilerError(initializer->position(), "🍼 was applied to \"",
+                                    utf8(var), "\" but instance variable has incompatible type.");
             }
             instanceVariable.initialize();
 
@@ -84,8 +82,8 @@ void SemanticAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
 
 void SemanticAnalyser::analyseInitializationRequirements() {
     if (isFullyInitializedCheckRequired(function_->functionType())) {
-        scoper_->instanceScope()->initializerUnintializedVariablesCheck(function_->position(),
-                                                                        "Instance variable \"%s\" must be initialized.");
+        scoper_->instanceScope()->unintializedVariablesCheck(function_->position(), "Instance variable \"",
+                                                             "\" must be initialized.");
     }
 
     if (isSuperconstructorRequired(function_->functionType())) {
@@ -102,11 +100,11 @@ void SemanticAnalyser::analyseInitializationRequirements() {
 }
 
 Type SemanticAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node, std::vector<CommonTypeFinder> *ctargs) {
-    auto returnType = ctargs ? (*node)->analyse(this, TypeExpectation()) : expect(TypeExpectation(type), node);
+    auto returnType = ctargs != nullptr ? (*node)->analyse(this, TypeExpectation()) : expect(TypeExpectation(type),
+                                                                                             node);
     if (!returnType.compatibleTo(type, typeContext_, ctargs)) {
-        auto cn = returnType.toString(typeContext_);
-        auto tn = type.toString(typeContext_);
-        throw CompilerError((*node)->position(), "%s is not compatible to %s.", cn.c_str(), tn.c_str());
+        throw CompilerError((*node)->position(), returnType.toString(typeContext_), " is not compatible to ",
+                            type.toString(typeContext_), ".");
     }
     return returnType;
 }
@@ -115,21 +113,21 @@ void SemanticAnalyser::validateAccessLevel(Function *function, const SourcePosit
     if (function->accessLevel() == AccessLevel::Private) {
         if (typeContext_.calleeType().type() != function->owningType().type()
             || function->owningType().typeDefinition() != typeContext_.calleeType().typeDefinition()) {
-            throw CompilerError(p, "%s is 🔒.", utf8(function->name()).c_str());
+            throw CompilerError(p, utf8(function->name()), " is 🔒.");
         }
     }
     else if (function->accessLevel() == AccessLevel::Protected) {
         if (typeContext_.calleeType().type() != function->owningType().type()
             || !this->typeContext_.calleeType().eclass()->inheritsFrom(function->owningType().eclass())) {
-            throw CompilerError(p, "%s is 🔐.", utf8(function->name()).c_str());
+            throw CompilerError(p, utf8(function->name()), " is 🔐.");
         }
     }
 }
 
 Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
     if (node->arguments().size() != function->arguments.size()) {
-        throw CompilerError(node->position(), "%s expects %ld arguments but %ld were supplied.",
-                            utf8(function->name()).c_str(), function->arguments.size(), node->arguments().size());
+        throw CompilerError(node->position(), utf8(function->name()), " expects ", function->arguments.size(),
+                            " arguments but ", node->arguments().size(), " were supplied.");
     }
 
     TypeContext typeContext = TypeContext(type, function, &node->genericArguments());
@@ -150,10 +148,9 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
 
     for (size_t i = 0; i < node->genericArguments().size(); i++) {
         if (!node->genericArguments()[i].compatibleTo(function->genericArgumentConstraints[i], typeContext)) {
-            throw CompilerError(node->position(),
-                                "Generic argument %d of type %s is not compatible to constraint %s.",
-                                i + 1, node->genericArguments()[i].toString(typeContext).c_str(),
-                                function->genericArgumentConstraints[i].toString(typeContext).c_str());
+            throw CompilerError(node->position(), "Generic argument ", i + 1, " of type ",
+                                node->genericArguments()[i].toString(typeContext), " is not compatible to constraint ",
+                                function->genericArgumentConstraints[i].toString(typeContext), ".");
         }
     }
 

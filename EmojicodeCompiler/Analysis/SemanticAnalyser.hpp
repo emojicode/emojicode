@@ -50,8 +50,7 @@ public:
 
     void validateMetability(const Type &originalType, const SourcePosition &p) const {
         if (!originalType.allowsMetaType()) {
-            auto string = originalType.toString(typeContext_);
-            throw CompilerError(p, "Can’t get metatype of %s.", string.c_str());
+            throw CompilerError(p, "Metatype of ", originalType.toString(typeContext_), " is not available.");
         }
     }
 

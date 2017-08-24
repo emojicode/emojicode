@@ -42,16 +42,14 @@ public:
 
     /// Retrieves a variable form the scope. Use @c hasLocalVariable to determine whether the variable with this name
     /// is in this scope.
-    Variable& getLocalVariable(const std::u32string &varable);
+    Variable& getLocalVariable(const std::u32string &variable);
     /// Returns true if a variable with the name @c variable is set in this scope.
     bool hasLocalVariable(const std::u32string &variable) const;
 
-    /**
-     * Emits @c errorMessage if not all instance variable were initialized.
-     * @params errorMessage The error message that will probably be issued. It should include @c %s for the name
-     of the variable.
-     */
-    void initializerUnintializedVariablesCheck(const SourcePosition &p, const char *errorMessage);
+    /// Throws an error if an uninitialized variable is found in this scope.
+    /// The error message is created by concatenating errorMessageFront, the variable name, and errorMessageBack.
+    void unintializedVariablesCheck(const SourcePosition &p, const std::string &errorMessageFront,
+                                    const std::string &errorMessageBack);
 
     /// Emits a warning for each non-frozen variable that has not been mutated.
     void recommendFrozenVariables() const;

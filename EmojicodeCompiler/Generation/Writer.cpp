@@ -77,7 +77,7 @@ void Writer::finish() {
         out.write(data_.data(), data_.size());
     }
     else {
-        throw CompilerError(SourcePosition(0, 0, ""), "Couldn't write output file %s.", path_.c_str());
+        throw CompilerError(SourcePosition(0, 0, ""), "Couldn't write output file ", path_, ".");
     }
 }
 

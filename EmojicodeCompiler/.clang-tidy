@@ -1,6 +1,5 @@
 Checks: '*,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-modernize-raw-string-literal,-clang-analyzer-*,-readability-redundant-declaration,-google-readability-todo,-llvm-header-guard,-misc-unused-parameters,-google-runtime-int,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-readability-named-parameter'
-# Checks: '-*,'
-# modernize-pass-by-value,modernize-use-using,readability-braces-around-statement,google-explicit-constructor,llvm-include-order,performance-unnecessary-value-param,llvm-namespace-comment
+# Checks: '-*,modernize-pass-by-value,modernize-use-using,readability-braces-around-statement,google-explicit-constructor,llvm-include-order,llvm-namespace-comment' #performance-unnecessary-value-param
 HeaderFilterRegex: '.*'
 CheckOptions:
   - key: readability-identifier-naming.GlobalConstantPrefix

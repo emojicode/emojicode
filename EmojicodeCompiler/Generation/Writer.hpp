@@ -9,6 +9,8 @@
 #ifndef Writer_hpp
 #define Writer_hpp
 
+#include <utility>
+
 #include "../EmojicodeCompiler.hpp"
 
 namespace EmojicodeCompiler {
@@ -25,7 +27,7 @@ class Writer {
     friend WriterPlaceholder<EmojicodeInstruction>;
     friend WriterPlaceholder<unsigned char>;
 public:
-    explicit Writer(const std::string &path) : path_(path) {};
+    explicit Writer(std::string path) : path_(std::move(path)) {};
 
     /** Must be used to write any uint16_t to the file */
     void writeUInt16(uint16_t value);

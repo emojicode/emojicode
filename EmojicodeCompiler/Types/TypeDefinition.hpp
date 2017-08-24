@@ -158,7 +158,7 @@ protected:
     template <typename T>
     void duplicateDeclarationCheck(T p, std::map<std::u32string, T> dict, SourcePosition position) {
         if (dict.count(p->name())) {
-            throw CompilerError(position, "%s is declared twice.", utf8(p->name()).c_str());
+            throw CompilerError(position, utf8(p->name()), " is declared twice.");
         }
     }
 

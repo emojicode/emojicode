@@ -59,7 +59,7 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
                     instruction_ = INS_MULTIPLY_DOUBLE;
-                    return std::make_pair(true, Type::doubl());
+                    return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::LessOperator:
                     swap = true;
                 case OperatorType::GreaterOperator:
@@ -72,19 +72,19 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                     return std::make_pair(true, BuiltIn(Type::boolean(), swap));
                 case OperatorType::DivisionOperator:
                     instruction_ = INS_DIVIDE_DOUBLE;
-                    return std::make_pair(true, Type::doubl());
+                    return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::PlusOperator:
                     instruction_ = INS_ADD_DOUBLE;
-                    return std::make_pair(true, Type::doubl());
+                    return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::MinusOperator:
                     instruction_ = INS_SUBTRACT_DOUBLE;
-                    return std::make_pair(true, Type::doubl());
+                    return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::RemainderOperator:
                     instruction_ = INS_REMAINDER_DOUBLE;
-                    return std::make_pair(true, Type::doubl());
+                    return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::EqualOperator:
                     instruction_ = INS_EQUAL_DOUBLE;
-                    return std::make_pair(true, Type::boolean());
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 default:
                     break;
             }
@@ -93,16 +93,16 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
                     instruction_ = INS_MULTIPLY_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::BitwiseAndOperator:
                     instruction_ = INS_BINARY_AND_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::BitwiseOrOperator:
                     instruction_ = INS_BINARY_OR_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::BitwiseXorOperator:
                     instruction_ = INS_BINARY_XOR_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::LessOperator:
                     swap = true;
                 case OperatorType::GreaterOperator:
@@ -115,22 +115,22 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                     return std::make_pair(true, BuiltIn(Type::boolean(), swap));
                 case OperatorType::ShiftLeftOperator:
                     instruction_ = INS_SHIFT_LEFT_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::ShiftRightOperator:
                     instruction_ = INS_SHIFT_RIGHT_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::DivisionOperator:
                     instruction_ = INS_DIVIDE_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::PlusOperator:
                     instruction_ = INS_ADD_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::MinusOperator:
                     instruction_ = INS_SUBTRACT_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::RemainderOperator:
                     instruction_ = INS_REMAINDER_INTEGER;
-                    return std::make_pair(true, Type::integer());
+                    return std::make_pair(true, BuiltIn(Type::integer()));
                 default:
                     break;
             }
@@ -139,10 +139,10 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
             switch (operator_) {
                 case OperatorType::LogicalAndOperator:
                     instruction_ = INS_AND_BOOLEAN;
-                    return std::make_pair(true, Type::boolean());
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::LogicalOrOperator:
                     instruction_ = INS_OR_BOOLEAN;
-                    return std::make_pair(true, Type::boolean());
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 default:
                     break;
             }
@@ -153,16 +153,16 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                 throw CompilerError(position(), "The identity operator can only be used with objects.");
             }
             instruction_ = INS_SAME_OBJECT;
-            return std::make_pair(true, Type::boolean());
+            return std::make_pair(true, BuiltIn(Type::boolean()));
         }
 
         if (operator_ == OperatorType::EqualOperator) {
             instruction_ = INS_EQUAL_PRIMITIVE;
-            return std::make_pair(true, Type::boolean());
+            return std::make_pair(true, BuiltIn(Type::boolean()));
         }
     }
 
-    return std::make_pair(false, Type::nothingness());
+    return std::make_pair(false, BuiltIn(Type::nothingness()));
 }
 
 }  // namespace EmojicodeCompiler

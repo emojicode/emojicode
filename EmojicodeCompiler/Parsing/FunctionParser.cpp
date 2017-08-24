@@ -225,7 +225,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
                 case TokenType::DocumentationComment:
                     throw CompilerError(token.position(), "Misplaced documentation comment.");
                 default:
-                    throw CompilerError(token.position(), "Unexpected token %s.", token.stringName());
+                    throw CompilerError(token.position(), "Unexpected token ", token.stringName(), ".");
             }
     }
 }
@@ -297,7 +297,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
         case E_RED_APPLE:
         case E_POLICE_CARS_LIGHT:
         case E_AVOCADO:
-            throw CompilerError(token.position(), "Unexpected statement %s.", utf8(token.value()).c_str());
+            throw CompilerError(token.position(), "Unexpected statement ", utf8(token.value()), ".");
     }
 }
 

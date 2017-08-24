@@ -157,7 +157,7 @@ void PackageParser::parse() {
                 break;
             }
             default:
-                throw CompilerError(theToken.position(), "Unexpected identifier %s", utf8(theToken.value()).c_str());
+                throw CompilerError(theToken.position(), "Unexpected identifier ", utf8(theToken.value()));
         }
     }
 }
@@ -192,8 +192,8 @@ void PackageParser::reservedEmojis(const Token &token, const char *place) const 
         case E_SPIRAL_SHELL:
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE:
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
-            throw CompilerError(token.position(), "%s is reserved and cannot be used as %s name.",
-                                utf8(token.value()).c_str(), place);
+            throw CompilerError(token.position(), utf8(token.value()), " is reserved and cannot be used as ", place,
+                                " name.");
         }
     }
 }
@@ -204,7 +204,7 @@ TypeIdentifier PackageParser::parseAndValidateNewTypeName() {
     Type type = Type::nothingness();
     if (package_->fetchRawType(parsedTypeName, false, &type)) {
         auto str = type.toString(Type::nothingness());
-        throw CompilerError(parsedTypeName.position, "Type %s is already defined.", str.c_str());
+        throw CompilerError(parsedTypeName.position, "Type ", str, " is already defined.");
     }
 
     return parsedTypeName;
@@ -304,8 +304,8 @@ void PackageParser::parseClass(const std::u32string &documentation, const Token 
 
         if (eclass->superclass()->final()) {
             auto string = type.toString(classType);
-            throw CompilerError(parsedTypeName.position,
-                                "%s can’t be used as superclass as it was marked with 🔏.", string.c_str());
+            throw CompilerError(parsedTypeName.position, string,
+                                " can’t be used as superclass as it was marked with 🔏.");
         }
     }
     else {
@@ -326,8 +326,8 @@ void PackageParser::parseClass(const std::u32string &documentation, const Token 
     parseTypeDefinitionBody(classType, &requiredInitializers);
 
     if (!requiredInitializers.empty()) {
-        throw CompilerError(eclass->position(), "Required initializer %s was not implemented.",
-                            utf8(*requiredInitializers.begin()).c_str());
+        throw CompilerError(eclass->position(), "Required initializer ", utf8(*requiredInitializers.begin()),
+                            " was not implemented.");
     }
 }
 
@@ -508,7 +508,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<std::u32
                 break;
             }
             default:
-                throw CompilerError(token.position(), "Unexpected identifier %s.", utf8(token.value()).c_str());
+                throw CompilerError(token.position(), "Unexpected identifier ", utf8(token.value()).c_str());
         }
     }
     stream_.consumeToken(TokenType::Identifier);

@@ -91,8 +91,7 @@ Initializer* TypeDefinition::getInitializer(const std::u32string &name, const Ty
                                                       const TypeContext &typeContext, const SourcePosition &p) {
     auto initializer = lookupInitializer(name);
     if (initializer == nullptr) {
-        auto typeString = type.toString(typeContext);
-        throw CompilerError(p, "%s has no initializer %s.", typeString.c_str(), utf8(name).c_str());
+        throw CompilerError(p, type.toString(typeContext), " has no initializer ", utf8(name), ".");
     }
     return initializer;
 }
@@ -102,7 +101,7 @@ Function* TypeDefinition::getMethod(const std::u32string &name, const Type &type
     auto method = lookupMethod(name);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext);
-        throw CompilerError(p, "%s has no method %s", eclass.c_str(), utf8(name).c_str());
+        throw CompilerError(p, type.toString(typeContext), " has no method ", utf8(name), ".");
     }
     return method;
 }
@@ -111,8 +110,7 @@ Function* TypeDefinition::getTypeMethod(const std::u32string &name, const Type &
                                                   const TypeContext &typeContext, const SourcePosition &p) {
     auto method = lookupTypeMethod(name);
     if (method == nullptr) {
-        auto eclass = type.toString(typeContext);
-        throw CompilerError(p, "%s has no type method %s", eclass.c_str(), utf8(name).c_str());
+        throw CompilerError(p, type.toString(typeContext), " has no type method ", utf8(name), ".");
     }
     return method;
 }
@@ -121,7 +119,7 @@ void TypeDefinition::addProtocol(const Type &type, const SourcePosition &p) {
     for (auto &protocol : protocols_) {
         if (protocol.identicalTo(type, Type::nothingness(), nullptr)) {
             auto name = type.toString(Type::nothingness());
-            throw CompilerError(p, "Conformance to protocol %s was already declared.", name.c_str());
+            throw CompilerError(p, "Conformance to protocol ", name, " was already declared.");
         }
     }
     protocols_.push_back(type);
@@ -205,8 +203,8 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
             if (clm == nullptr) {
                 auto typeName = type.toString(Type::nothingness());
                 auto protocolName = protocol.toString(Type::nothingness());
-                throw CompilerError(position(), "%s does not agree to protocol %s: Method %s is missing.",
-                                    typeName.c_str(), protocolName.c_str(), utf8(method->name()).c_str());
+                throw CompilerError(position(), typeName, " does not agree to protocol ", protocolName ,": Method ",
+                                    utf8(method->name()), "is missing.");
             }
 
             if (!clm->enforcePromises(method, type, protocol, TypeContext(protocol))) {

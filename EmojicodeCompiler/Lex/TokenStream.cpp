@@ -29,8 +29,8 @@ bool TokenStream::consumeTokenIf(TokenType type) {
 const Token& TokenStream::requireIdentifier(char32_t ch) {
     auto &token = consumeToken(TokenType::Identifier);
     if (!token.isIdentifier(ch)) {
-        throw CompilerError(token.position(), "Expected %s but found %s instead.", utf8(std::u32string(1, ch)).c_str(),
-                            utf8(token.value()).c_str());
+        throw CompilerError(token.position(), "Expected ", utf8(std::u32string(1, ch)), " but found ",
+                            utf8(token.value()), " instead.");
     }
     return token;
 }

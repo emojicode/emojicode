@@ -13,13 +13,13 @@ namespace EmojicodeCompiler {
 
 void Variable::uninitalizedError(const SourcePosition &p) const {
     if (initialized_ <= 0) {
-        throw CompilerError(p, "Variable \"%s\" is possibly not initialized.", utf8(name()).c_str());
+        throw CompilerError(p, "Variable \"", utf8(name()),"\" is possibly not initialized.");
     }
 }
 
 void Variable::mutate(const SourcePosition &p) {
     if (frozen()) {
-        throw CompilerError(p, "Cannot modify frozen variable \"%s\".", utf8(name()).c_str());
+        throw CompilerError(p, "Cannot modify frozen variable \"", utf8(name()), "\".");
     }
     mutated_ = true;
 }

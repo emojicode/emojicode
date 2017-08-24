@@ -9,9 +9,9 @@
 #ifndef ASTBoxing_hpp
 #define ASTBoxing_hpp
 
-#include <utility>
-#include <sstream>
 #include "ASTExpr.hpp"
+#include <sstream>
+#include <utility>
 
 namespace EmojicodeCompiler {
 

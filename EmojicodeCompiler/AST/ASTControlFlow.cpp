@@ -180,7 +180,7 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     elementType_ = Type::nothingness();
     if (!analyser->typeIsEnumerable(iteratee, &elementType_)) {
         auto iterateeString = iteratee.toString(analyser->typeContext());
-        throw CompilerError(position(), "%s does not conform to s🔂.", iterateeString.c_str());
+        throw CompilerError(position(), iterateeString, " does not conform to s🔂.");
     }
 
     iteratee_->setExpressionType(Type(PR_ENUMERATEABLE, false));

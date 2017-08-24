@@ -26,7 +26,7 @@ Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosi
     Type type = Type::nothingness();
     _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
     if (type.type() != TypeType::Class) {
-        throw CompilerError(errorPosition, "s package class %s is missing.", utf8(name).c_str());
+        throw CompilerError(errorPosition, "s package class ", utf8(name), " is missing.");
     }
     return type.eclass();
 }
@@ -35,7 +35,7 @@ Protocol* getStandardProtocol(const std::u32string &name, Package *_, const Sour
     Type type = Type::nothingness();
     _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
     if (type.type() != TypeType::Protocol) {
-        throw CompilerError(errorPosition, "s package protocol %s is missing.", utf8(name).c_str());
+        throw CompilerError(errorPosition, "s package protocol ", utf8(name), " is missing.");
     }
     return type.protocol();
 }
@@ -45,10 +45,10 @@ ValueType* getStandardValueType(const std::u32string &name, Package *_, const So
     Type type = Type::nothingness();
     _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
     if (type.type() != TypeType::ValueType) {
-        throw CompilerError(errorPosition, "s package value type %s is missing.", utf8(name).c_str());
+        throw CompilerError(errorPosition, "s package value type ", utf8(name), " is missing.");
     }
     if (type.boxIdentifier() != boxId) {
-        throw CompilerError(errorPosition, "s package value type %s has improper box id.", utf8(name).c_str());
+        throw CompilerError(errorPosition, "s package value type ", utf8(name), " has improper box id.");
     }
     return type.valueType();
 }
@@ -77,8 +77,8 @@ Package* Package::loadPackage(const std::string &name, const std::u32string &ns,
 
     if (package != nullptr) {
         if (!package->finishedLoading()) {
-            throw CompilerError(p, "Circular dependency detected: %s (loaded first) and %s depend on each other.",
-                                this->name().c_str(), name.c_str());
+            throw CompilerError(p, "Circular dependency detected: ", name_, " and ", name,
+                                " depend on each other.");
         }
     }
     else {
@@ -109,7 +109,7 @@ void Package::parse() {
     PackageParser(this, Lexer::lexFile(mainFile_)).parse();
 
     if (!validVersion()) {
-        throw CompilerError(position(), "Package %s does not provide a valid version.", name().c_str());
+        throw CompilerError(position(), "Package ", name(), " does not provide a valid version.");
     }
 
     if (name_ == "s") {
@@ -207,7 +207,7 @@ void Package::exportType(Type t, std::u32string name, const SourcePosition &p) {
         throw std::logic_error("The package did already finish loading. No more types can be exported.");
     }
     if (std::any_of(exportedTypes_.begin(), exportedTypes_.end(), [&name](auto &type) { return type.name == name; })) {
-        throw CompilerError(p, "A type named %s was already exported.", utf8(name).c_str());
+        throw CompilerError(p, "A type named ", utf8(name), " was already exported.");
     }
     exportedTypes_.emplace_back(t, name);
 }
@@ -226,9 +226,9 @@ void Package::loadInto(Package *destinationPackage, const std::u32string &ns, co
     for (auto exported : exportedTypes_) {
         Type type = Type::nothingness();
         if (destinationPackage->fetchRawType(exported.name, ns, false, p, &type)) {
-            throw CompilerError(p, "Package %s could not be loaded into namespace %s of package %s: %s collides with "\
-                                "a type of the same name in the same namespace.", name().c_str(), utf8(ns).c_str(),
-                                destinationPackage->name().c_str(), utf8(exported.name).c_str());
+            throw CompilerError(p, "Package ", name() , " could not be loaded into namespace ", utf8(ns),
+                                " of package ", destinationPackage->name(), ": ", utf8(exported.name),
+                                " collides with a type of the same name in the same namespace.");
         }
 
         destinationPackage->offerType(exported.type, exported.name, ns, false, p);

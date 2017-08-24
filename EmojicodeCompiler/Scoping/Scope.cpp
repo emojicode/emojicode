@@ -57,11 +57,12 @@ bool Scope::hasLocalVariable(const std::u32string &variable) const {
     return map_.count(variable) > 0;
 }
 
-void Scope::initializerUnintializedVariablesCheck(const SourcePosition &p, const char *errorMessage) {
+void Scope::unintializedVariablesCheck(const SourcePosition &p, const std::string &errorMessageFront,
+                                           const std::string &errorMessageBack) {
     for (auto &it : map_) {
         Variable &cv = it.second;
         if (!cv.initialized() && !cv.type().optional() && !cv.inherited()) {
-            throw CompilerError(p, errorMessage, utf8(cv.name()).c_str());
+            throw CompilerError(p, errorMessageFront, utf8(cv.name()), errorMessageBack);
         }
     }
 }

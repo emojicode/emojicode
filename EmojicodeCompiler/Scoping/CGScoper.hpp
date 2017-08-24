@@ -24,13 +24,13 @@ public:
         unsigned int value() { return stackIndex_; }
         void increment() { stackIndex_ += 1; }
     private:
-        StackIndex(unsigned int index) : stackIndex_(index) {}
+        explicit StackIndex(unsigned int index) : stackIndex_(index) {}
         unsigned int stackIndex_;
     };
 
     struct Variable {
         Type type = Type::nothingness();
-        StackIndex stackIndex = 0;
+        StackIndex stackIndex = StackIndex(0);
         unsigned int initialized = 0;
         InstructionCount initPosition;
 
@@ -77,7 +77,7 @@ public:
         auto typeSize = declarationType.size();
         scope.size += typeSize;
         var.type = declarationType;
-        var.stackIndex = reserveVariable(typeSize);
+        var.stackIndex = StackIndex(reserveVariable(typeSize));
         return var;
     }
 

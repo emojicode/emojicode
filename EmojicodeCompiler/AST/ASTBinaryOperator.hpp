@@ -24,7 +24,7 @@ public:
     void toCode(std::stringstream &stream) const override;
 private:
     struct BuiltIn {
-        BuiltIn(Type type) : returnType(std::move(type)), swap(false) {}
+        explicit BuiltIn(Type type) : returnType(std::move(type)), swap(false) {}
         BuiltIn(Type type, bool swap) : returnType(std::move(type)), swap(swap) {}
         Type returnType;
         bool swap;

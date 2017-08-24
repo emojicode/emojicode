@@ -106,8 +106,8 @@ void Class::prepareForSemanticAnalysis() {
                 return a.identicalTo(protocol, classType, nullptr);
             });
             if (find != protocols_.end()) {
-                throw CompilerError(position(), "Superclass already declared conformance to %s.",
-                                    protocol.toString(classType).c_str());
+                throw CompilerError(position(), "Superclass already declared conformance to ",
+                                    protocol.toString(classType), ".");
             }
             protocols_.emplace_back(protocol);
         }
@@ -150,14 +150,15 @@ void Class::checkOverride(Function *function) {
     auto superFunction = findSuperFunction(function);
     if (function->overriding()) {
         if (superFunction == nullptr || superFunction->accessLevel() == AccessLevel::Private) {
-            throw CompilerError(function->position(), "%s was declared ✒️ but does not override anything.",
-                                utf8(function->name()).c_str());
+            throw CompilerError(function->position(), utf8(function->name()),
+                                " was declared ✒️ but does not override anything.");
         }
         function->enforcePromises(superFunction, Type(this, false), Type(superclass(), false),
                                   std::experimental::nullopt);
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
-        throw CompilerError(function->position(), "If you want to override %s add ✒️.", utf8(function->name()).c_str());
+        throw CompilerError(function->position(), "If you want to override ", utf8(function->name()),
+                            " add ✒️.");
     }
 }
 

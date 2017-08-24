@@ -84,9 +84,8 @@ Type ASTThis::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
         throw CompilerError(position(), "Attempt to use 🐕 before superinitializer call.");
     }
     if (isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-        analyser->scoper().instanceScope()->initializerUnintializedVariablesCheck(position(),
-                                                                       "Instance variable \"%s\" must be "
-                                                                       "initialized before the use of 🐕.");
+        analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"",
+                                                                       "\" must be initialized before using 🐕.");
     }
 
     if (!isSelfAllowed(analyser->function()->functionType())) {

@@ -13,8 +13,8 @@
 
 #include "../EmojicodeShared.h"
 #include "Emojis.h"
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace EmojicodeCompiler {
 
@@ -49,20 +49,20 @@ std::string utf8(const std::u32string &s);
 void compilerWarning(const SourcePosition &p, const std::string &warning);
 
 template<typename Head>
-void compilerWarning(std::stringstream &stream, Head head) {
+void appendToStream(std::stringstream &stream, Head head) {
     stream << head;
 }
 
 template<typename Head, typename... Args>
-void compilerWarning(std::stringstream &stream, Head head, Args... args) {
+void appendToStream(std::stringstream &stream, Head head, Args... args) {
     stream << head;
-    compilerWarning(stream, args...);
+    appendToStream(stream, args...);
 }
 
 template<typename... Args>
 void compilerWarning(const SourcePosition &p, Args... args) {
     std::stringstream stream;
-    compilerWarning(stream, args...);
+    appendToStream(stream, args...);
     compilerWarning(p, stream.str());
 }
 

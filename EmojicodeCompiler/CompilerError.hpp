@@ -9,19 +9,27 @@
 #ifndef CompilerError_hpp
 #define CompilerError_hpp
 
+#include "EmojicodeCompiler.hpp"
 #include "Lex/SourcePosition.hpp"
 #include <exception>
+#include <sstream>
 
 namespace EmojicodeCompiler {
 
 class CompilerError: public std::exception {
 public:
-    CompilerError(SourcePosition p, const char *err, ...);
+    template<typename... Args>
+    CompilerError(SourcePosition p, Args... args) : position_(std::move(p)) {
+        std::stringstream stream;
+        appendToStream(stream, args...);
+        message_ = stream.str();
+    }
+
     const SourcePosition& position() const { return position_; }
-    const char* error() const { return error_; }
+    const std::string& message() const { return message_; }
 private:
     SourcePosition position_;
-    char error_[450];
+    std::string message_;
 };
 
 }  // namespace EmojicodeCompiler

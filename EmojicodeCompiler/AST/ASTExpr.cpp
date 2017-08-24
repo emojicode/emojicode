@@ -61,7 +61,7 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     }
     else if (!type.compatibleTo(originalType, analyser->typeContext())) {
         auto typeString = type.toString(analyser->typeContext());
-        throw CompilerError(position(), "Cast to unrelated type %s will always fail.", typeString.c_str());
+        throw CompilerError(position(), "Cast to unrelated type ", typeString," will always fail.");
     }
 
     if (type.type() == TypeType::Class) {
@@ -96,7 +96,7 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     }
     else {
         auto typeString = type.toString(analyser->typeContext());
-        throw CompilerError(position(), "You cannot cast to %s.", typeString.c_str());
+        throw CompilerError(position(), "You cannot cast to ", typeString, ".");
     }
 
     type.setOptional(true);
@@ -167,8 +167,7 @@ Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
         valueType_ = true;
     }
     else {
-        throw CompilerError(position(), "You can’t call type methods on %s.",
-                            type.toString(analyser->typeContext()).c_str());
+        throw CompilerError(position(), "You can’t call type methods on ", type.toString(analyser->typeContext()), ".");
     }
     return analyser->analyseFunctionCall(&args_, type, method);
 }

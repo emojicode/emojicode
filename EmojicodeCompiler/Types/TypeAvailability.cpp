@@ -13,7 +13,7 @@ namespace EmojicodeCompiler {
 
 void notStaticError(TypeAvailability t, const SourcePosition &p, const char *name) {
     if (!isStatic(t)) {
-        throw CompilerError(p, "%s cannot be used dynamically.", name);
+        throw CompilerError(p, name, " cannot be used dynamically.");
     }
 }
 

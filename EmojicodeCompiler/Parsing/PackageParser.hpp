@@ -61,7 +61,7 @@ public:
     bool set() const { return set_; }
     void disallow() const {
         if (set_) {
-            throw CompilerError(position_, "Inapplicable attribute %s.", utf8(std::u32string(1, attributeName)).c_str());
+            throw CompilerError(position_, "Inapplicable attribute ", utf8(std::u32string(1, attributeName)), ".");
         }
     }
 private:

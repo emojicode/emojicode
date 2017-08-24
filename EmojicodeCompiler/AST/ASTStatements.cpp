@@ -95,9 +95,8 @@ void ASTSuperinitializer::analyse(SemanticAnalyser *analyser) {
         throw CompilerError(position(), "Superinitializer might have already been called.");
     }
 
-    analyser->scoper().instanceScope()->initializerUnintializedVariablesCheck(position(),
-                                                                   "Instance variable \"%s\" must be "
-                                                                   "initialized before superinitializer.");
+    analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"", "\" must be "
+                                                                   "initialized before calling the superinitializer.");
 
     Class *eclass = analyser->typeContext().calleeType().eclass();
     auto initializer = eclass->superclass()->getInitializer(name_, Type(eclass, false),

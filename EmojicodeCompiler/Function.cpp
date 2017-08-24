@@ -30,21 +30,20 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
                                std::experimental::optional<TypeContext> protocol) {
     try {
         if (super->final()) {
-            throw CompilerError(position(), "%s’s implementation of %s was marked 🔏.",
-                                superSource.toString(typeContext).c_str(), utf8(name()).c_str());
+            throw CompilerError(position(), superSource.toString(typeContext), "’s implementation of ", utf8(name()),
+                                " was marked 🔏.");
         }
         if (this->accessLevel() != super->accessLevel()) {
-            throw CompilerError(position(), "Access level of %s’s implementation of %s doesn‘t match.",
-                                superSource.toString(typeContext).c_str(), utf8(name()).c_str());
+            throw CompilerError(position(), "Access level of ", superSource.toString(typeContext),
+                                "’s implementation of, ", utf8(name()), ", doesn‘t match.");
         }
 
         auto superReturnType = protocol ? super->returnType.resolveOn(*protocol, false) : super->returnType;
         if (!returnType.resolveOn(typeContext).compatibleTo(superReturnType, typeContext)) {
             auto supername = superReturnType.toString(typeContext);
             auto thisname = returnType.toString(typeContext);
-            throw CompilerError(position(), "Return type %s of %s is not compatible to the return type defined in %s.",
-                                returnType.toString(typeContext).c_str(), utf8(name()).c_str(),
-                                superSource.toString(typeContext).c_str());
+            throw CompilerError(position(), "Return type ", returnType.toString(typeContext), " of ", utf8(name()),
+                                " is not compatible to the return type defined in ", superSource.toString(typeContext));
         }
         if (superReturnType.storageType() == StorageType::Box && !protocol) {
             returnType.forceBox();
@@ -66,15 +65,14 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
             if (!superArgumentType.compatibleTo(arguments[i].type.resolveOn(typeContext), typeContext)) {
                 auto supertype = superArgumentType.toString(typeContext);
                 auto thisname = arguments[i].type.toString(typeContext);
-                throw CompilerError(position(),
-                                    "Type %s of argument %d is not compatible with its %s argument type %s.",
-                                    thisname.c_str(), i + 1, supertype.c_str());
+                throw CompilerError(position(), "Type ", thisname, " of argument ", i + 1,
+                                    " is not compatible with its ", thisname, " argument type ", supertype, ".");
             }
             if (arguments[i].type.resolveOn(typeContext).storageType() != superArgumentType.storageType()) {
                 if (protocol) {
                     return false;
                 }
-                throw CompilerError(position(), "Argument %d and super argument are storage incompatible.", i + 1);
+                throw CompilerError(position(), "Argument ", i + 1, " and super argument are storage incompatible.");
             }
         }
     }
@@ -87,11 +85,11 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
 void Function::deprecatedWarning(const SourcePosition &p) const {
     if (deprecated()) {
         if (!documentation().empty()) {
-            compilerWarning(p, "%s is deprecated. Please refer to the documentation for further information:\n%s",
-                            utf8(name()).c_str(), utf8(documentation()).c_str());
+            compilerWarning(p, utf8(name()), " is deprecated. Please refer to the "\
+                            "documentation for further information: ", utf8(documentation()));
         }
         else {
-            compilerWarning(p, "%s is deprecated.", utf8(name()).c_str());
+            compilerWarning(p, utf8(name()), " is deprecated.");
         }
     }
 }

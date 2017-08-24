@@ -10,8 +10,8 @@
 #define ASTProxyExpr_hpp
 
 #include "ASTExpr.hpp"
-#include <sstream>
 #include <functional>
+#include <sstream>
 
 namespace EmojicodeCompiler {
 
