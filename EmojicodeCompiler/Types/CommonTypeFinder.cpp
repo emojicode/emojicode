@@ -23,6 +23,11 @@ void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext)
         return;
     }
 
+    updateCommonType(type, typeContext);
+    updateCommonProtocols(type, typeContext);
+}
+
+void CommonTypeFinder::updateCommonType(const Type &type, const TypeContext &typeContext) {
     if (!type.compatibleTo(commonType_, typeContext)) {
         if (commonType_.compatibleTo(type, typeContext)) {
             commonType_ = type;
@@ -34,7 +39,9 @@ void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext)
             commonType_ = Type::something();
         }
     }
+}
 
+void CommonTypeFinder::updateCommonProtocols(const Type &type, const TypeContext &typeContext) {
     if (!commonProtocols_.empty()) {
         if (!type.canHaveProtocol()) {
             commonProtocols_.clear();

@@ -19,7 +19,7 @@ namespace EmojicodeCompiler {
 class CompilerError: public std::exception {
 public:
     template<typename... Args>
-    CompilerError(SourcePosition p, Args... args) : position_(std::move(p)) {
+    explicit CompilerError(SourcePosition p, Args... args) : position_(std::move(p)) {
         std::stringstream stream;
         appendToStream(stream, args...);
         message_ = stream.str();

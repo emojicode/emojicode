@@ -22,6 +22,8 @@ public:
     /** Returns the common type and issues a warning at @c warningToken if the common type is ambigious. */
     Type getCommonType(const SourcePosition &p) const;
 private:
+    void updateCommonProtocols(const Type &type, const TypeContext &typeContext);
+    void updateCommonType(const Type &type, const TypeContext &typeContext);
     bool firstTypeFound_ = false;
     Type commonType_ = Type::something();
     std::vector<Type> commonProtocols_;

@@ -211,6 +211,6 @@ void TypeBodyParser::parse() {
     stream_.consumeToken(TokenType::Identifier);
 }
 
-TypeBodyParser::~TypeBodyParser() {}
+TypeBodyParser::~TypeBodyParser() = default;
 
 }  // namespace EmojicodeCompiler
