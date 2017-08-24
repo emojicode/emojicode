@@ -12,7 +12,7 @@
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Types/ValueType.hpp"
 #include "Package.hpp"
-#include "PackageParser.hpp"
+#include "DocumentParser.hpp"
 #include <algorithm>
 #include <cstring>
 #include <iostream>
@@ -24,7 +24,7 @@ namespace EmojicodeCompiler {
 
 Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::nothingness();
-    _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::Class) {
         throw CompilerError(errorPosition, "s package class ", utf8(name), " is missing.");
     }
@@ -33,7 +33,7 @@ Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosi
 
 Protocol* getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::nothingness();
-    _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::Protocol) {
         throw CompilerError(errorPosition, "s package protocol ", utf8(name), " is missing.");
     }
@@ -43,7 +43,7 @@ Protocol* getStandardProtocol(const std::u32string &name, Package *_, const Sour
 ValueType* getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition,
                                 unsigned int boxId) {
     Type type = Type::nothingness();
-    _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::ValueType) {
         throw CompilerError(errorPosition, "s package value type ", utf8(name), " is missing.");
     }
@@ -106,7 +106,7 @@ void Package::compile() {
 void Package::parse() {
     packages_.emplace(name(), this);
 
-    PackageParser(this, Lexer::lexFile(mainFile_)).parse();
+    DocumentParser(this, Lexer::lexFile(mainFile_)).parse();
 
     if (!validVersion()) {
         throw CompilerError(position(), "Package ", name(), " does not provide a valid version.");
@@ -166,17 +166,21 @@ Package* Package::findPackage(const std::string &name) {
     return it != packages_.end() ? it->second : nullptr;
 }
 
-bool Package::fetchRawType(TypeIdentifier ptn, bool optional, Type *type) {
-    return fetchRawType(ptn.name, ptn.ns, optional, ptn.position, type);
+Type Package::getRawType(const TypeIdentifier &typeId, bool optional) const {
+    auto type = Type::nothingness();
+    if (!lookupRawType(typeId, optional, &type)) {
+        throw CompilerError(typeId.position, "Could not find a type named ", utf8(typeId.name), " in namespace ",
+                            utf8(typeId.ns), ".");
+    }
+    return type;
 }
 
-bool Package::fetchRawType(const std::u32string &name, const std::u32string &ns, bool optional,
-                           const SourcePosition &p, Type *type) {
-    if (ns == kDefaultNamespace && ns.size() == 1) {
-        switch (name.front()) {
+bool Package::lookupRawType(const TypeIdentifier &typeId, bool optional, Type *type) const {
+    if (typeId.ns == kDefaultNamespace && typeId.ns.size() == 1) {
+        switch (typeId.name.front()) {
             case E_MEDIUM_WHITE_CIRCLE:
                 if (optional) {
-                    throw CompilerError(p, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
+                    throw CompilerError(typeId.position, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
                 }
                 *type = Type::something();
                 return true;
@@ -184,11 +188,11 @@ bool Package::fetchRawType(const std::u32string &name, const std::u32string &ns,
                 *type = Type::someobject(optional);
                 return true;
             case E_SPARKLES:
-                throw CompilerError(p, "The Nothingness type may not be referenced to.");
+                throw CompilerError(typeId.position, "The Nothingness type may not be referenced to.");
         }
     }
 
-    std::u32string key = ns + name;
+    std::u32string key = typeId.ns + typeId.name;
     auto it = types_.find(key);
 
     if (it != types_.end()) {
@@ -225,7 +229,7 @@ void Package::offerType(Type t, const std::u32string &name, const std::u32string
 void Package::loadInto(Package *destinationPackage, const std::u32string &ns, const SourcePosition &p) const {
     for (auto exported : exportedTypes_) {
         Type type = Type::nothingness();
-        if (destinationPackage->fetchRawType(exported.name, ns, false, p, &type)) {
+        if (destinationPackage->lookupRawType(TypeIdentifier(exported.name, ns, p), false, &type)) {
             throw CompilerError(p, "Package ", name() , " could not be loaded into namespace ", utf8(ns),
                                 " of package ", destinationPackage->name(), ": ", utf8(exported.name),
                                 " collides with a type of the same name in the same namespace.");

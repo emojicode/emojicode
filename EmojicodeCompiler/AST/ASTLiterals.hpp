@@ -10,7 +10,6 @@
 #define ASTLiterals_hpp
 
 #include <utility>
-
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {

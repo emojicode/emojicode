@@ -136,15 +136,9 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
         return t;
     }
     else {
-        auto parsedType = parseTypeIdentifier();
-
-        auto type = Type::nothingness();
-        if (!package_->fetchRawType(parsedType, optional, &type)) {
-            throw CompilerError(parsedType.position, "Could not find type ", utf8(parsedType.name), " in namespace ",
-                                utf8(parsedType.ns), ".");
-        }
-
-        parseGenericArgumentsForType(&type, typeContext, dynamism, parsedType.position);
+        auto parsedTypeIdentifier = parseTypeIdentifier();
+        auto type = package_->getRawType(parsedTypeIdentifier, optional);
+        parseGenericArgumentsForType(&type, typeContext, dynamism, parsedTypeIdentifier.position);
         return type;
     }
 }

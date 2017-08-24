@@ -117,11 +117,11 @@ public:
 
     /// Tries to fetch a type by its name and namespace from the namespace and types available in this package and
     /// stores it into @c type.
+    /// @note This method returns a “raw” type, i.e. a type without generic arguments.
     /// @returns Whether the type could be found or not. @c type is untouched if @c false was returned.
-    bool fetchRawType(const std::u32string &name, const std::u32string &ns, bool optional, const SourcePosition &p,
-                      Type *type);
-    /// Calls fetchRawType() with the contents of the TypeIdentifier
-    bool fetchRawType(TypeIdentifier ptn, bool optional, Type *type);
+    bool lookupRawType(const TypeIdentifier &typeId, bool optional, Type *type) const;
+    /// Like lookupRawType() but throws a CompilerError if the type cannot be found.
+    Type getRawType(const TypeIdentifier &typeId, bool optional) const;
 private:
     void loadInto(Package *destinationPackage, const std::u32string &ns, const SourcePosition &p) const;
     /// Verifies that no type with name @c name has already been exported and adds the type to ::exportedTypes_

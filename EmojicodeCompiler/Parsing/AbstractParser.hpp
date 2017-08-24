@@ -18,6 +18,29 @@ namespace EmojicodeCompiler {
 class Function;
 class Package;
 
+class Documentation {
+public:
+    Documentation& parse(TokenStream *tokenStream) {
+        if (tokenStream->nextTokenIs(TokenType::DocumentationComment)) {
+            auto &token = tokenStream->consumeToken(TokenType::DocumentationComment);
+            position_ = token.position();
+            documentation_ = token.value();
+            found_ = true;
+        }
+        return *this;
+    }
+    const std::u32string& get() const { return documentation_; }
+    void disallow() const {
+        if (found_) {
+            throw CompilerError(position_, "Misplaced documentation token.");
+        }
+    }
+private:
+    std::u32string documentation_;
+    bool found_ = false;
+    SourcePosition position_ = SourcePosition(0, 0, "");
+};
+
 struct TypeIdentifier {
     TypeIdentifier(std::u32string name, std::u32string ns, SourcePosition p)
     : name(std::move(name)), ns(std::move(ns)), position(std::move(p)) {}

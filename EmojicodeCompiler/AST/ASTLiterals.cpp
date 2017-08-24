@@ -12,6 +12,7 @@
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Generation/StringPool.hpp"
 #include "../Types/TypeExpectation.hpp"
+#include "../Parsing/AbstractParser.hpp"
 #include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
@@ -154,8 +155,8 @@ void ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Type ASTConcatenateLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    analyser->function()->package()->fetchRawType(std::u32string(1, 0x1F520), kDefaultNamespace,
-                                                  false, position(), &type_);
+    type_ = analyser->function()->package()->getRawType(TypeIdentifier(std::u32string(1, 0x1F520), kDefaultNamespace,
+                                                                       position()), false);
 
     analyser->scoper().pushTemporaryScope();
     auto variable = analyser->scoper().currentScope().declareInternalVariable(type_, position());

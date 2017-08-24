@@ -30,7 +30,7 @@
 		E460A5A61F30EFA2006E3AC7 /* ASTNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5581F30EFA2006E3AC7 /* ASTNode.cpp */; };
 		E460A5A81F30EFA2006E3AC7 /* FunctionParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A55C1F30EFA2006E3AC7 /* FunctionParser.cpp */; };
 		E460A5A91F30EFA2006E3AC7 /* Package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A55E1F30EFA2006E3AC7 /* Package.cpp */; };
-		E460A5AA1F30EFA2006E3AC7 /* PackageParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5601F30EFA2006E3AC7 /* PackageParser.cpp */; };
+		E460A5AA1F30EFA2006E3AC7 /* DocumentParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5601F30EFA2006E3AC7 /* DocumentParser.cpp */; };
 		E460A5AB1F30EFA2006E3AC7 /* SemanticScoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5631F30EFA2006E3AC7 /* SemanticScoper.cpp */; };
 		E460A5AC1F30EFA2006E3AC7 /* CapturingSemanticScoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5651F30EFA2006E3AC7 /* CapturingSemanticScoper.cpp */; };
 		E460A5AD1F30EFA2006E3AC7 /* Scope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5671F30EFA2006E3AC7 /* Scope.cpp */; };
@@ -55,6 +55,8 @@
 		E47838D41F41E34D007B937C /* STIProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47838D21F41E34D007B937C /* STIProvider.cpp */; };
 		E47838D71F41EA4D007B937C /* ProtocolFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47838D51F41EA4D007B937C /* ProtocolFunction.cpp */; };
 		E47838DA1F41F9A6007B937C /* BoxingLayerBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47838D81F41F9A6007B937C /* BoxingLayerBuilder.cpp */; };
+		E47891091F4EEA3A008DCB24 /* TypeBodyParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47891071F4EEA3A008DCB24 /* TypeBodyParser.cpp */; };
+		E478910C1F4EFD9C008DCB24 /* AttributesParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E478910A1F4EFD9C008DCB24 /* AttributesParser.cpp */; };
 		E48356891F33866F000B80AE /* ASTExpr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356871F33866F000B80AE /* ASTExpr.cpp */; };
 		E483568C1F349807000B80AE /* ASTStatements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E483568A1F349807000B80AE /* ASTStatements.cpp */; };
 		E483568F1F34A51C000B80AE /* OperatorHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E483568D1F34A51C000B80AE /* OperatorHelper.cpp */; };
@@ -163,8 +165,8 @@
 		E460A55D1F30EFA2006E3AC7 /* FunctionParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FunctionParser.hpp; sourceTree = "<group>"; };
 		E460A55E1F30EFA2006E3AC7 /* Package.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cpp; sourceTree = "<group>"; };
 		E460A55F1F30EFA2006E3AC7 /* Package.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Package.hpp; sourceTree = "<group>"; };
-		E460A5601F30EFA2006E3AC7 /* PackageParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PackageParser.cpp; sourceTree = "<group>"; };
-		E460A5611F30EFA2006E3AC7 /* PackageParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PackageParser.hpp; sourceTree = "<group>"; };
+		E460A5601F30EFA2006E3AC7 /* DocumentParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DocumentParser.cpp; sourceTree = "<group>"; };
+		E460A5611F30EFA2006E3AC7 /* DocumentParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DocumentParser.hpp; sourceTree = "<group>"; };
 		E460A5631F30EFA2006E3AC7 /* SemanticScoper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SemanticScoper.cpp; sourceTree = "<group>"; };
 		E460A5641F30EFA2006E3AC7 /* SemanticScoper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SemanticScoper.hpp; sourceTree = "<group>"; };
 		E460A5651F30EFA2006E3AC7 /* CapturingSemanticScoper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CapturingSemanticScoper.cpp; sourceTree = "<group>"; };
@@ -218,6 +220,10 @@
 		E47838D61F41EA4D007B937C /* ProtocolFunction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ProtocolFunction.hpp; sourceTree = "<group>"; };
 		E47838D81F41F9A6007B937C /* BoxingLayerBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxingLayerBuilder.cpp; sourceTree = "<group>"; };
 		E47838D91F41F9A6007B937C /* BoxingLayerBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BoxingLayerBuilder.hpp; sourceTree = "<group>"; };
+		E47891071F4EEA3A008DCB24 /* TypeBodyParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypeBodyParser.cpp; sourceTree = "<group>"; };
+		E47891081F4EEA3A008DCB24 /* TypeBodyParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TypeBodyParser.hpp; sourceTree = "<group>"; };
+		E478910A1F4EFD9C008DCB24 /* AttributesParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AttributesParser.cpp; sourceTree = "<group>"; };
+		E478910B1F4EFD9C008DCB24 /* AttributesParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AttributesParser.hpp; sourceTree = "<group>"; };
 		E48356871F33866F000B80AE /* ASTExpr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASTExpr.cpp; sourceTree = "<group>"; };
 		E48356881F33866F000B80AE /* ASTExpr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTExpr.hpp; sourceTree = "<group>"; };
 		E483568A1F349807000B80AE /* ASTStatements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASTStatements.cpp; sourceTree = "<group>"; };
@@ -410,10 +416,14 @@
 				E460A5571F30EFA2006E3AC7 /* AbstractParser.hpp */,
 				E460A55C1F30EFA2006E3AC7 /* FunctionParser.cpp */,
 				E460A55D1F30EFA2006E3AC7 /* FunctionParser.hpp */,
+				E47891071F4EEA3A008DCB24 /* TypeBodyParser.cpp */,
+				E47891081F4EEA3A008DCB24 /* TypeBodyParser.hpp */,
 				E460A55E1F30EFA2006E3AC7 /* Package.cpp */,
 				E460A55F1F30EFA2006E3AC7 /* Package.hpp */,
-				E460A5601F30EFA2006E3AC7 /* PackageParser.cpp */,
-				E460A5611F30EFA2006E3AC7 /* PackageParser.hpp */,
+				E460A5601F30EFA2006E3AC7 /* DocumentParser.cpp */,
+				E460A5611F30EFA2006E3AC7 /* DocumentParser.hpp */,
+				E478910A1F4EFD9C008DCB24 /* AttributesParser.cpp */,
+				E478910B1F4EFD9C008DCB24 /* AttributesParser.hpp */,
 			);
 			path = Parsing;
 			sourceTree = "<group>";
@@ -685,12 +695,13 @@
 				E48356A41F35B6A7000B80AE /* ASTBoxing.cpp in Sources */,
 				E460A5A11F30EFA2006E3AC7 /* EmojiTokenization.cpp in Sources */,
 				E48356AE1F3713FB000B80AE /* FnCodeGenerator.cpp in Sources */,
+				E478910C1F4EFD9C008DCB24 /* AttributesParser.cpp in Sources */,
 				E460A5B81F30EFA2006E3AC7 /* TypeContext.cpp in Sources */,
 				E460A5AB1F30EFA2006E3AC7 /* SemanticScoper.cpp in Sources */,
 				E460A5991F30EFA2006E3AC7 /* PathAnalyser.cpp in Sources */,
 				E4969EBC1F30F1CF002DF345 /* CommonTypeFinder.cpp in Sources */,
 				E460A5B71F30EFA2006E3AC7 /* TypeAvailability.cpp in Sources */,
-				E460A5AA1F30EFA2006E3AC7 /* PackageParser.cpp in Sources */,
+				E460A5AA1F30EFA2006E3AC7 /* DocumentParser.cpp in Sources */,
 				E460A5A31F30EFA2006E3AC7 /* Token.cpp in Sources */,
 				E48356981F34CDBB000B80AE /* ASTTypeExpr.cpp in Sources */,
 				E460A5AC1F30EFA2006E3AC7 /* CapturingSemanticScoper.cpp in Sources */,
@@ -704,6 +715,7 @@
 				E483569F1F34D8BE000B80AE /* ASTBinaryOperator.cpp in Sources */,
 				E460A5A01F30EFA2006E3AC7 /* Writer.cpp in Sources */,
 				E460A5BB1F30EFA2006E3AC7 /* TypeExpectation.cpp in Sources */,
+				E47891091F4EEA3A008DCB24 /* TypeBodyParser.cpp in Sources */,
 				E460A5AD1F30EFA2006E3AC7 /* Scope.cpp in Sources */,
 				E47838D41F41E34D007B937C /* STIProvider.cpp in Sources */,
 				E48356891F33866F000B80AE /* ASTExpr.cpp in Sources */,
