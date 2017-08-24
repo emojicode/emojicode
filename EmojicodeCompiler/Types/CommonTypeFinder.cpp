@@ -66,7 +66,7 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p) const {
         if (commonProtocols_.size() == 1) {
             return commonProtocols_.front();
         }
-        compilerWarning(p, "Common type was inferred to be %s.", commonType_.toString(Type::nothingness()).c_str());
+        compilerWarning(p, "Common type was inferred to be ", commonType_.toString(Type::nothingness()), ".");
     }
     return commonType_;
 }

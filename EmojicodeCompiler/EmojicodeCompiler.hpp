@@ -14,6 +14,7 @@
 #include "../EmojicodeShared.h"
 #include "Emojis.h"
 #include <string>
+#include <sstream>
 
 namespace EmojicodeCompiler {
 
@@ -45,7 +46,26 @@ extern ValueType *VT_DOUBLE;
 std::string utf8(const std::u32string &s);
 
 /** Issues a compiler warning. The compilation is continued afterwards. */
-void compilerWarning(const SourcePosition &p, const char *err, ...);
+void compilerWarning(const SourcePosition &p, const std::string &warning);
+
+template<typename Head>
+void compilerWarning(std::stringstream &stream, Head head) {
+    stream << head;
+}
+
+template<typename Head, typename... Args>
+void compilerWarning(std::stringstream &stream, Head head, Args... args) {
+    stream << head;
+    compilerWarning(stream, args...);
+}
+
+template<typename... Args>
+void compilerWarning(const SourcePosition &p, Args... args) {
+    std::stringstream stream;
+    compilerWarning(stream, args...);
+    compilerWarning(p, stream.str());
+}
+
 /** Prints the given error and stores that an error was raised during compilation. */
 void printError(const CompilerError &ce);
 /** Prints the string as escaped JSON string to the given file. */

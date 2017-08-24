@@ -184,8 +184,8 @@ void TypeDefinition::prepareForSemanticAnalysis() {
     }
 
     if (!instanceVariables_.empty() && initializerList_.empty()) {
-        compilerWarning(position(), "Type defines %d instances variables but has no initializers.",
-                        instanceVariables_.size());
+        compilerWarning(position(), "Type defines ", instanceVariables_.size(),
+                        " instances variables but has no initializers.");
     }
 }
 

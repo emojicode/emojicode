@@ -90,27 +90,19 @@ void printError(const CompilerError &ce) {
     printedErrorOrWarning = true;
 }
 
-void compilerWarning(const SourcePosition &p, const char *err, ...) {
-    va_list list;
-    va_start(list, err);
-
-    char error[450];
-    vsprintf(error, err, list);
-
+void compilerWarning(const SourcePosition &p, const std::string &warning) {
     if (outputJSON) {
         fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":",
                 printedErrorOrWarning ? ",": "", p.line, p.character);
         printJSONStringToFile(p.file.c_str(), stderr);
         fprintf(stderr, ", \"message\":");
-        printJSONStringToFile(error, stderr);
+        printJSONStringToFile(warning.c_str(), stderr);
         fprintf(stderr, "}\n");
     }
     else {
-        fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", p.line, p.character, p.file.c_str(), error);
+        fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", p.line, p.character, p.file.c_str(), warning.c_str());
     }
     printedErrorOrWarning = true;
-
-    va_end(list);
 }
 
 } // namespace EmojicodeCompiler

@@ -70,9 +70,8 @@ void Scope::recommendFrozenVariables() const {
     for (auto &it : map_) {
         const Variable &cv = it.second;
         if (!cv.frozen() && !cv.mutated()) {
-            compilerWarning(cv.position(),
-                            "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.",
-                            utf8(cv.name()).c_str());
+            compilerWarning(cv.position(), "Variable \"", utf8(cv.name()),
+                            "\" was never mutated; consider making it a frozen 🍦 variable.");
         }
     }
 }
