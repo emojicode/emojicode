@@ -9,7 +9,6 @@
 #ifndef PackageParser_hpp
 #define PackageParser_hpp
 
-#include "../../utf8.h"
 #include "../CompilerError.hpp"
 #include "../Lex/Lexer.hpp"
 #include "AbstractParser.hpp"
@@ -35,21 +34,21 @@ private:
     void parseGenericArgumentList(TypeDefinition *typeDef, const TypeContext& tc);
     
     /** Parses a class definition, starting from the first token after 🐇. */
-    void parseClass(const EmojicodeString &documentation, const Token &theToken, bool exported, bool final);
+    void parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final);
     /** Parses a enum defintion, starting from the first token after 🦃. */
-    void parseEnum(const EmojicodeString &documentation, const Token &theToken, bool exported);
+    void parseEnum(const std::u32string &documentation, const Token &theToken, bool exported);
     /** Parses a protocol defintion, starting from the first token after🐊. */
-    void parseProtocol(const EmojicodeString &documentation, const Token &theToken, bool exported);
+    void parseProtocol(const std::u32string &documentation, const Token &theToken, bool exported);
     /** Parses a value type definition, starting from the first token after 🕊. */
-    void parseValueType(const EmojicodeString &documentation, const Token &theToken, bool exported);
+    void parseValueType(const std::u32string &documentation, const Token &theToken, bool exported);
 
     void parseFunction(Function *function);
     
     /** Parses the body of a TypeDefinitionFunctional type. */
-    void parseTypeDefinitionBody(const Type &typed, std::set<EmojicodeString> *requiredInitializers);
+    void parseTypeDefinitionBody(const Type &typed, std::set<std::u32string> *requiredInitializers);
 };
 
-template<EmojicodeChar attributeName>
+template<char32_t attributeName>
 class Attribute {
 public:
     Attribute& parse(TokenStream *tokenStream) {
@@ -62,8 +61,7 @@ public:
     bool set() const { return set_; }
     void disallow() const {
         if (set_) {
-            throw CompilerError(position_, "Inapplicable attribute %s.",
-                                         EmojicodeString(attributeName).utf8().c_str());
+            throw CompilerError(position_, "Inapplicable attribute %s.", utf8(std::u32string(1, attributeName)).c_str());
         }
     }
 private:
@@ -82,14 +80,14 @@ public:
         }
         return *this;
     }
-    const EmojicodeString& get() const { return documentation_; }
+    const std::u32string& get() const { return documentation_; }
     void disallow() const {
         if (found_) {
             throw CompilerError(position_, "Misplaced documentation token.");
         }
     }
 private:
-    EmojicodeString documentation_;
+    std::u32string documentation_;
     bool found_ = false;
     SourcePosition position_ = SourcePosition(0, 0, "");
 };

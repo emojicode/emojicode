@@ -11,9 +11,6 @@
 
 #include <cstdint>
 
-/// A Unicode codepoint
-using EmojicodeChar = uint32_t;
-
 /// A byte-code instruction
 using EmojicodeInstruction = uint32_t;
 
@@ -34,7 +31,7 @@ using EmojicodeInstruction = uint32_t;
 #define REMOTE_MASK (1 << 31)
 
 /// @returns True if @c c is a whitespace character. See http://www.unicode.org/Public/6.3.0/ucd/PropList.txt
-inline bool isWhitespace(EmojicodeChar c) {
+inline bool isWhitespace(char32_t c) {
     return (0x9 <= c && c <= 0xD) || c == 0x20 || c == 0x85 || c == 0xA0 || c == 0x1680 || (0x2000 <= c && c <= 0x200A)
     || c == 0x2028 || c== 0x2029 || c == 0x2029 || c == 0x202F || c == 0x205F || c == 0x3000 || c == 0xFE0F;
 }

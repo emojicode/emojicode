@@ -25,7 +25,7 @@ TypeIdentifier AbstractParser::parseTypeIdentifier() {
         throw CompilerError(stream_.consumeToken().position(), "Unexpected 🍬.");
     }
 
-    EmojicodeString enamespace;
+    std::u32string enamespace;
 
     if (stream_.consumeTokenIf(E_ORANGE_TRIANGLE)) {
         enamespace = stream_.consumeToken(TokenType::Identifier).value();
@@ -81,7 +81,7 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
         }
 
         throw CompilerError(variableToken.position(), "No such generic type variable \"%s\".",
-                            variableToken.value().utf8().c_str());
+                            utf8(variableToken.value()).c_str());
     }
     else if (stream_.nextTokenIs(E_DOG)) {
         auto &selfToken = stream_.consumeToken(TokenType::Identifier);
@@ -141,7 +141,7 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
         auto type = Type::nothingness();
         if (!package_->fetchRawType(parsedType, optional, &type)) {
             throw CompilerError(parsedType.position, "Could not find type %s in enamespace %s.",
-                                parsedType.name.utf8().c_str(), parsedType.ns.utf8().c_str());
+                                utf8(parsedType.name).c_str(), utf8(parsedType.ns).c_str());
         }
 
         parseGenericArgumentsForType(&type, typeContext, dynamism, parsedType.position);
@@ -242,7 +242,7 @@ void AbstractParser::parseGenericArgumentsInDefinition(Function *function, const
             throw CompilerError(variable.position(),
                                 "A generic argument variable with the same name is already in use.");
         }
-        function->genericArgumentVariables.insert(std::map<EmojicodeString, Type>::value_type(variable.value(), rType));
+        function->genericArgumentVariables.insert(std::map<std::u32string, Type>::value_type(variable.value(), rType));
     }
 }
 

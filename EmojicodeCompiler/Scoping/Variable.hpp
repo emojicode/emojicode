@@ -22,13 +22,13 @@ class CapturingSemanticScoper;
 class Variable {
     friend CapturingSemanticScoper;
 public:
-    Variable(Type type, VariableID id, bool frozen, EmojicodeString string, SourcePosition p)
+    Variable(Type type, VariableID id, bool frozen, std::u32string string, SourcePosition p)
         : type_(std::move(type)), frozen_(frozen), string_(std::move(string)), id_(id), position_(std::move(p)) {}
     /// The type of the variable.
     const Type type() const { return type_; }
 
     /// The name of this variable.
-    const EmojicodeString& name() const { return string_; }
+    const std::u32string& name() const { return string_; }
 
     /// The position at which this variable was defined
     const SourcePosition& position() const { return position_; }
@@ -61,8 +61,8 @@ public:
         }
     }
     void uninitialize() { initialized_ = 0; }
-    void popInitializationLevel() { if (initialized()) initialized_--; }
-    void pushInitializationLevel() { if (initialized()) initialized_++; }
+    void popInitializationLevel() { if (initialized()) { initialized_--; } }
+    void pushInitializationLevel() { if (initialized()) { initialized_++; } }
 
     /// Whether the variable is initialized.
     bool initialized() const { return initialized_ > 0; }
@@ -74,7 +74,7 @@ private:
     bool frozen_;
     bool mutated_ = false;
     bool inherited_ = false;
-    EmojicodeString string_;
+    std::u32string string_;
     int initialized_ = 0;
     VariableID id_;
 

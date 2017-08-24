@@ -7,7 +7,7 @@
 //
 
 #include "standard.hpp"
-#include "../utf8.h"
+#include "utf8.h"
 #include "Dictionary.hpp"
 #include "Engine.hpp"
 #include "List.hpp"

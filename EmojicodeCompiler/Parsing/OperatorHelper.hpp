@@ -37,8 +37,8 @@ enum class OperatorType {
 
 /// @returns The precedence of the given operator. Operators with higher values are evaluated first.
 int operatorPrecedence(OperatorType);
-OperatorType operatorType(const EmojicodeString &);
-EmojicodeString operatorName(OperatorType);
+OperatorType operatorType(const std::u32string &);
+std::u32string operatorName(OperatorType);
 const int kPrefixPrecedence = 11;
 
 } // namespace EmojicodeCompiler

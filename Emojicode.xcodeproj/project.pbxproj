@@ -11,6 +11,8 @@
 		E42207471ED81DDD006A1305 /* RetainedObjectPointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E42207451ED81DDD006A1305 /* RetainedObjectPointer.cpp */; };
 		E4221DA81F10BCFE002D85A6 /* Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4221DA61F10BCFE002D85A6 /* Data.cpp */; };
 		E4431D651F4C4B7000D68379 /* Initializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D631F4C4B7000D68379 /* Initializer.cpp */; };
+		E4431D741F4E17B100D68379 /* ASTToCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D731F4E17B000D68379 /* ASTToCode.cpp */; };
+		E4431D771F4EB05200D68379 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4431D761F4EB05100D68379 /* utf8.c */; };
 		E4452EFC1E2A33C80064E324 /* Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F31C83018F009E7089 /* Dictionary.cpp */; };
 		E44BE1531EDAB899003744BA /* ThreadsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E44BE1511EDAB899003744BA /* ThreadsManager.cpp */; };
 		E45DB8141CB44D7500AE6FBE /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45DB8131CB44D7500AE6FBE /* Thread.cpp */; };
@@ -77,7 +79,6 @@
 		E49E6D181F4ABF2500B819CA /* ClosureCodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E49E6D161F4ABF2500B819CA /* ClosureCodeGenerator.cpp */; };
 		E49E6D1B1F4AD97F00B819CA /* VariableID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E49E6D191F4AD97F00B819CA /* VariableID.cpp */; };
 		E4DF2B871E4602930006EA17 /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F71C8301A5009E7089 /* JSON.cpp */; };
-		E4E95F601C89CED20072ECEB /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
 		E4EC74801E1D9644007A22AA /* Processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EC747E1E1D9644007A22AA /* Processor.cpp */; };
 		E4EC74811E1E67C0007A22AA /* List.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F11C83018B009E7089 /* List.cpp */; };
 		E4EC74831E1E67C5007A22AA /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F51C830194009E7089 /* String.cpp */; };
@@ -86,7 +87,6 @@
 		E4EEB9F01C83016C009E7089 /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9EF1C83016C009E7089 /* Engine.cpp */; };
 		E4EEB9FA1C8301B5009E7089 /* Reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F91C8301B5009E7089 /* Reader.cpp */; };
 		E4EEB9FF1C8301E7009E7089 /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9FE1C8301E7009E7089 /* Memory.cpp */; };
-		E4EEBA041C830209009E7089 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4EEBA021C830209009E7089 /* utf8.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -122,6 +122,10 @@
 		E4431D631F4C4B7000D68379 /* Initializer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializer.cpp; sourceTree = "<group>"; };
 		E4431D641F4C4B7000D68379 /* Initializer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Initializer.hpp; sourceTree = "<group>"; };
 		E4431D661F4C504200D68379 /* .clang-tidy */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
+		E4431D721F4E17B000D68379 /* ASTToCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ASTToCode.hpp; sourceTree = "<group>"; };
+		E4431D731F4E17B000D68379 /* ASTToCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTToCode.cpp; sourceTree = "<group>"; };
+		E4431D751F4EB05100D68379 /* utf8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		E4431D761F4EB05100D68379 /* utf8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		E44BE1511EDAB899003744BA /* ThreadsManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadsManager.cpp; path = "EmojicodeReal-TimeEngine/ThreadsManager.cpp"; sourceTree = SOURCE_ROOT; };
 		E44BE1521EDAB899003744BA /* ThreadsManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ThreadsManager.hpp; path = "EmojicodeReal-TimeEngine/ThreadsManager.hpp"; sourceTree = SOURCE_ROOT; };
 		E45570ED1E1C08D50093B52B /* List.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = List.hpp; path = "EmojicodeReal-TimeEngine/List.hpp"; sourceTree = SOURCE_ROOT; };
@@ -274,8 +278,6 @@
 		E4EEB9FC1C8301CC009E7089 /* Dictionary.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Dictionary.hpp; path = "EmojicodeReal-TimeEngine/Dictionary.hpp"; sourceTree = SOURCE_ROOT; };
 		E4EEB9FD1C8301D6009E7089 /* String.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = String.hpp; path = "EmojicodeReal-TimeEngine/String.hpp"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		E4EEB9FE1C8301E7009E7089 /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Memory.cpp; path = "EmojicodeReal-TimeEngine/Memory.cpp"; sourceTree = SOURCE_ROOT; };
-		E4EEBA021C830209009E7089 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = SOURCE_ROOT; };
-		E4EEBA031C830209009E7089 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = SOURCE_ROOT; };
 		E4F8EE731E48E068006CF7EA /* Class.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Class.hpp; path = "EmojicodeReal-TimeEngine/Class.hpp"; sourceTree = SOURCE_ROOT; };
 		E4F8EE741E48E0DC006CF7EA /* Memory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Memory.hpp; path = "EmojicodeReal-TimeEngine/Memory.hpp"; sourceTree = SOURCE_ROOT; };
 		E4F8EE751E48E7CC006CF7EA /* Reader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Reader.hpp; path = "EmojicodeReal-TimeEngine/Reader.hpp"; sourceTree = SOURCE_ROOT; };
@@ -340,7 +342,6 @@
 			children = (
 				E455BC671B5BEB82002411C8 /* EmojicodeShared.h */,
 				E49FD7741DE9A2BB00FD5170 /* EmojicodeInstructions.h */,
-				E4F49AB31A5C22DE00A5FD48 /* Third Party */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -472,6 +473,8 @@
 		E4C77A631F337AF500B5876A /* AST */ = {
 			isa = PBXGroup;
 			children = (
+				E4431D731F4E17B000D68379 /* ASTToCode.cpp */,
+				E4431D721F4E17B000D68379 /* ASTToCode.hpp */,
 				E460A5581F30EFA2006E3AC7 /* ASTNode.cpp */,
 				E48356A01F34F741000B80AE /* ASTNode.hpp */,
 				E48356871F33866F000B80AE /* ASTExpr.cpp */,
@@ -552,6 +555,8 @@
 		E4F048361A7FB0D7005BB2C1 /* standard Package */ = {
 			isa = PBXGroup;
 			children = (
+				E4431D761F4EB05100D68379 /* utf8.c */,
+				E4431D751F4EB05100D68379 /* utf8.h */,
 				E46830951E6C2485001497AB /* standard.hpp */,
 				E4EEB9EB1C83014B009E7089 /* standard.cpp */,
 				E45570ED1E1C08D50093B52B /* List.hpp */,
@@ -565,16 +570,6 @@
 				E4221DA61F10BCFE002D85A6 /* Data.cpp */,
 			);
 			name = "standard Package";
-			sourceTree = "<group>";
-		};
-		E4F49AB31A5C22DE00A5FD48 /* Third Party */ = {
-			isa = PBXGroup;
-			children = (
-				E4EEBA021C830209009E7089 /* utf8.c */,
-				E4EEBA031C830209009E7089 /* utf8.h */,
-			);
-			name = "Third Party";
-			path = Emojicode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -748,7 +743,7 @@
 				E4969EB91F30F095002DF345 /* SourcePosition.cpp in Sources */,
 				E460A5BD1F30EFA2006E3AC7 /* BoxingLayer.cpp in Sources */,
 				E460A5B21F30EFA2006E3AC7 /* Class.cpp in Sources */,
-				E4E95F601C89CED20072ECEB /* utf8.c in Sources */,
+				E4431D741F4E17B100D68379 /* ASTToCode.cpp in Sources */,
 				E460A5B11F30EFA2006E3AC7 /* VariableNotFoundError.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -757,6 +752,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4431D771F4EB05200D68379 /* utf8.c in Sources */,
 				E4EEB9EE1C83015A009E7089 /* Class.cpp in Sources */,
 				E44BE1531EDAB899003744BA /* ThreadsManager.cpp in Sources */,
 				E4EEB9F01C83016C009E7089 /* Engine.cpp in Sources */,
@@ -769,7 +765,6 @@
 				E4221DA81F10BCFE002D85A6 /* Data.cpp in Sources */,
 				E4DF2B871E4602930006EA17 /* JSON.cpp in Sources */,
 				E42207471ED81DDD006A1305 /* RetainedObjectPointer.cpp in Sources */,
-				E4EEBA041C830209009E7089 /* utf8.c in Sources */,
 				E4EC74801E1D9644007A22AA /* Processor.cpp in Sources */,
 				E4EEB9FA1C8301B5009E7089 /* Reader.cpp in Sources */,
 			);

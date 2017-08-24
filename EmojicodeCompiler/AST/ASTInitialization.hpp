@@ -41,7 +41,7 @@ public:
         Enum, ValueType, Class
     };
 
-    ASTInitialization(EmojicodeString name, std::shared_ptr<ASTTypeExpr> type,
+    ASTInitialization(std::u32string name, std::shared_ptr<ASTTypeExpr> type,
                       ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
@@ -52,7 +52,7 @@ public:
     InitType initType() { return initType_; }
 private:
     InitType initType_ = InitType::Class;
-    EmojicodeString name_;
+    std::u32string name_;
     std::shared_ptr<ASTTypeExpr> typeExpr_;
     std::shared_ptr<ASTVTInitDest> vtDestination_;
     ASTArguments args_;

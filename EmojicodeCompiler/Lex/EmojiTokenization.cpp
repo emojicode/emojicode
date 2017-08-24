@@ -10,7 +10,7 @@
 
 namespace EmojicodeCompiler {
 
-bool isEmoji(EmojicodeChar ch) {
+bool isEmoji(char32_t ch) {
     return (/* ch == 0x0023 || ch == 0x002A || (0x0030 <= ch && ch <= 0x0039) || */
             ch == 0x00A9 || ch == 0x00AE || ch == 0x203C ||
             ch == 0x2049 || ch == 0x2122 || ch == 0x2139 ||
@@ -83,7 +83,7 @@ bool isEmoji(EmojicodeChar ch) {
             (0x1F980 <= ch && ch <= 0x1F984) || (0x1F985 <= ch && ch <= 0x1F991) || ch == 0x1F9C0);
 }
 
-bool isEmojiModifierBase(EmojicodeChar ch) {
+bool isEmojiModifierBase(char32_t ch) {
     return (ch == 0x261D || ch == 0x26F9 || (0x270A <= ch && ch <= 0x270B) ||
             (0x270C <= ch && ch <= 0x270D) || ch == 0x1F385 || (0x1F3C2 <= ch && ch <= 0x1F3C4) ||
             ch == 0x1F3C7 || ch == 0x1F3CA || (0x1F3CB <= ch && ch <= 0x1F3CC) ||
@@ -98,15 +98,15 @@ bool isEmojiModifierBase(EmojicodeChar ch) {
             (0x1F933 <= ch && ch <= 0x1F939) || (0x1F93D <= ch && ch <= 0x1F93E));
 }
 
-bool isEmojiModifier(EmojicodeChar ch) {
+bool isEmojiModifier(char32_t ch) {
     return 0x1F3FB <= ch && ch <= 0x1F3FF;
 }
 
-bool isRegionalIndicator(EmojicodeChar ch) {
+bool isRegionalIndicator(char32_t ch) {
     return 0x1F1E6 <= ch && ch <= 0x1F1FF;
 }
 
-bool isValidEmoji(EmojicodeString string) {
+bool isValidEmoji(std::u32string string) {
     if (string.size() == 1) {
         return !isRegionalIndicator(string.front());
     }

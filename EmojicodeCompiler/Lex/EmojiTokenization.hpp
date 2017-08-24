@@ -17,18 +17,18 @@ namespace EmojicodeCompiler {
 /// Whether the character is an emoji or not. This method acts in conformance with Unicode Emoji v4.0, except for that
 /// this method does not return true for #, *, and digits from 0 to 9.
 /// http://unicode.org/emoji/charts/emoji-list.html and http://www.unicode.org/Public/emoji/4.0//emoji-data.txt
-bool isEmoji(EmojicodeChar ch);
+bool isEmoji(char32_t ch);
 
 /// Whether the character is an emoji modifier base as defined in Unicode® Technical Report #51.
 /// http://www.unicode.org/reports/tr51/#Emoji_Implementation_Notes
-bool isEmojiModifierBase(EmojicodeChar ch);
+bool isEmojiModifierBase(char32_t ch);
 
 /// Whether the character is an emoji modifier as defined in Unicode® Technical Report #51.
-bool isEmojiModifier(EmojicodeChar ch);
+bool isEmojiModifier(char32_t ch);
 
-bool isRegionalIndicator(EmojicodeChar ch);
+bool isRegionalIndicator(char32_t ch);
 
-bool isValidEmoji(EmojicodeString string);
+bool isValidEmoji(std::u32string string);
 
 }  // namespace EmojicodeCompiler
 

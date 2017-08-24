@@ -9,7 +9,7 @@
 #include "Data.hpp"
 #include "String.hpp"
 #include "Thread.hpp"
-#include "../utf8.h"
+#include "utf8.h"
 #include <algorithm>
 #include <cstring>
 

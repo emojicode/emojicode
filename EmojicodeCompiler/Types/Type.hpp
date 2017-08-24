@@ -20,7 +20,7 @@
 namespace EmojicodeCompiler {
 
 /// The identifier value representing the default namespace.
-const EmojicodeString kDefaultNamespace = EmojicodeString(E_LARGE_RED_CIRCLE);
+const std::u32string kDefaultNamespace = std::u32string(1, E_LARGE_RED_CIRCLE);
 const int kBoxValueSize = 4;
 
 class TypeDefinition;
@@ -119,7 +119,7 @@ public:
     EmojicodeInstruction boxIdentifier() const;
     /// Unboxes this type.
     /// @throws std::logic_error if unboxing is not possible according to @c requiresBox()
-    void unbox() { forceBox_ = false; if (requiresBox()) throw std::logic_error("Cannot unbox!"); }
+    void unbox() { forceBox_ = false; if (requiresBox()) { throw std::logic_error("Cannot unbox!"); } }
     void forceBox() { forceBox_ = true; }
 
     bool remotelyStored() const { return (size() > 3 && !optional()) || size() > 4; }

@@ -29,27 +29,27 @@ private:
 
 class ASTVariableDeclaration final : public ASTStatement {
 public:
-    ASTVariableDeclaration(Type type, EmojicodeString name, const SourcePosition &p)
+    ASTVariableDeclaration(Type type, std::u32string name, const SourcePosition &p)
     : ASTStatement(p), varName_(std::move(name)), type_(std::move(type)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
     void toCode(std::stringstream &stream, unsigned int indentation) const override;
 private:
-    EmojicodeString varName_;
+    std::u32string varName_;
     Type type_;
     VariableID id_;
 };
 
 class ASTVariableAssignmentDecl : public ASTVariable, public ASTInitableCreator {
 public:
-    ASTVariableAssignmentDecl(EmojicodeString name, const std::shared_ptr<ASTExpr> &e,
+    ASTVariableAssignmentDecl(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                               const SourcePosition &p) : ASTInitableCreator(e, p), varName_(std::move(name)) {}
     void analyse(SemanticAnalyser *analyser) override;
     void generateAssignment(FnCodeGenerator *) const override;
     void toCode(std::stringstream &stream, unsigned int indentation) const override;
 protected:
-    EmojicodeString varName_;
+    std::u32string varName_;
 private:
     bool declare_ = false;
 
@@ -65,14 +65,14 @@ public:
 
 class ASTFrozenDeclaration final : public ASTInitableCreator {
 public:
-    ASTFrozenDeclaration(EmojicodeString name, const std::shared_ptr<ASTExpr> &e,
+    ASTFrozenDeclaration(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                          const SourcePosition &p) : ASTInitableCreator(e, p), varName_(std::move(name)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
     void generateAssignment(FnCodeGenerator *) const override;
     void toCode(std::stringstream &stream, unsigned int indentation) const override;
 private:
-    EmojicodeString varName_;
+    std::u32string varName_;
     VariableID id_;
 };
 

@@ -46,7 +46,7 @@ private:
 
 class ASTForIn final : public ASTStatement {
 public:
-    ASTForIn(std::shared_ptr<ASTExpr> iteratee, EmojicodeString varName, ASTBlock block,
+    ASTForIn(std::shared_ptr<ASTExpr> iteratee, std::u32string varName, ASTBlock block,
              const SourcePosition &p)
     : ASTStatement(p), iteratee_(std::move(iteratee)), block_(std::move(block)), varName_(std::move(varName)) {}
 
@@ -58,14 +58,14 @@ private:
     ASTBlock block_;
     VariableID elementVar_;
     VariableID iteratorVar_;
-    EmojicodeString varName_;
+    std::u32string varName_;
     Type elementType_ = Type::nothingness();
 };
 
 class ASTErrorHandler final : public ASTStatement {
 public:
-    ASTErrorHandler(std::shared_ptr<ASTExpr> value, EmojicodeString varNameValue,
-                    EmojicodeString varNameError, ASTBlock valueBlock, ASTBlock errorBlock,
+    ASTErrorHandler(std::shared_ptr<ASTExpr> value, std::u32string varNameValue,
+                    std::u32string varNameError, ASTBlock valueBlock, ASTBlock errorBlock,
                     const SourcePosition &p)
     : ASTStatement(p), value_(std::move(value)), valueBlock_(std::move(valueBlock)), errorBlock_(std::move(errorBlock)),
     valueVarName_(std::move(varNameValue)), errorVarName_(std::move(varNameError)) {}
@@ -80,8 +80,8 @@ private:
     ASTBlock valueBlock_;
     Type valueType_ = Type::nothingness();
     ASTBlock errorBlock_;
-    EmojicodeString valueVarName_;
-    EmojicodeString errorVarName_;
+    std::u32string valueVarName_;
+    std::u32string errorVarName_;
 };
 
 }  // namespace EmojicodeCompiler

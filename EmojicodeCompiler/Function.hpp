@@ -35,10 +35,10 @@ enum class AccessLevel {
 };
 
 struct Argument {
-    Argument(EmojicodeString n, Type t) : variableName(std::move(n)), type(std::move(t)) {}
+    Argument(std::u32string n, Type t) : variableName(std::move(n)), type(std::move(t)) {}
 
     /// The name of the variable
-    EmojicodeString variableName;
+    std::u32string variableName;
     /// The type
     Type type;
 };
@@ -47,23 +47,22 @@ struct Argument {
 class Function {
     friend void Class::prepareForCG();
     friend Protocol;
-    friend void generateCode(Writer &writer);
 public:
     static bool foundStart;
     static Function *start;
     static std::queue<Function *> compilationQueue;
     static std::queue<Function *> analysisQueue;
 
-    Function(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
-             bool overriding, EmojicodeString documentationToken, bool deprecated, bool mutating, FunctionType type)
+    Function(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
+             bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, FunctionType type)
     : position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding), deprecated_(deprecated), mutating_(mutating),
     access_(level), owningType_(std::move(owningType)), package_(package), documentation_(std::move(documentationToken)),
     functionType_(type) {}
 
-    EmojicodeString name() const { return name_; }
+    std::u32string name() const { return name_; }
 
-    EmojicodeString protocolBoxingLayerName(EmojicodeString protocolName) {
-        return EmojicodeString({ protocolName[0], name()[0] });
+    std::u32string protocolBoxingLayerName(const std::u32string &protocolName) {
+        return protocolName + name()[0];
     }
 
     /** Whether the method is implemented natively and Run-Time Native Linking must occur. */
@@ -94,12 +93,12 @@ public:
     Type owningType() const { return owningType_; }
     void setOwningType(const Type &type) { owningType_ = type; }
 
-    const EmojicodeString& documentation() const { return documentation_; }
+    const std::u32string& documentation() const { return documentation_; }
 
     /** The types for the generic arguments. */
     std::vector<Type> genericArgumentConstraints;
     /** Generic type arguments as variables */
-    std::map<EmojicodeString, Type> genericArgumentVariables;
+    std::map<std::u32string, Type> genericArgumentVariables;
 
     /// The package in which the function was defined.
     /// This does not necessarily match the package of @c owningType.
@@ -188,7 +187,7 @@ protected:
 private:
     std::shared_ptr<ASTBlock> ast_;
     SourcePosition position_;
-    EmojicodeString name_;
+    std::u32string name_;
     int vti_ = -1;
     bool final_;
     bool overriding_;
@@ -198,7 +197,7 @@ private:
     AccessLevel access_;
     Type owningType_;
     Package *package_;
-    EmojicodeString documentation_;
+    std::u32string documentation_;
     VTIProvider *vtiProvider_ = nullptr;
     FunctionType functionType_;
     size_t variableCount_ = 0;

@@ -23,10 +23,10 @@ class BoxingLayer : public Function {
 public:
     /// Creates a boxing layer for a protocol function.
     /// @parameter destinationFunction That function that should be called by the boxing layer. The "actual" method.
-    BoxingLayer(Function *destinationFunction, EmojicodeString protocolName,
+    BoxingLayer(Function *destinationFunction, std::u32string protocolName,
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
     : Function(destinationFunction->protocolBoxingLayerName(std::move(protocolName)), AccessLevel::Private, true,
-               destinationFunction->owningType(), destinationFunction->package(), p, false, EmojicodeString(), false,
+               destinationFunction->owningType(), destinationFunction->package(), p, false, std::u32string(), false,
                false, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
         destinationFunction_(destinationFunction) {
         this->arguments = arguments;
@@ -41,9 +41,9 @@ public:
     /// INS_EXECUTE_CALLABLE callable will be applied to the this context.
     BoxingLayer(std::vector<Type> destinationArgumentTypes, Type destinationReturnType, Package *pkg,
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
-    : Function(EmojicodeString(), AccessLevel::Private, true,
-               Type::callableIncomplete(), pkg, p, false, EmojicodeString(), false, false,
-               FunctionType::BoxingLayer), destinationArgumentTypes_(std::move(destinationArgumentTypes)),
+    : Function(std::u32string(), AccessLevel::Private, true, Type::callableIncomplete(), pkg, p, false,
+               std::u32string(), false, false, FunctionType::BoxingLayer),
+      destinationArgumentTypes_(std::move(destinationArgumentTypes)),
       destinationReturnType_(std::move(destinationReturnType)) {
           setVtiProvider(&STIProvider::globalStiProvider);
         this->returnType = returnType;

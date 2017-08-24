@@ -9,6 +9,4 @@
 #ifndef ASTToCode_hpp
 #define ASTToCode_hpp
 
-#include <stdio.h>
-
 #endif /* ASTToCode_hpp */

@@ -30,12 +30,12 @@ public:
      * the string is added to the end of the pool. 
      * @returns The index to access the string in the pool.
      */
-    EmojicodeInstruction poolString(const EmojicodeString &string);
+    EmojicodeInstruction poolString(const std::u32string &string);
     /** Returns a vector of all strings in the order in which they must appear in the pool at run-time. */
-    const std::vector<EmojicodeString>& strings() const { return strings_; }
+    const std::vector<std::u32string>& strings() const { return strings_; }
 private:
     StringPool() = default;
-    std::vector<EmojicodeString> strings_;
+    std::vector<std::u32string> strings_;
 };
 
 }  // namespace EmojicodeCompiler

@@ -69,7 +69,7 @@ namespace EmojicodeCompiler {
 //    if (theArg == nullptr) {
 //        throw "no arg";
 //    }
-//    std::cout << "ℹ️ Variable " << variableName.value().utf8() << " is " << theArg->type.size() << " words large ";
+//    std::cout << "ℹ️ Variable " << utf8(variableName.value()) << " is " << theArg->type.size() << " words large ";
 //    std::cout << "and has index " << index << "\n";
 //}
 

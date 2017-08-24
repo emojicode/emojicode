@@ -139,7 +139,8 @@ void ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
         fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
         fncg->wr().writeInstruction(type_.eclass()->index);
     });
-    InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(type, ASTArguments(position()), EmojicodeString(0x1F438));
+    InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(type, ASTArguments(position()),
+                                                                   std::u32string(1, 0x1F438));
     fncg->copyToVariable(var.stackIndex, false, type_);
 
     auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fncg) {
@@ -148,13 +149,13 @@ void ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
     for (auto &stringNode : values_) {
         auto args = ASTArguments(position());
         args.addArguments(stringNode);
-        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, args, EmojicodeString(0x1F43B));
+        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, args, std::u32string(1, 0x1F43B));
     }
     getVar.generateExpr(fncg);
 }
 
 Type ASTConcatenateLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    analyser->function()->package()->fetchRawType(EmojicodeString(0x1F520), kDefaultNamespace,
+    analyser->function()->package()->fetchRawType(std::u32string(1, 0x1F520), kDefaultNamespace,
                                                   false, position(), &type_);
 
     analyser->scoper().pushTemporaryScope();
@@ -173,7 +174,8 @@ void ASTConcatenateLiteral::generateExpr(FnCodeGenerator *fncg) const {
         fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
         fncg->wr().writeInstruction(type_.eclass()->index);
     });
-    InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(type, ASTArguments(position()), EmojicodeString(0x1F195));
+    InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(type, ASTArguments(position()),
+                                                                   std::u32string(1, 0x1F195));
     fncg->copyToVariable(var.stackIndex, false, type_);
 
     auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fncg) {
@@ -182,10 +184,10 @@ void ASTConcatenateLiteral::generateExpr(FnCodeGenerator *fncg) const {
     for (auto &stringNode : values_) {
         auto args = ASTArguments(position());
         args.addArguments(stringNode);
-        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, args, EmojicodeString(0x1F43B));
+        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, args, std::u32string(1, 0x1F43B));
     }
 
-    CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, ASTArguments(position()), EmojicodeString(0x1F521));
+    CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, ASTArguments(position()), std::u32string(1, 0x1F521));
 }
 
 }  // namespace EmojicodeCompiler

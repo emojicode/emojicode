@@ -25,9 +25,9 @@ namespace EmojicodeCompiler {
 
 struct InstanceVariableDeclaration {
     InstanceVariableDeclaration() = delete;
-    InstanceVariableDeclaration(EmojicodeString name, Type type, SourcePosition pos)
+    InstanceVariableDeclaration(std::u32string name, Type type, SourcePosition pos)
     : name(std::move(name)), type(std::move(type)), position(std::move(pos)) {}
-    EmojicodeString name;
+    std::u32string name;
     Type type;
     SourcePosition position;
 };
@@ -35,9 +35,9 @@ struct InstanceVariableDeclaration {
 class TypeDefinition {
 public:
     /** Returns a documentation token documenting this type definition or @c nullptr. */
-    const EmojicodeString& documentation() const { return documentation_; }
+    const std::u32string& documentation() const { return documentation_; }
     /** Returns the name of the type definition. */
-    EmojicodeString name() const { return name_; }
+    std::u32string name() const { return name_; }
     /** Returns the package in which this type was defined. */
     Package* package() const { return package_; }
     /** The position at which this type was initially defined. */
@@ -48,7 +48,7 @@ public:
      * @param variableName The name which is used to refer to this argument.
      * @param constraint The constraint that applies to the types passed.
      */
-    void addGenericArgument(const EmojicodeString &variableName, const Type &constraint, const SourcePosition &p);
+    void addGenericArgument(const std::u32string &variableName, const Type &constraint, const SourcePosition &p);
     void setSuperTypeDef(TypeDefinition *superTypeDef);
     void setSuperGenericArguments(std::vector<Type> superGenericArguments);
     /** Must be called before the type is used but after the last generic argument was added. */
@@ -63,36 +63,36 @@ public:
      * Tries to fetch the type reference type for the given generic variable name and stores it into @c type.
      * @returns Whether the variable could be found or not. @c type is untouched if @c false was returned.
      */
-    bool fetchVariable(const EmojicodeString &name, bool optional, Type *destType);
+    bool fetchVariable(const std::u32string &name, bool optional, Type *destType);
     /*
      * Determines whether the given type reference resolution constraint allows the type to be
      * resolved on this type definition.
      */
     virtual bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const = 0;
 
-    const std::map<EmojicodeString, Type>& ownGenericArgumentVariables() const { return ownGenericArgumentVariables_; }
+    const std::map<std::u32string, Type>& ownGenericArgumentVariables() const { return ownGenericArgumentVariables_; }
     const std::vector<Type>& superGenericArguments() const { return superGenericArguments_; }
     const std::vector<Type>& genericArgumentConstraints() const { return genericArgumentConstraints_; }
 
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function* getMethod(const EmojicodeString &name, const Type &type, const TypeContext &typeContext,
+    Function* getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
                         const SourcePosition &p);
     /// Returns an initializer by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Initializer* getInitializer(const EmojicodeString &name, const Type &type, const TypeContext &typeContext,
+    Initializer* getInitializer(const std::u32string &name, const Type &type, const TypeContext &typeContext,
                                 const SourcePosition &p);
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function* getTypeMethod(const EmojicodeString &name, const Type &type, const TypeContext &typeContext,
+    Function* getTypeMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
                             const SourcePosition &p);
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupMethod(const EmojicodeString &name);
+    virtual Function* lookupMethod(const std::u32string &name);
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    virtual Initializer* lookupInitializer(const EmojicodeString &name);
+    virtual Initializer* lookupInitializer(const std::u32string &name);
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupTypeMethod(const EmojicodeString &name);
+    virtual Function* lookupTypeMethod(const std::u32string &name);
 
     virtual void addMethod(Function *method);
     virtual void addInitializer(Initializer *initializer);
@@ -129,12 +129,12 @@ public:
     Scope& instanceScope() { return scope_; }
     CGScoper& cgScoper() { return cgScoper_; }
 protected:
-    TypeDefinition(EmojicodeString name, Package *p, SourcePosition pos, EmojicodeString documentation)
+    TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation)
     : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(std::move(pos))  {}
 
-    std::map<EmojicodeString, Function *> methods_;
-    std::map<EmojicodeString, Function *> typeMethods_;
-    std::map<EmojicodeString, Initializer *> initializers_;
+    std::map<std::u32string, Function *> methods_;
+    std::map<std::u32string, Function *> typeMethods_;
+    std::map<std::u32string, Initializer *> initializers_;
 
     std::vector<Function *> methodList_;
     std::vector<Initializer *> initializerList_;
@@ -156,17 +156,17 @@ protected:
     }
 
     template <typename T>
-    void duplicateDeclarationCheck(T p, std::map<EmojicodeString, T> dict, SourcePosition position) {
+    void duplicateDeclarationCheck(T p, std::map<std::u32string, T> dict, SourcePosition position) {
         if (dict.count(p->name())) {
-            throw CompilerError(position, "%s is declared twice.", p->name().utf8().c_str());
+            throw CompilerError(position, "%s is declared twice.", utf8(p->name()).c_str());
         }
     }
 
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 private:
-    EmojicodeString name_;
+    std::u32string name_;
     Package *package_;
-    EmojicodeString documentation_;
+    std::u32string documentation_;
     SourcePosition position_;
     /// The number of generic arguments including those from a superclass.
     uint16_t genericArgumentCount_ = 0;
@@ -175,7 +175,7 @@ private:
     /// The arguments for the classes from which this class inherits.
     std::vector<Type> superGenericArguments_;
     /** Generic type arguments as variables */
-    std::map<EmojicodeString, Type> ownGenericArgumentVariables_;
+    std::map<std::u32string, Type> ownGenericArgumentVariables_;
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 };

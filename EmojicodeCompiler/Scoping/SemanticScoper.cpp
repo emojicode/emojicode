@@ -60,7 +60,7 @@ Scope& SemanticScoper::pushScope() {
     return scopes_.front();
 }
 
-ResolvedVariable SemanticScoper::getVariable(const EmojicodeString &name, const SourcePosition &errorPosition) {
+ResolvedVariable SemanticScoper::getVariable(const std::u32string &name, const SourcePosition &errorPosition) {
     for (Scope &scope : scopes_) {
         if (scope.hasLocalVariable(name)) {
             return ResolvedVariable(scope.getLocalVariable(name), false);

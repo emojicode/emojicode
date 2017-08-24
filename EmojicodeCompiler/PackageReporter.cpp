@@ -7,7 +7,6 @@
 //
 
 #include "PackageReporter.hpp"
-#include "../utf8.h"
 #include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
 #include "Initializer.hpp"
@@ -30,13 +29,13 @@ enum class ReturnKind {
     ErrorProneInitializer
 };
 
-void reportDocumentation(const EmojicodeString &documentation) {
+void reportDocumentation(const std::u32string &documentation) {
     if (documentation.empty()) {
         return;
     }
 
     printf("\"documentation\":");
-    printJSONStringToFile(documentation.utf8().c_str(), stdout);
+    printJSONStringToFile(utf8(documentation).c_str(), stdout);
     putc(',', stdout);
 }
 
@@ -59,11 +58,11 @@ private:
     bool printedFirst_ = false;
 };
 
-void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Type> constraints,
+void reportGenericArguments(std::map<std::u32string, Type> map, std::vector<Type> constraints,
                             size_t superCount, const TypeContext &tc) {
     printf("\"genericArguments\":[");
 
-    auto gans = std::vector<EmojicodeString>(map.size());
+    auto gans = std::vector<std::u32string>(map.size());
     for (auto it : map) {
         gans[it.second.genericVariableIndex() - superCount] = it.first;
     }
@@ -73,7 +72,7 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
         printer.print();
         auto gan = gans[i];
         printf("{\"name\":");
-        printJSONStringToFile(gan.utf8().c_str(), stdout);
+        printJSONStringToFile(utf8(gan).c_str(), stdout);
         printf(",\"constraint\":");
         reportType(constraints[i], tc);
         printf("}");
@@ -83,7 +82,7 @@ void reportGenericArguments(std::map<EmojicodeString, Type> map, std::vector<Typ
 }
 
 void reportFunction(Function *function, ReturnKind returnKind, const TypeContext &tc) {
-    printf("{\"name\":\"%s\",", function->name().utf8().c_str());
+    printf("{\"name\":\"%s\",", utf8(function->name()).c_str());
     switch (function->accessLevel()) {
         case AccessLevel::Private:
             printf("\"access\":\"🔒\",");
@@ -103,7 +102,7 @@ void reportFunction(Function *function, ReturnKind returnKind, const TypeContext
     }
     else if (returnKind == ReturnKind::ErrorProneInitializer) {
         printf("\"errorType\":");
-        reportType(static_cast<Initializer *>(function)->errorType(), tc);
+        reportType(dynamic_cast<Initializer *>(function)->errorType(), tc);
         putc(',', stdout);
     }
 
@@ -117,7 +116,7 @@ void reportFunction(Function *function, ReturnKind returnKind, const TypeContext
         printf("{\"type\":");
         reportType(argument.type, tc);
         printf(",\"name\":");
-        printJSONStringToFile(argument.variableName.utf8().c_str(), stdout);
+        printJSONStringToFile(utf8(argument.variableName).c_str(), stdout);
         printf("}");
     }
     printf("]}");
@@ -136,7 +135,7 @@ protected:
     T *typeDef_;
 
     virtual void reportBasics() const {
-        printf("{\"name\": \"%s\",", typeDef_->name().utf8().c_str());
+        printf("{\"name\": \"%s\",", utf8(typeDef_->name()).c_str());
 
         printf("\"conformsTo\":[");
         CommaPrinter printer;
@@ -185,7 +184,7 @@ public:
         TypeDefinitionReporter::reportBasics();
         if (typeDef_->superclass() != nullptr) {
             printf(",\"superclass\":{\"package\":\"%s\",\"name\":\"%s\"}",
-                   typeDef_->superclass()->package()->name().c_str(), typeDef_->superclass()->name().utf8().c_str());
+                   typeDef_->superclass()->package()->name().c_str(), utf8(typeDef_->superclass()->name()).c_str());
         }
     }
 };
@@ -202,7 +201,7 @@ public:
             printer.print();
             printf("{");
             reportDocumentation(it.second.second);
-            printf("\"value\":\"%s\"}", it.first.utf8().c_str());
+            printf("\"value\":\"%s\"}", utf8(it.first).c_str());
         }
         printf("]");
     }

@@ -21,7 +21,7 @@ namespace EmojicodeCompiler {
 
 std::vector<Class *> Class::classes_;
 
-Class::Class(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &documentation, bool final)
+Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool final)
 : TypeDefinition(std::move(name), pkg, std::move(p), documentation) {
     index = classes_.size();
     final_ = final;
@@ -48,7 +48,7 @@ bool Class::inheritsFrom(Class *from) const {
     return false;
 }
 
-Initializer* Class::lookupInitializer(const EmojicodeString &name) {
+Initializer* Class::lookupInitializer(const std::u32string &name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->initializers_.find(name);
         if (pos != eclass->initializers_.end()) {
@@ -61,7 +61,7 @@ Initializer* Class::lookupInitializer(const EmojicodeString &name) {
     return nullptr;
 }
 
-Function* Class::lookupMethod(const EmojicodeString &name) {
+Function* Class::lookupMethod(const std::u32string &name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->methods_.find(name);
         if (pos != eclass->methods_.end()) {
@@ -71,7 +71,7 @@ Function* Class::lookupMethod(const EmojicodeString &name) {
     return nullptr;
 }
 
-Function* Class::lookupTypeMethod(const EmojicodeString &name) {
+Function* Class::lookupTypeMethod(const std::u32string &name) {
     for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
         auto pos = eclass->typeMethods_.find(name);
         if (pos != eclass->typeMethods_.end()) {
@@ -151,13 +151,13 @@ void Class::checkOverride(Function *function) {
     if (function->overriding()) {
         if (superFunction == nullptr || superFunction->accessLevel() == AccessLevel::Private) {
             throw CompilerError(function->position(), "%s was declared ✒️ but does not override anything.",
-                                function->name().utf8().c_str());
+                                utf8(function->name()).c_str());
         }
         function->enforcePromises(superFunction, Type(this, false), Type(superclass(), false),
                                   std::experimental::nullopt);
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
-        throw CompilerError(function->position(), "If you want to override %s add ✒️.", function->name().utf8().c_str());
+        throw CompilerError(function->position(), "If you want to override %s add ✒️.", utf8(function->name()).c_str());
     }
 }
 

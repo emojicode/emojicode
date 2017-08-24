@@ -16,12 +16,12 @@ if(defaultPackagesDirectory)
 endif()
 
 file(GLOB_RECURSE EMOJICODE_SOURCES "EmojicodeReal-TimeEngine/*")
-add_executable(emojicode ${EMOJICODE_SOURCES} utf8.c utf8.h)
+add_executable(emojicode ${EMOJICODE_SOURCES})
 target_compile_options(emojicode PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 target_link_libraries(emojicode dl pthread)
 
 file(GLOB_RECURSE EMOJICODEC_SOURCES "EmojicodeCompiler/*")
-add_executable(emojicodec ${EMOJICODEC_SOURCES} utf8.c utf8.h)
+add_executable(emojicodec ${EMOJICODEC_SOURCES})
 target_compile_options(emojicodec PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 
 if(APPLE)

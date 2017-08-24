@@ -18,8 +18,8 @@ namespace EmojicodeCompiler {
 
 class VariableNotFoundError: public CompilerError {
 public:
-    VariableNotFoundError(SourcePosition p, const EmojicodeString &name)
-        : CompilerError(std::move(p), "Variable \"%s\" not defined.", name.utf8().c_str()) {};
+    VariableNotFoundError(SourcePosition p, const std::u32string &name)
+        : CompilerError(std::move(p), "Variable \"%s\" not defined.", utf8(name).c_str()) {};
 };
 
 }  // namespace EmojicodeCompiler

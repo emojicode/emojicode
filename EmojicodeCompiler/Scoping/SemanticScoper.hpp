@@ -34,7 +34,7 @@ public:
     static SemanticScoper scoperForFunction(Function *function);
 
     /// Retrieves a variable or throws a @c VariableNotFoundError if the variable is not found.
-    virtual ResolvedVariable getVariable(const EmojicodeString &name, const SourcePosition &errorPosition);
+    virtual ResolvedVariable getVariable(const std::u32string &name, const SourcePosition &errorPosition);
 
     /// Returns the current subscope.
     Scope& currentScope() {

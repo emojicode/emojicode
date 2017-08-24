@@ -17,8 +17,8 @@ namespace EmojicodeCompiler {
 
 class Initializer : public Function {
 public:
-    Initializer(EmojicodeString name, AccessLevel level, bool final, Type owningType, Package *package,
-                SourcePosition p, bool overriding, EmojicodeString documentationToken, bool deprecated, bool r,
+    Initializer(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package,
+                SourcePosition p, bool overriding, std::u32string documentationToken, bool deprecated, bool r,
                 std::experimental::optional<Type> errorType, FunctionType mode)
     : Function(std::move(name), level, final, std::move(owningType), package, std::move(p), overriding, std::move(documentationToken), deprecated, true, mode),
     required_(r), errorType_(std::move(errorType)) {
@@ -41,18 +41,18 @@ public:
         }
         return type;
     }
-    void addArgumentToVariable(const EmojicodeString &string, const SourcePosition &p) {
+    void addArgumentToVariable(const std::u32string &string, const SourcePosition &p) {
         auto find = std::find(argumentsToVariables_.begin(), argumentsToVariables_.end(), string);
         if (find != argumentsToVariables_.end()) {
             throw CompilerError(p, "Instance variable initialized with 🍼 more than once.");
         }
         argumentsToVariables_.push_back(string);
     }
-    const std::vector<EmojicodeString>& argumentsToVariables() const { return argumentsToVariables_; }
+    const std::vector<std::u32string>& argumentsToVariables() const { return argumentsToVariables_; }
 private:
     bool required_;
     std::experimental::optional<Type> errorType_;
-    std::vector<EmojicodeString> argumentsToVariables_;
+    std::vector<std::u32string> argumentsToVariables_;
 };
 
 }  // namespace EmojicodeCompiler

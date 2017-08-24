@@ -21,7 +21,7 @@ class ASTMethodable : public ASTExpr {
 protected:
     explicit ASTMethodable(const SourcePosition &p) : ASTExpr(p), args_(p) {}
     ASTMethodable(const SourcePosition &p, ASTArguments args) : ASTExpr(p), args_(std::move(args)) {}
-    Type analyseMethodCall(SemanticAnalyser *analyser, const EmojicodeString &name,
+    Type analyseMethodCall(SemanticAnalyser *analyser, const std::u32string &name,
                            std::shared_ptr<ASTExpr> &callee);
     EmojicodeInstruction instruction_;
     ASTArguments args_;
@@ -30,14 +30,13 @@ protected:
 
 class ASTMethod final : public ASTMethodable {
 public:
-    ASTMethod(EmojicodeString name, std::shared_ptr<ASTExpr> callee,
-              const ASTArguments &args, const SourcePosition &p)
+    ASTMethod(std::u32string name, std::shared_ptr<ASTExpr> callee, const ASTArguments &args, const SourcePosition &p)
     : ASTMethodable(p, args), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(std::stringstream &stream) const override;
 private:
     void generateExpr(FnCodeGenerator *fncg) const override;
-    EmojicodeString name_;
+    std::u32string name_;
     std::shared_ptr<ASTExpr> callee_;
 };
 

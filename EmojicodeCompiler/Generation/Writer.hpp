@@ -34,7 +34,7 @@ public:
     void writeInstruction(EmojicodeInstruction value);
 
     /** Writes a single unicode character */
-    void writeEmojicodeChar(EmojicodeChar c);
+    void writeEmojicodeChar(char32_t c);
 
     void writeByte(unsigned char);
 
@@ -66,7 +66,6 @@ class WriterPlaceholder {
     friend Writer;
 public:
     WriterPlaceholder(Writer *w, size_t index) : writer_(w), index_(index) {};
-    /** Writes a coin with the given value */
     void write(T value) {
         if (std::is_same<T, uint8_t>::value) {
             writer_->data_[index_] = value;

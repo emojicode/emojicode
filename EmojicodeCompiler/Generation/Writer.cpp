@@ -22,7 +22,7 @@ void Writer::writeUInt16(uint16_t value) {
     data_.push_back(value >> 8);
 }
 
-void Writer::writeEmojicodeChar(EmojicodeChar c) {
+void Writer::writeEmojicodeChar(char32_t c) {
     data_.push_back(c);
     data_.push_back(c >> 8);
     data_.push_back(c >> 16);

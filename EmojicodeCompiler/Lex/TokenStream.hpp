@@ -42,7 +42,7 @@ public:
         if (!checkType(nextToken().type(), args...)) {
             throw CompilerError(nextToken().position(), "Expected token but instead found %s (%s).",
                                 /*Token::stringNameForType(type),*/ nextToken().stringName(),
-                                nextToken().value().utf8().c_str());
+                                utf8(nextToken().value()).c_str());
         }
         return tokens_[index_++];
     }
@@ -52,7 +52,7 @@ public:
     /** Tests whether the next token is of the given type. */
     bool nextTokenIs(TokenType type) const { return hasMoreTokens() && nextToken().type() == type; }
     /** Tests whether the next token is an identifier and the value’s first element matches the given character. */
-    bool nextTokenIs(EmojicodeChar c, TokenType type = TokenType::Identifier) const {
+    bool nextTokenIs(char32_t c, TokenType type = TokenType::Identifier) const {
         return hasMoreTokens() && nextToken().type() == type && nextToken().value()[0] == c;
     }
     const Token& nextToken() const { return tokens_[index_]; }
@@ -60,7 +60,7 @@ public:
      * Tests whether the end of the stream was not reached and the first element of the next token’s value does not
      * match the given character.
      */
-    bool nextTokenIsEverythingBut(EmojicodeChar c, TokenType type = TokenType::Identifier) const {
+    bool nextTokenIsEverythingBut(char32_t c, TokenType type = TokenType::Identifier) const {
         return hasMoreTokens() && !(nextToken().type() == type && nextToken().value()[0] == c);
     }
     bool nextTokenIsEverythingBut(TokenType type) const {
@@ -69,14 +69,14 @@ public:
 
     /** Consumes the next token and returns true if it is an identifier and value’s first element matches
         the given character. */
-    bool consumeTokenIf(EmojicodeChar c, TokenType type = TokenType::Identifier);
+    bool consumeTokenIf(char32_t c, TokenType type = TokenType::Identifier);
     /** Consumes the next token and returns true if it is an identifier and value’s first element matches
      the given character. */
     bool consumeTokenIf(TokenType type);
 
     /// Consumes the next toekn and throws an CompilerError if this token isn’t an indentifier whose
     /// value is @c ch.
-    const Token& requireIdentifier(EmojicodeChar ch);
+    const Token& requireIdentifier(char32_t ch);
 private:
     std::vector<Token> tokens_;
     size_t index_ = 0;

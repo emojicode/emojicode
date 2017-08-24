@@ -15,7 +15,7 @@ namespace EmojicodeCompiler {
 
 uint_fast16_t Protocol::nextIndex = 0;
 
-Protocol::Protocol(EmojicodeString name, Package *pkg, const SourcePosition &p, const EmojicodeString &string)
+Protocol::Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string)
     : TypeDefinition(std::move(name), pkg, p, string) {
     if (nextIndex == UINT16_MAX) {
         throw CompilerError(p, "You exceeded the limit of 65,536 protocols.");

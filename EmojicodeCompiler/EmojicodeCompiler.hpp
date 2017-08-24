@@ -30,14 +30,6 @@ extern std::string packageDirectory;
 
 using InstructionCount = unsigned int;
 
-class EmojicodeString: public std::basic_string<EmojicodeChar>  {
-public:
-    EmojicodeString() = default;
-    explicit EmojicodeString(EmojicodeChar ch) : basic_string(1, ch) {}
-    EmojicodeString(std::initializer_list<EmojicodeChar> ch) : basic_string(ch) {}
-    std::string utf8() const;
-};
-
 extern Class *CL_STRING;
 extern Class *CL_LIST;
 extern Class *CL_ERROR;
@@ -49,6 +41,8 @@ extern ValueType *VT_BOOLEAN;
 extern ValueType *VT_SYMBOL;
 extern ValueType *VT_INTEGER;
 extern ValueType *VT_DOUBLE;
+
+std::string utf8(const std::u32string &s);
 
 /** Issues a compiler warning. The compilation is continued afterwards. */
 void compilerWarning(const SourcePosition &p, const char *err, ...);

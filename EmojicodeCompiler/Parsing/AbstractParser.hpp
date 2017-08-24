@@ -19,10 +19,10 @@ class Function;
 class Package;
 
 struct TypeIdentifier {
-    TypeIdentifier(EmojicodeString name, EmojicodeString ns, SourcePosition p)
+    TypeIdentifier(std::u32string name, std::u32string ns, SourcePosition p)
     : name(std::move(name)), ns(std::move(ns)), position(std::move(p)) {}
-    EmojicodeString name;
-    EmojicodeString ns;
+    std::u32string name;
+    std::u32string ns;
     SourcePosition position;
 };
 

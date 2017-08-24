@@ -19,12 +19,12 @@ class SemanticAnalyser;
 
 class ASTStringLiteral final : public ASTExpr {
 public:
-    ASTStringLiteral(EmojicodeString value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
+    ASTStringLiteral(std::u32string value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(std::stringstream &stream) const override;
 private:
-    EmojicodeString value_;
+    std::u32string value_;
     unsigned int varId_;
 };
 
@@ -66,12 +66,12 @@ private:
 
 class ASTSymbolLiteral final : public ASTExpr {
 public:
-    ASTSymbolLiteral(EmojicodeChar value, const SourcePosition &p) : ASTExpr(p), value_(value) {}
+    ASTSymbolLiteral(char32_t value, const SourcePosition &p) : ASTExpr(p), value_(value) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(std::stringstream &stream) const override;
 private:
-    EmojicodeChar value_;
+    char32_t value_;
 };
 
 class ASTConcatenateLiteral final : public ASTExpr {

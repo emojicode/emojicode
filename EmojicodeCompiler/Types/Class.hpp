@@ -29,7 +29,7 @@ class Class : public TypeDefinition {
 public:
     static const std::vector<Class *>& classes() { return classes_; }
 
-    Class(EmojicodeString name, Package *pkg, SourcePosition p, const EmojicodeString &documentation, bool final);
+    Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool final);
 
     /** The class's superclass. @c nullptr if the class has no superclass. */
     Class* superclass() const { return superclass_; }
@@ -48,14 +48,14 @@ public:
     /** Whether this class is eligible for initializer inheritance. */
     bool inheritsInitializers() const { return inheritsInitializers_; }
     /** Returns a list of all required intializers. */
-    const std::set<EmojicodeString>& requiredInitializers() const { return requiredInitializers_; }
+    const std::set<std::u32string>& requiredInitializers() const { return requiredInitializers_; }
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    Function* lookupMethod(const EmojicodeString &name) override;
+    Function* lookupMethod(const std::u32string &name) override;
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    Initializer* lookupInitializer(const EmojicodeString &name) override;
+    Initializer* lookupInitializer(const std::u32string &name) override;
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    Function* lookupTypeMethod(const EmojicodeString &name) override;
+    Function* lookupTypeMethod(const std::u32string &name) override;
 
     void prepareForCG() override;
     void prepareForSemanticAnalysis() override;
@@ -77,7 +77,7 @@ private:
     VTIProvider *protocolMethodVtiProvider() override {
         return &methodVtiProvider_;
     }
-    std::set<EmojicodeString> requiredInitializers_;
+    std::set<std::u32string> requiredInitializers_;
 
     Function* findSuperFunction(Function *function) const;
     Initializer* findSuperFunction(Initializer *function) const;

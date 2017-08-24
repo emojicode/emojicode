@@ -20,7 +20,7 @@ class ValueType : public TypeDefinition {
 public:
     static const std::vector<ValueType *>& valueTypes() { return valueTypes_; }
 
-    ValueType(EmojicodeString name, Package *p, SourcePosition pos, const EmojicodeString &documentation)
+    ValueType(std::u32string name, Package *p, SourcePosition pos, const std::u32string &documentation)
         : TypeDefinition(std::move(name), p, std::move(pos), documentation) {
         valueTypes_.push_back(this);
     }

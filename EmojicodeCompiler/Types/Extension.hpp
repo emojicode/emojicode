@@ -15,7 +15,7 @@ namespace EmojicodeCompiler {
 
 class Extension : public TypeDefinition {
 public:
-    Extension(Type extendedType, Package *pkg, SourcePosition p, const EmojicodeString &documentation)
+    Extension(Type extendedType, Package *pkg, SourcePosition p, const std::u32string &documentation)
     : TypeDefinition(extendedType.typeDefinition()->name(), pkg, std::move(p), documentation),
     extendedType_(std::move(extendedType)) {}
 

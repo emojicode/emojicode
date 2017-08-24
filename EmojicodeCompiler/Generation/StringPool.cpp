@@ -10,7 +10,7 @@
 
 namespace EmojicodeCompiler {
 
-EmojicodeInstruction StringPool::poolString(const EmojicodeString &string) {
+EmojicodeInstruction StringPool::poolString(const std::u32string &string) {
     for (size_t i = 0; i < strings_.size(); i++) {
         if (strings_[i] == string) {
             return static_cast<EmojicodeInstruction>(i);

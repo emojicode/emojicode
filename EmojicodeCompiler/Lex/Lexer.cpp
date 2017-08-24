@@ -7,13 +7,13 @@
 //
 
 #include "Lexer.hpp"
-#include "../../utf8.h"
 #include "../CompilerError.hpp"
 #include "EmojiTokenization.hpp"
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <sstream>
+#include <locale>
+#include <codecvt>
 
 namespace EmojicodeCompiler {
 
@@ -23,7 +23,7 @@ bool Lexer::detectWhitespace() {
         sourcePosition_.line++;
         return true;
     }
-    return isWhitespace(codePoint_);
+    return isWhitespace(codePoint());
 }
 
 inline bool endsWith(const std::string &value, const std::string &ending) {
@@ -44,18 +44,17 @@ TokenStream Lexer::lexFile(const std::string &path) {
         throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file %s.", path.c_str());
     }
 
-    std::stringstream stringBuffer;
-    stringBuffer << f.rdbuf();
-    return Lexer(stringBuffer.str(), path).lex();
+    auto string = std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    return Lexer(conv.from_bytes(string), path).lex();
 }
 
 void Lexer::nextChar() {
     if (!hasMoreChars()) {
         throw CompilerError(tokens_.back().position(), "Unexpected end of file.");
     }
-    size_t delta = i_;
-    codePoint_ = u8_nextchar(string_.c_str(), &i_);
-    sourcePosition_.character += i_ - delta;
+    codePoint_ = string_[i_++];
+    sourcePosition_.character++;
 }
 
 void Lexer::nextCharOrEnd() {
@@ -106,13 +105,13 @@ void Lexer::readToken(Token *token) {
     }
 }
 
-void Lexer::singleToken(Token *token, TokenType type, EmojicodeChar c) {
+void Lexer::singleToken(Token *token, TokenType type, char32_t c) {
     token->type_ = type;
     token->value_.push_back(c);
 }
 
 bool Lexer::beginToken(Token *token) {
-    switch (codePoint_) {
+    switch (codePoint()) {
         case E_INPUT_SYMBOL_LATIN_LETTERS:
             token->type_ = TokenType::String;
             return true;
@@ -127,7 +126,7 @@ bool Lexer::beginToken(Token *token) {
             return true;
         case E_THUMBS_UP_SIGN:
         case E_THUMBS_DOWN_SIGN:
-            token->type_ = (codePoint_ == E_THUMBS_UP_SIGN) ? TokenType::BooleanTrue : TokenType::BooleanFalse;
+            token->type_ = (codePoint() == E_THUMBS_UP_SIGN) ? TokenType::BooleanTrue : TokenType::BooleanFalse;
             return false;
         case E_KEYCAP_10:
             token->type_ = TokenType::Symbol;
@@ -151,29 +150,29 @@ bool Lexer::beginToken(Token *token) {
         case E_HANDS_RAISED_IN_CELEBRATION:
         case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE:
         case E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK:
-            singleToken(token, TokenType::Operator, codePoint_);
+            singleToken(token, TokenType::Operator, codePoint());
             return false;
         case E_WHITE_EXCLAMATION_MARK:
-            singleToken(token, TokenType::BeginArgumentList, codePoint_);
+            singleToken(token, TokenType::BeginArgumentList, codePoint());
             return false;
         case E_RED_EXCLAMATION_MARK:
-            singleToken(token, TokenType::EndArgumentList, codePoint_);
+            singleToken(token, TokenType::EndArgumentList, codePoint());
             return false;
     }
 
-    if (('0' <= codePoint_ && codePoint_ <= '9') || codePoint_ == '-' || codePoint_ == '+') {
+    if (('0' <= codePoint() && codePoint() <= '9') || codePoint() == '-' || codePoint() == '+') {
         token->type_ = TokenType::Integer;
-        token->value_.push_back(codePoint_);
+        token->value_.push_back(codePoint());
 
         isHex_ = false;
     }
-    else if (isEmoji(codePoint_)) {
+    else if (isEmoji(codePoint())) {
         token->type_ = TokenType::Identifier;
-        token->value_.push_back(codePoint_);
+        token->value_.push_back(codePoint());
     }
     else {
         token->type_ = TokenType::Variable;
-        token->value_.push_back(codePoint_);
+        token->value_.push_back(codePoint());
     }
     return true;
 }
@@ -181,22 +180,22 @@ bool Lexer::beginToken(Token *token) {
 Lexer::TokenState Lexer::continueToken(Token *token) {
     switch (token->type()) {
         case TokenType::Identifier:
-            if (foundZWJ_ && isEmoji(codePoint_)) {
-                token->value_.push_back(codePoint_);
+            if (foundZWJ_ && isEmoji(codePoint())) {
+                token->value_.push_back(codePoint());
                 foundZWJ_ = false;
                 return TokenState::Continues;
             }
-            if ((isEmojiModifier(codePoint_) && isEmojiModifierBase(token->value_.back())) ||
-                (isRegionalIndicator(codePoint_) && token->value().size() == 1 && isRegionalIndicator(token->value().front()))) {
-                 token->value_.push_back(codePoint_);
+            if ((isEmojiModifier(codePoint()) && isEmojiModifierBase(token->value_.back())) ||
+                (isRegionalIndicator(codePoint()) && token->value().size() == 1 && isRegionalIndicator(token->value().front()))) {
+                 token->value_.push_back(codePoint());
                  return TokenState::Continues;
              }
-            if (codePoint_ == 0x200D) {
-                token->value_.push_back(codePoint_);
+            if (codePoint() == 0x200D) {
+                token->value_.push_back(codePoint());
                 foundZWJ_ = true;
                 return TokenState::Continues;
             }
-            if (codePoint_ == 0xFE0F) {  // Emojicode ignores the Emoji modifier behind an emoji character
+            if (codePoint() == 0xFE0F) {  // Emojicode ignores the Emoji modifier behind an emoji character
                 return TokenState::Continues;
             }
             return TokenState::NextBegun;
@@ -206,22 +205,22 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
             }
             return TokenState::Continues;
         case TokenType::MultilineComment:
-            if (codePoint_ == E_OLDER_WOMAN) {
+            if (codePoint() == E_OLDER_WOMAN) {
                 return TokenState::Discard;
             }
             return TokenState::Continues;
         case TokenType::DocumentationComment:
-            if (codePoint_ == E_TACO) {
+            if (codePoint() == E_TACO) {
                 return TokenState::Ended;
             }
-            token->value_.push_back(codePoint_);
+            token->value_.push_back(codePoint());
             return TokenState::Continues;
         case TokenType::String:
             if (escapeSequence_) {
-                switch (codePoint_) {
+                switch (codePoint()) {
                     case E_INPUT_SYMBOL_LATIN_LETTERS:
                     case E_CROSS_MARK:
-                        token->value_.push_back(codePoint_);
+                        token->value_.push_back(codePoint());
                         break;
                     case 'n':
                         token->value_.push_back('\n');
@@ -233,59 +232,58 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
                         token->value_.push_back('\r');
                         break;
                     default: {
-                        char tc[5] = {0, 0, 0, 0, 0};
-                        u8_wc_toutf8(tc, codePoint_);
-                        throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌%s.", tc);
+                        throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌%s.",
+                                            utf8(std::u32string(1, codePoint())).c_str());
                     }
                 }
 
                 escapeSequence_ = false;
             }
-            else if (codePoint_ == E_CROSS_MARK) {
+            else if (codePoint() == E_CROSS_MARK) {
                 escapeSequence_ = true;
             }
-            else if (codePoint_ == E_INPUT_SYMBOL_LATIN_LETTERS) {
+            else if (codePoint() == E_INPUT_SYMBOL_LATIN_LETTERS) {
                 return TokenState::Ended;
             }
 
-            token->value_.push_back(codePoint_);
+            token->value_.push_back(codePoint());
             return TokenState::Continues;
         case TokenType::Variable:
             // A variable can consist of everything except for whitespaces and identifiers (that is emojis)
             // isWhitespace used here because if it is whitespace, the detection will take place below
-            if (isWhitespace(codePoint_) || isEmoji(codePoint_)) {
+            if (isWhitespace(codePoint()) || isEmoji(codePoint())) {
                 return TokenState::NextBegun;
             }
 
-            token->value_.push_back(codePoint_);
+            token->value_.push_back(codePoint());
             return TokenState::Continues;
         case TokenType::Integer:
-            if (('0' <= codePoint_ && codePoint_ <= '9') || (((64 < codePoint_ && codePoint_ < 71) || (96 < codePoint_ && codePoint_ < 103)) && isHex_)) {
-                token->value_.push_back(codePoint_);
+            if (('0' <= codePoint() && codePoint() <= '9') || (((64 < codePoint() && codePoint() < 71) || (96 < codePoint() && codePoint() < 103)) && isHex_)) {
+                token->value_.push_back(codePoint());
                 return TokenState::Continues;
             }
-            else if (codePoint_ == '.') {
+            else if (codePoint() == '.') {
                 token->type_ = TokenType::Double;
-                token->value_.push_back(codePoint_);
+                token->value_.push_back(codePoint());
                 return TokenState::Continues;
             }
-            else if ((codePoint_ == 'x' || codePoint_ == 'X') && token->value_.size() == 1 && token->value_[0] == '0') {
+            else if ((codePoint() == 'x' || codePoint() == 'X') && token->value_.size() == 1 && token->value_[0] == '0') {
                 isHex_ = true;
-                token->value_.push_back(codePoint_);
+                token->value_.push_back(codePoint());
                 return TokenState::Continues;
             }
-            else if (codePoint_ == '_') {
+            else if (codePoint() == '_') {
                 return TokenState::Continues;
             }
             return TokenState::NextBegun;
         case TokenType::Double:
-            if ('0' <= codePoint_ && codePoint_ <= '9') {
-                token->value_.push_back(codePoint_);
+            if ('0' <= codePoint() && codePoint() <= '9') {
+                token->value_.push_back(codePoint());
                 return TokenState::Continues;
             }
             return TokenState::NextBegun;
         case TokenType::Symbol:
-            token->value_.push_back(codePoint_);
+            token->value_.push_back(codePoint());
             return TokenState::Ended;
         default:
             throw std::logic_error("Lexer: Token continued but not handled.");

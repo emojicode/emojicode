@@ -36,7 +36,7 @@ public:
         return scope;
     }
 
-    ResolvedVariable getVariable(const EmojicodeString &name, const SourcePosition &errorPosition) override;
+    ResolvedVariable getVariable(const std::u32string &name, const SourcePosition &errorPosition) override;
     const std::vector<VariableCapture>& captures() const { return captures_; }
 private:
     SemanticScoper &capturedScoper_;

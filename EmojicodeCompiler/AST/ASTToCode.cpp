@@ -63,7 +63,7 @@ void ASTRepeatWhile::toCode(std::stringstream &stream, unsigned int indentation)
 }
 
 void ASTForIn::toCode(std::stringstream &stream, unsigned int indentation) const {
-    indent(stream, indentation) << "🔂 " << varName_.utf8() << " ";
+    indent(stream, indentation) << "🔂 " << utf8(varName_) << " ";
     iteratee_->toCode(stream);
     block_.toCode(stream, indentation);
 }
@@ -92,11 +92,11 @@ void ASTClosure::toCode(std::stringstream &stream) const {
 }
 
 void ASTErrorHandler::toCode(std::stringstream &stream, unsigned int indentation) const {
-    indent(stream, indentation) << "🥑 " << valueVarName_.utf8() << " ";
+    indent(stream, indentation) << "🥑 " << utf8(valueVarName_) << " ";
     value_->toCode(stream);
     stream << " ";
     valueBlock_.toCode(stream, indentation);
-    indent(stream, indentation) << "🍓 " << errorVarName_.utf8() << " ";
+    indent(stream, indentation) << "🍓 " << utf8(errorVarName_) << " ";
     errorBlock_.toCode(stream, indentation);
 }
 
@@ -106,51 +106,51 @@ void ASTExprStatement::toCode(std::stringstream &stream, unsigned int indentatio
 }
 
 void ASTVariableDeclaration::toCode(std::stringstream &stream, unsigned int indentation) const {
-    indent(stream, indentation) << "🍰 " << varName_.utf8() << " " << type_;
+    indent(stream, indentation) << "🍰 " << utf8(varName_) << " " << type_;
 }
 
 void ASTVariableAssignmentDecl::toCode(std::stringstream &stream, unsigned int indentation) const {
-    indent(stream, indentation) << "🍮 " << varName_.utf8() << " ";
+    indent(stream, indentation) << "🍮 " << utf8(varName_) << " ";
     expr_->toCode(stream);
 }
 
 void ASTFrozenDeclaration::toCode(std::stringstream &stream, unsigned int indentation) const {
-    indent(stream, indentation) << "🍦 " << varName_.utf8() << " ";
+    indent(stream, indentation) << "🍦 " << utf8(varName_) << " ";
     expr_->toCode(stream);
 }
 
 void ASTConditionalAssignment::toCode(std::stringstream &stream) const {
-    stream << "🍦 " << varName_.utf8() << " ";
+    stream << "🍦 " << utf8(varName_) << " ";
     expr_->toCode(stream);
 }
 
 void ASTGetVariable::toCode(std::stringstream &stream) const {
-    stream << name_.utf8();
+    stream << utf8(name_);
 }
 
 void ASTSuperMethod::toCode(std::stringstream &stream) const {
-    stream << "🐿" << name_.utf8();
+    stream << "🐿" << utf8(name_);
     args_.toCode(stream);
 }
 
 void ASTTypeMethod::toCode(std::stringstream &stream) const {
-    stream << "🍩" << name_.utf8();
+    stream << "🍩" << utf8(name_);
     callee_->toCode(stream);
     args_.toCode(stream);
 }
 
 void ASTCaptureTypeMethod::toCode(std::stringstream &stream) const {
-    stream << "🌶🍩" << name_.utf8();
+    stream << "🌶🍩" << utf8(name_);
     callee_->toCode(stream);
 }
 
 void ASTCaptureMethod::toCode(std::stringstream &stream) const {
-    stream << "🌶" << name_.utf8();
+    stream << "🌶" << utf8(name_);
     callee_->toCode(stream);
 }
 
 void ASTInitialization::toCode(std::stringstream &stream) const {
-    stream << "🔷" << name_.utf8();
+    stream << "🔷" << utf8(name_);
     typeExpr_->toCode(stream);
     args_.toCode(stream);
 }
@@ -226,7 +226,7 @@ void ASTNumberLiteral::toCode(std::stringstream &stream) const {
 }
 
 void ASTSymbolLiteral::toCode(std::stringstream &stream) const {
-    stream << "🔟" << EmojicodeString(value_).utf8();
+    stream << "🔟" << utf8(std::u32string(1, value_));
 }
 
 void ASTNothingness::toCode(std::stringstream &stream) const {
@@ -234,7 +234,7 @@ void ASTNothingness::toCode(std::stringstream &stream) const {
 }
 
 void ASTStringLiteral::toCode(std::stringstream &stream) const {
-    stream << "🔤" << value_.utf8() << "🔤";
+    stream << "🔤" << utf8(value_) << "🔤";
 }
 
 void ASTRaise::toCode(std::stringstream &stream, unsigned int indentation) const {
@@ -248,7 +248,7 @@ void ASTReturn::toCode(std::stringstream &stream, unsigned int indentation) cons
 }
 
 void ASTSuperinitializer::toCode(std::stringstream &stream, unsigned int indentation) const {
-    indent(stream, indentation) << "🐐" << name_.utf8();
+    indent(stream, indentation) << "🐐" << utf8(name_);
     arguments_.toCode(stream);
 }
 
@@ -259,7 +259,7 @@ void ASTCast::toCode(std::stringstream &stream) const {
 }
 
 void ASTMethod::toCode(std::stringstream &stream) const {
-    stream << name_.utf8();
+    stream << utf8(name_);
     callee_->toCode(stream);
     args_.toCode(stream);
 }
@@ -293,7 +293,7 @@ void ASTDictionaryLiteral::toCode(std::stringstream &stream) const {
 
 void ASTBinaryOperator::toCode(std::stringstream &stream) const {
     left_->toCode(stream);
-    stream << " " << operatorName(operator_).utf8() << " ";
+    stream << " " << utf8(operatorName(operator_)) << " ";
     right_->toCode(stream);
 }
 

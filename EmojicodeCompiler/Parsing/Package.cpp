@@ -22,57 +22,57 @@
 
 namespace EmojicodeCompiler {
 
-Class* getStandardClass(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition) {
+Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::nothingness();
     _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
     if (type.type() != TypeType::Class) {
-        throw CompilerError(errorPosition, "s package class %s is missing.", name.utf8().c_str());
+        throw CompilerError(errorPosition, "s package class %s is missing.", utf8(name).c_str());
     }
     return type.eclass();
 }
 
-Protocol* getStandardProtocol(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition) {
+Protocol* getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::nothingness();
     _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
     if (type.type() != TypeType::Protocol) {
-        throw CompilerError(errorPosition, "s package protocol %s is missing.", name.utf8().c_str());
+        throw CompilerError(errorPosition, "s package protocol %s is missing.", utf8(name).c_str());
     }
     return type.protocol();
 }
 
-ValueType* getStandardValueType(const EmojicodeString &name, Package *_, const SourcePosition &errorPosition,
+ValueType* getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition,
                                 unsigned int boxId) {
     Type type = Type::nothingness();
     _->fetchRawType(name, kDefaultNamespace, false, errorPosition, &type);
     if (type.type() != TypeType::ValueType) {
-        throw CompilerError(errorPosition, "s package value type %s is missing.", name.utf8().c_str());
+        throw CompilerError(errorPosition, "s package value type %s is missing.", utf8(name).c_str());
     }
     if (type.boxIdentifier() != boxId) {
-        throw CompilerError(errorPosition, "s package value type %s has improper box id.", name.utf8().c_str());
+        throw CompilerError(errorPosition, "s package value type %s has improper box id.", utf8(name).c_str());
     }
     return type.valueType();
 }
 
 void loadStandard(Package *s, const SourcePosition &errorPosition) {
     // Order of the following calls is important as they will cause Box IDs to be assigned
-    VT_BOOLEAN = getStandardValueType(EmojicodeString(E_OK_HAND_SIGN), s, errorPosition, T_BOOLEAN);
-    VT_INTEGER = getStandardValueType(EmojicodeString(E_STEAM_LOCOMOTIVE), s, errorPosition, T_INTEGER);
-    VT_DOUBLE = getStandardValueType(EmojicodeString(E_ROCKET), s, errorPosition, T_DOUBLE);
-    VT_SYMBOL = getStandardValueType(EmojicodeString(E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition, T_SYMBOL);
+    VT_BOOLEAN = getStandardValueType(std::u32string(1, E_OK_HAND_SIGN), s, errorPosition, T_BOOLEAN);
+    VT_INTEGER = getStandardValueType(std::u32string(1, E_STEAM_LOCOMOTIVE), s, errorPosition, T_INTEGER);
+    VT_DOUBLE = getStandardValueType(std::u32string(1, E_ROCKET), s, errorPosition, T_DOUBLE);
+    VT_SYMBOL = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition, T_SYMBOL);
 
-    CL_STRING = getStandardClass(EmojicodeString(0x1F521), s, errorPosition);
-    CL_LIST = getStandardClass(EmojicodeString(0x1F368), s, errorPosition);
-    CL_DATA = getStandardClass(EmojicodeString(0x1F4C7), s, errorPosition);
-    CL_DICTIONARY = getStandardClass(EmojicodeString(0x1F36F), s, errorPosition);
+    CL_STRING = getStandardClass(std::u32string(1, 0x1F521), s, errorPosition);
+    CL_LIST = getStandardClass(std::u32string(1, 0x1F368), s, errorPosition);
+    CL_DATA = getStandardClass(std::u32string(1, 0x1F4C7), s, errorPosition);
+    CL_DICTIONARY = getStandardClass(std::u32string(1, 0x1F36F), s, errorPosition);
 
-    PR_ENUMERATOR = getStandardProtocol(EmojicodeString(0x1F361), s, errorPosition);
-    PR_ENUMERATEABLE = getStandardProtocol(EmojicodeString(E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
+    PR_ENUMERATOR = getStandardProtocol(std::u32string(1, 0x1F361), s, errorPosition);
+    PR_ENUMERATEABLE = getStandardProtocol(std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
 }
 
 std::vector<Package *> Package::packagesLoadingOrder_;
 std::map<std::string, Package *> Package::packages_;
 
-Package* Package::loadPackage(const std::string &name, const EmojicodeString &ns, const SourcePosition &p) {
+Package* Package::loadPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {
     Package *package = findPackage(name);
 
     if (package != nullptr) {
@@ -170,7 +170,7 @@ bool Package::fetchRawType(TypeIdentifier ptn, bool optional, Type *type) {
     return fetchRawType(ptn.name, ptn.ns, optional, ptn.position, type);
 }
 
-bool Package::fetchRawType(const EmojicodeString &name, const EmojicodeString &ns, bool optional,
+bool Package::fetchRawType(const std::u32string &name, const std::u32string &ns, bool optional,
                            const SourcePosition &p, Type *type) {
     if (ns == kDefaultNamespace && ns.size() == 1) {
         switch (name.front()) {
@@ -188,8 +188,7 @@ bool Package::fetchRawType(const EmojicodeString &name, const EmojicodeString &n
         }
     }
 
-    EmojicodeString key = EmojicodeString(ns);
-    key.append(name);
+    std::u32string key = ns + name;
     auto it = types_.find(key);
 
     if (it != types_.end()) {
@@ -203,20 +202,19 @@ bool Package::fetchRawType(const EmojicodeString &name, const EmojicodeString &n
     return false;
 }
 
-void Package::exportType(Type t, EmojicodeString name, const SourcePosition &p) {
+void Package::exportType(Type t, std::u32string name, const SourcePosition &p) {
     if (finishedLoading()) {
         throw std::logic_error("The package did already finish loading. No more types can be exported.");
     }
     if (std::any_of(exportedTypes_.begin(), exportedTypes_.end(), [&name](auto &type) { return type.name == name; })) {
-        throw CompilerError(p, "A type named %s was already exported.", name.utf8().c_str());
+        throw CompilerError(p, "A type named %s was already exported.", utf8(name).c_str());
     }
     exportedTypes_.emplace_back(t, name);
 }
 
-void Package::offerType(Type t, const EmojicodeString &name, const EmojicodeString &ns, bool exportFromPkg,
-                          const SourcePosition &p) {
-    EmojicodeString key = EmojicodeString(ns);
-    key.append(name);
+void Package::offerType(Type t, const std::u32string &name, const std::u32string &ns, bool exportFromPkg,
+                        const SourcePosition &p) {
+    std::u32string key = ns + name;
     types_.emplace(key, t);
 
     if (exportFromPkg) {
@@ -224,13 +222,13 @@ void Package::offerType(Type t, const EmojicodeString &name, const EmojicodeStri
     }
 }
 
-void Package::loadInto(Package *destinationPackage, const EmojicodeString &ns, const SourcePosition &p) const {
+void Package::loadInto(Package *destinationPackage, const std::u32string &ns, const SourcePosition &p) const {
     for (auto exported : exportedTypes_) {
         Type type = Type::nothingness();
         if (destinationPackage->fetchRawType(exported.name, ns, false, p, &type)) {
             throw CompilerError(p, "Package %s could not be loaded into namespace %s of package %s: %s collides with "\
-                                "a type of the same name in the same namespace.", name().c_str(), ns.utf8().c_str(),
-                                destinationPackage->name().c_str(), exported.name.utf8().c_str());
+                                "a type of the same name in the same namespace.", name().c_str(), utf8(ns).c_str(),
+                                destinationPackage->name().c_str(), utf8(exported.name).c_str());
         }
 
         destinationPackage->offerType(exported.type, exported.name, ns, false, p);

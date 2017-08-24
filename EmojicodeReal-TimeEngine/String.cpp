@@ -7,7 +7,7 @@
 //
 
 #include "String.hpp"
-#include "../utf8.h"
+#include "utf8.h"
 #include "List.hpp"
 #include "Data.hpp"
 #include "Thread.hpp"

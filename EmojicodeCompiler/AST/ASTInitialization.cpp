@@ -53,7 +53,7 @@ Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectatio
         auto v = type.eenum()->getValueFor(name_);
         if (!v.first) {
             throw CompilerError(position(), "%s does not have a member named %s.",
-                                type.eenum()->name().utf8().c_str(), name_.utf8().c_str());
+                                utf8(type.eenum()->name()).c_str(), utf8(name_).c_str());
         }
         return type;
     }

@@ -11,7 +11,7 @@
 
 namespace EmojicodeCompiler {
 
-std::pair<bool, long> Enum::getValueFor(const EmojicodeString &c) const {
+std::pair<bool, long> Enum::getValueFor(const std::u32string &c) const {
     auto it = map_.find(c);
     if (it == map_.end()) {
         return std::pair<bool, long>(false, 0);
@@ -19,11 +19,11 @@ std::pair<bool, long> Enum::getValueFor(const EmojicodeString &c) const {
     return std::pair<bool, long>(true, it->second.first);
 }
 
-void Enum::addValueFor(const EmojicodeString &c, const SourcePosition &position, EmojicodeString documentation) {
+void Enum::addValueFor(const std::u32string &c, const SourcePosition &position, std::u32string documentation) {
     if (map_.count(c) > 0) {
         throw CompilerError(position, "Duplicate enum value.");
     }
-    map_.emplace(c, std::pair<long, EmojicodeString>(nextValue_++, documentation));
+    map_.emplace(c, std::pair<long, std::u32string>(nextValue_++, documentation));
 }
 
 }  // namespace EmojicodeCompiler

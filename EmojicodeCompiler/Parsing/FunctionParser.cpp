@@ -209,11 +209,11 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
                 case TokenType::BooleanFalse:
                     return std::make_shared<ASTBooleanFalse>(token.position());
                 case TokenType::Integer: {
-                    int64_t value = std::stoll(token.value().utf8(), nullptr, 0);
+                    int64_t value = std::stoll(utf8(token.value()), nullptr, 0);
                     return std::make_shared<ASTNumberLiteral>(value, token.position());
                 }
                 case TokenType::Double: {
-                    double d = std::stod(token.value().utf8());
+                    double d = std::stod(utf8(token.value()));
                     return std::make_shared<ASTNumberLiteral>(d, token.position());
                 }
                 case TokenType::Symbol:
@@ -254,8 +254,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return std::make_shared<ASTCaptureMethod>(name, parseExpr(0), token.position());
         }
         case E_GRAPES: {
-            auto function = new Function(EmojicodeString(E_GRAPES), AccessLevel::Public, true, Type::nothingness(),
-                                         package_, token.position(), false, EmojicodeString(), false, false,
+            auto function = new Function(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::nothingness(),
+                                         package_, token.position(), false, std::u32string(), false, false,
                                          FunctionType::Function);
 
             parseArgumentList(function, typeContext_);
@@ -297,7 +297,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
         case E_RED_APPLE:
         case E_POLICE_CARS_LIGHT:
         case E_AVOCADO:
-            throw CompilerError(token.position(), "Unexpected statement %s.", token.value().utf8().c_str());
+            throw CompilerError(token.position(), "Unexpected statement %s.", utf8(token.value()).c_str());
     }
 }
 

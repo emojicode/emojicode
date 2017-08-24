@@ -43,17 +43,17 @@ private:
 
 class ASTGetVariable final : public ASTExpr, public ASTVariable {
 public:
-    ASTGetVariable(EmojicodeString name, const SourcePosition &p) : ASTExpr(p), name_(std::move(name)) {}
+    ASTGetVariable(std::u32string name, const SourcePosition &p) : ASTExpr(p), name_(std::move(name)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(std::stringstream &stream) const override;
 
     void setReference() { reference_ = true; }
     bool reference() { return reference_; }
-    const EmojicodeString& name() { return name_; }
+    const std::u32string& name() { return name_; }
 private:
     bool reference_ = false;
-    EmojicodeString name_;
+    std::u32string name_;
 };
 
 class ASTMetaTypeInstantiation final : public ASTExpr {
@@ -110,45 +110,45 @@ private:
 
 class ASTSuperMethod final : public ASTExpr {
 public:
-    ASTSuperMethod(EmojicodeString name, ASTArguments args, const SourcePosition &p)
+    ASTSuperMethod(std::u32string name, ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(std::stringstream &stream) const override;
 private:
-    EmojicodeString name_;
+    std::u32string name_;
     Type calleeType_ = Type::nothingness();
     ASTArguments args_;
 };
 
 class ASTCaptureMethod final : public ASTExpr {
 public:
-    ASTCaptureMethod(EmojicodeString name, std::shared_ptr<ASTExpr> callee, const SourcePosition &p)
+    ASTCaptureMethod(std::u32string name, std::shared_ptr<ASTExpr> callee, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(std::stringstream &stream) const override;
 private:
-    EmojicodeString name_;
+    std::u32string name_;
     std::shared_ptr<ASTExpr> callee_;
 };
 
 class ASTCaptureTypeMethod final : public ASTExpr {
 public:
-    ASTCaptureTypeMethod(EmojicodeString name, std::shared_ptr<ASTTypeExpr> callee,
+    ASTCaptureTypeMethod(std::u32string name, std::shared_ptr<ASTTypeExpr> callee,
                          const SourcePosition &p) : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(std::stringstream &stream) const override;
 private:
-    EmojicodeString name_;
+    std::u32string name_;
     std::shared_ptr<ASTTypeExpr> callee_;
     bool contextedFunction_ = false;
 };
 
 class ASTTypeMethod final : public ASTExpr {
 public:
-    ASTTypeMethod(EmojicodeString name, std::shared_ptr<ASTTypeExpr> callee,
+    ASTTypeMethod(std::u32string name, std::shared_ptr<ASTTypeExpr> callee,
                   ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
@@ -156,20 +156,20 @@ public:
     void toCode(std::stringstream &stream) const override;
 private:
     bool valueType_ = false;
-    EmojicodeString name_;
+    std::u32string name_;
     const std::shared_ptr<ASTTypeExpr> callee_;
     ASTArguments args_;
 };
 
 class ASTConditionalAssignment final : public ASTExpr {
 public:
-    ASTConditionalAssignment(EmojicodeString varName, std::shared_ptr<ASTExpr> expr,
+    ASTConditionalAssignment(std::u32string varName, std::shared_ptr<ASTExpr> expr,
                              const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(std::stringstream &stream) const override;
 private:
-    EmojicodeString varName_;
+    std::u32string varName_;
     std::shared_ptr<ASTExpr> expr_;
     VariableID varId_;
 };

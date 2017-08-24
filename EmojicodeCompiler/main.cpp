@@ -7,7 +7,6 @@
 //
 
 #include "Generation/Writer.hpp"
-#include "../utf8.h"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
@@ -21,14 +20,14 @@
 #include <libgen.h>
 #include <unistd.h>
 #include <vector>
+#include <codecvt>
+#include <locale>
 
 namespace EmojicodeCompiler {
 
-std::string EmojicodeString::utf8() const {
-    std::string string;
-    string.resize(u8_codingsize(c_str(), size()));
-    u8_toutf8(&string[0], string.capacity(), c_str(), size());
-    return string;
+std::string utf8(const std::u32string &s) {
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    return conv.to_bytes(s);
 }
 
 static bool outputJSON = false;

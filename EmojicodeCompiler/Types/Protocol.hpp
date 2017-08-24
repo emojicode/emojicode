@@ -19,7 +19,7 @@ namespace EmojicodeCompiler {
 
 class Protocol : public TypeDefinition {
 public:
-    Protocol(EmojicodeString name, Package *pkg, const SourcePosition &p, const EmojicodeString &string);
+    Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string);
 
     uint_fast16_t index;
 

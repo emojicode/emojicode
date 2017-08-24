@@ -18,21 +18,21 @@ namespace EmojicodeCompiler {
 
 class Enum : public ValueType {
 public:
-    Enum(EmojicodeString name, Package *package, SourcePosition position, const EmojicodeString &documentation)
+    Enum(std::u32string name, Package *package, SourcePosition position, const std::u32string &documentation)
         : ValueType(std::move(name), package, std::move(position), documentation) {
             makePrimitive();
     }
 
-    std::pair<bool, long> getValueFor(const EmojicodeString &c) const;
-    void addValueFor(const EmojicodeString &c, const SourcePosition &position, EmojicodeString documentation);
+    std::pair<bool, long> getValueFor(const std::u32string &c) const;
+    void addValueFor(const std::u32string &c, const SourcePosition &position, std::u32string documentation);
 
-    const std::map<EmojicodeString, std::pair<long, EmojicodeString>>& values() const { return map_; }
+    const std::map<std::u32string, std::pair<long, std::u32string>>& values() const { return map_; }
 
     int size() const override { return 1; }
 
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 private:
-    std::map<EmojicodeString, std::pair<long, EmojicodeString>> map_;
+    std::map<std::u32string, std::pair<long, std::u32string>> map_;
     long nextValue_ = 0;
 };
 

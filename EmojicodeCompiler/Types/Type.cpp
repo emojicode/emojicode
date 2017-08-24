@@ -7,7 +7,6 @@
 //
 
 #include "Type.hpp"
-#include "../../utf8.h"
 #include "../EmojicodeCompiler.hpp"
 #include "../Function.hpp"
 #include "../Types/Class.hpp"
@@ -586,7 +585,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
         case TypeType::Protocol:
         case TypeType::Enum:
         case TypeType::ValueType:
-            string.append(type.typeDefinition()->name().utf8());
+            string.append(utf8(type.typeDefinition()->name()));
             break;
         case TypeType::MultiProtocol:
             string.append("🍱");
@@ -629,7 +628,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
                 do {
                     for (auto it : eclass->ownGenericArgumentVariables()) {
                         if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
-                            string.append(it.first.utf8());
+                            string.append(utf8(it.first));
                             return;
                         }
                     }
@@ -638,7 +637,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             else if (typeContext.calleeType().canHaveGenericArguments()) {
                 for (auto it : typeContext.calleeType().typeDefinition()->ownGenericArgumentVariables()) {
                     if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
-                        string.append(it.first.utf8());
+                        string.append(utf8(it.first));
                         return;
                     }
                 }
@@ -651,7 +650,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             if (typeContext.function() != nullptr) {
                 for (auto it : typeContext.function()->genericArgumentVariables) {
                     if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
-                        string.append(it.first.utf8());
+                        string.append(utf8(it.first));
                         return;
                     }
                 }

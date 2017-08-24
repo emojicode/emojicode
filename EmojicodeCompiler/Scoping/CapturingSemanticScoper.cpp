@@ -11,7 +11,7 @@
 
 namespace EmojicodeCompiler {
 
-ResolvedVariable CapturingSemanticScoper::getVariable(const EmojicodeString &name,
+ResolvedVariable CapturingSemanticScoper::getVariable(const std::u32string &name,
                                                       const SourcePosition &errorPosition) {
     try {
         return SemanticScoper::getVariable(name, errorPosition);

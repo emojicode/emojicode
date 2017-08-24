@@ -46,9 +46,9 @@ public:
     /** Returns the type of this token. */
     const TokenType& type() const { return type_; }
     /** Represents the value of this token. */
-    const EmojicodeString& value() const { return value_; }
+    const std::u32string& value() const { return value_; }
 
-    bool isIdentifier(EmojicodeChar ch) const;
+    bool isIdentifier(char32_t ch) const;
 
     /** Returns a string describing the token */
     const char* stringName() const;
@@ -59,7 +59,7 @@ public:
 private:
     SourcePosition position_;
     TokenType type_ = TokenType::NoType;
-    EmojicodeString value_;
+    std::u32string value_;
 };
 
 }  // namespace EmojicodeCompiler

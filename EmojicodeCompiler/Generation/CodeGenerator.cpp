@@ -146,7 +146,7 @@ void writePackageHeader(Package *pkg, Writer *writer) {
 
 void generateCode(Writer *writer) {
     auto &theStringPool = StringPool::theStringPool();
-    theStringPool.poolString(EmojicodeString());
+    theStringPool.poolString(std::u32string());
 
     Function::start->setVtiProvider(&STIProvider::globalStiProvider);
     Function::start->vtiForUse();

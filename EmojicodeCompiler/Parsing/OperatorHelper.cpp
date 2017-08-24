@@ -11,7 +11,7 @@
 
 namespace EmojicodeCompiler {
 
-OperatorType operatorType(const EmojicodeString &value) {
+OperatorType operatorType(const std::u32string &value) {
     switch (value.front()) {
         case E_HEAVY_PLUS_SIGN:
             return OperatorType::PlusOperator;
@@ -55,46 +55,46 @@ OperatorType operatorType(const EmojicodeString &value) {
     throw std::invalid_argument("Operator token has invalid value.");
 }
 
-EmojicodeString operatorName(OperatorType type) {
+std::u32string operatorName(OperatorType type) {
     switch (type) {
         case OperatorType::PlusOperator:
-            return EmojicodeString(E_HEAVY_PLUS_SIGN);
+            return std::u32string(1, E_HEAVY_PLUS_SIGN);
         case OperatorType::MinusOperator:
-            return EmojicodeString(E_HEAVY_MINUS_SIGN);
+            return std::u32string(1, E_HEAVY_MINUS_SIGN);
         case OperatorType::DivisionOperator:
-            return EmojicodeString(E_HEAVY_DIVISION_SIGN);
+            return std::u32string(1, E_HEAVY_DIVISION_SIGN);
         case OperatorType::MultiplicationOperator:
-            return EmojicodeString(E_HEAVY_MULTIPLICATION_SIGN);
+            return std::u32string(1, E_HEAVY_MULTIPLICATION_SIGN);
         case OperatorType::LogicalOrOperator:
-            return EmojicodeString(E_OPEN_HANDS);
+            return std::u32string(1, E_OPEN_HANDS);
         case OperatorType::LogicalAndOperator:
-            return EmojicodeString(E_HANDSHAKE);
+            return std::u32string(1, E_HANDSHAKE);
         case OperatorType::LessOperator:
-            return EmojicodeString(E_LEFT_POINTING_TRIANGLE);
+            return std::u32string(1, E_LEFT_POINTING_TRIANGLE);
         case OperatorType::GreaterOperator:
-            return EmojicodeString(E_RIGHT_POINTING_TRIANGLE);
+            return std::u32string(1, E_RIGHT_POINTING_TRIANGLE);
         case OperatorType::LessOrEqualOperator:
-            return EmojicodeString(E_LEFTWARDS_ARROW);
+            return std::u32string(1, E_LEFTWARDS_ARROW);
         case OperatorType::GreaterOrEqualOperator:
-            return EmojicodeString(E_RIGHTWARDS_ARROW);
+            return std::u32string(1, E_RIGHTWARDS_ARROW);
         case OperatorType::BitwiseAndOperator:
-            return EmojicodeString(E_HEAVY_LARGE_CIRCLE);
+            return std::u32string(1, E_HEAVY_LARGE_CIRCLE);
         case OperatorType::BitwiseOrOperator:
-            return EmojicodeString(E_ANGER_SYMBOL);
+            return std::u32string(1, E_ANGER_SYMBOL);
         case OperatorType::BitwiseXorOperator:
-            return EmojicodeString(E_CROSS_MARK);
+            return std::u32string(1, E_CROSS_MARK);
         case OperatorType::ShiftLeftOperator:
-            return EmojicodeString(E_LEFT_POINTING_BACKHAND_INDEX);
+            return std::u32string(1, E_LEFT_POINTING_BACKHAND_INDEX);
         case OperatorType::ShiftRightOperator:
-            return EmojicodeString(E_RIGHT_POINTING_BACKHAND_INDEX);
+            return std::u32string(1, E_RIGHT_POINTING_BACKHAND_INDEX);
         case OperatorType::RemainderOperator:
-            return EmojicodeString(E_PUT_LITTER_IN_ITS_SPACE);
+            return std::u32string(1, E_PUT_LITTER_IN_ITS_SPACE);
         case OperatorType::EqualOperator:
-            return EmojicodeString(E_HANDS_RAISED_IN_CELEBRATION);
+            return std::u32string(1, E_HANDS_RAISED_IN_CELEBRATION);
         case OperatorType::IdentityOperator:
-            return EmojicodeString(E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE);
+            return std::u32string(1, E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE);
         case OperatorType::CallOperator:
-            return EmojicodeString(E_WHITE_EXCLAMATION_MARK);
+            return std::u32string(1, E_WHITE_EXCLAMATION_MARK);
     }
 }
 

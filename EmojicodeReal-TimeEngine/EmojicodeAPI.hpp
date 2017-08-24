@@ -12,6 +12,9 @@
 #include "../EmojicodeShared.h"
 #include <cstddef>
 
+/// A Unicode codepoint
+using EmojicodeChar = uint32_t;
+
 namespace Emojicode {
 
 typedef unsigned char Byte;

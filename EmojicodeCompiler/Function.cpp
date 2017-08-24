@@ -31,11 +31,11 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
     try {
         if (super->final()) {
             throw CompilerError(position(), "%s’s implementation of %s was marked 🔏.",
-                                superSource.toString(typeContext).c_str(), name().utf8().c_str());
+                                superSource.toString(typeContext).c_str(), utf8(name()).c_str());
         }
         if (this->accessLevel() != super->accessLevel()) {
             throw CompilerError(position(), "Access level of %s’s implementation of %s doesn‘t match.",
-                                superSource.toString(typeContext).c_str(), name().utf8().c_str());
+                                superSource.toString(typeContext).c_str(), utf8(name()).c_str());
         }
 
         auto superReturnType = protocol ? super->returnType.resolveOn(*protocol, false) : super->returnType;
@@ -43,7 +43,7 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
             auto supername = superReturnType.toString(typeContext);
             auto thisname = returnType.toString(typeContext);
             throw CompilerError(position(), "Return type %s of %s is not compatible to the return type defined in %s.",
-                                returnType.toString(typeContext).c_str(), name().utf8().c_str(),
+                                returnType.toString(typeContext).c_str(), utf8(name()).c_str(),
                                 superSource.toString(typeContext).c_str());
         }
         if (superReturnType.storageType() == StorageType::Box && !protocol) {
@@ -88,10 +88,10 @@ void Function::deprecatedWarning(const SourcePosition &p) const {
     if (deprecated()) {
         if (!documentation().empty()) {
             compilerWarning(p, "%s is deprecated. Please refer to the documentation for further information:\n%s",
-                            name().utf8().c_str(), documentation().utf8().c_str());
+                            utf8(name()).c_str(), utf8(documentation()).c_str());
         }
         else {
-            compilerWarning(p, "%s is deprecated.", name().utf8().c_str());
+            compilerWarning(p, "%s is deprecated.", utf8(name()).c_str());
         }
     }
 }
@@ -108,7 +108,7 @@ void Function::assignVti() {
 void Function::setUsed(bool enqueue) {
     if (!used_) {
         used_ = true;
-        if (vtiProvider_) {
+        if (vtiProvider_ != nullptr) {
             vtiProvider_->used();
         }
         if (enqueue) {

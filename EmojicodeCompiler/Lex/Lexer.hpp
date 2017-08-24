@@ -16,7 +16,7 @@ namespace EmojicodeCompiler {
 
 class Lexer {
 public:
-    Lexer(std::string str, std::string sourcePositionFile) : string_(std::move(str)) {
+    Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::move(str)) {
         sourcePosition_.file = std::move(sourcePositionFile);
     }
     static TokenStream lexFile(const std::string &path);
@@ -40,26 +40,27 @@ private:
     /// returned TokenState::Continues.
     TokenState continueToken(Token *token);
     /// Reads exactly one token.
-    /// This method calls nextChar() as necessary. On return, ::codePoint_ already contains the next code point for
+    /// This method calls nextChar() as necessary. On return, ::codePoint() already returns the next code point for
     /// another call to beginToken(), if ::continue_ is true.
     void readToken(Token *token);
 
-    bool isNewline() { return codePoint_ == 0x0A || codePoint_ == 0x2028 || codePoint_ == 0x2029; }
+    bool isNewline() { return codePoint() == 0x0A || codePoint() == 0x2028 || codePoint() == 0x2029; }
 
     void nextChar();
     bool hasMoreChars() { return i_ < string_.size(); }
     void nextCharOrEnd();
+    char32_t codePoint() { return codePoint_; }
 
-    void singleToken(Token *token, TokenType type, EmojicodeChar c);
+    void singleToken(Token *token, TokenType type, char32_t c);
 
     bool isHex_ = false;
     bool escapeSequence_ = false;
     bool foundZWJ_ = false;
 
     bool continue_ = true;
-    EmojicodeChar codePoint_ = 0;
 
-    std::string string_;
+    char32_t codePoint_ = 0;
+    std::u32string string_;
     size_t i_ = 0;
     std::vector<Token> tokens_;
 };

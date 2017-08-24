@@ -210,7 +210,7 @@ Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation 
 }
 
 void ASTCallableCall::generateExpr(FnCodeGenerator *fncg) const {
-    CallableCallCodeGenerator(fncg).generate(*callable_, args_, EmojicodeString());
+    CallableCallCodeGenerator(fncg).generate(*callable_, args_, std::u32string());
 }
 
 Type ASTCaptureMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

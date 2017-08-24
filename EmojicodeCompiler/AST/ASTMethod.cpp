@@ -15,7 +15,7 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const EmojicodeString &name,
+Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee) {
     if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
         invert_ = true;
@@ -36,7 +36,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const Emojicod
             }
         }
         throw CompilerError(position(), "No type in %s provides a method called %s.",
-                            type.toString(analyser->typeContext()).c_str(), name.utf8().c_str());
+                            type.toString(analyser->typeContext()).c_str(), utf8(name).c_str());
     }
 
     auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), position());
@@ -45,7 +45,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const Emojicod
         if (method->mutating()) {
             if (!type.isMutable()) {
                 throw CompilerError(position(), "%s was marked 🖍 but callee is not mutable.",
-                                    method->name().utf8().c_str());
+                                    utf8(method->name()).c_str());
             }
             auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee);
             assert(varNode != nullptr && varNode->reference());

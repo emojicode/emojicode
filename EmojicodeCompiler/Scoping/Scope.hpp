@@ -26,11 +26,11 @@ public:
 
     /// Sets a variable in this scope and returns it.
     /// @throws CompilerError if a variable with this name already exists.
-    Variable& declareVariable(const EmojicodeString &variable, const Type &type, bool frozen, const SourcePosition &p);
+    Variable& declareVariable(const std::u32string &variable, const Type &type, bool frozen, const SourcePosition &p);
 
     /// Sets a variable with the given ID in this scope and returns it.
     /// @throws CompilerError if a variable with this name already exists.
-    Variable& declareVariableWithId(const EmojicodeString &variable, const Type &type, bool frozen, VariableID id,
+    Variable& declareVariableWithId(const std::u32string &variable, const Type &type, bool frozen, VariableID id,
                                     const SourcePosition &p);
 
     /// Creates an internal variable for the given type. It will be marked as mutated and non-frozen.
@@ -42,9 +42,9 @@ public:
 
     /// Retrieves a variable form the scope. Use @c hasLocalVariable to determine whether the variable with this name
     /// is in this scope.
-    Variable& getLocalVariable(const EmojicodeString &varable);
+    Variable& getLocalVariable(const std::u32string &varable);
     /// Returns true if a variable with the name @c variable is set in this scope.
-    bool hasLocalVariable(const EmojicodeString &variable) const;
+    bool hasLocalVariable(const std::u32string &variable) const;
 
     /**
      * Emits @c errorMessage if not all instance variable were initialized.
@@ -56,7 +56,7 @@ public:
     /// Emits a warning for each non-frozen variable that has not been mutated.
     void recommendFrozenVariables() const;
 
-    const std::map<EmojicodeString, Variable>& map() const { return map_; }
+    const std::map<std::u32string, Variable>& map() const { return map_; }
 
     void markInherited() {
         for (auto &pair : map_) {
@@ -72,8 +72,8 @@ public:
     }
 private:
     /// Returns a name for an internal variable
-    EmojicodeString internalName() {
-        auto string = EmojicodeString(E_LOCK);
+    std::u32string internalName() {
+        auto string = std::u32string(1, E_LOCK);
         auto number = std::to_string(internalCount_++);
         string.resize(number.size() + 1);
         auto stringData = &string[1];
@@ -83,7 +83,7 @@ private:
         return string;
     }
 
-    std::map<EmojicodeString, Variable> map_;
+    std::map<std::u32string, Variable> map_;
     int internalCount_ = 0;
     unsigned int maxVariableId_;
 };

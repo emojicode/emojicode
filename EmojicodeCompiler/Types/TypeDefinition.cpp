@@ -19,7 +19,7 @@
 
 namespace EmojicodeCompiler {
 
-void TypeDefinition::addGenericArgument(const EmojicodeString &variableName, const Type &constraint,
+void TypeDefinition::addGenericArgument(const std::u32string &variableName, const Type &constraint,
                                         const SourcePosition &p) {
     genericArgumentConstraints_.push_back(constraint);
 
@@ -50,7 +50,7 @@ void TypeDefinition::finalizeGenericArguments() {
     genericArgumentCount_ = ownGenericArgumentVariables_.size();
 }
 
-bool TypeDefinition::fetchVariable(const EmojicodeString &name, bool optional, Type *destType) {
+bool TypeDefinition::fetchVariable(const std::u32string &name, bool optional, Type *destType) {
     auto it = ownGenericArgumentVariables_.find(name);
     if (it != ownGenericArgumentVariables_.end()) {
         Type type = it->second;
@@ -63,7 +63,7 @@ bool TypeDefinition::fetchVariable(const EmojicodeString &name, bool optional, T
     return false;
 }
 
-Initializer* TypeDefinition::lookupInitializer(const EmojicodeString &name) {
+Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) {
     auto pos = initializers_.find(name);
     if (pos != initializers_.end()) {
         return pos->second;
@@ -71,7 +71,7 @@ Initializer* TypeDefinition::lookupInitializer(const EmojicodeString &name) {
     return nullptr;
 }
 
-Function* TypeDefinition::lookupMethod(const EmojicodeString &name) {
+Function* TypeDefinition::lookupMethod(const std::u32string &name) {
     auto pos = methods_.find(name);
     if (pos != methods_.end()) {
         return pos->second;
@@ -79,7 +79,7 @@ Function* TypeDefinition::lookupMethod(const EmojicodeString &name) {
     return nullptr;
 }
 
-Function* TypeDefinition::lookupTypeMethod(const EmojicodeString &name) {
+Function* TypeDefinition::lookupTypeMethod(const std::u32string &name) {
     auto pos = typeMethods_.find(name);
     if (pos != typeMethods_.end()) {
         return pos->second;
@@ -87,32 +87,32 @@ Function* TypeDefinition::lookupTypeMethod(const EmojicodeString &name) {
     return nullptr;
 }
 
-Initializer* TypeDefinition::getInitializer(const EmojicodeString &name, const Type &type,
+Initializer* TypeDefinition::getInitializer(const std::u32string &name, const Type &type,
                                                       const TypeContext &typeContext, const SourcePosition &p) {
     auto initializer = lookupInitializer(name);
     if (initializer == nullptr) {
         auto typeString = type.toString(typeContext);
-        throw CompilerError(p, "%s has no initializer %s.", typeString.c_str(), name.utf8().c_str());
+        throw CompilerError(p, "%s has no initializer %s.", typeString.c_str(), utf8(name).c_str());
     }
     return initializer;
 }
 
-Function* TypeDefinition::getMethod(const EmojicodeString &name, const Type &type,
+Function* TypeDefinition::getMethod(const std::u32string &name, const Type &type,
                                               const TypeContext &typeContext, const SourcePosition &p) {
     auto method = lookupMethod(name);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext);
-        throw CompilerError(p, "%s has no method %s", eclass.c_str(), name.utf8().c_str());
+        throw CompilerError(p, "%s has no method %s", eclass.c_str(), utf8(name).c_str());
     }
     return method;
 }
 
-Function* TypeDefinition::getTypeMethod(const EmojicodeString &name, const Type &type,
+Function* TypeDefinition::getTypeMethod(const std::u32string &name, const Type &type,
                                                   const TypeContext &typeContext, const SourcePosition &p) {
     auto method = lookupTypeMethod(name);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext);
-        throw CompilerError(p, "%s has no type method %s", eclass.c_str(), name.utf8().c_str());
+        throw CompilerError(p, "%s has no type method %s", eclass.c_str(), utf8(name).c_str());
     }
     return method;
 }
@@ -206,7 +206,7 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
                 auto typeName = type.toString(Type::nothingness());
                 auto protocolName = protocol.toString(Type::nothingness());
                 throw CompilerError(position(), "%s does not agree to protocol %s: Method %s is missing.",
-                                    typeName.c_str(), protocolName.c_str(), method->name().utf8().c_str());
+                                    typeName.c_str(), protocolName.c_str(), utf8(method->name()).c_str());
             }
 
             if (!clm->enforcePromises(method, type, protocol, TypeContext(protocol))) {

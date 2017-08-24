@@ -7,7 +7,6 @@
 //
 
 #include "PackageParser.hpp"
-#include "../../utf8.h"
 #include "../Function.hpp"
 #include "../Initializer.hpp"
 #include "../ProtocolFunction.hpp"
@@ -37,7 +36,7 @@ void PackageParser::parse() {
                 auto &nameToken = stream_.consumeToken(TokenType::Variable);
                 auto &namespaceToken = stream_.consumeToken(TokenType::Identifier);
 
-                package_->loadPackage(nameToken.value().utf8(), namespaceToken.value(), theToken.position());
+                package_->loadPackage(utf8(nameToken.value()), namespaceToken.value(), theToken.position());
 
                 continue;
             }
@@ -73,8 +72,8 @@ void PackageParser::parse() {
                     throw CompilerError(theToken.position(), "Package version already declared.");
                 }
 
-                auto major = std::stoi(stream_.consumeToken(TokenType::Integer).value().utf8());
-                auto minor = std::stoi(stream_.consumeToken(TokenType::Integer).value().utf8());
+                auto major = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
+                auto minor = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
 
                 package_->setPackageVersion(PackageVersion(major, minor));
                 if (!package_->validVersion()) {
@@ -124,7 +123,7 @@ void PackageParser::parse() {
 
                 auto &pathString = stream_.consumeToken(TokenType::String);
                 auto relativePath = std::string(pathString.position().file);
-                auto fileString = pathString.value().utf8();
+                auto fileString = utf8(pathString.value());
 
                 auto lastSlash = relativePath.find_last_of('/');
                 if (lastSlash != relativePath.npos) {
@@ -142,7 +141,7 @@ void PackageParser::parse() {
                 }
                 Function::foundStart = true;
 
-                auto function = new Function(EmojicodeString(E_CHEQUERED_FLAG), AccessLevel::Public, false,
+                auto function = new Function(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public, false,
                                              Type::nothingness(), package_, theToken.position(), false,
                                              documentation.get(), false, false,
                                              FunctionType::Function);
@@ -158,13 +157,13 @@ void PackageParser::parse() {
                 break;
             }
             default:
-                throw CompilerError(theToken.position(), "Unexpected identifier %s", theToken.value().utf8().c_str());
+                throw CompilerError(theToken.position(), "Unexpected identifier %s", utf8(theToken.value()).c_str());
         }
     }
 }
 
 void PackageParser::reservedEmojis(const Token &token, const char *place) const {
-    EmojicodeChar name = token.value()[0];
+    char32_t name = token.value()[0];
     switch (name) {
         case E_CUSTARD:
         case E_DOUGHNUT:
@@ -194,7 +193,7 @@ void PackageParser::reservedEmojis(const Token &token, const char *place) const 
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE:
         case E_BLACK_RIGHT_POINTING_DOUBLE_TRIANGLE_WITH_VERTICAL_BAR: {
             throw CompilerError(token.position(), "%s is reserved and cannot be used as %s name.",
-                                token.value().utf8().c_str(), place);
+                                utf8(token.value()).c_str(), place);
         }
     }
 }
@@ -233,7 +232,7 @@ static AccessLevel readAccessLevel(TokenStream *stream) {
     return access;
 }
 
-void PackageParser::parseProtocol(const EmojicodeString &documentation, const Token &theToken, bool exported) {
+void PackageParser::parseProtocol(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
     auto protocol = new Protocol(parsedTypeName.name, package_, theToken.position(), documentation);
 
@@ -267,7 +266,7 @@ void PackageParser::parseProtocol(const EmojicodeString &documentation, const To
     stream_.consumeToken(TokenType::Identifier);
 }
 
-void PackageParser::parseEnum(const EmojicodeString &documentation, const Token &theToken, bool exported) {
+void PackageParser::parseEnum(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
     Enum *eenum = new Enum(parsedTypeName.name, package_, theToken.position(), documentation);
@@ -278,7 +277,7 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
     package_->registerValueType(eenum);
 }
 
-void PackageParser::parseClass(const EmojicodeString &documentation, const Token &theToken, bool exported, bool final) {
+void PackageParser::parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
     auto eclass = new Class(parsedTypeName.name, package_, theToken.position(), documentation, final);
@@ -317,22 +316,22 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
     package_->offerType(classType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
     package_->registerClass(eclass);
 
-    std::set<EmojicodeString> requiredInitializers;
+    std::set<std::u32string> requiredInitializers;
     if (eclass->superclass() != nullptr) {
         // This set contains methods that must be implemented.
         // If a method is implemented it gets removed from this list by parseClassBody.
-        requiredInitializers = std::set<EmojicodeString>(eclass->superclass()->requiredInitializers());
+        requiredInitializers = std::set<std::u32string>(eclass->superclass()->requiredInitializers());
     }
 
     parseTypeDefinitionBody(classType, &requiredInitializers);
 
     if (!requiredInitializers.empty()) {
         throw CompilerError(eclass->position(), "Required initializer %s was not implemented.",
-                                     (*requiredInitializers.begin()).utf8().c_str());
+                            utf8(*requiredInitializers.begin()).c_str());
     }
 }
 
-void PackageParser::parseValueType(const EmojicodeString &documentation, const Token &theToken, bool exported) {
+void PackageParser::parseValueType(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
     auto valueType = new ValueType(parsedTypeName.name, package_, theToken.position(), documentation);
@@ -350,7 +349,7 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
     parseTypeDefinitionBody(valueTypeContent, nullptr);
 }
 
-void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<EmojicodeString> *requiredInitializers) {
+void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<std::u32string> *requiredInitializers) {
     stream_.requireIdentifier(E_GRAPES);
 
     auto owningType = typed;
@@ -489,7 +488,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
                     required.disallow();
                 }
 
-                EmojicodeString name = stream_.consumeToken(TokenType::Identifier).value();
+                std::u32string name = stream_.consumeToken(TokenType::Identifier).value();
                 Initializer *initializer = new Initializer(name, accessLevel, final.set(), owningType, package_,
                                                            token.position(), override.set(), documentation.get(),
                                                            deprecated.set(), required.set(), errorType,
@@ -509,7 +508,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
                 break;
             }
             default:
-                throw CompilerError(token.position(), "Unexpected identifier %s.", token.value().utf8().c_str());
+                throw CompilerError(token.position(), "Unexpected identifier %s.", utf8(token.value()).c_str());
         }
     }
     stream_.consumeToken(TokenType::Identifier);
@@ -518,7 +517,7 @@ void PackageParser::parseTypeDefinitionBody(const Type &typed, std::set<Emojicod
 void PackageParser::parseFunction(Function *function) {
     if (stream_.consumeTokenIf(E_RADIO)) {
         auto &indexToken = stream_.consumeToken(TokenType::Integer);
-        auto index = std::stoll(indexToken.value().utf8(), nullptr, 0);
+        auto index = std::stoll(utf8(indexToken.value()), nullptr, 0);
         if (index < 1 || index > UINT16_MAX) {
             throw CompilerError(indexToken.position(), "Linking Table Index is not in range.");
         }

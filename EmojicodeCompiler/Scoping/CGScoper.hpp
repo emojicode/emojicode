@@ -87,7 +87,7 @@ private:
     struct Scope {
         explicit Scope (size_t minIndex) : minIndex(minIndex), maxIndex(minIndex) {}
 
-        void updateMax(unsigned int x) { if (x > maxIndex) maxIndex = x; }
+        void updateMax(unsigned int x) { if (x > maxIndex) { maxIndex = x; } }
 
         size_t minIndex;
         size_t maxIndex;

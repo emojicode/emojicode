@@ -35,12 +35,12 @@ void Scope::popInitializationLevel() {
     }
 }
 
-Variable& Scope::declareVariable(const EmojicodeString &variable, const Type &type, bool frozen,
+Variable& Scope::declareVariable(const std::u32string &variable, const Type &type, bool frozen,
                                   const SourcePosition &p) {
     return declareVariableWithId(variable, type, frozen, VariableID(maxVariableId_++), p);
 }
 
-Variable& Scope::declareVariableWithId(const EmojicodeString &variable, const Type &type, bool frozen, VariableID id,
+Variable& Scope::declareVariableWithId(const std::u32string &variable, const Type &type, bool frozen, VariableID id,
                                        const SourcePosition &p) {
     if (hasLocalVariable(variable)) {
         throw CompilerError(p, "Cannot redeclare variable.");
@@ -49,11 +49,11 @@ Variable& Scope::declareVariableWithId(const EmojicodeString &variable, const Ty
     return v;
 }
 
-Variable& Scope::getLocalVariable(const EmojicodeString &variable) {
+Variable& Scope::getLocalVariable(const std::u32string &variable) {
     return map_.find(variable)->second;
 }
 
-bool Scope::hasLocalVariable(const EmojicodeString &variable) const {
+bool Scope::hasLocalVariable(const std::u32string &variable) const {
     return map_.count(variable) > 0;
 }
 
@@ -61,7 +61,7 @@ void Scope::initializerUnintializedVariablesCheck(const SourcePosition &p, const
     for (auto &it : map_) {
         Variable &cv = it.second;
         if (!cv.initialized() && !cv.type().optional() && !cv.inherited()) {
-            throw CompilerError(p, errorMessage, cv.name().utf8().c_str());
+            throw CompilerError(p, errorMessage, utf8(cv.name()).c_str());
         }
     }
 }
@@ -72,7 +72,7 @@ void Scope::recommendFrozenVariables() const {
         if (!cv.frozen() && !cv.mutated()) {
             compilerWarning(cv.position(),
                             "Variable \"%s\" was never mutated; consider making it a frozen 🍦 variable.",
-                            cv.name().utf8().c_str());
+                            utf8(cv.name()).c_str());
         }
     }
 }

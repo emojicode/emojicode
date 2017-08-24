@@ -89,14 +89,14 @@ private:
 
 class ASTSuperinitializer final : public ASTStatement {
 public:
-    ASTSuperinitializer(EmojicodeString name, ASTArguments arguments,
+    ASTSuperinitializer(std::u32string name, ASTArguments arguments,
                         const SourcePosition &p) : ASTStatement(p), name_(std::move(name)), arguments_(std::move(arguments)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
     void toCode(std::stringstream &stream, unsigned int indentation) const override;
 private:
-    EmojicodeString name_;
+    std::u32string name_;
     ASTArguments arguments_;
     Type superType_ = Type::nothingness();
 };

@@ -37,14 +37,14 @@ void SemanticAnalyser::analyse() {
             if (!scoper_->instanceScope()->hasLocalVariable(var)) {
                 throw CompilerError(initializer->position(),
                                     "🍼 was applied to \"%s\" but no matching instance variable was found.",
-                                    var.utf8().c_str());
+                                    utf8(var).c_str());
             }
             auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var);
             auto &argumentVariable = methodScope.getLocalVariable(var);
             if (!argumentVariable.type().compatibleTo(instanceVariable.type(), typeContext_)) {
                 throw CompilerError(initializer->position(),
                                     "🍼 was applied to \"%s\" but instance variable has incompatible type.",
-                                    var.utf8().c_str());
+                                    utf8(var).c_str());
             }
             instanceVariable.initialize();
 
@@ -115,13 +115,13 @@ void SemanticAnalyser::validateAccessLevel(Function *function, const SourcePosit
     if (function->accessLevel() == AccessLevel::Private) {
         if (typeContext_.calleeType().type() != function->owningType().type()
             || function->owningType().typeDefinition() != typeContext_.calleeType().typeDefinition()) {
-            throw CompilerError(p, "%s is 🔒.", function->name().utf8().c_str());
+            throw CompilerError(p, "%s is 🔒.", utf8(function->name()).c_str());
         }
     }
     else if (function->accessLevel() == AccessLevel::Protected) {
         if (typeContext_.calleeType().type() != function->owningType().type()
             || !this->typeContext_.calleeType().eclass()->inheritsFrom(function->owningType().eclass())) {
-            throw CompilerError(p, "%s is 🔐.", function->name().utf8().c_str());
+            throw CompilerError(p, "%s is 🔐.", utf8(function->name()).c_str());
         }
     }
 }
@@ -129,7 +129,7 @@ void SemanticAnalyser::validateAccessLevel(Function *function, const SourcePosit
 Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
     if (node->arguments().size() != function->arguments.size()) {
         throw CompilerError(node->position(), "%s expects %ld arguments but %ld were supplied.",
-                            function->name().utf8().c_str(), function->arguments.size(), node->arguments().size());
+                            utf8(function->name()).c_str(), function->arguments.size(), node->arguments().size());
     }
 
     TypeContext typeContext = TypeContext(type, function, &node->genericArguments());
@@ -199,7 +199,7 @@ Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, st
         arguments.reserve(expectation.genericArguments().size() - 1);
         for (auto argumentType = expectation.genericArguments().begin() + 1;
              argumentType != expectation.genericArguments().end(); argumentType++) {
-            arguments.emplace_back(EmojicodeString(expectation.genericArguments().end() - argumentType),
+            arguments.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
                                    *argumentType);
         }
         auto destinationArgTypes = std::vector<Type>(exprType.genericArguments().begin() + 1,
