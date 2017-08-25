@@ -7,8 +7,8 @@
 //
 
 #include "EmojicodeCompiler.hpp"
-#include "PackageReporter.hpp"
 #include "Application.hpp"
+#include "PackageReporter.hpp"
 #include <codecvt>
 #include <cstdlib>
 #include <cstring>

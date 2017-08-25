@@ -7,9 +7,9 @@
 //
 
 #include "Application.hpp"
-#include "Parsing/Package.hpp"
-#include "Generation/Writer.hpp"
 #include "Generation/CodeGenerator.hpp"
+#include "Generation/Writer.hpp"
+#include "Parsing/Package.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -93,4 +93,4 @@ void Application::warn(const SourcePosition &p, const std::string &warning) {
 //    printedErrorOrWarning = true;
 }
 
-}
+} // namespace EmojicodeCompiler

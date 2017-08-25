@@ -8,10 +8,10 @@
 
 #include "ASTExpr.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
+#include "../Application.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Types/Enum.hpp"
-#include "../Application.hpp"
 #include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {

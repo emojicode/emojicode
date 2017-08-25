@@ -7,10 +7,10 @@
 //
 
 #include "../EmojicodeCompiler.hpp"
+#include "../Application.hpp"
 #include "../CompilerError.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
-#include "../Application.hpp"
 #include "Class.hpp"
 #include "TypeContext.hpp"
 #include <algorithm>

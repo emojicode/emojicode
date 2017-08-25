@@ -10,10 +10,10 @@
 #define Function_hpp
 
 #include "../CompilerError.hpp"
-#include "FunctionType.hpp"
 #include "../Generation/FunctionWriter.hpp"
-#include "../Types/Type.hpp"
 #include "../Types/Class.hpp"
+#include "../Types/Type.hpp"
+#include "FunctionType.hpp"
 #include <algorithm>
 #include <experimental/optional>
 #include <map>

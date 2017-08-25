@@ -7,9 +7,9 @@
 //
 
 #include "Scope.hpp"
+#include "../Application.hpp"
 #include "../CompilerError.hpp"
 #include "../Types/TypeDefinition.hpp"
-#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 

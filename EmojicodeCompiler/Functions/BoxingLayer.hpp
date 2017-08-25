@@ -12,10 +12,10 @@
 #include <utility>
 
 #include "../EmojicodeCompiler.hpp"
-#include "Function.hpp"
-#include "FunctionType.hpp"
 #include "../Generation/STIProvider.hpp"
 #include "../Types/Type.hpp"
+#include "Function.hpp"
+#include "FunctionType.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -25,7 +25,7 @@ public:
     /// @parameter destinationFunction That function that should be called by the boxing layer. The "actual" method.
     BoxingLayer(Function *destinationFunction, std::u32string protocolName,
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
-    : Function(destinationFunction->protocolBoxingLayerName(std::move(protocolName)), AccessLevel::Private, true,
+    : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
                destinationFunction->owningType(), destinationFunction->package(), p, false, std::u32string(), false,
                false, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
         destinationFunction_(destinationFunction) {

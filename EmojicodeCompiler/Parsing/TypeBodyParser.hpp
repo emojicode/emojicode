@@ -9,9 +9,9 @@
 #ifndef TypeBodyParser_hpp
 #define TypeBodyParser_hpp
 
+#include "../Functions/Function.hpp"
 #include "AbstractParser.hpp"
 #include "AttributesParser.hpp"
-#include "../Functions/Function.hpp"
 
 namespace EmojicodeCompiler {
 

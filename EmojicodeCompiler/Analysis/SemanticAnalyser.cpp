@@ -10,6 +10,7 @@
 #include "../AST/ASTBoxing.hpp"
 #include "../AST/ASTLiterals.hpp"
 #include "../AST/ASTVariables.hpp"
+#include "../Application.hpp"
 #include "../Functions/BoxingLayer.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
@@ -18,7 +19,6 @@
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
-#include "../Application.hpp"
 #include "BoxingLayerBuilder.hpp"
 #include "SemanticAnalyser.hpp"
 #include <memory>

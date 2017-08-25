@@ -9,12 +9,12 @@
 #include "ASTStatements.hpp"
 #include "../../EmojicodeInstructions.h"
 #include "../Analysis/SemanticAnalyser.hpp"
+#include "../Application.hpp"
 #include "../Functions/FunctionType.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Scoping/CGScoper.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
-#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 

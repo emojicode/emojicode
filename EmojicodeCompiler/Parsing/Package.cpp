@@ -8,12 +8,12 @@
 
 #include "../Scoping/SemanticScoper.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
+#include "../Application.hpp"
 #include "../CompilerError.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Types/ValueType.hpp"
-#include "../Application.hpp"
-#include "Package.hpp"
 #include "DocumentParser.hpp"
+#include "Package.hpp"
 #include <algorithm>
 #include <cstring>
 #include <iostream>

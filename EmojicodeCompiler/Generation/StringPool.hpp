@@ -10,8 +10,8 @@
 #define StringPool_hpp
 
 #include "../EmojicodeCompiler.hpp"
-#include <vector>
 #include <map>
+#include <vector>
 
 namespace EmojicodeCompiler {
 

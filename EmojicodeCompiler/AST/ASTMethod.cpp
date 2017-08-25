@@ -9,10 +9,10 @@
 #include "ASTMethod.hpp"
 #include "../../EmojicodeInstructions.h"
 #include "../Analysis/SemanticAnalyser.hpp"
+#include "../Application.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
-#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 

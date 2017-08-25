@@ -9,11 +9,11 @@
 #ifndef Application_hpp
 #define Application_hpp
 
-#include "Types/Type.hpp"
 #include "Generation/StringPool.hpp"
-#include <vector>
+#include "Types/Type.hpp"
 #include <map>
 #include <queue>
+#include <vector>
 
 namespace EmojicodeCompiler {
 

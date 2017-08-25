@@ -9,10 +9,10 @@
 #ifndef ValueType_hpp
 #define ValueType_hpp
 
-#include "../Generation/STIProvider.hpp"
-#include "TypeDefinition.hpp"
-#include "../Parsing/Package.hpp"
 #include "../Application.hpp"
+#include "../Generation/STIProvider.hpp"
+#include "../Parsing/Package.hpp"
+#include "TypeDefinition.hpp"
 #include <utility>
 #include <vector>
 

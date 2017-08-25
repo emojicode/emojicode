@@ -9,8 +9,8 @@
 #include "TypeBodyParser.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
-#include "FunctionParser.hpp"
 #include "../Types/Enum.hpp"
+#include "FunctionParser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -90,7 +90,7 @@ Initializer* EnumTypeBodyParser::parseInitializer(TypeBodyAttributeParser attrib
 
 void ClassTypeBodyParser::parse() {
     TypeBodyParser::parse();
-    for (auto init : requiredInitializers_) {
+    for (auto &init : requiredInitializers_) {
         package_->app()->error(CompilerError(type_.typeDefinition()->position(), "Required initializer ",
                                              utf8(init), " was not implemented."));
     }

@@ -8,13 +8,13 @@
 
 #include "ASTLiterals.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
+#include "../Application.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Generation/StringPool.hpp"
-#include "../Types/TypeExpectation.hpp"
 #include "../Parsing/AbstractParser.hpp"
+#include "../Types/TypeExpectation.hpp"
 #include "ASTProxyExpr.hpp"
-#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 

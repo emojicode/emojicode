@@ -8,14 +8,14 @@
 
 #include "TypeDefinition.hpp"
 #include "../Analysis/BoxingLayerBuilder.hpp"
-#include "../Functions/BoxingLayer.hpp"
+#include "../Application.hpp"
 #include "../CompilerError.hpp"
+#include "../Functions/BoxingLayer.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/Type.hpp"
 #include "../Types/TypeContext.hpp"
-#include "../Application.hpp"
 #include <algorithm>
 
 namespace EmojicodeCompiler {

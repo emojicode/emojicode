@@ -9,9 +9,9 @@
 #ifndef AttributesParser_hpp
 #define AttributesParser_hpp
 
+#include "../Application.hpp"
 #include "../Emojis.h"
 #include "../Lex/TokenStream.hpp"
-#include "../Application.hpp"
 #include <array>
 #include <map>
 #include <string>

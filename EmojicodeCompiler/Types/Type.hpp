@@ -10,8 +10,8 @@
 #define Type_hpp
 
 #include "../EmojicodeCompiler.hpp"
-#include "StorageType.hpp"
 #include "../Emojis.h"
+#include "StorageType.hpp"
 #include <stdexcept>
 #include <string>
 #include <tuple>

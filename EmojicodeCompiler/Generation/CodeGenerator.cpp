@@ -7,6 +7,7 @@
 //
 
 #include "CodeGenerator.hpp"
+#include "../Application.hpp"
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
 #include "../Functions/Initializer.hpp"
@@ -14,7 +15,6 @@
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include "../Types/ValueType.hpp"
-#include "../Application.hpp"
 #include "FnCodeGenerator.hpp"
 #include "StringPool.hpp"
 #include <algorithm>

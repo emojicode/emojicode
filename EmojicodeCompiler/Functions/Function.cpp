@@ -7,11 +7,11 @@
 //
 
 #include "Function.hpp"
+#include "../Application.hpp"
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
 #include "../Generation/VTIProvider.hpp"
 #include "../Types/TypeContext.hpp"
-#include "../Application.hpp"
 #include <algorithm>
 #include <map>
 #include <stdexcept>

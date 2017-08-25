@@ -8,10 +8,10 @@
 
 #include "ASTVariables.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
+#include "../Application.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
 #include "ASTInitialization.hpp"
-#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 

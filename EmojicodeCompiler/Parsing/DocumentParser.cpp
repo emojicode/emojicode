@@ -15,8 +15,8 @@
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeContext.hpp"
 #include "../Types/ValueType.hpp"
-#include "TypeBodyParser.hpp"
 #include "FunctionParser.hpp"
+#include "TypeBodyParser.hpp"
 #include <cstring>
 #include <experimental/optional>
 
