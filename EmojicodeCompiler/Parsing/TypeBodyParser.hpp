@@ -37,9 +37,9 @@ protected:
     virtual void parseEnumValue(const SourcePosition &p, const Documentation &documentation);
     /// Called if an $instance-variable$ has been detected. The first token has already been parsed.
     virtual void parseInstanceVariable(const SourcePosition &p);
-    /// Called if a $method$ has been detected. The first token has already been parsed.
-    virtual void parseMethod(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                             AccessLevel access, const SourcePosition &p);
+    /// Called if a $method$ has been detected. All tokens up to and including the name.
+    virtual void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                             const Documentation &documentation, AccessLevel access, const SourcePosition &p);
     /// Called if an $initializer$ has been detected. The first token has already been parsed.
     virtual Initializer* parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
                                           AccessLevel access, const SourcePosition &p);
@@ -68,7 +68,7 @@ private:
 class ValueTypeBodyParser : public TypeBodyParser {
 private:
     using TypeBodyParser::TypeBodyParser;
-    void parseMethod(TypeBodyAttributeParser attributes, const Documentation &documentation,
+    void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes, const Documentation &documentation,
                      AccessLevel access, const SourcePosition &p) override;
 };
 
@@ -78,7 +78,7 @@ public:
     : TypeBodyParser(std::move(type), pkg, stream), requiredInitializers_(std::move(requiredInits)) {}
     void parse() override;
 private:
-    void parseMethod(TypeBodyAttributeParser attributes, const Documentation &documentation,
+    void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes, const Documentation &documentation,
                      AccessLevel access, const SourcePosition &p) override;
     Initializer* parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
                                   AccessLevel access, const SourcePosition &p) override;

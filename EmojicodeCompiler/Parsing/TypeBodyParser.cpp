@@ -96,18 +96,18 @@ void ClassTypeBodyParser::parse() {
     }
 }
 
-void ClassTypeBodyParser::parseMethod(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                      AccessLevel access, const SourcePosition &p) {
-    TypeBodyParser::parseMethod(attributes.allow(Attribute::Final).allow(Attribute::Override), documentation,
+void ClassTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                      const Documentation &documentation, AccessLevel access, const SourcePosition &p) {
+    TypeBodyParser::parseMethod(name, attributes.allow(Attribute::Final).allow(Attribute::Override), documentation,
                                 access, p);
 }
 
-void ValueTypeBodyParser::parseMethod(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                      AccessLevel access, const SourcePosition &p) {
+void ValueTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                      const Documentation &documentation, AccessLevel access, const SourcePosition &p) {
     if (!attributes.has(Attribute::StaticOnType)) {
         attributes.allow(Attribute::Mutating);
     }
-    TypeBodyParser::parseMethod(attributes, documentation, access, p);
+    TypeBodyParser::parseMethod(name, attributes, documentation, access, p);
 }
 
 Initializer* ClassTypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes,
@@ -125,14 +125,12 @@ void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
     type_.typeDefinition()->addInstanceVariable(instanceVar);
 }
 
-void TypeBodyParser::parseMethod(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                 AccessLevel access, const SourcePosition &p) {
+void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                 const Documentation &documentation, AccessLevel access, const SourcePosition &p) {
     attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).check(p, package_->app());
 
-    auto &methodName = stream_.consumeToken(TokenType::Identifier, TokenType::Operator);
-
     if (attributes.has(Attribute::StaticOnType)) {
-        auto *typeMethod = new Function(methodName.value(), access, attributes.has(Attribute::Final), owningType(),
+        auto *typeMethod = new Function(name, access, attributes.has(Attribute::Final), owningType(),
                                         package_, p, attributes.has(Attribute::Override), documentation.get(),
                                         attributes.has(Attribute::Deprecated), true, type_.type() == TypeType::Class ?
                                         FunctionType::ClassMethod : FunctionType::Function);
@@ -141,7 +139,7 @@ void TypeBodyParser::parseMethod(TypeBodyAttributeParser attributes, const Docum
     }
     else {
         auto mutating = type_.type() == TypeType::ValueType ? attributes.has(Attribute::Mutating) : true;
-        auto *method = new Function(methodName.value(), access, attributes.has(Attribute::Final), owningType(),
+        auto *method = new Function(name, access, attributes.has(Attribute::Final), owningType(),
                                     package_, p, attributes.has(Attribute::Override), documentation.get(),
                                     attributes.has(Attribute::Deprecated), mutating,
                                     type_.type() == TypeType::Class ? FunctionType::ObjectMethod :
@@ -199,9 +197,11 @@ void TypeBodyParser::parse() {
                 documentation.disallow();
                 parseProtocolConformance(token.position());
                 break;
-            case E_PIG:
-                parseMethod(attributes, documentation, accessLevel, token.position());
+            case E_PIG: {
+                auto &methodName = stream_.consumeToken(TokenType::Identifier, TokenType::Operator);
+                parseMethod(methodName.value(), attributes, documentation, accessLevel, token.position());
                 break;
+            }
             case E_CAT:
                 parseInitializer(attributes, documentation, accessLevel, token.position());
                 break;
