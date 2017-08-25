@@ -14,6 +14,8 @@
 #include "../EmojicodeShared.h"
 #include <sstream>
 #include <string>
+#include <codecvt>
+#include <locale>
 
 namespace EmojicodeCompiler {
 
@@ -23,8 +25,6 @@ class Type;
 class Package;
 class CompilerError;
 class ValueType;
-
-struct SourcePosition;
 
 using InstructionCount = unsigned int;
 
@@ -40,7 +40,9 @@ extern ValueType *VT_SYMBOL;
 extern ValueType *VT_INTEGER;
 extern ValueType *VT_DOUBLE;
 
-std::string utf8(const std::u32string &s);
+inline std::string utf8(const std::u32string &s) {
+    return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>().to_bytes(s);
+}
 
 template<typename Head>
 void appendToStream(std::stringstream &stream, Head head) {
@@ -52,9 +54,6 @@ void appendToStream(std::stringstream &stream, Head head, Args... args) {
     stream << head;
     appendToStream(stream, args...);
 }
-
-/** Prints the string as escaped JSON string to the given file. */
-void printJSONStringToFile(const char *string, FILE *f);
 
 }  // namespace EmojicodeCompiler
 

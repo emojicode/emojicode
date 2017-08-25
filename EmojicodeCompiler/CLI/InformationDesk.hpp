@@ -9,9 +9,6 @@
 #ifndef InformationDesk_hpp
 #define InformationDesk_hpp
 
-#include "Parsing/AbstractParser.hpp"
-#include <string>
-
 namespace EmojicodeCompiler {
     
 //class InformationDesk : public AbstractParser {

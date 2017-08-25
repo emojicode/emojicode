@@ -8,11 +8,6 @@
 
 #include "InformationDesk.hpp"
 
-#include "EmojicodeCompiler.hpp"
-#include "Lex/Lexer.hpp"
-#include <algorithm>
-#include <iostream>
-
 namespace EmojicodeCompiler {
 
 //enum class InformationDeskFunction {

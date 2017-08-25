@@ -14,6 +14,7 @@
 namespace EmojicodeCompiler {
 
 bool Application::compile() {
+    delegate_->begin();
     Package underscorePackage = Package("_", mainFile_, this);
     underscorePackage.setPackageVersion(PackageVersion(1, 0));
     underscorePackage.setRequiresBinary(false);
@@ -30,12 +31,14 @@ bool Application::compile() {
             Writer writer = Writer(outPath_);
             generateCode(&writer, this);
             writer.finish();
+            delegate_->finish();
             return true;
         }
     }
     catch (CompilerError &ce) {
         error(ce);
     }
+    delegate_->finish();
     return false;
 }
 
@@ -63,34 +66,11 @@ Package* Application::loadPackage(const std::string &name, const SourcePosition 
 
 void Application::error(const CompilerError &ce) {
     hasError_ = true;
-//    if (outputJSON) {
-//        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":",
-//                printedErrorOrWarning ? ",": "", ce.position().line, ce.position().character);
-//        printJSONStringToFile(ce.position().file.c_str(), stderr);
-//        fprintf(stderr, ", \"message\":");
-//        printJSONStringToFile(ce.message().c_str(), stderr);
-//        fprintf(stderr, "}\n");
-//    }
-//    else {
-        fprintf(stderr, "🚨 line %zu column %zu %s: %s\n", ce.position().line, ce.position().character,
-                ce.position().file.c_str(), ce.message().c_str());
-//    }
-//    printedErrorOrWarning = true;
+    delegate_->error(ce.position(), ce.message());
 }
 
 void Application::warn(const SourcePosition &p, const std::string &warning) {
-//    if (outputJSON) {
-//        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":",
-//                printedErrorOrWarning ? ",": "", p.line, p.character);
-//        printJSONStringToFile(p.file.c_str(), stderr);
-//        fprintf(stderr, ", \"message\":");
-//        printJSONStringToFile(warning.c_str(), stderr);
-//        fprintf(stderr, "}\n");
-//    }
-//    else {
-        fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", p.line, p.character, p.file.c_str(), warning.c_str());
-//    }
-//    printedErrorOrWarning = true;
+    delegate_->warn(p, warning);
 }
 
 } // namespace EmojicodeCompiler

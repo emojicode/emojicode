@@ -9,11 +9,15 @@
 #ifndef PackageReporter_hpp
 #define PackageReporter_hpp
 
-#include "Parsing/Package.hpp"
-
 namespace EmojicodeCompiler {
 
+class Package;
+
+namespace CLI {
+
 void reportPackage(Package *package);
+
+}  // namespace CLI
 
 }  // namespace EmojicodeCompiler
 

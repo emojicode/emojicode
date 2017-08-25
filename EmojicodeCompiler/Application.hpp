@@ -19,14 +19,34 @@ namespace EmojicodeCompiler {
 
 class Package;
 class Function;
+struct SourcePosition;
+
+/// ApplicationDelegate is an interface class, which is used by Application to notify about certain events, like
+/// compiler errors.
+class ApplicationDelegate {
+public:
+    /// Called when the compilation begins, i.e. when Application::compile was called.
+    virtual void begin() = 0;
+    /// A compiler error occured.
+    /// @param p The location at which the error occurred.
+    /// @param message A string message describing the error.
+    virtual void error(const SourcePosition &p, const std::string &message) = 0;
+    /// A compiler warning has been issued.
+    /// @param p The location at which the warning was issued.
+    /// @param message A string message describing the warning.
+    virtual void warn(const SourcePosition &p, const std::string &message) = 0;
+    /// Called when the compilation stops, i.e. just before Application::compile returns.
+    virtual void finish() = 0;
+};
 
 /// The application class represents an Emojicode application and manages all steps necessary to transform
 /// source code documents into an Emojicode binary.
 /// Instance of this class own all Packages associated with them.
-class Application {
+class Application final {
 public:
-    Application(std::string mainFile, std::string outPath, std::string pkgDir) : mainFile_(std::move(mainFile)),
-    outPath_(std::move(outPath)), packageDirectory_(std::move(pkgDir)) {}
+    Application(std::string mainFile, std::string outPath, std::string pkgDir, ApplicationDelegate *delegate)
+    : mainFile_(std::move(mainFile)), outPath_(std::move(outPath)), packageDirectory_(std::move(pkgDir)),
+    delegate_(delegate) {}
     /// Compile the application.
     /// @returns True iff the application has been successfully compiled and an Emojicode binary was written.
     bool compile();
@@ -93,6 +113,7 @@ private:
     const std::string outPath_;
     const std::string packageDirectory_;
     StringPool stringPool_;
+    ApplicationDelegate *delegate_;
 };
 
 }  // namespace EmojicodeCompiler

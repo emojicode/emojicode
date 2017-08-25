@@ -7,21 +7,26 @@
 //
 
 #include "PackageReporter.hpp"
-#include "EmojicodeCompiler.hpp"
-#include "Functions/Function.hpp"
-#include "Functions/Initializer.hpp"
-#include "Types/Class.hpp"
-#include "Types/Enum.hpp"
-#include "Types/Protocol.hpp"
-#include "Types/TypeContext.hpp"
-#include "Types/TypeDefinition.hpp"
-#include "Types/ValueType.hpp"
+#include "../Parsing/Package.hpp"
+#include "../EmojicodeCompiler.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
+#include "../Types/Class.hpp"
+#include "../Types/Enum.hpp"
+#include "../Types/Protocol.hpp"
+#include "../Types/TypeContext.hpp"
+#include "../Types/TypeDefinition.hpp"
+#include "../Types/ValueType.hpp"
+#include "JSONHelper.h"
 #include <cstring>
 #include <list>
 #include <map>
 #include <vector>
+#include <iostream>
 
 namespace EmojicodeCompiler {
+
+namespace CLI {
 
 enum class ReturnKind {
     Return,
@@ -35,7 +40,7 @@ void reportDocumentation(const std::u32string &documentation) {
     }
 
     printf("\"documentation\":");
-    printJSONStringToFile(utf8(documentation).c_str(), stdout);
+    jsonString(utf8(documentation), std::cout);
     putc(',', stdout);
 }
 
@@ -44,19 +49,6 @@ void reportType(const Type &type, const TypeContext &tc) {
     printf("{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
            type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
 }
-
-class CommaPrinter {
-public:
-    CommaPrinter() = default;
-    void print() {
-        if (printedFirst_) {
-            putc(',', stdout);
-        }
-        printedFirst_ = true;
-    }
-private:
-    bool printedFirst_ = false;
-};
 
 void reportGenericArguments(std::map<std::u32string, Type> map, std::vector<Type> constraints,
                             size_t superCount, const TypeContext &tc) {
@@ -72,7 +64,7 @@ void reportGenericArguments(std::map<std::u32string, Type> map, std::vector<Type
         printer.print();
         auto gan = gans[i];
         printf("{\"name\":");
-        printJSONStringToFile(utf8(gan).c_str(), stdout);
+        jsonString(utf8(gan), std::cout);
         printf(",\"constraint\":");
         reportType(constraints[i], tc);
         printf("}");
@@ -116,7 +108,7 @@ void reportFunction(Function *function, ReturnKind returnKind, const TypeContext
         printf("{\"type\":");
         reportType(argument.type, tc);
         printf(",\"name\":");
-        printJSONStringToFile(utf8(argument.variableName).c_str(), stdout);
+        jsonString(utf8(argument.variableName).c_str(), std::cout);
         printf("}");
     }
     printf("]}");
@@ -267,5 +259,7 @@ void reportPackage(Package *package) {
     }
     printf("]}");
 }
+
+}  // namespace CLI
 
 }  // namespace EmojicodeCompiler
