@@ -9,13 +9,11 @@
 #ifndef Function_hpp
 #define Function_hpp
 
-#include "CompilerError.hpp"
-
+#include "../CompilerError.hpp"
 #include "FunctionType.hpp"
-#include "Generation/FunctionWriter.hpp"
-#include "Lex/TokenStream.hpp"
-#include "Types/Class.hpp"
-#include "Types/Type.hpp"
+#include "../Generation/FunctionWriter.hpp"
+#include "../Types/Type.hpp"
+#include "../Types/Class.hpp"
 #include <algorithm>
 #include <experimental/optional>
 #include <map>
@@ -48,11 +46,6 @@ class Function {
     friend void Class::prepareForCG();
     friend Protocol;
 public:
-    static bool foundStart;
-    static Function *start;
-    static std::queue<Function *> compilationQueue;
-    static std::queue<Function *> analysisQueue;
-
     Function(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, FunctionType type)
     : position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding), deprecated_(deprecated), mutating_(mutating),

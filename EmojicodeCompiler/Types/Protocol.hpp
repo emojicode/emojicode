@@ -30,7 +30,6 @@ public:
 
     int size() const override { return 1; }
 private:
-    static uint_fast16_t nextIndex;
     VTIProvider* protocolMethodVtiProvider() override { return nullptr; }
 };
 

@@ -9,7 +9,7 @@
 #ifndef CGScoper_hpp
 #define CGScoper_hpp
 
-#include "../FunctionVariableObjectInformation.hpp"
+#include "../Functions/FunctionVariableObjectInformation.hpp"
 #include "../Types/Type.hpp"
 #include "VariableID.hpp"
 #include <cassert>

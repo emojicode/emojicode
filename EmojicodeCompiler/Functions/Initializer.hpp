@@ -10,7 +10,6 @@
 #define Initializer_hpp
 
 #include <utility>
-
 #include "Function.hpp"
 
 namespace EmojicodeCompiler {

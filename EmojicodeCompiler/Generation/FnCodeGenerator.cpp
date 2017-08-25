@@ -8,7 +8,7 @@
 
 #include "../Types/Enum.hpp"
 #include "../AST/ASTStatements.hpp"
-#include "../BoxingLayer.hpp"
+#include "../Functions/BoxingLayer.hpp"
 #include "FnCodeGenerator.hpp"
 #include <cstdlib>
 

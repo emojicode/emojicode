@@ -7,13 +7,10 @@
 //
 
 #include "ValueType.hpp"
-#include "../Function.hpp"
-#include "../Initializer.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
 
 namespace EmojicodeCompiler {
-
-std::vector<ValueType *> ValueType::valueTypes_;
-std::vector<std::vector<ObjectVariableInformation>> ValueType::boxObjectVariableInformation_(3);
 
 void ValueType::prepareForSemanticAnalysis() {
     TypeDefinition::prepareForSemanticAnalysis();

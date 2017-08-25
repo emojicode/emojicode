@@ -10,14 +10,15 @@
 #include "../AST/ASTBoxing.hpp"
 #include "../AST/ASTLiterals.hpp"
 #include "../AST/ASTVariables.hpp"
-#include "../BoxingLayer.hpp"
-#include "../Function.hpp"
-#include "../Initializer.hpp"
+#include "../Functions/BoxingLayer.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
 #include "../Types/CommonTypeFinder.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
+#include "../Application.hpp"
 #include "BoxingLayerBuilder.hpp"
 #include "SemanticAnalyser.hpp"
 #include <memory>
@@ -58,7 +59,7 @@ void SemanticAnalyser::analyse() {
     analyseReturn(function()->ast());
     analyseInitializationRequirements();
 
-    scoper_->popScope();
+    scoper_->popScope(app());
     function_->setVariableCount(scoper_->variableIdCount());
 }
 
@@ -139,7 +140,7 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
             expectType(arg.type.resolveOn(typeContext), &node->arguments()[i++], &genericArgsFinders);
         }
         for (auto &finder : genericArgsFinders) {
-            typeContext.functionGenericArguments()->emplace_back(finder.getCommonType(node->position()));
+            typeContext.functionGenericArguments()->emplace_back(finder.getCommonType(node->position(), app()));
         }
     }
     else if (node->genericArguments().size() != function->genericArgumentVariables.size()) {
@@ -206,7 +207,7 @@ Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, st
                                            expectation.genericArguments()[0], function_->position());
         buildBoxingLayerAst(boxingLayer);
         function_->package()->registerFunction(boxingLayer);
-        Function::analysisQueue.emplace(boxingLayer);
+        app()->analysisQueue.emplace(boxingLayer);
 
 //        insertNode<ASTCallableBox>(node, exprType, boxingLayer);
     }

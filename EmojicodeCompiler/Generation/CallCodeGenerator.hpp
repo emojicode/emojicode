@@ -11,7 +11,7 @@
 
 #include "../AST/ASTExpr.hpp"
 #include "../AST/ASTInitialization.hpp"
-#include "../Initializer.hpp"
+#include "../Functions/Initializer.hpp"
 #include "../Types/Protocol.hpp"
 #include "FnCodeGenerator.hpp"
 

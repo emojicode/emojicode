@@ -11,6 +11,7 @@
 
 #include "../Emojis.h"
 #include "../Lex/TokenStream.hpp"
+#include "../Application.hpp"
 #include <array>
 #include <map>
 #include <string>
@@ -31,11 +32,11 @@ public:
     AttributeParser& allow(Attribute attr) { found_.find(attr)->second.allowed = true; return *this; }
     bool has(Attribute attr) const { return found_.find(attr)->second.found; }
 
-    void check(const SourcePosition &p) const {
+    void check(const SourcePosition &p, Application *app) const {
         for (auto &pair : found_) {
             if (!pair.second.allowed && pair.second.found) {
                 auto name = utf8(std::u32string(1, static_cast<char32_t>(pair.first)));
-                throw CompilerError(p, "Attribute ", name, " not applicable.");
+                app->error(CompilerError(p, "Attribute ", name, " not applicable."));
             }
         }
     }

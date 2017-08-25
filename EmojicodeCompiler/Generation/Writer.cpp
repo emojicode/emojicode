@@ -9,8 +9,8 @@
 #include "Writer.hpp"
 #include "../../EmojicodeInstructions.h"
 #include "../CompilerError.hpp"
-#include "../Function.hpp"
-#include "../FunctionType.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/FunctionType.hpp"
 #include "FunctionWriter.hpp"
 #include <fstream>
 #include <iostream>

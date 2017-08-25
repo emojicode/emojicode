@@ -7,6 +7,7 @@
 //
 
 #include "OperatorHelper.hpp"
+#include "../Emojis.h"
 #include <stdexcept>
 
 namespace EmojicodeCompiler {

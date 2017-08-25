@@ -6,14 +6,9 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Generation/Writer.hpp"
-#include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
-#include "Function.hpp"
-#include "Generation/CodeGenerator.hpp"
 #include "PackageReporter.hpp"
-#include "Types/Class.hpp"
-#include "Types/ValueType.hpp"
+#include "Application.hpp"
 #include <codecvt>
 #include <cstdlib>
 #include <cstring>
@@ -31,9 +26,6 @@ std::string utf8(const std::u32string &s) {
 }
 
 static bool outputJSON = false;
-static bool printedErrorOrWarning = false;
-static bool hasError = false;
-std::string packageDirectory = defaultPackagesDirectory;
 
 void printJSONStringToFile(const char *string, FILE *f) {
     char c;
@@ -71,59 +63,22 @@ void printJSONStringToFile(const char *string, FILE *f) {
     fputc('"', f);
 }
 
-// MARK: Warnings
-
-void printError(const CompilerError &ce) {
-    hasError = true;
-    if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"error\", \"line\": %zu, \"character\": %zu, \"file\":",
-                printedErrorOrWarning ? ",": "", ce.position().line, ce.position().character);
-        printJSONStringToFile(ce.position().file.c_str(), stderr);
-        fprintf(stderr, ", \"message\":");
-        printJSONStringToFile(ce.message().c_str(), stderr);
-        fprintf(stderr, "}\n");
-    }
-    else {
-        fprintf(stderr, "🚨 line %zu column %zu %s: %s\n", ce.position().line, ce.position().character,
-                ce.position().file.c_str(), ce.message().c_str());
-    }
-    printedErrorOrWarning = true;
-}
-
-void compilerWarning(const SourcePosition &p, const std::string &warning) {
-    if (outputJSON) {
-        fprintf(stderr, "%s{\"type\": \"warning\", \"line\": %zu, \"character\": %zu, \"file\":",
-                printedErrorOrWarning ? ",": "", p.line, p.character);
-        printJSONStringToFile(p.file.c_str(), stderr);
-        fprintf(stderr, ", \"message\":");
-        printJSONStringToFile(warning.c_str(), stderr);
-        fprintf(stderr, "}\n");
-    }
-    else {
-        fprintf(stderr, "⚠️ line %zu col %zu %s: %s\n", p.line, p.character, p.file.c_str(), warning.c_str());
-    }
-    printedErrorOrWarning = true;
-}
-
 } // namespace EmojicodeCompiler
 
-using EmojicodeCompiler::compilerWarning;
+using EmojicodeCompiler::Application;
 using EmojicodeCompiler::outputJSON;
-using EmojicodeCompiler::packageDirectory;
-using EmojicodeCompiler::SourcePosition;
-using EmojicodeCompiler::Package;
-using EmojicodeCompiler::hasError;
-using EmojicodeCompiler::Function;
-using EmojicodeCompiler::Writer;
-using EmojicodeCompiler::PackageVersion;
-using EmojicodeCompiler::CompilerError;
 //using EmojicodeCompiler::InformationDesk;
+
+void cliWarning(const std::string &message) {
+    puts(message.c_str());
+}
 
 int main(int argc, char * argv[]) {
     try {
         const char *packageToReport = nullptr;
         std::string outPath;
         std::string sizeVariable;
+        std::string packageDirectory = defaultPackagesDirectory;
 
         const char *ppath;
         if ((ppath = getenv("EMOJICODE_PACKAGES_PATH")) != nullptr) {
@@ -163,11 +118,11 @@ int main(int argc, char * argv[]) {
         }
 
         if (argc == 0) {
-            compilerWarning(SourcePosition(0, 0, ""), "No input file provided.");
+            cliWarning("No input file provided.");
             return 1;
         }
         if (argc > 1) {
-            compilerWarning(SourcePosition(0, 0, ""), "Only the first file provided will be compiled.");
+            cliWarning("Only the first file provided will be compiled.");
         }
 
         if (outPath.empty()) {
@@ -175,34 +130,15 @@ int main(int argc, char * argv[]) {
             outPath[outPath.size() - 1] = 'b';
         }
 
-        Package underscorePackage = Package("_", argv[0]);
-        underscorePackage.setPackageVersion(PackageVersion(1, 0));
-        underscorePackage.setRequiresBinary(false);
-
-        try {
-            underscorePackage.compile();
-
-            if (!Function::foundStart) {
-                throw CompilerError(underscorePackage.position(), "No 🏁 block was found.");
-            }
-
-            if (!hasError) {
-                Writer writer = Writer(outPath);
-                generateCode(&writer);
-                writer.finish();
-            }
-        }
-        catch (CompilerError &ce) {
-            printError(ce);
-        }
+        auto application = Application(argv[0], std::move(outPath), std::move(packageDirectory));
+        bool successfullyCompiled = application.compile();
 
         if (packageToReport != nullptr) {
-            if (auto package = Package::findPackage(packageToReport)) {
+            if (auto package = application.findPackage(packageToReport)) {
                 reportPackage(package);
             }
             else {
-                compilerWarning(SourcePosition(0, 0, ""), "Report for package %s failed as it was not loaded.",
-                                packageToReport);
+                cliWarning("Report for package %s failed as it was not loaded.");
             }
         }
 
@@ -214,9 +150,7 @@ int main(int argc, char * argv[]) {
             fprintf(stderr, "]");
         }
 
-        if (hasError) {
-            return 1;
-        }
+        return successfullyCompiled ? 0 : 1;
     }
     catch (std::exception &ex) {
         printf("💣 The compiler crashed due to an internal problem: %s\nPlease report this message and the code that "

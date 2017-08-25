@@ -9,11 +9,12 @@
 #include "CodeGenerator.hpp"
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
-#include "../Initializer.hpp"
+#include "../Functions/Initializer.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include "../Types/ValueType.hpp"
+#include "../Application.hpp"
 #include "FnCodeGenerator.hpp"
 #include "StringPool.hpp"
 #include <algorithm>
@@ -144,42 +145,43 @@ void writePackageHeader(Package *pkg, Writer *writer) {
     writer->writeUInt16(pkg->classes().size());
 }
 
-void generateCode(Writer *writer) {
-    auto &theStringPool = StringPool::theStringPool();
-    theStringPool.poolString(std::u32string());
+void generateCode(Writer *writer, Application *app) {
+    app->stringPool().pool(std::u32string());
 
-    Function::start->setVtiProvider(&STIProvider::globalStiProvider);
-    Function::start->vtiForUse();
+    app->startFlagFunction()->setVtiProvider(&STIProvider::globalStiProvider);
+    app->startFlagFunction()->vtiForUse();
 
-    for (auto valueType : ValueType::valueTypes()) {
-        valueType->prepareForCG();
+    for (auto package : app->packagesInOrder()) {
+        for (auto valueType : package->valueTypes()) {
+            valueType->prepareForCG();
+        }
+        for (auto klass : package->classes()) {
+            klass->prepareForCG();
+        }
     }
-    for (auto klass : Class::classes()) {
-        klass->prepareForCG();
-    }
 
-    while (!Function::compilationQueue.empty()) {
-        Function *function = Function::compilationQueue.front();
+    while (!app->compilationQueue.empty()) {
+        Function *function = app->compilationQueue.front();
         generateCodeForFunction(function);
-        Function::compilationQueue.pop();
+        app->compilationQueue.pop();
     }
 
-    if (ValueType::maxBoxIndetifier() > 2147483647) {
+    if (app->maxBoxIndetifier() > 2147483647) {
         throw CompilerError(SourcePosition(0, 0, ""), "More than 2147483647 box identifiers in use.");
     }
-
-    writer->writeUInt16(Class::classes().size());
-    writer->writeUInt16(STIProvider::functionCount());
-
-    auto pkgCount = Package::packagesInOrder().size();
-
-    if (pkgCount > 255) {
-        throw CompilerError(Package::packagesInOrder().back()->position(), "You exceeded the maximum of 255 packages.");
+    if (app->protocolCount() == UINT16_MAX) {
+        throw CompilerError(SourcePosition(0, 0, ""), "You exceeded the limit of 65,536 protocols.");
     }
 
-    writer->writeByte(pkgCount);
+    writer->writeUInt16(app->classCount());
+    writer->writeUInt16(STIProvider::functionCount());
 
-    for (auto pkg : Package::packagesInOrder()) {
+    if (app->packagesInOrder().size() > 255) {
+        throw CompilerError(app->packagesInOrder().back()->position(), "You exceeded the maximum of 255 packages.");
+    }
+    writer->writeByte(app->packagesInOrder().size());
+
+    for (auto pkg : app->packagesInOrder()) {
         writePackageHeader(pkg, writer);
 
         for (auto cl : pkg->classes()) {
@@ -196,18 +198,20 @@ void generateCode(Writer *writer) {
     auto tableSizePlaceholder = writer->writePlaceholder<uint16_t>();
     auto smallestPlaceholder = writer->writePlaceholder<uint16_t>();
     auto countPlaceholder = writer->writePlaceholder<uint16_t>();
-    for (auto vt : ValueType::valueTypes()) {
-        if (!vt->protocols().empty()) {
-            for (auto idPair : vt->genericIds()) {
-                writer->writeUInt16(idPair.second);
-                writeProtocolTable(vt, writer);
-                if (idPair.second < smallestBoxIdentifier) {
-                    smallestBoxIdentifier = idPair.second;
+    for (auto package : app->packagesInOrder()) {
+        for (auto vt : package->valueTypes()) {
+            if (!vt->protocols().empty()) {
+                for (auto idPair : vt->genericIds()) {
+                    writer->writeUInt16(idPair.second);
+                    writeProtocolTable(vt, writer);
+                    if (idPair.second < smallestBoxIdentifier) {
+                        smallestBoxIdentifier = idPair.second;
+                    }
+                    if (idPair.second > biggestBoxIdentifier) {
+                        biggestBoxIdentifier = idPair.second;
+                    }
+                    vtWithProtocolsCount++;
                 }
-                if (idPair.second > biggestBoxIdentifier) {
-                    biggestBoxIdentifier = idPair.second;
-                }
-                vtWithProtocolsCount++;
             }
         }
     }
@@ -215,7 +219,7 @@ void generateCode(Writer *writer) {
     tableSizePlaceholder.write(vtWithProtocolsCount > 0 ? biggestBoxIdentifier - smallestBoxIdentifier + 1 : 0);
     smallestPlaceholder.write(smallestBoxIdentifier);
 
-    auto binfo = ValueType::boxObjectVariableInformation();
+    auto binfo = app->boxObjectVariableInformation();
     writer->writeInstruction(binfo.size());
     for (auto information : binfo) {
         writer->writeUInt16(information.size());
@@ -227,8 +231,8 @@ void generateCode(Writer *writer) {
         }
     }
 
-    writer->writeUInt16(theStringPool.strings().size());
-    for (auto string : theStringPool.strings()) {
+    writer->writeUInt16(app->stringPool().strings().size());
+    for (auto string : app->stringPool().strings()) {
         writer->writeUInt16(string.size());
 
         for (auto c : string) {

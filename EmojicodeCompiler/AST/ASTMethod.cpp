@@ -12,6 +12,7 @@
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
+#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -44,7 +45,8 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     if (type.type() == TypeType::ValueType) {
         if (method->mutating()) {
             if (!type.isMutable()) {
-                throw CompilerError(position(), utf8(method->name()), " was marked 🖍 but callee is not mutable.");
+                analyser->app()->error(CompilerError(position(), utf8(method->name()),
+                                                     " was marked 🖍 but callee is not mutable."));
             }
             auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee);
             assert(varNode != nullptr && varNode->reference());

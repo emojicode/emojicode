@@ -11,6 +11,7 @@
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
 #include "ASTInitialization.hpp"
+#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -51,7 +52,8 @@ void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
         auto rvar = analyser->scoper().getVariable(varName_, position());
         if (rvar.inInstanceScope && !analyser->function()->mutating() &&
             !isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-            throw CompilerError(position(), "Can’t mutate instance variable as method is not marked with 🖍.");
+            analyser->app()->error(CompilerError(position(),
+                                                 "Can’t mutate instance variable as method is not marked with 🖍."));
         }
 
         copyVariableAstInfo(rvar, analyser);

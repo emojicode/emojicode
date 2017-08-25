@@ -11,7 +11,7 @@
 
 #include "../../EmojicodeInstructions.h"
 #include "../AST/ASTNode.hpp"
-#include "../Function.hpp"
+#include "../Functions/Function.hpp"
 #include "../Scoping/CGScoper.hpp"
 #include "FunctionWriter.hpp"
 #include <memory>
@@ -29,6 +29,7 @@ public:
     FunctionWriter& wr() { return fn_->writer_; }
     CGScoper& scoper() { return scoper_; }
     CGScoper& instanceScoper() { return *instanceScoper_; }
+    Application* app() { return fn_->package()->app(); }
 
     void writeInteger(long long value);
 

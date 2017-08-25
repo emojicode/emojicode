@@ -13,7 +13,7 @@
 #include "../AST/ASTStatements.hpp"
 #include "../AST/ASTTypeExpr.hpp"
 #include "../CompilerError.hpp"
-#include "../FunctionType.hpp"
+#include "../Functions/FunctionType.hpp"
 #include "../Scoping/SemanticScoper.hpp"
 #include "../Types/Type.hpp"
 #include "../Types/TypeContext.hpp"
@@ -39,6 +39,7 @@ public:
     SemanticScoper& scoper() { return *scoper_; }
     const TypeContext& typeContext() const { return typeContext_; }
     Function* function() { return function_; }
+    Application* app() { return function_->package()->app(); }
 
     /// Parses an expression node, verifies it return type and boxes it according to the given expectation.
     /// Calls @c expect internally.

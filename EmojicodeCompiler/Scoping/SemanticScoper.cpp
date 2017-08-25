@@ -7,7 +7,7 @@
 //
 
 #include "VariableNotFoundError.hpp"
-#include "../Function.hpp"
+#include "../Functions/Function.hpp"
 #include "../Scoping/SemanticScoper.hpp"
 #include <map>
 
@@ -23,8 +23,8 @@ Scope& SemanticScoper::pushArgumentsScope(const std::vector<Argument> &arguments
 }
 
 
-void SemanticScoper::popScope() {
-    currentScope().recommendFrozenVariables();
+void SemanticScoper::popScope(Application *app) {
+    currentScope().recommendFrozenVariables(app);
 
     updateMaxVariableIdForPopping();
     scopes_.pop_front();

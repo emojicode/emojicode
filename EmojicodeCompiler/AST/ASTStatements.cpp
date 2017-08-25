@@ -9,11 +9,12 @@
 #include "ASTStatements.hpp"
 #include "../../EmojicodeInstructions.h"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../FunctionType.hpp"
+#include "../Functions/FunctionType.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Scoping/CGScoper.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
+#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -92,7 +93,7 @@ void ASTSuperinitializer::analyse(SemanticAnalyser *analyser) {
         throw CompilerError(position(), "🐐 can only be used if the class inherits from another.");
     }
     if (analyser->pathAnalyser().hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
-        throw CompilerError(position(), "Superinitializer might have already been called.");
+        analyser->app()->error(CompilerError(position(), "Superinitializer might have already been called."));
     }
 
     analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"", "\" must be "

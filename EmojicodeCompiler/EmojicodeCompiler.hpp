@@ -12,7 +12,6 @@
 #define EmojicodeCompiler_hpp
 
 #include "../EmojicodeShared.h"
-#include "Emojis.h"
 #include <sstream>
 #include <string>
 
@@ -26,8 +25,6 @@ class CompilerError;
 class ValueType;
 
 struct SourcePosition;
-
-extern std::string packageDirectory;
 
 using InstructionCount = unsigned int;
 
@@ -45,9 +42,6 @@ extern ValueType *VT_DOUBLE;
 
 std::string utf8(const std::u32string &s);
 
-/** Issues a compiler warning. The compilation is continued afterwards. */
-void compilerWarning(const SourcePosition &p, const std::string &warning);
-
 template<typename Head>
 void appendToStream(std::stringstream &stream, Head head) {
     stream << head;
@@ -59,15 +53,6 @@ void appendToStream(std::stringstream &stream, Head head, Args... args) {
     appendToStream(stream, args...);
 }
 
-template<typename... Args>
-void compilerWarning(const SourcePosition &p, Args... args) {
-    std::stringstream stream;
-    appendToStream(stream, args...);
-    compilerWarning(p, stream.str());
-}
-
-/** Prints the given error and stores that an error was raised during compilation. */
-void printError(const CompilerError &ce);
 /** Prints the string as escaped JSON string to the given file. */
 void printJSONStringToFile(const char *string, FILE *f);
 

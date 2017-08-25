@@ -9,6 +9,7 @@
 #include "../Types/CommonTypeFinder.hpp"
 #include "../Types/TypeContext.hpp"
 #include "../Types/TypeDefinition.hpp"
+#include "../Application.hpp"
 #include <algorithm>
 
 namespace EmojicodeCompiler {
@@ -62,9 +63,9 @@ void CommonTypeFinder::updateCommonProtocols(const Type &type, const TypeContext
     }
 }
 
-Type CommonTypeFinder::getCommonType(const SourcePosition &p) const {
+Type CommonTypeFinder::getCommonType(const SourcePosition &p, Application *app) const {
     if (!firstTypeFound_) {
-        compilerWarning(p, "Type is ambigious without more context.");
+        app->warn(p, "Type is ambigious without more context.");
     }
     else if (commonType_.type() == TypeType::Something || commonType_.type() == TypeType::Someobject) {
         if (commonProtocols_.size() > 1) {
@@ -73,7 +74,7 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p) const {
         if (commonProtocols_.size() == 1) {
             return commonProtocols_.front();
         }
-        compilerWarning(p, "Common type was inferred to be ", commonType_.toString(Type::nothingness()), ".");
+        app->warn(p, "Common type was inferred to be ", commonType_.toString(Type::nothingness()), ".");
     }
     return commonType_;
 }

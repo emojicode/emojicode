@@ -13,9 +13,10 @@
 #include "../AST/ASTLiterals.hpp"
 #include "../AST/ASTMethod.hpp"
 #include "../AST/ASTStatements.hpp"
-#include "../BoxingLayer.hpp"
 
 namespace EmojicodeCompiler {
+
+class BoxingLayer;
 
 /// Creates and AST representing the actions of the boxing layer and assigns it to the layer.
 /// @attention The layer must be semantically analysed and transformed!

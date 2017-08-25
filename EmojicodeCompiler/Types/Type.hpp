@@ -11,6 +11,7 @@
 
 #include "../EmojicodeCompiler.hpp"
 #include "StorageType.hpp"
+#include "../Emojis.h"
 #include <stdexcept>
 #include <string>
 #include <tuple>

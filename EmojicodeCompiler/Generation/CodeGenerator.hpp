@@ -13,8 +13,10 @@
 
 namespace EmojicodeCompiler {
 
+class Application;
+
 /** Generates the bytecode for the program and writes with the given writer. */
-void generateCode(Writer *writer);
+void generateCode(Writer *writer, Application *app);
 
 }  // namespace EmojicodeCompiler
 

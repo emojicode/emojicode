@@ -7,9 +7,9 @@
 //
 
 #include "DocumentParser.hpp"
-#include "../Function.hpp"
-#include "../Initializer.hpp"
-#include "../ProtocolFunction.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
+#include "../Functions/ProtocolFunction.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
@@ -29,20 +29,20 @@ void DocumentParser::parse() {
         auto &theToken = stream_.consumeToken(TokenType::Identifier);
         switch (theToken.value()[0]) {
             case E_PACKAGE:
-                attributes.check(theToken.position());
+                attributes.check(theToken.position(), package_->app());
                 documentation.disallow();
                 parsePackageImport(theToken.position());
                 continue;
             case E_CROCODILE:
-                attributes.allow(Attribute::Export).check(theToken.position());
+                attributes.allow(Attribute::Export).check(theToken.position(), package_->app());
                 parseProtocol(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
             case E_TURKEY:
-                attributes.allow(Attribute::Export).check(theToken.position());
+                attributes.allow(Attribute::Export).check(theToken.position(), package_->app());
                 parseEnum(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
             case E_RADIO:
-                attributes.check(theToken.position());
+                attributes.check(theToken.position(), package_->app());
                 documentation.disallow();
                 package_->setRequiresBinary();
                 if (package_->name() == "_") {
@@ -50,18 +50,18 @@ void DocumentParser::parse() {
                 }
                 continue;
             case E_TRIANGLE_POINTED_DOWN: {
-                attributes.check(theToken.position());
+                attributes.check(theToken.position(), package_->app());
                 TypeIdentifier alias = parseTypeIdentifier();
                 Type type = package_->getRawType(parseTypeIdentifier(), false);
                 package_->offerType(type, alias.name, alias.ns, false, theToken.position());
                 continue;
             }
             case E_CRYSTAL_BALL:
-                attributes.check(theToken.position());
+                attributes.check(theToken.position(), package_->app());
                 parseVersion(documentation, theToken.position());
                 continue;
             case E_WALE:
-                attributes.check(theToken.position());
+                attributes.check(theToken.position(), package_->app());
                 documentation.disallow();
                 parseExtension(documentation, theToken.position());
                 continue;
@@ -70,16 +70,16 @@ void DocumentParser::parse() {
                            attributes.has(Attribute::Final));
                 continue;
             case E_DOVE_OF_PEACE:
-                attributes.allow(Attribute::Export).check(theToken.position());
+                attributes.allow(Attribute::Export).check(theToken.position(), package_->app());
                 parseValueType(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
             case E_SCROLL:
-                attributes.check(theToken.position());
+                attributes.check(theToken.position(), package_->app());
                 documentation.disallow();
                 parseInclude(theToken.position());
                 continue;
             case E_CHEQUERED_FLAG:
-                attributes.check(theToken.position());
+                attributes.check(theToken.position(), package_->app());
                 parseStartFlag(documentation, theToken.position());
                 break;
             default:
@@ -104,14 +104,13 @@ void DocumentParser::parsePackageImport(const SourcePosition &p) {
     auto &nameToken = stream_.consumeToken(TokenType::Variable);
     auto &namespaceToken = stream_.consumeToken(TokenType::Identifier);
 
-    package_->loadPackage(utf8(nameToken.value()), namespaceToken.value(), p);
+    package_->importPackage(utf8(nameToken.value()), namespaceToken.value(), p);
 }
 
 void DocumentParser::parseStartFlag(const Documentation &documentation, const SourcePosition &p) {
-    if (Function::foundStart) {
+    if (package_->app()->hasStartFlagFunction()) {
         throw CompilerError(p, "Duplicate 🏁.");
     }
-    Function::foundStart = true;
 
     auto function = new Function(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public, false,
                                  Type::nothingness(), package_, p, false,
@@ -127,11 +126,11 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
         function->setAst(ast);
     }
     catch (CompilerError &ce) {
-        printError(ce);
+        package_->app()->error(ce);
     }
     package_->registerFunction(function);
 
-    Function::start = function;
+    package_->app()->setStartFlagFunction(function);
 }
 
 void DocumentParser::parseInclude(const SourcePosition &p) {
@@ -149,7 +148,8 @@ void DocumentParser::parseInclude(const SourcePosition &p) {
 
 void DocumentParser::parseVersion(const Documentation &documentation, const SourcePosition &p) {
     if (package_->validVersion()) {
-        throw CompilerError(p, "Package version already declared.");
+        package_->app()->error(CompilerError(p, "Package version already declared."));
+        return;
     }
 
     auto major = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
@@ -262,8 +262,8 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
 
         if (eclass->superclass()->final()) {
             auto string = type.toString(classType);
-            throw CompilerError(parsedTypeName.position, string,
-                                " can’t be used as superclass as it was marked with 🔏.");
+            package_->app()->error(CompilerError(parsedTypeName.position, string,
+                                                 " can’t be used as superclass as it was marked with 🔏."));
         }
     }
     else {

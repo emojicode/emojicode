@@ -132,14 +132,6 @@ protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation)
     : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(std::move(pos))  {}
 
-    std::map<std::u32string, Function *> methods_;
-    std::map<std::u32string, Function *> typeMethods_;
-    std::map<std::u32string, Initializer *> initializers_;
-
-    std::vector<Function *> methodList_;
-    std::vector<Initializer *> initializerList_;
-    std::vector<Function *> typeMethodList_;
-
     std::vector<Type> protocols_;
 
     Scope scope_ = Scope(0);
@@ -164,6 +156,14 @@ protected:
 
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 private:
+    std::map<std::u32string, Function *> methods_;
+    std::map<std::u32string, Function *> typeMethods_;
+    std::map<std::u32string, Initializer *> initializers_;
+
+    std::vector<Function *> methodList_;
+    std::vector<Initializer *> initializerList_;
+    std::vector<Function *> typeMethodList_;
+
     std::u32string name_;
     Package *package_;
     std::u32string documentation_;

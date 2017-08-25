@@ -8,13 +8,14 @@
 
 #include "TypeDefinition.hpp"
 #include "../Analysis/BoxingLayerBuilder.hpp"
-#include "../BoxingLayer.hpp"
+#include "../Functions/BoxingLayer.hpp"
 #include "../CompilerError.hpp"
-#include "../Function.hpp"
-#include "../Initializer.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/Type.hpp"
 #include "../Types/TypeContext.hpp"
+#include "../Application.hpp"
 #include <algorithm>
 
 namespace EmojicodeCompiler {
@@ -182,8 +183,8 @@ void TypeDefinition::prepareForSemanticAnalysis() {
     }
 
     if (!instanceVariables_.empty() && initializerList_.empty()) {
-        compilerWarning(position(), "Type defines ", instanceVariables_.size(),
-                        " instances variables but has no initializers.");
+        package_->app()->warn(position(), "Type defines ", instanceVariables_.size(),
+                              " instances variables but has no initializers.");
     }
 }
 
@@ -217,7 +218,7 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
                                           method->returnType.resolveOn(protocol), clm->position());
                 buildBoxingLayerAst(bl);
                 if (enqueBoxingLayers) {
-                    Function::analysisQueue.emplace(bl);
+                    package_->app()->analysisQueue.emplace(bl);
                 }
                 method->registerOverrider(bl);
                 addMethod(bl);
@@ -227,7 +228,7 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
             }
         }
         catch (CompilerError &ce) {
-            printError(ce);
+            package_->app()->error(ce);
         }
     }
 }

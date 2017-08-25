@@ -7,20 +7,20 @@
 //
 
 #include "Extension.hpp"
-#include "../Function.hpp"
+#include "../Functions/Function.hpp"
 #include <functional>
 
 namespace EmojicodeCompiler {
 
 void Extension::extend() {
     auto typeDef = extendedType_.typeDefinition();
-    for (auto method : methodList_) {
+    for (auto method : methodList()) {
         typeDef->addMethod(method);
     }
-    for (auto initializer : initializerList_) {
+    for (auto initializer : initializerList()) {
         typeDef->addInitializer(initializer);
     }
-    for (auto method : typeMethodList_) {
+    for (auto method : typeMethodList()) {
         typeDef->addTypeMethod(method);
     }
     for (auto &protocol : protocols_) {

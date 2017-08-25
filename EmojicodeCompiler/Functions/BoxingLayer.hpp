@@ -11,11 +11,11 @@
 
 #include <utility>
 
-#include "EmojicodeCompiler.hpp"
+#include "../EmojicodeCompiler.hpp"
 #include "Function.hpp"
 #include "FunctionType.hpp"
-#include "Generation/STIProvider.hpp"
-#include "Types/Type.hpp"
+#include "../Generation/STIProvider.hpp"
+#include "../Types/Type.hpp"
 
 namespace EmojicodeCompiler {
 

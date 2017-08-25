@@ -7,8 +7,8 @@
 //
 
 #include "AbstractParser.hpp"
-#include "../Function.hpp"
-#include "../Initializer.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeContext.hpp"
 #include <map>

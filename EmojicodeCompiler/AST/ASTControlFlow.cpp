@@ -21,7 +21,7 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
         analyser->expectType(Type::boolean(), &conditions_[i]);
         analyser->popTemporaryScope(conditions_[i]);
         blocks_[i].analyse(analyser);
-        analyser->scoper().popScope();
+        analyser->scoper().popScope(analyser->app());
         analyser->pathAnalyser().beginBranch();
     }
 
@@ -29,7 +29,7 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
         analyser->pathAnalyser().beginBranch();
         analyser->scoper().pushScope();
         blocks_.back().analyse(analyser);
-        analyser->scoper().popScope();
+        analyser->scoper().popScope(analyser->app());
         analyser->pathAnalyser().endBranch();
 
         analyser->pathAnalyser().endMutualExclusiveBranches();
@@ -86,7 +86,7 @@ void ASTRepeatWhile::analyse(SemanticAnalyser *analyser) {
     analyser->expectType(Type::boolean(), &condition_);
     analyser->popTemporaryScope(condition_);
     block_.analyse(analyser);
-    analyser->scoper().popScope();
+    analyser->scoper().popScope(analyser->app());
     analyser->pathAnalyser().endBranch();
     analyser->pathAnalyser().endUncertainBranches();
 }
@@ -130,7 +130,7 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
     var.initialize();
     varId_ = var.id();
     valueBlock_.analyse(analyser);
-    analyser->scoper().popScope();
+    analyser->scoper().popScope(analyser->app());
     analyser->pathAnalyser().endBranch();
 
     analyser->pathAnalyser().beginBranch();
@@ -139,10 +139,10 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
                                                             position()).initialize();
 
     errorBlock_.analyse(analyser);
-    analyser->scoper().popScope();
+    analyser->scoper().popScope(analyser->app());
     analyser->pathAnalyser().endBranch();
     analyser->pathAnalyser().endMutualExclusiveBranches();
-    analyser->scoper().popScope();
+    analyser->scoper().popScope(analyser->app());
 }
 
 void ASTErrorHandler::generate(FnCodeGenerator *fncg) const {
@@ -191,7 +191,7 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     elVar.initialize();
     elementVar_ = elVar.id();
     block_.analyse(analyser);
-    analyser->scoper().popScope();
+    analyser->scoper().popScope(analyser->app());
     analyser->pathAnalyser().endBranch();
     analyser->pathAnalyser().endUncertainBranches();
 }

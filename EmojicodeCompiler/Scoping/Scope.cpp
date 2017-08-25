@@ -9,6 +9,7 @@
 #include "Scope.hpp"
 #include "../CompilerError.hpp"
 #include "../Types/TypeDefinition.hpp"
+#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -67,12 +68,12 @@ void Scope::unintializedVariablesCheck(const SourcePosition &p, const std::strin
     }
 }
 
-void Scope::recommendFrozenVariables() const {
+void Scope::recommendFrozenVariables(Application *app) const {
     for (auto &it : map_) {
         const Variable &cv = it.second;
         if (!cv.frozen() && !cv.mutated()) {
-            compilerWarning(cv.position(), "Variable \"", utf8(cv.name()),
-                            "\" was never mutated; consider making it a frozen 🍦 variable.");
+            app->warn(cv.position(), "Variable \"", utf8(cv.name()),
+                      "\" was never mutated; consider making it a frozen 🍦 variable.");
         }
     }
 }

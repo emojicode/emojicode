@@ -9,7 +9,7 @@
 #ifndef FunctionVariableObjectInformation_hpp
 #define FunctionVariableObjectInformation_hpp
 
-#include "Types/Type.hpp"
+#include "../Types/Type.hpp"
 
 namespace EmojicodeCompiler {
 

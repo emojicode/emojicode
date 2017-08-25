@@ -19,6 +19,7 @@ public:
     Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::move(str)) {
         sourcePosition_.file = std::move(sourcePositionFile);
     }
+    /// Reads the file at path, creates a Lexer instance and returns the result of calling lex().
     static TokenStream lexFile(const std::string &path);
     /// Lexes the string and returns a TokenStream
     TokenStream lex();

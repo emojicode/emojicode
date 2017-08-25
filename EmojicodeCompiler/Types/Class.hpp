@@ -9,7 +9,6 @@
 #ifndef Class_hpp
 #define Class_hpp
 
-#include "../FunctionType.hpp"
 #include "../Generation/VTIProvider.hpp"
 #include "../Parsing/Package.hpp"
 #include "../Scoping/Scope.hpp"
@@ -27,8 +26,6 @@ class Type;
 
 class Class : public TypeDefinition {
 public:
-    static const std::vector<Class *>& classes() { return classes_; }
-
     Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool final);
 
     /** The class's superclass. @c nullptr if the class has no superclass. */
@@ -50,11 +47,8 @@ public:
     /** Returns a list of all required intializers. */
     const std::set<std::u32string>& requiredInitializers() const { return requiredInitializers_; }
 
-    /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     Function* lookupMethod(const std::u32string &name) override;
-    /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
     Initializer* lookupInitializer(const std::u32string &name) override;
-    /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     Function* lookupTypeMethod(const std::u32string &name) override;
 
     void prepareForCG() override;
@@ -71,8 +65,6 @@ public:
     int usedInitializerCount() { return initializerVtiProvider_.usedCount(); }
 private:
     void createCGScope() override;
-
-    static std::vector<Class *> classes_;
 
     VTIProvider *protocolMethodVtiProvider() override {
         return &methodVtiProvider_;

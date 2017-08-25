@@ -8,7 +8,7 @@
 
 #include "ASTClosure.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../Function.hpp"
+#include "../Functions/Function.hpp"
 #include "../Generation/ClosureCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Generation/STIProvider.hpp"

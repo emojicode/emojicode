@@ -8,23 +8,19 @@
 
 #include "Protocol.hpp"
 
-#include "../Function.hpp"
+#include "../Functions/Function.hpp"
+#include "../Application.hpp"
 #include <utility>
 
 namespace EmojicodeCompiler {
 
-uint_fast16_t Protocol::nextIndex = 0;
-
 Protocol::Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string)
     : TypeDefinition(std::move(name), pkg, p, string) {
-    if (nextIndex == UINT16_MAX) {
-        throw CompilerError(p, "You exceeded the limit of 65,536 protocols.");
-    }
-    index = nextIndex++;
+    index = package()->app()->protocolIndex();
 }
 
 void Protocol::addMethod(Function *method) {
-    method->setVti(static_cast<int>(methodList_.size()));
+    method->setVti(static_cast<int>(methodList().size()));
     TypeDefinition::addMethod(method);
 }
 

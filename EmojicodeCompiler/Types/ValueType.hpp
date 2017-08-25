@@ -11,6 +11,8 @@
 
 #include "../Generation/STIProvider.hpp"
 #include "TypeDefinition.hpp"
+#include "../Parsing/Package.hpp"
+#include "../Application.hpp"
 #include <utility>
 #include <vector>
 
@@ -18,12 +20,8 @@ namespace EmojicodeCompiler {
 
 class ValueType : public TypeDefinition {
 public:
-    static const std::vector<ValueType *>& valueTypes() { return valueTypes_; }
-
     ValueType(std::u32string name, Package *p, SourcePosition pos, const std::u32string &documentation)
-        : TypeDefinition(std::move(name), p, std::move(pos), documentation) {
-        valueTypes_.push_back(this);
-    }
+        : TypeDefinition(std::move(name), p, std::move(pos), documentation) {}
 
     void prepareForSemanticAnalysis() override;
 
@@ -45,25 +43,22 @@ public:
         if (genericId != genericIds_.end()) {
             return genericId->second;
         }
-        auto id = boxObjectVariableInformation_.size();
+        auto id = package()->app()->boxObjectVariableInformation().size();
         genericIds_.emplace(genericArguments, id);
-        boxObjectVariableInformation_.emplace_back();
+        package()->app()->boxObjectVariableInformation().emplace_back();
+
 //        for (auto variable : instanceScope().map()) {
 //            variable.second.type().objectVariableRecords(variable.second.id(), &boxObjectVariableInformation_.back());
 //        }
         // TODO: fix
         return static_cast<uint32_t>(id);
     }
-    static uint32_t maxBoxIndetifier() { return static_cast<uint32_t>(boxObjectVariableInformation_.size()); }
-    static const std::vector<std::vector<ObjectVariableInformation>>& boxObjectVariableInformation() {
-        return boxObjectVariableInformation_;
-    };
+    
     const std::map<std::vector<Type>, uint32_t>& genericIds() { return genericIds_; }
 
     void makePrimitive() { primitive_ = true; }
     bool isPrimitive() { return primitive_; }
 private:
-    static std::vector<ValueType *> valueTypes_;
     ValueTypeVTIProvider vtiProvider_;
     bool primitive_ = false;
 
@@ -71,7 +66,6 @@ private:
         return &vtiProvider_;
     }
 
-    static std::vector<std::vector<ObjectVariableInformation>> boxObjectVariableInformation_;
     std::map<std::vector<Type>, uint32_t> genericIds_;
 };
 

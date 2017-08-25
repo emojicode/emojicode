@@ -7,6 +7,7 @@
 //
 
 #include "BoxingLayerBuilder.hpp"
+#include "../Functions/BoxingLayer.hpp"
 #include <memory>
 
 namespace EmojicodeCompiler {

@@ -10,15 +10,16 @@
 
 namespace EmojicodeCompiler {
 
-EmojicodeInstruction StringPool::poolString(const std::u32string &string) {
-    for (size_t i = 0; i < strings_.size(); i++) {
-        if (strings_[i] == string) {
-            return static_cast<EmojicodeInstruction>(i);
-        }
+EmojicodeInstruction StringPool::pool(const std::u32string &string) {
+    auto it = pool_.find(string);
+    if (it != pool_.end()) {
+        return it->second;
     }
 
-    strings_.push_back(string);
-    return static_cast<EmojicodeInstruction>(strings_.size() - 1);
+    strings_.emplace_back(string);
+    auto index = static_cast<EmojicodeInstruction>(strings_.size() - 1);
+    pool_.emplace(string, index);
+    return index;
 }
 
 }  // namespace EmojicodeCompiler

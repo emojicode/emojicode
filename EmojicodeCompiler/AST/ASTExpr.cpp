@@ -11,6 +11,7 @@
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Types/Enum.hpp"
+#include "../Application.hpp"
 #include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
@@ -57,16 +58,16 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
 
     Type originalType = value_->analyse(analyser, expectation);
     if (originalType.compatibleTo(type, analyser->typeContext())) {
-        throw CompilerError(position(), "Unnecessary cast.");
+        analyser->app()->error(CompilerError(position(), "Unnecessary cast."));
     }
     else if (!type.compatibleTo(originalType, analyser->typeContext())) {
         auto typeString = type.toString(analyser->typeContext());
-        throw CompilerError(position(), "Cast to unrelated type ", typeString," will always fail.");
+        analyser->app()->error(CompilerError(position(), "Cast to unrelated type ", typeString," will always fail."));
     }
 
     if (type.type() == TypeType::Class) {
         if (!type.genericArguments().empty()) {
-            throw CompilerError(position(), "Class casts with generic arguments are not available.");
+            analyser->app()->error(CompilerError(position(), "Class casts with generic arguments are not available."));
         }
 
         if (originalType.type() == TypeType::Someobject || originalType.type() == TypeType::Class) {
@@ -83,7 +84,7 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     }
     else if (type.type() == TypeType::Protocol && isStatic(typeExpr_->availability())) {
         if (!type.genericArguments().empty()) {
-            throw CompilerError(position(), "Cannot cast to generic protocols.");
+            analyser->app()->error(CompilerError(position(), "Cannot cast to generic protocols."));
         }
         castType_ = CastType::ToProtocol;
         assert(originalType.storageType() == StorageType::Box);
@@ -154,7 +155,7 @@ Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
     auto type = analyser->analyseTypeExpr(callee_, expectation);
 
     if (type.optional()) {
-        compilerWarning(position(), "You cannot call optionals on 🍬.");
+        analyser->app()->warn(position(), "You cannot call optionals on 🍬.");
     }
 
     Function *method;

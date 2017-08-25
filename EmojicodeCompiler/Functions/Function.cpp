@@ -7,20 +7,16 @@
 //
 
 #include "Function.hpp"
-#include "CompilerError.hpp"
-#include "EmojicodeCompiler.hpp"
-#include "Generation/VTIProvider.hpp"
-#include "Types/TypeContext.hpp"
+#include "../CompilerError.hpp"
+#include "../EmojicodeCompiler.hpp"
+#include "../Generation/VTIProvider.hpp"
+#include "../Types/TypeContext.hpp"
+#include "../Application.hpp"
 #include <algorithm>
 #include <map>
 #include <stdexcept>
 
 namespace EmojicodeCompiler {
-
-bool Function::foundStart = false;
-Function *Function::start;
-std::queue<Function*> Function::compilationQueue;
-std::queue<Function*> Function::analysisQueue;
 
 void Function::setLinkingTableIndex(int index) {
     linkingTableIndex_ = index;
@@ -77,7 +73,7 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
         }
     }
     catch (CompilerError &ce) {
-        printError(ce);
+        package_->app()->error(ce);
     }
     return true;
 }
@@ -85,11 +81,11 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
 void Function::deprecatedWarning(const SourcePosition &p) const {
     if (deprecated()) {
         if (!documentation().empty()) {
-            compilerWarning(p, utf8(name()), " is deprecated. Please refer to the "\
-                            "documentation for further information: ", utf8(documentation()));
+            package_->app()->warn(p, utf8(name()), " is deprecated. Please refer to the "\
+                                  "documentation for further information: ", utf8(documentation()));
         }
         else {
-            compilerWarning(p, utf8(name()), " is deprecated.");
+            package_->app()->warn(p, utf8(name()), " is deprecated.");
         }
     }
 }
@@ -110,7 +106,7 @@ void Function::setUsed(bool enqueue) {
             vtiProvider_->used();
         }
         if (enqueue) {
-            Function::compilationQueue.emplace(this);
+            package_->app()->compilationQueue.emplace(this);
         }
         for (Function *function : overriders_) {
             function->setUsed();

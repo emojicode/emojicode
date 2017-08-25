@@ -7,8 +7,8 @@
 //
 
 #include "TypeBodyParser.hpp"
-#include "../Function.hpp"
-#include "../Initializer.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
 #include "FunctionParser.hpp"
 #include "../Types/Enum.hpp"
 
@@ -30,7 +30,7 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
             function->setAst(ast);
         }
         catch (CompilerError &ce) {
-            printError(ce);
+            package_->app()->error(ce);
         }
     }
 }
@@ -63,7 +63,8 @@ void TypeBodyParser::parseProtocolConformance(const SourcePosition &p) {
     Type type = parseType(type_, TypeDynamism::GenericTypeVariables);
 
     if (type.type() != TypeType::Protocol || type.optional()) {
-        throw CompilerError(p, "The given type is not a protocol.");
+        package_->app()->error(CompilerError(p, "The given type is not a protocol."));
+        return;
     }
 
     type_.typeDefinition()->addProtocol(type, p);
@@ -89,9 +90,9 @@ Initializer* EnumTypeBodyParser::parseInitializer(TypeBodyAttributeParser attrib
 
 void ClassTypeBodyParser::parse() {
     TypeBodyParser::parse();
-    if (!requiredInitializers_.empty()) {
-        throw CompilerError(type_.typeDefinition()->position(), "Required initializer ",
-                            utf8(*requiredInitializers_.begin()), " was not implemented.");
+    for (auto init : requiredInitializers_) {
+        package_->app()->error(CompilerError(type_.typeDefinition()->position(), "Required initializer ",
+                                             utf8(init), " was not implemented."));
     }
 }
 
@@ -126,7 +127,7 @@ void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
 
 void TypeBodyParser::parseMethod(TypeBodyAttributeParser attributes, const Documentation &documentation,
                                  AccessLevel access, const SourcePosition &p) {
-    attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).check(p);
+    attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).check(p, package_->app());
 
     auto &methodName = stream_.consumeToken(TokenType::Identifier, TokenType::Operator);
 
@@ -152,7 +153,7 @@ void TypeBodyParser::parseMethod(TypeBodyAttributeParser attributes, const Docum
 
 Initializer* TypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
                                               AccessLevel access, const SourcePosition &p) {
-    attributes.check(p);
+    attributes.check(p, package_->app());
 
     std::experimental::optional<Type> errorType = std::experimental::nullopt;
     if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
@@ -185,16 +186,16 @@ void TypeBodyParser::parse() {
         auto &token = stream_.consumeToken(TokenType::Identifier);
         switch (token.value()[0]) {
             case E_SHORTCAKE:
-                attributes.check(token.position());
+                attributes.check(token.position(), package_->app());
                 documentation.disallow();
                 parseInstanceVariable(token.position());
                 break;
             case E_RADIO_BUTTON:
-                attributes.check(token.position());
+                attributes.check(token.position(), package_->app());
                 parseEnumValue(token.position(), documentation);
                 break;
             case E_CROCODILE:
-                attributes.check(token.position());
+                attributes.check(token.position(), package_->app());
                 documentation.disallow();
                 parseProtocolConformance(token.position());
                 break;

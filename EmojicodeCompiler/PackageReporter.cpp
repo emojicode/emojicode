@@ -8,8 +8,8 @@
 
 #include "PackageReporter.hpp"
 #include "EmojicodeCompiler.hpp"
-#include "Function.hpp"
-#include "Initializer.hpp"
+#include "Functions/Function.hpp"
+#include "Functions/Initializer.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"

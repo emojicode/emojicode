@@ -9,7 +9,7 @@
 #ifndef OperatorHelper_hpp
 #define OperatorHelper_hpp
 
-#include "../EmojicodeCompiler.hpp"
+#include <string>
 
 namespace EmojicodeCompiler {
 

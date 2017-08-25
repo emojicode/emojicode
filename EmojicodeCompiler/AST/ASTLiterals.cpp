@@ -14,6 +14,7 @@
 #include "../Types/TypeExpectation.hpp"
 #include "../Parsing/AbstractParser.hpp"
 #include "ASTProxyExpr.hpp"
+#include "../Application.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -23,7 +24,7 @@ Type ASTStringLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation
 
 void ASTStringLiteral::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_GET_STRING_POOL);
-    fncg->wr().writeInstruction(StringPool::theStringPool().poolString(value_));
+    fncg->wr().writeInstruction(fncg->app()->stringPool().pool(value_));
 }
 
 Type ASTBooleanTrue::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
@@ -82,7 +83,7 @@ Type ASTThis::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     if (isSuperconstructorRequired(analyser->function()->functionType()) &&
         !analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
         analyser->typeContext().calleeType().eclass()->superclass() != nullptr) {
-        throw CompilerError(position(), "Attempt to use 🐕 before superinitializer call.");
+        analyser->app()->error(CompilerError(position(), "Attempt to use 🐕 before superinitializer call."));
     }
     if (isFullyInitializedCheckRequired(analyser->function()->functionType())) {
         analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"",
@@ -129,7 +130,7 @@ Type ASTListLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &
         finder.addType(type, analyser->typeContext());
     }
 
-    type_.setGenericArgument(0, finder.getCommonType(position()));
+    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->app()));
     return type_;
 }
 

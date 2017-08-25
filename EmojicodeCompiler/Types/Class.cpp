@@ -8,8 +8,9 @@
 
 #include "../EmojicodeCompiler.hpp"
 #include "../CompilerError.hpp"
-#include "../Function.hpp"
-#include "../Initializer.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
+#include "../Application.hpp"
 #include "Class.hpp"
 #include "TypeContext.hpp"
 #include <algorithm>
@@ -19,13 +20,9 @@
 
 namespace EmojicodeCompiler {
 
-std::vector<Class *> Class::classes_;
-
 Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool final)
-: TypeDefinition(std::move(name), pkg, std::move(p), documentation) {
-    index = classes_.size();
-    final_ = final;
-    classes_.push_back(this);
+: TypeDefinition(std::move(name), pkg, std::move(p), documentation), final_(final) {
+    index = pkg->app()->classIndex();
 }
 
 void Class::setSuperclass(Class *eclass) {
@@ -49,12 +46,11 @@ bool Class::inheritsFrom(Class *from) const {
 }
 
 Initializer* Class::lookupInitializer(const std::u32string &name) {
-    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
-        auto pos = eclass->initializers_.find(name);
-        if (pos != eclass->initializers_.end()) {
-            return pos->second;
+    for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
+        if (auto initializer = klass->TypeDefinition::lookupInitializer(name)) {
+            return initializer;
         }
-        if (!eclass->inheritsInitializers()) {
+        if (!klass->inheritsInitializers()) {
             break;
         }
     }
@@ -62,20 +58,18 @@ Initializer* Class::lookupInitializer(const std::u32string &name) {
 }
 
 Function* Class::lookupMethod(const std::u32string &name) {
-    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
-        auto pos = eclass->methods_.find(name);
-        if (pos != eclass->methods_.end()) {
-            return pos->second;
+    for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
+        if (auto method = klass->TypeDefinition::lookupMethod(name)) {
+            return method;
         }
     }
     return nullptr;
 }
 
 Function* Class::lookupTypeMethod(const std::u32string &name) {
-    for (auto eclass = this; eclass != nullptr; eclass = eclass->superclass()) {
-        auto pos = eclass->typeMethods_.find(name);
-        if (pos != eclass->typeMethods_.end()) {
-            return pos->second;
+    for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
+        if (auto method = klass->TypeDefinition::lookupTypeMethod(name)) {
+            return method;
         }
     }
     return nullptr;
@@ -157,8 +151,7 @@ void Class::checkOverride(Function *function) {
                                   std::experimental::nullopt);
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
-        throw CompilerError(function->position(), "If you want to override ", utf8(function->name()),
-                            " add ✒️.");
+        throw CompilerError(function->position(), "If you want to override ", utf8(function->name()), " add ✒️.");
     }
 }
 

@@ -9,12 +9,14 @@
 #ifndef Scope_hpp
 #define Scope_hpp
 
-#include "../Lex/SourcePosition.hpp"
 #include "Variable.hpp"
 #include "VariableID.hpp"
 #include <map>
 
 namespace EmojicodeCompiler {
+
+class Application;
+struct SourcePosition;
 
 class Scope {
 public:
@@ -52,7 +54,7 @@ public:
                                     const std::string &errorMessageBack);
 
     /// Emits a warning for each non-frozen variable that has not been mutated.
-    void recommendFrozenVariables() const;
+    void recommendFrozenVariables(Application *app) const;
 
     const std::map<std::u32string, Variable>& map() const { return map_; }
 

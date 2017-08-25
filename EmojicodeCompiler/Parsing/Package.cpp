@@ -11,6 +11,7 @@
 #include "../CompilerError.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Types/ValueType.hpp"
+#include "../Application.hpp"
 #include "Package.hpp"
 #include "DocumentParser.hpp"
 #include <algorithm>
@@ -69,32 +70,24 @@ void loadStandard(Package *s, const SourcePosition &errorPosition) {
     PR_ENUMERATEABLE = getStandardProtocol(std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
 }
 
-std::vector<Package *> Package::packagesLoadingOrder_;
-std::map<std::string, Package *> Package::packages_;
+void Package::importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {
+    auto import = app_->loadPackage(name, p, this);
 
-Package* Package::loadPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {
-    Package *package = findPackage(name);
-
-    if (package != nullptr) {
-        if (!package->finishedLoading()) {
-            throw CompilerError(p, "Circular dependency detected: ", name_, " and ", name,
-                                " depend on each other.");
+    for (auto exported : import->exportedTypes_) {
+        Type type = Type::nothingness();
+        if (lookupRawType(TypeIdentifier(exported.name, ns, p), false, &type)) {
+            throw CompilerError(p, "Package ", name , " could not be loaded into namespace ", utf8(ns),
+                                " of package ", name_, ": ", utf8(exported.name),
+                                " collides with a type of the same name in the same namespace.");
         }
-    }
-    else {
-        auto path = packageDirectory + "/" + name + "/header.emojic";
 
-        package = new Package(name, path);
-        package->compile();
+        offerType(exported.type, exported.name, ns, false, p);
     }
-
-    package->loadInto(this, ns, p);
-    return package;
 }
 
 void Package::compile() {
     if (name_ != "s") {
-        loadPackage("s", kDefaultNamespace, position());
+        importPackage("s", kDefaultNamespace, position());
     }
 
     parse();
@@ -104,8 +97,6 @@ void Package::compile() {
 }
 
 void Package::parse() {
-    packages_.emplace(name(), this);
-
     DocumentParser(this, Lexer::lexFile(mainFile_)).parse();
 
     if (!validVersion()) {
@@ -116,8 +107,6 @@ void Package::parse() {
         loadStandard(this, position());
         requiresNativeBinary_ = false;
     }
-
-    packagesLoadingOrder_.push_back(this);
 }
 
 void Package::analyse() {
@@ -137,15 +126,15 @@ void Package::analyse() {
         enqueFunction(function);
     }
 
-    while (!Function::analysisQueue.empty()) {
+    while (!app_->analysisQueue.empty()) {
         try {
-            auto function = Function::analysisQueue.front();
+            auto function = app_->analysisQueue.front();
             SemanticAnalyser(function).analyse();
         }
         catch (CompilerError &ce) {
-            printError(ce);
+            app_->error(ce);
         }
-        Function::analysisQueue.pop();
+        app_->analysisQueue.pop();
     }
 }
 
@@ -157,13 +146,8 @@ void Package::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) {
 
 void Package::enqueFunction(Function *function) {
     if (!function->isNative()) {
-        Function::analysisQueue.emplace(function);
+        app_->analysisQueue.emplace(function);
     }
-}
-
-Package* Package::findPackage(const std::string &name) {
-    auto it = packages_.find(name);
-    return it != packages_.end() ? it->second : nullptr;
 }
 
 Type Package::getRawType(const TypeIdentifier &typeId, bool optional) const {
@@ -223,19 +207,6 @@ void Package::offerType(Type t, const std::u32string &name, const std::u32string
 
     if (exportFromPkg) {
         exportType(t, name, p);
-    }
-}
-
-void Package::loadInto(Package *destinationPackage, const std::u32string &ns, const SourcePosition &p) const {
-    for (auto exported : exportedTypes_) {
-        Type type = Type::nothingness();
-        if (destinationPackage->lookupRawType(TypeIdentifier(exported.name, ns, p), false, &type)) {
-            throw CompilerError(p, "Package ", name() , " could not be loaded into namespace ", utf8(ns),
-                                " of package ", destinationPackage->name(), ": ", utf8(exported.name),
-                                " collides with a type of the same name in the same namespace.");
-        }
-
-        destinationPackage->offerType(exported.type, exported.name, ns, false, p);
     }
 }
 
