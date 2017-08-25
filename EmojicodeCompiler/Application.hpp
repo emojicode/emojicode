@@ -14,6 +14,7 @@
 #include <map>
 #include <queue>
 #include <vector>
+#include <memory>
 
 namespace EmojicodeCompiler {
 
@@ -44,9 +45,10 @@ public:
 /// Instance of this class own all Packages associated with them.
 class Application final {
 public:
-    Application(std::string mainFile, std::string outPath, std::string pkgDir, ApplicationDelegate *delegate)
+    Application(std::string mainFile, std::string outPath, std::string pkgDir,
+                std::unique_ptr<ApplicationDelegate> delegate)
     : mainFile_(std::move(mainFile)), outPath_(std::move(outPath)), packageDirectory_(std::move(pkgDir)),
-    delegate_(delegate) {}
+    delegate_(std::move(delegate)) {}
     /// Compile the application.
     /// @returns True iff the application has been successfully compiled and an Emojicode binary was written.
     bool compile();
@@ -113,7 +115,7 @@ private:
     const std::string outPath_;
     const std::string packageDirectory_;
     StringPool stringPool_;
-    ApplicationDelegate *delegate_;
+    std::unique_ptr<ApplicationDelegate> delegate_;
 };
 
 }  // namespace EmojicodeCompiler

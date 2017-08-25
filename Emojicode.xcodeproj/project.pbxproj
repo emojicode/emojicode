@@ -16,6 +16,7 @@
 		E4452EFC1E2A33C80064E324 /* Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F31C83018F009E7089 /* Dictionary.cpp */; };
 		E44BE1531EDAB899003744BA /* ThreadsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E44BE1511EDAB899003744BA /* ThreadsManager.cpp */; };
 		E45AF99B1F5035F00077E343 /* JSONApplicationDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45AF9991F5035F00077E343 /* JSONApplicationDelegate.cpp */; };
+		E45AF99F1F504D5C0077E343 /* Options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45AF99D1F504D5C0077E343 /* Options.cpp */; };
 		E45DB8141CB44D7500AE6FBE /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45DB8131CB44D7500AE6FBE /* Thread.cpp */; };
 		E460A5991F30EFA2006E3AC7 /* PathAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A53B1F30EFA2006E3AC7 /* PathAnalyser.cpp */; };
 		E460A59D1F30EFA2006E3AC7 /* FunctionWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5441F30EFA2006E3AC7 /* FunctionWriter.cpp */; };
@@ -138,6 +139,8 @@
 		E45AF9991F5035F00077E343 /* JSONApplicationDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JSONApplicationDelegate.cpp; sourceTree = "<group>"; };
 		E45AF99A1F5035F00077E343 /* JSONApplicationDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JSONApplicationDelegate.hpp; sourceTree = "<group>"; };
 		E45AF99C1F5039010077E343 /* JSONHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSONHelper.h; sourceTree = "<group>"; };
+		E45AF99D1F504D5C0077E343 /* Options.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Options.cpp; sourceTree = "<group>"; };
+		E45AF99E1F504D5C0077E343 /* Options.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Options.hpp; sourceTree = "<group>"; };
 		E45DB8131CB44D7500AE6FBE /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Thread.cpp; path = "EmojicodeReal-TimeEngine/Thread.cpp"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EmojicodeCompiler; sourceTree = BUILT_PRODUCTS_DIR; };
 		E460A53B1F30EFA2006E3AC7 /* PathAnalyser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PathAnalyser.cpp; sourceTree = "<group>"; };
@@ -509,6 +512,8 @@
 				E45AF99A1F5035F00077E343 /* JSONApplicationDelegate.hpp */,
 				E45AF99C1F5039010077E343 /* JSONHelper.h */,
 				E460A5941F30EFA2006E3AC7 /* main.cpp */,
+				E45AF99D1F504D5C0077E343 /* Options.cpp */,
+				E45AF99E1F504D5C0077E343 /* Options.hpp */,
 			);
 			path = CLI;
 			sourceTree = "<group>";
@@ -749,6 +754,7 @@
 				E460A5A01F30EFA2006E3AC7 /* Writer.cpp in Sources */,
 				E460A5BB1F30EFA2006E3AC7 /* TypeExpectation.cpp in Sources */,
 				E47891091F4EEA3A008DCB24 /* TypeBodyParser.cpp in Sources */,
+				E45AF99F1F504D5C0077E343 /* Options.cpp in Sources */,
 				E460A5AD1F30EFA2006E3AC7 /* Scope.cpp in Sources */,
 				E47838D41F41E34D007B937C /* STIProvider.cpp in Sources */,
 				E48356891F33866F000B80AE /* ASTExpr.cpp in Sources */,

@@ -8,89 +8,36 @@
 
 #include "../Application.hpp"
 #include "PackageReporter.hpp"
-#include "HRFApplicationDelegate.hpp"
-#include "JSONApplicationDelegate.hpp"
-#include <cstdlib>
-#include <getopt.h>
+#include "Options.hpp"
 #include <exception>
-#include <memory>
 
 namespace EmojicodeCompiler {
-namespace CLI {
 
-void cliWarning(const std::string &message) {
-    puts(message.c_str());
-}
+namespace CLI {
 
 /// The compiler CLI main function
 /// @returns True iff the compilation was successful as determined by Application::compile.
 bool start(int argc, char *argv[]) {
-    const char *packageToReport = nullptr;
-    std::string outPath;
-    std::string sizeVariable;
-    std::string packageDirectory = defaultPackagesDirectory;
-    bool jsonOutput = false;
+    Options options(argc, argv);
 
-    if (const char *ppath = getenv("EMOJICODE_PACKAGES_PATH")) {
-        packageDirectory = ppath;
-    }
-
-    signed char ch;
-    while ((ch = getopt(argc, argv, "vrjR:o:S:")) != -1) {
-        switch (ch) {
-            case 'v':
-                puts("Emojicode 0.5. Created by Theo Weidmann.");
-                return false;
-            case 'R':
-                packageToReport = optarg;
-                break;
-            case 'r':
-                packageToReport = "_";
-                break;
-            case 'o':
-                outPath = optarg;
-                break;
-            case 'j':
-                jsonOutput = true;
-                break;
-            case 'S':
-                sizeVariable = optarg;
-                break;
-            default:
-                break;
-        }
-    }
-    argc -= optind;
-    argv += optind;
-
-    if (argc == 0) {
-        cliWarning("No input file provided.");
+    if (!options.beginCompilation()) {
         return false;
     }
-    if (argc > 1) {
-        cliWarning("Only the first file provided will be compiled.");
-    }
 
-    if (outPath.empty()) {
-        outPath = argv[0];
-        outPath[outPath.size() - 1] = 'b';
-    }
-
-    auto delegate = jsonOutput ? std::unique_ptr<ApplicationDelegate>(std::make_unique<JSONApplicationDelegate>()) :
-    std::unique_ptr<ApplicationDelegate>(std::make_unique<HRFApplicationDelegate>());
-    auto application = Application(argv[0], std::move(outPath), std::move(packageDirectory), delegate.get());
+    auto application = Application(options.mainFile(), options.outPath(), options.packageDirectory(),
+                                   options.applicationDelegate());
     bool successfullyCompiled = application.compile();
 
-    if (packageToReport != nullptr) {
-        if (auto package = application.findPackage(packageToReport)) {
+    if (!options.packageToReport().empty()) {
+        if (auto package = application.findPackage(options.packageToReport())) {
             reportPackage(package);
         }
         else {
-            cliWarning("Report for package %s failed as it was not loaded.");
+            options.printCliMessage("Report failed as the request package was not loaded.");
         }
     }
 
-    if (!sizeVariable.empty()) {
+    if (!options.sizeVariable().empty()) {
         //            InformationDesk(&pkg).sizeOfVariable(sizeVariable);
     }
 
@@ -98,6 +45,7 @@ bool start(int argc, char *argv[]) {
 }
 
 }  // namespace CLI
+
 }  // namespace EmojicodeCompiler
 
 int main(int argc, char *argv[]) {

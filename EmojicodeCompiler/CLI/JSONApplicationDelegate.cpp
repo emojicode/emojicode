@@ -15,21 +15,21 @@ namespace EmojicodeCompiler {
 namespace CLI {
 
 void JSONApplicationDelegate::begin() {
-    std::cout << "[" << std::endl;
+    std::cerr << "[" << std::endl;
 }
 
 void JSONApplicationDelegate::finish() {
-    std::cout << "]" << std::endl;
+    std::cerr << "]" << std::endl;
 }
 
 void JSONApplicationDelegate::printJson(const char *type, const SourcePosition &p, const std::string &message) {
     printer_.print();
-    std::cout << "{\"type\": \"" << type << "\", \"line\": " << p.line << ", \"character\": " << p.character;
-    std::cout << ", \"file\":";
-    jsonString(p.file, std::cout);
-    std::cout << ", \"message\": ";
-    jsonString(message, std::cout);
-    std::cout << "}" << std::endl;
+    std::cerr << "{\"type\": \"" << type << "\", \"line\": " << p.line << ", \"character\": " << p.character;
+    std::cerr << ", \"file\":";
+    jsonString(p.file, std::cerr);
+    std::cerr << ", \"message\": ";
+    jsonString(message, std::cerr);
+    std::cerr << "}" << std::endl;
 }
 
 void JSONApplicationDelegate::error(const SourcePosition &p, const std::string &message) {

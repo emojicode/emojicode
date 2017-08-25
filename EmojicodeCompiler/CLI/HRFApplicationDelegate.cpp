@@ -15,11 +15,11 @@ namespace EmojicodeCompiler {
 namespace CLI {
 
 void HRFApplicationDelegate::error(const SourcePosition &p, const std::string &message) {
-    std::cout << "🚨 line " << p.line << " column " << p.file << ": " << message << std::endl;
+    std::cerr << "🚨 line " << p.line << " column " << p.character << " " << p.file << ": " << message << std::endl;
 }
 
 void HRFApplicationDelegate::warn(const SourcePosition &p, const std::string &message) {
-    std::cout << "⚠️ line " << p.line << " column " << p.file << ": " << message << std::endl;
+    std::cerr << "⚠️ line " << p.line << " column " << p.character << " " << p.file << ": " << message << std::endl;
 }
 
 }  // namespace CLI
