@@ -6,11 +6,10 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.hpp"
-#include "Application.hpp"
-#include "CLI/PackageReporter.hpp"
-#include "CLI/HRFApplicationDelegate.hpp"
-#include "CLI/JSONApplicationDelegate.hpp"
+#include "../Application.hpp"
+#include "PackageReporter.hpp"
+#include "HRFApplicationDelegate.hpp"
+#include "JSONApplicationDelegate.hpp"
 #include <cstdlib>
 #include <getopt.h>
 #include <exception>
