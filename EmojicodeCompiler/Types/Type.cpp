@@ -610,38 +610,22 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             typeName(type.genericArguments_[0], typeContext, string, package);
             typeName(type.genericArguments_[1], typeContext, string, package);
             return;
-        case TypeType::GenericVariable: {
-            if (typeContext.calleeType().type() == TypeType::Class) {
-                Class *eclass = typeContext.calleeType().eclass();
-                do {
-                    auto str = eclass->findGenericName(type.genericVariableIndex());
-                    if (!str.empty()) {
-                        string.append(utf8(str));
-                        return;
-                    }
-                } while ((eclass = eclass->superclass()) != nullptr);
-            }
-            else if (typeContext.calleeType().canHaveGenericArguments()) {
+        case TypeType::GenericVariable:
+            if (typeContext.calleeType().canHaveGenericArguments()) {
                 auto str = typeContext.calleeType().typeDefinition()->findGenericName(type.genericVariableIndex());
-                if (!str.empty()) {
-                    string.append(utf8(str));
-                    return;
-                }
+                string.append(utf8(str));
             }
-
-            string.append("T" + std::to_string(type.genericVariableIndex()) + "?");
+            else {
+                string.append("T" + std::to_string(type.genericVariableIndex()) + "?");
+            }
             return;
-        }
         case TypeType::LocalGenericVariable:
             if (typeContext.function() != nullptr) {
-                auto str = typeContext.function()->findGenericName(type.genericVariableIndex());
-                if (!str.empty()) {
-                    string.append(utf8(str));
-                    return;
-                }
+                string.append(utf8(typeContext.function()->findGenericName(type.genericVariableIndex())));
             }
-
-            string.append("L" + std::to_string(type.genericVariableIndex()) + "?");
+            else {
+                string.append("L" + std::to_string(type.genericVariableIndex()) + "?");
+            }
             return;
         case TypeType::StorageExpectation:
         case TypeType::Extension:
@@ -649,9 +633,9 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
     }
 
     if (type.canHaveGenericArguments()) {
-        for (auto &argumentType : type.genericArguments()) {
+        for (size_t i = type.typeDefinition()->superGenericArguments().size(); i < type.genericArguments().size(); i++) {
             string.append("🐚");
-            typeName(argumentType, typeContext, string, package);
+            typeName(type.genericArguments()[i], typeContext, string, package);
         }
     }
 }
