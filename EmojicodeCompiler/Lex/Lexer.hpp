@@ -31,6 +31,7 @@ private:
     SourcePosition sourcePosition_ = SourcePosition(1, 0, "");
     /// Checks for a whitespace character and updates ::sourcePosition_.
     /// @returns True if @c is whitespace according to isWhitespace().
+    /// @warning This method must not be called more than once for the same character!
     bool detectWhitespace();
 
     /// Called if a new code point is available.

@@ -85,10 +85,6 @@ TokenStream Lexer::lex() {
 void Lexer::readToken(Token *token) {
     TokenState state = beginToken(token) ? TokenState::Continues : TokenState::Ended;
     while (true) {
-        if (state == TokenState::NextBegun) {
-            token->validate();
-            return;
-        }
         if (state == TokenState::Ended) {
             token->validate();
             nextCharOrEnd();
@@ -100,8 +96,14 @@ void Lexer::readToken(Token *token) {
             return;
         }
         nextChar();
-        detectWhitespace();
         state = continueToken(token);
+        if (state == TokenState::NextBegun) {
+            token->validate();
+            return;
+        }
+        // Whitespace must be detected here so that this method returns on NextBegun without calling detectWhitespace()
+        // as the detectWhitespace() would otherwise be called twice for the same character. (Here and in lex())
+        detectWhitespace();
     }
 }
 
