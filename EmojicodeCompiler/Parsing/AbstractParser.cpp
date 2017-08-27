@@ -52,90 +52,82 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
         return type;
     }
 
-    bool optional = false;
-    if (stream_.consumeTokenIf(E_CANDY)) {
-        optional = true;
-    }
+    bool optional = stream_.consumeTokenIf(E_CANDY);
 
     if ((dynamism & TypeDynamism::GenericTypeVariables) != TypeDynamism::None &&
         (typeContext.calleeType().canHaveGenericArguments() || typeContext.function() != nullptr) &&
         stream_.nextTokenIs(TokenType::Variable)) {
-
-        auto &variableToken = stream_.consumeToken(TokenType::Variable);
-
-        Type type = Type::nothingness();
-        if (typeContext.function() != nullptr &&
-            typeContext.function()->fetchVariable(variableToken.value(), optional, &type)) {
-            return type;
-        }
-        if (typeContext.calleeType().canHaveGenericArguments() &&
-            typeContext.calleeType().typeDefinition()->fetchVariable(variableToken.value(), optional, &type)) {
-            return type;
-        }
-
-        throw CompilerError(variableToken.position(), "No such generic type variable \"", utf8(variableToken.value()),
-                            "\".");
+        return parseGenericVariable(optional, typeContext, dynamism);
     }
-    else if (stream_.nextTokenIs(E_DOG)) {
-        auto &selfToken = stream_.consumeToken(TokenType::Identifier);
-        if ((dynamism & TypeDynamism::Self) == TypeDynamism::None) {
-            throw CompilerError(selfToken.position(), "🐕 not allowed here.");
-        }
-        return Type::self(optional);
+    if (stream_.nextTokenIs(E_DOG)) {
+        return parseSelf(optional, typeContext, dynamism);
     }
-    else if (stream_.nextTokenIs(E_BENTO_BOX)) {
-        auto &bentoToken = stream_.consumeToken(TokenType::Identifier);
-        Type type = Type(TypeType::MultiProtocol, optional);
-        while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
-            auto protocolType = parseType(typeContext, dynamism);
-            if (protocolType.type() != TypeType::Protocol || protocolType.optional() || protocolType.meta()) {
-                throw CompilerError(bentoToken.position(), "🍱 may only consist of non-optional protocol types.");
-            }
-            type.genericArguments_.push_back(protocolType);
+    if (stream_.nextTokenIs(E_BENTO_BOX)) {
+        return parseMultiProtocol(optional, typeContext, dynamism);
+    }
+    if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
+        return parseErrorType(optional, typeContext, dynamism);
+    }
+    if (stream_.consumeTokenIf(E_GRAPES)) {
+        return parseCallableType(optional, typeContext, dynamism);
+    }
+
+    auto parsedTypeIdentifier = parseTypeIdentifier();
+    auto type = package_->getRawType(parsedTypeIdentifier, optional);
+    if (type.canHaveGenericArguments()) {
+        parseGenericArgumentsForType(&type, typeContext, dynamism, parsedTypeIdentifier.position);
+    }
+    return type;
+}
+
+Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+    auto &bentoToken = stream_.consumeToken(TokenType::Identifier);
+    Type type = Type(TypeType::MultiProtocol, optional);
+    while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
+        auto protocolType = parseType(typeContext, dynamism);
+        if (protocolType.type() != TypeType::Protocol || protocolType.optional() || protocolType.meta()) {
+            throw CompilerError(bentoToken.position(), "🍱 may only consist of non-optional protocol types.");
         }
-        if (type.protocols().empty()) {
-            throw CompilerError(bentoToken.position(), "An empty 🍱 is invalid.");
-        }
-        type.sortMultiProtocolType();
-        stream_.consumeToken(TokenType::Identifier);
+        type.genericArguments_.push_back(protocolType);
+    }
+    if (type.protocols().empty()) {
+        throw CompilerError(bentoToken.position(), "An empty 🍱 is invalid.");
+    }
+    type.sortMultiProtocolType();
+    stream_.consumeToken(TokenType::Identifier);
+    return type;
+}
+
+Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+    Type t = Type::callableIncomplete(optional);
+    t.genericArguments_.push_back(Type::nothingness());
+
+    while (stream_.nextTokenIsEverythingBut(E_WATERMELON) &&
+           stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
+        t.genericArguments_.push_back(parseType(typeContext, dynamism));
+    }
+
+    if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
+        t.genericArguments_[0] = parseType(typeContext, dynamism);
+    }
+
+    stream_.requireIdentifier(E_WATERMELON);
+    return t;
+}
+
+Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+    auto &varToken = stream_.consumeToken(TokenType::Variable);
+
+    Type type = Type::nothingness();
+    if (typeContext.function() != nullptr && typeContext.function()->fetchVariable(varToken.value(), optional, &type)) {
         return type;
     }
-    else if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
-        auto &token = stream_.consumeToken(TokenType::Identifier);
-        Type errorType = parseErrorEnumType(typeContext, dynamism, token.position());
-        if (optional) {
-            throw CompilerError(token.position(), "The error type itself cannot be an optional. "
-                                "Maybe you meant to make the contained type an optional?");
-        }
-        Type type = Type::error();
-        type.genericArguments_.emplace_back(errorType);
-        type.genericArguments_.emplace_back(parseType(typeContext, dynamism));
+    if (typeContext.calleeType().canHaveGenericArguments() &&
+        typeContext.calleeType().typeDefinition()->fetchVariable(varToken.value(), optional, &type)) {
         return type;
     }
-    else if (stream_.consumeTokenIf(E_GRAPES)) {
-        Type t = Type::callableIncomplete(optional);
-        t.genericArguments_.push_back(Type::nothingness());
 
-        while (stream_.nextTokenIsEverythingBut(E_WATERMELON) &&
-               stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
-            t.genericArguments_.push_back(parseType(typeContext, dynamism));
-        }
-
-        if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
-            t.genericArguments_[0] = parseType(typeContext, dynamism);
-        }
-
-        stream_.requireIdentifier(E_WATERMELON);
-        return t;
-    }
-    else {
-        auto parsedTypeIdentifier = parseTypeIdentifier();
-        auto type = package_->getRawType(parsedTypeIdentifier, optional);
-        if (type.canHaveGenericArguments()) {
-            parseGenericArgumentsForType(&type, typeContext, dynamism, parsedTypeIdentifier.position);
-        }
-        return type;
-    }
+    throw CompilerError(varToken.position(), "No such generic type variable \"", utf8(varToken.value()), "\".");
 }
 
 Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p) {
@@ -144,6 +136,27 @@ Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, TypeDyna
         throw CompilerError(p, "Error type must be a non-optional 🦃.");
     }
     return errorType;
+}
+
+Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+    auto &token = stream_.consumeToken(TokenType::Identifier);
+    Type errorType = parseErrorEnumType(typeContext, dynamism, token.position());
+    if (optional) {
+        throw CompilerError(token.position(), "The error type itself cannot be an optional. "
+                            "Maybe you meant to make the contained type an optional?");
+    }
+    Type type = Type::error();
+    type.genericArguments_.emplace_back(errorType);
+    type.genericArguments_.emplace_back(parseType(typeContext, dynamism));
+    return type;
+}
+
+Type AbstractParser::parseSelf(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+    auto &selfToken = stream_.consumeToken(TokenType::Identifier);
+    if ((dynamism & TypeDynamism::Self) == TypeDynamism::None) {
+        throw CompilerError(selfToken.position(), "🐕 not allowed here.");
+    }
+    return Type::self(optional);
 }
 
 void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,
@@ -171,7 +184,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
     }
 }
 
-void AbstractParser::parseArgumentList(Function *function, const TypeContext &typeContext, bool initializer) {
+void AbstractParser::parseParameters(Function *function, const TypeContext &typeContext, bool initializer) {
     bool argumentToVariable;
 
     while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {

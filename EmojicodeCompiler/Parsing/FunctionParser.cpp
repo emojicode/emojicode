@@ -258,7 +258,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
                                          package_, token.position(), false, std::u32string(), false, false,
                                          FunctionType::Function);
 
-            parseArgumentList(function, typeContext_);
+            parseParameters(function, typeContext_);
             parseReturnType(function, typeContext_);
 
             function->setAst(FunctionParser(package_, stream_, typeContext_).parse());

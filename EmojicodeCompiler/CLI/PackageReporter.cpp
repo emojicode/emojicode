@@ -7,23 +7,23 @@
 //
 
 #include "PackageReporter.hpp"
-#include "../Parsing/Package.hpp"
 #include "../EmojicodeCompiler.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
+#include "../Parsing/Package.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Enum.hpp"
+#include "../Types/Generic.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeContext.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include "../Types/ValueType.hpp"
-#include "../Types/Generic.hpp"
 #include "JSONHelper.h"
 #include <cstring>
+#include <iostream>
 #include <list>
 #include <map>
 #include <vector>
-#include <iostream>
 
 namespace EmojicodeCompiler {
 
@@ -103,7 +103,7 @@ void reportFunction(Function *function, ReturnKind returnKind, const TypeContext
         printf("{\"type\":");
         reportType(argument.type, tc);
         printf(",\"name\":");
-        jsonString(utf8(argument.variableName).c_str(), std::cout);
+        jsonString(utf8(argument.variableName), std::cout);
         printf("}");
     }
     printf("]}");

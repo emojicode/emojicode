@@ -12,9 +12,9 @@
 #include "Generation/StringPool.hpp"
 #include "Types/Type.hpp"
 #include <map>
+#include <memory>
 #include <queue>
 #include <vector>
-#include <memory>
 
 namespace EmojicodeCompiler {
 

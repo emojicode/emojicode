@@ -11,8 +11,8 @@
 
 #include "../EmojicodeCompiler.hpp"
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace EmojicodeCompiler {
 

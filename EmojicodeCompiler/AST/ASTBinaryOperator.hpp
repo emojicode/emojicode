@@ -9,9 +9,9 @@
 #ifndef ASTBinaryOperator_hpp
 #define ASTBinaryOperator_hpp
 
-#include <utility>
 #include "../Parsing/OperatorHelper.hpp"
 #include "ASTMethod.hpp"
+#include <utility>
 
 namespace EmojicodeCompiler {
 

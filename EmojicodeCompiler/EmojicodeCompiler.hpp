@@ -12,10 +12,10 @@
 #define EmojicodeCompiler_hpp
 
 #include "../EmojicodeShared.h"
-#include <sstream>
-#include <string>
 #include <codecvt>
 #include <locale>
+#include <sstream>
+#include <string>
 
 namespace EmojicodeCompiler {
 

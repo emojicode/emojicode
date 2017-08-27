@@ -11,9 +11,9 @@
 
 #include "../CompilerError.hpp"
 #include "Type.hpp"
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 namespace EmojicodeCompiler {
 

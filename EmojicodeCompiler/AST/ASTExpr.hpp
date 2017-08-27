@@ -9,8 +9,8 @@
 #ifndef ASTExpr_hpp
 #define ASTExpr_hpp
 
-#include <utility>
 #include "ASTNode.hpp"
+#include <utility>
 
 namespace EmojicodeCompiler {
 

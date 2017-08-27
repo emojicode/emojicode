@@ -10,8 +10,8 @@
 #define AbstractParser_hpp
 
 #include "../Lex/TokenStream.hpp"
-#include "../Types/TypeContext.hpp"
 #include "../Types/Generic.hpp"
+#include "../Types/TypeContext.hpp"
 #include <utility>
 
 namespace EmojicodeCompiler {
@@ -91,7 +91,7 @@ protected:
 
     /// Parses $parameters$ for a function if there are any specified.
     /// @param initializer If this is true, the method parses $init-parameters$ instead.
-    void parseArgumentList(Function *function, const TypeContext &typeContext, bool initializer = false);
+    void parseParameters(Function *function, const TypeContext &typeContext, bool initializer = false);
     /// Parses a $return-type$ for a function one is specified.
     void parseReturnType(Function *function, const TypeContext &typeContext);
     /// Parses $generic-arguments$ for a type.
@@ -100,6 +100,17 @@ protected:
 
     /// Parses and validates the error type
     Type parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p);
+private:
+    /// Parses a $multi-protocol$
+    Type parseMultiProtocol(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
+    /// Parses a $callable-type$. The first token has already been consumed.
+    Type parseCallableType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
+
+    Type parseGenericVariable(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
+
+    Type parseErrorType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
+
+    Type parseSelf(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
 };
 
 }  // namespace EmojicodeCompiler

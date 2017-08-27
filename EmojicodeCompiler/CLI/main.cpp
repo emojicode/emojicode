@@ -7,8 +7,8 @@
 //
 
 #include "../Application.hpp"
-#include "PackageReporter.hpp"
 #include "Options.hpp"
+#include "PackageReporter.hpp"
 #include <exception>
 
 namespace EmojicodeCompiler {

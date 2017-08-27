@@ -38,7 +38,7 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
 void TypeBodyParser::parseFunction(Function *function, bool inititalizer) {
     auto context = TypeContext(type_, function);
     parseGenericParameters(function, context);
-    parseArgumentList(function, context, inititalizer);
+    parseParameters(function, context, inititalizer);
     if (!inititalizer) {
         parseReturnType(function, context);
     }

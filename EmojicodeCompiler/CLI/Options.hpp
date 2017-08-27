@@ -11,8 +11,8 @@
 
 #include "../../EmojicodeShared.h"
 #include "../Application.hpp"
-#include <string>
 #include <memory>
+#include <string>
 
 namespace EmojicodeCompiler {
 

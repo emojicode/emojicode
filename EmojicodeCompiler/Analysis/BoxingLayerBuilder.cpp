@@ -7,11 +7,11 @@
 //
 
 #include "BoxingLayerBuilder.hpp"
-#include "../Functions/BoxingLayer.hpp"
 #include "../AST/ASTExpr.hpp"
 #include "../AST/ASTLiterals.hpp"
 #include "../AST/ASTMethod.hpp"
 #include "../AST/ASTStatements.hpp"
+#include "../Functions/BoxingLayer.hpp"
 #include <memory>
 
 namespace EmojicodeCompiler {

@@ -210,7 +210,7 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
         auto method = new ProtocolFunction(methodName.value(), AccessLevel::Public, false, protocolType, package_,
                                            methodName.position(), false, documentation.get(), deprecated, false,
                                            FunctionType::ObjectMethod);
-        parseArgumentList(method, protocolType, false);
+        parseParameters(method, protocolType, false);
         parseReturnType(method, protocolType);
 
         protocol->addMethod(method);
