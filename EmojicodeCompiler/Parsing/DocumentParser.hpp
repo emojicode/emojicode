@@ -31,8 +31,6 @@ private:
     /// Parses a $type-identifier$ and ensures that a type with this name can be declared in the current package.
     /// This method is used with type declarations.
     TypeIdentifier parseAndValidateNewTypeName();
-    /** Parses the definition list of generic arguments for a type. */
-    void parseGenericArgumentList(TypeDefinition *typeDef, const TypeContext& tc);
     
     /// Called if a $class$ has been detected. The first token has already been parsed.
     void parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final);

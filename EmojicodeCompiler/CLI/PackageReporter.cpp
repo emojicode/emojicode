@@ -17,6 +17,7 @@
 #include "../Types/TypeContext.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include "../Types/ValueType.hpp"
+#include "../Types/Generic.hpp"
 #include "JSONHelper.h"
 #include <cstring>
 #include <list>
@@ -50,23 +51,17 @@ void reportType(const Type &type, const TypeContext &tc) {
            type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
 }
 
-void reportGenericArguments(std::map<std::u32string, Type> map, std::vector<Type> constraints,
-                            size_t superCount, const TypeContext &tc) {
+template <typename T>
+void reportGenericParameters(Generic<T> *generic, const TypeContext &tc) {
     printf("\"genericArguments\":[");
 
-    auto gans = std::vector<std::u32string>(map.size());
-    for (auto it : map) {
-        gans[it.second.genericVariableIndex() - superCount] = it.first;
-    }
-
     CommaPrinter printer;
-    for (size_t i = 0; i < gans.size(); i++) {
+    for (auto &param : generic->parameters()) {
         printer.print();
-        auto gan = gans[i];
         printf("{\"name\":");
-        jsonString(utf8(gan), std::cout);
+        jsonString(utf8(param.first), std::cout);
         printf(",\"constraint\":");
-        reportType(constraints[i], tc);
+        reportType(param.second, tc);
         printf("}");
     }
 
@@ -98,7 +93,7 @@ void reportFunction(Function *function, ReturnKind returnKind, const TypeContext
         putc(',', stdout);
     }
 
-    reportGenericArguments(function->genericArgumentVariables, function->genericArgumentConstraints, 0, tc);
+    reportGenericParameters(function, tc);
     reportDocumentation(function->documentation());
 
     printf("\"arguments\":[");
@@ -137,8 +132,7 @@ protected:
         }
         printf("],");
 
-        reportGenericArguments(typeDef_->ownGenericArgumentVariables(), typeDef_->genericArgumentConstraints(),
-                               typeDef_->superGenericArguments().size(), TypeContext(Type(typeDef_, false)));
+        reportGenericParameters(typeDef_, TypeContext(Type(typeDef_, false)));
         reportDocumentation(typeDef_->documentation());
 
         printf("\"methods\":[");

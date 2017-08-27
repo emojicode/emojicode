@@ -10,9 +10,7 @@
 #define VariableNotFoundError_hpp
 
 #include <utility>
-
 #include "../CompilerError.hpp"
-#include "../EmojicodeCompiler.hpp"
 
 namespace EmojicodeCompiler {
 

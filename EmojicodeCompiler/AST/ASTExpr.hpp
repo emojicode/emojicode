@@ -10,8 +10,6 @@
 #define ASTExpr_hpp
 
 #include <utility>
-
-#include "../Parsing/OperatorHelper.hpp"
 #include "ASTNode.hpp"
 
 namespace EmojicodeCompiler {

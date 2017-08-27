@@ -185,20 +185,11 @@ void DocumentParser::parseExtension(const Documentation &documentation, const So
     package_->registerExtension(extension);
 }
 
-void DocumentParser::parseGenericArgumentList(TypeDefinition *typeDef, const TypeContext& tc) {
-    while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
-        auto &variable = stream_.consumeToken(TokenType::Variable);
-        auto constraint = parseType(tc, TypeDynamism::GenericTypeVariables);
-        typeDef->addGenericArgument(variable.value(), constraint, variable.position());
-    }
-}
-
 void DocumentParser::parseProtocol(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
     auto protocol = new Protocol(parsedTypeName.name, package_, theToken.position(), documentation);
 
-    parseGenericArgumentList(protocol, Type(protocol, false));
-    protocol->finalizeGenericArguments();
+    parseGenericParameters(protocol, Type(protocol, false));
 
     stream_.requireIdentifier(E_GRAPES);
 
@@ -243,31 +234,20 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
 
     auto eclass = new Class(parsedTypeName.name, package_, theToken.position(), documentation, final);
 
-    parseGenericArgumentList(eclass, Type(eclass, false));
+    parseGenericParameters(eclass, Type(eclass, false));
 
     if (!stream_.nextTokenIs(E_GRAPES)) {
         auto classType = Type(eclass, false);  // New Type due to generic arguments now (partly) available.
-        auto parsedTypeName = parseTypeIdentifier();
 
-        Type type = package_->getRawType(parsedTypeName, false);
-        if (type.type() != TypeType::Class) {
+        Type type = parseType(TypeContext(classType), TypeDynamism::GenericTypeVariables);
+        if (type.type() != TypeType::Class && !type.optional() && !type.meta()) {
             throw CompilerError(parsedTypeName.position, "The superclass must be a class.");
         }
-
-        eclass->setSuperclass(type.eclass());
-        eclass->setSuperTypeDef(eclass->superclass());
-        parseGenericArgumentsForType(&type, classType, TypeDynamism::GenericTypeVariables,
-                                     parsedTypeName.position);
-        eclass->setSuperGenericArguments(type.genericArguments());
-
-        if (eclass->superclass()->final()) {
-            auto string = type.toString(classType);
-            package_->app()->error(CompilerError(parsedTypeName.position, string,
+        if (type.eclass()->final()) {
+            package_->app()->error(CompilerError(parsedTypeName.position, type.toString(classType),
                                                  " can’t be used as superclass as it was marked with 🔏."));
         }
-    }
-    else {
-        eclass->finalizeGenericArguments();
+        eclass->setSuperType(type);
     }
 
     auto classType = Type(eclass, false);  // New Type due to generic arguments now available.
@@ -287,8 +267,7 @@ void DocumentParser::parseValueType(const std::u32string &documentation, const T
         valueType->makePrimitive();
     }
 
-    parseGenericArgumentList(valueType, Type(valueType, false));
-    valueType->finalizeGenericArguments();
+    parseGenericParameters(valueType, Type(valueType, false));
 
     auto valueTypeContent = Type(valueType, false);
     package_->offerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());

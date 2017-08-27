@@ -132,8 +132,8 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
     }
 
     TypeContext typeContext = TypeContext(type, function, &node->genericArguments());
-    if (node->genericArguments().empty() && !function->genericArgumentVariables.empty()) {
-        std::vector<CommonTypeFinder> genericArgsFinders(function->genericArgumentVariables.size(), CommonTypeFinder());
+    if (node->genericArguments().empty() && function->genericParameterCount() > 0) {
+        std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameterCount(), CommonTypeFinder());
 
         size_t i = 0;
         for (auto arg : function->arguments) {
@@ -143,15 +143,15 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
             typeContext.functionGenericArguments()->emplace_back(finder.getCommonType(node->position(), app()));
         }
     }
-    else if (node->genericArguments().size() != function->genericArgumentVariables.size()) {
+    else if (node->genericArguments().size() != function->genericParameterCount()) {
         throw CompilerError(node->position(), "Too few generic arguments provided.");
     }
 
     for (size_t i = 0; i < node->genericArguments().size(); i++) {
-        if (!node->genericArguments()[i].compatibleTo(function->genericArgumentConstraints[i], typeContext)) {
+        if (!node->genericArguments()[i].compatibleTo(function->constraintForIndex(i), typeContext)) {
             throw CompilerError(node->position(), "Generic argument ", i + 1, " of type ",
                                 node->genericArguments()[i].toString(typeContext), " is not compatible to constraint ",
-                                function->genericArgumentConstraints[i].toString(typeContext), ".");
+                                function->constraintForIndex(i).toString(typeContext), ".");
         }
     }
 
@@ -293,7 +293,7 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
                 if (protocol.protocol() == PR_ENUMERATEABLE) {
-                    auto itemType = Type(TypeType::GenericVariable, false, 0, PR_ENUMERATEABLE);
+                    auto itemType = Type(false, 0, PR_ENUMERATEABLE);
                     *elementType = itemType.resolveOn(protocol.resolveOn(type));
                     return true;
                 }
@@ -303,14 +303,14 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
     else if (type.canHaveProtocol() && !type.optional()) {
         for (auto &protocol : type.typeDefinition()->protocols()) {
             if (protocol.protocol() == PR_ENUMERATEABLE) {
-                auto itemType = Type(TypeType::GenericVariable, false, 0, PR_ENUMERATEABLE);
+                auto itemType = Type(   false, 0, PR_ENUMERATEABLE);
                 *elementType = itemType.resolveOn(protocol.resolveOn(type));
                 return true;
             }
         }
     }
     else if (type.type() == TypeType::Protocol && type.protocol() == PR_ENUMERATEABLE) {
-        *elementType = Type(TypeType::GenericVariable, false, 0, type.protocol()).resolveOn(type);
+        *elementType = Type(false, 0, type.protocol()).resolveOn(type);
         return true;
     }
     return false;

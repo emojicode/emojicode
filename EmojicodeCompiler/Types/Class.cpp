@@ -25,10 +25,6 @@ Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32
     index = pkg->app()->classIndex();
 }
 
-void Class::setSuperclass(Class *eclass) {
-    superclass_ = eclass;
-}
-
 bool Class::canBeUsedToResolve(TypeDefinition *resolutionConstraint) const {
     if (auto cl = dynamic_cast<Class *>(resolutionConstraint)) {
         return inheritsFrom(cl);

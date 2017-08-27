@@ -15,6 +15,7 @@
 #include "../Lex/SourcePosition.hpp"
 #include "../Scoping/CGScoper.hpp"
 #include "../Scoping/Scope.hpp"
+#include "Generic.hpp"
 #include "Type.hpp"
 #include <functional>
 #include <map>
@@ -32,47 +33,29 @@ struct InstanceVariableDeclaration {
     SourcePosition position;
 };
 
-class TypeDefinition {
+class TypeDefinition : public Generic<TypeDefinition> {
 public:
-    /** Returns a documentation token documenting this type definition or @c nullptr. */
+    /// Returns a documentation token documenting this type definition.
     const std::u32string& documentation() const { return documentation_; }
-    /** Returns the name of the type definition. */
+    /// Returns the name of the type definition.
     std::u32string name() const { return name_; }
-    /** Returns the package in which this type was defined. */
+    /// Returns the package in which this type was defined.
     Package* package() const { return package_; }
-    /** The position at which this type was initially defined. */
+    /// The position at which this type was initially defined.
     const SourcePosition& position() const { return position_; }
 
-    /**
-     * Adds a new generic argument to the end of the list.
-     * @param variableName The name which is used to refer to this argument.
-     * @param constraint The constraint that applies to the types passed.
-     */
-    void addGenericArgument(const std::u32string &variableName, const Type &constraint, const SourcePosition &p);
-    void setSuperTypeDef(TypeDefinition *superTypeDef);
-    void setSuperGenericArguments(std::vector<Type> superGenericArguments);
-    /** Must be called before the type is used but after the last generic argument was added. */
-    void finalizeGenericArguments();
+    /// Sets the super type to the given Type.
+    /// All generic arguments are offset by the number of generic arguments this type has.
+    void setSuperType(const Type &type);
+    /// The generic arguments of the super type.
+    /// @returns The generic arguments of the Type passed to setSuperType().
+    /// If no super type was provided an empty vector is returned.
+    const std::vector<Type>& superGenericArguments() const { return superType_.genericArguments(); }
 
-    /**
-     * Returns the number of generic arguments a type of this type definition stores when initialized.
-     * This therefore also includes all arguments to supertypedefinitions of this type.
-     */
-    uint16_t numberOfGenericArgumentsWithSuperArguments() const { return genericArgumentCount_; }
-    /**
-     * Tries to fetch the type reference type for the given generic variable name and stores it into @c type.
-     * @returns Whether the variable could be found or not. @c type is untouched if @c false was returned.
-     */
-    bool fetchVariable(const std::u32string &name, bool optional, Type *destType);
-    /*
-     * Determines whether the given type reference resolution constraint allows the type to be
-     * resolved on this type definition.
-     */
+    /// Determines whether the resolution constraint of TypeType::GenericVariable allows it to be resolved on an Type
+    /// instance representing an instance of this TypeDefinition.
+    /// @see Type::resolveOn
     virtual bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const = 0;
-
-    const std::map<std::u32string, Type>& ownGenericArgumentVariables() const { return ownGenericArgumentVariables_; }
-    const std::vector<Type>& superGenericArguments() const { return superGenericArguments_; }
-    const std::vector<Type>& genericArgumentConstraints() const { return genericArgumentConstraints_; }
 
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
@@ -134,6 +117,8 @@ protected:
 
     std::vector<Type> protocols_;
 
+    const Type& superType() const { return superType_; }
+
     Scope scope_ = Scope(0);
     CGScoper cgScoper_ = CGScoper(0);
 
@@ -168,14 +153,8 @@ private:
     Package *package_;
     std::u32string documentation_;
     SourcePosition position_;
-    /// The number of generic arguments including those from a superclass.
-    uint16_t genericArgumentCount_ = 0;
-    /** The types for the generic arguments. */
-    std::vector<Type> genericArgumentConstraints_;
-    /// The arguments for the classes from which this class inherits.
-    std::vector<Type> superGenericArguments_;
-    /** Generic type arguments as variables */
-    std::map<std::u32string, Type> ownGenericArgumentVariables_;
+
+    Type superType_ = Type::nothingness();
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 };

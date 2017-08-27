@@ -11,6 +11,7 @@
 
 #include "../Lex/TokenStream.hpp"
 #include "../Types/TypeContext.hpp"
+#include "../Types/Generic.hpp"
 #include <utility>
 
 namespace EmojicodeCompiler {
@@ -78,12 +79,22 @@ protected:
     TypeIdentifier parseTypeIdentifier();
     /// Reads a $type$ and fetches it
     Type parseType(const TypeContext &typeContext, TypeDynamism dynamism);
+    /// Parses $generic-parameters$
+    template <typename T>
+    void parseGenericParameters(Generic<T> *generic, const TypeContext &typeContext) {
+        while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
+            auto &variable = stream_.consumeToken(TokenType::Variable);
+            auto constraint = parseType(typeContext, TypeDynamism::GenericTypeVariables);
+            generic->addGenericArgument(variable.value(), constraint, variable.position());
+        }
+    }
 
-    /// Parses the arguments for a callable.
+    /// Parses $parameters$ for a function if there are any specified.
+    /// @param initializer If this is true, the method parses $init-parameters$ instead.
     void parseArgumentList(Function *function, const TypeContext &typeContext, bool initializer = false);
-    /// Parses the return type for a function if there is one specified.
+    /// Parses a $return-type$ for a function one is specified.
     void parseReturnType(Function *function, const TypeContext &typeContext);
-    void parseGenericArgumentsInDefinition(Function *function, const TypeContext &typeContext);
+    /// Parses $generic-arguments$ for a type.
     void parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,
                                       const SourcePosition &p);
 

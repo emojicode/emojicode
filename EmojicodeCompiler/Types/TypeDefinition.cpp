@@ -20,48 +20,15 @@
 
 namespace EmojicodeCompiler {
 
-void TypeDefinition::addGenericArgument(const std::u32string &variableName, const Type &constraint,
-                                        const SourcePosition &p) {
-    genericArgumentConstraints_.push_back(constraint);
-
-    Type referenceType = Type(TypeType::GenericVariable, false, ownGenericArgumentVariables_.size(), this);
-
-    if (ownGenericArgumentVariables_.count(variableName) > 0) {
-        throw CompilerError(p, "A generic argument variable with the same name is already in use.");
-    }
-    ownGenericArgumentVariables_.emplace(variableName, referenceType);
-}
-
-void TypeDefinition::setSuperTypeDef(TypeDefinition *superTypeDef) {
-    genericArgumentCount_ = ownGenericArgumentVariables_.size() + superTypeDef->genericArgumentCount_;
-    genericArgumentConstraints_.insert(genericArgumentConstraints_.begin(),
-                                       superTypeDef->genericArgumentConstraints_.begin(),
-                                       superTypeDef->genericArgumentConstraints_.end());
-
-    for (auto &genericArg : ownGenericArgumentVariables_) {
-        genericArg.second.genericArgumentIndex_ += superTypeDef->genericArgumentCount_;
-    }
-}
-
-void TypeDefinition::setSuperGenericArguments(std::vector<Type> superGenericArguments) {
-    superGenericArguments_ = std::move(superGenericArguments);
-}
-
-void TypeDefinition::finalizeGenericArguments() {
-    genericArgumentCount_ = ownGenericArgumentVariables_.size();
-}
-
-bool TypeDefinition::fetchVariable(const std::u32string &name, bool optional, Type *destType) {
-    auto it = ownGenericArgumentVariables_.find(name);
-    if (it != ownGenericArgumentVariables_.end()) {
-        Type type = it->second;
-        if (optional) {
-            type.setOptional();
+void TypeDefinition::setSuperType(const Type &type) {
+    offsetIndicesBy(type.genericArguments().size());
+    superType_ = type;
+    for (size_t i = superType_.typeDefinition()->superGenericArguments().size(); i < superType_.genericArguments().size(); i++) {
+        if (type.genericArguments()[i].type() == TypeType::GenericVariable) {
+            auto newIndex = superType_.genericArguments()[i].genericVariableIndex() + superType_.genericArguments().size();
+            superType_.setGenericArgument(i, Type(false, newIndex, this));
         }
-        *destType = type;
-        return true;
     }
-    return false;
 }
 
 Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) {

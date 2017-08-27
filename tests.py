@@ -109,7 +109,6 @@ def library_test(name):
 
 def compilation_test(name):
     source_path, binary_path = test_paths(name, 'compilation')
-
     run([emojicodec, source_path], check=True)
     completed = run([emojicode, binary_path], stdout=PIPE)
     exp_path = os.path.join(dist.source, "tests", "compilation", name + ".txt")

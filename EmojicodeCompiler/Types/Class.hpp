@@ -28,10 +28,14 @@ class Class : public TypeDefinition {
 public:
     Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool final);
 
-    /** The class's superclass. @c nullptr if the class has no superclass. */
-    Class* superclass() const { return superclass_; }
-    /** Sets the class superclass to the given class. */
-    void setSuperclass(Class *);
+    /// The class's superclass.
+    /// @returns TypeDefinition::superType().eclass(). Guaranteed to be @c nullptr if the class has no superclass.
+    Class* superclass() const {
+        if (superType().type() == TypeType::Nothingness) {
+            return nullptr;
+        }
+        return superType().eclass();
+    }
 
     uint16_t index;
 
@@ -83,8 +87,6 @@ private:
 
     ClassVTIProvider methodVtiProvider_;
     ClassVTIProvider initializerVtiProvider_;
-
-    Class *superclass_ = nullptr;
 
     void handleRequiredInitializer(Initializer *init) override;
 };

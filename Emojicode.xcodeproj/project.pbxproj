@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E40090A01F51ACE8003F62FE /* Generic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E400909E1F51ACE8003F62FE /* Generic.cpp */; };
 		E40B59EF1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40B59ED1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp */; };
 		E42207471ED81DDD006A1305 /* RetainedObjectPointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E42207451ED81DDD006A1305 /* RetainedObjectPointer.cpp */; };
 		E4221DA81F10BCFE002D85A6 /* Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4221DA61F10BCFE002D85A6 /* Data.cpp */; };
@@ -118,6 +119,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E400909E1F51ACE8003F62FE /* Generic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Generic.cpp; sourceTree = "<group>"; };
+		E400909F1F51ACE8003F62FE /* Generic.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Generic.hpp; sourceTree = "<group>"; };
 		E40B59ED1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FunctionVariableObjectInformation.cpp; sourceTree = "<group>"; };
 		E40B59EE1F31DFD900A27376 /* FunctionVariableObjectInformation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FunctionVariableObjectInformation.hpp; sourceTree = "<group>"; };
 		E42207451ED81DDD006A1305 /* RetainedObjectPointer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetainedObjectPointer.cpp; path = "EmojicodeReal-TimeEngine/RetainedObjectPointer.cpp"; sourceTree = SOURCE_ROOT; };
@@ -476,6 +479,8 @@
 				E460A5871F30EFA2006E3AC7 /* ValueType.hpp */,
 				E48356B31F375742000B80AE /* Extension.hpp */,
 				E48356B21F375742000B80AE /* Extension.cpp */,
+				E400909F1F51ACE8003F62FE /* Generic.hpp */,
+				E400909E1F51ACE8003F62FE /* Generic.cpp */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -769,6 +774,7 @@
 				E48356B41F375742000B80AE /* Extension.cpp in Sources */,
 				E460A5B01F30EFA2006E3AC7 /* Variable.cpp in Sources */,
 				E460A5A21F30EFA2006E3AC7 /* Lexer.cpp in Sources */,
+				E40090A01F51ACE8003F62FE /* Generic.cpp in Sources */,
 				E47838DA1F41F9A6007B937C /* BoxingLayerBuilder.cpp in Sources */,
 				E460A5BE1F30EFA2006E3AC7 /* CompilerError.cpp in Sources */,
 				E48356AA1F35E1A2000B80AE /* ASTMethod.cpp in Sources */,

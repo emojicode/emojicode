@@ -63,21 +63,14 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
 
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
 
-        if (typeContext.function() != nullptr) {
-            auto it = typeContext.function()->genericArgumentVariables.find(variableToken.value());
-            if (it != typeContext.function()->genericArgumentVariables.end()) {
-                Type type = it->second;
-                if (optional) {
-                    type.setOptional();
-                }
-                return type;
-            }
+        Type type = Type::nothingness();
+        if (typeContext.function() != nullptr &&
+            typeContext.function()->fetchVariable(variableToken.value(), optional, &type)) {
+            return type;
         }
-        if (typeContext.calleeType().canHaveGenericArguments()) {
-            Type type = Type::nothingness();
-            if (typeContext.calleeType().typeDefinition()->fetchVariable(variableToken.value(), optional, &type)) {
-                return type;
-            }
+        if (typeContext.calleeType().canHaveGenericArguments() &&
+            typeContext.calleeType().typeDefinition()->fetchVariable(variableToken.value(), optional, &type)) {
+            return type;
         }
 
         throw CompilerError(variableToken.position(), "No such generic type variable \"", utf8(variableToken.value()),
@@ -138,7 +131,9 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
     else {
         auto parsedTypeIdentifier = parseTypeIdentifier();
         auto type = package_->getRawType(parsedTypeIdentifier, optional);
-        parseGenericArgumentsForType(&type, typeContext, dynamism, parsedTypeIdentifier.position);
+        if (type.canHaveGenericArguments()) {
+            parseGenericArgumentsForType(&type, typeContext, dynamism, parsedTypeIdentifier.position);
+        }
         return type;
     }
 }
@@ -153,40 +148,26 @@ Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, TypeDyna
 
 void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,
                                                   const SourcePosition &p) {
-    if (type->canHaveGenericArguments()) {
-        auto typeDef = type->typeDefinition();
-        auto offset = typeDef->superGenericArguments().size();
-        type->genericArguments_ = typeDef->superGenericArguments();
+    auto typeDef = type->typeDefinition();
+    auto offset = typeDef->superGenericArguments().size();
+    type->genericArguments_ = typeDef->superGenericArguments();
 
-        if (!typeDef->ownGenericArgumentVariables().empty()) {
-            size_t count = 0;
-            while (stream_.nextTokenIs(E_SPIRAL_SHELL)) {
-                auto &token = stream_.consumeToken(TokenType::Identifier);
+    size_t count = 0;
+    for (; stream_.nextTokenIs(E_SPIRAL_SHELL) && count < typeDef->genericParameterCount(); count++) {
+        auto &token = stream_.consumeToken(TokenType::Identifier);
 
-                Type ta = parseType(typeContext, dynamism);
-
-                auto i = count + offset;
-                if (typeDef->numberOfGenericArgumentsWithSuperArguments() <= i) {
-                    break;  // and throw an error below
-                }
-                if (!ta.compatibleTo(typeDef->genericArgumentConstraints()[i], typeContext)) {
-                    auto thisName = typeDef->genericArgumentConstraints()[i].toString(typeContext);
-                    auto thatName = ta.toString(typeContext);
-                    throw CompilerError(token.position(), "Generic argument for ", thatName,
-                                        " is not compatible to constraint ", thisName, ".");
-                }
-
-                type->genericArguments_.push_back(ta);
-
-                count++;
-            }
-
-            if (count != typeDef->ownGenericArgumentVariables().size()) {
-                auto str = type->toString(Type::nothingness());
-                throw CompilerError(p, "Type ", str, " requires ", typeDef->ownGenericArgumentVariables().size(),
-                                    " generic arguments, but ", count, " were given.");
-            }
+        Type argument = parseType(typeContext, dynamism);
+        if (!argument.compatibleTo(typeDef->constraintForIndex(offset + count), typeContext)) {
+            throw CompilerError(token.position(), "Generic argument for ", argument.toString(typeContext),
+                                " is not compatible to constraint ",
+                                typeDef->constraintForIndex(offset + count).toString(typeContext), ".");
         }
+        type->genericArguments_.emplace_back(argument);
+    }
+
+    if (count != typeDef->genericParameterCount()) {
+        throw CompilerError(p, "Type ", type->toString(Type::nothingness()), " requires ",
+                            typeDef->genericParameterCount(), " generic arguments, but ", count, " were given.");
     }
 }
 
@@ -219,24 +200,6 @@ void AbstractParser::parseArgumentList(Function *function, const TypeContext &ty
 void AbstractParser::parseReturnType(Function *function, const TypeContext &typeContext) {
     if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
         function->returnType = parseType(typeContext, TypeDynamism::GenericTypeVariables);
-    }
-}
-
-void AbstractParser::parseGenericArgumentsInDefinition(Function *function, const TypeContext &ct) {
-    while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
-        auto &variable = stream_.consumeToken(TokenType::Variable);
-
-        Type t = parseType(function->typeContext(), TypeDynamism::GenericTypeVariables);
-        function->genericArgumentConstraints.push_back(t);
-
-        Type rType = Type(TypeType::LocalGenericVariable, false,
-                          static_cast<int>(function->genericArgumentVariables.size()), function);
-
-        if (function->genericArgumentVariables.count(variable.value()) > 0) {
-            throw CompilerError(variable.position(),
-                                "A generic argument variable with the same name is already in use.");
-        }
-        function->genericArgumentVariables.insert(std::map<std::u32string, Type>::value_type(variable.value(), rType));
     }
 }
 

@@ -13,6 +13,7 @@
 #include "../Generation/FunctionWriter.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Type.hpp"
+#include "../Types/Generic.hpp"
 #include "FunctionType.hpp"
 #include <algorithm>
 #include <experimental/optional>
@@ -42,7 +43,7 @@ struct Argument {
 };
 
 /** Functions are callables that belong to a class or value type as either method, type method or initializer. */
-class Function {
+class Function : public Generic<Function> {
     friend void Class::prepareForCG();
     friend Protocol;
 public:
@@ -87,11 +88,6 @@ public:
     void setOwningType(const Type &type) { owningType_ = type; }
 
     const std::u32string& documentation() const { return documentation_; }
-
-    /** The types for the generic arguments. */
-    std::vector<Type> genericArgumentConstraints;
-    /** Generic type arguments as variables */
-    std::map<std::u32string, Type> genericArgumentVariables;
 
     /// The package in which the function was defined.
     /// This does not necessarily match the package of @c owningType.

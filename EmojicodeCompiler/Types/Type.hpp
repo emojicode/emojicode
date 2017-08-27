@@ -71,7 +71,6 @@ struct ObjectVariableInformation {
 /// Represents the type of variable, an argument or the return value of a Function such as a method, an initializer,
 /// or type method.
 class Type {
-    friend TypeDefinition;
     friend AbstractParser;
     friend Initializer;
     friend Function;
@@ -82,11 +81,13 @@ public:
     Type(ValueType *valueType, bool optional);
     explicit Type(Extension *extension);
     /// Creates a generic variable to the generic argument @c r.
-    Type(TypeType t, bool optional, size_t r, TypeDefinition *resolutionConstraint)
-        : typeContent_(t), genericArgumentIndex_(r), typeDefinition_(resolutionConstraint), optional_(optional) {}
+    Type(bool optional, size_t r, TypeDefinition *resolutionConstraint)
+    : typeContent_(TypeType::GenericVariable), genericArgumentIndex_(r),
+      typeDefinition_(resolutionConstraint), optional_(optional) {}
     /// Creates a local generic variable (generic function) to the generic argument @c r.
-    Type(TypeType t, bool optional, size_t r, Function *function)
-        : typeContent_(t), genericArgumentIndex_(r), localResolutionConstraint_(function), optional_(optional) {}
+    Type(bool optional, size_t r, Function *function)
+    : typeContent_(TypeType::LocalGenericVariable), genericArgumentIndex_(r),
+      localResolutionConstraint_(function), optional_(optional) {}
     Type(std::vector<Type> protocols, bool optional)
         : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)), optional_(optional) {
             sortMultiProtocolType();
@@ -135,7 +136,7 @@ public:
     /// Mainly used to determine compatibility of generics.
     bool identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const;
 
-    /// Returns the generic variable index if the type is a @c GenericVariable or @c LocalGenericVariable.
+    /// Returns the generic variable index if the type is a Type::GenericVariable or TypeType::LocalGenericVariable.
     /// @throws std::domain_error if the Type is not a generic variable.
     size_t genericVariableIndex() const;
 

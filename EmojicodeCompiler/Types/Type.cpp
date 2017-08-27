@@ -31,25 +31,25 @@ ValueType *VT_SYMBOL;
 ValueType *VT_INTEGER;
 ValueType *VT_DOUBLE;
 
-Type::Type(Protocol *protocol, bool o) : typeContent_(TypeType::Protocol), typeDefinition_(protocol), optional_(o) {
-}
+Type::Type(Protocol *protocol, bool optional)
+    : typeContent_(TypeType::Protocol), typeDefinition_(protocol), optional_(optional) {}
 
-Type::Type(Enum *enumeration, bool o) : typeContent_(TypeType::Enum), typeDefinition_(enumeration), optional_(o) {
-}
+Type::Type(Enum *enumeration, bool optional)
+    : typeContent_(TypeType::Enum), typeDefinition_(enumeration), optional_(optional) {}
 
-Type::Type(Extension *extension) : typeContent_(TypeType::Extension), typeDefinition_(extension), optional_(false) {
-}
+Type::Type(Extension *extension)
+    : typeContent_(TypeType::Extension), typeDefinition_(extension), optional_(false) {}
 
-Type::Type(ValueType *valueType, bool o)
-: typeContent_(TypeType::ValueType), typeDefinition_(valueType), optional_(o), mutable_(false) {
-    for (size_t i = 0; i < valueType->numberOfGenericArgumentsWithSuperArguments(); i++) {
-        genericArguments_.emplace_back(TypeType::GenericVariable, false, i, valueType);
+Type::Type(ValueType *valueType, bool optional)
+: typeContent_(TypeType::ValueType), typeDefinition_(valueType), optional_(optional), mutable_(false) {
+    for (size_t i = 0; i < valueType->genericParameterCount(); i++) {
+        genericArguments_.emplace_back(false, i, valueType);
     }
 }
 
-Type::Type(Class *c, bool o) : typeContent_(TypeType::Class), typeDefinition_(c), optional_(o) {
-    for (size_t i = 0; i < c->numberOfGenericArgumentsWithSuperArguments(); i++) {
-        genericArguments_.emplace_back(TypeType::GenericVariable, false, i, c);
+Type::Type(Class *klass, bool optional) : typeContent_(TypeType::Class), typeDefinition_(klass), optional_(optional) {
+    for (size_t i = 0; i < klass->genericParameterCount() + klass->superGenericArguments().size(); i++) {
+        genericArguments_.emplace_back(false, i, klass);
     }
 }
 
@@ -98,10 +98,9 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &ty
     TypeDefinition *c = typeContext.calleeType().typeDefinition();
     Type t = *this;
 
-    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
     while (t.type() == TypeType::GenericVariable && c->canBeUsedToResolve(t.typeDefinition()) &&
-           t.genericVariableIndex() < maxReferenceForSuper) {
+           t.genericVariableIndex() < c->superGenericArguments().size()) {
         Type tn = c->superGenericArguments()[t.genericVariableIndex()];
         if (tn.type() == TypeType::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
             && tn.typeDefinition() == t.typeDefinition()) {
@@ -128,17 +127,16 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext,
         t = typeContext.calleeType();
     }
 
-    auto maxReferenceForSuper = c->numberOfGenericArgumentsWithSuperArguments() - c->ownGenericArgumentVariables().size();
     // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeType::GenericVariable && t.genericVariableIndex() < maxReferenceForSuper) {
-        t = c->superGenericArguments()[t.genericVariableIndex()];
+    while (t.type() == TypeType::GenericVariable && t.genericVariableIndex() < c->superGenericArguments().size()) {
+        t = c->superGenericArguments()[t.genericArgumentIndex_];
     }
     while (t.type() == TypeType::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_) {
-        t = typeContext.function()->genericArgumentConstraints[t.genericVariableIndex()];
+        t = typeContext.function()->constraintForIndex(t.genericArgumentIndex_);
     }
     while (t.type() == TypeType::GenericVariable
            && typeContext.calleeType().typeDefinition()->canBeUsedToResolve(t.typeDefinition())) {
-        t = typeContext.calleeType().typeDefinition()->genericArgumentConstraints()[t.genericVariableIndex()];
+        t = typeContext.calleeType().typeDefinition()->constraintForIndex(t.genericArgumentIndex_);
     }
 
     if (optional) {
@@ -183,15 +181,8 @@ Type Type::resolveOn(const TypeContext &typeContext, bool resolveSelf) const {
         t.setOptional();
     }
 
-    if (t.canHaveGenericArguments()) {
-        for (size_t i = 0; i < t.typeDefinition()->numberOfGenericArgumentsWithSuperArguments(); i++) {
-            t.genericArguments_[i] = t.genericArguments_[i].resolveOn(typeContext);
-        }
-    }
-    else if (t.type() == TypeType::Callable) {
-        for (Type &genericArgument : t.genericArguments_) {
-            genericArgument = genericArgument.resolveOn(typeContext);
-        }
+    for (auto &arg : t.genericArguments_) {
+        arg = arg.resolveOn(typeContext);
     }
 
     if (box) {
@@ -201,12 +192,9 @@ Type Type::resolveOn(const TypeContext &typeContext, bool resolveSelf) const {
 }
 
 bool Type::identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const {
-    if (!to.typeDefinition()->ownGenericArgumentVariables().empty()) {
-        for (size_t l = to.typeDefinition()->ownGenericArgumentVariables().size(),
-             i = to.typeDefinition()->numberOfGenericArgumentsWithSuperArguments() - l; i < l; i++) {
-            if (!this->genericArguments_[i].identicalTo(to.genericArguments_[i], typeContext, ctargs)) {
-                return false;
-            }
+    for (size_t i = to.typeDefinition()->superGenericArguments().size(); i < to.genericArguments().size(); i++) {
+        if (!this->genericArguments_[i].identicalTo(to.genericArguments_[i], typeContext, ctargs)) {
+            return false;
         }
     }
     return true;
@@ -626,20 +614,18 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             if (typeContext.calleeType().type() == TypeType::Class) {
                 Class *eclass = typeContext.calleeType().eclass();
                 do {
-                    for (auto it : eclass->ownGenericArgumentVariables()) {
-                        if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
-                            string.append(utf8(it.first));
-                            return;
-                        }
+                    auto str = eclass->findGenericName(type.genericVariableIndex());
+                    if (!str.empty()) {
+                        string.append(utf8(str));
+                        return;
                     }
                 } while ((eclass = eclass->superclass()) != nullptr);
             }
             else if (typeContext.calleeType().canHaveGenericArguments()) {
-                for (auto it : typeContext.calleeType().typeDefinition()->ownGenericArgumentVariables()) {
-                    if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
-                        string.append(utf8(it.first));
-                        return;
-                    }
+                auto str = typeContext.calleeType().typeDefinition()->findGenericName(type.genericVariableIndex());
+                if (!str.empty()) {
+                    string.append(utf8(str));
+                    return;
                 }
             }
 
@@ -648,11 +634,10 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
         }
         case TypeType::LocalGenericVariable:
             if (typeContext.function() != nullptr) {
-                for (auto it : typeContext.function()->genericArgumentVariables) {
-                    if (it.second.genericVariableIndex() == type.genericVariableIndex()) {
-                        string.append(utf8(it.first));
-                        return;
-                    }
+                auto str = typeContext.function()->findGenericName(type.genericVariableIndex());
+                if (!str.empty()) {
+                    string.append(utf8(str));
+                    return;
                 }
             }
 
@@ -664,11 +649,6 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
     }
 
     if (type.canHaveGenericArguments()) {
-        auto typeDef = type.typeDefinition();
-        if (typeDef->ownGenericArgumentVariables().empty()) {
-            return;
-        }
-
         for (auto &argumentType : type.genericArguments()) {
             string.append("🐚");
             typeName(argumentType, typeContext, string, package);
