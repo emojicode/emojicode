@@ -10,6 +10,7 @@
 #define ArgumentsMigCreator_hpp
 
 #include <vector>
+#include <cstdlib>
 
 namespace EmojicodeCompiler {
 
