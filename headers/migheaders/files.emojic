@@ -1,0 +1,167 @@
+🌮
+  The files packages provides an API to interact with the file system. Files can
+  be read, written to and deleted. Moreover, the [[📑]] class provides class
+  methods to work with directories, create symbolic links etc.
+🌮
+🔮 0 1
+📻
+
+🌮 Errors 🌮
+🌍 🦃 🌧 🍇
+  🌮 Indicates a generic error. 🌮
+  🔘⁉️
+  🌮 Permission denied 🌮
+  🔘 🚧
+  🌮 File exists 🌮
+  🔘 🗿
+  🌮 Not enough space. 🌮
+  🔘 🐁
+  🌮 Function not supported. 🌮
+  🔘 🙅
+  🌮 Mathematics argument out of domain of function. 🌮
+  🔘 ➗
+  🌮 Invalid argument. 🌮
+  🔘 🚯
+  🌮 Illegal byte sequence. 🌮
+  🔘 🛃
+  🌮 Result too large. 🌮
+  🔘 🗻
+  🌮 Operation not permitted. 🌮
+  🔘 🚷
+🍉
+
+🌮
+    The 📑 class has many class methods which allow you to work with the file
+    system.
+
+    See the 📄 class for reading and writing.
+🌮
+🌍 🐇 📑 🍇
+  🌮
+    This method creates a directory at the given path.
+    If the directory already exists an error is returned.
+  🌮
+  🐇🐖 📁 path 🔡 ➡️ 🍬🌧 📻 1
+  🌮
+    This method deletes the file at the given path.
+    >!N This method may not be used to delete directories.
+  🌮
+  🐇🐖 🔫 path 🔡 ➡️ 🍬🌧 📻 7
+  🌮
+    This method deletes an *empty* directory at the given path.
+    If you need to delete a whole directory hierarchy use 💣.
+  🌮
+  🐇🐖 🔥 path 🔡 ➡️ 🍬🌧 📻 8
+  🌮
+    This method deletes an directory with its content. The method recursively
+    descends the directory hierarchy and deletes every file or directory it
+    finds. Once finished, it deletes the directory itself.
+  🌮
+  🐇🐖 💣 path 🔡 ➡️ 🍬🌧 📻 9
+  🌮 This method creates a symbolic link to another. 🌮
+  🐇🐖 🔗 originalFile 🔡 destination 🔡 ➡️ 🍬🌧 📻 2
+  🌮 Determines whether a file exists at the given path. 🌮
+  🐇🐖 📃 path 🔡 ➡️ 👌 📻 3
+  🌮
+    Determines whether a file exists and the given path and if it is readable.
+  🌮
+  🐇🐖 📜 path 🔡 ➡️ 👌 📻 4
+  🌮
+    Determines whether a file exists and the given path and if it is writeable.
+  🌮
+  🐇🐖 📝 path 🔡 ➡️ 👌 📻 5
+  🌮
+    Determines whether a file exists and the given path and if it is executable.
+  🌮
+  🐇🐖 👟 path 🔡 ➡️ 👌 📻 6
+  🌮
+    Determines the size of a file at a given path. If the file cannot be found
+    or any other error occurs the method returns -1.
+  🌮
+  🐇🐖 📏 path 🔡 ➡️ 🚨🌧🚂 📻 10
+  🌮
+    Returns an absolute pathname derived from `path` that
+    resolves to the same directory entry, whose resolution does not involve `.`,
+    `..`, or symbolic links. On failure Nothingness is returned.
+  🌮
+  🐇🐖 ⛓ path 🔡 ➡️ 🚨🌧🔡 📻 11
+🍉
+
+🌮
+    The 📄 class allows you to read and write to files.
+
+    It provides several class methods which are shortcuts to reading and
+    writing. They operate always on the whole file and reading can be very
+    inefficient using these shortcuts when working with big files, because they
+    will read the whole file into memory.
+
+    You must close files openend with 📝 and 📜 appropriately with 🙅 when they
+    are no longer needed.
+🌮
+🌍 🐇 📄 🍇
+  🌮
+    Opens the file at the given path for writing. The file pointer is set to the
+    beginning of the file and the file is truncated to zero length or created.
+
+    This initializer returns nothingness if the file can not be opened for some
+    reason. In many cases this occurs when you don’t have the permission to
+    create or open the file.
+
+    You cannot read from a file opened with this initializer.
+  🌮
+  🐈🚨🌧 📝 message 🔡 📻 21
+  🌮
+    Opens the file at the given path for reading. The file pointer is set to the
+    beginning of the file.
+
+    This initializer returns nothingness if the file can not be opened for some
+    reason. In many cases this occurs when you don’t have the permission to open
+    the file or when it does not exist.
+
+    You cannot write to a file opened with this initializer.
+  🌮
+  🐈🚨🌧 📜 message 🔡 📻 22
+
+  🌮 Write the data at the current file pointer position. 🌮
+  🐖 ✏️ data 📇 ➡️ 🍬🌧 📻 17
+
+  🌮
+    Reads as many bytes as specified from the file pointer position.
+
+    Keep in mind that a byte is not equal to one character!
+  🌮
+  🐖 📓 bytesToRead 🚂 ➡️ 🚨🌧📇 📻 18
+
+  🌮 Seeks the file pointer to the end of the file. 🌮
+  🐖 🔚 📻 20
+  🌮 Seeks the file pointer to the given position. 🌮
+  🐖 🔛 position 🚂 📻 19
+
+  🌮
+    This class method tries to write the given 📇 to the given path. If the file
+    already exists, it will be overwritten.
+  🌮
+  🐇🐖 📻 path 🔡 data 📇 ➡️ 🍬🌧 📻 12
+
+  🌮
+    This class method tries to read the file at given path `path` and returns
+    a 📇 object representing its content on success. On failure Nothingness
+    is returned.
+  🌮
+  🐇🐖 📇 path 🔡 ➡️ 🚨🌧📇 📻 13
+
+  🌮 Returns a 📄 object representing the **standard output**. 🌮
+  🐇🐖 📤 ➡️ 📄 📻 15
+
+  🌮 Returns a 📄 object representing the **standard input**. 🌮
+  🐇🐖 📥 ➡️ 📄 📻 14
+
+  🌮 Returns a 📄 object representing the **standard error**. 🌮
+  🐇🐖 📯 ➡️ 📄 📻 16
+
+  🌮 Causes any buffered unwritten data to be written to the file. 🌮
+  🐖 💧 📻 24
+
+  🌮 Closes the file. Reading or writing thereafter is undefined behavior. 🌮
+  🐖 🙅 📻 23
+🍉

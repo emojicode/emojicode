@@ -24,6 +24,10 @@ file(GLOB_RECURSE EMOJICODEC_SOURCES "EmojicodeCompiler/*")
 add_executable(emojicodec ${EMOJICODEC_SOURCES})
 target_compile_options(emojicodec PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 
+file(GLOB EMOJICODEMIG_SOURCES "Migrator/*")
+add_executable(emojicodemig ${EMOJICODEMIG_SOURCES})
+target_compile_options(emojicodemig PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
+
 if(APPLE)
   set(CMAKE_SHARED_MODULE_CREATE_CXX_FLAGS "${CMAKE_SHARED_MODULE_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
 endif()
