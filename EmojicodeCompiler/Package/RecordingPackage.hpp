@@ -33,6 +33,7 @@ public:
     void importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) override;
     void offerType(Type t, const std::u32string &name, const std::u32string &ns, bool exportFromPkg,
                            const SourcePosition &p) override;
+    Extension& registerExtension(Extension ext) override;
 private:
     std::vector<Type> types_;
     std::vector<RecordedImport> packages_;

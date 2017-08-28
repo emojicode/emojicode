@@ -25,4 +25,10 @@ void RecordingPackage::offerType(Type t, const std::u32string &name, const std::
     Package::offerType(std::move(t), name, ns, exportFromPkg, p);
 }
 
+Extension& RecordingPackage::registerExtension(Extension ext) {
+    auto &extension = Package::registerExtension(std::move(ext));
+    types_.emplace_back(&extension);
+    return extension;
+}
+
 };

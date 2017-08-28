@@ -108,6 +108,9 @@ void Prettyprinter::printTypeDefName(const Type &type) {
         case TypeType::Protocol:
             stream_ << "🐊 ";
             break;
+        case TypeType::Extension:
+            stream_ << "🐋 ";
+            break;
         default:
             break;
     }

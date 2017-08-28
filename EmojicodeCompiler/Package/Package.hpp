@@ -98,7 +98,10 @@ public:
     void registerFunction(Function *function) { functions_.push_back(function); }
     /// An extension defined in this package that extends a type not defined in this package, must be registered
     /// with this method.
-    void registerExtension(Extension ext) { extensions_.emplace_back(std::move(ext)); }
+    virtual Extension& registerExtension(Extension ext) {
+        extensions_.emplace_back(std::move(ext));
+        return extensions_.back();
+    }
 
     /// Make a type available in this package. A type may be provided under different names, so this method may be
     /// called with the same type multiple times with different names and namespaces.
