@@ -56,10 +56,11 @@ Package* Application::loadPackage(const std::string &name, const SourcePosition 
 
     auto path = packageDirectory_ + "/" + name + "/header.emojic";
     auto package = std::make_unique<Package>(name, path, this);
-    packages_.emplace(name, package.get());
+    auto rawPtr = package.get();
+    packages_.emplace(name, rawPtr);
     packagesLoadingOrder_.emplace_back(std::move(package));
-    package->compile();
-    return package.get();
+    rawPtr->compile();
+    return rawPtr;
 }
 
 void Application::error(const CompilerError &ce) {
