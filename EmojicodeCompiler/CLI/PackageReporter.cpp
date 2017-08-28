@@ -10,7 +10,7 @@
 #include "../EmojicodeCompiler.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
-#include "../Parsing/Package.hpp"
+#include "../Package/Package.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Generic.hpp"

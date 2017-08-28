@@ -11,7 +11,7 @@
 
 #include "../Application.hpp"
 #include "../Generation/STIProvider.hpp"
-#include "../Parsing/Package.hpp"
+#include "../Package/Package.hpp"
 #include "TypeDefinition.hpp"
 #include <utility>
 #include <vector>

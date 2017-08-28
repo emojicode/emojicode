@@ -21,7 +21,7 @@ Options::Options(int argc, char *argv[]) {
     readEnvironment();
 
     signed char ch;
-    while ((ch = getopt(argc, argv, "vrjR:o:S:")) != -1) {
+    while ((ch = getopt(argc, argv, "vrjR:o:S:f")) != -1) {
         switch (ch) {
             case 'v':
                 puts("Emojicode 0.5. Created by Theo Weidmann.");
@@ -41,6 +41,9 @@ Options::Options(int argc, char *argv[]) {
                 break;
             case 'S':
                 sizeVariable_ = optarg;
+                break;
+            case 'f':
+                format_ = true;
                 break;
             default:
                 break;

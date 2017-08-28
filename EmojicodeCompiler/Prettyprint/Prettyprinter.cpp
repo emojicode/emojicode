@@ -1,0 +1,254 @@
+//
+//  Prettyprinter.cpp
+//  EmojicodeCompiler
+//
+//  Created by Theo Weidmann on 25/08/2017.
+//  Copyright © 2017 Theo Weidmann. All rights reserved.
+//
+
+#include "Prettyprinter.hpp"
+#include "../Package/Package.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
+#include "../Types/ValueType.hpp"
+#include "../Types/Protocol.hpp"
+#include "../Types/Enum.hpp"
+#include "../Types/Type.hpp"
+#include "../Application.hpp"
+#include "../AST/ASTStatements.hpp"
+#include <algorithm>
+
+namespace EmojicodeCompiler {
+
+void Prettyprinter::print() {
+    for (auto import : package_->importedPackages()) {
+        stream_ << "📦 " << import.package << " " << utf8(import.destNamespace) << "\n";
+    }
+    offerNewLineUnlessEmpty(package_->importedPackages());
+
+    for (auto &type : package_->types()) {
+        printTypeDef(type);
+    }
+
+    stream_ << "🏁 ";
+    if (app_->startFlagFunction()->returnType.type() != TypeType::Nothingness) {
+        printReturnType(app_->startFlagFunction());
+        stream_ << " ";
+    }
+    app_->startFlagFunction()->ast()->toCode(*this);
+}
+
+void Prettyprinter::printArguments(Function *function) {
+    if (auto initializer = dynamic_cast<Initializer *>(function)) {
+        auto it = initializer->argumentsToVariables().begin();
+        for (auto &arg : function->arguments) {
+            if (it != initializer->argumentsToVariables().end() && arg.variableName == *it) {
+                it++;
+                stream_ << "🍼 ";
+            }
+            *this << utf8(arg.variableName) << " " << arg.type << " ";
+        }
+        return;
+    }
+    for (auto &arg : function->arguments) {
+        *this << utf8(arg.variableName) << " " << arg.type << " ";
+    }
+}
+
+void Prettyprinter::printReturnType(Function *function) {
+    if (function->returnType.type() != TypeType::Nothingness) {
+        *this << "➡️ " << function->returnType;
+    }
+}
+
+void Prettyprinter::printDocumentation(const std::u32string &doc) {
+    if (!doc.empty()) {
+        indent() << "🌮" << utf8(doc) << "🌮\n";
+    }
+}
+
+void Prettyprinter::printTypeDef(const Type &type) {
+    auto typeDef = type.typeDefinition();
+
+    printDocumentation(typeDef->documentation());
+    printTypeDefName(type);
+
+    increaseIndent();
+    *this << "🍇\n";
+
+    if (auto protocol = type.protocol()) {
+        for (auto method : protocol->methodList()) {
+            print("🐖", method, false, true);
+        }
+        stream_ << "🍉\n\n";
+        return;
+    }
+    if (auto enumeration = type.eenum()) {
+        printEnumValues(enumeration);
+    }
+
+    printProtocolConformances(typeDef, TypeContext(type));
+    printInstanceVariables(typeDef, TypeContext(type));
+    printMethodsAndInitializers(typeDef);
+    decreaseIndent();
+    refuseOffer() << "🍉\n\n";
+}
+
+void Prettyprinter::printTypeDefName(const Type &type) {
+    switch (type.type()) {
+        case TypeType::Class:
+            stream_ << "🐇 ";
+            break;
+        case TypeType::ValueType:
+            stream_ << "🕊 ";
+            break;
+        case TypeType::Enum:
+            stream_ << "🦃 ";
+            break;
+        case TypeType::Protocol:
+            stream_ << "🐊 ";
+            break;
+        default:
+            break;
+    }
+
+    printNamespaceAccessor(type);
+    stream_ << utf8(type.typeDefinition()->name());
+    offerSpace();
+    printGenericParameters(type.typeDefinition());
+
+    if (auto klass = type.eclass()) {
+        if (klass->superclass() != nullptr) {
+            print(klass->superType(), TypeContext(type));
+            stream_ << " ";
+        }
+    }
+}
+
+void Prettyprinter::printMethodsAndInitializers(TypeDefinition *typeDef) {
+    for (auto init : typeDef->initializerList()) {
+        print("🐈", init, true, true);
+    }
+    for (auto method : typeDef->methodList()) {
+        print("🐖", method, true, false);
+    }
+    for (auto typeMethod : typeDef->typeMethodList()) {
+        print("🐇🐖", typeMethod, true, true);
+    }
+}
+
+void Prettyprinter::printProtocolConformances(TypeDefinition *typeDef, const TypeContext &typeContext) {
+    for (auto &protocol : typeDef->protocols()) {
+        indent() << "🐊 ";
+        print(protocol, typeContext);
+        stream_ << "\n";
+    }
+    offerNewLineUnlessEmpty(typeDef->protocols());
+}
+
+void Prettyprinter::printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext) {
+    for (auto &ivar : typeDef->instanceVariables()) {
+        indent() << "🍰 " << utf8(ivar.name) << " ";
+        print(ivar.type, typeContext);
+        stream_ << "\n";
+    }
+    offerNewLineUnlessEmpty(typeDef->instanceVariables());
+}
+
+void Prettyprinter::printEnumValues(Enum *enumeration) {
+    auto values = std::vector<std::pair<std::u32string, std::u32string>>();
+    std::transform(enumeration->values().begin(), enumeration->values().end(), std::back_inserter(values),
+                   [](auto pair){ return std::make_pair(pair.first, pair.second.second); });
+    std::sort(values.begin(), values.end(), [](auto &a, auto &b) { return a.first < b.first; });
+    for (auto &value : values) {
+        printDocumentation(value.second);
+        indent() << "🔘" << utf8(value.first);
+        stream_ << "\n";
+    }
+    offerNewLineUnlessEmpty(values);
+}
+
+void Prettyprinter::printFunctionAttributes(Function *function, bool noMutate) {
+    if (function->deprecated()) {
+        stream_ << "⚠️ ";
+    }
+    if (function->final()) {
+        stream_ << "🔏 ";
+    }
+    if (function->overriding()) {
+        stream_ << "✒️ ";
+    }
+    if (function->owningType().type() == TypeType::ValueType && function->mutating() && !noMutate) {
+        stream_ << "🖍 ";
+    }
+}
+
+void Prettyprinter::printFunctionAccessLevel(Function *function) {
+    switch (function->accessLevel()) {
+        case AccessLevel::Private:
+            stream_ << "🔒";
+            break;
+        case AccessLevel::Protected:
+            stream_ << "🔐";
+            break;
+        case AccessLevel::Public:
+            break;
+    }
+}
+
+void Prettyprinter::printClosure(Function *function) {
+    stream_ << "🍇";
+    printArguments(function);
+    printReturnType(function);
+    stream_ << "\n";
+    function->ast()->innerToCode(*this);
+    stream_ << "🍉\n";
+}
+
+void Prettyprinter::print(const char *key, Function *function, bool body, bool noMutate) {
+    printDocumentation(function->documentation());
+    typeContext_ = function->typeContext();
+
+    indent();
+    printFunctionAttributes(function, noMutate);
+    printFunctionAccessLevel(function);
+
+    if (auto initializer = dynamic_cast<Initializer *>(function)) {
+        if (initializer->required()) {
+            stream_ << "🔑 ";
+        }
+    }
+
+    stream_ << key;
+
+    if (auto initializer = dynamic_cast<Initializer *>(function)) {
+        if (initializer->errorProne()) {
+            stream_ << "🚨";
+            print(initializer->errorType(), typeContext_);
+            stream_ << " ";
+        }
+    }
+    stream_ << " " << utf8(function->name()) << " ";
+
+    printArguments(function);
+    printReturnType(function);
+    if (body) {
+        function->ast()->toCode(*this);
+        offerNewLine();
+    }
+    typeContext_ = TypeContext();
+}
+
+void Prettyprinter::print(const Type &type, const TypeContext &typeContext) {
+    printNamespaceAccessor(type);
+    stream_ << type.toString(typeContext, false);
+}
+
+void Prettyprinter::printNamespaceAccessor(const Type &type) {
+    auto ns = package_->findNamespace(type);
+    if (!ns.empty()) {
+        stream_ << "🔶" << utf8(ns);
+    }
+}
+
+}  // namespace EmojicodeCompiler

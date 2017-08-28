@@ -109,6 +109,10 @@ def library_test(name):
 
 def compilation_test(name):
     source_path, binary_path = test_paths(name, 'compilation')
+    test_compilation(name, source_path, binary_path)
+
+
+def test_compilation(name, source_path, binary_path):
     run([emojicodec, source_path], check=True)
     completed = run([emojicode, binary_path], stdout=PIPE)
     exp_path = os.path.join(dist.source, "tests", "compilation", name + ".txt")
@@ -126,8 +130,20 @@ def reject_test(filename):
         fail_test(filename)
 
 
+def prettyprint_test(name):
+    source_path = test_paths(name, 'compilation')[0]
+    out_path, binary_path = test_paths(name, 'prettyprint')
+    run([emojicodec, '-f', source_path], check=True, stdout=open(out_path, 'w'))
+    try:
+        test_compilation(name, out_path, binary_path)
+    except CalledProcessError:
+        pass
+
+
 for test in compilation_tests:
     compilation_test(test)
+for test in compilation_tests:
+    prettyprint_test(test)
 # for test in reject_tests:
 #     reject_test(test)
 # os.chdir(os.path.join(dist.source, "tests", "s"))

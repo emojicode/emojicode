@@ -9,7 +9,10 @@
 #include "../Application.hpp"
 #include "Options.hpp"
 #include "PackageReporter.hpp"
+#include "../Prettyprint/Prettyprinter.hpp"
+#include "../Package/RecordingPackage.hpp"
 #include <exception>
+#include <iostream>
 
 namespace EmojicodeCompiler {
 
@@ -26,6 +29,14 @@ bool start(int argc, char *argv[]) {
 
     auto application = Application(options.mainFile(), options.outPath(), options.packageDirectory(),
                                    options.applicationDelegate());
+
+    if (options.format()) {
+        auto package = application.factorUnderscorePackage<RecordingPackage>();
+        package.parse();
+        Prettyprinter(std::cout, &package, &application).print();
+        return true;
+    }
+
     bool successfullyCompiled = application.compile();
 
     if (!options.packageToReport().empty()) {

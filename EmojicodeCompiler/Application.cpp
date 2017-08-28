@@ -9,15 +9,12 @@
 #include "Application.hpp"
 #include "Generation/CodeGenerator.hpp"
 #include "Generation/Writer.hpp"
-#include "Parsing/Package.hpp"
 
 namespace EmojicodeCompiler {
 
 bool Application::compile() {
     delegate_->begin();
-    Package underscorePackage = Package("_", mainFile_, this);
-    underscorePackage.setPackageVersion(PackageVersion(1, 0));
-    underscorePackage.setRequiresBinary(false);
+    Package underscorePackage = factorUnderscorePackage<Package>();
 
     try {
         underscorePackage.compile();

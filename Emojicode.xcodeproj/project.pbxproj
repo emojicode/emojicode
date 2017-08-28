@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E40090A01F51ACE8003F62FE /* Generic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E400909E1F51ACE8003F62FE /* Generic.cpp */; };
+		E400909C1F515D80003F62FE /* RecordingPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E400909A1F515D80003F62FE /* RecordingPackage.cpp */; };
+		E400909D1F516E80003F62FE /* Package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40090981F515CAA003F62FE /* Package.cpp */; };
 		E40B59EF1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40B59ED1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp */; };
 		E42207471ED81DDD006A1305 /* RetainedObjectPointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E42207451ED81DDD006A1305 /* RetainedObjectPointer.cpp */; };
 		E4221DA81F10BCFE002D85A6 /* Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4221DA61F10BCFE002D85A6 /* Data.cpp */; };
@@ -18,6 +19,7 @@
 		E44BE1531EDAB899003744BA /* ThreadsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E44BE1511EDAB899003744BA /* ThreadsManager.cpp */; };
 		E45AF99B1F5035F00077E343 /* JSONApplicationDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45AF9991F5035F00077E343 /* JSONApplicationDelegate.cpp */; };
 		E45AF99F1F504D5C0077E343 /* Options.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45AF99D1F504D5C0077E343 /* Options.cpp */; };
+		E45AF9A71F506EA00077E343 /* Prettyprinter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45AF9A51F506EA00077E343 /* Prettyprinter.cpp */; };
 		E45DB8141CB44D7500AE6FBE /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45DB8131CB44D7500AE6FBE /* Thread.cpp */; };
 		E460A5991F30EFA2006E3AC7 /* PathAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A53B1F30EFA2006E3AC7 /* PathAnalyser.cpp */; };
 		E460A59D1F30EFA2006E3AC7 /* FunctionWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5441F30EFA2006E3AC7 /* FunctionWriter.cpp */; };
@@ -31,7 +33,6 @@
 		E460A5A51F30EFA2006E3AC7 /* AbstractParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5561F30EFA2006E3AC7 /* AbstractParser.cpp */; };
 		E460A5A61F30EFA2006E3AC7 /* ASTNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5581F30EFA2006E3AC7 /* ASTNode.cpp */; };
 		E460A5A81F30EFA2006E3AC7 /* FunctionParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A55C1F30EFA2006E3AC7 /* FunctionParser.cpp */; };
-		E460A5A91F30EFA2006E3AC7 /* Package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A55E1F30EFA2006E3AC7 /* Package.cpp */; };
 		E460A5AA1F30EFA2006E3AC7 /* DocumentParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5601F30EFA2006E3AC7 /* DocumentParser.cpp */; };
 		E460A5AB1F30EFA2006E3AC7 /* SemanticScoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5631F30EFA2006E3AC7 /* SemanticScoper.cpp */; };
 		E460A5AC1F30EFA2006E3AC7 /* CapturingSemanticScoper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5651F30EFA2006E3AC7 /* CapturingSemanticScoper.cpp */; };
@@ -119,6 +120,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E40090981F515CAA003F62FE /* Package.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cpp; sourceTree = "<group>"; };
+		E40090991F515CAA003F62FE /* Package.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Package.hpp; sourceTree = "<group>"; };
+		E400909A1F515D80003F62FE /* RecordingPackage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecordingPackage.cpp; sourceTree = "<group>"; };
+		E400909B1F515D80003F62FE /* RecordingPackage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RecordingPackage.hpp; sourceTree = "<group>"; };
 		E400909E1F51ACE8003F62FE /* Generic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Generic.cpp; sourceTree = "<group>"; };
 		E400909F1F51ACE8003F62FE /* Generic.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Generic.hpp; sourceTree = "<group>"; };
 		E40B59ED1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FunctionVariableObjectInformation.cpp; sourceTree = "<group>"; };
@@ -131,7 +136,6 @@
 		E4431D631F4C4B7000D68379 /* Initializer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializer.cpp; sourceTree = "<group>"; };
 		E4431D641F4C4B7000D68379 /* Initializer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Initializer.hpp; sourceTree = "<group>"; };
 		E4431D661F4C504200D68379 /* .clang-tidy */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
-		E4431D721F4E17B000D68379 /* ASTToCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ASTToCode.hpp; sourceTree = "<group>"; };
 		E4431D731F4E17B000D68379 /* ASTToCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTToCode.cpp; sourceTree = "<group>"; };
 		E4431D751F4EB05100D68379 /* utf8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		E4431D761F4EB05100D68379 /* utf8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
@@ -144,6 +148,8 @@
 		E45AF99C1F5039010077E343 /* JSONHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSONHelper.h; sourceTree = "<group>"; };
 		E45AF99D1F504D5C0077E343 /* Options.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Options.cpp; sourceTree = "<group>"; };
 		E45AF99E1F504D5C0077E343 /* Options.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Options.hpp; sourceTree = "<group>"; };
+		E45AF9A51F506EA00077E343 /* Prettyprinter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Prettyprinter.cpp; sourceTree = "<group>"; };
+		E45AF9A61F506EA00077E343 /* Prettyprinter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Prettyprinter.hpp; sourceTree = "<group>"; };
 		E45DB8131CB44D7500AE6FBE /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Thread.cpp; path = "EmojicodeReal-TimeEngine/Thread.cpp"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EmojicodeCompiler; sourceTree = BUILT_PRODUCTS_DIR; };
 		E460A53B1F30EFA2006E3AC7 /* PathAnalyser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PathAnalyser.cpp; sourceTree = "<group>"; };
@@ -175,8 +181,6 @@
 		E460A5581F30EFA2006E3AC7 /* ASTNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASTNode.cpp; sourceTree = "<group>"; };
 		E460A55C1F30EFA2006E3AC7 /* FunctionParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FunctionParser.cpp; sourceTree = "<group>"; };
 		E460A55D1F30EFA2006E3AC7 /* FunctionParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FunctionParser.hpp; sourceTree = "<group>"; };
-		E460A55E1F30EFA2006E3AC7 /* Package.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Package.cpp; sourceTree = "<group>"; };
-		E460A55F1F30EFA2006E3AC7 /* Package.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Package.hpp; sourceTree = "<group>"; };
 		E460A5601F30EFA2006E3AC7 /* DocumentParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DocumentParser.cpp; sourceTree = "<group>"; };
 		E460A5611F30EFA2006E3AC7 /* DocumentParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DocumentParser.hpp; sourceTree = "<group>"; };
 		E460A5631F30EFA2006E3AC7 /* SemanticScoper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SemanticScoper.cpp; sourceTree = "<group>"; };
@@ -323,12 +327,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E40090971F515CAA003F62FE /* Package */ = {
+			isa = PBXGroup;
+			children = (
+				E40090981F515CAA003F62FE /* Package.cpp */,
+				E40090991F515CAA003F62FE /* Package.hpp */,
+				E400909A1F515D80003F62FE /* RecordingPackage.cpp */,
+				E400909B1F515D80003F62FE /* RecordingPackage.hpp */,
+			);
+			path = Package;
+			sourceTree = "<group>";
+		};
+		E45AF9A41F506E840077E343 /* Prettyprint */ = {
+			isa = PBXGroup;
+			children = (
+				E4431D731F4E17B000D68379 /* ASTToCode.cpp */,
+				E45AF9A51F506EA00077E343 /* Prettyprinter.cpp */,
+				E45AF9A61F506EA00077E343 /* Prettyprinter.hpp */,
+			);
+			path = Prettyprint;
+			sourceTree = "<group>";
+		};
 		E45FA2F41AA0D24200F032A8 /* EmojicodeCompiler */ = {
 			isa = PBXGroup;
 			children = (
 				E4431D661F4C504200D68379 /* .clang-tidy */,
 				E4C77A631F337AF500B5876A /* AST */,
+				E45AF9A41F506E840077E343 /* Prettyprint */,
 				E460A5361F30EFA2006E3AC7 /* Analysis */,
+				E40090971F515CAA003F62FE /* Package */,
 				E460A53F1F30EFA2006E3AC7 /* Generation */,
 				E460A54C1F30EFA2006E3AC7 /* Lex */,
 				E460A5551F30EFA2006E3AC7 /* Parsing */,
@@ -421,8 +448,6 @@
 				E460A55D1F30EFA2006E3AC7 /* FunctionParser.hpp */,
 				E47891071F4EEA3A008DCB24 /* TypeBodyParser.cpp */,
 				E47891081F4EEA3A008DCB24 /* TypeBodyParser.hpp */,
-				E460A55E1F30EFA2006E3AC7 /* Package.cpp */,
-				E460A55F1F30EFA2006E3AC7 /* Package.hpp */,
 				E460A5601F30EFA2006E3AC7 /* DocumentParser.cpp */,
 				E460A5611F30EFA2006E3AC7 /* DocumentParser.hpp */,
 				E478910A1F4EFD9C008DCB24 /* AttributesParser.cpp */,
@@ -526,8 +551,6 @@
 		E4C77A631F337AF500B5876A /* AST */ = {
 			isa = PBXGroup;
 			children = (
-				E4431D731F4E17B000D68379 /* ASTToCode.cpp */,
-				E4431D721F4E17B000D68379 /* ASTToCode.hpp */,
 				E460A5581F30EFA2006E3AC7 /* ASTNode.cpp */,
 				E48356A01F34F741000B80AE /* ASTNode.hpp */,
 				E48356871F33866F000B80AE /* ASTExpr.cpp */,
@@ -711,7 +734,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/Cellar/llvm/4.0.1/share/clang/run-clang-tidy.py -p build/ -header-filter=EmojicodeCompiler/*/*";
+			shellScript = "# /usr/local/Cellar/llvm/4.0.1/share/clang/run-clang-tidy.py -p build/ -header-filter=EmojicodeCompiler/*/*";
 		};
 		E4FD1FAB1E3693FC00313733 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -738,6 +761,7 @@
 				E48356A41F35B6A7000B80AE /* ASTBoxing.cpp in Sources */,
 				E460A5A11F30EFA2006E3AC7 /* EmojiTokenization.cpp in Sources */,
 				E48356AE1F3713FB000B80AE /* FnCodeGenerator.cpp in Sources */,
+				E400909D1F516E80003F62FE /* Package.cpp in Sources */,
 				E478910C1F4EFD9C008DCB24 /* AttributesParser.cpp in Sources */,
 				E460A5B81F30EFA2006E3AC7 /* TypeContext.cpp in Sources */,
 				E460A5AB1F30EFA2006E3AC7 /* SemanticScoper.cpp in Sources */,
@@ -774,12 +798,12 @@
 				E48356B41F375742000B80AE /* Extension.cpp in Sources */,
 				E460A5B01F30EFA2006E3AC7 /* Variable.cpp in Sources */,
 				E460A5A21F30EFA2006E3AC7 /* Lexer.cpp in Sources */,
-				E40090A01F51ACE8003F62FE /* Generic.cpp in Sources */,
 				E47838DA1F41F9A6007B937C /* BoxingLayerBuilder.cpp in Sources */,
 				E460A5BE1F30EFA2006E3AC7 /* CompilerError.cpp in Sources */,
 				E48356AA1F35E1A2000B80AE /* ASTMethod.cpp in Sources */,
 				E460A5C31F30EFA2006E3AC7 /* PackageReporter.cpp in Sources */,
 				E460A59D1F30EFA2006E3AC7 /* FunctionWriter.cpp in Sources */,
+				E400909C1F515D80003F62FE /* RecordingPackage.cpp in Sources */,
 				E45AF99B1F5035F00077E343 /* JSONApplicationDelegate.cpp in Sources */,
 				E48356A11F34FAAF000B80AE /* SemanticAnalyser.cpp in Sources */,
 				E460A5A41F30EFA2006E3AC7 /* TokenStream.cpp in Sources */,
@@ -788,7 +812,6 @@
 				E48356BA1F3892C2000B80AE /* ASTVariables.cpp in Sources */,
 				E460A5B51F30EFA2006E3AC7 /* StorageType.cpp in Sources */,
 				E460A5BF1F30EFA2006E3AC7 /* Function.cpp in Sources */,
-				E460A5A91F30EFA2006E3AC7 /* Package.cpp in Sources */,
 				E49E6D1B1F4AD97F00B819CA /* VariableID.cpp in Sources */,
 				E48F3FDE1F31A7730057BAD4 /* CGScoper.cpp in Sources */,
 				E460A5C01F30EFA2006E3AC7 /* FunctionType.cpp in Sources */,
@@ -796,6 +819,7 @@
 				E48356951F34C817000B80AE /* ASTControlFlow.cpp in Sources */,
 				E460A59F1F30EFA2006E3AC7 /* VTIProvider.cpp in Sources */,
 				E460A5B91F30EFA2006E3AC7 /* TypeDefinition.cpp in Sources */,
+				E45AF9A71F506EA00077E343 /* Prettyprinter.cpp in Sources */,
 				E47891111F4FF7D5008DCB24 /* CodeGenerator.cpp in Sources */,
 				E460A5C21F30EFA2006E3AC7 /* main.cpp in Sources */,
 				E460A5B41F30EFA2006E3AC7 /* Protocol.cpp in Sources */,

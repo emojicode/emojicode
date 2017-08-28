@@ -38,12 +38,14 @@ public:
     const std::string& mainFile() const { return mainFile_; }
     const std::string& sizeVariable() const { return sizeVariable_; }
     const std::string& packageDirectory() const { return packageDirectory_; }
+    const bool format() const { return format_; }
 private:
     std::string packageToReport_;
     std::string outPath_;
     std::string mainFile_;
     std::string sizeVariable_;
     std::string packageDirectory_ = defaultPackagesDirectory;
+    bool format_ = false;
     bool jsonOutput_ = false;
     bool beginCompilation_ = true;
 

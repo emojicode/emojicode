@@ -9,13 +9,8 @@
 #ifndef PackageParser_hpp
 #define PackageParser_hpp
 
-#include "../CompilerError.hpp"
-#include "../Lex/Lexer.hpp"
 #include "AbstractParser.hpp"
 #include "AttributesParser.hpp"
-#include "Package.hpp"
-
-#include <set>
 
 namespace EmojicodeCompiler {
 

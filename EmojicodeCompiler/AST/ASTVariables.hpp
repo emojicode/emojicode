@@ -34,7 +34,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string varName_;
     Type type_;
@@ -47,7 +47,7 @@ public:
                               const SourcePosition &p) : ASTInitableCreator(e, p), varName_(std::move(name)) {}
     void analyse(SemanticAnalyser *analyser) override;
     void generateAssignment(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 protected:
     std::u32string varName_;
 private:
@@ -60,7 +60,7 @@ class ASTInstanceVariableAssignment final : public ASTVariableAssignmentDecl {
 public:
     using ASTVariableAssignmentDecl::ASTVariableAssignmentDecl;
     void analyse(SemanticAnalyser *analyser) override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override {}
+    void toCode(Prettyprinter &pretty) const override {}
 };
 
 class ASTFrozenDeclaration final : public ASTInitableCreator {
@@ -70,7 +70,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generateAssignment(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string varName_;
     VariableID id_;

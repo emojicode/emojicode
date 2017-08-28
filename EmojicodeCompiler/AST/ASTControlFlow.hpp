@@ -23,7 +23,7 @@ public:
 
     void analyse(SemanticAnalyser *) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 
     bool hasElse() const { return conditions_.size() < blocks_.size(); }
 private:
@@ -38,7 +38,7 @@ public:
 
     void analyse(SemanticAnalyser *) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> condition_;
     ASTBlock block_;
@@ -52,7 +52,7 @@ public:
 
     void analyse(SemanticAnalyser *) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> iteratee_;
     ASTBlock block_;
@@ -72,7 +72,7 @@ public:
 
     void analyse(SemanticAnalyser *) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> value_;
     bool valueIsBoxed_ = false;

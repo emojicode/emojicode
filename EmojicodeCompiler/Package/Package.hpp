@@ -44,13 +44,8 @@ struct TypeIdentifier;
 class Application;
 
 /// Package is the class used to load, parse and analyse packages.
-/// This class keeps track of all loaded packages. Packages can be queried with findPackage().
 class Package {
 public:
-    /// Tries to import the package identified by name into a namespace of this package.
-    /// @see Application::loadPackage
-    void importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p);
-
     /// Constructs a package. The package must be compiled with compile() before it can be loaded.
     /// @param name The name of the package. The package is registered with this name.
     /// @param mainFilePath The path to the package’s main file.
@@ -60,6 +55,16 @@ public:
     /// Lexes, parser, semantically analyses and optimizes this package.
     /// If the package is not the @c s package, the s package is loaded first.
     void compile();
+    /// Parses the package. If this package is the s package the s loading procedure is invoked.
+    void parse();
+
+    /// Tries to import the package identified by name into a namespace of this package.
+    /// @see Application::loadPackage
+    virtual void importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p);
+
+    /// Loads, lexes and parses the document at path in the context of this package.
+    /// @param path A file path to a source code document.
+    virtual void includeDocument(const std::string &path);
 
     /// @returns The application to which this package belongs.
     Application* app() const { return app_; }
@@ -103,8 +108,8 @@ public:
     /// @param exportFromPkg Whether the type should be exported from the package. Note that the type will be imported
     ///                      in other packages with @c name.
     /// @throws CompilerError If a type with the same name has already been exported.
-    void offerType(Type t, const std::u32string &name, const std::u32string &ns, bool exportFromPkg,
-                   const SourcePosition &p);
+    virtual void offerType(Type t, const std::u32string &name, const std::u32string &ns, bool exportFromPkg,
+                           const SourcePosition &p);
 
     /// @returns All classes registered with this package.
     const std::vector<Class *>& classes() const { return classes_; };
@@ -119,15 +124,17 @@ public:
     bool lookupRawType(const TypeIdentifier &typeId, bool optional, Type *type) const;
     /// Like lookupRawType() but throws a CompilerError if the type cannot be found.
     Type getRawType(const TypeIdentifier &typeId, bool optional) const;
+
+    /// @complexity O(n)
+    std::u32string findNamespace(const Type &type);
 private:
     /// Verifies that no type with name @c name has already been exported and adds the type to ::exportedTypes_
     void exportType(Type t, std::u32string name, const SourcePosition &p);
 
-    void parse();
     void analyse();
 
     void enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef);
-    void enqueFunction(Function *);
+    void enqueueFunction(Function *);
 
     const std::string name_;
     const std::string mainFile_;

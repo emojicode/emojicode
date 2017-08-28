@@ -20,7 +20,7 @@ public:
 
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     Function *function_;
     std::vector<VariableCapture> captures_;

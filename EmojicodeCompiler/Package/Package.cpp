@@ -12,9 +12,12 @@
 #include "../CompilerError.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Types/ValueType.hpp"
-#include "DocumentParser.hpp"
+#include "../Parsing/DocumentParser.hpp"
 #include "Package.hpp"
+#include "../Prettyprint/Prettyprinter.hpp"
+#include "../Lex/Lexer.hpp"
 #include <algorithm>
+#include <sstream>
 #include <cstring>
 #include <iostream>
 #include <list>
@@ -85,11 +88,11 @@ void Package::importPackage(const std::string &name, const std::u32string &ns, c
     }
 }
 
-void Package::compile() {
-    if (name_ != "s") {
-        importPackage("s", kDefaultNamespace, position());
-    }
+void Package::includeDocument(const std::string &path) {
+    DocumentParser(this, Lexer::lexFile(path)).parse();
+}
 
+void Package::compile() {
     parse();
     analyse();
 
@@ -97,6 +100,10 @@ void Package::compile() {
 }
 
 void Package::parse() {
+    if (name_ != "s") {
+        importPackage("s", kDefaultNamespace, position());
+    }
+    
     DocumentParser(this, Lexer::lexFile(mainFile_)).parse();
 
     if (!validVersion()) {
@@ -123,7 +130,7 @@ void Package::analyse() {
     }
 
     for (auto function : functions()) {
-        enqueFunction(function);
+        enqueueFunction(function);
     }
 
     while (!app_->analysisQueue.empty()) {
@@ -140,11 +147,11 @@ void Package::analyse() {
 
 void Package::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) {
     typeDef->eachFunction([this](Function *function) {
-        enqueFunction(function);
+        enqueueFunction(function);
     });
 }
 
-void Package::enqueFunction(Function *function) {
+void Package::enqueueFunction(Function *function) {
     if (!function->isNative()) {
         app_->analysisQueue.emplace(function);
     }
@@ -208,6 +215,26 @@ void Package::offerType(Type t, const std::u32string &name, const std::u32string
     if (exportFromPkg) {
         exportType(t, name, p);
     }
+}
+
+std::u32string Package::findNamespace(const Type &type) {
+    if (type.type() != TypeType::ValueType && type.type() != TypeType::Enum && type.type() != TypeType::Class &&
+        type.type() != TypeType::Protocol) {
+        return std::u32string();
+    }
+    auto key = kDefaultNamespace + type.typeDefinition()->name();
+    auto it = types_.find(key);
+    if (it != types_.end()) {
+        return std::u32string();
+    }
+    for (auto &pair : types_) {
+        if (pair.second.typeDefinition() == type.typeDefinition()) {
+            auto cpy = pair.first;
+            cpy.erase(cpy.size() - type.typeDefinition()->name().size(), type.typeDefinition()->name().size());
+            return cpy;
+        }
+    }
+    return std::u32string();
 }
 
 }  // namespace EmojicodeCompiler

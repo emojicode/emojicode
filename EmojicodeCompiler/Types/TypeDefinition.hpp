@@ -111,6 +111,8 @@ public:
      @warning @c prepareForCG() must be called before a call to this method. */
     Scope& instanceScope() { return scope_; }
     CGScoper& cgScoper() { return cgScoper_; }
+
+    const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation)
     : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(std::move(pos))  {}
@@ -138,8 +140,6 @@ protected:
             throw CompilerError(position, utf8(p->name()), " is declared twice.");
         }
     }
-
-    const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 private:
     std::map<std::u32string, Function *> methods_;
     std::map<std::u32string, Function *> typeMethods_;

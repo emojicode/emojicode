@@ -143,7 +143,7 @@ void DocumentParser::parseInclude(const SourcePosition &p) {
         fileString = relativePath.substr(0, lastSlash) + "/" + fileString;
     }
 
-    DocumentParser(package_, Lexer::lexFile(fileString)).parse();
+    package_->includeDocument(fileString);
 }
 
 void DocumentParser::parseVersion(const Documentation &documentation, const SourcePosition &p) {

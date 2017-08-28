@@ -11,6 +11,7 @@
 
 #include "Generation/StringPool.hpp"
 #include "Types/Type.hpp"
+#include "Package/Package.hpp"
 #include <map>
 #include <memory>
 #include <queue>
@@ -52,6 +53,15 @@ public:
     /// Compile the application.
     /// @returns True iff the application has been successfully compiled and an Emojicode binary was written.
     bool compile();
+
+    /// Constructs a Package instance that represents the underscore package. Appropriate values are set.
+    template <typename T>
+    T factorUnderscorePackage() {
+        auto underscorePackage = T("_", mainFile_, this);
+        underscorePackage.setPackageVersion(PackageVersion(1, 0));
+        underscorePackage.setRequiresBinary(false);
+        return underscorePackage;
+    }
 
     /// Issues a compiler warning. The compilation is continued normally.
     /// @param args All arguments will be concatenated.

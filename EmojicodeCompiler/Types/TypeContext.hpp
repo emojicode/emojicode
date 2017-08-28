@@ -20,10 +20,11 @@ class Function;
 
 class TypeContext {
 public:
-    TypeContext(Type callee) : calleeType_(std::move(callee)) {};
-    TypeContext(Type callee, Function *p) : calleeType_(std::move(callee)), function_(p) {};
+    TypeContext() : calleeType_(Type::nothingness()) {}
+    TypeContext(Type callee) : calleeType_(std::move(callee)) {}
+    TypeContext(Type callee, Function *p) : calleeType_(std::move(callee)), function_(p) {}
     TypeContext(Type callee, Function *p, std::vector<Type> *args)
-        : calleeType_(std::move(callee)), function_(p), functionGenericArguments_(args) {};
+        : calleeType_(std::move(callee)), function_(p), functionGenericArguments_(args) {}
 
     const Type& calleeType() const { return calleeType_; }
     Function* function() const { return function_; }

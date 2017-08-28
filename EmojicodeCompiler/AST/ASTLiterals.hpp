@@ -21,7 +21,7 @@ public:
     ASTStringLiteral(std::u32string value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string value_;
     unsigned int varId_;
@@ -32,7 +32,7 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     explicit ASTBooleanFalse(const SourcePosition &p) : ASTExpr(p) {}
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 };
 
 class ASTBooleanTrue final : public ASTExpr {
@@ -40,7 +40,7 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     explicit ASTBooleanTrue(const SourcePosition &p) : ASTExpr(p) {}
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 };
 
 class ASTNumberLiteral final : public ASTExpr {
@@ -52,7 +52,7 @@ public:
 
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     enum class NumberType {
         Double, Integer
@@ -68,7 +68,7 @@ public:
     ASTSymbolLiteral(char32_t value, const SourcePosition &p) : ASTExpr(p), value_(value) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     char32_t value_;
 };
@@ -79,7 +79,7 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     VariableID varId_;
@@ -92,7 +92,7 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     VariableID varId_;
@@ -105,7 +105,7 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
 };
@@ -115,7 +115,7 @@ class ASTThis : public ASTExpr {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 };
 
 class ASTNothingness : public ASTExpr {
@@ -123,7 +123,7 @@ class ASTNothingness : public ASTExpr {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 };
 
 }  // namespace EmojicodeCompiler

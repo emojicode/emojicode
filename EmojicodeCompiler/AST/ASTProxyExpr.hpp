@@ -28,7 +28,7 @@ public:
     void generateExpr(FnCodeGenerator *fncg) const override {
         function_(fncg);
     }
-    void toCode(std::stringstream &stream) const override {}
+    void toCode(Prettyprinter &pretty) const override {}
 private:
     std::function<void(FnCodeGenerator*)> function_;
 };

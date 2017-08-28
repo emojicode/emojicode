@@ -30,7 +30,7 @@ public:
     : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p), expr_(std::move(value)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> expr_;
 };
@@ -41,7 +41,7 @@ public:
     : ASTTypeExpr(av, p), type_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 protected:
     Type type_;
 };
@@ -50,7 +50,7 @@ class ASTInferType final : public ASTStaticType {
 public:
     explicit ASTInferType(const SourcePosition &p) : ASTStaticType(Type::nothingness(), TypeAvailability::StaticAndUnavailable, p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 };
 
 class ASTThisType final : public ASTTypeExpr {
@@ -58,7 +58,7 @@ public:
     explicit ASTThisType(const SourcePosition &p) : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(std::stringstream &stream) const override;
+    void toCode(Prettyprinter &pretty) const override;
 };
 
 } // namespace EmojicodeCompiler

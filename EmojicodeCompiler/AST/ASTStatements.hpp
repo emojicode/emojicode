@@ -25,7 +25,7 @@ class ASTStatement : public ASTNode {
 public:
     virtual void generate(FnCodeGenerator *) const = 0;
     virtual void analyse(SemanticAnalyser *) = 0;
-    virtual void toCode(std::stringstream &stream, unsigned int indentation) const = 0;
+    virtual void toCode(Prettyprinter &pretty) const = 0;
 protected:
     using ASTNode::ASTNode;
 };
@@ -44,7 +44,9 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
+    /// Prints the code that goes between the block delimiters.
+    void innerToCode(Prettyprinter &pretty) const;
 
     const std::vector<std::shared_ptr<ASTStatement>>& nodes() const { return stmts_; }
 private:
@@ -58,7 +60,7 @@ public:
     void generate(FnCodeGenerator *fncg) const override {
         expr_->generate(fncg);
     }
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 
     ASTExprStatement(std::shared_ptr<ASTExpr> expr, const SourcePosition &p) : ASTStatement(p), expr_(std::move(expr)) {}
 private:
@@ -71,7 +73,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 protected:
     std::shared_ptr<ASTExpr> value_;
 };
@@ -82,7 +84,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     bool boxed_ = false;
 };
@@ -94,7 +96,7 @@ public:
 
     void analyse(SemanticAnalyser *analyser) override;
     void generate(FnCodeGenerator *) const override;
-    void toCode(std::stringstream &stream, unsigned int indentation) const override;
+    void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string name_;
     ASTArguments arguments_;

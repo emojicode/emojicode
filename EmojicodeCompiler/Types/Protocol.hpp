@@ -9,7 +9,7 @@
 #ifndef Protocol_hpp
 #define Protocol_hpp
 
-#include "../Parsing/Package.hpp"
+#include "../Package/Package.hpp"
 #include "TypeContext.hpp"
 #include "TypeDefinition.hpp"
 #include <map>

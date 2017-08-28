@@ -10,7 +10,7 @@
 #define Class_hpp
 
 #include "../Generation/VTIProvider.hpp"
-#include "../Parsing/Package.hpp"
+#include "../Package/Package.hpp"
 #include "../Scoping/Scope.hpp"
 #include "../Scoping/Variable.hpp"
 #include "../Types/TypeContext.hpp"
@@ -36,6 +36,8 @@ public:
         }
         return superType().eclass();
     }
+
+    using TypeDefinition::superType;
 
     uint16_t index;
 
