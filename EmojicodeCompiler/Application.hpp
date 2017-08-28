@@ -56,10 +56,10 @@ public:
 
     /// Constructs a Package instance that represents the underscore package. Appropriate values are set.
     template <typename T>
-    T factorUnderscorePackage() {
-        auto underscorePackage = T("_", mainFile_, this);
-        underscorePackage.setPackageVersion(PackageVersion(1, 0));
-        underscorePackage.setRequiresBinary(false);
+    std::unique_ptr<T> factorUnderscorePackage() {
+        auto underscorePackage = std::make_unique<T>("_", mainFile_, this);
+        underscorePackage->setPackageVersion(PackageVersion(1, 0));
+        underscorePackage->setRequiresBinary(false);
         return underscorePackage;
     }
 
@@ -82,7 +82,7 @@ public:
     bool hasStartFlagFunction() const { return startFlag_ != nullptr; }
 
     /// Returns all packages in the order in which they were loaded.
-    const std::vector<Package *>& packagesInOrder() const { return packagesLoadingOrder_; };
+    const std::vector<std::unique_ptr<Package>>& packagesInOrder() const { return packagesLoadingOrder_; }
     /// Searches the loaded packages for the package with the given name.
     /// If the package has not been loaded yet @c nullptr is returned.
     Package* findPackage(const std::string &name) const;
@@ -114,7 +114,7 @@ private:
     /// Contains all packages in the order in which they must be loaded.
     /// The loading order is only necessary due to class inheritance, so that superclasses are available when the
     /// subclass is read.
-    std::vector<Package *> packagesLoadingOrder_;
+    std::vector<std::unique_ptr<Package>> packagesLoadingOrder_;
     std::map<std::string, Package *> packages_;
     std::vector<std::vector<ObjectVariableInformation>> boxObjectVariableInformation_ = std::vector<std::vector<ObjectVariableInformation>>(3);
     Function *startFlag_ = nullptr;

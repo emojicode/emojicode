@@ -151,7 +151,7 @@ void generateCode(Writer *writer, Application *app) {
     app->startFlagFunction()->setVtiProvider(&STIProvider::globalStiProvider);
     app->startFlagFunction()->vtiForUse();
 
-    for (auto package : app->packagesInOrder()) {
+    for (auto &package : app->packagesInOrder()) {
         for (auto valueType : package->valueTypes()) {
             valueType->prepareForCG();
         }
@@ -181,8 +181,8 @@ void generateCode(Writer *writer, Application *app) {
     }
     writer->writeByte(app->packagesInOrder().size());
 
-    for (auto pkg : app->packagesInOrder()) {
-        writePackageHeader(pkg, writer);
+    for (auto &pkg : app->packagesInOrder()) {
+        writePackageHeader(pkg.get(), writer);
 
         for (auto cl : pkg->classes()) {
             writeClass(Type(cl, false), writer);
@@ -198,7 +198,7 @@ void generateCode(Writer *writer, Application *app) {
     auto tableSizePlaceholder = writer->writePlaceholder<uint16_t>();
     auto smallestPlaceholder = writer->writePlaceholder<uint16_t>();
     auto countPlaceholder = writer->writePlaceholder<uint16_t>();
-    for (auto package : app->packagesInOrder()) {
+    for (auto &package : app->packagesInOrder()) {
         for (auto vt : package->valueTypes()) {
             if (!vt->protocols().empty()) {
                 for (auto idPair : vt->genericIds()) {

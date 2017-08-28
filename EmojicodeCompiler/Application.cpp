@@ -14,15 +14,16 @@ namespace EmojicodeCompiler {
 
 bool Application::compile() {
     delegate_->begin();
-    Package underscorePackage = factorUnderscorePackage<Package>();
+    auto underscorePackage = factorUnderscorePackage<Package>();
 
     try {
-        underscorePackage.compile();
-        packagesLoadingOrder_.emplace_back(&underscorePackage);
+        underscorePackage->compile();
 
         if (!hasStartFlagFunction()) {
-            throw CompilerError(underscorePackage.position(), "No 🏁 block was found.");
+            throw CompilerError(underscorePackage->position(), "No 🏁 block was found.");
         }
+
+        packagesLoadingOrder_.emplace_back(std::move(underscorePackage));
 
         if (!hasError_) {
             Writer writer = Writer(outPath_);
@@ -54,11 +55,11 @@ Package* Application::loadPackage(const std::string &name, const SourcePosition 
     }
 
     auto path = packageDirectory_ + "/" + name + "/header.emojic";
-    auto package = new Package(name, path, this);
-    packages_.emplace(name, package);
-    packagesLoadingOrder_.emplace_back(package);
+    auto package = std::make_unique<Package>(name, path, this);
+    packages_.emplace(name, package.get());
+    packagesLoadingOrder_.emplace_back(std::move(package));
     package->compile();
-    return package;
+    return package.get();
 }
 
 void Application::error(const CompilerError &ce) {

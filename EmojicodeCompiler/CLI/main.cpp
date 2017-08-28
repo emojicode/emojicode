@@ -32,8 +32,8 @@ bool start(int argc, char *argv[]) {
 
     if (options.format()) {
         auto package = application.factorUnderscorePackage<RecordingPackage>();
-        package.parse();
-        Prettyprinter(std::cout, &package, &application).print();
+        package->parse();
+        Prettyprinter(std::cout, package.get(), &application).print();
         return true;
     }
 
