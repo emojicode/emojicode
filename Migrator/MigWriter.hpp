@@ -11,6 +11,7 @@
 
 #include <fstream>
 #include <map>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
