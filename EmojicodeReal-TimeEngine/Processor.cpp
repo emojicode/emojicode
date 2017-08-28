@@ -42,6 +42,10 @@ void executeCallableExtern(Object *callable, Value *args, size_t argsSize, Threa
     thread->deconfigureInterruption(interupt);
 }
 
+inline EmojicodeInteger normalizedBoxType(EmojicodeInteger type) {
+    return type & ~REMOTE_MASK;
+}
+
 void execute(Thread *thread) {
     while (true) {
         auto i = static_cast<Instructions>(thread->consumeInstruction());
@@ -74,7 +78,7 @@ void execute(Thread *thread) {
                     thread->pushStackFrame(v.value[1], true, o->klass->protocolTable.dispatch(pti, vti));
                 }
                 else if ((type & REMOTE_MASK) != 0) {
-                    auto protocol = protocolDispatchTableTable[(type & ~REMOTE_MASK) - protocolDTTOffset];
+                    auto protocol = protocolDispatchTableTable[normalizedBoxType(type) - protocolDTTOffset];
                     thread->pushStackFrame(v.value[1].object->val<Value>(), true, protocol.dispatch(pti, vti));
                 }
                 else {
@@ -474,9 +478,10 @@ void execute(Thread *thread) {
             case INS_CAST_TO_PROTOCOL: {
                 auto *box = thread->popOpr(kBoxValueSize);
                 EmojicodeInstruction pi = thread->consumeInstruction();
+                auto typeId = normalizedBoxType(box[0].raw) - protocolDTTOffset;
                 if (box[0].raw != T_NOTHINGNESS && ((box[0].raw == T_OBJECT &&
                                                      box[1].object->klass->protocolTable.conformsTo(pi)) ||
-                                                    protocolDispatchTableTable[box[0].raw].conformsTo(pi))) {
+                                                    protocolDispatchTableTable[typeId].conformsTo(pi))) {
                     thread->pushPointerOpr(kBoxValueSize);
                 }
                 else {
