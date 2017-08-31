@@ -35,7 +35,7 @@ void Prettyprinter::print() {
                printTypeDef(type->type_);
             }
             if (auto include = dynamic_cast<RecordingPackage::Include *>(recording.get())) {
-                refuseOffer() << "📜 🔤" << changeExtension(include->path_) << "🔤\n";
+                refuseOffer() << "📜 🔤" << include->path_ << "🔤\n";
                 offerNewLine();
             }
         }

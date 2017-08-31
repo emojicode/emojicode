@@ -60,14 +60,6 @@ public:
     void increaseIndent() { indentation_++; }
     void decreaseIndent() { indentation_--; }
 
-    /// Changes .emojic extension to .ejc
-    std::string changeExtension(std::string path) {
-        if (endsWith(path, ".emojic")) {
-            path.replace(path.size() - 6, 6, "ejc");
-        }
-        return path;
-    }
-
     /// Refuses any available whitespace offer.
     /// @returns The instance.
     Prettyprinter& refuseOffer() { whitespaceOffer_ = 0; return *this; }
