@@ -27,11 +27,13 @@
 
 namespace EmojicodeCompiler {
 
+class MigWriter;
+
 /// This class is responsible to parse and compile (abbreviated PAG) all functions to byte code.
 /// One instance of @c FunctionPAG can compile exactly one function.
 class FunctionPAG final : AbstractParser, private FunctionPAGInterface {
 public:
-    FunctionPAG(Function &function, Type contextType, FunctionWriter &writer, CallableScoper &scoper);
+    FunctionPAG(Function &function, Type contextType, FunctionWriter &writer, CallableScoper &scoper, MigWriter *migWriter);
 
     /// Parses the function and compiles it to bytecode. The bytecode is appended to the writer.
     void compile();
@@ -50,6 +52,8 @@ private:
 
     PathAnalyser pathAnalyser;
 
+    MigWriter *migWriter_;
+
     FunctionWriter& writer() override { return writer_; }
     TokenStream& stream() override { return stream_; }
     ArgumentsMigCreator& argsMigCreator() override { return function_.creator; }
@@ -59,7 +63,7 @@ private:
 
     /// Whether the statment has an effect.
     bool effect = false;
-    
+
     void makeEffective() override { effect = true; }
 
     /** Whether the this context or an instance variable has been acessed. */
@@ -85,7 +89,7 @@ private:
 
     /// Parses an expression identifier
     Type parseExprIdentifier(const Token &token, const TypeExpectation &expectation);
-    
+
     /// Parses a condition as used by if, while etc.
     FunctionWriter parseCondition(const Token &token, bool temporaryWriter);
     /**

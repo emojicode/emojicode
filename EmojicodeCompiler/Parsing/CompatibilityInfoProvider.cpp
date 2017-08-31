@@ -40,15 +40,15 @@ CompatibilityInfoProvider::CompatibilityInfoProvider(const std::string &path) {
 }
 
 void CompatibilityInfoProvider::selectFunction(Function *function) {
-    selectedFunction_ = &files_[function->position().file][function->position().line];
-    index_ = 0;
+    selection_.selectedFunction_ = &files_[function->position().file][function->position().line];
+    selection_.index_ = 0;
 }
 
 unsigned int CompatibilityInfoProvider::nextArgumentsCount() {
-    if (index_ == selectedFunction_->size()) {
+    if (selection_.index_ == selection_.selectedFunction_->size()) {
         throw "error";
     }
-    return (*selectedFunction_)[index_++];
+    return (*selection_.selectedFunction_)[selection_.index_++];
 }
 
 

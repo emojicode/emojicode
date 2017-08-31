@@ -21,6 +21,7 @@
 #include "Type.hpp"
 #include "ValueType.hpp"
 #include "VariableNotFoundError.hpp"
+#include "MigWriter.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
@@ -949,7 +950,7 @@ Type FunctionPAG::parseExprIdentifier(const Token &token, const TypeExpectation 
             package_->registerFunction(function);
 
             auto closureScoper = CapturingCallableScoper(scoper_);
-            auto pag = FunctionPAG(*function, function->owningType(), function->writer_, closureScoper);
+            auto pag = FunctionPAG(*function, function->owningType(), function->writer_, closureScoper, migWriter_);
             pag.compile();
 
             auto insertionPoint = writer_.getInsertionPoint();
@@ -978,6 +979,7 @@ Type FunctionPAG::parseExprIdentifier(const Token &token, const TypeExpectation 
 
             auto type = function->type();
             box(expectation, type, insertionPoint);
+            migWriter_->add(function);
             return type;
         }
         case E_LOLLIPOP:
@@ -1350,9 +1352,9 @@ void FunctionPAG::generateBoxingLayer(BoxingLayer &layer) {
 }
 
 
-FunctionPAG::FunctionPAG(Function &function, Type contextType, FunctionWriter &writer, CallableScoper &scoper)
+FunctionPAG::FunctionPAG(Function &function, Type contextType, FunctionWriter &writer, CallableScoper &scoper, MigWriter *migWriter)
     : AbstractParser(function.package(), function.tokenStream()), function_(function), writer_(writer), scoper_(scoper),
-    typeContext_(typeContextForType(std::move(contextType))) {
+    migWriter_(migWriter), typeContext_(typeContextForType(std::move(contextType))) {
         scoper_.setVariableInformation(&function_.objectVariableInformation());
     }
 

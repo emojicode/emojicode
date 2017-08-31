@@ -20,6 +20,13 @@ class Function;
 /// to parse arguments in compatiblity mode.
 class CompatibilityInfoProvider {
 public:
+    struct Selection {
+    friend CompatibilityInfoProvider;
+    private:
+        std::vector<unsigned int> *selectedFunction_ = nullptr;
+        size_t index_ = 0;
+    };
+
     /// Constructs an CompatibilityInfoProvider instance from the .emojimig file at the given path.
     CompatibilityInfoProvider(const std::string &path);
 
@@ -28,9 +35,11 @@ public:
     /// @pre A function must have been previously selected with selectFunction().
     /// @throws CompilerError If there are no more argument counts to return.
     unsigned int nextArgumentsCount();
+
+    Selection selection() { return selection_; }
+    void setSelection(Selection selection) { selection_ = std::move(selection); }
 private:
-    std::vector<unsigned int> *selectedFunction_ = nullptr;
-    size_t index_ = 0;
+    Selection selection_;
     std::map<std::string, std::map<size_t, std::vector<unsigned int>>> files_;
 };
 

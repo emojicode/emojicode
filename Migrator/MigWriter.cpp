@@ -12,10 +12,9 @@
 namespace EmojicodeCompiler {
 
 void MigWriter::add(Function *function) {
-    if (function->package() != underscore_) {
+    if (function->package() != underscore_ || function->compilationMode() == FunctionPAGMode::BoxingLayer) {
         return;
     }
-
     functions_[function->position().file].emplace_back(function);
 }
 
@@ -30,6 +29,7 @@ void MigWriter::finish() {
             out_ << "\n";
         }
     }
+    out_.flush();
 }
 
 }

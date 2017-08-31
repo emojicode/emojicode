@@ -35,7 +35,7 @@ void generateCodeForFunction(Function *function, FunctionWriter &w, MigWriter *m
     if (FunctionPAG::hasInstanceScope(function->compilationMode())) {
         scoper = CallableScoper(&function->owningType().typeDefinitionFunctional()->instanceScope());
     }
-    FunctionPAG(*function, function->owningType().disableSelfResolving(), w, scoper).compile();
+    FunctionPAG(*function, function->owningType().disableSelfResolving(), w, scoper, migWriter).compile();
     migWriter->add(function);
 }
 

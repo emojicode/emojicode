@@ -261,17 +261,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             return std::make_shared<ASTCaptureMethod>(name, parseExpr(0), token.position());
         }
-        case E_GRAPES: {
-            auto function = new Function(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::nothingness(),
-                                         package_, token.position(), false, std::u32string(), false, false,
-                                         FunctionType::Function);
-
-            parseParameters(function, typeContext_);
-            parseReturnType(function, typeContext_);
-
-            function->setAst(FunctionParser(package_, stream_, typeContext_).parse());
-            return std::make_shared<ASTClosure>(function, token.position());
-        }
+        case E_GRAPES:
+            return parseClosure(token);
         case E_CHIPMUNK: {
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             return std::make_shared<ASTSuperMethod>(name, parseArguments(token.position()), token.position());
@@ -307,6 +298,18 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
         case E_AVOCADO:
             throw CompilerError(token.position(), "Unexpected statement ", utf8(token.value()), ".");
     }
+}
+
+std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
+    auto function = new Function(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::nothingness(),
+                                 package_, token.position(), false, std::u32string(), false, false,
+                                 FunctionType::Function);
+
+    parseParameters(function, typeContext_);
+    parseReturnType(function, typeContext_);
+
+    function->setAst(factorFunctionParser(package_, stream_, typeContext_, function)->parse());
+    return std::make_shared<ASTClosure>(function, token.position());
 }
 
 std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition &p) {
