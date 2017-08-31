@@ -17,13 +17,14 @@
 #include "../Application.hpp"
 #include "../AST/ASTStatements.hpp"
 #include <algorithm>
+#include <cstdio>
 
 namespace EmojicodeCompiler {
 
 void Prettyprinter::print() {
     auto first = true;
     for (auto &file : package_->files()) {
-        stream_ = std::fstream(changeExtension(file.path_), std::ios_base::out);
+        stream_ = std::fstream(filePath(file.path_), std::ios_base::out);
 
         for (auto &recording : file.recordings_) {
             if (auto import = dynamic_cast<RecordingPackage::Import *>(recording.get())) {
@@ -49,6 +50,11 @@ void Prettyprinter::print() {
             app_->startFlagFunction()->ast()->toCode(*this);
         }
     }
+}
+
+std::string Prettyprinter::filePath(const std::string &path) {
+    std::rename(path.c_str(), (path + "_original").c_str());
+    return path;
 }
 
 void Prettyprinter::printArguments(Function *function) {

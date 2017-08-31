@@ -59,11 +59,11 @@ ASTArguments FunctionParser::parseArguments(const SourcePosition &position) {
         return args;
     }
 
-    parseMainArguments(&args);
+    parseMainArguments(&args, position);
     return args;
 }
 
-void FunctionParser::parseMainArguments(ASTArguments *arguments) {
+void FunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePosition &position) {
     stream_.consumeToken(TokenType::BeginArgumentList);
     while (stream_.nextTokenIsEverythingBut(TokenType::EndArgumentList)) {
         arguments->addArguments(parseExpr(0));

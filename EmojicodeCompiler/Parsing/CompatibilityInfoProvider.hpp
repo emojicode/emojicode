@@ -14,6 +14,7 @@
 
 namespace EmojicodeCompiler {
 
+struct SourcePosition;
 class Function;
 
 /// An CompatibilityInfoProvider object is initialized from an .emojimig file and provides the argument counts
@@ -34,7 +35,7 @@ public:
     /// Returns the next argument count for the selected function.
     /// @pre A function must have been previously selected with selectFunction().
     /// @throws CompilerError If there are no more argument counts to return.
-    unsigned int nextArgumentsCount();
+    unsigned int nextArgumentsCount(const SourcePosition &p);
 
     Selection selection() { return selection_; }
     void setSelection(Selection selection) { selection_ = std::move(selection); }

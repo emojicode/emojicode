@@ -8,6 +8,7 @@
 
 #include "CompatibilityInfoProvider.hpp"
 #include "../Functions/Function.hpp"
+#include "../CompilerError.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -44,9 +45,11 @@ void CompatibilityInfoProvider::selectFunction(Function *function) {
     selection_.index_ = 0;
 }
 
-unsigned int CompatibilityInfoProvider::nextArgumentsCount() {
+unsigned int CompatibilityInfoProvider::nextArgumentsCount(const SourcePosition &p) {
     if (selection_.index_ == selection_.selectedFunction_->size()) {
-        throw "error";
+        throw CompilerError(p, "Migration file does not contain enough argument counts. Either the migration file "\
+                            "was corrupted or the compiler classified an identifer as method call where it shouldn’t. "\
+                            "Please see the caveats.");
     }
     return (*selection_.selectedFunction_)[selection_.index_++];
 }

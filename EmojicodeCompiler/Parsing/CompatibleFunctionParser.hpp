@@ -25,7 +25,7 @@ private:
     std::shared_ptr<ASTBinaryOperator> parseOperatorCompatibly(OperatorType type, const SourcePosition &position);
     std::shared_ptr<ASTExpr> parseClosure(const Token &token) override;
 
-    void parseMainArguments(ASTArguments *arguments) override;
+    void parseMainArguments(ASTArguments *arguments, const SourcePosition &position) override;
 };
 
 }  // namespace EmojicodeCompiler

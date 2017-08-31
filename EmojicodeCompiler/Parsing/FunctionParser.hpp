@@ -28,7 +28,7 @@ public:
     FunctionParser(Package *pkg, TokenStream &stream, TypeContext context) : AbstractParser(pkg, stream), typeContext_(std::move(context)) {}
     std::shared_ptr<ASTBlock> parse();
 protected:
-    virtual void parseMainArguments(ASTArguments *arguments);
+    virtual void parseMainArguments(ASTArguments *arguments, const SourcePosition &position);
     virtual std::shared_ptr<ASTExpr> parseExprLeft(const Token &token, int precedence);
     virtual std::shared_ptr<ASTExpr> parseRight(std::shared_ptr<ASTExpr> left, int precendence);
     virtual std::shared_ptr<ASTStatement> parseVariableAssignment(const Token &token);

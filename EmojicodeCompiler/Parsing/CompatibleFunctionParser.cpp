@@ -18,7 +18,7 @@ namespace EmojicodeCompiler {
 std::shared_ptr<ASTBinaryOperator> CompatibleFunctionParser::parseOperatorCompatibly(OperatorType type,
                                                                            const SourcePosition &position) {
     auto left = parseExpr(10000);
-    package_->compatibilityInfoProvider()->nextArgumentsCount();
+    package_->compatibilityInfoProvider()->nextArgumentsCount(position);
     auto right = parseExpr(10000);
     return std::make_shared<ASTBinaryOperator>(type, left, right, position);
 }
@@ -64,14 +64,14 @@ std::shared_ptr<ASTStatement> CompatibleFunctionParser::parseVariableAssignment(
     return FunctionParser::parseVariableAssignment(token);
 }
 
-void CompatibleFunctionParser::parseMainArguments(ASTArguments *arguments) {
+void CompatibleFunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePosition &position) {
     if (!stream_.nextTokenIs(TokenType::BeginArgumentList)) {
-        for (auto i = package_->compatibilityInfoProvider()->nextArgumentsCount(); i > 0; i--) {
+        for (auto i = package_->compatibilityInfoProvider()->nextArgumentsCount(position); i > 0; i--) {
             arguments->addArguments(parseExpr(0));
         }
     }
     else {
-        FunctionParser::parseMainArguments(arguments);
+        FunctionParser::parseMainArguments(arguments, position);
     }
 }
 
