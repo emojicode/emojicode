@@ -28,10 +28,10 @@ std::shared_ptr<ASTExpr> CompatibleFunctionParser::parseExprLeft(const Emojicode
     if (token.type() == TokenType::Operator) {
         return parseOperatorCompatibly(operatorType(token.value()), token.position());
     }
-    else if (token.value().front() == 0x1F389) {
+    else if (token.value().front() == 0x1F38A) {
         return parseOperatorCompatibly(OperatorType::LogicalAndOperator, token.position());
     }
-    else if (token.value().front() == 0x1F38A) {
+    else if (token.value().front() == 0x1F389) {
         return parseOperatorCompatibly(OperatorType::LogicalOrOperator, token.position());
     }
     else if (token.value().front() == 0x1F61B) {
