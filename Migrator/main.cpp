@@ -149,11 +149,13 @@ int main(int argc, char * argv[]) {
             }
 
             auto writer = MigWriter(outPath, &pkg);
-            generateCode(&writer);
-            std::cout << "📝 Wrote migration file to " << outPath << "\n";
-            std::cout << "👩‍💻 Letting compiler create new files" << "\n";
-            if (std::system(("./emojicodec " + outPath).c_str()) == 0) {
-                std::cout << "✅ Done" << "\n";
+            if (!hasError) {
+                generateCode(&writer);
+                std::cout << "📝 Wrote migration file to " << outPath << "\n";
+                std::cout << "👩‍💻 Letting compiler create new files" << "\n";
+                if (std::system(("./emojicodec " + outPath).c_str()) == 0) {
+                    std::cout << "✅ Done" << "\n";
+                }
             }
         }
         catch (CompilerError &ce) {

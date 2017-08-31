@@ -16,7 +16,6 @@
 #include "ExpressionPAGs.hpp"
 #include "Function.hpp"
 #include "Protocol.hpp"
-#include "RecompilationPoint.hpp"
 #include "StringPool.hpp"
 #include "Type.hpp"
 #include "ValueType.hpp"
@@ -96,7 +95,6 @@ Type FunctionPAG::parseFunctionCall(const Type &type, Function *p, const Token &
         std::vector<CommonTypeFinder> genericArgsFinders;
         genericArgsFinders.resize(p->genericArgumentVariables.size());
 
-        auto recompilationPoint = RecompilationPoint(writer_, stream_);
         for (auto var : p->arguments) {
             auto resolved = var.type.resolveOn(typeContext);
             parseTypeSafeExpr(resolved, &genericArgsFinders);
@@ -114,8 +112,6 @@ Type FunctionPAG::parseFunctionCall(const Type &type, Function *p, const Token &
             }
             genericArguments.push_back(commonType);
         }
-
-        recompilationPoint.restore();
     }
     else {
         if (genericArguments.size() != p->genericArgumentVariables.size()) {
@@ -129,12 +125,12 @@ Type FunctionPAG::parseFunctionCall(const Type &type, Function *p, const Token &
                                     p->genericArgumentConstraints[i].toString(typeContext, true).c_str());
             }
         }
-    }
 
-    for (auto var : p->arguments) {
-        auto resolved = var.type.resolveOn(typeContext);
-        writer_.writeInstruction(resolved.size());
-        parseTypeSafeExpr(resolved);
+        for (auto var : p->arguments) {
+            auto resolved = var.type.resolveOn(typeContext);
+            writer_.writeInstruction(resolved.size());
+            parseTypeSafeExpr(resolved);
+        }
     }
 
     p->deprecatedWarning(token.position());

@@ -478,7 +478,7 @@ Type pagInstatiation(const Token &token, const TypeExpectation &expectation, Fun
         throw CompilerError(token.position(), "The given type cannot be instantiated.");
     }
 
-
+    argsExpector.provide(initializer->arguments.size());
     auto constructedType = initializer->constructedType(type);
     functionPag.box(expectation, constructedType, insertionPoint);
     return constructedType;
