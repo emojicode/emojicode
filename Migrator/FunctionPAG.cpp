@@ -1000,22 +1000,13 @@ Type FunctionPAG::parseExprIdentifier(const Token &token, const TypeExpectation 
 
 Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &expectation,
                                   std::function<Type(TypeExpectation &)> callee) {
-    auto argsExpector = argsMigCreator().takesArguments();
     auto insertionPoint = writer_.getInsertionPoint();
     auto placeholder = writer_.writeInstructionPlaceholder();
 
-    auto recompilationPoint = RecompilationPoint(writer_, stream_);
-    auto recompileWithSimple = [this, recompilationPoint, &callee]() {
-        recompilationPoint.restore();
-        auto simpleExpectation = TypeExpectation(false, false, false);
-        callee(simpleExpectation);
-    };
-    auto writePrimitiveMethod = [this, &placeholder, &insertionPoint, &expectation,
-                                 &recompileWithSimple](EmojicodeInstruction instruction, Type returnType,
-                                 std::experimental::optional<Type> argument) {
+    auto writePrimitiveMethod = [this, &placeholder, &insertionPoint, &expectation](EmojicodeInstruction instruction,
+                                                                                    Type returnType,
+                                                                                    std::experimental::optional<Type> argument) {
         placeholder.write(instruction);
-        recompileWithSimple();
-        box(expectation, returnType, insertionPoint);
         if (argument) {
             parseTypeSafeExpr(*argument);
         }
@@ -1026,6 +1017,7 @@ Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &exp
     Type rtype = callee(calleeExpectation);
     Type type = rtype.resolveOnSuperArgumentsAndConstraints(typeContext_);
 
+    auto argsExpector = argsMigCreator().takesArguments();
     if (type.optional()) {
         throw CompilerError(token.position(), "You cannot call methods on optionals.");
     }
@@ -1107,7 +1099,6 @@ Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &exp
         }
 
         if (token.isIdentifier(E_FACE_WITH_STUCK_OUT_TONGUE) && type.valueType()->isPrimitive()) {
-            recompileWithSimple();
             type.setReference(false);
             parseTypeSafeExpr(type);
             placeholder.write(INS_EQUAL_PRIMITIVE);
@@ -1116,7 +1107,6 @@ Type FunctionPAG::parseMethodCall(const Token &token, const TypeExpectation &exp
         }
     }
     else if (type.type() == TypeContent::Enum && token.value()[0] == E_FACE_WITH_STUCK_OUT_TONGUE) {
-        recompileWithSimple();
         type.setReference(false);
         parseTypeSafeExpr(type);  // Must be of the same type as the callee
         placeholder.write(INS_EQUAL_PRIMITIVE);

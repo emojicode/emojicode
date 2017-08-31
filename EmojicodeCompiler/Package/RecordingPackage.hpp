@@ -10,6 +10,7 @@
 #define RecordingPackage_hpp
 
 #include "Package.hpp"
+#include <memory>
 
 namespace EmojicodeCompiler {
 
@@ -18,25 +19,47 @@ namespace EmojicodeCompiler {
 class RecordingPackage : public Package {
     using Package::Package;
 public:
-    struct RecordedImport {
-        RecordedImport(std::string pkg, std::u32string ns)
+    class Recording {
+    public:
+        virtual ~Recording() {}
+    };
+
+    class Import : public Recording {
+    public:
+        Import(std::string pkg, std::u32string ns)
         : package(std::move(pkg)), destNamespace(std::move(ns)) {}
         std::string package;
         std::u32string destNamespace;
     };
 
-    /// @returns A vector of Type instances which represent the type definitions.
-    const std::vector<Type>& types() const { return types_; }
-    /// @returns A vector of RecordedImport instances that represent all package imports in the order they occurred.
-    const std::vector<RecordedImport>& importedPackages() const { return packages_; }
+    class Include : public Recording {
+    public:
+        Include(std::string path) : path_(std::move(path)) {}
+        std::string path_;
+    };
+
+    class RecordedType : public Recording {
+    public:
+        RecordedType(Type type) : type_(std::move(type)) {}
+        Type type_;
+    };
+
+    struct File {
+        File(std::string path) : path_(path) {}
+        std::string path_;
+        std::vector<std::unique_ptr<Recording>> recordings_;
+    };
+
+    const std::vector<File>& files() const { return files_; }
 
     void importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) override;
     void offerType(Type t, const std::u32string &name, const std::u32string &ns, bool exportFromPkg,
                            const SourcePosition &p) override;
     Extension& registerExtension(Extension ext) override;
+    void includeDocument(const std::string &path, const std::string &relativePath) override;
 private:
-    std::vector<Type> types_;
-    std::vector<RecordedImport> packages_;
+    std::vector<File> files_;
+    size_t currentFile_ = 0;
 };
 
 }

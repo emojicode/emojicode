@@ -13,11 +13,13 @@
 #include "../Types/Generic.hpp"
 #include "../Types/TypeContext.hpp"
 #include <utility>
+#include <memory>
 
 namespace EmojicodeCompiler {
 
 class Function;
 class Package;
+class FunctionParser;
 
 class Documentation {
 public:
@@ -100,6 +102,9 @@ protected:
 
     /// Parses and validates the error type
     Type parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p);
+
+    std::unique_ptr<FunctionParser> factorFunctionParser(Package *pkg, TokenStream &stream, TypeContext context,
+                                                         Function *function);
 private:
     /// Parses a $multi-protocol$
     Type parseMultiProtocol(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);

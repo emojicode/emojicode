@@ -12,32 +12,48 @@
 
 namespace EmojicodeCompiler {
 
-bool Application::compile() {
+Application::Application(std::string mainFile, std::string outPath, std::string pkgDir,
+                         std::unique_ptr<ApplicationDelegate> delegate)
+: mainFile_(std::move(mainFile)), outPath_(std::move(outPath)), packageDirectory_(std::move(pkgDir)),
+    delegate_(std::move(delegate)) {}
+
+bool Application::compile(bool parseOnly) {
     delegate_->begin();
-    auto underscorePackage = factorUnderscorePackage<Package>();
 
     try {
-        underscorePackage->compile();
-
-        if (!hasStartFlagFunction()) {
-            throw CompilerError(underscorePackage->position(), "No 🏁 block was found.");
+        factorUnderscorePackage<Package>();
+        underscorePackage_->parse();
+        if (parseOnly) {
+            return !hasError_;
         }
-
-        packagesLoadingOrder_.emplace_back(std::move(underscorePackage));
-
-        if (!hasError_) {
-            Writer writer = Writer(outPath_);
-            generateCode(&writer, this);
-            writer.finish();
-            delegate_->finish();
-            return true;
-        }
+        analyse(underscorePackage_.get());
+        packagesLoadingOrder_.emplace_back(std::move(underscorePackage_));
+        underscorePackage_ = nullptr;
     }
     catch (CompilerError &ce) {
         error(ce);
     }
+
+    if (!hasError_) {
+        generateCode();
+    }
+
     delegate_->finish();
-    return false;
+    return !hasError_;
+}
+
+void Application::analyse(Package *underscorePackage) {
+    underscorePackage->analyse();
+
+    if (!hasStartFlagFunction()) {
+        throw CompilerError(underscorePackage->position(), "No 🏁 block was found.");
+    }
+}
+
+void Application::generateCode() {
+    Writer writer = Writer(outPath_);
+    EmojicodeCompiler::generateCode(&writer, this);
+    writer.finish();
 }
 
 Package* Application::findPackage(const std::string &name) const {
@@ -59,7 +75,8 @@ Package* Application::loadPackage(const std::string &name, const SourcePosition 
     auto rawPtr = package.get();
     packages_.emplace(name, rawPtr);
     packagesLoadingOrder_.emplace_back(std::move(package));
-    rawPtr->compile();
+    rawPtr->parse();
+    rawPtr->analyse();
     return rawPtr;
 }
 

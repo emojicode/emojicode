@@ -16,6 +16,7 @@
 #include "Package.hpp"
 #include "../Prettyprint/Prettyprinter.hpp"
 #include "../Lex/Lexer.hpp"
+#include "../Parsing/CompatibilityInfoProvider.hpp"
 #include <algorithm>
 #include <sstream>
 #include <cstring>
@@ -88,15 +89,8 @@ void Package::importPackage(const std::string &name, const std::u32string &ns, c
     }
 }
 
-void Package::includeDocument(const std::string &path) {
+void Package::includeDocument(const std::string &path, const std::string &relativePath) {
     DocumentParser(this, Lexer::lexFile(path)).parse();
-}
-
-void Package::compile() {
-    parse();
-    analyse();
-
-    finishedLoading_ = true;
 }
 
 void Package::parse() {
@@ -104,7 +98,7 @@ void Package::parse() {
         importPackage("s", kDefaultNamespace, position());
     }
     
-    DocumentParser(this, Lexer::lexFile(mainFile_)).parse();
+    includeDocument(mainFile_, "");
 
     if (!validVersion()) {
         throw CompilerError(position(), "Package ", name(), " does not provide a valid version.");
@@ -114,6 +108,7 @@ void Package::parse() {
         loadStandard(this, position());
         requiresNativeBinary_ = false;
     }
+    finishedLoading_ = true;
 }
 
 void Package::analyse() {
@@ -145,13 +140,13 @@ void Package::analyse() {
     }
 }
 
-void Package::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) {
+void Package::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) const {
     typeDef->eachFunction([this](Function *function) {
         enqueueFunction(function);
     });
 }
 
-void Package::enqueueFunction(Function *function) {
+void Package::enqueueFunction(Function *function) const {
     if (!function->isNative()) {
         app_->analysisQueue.emplace(function);
     }

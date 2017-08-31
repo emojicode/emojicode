@@ -21,21 +21,34 @@
 namespace EmojicodeCompiler {
 
 void Prettyprinter::print() {
-    for (auto import : package_->importedPackages()) {
-        stream_ << "📦 " << import.package << " " << utf8(import.destNamespace) << "\n";
-    }
-    offerNewLineUnlessEmpty(package_->importedPackages());
+    auto first = true;
+    for (auto &file : package_->files()) {
+        stream_ = std::fstream(changeExtension(file.path_), std::ios_base::out);
 
-    for (auto &type : package_->types()) {
-        printTypeDef(type);
-    }
+        for (auto &recording : file.recordings_) {
+            if (auto import = dynamic_cast<RecordingPackage::Import *>(recording.get())) {
+                refuseOffer() << "📦 " << import->package << " " << utf8(import->destNamespace) << "\n";
+                offerNewLine();
+            }
+            if (auto type = dynamic_cast<RecordingPackage::RecordedType *>(recording.get())) {
+               printTypeDef(type->type_);
+            }
+            if (auto include = dynamic_cast<RecordingPackage::Include *>(recording.get())) {
+                refuseOffer() << "📜 🔤" << changeExtension(include->path_) << "🔤\n";
+                offerNewLine();
+            }
+        }
 
-    stream_ << "🏁 ";
-    if (app_->startFlagFunction()->returnType.type() != TypeType::Nothingness) {
-        printReturnType(app_->startFlagFunction());
-        stream_ << " ";
+        if (first) {
+            first = false;
+            stream_ << "🏁 ";
+            if (app_->startFlagFunction()->returnType.type() != TypeType::Nothingness) {
+                printReturnType(app_->startFlagFunction());
+                stream_ << " ";
+            }
+            app_->startFlagFunction()->ast()->toCode(*this);
+        }
     }
-    app_->startFlagFunction()->ast()->toCode(*this);
 }
 
 void Prettyprinter::printArguments(Function *function) {
@@ -97,19 +110,19 @@ void Prettyprinter::printTypeDef(const Type &type) {
 void Prettyprinter::printTypeDefName(const Type &type) {
     switch (type.type()) {
         case TypeType::Class:
-            stream_ << "🐇 ";
+            thisStream() << "🐇 ";
             break;
         case TypeType::ValueType:
-            stream_ << "🕊 ";
+            thisStream() << "🕊 ";
             break;
         case TypeType::Enum:
-            stream_ << "🦃 ";
+            thisStream() << "🦃 ";
             break;
         case TypeType::Protocol:
-            stream_ << "🐊 ";
+            thisStream() << "🐊 ";
             break;
         case TypeType::Extension:
-            stream_ << "🐋 ";
+            thisStream() << "🐋 ";
             break;
         default:
             break;

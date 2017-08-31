@@ -26,16 +26,9 @@ bool Lexer::detectWhitespace() {
     }
     return isWhitespace(codePoint());
 }
-
-inline bool endsWith(const std::string &value, const std::string &ending) {
-    if (ending.size() > value.size()) {
-        return false;
-    }
-    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
-}
-
+    
 TokenStream Lexer::lexFile(const std::string &path) {
-    if (!endsWith(path, ".emojic")) {
+    if (!endsWith(path, ".emojic") && !endsWith(path, ".ejc")) {
         throw CompilerError(SourcePosition(0, 0, path), "Emojicode files must be suffixed with .emojic: ", path);
     }
 
@@ -243,6 +236,7 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
             }
             else if (codePoint() == E_CROSS_MARK) {
                 escapeSequence_ = true;
+                return TokenState::Continues;
             }
             else if (codePoint() == E_INPUT_SYMBOL_LATIN_LETTERS) {
                 return TokenState::Ended;

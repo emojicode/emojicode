@@ -45,10 +45,10 @@ public:
 
 class ASTNumberLiteral final : public ASTExpr {
 public:
-    ASTNumberLiteral(double value,
-                     const SourcePosition &p) : ASTExpr(p), doubleValue_(value), type_(NumberType::Double) {}
-    ASTNumberLiteral(int64_t value,
-                     const SourcePosition &p) : ASTExpr(p), integerValue_(value), type_(NumberType::Integer) {}
+    ASTNumberLiteral(double value, std::u32string string, const SourcePosition &p)
+    : ASTExpr(p), string_(std::move(string)), doubleValue_(value), type_(NumberType::Double) {}
+    ASTNumberLiteral(int64_t value, std::u32string string, const SourcePosition &p)
+    : ASTExpr(p), string_(std::move(string)), integerValue_(value), type_(NumberType::Integer) {}
 
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
@@ -58,6 +58,7 @@ private:
         Double, Integer
     };
 
+    std::u32string string_;
     double doubleValue_ = 0;
     int64_t integerValue_ = 0;
     NumberType type_;

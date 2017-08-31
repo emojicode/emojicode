@@ -13,31 +13,35 @@
 #include "../Package/RecordingPackage.hpp"
 #include <exception>
 #include <iostream>
+#include <fstream>
 
 namespace EmojicodeCompiler {
 
 namespace CLI {
 
 /// The compiler CLI main function
-/// @returns True iff the compilation was successful as determined by Application::compile.
-bool start(int argc, char *argv[]) {
-    Options options(argc, argv);
-
+/// @returns True if the requested operation was successful.
+bool start(Options options) {
     if (!options.beginCompilation()) {
-        return false;
+        return true;
     }
 
     auto application = Application(options.mainFile(), options.outPath(), options.packageDirectory(),
                                    options.applicationDelegate());
 
-    if (options.format()) {
-        auto package = application.factorUnderscorePackage<RecordingPackage>();
-        package->parse();
-        Prettyprinter(std::cout, package.get(), &application).print();
-        return true;
+    if (!options.migrationFile().empty()) {
+        application.loadMigrationFile(options.migrationFile());
+    }
+    if (options.prettyprint()) {
+        application.factorUnderscorePackage<RecordingPackage>();
     }
 
-    bool successfullyCompiled = application.compile();
+    bool success = application.compile(options.prettyprint());
+
+    if (options.prettyprint()) {
+        auto recordingPackage = dynamic_cast<RecordingPackage *>(application.underscorePackage());
+        Prettyprinter(recordingPackage, &application).print();
+    }
 
     if (!options.packageToReport().empty()) {
         if (auto package = application.findPackage(options.packageToReport())) {
@@ -52,7 +56,7 @@ bool start(int argc, char *argv[]) {
         //            InformationDesk(&pkg).sizeOfVariable(sizeVariable);
     }
 
-    return successfullyCompiled;
+    return success;
 }
 
 }  // namespace CLI
@@ -61,7 +65,7 @@ bool start(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
     try {
-        return EmojicodeCompiler::CLI::start(argc, argv) ? 0 : 1;
+        return EmojicodeCompiler::CLI::start(EmojicodeCompiler::CLI::Options(argc, argv)) ? 0 : 1;
     }
     catch (std::exception &ex) {
         printf("💣 The compiler crashed due to an internal problem: %s\nPlease report this message and the code that "

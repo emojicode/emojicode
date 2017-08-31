@@ -11,6 +11,8 @@
 #include "../Functions/Initializer.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeContext.hpp"
+#include "../Parsing/CompatibleFunctionParser.hpp"
+#include "CompatibilityInfoProvider.hpp"
 #include <map>
 #include <vector>
 
@@ -36,6 +38,15 @@ TypeIdentifier AbstractParser::parseTypeIdentifier() {
 
     auto &typeName = stream_.consumeToken(TokenType::Identifier);
     return TypeIdentifier(typeName.value(), enamespace, typeName.position());
+}
+
+std::unique_ptr<FunctionParser> AbstractParser::factorFunctionParser(Package *pkg, TokenStream &stream,
+                                                                     TypeContext context, Function *function) {
+    if (package_->compatibilityMode()) {
+        package_->compatibilityInfoProvider()->selectFunction(function);
+        return std::make_unique<CompatibleFunctionParser>(pkg, stream, context);
+    }
+    return std::make_unique<FunctionParser>(pkg, stream, context);
 }
 
 Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dynamism) {

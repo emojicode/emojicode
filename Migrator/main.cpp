@@ -156,6 +156,9 @@ int main(int argc, char * argv[]) {
         }
 
         std::cout << "📝 Wrote migration file to " << outPath << "\n";
+        std::cout << "👩‍💻 Letting compiler create new files" << "\n";
+        std::system(("./emojicodec " + outPath).c_str());
+        std::cout << "✅ Done" << "\n";
 
         if (hasError) {
             return 1;

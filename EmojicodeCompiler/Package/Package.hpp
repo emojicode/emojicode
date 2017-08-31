@@ -42,20 +42,21 @@ struct ExportedType {
 
 struct TypeIdentifier;
 class Application;
+class CompatibilityInfoProvider;
 
 /// Package is the class used to load, parse and analyse packages.
 class Package {
 public:
     /// Constructs a package. The package must be compiled with compile() before it can be loaded.
     /// @param name The name of the package. The package is registered with this name.
-    /// @param mainFilePath The path to the package’s main file.
+    /// @param mainFilePath The path to the package’s main file. This is the file that is parsed when parse() is called.
     Package(std::string name, std::string mainFilePath, Application *app)
     : name_(std::move(name)), mainFile_(std::move(mainFilePath)), app_(app) {}
 
-    /// Lexes, parser, semantically analyses and optimizes this package.
-    /// If the package is not the @c s package, the s package is loaded first.
-    void compile();
-    /// Parses the package. If this package is the s package the s loading procedure is invoked.
+    /// Ssemantically analyses and optimizes this package.
+    void analyse();
+    /// Lexes and parses the package. If this package is the s package the s loading procedure is invoked.
+    /// If the package is not the @c s package, the s package is first imported via importPackage().
     void parse();
 
     /// Tries to import the package identified by name into a namespace of this package.
@@ -64,7 +65,9 @@ public:
 
     /// Loads, lexes and parses the document at path in the context of this package.
     /// @param path A file path to a source code document.
-    virtual void includeDocument(const std::string &path);
+    /// @param relativePath The path as it was discovered in the source code document. Value is provided for
+    ///                     subclasses that might be interested in this. (e.g. RecordingPackage)
+    virtual void includeDocument(const std::string &path, const std::string &relativePath);
 
     /// @returns The application to which this package belongs.
     Application* app() const { return app_; }
@@ -81,6 +84,13 @@ public:
     /** Whether this package has declared a valid package version. */
     bool validVersion() const { return version().minor > 0 || version().major > 0; }
     void setPackageVersion(PackageVersion v) { version_ = v; }
+
+    /// If the compatibility mode is on the, the parsers will try to parse Emojicode 0.5 syntax.
+    /// If this is true, a MigArgs object is provided.
+    /// @returns Whether the compatiblity mode is on.
+    bool compatibilityMode() { return compatibilityInfoProvider_ != nullptr; }
+    CompatibilityInfoProvider* compatibilityInfoProvider() { return compatibilityInfoProvider_; }
+    void setCompatiblityInfoProvider(CompatibilityInfoProvider *cac) { compatibilityInfoProvider_ = cac; }
 
     const std::u32string& documentation() const { return documentation_; }
     void setDocumentation(const std::u32string &doc) { documentation_ = doc; }
@@ -134,16 +144,16 @@ private:
     /// Verifies that no type with name @c name has already been exported and adds the type to ::exportedTypes_
     void exportType(Type t, std::u32string name, const SourcePosition &p);
 
-    void analyse();
-
-    void enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef);
-    void enqueueFunction(Function *);
+    void enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) const;
+    void enqueueFunction(Function *) const;
 
     const std::string name_;
     const std::string mainFile_;
     PackageVersion version_ = PackageVersion(0, 0);
     bool requiresNativeBinary_ = false;
     bool finishedLoading_ = false;
+
+    CompatibilityInfoProvider *compatibilityInfoProvider_ = nullptr;
 
     std::map<std::u32string, Type> types_;
     std::vector<ExportedType> exportedTypes_;

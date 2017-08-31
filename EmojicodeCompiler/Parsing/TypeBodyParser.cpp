@@ -26,7 +26,7 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
     else {
         stream_.requireIdentifier(E_GRAPES);
         try {
-            auto ast = FunctionParser(package_, stream_, function->typeContext()).parse();
+            auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
             function->setAst(ast);
         }
         catch (CompilerError &ce) {

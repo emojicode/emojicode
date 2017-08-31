@@ -21,11 +21,20 @@
 namespace EmojicodeCompiler {
 
 class ASTNode;
+class ASTBinaryOperator;
 
-class FunctionParser : AbstractParser {
+class FunctionParser : protected AbstractParser {
 public:
     FunctionParser(Package *pkg, TokenStream &stream, TypeContext context) : AbstractParser(pkg, stream), typeContext_(std::move(context)) {}
     std::shared_ptr<ASTBlock> parse();
+protected:
+    virtual void parseMainArguments(ASTArguments *arguments);
+    virtual std::shared_ptr<ASTExpr> parseExprLeft(const Token &token, int precedence);
+    virtual std::shared_ptr<ASTExpr> parseRight(std::shared_ptr<ASTExpr> left, int precendence);
+    virtual std::shared_ptr<ASTStatement> parseVariableAssignment(const Token &token);
+    std::shared_ptr<ASTExpr> parseExpr(int precedence) {
+        return parseExprTokens(stream_.consumeToken(), precedence);
+    }
 private:
     TypeContext typeContext_;
     std::shared_ptr<ASTBlock> fnode_ = std::make_shared<ASTBlock>(SourcePosition(0, 0, ""));
@@ -33,15 +42,9 @@ private:
     ASTBlock parseBlock();
     std::shared_ptr<ASTExpr> parseCondition();
     std::shared_ptr<ASTExpr> parseExprTokens(const Token &token, int precendence);
-    std::shared_ptr<ASTExpr> parseExprLeft(const Token &token, int precedence);
-
     std::shared_ptr<ASTExpr> parseExprIdentifier(const Token &token);
     ASTArguments parseArguments(const SourcePosition &position);
     std::shared_ptr<ASTTypeExpr> parseTypeExpr(const SourcePosition &p);
-
-    std::shared_ptr<ASTExpr> parseExpr(int precedence) {
-        return parseExprTokens(stream_.consumeToken(), precedence);
-    }
 
     template <typename T>
     std::shared_ptr<T> parseUnaryPrefix(const Token &token) {

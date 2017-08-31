@@ -122,7 +122,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
     }
     stream_.requireIdentifier(E_GRAPES);
     try {
-        auto ast = FunctionParser(package_, stream_, function->typeContext()).parse();
+        auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
         function->setAst(ast);
     }
     catch (CompilerError &ce) {
@@ -136,14 +136,15 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
 void DocumentParser::parseInclude(const SourcePosition &p) {
     auto &pathString = stream_.consumeToken(TokenType::String);
     auto relativePath = std::string(pathString.position().file);
-    auto fileString = utf8(pathString.value());
+    auto originalPathString = utf8(pathString.value());
+    auto fileString = originalPathString;
 
     auto lastSlash = relativePath.find_last_of('/');
     if (lastSlash != relativePath.npos) {
         fileString = relativePath.substr(0, lastSlash) + "/" + fileString;
     }
 
-    package_->includeDocument(fileString);
+    package_->includeDocument(fileString, originalPathString);
 }
 
 void DocumentParser::parseVersion(const Documentation &documentation, const SourcePosition &p) {

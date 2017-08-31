@@ -86,6 +86,8 @@
 		E49E6D151F441F0900B819CA /* ASTClosure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E49E6D131F441F0900B819CA /* ASTClosure.cpp */; };
 		E49E6D181F4ABF2500B819CA /* ClosureCodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E49E6D161F4ABF2500B819CA /* ClosureCodeGenerator.cpp */; };
 		E49E6D1B1F4AD97F00B819CA /* VariableID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E49E6D191F4AD97F00B819CA /* VariableID.cpp */; };
+		E4D3EF8C1F5459A100A31C81 /* CompatibilityInfoProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4D3EF8A1F5459A100A31C81 /* CompatibilityInfoProvider.cpp */; };
+		E4DE8CAB1F57410400BFE7A9 /* CompatibleFunctionParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */; };
 		E4DF2B871E4602930006EA17 /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F71C8301A5009E7089 /* JSON.cpp */; };
 		E4EC74801E1D9644007A22AA /* Processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EC747E1E1D9644007A22AA /* Processor.cpp */; };
 		E4EC74811E1E67C0007A22AA /* List.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F11C83018B009E7089 /* List.cpp */; };
@@ -288,6 +290,10 @@
 		E49E6D191F4AD97F00B819CA /* VariableID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VariableID.cpp; sourceTree = "<group>"; };
 		E49E6D1A1F4AD97F00B819CA /* VariableID.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VariableID.hpp; sourceTree = "<group>"; };
 		E49FD7741DE9A2BB00FD5170 /* EmojicodeInstructions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeInstructions.h; sourceTree = "<group>"; };
+		E4D3EF8A1F5459A100A31C81 /* CompatibilityInfoProvider.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompatibilityInfoProvider.cpp; sourceTree = "<group>"; };
+		E4D3EF8B1F5459A100A31C81 /* CompatibilityInfoProvider.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CompatibilityInfoProvider.hpp; sourceTree = "<group>"; };
+		E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompatibleFunctionParser.cpp; sourceTree = "<group>"; };
+		E4DE8CAA1F57410400BFE7A9 /* CompatibleFunctionParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CompatibleFunctionParser.hpp; sourceTree = "<group>"; };
 		E4E404071A5B2E4300034386 /* Emojicode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Emojicode; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4E404141A5B2E8F00034386 /* Engine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; path = Engine.hpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		E4EC747D1E1D87F9007A22AA /* Thread.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; name = Thread.hpp; path = "EmojicodeReal-TimeEngine/Thread.hpp"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -446,12 +452,16 @@
 				E460A5571F30EFA2006E3AC7 /* AbstractParser.hpp */,
 				E460A55C1F30EFA2006E3AC7 /* FunctionParser.cpp */,
 				E460A55D1F30EFA2006E3AC7 /* FunctionParser.hpp */,
+				E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */,
+				E4DE8CAA1F57410400BFE7A9 /* CompatibleFunctionParser.hpp */,
 				E47891071F4EEA3A008DCB24 /* TypeBodyParser.cpp */,
 				E47891081F4EEA3A008DCB24 /* TypeBodyParser.hpp */,
 				E460A5601F30EFA2006E3AC7 /* DocumentParser.cpp */,
 				E460A5611F30EFA2006E3AC7 /* DocumentParser.hpp */,
 				E478910A1F4EFD9C008DCB24 /* AttributesParser.cpp */,
 				E478910B1F4EFD9C008DCB24 /* AttributesParser.hpp */,
+				E4D3EF8A1F5459A100A31C81 /* CompatibilityInfoProvider.cpp */,
+				E4D3EF8B1F5459A100A31C81 /* CompatibilityInfoProvider.hpp */,
 			);
 			path = Parsing;
 			sourceTree = "<group>";
@@ -800,6 +810,7 @@
 				E460A5A21F30EFA2006E3AC7 /* Lexer.cpp in Sources */,
 				E47838DA1F41F9A6007B937C /* BoxingLayerBuilder.cpp in Sources */,
 				E460A5BE1F30EFA2006E3AC7 /* CompilerError.cpp in Sources */,
+				E4D3EF8C1F5459A100A31C81 /* CompatibilityInfoProvider.cpp in Sources */,
 				E48356AA1F35E1A2000B80AE /* ASTMethod.cpp in Sources */,
 				E460A5C31F30EFA2006E3AC7 /* PackageReporter.cpp in Sources */,
 				E460A59D1F30EFA2006E3AC7 /* FunctionWriter.cpp in Sources */,
@@ -828,6 +839,7 @@
 				E460A5BD1F30EFA2006E3AC7 /* BoxingLayer.cpp in Sources */,
 				E460A5B21F30EFA2006E3AC7 /* Class.cpp in Sources */,
 				E4431D741F4E17B100D68379 /* ASTToCode.cpp in Sources */,
+				E4DE8CAB1F57410400BFE7A9 /* CompatibleFunctionParser.cpp in Sources */,
 				E460A5B11F30EFA2006E3AC7 /* VariableNotFoundError.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

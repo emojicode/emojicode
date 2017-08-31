@@ -292,12 +292,12 @@ Type pagExtraction(const Token &token, const TypeExpectation &expectation, Funct
 }
 
 Type pagCallableCall(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag) {
-    auto argsExpector = functionPag.argsMigCreator().takesArguments();
     functionPag.makeEffective();
     auto insertionPoint = functionPag.writer().getInsertionPoint();
     functionPag.writer().writeInstruction(INS_EXECUTE_CALLABLE);
 
     Type type = functionPag.parseExpr(TypeExpectation(false, false, false));
+    auto argsExpector = functionPag.argsMigCreator().takesArguments();
 
     if (type.type() != TypeContent::Callable) {
         throw CompilerError(token.position(), "Given value is not callable.");
@@ -377,7 +377,6 @@ Type pagMethodCapture(const Token &token, const TypeExpectation &expectation, Fu
 }
 
 Type pagTypeMethod(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag) {
-    auto argsExpector = functionPag.argsMigCreator().takesArguments();
     functionPag.makeEffective();
     auto insertionPoint = functionPag.writer().getInsertionPoint();
     auto &methodToken = functionPag.stream().consumeToken(TokenType::Identifier);
@@ -385,6 +384,7 @@ Type pagTypeMethod(const Token &token, const TypeExpectation &expectation, Funct
     auto placeholder = functionPag.writer().writeInstructionPlaceholder();
     auto pair = functionPag.parseTypeAsValue(token.position(), TypeExpectation());
     auto type = pair.first.resolveOnSuperArgumentsAndConstraints(functionPag.typeContext());
+    auto argsExpector = functionPag.argsMigCreator().takesArguments();
 
     if (type.optional()) {
         compilerWarning(token.position(), "You cannot call optionals on 🍬.");
@@ -413,12 +413,11 @@ Type pagTypeMethod(const Token &token, const TypeExpectation &expectation, Funct
 }
 
 Type pagInstatiation(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag) {
-    auto argsExpector = functionPag.argsMigCreator().takesArguments();
-
     auto insertionPoint = functionPag.writer().getInsertionPoint();
     auto placeholder = functionPag.writer().writeInstructionPlaceholder();
     auto pair = functionPag.parseTypeAsValue(token.position(), expectation);
     auto type = pair.first.resolveOnSuperArgumentsAndConstraints(functionPag.typeContext());
+    auto argsExpector = functionPag.argsMigCreator().takesArguments();
 
     auto &initializerName = functionPag.stream().consumeToken(TokenType::Identifier);
 
@@ -479,7 +478,7 @@ Type pagInstatiation(const Token &token, const TypeExpectation &expectation, Fun
         throw CompilerError(token.position(), "The given type cannot be instantiated.");
     }
 
-    
+
     auto constructedType = initializer->constructedType(type);
     functionPag.box(expectation, constructedType, insertionPoint);
     return constructedType;
@@ -530,10 +529,10 @@ Type pagSuperMethod(const Token &token, const TypeExpectation &expectation, Func
 Type pagIdentityCheck(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag) {
     functionPag.box(expectation, Type::boolean());
     functionPag.writer().writeInstruction(INS_SAME_OBJECT);
-    
+
     functionPag.parseTypeSafeExpr(Type::someobject());
     functionPag.parseTypeSafeExpr(Type::someobject());
-    
+
     return Type::boolean();
 }
 

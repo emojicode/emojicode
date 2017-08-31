@@ -44,6 +44,13 @@ inline std::string utf8(const std::u32string &s) {
     return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>().to_bytes(s);
 }
 
+inline bool endsWith(const std::string &value, const std::string &ending) {
+    if (ending.size() > value.size()) {
+        return false;
+    }
+    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
 template<typename Head>
 void appendToStream(std::stringstream &stream, Head head) {
     stream << head;

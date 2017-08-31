@@ -214,16 +214,8 @@ void ASTUnwrap::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTNumberLiteral::toCode(Prettyprinter &pretty) const {
-    switch (type_) {
-        case ASTNumberLiteral::NumberType::Integer:
-            pretty << integerValue_;
-            pretty.offerSpace();
-            break;
-        case ASTNumberLiteral::NumberType::Double:
-            pretty << doubleValue_;
-            pretty.offerSpace();
-            break;
-    }
+    pretty << utf8(string_);
+    pretty.offerSpace();
 }
 
 void ASTSymbolLiteral::toCode(Prettyprinter &pretty) const {

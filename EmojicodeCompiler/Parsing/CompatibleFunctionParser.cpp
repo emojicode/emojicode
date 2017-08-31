@@ -1,0 +1,71 @@
+//
+//  CompatibleFunctionParser.cpp
+//  EmojicodeCompiler
+//
+//  Created by Theo Weidmann on 30/08/2017.
+//  Copyright © 2017 Theo Weidmann. All rights reserved.
+//
+
+#include "CompatibleFunctionParser.hpp"
+#include "../AST/ASTBinaryOperator.hpp"
+#include "../AST/ASTVariables.hpp"
+#include "../Package/Package.hpp"
+#include "CompatibilityInfoProvider.hpp"
+#include <cassert>
+
+namespace EmojicodeCompiler {
+
+std::shared_ptr<ASTBinaryOperator> CompatibleFunctionParser::parseOperatorCompatibly(OperatorType type,
+                                                                           const SourcePosition &position) {
+    auto left = parseExpr(10000);
+    assert(package_->compatibilityInfoProvider()->nextArgumentsCount() == 0);
+    auto right = parseExpr(10000);
+    return std::make_shared<ASTBinaryOperator>(type, left, right, position);
+}
+
+std::shared_ptr<ASTExpr> CompatibleFunctionParser::parseExprLeft(const EmojicodeCompiler::Token &token,
+                                                                 int precedence) {
+    if (token.type() == TokenType::Operator) {
+        return parseOperatorCompatibly(operatorType(token.value()), token.position());
+    }
+    else if (token.value().front() == 0x1F389) {
+        return parseOperatorCompatibly(OperatorType::LogicalAndOperator, token.position());
+    }
+    else if (token.value().front() == 0x1F38A) {
+        return parseOperatorCompatibly(OperatorType::LogicalOrOperator, token.position());
+    }
+    else if (token.value().front() == 0x1F61B) {
+        return parseOperatorCompatibly(OperatorType::EqualOperator, token.position());
+    }
+    return FunctionParser::parseExprLeft(token, precedence);
+}
+
+std::shared_ptr<ASTExpr> CompatibleFunctionParser::parseRight(std::shared_ptr<ASTExpr> left, int precendence) {
+    return left;
+}
+
+std::shared_ptr<ASTStatement> CompatibleFunctionParser::parseVariableAssignment(const Token &token) {
+    if (stream_.nextToken().type() == TokenType::Operator) {
+        auto &token = stream_.consumeToken();
+        auto &varName = stream_.consumeToken(TokenType::Variable);
+
+        auto varGet = std::make_shared<ASTGetVariable>(varName.value(), token.position());
+        auto mc = std::make_shared<ASTBinaryOperator>(operatorType(token.value()), varGet,
+                                                      parseExpr(0), token.position());
+        return std::make_shared<ASTVariableAssignmentDecl>(varName.value(), mc, token.position());
+    }
+    return FunctionParser::parseVariableAssignment(token);
+}
+
+void CompatibleFunctionParser::parseMainArguments(ASTArguments *arguments) {
+    if (!stream_.nextTokenIs(TokenType::BeginArgumentList)) {
+        for (auto i = package_->compatibilityInfoProvider()->nextArgumentsCount(); i > 0; i--) {
+            arguments->addArguments(parseExpr(0));
+        }
+    }
+    else {
+        FunctionParser::parseMainArguments(arguments);
+    }
+}
+
+}  // namespace EmojicodeCompiler

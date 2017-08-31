@@ -38,19 +38,27 @@ public:
     const std::string& mainFile() const { return mainFile_; }
     const std::string& sizeVariable() const { return sizeVariable_; }
     const std::string& packageDirectory() const { return packageDirectory_; }
-    const bool format() const { return format_; }
+    const std::string& migrationFile() const { return migrationFile_; }
+
+    /// Whether the main purpose of the invocation of the compiler is to prettyprint a file.
+    /// This method returns true if prettyprint was explicitely requested or if a file is being migrated.
+    const bool prettyprint() const { return format_; }
 private:
     std::string packageToReport_;
     std::string outPath_;
     std::string mainFile_;
     std::string sizeVariable_;
     std::string packageDirectory_ = defaultPackagesDirectory;
+    std::string migrationFile_;
     bool format_ = false;
     bool jsonOutput_ = false;
     bool beginCompilation_ = true;
 
     void readEnvironment();
     void parsePositionalArguments(int positionalArguments, char *argv[]);
+    /// If the file ends in ".emojimig", the migration file migrationFile_ will be set to it and prettyprint_ to true.
+    /// The main file is then derived from by replacing ".emojimig" with ".emojic".
+    void examineMainFile();
 };
 
 }  // namespace CLI

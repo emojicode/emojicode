@@ -11,7 +11,7 @@
 
 #include "../Types/TypeContext.hpp"
 #include "../Package/RecordingPackage.hpp"
-#include <ostream>
+#include <fstream>
 
 namespace EmojicodeCompiler {
 
@@ -30,8 +30,8 @@ class TypeDefinition;
 /// before.
 class Prettyprinter {
 public:
-    Prettyprinter(std::ostream &stream, RecordingPackage *package, Application *app)
-    : stream_(stream), package_(package), app_(app) {}
+    Prettyprinter(RecordingPackage *package, Application *app)
+    : package_(package), app_(app) {}
     void print();
 
     /// Appends the whitespace offer to the stream if any is available. Then appends rhs and returns this instance.
@@ -50,6 +50,8 @@ public:
         return *this;
     }
 
+    Prettyprinter& thisStream() { return *this; }
+
     void printClosure(Function *function);
 
     /// Appends the requested amount of indentation characters to the stream and returns it.
@@ -57,6 +59,14 @@ public:
 
     void increaseIndent() { indentation_++; }
     void decreaseIndent() { indentation_--; }
+
+    /// Changes .emojic extension to .ejc
+    std::string changeExtension(std::string path) {
+        if (endsWith(path, ".emojic")) {
+            path.replace(path.size() - 6, 6, "ejc");
+        }
+        return path;
+    }
 
     /// Refuses any available whitespace offer.
     /// @returns The instance.
@@ -69,7 +79,7 @@ public:
     template<typename T>
     void offerNewLineUnlessEmpty(const T &collection) { if (!collection.empty()) { offerNewLine(); } }
 private:
-    std::ostream &stream_;
+    std::fstream stream_;
     RecordingPackage *package_;
     Application *app_;
     TypeContext typeContext_;

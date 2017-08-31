@@ -77,6 +77,16 @@ void Options::parsePositionalArguments(int positionalArguments, char *argv[]) {
 
     mainFile_ = argv[0];
 
+    examineMainFile();
+}
+
+void Options::examineMainFile() {
+    if (endsWith(mainFile_, ".emojimig")) {
+        migrationFile_ = mainFile_;
+        format_ = true;
+        mainFile_.replace(mainFile_.size() - 8, 8, "emojic");
+    }
+
     if (outPath_.empty()) {
         outPath_ = mainFile_;
         outPath_.back() = 'b';
