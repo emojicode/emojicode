@@ -90,6 +90,7 @@ public:
     /// Leaves the function and sets the value of the return destination to Nothingness. (See @c makeNothingness())
     void returnNothingnessFromFunction() {
         pushOpr(T_NOTHINGNESS);
+        pushPointerOpr(1);
         returnFromFunction();
     }
     /// Leaves the function and sets the value of the return destination to the given value. The destination is treated
