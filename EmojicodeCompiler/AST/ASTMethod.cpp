@@ -18,14 +18,13 @@ namespace EmojicodeCompiler {
 
 Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee) {
-    if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
-        invert_ = true;
-        analyser->expectType(Type::boolean(), &callee);
-        return Type::boolean();
+    Type otype = callee->analyse(analyser, TypeExpectation());
+    Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+    auto pair = builtIn(type, name);
+    if (pair.first) {
+        return pair.second;
     }
-    
-    Type type = analyser->expect(TypeExpectation(true, false), &callee)
-    .resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+    type = analyser->box(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
 
     if (type.type() == TypeType::MultiProtocol) {
         for (auto &protocol : type.protocols()) {
@@ -70,10 +69,33 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     return analyser->analyseFunctionCall(&args_, type, method);
 }
 
+std::pair<bool, Type> ASTMethodable::builtIn(const Type &type, const std::u32string &name) {
+    if (type.typeDefinition() == VT_BOOLEAN) {
+        if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
+            builtIn_ = true;
+            instruction_ = INS_INVERT_BOOLEAN;
+            return std::make_pair(true, Type::boolean());
+        }
+    }
+    else if (type.typeDefinition() == VT_INTEGER) {
+        if (name.front() == E_ROCKET) {
+            builtIn_ = true;
+            instruction_ = INS_INT_TO_DOUBLE;
+            return std::make_pair(true, Type::doubl());
+        }
+        else if (name.front() == E_NO_ENTRY_SIGN) {
+            builtIn_ = true;
+            instruction_ = INS_BINARY_NOT_INTEGER;
+            return std::make_pair(true, Type::integer());
+        }
+    }
+    return std::make_pair(false, Type::nothingness());
+}
+
 void ASTMethod::generateExpr(FnCodeGenerator *fncg) const {
-    if (invert_) {
+    if (builtIn_) {
         callee_->generate(fncg);
-        fncg->wr().writeInstruction(INS_INVERT_BOOLEAN);
+        fncg->wr().writeInstruction(instruction_);
         return;
     }
     CallCodeGenerator(fncg, instruction_).generate(*callee_, args_, name_);

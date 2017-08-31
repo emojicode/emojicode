@@ -25,7 +25,9 @@ protected:
                            std::shared_ptr<ASTExpr> &callee);
     EmojicodeInstruction instruction_;
     ASTArguments args_;
-    bool invert_ = false;
+    bool builtIn_ = false;
+private:
+    std::pair<bool, Type> builtIn(const Type &type, const std::u32string &name);
 };
 
 class ASTMethod final : public ASTMethodable {
