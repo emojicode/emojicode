@@ -286,10 +286,24 @@ void ASTDictionaryLiteral::toCode(Prettyprinter &pretty) const {
     pretty << "🍆";
 }
 
+void ASTBinaryOperator::printBinaryOperand(int precedence, const std::shared_ptr<ASTExpr> &expr,
+                                           Prettyprinter &pretty) const {
+    if (auto oper = dynamic_cast<ASTBinaryOperator *>(expr.get())) {
+        if (operatorPrecedence(oper->operator_) < precedence) {
+            pretty << "🤜";
+            expr->toCode(pretty);
+            pretty << "🤛";
+            return;
+        }
+    }
+    expr->toCode(pretty);
+}
+
 void ASTBinaryOperator::toCode(Prettyprinter &pretty) const {
-    left_->toCode(pretty);
+    auto precedence = operatorPrecedence(operator_);
+    printBinaryOperand(precedence, left_, pretty);
     pretty << " " << utf8(operatorName(operator_)) << " ";
-    right_->toCode(pretty);
+    printBinaryOperand(precedence, right_, pretty);
 }
 
 } // namespace EmojicodeCompiler

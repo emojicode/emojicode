@@ -33,6 +33,8 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::Operator: return "Operator";
         case TokenType::EndArgumentList: return "EndOfArguments";
         case TokenType::BeginArgumentList: return "BeginArgumentList";
+        case TokenType::GroupEnd: return "GroupEnd";
+        case TokenType::GroupBegin: return "GroupBegin";
     }
 }
 

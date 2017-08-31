@@ -230,6 +230,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
                     return std::make_shared<ASTGetVariable>(token.value(), token.position());
                 case TokenType::Identifier:
                     return parseExprIdentifier(token);
+                case TokenType::GroupBegin:
+                    return parseGroup();
                 case TokenType::DocumentationComment:
                     throw CompilerError(token.position(), "Misplaced documentation comment.");
                 default:
@@ -298,6 +300,12 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
         case E_AVOCADO:
             throw CompilerError(token.position(), "Unexpected statement ", utf8(token.value()), ".");
     }
+}
+
+std::shared_ptr<ASTExpr> FunctionParser::parseGroup() {
+    auto expr = parseExpr(0);
+    stream_.consumeToken(TokenType::GroupEnd);
+    return expr;
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {

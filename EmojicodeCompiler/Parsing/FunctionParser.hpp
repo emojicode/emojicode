@@ -42,6 +42,7 @@ private:
     std::shared_ptr<ASTStatement> parseStatement();
     ASTBlock parseBlock();
     std::shared_ptr<ASTExpr> parseCondition();
+    std::shared_ptr<ASTExpr> parseGroup();
     std::shared_ptr<ASTExpr> parseExprTokens(const Token &token, int precendence);
     std::shared_ptr<ASTExpr> parseExprIdentifier(const Token &token);
     ASTArguments parseArguments(const SourcePosition &position);

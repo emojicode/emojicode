@@ -34,6 +34,8 @@ enum class TokenType {
     Operator,
     BeginArgumentList,
     EndArgumentList,
+    GroupBegin,
+    GroupEnd,
 };
 
 class Token {

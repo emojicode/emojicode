@@ -53,7 +53,7 @@ private:
     void nextCharOrEnd();
     char32_t codePoint() { return codePoint_; }
 
-    void singleToken(Token *token, TokenType type, char32_t c);
+    void singleToken(Token *token, TokenType type);
 
     bool isHex_ = false;
     bool escapeSequence_ = false;

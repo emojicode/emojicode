@@ -100,9 +100,9 @@ void Lexer::readToken(Token *token) {
     }
 }
 
-void Lexer::singleToken(Token *token, TokenType type, char32_t c) {
+void Lexer::singleToken(Token *token, TokenType type) {
     token->type_ = type;
-    token->value_.push_back(c);
+    token->value_.push_back(codePoint());
 }
 
 bool Lexer::beginToken(Token *token) {
@@ -145,13 +145,19 @@ bool Lexer::beginToken(Token *token) {
         case E_HANDS_RAISED_IN_CELEBRATION:
         case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE:
         case E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK:
-            singleToken(token, TokenType::Operator, codePoint());
+            singleToken(token, TokenType::Operator);
             return false;
         case E_WHITE_EXCLAMATION_MARK:
-            singleToken(token, TokenType::BeginArgumentList, codePoint());
+            singleToken(token, TokenType::BeginArgumentList);
             return false;
         case E_RED_EXCLAMATION_MARK:
-            singleToken(token, TokenType::EndArgumentList, codePoint());
+            singleToken(token, TokenType::EndArgumentList);
+            return false;
+        case E_RIGHT_FACING_FIST:
+            singleToken(token, TokenType::GroupBegin);
+            return false;
+        case E_LEFT_FACING_FIST:
+            singleToken(token, TokenType::GroupEnd);
             return false;
     }
 
