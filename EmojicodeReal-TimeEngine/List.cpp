@@ -159,9 +159,8 @@ void listSort(Thread *thread) {
         Value args[2 * kBoxValueSize];
         a.copyTo(args);
         b.copyTo(args + kBoxValueSize);
-        Value c;
         executeCallableExtern(thread->variable(0).object, args, sizeof(args) / sizeof(Value), thread);
-        return c.raw < 0;
+        return thread->popOpr().raw < 0;
     });
     thread->returnFromFunction();
 }
