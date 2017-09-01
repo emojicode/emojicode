@@ -28,6 +28,9 @@ inline double readDouble(Thread *thread) {
 }
 
 void loadCapture(Closure *c, Thread *thread) {
+    if (c->captureSize == 0) {
+        return;
+    }
     auto *cv = c->capturedVariables->val<Value>();
     std::memcpy(thread->variableDestination(c->captureDestination), cv, c->captureSize * sizeof(Value));
 }
