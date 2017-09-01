@@ -400,12 +400,12 @@
   🐖 🐽 n 🚂 ➡️ 🍬🚂 🍇
     🍦 v start ➕ n ✖️ step
     🍊 step ◀️ 0 🍇
-      🍊 stop ◀️ v 👐 v ⬅️ start 🍇
+      🍊 stop ◀️ v 🤝 v ⬅️ start 🍇
         🍎 v
       🍉
     🍉
     🍓 🍇
-      🍊 start ⬅️ v 👐 v ◀️ stop 🍇
+      🍊 start ⬅️ v 🤝 v ◀️ stop 🍇
         🍎 v
       🍉
     🍉
@@ -783,7 +783,7 @@
   🍉
 
   🌮 Tests whether this array and `other` are equal. 🌮
-  🐖 😛 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
+  🐖 🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
     🍊 ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
       🍎 👎
     🍉
