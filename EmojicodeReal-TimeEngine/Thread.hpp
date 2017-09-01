@@ -159,7 +159,7 @@ public:
         rstackPointer_ -= n;
         return rstackPointer_;
     }
-
+    bool hasOprToPop() const { return rstackPointer_ > rstack_; }
     Value* pointerOpr() { return rstackPointer_; }
 private:
     Thread();

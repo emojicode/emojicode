@@ -89,5 +89,5 @@ int main(int argc, char *argv[]) {
     mainThread->pushStackFrame(Value(), false, handler);
     mainThread->configureInterruption();
     execute(mainThread);
-    return 0; // static_cast<int>(mainThread->rstackPop().raw);
+    return mainThread->hasOprToPop() ? static_cast<int>(mainThread->popOpr().raw) : 0;
 }
