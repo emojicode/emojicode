@@ -47,7 +47,7 @@ void ASTBinaryOperator::generateExpr(FnCodeGenerator *fncg) const {
         return;
     }
 
-    CallCodeGenerator(fncg, instruction_).generate(*left_, args_, operatorName(operator_));
+    CallCodeGenerator(fncg, instruction_).generate(*left_, calleeType_, args_, operatorName(operator_));
 }
 
 std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveOperator(SemanticAnalyser *analyser,

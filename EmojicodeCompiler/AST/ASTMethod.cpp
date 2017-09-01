@@ -24,14 +24,14 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     if (pair.first) {
         return pair.second;
     }
-    type = analyser->box(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+    calleeType_ = analyser->box(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
 
     if (type.type() == TypeType::MultiProtocol) {
         for (auto &protocol : type.protocols()) {
             Function *method;
             if ((method = protocol.protocol()->lookupMethod(name)) != nullptr) {
                 instruction_ = INS_DISPATCH_PROTOCOL;
-                callee->setExpressionType(protocol);
+                calleeType_ = protocol;
                 return analyser->analyseFunctionCall(&args_, protocol, method);
             }
         }
@@ -98,7 +98,7 @@ void ASTMethod::generateExpr(FnCodeGenerator *fncg) const {
         fncg->wr().writeInstruction(instruction_);
         return;
     }
-    CallCodeGenerator(fncg, instruction_).generate(*callee_, args_, name_);
+    CallCodeGenerator(fncg, instruction_).generate(*callee_, calleeType_,  args_, name_);
 }
 
 Type ASTMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

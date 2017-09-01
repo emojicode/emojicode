@@ -33,7 +33,8 @@ void ASTVTInitDest::generateExpr(FnCodeGenerator *fncg) const {
 void ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
     switch (initType_) {
         case InitType::Class:
-            InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(*typeExpr_, args_, name_);
+            InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(*typeExpr_, typeExpr_->expressionType(),
+                                                                           args_, name_);
             break;
         case InitType::Enum:
             fncg->writeInteger(typeExpr_->expressionType().eenum()->getValueFor(name_).second);

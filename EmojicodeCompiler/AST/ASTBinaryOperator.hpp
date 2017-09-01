@@ -33,7 +33,6 @@ private:
     std::pair<bool, BuiltIn> builtInPrimitiveOperator(SemanticAnalyser *analyser, const Type &type);
     void printBinaryOperand(int precedence, const std::shared_ptr<ASTExpr> &expr, Prettyprinter &pretty) const;
 
-    bool builtIn_ = false;
     OperatorType operator_;
     std::shared_ptr<ASTExpr> left_;
     std::shared_ptr<ASTExpr> right_;

@@ -21,10 +21,10 @@ class CallCodeGenerator {
 public:
     explicit CallCodeGenerator(FnCodeGenerator *fncg, EmojicodeInstruction instruction)
     : fncg_(fncg), instruction_(instruction) {}
-    void generate(const ASTExpr &callee, const ASTArguments &args, const std::u32string &name) {
+    void generate(const ASTExpr &callee, const Type &calleeType, const ASTArguments &args, const std::u32string &name) {
         auto argSize = generateArguments(args);
         callee.generate(fncg_);
-        writeInstructions(argSize, callee.expressionType(), name);
+        writeInstructions(argSize, calleeType, name);
     }
 protected:
     virtual Function* lookupFunction(const Type &type, const std::u32string &name) {

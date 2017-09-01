@@ -175,7 +175,7 @@ Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
 
 void ASTTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
     auto ins = valueType_ ? INS_CALL_FUNCTION : INS_DISPATCH_TYPE_METHOD;
-    TypeMethodCallCodeGenerator(fncg, ins).generate(*callee_, args_, name_);
+    TypeMethodCallCodeGenerator(fncg, ins).generate(*callee_, callee_->expressionType(), args_, name_);
 }
 
 Type ASTSuperMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
@@ -210,7 +210,7 @@ Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation 
 }
 
 void ASTCallableCall::generateExpr(FnCodeGenerator *fncg) const {
-    CallableCallCodeGenerator(fncg).generate(*callable_, args_, std::u32string());
+    CallableCallCodeGenerator(fncg).generate(*callable_, callable_->expressionType(), args_, std::u32string());
 }
 
 Type ASTCaptureMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

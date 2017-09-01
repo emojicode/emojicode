@@ -201,7 +201,7 @@ void ASTForIn::generate(FnCodeGenerator *fncg) const {
 
     auto callCG = CallCodeGenerator(fncg, INS_DISPATCH_PROTOCOL);
 
-    callCG.generate(*iteratee_, ASTArguments(position()), std::u32string(1, E_DANGO));
+    callCG.generate(*iteratee_, iteratee_->expressionType(), ASTArguments(position()), std::u32string(1, E_DANGO));
 
     auto &itVar = fncg->scoper().declareVariable(iteratorVar_, Type(PR_ENUMERATOR, false));
     auto &elementVar = fncg->scoper().declareVariable(elementVar_, elementType_);
@@ -216,12 +216,12 @@ void ASTForIn::generate(FnCodeGenerator *fncg) const {
     });
 
     auto delta = fncg->wr().count();
-    callCG.generate(getVar, ASTArguments(position()), std::u32string(1, 0x1F53D));
+    callCG.generate(getVar, itVar.type, ASTArguments(position()), std::u32string(1, 0x1F53D));
     fncg->copyToVariable(elementVar.stackIndex, false, Type(PR_ENUMERATEABLE, false));
     block_.generate(fncg);
     placeholder.write();
 
-    callCG.generate(getVar, ASTArguments(position()), std::u32string(1, E_RED_QUESTION_MARK));
+    callCG.generate(getVar, itVar.type, ASTArguments(position()), std::u32string(1, E_RED_QUESTION_MARK));
     fncg->wr().writeInstruction(INS_JUMP_BACKWARD_IF);
     fncg->wr().writeInstruction(fncg->wr().count() - delta + 1);
     fncg->scoper().popScope(fncg->wr().count());

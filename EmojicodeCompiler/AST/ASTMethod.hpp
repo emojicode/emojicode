@@ -26,6 +26,7 @@ protected:
     EmojicodeInstruction instruction_;
     ASTArguments args_;
     bool builtIn_ = false;
+    Type calleeType_ = Type::nothingness();
 private:
     std::pair<bool, Type> builtIn(const Type &type, const std::u32string &name);
 };
