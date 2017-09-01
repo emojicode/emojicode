@@ -131,22 +131,23 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
                             " arguments but ", node->arguments().size(), " were supplied.");
     }
 
-    TypeContext typeContext = TypeContext(type, function, &node->genericArguments());
+
     if (node->genericArguments().empty() && function->genericParameterCount() > 0) {
         std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameterCount(), CommonTypeFinder());
-
+        TypeContext typeContext = TypeContext(type, function, nullptr);
         size_t i = 0;
         for (auto arg : function->arguments) {
             expectType(arg.type.resolveOn(typeContext), &node->arguments()[i++], &genericArgsFinders);
         }
         for (auto &finder : genericArgsFinders) {
-            typeContext.functionGenericArguments()->emplace_back(finder.getCommonType(node->position(), app()));
+            node->genericArguments().emplace_back(finder.getCommonType(node->position(), app()));
         }
     }
     else if (node->genericArguments().size() != function->genericParameterCount()) {
         throw CompilerError(node->position(), "Too few generic arguments provided.");
     }
 
+    TypeContext typeContext = TypeContext(type, function, &node->genericArguments());
     for (size_t i = 0; i < node->genericArguments().size(); i++) {
         if (!node->genericArguments()[i].compatibleTo(function->constraintForIndex(i), typeContext)) {
             throw CompilerError(node->position(), "Generic argument ", i + 1, " of type ",
