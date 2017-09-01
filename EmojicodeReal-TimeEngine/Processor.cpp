@@ -394,6 +394,28 @@ void execute(Thread *thread) {
                 thread->pushOpr(fmod(thread->popOpr().doubl, b));
                 continue;
             }
+            case INS_BINARY_AND_INTEGER:
+                thread->pushOpr(thread->popOpr().raw & thread->popOpr().raw);
+                continue;
+            case INS_BINARY_OR_INTEGER:
+                thread->pushOpr(thread->popOpr().raw | thread->popOpr().raw);
+                continue;
+            case INS_BINARY_XOR_INTEGER:
+                thread->pushOpr(thread->popOpr().raw ^ thread->popOpr().raw);
+                continue;
+            case INS_BINARY_NOT_INTEGER:
+                thread->pushOpr(~thread->popOpr().raw);
+                continue;
+            case INS_SHIFT_LEFT_INTEGER: {
+                auto b = thread->popOpr().raw;
+                thread->pushOpr(thread->popOpr().raw << b);
+                continue;
+            }
+            case INS_SHIFT_RIGHT_INTEGER: {
+                auto b = thread->popOpr().raw;
+                thread->pushOpr(thread->popOpr().raw >> b);
+                continue;
+            }
             case INS_INT_TO_DOUBLE:
                 thread->pushOpr(static_cast<double>(thread->popOpr().raw));
                 continue;
@@ -505,24 +527,6 @@ void execute(Thread *thread) {
                 }
                 continue;
             }
-            case INS_BINARY_AND_INTEGER:
-                thread->pushOpr(thread->popOpr().raw & thread->popOpr().raw);
-                continue;
-            case INS_BINARY_OR_INTEGER:
-                thread->pushOpr(thread->popOpr().raw | thread->popOpr().raw);
-                continue;
-            case INS_BINARY_XOR_INTEGER:
-                thread->pushOpr(thread->popOpr().raw ^ thread->popOpr().raw);
-                continue;
-            case INS_BINARY_NOT_INTEGER:
-                thread->pushOpr(~thread->popOpr().raw);
-                continue;
-            case INS_SHIFT_LEFT_INTEGER:
-                thread->pushOpr(thread->popOpr().raw << thread->popOpr().raw);
-                continue;
-            case INS_SHIFT_RIGHT_INTEGER:
-                thread->pushOpr(thread->popOpr().raw >> thread->popOpr().raw);
-                continue;
             case INS_RETURN:
                 if (thread->interrupt()) {
                     return;
