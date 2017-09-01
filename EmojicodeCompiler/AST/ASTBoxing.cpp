@@ -8,6 +8,7 @@
 
 #include "ASTBoxing.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
+#include "../Functions/BoxingLayer.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -79,6 +80,12 @@ void ASTDereference::generateExpr(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
     fncg->wr().writeInstruction(INS_PUSH_VALUE_FROM_REFERENCE);
     fncg->wr().writeInstruction(expr_->expressionType().size());
+}
+
+void ASTCallableBox::generateExpr(FnCodeGenerator *fncg) const {
+    expr_->generate(fncg);
+    fncg->wr().writeInstruction(INS_CLOSURE_BOX);
+    fncg->wr().writeInstruction(boxingLayer_->vtiForUse());
 }
 
 void ASTStoreTemporarily::generateExpr(FnCodeGenerator *fncg) const {

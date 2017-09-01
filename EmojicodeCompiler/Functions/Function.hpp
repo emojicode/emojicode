@@ -84,7 +84,7 @@ public:
 
     /** Type to which this function belongs.
      This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
-    Type owningType() const { return owningType_; }
+    const Type& owningType() const { return owningType_; }
     void setOwningType(const Type &type) { owningType_ = type; }
 
     const std::u32string& documentation() const { return documentation_; }

@@ -10,10 +10,11 @@
 #define ASTBoxing_hpp
 
 #include "ASTExpr.hpp"
-#include <sstream>
 #include <utility>
 
 namespace EmojicodeCompiler {
+
+class BoxingLayer;
 
 class ASTBoxing : public ASTExpr {
 public:
@@ -68,10 +69,15 @@ class ASTDereference final : public ASTBoxing {
 };
 
 class ASTCallableBox final : public ASTBoxing {
-    using ASTBoxing::ASTBoxing;
+public:
+    ASTCallableBox(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p,
+                   BoxingLayer *boxingLayer) : ASTBoxing(std::move(expr), exprType, p), boxingLayer_(boxingLayer) {}
+
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
+private:
+    BoxingLayer *boxingLayer_;
 };
 
 class ASTStoreTemporarily final : public ASTBoxing {

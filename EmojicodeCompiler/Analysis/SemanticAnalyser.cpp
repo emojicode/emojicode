@@ -200,16 +200,13 @@ Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, st
             arguments.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
                                    *argumentType);
         }
-        auto destinationArgTypes = std::vector<Type>(exprType.genericArguments().begin() + 1,
-                                                     exprType.genericArguments().end());
-        auto boxingLayer = new BoxingLayer(destinationArgTypes, exprType.genericArguments()[0],
-                                           function_->package(), arguments,
+        auto boxingLayer = new BoxingLayer(exprType, function_->package(), arguments,
                                            expectation.genericArguments()[0], function_->position());
         buildBoxingLayerAst(boxingLayer);
         function_->package()->registerFunction(boxingLayer);
         app()->analysisQueue.emplace(boxingLayer);
 
-//        insertNode<ASTCallableBox>(node, exprType, boxingLayer);
+        insertNode<ASTCallableBox>(node, exprType, boxingLayer);
     }
 
     if (exprType.isReference() && !expectation.isReference()) {

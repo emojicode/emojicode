@@ -39,15 +39,15 @@ public:
     }
     /// Creates a boxing layer for a callable. The argument/return conversions will be performed and
     /// INS_EXECUTE_CALLABLE callable will be applied to the this context.
-    BoxingLayer(std::vector<Type> destinationArgumentTypes, Type destinationReturnType, Package *pkg,
-                const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
-    : Function(std::u32string(), AccessLevel::Private, true, Type::callableIncomplete(), pkg, p, false,
+    BoxingLayer(Type thisCallable, Package *pkg, const std::vector<Argument> &arguments, const Type &returnType,
+                const SourcePosition &p)
+    : Function(std::u32string(), AccessLevel::Private, true, std::move(thisCallable), pkg, p, false,
                std::u32string(), false, false, FunctionType::BoxingLayer),
-      destinationArgumentTypes_(std::move(destinationArgumentTypes)),
-      destinationReturnType_(std::move(destinationReturnType)) {
+      destinationArgumentTypes_(owningType().genericArguments().begin() + 1, owningType().genericArguments().end()),
+      destinationReturnType_(owningType().genericArguments()[0]) {
           setVtiProvider(&STIProvider::globalStiProvider);
-        this->returnType = returnType;
-        this->arguments = arguments;
+          this->returnType = returnType;
+          this->arguments = arguments;
     }
 
     ContextType contextType() const override {
