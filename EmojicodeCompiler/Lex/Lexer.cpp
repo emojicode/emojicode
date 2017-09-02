@@ -21,25 +21,7 @@ namespace EmojicodeCompiler {
 Lexer::Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::move(str)) {
     sourcePosition_.file = std::move(sourcePositionFile);
 
-    singleTokens_.emplace(E_HEAVY_PLUS_SIGN, TokenType::Operator);
-    singleTokens_.emplace(E_HEAVY_MINUS_SIGN, TokenType::Operator);
-    singleTokens_.emplace(E_HEAVY_DIVISION_SIGN, TokenType::Operator);
-    singleTokens_.emplace(E_HEAVY_MULTIPLICATION_SIGN, TokenType::Operator);
-    singleTokens_.emplace(E_OPEN_HANDS, TokenType::Operator);
-    singleTokens_.emplace(E_HANDSHAKE, TokenType::Operator);
-    singleTokens_.emplace(E_LEFT_POINTING_TRIANGLE, TokenType::Operator);
-    singleTokens_.emplace(E_RIGHT_POINTING_TRIANGLE, TokenType::Operator);
-    singleTokens_.emplace(E_LEFTWARDS_ARROW, TokenType::Operator);
-    singleTokens_.emplace(E_RIGHTWARDS_ARROW, TokenType::Operator);
-    singleTokens_.emplace(E_HEAVY_LARGE_CIRCLE, TokenType::Operator);
-    singleTokens_.emplace(E_ANGER_SYMBOL, TokenType::Operator);
-    singleTokens_.emplace(E_CROSS_MARK, TokenType::Operator);
-    singleTokens_.emplace(E_LEFT_POINTING_BACKHAND_INDEX, TokenType::Operator);
-    singleTokens_.emplace(E_RIGHT_POINTING_BACKHAND_INDEX, TokenType::Operator);
-    singleTokens_.emplace(E_PUT_LITTER_IN_ITS_SPACE, TokenType::Operator);
-    singleTokens_.emplace(E_HANDS_RAISED_IN_CELEBRATION, TokenType::Operator);
-    singleTokens_.emplace(E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE, TokenType::Operator);
-    singleTokens_.emplace(E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK, TokenType::Operator);
+    loadOperatorSingleTokens();
     singleTokens_.emplace(E_WHITE_EXCLAMATION_MARK, TokenType::BeginArgumentList);
     singleTokens_.emplace(E_RED_EXCLAMATION_MARK, TokenType::EndArgumentList);
     singleTokens_.emplace(E_RIGHT_FACING_FIST, TokenType::GroupBegin);
@@ -62,6 +44,28 @@ Lexer::Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::
     singleTokens_.emplace(E_GRAPES, TokenType::BlockBegin);
     singleTokens_.emplace(E_WATERMELON, TokenType::BlockEnd);
     singleTokens_.emplace(E_NEW_SIGN, TokenType::New);
+}
+
+void Lexer::loadOperatorSingleTokens() {
+    singleTokens_.emplace(E_HEAVY_PLUS_SIGN, TokenType::Operator);
+    singleTokens_.emplace(E_HEAVY_MINUS_SIGN, TokenType::Operator);
+    singleTokens_.emplace(E_HEAVY_DIVISION_SIGN, TokenType::Operator);
+    singleTokens_.emplace(E_HEAVY_MULTIPLICATION_SIGN, TokenType::Operator);
+    singleTokens_.emplace(E_OPEN_HANDS, TokenType::Operator);
+    singleTokens_.emplace(E_HANDSHAKE, TokenType::Operator);
+    singleTokens_.emplace(E_LEFT_POINTING_TRIANGLE, TokenType::Operator);
+    singleTokens_.emplace(E_RIGHT_POINTING_TRIANGLE, TokenType::Operator);
+    singleTokens_.emplace(E_LEFTWARDS_ARROW, TokenType::Operator);
+    singleTokens_.emplace(E_RIGHTWARDS_ARROW, TokenType::Operator);
+    singleTokens_.emplace(E_HEAVY_LARGE_CIRCLE, TokenType::Operator);
+    singleTokens_.emplace(E_ANGER_SYMBOL, TokenType::Operator);
+    singleTokens_.emplace(E_CROSS_MARK, TokenType::Operator);
+    singleTokens_.emplace(E_LEFT_POINTING_BACKHAND_INDEX, TokenType::Operator);
+    singleTokens_.emplace(E_RIGHT_POINTING_BACKHAND_INDEX, TokenType::Operator);
+    singleTokens_.emplace(E_PUT_LITTER_IN_ITS_SPACE, TokenType::Operator);
+    singleTokens_.emplace(E_HANDS_RAISED_IN_CELEBRATION, TokenType::Operator);
+    singleTokens_.emplace(E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE, TokenType::Operator);
+    singleTokens_.emplace(E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK, TokenType::Operator);
 }
 
 bool Lexer::detectWhitespace() {

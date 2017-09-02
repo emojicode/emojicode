@@ -28,6 +28,8 @@ private:
         Continues, Ended, NextBegun, Discard
     };
 
+    void loadOperatorSingleTokens();
+
     SourcePosition sourcePosition_ = SourcePosition(1, 0, "");
     /// Checks for a whitespace character and updates ::sourcePosition_.
     /// @returns True if @c is whitespace according to isWhitespace().
