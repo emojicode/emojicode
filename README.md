@@ -31,7 +31,7 @@ can of course also build Emojicode from source.
 Prerequisites (earlier versions might work but are not tested):
 
 - clang and clang++ 3.9 or newer, or
-- gcc and g++ 5.4 or newer
+- gcc and g++ 7.2 or newer (previous GCC versions are unsuitable due to a bug)
 - CMake 3.5.1 or newer and (preferably) Ninja
 - Python 3.5.2 or newer (for tests and packaging)
 - Allegro 5 to compile the allegro package

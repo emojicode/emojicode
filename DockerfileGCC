@@ -1,6 +1,6 @@
-FROM ubuntu:16.10
+FROM gcc:7
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y ninja-build python3 gcc g++ cmake liballegro5-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y ninja-build python3 cmake liballegro5-dev
 
 RUN mkdir /app
 WORKDIR /app
