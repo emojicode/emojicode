@@ -121,7 +121,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
         !function->returnType.compatibleTo(Type::integer(), TypeContext())) {
         throw CompilerError(p, "🏁 must either return ✨ or 🚂.");
     }
-    stream_.requireIdentifier(E_GRAPES);
+    stream_.consumeToken(TokenType::BlockBegin);
     try {
         auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
         function->setAst(ast);
@@ -215,7 +215,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
 
     parseGenericParameters(eclass, TypeContext(Type(eclass, false)));
 
-    if (!stream_.nextTokenIs(E_GRAPES)) {
+    if (!stream_.nextTokenIs(TokenType::BlockBegin)) {
         auto classType = Type(eclass, false);  // New Type due to generic arguments now (partly) available.
 
         Type type = parseType(TypeContext(classType), TypeDynamism::GenericTypeVariables);

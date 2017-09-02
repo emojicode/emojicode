@@ -22,18 +22,19 @@
 namespace EmojicodeCompiler {
 
 std::shared_ptr<ASTBlock> FunctionParser::parse() {
-    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        fnode_->appendNode(parseStatement());
+    auto block = std::make_shared<ASTBlock>(SourcePosition(0, 0, ""));
+    while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
+        block->appendNode(parseStatement());
     }
     stream_.consumeToken();
-    return fnode_;
+    return block;
 }
 
 ASTBlock FunctionParser::parseBlock() {
-    auto &token = stream_.requireIdentifier(E_GRAPES);
+    auto &token = stream_.consumeToken(TokenType::BlockBegin);
 
     auto block = ASTBlock(token.position());
-    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
+    while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
         block.appendNode(parseStatement());
     }
     stream_.consumeToken();
@@ -41,7 +42,7 @@ ASTBlock FunctionParser::parseBlock() {
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseCondition() {
-    if (stream_.consumeTokenIf(E_SOFT_ICE_CREAM)) {
+    if (stream_.consumeTokenIf(TokenType::FrozenDeclaration)) {
         auto &varName = stream_.consumeToken(TokenType::Variable);
         return std::make_shared<ASTConditionalAssignment>(varName.value(), parseExpr(0), varName.position());
     }
@@ -73,68 +74,72 @@ void FunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePos
 
 std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
     const Token &token = stream_.consumeToken();
-    if (token.type() == TokenType::Identifier) {
-        switch (token.value()[0]) {
-            case E_SHORTCAKE: {
-                auto &varName = stream_.consumeToken(TokenType::Variable);
+    switch (token.type()) {
+        case TokenType::Declaration: {
+            auto &varName = stream_.consumeToken(TokenType::Variable);
 
-                Type type = parseType(typeContext_, TypeDynamism::AllKinds);
-                return std::make_shared<ASTVariableDeclaration>(type, varName.value(), token.position());
-            }
-            case E_CUSTARD:
-                return parseVariableAssignment(token);
-            case E_SOFT_ICE_CREAM: {
-                auto &varName = stream_.consumeToken(TokenType::Variable);
-                return std::make_shared<ASTFrozenDeclaration>(varName.value(), parseExpr(0), token.position());
-            }
-            case E_TANGERINE: {
-                auto node = std::make_shared<ASTIf>(token.position());
-                do {
-                    node->addCondition(parseCondition());
-                    node->addBlock(parseBlock());
-                } while (stream_.consumeTokenIf(E_LEMON));
-
-                if (stream_.consumeTokenIf(E_STRAWBERRY)) {
-                    node->addBlock(parseBlock());
-                }
-                return node;
-            }
-            case E_AVOCADO: {
-                auto &variableToken = stream_.consumeToken(TokenType::Variable);
-                auto value = parseExpr(0);
-                auto valueBlock = parseBlock();
-
-                stream_.requireIdentifier(E_STRAWBERRY);
-                auto errorVariableToken = stream_.consumeToken(TokenType::Variable);
-                auto errorBlock = parseBlock();
-                return std::make_shared<ASTErrorHandler>(value, variableToken.value(), errorVariableToken.value(),
-                                                         valueBlock, errorBlock, token.position());
-            }
-            case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS: {
-                auto cond = parseCondition();
-                auto block = parseBlock();
-                return std::make_shared<ASTRepeatWhile>(cond, block, token.position());
-            }
-            case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY: {
-                auto &variableToken = stream_.consumeToken(TokenType::Variable);
-                auto iteratee = parseExpr(0);
-                auto block = parseBlock();
-                return std::make_shared<ASTForIn>(iteratee, variableToken.value(), block, token.position());
-            }
-            case E_GOAT: {
-                auto &initializerToken = stream_.consumeToken(TokenType::Identifier);
-                auto arguments = parseArguments(token.position());
-                return std::make_shared<ASTSuperinitializer>(initializerToken.value(), arguments, token.position());
-            }
-            case E_POLICE_CARS_LIGHT: {
-                return std::make_shared<ASTRaise>(parseExpr(0), token.position());
-            }
-            case E_RED_APPLE: {
-                return std::make_shared<ASTReturn>(parseExpr(0), token.position());
-            }
+            Type type = parseType(typeContext_, TypeDynamism::AllKinds);
+            return std::make_shared<ASTVariableDeclaration>(type, varName.value(), token.position());
         }
+        case TokenType::Assignment:
+            return parseVariableAssignment(token);
+        case TokenType::FrozenDeclaration: {
+            auto &varName = stream_.consumeToken(TokenType::Variable);
+            return std::make_shared<ASTFrozenDeclaration>(varName.value(), parseExpr(0), token.position());
+        }
+        case TokenType::If:
+            return parseIf(token.position());
+        case TokenType::ErrorHandler:
+            return parseErrorHandler(token.position());
+        case TokenType::RepeatWhile: {
+            auto cond = parseCondition();
+            auto block = parseBlock();
+            return std::make_shared<ASTRepeatWhile>(cond, block, token.position());
+        }
+        case TokenType::ForIn: {
+            auto &variableToken = stream_.consumeToken(TokenType::Variable);
+            auto iteratee = parseExpr(0);
+            auto block = parseBlock();
+            return std::make_shared<ASTForIn>(iteratee, variableToken.value(), block, token.position());
+        }
+        case TokenType::SuperInit: {
+            auto &initializerToken = stream_.consumeToken(TokenType::Identifier);
+            auto arguments = parseArguments(token.position());
+            return std::make_shared<ASTSuperinitializer>(initializerToken.value(), arguments, token.position());
+        }
+        case TokenType::Error:
+            return std::make_shared<ASTRaise>(parseExpr(0), token.position());
+        case TokenType::Return:
+            return std::make_shared<ASTReturn>(parseExpr(0), token.position());
+        default:
+            // None of the TokenTypes that begin a statement were detected so this must be an expression
+            return std::make_shared<ASTExprStatement>(parseExprTokens(token, 0), token.position());
     }
-    return std::make_shared<ASTExprStatement>(parseExprTokens(token, 0), token.position());
+}
+
+std::shared_ptr<ASTStatement> FunctionParser::parseErrorHandler(const SourcePosition &position) {
+    auto &variableToken = stream_.consumeToken(TokenType::Variable);
+    auto value = parseExpr(0);
+    auto valueBlock = parseBlock();
+
+    stream_.consumeToken(TokenType::Else);
+    auto errorVariableToken = stream_.consumeToken(TokenType::Variable);
+    auto errorBlock = parseBlock();
+    return std::make_shared<ASTErrorHandler>(value, variableToken.value(), errorVariableToken.value(),
+                                             valueBlock, errorBlock, position);
+}
+
+std::shared_ptr<ASTStatement> FunctionParser::parseIf(const SourcePosition &position) {
+    auto node = std::make_shared<ASTIf>(position);
+    do {
+        node->addCondition(parseCondition());
+        node->addBlock(parseBlock());
+    } while (stream_.consumeTokenIf(TokenType::ElseIf));
+
+    if (stream_.consumeTokenIf(TokenType::Else)) {
+        node->addBlock(parseBlock());
+    }
+    return node;
 }
 
 std::shared_ptr<ASTStatement> FunctionParser::parseVariableAssignment(const Token &token) {
@@ -189,7 +194,40 @@ std::shared_ptr<ASTExpr> FunctionParser::parseRight(std::shared_ptr<ASTExpr> lef
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::Token &token, int precedence) {
-    switch (token.value().front()) {
+    switch (token.type()) {
+        case TokenType::String:
+            return std::make_shared<ASTStringLiteral>(token.value(), token.position());
+        case TokenType::BooleanTrue:
+            return std::make_shared<ASTBooleanTrue>(token.position());
+        case TokenType::BooleanFalse:
+            return std::make_shared<ASTBooleanFalse>(token.position());
+        case TokenType::Integer: {
+            int64_t value = std::stoll(utf8(token.value()), nullptr, 0);
+            return std::make_shared<ASTNumberLiteral>(value, token.value(), token.position());
+        }
+        case TokenType::Double: {
+            double d = std::stod(utf8(token.value()));
+            return std::make_shared<ASTNumberLiteral>(d, token.value(), token.position());
+        }
+        case TokenType::Symbol:
+            return std::make_shared<ASTSymbolLiteral>(token.value().front(), token.position());
+        case TokenType::Variable:
+            return std::make_shared<ASTGetVariable>(token.value(), token.position());
+        case TokenType::Identifier:
+            return parseExprIdentifier(token);
+        case TokenType::GroupBegin:
+            return parseGroup();
+        case TokenType::DocumentationComment:
+            throw CompilerError(token.position(), "Misplaced documentation comment.");
+        case TokenType::BlockBegin:
+            return parseClosure(token);
+        default:
+            throw CompilerError(token.position(), "Unexpected token ", token.stringName(), ".");
+    }
+}
+
+std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token) {
+    switch (token.value()[0]) {
         case E_CLOUD:
             return parseUnaryPrefix<ASTIsNothigness>(token);
         case E_TRAFFIC_LIGHT:
@@ -208,52 +246,16 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             auto expr = parseExpr(kPrefixPrecedence);
             return std::make_shared<ASTCast>(expr, parseTypeExpr(token.position()), token.position());
         }
-        default:
-            switch (token.type()) {
-                case TokenType::String:
-                    return std::make_shared<ASTStringLiteral>(token.value(), token.position());
-                case TokenType::BooleanTrue:
-                    return std::make_shared<ASTBooleanTrue>(token.position());
-                case TokenType::BooleanFalse:
-                    return std::make_shared<ASTBooleanFalse>(token.position());
-                case TokenType::Integer: {
-                    int64_t value = std::stoll(utf8(token.value()), nullptr, 0);
-                    return std::make_shared<ASTNumberLiteral>(value, token.value(), token.position());
-                }
-                case TokenType::Double: {
-                    double d = std::stod(utf8(token.value()));
-                    return std::make_shared<ASTNumberLiteral>(d, token.value(), token.position());
-                }
-                case TokenType::Symbol:
-                    return std::make_shared<ASTSymbolLiteral>(token.value().front(), token.position());
-                case TokenType::Variable:
-                    return std::make_shared<ASTGetVariable>(token.value(), token.position());
-                case TokenType::Identifier:
-                    return parseExprIdentifier(token);
-                case TokenType::GroupBegin:
-                    return parseGroup();
-                case TokenType::DocumentationComment:
-                    throw CompilerError(token.position(), "Misplaced documentation comment.");
-                default:
-                    throw CompilerError(token.position(), "Unexpected token ", token.stringName(), ".");
-            }
-    }
-}
-
-std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token) {
-    switch (token.value()[0]) {
         case E_COOKIE:
             return parseListingLiteral<ASTConcatenateLiteral>(E_COOKIE, token);
         case E_ICE_CREAM:
             return parseListingLiteral<ASTListLiteral>(E_AUBERGINE, token);
         case E_HONEY_POT:
             return parseListingLiteral<ASTDictionaryLiteral>(E_AUBERGINE, token);
-        case E_DOG: {
+        case E_DOG:
             return std::make_shared<ASTThis>(token.position());
-        }
-        case E_HIGH_VOLTAGE_SIGN: {
+        case E_HIGH_VOLTAGE_SIGN:
             return std::make_shared<ASTNothingness>(token.position());
-        }
         case E_HOT_PEPPER: {
             if (stream_.consumeTokenIf(E_DOUGHNUT)) {
                 auto name = stream_.consumeToken(TokenType::Identifier).value();
@@ -263,8 +265,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             return std::make_shared<ASTCaptureMethod>(name, parseExpr(0), token.position());
         }
-        case E_GRAPES:
-            return parseClosure(token);
         case E_CHIPMUNK: {
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             return std::make_shared<ASTSuperMethod>(name, parseArguments(token.position()), token.position());
@@ -284,21 +284,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return std::make_shared<ASTMethod>(token.value(), value, parseArguments(token.position()),
                                                token.position());
         }
-        case E_LEMON:
-        case E_STRAWBERRY:
-        case E_WATERMELON:
-        case E_AUBERGINE:
-        case E_SHORTCAKE:
-        case E_CUSTARD:
-        case E_SOFT_ICE_CREAM:
-        case E_TANGERINE:
-        case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS:
-        case E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY:
-        case E_GOAT:
-        case E_RED_APPLE:
-        case E_POLICE_CARS_LIGHT:
-        case E_AVOCADO:
-            throw CompilerError(token.position(), "Unexpected statement ", utf8(token.value()), ".");
     }
 }
 

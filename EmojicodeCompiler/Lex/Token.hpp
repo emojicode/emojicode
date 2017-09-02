@@ -36,6 +36,21 @@ enum class TokenType {
     EndArgumentList,
     GroupBegin,
     GroupEnd,
+
+    BlockBegin,
+    BlockEnd,
+    Return,
+    RepeatWhile,
+    ForIn,
+    Error,
+    If,
+    ElseIf,
+    Else,
+    SuperInit,
+    FrozenDeclaration,
+    Declaration,
+    Assignment,
+    ErrorHandler,
 };
 
 class Token {

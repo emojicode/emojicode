@@ -71,10 +71,6 @@ public:
     /** Consumes the next token and returns true if it is an identifier and value’s first element matches
      the given character. */
     bool consumeTokenIf(TokenType type);
-
-    /// Consumes the next toekn and throws an CompilerError if this token isn’t an indentifier whose
-    /// value is @c ch.
-    const Token& requireIdentifier(char32_t ch);
 private:
     std::vector<Token> tokens_;
     size_t index_ = 0;

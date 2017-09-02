@@ -26,13 +26,4 @@ bool TokenStream::consumeTokenIf(TokenType type) {
     return false;
 }
 
-const Token& TokenStream::requireIdentifier(char32_t ch) {
-    auto &token = consumeToken(TokenType::Identifier);
-    if (!token.isIdentifier(ch)) {
-        throw CompilerError(token.position(), "Expected ", utf8(std::u32string(1, ch)), " but found ",
-                            utf8(token.value()), " instead.");
-    }
-    return token;
-}
-
 }  // namespace EmojicodeCompiler

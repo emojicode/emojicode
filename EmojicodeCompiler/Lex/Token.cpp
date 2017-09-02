@@ -35,6 +35,20 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::BeginArgumentList: return "BeginArgumentList";
         case TokenType::GroupEnd: return "GroupEnd";
         case TokenType::GroupBegin: return "GroupBegin";
+        case TokenType::Return: return "Return";
+        case TokenType::RepeatWhile: return "RepeatWhile";
+        case TokenType::ForIn: return "ForIn";
+        case TokenType::Error: return "Error";
+        case TokenType::If: return "If";
+        case TokenType::ElseIf: return "ElseIf";
+        case TokenType::Else: return "Else";
+        case TokenType::SuperInit: return "SuperInit";
+        case TokenType::FrozenDeclaration: return "FrozenDeclaration";
+        case TokenType::Declaration: return "Declaration";
+        case TokenType::Assignment: return "Assignment";
+        case TokenType::ErrorHandler: return "ErrorHandler";
+        case TokenType::BlockBegin: return "BlockBegin";
+        case TokenType::BlockEnd: return "BlockEnd";
     }
 }
 

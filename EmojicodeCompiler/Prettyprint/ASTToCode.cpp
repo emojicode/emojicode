@@ -236,7 +236,7 @@ void ASTRaise::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTReturn::toCode(Prettyprinter &pretty) const {
-    pretty.indent() << "🍎 ";
+    pretty.indent() << "↩️ ";
     if (value_ != nullptr) {
         value_->toCode(pretty);
     }

@@ -24,7 +24,7 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
         function->setLinkingTableIndex(static_cast<int>(index));
     }
     else {
-        stream_.requireIdentifier(E_GRAPES);
+        stream_.consumeToken(TokenType::BlockBegin);
         try {
             auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
             function->setAst(ast);
@@ -154,11 +154,11 @@ Initializer* TypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes
     attributes.check(p, package_->app());
 
     std::experimental::optional<Type> errorType = std::experimental::nullopt;
-    if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
+    if (stream_.nextTokenIs(TokenType::Error)) {
         if (type_.type() != TypeType::Class) {
             throw CompilerError(p, "Only classes can have error-prone initializers.");
         }
-        auto &token = stream_.consumeToken(TokenType::Identifier);
+        auto &token = stream_.consumeToken(TokenType::Error);
         errorType = parseErrorEnumType(TypeContext(type_), TypeDynamism::None, token.position());
     }
 
@@ -174,9 +174,8 @@ Initializer* TypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes
 }
 
 void TypeBodyParser::parse() {
-    stream_.requireIdentifier(E_GRAPES);
-
-    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
+    stream_.consumeToken(TokenType::BlockBegin);
+    while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
         auto documentation = Documentation().parse(&stream_);
         auto attributes = TypeBodyAttributeParser().parse(&stream_);
         AccessLevel accessLevel = readAccessLevel();
@@ -192,13 +191,13 @@ void TypeBodyParser::parse() {
                 parseMethod(token.value(), attributes, documentation, accessLevel, token.position());
                 break;
             }
+            case TokenType::Declaration:
+                attributes.check(token.position(), package_->app());
+                documentation.disallow();
+                parseInstanceVariable(token.position());
+                break;
             case TokenType::Identifier:
                 switch (token.value().front()) {
-                    case E_SHORTCAKE:
-                        attributes.check(token.position(), package_->app());
-                        documentation.disallow();
-                        parseInstanceVariable(token.position());
-                        break;
                     case E_RADIO_BUTTON:
                         attributes.check(token.position(), package_->app());
                         parseEnumValue(token.position(), documentation);
@@ -219,7 +218,7 @@ void TypeBodyParser::parse() {
                 throw CompilerError(token.position(), "Unexpected token ", token.stringName());
         }
     }
-    stream_.consumeToken(TokenType::Identifier);
+    stream_.consumeToken(TokenType::BlockEnd);
 }
 
 TypeBodyParser::~TypeBodyParser() = default;

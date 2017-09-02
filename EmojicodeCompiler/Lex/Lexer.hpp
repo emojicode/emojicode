@@ -11,14 +11,14 @@
 
 #include "TokenStream.hpp"
 #include <string>
+#include <map>
 
 namespace EmojicodeCompiler {
 
 class Lexer {
 public:
-    Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::move(str)) {
-        sourcePosition_.file = std::move(sourcePositionFile);
-    }
+    Lexer(std::u32string str, std::string sourcePositionFile);
+
     /// Reads the file at path, creates a Lexer instance and returns the result of calling lex().
     static TokenStream lexFile(const std::string &path);
     /// Lexes the string and returns a TokenStream
@@ -53,8 +53,6 @@ private:
     void nextCharOrEnd();
     char32_t codePoint() { return codePoint_; }
 
-    void singleToken(Token *token, TokenType type);
-
     bool isHex_ = false;
     bool escapeSequence_ = false;
     bool foundZWJ_ = false;
@@ -65,6 +63,8 @@ private:
     std::u32string string_;
     size_t i_ = 0;
     std::vector<Token> tokens_;
+
+    std::map<char32_t, TokenType> singleTokens_;
 };
 
 }  // namespace EmojicodeCompiler

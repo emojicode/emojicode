@@ -38,13 +38,19 @@ protected:
     }
 private:
     TypeContext typeContext_;
-    std::shared_ptr<ASTBlock> fnode_ = std::make_shared<ASTBlock>(SourcePosition(0, 0, ""));
+
     std::shared_ptr<ASTStatement> parseStatement();
     ASTBlock parseBlock();
-    std::shared_ptr<ASTExpr> parseCondition();
-    std::shared_ptr<ASTExpr> parseGroup();
+
+    std::shared_ptr<ASTStatement> parseIf(const SourcePosition &position);
+    std::shared_ptr<ASTStatement> parseErrorHandler(const SourcePosition &position);
+
     std::shared_ptr<ASTExpr> parseExprTokens(const Token &token, int precendence);
     std::shared_ptr<ASTExpr> parseExprIdentifier(const Token &token);
+
+    std::shared_ptr<ASTExpr> parseCondition();
+    std::shared_ptr<ASTExpr> parseGroup();
+
     ASTArguments parseArguments(const SourcePosition &position);
     std::shared_ptr<ASTTypeExpr> parseTypeExpr(const SourcePosition &p);
 

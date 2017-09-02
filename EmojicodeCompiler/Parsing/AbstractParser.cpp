@@ -36,7 +36,7 @@ TypeIdentifier AbstractParser::parseTypeIdentifier() {
         enamespace = kDefaultNamespace;
     }
 
-    auto &typeName = stream_.consumeToken(TokenType::Identifier);
+    auto &typeName = stream_.consumeToken();
     return TypeIdentifier(typeName.value(), enamespace, typeName.position());
 }
 
@@ -73,10 +73,10 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
     if (stream_.nextTokenIs(E_BENTO_BOX)) {
         return parseMultiProtocol(optional, typeContext, dynamism);
     }
-    if (stream_.nextTokenIs(E_POLICE_CARS_LIGHT)) {
+    if (stream_.nextTokenIs(TokenType::Error)) {
         return parseErrorType(optional, typeContext, dynamism);
     }
-    if (stream_.consumeTokenIf(E_GRAPES)) {
+    if (stream_.consumeTokenIf(TokenType::BlockBegin)) {
         return parseCallableType(optional, typeContext, dynamism);
     }
 
@@ -110,7 +110,7 @@ Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeCon
     Type t = Type::callableIncomplete(optional);
     t.genericArguments_.push_back(Type::noReturn());
 
-    while (stream_.nextTokenIsEverythingBut(E_WATERMELON) &&
+    while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd) &&
            stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
         t.genericArguments_.push_back(parseType(typeContext, dynamism));
     }
@@ -119,7 +119,7 @@ Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeCon
         t.genericArguments_[0] = parseType(typeContext, dynamism);
     }
 
-    stream_.requireIdentifier(E_WATERMELON);
+    stream_.consumeToken(TokenType::BlockEnd);
     return t;
 }
 
@@ -147,7 +147,7 @@ Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, TypeDyna
 }
 
 Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
-    auto &token = stream_.consumeToken(TokenType::Identifier);
+    auto &token = stream_.consumeToken(TokenType::Error);
     Type errorType = parseErrorEnumType(typeContext, dynamism, token.position());
     if (optional) {
         throw CompilerError(token.position(), "The error type itself cannot be an optional. "
