@@ -118,10 +118,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_1_1_thread.html#a255c376ff40b444f15916585bb7836dc">returnFromFunction</a> (<a class="el" href="struct_emojicode_1_1_box.html">Box</a> value)</td></tr>
 <tr class="memdesc:a255c376ff40b444f15916585bb7836dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leaves the function and sets the value of the return destination to the given value. <br /></td></tr>
 <tr class="separator:a255c376ff40b444f15916585bb7836dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4558c1bfa673b9ae99341a000561760b"><td class="memItemLeft" align="right" valign="top"><a id="a4558c1bfa673b9ae99341a000561760b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_1_1_thread.html#a4558c1bfa673b9ae99341a000561760b">returnNothingnessFromFunction</a> ()</td></tr>
-<tr class="memdesc:a4558c1bfa673b9ae99341a000561760b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leaves the function and sets the value of the return destination to Nothingness. (See <code>makeNothingness()</code>) <br /></td></tr>
+<tr class="memitem:a4558c1bfa673b9ae99341a000561760b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_1_1_thread.html#a4558c1bfa673b9ae99341a000561760b">returnNothingnessFromFunction</a> ()</td></tr>
 <tr class="separator:a4558c1bfa673b9ae99341a000561760b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7011d3346adc3c090420297ae65de4d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_1_1_thread.html#a7011d3346adc3c090420297ae65de4d1">returnBoxNothingnessFromFunction</a> ()</td></tr>
+<tr class="separator:a7011d3346adc3c090420297ae65de4d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4013ebb7d427daca39f97c328b05b93c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_1_1_thread.html#a4013ebb7d427daca39f97c328b05b93c">returnOEValueFromFunction</a> (<a class="el" href="union_emojicode_1_1_value.html">Value</a> value)</td></tr>
 <tr class="separator:a4013ebb7d427daca39f97c328b05b93c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fa09c7023047273db11f1149eb0de1a"><td class="memItemLeft" align="right" valign="top"><a id="a4fa09c7023047273db11f1149eb0de1a"></a>
@@ -156,6 +156,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>pushPointerOpr</b> (s
 <tr class="separator:a8e3c973156173a383217f4901acd178a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39eef91d1bbf6278a44ee58b6d632267"><td class="memItemLeft" align="right" valign="top"><a class="el" href="union_emojicode_1_1_value.html">Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_1_1_thread.html#a39eef91d1bbf6278a44ee58b6d632267">popOpr</a> (size_t n)</td></tr>
 <tr class="separator:a39eef91d1bbf6278a44ee58b6d632267"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af993a6b132295a28dbc67ca3efe8d9f4"><td class="memItemLeft" align="right" valign="top"><a id="af993a6b132295a28dbc67ca3efe8d9f4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasOprToPop</b> () const</td></tr>
+<tr class="separator:af993a6b132295a28dbc67ca3efe8d9f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a631a3d7038b5c2abbf35ddab12fb8ec9"><td class="memItemLeft" align="right" valign="top"><a id="a631a3d7038b5c2abbf35ddab12fb8ec9"></a>
 <a class="el" href="union_emojicode_1_1_value.html">Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>pointerOpr</b> ()</td></tr>
 <tr class="separator:a631a3d7038b5c2abbf35ddab12fb8ec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -319,6 +322,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadsManager::deall
 
 </div>
 </div>
+<a id="a7011d3346adc3c090420297ae65de4d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7011d3346adc3c090420297ae65de4d1">&#9670;&nbsp;</a></span>returnBoxNothingnessFromFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Emojicode::Thread::returnBoxNothingnessFromFunction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Leaves the function and sets the value of the return destination to Nothingness. </p><dl class="section attention"><dt>Attention</dt><dd>This function may only be used if the return is a box. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_1_1_thread.html#a4558c1bfa673b9ae99341a000561760b">returnNothingnessFromFunction()</a> </dd></dl>
+
+</div>
+</div>
 <a id="a7f0be8b4e1578000436fbb787a9c0940"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7f0be8b4e1578000436fbb787a9c0940">&#9670;&nbsp;</a></span>returnFromFunction()</h2>
 
@@ -345,6 +375,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadsManager::deall
 
 </div>
 </div>
+<a id="a4558c1bfa673b9ae99341a000561760b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4558c1bfa673b9ae99341a000561760b">&#9670;&nbsp;</a></span>returnNothingnessFromFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Emojicode::Thread::returnNothingnessFromFunction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Leaves the function and sets the value of the return destination to Nothingness. </p><dl class="section attention"><dt>Attention</dt><dd>This function may only be used if the return is a simple optional and the value field has size 1. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_1_1_thread.html#a7011d3346adc3c090420297ae65de4d1">returnBoxNothingnessFromFunction()</a>, <a class="el" href="class_emojicode_1_1_thread.html#a4013ebb7d427daca39f97c328b05b93c">returnOEValueFromFunction()</a> </dd></dl>
+
+</div>
+</div>
 <a id="a4013ebb7d427daca39f97c328b05b93c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4013ebb7d427daca39f97c328b05b93c">&#9670;&nbsp;</a></span>returnOEValueFromFunction()</h2>
 
@@ -368,7 +425,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadsManager::deall
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Leaves the function and sets the value of the return destination to the given value. The destination is treated as optional. (See <code>optionalSet()</code>) </p>
+<p>Leaves the function and sets the value of the return destination to the given value. </p><dl class="section attention"><dt>Attention</dt><dd>This function may only be used if the return is a simple optional and the value field has size 1. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_1_1_thread.html#a4558c1bfa673b9ae99341a000561760b">returnNothingnessFromFunction()</a>, <a class="el" href="class_emojicode_1_1_thread.html#a7f0be8b4e1578000436fbb787a9c0940">returnFromFunction()</a> </dd></dl>
 
 </div>
 </div>

@@ -1,0 +1,5 @@
+<map id="EmojicodeCompiler::VTIProvider" name="EmojicodeCompiler::VTIProvider">
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_class_v_t_i_provider.html" title="EmojicodeCompiler::\lClassVTIProvider" alt="" coords="5,92,150,131"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_s_t_i_provider.html" title="The STIProvider is used for static virtual function dispatch, i.e. value types methods, closures, the start flag. " alt="" coords="173,92,318,131"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_value_type_v_t_i_provider.html" title="EmojicodeCompiler::\lValueTypeVTIProvider" alt="" coords="169,179,322,217"/>
+</map>

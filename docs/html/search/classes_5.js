@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['file',['File',['../struct_emojicode_compiler_1_1_recording_package_1_1_file.html',1,'EmojicodeCompiler::RecordingPackage']]],
   ['fncodegenerator',['FnCodeGenerator',['../class_emojicode_compiler_1_1_fn_code_generator.html',1,'EmojicodeCompiler']]],
   ['function',['Function',['../class_emojicode_compiler_1_1_function.html',1,'EmojicodeCompiler::Function'],['../struct_emojicode_1_1_function.html',1,'Emojicode::Function']]],
   ['functionobjectvariableinformation',['FunctionObjectVariableInformation',['../struct_emojicode_compiler_1_1_function_object_variable_information.html',1,'EmojicodeCompiler']]],

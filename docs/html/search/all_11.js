@@ -1,6 +1,7 @@
 var searchData=
 [
   ['scope',['Scope',['../class_emojicode_compiler_1_1_scope.html',1,'EmojicodeCompiler']]],
+  ['selection',['Selection',['../struct_emojicode_compiler_1_1_compatibility_info_provider_1_1_selection.html',1,'EmojicodeCompiler::CompatibilityInfoProvider']]],
   ['semanticanalyser',['SemanticAnalyser',['../class_emojicode_compiler_1_1_semantic_analyser.html',1,'EmojicodeCompiler']]],
   ['semanticscoper',['SemanticScoper',['../class_emojicode_compiler_1_1_semantic_scoper.html',1,'EmojicodeCompiler']]],
   ['setgenericargument',['setGenericArgument',['../class_emojicode_compiler_1_1_type.html#ab691eb7505ce1fb20ce4a18edfefe0af',1,'EmojicodeCompiler::Type']]],

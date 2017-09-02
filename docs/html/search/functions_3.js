@@ -6,6 +6,5 @@ var searchData=
   ['deprecated',['deprecated',['../class_emojicode_compiler_1_1_function.html#ade7fe764fbabea00531e998ddd469eea',1,'EmojicodeCompiler::Function']]],
   ['deprecatedwarning',['deprecatedWarning',['../class_emojicode_compiler_1_1_function.html#a532e233e81fcbbad10f63bb620cf6dd1',1,'EmojicodeCompiler::Function']]],
   ['destinationfunction',['destinationFunction',['../class_emojicode_compiler_1_1_boxing_layer.html#aff41a6b051bf02daa7282b0454d3b1a2',1,'EmojicodeCompiler::BoxingLayer']]],
-  ['disableselfresolving',['disableSelfResolving',['../class_emojicode_compiler_1_1_type.html#a48e9303bd47fbba88d253f00454a31ca',1,'EmojicodeCompiler::Type']]],
   ['documentation',['documentation',['../class_emojicode_compiler_1_1_type_definition.html#ad4a80e47f9257d22ce52ad6db5e51bc2',1,'EmojicodeCompiler::TypeDefinition']]]
 ];

@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_emojicode_compiler_1_1_v_t_i_provider.html" title="EmojicodeCompiler::\lVTIProvider" alt="" coords="5,37,150,76"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_class_v_t_i_provider.html" title="EmojicodeCompiler::\lClassVTIProvider" alt="" coords="198,5,342,44"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_s_t_i_provider.html" title="The STIProvider is used for static virtual function dispatch, i.e. value types methods, closures, the start flag. " alt="" coords="198,68,342,107"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_value_type_v_t_i_provider.html" title="EmojicodeCompiler::\lValueTypeVTIProvider" alt="" coords="390,68,544,107"/>
+</map>

@@ -76,11 +76,19 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:adc43eea77b7cff875d2b32548bed13bf"><td class="memItemLeft" align="right" valign="top"><a id="adc43eea77b7cff875d2b32548bed13bf"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Application</b> (std::string mainFile, std::string outPath, std::string pkgDir, std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_application_delegate.html">ApplicationDelegate</a> &gt; delegate)</td></tr>
+<tr class="memitem:adc43eea77b7cff875d2b32548bed13bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#adc43eea77b7cff875d2b32548bed13bf">Application</a> (std::string mainFile, std::string outPath, std::string pkgDir, std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_application_delegate.html">ApplicationDelegate</a> &gt; delegate)</td></tr>
 <tr class="separator:adc43eea77b7cff875d2b32548bed13bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0eda888f55b61d00bfa51e7f7dd2fb70"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#a0eda888f55b61d00bfa51e7f7dd2fb70">compile</a> ()</td></tr>
-<tr class="separator:a0eda888f55b61d00bfa51e7f7dd2fb70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a450d77e2cd659b23bd3da60fa2567e3b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#a450d77e2cd659b23bd3da60fa2567e3b">compile</a> (bool parseOnly)</td></tr>
+<tr class="separator:a450d77e2cd659b23bd3da60fa2567e3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84fde2cc9555a24f5b6f7dab8a15cf32"><td class="memTemplParams" colspan="2"><a id="a84fde2cc9555a24f5b6f7dab8a15cf32"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a84fde2cc9555a24f5b6f7dab8a15cf32"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#a84fde2cc9555a24f5b6f7dab8a15cf32">factorUnderscorePackage</a> ()</td></tr>
+<tr class="memdesc:a84fde2cc9555a24f5b6f7dab8a15cf32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="class_emojicode_compiler_1_1_package.html" title="Package is the class used to load, parse and analyse packages. ">Package</a> instance that represents the underscore package. Appropriate values are set. <br /></td></tr>
+<tr class="separator:a84fde2cc9555a24f5b6f7dab8a15cf32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98c339fe2d2dead6a86eb2a42cde5451"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#a98c339fe2d2dead6a86eb2a42cde5451">underscorePackage</a> ()</td></tr>
+<tr class="separator:a98c339fe2d2dead6a86eb2a42cde5451"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1351eddb0b08eb19e3c0514787ad4674"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#a1351eddb0b08eb19e3c0514787ad4674">loadMigrationFile</a> (const std::string &amp;file)</td></tr>
+<tr class="separator:a1351eddb0b08eb19e3c0514787ad4674"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3ef41f5f6f1096ae5c783b8a982a4e3"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:ab3ef41f5f6f1096ae5c783b8a982a4e3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#ab3ef41f5f6f1096ae5c783b8a982a4e3">warn</a> (const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p, Args... args)</td></tr>
 <tr class="separator:ab3ef41f5f6f1096ae5c783b8a982a4e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -102,10 +110,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setStartFlagFunction<
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#a256302c3a6a49acdc996d15acb7412c2">hasStartFlagFunction</a> () const</td></tr>
 <tr class="memdesc:a256302c3a6a49acdc996d15acb7412c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a start flag function was encountered and compiled. <br /></td></tr>
 <tr class="separator:a256302c3a6a49acdc996d15acb7412c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04bde02aae49107ee832993caedfb347"><td class="memItemLeft" align="right" valign="top"><a id="a04bde02aae49107ee832993caedfb347"></a>
-const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#a04bde02aae49107ee832993caedfb347">packagesInOrder</a> () const</td></tr>
-<tr class="memdesc:a04bde02aae49107ee832993caedfb347"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all packages in the order in which they were loaded. <br /></td></tr>
-<tr class="separator:a04bde02aae49107ee832993caedfb347"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad96583f2b3b41d8dd1e1b03c349602c7"><td class="memItemLeft" align="right" valign="top"><a id="ad96583f2b3b41d8dd1e1b03c349602c7"></a>
+const std::vector&lt; std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#ad96583f2b3b41d8dd1e1b03c349602c7">packagesInOrder</a> () const</td></tr>
+<tr class="memdesc:ad96583f2b3b41d8dd1e1b03c349602c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all packages in the order in which they were loaded. <br /></td></tr>
+<tr class="separator:ad96583f2b3b41d8dd1e1b03c349602c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac57272b9ba4dd3c283cf4f8aba415354"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#ac57272b9ba4dd3c283cf4f8aba415354">findPackage</a> (const std::string &amp;name) const</td></tr>
 <tr class="separator:ac57272b9ba4dd3c283cf4f8aba415354"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bdc13f124fa31026b933b61c299a637"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_application.html#a4bdc13f124fa31026b933b61c299a637">loadPackage</a> (const std::string &amp;name, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p, <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *requestor)</td></tr>
@@ -147,9 +155,58 @@ std::queue&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">F
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The application class represents an Emojicode application and manages all steps necessary to transform source code documents into an Emojicode binary. Instance of this class own all Packages associated with them. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0eda888f55b61d00bfa51e7f7dd2fb70"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0eda888f55b61d00bfa51e7f7dd2fb70">&#9670;&nbsp;</a></span>compile()</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="adc43eea77b7cff875d2b32548bed13bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc43eea77b7cff875d2b32548bed13bf">&#9670;&nbsp;</a></span>Application()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EmojicodeCompiler::Application::Application </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>mainFile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>outPath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>pkgDir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_application_delegate.html">ApplicationDelegate</a> &gt;&#160;</td>
+          <td class="paramname"><em>delegate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Constructs an <a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> instance. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mainFile</td><td>The underscore package’s main file. (See <a class="el" href="class_emojicode_compiler_1_1_package.html#a6d05216a4cdee308d8d1c3fc65ba915b">Package::Package</a>.) </td></tr>
+    <tr><td class="paramname">outPath</td><td>The path at which the Emojicode Binary will be written. </td></tr>
+    <tr><td class="paramname">pkgDir</td><td>The path to the Emojicode packages directory. It will be searched if a package is loaded via <a class="el" href="class_emojicode_compiler_1_1_application.html#a4bdc13f124fa31026b933b61c299a637">loadPackage()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a450d77e2cd659b23bd3da60fa2567e3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a450d77e2cd659b23bd3da60fa2567e3b">&#9670;&nbsp;</a></span>compile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -157,12 +214,19 @@ std::queue&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">F
         <tr>
           <td class="memname">bool EmojicodeCompiler::Application::compile </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>parseOnly</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Compile the application. </p><dl class="section return"><dt>Returns</dt><dd>True iff the application has been successfully compiled and an Emojicode binary was written. </dd></dl>
+<p>Compile the application. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parseOnly</td><td>If this argument is true, all packages are only parsed and not semantically analysed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True iff the application has been successfully compiled and an Emojicode binary was written. </dd></dl>
 
 </div>
 </div>
@@ -182,6 +246,33 @@ std::queue&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">F
       </table>
 </div><div class="memdoc">
 <p>Searches the loaded packages for the package with the given name. If the package has not been loaded yet <code>nullptr</code> is returned. </p>
+
+</div>
+</div>
+<a id="a1351eddb0b08eb19e3c0514787ad4674"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1351eddb0b08eb19e3c0514787ad4674">&#9670;&nbsp;</a></span>loadMigrationFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EmojicodeCompiler::Application::loadMigrationFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="class_emojicode_compiler_1_1_application.html#a84fde2cc9555a24f5b6f7dab8a15cf32" title="Constructs a Package instance that represents the underscore package. Appropriate values are set...">factorUnderscorePackage()</a> must not have been called. </dd></dl>
 
 </div>
 </div>
@@ -223,6 +314,32 @@ std::queue&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">F
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_application.html#ac57272b9ba4dd3c283cf4f8aba415354">findPackage()</a> </dd></dl>
+
+</div>
+</div>
+<a id="a98c339fe2d2dead6a86eb2a42cde5451"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c339fe2d2dead6a86eb2a42cde5451">&#9670;&nbsp;</a></span>underscorePackage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a>* EmojicodeCompiler::Application::underscorePackage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the underscore package. If the underscore package has not been factored yet, nullptr is returned. </p>
 
 </div>
 </div>

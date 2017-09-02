@@ -73,13 +73,21 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for EmojicodeCompiler::ASTBlock:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_emojicode_compiler_1_1_a_s_t_block.png" usemap="#EmojicodeCompiler::ASTBlock_map" alt=""/>
-  <map id="EmojicodeCompiler::ASTBlock_map" name="EmojicodeCompiler::ASTBlock_map">
-<area href="class_emojicode_compiler_1_1_a_s_t_statement.html" alt="EmojicodeCompiler::ASTStatement" shape="rect" coords="0,56,204,80"/>
-<area href="class_emojicode_compiler_1_1_a_s_t_node.html" alt="EmojicodeCompiler::ASTNode" shape="rect" coords="0,0,204,24"/>
+<div class="center"><img src="class_emojicode_compiler_1_1_a_s_t_block__inherit__graph.png" border="0" usemap="#_emojicode_compiler_1_1_a_s_t_block_inherit__map" alt="Inheritance graph"/></div>
+<map name="_emojicode_compiler_1_1_a_s_t_block_inherit__map" id="_emojicode_compiler_1_1_a_s_t_block_inherit__map">
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="5,92,150,131"/>
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
 </map>
- </div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for EmojicodeCompiler::ASTBlock:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_emojicode_compiler_1_1_a_s_t_block__coll__graph.png" border="0" usemap="#_emojicode_compiler_1_1_a_s_t_block_coll__map" alt="Collaboration graph"/></div>
+<map name="_emojicode_compiler_1_1_a_s_t_block_coll__map" id="_emojicode_compiler_1_1_a_s_t_block_coll__map">
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="5,92,150,131"/>
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -98,9 +106,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class
 <tr class="memitem:add86c2489c84c82383fb42bb80551c4a"><td class="memItemLeft" align="right" valign="top"><a id="add86c2489c84c82383fb42bb80551c4a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *) const override</td></tr>
 <tr class="separator:add86c2489c84c82383fb42bb80551c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25a89ae9bdeda1582e918b11122d2b63"><td class="memItemLeft" align="right" valign="top"><a id="a25a89ae9bdeda1582e918b11122d2b63"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (std::stringstream &amp;stream, unsigned int indentation) const override</td></tr>
-<tr class="separator:a25a89ae9bdeda1582e918b11122d2b63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aaf412c153f1e3bdb125928e85fcbed"><td class="memItemLeft" align="right" valign="top"><a id="a2aaf412c153f1e3bdb125928e85fcbed"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (<a class="el" href="class_emojicode_compiler_1_1_prettyprinter.html">Prettyprinter</a> &amp;pretty) const override</td></tr>
+<tr class="separator:a2aaf412c153f1e3bdb125928e85fcbed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b79c0254fe3ccf02fa0f363babb4ee1"><td class="memItemLeft" align="right" valign="top"><a id="a4b79c0254fe3ccf02fa0f363babb4ee1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_block.html#a4b79c0254fe3ccf02fa0f363babb4ee1">innerToCode</a> (<a class="el" href="class_emojicode_compiler_1_1_prettyprinter.html">Prettyprinter</a> &amp;pretty) const</td></tr>
+<tr class="memdesc:a4b79c0254fe3ccf02fa0f363babb4ee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the code that goes between the block delimiters. <br /></td></tr>
+<tr class="separator:a4b79c0254fe3ccf02fa0f363babb4ee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99d4f250b7631944fd1354d5806444d2"><td class="memItemLeft" align="right" valign="top"><a id="a99d4f250b7631944fd1354d5806444d2"></a>
 const std::vector&lt; std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_statement.html">ASTStatement</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>nodes</b> () const</td></tr>
 <tr class="separator:a99d4f250b7631944fd1354d5806444d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,7 +128,7 @@ const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">So
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/<a class="el" href="_a_s_t_statements_8hpp_source.html">ASTStatements.hpp</a></li>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTStatements.cpp</li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTToCode.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Prettyprint/ASTToCode.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

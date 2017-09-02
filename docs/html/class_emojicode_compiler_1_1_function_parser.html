@@ -65,6 +65,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_function_parser-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EmojicodeCompiler::FunctionParser Class Reference</div>  </div>
@@ -73,12 +74,22 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for EmojicodeCompiler::FunctionParser:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_emojicode_compiler_1_1_function_parser.png" usemap="#EmojicodeCompiler::FunctionParser_map" alt=""/>
-  <map id="EmojicodeCompiler::FunctionParser_map" name="EmojicodeCompiler::FunctionParser_map">
-<area href="class_emojicode_compiler_1_1_abstract_parser.html" alt="EmojicodeCompiler::AbstractParser" shape="rect" coords="0,0,213,24"/>
+<div class="center"><img src="class_emojicode_compiler_1_1_function_parser__inherit__graph.png" border="0" usemap="#_emojicode_compiler_1_1_function_parser_inherit__map" alt="Inheritance graph"/></div>
+<map name="_emojicode_compiler_1_1_function_parser_inherit__map" id="_emojicode_compiler_1_1_function_parser_inherit__map">
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_compatible_function_parser.html" title="EmojicodeCompiler::\lCompatibleFunctionParser" alt="" coords="5,179,185,217"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="23,5,167,44"/>
 </map>
- </div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for EmojicodeCompiler::FunctionParser:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_emojicode_compiler_1_1_function_parser__coll__graph.png" border="0" usemap="#_emojicode_compiler_1_1_function_parser_coll__map" alt="Collaboration graph"/></div>
+<map name="_emojicode_compiler_1_1_function_parser_coll__map" id="_emojicode_compiler_1_1_function_parser_coll__map">
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="89,105,234,144"/>
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_token_stream.html" title="EmojicodeCompiler::\lTokenStream" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_package.html" title="Package is the class used to load, parse and analyse packages. " alt="" coords="173,5,318,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -88,6 +99,71 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a047177c34e82d563c5c20a398892becc"><td class="memItemLeft" align="right" valign="top"><a id="a047177c34e82d563c5c20a398892becc"></a>
 std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_block.html">ASTBlock</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> ()</td></tr>
 <tr class="separator:a047177c34e82d563c5c20a398892becc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:aa3be73d713f1e1763748c38d33cf6311"><td class="memItemLeft" align="right" valign="top"><a id="aa3be73d713f1e1763748c38d33cf6311"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>parseMainArguments</b> (<a class="el" href="class_emojicode_compiler_1_1_a_s_t_arguments.html">ASTArguments</a> *arguments, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;position)</td></tr>
+<tr class="separator:aa3be73d713f1e1763748c38d33cf6311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c81b6306b1815ac87f9537db7b541fb"><td class="memItemLeft" align="right" valign="top"><a id="a9c81b6306b1815ac87f9537db7b541fb"></a>
+virtual std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parseExprLeft</b> (const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;token, int precedence)</td></tr>
+<tr class="separator:a9c81b6306b1815ac87f9537db7b541fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5b02f63229dd7580e03b103712d3e87"><td class="memItemLeft" align="right" valign="top"><a id="ab5b02f63229dd7580e03b103712d3e87"></a>
+virtual std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parseRight</b> (std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; left, int precendence)</td></tr>
+<tr class="separator:ab5b02f63229dd7580e03b103712d3e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0747414ece2e180556443f0ad9a92b70"><td class="memItemLeft" align="right" valign="top"><a id="a0747414ece2e180556443f0ad9a92b70"></a>
+virtual std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_statement.html">ASTStatement</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parseVariableAssignment</b> (const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;token)</td></tr>
+<tr class="separator:a0747414ece2e180556443f0ad9a92b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab408369b73f6d6f8a3cb081120639b3f"><td class="memItemLeft" align="right" valign="top"><a id="ab408369b73f6d6f8a3cb081120639b3f"></a>
+virtual std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parseClosure</b> (const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;token)</td></tr>
+<tr class="separator:ab408369b73f6d6f8a3cb081120639b3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ad20bc8d9af8fd09b54d62756f51acc"><td class="memItemLeft" align="right" valign="top"><a id="a9ad20bc8d9af8fd09b54d62756f51acc"></a>
+std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parseExpr</b> (int precedence)</td></tr>
+<tr class="separator:a9ad20bc8d9af8fd09b54d62756f51acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_emojicode_compiler_1_1_abstract_parser')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html">EmojicodeCompiler::AbstractParser</a></td></tr>
+<tr class="memitem:a5ebbc43652fb209e1d81636c0675548f inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="a5ebbc43652fb209e1d81636c0675548f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>AbstractParser</b> (<a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *pkg, <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;stream)</td></tr>
+<tr class="separator:a5ebbc43652fb209e1d81636c0675548f inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaec397aaf5e4797386707c86c8f9507f inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="aaec397aaf5e4797386707c86c8f9507f"></a>
+<a class="el" href="struct_emojicode_compiler_1_1_type_identifier.html">TypeIdentifier</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html#aaec397aaf5e4797386707c86c8f9507f">parseTypeIdentifier</a> ()</td></tr>
+<tr class="memdesc:aaec397aaf5e4797386707c86c8f9507f inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a $type-identifier$. <br /></td></tr>
+<tr class="separator:aaec397aaf5e4797386707c86c8f9507f inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5deee459618782442e853017826665b0 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="a5deee459618782442e853017826665b0"></a>
+<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html#a5deee459618782442e853017826665b0">parseType</a> (const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> &amp;typeContext, TypeDynamism dynamism)</td></tr>
+<tr class="memdesc:a5deee459618782442e853017826665b0 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a $type$ and fetches it. <br /></td></tr>
+<tr class="separator:a5deee459618782442e853017826665b0 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad898b007574de67f8e328a8507459821 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memTemplParams" colspan="2"><a id="ad898b007574de67f8e328a8507459821"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ad898b007574de67f8e328a8507459821 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html#ad898b007574de67f8e328a8507459821">parseGenericParameters</a> (<a class="el" href="class_emojicode_compiler_1_1_generic.html">Generic</a>&lt; T &gt; *generic, const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> &amp;typeContext)</td></tr>
+<tr class="memdesc:ad898b007574de67f8e328a8507459821 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses $generic-parameters$. <br /></td></tr>
+<tr class="separator:ad898b007574de67f8e328a8507459821 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e386a067667d5543f390fa01ca1e15e inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html#a1e386a067667d5543f390fa01ca1e15e">parseParameters</a> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> &amp;typeContext, bool initializer=false)</td></tr>
+<tr class="separator:a1e386a067667d5543f390fa01ca1e15e inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacdf6ffa43c732e345082cd5095f8ae0 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="aacdf6ffa43c732e345082cd5095f8ae0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html#aacdf6ffa43c732e345082cd5095f8ae0">parseReturnType</a> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> &amp;typeContext)</td></tr>
+<tr class="memdesc:aacdf6ffa43c732e345082cd5095f8ae0 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses a $return-type$ for a function one is specified. <br /></td></tr>
+<tr class="separator:aacdf6ffa43c732e345082cd5095f8ae0 inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1892b03ecf6ba3e7f4907f56f71382da inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="a1892b03ecf6ba3e7f4907f56f71382da"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html#a1892b03ecf6ba3e7f4907f56f71382da">parseGenericArgumentsForType</a> (<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> *type, const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> &amp;typeContext, TypeDynamism dynamism, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
+<tr class="memdesc:a1892b03ecf6ba3e7f4907f56f71382da inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses $generic-arguments$ for a type. <br /></td></tr>
+<tr class="separator:a1892b03ecf6ba3e7f4907f56f71382da inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b57ea532baf9a96ce63a643146d42ff inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="a0b57ea532baf9a96ce63a643146d42ff"></a>
+<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html#a0b57ea532baf9a96ce63a643146d42ff">parseErrorEnumType</a> (const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> &amp;typeContext, TypeDynamism dynamism, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
+<tr class="memdesc:a0b57ea532baf9a96ce63a643146d42ff inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and validates the error type. <br /></td></tr>
+<tr class="separator:a0b57ea532baf9a96ce63a643146d42ff inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad35fce68313f851bda20eb9510830b5a inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="ad35fce68313f851bda20eb9510830b5a"></a>
+std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function_parser.html">FunctionParser</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>factorFunctionParser</b> (<a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *pkg, <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;stream, <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> context, <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
+<tr class="separator:ad35fce68313f851bda20eb9510830b5a inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_attribs_class_emojicode_compiler_1_1_abstract_parser"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_emojicode_compiler_1_1_abstract_parser')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html">EmojicodeCompiler::AbstractParser</a></td></tr>
+<tr class="memitem:acf31fcf4134aa757d77db7f4f20c9476 inherit pro_attribs_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="acf31fcf4134aa757d77db7f4f20c9476"></a>
+<a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>package_</b></td></tr>
+<tr class="separator:acf31fcf4134aa757d77db7f4f20c9476 inherit pro_attribs_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ec053de06069366fe86bffa6d8a3007 inherit pro_attribs_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="a9ec053de06069366fe86bffa6d8a3007"></a>
+<a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>stream_</b></td></tr>
+<tr class="separator:a9ec053de06069366fe86bffa6d8a3007 inherit pro_attribs_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Parsing/<a class="el" href="_function_parser_8hpp_source.html">FunctionParser.hpp</a></li>
