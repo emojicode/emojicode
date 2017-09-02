@@ -29,7 +29,7 @@ public:
     };
 
     /// Constructs an CompatibilityInfoProvider instance from the .emojimig file at the given path.
-    CompatibilityInfoProvider(const std::string &path);
+    explicit CompatibilityInfoProvider(const std::string &path);
 
     void selectFunction(Function *function);
     /// Returns the next argument count for the selected function.
@@ -38,7 +38,7 @@ public:
     unsigned int nextArgumentsCount(const SourcePosition &p);
 
     Selection selection() { return selection_; }
-    void setSelection(Selection selection) { selection_ = std::move(selection); }
+    void setSelection(Selection selection) { selection_ = selection; }
 private:
     Selection selection_;
     std::map<std::string, std::map<size_t, std::vector<unsigned int>>> files_;

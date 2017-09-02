@@ -53,7 +53,6 @@ enum class TypeType {
     GenericVariable,
     LocalGenericVariable,
     Callable,
-    Self,
     Error,
     StorageExpectation,
     Extension,
@@ -102,7 +101,6 @@ public:
     static Type error() { return Type(TypeType::Error, false); }
     static Type someobject(bool optional = false) { return Type(TypeType::Someobject, optional); }
     static Type callableIncomplete(bool optional = false) { return Type(TypeType::Callable, optional); }
-    static Type self(bool optional = false) { return Type(TypeType::Self, optional); }
     
     /// @returns The type of this type, i.e. Protocol, Class instance etc.
     TypeType type() const { return typeContent_; }
@@ -131,7 +129,7 @@ public:
     void setOptional(bool o = true) { optional_ = o; }
 
     /// Returns true if this type is compatible to the given other type.
-    bool compatibleTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
+    bool compatibleTo(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
     /// Whether this instance of Type is considered indentical to the other instance.
     /// Mainly used to determine compatibility of generics.
     bool identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const;
@@ -160,21 +158,18 @@ public:
     /// Returns the protocol types of a MultiProtocol
     const std::vector<Type>& protocols() const { return genericArguments_; }
 
-    /// Forbids the usage of this instance of Type to resolve @c Self.
-    Type& disableSelfResolving() { resolveSelfOn_ = false; return *this; }
     /// Tries to resolve this type to a non-generic-variable type by using the generic arguments provided in the
     /// TypeContext. This method also tries to resolve generic arguments to non-generic-variable types recursively.
     /// This method can resolve @c Self, @c References and @c LocalReferences. @c GenericVariable will only be resolved
     /// if the TypeContext’s @c calleeType implementation of @c canBeUsedToResolve returns true for the resolution
-    /// constraint, thus only if the generic variable is inteded to be resolved on the given type. @c Self will only be
-    /// resolved if @c disableSelfResolving() wasn’t called on the calleeType before.
-    Type resolveOn(const TypeContext &typeContext, bool resolveSelf = true) const;
+    /// constraint, thus only if the generic variable is inteded to be resolved on the given type.
+    Type resolveOn(const TypeContext &typeContext) const;
     /**
      * Used to get as mutch information about a reference type as possible without using the generic arguments of
      * the type context’s callee.
      * This method is intended to be used to determine type compatibility while e.g. compiling generic classes.
      */
-    Type resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext, bool resolveSelf = true) const;
+    Type resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext) const;
     
     /// Returns the name of the package to which this type belongs.
     std::string typePackage() const;
@@ -221,7 +216,6 @@ private:
     };
     std::vector<Type> genericArguments_;
     bool optional_;
-    bool resolveSelfOn_ = true;
     bool meta_ = false;
     bool isReference_ = false;
     bool mutable_ = true;
@@ -232,6 +226,10 @@ private:
     bool identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const;
     Type resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const;
     void sortMultiProtocolType();
+
+    bool isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
+    bool isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
+    bool isCompatibleToCallable(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
 };
 
 }  // namespace EmojicodeCompiler

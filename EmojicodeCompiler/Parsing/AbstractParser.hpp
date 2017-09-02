@@ -114,8 +114,6 @@ private:
     Type parseGenericVariable(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
 
     Type parseErrorType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
-
-    Type parseSelf(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
 };
 
 }  // namespace EmojicodeCompiler

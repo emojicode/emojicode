@@ -70,9 +70,6 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
         stream_.nextTokenIs(TokenType::Variable)) {
         return parseGenericVariable(optional, typeContext, dynamism);
     }
-    if (stream_.nextTokenIs(E_DOG)) {
-        return parseSelf(optional, typeContext, dynamism);
-    }
     if (stream_.nextTokenIs(E_BENTO_BOX)) {
         return parseMultiProtocol(optional, typeContext, dynamism);
     }
@@ -160,14 +157,6 @@ Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContex
     type.genericArguments_.emplace_back(errorType);
     type.genericArguments_.emplace_back(parseType(typeContext, dynamism));
     return type;
-}
-
-Type AbstractParser::parseSelf(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
-    auto &selfToken = stream_.consumeToken(TokenType::Identifier);
-    if ((dynamism & TypeDynamism::Self) == TypeDynamism::None) {
-        throw CompilerError(selfToken.position(), "🐕 not allowed here.");
-    }
-    return Type::self(optional);
 }
 
 void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,

@@ -34,7 +34,7 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
                                 "’s implementation of, ", utf8(name()), ", doesn‘t match.");
         }
 
-        auto superReturnType = protocol ? super->returnType.resolveOn(*protocol, false) : super->returnType;
+        auto superReturnType = protocol ? super->returnType.resolveOn(*protocol) : super->returnType;
         if (!returnType.resolveOn(typeContext).compatibleTo(superReturnType, typeContext)) {
             auto supername = superReturnType.toString(typeContext);
             auto thisname = returnType.toString(typeContext);
@@ -56,7 +56,7 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
         }
         for (size_t i = 0; i < super->arguments.size(); i++) {
             // More general arguments are OK
-            auto superArgumentType = protocol ? super->arguments[i].type.resolveOn(*protocol, false) :
+            auto superArgumentType = protocol ? super->arguments[i].type.resolveOn(*protocol) :
             super->arguments[i].type;
             if (!superArgumentType.compatibleTo(arguments[i].type.resolveOn(typeContext), typeContext)) {
                 auto supertype = superArgumentType.toString(typeContext);

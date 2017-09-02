@@ -23,7 +23,7 @@ class BoxingLayer : public Function {
 public:
     /// Creates a boxing layer for a protocol function.
     /// @parameter destinationFunction That function that should be called by the boxing layer. The "actual" method.
-    BoxingLayer(Function *destinationFunction, std::u32string protocolName,
+    BoxingLayer(Function *destinationFunction, const std::u32string &protocolName,
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
     : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
                destinationFunction->owningType(), destinationFunction->package(), p, false, std::u32string(), false,

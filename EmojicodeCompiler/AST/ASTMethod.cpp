@@ -83,7 +83,7 @@ std::pair<bool, Type> ASTMethodable::builtIn(const Type &type, const std::u32str
             instruction_ = INS_INT_TO_DOUBLE;
             return std::make_pair(true, Type::doubl());
         }
-        else if (name.front() == E_NO_ENTRY_SIGN) {
+        if (name.front() == E_NO_ENTRY_SIGN) {
             builtIn_ = true;
             instruction_ = INS_BINARY_NOT_INTEGER;
             return std::make_pair(true, Type::integer());

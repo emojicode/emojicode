@@ -21,7 +21,7 @@ class RecordingPackage : public Package {
 public:
     class Recording {
     public:
-        virtual ~Recording() {}
+        virtual ~Recording() = default;
     };
 
     class Import : public Recording {
@@ -34,18 +34,18 @@ public:
 
     class Include : public Recording {
     public:
-        Include(std::string path) : path_(std::move(path)) {}
+        explicit Include(std::string path) : path_(std::move(path)) {}
         std::string path_;
     };
 
     class RecordedType : public Recording {
     public:
-        RecordedType(Type type) : type_(std::move(type)) {}
+        explicit RecordedType(Type type) : type_(std::move(type)) {}
         Type type_;
     };
 
     struct File {
-        File(std::string path) : path_(path) {}
+        explicit File(std::string path) : path_(std::move(path)) {}
         std::string path_;
         std::vector<std::unique_ptr<Recording>> recordings_;
     };
@@ -62,6 +62,6 @@ private:
     size_t currentFile_ = 0;
 };
 
-}
+}  // namespace EmojicodeCompiler
 
 #endif /* RecordingPackage_hpp */

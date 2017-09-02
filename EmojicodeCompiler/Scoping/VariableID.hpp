@@ -27,10 +27,10 @@ class VariableID {
     friend FnCodeGenerator;
     friend CapturingSemanticScoper;
 public:
-    VariableID() : id_(4294967295) {}
+    VariableID() = default;
 private:
     explicit VariableID(unsigned int id) : id_(id) {}
-    unsigned int id_;
+    unsigned int id_ = 4294967295;
 };
     
 }  // namespace EmojicodeCompiler
