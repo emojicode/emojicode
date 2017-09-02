@@ -9,17 +9,17 @@
 🌮
 🌍 🕊 👌 ⚪️ 🍇
   🌮 Whether this value and *other* are considered equal. 🌮
-  🐖 🙌 other 👌 ➡️ 👌 🍇
+  🙌 other 👌 ➡️ 👌 🍇
     🍎 🐕 🙌 other
   🍉
 
   🌮 Logical and. Returns true if both, the receiver and other, are true. 🌮
-  🐖 🤝 other 👌 ➡️ 👌 🍇
+  🤝 other 👌 ➡️ 👌 🍇
     🍎 🐕 🤝 other
   🍉
 
   🌮 Logical or. Returns true if the receiver or other or both are true. 🌮
-  🐖 👐 other 👌 ➡️ 👌 🍇
+  👐 other 👌 ➡️ 👌 🍇
     🍎 🐕 👐 other
   🍉
 
@@ -27,7 +27,7 @@
     Inverts the boolean. Returns true if the boolean is false, and false if the
     boolean is true.
   🌮
-  🐖 ❎ ➡️ 👌 🍇
+  ❗️ ❎ ➡️ 👌 🍇
     🍎 ❎🐕❗️
   🍉
 🍉
@@ -39,7 +39,7 @@
 🌮
 🌍 🐊 😛🐚T⚪️ 🍇
   🌮 Whether this value and *other* are equal. 🌮
-  🐖 🙌 other T ➡️ 👌
+  🙌 other T ➡️ 👌
 🍉
 
 🐋 👌 🍇
@@ -53,72 +53,72 @@
   🐊 😛🐚🚂
 
   🌮 Whether this value and *other* are considered equal. 🌮
-  🐖 🙌 other 🚂 ➡️ 👌 🍇
+  🙌 other 🚂 ➡️ 👌 🍇
     🍎 🐕 🙌 other
   🍉
 
   🌮 Returns the receiver minus *other*. 🌮
-  🐖 ➖ other 🚂 ➡️ 🚂 🍇
+  ➖ other 🚂 ➡️ 🚂 🍇
     🍎 🐕 ➖ other
   🍉
   🌮 Returns the receiver plus *other*. 🌮
-  🐖 ➕ other 🚂 ➡️ 🚂 🍇
+  ➕ other 🚂 ➡️ 🚂 🍇
     🍎 🐕 ➕ other
   🍉
   🌮 Returns the receiver divided by *other*. 🌮
-  🐖 ➗ other 🚂 ➡️ 🚂 🍇
+  ➗ other 🚂 ➡️ 🚂 🍇
     🍎 🐕 ➗ other
   🍉
   🌮 Returns the receiver multiplied by *other*. 🌮
-  🐖 ✖️ other 🚂 ➡️ 🚂 🍇
+  ✖️ other 🚂 ➡️ 🚂 🍇
     🍎 🐕 ✖️ other
   🍉
   🌮 Returns the receiver modulus *other*. 🌮
-  🐖 🚮 other 🚂 ➡️ 🚂 🍇
+  🚮 other 🚂 ➡️ 🚂 🍇
     🍎 🐕 🚮 other
   🍉
   🌮 Returns true if the receiver is smaller than *other*. 🌮
-  🐖 ◀️ other 🚂 ➡️ 👌 🍇
+  ◀️ other 🚂 ➡️ 👌 🍇
     🍎 🐕 ◀️ other
   🍉
   🌮 Returns true if the receiver is greater than *other*. 🌮
-  🐖 ▶️ other 🚂 ➡️ 👌 🍇
+  ▶️ other 🚂 ➡️ 👌 🍇
     🍎 🐕 ▶️ other
   🍉
   🌮 Returns true if the receiver is smaller than or equal to *other*. 🌮
-  🐖 ⬅️ other 🚂 ➡️ 👌 🍇
+  ⬅️ other 🚂 ➡️ 👌 🍇
     🍎 🐕 ⬅️ other
   🍉
   🌮 Returns true if the receiver is greater than or equal to *other*. 🌮
-  🐖 ➡️ other 🚂 ➡️ 👌 🍇
+  ➡️ other 🚂 ➡️ 👌 🍇
     🍎 🐕 ➡️ other
   🍉
   🌮 Returns this integer AND *other*. 🌮
-  🐖 ⭕️ other 🚂 ➡️ 🚂 🍇
+  ⭕️ other 🚂 ➡️ 🚂 🍇
     🍎 🐕 ⭕️ other
   🍉
   🌮 Returns this integer OR *other*. 🌮
-  🐖 💢 other 🚂 ➡️ 🚂 🍇
+  💢 other 🚂 ➡️ 🚂 🍇
     🍎 🐕 💢 other
   🍉
   🌮 Returns this integer XOR *other*. 🌮
-  🐖 ❌ other 🚂 ➡️ 🚂 🍇
+  ❌ other 🚂 ➡️ 🚂 🍇
     🍎 🐕 ❌ other
   🍉
   🌮 Returns NOT applied to this integer. 🌮
-  🐖 🚫 ➡️ 🚂 🍇
+  ❗️ 🚫 ➡️ 🚂 🍇
     🍎 🚫 🐕 ❗️
   🍉
   🌮 Shifts this integer by *n* bits to the left. 🌮
-  🐖 👈 n 🚂 ➡️ 🚂 🍇
+  👈 n 🚂 ➡️ 🚂 🍇
     🍎 🐕 👈 n
   🍉
   🌮 Shifts this integer by *n* bits to the right. 🌮
-  🐖 👉 n 🚂 ➡️ 🚂 🍇
+  👉 n 🚂 ➡️ 🚂 🍇
     🍎 🐕 👉 n
   🍉
   🌮 Returns the absolute value of this 🚂. 🌮
-  🐖 🏧 ➡️ 🚂 📻 18
+  ❗️ 🏧 ➡️ 🚂 📻 18
 🍉
 
 🌮
@@ -128,24 +128,24 @@
   🐊 😛🐚🚀
 
   🌮 Whether this value and *other* are considered equal. 🌮
-  🐖 🙌 other 🚀 ➡️ 👌 🍇
+  🙌 other 🚀 ➡️ 👌 🍇
     🍎 🐕 🙌 other
   🍉
 
   🌮 Returns the receiver minus *other*. 🌮
-  🐖 ➖ other 🚀 ➡️ 🚀 🍇
+  ➖ other 🚀 ➡️ 🚀 🍇
     🍎 🐕 ➖ other
   🍉
   🌮 Returns the receiver plus *other*. 🌮
-  🐖 ➕ other 🚀 ➡️ 🚀 🍇
+  ➕ other 🚀 ➡️ 🚀 🍇
     🍎 🐕 ➕ other
   🍉
   🌮 Returns the receiver divided by *other*. 🌮
-  🐖 ➗ other 🚀 ➡️ 🚀 🍇
+  ➗ other 🚀 ➡️ 🚀 🍇
     🍎 🐕 ➗ other
   🍉
   🌮 Returns the receiver multiplied by *other*. 🌮
-  🐖 ✖️ other 🚀 ➡️ 🚀 🍇
+  ✖️ other 🚀 ➡️ 🚀 🍇
     🍎 🐕 ✖️ other
   🍉
   🌮
@@ -153,94 +153,94 @@
     `receiver/other`. This will always be the value of `receiver - n*other` and
     will always have the same sign as the receiver.
   🌮
-  🐖 🚮 other 🚀 ➡️ 🚀 🍇
+  🚮 other 🚀 ➡️ 🚀 🍇
     🍎 🐕 🚮 other
   🍉
   🌮 Returns true if the receiver is smaller than *other*. 🌮
-  🐖 ◀️ other 🚀 ➡️ 👌 🍇
+  ◀️ other 🚀 ➡️ 👌 🍇
     🍎 🐕 ◀️ other
   🍉
   🌮 Returns true if the receiver is greater than *other*. 🌮
-  🐖 ▶️ other 🚀 ➡️ 👌 🍇
+  ▶️ other 🚀 ➡️ 👌 🍇
     🍎 🐕 ▶️ other
   🍉
   🌮 Returns true if the receiver is smaller than or equal to *other*. 🌮
-  🐖 ⬅️ other 🚀 ➡️ 👌 🍇
+  ⬅️ other 🚀 ➡️ 👌 🍇
     🍎 🐕 ⬅️ other
   🍉
   🌮 Returns true if the receiver is greater than or equal to *other*. 🌮
-  🐖 ➡️ other 🚀 ➡️ 👌 🍇
+  ➡️ other 🚀 ➡️ 👌 🍇
     🍎 🐕 ➡️ other
   🍉
 
   🌮 Returns the absolute value of this 🚀. 🌮
-  🐖 🏧 ➡️ 🚀 📻 33
+  ❗️ 🏧 ➡️ 🚀 📻 33
 
   🌮
     Returns an approximation of 𝜋.
   🌮
-  🐇🐖 ⚾️ ➡️ 🚀 🍇
+  🐇❗️ ⚾️ ➡️ 🚀 🍇
     🍎 3.14159265358979323846264338327950288
   🍉
   🌮
     Returns an approximation of 𝜏 which is equal to 𝜋/2.
   🌮
-  🐇🐖 🏉 ➡️ 🚀 🍇
+  🐇❗️ 🏉 ➡️ 🚀 🍇
     🍎 1.57079632679489661923132169163975144
   🍉
   🌮
     Returns an approximation of 𝜏/2 which is equal to 𝜋/4.
   🌮
-  🐇🐖 🎾 ➡️ 🚀 🍇
+  🐇❗️ 🎾 ➡️ 🚀 🍇
     🍎 0.785398163397448309615660845819875721
   🍉
   🌮
     Returns an approximation of ℇ (Euler’s number).
   🌮
-  🐇🐖 🏹 ➡️ 🚀 🍇
+  🐇❗️ 🏹 ➡️ 🚀 🍇
     🍎 2.71828182845904523536028747135266250
   🍉
 
   🌮
     Returns the sine of this 🚀.
   🌮
-  🐖 📓 ➡️ 🚀 📻 19
+  ❗️ 📓 ➡️ 🚀 📻 19
   🌮
     Returns the cosine of this 🚀.
   🌮
-  🐖 📕 ➡️ 🚀 📻 20
+  ❗️ 📕 ➡️ 🚀 📻 20
   🌮
     Returns the tangent of this 🚀.
   🌮
-  🐖 📘 ➡️ 🚀 📻 21
+  ❗️ 📘 ➡️ 🚀 📻 21
   🌮
     Returns the arcsine of this 🚀.
   🌮
-  🐖 📔 ➡️ 🚀 📻 22
+  ❗️ 📔 ➡️ 🚀 📻 22
   🌮
     Returns the arccosine of this 🚀.
   🌮
-  🐖 📙 ➡️ 🚀 📻 23
+  ❗️ 📙 ➡️ 🚀 📻 23
   🌮
     Returns the arctangent of this 🚀.
   🌮
-  🐖 📗 ➡️ 🚀 📻 24
+  ❗️ 📗 ➡️ 🚀 📻 24
   🌮
     Returns this 🚀 to the exponent power, that is, base<sup>exponent</sup>.
   🌮
-  🐖 🏂 exponent 🚀 ➡️ 🚀 📻 25
+  ❗️ 🏂 exponent 🚀 ➡️ 🚀 📻 25
   🌮
     Returns the positive square root of this 🚀.
   🌮
-  🐖 ⛷ ➡️ 🚀 📻 26
+  ❗️ ⛷ ➡️ 🚀 📻 26
   🌮
     Returns the smallest integer greater than or equal to this 🚀.
   🌮
-  🐖 🚴 ➡️ 🚂 📻 27
+  ❗️ 🚴 ➡️ 🚂 📻 27
   🌮
     Returns the largest integer less than or equal to this 🚀.
   🌮
-  🐖 🚵 ➡️ 🚂 📻 28
+  ❗️ 🚵 ➡️ 🚂 📻 28
   🌮
     Returns the value of this 🚀 rounded to the nearest integer.
 
@@ -248,16 +248,16 @@
     rounded to the next higher integer. If the fractional portion of this 🚀 is
     less than 0.5, the argument is rounded to the next lower integer.
   🌮
-  🐖 🏇 ➡️ 🚂 📻 29
+  ❗️ 🏇 ➡️ 🚂 📻 29
   🌮
     Returns the base 2 logarithm of this 🚀.
   🌮
-  🐖 🚣 ➡️ 🚀 📻 30
+  ❗️ 🚣 ➡️ 🚀 📻 30
 
   🌮
     Returns the natural (base ℇ) logarithm of this 🚀.
   🌮
-  🐖 🏄 ➡️ 🚀 📻 31
+  ❗️ 🏄 ➡️ 🚀 📻 31
 🍉
 
 🌮
@@ -267,7 +267,7 @@
   🐊 😛🐚🔣
 
   🌮 Whether this value and *other* are considered equal. 🌮
-  🐖 🙌 other 🔣 ➡️ 👌 🍇
+  🙌 other 🔣 ➡️ 👌 🍇
     🍎 🐕 🙌 other
   🍉
 🍉
@@ -302,11 +302,11 @@
     Returns the next object. Expect undefined behavior if you call this method
     when ❓ previously returned 👎.
   🌮
-  🐖 🔽 ➡️ Element
+  ❗️ 🔽 ➡️ Element
   🌮
     Whether the enumerator has more elements to provide.
   🌮
-  🐖 ❓ ➡️ 👌
+  ❗️ ❓ ➡️ 👌
 🍉
 
 🌮
@@ -318,7 +318,7 @@
     This method must return an instance of a class that conforms to
     [[🍡]] which will be used to enumerate this instance.
   🌮
-  🐖 🍡 ➡️ 🍡🐚Element
+  ❗️ 🍡 ➡️ 🍡🐚Element
 🍉
 
 🌮
@@ -329,9 +329,9 @@
   🌮
     Gets the item at `index`. If the index is invalid Nothingness is returned.
   🌮
-  🐖 🐽 index 🚂 ➡️ 🍬Element
+  ❗️ 🐽 index 🚂 ➡️ 🍬Element
   🌮 Returns the number of items in the list. 🌮
-  🐖 🐔 ➡️ 🚂
+  ❗️ 🐔 ➡️ 🚂
 🍉
 
 🌮
@@ -349,17 +349,17 @@
     🍮 index 0
   🍉
 
-  🐖 🔽 ➡️ Element 🍇
+  ❗️ 🔽 ➡️ Element 🍇
     🍦 sy 🍺 🐽 iteratee ❕index❗️
     🍮 index ➕ 1
     🍎 sy
   🍉
 
-  🐖 ❓ ➡️ 👌 🍇
+  ❗️ ❓ ➡️ 👌 🍇
     🍎 index ◀️ 🐔 iteratee❗️
   🍉
 
-  🐖 🍡 ➡️ 🍡🐚Element 🍇
+  ❗️ 🍡 ➡️ 🍡🐚Element 🍇
     🍎 🐕
   🍉
 🍉
@@ -397,7 +397,7 @@
     `start + step * n` is `>= start` and `< stop`. If `n` is invalid
     Nothingness is returned.
   🌮
-  🐖 🐽 n 🚂 ➡️ 🍬🚂 🍇
+  ❗️ 🐽 n 🚂 ➡️ 🍬🚂 🍇
     🍦 v start ➕ n ✖️ step
     🍊 step ◀️ 0 🍇
       🍊 stop ◀️ v 🤝 v ⬅️ start 🍇
@@ -413,12 +413,12 @@
   🍉
 
   🌮 Returns the number of numbers in this range. 🌮
-  🐖 🐔 ➡️ 🚂 🍇
+  ❗️ 🐔 ➡️ 🚂 🍇
     🍎 stop ➖ start ➗ step
   🍉
 
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
-  🐖 🍡 ➡️ 🌳🐚🚂 🍇
+  ❗️ 🍡 ➡️ 🌳🐚🚂 🍇
     🍎 🔷🌳🐚🚂🆕 ❕🐕❗️
   🍉
 🍉
@@ -439,13 +439,13 @@
     🍮 index 0
   🍉
 
-  🐖 🔽 ➡️ 🍬Element 🍇
+  ❗️ 🔽 ➡️ 🍬Element 🍇
     🍦 sy 🐽 iteratee ❕index❗️
     🍮 index ➕ 1
     🍎 sy
   🍉
 
-  🐖 ❓ ➡️ 👌 🍇
+  ❗️ ❓ ➡️ 👌 🍇
     🍎 index ◀️ 🐔 iteratee❗️
   🍉
 
@@ -453,12 +453,12 @@
     Removes the element last returned by 🔽 from the list. Calling this method
     before having called 🔽 results in undefined behavior.
   🌮
-  🐖 🚯  🍇
+  ❗️ 🚯  🍇
     🍮 index ➖ 1
     🐨 iteratee ❕index❗️
   🍉
 
-  🐖 🍡 ➡️ 🍡🐚🍬Element 🍇
+  ❗️ 🍡 ➡️ 🍡🐚🍬Element 🍇
     🍎 🐕
   🍉
 🍉
@@ -471,10 +471,10 @@
     The digits used to represent the integer are
     `0123456789abcdefghijklmnopqrstuvxyz`.
   🌮
-  🐖 🔡 base 🚂 ➡️ 🔡 📻 16
+  ❗️ 🔡 base 🚂 ➡️ 🔡 📻 16
 
   🌮 Returns the double representation of this integer. 🌮
-  🐖 🚀 ➡️ 🚀 🍇
+  ❗️ 🚀 ➡️ 🚀 🍇
     🍎 🚀 🐕❗️
   🍉
 🍉
@@ -484,14 +484,14 @@
     Creates a 🔡 representation of this 🚀 and the given precision – the number
     of digits after the decimal separator “.”.
   🌮
-  🐖 🔡 precision 🚂 ➡️ 🔡 📻 32
+  ❗️ 🔡 precision 🚂 ➡️ 🔡 📻 32
 🍉
 
 🐋 🔣 🍇
   🌮 Creates a 🔡 from this symbol. 🌮
-  🐖 🔡 ➡️ 🔡 📻 34
+  ❗️ 🔡 ➡️ 🔡 📻 34
   🌮 Returns the Unicode code point of this symbol. 🌮
-  🐖 🚂 ➡️ 🚂 📻 35
+  ❗️ 🚂 ➡️ 🚂 📻 35
 🍉
 
 🐋 🔡 🍇
@@ -512,10 +512,10 @@
   🐈 🍨 list 🍨🐚🔡 separator 🔡 📻 82
 
   🌮 Puts this 🔡 to the standard output. 🌮
-  🐖 😀 📻 59
+  ❗️ 😀 📻 59
 
   🌮 Returns 👍 if this 🔡 is equal to b. 🌮
-  🐖 🙌 b 🔡 ➡️ 👌📻 60
+  🙌 b 🔡 ➡️ 👌📻 60
 
   🌮
     Compares this string to `b` and returns -1, 0, or 1 depending on whether
@@ -526,7 +526,7 @@
     >!N the sort will always be the same, but may not appear logical to human
     >!N beings.
   🌮
-  🐖 ↔️ b 🔡 ➡️ 🚂 📻 77
+  ❗️ ↔️ b 🔡 ➡️ 🚂 📻 77
 
   🌮
     Returns the characters in a string beginning at the specified location
@@ -536,31 +536,31 @@
     is given, it is treated as strLength + start where strLength = to the length
     of the string (for example, if start is -3 it is treated as strLength - 3.)
   🌮
-  🐖 🔪 from 🚂 length 🚂 ➡️ 🔡 📻 64
+  ❗️ 🔪 from 🚂 length 🚂 ➡️ 🔡 📻 64
 
   🌮
     Finds the first occurrences of a string in this string. Search is done from
     left to right. Nothingness is returned if *search* cannot be found.
   🌮
-  🐖 🔍 search 🔡 ➡️ 🍬🚂 📻 65
+  ❗️ 🔍 search 🔡 ➡️ 🍬🚂 📻 65
 
   🌮 Whether this strings begins with another string. 🌮
-  🐖 🎼 testString 🔡 ➡️ 👌 📻 70
+  ❗️ 🎼 testString 🔡 ➡️ 👌 📻 70
 
   🌮 Whether this strings ends with another string. 🌮
-  🐖 ⛳️ testString 🔡 ➡️ 👌 📻 71
+  ❗️ ⛳️ testString 🔡 ➡️ 👌 📻 71
 
   🌮
     The 🔧 method returns a new string, on which whitespace has been removed
     from both ends of a string.
   🌮
-  🐖 🔧 ➡️ 🔡 📻 66
+  ❗️ 🔧 ➡️ 🔡 📻 66
 
   🌮
     This string is split up into substring at each place *seperator* is found.
     *seperator* itself is removed from the string.
   🌮
-  🐖 🔫 separator 🔡 ➡️ 🍨🐚🔡 📻 67
+  ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡 📻 67
 
   🌮
     This string is split up into substring at each place *seperator* is found.
@@ -568,26 +568,26 @@
 
     Prefer this method over `🔫` if the separator is just a single character.
   🌮
-  🐖 💣 separator 🔣 ➡️ 🍨🐚🔡 📻 69
+  ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 📻 69
 
   🌮
     This method returns the number of Unicode code points of this string. This
     is possibly not the number of bytes needed to write the string to a file,
     since Emojicode encodes everything into UTF8.
   🌮
-  🐖 🐔 ➡️ 🚂 📻 61
+  ❗️ 🐔 ➡️ 🚂 📻 61
 
   🌮
     Returns the number of bytes needed to encode this string into proper UTF8.
   🌮
-  🐖 📐 ➡️ 🚂 📻 68
+  ❗️ 📐 ➡️ 🚂 📻 68
   🌮
     This methods tries to construct an integer from this string in the given
     base. It returns the integer or Nothingness if the string does not match the
     regular expression `[+-]?[0-9a-zA-Z]+` or it does not represent a valid
     value in the given base.
   🌮
-  🐖 🚂 base 🚂 ➡️ 🍬🚂 📻 75
+  ❗️ 🚂 base 🚂 ➡️ 🍬🚂 📻 75
 
   🌮
     This methods tries to construct a 🚀 from this 🔡. It returns the 🚀, or ✨
@@ -595,40 +595,40 @@
     `[+-]?([0-9]+(\.[0-9]*)?|[0-9]*\.[0-9]+)([eE][+-]?[0-9]+)?`
     or if it does not represent a valid 🚀.
   🌮
-  🐖 🚀 ➡️ 🍬🚀 📻 76
+  ❗️ 🚀 ➡️ 🍬🚀 📻 76
 
   🌮 Creates a new string by appending *symbol*. 🌮
-  🐖 📝 symbol 🔣 ➡️ 🔡 📻 62
+  ❗️ 📝 symbol 🔣 ➡️ 🔡 📻 62
 
   🌮 Gets a symbol by its index. 🌮
-  🐖 🐽 index 🚂 ➡️ 🍬🔣 📻 63
+  ❗️ 🐽 index 🚂 ➡️ 🍬🔣 📻 63
 
   🌮 Converts the string to data encoded as UTF8. 🌮
-  🐖 📇 ➡️ 📇 📻 73
+  ❗️ 📇 ➡️ 📇 📻 73
 
   🌮 Returns an array with the symbols from this string. 🌮
-  🐖 🎶 ➡️ 🍨🐚🔣 📻 72
+  ❗️ 🎶 ➡️ 🍨🐚🔣 📻 72
 
   🌮
     Tries to parse this string as JSON. If the string doesn’t represent valid
     JSON Nothigness is returned. The depth is limited to 256 levels.
   🌮
-  🐖 📰 ➡️ ⚪️ 📻 74
+  ❗️ 📰 ➡️ ⚪️ 📻 74
 
   🌮
     Returns a new string in which at least all letters contained in ASCII
     were converted to uppercase.
   🌮
-  🐖 📫 ➡️ 🔡 📻 78
+  ❗️ 📫 ➡️ 🔡 📻 78
 
   🌮
     Returns a new string in which at least all letters contained in ASCII
     were converted to lowercase.
   🌮
-  🐖 📪 ➡️ 🔡 📻 79
+  ❗️ 📪 ➡️ 🔡 📻 79
 
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
-  🐖 🍡 ➡️ 🌳🐚🔣 🍇
+  ❗️ 🍡 ➡️ 🌳🐚🔣 🍇
     🍎 🔷🌳🐚🔣🆕❕🐕❗️
   🍉
 🍉
@@ -644,11 +644,11 @@
     🍮 symbols 🔷🍨🐚🔣🐧❕ capacity❗️
   🍉
 
-  🐖 🐻 string 🔡 🍇
+  ❗️ 🐻 string 🔡 🍇
     🐥 symbols❕🎶 string❗️❗️
   🍉
 
-  🐖 🔡 ➡️  🔡 🍇
+  ❗️ 🔡 ➡️  🔡 🍇
     🍎 🔷🔡🎙❕symbols❗️
   🍉
 🍉
@@ -664,22 +664,22 @@
   🐈 🐧 capacity 🚂 📻 57
 
   🌮 Returns a shallow copy of this list. 🌮
-  🐖 🐮 ➡️ 🍨🐚Element 📻 52
+  ❗️ 🐮 ➡️ 🍨🐚Element 📻 52
 
   🌮 Appends `item` to the end of the list in `O(1)`. 🌮
-  🐖 🐻 item Element 📻 45
+  ❗️ 🐻 item Element 📻 45
 
   🌮
     Gets the item at `index` in `O(1)`. If the index is invalid Nothingness is
     returned.
   🌮
-  🐖 🐽 index 🚂 ➡️ 🍬Element 📻 46
+  ❗️ 🐽 index 🚂 ➡️ 🍬Element 📻 46
 
   🌮
     Sets `value` at `index`. If `index` is bigger than the capacity of the list,
     the list is resized to a capacity of `index + 1`. Complexity: `O(1)`.
   🌮
-  🐖 🐷 index 🚂 value Element 📻 55
+  ❗️ 🐷 index 🚂 value Element 📻 55
 
   🌮
     Removes the item at `index` and shifts all following items to the left in
@@ -687,7 +687,7 @@
 
     Returns 👍 unless the index is out of range.
   🌮
-  🐖 🐨 index 🚂 ➡️ 👌 📻 47
+  ❗️ 🐨 index 🚂 ➡️ 👌 📻 47
 
   🌮
     Inserts the given values before the element with the given index.
@@ -695,19 +695,19 @@
     All items beginning from `index` are shifted to the right and `item` is
     then inserted at `index`. Complexity: `O(count - index)`.
   🌮
-  🐖 🐵 index 🚂 item Element 📻 48
+  ❗️ 🐵 index 🚂 item Element 📻 48
 
   🌮 Returns the number of items in the list. 🌮
-  🐖 🐔 ➡️ 🚂 📻 49
+  ❗️ 🐔 ➡️ 🚂 📻 49
 
   🌮 Appends the content of `list` to this list. 🌮
-  🐖 🐥 list 🍨🐚Element 📻 97
+  ❗️ 🐥 list 🍨🐚Element 📻 97
 
   🌮
     Removes the last item from the list and returns it in `O(1)`.
     If the list is empty ✨ is returned.
   🌮
-  🐖 🐼 ➡️ 🍬Element 📻 50
+  ❗️ 🐼 ➡️ 🍬Element 📻 50
 
   🌮
     Removes all elements from the list but keeps the list’s capacity.
@@ -715,7 +715,7 @@
     This can be much more efficient than using a new list. Complexity:
     `O(count)`.
   🌮
-  🐖 🐗 📻 54
+  ❗️ 🐗 📻 54
 
   🌮
     Ensures that the list is large enoguh to store at least `capacity` elements.
@@ -725,7 +725,7 @@
 
     Complexity: `O(1)`.
   🌮
-  🐖 🐴 capacity 🚂 📻 56
+  ❗️ 🐴 capacity 🚂 📻 56
 
   🌮
     Sorts this array in place using the quick sort algorithm.
@@ -734,18 +734,18 @@
     if the first argument is considered respectively less than, equal to, or
     greater than the second.
   🌮
-  🐖 🦁 comparator 🍇Element Element➡️🚂🍉 📻 53
+  ❗️ 🦁 comparator 🍇Element Element➡️🚂🍉 📻 53
 
   🌮
     Shuffles the list in place.
   🌮
-  🐖 🐹 📻 51
+  ❗️ 🐹 📻 51
 
   🌮
     Calls callback with each element in the list and appends the returned
     value to the end of a new list.
   🌮
-  🐖 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
+  ❗️ 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
     🍦 g 🔷🍨🐚A🐧 ❕🐔 🐕❗️❗️
     🔂 element 🐕 🍇
       🐻 g❕callback⁉️❕element❗️❗️
@@ -757,7 +757,7 @@
     Returns a new array with all elements that pass the test implemented by
     `callback`.
   🌮
-  🐖 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
+  ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
     🍦 g 🔷🍨🐚Element🐸❗️
     🔂 element 🐕 🍇
       🍊 callback⁉️❕element❗️ 🍇
@@ -773,7 +773,7 @@
 
     The method immdiately returns 👎 if `callback` returned 👎 for one element.
   🌮
-  🐖 🐯 callback 🍇Element➡️👌🍉 ➡️ 👌 🍇
+  ❗️ 🐯 callback 🍇Element➡️👌🍉 ➡️ 👌 🍇
     🔂 element 🐕 🍇
       🍊 ❎ callback⁉️❕element❗️ ❗️ 🍇
         🍎 👎
@@ -783,7 +783,7 @@
   🍉
 
   🌮 Tests whether this array and `other` are equal. 🌮
-  🐖 🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
+  🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
     🍊 ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
       🍎 👎
     🍉
@@ -797,7 +797,7 @@
   🍉
 
   🌮 Returns an iterator to iterate over the elements of this list. 🌮
-  🐖 🍡 ➡️ 🌳🐚Element 🍇
+  ❗️ 🍡 ➡️ 🌳🐚Element 🍇
     🍎 🔷⚫️🆕❕🐕❗️
   🍉
 🍉
@@ -808,9 +808,9 @@
   🐊 😛🐚📇
 
   🌮 Returns 👍 if this is equal to b. 🌮
-  🐖 🙌 b 📇 ➡️ 👌 📻 1
+  🙌 b 📇 ➡️ 👌 📻 1
   🌮 Returns the number of bytes represented by this instance. 🌮
-  🐖 🐔 ➡️ 🚂 📻 2
+  ❗️ 🐔 ➡️ 🚂 📻 2
   🌮
     Returns an integer representing the value of the byte at the given index
     `index`. A negative index is assumed to be relative to the end of the data.
@@ -821,32 +821,32 @@
 
     Nothingness is returned if the index is out of range.
   🌮
-  🐖 🐽 index 🚂 ➡️ 🍬🚂 📻 3
+  ❗️ 🐽 index 🚂 ➡️ 🍬🚂 📻 3
   🌮
     If this object represents the bytes of a UTF8 encoded text this method
     returns a string representing that text. Nothingness is returned if this
     object does not represent a valid UTF8 sequence.
   🌮
-  🐖 🔡 ➡️ 🍬🔡 📻 4
+  ❗️ 🔡 ➡️ 🍬🔡 📻 4
   🌮
     Returns a copy of the data within the given range. This method employes
     various techniques to make this as efficient as possible.
   🌮
-  🐖 🔪 from 🚂 length 🚂 ➡️ 📇 📻 5
+  ❗️ 🔪 from 🚂 length 🚂 ➡️ 📇 📻 5
   🌮
     Finds the first occurrences of *search* in the bytes represented by this
     instance. Search is done from left to right. Nothingness is returned if
     *search* cannot be found. 0 is returned if *search* is empty.
   🌮
-  🐖 🔍 search 📇 ➡️ 🍬🚂 📻 6
+  ❗️ 🔍 search 📇 ➡️ 🍬🚂 📻 6
   🌮
     Creates a new data object by with the bytes of this instance and *b*
     concatenated.
   🌮
-  🐖 📝 b 📇 ➡️ 📇 📻 7
+  ❗️ 📝 b 📇 ➡️ 📇 📻 7
 
   🌮 Returns an iterator to iterate over the bytes of this data object. 🌮
-  🐖 🍡 ➡️ 🌳🐚🚂 🍇
+  ❗️ 🍡 ➡️ 🌳🐚🚂 🍇
     🍎 🔷🌳🐚🚂🆕❕🐕❗️
   🍉
 🍉
@@ -858,15 +858,15 @@
     Returns the value assigned to *key*. If key is not in the 🍯 ✨ is
     returned.
   🌮
-  🐖 🐽 key 🔡 ➡️ 🍬Element 📻 87
+  ❗️ 🐽 key 🔡 ➡️ 🍬Element 📻 87
   🌮
     Removes *key* and its assigned value from the 🍯. No action is performed if
     *key* is not in the 🍯.
   🌮
-  🐖 🐨 key 🔡 📻 88
+  ❗️ 🐨 key 🔡 📻 88
 
   🌮 Adds a key-value pair. 🌮
-  🐖 🐷 key 🔡 object Element 📻 89
+  ❗️ 🐷 key 🔡 object Element 📻 89
 
   🌮
     Returns a list consisting of all keys in this 🍯.
@@ -874,19 +874,19 @@
     >!N Note that the keys in the returned list are arbitrarily ordered.
 
   🌮
-  🐖 🐙 ➡️ 🍨🐚🔡 📻 90
+  ❗️ 🐙 ➡️ 🍨🐚🔡 📻 90
 
   🌮
     Removes all key-value pairs in this 🍯 and returns the number of deleted
     items.
   🌮
-  🐖 🐗 ➡️ 🚂 📻 91
+  ❗️ 🐗 ➡️ 🚂 📻 91
 
   🌮 Checks whether *key* is in this 🍯. 🌮
-  🐖 🐣 key 🔡 ➡️ 👌📻 92
+  ❗️ 🐣 key 🔡 ➡️ 👌📻 92
 
   🌮 Returns the number of items. 🌮
-  🐖 🐔 ➡️ 🚂📻 93
+  ❗️ 🐔 ➡️ 🚂📻 93
 🍉
 
 🌮
@@ -898,32 +898,32 @@
     Returns a list of the arguments passed to the programm. Calling this method
     is rather expensive.
   🌮
-  🐇🐖 🎞 ➡️ 🍨🐚🔡 📻 40
+  🐇❗️ 🎞 ➡️ 🍨🐚🔡 📻 40
 
   🌮
     Gets an environment variable by its name. If the variable cannot be found
     ✨ is returned.
   🌮
-  🐇🐖 🌳 variableName 🔡 ➡️ 🍬🔡 📻 37
+  🐇❗️ 🌳 variableName 🔡 ➡️ 🍬🔡 📻 37
 
   🌮
     Immediately exits the program with the given status code. The code may
     not be larger than 255 on most operating systems.
   🌮
-  🐇🐖 🚪 status 🚂 📻 36
+  🐇❗️ 🚪 status 🚂 📻 36
 
   🌮
     Returns the standard output of running `command` in a subshell.
   🌮
-  🐇🐖 🕴 command 🔡 ➡️ 🍬🔡 📻 41
+  🐇❗️ 🕴 command 🔡 ➡️ 🍬🔡 📻 41
 
   🌮 Returns the current working directory. 🌮
-  🐇🐖 🌍 ➡️ 🔡 📻 38
+  🐇❗️ 🌍 ➡️ 🔡 📻 38
 
   🌮
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
   🌮
-  🐇🐖 🕰 ➡️ 🚂📻 39
+  🐇❗️ 🕰 ➡️ 🚂📻 39
 🍉
 
 🌮
@@ -938,12 +938,12 @@
   🌮
     Blocks the calling thread until this thread has finished work.
   🌮
-  🐖 🛂 📻 11
+  ❗️ 🛂 📻 11
   🌮
     Suspends the calling thread from execution for at least the number of
     microseconds specified by the argument *microseconds*.
   🌮
-  🐇🐖 ⏲ microseconds 🚂 📻 10
+  🐇❗️ ⏲ microseconds 🚂 📻 10
 🍉
 
 🌮
@@ -959,16 +959,16 @@
     Attempts to lock the mutex and waits until it becomes available if it is
     already locked.
   🌮
-  🐖 🔒 📻 13
+  ❗️ 🔒 📻 13
   🌮
     Unlocks the mutex.
   🌮
-  🐖 🔓 📻 14
+  ❗️ 🔓 📻 14
   🌮
     Attempts to lock the mutex and returns immediately. Returns 👍 if the mutex
     could be locked.
   🌮
-  🐖 🔐 ➡️ 👌 📻 15
+  ❗️ 🔐 ➡️ 👌 📻 15
 🍉
 
 🌮
@@ -985,10 +985,10 @@
     Generates an integer. Integers are uniformly distributed on the
     closed interval `[a, b]`.
   🌮
-  🐖 🚂 a 🚂 b 🚂 ➡️ 🚂 📻 95
+  ❗️ 🚂 a 🚂 b 🚂 ➡️ 🚂 📻 95
   🌮
     Generates a double, where doubles are uniformly distributed on the interval
     `[0, 1)`.
   🌮
-  🐖 🚀 ➡️ 🚀 📻 96
+  ❗️ 🚀 ➡️ 🚀 📻 96
 🍉

@@ -32,7 +32,7 @@ public:
     virtual ~TypeBodyParser() = 0;
 protected:
     /// Called if an $protocol-conformance$ has been detected. The first token has already been parsed.
-    void parseProtocolConformance(const SourcePosition &p);
+    virtual void parseProtocolConformance(const SourcePosition &p);
     /// Called if an $enum-value$ has been detected. The first token has already been parsed.
     virtual void parseEnumValue(const SourcePosition &p, const Documentation &documentation);
     /// Called if an $instance-variable$ has been detected. The first token has already been parsed.
@@ -43,14 +43,16 @@ protected:
     /// Called if an $initializer$ has been detected. The first token has already been parsed.
     virtual Initializer* parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
                                           AccessLevel access, const SourcePosition &p);
-    Type type_;
-private:
+
     Type owningType() {
         if (type_.type() == TypeType::Extension) {
             return dynamic_cast<Extension *>(type_.typeDefinition())->extendedType();
         }
         return type_;
     }
+    
+    Type type_;
+private:
     AccessLevel readAccessLevel();
     void parseFunctionBody(Function *function);
     void parseFunction(Function *function, bool inititalizer);

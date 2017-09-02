@@ -97,7 +97,7 @@ void Prettyprinter::printTypeDef(const Type &type) {
 
     if (auto protocol = type.protocol()) {
         for (auto method : protocol->methodList()) {
-            print("🐖", method, false, true);
+            print("❗️", method, false, true);
         }
         stream_ << "🍉\n\n";
         return;
@@ -152,10 +152,10 @@ void Prettyprinter::printMethodsAndInitializers(TypeDefinition *typeDef) {
         print("🐈", init, true, true);
     }
     for (auto method : typeDef->methodList()) {
-        print("🐖", method, true, false);
+        print("❗️", method, true, false);
     }
     for (auto typeMethod : typeDef->typeMethodList()) {
-        print("🐇🐖", typeMethod, true, true);
+        print("🐇❗️", typeMethod, true, true);
     }
 }
 

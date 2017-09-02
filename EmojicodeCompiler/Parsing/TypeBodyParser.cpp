@@ -181,32 +181,42 @@ void TypeBodyParser::parse() {
         auto attributes = TypeBodyAttributeParser().parse(&stream_);
         AccessLevel accessLevel = readAccessLevel();
 
-        auto &token = stream_.consumeToken(TokenType::Identifier);
-        switch (token.value()[0]) {
-            case E_SHORTCAKE:
-                attributes.check(token.position(), package_->app());
-                documentation.disallow();
-                parseInstanceVariable(token.position());
-                break;
-            case E_RADIO_BUTTON:
-                attributes.check(token.position(), package_->app());
-                parseEnumValue(token.position(), documentation);
-                break;
-            case E_CROCODILE:
-                attributes.check(token.position(), package_->app());
-                documentation.disallow();
-                parseProtocolConformance(token.position());
-                break;
-            case E_PIG: {
-                auto &methodName = stream_.consumeToken(TokenType::Identifier, TokenType::Operator);
+        auto &token = stream_.consumeToken();
+        switch (token.type()) {
+            case TokenType::EndArgumentList: {
+                auto &methodName = stream_.consumeToken(TokenType::Identifier);
                 parseMethod(methodName.value(), attributes, documentation, accessLevel, token.position());
                 break;
             }
-            case E_CAT:
-                parseInitializer(attributes, documentation, accessLevel, token.position());
+            case TokenType::Operator: {
+                parseMethod(token.value(), attributes, documentation, accessLevel, token.position());
+                break;
+            }
+            case TokenType::Identifier:
+                switch (token.value().front()) {
+                    case E_SHORTCAKE:
+                        attributes.check(token.position(), package_->app());
+                        documentation.disallow();
+                        parseInstanceVariable(token.position());
+                        break;
+                    case E_RADIO_BUTTON:
+                        attributes.check(token.position(), package_->app());
+                        parseEnumValue(token.position(), documentation);
+                        break;
+                    case E_CROCODILE:
+                        attributes.check(token.position(), package_->app());
+                        documentation.disallow();
+                        parseProtocolConformance(token.position());
+                        break;
+                    case E_CAT:
+                        parseInitializer(attributes, documentation, accessLevel, token.position());
+                        break;
+                    default:
+                        break;
+                }
                 break;
             default:
-                throw CompilerError(token.position(), "Unexpected identifier ", utf8(token.value()).c_str());
+                throw CompilerError(token.position(), "Unexpected token ", token.stringName());
         }
     }
     stream_.consumeToken(TokenType::Identifier);

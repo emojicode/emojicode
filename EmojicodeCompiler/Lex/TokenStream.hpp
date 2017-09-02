@@ -34,15 +34,13 @@ public:
         return tokens_[index_++];
     }
 
-    template<class... Args>
-    const Token& consumeToken(Args... args) {
+    const Token& consumeToken(TokenType type) {
         if (!hasMoreTokens()) {
             throw CompilerError(nextToken().position(), "Unexpected end of program.");
         }
-        if (!checkType(nextToken().type(), args...)) {
-            throw CompilerError(nextToken().position(), "Expected token but instead found %s (%s).",
-                                /*Token::stringNameForType(type),*/ nextToken().stringName(),
-                                utf8(nextToken().value()).c_str());
+        if (nextToken().type() != type) {
+            throw CompilerError(nextToken().position(), "Expected ", Token::stringNameForType(type),
+                                " but instead found ", nextToken().stringName(), "(", utf8(nextToken().value()), ").");
         }
         return tokens_[index_++];
     }
@@ -80,15 +78,6 @@ public:
 private:
     std::vector<Token> tokens_;
     size_t index_ = 0;
-
-    template<class... Args>
-    bool checkType(TokenType type, TokenType head, Args... args) {
-        return type == head || checkType(type, args...);
-    }
-
-    bool checkType(TokenType type, TokenType head) {
-        return type == head;
-    }
 };
 
 }  // namespace EmojicodeCompiler

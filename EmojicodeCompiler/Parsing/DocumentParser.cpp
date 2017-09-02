@@ -17,6 +17,7 @@
 #include "../Types/ValueType.hpp"
 #include "FunctionParser.hpp"
 #include "TypeBodyParser.hpp"
+#include "ProtocolTypeBodyParser.hpp"
 #include <cstring>
 #include <experimental/optional>
 
@@ -192,36 +193,13 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
 
     parseGenericParameters(protocol, TypeContext(Type(protocol, false)));
 
-    stream_.requireIdentifier(E_GRAPES);
-
     auto protocolType = Type(protocol, false);
     package_->offerType(protocolType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-
-    while (stream_.nextTokenIsEverythingBut(E_WATERMELON)) {
-        auto documentation = Documentation().parse(&stream_);
-        auto &token = stream_.consumeToken(TokenType::Identifier);
-        auto deprecated = stream_.consumeTokenIf(E_WARNING_SIGN);
-
-        if (!token.isIdentifier(E_PIG)) {
-            throw CompilerError(token.position(), "Only method declarations are allowed inside a protocol.");
-        }
-
-        auto &methodName = stream_.consumeToken(TokenType::Identifier, TokenType::Operator);
-
-        auto method = new ProtocolFunction(methodName.value(), AccessLevel::Public, false, protocolType, package_,
-                                           methodName.position(), false, documentation.get(), deprecated, false,
-                                           FunctionType::ObjectMethod);
-        parseParameters(method, TypeContext(protocolType), false);
-        parseReturnType(method, TypeContext(protocolType));
-
-        protocol->addMethod(method);
-    }
-    stream_.consumeToken(TokenType::Identifier);
+    ProtocolTypeBodyParser(protocolType, package_, stream_).parse();
 }
 
 void DocumentParser::parseEnum(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
-
     Enum *enumeration = new Enum(parsedTypeName.name, package_, theToken.position(), documentation);
 
     auto type = Type(enumeration, false);

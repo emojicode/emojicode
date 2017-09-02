@@ -3,15 +3,15 @@
   🍰 failed 🚂
 
   🐈 🆕 🍇
-    🍮 asserts 0 
-    🍮 failed 0 
+    🍮 asserts 0
+    🍮 failed 0
   🍉
 
-  🐖 ⛔ a 👌 description 🔡 🍇
-    🍮 asserts asserts ➕ 1 
+  ❗️ ⛔ a 👌 description 🔡 🍇
+    🍮 asserts asserts ➕ 1
     🍊 ❎a❗️ 🍇
       😀🍪 🔤❌❌ Failed 🔤 description 🍪❗️
-      🍮 failed failed ➕ 1 
+      🍮 failed failed ➕ 1
     🍉
     🍓 🍇
       😀description❗️
@@ -19,16 +19,16 @@
 
   🍉
 
-  🐖 👔 ➡️ 🚂🍇
+  ❗️ 👔 ➡️ 🚂🍇
     😀🍪 🔡failed❕10❗️ 🔤 of 🔤 🔡asserts❕10❗️ 🔤 tests failed.🔤 🍪❗️
     🍊 failed ▶ 0  🍇
-      🍎 1 
+      🍎 1
     🍉
 
-    🍎 0 
+    🍎 0
   🍉
 
-  🐖 🏁 🍇
+  ❗️ 🏁 🍇
     😀🔤You might want to implement the 🏁 method.🔤❗️
   🍉
 🍉

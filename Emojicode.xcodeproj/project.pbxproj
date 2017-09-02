@@ -12,6 +12,7 @@
 		E40B59EF1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40B59ED1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp */; };
 		E42207471ED81DDD006A1305 /* RetainedObjectPointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E42207451ED81DDD006A1305 /* RetainedObjectPointer.cpp */; };
 		E4221DA81F10BCFE002D85A6 /* Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4221DA61F10BCFE002D85A6 /* Data.cpp */; };
+		E426870E1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E426870C1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp */; };
 		E4431D651F4C4B7000D68379 /* Initializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D631F4C4B7000D68379 /* Initializer.cpp */; };
 		E4431D741F4E17B100D68379 /* ASTToCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D731F4E17B000D68379 /* ASTToCode.cpp */; };
 		E4431D771F4EB05200D68379 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4431D761F4EB05100D68379 /* utf8.c */; };
@@ -135,6 +136,8 @@
 		E4221DA61F10BCFE002D85A6 /* Data.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Data.cpp; path = "EmojicodeReal-TimeEngine/Data.cpp"; sourceTree = SOURCE_ROOT; };
 		E4221DA71F10BCFE002D85A6 /* Data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Data.hpp; path = "EmojicodeReal-TimeEngine/Data.hpp"; sourceTree = SOURCE_ROOT; };
 		E425EE9F1A6433A700F3A62B /* EmojicodeAPI.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; lineEnding = 0; name = EmojicodeAPI.hpp; path = "EmojicodeReal-TimeEngine/EmojicodeAPI.hpp"; sourceTree = SOURCE_ROOT; };
+		E426870C1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ProtocolTypeBodyParser.cpp; sourceTree = "<group>"; };
+		E426870D1F5AD49500B96A62 /* ProtocolTypeBodyParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProtocolTypeBodyParser.hpp; sourceTree = "<group>"; };
 		E4431D631F4C4B7000D68379 /* Initializer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializer.cpp; sourceTree = "<group>"; };
 		E4431D641F4C4B7000D68379 /* Initializer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Initializer.hpp; sourceTree = "<group>"; };
 		E4431D661F4C504200D68379 /* .clang-tidy */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
@@ -456,6 +459,8 @@
 				E4DE8CAA1F57410400BFE7A9 /* CompatibleFunctionParser.hpp */,
 				E47891071F4EEA3A008DCB24 /* TypeBodyParser.cpp */,
 				E47891081F4EEA3A008DCB24 /* TypeBodyParser.hpp */,
+				E426870C1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp */,
+				E426870D1F5AD49500B96A62 /* ProtocolTypeBodyParser.hpp */,
 				E460A5601F30EFA2006E3AC7 /* DocumentParser.cpp */,
 				E460A5611F30EFA2006E3AC7 /* DocumentParser.hpp */,
 				E478910A1F4EFD9C008DCB24 /* AttributesParser.cpp */,
@@ -832,6 +837,7 @@
 				E460A5B91F30EFA2006E3AC7 /* TypeDefinition.cpp in Sources */,
 				E45AF9A71F506EA00077E343 /* Prettyprinter.cpp in Sources */,
 				E47891111F4FF7D5008DCB24 /* CodeGenerator.cpp in Sources */,
+				E426870E1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp in Sources */,
 				E460A5C21F30EFA2006E3AC7 /* main.cpp in Sources */,
 				E460A5B41F30EFA2006E3AC7 /* Protocol.cpp in Sources */,
 				E47891161F502F12008DCB24 /* HRFApplicationDelegate.cpp in Sources */,
