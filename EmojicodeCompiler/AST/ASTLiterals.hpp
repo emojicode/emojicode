@@ -101,8 +101,8 @@ private:
 };
 
 class ASTDictionaryLiteral final : public ASTExpr {
-    using ASTExpr::ASTExpr;
 public:
+    explicit ASTDictionaryLiteral(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     void generateExpr(FnCodeGenerator *fncg) const override;
