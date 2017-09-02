@@ -12,7 +12,7 @@
 namespace EmojicodeCompiler {
 
 enum Emojis {
-    E_LARGE_RED_CIRCLE = 0x1F534,
+    E_HOUSE_BUILDING = 0x1F3E0,
     E_GRAPES = 0x1F347,
     E_CANDY = 0x1F36C,
     E_ORANGE_TRIANGLE = 0x1F536,

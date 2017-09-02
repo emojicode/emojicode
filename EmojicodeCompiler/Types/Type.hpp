@@ -21,7 +21,7 @@
 namespace EmojicodeCompiler {
 
 /// The identifier value representing the default namespace.
-const std::u32string kDefaultNamespace = std::u32string(1, E_LARGE_RED_CIRCLE);
+const std::u32string kDefaultNamespace = std::u32string(1, E_HOUSE_BUILDING);
 const int kBoxValueSize = 4;
 
 class TypeDefinition;
