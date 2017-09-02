@@ -5,7 +5,12 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -DDEBUG=1 -g")
-set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -fcolor-diagnostics")
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+add_compile_options(-fcolor-diagnostics)
+add_compile_options(-fcolor-diagnostics)
+endif()
 
 if(heapSize)
   add_definitions(-DheapSize=${heapSize})
