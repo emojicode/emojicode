@@ -120,8 +120,8 @@ public:
 };
 
 class ASTNothingness : public ASTExpr {
-    using ASTExpr::ASTExpr;
 public:
+    explicit ASTNothingness(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
