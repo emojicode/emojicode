@@ -40,7 +40,6 @@ enum Emojis {
     E_CROCODILE = 0x1F40A,
     E_PIG = 0x1F416,
     E_CHEQUERED_FLAG = 0x1F3C1,
-    E_CAT = 0x1F408,
     E_TURKEY = 0x1F983,
     E_WALE = 0x1F40B,
     E_CRYSTAL_BALL = 0x1F52E,
@@ -121,6 +120,7 @@ enum Emojis {
     E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK = 0x2049,
     E_RIGHT_FACING_FIST = 0x1F91C,
     E_LEFT_FACING_FIST = 0x1F91B,
+    E_NEW_SIGN = 0x1F195,
 };
 
 }  // namespace EmojicodeCompiler

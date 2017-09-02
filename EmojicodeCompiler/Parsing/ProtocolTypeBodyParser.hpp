@@ -18,8 +18,9 @@ class ProtocolTypeBodyParser : public TypeBodyParser {
 private:
     void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes, const Documentation &documentation,
                      AccessLevel access, const SourcePosition &p) override;
-    Initializer* parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                  AccessLevel access, const SourcePosition &p) override;
+    Initializer* parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                  const Documentation &documentation, AccessLevel access,
+                                  const SourcePosition &p) override;
     void parseInstanceVariable(const SourcePosition &p) override;
     void parseProtocolConformance(const SourcePosition &p) override;
 };

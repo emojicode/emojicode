@@ -103,7 +103,7 @@ std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
             return std::make_shared<ASTForIn>(iteratee, variableToken.value(), block, token.position());
         }
         case TokenType::SuperInit: {
-            auto &initializerToken = stream_.consumeToken(TokenType::Identifier);
+            auto &initializerToken = stream_.consumeToken();  // TODO: TokenType::Identifier
             auto arguments = parseArguments(token.position());
             return std::make_shared<ASTSuperinitializer>(initializerToken.value(), arguments, token.position());
         }
@@ -221,6 +221,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             throw CompilerError(token.position(), "Misplaced documentation comment.");
         case TokenType::BlockBegin:
             return parseClosure(token);
+        case TokenType::New:
+            return parseInitialization(token.position());
         default:
             throw CompilerError(token.position(), "Unexpected token ", token.stringName(), ".");
     }
@@ -269,11 +271,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             return std::make_shared<ASTSuperMethod>(name, parseArguments(token.position()), token.position());
         }
-        case E_LARGE_BLUE_DIAMOND: {
-            auto type = parseTypeExpr(token.position());
-            auto name = stream_.consumeToken(TokenType::Identifier).value();
-            return std::make_shared<ASTInitialization>(name, type, parseArguments(token.position()), token.position());
-        }
         case E_DOUGHNUT: {
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             auto callee = parseTypeExpr(token.position());
@@ -291,6 +288,12 @@ std::shared_ptr<ASTExpr> FunctionParser::parseGroup() {
     auto expr = parseExpr(0);
     stream_.consumeToken(TokenType::GroupEnd);
     return expr;
+}
+
+std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePosition &position) {
+    auto type = parseTypeExpr(position);
+    auto name = stream_.consumeToken().value();  // TODO: TokenType::Identifier
+    return std::make_shared<ASTInitialization>(name, type, parseArguments(position), position);
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {

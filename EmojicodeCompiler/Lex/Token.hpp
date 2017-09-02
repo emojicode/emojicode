@@ -51,6 +51,7 @@ enum class TokenType {
     Declaration,
     Assignment,
     ErrorHandler,
+    New,
 };
 
 class Token {

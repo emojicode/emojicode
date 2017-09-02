@@ -148,7 +148,7 @@ void ASTCaptureMethod::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTInitialization::toCode(Prettyprinter &pretty) const {
-    pretty << "🔷";
+    pretty << "🆕";
     typeExpr_->toCode(pretty);
     pretty << utf8(name_);
     args_.toCode(pretty);

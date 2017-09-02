@@ -24,7 +24,7 @@ void ProtocolTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAtt
     type_.protocol()->addMethod(method);
 }
 
-Initializer* ProtocolTypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes,
+Initializer* ProtocolTypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                                       const Documentation &documentation, AccessLevel access,
                                                       const SourcePosition &p) {
     throw CompilerError(p, "Only method declarations are allowed inside a protocol.");

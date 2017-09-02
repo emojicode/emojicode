@@ -153,7 +153,7 @@ void Prettyprinter::printTypeDefName(const Type &type) {
 
 void Prettyprinter::printMethodsAndInitializers(TypeDefinition *typeDef) {
     for (auto init : typeDef->initializerList()) {
-        print("🐈", init, true, true);
+        print("🆕", init, true, true);
     }
     for (auto method : typeDef->methodList()) {
         print("❗️", method, true, false);
@@ -248,13 +248,18 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
     stream_ << key;
 
     if (auto initializer = dynamic_cast<Initializer *>(function)) {
+        if (initializer->name().front() != E_NEW_SIGN) {
+            stream_ << " " << utf8(function->name()) << " ";
+        }
         if (initializer->errorProne()) {
             stream_ << "🚨";
             print(initializer->errorType(), typeContext_);
             stream_ << " ";
         }
     }
-    stream_ << " " << utf8(function->name()) << " ";
+    else {
+        stream_ << " " << utf8(function->name()) << " ";
+    }
 
     printArguments(function);
     printReturnType(function);

@@ -83,8 +83,9 @@ void EnumTypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
     throw CompilerError(p, "Enums cannot have instance variable.");
 }
 
-Initializer* EnumTypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                                  AccessLevel access, const SourcePosition &p) {
+Initializer* EnumTypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                                  const Documentation &documentation, AccessLevel access,
+                                                  const SourcePosition &p) {
     throw CompilerError(p, "Enums cannot have custom initializers.");
 }
 
@@ -110,10 +111,10 @@ void ValueTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttrib
     TypeBodyParser::parseMethod(name, attributes, documentation, access, p);
 }
 
-Initializer* ClassTypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes,
+Initializer* ClassTypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                                    const Documentation &documentation, AccessLevel access,
                                                    const SourcePosition &p) {
-    auto init = TypeBodyParser::parseInitializer(attributes.allow(Attribute::Required), documentation, access, p);
+    auto init = TypeBodyParser::parseInitializer(name, attributes.allow(Attribute::Required), documentation, access, p);
     requiredInitializers_.erase(init->name());
     return init;
 }
@@ -149,8 +150,9 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
     }
 }
 
-Initializer* TypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                              AccessLevel access, const SourcePosition &p) {
+Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                              const Documentation &documentation, AccessLevel access,
+                                              const SourcePosition &p) {
     attributes.check(p, package_->app());
 
     std::experimental::optional<Type> errorType = std::experimental::nullopt;
@@ -162,7 +164,7 @@ Initializer* TypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes
         errorType = parseErrorEnumType(TypeContext(type_), TypeDynamism::None, token.position());
     }
 
-    std::u32string name = stream_.consumeToken(TokenType::Identifier).value();
+
     auto initializer = new Initializer(name, access, attributes.has(Attribute::Final), owningType(),
                                        package_, p, attributes.has(Attribute::Override), documentation.get(),
                                        attributes.has(Attribute::Deprecated), attributes.has(Attribute::Required),
@@ -187,15 +189,23 @@ void TypeBodyParser::parse() {
                 parseMethod(methodName.value(), attributes, documentation, accessLevel, token.position());
                 break;
             }
-            case TokenType::Operator: {
+            case TokenType::Operator:
                 parseMethod(token.value(), attributes, documentation, accessLevel, token.position());
                 break;
-            }
             case TokenType::Declaration:
                 attributes.check(token.position(), package_->app());
                 documentation.disallow();
                 parseInstanceVariable(token.position());
                 break;
+            case TokenType::New: {
+                std::u32string name = std::u32string(1, E_NEW_SIGN);
+                if (stream_.nextTokenIs(TokenType::Identifier) && !stream_.nextTokenIs(E_RADIO)
+                    && !stream_.nextTokenIs(E_BABY_BOTTLE)) {
+                    name = stream_.consumeToken(TokenType::Identifier).value();
+                }
+                parseInitializer(name, attributes, documentation, accessLevel, token.position());
+                break;
+            }
             case TokenType::Identifier:
                 switch (token.value().front()) {
                     case E_RADIO_BUTTON:
@@ -206,9 +216,6 @@ void TypeBodyParser::parse() {
                         attributes.check(token.position(), package_->app());
                         documentation.disallow();
                         parseProtocolConformance(token.position());
-                        break;
-                    case E_CAT:
-                        parseInitializer(attributes, documentation, accessLevel, token.position());
                         break;
                     default:
                         break;

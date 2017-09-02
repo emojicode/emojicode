@@ -10,7 +10,7 @@
   🐊 📞
   🐊 💡
 
-  🐈 🆕 🍇🍉
+  🆕 🍇🍉
 
   ❗️ 🔦 degree 🚀 🍇
     😀 🍪 🔤Turning on camera flash light at 🔤 🔡 degree ❕3❗️ 🍪❗️
@@ -25,7 +25,7 @@
   🐊 📞
   🐊 💡
 
-  🐈 🆕 🍇🍉
+  🆕 🍇🍉
 
   ❗️ 🔦 degree 🚀 🍇
     😀 🍪 🔤Turning on spot light at 🔤 🔡 degree ❕3❗️ 🍪❗️
@@ -39,7 +39,7 @@
 🐇 ☎️ 🍇
   🐊 📞
 
-  🐈 🆕 🍇🍉
+  🆕 🍇🍉
 
   ❗️ 📞 number 🔡 🍇
     😀 🍪 🔤From a landline, calling 🔤 number 🍪❗️
@@ -49,7 +49,7 @@
 🕊 🔦 🍇
   🐊 💡
 
-  🐈 🆕 🍇🍉
+  🆕 🍇🍉
 
   ❗️ 🔦 degree 🚀 🍇
     😀 🍪 🔤Turning on flashlight at 🔤 🔡 degree ❕3❗️ 🍪❗️
@@ -61,19 +61,19 @@
   🍰 g 🍨🐚🔡
   🍮 g stringList
 
-  🍦 mobilePhoneList 🍨 🔷📱🆕❗️ 🔷📱🆕❗️ 🍆
+  🍦 mobilePhoneList 🍨 🆕📱🆕❗️ 🆕📱🆕❗️ 🍆
   🍰 l 🍨🐚📱
   🍮 l mobilePhoneList
 
-  🍦 phonableList 🍨 🔷📱🆕❗️ 🔷📱🆕❗️ 🔷☎️ 🆕❗️ 🍆
+  🍦 phonableList 🍨 🆕📱🆕❗️ 🆕📱🆕❗️ 🆕☎️ 🆕❗️ 🍆
   🍰 a 🍨🐚📞
   🍮 a phonableList
 
-  🍦 flashlightableList 🍨 🔷📱🆕❗️ 🔷🔦🆕❗️ 🍆
+  🍦 flashlightableList 🍨 🆕📱🆕❗️ 🆕🔦🆕❗️ 🍆
   🍰 b 🍨🐚💡
   🍮 b flashlightableList
 
-  🍦 flashlightAndPhonableableList 🍨 🔷📱🆕❗️ 🔷🚁🆕❗️ 🍆
+  🍦 flashlightAndPhonableableList 🍨 🆕📱🆕❗️ 🆕🚁🆕❗️ 🍆
   🍰 q 🍨🐚🍱💡📞🍱
   🍮 q flashlightAndPhonableableList
 

@@ -61,6 +61,7 @@ Lexer::Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::
     singleTokens_.emplace(E_AVOCADO, TokenType::ErrorHandler);
     singleTokens_.emplace(E_GRAPES, TokenType::BlockBegin);
     singleTokens_.emplace(E_WATERMELON, TokenType::BlockEnd);
+    singleTokens_.emplace(E_NEW_SIGN, TokenType::New);
 }
 
 bool Lexer::detectWhitespace() {

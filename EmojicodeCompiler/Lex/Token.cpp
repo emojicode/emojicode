@@ -49,6 +49,7 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::ErrorHandler: return "ErrorHandler";
         case TokenType::BlockBegin: return "BlockBegin";
         case TokenType::BlockEnd: return "BlockEnd";
+        case TokenType::New: return "New";
     }
 }
 

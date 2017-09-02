@@ -41,8 +41,9 @@ protected:
     virtual void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
                              const Documentation &documentation, AccessLevel access, const SourcePosition &p);
     /// Called if an $initializer$ has been detected. The first token has already been parsed.
-    virtual Initializer* parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                          AccessLevel access, const SourcePosition &p);
+    virtual Initializer* parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                          const Documentation &documentation, AccessLevel access,
+                                          const SourcePosition &p);
 
     Type owningType() {
         if (type_.type() == TypeType::Extension) {
@@ -63,8 +64,9 @@ private:
     using TypeBodyParser::TypeBodyParser;
     void parseEnumValue(const SourcePosition &p, const Documentation &documentation) override;
     void parseInstanceVariable(const SourcePosition &p) override;
-    Initializer* parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                  AccessLevel access, const SourcePosition &p) override;
+    Initializer* parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                  const Documentation &documentation, AccessLevel access,
+                                  const SourcePosition &p) override;
 };
 
 class ValueTypeBodyParser : public TypeBodyParser {
@@ -82,8 +84,9 @@ public:
 private:
     void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes, const Documentation &documentation,
                      AccessLevel access, const SourcePosition &p) override;
-    Initializer* parseInitializer(TypeBodyAttributeParser attributes, const Documentation &documentation,
-                                  AccessLevel access, const SourcePosition &p) override;
+    Initializer* parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                  const Documentation &documentation, AccessLevel access,
+                                  const SourcePosition &p) override;
 
     std::set<std::u32string> requiredInitializers_;
 };

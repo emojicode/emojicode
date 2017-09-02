@@ -345,7 +345,7 @@
   🍰 iteratee 🐽🐚Element
   🍰 index 🚂
 
-  🐈 🆕 🍼 iteratee 🐽🐚Element 🍇
+  🆕 🍼 iteratee 🐽🐚Element 🍇
     🍮 index 0
   🍉
 
@@ -380,7 +380,7 @@
   🌮
     Creates a range from start to stop.
   🌮
-  🐈 ⏩ 🍼 start 🚂 🍼 stop 🚂 🍇
+  🆕 ⏩ 🍼 start 🚂 🍼 stop 🚂 🍇
     🍮 step 1
     🍊 stop ◀️ start 🍇
       🍮 step -1
@@ -390,7 +390,7 @@
   🌮
     Creates a range from start to stop with the given step.
   🌮
-  🐈 ⏭ 🍼 start 🚂 🍼 stop 🚂 🍼 step 🚂 🍇🍉
+  🆕 ⏭ 🍼 start 🚂 🍼 stop 🚂 🍼 step 🚂 🍇🍉
 
   🌮
     Returns the `n`th element of the range. `n` is only valid if
@@ -419,7 +419,7 @@
 
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
   ❗️ 🍡 ➡️ 🌳🐚🚂 🍇
-    ↩️ 🔷🌳🐚🚂🆕 ❕🐕❗️
+    ↩️ 🆕🌳🐚🚂🆕 ❕🐕❗️
   🍉
 🍉
 
@@ -435,7 +435,7 @@
   🍰 iteratee 🍨🐚Element
   🍰 index 🚂
 
-  🐈 🆕 🍼 iteratee 🍨🐚Element 🍇
+  🆕 🍼 iteratee 🍨🐚Element 🍇
     🍮 index 0
   🍉
 
@@ -500,16 +500,16 @@
   🐊 😛🐚🔡
 
   🌮 Prompts the user for input. (via the standard input/output) 🌮
-  🐈 😯 prompt 🔡 📻 80
+  🆕 😯 prompt 🔡 📻 80
 
   🌮 Creates a string from the given list of symbols. 🌮
-  🐈 🎙 symbolList 🍨🐚🔣 📻 81
+  🆕 🎙 symbolList 🍨🐚🔣 📻 81
 
   🌮
     Creates a string by joining all elements into a string sepearted
     by *separator*.
   🌮
-  🐈 🍨 list 🍨🐚🔡 separator 🔡 📻 82
+  🆕 🍨 list 🍨🐚🔡 separator 🔡 📻 82
 
   🌮 Puts this 🔡 to the standard output. 🌮
   ❗️ 😀 📻 59
@@ -629,19 +629,19 @@
 
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
   ❗️ 🍡 ➡️ 🌳🐚🔣 🍇
-    ↩️ 🔷🌳🐚🔣🆕❕🐕❗️
+    ↩️ 🆕🌳🐚🔣🆕❕🐕❗️
   🍉
 🍉
 
 🌍 🐇 🔠 🍇
   🍰 symbols 🍨🐚🔣
 
-  🐈 🆕 🍇
-    🍮 symbols 🔷🍨🐚🔣🐸❗️
+  🆕 🍇
+    🍮 symbols 🆕🍨🐚🔣🐸❗️
   🍉
 
-  🐈 🐧 capacity 🚂 🍇
-    🍮 symbols 🔷🍨🐚🔣🐧❕ capacity❗️
+  🆕 🐧 capacity 🚂 🍇
+    🍮 symbols 🆕🍨🐚🔣🐧❕ capacity❗️
   🍉
 
   ❗️ 🐻 string 🔡 🍇
@@ -649,7 +649,7 @@
   🍉
 
   ❗️ 🔡 ➡️  🔡 🍇
-    ↩️ 🔷🔡🎙❕symbols❗️
+    ↩️ 🆕🔡🎙❕symbols❗️
   🍉
 🍉
 
@@ -658,10 +658,10 @@
   🐊 🐽🐚Element
 
   🌮 Creates an empty list. 🌮
-  🐈 🐸 📻 58
+  🆕 🐸 📻 58
 
   🌮 Creates an empty list with the given initial capacity. 🌮
-  🐈 🐧 capacity 🚂 📻 57
+  🆕 🐧 capacity 🚂 📻 57
 
   🌮 Returns a shallow copy of this list. 🌮
   ❗️ 🐮 ➡️ 🍨🐚Element 📻 52
@@ -746,7 +746,7 @@
     value to the end of a new list.
   🌮
   ❗️ 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
-    🍦 g 🔷🍨🐚A🐧 ❕🐔 🐕❗️❗️
+    🍦 g 🆕🍨🐚A🐧 ❕🐔 🐕❗️❗️
     🔂 element 🐕 🍇
       🐻 g❕callback⁉️❕element❗️❗️
     🍉
@@ -758,7 +758,7 @@
     `callback`.
   🌮
   ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
-    🍦 g 🔷🍨🐚Element🐸❗️
+    🍦 g 🆕🍨🐚Element🐸❗️
     🔂 element 🐕 🍇
       🍊 callback⁉️❕element❗️ 🍇
         🐻 g❕element❗️
@@ -788,7 +788,7 @@
       ↩️ 👎
     🍉
 
-    🔂 i 🔷⏩⏩❕ 0 🐔🐕❗️ ❗️ 🍇
+    🔂 i 🆕⏩⏩❕ 0 🐔🐕❗️ ❗️ 🍇
       🍊 ❎ 🍺🐽 other❕i❗️ 🙌 🍺 🐽 🐕❕ i❗️ ❗️ 🍇
         ↩️ 👎
       🍉
@@ -798,7 +798,7 @@
 
   🌮 Returns an iterator to iterate over the elements of this list. 🌮
   ❗️ 🍡 ➡️ 🌳🐚Element 🍇
-    ↩️ 🔷⚫️🆕❕🐕❗️
+    ↩️ 🆕⚫️🆕❕🐕❗️
   🍉
 🍉
 
@@ -847,13 +847,13 @@
 
   🌮 Returns an iterator to iterate over the bytes of this data object. 🌮
   ❗️ 🍡 ➡️ 🌳🐚🚂 🍇
-    ↩️ 🔷🌳🐚🚂🆕❕🐕❗️
+    ↩️ 🆕🌳🐚🚂🆕❕🐕❗️
   🍉
 🍉
 
 🐋 🍯 🍇
   🌮 Creates an empty 🍯. 🌮
-  🐈 🐸 📻 86
+  🆕 🐸 📻 86
   🌮
     Returns the value assigned to *key*. If key is not in the 🍯 ✨ is
     returned.
@@ -934,7 +934,7 @@
     Creates an new thread and calls the given callable `callable` on the newly
     created thread.
   🌮
-  🐈 🆕 callable 🍇🍉 📻 8
+  🆕 callable 🍇🍉 📻 8
   🌮
     Blocks the calling thread until this thread has finished work.
   🌮
@@ -954,7 +954,7 @@
   🌮
     Creates an new mutex.
   🌮
-  🐈 🆕 📻 12
+  🆕 📻 12
   🌮
     Attempts to lock the mutex and waits until it becomes available if it is
     already locked.
@@ -980,7 +980,7 @@
     Creates a new generator and seeds it with a random value, if possible using
     hardware entropy.
   🌮
-  🐈 🆕 📻 94
+  🆕 📻 94
   🌮
     Generates an integer. Integers are uniformly distributed on the
     closed interval `[a, b]`.
