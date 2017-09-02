@@ -117,11 +117,45 @@ void ASTNothingness::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type(CL_DICTIONARY, false);  // TODO: infer and transform
+    type_ = Type(CL_DICTIONARY, false);
+
+    analyser->scoper().pushTemporaryScope();
+    auto variable = analyser->scoper().currentScope().declareInternalVariable(type_, position());
+    varId_ = variable.id();
+
+    CommonTypeFinder finder;
+    for (auto it = values_.begin(); it != values_.end(); it++) {
+        analyser->expectType(Type(CL_STRING, false), &*it);
+        if (++it == values_.end()) {
+            throw CompilerError(position(), "A value must be provided for every key.");
+        }
+        finder.addType(analyser->expect(TypeExpectation(false, true, false), &*it), analyser->typeContext());
+    }
+
+    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->app()));
+    return type_;
 }
 
 void ASTDictionaryLiteral::generateExpr(FnCodeGenerator *fncg) const {
-    // TODO: implement
+    auto &var = fncg->scoper().declareVariable(varId_, type_);
+    auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
+        fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
+        fncg->wr().writeInstruction(type_.eclass()->index);
+    });
+    InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
+                                                                   std::u32string(1, 0x1F438));
+    fncg->copyToVariable(var.stackIndex, false, type_);
+
+    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fncg) {
+        fncg->pushVariable(var.stackIndex, false, var.type);
+    });
+    for (auto it = values_.begin(); it != values_.end(); it++) {
+        auto args = ASTArguments(position());
+        args.addArguments(*it);
+        args.addArguments(*(++it));
+        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F437));
+    }
+    getVar.generateExpr(fncg);
 }
 
 Type ASTListLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

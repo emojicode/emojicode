@@ -73,8 +73,8 @@ compilation_tests = [
 ]
 library_tests = [
     "stringTest", "primitives", "mathTest", "dataTest", "systemTest",
-    "listTest", "enumerator", "rangeTest",
-    #   "dictionaryTest", "jsonTest", "fileTest"
+    "listTest", "enumerator", "rangeTest", "dictionaryTest",
+    # "jsonTest", "fileTest"
 ]
 reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject",
                                       "*.emojic"))

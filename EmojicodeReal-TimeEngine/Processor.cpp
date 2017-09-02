@@ -53,6 +53,8 @@ void execute(Thread *thread) {
     while (true) {
         auto i = static_cast<Instructions>(thread->consumeInstruction());
 #ifdef DEBUG
+        printf("%4ld: ", thread->currentStackFrame()->executionPointer -
+               thread->currentStackFrame()->function->block.instructions - 1);
         pinsname(i);
         puts("");
 #endif

@@ -313,7 +313,7 @@ void bridgeDictionaryGet(Thread *thread) {
     auto *dictionary = thread->thisObject()->val<EmojicodeDictionary>();
     EmojicodeDictionaryNode *node = dictionaryGetNode(dictionary, key);
     if (node == nullptr) {
-        thread->returnNothingnessFromFunction();
+        thread->returnBoxNothingnessFromFunction();
     }
     else {
         thread->returnFromFunction(node->value);

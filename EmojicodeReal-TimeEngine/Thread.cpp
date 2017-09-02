@@ -60,12 +60,17 @@ StackFrame* Thread::pushStackFrame(Value self, bool copyArgs, Function *function
         EmojicodeInstruction copySize = consumeInstruction();
         std::memcpy(sf->variableDestination(0), popOpr(copySize), copySize * sizeof(Value));
     }
-
+#ifdef DEBUG
+    puts("=== PUSH FRAME ===");
+#endif
     stack_ = sf;
     return stack_;
 }
 
 void Thread::popStackFrame() {
+#ifdef DEBUG
+    puts("=== POP FRAME ===");
+#endif
     stack_ = stack_->returnPointer;
 }
 

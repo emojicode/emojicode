@@ -109,6 +109,8 @@ public:
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
+    VariableID varId_;
+    Type type_ = Type::noReturn();
 };
 
 class ASTThis : public ASTExpr {
