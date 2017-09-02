@@ -87,14 +87,26 @@ public:
         pushOpr(&value.type, kBoxValueSize);
         returnFromFunction();
     }
-    /// Leaves the function and sets the value of the return destination to Nothingness. (See @c makeNothingness())
+    /// Leaves the function and sets the value of the return destination to Nothingness.
+    /// @attention This function may only be used if the return is a simple optional and the value field has size 1.
+    /// @see returnBoxNothingnessFromFunction(), returnOEValueFromFunction()
     void returnNothingnessFromFunction() {
         pushOpr(T_NOTHINGNESS);
         pushPointerOpr(1);
         returnFromFunction();
     }
-    /// Leaves the function and sets the value of the return destination to the given value. The destination is treated
-    /// as optional. (See @c optionalSet())
+    /// Leaves the function and sets the value of the return destination to Nothingness.
+    /// @attention This function may only be used if the return is a box.
+    /// @see returnNothingnessFromFunction()
+    void returnBoxNothingnessFromFunction() {
+        pushOpr(T_NOTHINGNESS);
+        pushPointerOpr(kBoxValueSize - 1);
+        returnFromFunction();
+    }
+
+    /// Leaves the function and sets the value of the return destination to the given value.
+    /// @attention This function may only be used if the return is a simple optional and the value field has size 1.
+    /// @see returnNothingnessFromFunction(), returnFromFunction()
     void returnOEValueFromFunction(Value value) {
         pushOpr(T_OPTIONAL_VALUE);
         pushOpr(value);

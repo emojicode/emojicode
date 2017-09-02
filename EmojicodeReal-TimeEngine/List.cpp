@@ -97,7 +97,7 @@ void listGetBridge(Thread *thread) {
         index += list->count;
     }
     if (index < 0 || list->count <= index) {
-        thread->returnNothingnessFromFunction();
+        thread->returnBoxNothingnessFromFunction();
         return;
     }
     thread->returnFromFunction(list->elements()[index]);
