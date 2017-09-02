@@ -29,7 +29,7 @@ public:
     };
 
     struct Variable {
-        Type type = Type::nothingness();
+        Type type = Type::noReturn();
         StackIndex stackIndex = StackIndex(0);
         unsigned int initialized = 0;
         InstructionCount initPosition;

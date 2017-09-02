@@ -154,7 +154,7 @@ private:
     std::u32string documentation_;
     SourcePosition position_;
 
-    Type superType_ = Type::nothingness();
+    Type superType_ = Type::noReturn();
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 };

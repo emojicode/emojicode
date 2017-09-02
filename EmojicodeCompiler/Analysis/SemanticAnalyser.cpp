@@ -72,7 +72,7 @@ void SemanticAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
         root->appendNode(std::make_shared<ASTReturn>(nullptr, root->position()));
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
-        if (function_->returnType.type() != TypeType::Nothingness) {
+        if (function_->returnType.type() != TypeType::NoReturn) {
             throw CompilerError(function_->position(), "An explicit return is missing.");
         }
         else {
@@ -292,7 +292,7 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
             for (auto &protocol : a->protocols()) {
                 if (protocol.protocol() == PR_ENUMERATEABLE) {
                     auto itemType = Type(false, 0, PR_ENUMERATEABLE);
-                    *elementType = itemType.resolveOn(protocol.resolveOn(type));
+                    *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
                     return true;
                 }
             }
@@ -302,13 +302,13 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
         for (auto &protocol : type.typeDefinition()->protocols()) {
             if (protocol.protocol() == PR_ENUMERATEABLE) {
                 auto itemType = Type(   false, 0, PR_ENUMERATEABLE);
-                *elementType = itemType.resolveOn(protocol.resolveOn(type));
+                *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
                 return true;
             }
         }
     }
     else if (type.type() == TypeType::Protocol && type.protocol() == PR_ENUMERATEABLE) {
-        *elementType = Type(false, 0, type.protocol()).resolveOn(type);
+        *elementType = Type(false, 0, type.protocol()).resolveOn(TypeContext(type));
         return true;
     }
     return false;

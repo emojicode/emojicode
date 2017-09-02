@@ -309,7 +309,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseGroup() {
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
-    auto function = new Function(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::nothingness(),
+    auto function = new Function(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::noReturn(),
                                  package_, token.position(), false, std::u32string(), false, false,
                                  FunctionType::Function);
 

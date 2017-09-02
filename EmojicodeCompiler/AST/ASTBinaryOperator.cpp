@@ -162,7 +162,7 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
         }
     }
 
-    return std::make_pair(false, BuiltIn(Type::nothingness()));
+    return std::make_pair(false, BuiltIn(Type::noReturn()));
 }
 
 }  // namespace EmojicodeCompiler

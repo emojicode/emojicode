@@ -14,6 +14,7 @@
 #include "../Generation/StringPool.hpp"
 #include "../Parsing/AbstractParser.hpp"
 #include "../Types/TypeExpectation.hpp"
+#include "../Types/CommonTypeFinder.hpp"
 #include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
@@ -102,11 +103,17 @@ void ASTThis::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Type ASTNothingness::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type::nothingness();
+    if (!expectation.optional() && expectation.type() != TypeType::Something) {
+        throw CompilerError(position(), "⚡ can only be used when an optional is expected.");
+    }
+    type_ = expectation.copyType();
+    return type_;
 }
 
 void ASTNothingness::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_GET_NOTHINGNESS);
+    fncg->wr().writeInstruction(INS_PUSH_N);
+    fncg->wr().writeInstruction(type_.size() - 1);
 }
 
 Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

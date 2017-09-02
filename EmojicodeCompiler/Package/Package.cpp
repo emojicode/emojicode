@@ -28,7 +28,7 @@
 namespace EmojicodeCompiler {
 
 Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
-    Type type = Type::nothingness();
+    Type type = Type::noReturn();
     _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::Class) {
         throw CompilerError(errorPosition, "s package class ", utf8(name), " is missing.");
@@ -37,7 +37,7 @@ Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosi
 }
 
 Protocol* getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
-    Type type = Type::nothingness();
+    Type type = Type::noReturn();
     _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::Protocol) {
         throw CompilerError(errorPosition, "s package protocol ", utf8(name), " is missing.");
@@ -47,7 +47,7 @@ Protocol* getStandardProtocol(const std::u32string &name, Package *_, const Sour
 
 ValueType* getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition,
                                 unsigned int boxId) {
-    Type type = Type::nothingness();
+    Type type = Type::noReturn();
     _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::ValueType) {
         throw CompilerError(errorPosition, "s package value type ", utf8(name), " is missing.");
@@ -78,7 +78,7 @@ void Package::importPackage(const std::string &name, const std::u32string &ns, c
     auto import = app_->loadPackage(name, p, this);
 
     for (auto exported : import->exportedTypes_) {
-        Type type = Type::nothingness();
+        Type type = Type::noReturn();
         if (lookupRawType(TypeIdentifier(exported.name, ns, p), false, &type)) {
             throw CompilerError(p, "Package ", name , " could not be loaded into namespace ", utf8(ns),
                                 " of package ", name_, ": ", utf8(exported.name),
@@ -153,7 +153,7 @@ void Package::enqueueFunction(Function *function) const {
 }
 
 Type Package::getRawType(const TypeIdentifier &typeId, bool optional) const {
-    auto type = Type::nothingness();
+    auto type = Type::noReturn();
     if (!lookupRawType(typeId, optional, &type)) {
         throw CompilerError(typeId.position, "Could not find a type named ", utf8(typeId.name), " in namespace ",
                             utf8(typeId.ns), ".");

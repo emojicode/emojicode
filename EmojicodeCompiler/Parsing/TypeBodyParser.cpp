@@ -60,7 +60,7 @@ AccessLevel TypeBodyParser::readAccessLevel() {
 }
 
 void TypeBodyParser::parseProtocolConformance(const SourcePosition &p) {
-    Type type = parseType(type_, TypeDynamism::GenericTypeVariables);
+    Type type = parseType(TypeContext(type_), TypeDynamism::GenericTypeVariables);
 
     if (type.type() != TypeType::Protocol || type.optional()) {
         package_->app()->error(CompilerError(p, "The given type is not a protocol."));
@@ -120,7 +120,7 @@ Initializer* ClassTypeBodyParser::parseInitializer(TypeBodyAttributeParser attri
 
 void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
     auto &variableName = stream_.consumeToken(TokenType::Variable);
-    auto type = parseType(type_, TypeDynamism::GenericTypeVariables);
+    auto type = parseType(TypeContext(type_), TypeDynamism::GenericTypeVariables);
     auto instanceVar = InstanceVariableDeclaration(variableName.value(), type, variableName.position());
     type_.typeDefinition()->addInstanceVariable(instanceVar);
 }
@@ -159,7 +159,7 @@ Initializer* TypeBodyParser::parseInitializer(TypeBodyAttributeParser attributes
             throw CompilerError(p, "Only classes can have error-prone initializers.");
         }
         auto &token = stream_.consumeToken(TokenType::Identifier);
-        errorType = parseErrorEnumType(type_, TypeDynamism::None, token.position());
+        errorType = parseErrorEnumType(TypeContext(type_), TypeDynamism::None, token.position());
     }
 
     std::u32string name = stream_.consumeToken(TokenType::Identifier).value();

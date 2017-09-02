@@ -177,7 +177,7 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     Type iteratee = analyser->expect(TypeExpectation(true, true, false), &iteratee_);
     analyser->popTemporaryScope(iteratee_);
 
-    elementType_ = Type::nothingness();
+    elementType_ = Type::noReturn();
     if (!analyser->typeIsEnumerable(iteratee, &elementType_)) {
         auto iterateeString = iteratee.toString(analyser->typeContext());
         throw CompilerError(position(), iterateeString, " does not conform to s🔂.");

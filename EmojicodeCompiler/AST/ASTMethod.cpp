@@ -89,7 +89,7 @@ std::pair<bool, Type> ASTMethodable::builtIn(const Type &type, const std::u32str
             return std::make_pair(true, Type::integer());
         }
     }
-    return std::make_pair(false, Type::nothingness());
+    return std::make_pair(false, Type::noReturn());
 }
 
 void ASTMethod::generateExpr(FnCodeGenerator *fncg) const {

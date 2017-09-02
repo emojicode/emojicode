@@ -48,7 +48,7 @@ protected:
 
 class ASTInferType final : public ASTStaticType {
 public:
-    explicit ASTInferType(const SourcePosition &p) : ASTStaticType(Type::nothingness(), TypeAvailability::StaticAndUnavailable, p) {}
+    explicit ASTInferType(const SourcePosition &p) : ASTStaticType(Type::noReturn(), TypeAvailability::StaticAndUnavailable, p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(Prettyprinter &pretty) const override;
 };

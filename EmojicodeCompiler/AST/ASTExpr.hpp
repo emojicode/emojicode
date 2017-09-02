@@ -36,7 +36,7 @@ public:
 protected:
     virtual void generateExpr(FnCodeGenerator *fncg) const = 0;
 private:
-    Type expressionType_ = Type::nothingness();
+    Type expressionType_ = Type::noReturn();
     bool temporarilyScoped_ = false;
 };
 
@@ -116,7 +116,7 @@ public:
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string name_;
-    Type calleeType_ = Type::nothingness();
+    Type calleeType_ = Type::noReturn();
     ASTArguments args_;
 };
 

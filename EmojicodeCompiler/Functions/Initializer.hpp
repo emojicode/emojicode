@@ -21,7 +21,7 @@ public:
                 std::experimental::optional<Type> errorType, FunctionType mode)
     : Function(std::move(name), level, final, std::move(owningType), package, std::move(p), overriding, std::move(documentationToken), deprecated, true, mode),
     required_(r), errorType_(std::move(errorType)) {
-        returnType = Type::nothingness();
+        returnType = Type::noReturn();
     }
 
     /// Whether all subclassess are required to implement this initializer as well. Never true for non-class types.

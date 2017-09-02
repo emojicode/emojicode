@@ -33,7 +33,7 @@ void buildBoxingLayerAst(BoxingLayer *layer) {
     }
 
     std::shared_ptr<ASTBlock> block = std::make_shared<ASTBlock>(p);
-    if (layer->returnType.type() == TypeType::Nothingness) {
+    if (layer->returnType.type() == TypeType::NoReturn) {
         block->appendNode(std::make_shared<ASTExprStatement>(expr, p));
     }
     else {

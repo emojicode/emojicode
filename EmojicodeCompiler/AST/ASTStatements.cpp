@@ -37,7 +37,7 @@ void ASTExprStatement::analyse(SemanticAnalyser *analyser)  {
 
 void ASTReturn::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
-    if (analyser->function()->returnType.type() == TypeType::Nothingness) {
+    if (analyser->function()->returnType.type() == TypeType::NoReturn) {
         return;
     }
 

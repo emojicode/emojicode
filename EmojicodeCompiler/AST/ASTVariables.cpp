@@ -43,7 +43,8 @@ void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
     auto &var = fncg->scoper().declareVariable(id_, type_);
     if (type_.optional()) {
         fncg->wr().writeInstruction(INS_GET_NOTHINGNESS);
-        fncg->copyToVariable(var.stackIndex, false, Type::nothingness());
+        fncg->wr().writeInstruction(INS_COPY_TO_STACK);
+        fncg->wr().writeInstruction(var.stackIndex.value());
     }
 }
 

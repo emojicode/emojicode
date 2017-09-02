@@ -22,7 +22,7 @@ class FnCodeGenerator {
 public:
     explicit FnCodeGenerator(Function *function)
     : fn_(function), scoper_(function->variableCount()),
-    instanceScoper_(function->owningType().type() != TypeType::Nothingness ?
+    instanceScoper_(function->owningType().type() != TypeType::NoReturn ?
                     &function->owningType().typeDefinition()->cgScoper() : nullptr) {}
     void generate();
 

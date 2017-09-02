@@ -85,8 +85,8 @@ Function* TypeDefinition::getTypeMethod(const std::u32string &name, const Type &
 
 void TypeDefinition::addProtocol(const Type &type, const SourcePosition &p) {
     for (auto &protocol : protocols_) {
-        if (protocol.identicalTo(type, Type::nothingness(), nullptr)) {
-            auto name = type.toString(Type::nothingness());
+        if (protocol.identicalTo(type, TypeContext(), nullptr)) {
+            auto name = type.toString(TypeContext());
             throw CompilerError(p, "Conformance to protocol ", name, " was already declared.");
         }
     }
@@ -169,20 +169,20 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
         try {
             Function *clm = lookupMethod(method->name());
             if (clm == nullptr) {
-                auto typeName = type.toString(Type::nothingness());
-                auto protocolName = protocol.toString(Type::nothingness());
+                auto typeName = type.toString(TypeContext());
+                auto protocolName = protocol.toString(TypeContext());
                 throw CompilerError(position(), typeName, " does not agree to protocol ", protocolName ,": Method ",
                                     utf8(method->name()), "is missing.");
             }
 
-            if (!clm->enforcePromises(method, type, protocol, TypeContext(protocol))) {
+            if (!clm->enforcePromises(method, TypeContext(type), protocol, TypeContext(protocol))) {
                 auto arguments = std::vector<Argument>();
                 arguments.reserve(method->arguments.size());
                 for (auto &arg : method->arguments) {
-                    arguments.emplace_back(arg.variableName, arg.type.resolveOn(protocol));
+                    arguments.emplace_back(arg.variableName, arg.type.resolveOn(TypeContext(protocol)));
                 }
                 auto bl = new BoxingLayer(clm, protocol.protocol()->name(), arguments,
-                                          method->returnType.resolveOn(protocol), clm->position());
+                                          method->returnType.resolveOn(TypeContext(protocol)), clm->position());
                 buildBoxingLayerAst(bl);
                 if (enqueBoxingLayers) {
                     package_->app()->analysisQueue.emplace(bl);

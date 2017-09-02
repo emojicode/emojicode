@@ -74,7 +74,7 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p, Application *app) 
         if (commonProtocols_.size() == 1) {
             return commonProtocols_.front();
         }
-        app->warn(p, "Common type was inferred to be ", commonType_.toString(Type::nothingness()), ".");
+        app->warn(p, "Common type was inferred to be ", commonType_.toString(TypeContext()), ".");
     }
     return commonType_;
 }

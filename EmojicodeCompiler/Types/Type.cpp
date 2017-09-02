@@ -9,11 +9,12 @@
 #include "Type.hpp"
 #include "../EmojicodeCompiler.hpp"
 #include "../Functions/Function.hpp"
-#include "../Types/Class.hpp"
-#include "../Types/Enum.hpp"
-#include "../Types/Protocol.hpp"
-#include "../Types/TypeContext.hpp"
-#include "../Types/ValueType.hpp"
+#include "Class.hpp"
+#include "Enum.hpp"
+#include "Protocol.hpp"
+#include "TypeContext.hpp"
+#include "ValueType.hpp"
+#include "CommonTypeFinder.hpp"
 #include <algorithm>
 #include <cstring>
 #include <vector>
@@ -112,12 +113,12 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &ty
 }
 
 Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext) const {
-    if (typeContext.calleeType().type() == TypeType::Nothingness) {
+    if (typeContext.calleeType().type() == TypeType::NoReturn) {
         return *this;
     }
     TypeDefinition *c = typeContext.calleeType().typeDefinition();
     Type t = *this;
-    if (type() == TypeType::Nothingness) {
+    if (type() == TypeType::NoReturn) {
         return t;
     }
     bool optional = t.optional();
@@ -146,7 +147,7 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
 
 Type Type::resolveOn(const TypeContext &typeContext) const {
     Type t = *this;
-    if (type() == TypeType::Nothingness) {
+    if (type() == TypeType::NoReturn) {
         return t;
     }
     bool optional = t.optional();
@@ -255,9 +256,8 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
     if (to.type() == TypeType::Callable) {
         return isCompatibleToCallable(to, tc, ctargs);
     }
-
-    if (this->type() == TypeType::Nothingness) {
-        return to.optional() || to.type() == TypeType::Nothingness;
+    if (to.type() == TypeType::NoReturn) {
+        return type() == TypeType::NoReturn;
     }
     return false;
 }
@@ -279,7 +279,7 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::ve
     if (type() == TypeType::Class) {
         for (Class *a = this->eclass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
-                if (protocol.resolveOn(*this).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
+                if (protocol.resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
                     return true;
                 }
             }
@@ -288,7 +288,7 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::ve
     }
     if (type() == TypeType::ValueType || type() == TypeType::Enum) {
         for (auto &protocol : typeDefinition()->protocols()) {
-            if (protocol.resolveOn(*this).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
+            if (protocol.resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
                 return true;
             }
         }
@@ -342,7 +342,7 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
                 to.resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex();
             case TypeType::Something:
             case TypeType::Someobject:
-            case TypeType::Nothingness:
+            case TypeType::NoReturn:
                 return true;
             case TypeType::Error:
                 return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, ctargs) &&
@@ -380,8 +380,8 @@ int Type::size() const {
                         return std::max(2, genericArguments()[1].size());
                     }
                     return std::max(1, genericArguments()[1].size()) + basesize;
-                case TypeType::Nothingness:
-                    return 1;
+                case TypeType::NoReturn:
+                    return 0;
                 default:
                     throw std::logic_error("Type is wrongly simply stored");
             }
@@ -414,7 +414,7 @@ EmojicodeInstruction Type::boxIdentifier() const {
         case TypeType::Someobject:
             value = T_OBJECT;
             break;
-        case TypeType::Nothingness:
+        case TypeType::NoReturn:
         case TypeType::Protocol:
         case TypeType::MultiProtocol:
         case TypeType::Something:
@@ -436,7 +436,7 @@ bool Type::requiresBox() const {
         case TypeType::Callable:
         case TypeType::Class:
         case TypeType::Someobject:
-        case TypeType::Nothingness:
+        case TypeType::NoReturn:
         case TypeType::StorageExpectation:
         case TypeType::Extension:
             return false;
@@ -459,7 +459,7 @@ bool Type::isReferencable() const {
         case TypeType::GenericVariable:
         case TypeType::LocalGenericVariable:
             return storageType() != StorageType::Simple;
-        case TypeType::Nothingness:
+        case TypeType::NoReturn:
             return false;
         case TypeType::ValueType:
         case TypeType::Enum:
@@ -519,7 +519,7 @@ void Type::objectVariableRecords(int index, std::vector<T> *information, Us... a
                     throw std::domain_error("invalid storage type");
             }
         case TypeType::Enum:
-        case TypeType::Nothingness:
+        case TypeType::NoReturn:
         case TypeType::StorageExpectation:
         case TypeType::Extension:
             return;  // Can't be object pointer
@@ -538,8 +538,8 @@ std::string Type::typePackage() const {
         case TypeType::ValueType:
         case TypeType::Protocol:
         case TypeType::Enum:
-            return this->typeDefinition()->package()->name();
-        case TypeType::Nothingness:
+            return typeDefinition()->package()->name();
+        case TypeType::NoReturn:
         case TypeType::Something:
         case TypeType::Someobject:
         case TypeType::GenericVariable:
@@ -582,7 +582,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             }
             string.append("🍱");
             return;
-        case TypeType::Nothingness:
+        case TypeType::NoReturn:
             string.append("✨");
             return;
         case TypeType::Something:

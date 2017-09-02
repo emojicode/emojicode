@@ -31,7 +31,7 @@ public:
     /// The class's superclass.
     /// @returns TypeDefinition::superType().eclass(). Guaranteed to be @c nullptr if the class has no superclass.
     Class* superclass() const {
-        if (superType().type() == TypeType::Nothingness) {
+        if (superType().type() == TypeType::NoReturn) {
             return nullptr;
         }
         return superType().eclass();

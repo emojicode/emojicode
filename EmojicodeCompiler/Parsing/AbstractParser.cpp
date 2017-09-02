@@ -108,7 +108,7 @@ Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeCo
 
 Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
     Type t = Type::callableIncomplete(optional);
-    t.genericArguments_.push_back(Type::nothingness());
+    t.genericArguments_.push_back(Type::noReturn());
 
     while (stream_.nextTokenIsEverythingBut(E_WATERMELON) &&
            stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
@@ -126,7 +126,7 @@ Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeCon
 Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
     auto &varToken = stream_.consumeToken(TokenType::Variable);
 
-    Type type = Type::nothingness();
+    Type type = Type::noReturn();
     if (typeContext.function() != nullptr && typeContext.function()->fetchVariable(varToken.value(), optional, &type)) {
         return type;
     }
@@ -179,7 +179,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
     }
 
     if (count != typeDef->genericParameterCount()) {
-        throw CompilerError(p, "Type ", type->toString(Type::nothingness()), " requires ",
+        throw CompilerError(p, "Type ", type->toString(TypeContext()), " requires ",
                             typeDef->genericParameterCount(), " generic arguments, but ", count, " were given.");
     }
 }

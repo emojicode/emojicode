@@ -93,11 +93,11 @@ void Class::prepareForSemanticAnalysis() {
         protocols_.reserve(superclass()->protocols().size());
         for (auto &protocol : superclass()->protocols()) {
             auto find = std::find_if(protocols_.begin(), protocols_.end(), [&classType, &protocol](const Type &a) {
-                return a.identicalTo(protocol, classType, nullptr);
+                return a.identicalTo(protocol, TypeContext(classType), nullptr);
             });
             if (find != protocols_.end()) {
                 throw CompilerError(position(), "Superclass already declared conformance to ",
-                                    protocol.toString(classType), ".");
+                                    protocol.toString(TypeContext(classType)), ".");
             }
             protocols_.emplace_back(protocol);
         }
@@ -143,7 +143,7 @@ void Class::checkOverride(Function *function) {
             throw CompilerError(function->position(), utf8(function->name()),
                                 " was declared ✒️ but does not override anything.");
         }
-        function->enforcePromises(superFunction, Type(this, false), Type(superclass(), false),
+        function->enforcePromises(superFunction, TypeContext(Type(this, false)), Type(superclass(), false),
                                   std::experimental::nullopt);
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {

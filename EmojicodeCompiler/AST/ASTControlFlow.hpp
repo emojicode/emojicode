@@ -59,7 +59,7 @@ private:
     VariableID elementVar_;
     VariableID iteratorVar_;
     std::u32string varName_;
-    Type elementType_ = Type::nothingness();
+    Type elementType_ = Type::noReturn();
 };
 
 class ASTErrorHandler final : public ASTStatement {
@@ -78,7 +78,7 @@ private:
     bool valueIsBoxed_ = false;
     VariableID varId_;
     ASTBlock valueBlock_;
-    Type valueType_ = Type::nothingness();
+    Type valueType_ = Type::noReturn();
     ASTBlock errorBlock_;
     std::u32string valueVarName_;
     std::u32string errorVarName_;

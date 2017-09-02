@@ -43,7 +43,7 @@ void Prettyprinter::print() {
         if (first) {
             first = false;
             stream_ << "🏁 ";
-            if (app_->startFlagFunction()->returnType.type() != TypeType::Nothingness) {
+            if (app_->startFlagFunction()->returnType.type() != TypeType::NoReturn) {
                 printReturnType(app_->startFlagFunction());
                 stream_ << " ";
             }
@@ -75,7 +75,7 @@ void Prettyprinter::printArguments(Function *function) {
 }
 
 void Prettyprinter::printReturnType(Function *function) {
-    if (function->returnType.type() != TypeType::Nothingness) {
+    if (function->returnType.type() != TypeType::NoReturn) {
         *this << "➡️ " << function->returnType;
     }
 }

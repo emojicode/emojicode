@@ -91,9 +91,9 @@ void DocumentParser::parse() {
 TypeIdentifier DocumentParser::parseAndValidateNewTypeName() {
     auto parsedTypeName = parseTypeIdentifier();
 
-    Type type = Type::nothingness();
+    Type type = Type::noReturn();
     if (package_->lookupRawType(parsedTypeName, false, &type)) {
-        auto str = type.toString(Type::nothingness());
+        auto str = type.toString(TypeContext());
         throw CompilerError(parsedTypeName.position, "Type ", str, " is already defined.");
     }
 
@@ -113,11 +113,11 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
     }
 
     auto function = new Function(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public, false,
-                                 Type::nothingness(), package_, p, false,
+                                 Type::noReturn(), package_, p, false,
                                  documentation.get(), false, false, FunctionType::Function);
-    parseReturnType(function, Type::nothingness());
-    if (function->returnType.type() != TypeType::Nothingness &&
-        !function->returnType.compatibleTo(Type::integer(), Type::nothingness())) {
+    parseReturnType(function, TypeContext());
+    if (function->returnType.type() != TypeType::NoReturn &&
+        !function->returnType.compatibleTo(Type::integer(), TypeContext())) {
         throw CompilerError(p, "🏁 must either return ✨ or 🚂.");
     }
     stream_.requireIdentifier(E_GRAPES);
@@ -190,7 +190,7 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
     auto parsedTypeName = parseAndValidateNewTypeName();
     auto protocol = new Protocol(parsedTypeName.name, package_, theToken.position(), documentation);
 
-    parseGenericParameters(protocol, Type(protocol, false));
+    parseGenericParameters(protocol, TypeContext(Type(protocol, false)));
 
     stream_.requireIdentifier(E_GRAPES);
 
@@ -211,8 +211,8 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
         auto method = new ProtocolFunction(methodName.value(), AccessLevel::Public, false, protocolType, package_,
                                            methodName.position(), false, documentation.get(), deprecated, false,
                                            FunctionType::ObjectMethod);
-        parseParameters(method, protocolType, false);
-        parseReturnType(method, protocolType);
+        parseParameters(method, TypeContext(protocolType), false);
+        parseReturnType(method, TypeContext(protocolType));
 
         protocol->addMethod(method);
     }
@@ -235,7 +235,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
 
     auto eclass = new Class(parsedTypeName.name, package_, theToken.position(), documentation, final);
 
-    parseGenericParameters(eclass, Type(eclass, false));
+    parseGenericParameters(eclass, TypeContext(Type(eclass, false)));
 
     if (!stream_.nextTokenIs(E_GRAPES)) {
         auto classType = Type(eclass, false);  // New Type due to generic arguments now (partly) available.
@@ -245,7 +245,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
             throw CompilerError(parsedTypeName.position, "The superclass must be a class.");
         }
         if (type.eclass()->final()) {
-            package_->app()->error(CompilerError(parsedTypeName.position, type.toString(classType),
+            package_->app()->error(CompilerError(parsedTypeName.position, type.toString(TypeContext(classType)),
                                                  " can’t be used as superclass as it was marked with 🔏."));
         }
         eclass->setSuperType(type);
@@ -268,7 +268,7 @@ void DocumentParser::parseValueType(const std::u32string &documentation, const T
         valueType->makePrimitive();
     }
 
-    parseGenericParameters(valueType, Type(valueType, false));
+    parseGenericParameters(valueType, TypeContext(Type(valueType, false)));
 
     auto valueTypeContent = Type(valueType, false);
     package_->offerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());

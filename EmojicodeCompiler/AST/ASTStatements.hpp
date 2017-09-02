@@ -100,7 +100,7 @@ public:
 private:
     std::u32string name_;
     ASTArguments arguments_;
-    Type superType_ = Type::nothingness();
+    Type superType_ = Type::noReturn();
 };
     
 } // namespace EmojicodeCompiler

@@ -44,7 +44,7 @@ enum class TypeType {
     Protocol,
     Enum,
     ValueType,
-    Nothingness,
+    NoReturn,
     /** Maybe everything. */
     Something,
     /** Any Object */
@@ -97,7 +97,7 @@ public:
     static Type symbol() { return Type(VT_SYMBOL, false); }
     static Type doubl() { return Type(VT_DOUBLE, false); }
     static Type something() { return Type(TypeType::Something, false); }
-    static Type nothingness() { return Type(TypeType::Nothingness, false); }
+    static Type noReturn() { return Type(TypeType::NoReturn, false); }
     static Type error() { return Type(TypeType::Error, false); }
     static Type someobject(bool optional = false) { return Type(TypeType::Someobject, optional); }
     static Type callableIncomplete(bool optional = false) { return Type(TypeType::Callable, optional); }

@@ -13,7 +13,7 @@
 namespace EmojicodeCompiler {
 
 Type ASTInferType::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::Nothingness) {
+    if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::NoReturn) {
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
     Type type = expectation.copyType();

@@ -84,7 +84,7 @@ public:
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     VariableID varId_;
-    Type type_ = Type::nothingness();
+    Type type_ = Type::noReturn();
 };
 
 class ASTListLiteral final : public ASTExpr {
@@ -97,7 +97,7 @@ public:
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     VariableID varId_;
-    Type type_ = Type::nothingness();
+    Type type_ = Type::noReturn();
 };
 
 class ASTDictionaryLiteral final : public ASTExpr {
@@ -125,6 +125,8 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
+private:
+    Type type_ = Type::noReturn();
 };
 
 }  // namespace EmojicodeCompiler
