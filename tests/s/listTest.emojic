@@ -1,167 +1,127 @@
 📜 🔤testsHelper.emojic🔤
 
-🏁 ➡️ 🚂 🍇
-  🍦 tester 🔷💯🆕
-  🏁 tester
-  🍎 👔 tester
+🐇 💯🚉  🍇
+  ✒️ 🐖 🏁 🍇
+    🍦 emptyList 🔷🍨🐚🔡🐸❗️
+    ⛔🐕❕🐔emptyList❗️ 🙌 0 🔤Correct Length 0🔤❗️
+    🐻emptyList❕🔤Hallo🔤❗️
+    🐻emptyList❕🔤Josef🔤❗️
+    ⛔🐕❕🐔emptyList❗️ 🙌 2 🔤Correct Length 2🔤❗️
+    🐻emptyList❕🔤Grüß dich🔤❗️
+    🐻emptyList❕🔤Sarah🔤❗️
+    🐻emptyList❕🔤Hansl🔤❗️
+    ⛔🐕❕🐔emptyList❗️ 🙌 5 🔤Correct Length 4🔤❗️
+    🐼emptyList❗️
+    ⛔🐕❕🐔emptyList❗️ 🙌 4 🔤Correct Length 3🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕1❗️ 🙌 🔤Josef🔤🔤Index 1 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕2❗️ 🙌 🔤Grüß dich🔤🔤Index 2 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕3❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕-1❗️ 🙌 🔤Sarah🔤🔤Index -1 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕-2❗️ 🙌 🔤Grüß dich🔤🔤Index -2 Value Correct🔤❗️
+    ⛔🐕❕🐨emptyList❕0❗️🔤Remove by index success🔤❗️
+    ⛔🐕❕❎🐨emptyList❕899❗️❗️🔤Remove by index failure🔤❗️
+    ⛔🐕❕🐔emptyList❗️ 🙌 3 🔤Correct Length 3🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕0❗️ 🙌 🔤Josef🔤🔤Index 0 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕1❗️ 🙌 🔤Grüß dich🔤🔤Index 1 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕2❗️ 🙌 🔤Sarah🔤🔤Index 2 Value Correct🔤❗️
+    🐵emptyList❕1 🔤Robert🔤❗️
+    ⛔🐕❕🐔emptyList❗️ 🙌 4 🔤Correct Length 4🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕0❗️ 🙌 🔤Josef🔤🔤Index 0 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕1❗️ 🙌 🔤Robert🔤🔤Index 1 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕2❗️ 🙌 🔤Grüß dich🔤🔤Index 2 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕3❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
+    🍦 copiedList 🐮emptyList❗️
+    🐵emptyList❕-1 🔤Peter🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕3❗️ 🙌 🔤Peter🔤🔤Index 3 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕4❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
+    🐨emptyList❕-2❗️
+    ⛔🐕❕ 🍺🐽emptyList❕3❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
+    ⛔🐕❕🐔emptyList❗️ 🙌 4 🔤Correct Length 4🔤❗️
+    ⛔🐕❕ 🍺🐽emptyList❕0❗️ 🙌 🔤Josef🔤🔤Index 0 Value Correct🔤❗️
+    ⛔🐕❕🐔copiedList❗️ 🙌 4 🔤Copied List Correct Length 4🔤❗️
+    ⛔🐕❕ 🍺🐽copiedList❕0❗️ 🙌 🔤Josef🔤🔤Copied List Index 0 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽copiedList❕1❗️ 🙌 🔤Robert🔤🔤Copied List Index 1 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽copiedList❕2❗️ 🙌 🔤Grüß dich🔤🔤Copied List Index 2 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽copiedList❕3❗️ 🙌 🔤Sarah🔤🔤Copied List Index 3 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐼copiedList❗️ 🙌 🔤Sarah🔤🔤🐼 Value Correct🔤❗️
+    ⛔🐕❕🐔copiedList❗️ 🙌 3 🔤Correct Length 3🔤❗️
+    🍦 literalList 🍨 🔤Götz🔤 🔤Bert🔤 🔤Igor🔤 🔤Hans🔤 🔤Franz🔤 🍆
+    ⛔🐕❕🐔literalList❗️ 🙌 5 🔤Correct Length 5🔤❗️
+    ⛔🐕❕ 🍺🐼literalList❗️ 🙌 🔤Franz🔤🔤Pop = Franz🔤❗️
+    ⛔🐕❕🐔literalList❗️ 🙌 4 🔤Correct Length 4🔤❗️
+    🍦 g 🐰🍨 🔤aa🔤 🔤12345🔤 🍆❕🍇a 🔡 ➡️ 🔡
+      🍎 🍪 a 🔤!🔤 🍪
+🍉
+❗️
+    ⛔🐕❕ 🍺🐽g❕0❗️ 🙌 🔤aa!🔤🔤Index Mapped 0 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽g❕1❗️ 🙌 🔤12345!🔤🔤Index Mapped 1 Value Correct🔤❗️
+    🍦 g2 🐭🍨 🔤aa🔤 🔤a🔤 🔤123🔤 🔤🙄🙄🙄🔤 🔤🔤 🍆❕🍇a 🔡 ➡️ 👌
+      🍎 🐔a❗️ 🙌 3
+🍉
+❗️
+    ⛔🐕❕ 🍺🐽g2❕0❗️ 🙌 🔤123🔤🔤Index Filtered 0 Value Correct🔤❗️
+    ⛔🐕❕ 🍺🐽g2❕1❗️ 🙌 🔤🙄🙄🙄🔤🔤Index Filtered 1 Value Correct🔤❗️
+    ⛔🐕❕🐯🍨 🔤aa🔤 🔤12🔤 🔤🙄🙄🔤 🍆❕🍇a 🔡 ➡️ 👌
+      🍎 🐔a❗️ 🙌 2
+🍉
+❗️🔤Every True🔤❗️
+    ⛔🐕❕❎🐯🍨 🔤aazzzzzz🔤 🔤567🔤 🔤🙄🙄🔤 🍆❕🍇a 🔡 ➡️ 👌
+      🍎 🐔a❗️ 🙌 2
+🍉
+❗️❗️🔤Every False🔤❗️
+    ⛔🐕❕🍨 🔤aa🔤 🔤12🔤 🔤🙄🙄🔤 🍆 🙌 🍨 🔤aa🔤 🔤12🔤 🔤🙄🙄🔤 🍆🔤Array Equal True🔤❗️
+    ⛔🐕❕❎🍨 🔤aa🔤 🍆 🙌 🍨 🔤aa🔤 🔤12🔤 🔤🙄🙄🔤 🍆❗️🔤Array Equal False🔤❗️
+    ⛔🐕❕❎🍨 🔤aa🔤 🔤aa🔤 🔤aa🔤 🍆 🙌 🍨 🔤aa🔤 🔤12🔤 🔤🙄🙄🔤 🍆❗️🔤Array Equal False🔤❗️
+    ⛔🐕❕🍨 12.1  31.3  42.1  🍆 🙌 🍨 12.1  31.3  42.1  🍆🔤Array Equal True🔤❗️
+    ⛔🐕❕❎🍨 12.1  31.2  42.1  🍆 🙌 🍨 12.1  31.3  42.1  🍆❗️🔤Array Equal False🔤❗️
+    ⛔🐕❕🍨 45  13  856  1352  1  63  🍆 🙌 🍨 45  13  856  1352  1  63  🍆🔤Array Equal True🔤❗️
+    ⛔🐕❕❎🍨 45  13  856  1352  1  61  🍆 🙌 🍨 45  13  856  1352  1  63  🍆❗️🔤Array Equal False🔤❗️
+    🍦 g3 🍨 8  9  2  5  -32  3  289  11  10  🍆
+    🦁g3❕🍇a 🚂 b 🚂 ➡️ 🚂
+      🍎 a ➖ b
+🍉
+❗️
+    ⛔🐕❕🍨 -32  2  3  5  8  9  10  11  289  🍆 🙌 g3🔤Array Sort🔤❗️
+    🍦 g4 🍨 -4  12  -5  11  -6  10  -7  🍆
+    🦁g4❕🍇a 🚂 b 🚂 ➡️ 🚂
+      🍎 a ➖ b
+🍉
+❗️
+    ⛔🐕❕🍨 -7  -6  -5  -4  10  11  12  🍆 🙌 g4🔤Array Sort🔤❗️
+    🍦 getList 🔷🍨🐚🚂🐸❗️
+    🐷getList❕5 99❗️
+    🐷getList❕3 77❗️
+    ⛔🐕❕🐔getList❗️ 🙌 6 🔤Correct Length 6🔤❗️
+    ⛔🐕❕ 🍺🐽getList❕5❗️ 🙌 99 🔤Correct Value 5🔤❗️
+    ⛔🐕❕ 🍺🐽getList❕3❗️ 🙌 77 🔤Correct Value 3🔤❗️
+    ⛔🐕❕☁️🐽getList❕1❗️🔤Correct Value Nothingness🔤❗️
+    ⛔🐕❕☁️🐽getList❕0❗️🔤Correct Value Nothingness🔤❗️
+    ⛔🐕❕☁️🐽getList❕88❗️🔤Correct Value Nothingness🔤❗️
+    🐼getList❗️
+    ⛔🐕❕🐔getList❗️ 🙌 5 🔤Correct Length 5🔤❗️
+    🐷getList❕7 22❗️
+    ⛔🐕❕🐔getList❗️ 🙌 8 🔤Correct Length 8🔤❗️
+    ⛔🐕❕ 🍺🐽getList❕7❗️ 🙌 22 🔤Correct Value 5🔤❗️
+    ⛔🐕❕ 🍺🐽getList❕3❗️ 🙌 77 🔤Correct Value 3🔤❗️
+    ⛔🐕❕☁️🐽getList❕5❗️🔤Correct Value Nothingness🔤❗️
+    🐨getList❕3❗️
+    🐷getList❕9 17❗️
+    ⛔🐕❕☁️🐽getList❕7❗️🔤Correct Value Nothingness🔤❗️
+    🐗getList❗️
+    ⛔🐕❕🐔getList❗️ 🙌 0 🔤Correct Length 0🔤❗️
+    🐷getList❕5 99❗️
+    🐷getList❕3 77❗️
+    ⛔🐕❕🐔getList❗️ 🙌 6 🔤Correct Length 6🔤❗️
+    ⛔🐕❕ 🍺🐽getList❕5❗️ 🙌 99 🔤Correct Value 5🔤❗️
+    ⛔🐕❕ 🍺🐽getList❕3❗️ 🙌 77 🔤Correct Value 3🔤❗️
+    ⛔🐕❕☁️🐽getList❕1❗️🔤Correct Value Nothingness🔤❗️
+    ⛔🐕❕☁️🐽getList❕0❗️🔤Correct Value Nothingness🔤❗️
+    ⛔🐕❕☁️🐽getList❕88❗️🔤Correct Value Nothingness🔤❗️
+  🍉
 🍉
 
-🐇 💯 👈 🍇
-  ✒️ 🐖 🏁 🍇
-    🍦 emptyList 🔷🍨🐚🔡🐸
-
-    ⛔️🐕 😛 🐔 emptyList 0 🔤Correct Length 0🔤
-
-    🐻 emptyList 🔤Hallo🔤
-    🐻 emptyList 🔤Josef🔤
-
-    ⛔️🐕 😛 🐔 emptyList 2 🔤Correct Length 2🔤
-
-    🐻 emptyList 🔤Grüß dich🔤
-    🐻 emptyList 🔤Sarah🔤
-    🐻 emptyList 🔤Hansl🔤
-
-    ⛔️🐕 😛 🐔 emptyList 5 🔤Correct Length 4🔤
-
-    🐼 emptyList
-
-    ⛔️🐕 😛 🐔 emptyList 4 🔤Correct Length 3🔤
-
-    ⛔️🐕 😛 🍺 🐽 emptyList 1 🔤Josef🔤 🔤Index 1 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 2 🔤Grüß dich🔤 🔤Index 2 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList -1 🔤Sarah🔤 🔤Index -1 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList -2 🔤Grüß dich🔤 🔤Index -2 Value Correct🔤
-
-    ⛔️🐕 🐨 emptyList 0 🔤Remove by index success🔤
-    ⛔️🐕 ❎ 🐨 emptyList 899 🔤Remove by index failure🔤
-
-    ⛔️🐕 😛 🐔 emptyList 3 🔤Correct Length 3🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 1 🔤Grüß dich🔤 🔤Index 1 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 2 🔤Sarah🔤 🔤Index 2 Value Correct🔤
-
-    🐵 emptyList 1 🔤Robert🔤
-
-    ⛔️🐕 😛 🐔 emptyList 4 🔤Correct Length 4🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 1 🔤Robert🔤 🔤Index 1 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 2 🔤Grüß dich🔤 🔤Index 2 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
-
-    🍦 copiedList 🐮 emptyList
-
-    🐵 emptyList -1 🔤Peter🔤
-
-    ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Peter🔤 🔤Index 3 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 4 🔤Sarah🔤 🔤Index 3 Value Correct🔤
-
-    🐨 emptyList -2
-
-    ⛔️🐕 😛 🍺 🐽 emptyList 3 🔤Sarah🔤 🔤Index 3 Value Correct🔤
-
-    ⛔️🐕 😛 🐔 emptyList 4 🔤Correct Length 4🔤
-    ⛔️🐕 😛 🍺 🐽 emptyList 0 🔤Josef🔤 🔤Index 0 Value Correct🔤
-
-    ⛔️🐕 😛 🐔 copiedList 4 🔤Copied List Correct Length 4🔤
-
-    ⛔️🐕 😛 🍺 🐽 copiedList 0 🔤Josef🔤 🔤Copied List Index 0 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 copiedList 1 🔤Robert🔤 🔤Copied List Index 1 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 copiedList 2 🔤Grüß dich🔤 🔤Copied List Index 2 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 copiedList 3 🔤Sarah🔤 🔤Copied List Index 3 Value Correct🔤
-
-    ⛔️🐕 😛 🍺 🐼 copiedList 🔤Sarah🔤 🔤🐼 Value Correct🔤
-    ⛔️🐕 😛 🐔 copiedList 3 🔤Correct Length 3🔤
-
-    🍦 literalList 🍨 🔤Götz🔤 🔤Bert🔤 🔤Igor🔤 🔤Hans🔤 🔤Franz🔤 🍆
-    ⛔️🐕 😛 🐔 literalList 5 🔤Correct Length 5🔤
-    ⛔️🐕 😛 🍺🐼 literalList 🔤Franz🔤 🔤Pop = Franz🔤
-    ⛔️🐕 😛 🐔 literalList 4 🔤Correct Length 4🔤
-
-    🍦 g 🐰 🍨🔤aa🔤 🔤12345🔤🍆 🍇 a 🔡 ➡️ 🔡
-      🍎 🍪a 🔤!🔤🍪
-    🍉
-
-    ⛔️🐕 😛 🍺 🐽 g 0 🔤aa!🔤 🔤Index Mapped 0 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 g 1 🔤12345!🔤 🔤Index Mapped 1 Value Correct🔤
-
-    🍦 g2 🐭 🍨🔤aa🔤 🔤a🔤 🔤123🔤 🔤🙄🙄🙄🔤 🔤🔤🍆 🍇 a 🔡 ➡️ 👌
-      🍎 😛 🐔 a 3
-    🍉
-
-    ⛔️🐕 😛 🍺 🐽 g2 0 🔤123🔤 🔤Index Filtered 0 Value Correct🔤
-    ⛔️🐕 😛 🍺 🐽 g2 1 🔤🙄🙄🙄🔤 🔤Index Filtered 1 Value Correct🔤
-
-    ⛔️🐕 🐯 🍨🔤aa🔤 🔤12🔤 🔤🙄🙄🔤🍆 🍇 a 🔡 ➡️ 👌
-      🍎 😛 🐔 a 2
-    🍉 🔤Every True🔤
-
-    ⛔️🐕 ❎ 🐯 🍨🔤aazzzzzz🔤 🔤567🔤 🔤🙄🙄🔤🍆 🍇 a 🔡 ➡️ 👌
-      🍎 😛 🐔 a 2
-    🍉 🔤Every False🔤
-
-    ⛔️🐕 😛 🍨🔤aa🔤 🔤12🔤 🔤🙄🙄🔤🍆 🍨🔤aa🔤 🔤12🔤 🔤🙄🙄🔤🍆 🔤Array Equal True🔤
-    ⛔️🐕 ❎ 😛 🍨🔤aa🔤🍆 🍨🔤aa🔤 🔤12🔤 🔤🙄🙄🔤🍆 🔤Array Equal False🔤
-    ⛔️🐕 ❎ 😛 🍨🔤aa🔤 🔤aa🔤 🔤aa🔤 🍆 🍨🔤aa🔤 🔤12🔤 🔤🙄🙄🔤🍆 🔤Array Equal False🔤
-
-    ⛔️🐕 😛 🍨 12.1 31.3 42.1 🍆 🍨 12.1 31.3 42.1 🍆 🔤Array Equal True🔤
-    ⛔️🐕 ❎ 😛 🍨 12.1 31.2 42.1 🍆 🍨 12.1 31.3 42.1 🍆 🔤Array Equal False🔤
-
-    ⛔️🐕 😛 🍨 45 13 856 1352 1 63 🍆 🍨 45 13 856 1352 1 63 🍆 🔤Array Equal True🔤
-    ⛔️🐕 ❎ 😛 🍨 45 13 856 1352 1 61 🍆 🍨 45 13 856 1352 1 63 🍆 🔤Array Equal False🔤
-
-    🍦 g3 🍨8 9 2 5 -32 3 289 11 10🍆
-    🦁 g3 🍇 a 🚂 b 🚂 ➡️ 🚂
-      🍎 ➖ a b
-    🍉
-    ⛔️🐕 😛 🍨-32 2 3 5 8 9 10 11 289🍆 g3 🔤Array Sort🔤
-
-    🍦 g4 🍨-4 12 -5 11 -6 10 -7🍆
-    🦁 g4 🍇 a 🚂 b 🚂 ➡️ 🚂
-      🍎 ➖ a b
-    🍉
-    ⛔️🐕 😛 🍨-7 -6 -5 -4 10 11 12🍆 g4 🔤Array Sort🔤
-
-    🍦 getList 🔷🍨🐚🚂🐸
-
-    🐷 getList 5 99
-    🐷 getList 3 77
-
-    ⛔️🐕 😛 🐔 getList 6 🔤Correct Length 6🔤
-    ⛔️🐕 😛 🍺 🐽 getList 5 99 🔤Correct Value 5🔤
-    ⛔️🐕 😛 🍺 🐽 getList 3 77 🔤Correct Value 3🔤
-    ⛔️🐕 ☁️ 🐽 getList 1 🔤Correct Value Nothingness🔤
-    ⛔️🐕 ☁️ 🐽 getList 0 🔤Correct Value Nothingness🔤
-    ⛔️🐕 ☁️ 🐽 getList 88 🔤Correct Value Nothingness🔤
-
-    🐼 getList
-
-    ⛔️🐕 😛 🐔 getList 5 🔤Correct Length 5🔤
-
-    🐷 getList 7 22
-
-    ⛔️🐕 😛 🐔 getList 8 🔤Correct Length 8🔤
-    ⛔️🐕 😛 🍺 🐽 getList 7 22 🔤Correct Value 5🔤
-    ⛔️🐕 😛 🍺 🐽 getList 3 77 🔤Correct Value 3🔤
-    ⛔️🐕 ☁️ 🐽 getList 5 🔤Correct Value Nothingness🔤
-
-    🐨 getList 3
-    🐷 getList 9 17
-
-    ⛔️🐕 ☁️ 🐽 getList 7 🔤Correct Value Nothingness🔤
-
-    🐗 getList
-
-    ⛔️🐕 😛 🐔 getList 0 🔤Correct Length 0🔤
-
-    🐷 getList 5 99
-    🐷 getList 3 77
-
-    ⛔️🐕 😛 🐔 getList 6 🔤Correct Length 6🔤
-    ⛔️🐕 😛 🍺 🐽 getList 5 99 🔤Correct Value 5🔤
-    ⛔️🐕 😛 🍺 🐽 getList 3 77 🔤Correct Value 3🔤
-    ⛔️🐕 ☁️ 🐽 getList 1 🔤Correct Value Nothingness🔤
-    ⛔️🐕 ☁️ 🐽 getList 0 🔤Correct Value Nothingness🔤
-    ⛔️🐕 ☁️ 🐽 getList 88 🔤Correct Value Nothingness🔤
-  🍉
+🏁 ➡️ 🚂 🍇
+  🍦 tester 🔷💯🆕❗️
+  🏁tester❗️
+  🍎 👔tester❗️
 🍉

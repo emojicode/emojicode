@@ -72,9 +72,9 @@ compilation_tests = [
     # "threads",
 ]
 library_tests = [
-    "stringTest", "primitives", "mathTest", "listTest", "rangeTest",
-    "dataTest", "dictionaryTest", "systemTest", "jsonTest", "enumerator",
-    "fileTest"
+    "stringTest", "primitives", "mathTest", "dataTest", "systemTest",
+    "listTest", "enumerator", "rangeTest",
+    #   "dictionaryTest", "jsonTest", "fileTest"
 ]
 reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject",
                                       "*.emojic"))
@@ -109,10 +109,6 @@ def library_test(name):
 
 def compilation_test(name):
     source_path, binary_path = test_paths(name, 'compilation')
-    test_compilation(name, source_path, binary_path)
-
-
-def test_compilation(name, source_path, binary_path):
     run([emojicodec, source_path], check=True)
     completed = run([emojicode, binary_path], stdout=PIPE)
     exp_path = os.path.join(dist.source, "tests", "compilation", name + ".txt")
@@ -132,23 +128,27 @@ def reject_test(filename):
 
 def prettyprint_test(name):
     source_path = test_paths(name, 'compilation')[0]
-    out_path, binary_path = test_paths(name, 'prettyprint')
-    run([emojicodec, '-f', source_path], check=True, stdout=open(out_path, 'w'))
+    run([emojicodec, '-f', source_path], check=True)
     try:
-        test_compilation(name, out_path, binary_path)
+        compilation_test(name)
     except CalledProcessError:
         pass
+    os.rename(source_path + '_original', source_path)
 
 
 for test in compilation_tests:
     compilation_test(test)
 for test in compilation_tests:
     prettyprint_test(test)
+
+included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
+os.rename(included + '_original', included)
+
 # for test in reject_tests:
 #     reject_test(test)
-# os.chdir(os.path.join(dist.source, "tests", "s"))
-# for test in library_tests:
-#     library_test(test)
+os.chdir(os.path.join(dist.source, "tests", "s"))
+for test in library_tests:
+    library_test(test)
 
 if len(failed_tests) == 0:
     print("✅ ✅  All tests passed.")

@@ -1,0 +1,160 @@
+📜 🔤testsHelper.emojic🔤
+
+🐇 💯 🚉 🍇
+  ✒️  🐖 🏁 🍇
+    ⛔️🐕 😛 🔟a 🔟a 🔤symbol a should be equal to a🔤
+    ⛔️🐕 😛 🔟🌽 🔟🌽 🔤symbol 🌽 should be equal to 🌽🔤
+    ⛔️🐕 😛 🔟💛 🔟💛 🔤symbol 💛 should be equal to 💛🔤
+    ⛔️🐕❎😛 🔟d 🔟a 🔤symbol d should not be equal to a🔤
+    ⛔️🐕❎😛 🔟🌶 🔟) 🔤symbol 🌶 should not be equal to )🔤
+
+    ⛔️🐕 😛 🔤Hallo🔤 🔤Hallo🔤 🔤Equal Hallo🔤
+    ⛔️🐕 😛 🔤🔤 🔤🔤 🔤Equal Empty🔤
+    ⛔️🐕 😛 🔤Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.🔤 🔤Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.🔤 🔤Equal Long🔤
+
+    ⛔️🐕❎😛🔤-----🔤 🔤----.🔤 🔤String not equal🔤
+    ⛔️🐕❎😛🔤.----🔤 🔤-----🔤 🔤String not equal🔤
+
+    ⛔️🐕 😛 🍪🔤12🔤🔤34🔤🍪 🔤1234🔤 🔤🍪 2🔤
+    ⛔️🐕 😛 🍪🔤12🔤🔤34🔤🔤zz🔤🍪 🔤1234zz🔤 🔤🍪 3🔤
+    ⛔️🐕 😛 🍪🔤12🔤🔤34🔤🔤zz🔤🔤456🔤🍪 🔤1234zz456🔤 🔤🍪 4🔤
+
+    ⛔️🐕 😛 🔪 🔤Birne🔤 2 4 🔤rne🔤 🔤Slice 2 4🔤
+    ⛔️🐕 😛 🔪 🔤Birne🔤 0 5 🔤Birne🔤 🔤Slice 0 5🔤
+    ⛔️🐕 😛 🔪 🔤Birne🔤 0 0 🔤🔤 🔤Slice 0 0🔤
+    ⛔️🐕 😛 🔪 🔤Birne🔤 0 -1 🔤Birn🔤 🔤Slice 0 -1🔤
+    ⛔️🐕 😛 🔪 🔤Birne🔤 0 -4 🔤B🔤 🔤Slice 0 -4🔤
+
+    ⛔️🐕 😛 🔪 🔤Birne🔤 -2 2 🔤ne🔤 🔤Slice -2 2🔤
+    ⛔️🐕 😛 🔪 🔤Birne🔤 -2 6 🔤ne🔤 🔤Slice -2 6🔤
+
+    ⛔️🐕 😛 🍺 🔍 🔤a🔤 🔤a🔤 0 🔤Search A 0 1🔤
+    ⛔️🐕 😛 🍺 🔍 🔤aa🔤 🔤a🔤 0 🔤Search A 0 2🔤
+    ⛔️🐕 😛 🍺 🔍 🔤aaa🔤 🔤a🔤 0 🔤Search A 0 3🔤
+    ⛔️🐕 😛 🍺 🔍 🔤aa🔤 🔤aa🔤 0 🔤Search AA 0🔤
+    ⛔️🐕 😛 🍺 🔍 🔤aab🔤 🔤ab🔤 1 🔤Search A 1🔤
+    ⛔️🐕 😛 🍺 🔍 🔤aaabb🔤 🔤aabb🔤 1 🔤Search A 1🔤
+    ⛔️🐕 😛 🍺 🔍 🔤abcde🔤 🔤cd🔤 2 🔤Search A 2🔤
+    ⛔️🐕 ☁️  🔍 🔤asdfg🔤 🔤ss🔤 🔤Search Nothingness🔤
+
+    ⛔️🐕 ❎🎼 🔤Das ist ein Affe.🔤 🔤Affe🔤 🔤Begins false🔤
+    ⛔️🐕 🎼 🔤Das ist ein Affe.🔤 🔤Das🔤 🔤Begins true🔤
+
+    ⛔️🐕 ❎⛳️ 🔤Das ist ein Affe.🔤 🔤Das🔤 🔤Ends false🔤
+    ⛔️🐕 ⛳️ 🔤Das ist ein Affe.🔤 🔤Affe.🔤 🔤Ends true🔤
+
+    ⛔️🐕 😛 🔧 🔤    Affe🔤 🔤Affe🔤 🔤Trim left🔤
+    ⛔️🐕 😛 🔧 🔤    Affe     🔤 🔤Affe🔤 🔤Trim both🔤
+    ⛔️🐕 😛 🔧 🔤Affe     🔤 🔤Affe🔤 🔤Trim right🔤
+    ⛔️🐕 😛 🔧 🔤     🔤 🔤🔤 🔤Trim empty🔤
+
+    ⛔️🐕 😛 🐔 🔫 🔤Gans;Ente;Schwein🔤 🔤;🔤 3 🔤Split ;🔤
+    ⛔️🐕 😛 🐔 🔫 🔤Gans;d!Ente;d!Schwein🔤 🔤;d!🔤 3 🔤Split ;d!🔤
+    ⛔️🐕 😛 🐔 🔫 🔤Gans;d!En;te;d!Schwei;dn🔤 🔤;d!🔤 3 🔤Split ;d! ; in strings🔤
+
+    ⛔️🐕 😛 🐔 💣 🔤Gans;Ente;Schwein🔤 🔟; 3 🔤Split character ;🔤
+    ⛔️🐕 😛 🐔 💣 🔤Gans🔤 🔟; 1 🔤Split character ; 1 item🔤
+    ⛔️🐕 😛 🐔 💣 🔤Gans€Ente€Löffel€Tiger🔤 🔟€ 4 🔤Split character €🔤
+
+    ⛔️🐕 😛 🐔 🔤Gans🔤 4 🔤Count 4🔤
+    ⛔️🐕 😛 🐔 🔤Österreich🔤 10 🔤Count 10🔤
+    ⛔️🐕 😛 🐔 🔤à€âf°äüöÖP¥🔤 11 🔤Count 11🔤
+
+    ⛔️🐕 😛 📐 🔤Gans🔤 4 🔤Byte Count 4🔤
+    ⛔️🐕 😛 📐 🔤Österreich🔤 11 🔤Byte Count 11🔤
+    ⛔️🐕 😛 📐 🔤😇🔤 4 🔤Byte Count 4🔤
+
+    ⛔️🐕 😛 📫 🔤abcDjeDvLkd🔤 🔤ABCDJEDVLKD🔤 🔤abcDjeDvLkd to uppercase🔤
+    ⛔️🐕 😛 📫 🔤j2j*3:🔤 🔤J2J*3:🔤 🔤j2j*3: to uppercase🔤
+    ⛔️🐕 😛 📪 🔤ABcDjOWlD🔤 🔤abcdjowld🔤 🔤ABcDjOWlD to lowercase🔤
+    ⛔️🐕 😛 📪 🔤LO-2:dDG🔤 🔤lo-2:ddg🔤 🔤LO-2:dDG to lowercase🔤
+
+    ⛔️🐕 😛 📝 🔤Österreic🔤 🔟h 🔤Österreich🔤 🔤Symbol add Österreich🔤
+    ⛔️🐕 😛 📝 🔤🔤 🔟h 🔤h🔤 🔤Symbol add empty🔤
+    ⛔️🐕 😛 📝 🔤10🔤 🔟€ 🔤10€🔤 🔤Symbol add €🔤
+
+    ⛔️🐕 😛🔷🔡🍨 🍨🔤123🔤 🔤dang🔤 🔤oh_man🔤🍆 🔤--🔤 🔤123--dang--oh_man🔤 🔤Join 2 symbols🔤
+    ⛔️🐕 😛🔷🔡🍨 🍨🔤123🔤 🔤dang🔤 🔤oh_man🔤🍆 🔤🔤 🔤123dangoh_man🔤 🔤Join empty seperator🔤
+    ⛔️🐕 😛🔷🔡🍨 🍨🔤123🔤 🔤dang🔤 🔤oh_man🔤🍆 🔤-🔤 🔤123-dang-oh_man🔤 🔤Join 1 symbol🔤
+    ⛔️🐕 😛🔷🔡🍨 🔷🍨🐚🔡🐸 🔤1234567🔤 🔤🔤 🔤Join empty input🔤
+
+    ⛔️🐕 😛 🔡 342 10 🔤342🔤 🔤342 to string🔤
+    ⛔️🐕 😛 🔡 0x28 16 🔤28🔤 🔤0x28 to string🔤
+    ⛔️🐕 😛 🔡 0xFA 16 🔤fa🔤 🔤0xFA to string🔤
+    ⛔️🐕 😛 🔡 010 8 🔤10🔤 🔤010 to string🔤
+    ⛔️🐕 😛 🔡 0 19 🔤0🔤 🔤0 to string🔤
+    ⛔️🐕 😛 🔡 -12 10 🔤-12🔤 🔤0 to string🔤
+    ⛔️🐕 😛 🔡 -3421231293991 10 🔤-3421231293991🔤 🔤-3421231293991 to string🔤
+    ⛔️🐕 😛 🔡 0.0 0 🔤0🔤 🔤0.0 to string🔤
+    ⛔️🐕 😛 🔡 0.0 5 🔤0.00000🔤 🔤0.0 to string🔤
+    ⛔️🐕 😛 🔡 42.42 1 🔤42.4🔤 🔤42.42 to string🔤
+    ⛔️🐕 😛 🔡 3.141592653589793238462 12 🔤3.141592653589🔤 🔤π to string🔤
+    ⛔️🐕 😛 🔡 -3.141592653589793238462 12 🔤-3.141592653589🔤 🔤-π to string🔤
+    ⛔️🐕 😛 🔡 12345.42 3 🔤12345.420🔤 🔤12345.42 to string🔤
+    ⛔️🐕 😛 🔡 -12345.42 3 🔤-12345.420🔤 🔤-12345.42 to string🔤
+
+    ⛔️🐕 😛 🍺 🚂 🔤342🔤 10 342 🔤342 from string🔤
+    ⛔️🐕 😛 🍺 🚂 🔤-3421231293991🔤 10 -3421231293991 🔤-3421231293991 from string🔤
+    ⛔️🐕 😛 🍺 🚂 🔤0🔤 10 0 🔤0 from string🔤
+    ⛔️🐕 😛 🍺 🚂 🔤FF🔤 16 0xFF 🔤0xFF from string🔤
+    ⛔️🐕 😛 🍺 🚂 🔤ADDFF🔤 16 0xADDFF 🔤0xFF from string🔤
+    ⛔️🐕 😛 🍺 🚂 🔤10🔤 8 010 🔤010 from string🔤
+    ⛔️🐕 😛 🍺 🚂 🔤+10🔤 8 010 🔤+010 from string🔤
+    ⛔️🐕 ☁️ 🚂 🔤🔤 16 🔤Nothingness Empty String int🔤
+    ⛔️🐕 ☁️ 🚂 🔤0xAF🔤 16 🔤Nothingness 0xAF String int🔤
+    ⛔️🐕 ☁️ 🚂 🔤13!🔤 16 🔤Nothingness 13! String int🔤
+    ⛔️🐕 ☁️ 🚂 🔤+🔤 16 🔤Nothingness + String int🔤
+    ⛔️🐕 ☁️ 🚂 🔤-🔤 16 🔤Nothingness - String int🔤
+
+    ⛔️🐕 😛 🍺 🚀 🔤342🔤 342.0 🔤342.0 from string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤-3421231293991🔤 -3421231293991.0 🔤-3421231293991.0 from string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤0🔤 0.0 🔤0.0 from string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤10🔤 10.0 🔤010.0 from string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤+10🔤 10.0 🔤+010.0 from string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤0.🔤 0.0 🔤0.0 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤.0🔤 0.0 🔤0.0 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤0.00000🔤 0.0 🔤0.0 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤42.420🔤 42.420 🔤42.42 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤+3.141592653589🔤 3.141592653589 🔤π to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤-3.141592653589🔤 -3.141592653589 🔤-π to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤12345.420🔤 12345.42 🔤12345.42 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤.42e2🔤 42.0 🔤.42e2 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤.42E2🔤 42.0 🔤.42E2 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤-3.141592653589e10🔤 -31415926535.89 🔤-πe10 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤-3.141592653589e0🔤 -3.141592653589 🔤-πe0 to string🔤
+    ⛔️🐕 😛 🍺 🚀 🔤-3.141592653589e-5🔤 -.00003141592653589 🔤-πe-5 to string🔤
+    ⛔️🐕 ☁️ 🚀 🔤🔤 🔤Nothingness Empty String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤0xAF🔤 🔤Nothingness 0xAF String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤13!🔤 🔤Nothingness 13! String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤+🔤 🔤Nothingness + String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤-🔤 🔤Nothingness - String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤.🔤 🔤Nothingness - String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤..🔤 🔤Nothingness - String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤e10🔤 🔤Nothingness - String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤.e10🔤 🔤Nothingness - String double🔤
+    ⛔️🐕 ☁️ 🚀 🔤1e10.2🔤 🔤Nothingness - String double🔤
+
+    ⛔️🐕 😛 🐔🎶🔤a🔤 1 🔤Split String to Symbols🔤
+    ⛔️🐕 😛 🐔🎶🔤42🔤 2 🔤Split String to Symbols🔤
+
+    ⛔️🐕 😛↔️ 🔤abcdefg🔤 🔤abcdefg🔤 0 🔤String Compare🔤
+    ⛔️🐕 ❎😛↔️ 🔤abcdef🔤 🔤abcdefg🔤 0 🔤String Compare🔤
+    ⛔️🐕 ❎😛↔️ 🔤abcdefg🔤 🔤abcdef🔤 0 🔤String Compare🔤
+    ⛔️🐕 ❎😛↔️ 🔤abcdefg🔤 🔤abcdeff🔤 0 🔤String Compare🔤
+    ⛔️🐕 ◀️ ✖️ ↔️ 🔤abcdeff🔤 🔤abcdefg🔤 ↔️ 🔤abcdefg🔤 🔤abcdeff🔤 0 🔤String Compare Direction Different🔤
+
+    ⛔️🐕 😛 🔡🔟A 🔤A🔤 🔤🔟A to string🔤
+    ⛔️🐕 😛 🔡🔟Ü 🔤Ü🔤 🔤🔟Ü to string🔤
+    ⛔️🐕 😛 🔡🔟🍕 🔤🍕🔤 🔤🔟🍕 to string🔤
+
+    ⛔️🐕 😛 🚂🔟🍕 0x1F355 🔤🔟🍕 to integer🔤
+    ⛔️🐕 😛 🚂🔟a 0x61 🔤🔟a to integer🔤
+    ⛔️🐕 😛 🚂🔟ß 0xDF 🔤🔟ß to integer🔤
+  🍉
+🍉
+
+🏁 ➡️ 🚂 🍇
+    🍦 tester 🔷💯🆕
+    🏁 tester
+    🍎 👔 tester
+🍉

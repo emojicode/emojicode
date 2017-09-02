@@ -1,0 +1,38 @@
+📜 🔤testsHelper.emojic🔤
+
+🐇 💯 🚉 🍇
+  ✒️ 🐖 🏁 🍇
+    🍦 data1 📇 🔤This is a string.🔤
+    🍦 data2 📇 🔤This is a string.🔤
+    🍦 data3 📇 🔤This is b string.🔤
+
+    ⛔️🐕 😛 data1 data2 🔤Equality test🔤
+    ⛔️🐕 ❎😛 data1 data3 🔤Equality test🔤
+    ⛔️🐕 😛 🐔 data1 17 🔤Length 17🔤
+    ⛔️🐕 😛 🍺 🐽 data1 0 0x54 🔤Byte value index 0🔤
+    ⛔️🐕 😛 🍺 🐽 data1 5 0x69 🔤Byte value index 5🔤
+    ⛔️🐕 😛 🍺 🐽 data1 -1 0x2E 🔤Byte value index -1🔤
+    ⛔️🐕 ☁️ 🐽 data1 60 🔤Byte value invalid index🔤
+    ⛔️🐕 😛 🔤This is a string.🔤 🍺 🔡 data1 🔤Data to string🔤
+
+    ⛔️🐕 😛 🍺 🔍 data1 📇 🔤is a🔤 5 🔤Index of at 5🔤
+    ⛔️🐕 😛 🍺 🔍 data1 📇 🔤This🔤 0 🔤Index of at 0🔤
+    ⛔️🐕 😛 🍺 🔍 data1 📇 🔤is a string.🔤 5 🔤Index of at 5🔤
+    ⛔️🐕 😛 🍺 🔍 data1 📇 🔤🔤 0 🔤Index of empty string🔤
+    ⛔️🐕 ☁️ 🔍 data1 📇 🔤39df9d9ds🔤 🔤Index of nonsense🔤
+
+    ⛔️🐕 😛 📝 data1 data3 📇 🔤This is a string.This is b string.🔤 🔤Append two strings🔤
+    ⛔️🐕 😛 📝 data1 📇 🔤🔤 📇 🔤This is a string.🔤 🔤Append two strings🔤
+
+    ⛔️🐕 😛 🔪 📇 🔤34This is a string.T🔤 2 17 data1 🔤Copy Test🔤
+    ⛔️🐕 😛 🐔 🔪 📇 🔤34This🔤 6 20 0 🔤Copy Test After Content🔤
+    ⛔️🐕 😛 🐔 🔪 📇 🔤34This🔤 0 20 6 🔤Copy Test Too Long🔤
+    ⛔️🐕 😛 🐔 🔪 📇 🔤🔤 3 20 0 🔤Copy Test Empty🔤
+  🍉
+🍉
+
+🏁 ➡️ 🚂 🍇
+  🍦 tester 🔷💯🆕
+  🏁 tester
+  🍎 👔 tester
+🍉
