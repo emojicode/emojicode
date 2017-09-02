@@ -9,8 +9,8 @@
 #ifndef Prettyprinter_hpp
 #define Prettyprinter_hpp
 
-#include "../Types/TypeContext.hpp"
 #include "../Package/RecordingPackage.hpp"
+#include "../Types/TypeContext.hpp"
 #include <fstream>
 
 namespace EmojicodeCompiler {
@@ -79,6 +79,7 @@ private:
     unsigned int indentation_ = 0;
 
     void print(const char *key, Function *function, bool body, bool noMutate);
+    void print(RecordingPackage::Recording *recording);
     void printNamespaceAccessor(const Type &type);
     void printEnumValues(Enum *enumeration);
     void printProtocolConformances(TypeDefinition *typeDef, const TypeContext &typeContext);

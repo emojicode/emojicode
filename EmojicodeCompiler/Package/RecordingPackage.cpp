@@ -42,4 +42,4 @@ void RecordingPackage::includeDocument(const std::string &path, const std::strin
     currentFile_ = temp;
 }
 
-};
+}  // namespace EmojicodeCompiler

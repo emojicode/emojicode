@@ -13,8 +13,8 @@
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Generation/StringPool.hpp"
 #include "../Parsing/AbstractParser.hpp"
-#include "../Types/TypeExpectation.hpp"
 #include "../Types/CommonTypeFinder.hpp"
+#include "../Types/TypeExpectation.hpp"
 #include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {

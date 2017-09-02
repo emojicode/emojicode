@@ -7,15 +7,15 @@
 //
 
 #include "Prettyprinter.hpp"
-#include "../Package/Package.hpp"
+#include "../AST/ASTStatements.hpp"
+#include "../Application.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
-#include "../Types/ValueType.hpp"
-#include "../Types/Protocol.hpp"
+#include "../Package/Package.hpp"
 #include "../Types/Enum.hpp"
+#include "../Types/Protocol.hpp"
 #include "../Types/Type.hpp"
-#include "../Application.hpp"
-#include "../AST/ASTStatements.hpp"
+#include "../Types/ValueType.hpp"
 #include <algorithm>
 #include <cstdio>
 
@@ -27,17 +27,7 @@ void Prettyprinter::print() {
         stream_ = std::fstream(filePath(file.path_), std::ios_base::out);
 
         for (auto &recording : file.recordings_) {
-            if (auto import = dynamic_cast<RecordingPackage::Import *>(recording.get())) {
-                refuseOffer() << "📦 " << import->package << " " << utf8(import->destNamespace) << "\n";
-                offerNewLine();
-            }
-            if (auto type = dynamic_cast<RecordingPackage::RecordedType *>(recording.get())) {
-               printTypeDef(type->type_);
-            }
-            if (auto include = dynamic_cast<RecordingPackage::Include *>(recording.get())) {
-                refuseOffer() << "📜 🔤" << include->path_ << "🔤\n";
-                offerNewLine();
-            }
+            print(recording.get());
         }
 
         if (first) {
@@ -49,6 +39,20 @@ void Prettyprinter::print() {
             }
             app_->startFlagFunction()->ast()->toCode(*this);
         }
+    }
+}
+
+void Prettyprinter::print(RecordingPackage::Recording *recording) {
+    if (auto import = dynamic_cast<RecordingPackage::Import *>(recording)) {
+        refuseOffer() << "📦 " << import->package << " " << utf8(import->destNamespace) << "\n";
+        offerNewLine();
+    }
+    if (auto type = dynamic_cast<RecordingPackage::RecordedType *>(recording)) {
+        printTypeDef(type->type_);
+    }
+    if (auto include = dynamic_cast<RecordingPackage::Include *>(recording)) {
+        refuseOffer() << "📜 🔤" << include->path_ << "🔤\n";
+        offerNewLine();
     }
 }
 

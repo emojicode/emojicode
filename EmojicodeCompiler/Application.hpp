@@ -10,14 +10,14 @@
 #define Application_hpp
 
 #include "Generation/StringPool.hpp"
-#include "Types/Type.hpp"
 #include "Package/Package.hpp"
 #include "Parsing/CompatibilityInfoProvider.hpp"
+#include "Types/Type.hpp"
+#include <exception>
 #include <map>
 #include <memory>
 #include <queue>
 #include <vector>
-#include <exception>
 
 namespace EmojicodeCompiler {
 

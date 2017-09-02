@@ -11,18 +11,18 @@
 #include "../Application.hpp"
 #include "../CompilerError.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
-#include "../Types/ValueType.hpp"
-#include "../Parsing/DocumentParser.hpp"
-#include "Package.hpp"
-#include "../Prettyprint/Prettyprinter.hpp"
 #include "../Lex/Lexer.hpp"
 #include "../Parsing/CompatibilityInfoProvider.hpp"
+#include "../Parsing/DocumentParser.hpp"
+#include "../Prettyprint/Prettyprinter.hpp"
+#include "../Types/ValueType.hpp"
+#include "Package.hpp"
 #include <algorithm>
-#include <sstream>
 #include <cstring>
 #include <iostream>
 #include <list>
 #include <map>
+#include <sstream>
 #include <string>
 
 namespace EmojicodeCompiler {

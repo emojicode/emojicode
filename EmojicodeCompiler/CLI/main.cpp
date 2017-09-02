@@ -7,13 +7,13 @@
 //
 
 #include "../Application.hpp"
+#include "../Package/RecordingPackage.hpp"
+#include "../Prettyprint/Prettyprinter.hpp"
 #include "Options.hpp"
 #include "PackageReporter.hpp"
-#include "../Prettyprint/Prettyprinter.hpp"
-#include "../Package/RecordingPackage.hpp"
 #include <exception>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 namespace EmojicodeCompiler {
 

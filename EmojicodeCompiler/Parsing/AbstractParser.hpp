@@ -12,8 +12,8 @@
 #include "../Lex/TokenStream.hpp"
 #include "../Types/Generic.hpp"
 #include "../Types/TypeContext.hpp"
-#include <utility>
 #include <memory>
+#include <utility>
 
 namespace EmojicodeCompiler {
 

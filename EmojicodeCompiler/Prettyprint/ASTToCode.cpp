@@ -7,7 +7,6 @@
 //
 
 #include "../Parsing/OperatorHelper.hpp"
-#include "../Types/Type.hpp"
 #include "../AST/ASTBinaryOperator.hpp"
 #include "../AST/ASTClosure.hpp"
 #include "../AST/ASTControlFlow.hpp"
@@ -19,6 +18,7 @@
 #include "../AST/ASTTypeExpr.hpp"
 #include "../AST/ASTUnary.hpp"
 #include "../AST/ASTVariables.hpp"
+#include "../Types/Type.hpp"
 #include "Prettyprinter.hpp"
 #include <sstream>
 

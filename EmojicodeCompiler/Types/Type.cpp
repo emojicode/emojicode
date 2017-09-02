@@ -10,11 +10,11 @@
 #include "../EmojicodeCompiler.hpp"
 #include "../Functions/Function.hpp"
 #include "Class.hpp"
+#include "CommonTypeFinder.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 #include "ValueType.hpp"
-#include "CommonTypeFinder.hpp"
 #include <algorithm>
 #include <cstring>
 #include <vector>

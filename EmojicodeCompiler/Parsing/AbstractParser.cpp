@@ -9,9 +9,9 @@
 #include "AbstractParser.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
+#include "../Parsing/CompatibleFunctionParser.hpp"
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeContext.hpp"
-#include "../Parsing/CompatibleFunctionParser.hpp"
 #include "CompatibilityInfoProvider.hpp"
 #include <map>
 #include <vector>
