@@ -9,37 +9,14 @@
 #include "ASTExpr.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
-#include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
 #include "../Types/Enum.hpp"
-#include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
-
-void ASTExpr::generate(FnCodeGenerator *fncg) const {
-    if (temporarilyScoped_) {
-        fncg->scoper().pushScope();
-    }
-    generateExpr(fncg);
-    if (temporarilyScoped_) {
-        fncg->scoper().popScope(fncg->wr().count());
-    }
-}
 
 Type ASTGetVariable::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     auto var = analyser->scoper().getVariable(name_, position());
     copyVariableAstInfo(var, analyser);
     return var.variable.type();
-}
-
-void ASTGetVariable::generateExpr(FnCodeGenerator *fncg) const {
-    auto &var = inInstanceScope_ ? fncg->instanceScoper().getVariable(varId_) : fncg->scoper().getVariable(varId_);
-    if (reference_) {
-        fncg->pushVariableReference(var.stackIndex, inInstanceScope_);
-        return;
-    }
-
-    fncg->pushVariable(var.stackIndex, inInstanceScope_, var.type);
 }
 
 Type ASTMetaTypeInstantiation::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
@@ -48,10 +25,6 @@ Type ASTMetaTypeInstantiation::analyse(SemanticAnalyser *analyser, const TypeExp
     return type_;
 }
 
-void ASTMetaTypeInstantiation::generateExpr(FnCodeGenerator *fncg) const {
-    fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-    fncg->wr().writeInstruction(type_.eclass()->index);
-}
 
 Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
@@ -104,27 +77,6 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     return type;
 }
 
-void ASTCast::generateExpr(FnCodeGenerator *fncg) const {
-    typeExpr_->generate(fncg);
-    value_->generate(fncg);
-    switch (castType_) {
-        case CastType::ClassDowncast:
-            fncg->wr().writeInstruction(INS_DOWNCAST_TO_CLASS);
-            break;
-        case CastType::ToClass:
-            fncg->wr().writeInstruction(INS_CAST_TO_CLASS);
-            break;
-        case CastType::ToValueType:
-            fncg->wr().writeInstruction(INS_CAST_TO_VALUE_TYPE);
-            fncg->wr().writeInstruction(typeExpr_->expressionType().boxIdentifier());
-            break;
-        case CastType::ToProtocol:
-            fncg->wr().writeInstruction(INS_CAST_TO_PROTOCOL);
-            fncg->wr().writeInstruction(typeExpr_->expressionType().protocol()->index);
-            break;
-    }
-}
-
 Type ASTConditionalAssignment::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     if (!t.optional()) {
@@ -139,16 +91,6 @@ Type ASTConditionalAssignment::analyse(SemanticAnalyser *analyser, const TypeExp
     varId_ = variable.id();
 
     return Type::boolean();
-}
-
-void ASTConditionalAssignment::generateExpr(FnCodeGenerator *fncg) const {
-    expr_->generate(fncg);
-    auto &var = fncg->scoper().declareVariable(varId_, expr_->expressionType());
-    fncg->copyToVariable(var.stackIndex, false, expr_->expressionType());
-    fncg->pushVariableReference(var.stackIndex, false);
-    fncg->wr().writeInstruction({ INS_IS_NOTHINGNESS, INS_INVERT_BOOLEAN });
-    var.stackIndex.increment();
-    var.type.setOptional(false);
 }
 
 Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
@@ -173,11 +115,6 @@ Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
     return analyser->analyseFunctionCall(&args_, type, method);
 }
 
-void ASTTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
-    auto ins = valueType_ ? INS_CALL_FUNCTION : INS_DISPATCH_TYPE_METHOD;
-    TypeMethodCallCodeGenerator(fncg, ins).generate(*callee_, callee_->expressionType(), args_, name_);
-}
-
 Type ASTSuperMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     if (analyser->function()->functionType() != FunctionType::ObjectMethod) {
         throw CompilerError(position(), "Not within an object-context.");
@@ -194,9 +131,6 @@ Type ASTSuperMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &
     return analyser->analyseFunctionCall(&args_, calleeType_, method);
 }
 
-void ASTSuperMethod::generateExpr(FnCodeGenerator *fncg) const {
-    SuperCallCodeGenerator(fncg, INS_DISPATCH_SUPER).generate(calleeType_, args_, name_);
-}
 
 Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false, false), &callable_);
@@ -209,10 +143,6 @@ Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation 
     return type.genericArguments()[0];
 }
 
-void ASTCallableCall::generateExpr(FnCodeGenerator *fncg) const {
-    CallableCallCodeGenerator(fncg).generate(*callable_, callable_->expressionType(), args_, std::u32string());
-}
-
 Type ASTCaptureMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false, false), &callee_);
 
@@ -220,12 +150,6 @@ Type ASTCaptureMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation
     auto function = type.typeDefinition()->getMethod(name_, type, analyser->typeContext(), position());
     function->deprecatedWarning(position());
     return function->type();
-}
-
-void ASTCaptureMethod::generateExpr(FnCodeGenerator *fncg) const {
-    callee_->generate(fncg);
-    fncg->wr().writeInstruction(INS_CAPTURE_METHOD);
-    fncg->wr().writeInstruction(callee_->expressionType().eclass()->lookupMethod(name_)->vtiForUse());
 }
 
 Type ASTCaptureTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
@@ -237,15 +161,5 @@ Type ASTCaptureTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpecta
     return function->type();
 }
 
-void ASTCaptureTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
-    if (contextedFunction_) {
-        fncg->wr().writeInstruction(INS_CAPTURE_CONTEXTED_FUNCTION);
-    }
-    else {
-        callee_->generate(fncg);
-        fncg->wr().writeInstruction(INS_CAPTURE_TYPE_METHOD);
-    }
-    fncg->wr().writeInstruction(callee_->expressionType().typeDefinition()->lookupTypeMethod(name_)->vtiForUse());
-}
 
 }  // namespace EmojicodeCompiler

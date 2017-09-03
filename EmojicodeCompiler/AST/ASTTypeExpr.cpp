@@ -8,7 +8,6 @@
 
 #include "ASTTypeExpr.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -36,30 +35,12 @@ Type ASTTypeFromExpr::analyse(SemanticAnalyser *analyser, const TypeExpectation 
     return type;
 }
 
-void ASTTypeFromExpr::generateExpr(FnCodeGenerator *fncg) const {
-    expr_->generate(fncg);
-}
-
 Type ASTStaticType::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     return type_;
 }
 
-void ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
-    if (type_.type() == TypeType::Class) {
-        fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-        fncg->wr().writeInstruction(type_.eclass()->index);
-    }
-    else {
-        assert(availability() == TypeAvailability::StaticAndUnavailable);
-    }
-}
-
 Type ASTThisType::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->typeContext().calleeType();
-}
-
-void ASTThisType::generateExpr(FnCodeGenerator *fncg) const {
-    fncg->wr().writeInstruction(INS_THIS);
 }
 
 }  // namespace EmojicodeCompiler

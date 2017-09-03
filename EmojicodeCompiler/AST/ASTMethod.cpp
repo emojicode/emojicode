@@ -10,7 +10,6 @@
 #include "../../EmojicodeInstructions.h"
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
-#include "../Generation/CallCodeGenerator.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
 
@@ -90,15 +89,6 @@ std::pair<bool, Type> ASTMethodable::builtIn(const Type &type, const std::u32str
         }
     }
     return std::make_pair(false, Type::noReturn());
-}
-
-void ASTMethod::generateExpr(FnCodeGenerator *fncg) const {
-    if (builtIn_) {
-        callee_->generate(fncg);
-        fncg->wr().writeInstruction(instruction_);
-        return;
-    }
-    CallCodeGenerator(fncg, instruction_).generate(*callee_, calleeType_,  args_, name_);
 }
 
 Type ASTMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

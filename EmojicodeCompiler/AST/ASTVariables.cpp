@@ -9,7 +9,6 @@
 #include "ASTVariables.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
 #include "ASTInitialization.hpp"
 
@@ -25,27 +24,9 @@ void ASTInitableCreator::setVtDestination(VariableID varId, bool inInstanceScope
     }
 }
 
-void ASTInitableCreator::generate(FnCodeGenerator *fncg) const {
-    if (noAction_) {
-        expr_->generate(fncg);
-    }
-    else {
-        generateAssignment(fncg);
-    }
-}
-
 void ASTVariableDeclaration::analyse(SemanticAnalyser *analyser) {
     auto &var = analyser->scoper().currentScope().declareVariable(varName_, type_, false, position());
     id_ = var.id();
-}
-
-void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
-    auto &var = fncg->scoper().declareVariable(id_, type_);
-    if (type_.optional()) {
-        fncg->wr().writeInstruction(INS_GET_NOTHINGNESS);
-        fncg->wr().writeInstruction(INS_COPY_TO_STACK);
-        fncg->wr().writeInstruction(var.stackIndex.value());
-    }
 }
 
 void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
@@ -77,21 +58,6 @@ void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
     }
 }
 
-CGScoper::Variable& ASTVariableAssignmentDecl::generateGetVariable(FnCodeGenerator *fncg) const {
-    if (declare_) {
-        return fncg->scoper().declareVariable(varId_, expr_->expressionType());
-    }
-    return inInstanceScope() ? fncg->instanceScoper().getVariable(varId_) : fncg->scoper().getVariable(varId_);
-}
-
-void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) const {
-    expr_->generate(fncg);
-
-    auto &var = generateGetVariable(fncg);
-    fncg->copyToVariable(var.stackIndex, inInstanceScope(), expr_->expressionType());
-    var.initialize(fncg->wr().count());
-}
-
 void ASTInstanceVariableAssignment::analyse(SemanticAnalyser *analyser) {
     auto &var = analyser->scoper().instanceScope()->getLocalVariable(varName_);
     var.initialize();
@@ -107,14 +73,6 @@ void ASTFrozenDeclaration::analyse(SemanticAnalyser *analyser) {
     var.initialize();
     id_ = var.id();
     setVtDestination(var.id(), false, true);
-}
-
-void ASTFrozenDeclaration::generateAssignment(FnCodeGenerator *fncg) const {
-    expr_->generate(fncg);
-
-    auto &var = fncg->scoper().declareVariable(id_, expr_->expressionType());
-    fncg->copyToVariable(var.stackIndex, false, expr_->expressionType());
-    var.initialize(fncg->wr().count());
 }
 
 }  // namespace EmojicodeCompiler

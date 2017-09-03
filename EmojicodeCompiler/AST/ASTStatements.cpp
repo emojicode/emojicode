@@ -7,13 +7,10 @@
 //
 
 #include "ASTStatements.hpp"
-#include "../../EmojicodeInstructions.h"
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
 #include "../Functions/FunctionType.hpp"
-#include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
-#include "../Scoping/CGScoper.hpp"
+#include "../Functions/Initializer.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
 
 namespace EmojicodeCompiler {
@@ -21,12 +18,6 @@ namespace EmojicodeCompiler {
 void ASTBlock::analyse(SemanticAnalyser *analyser) {
     for (auto &stmt : stmts_) {
         stmt->analyse(analyser);
-    }
-}
-
-void ASTBlock::generate(FnCodeGenerator *fncg) const {
-    for (auto &stmt : stmts_) {
-        stmt->generate(fncg);
     }
 }
 
@@ -48,13 +39,6 @@ void ASTReturn::analyse(SemanticAnalyser *analyser) {
     analyser->expectType(analyser->function()->returnType, &value_);
 }
 
-void ASTReturn::generate(FnCodeGenerator *fncg) const {
-    if (value_) {
-        value_->generate(fncg);
-    }
-    fncg->wr().writeInstruction(INS_RETURN);
-}
-
 void ASTRaise::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
     if (isOnlyNothingnessReturnAllowed(analyser->function()->functionType())) {
@@ -73,16 +57,6 @@ void ASTRaise::analyse(SemanticAnalyser *analyser) {
     boxed_ = analyser->function()->returnType.storageType() == StorageType::Box;
 
     analyser->expectType(analyser->function()->returnType.genericArguments()[0], &value_);
-}
-
-void ASTRaise::generate(FnCodeGenerator *fncg) const {
-    fncg->wr().writeInstruction(INS_PUSH_ERROR);
-    value_->generate(fncg);
-    if (boxed_) {
-        fncg->wr().writeInstruction(INS_PUSH_N),
-        fncg->wr().writeInstruction(kBoxValueSize - value_->expressionType().size() - 1);
-    }
-    fncg->wr().writeInstruction(INS_RETURN);
 }
 
 void ASTSuperinitializer::analyse(SemanticAnalyser *analyser) {
@@ -106,11 +80,6 @@ void ASTSuperinitializer::analyse(SemanticAnalyser *analyser) {
     analyser->analyseFunctionCall(&arguments_, superType_, initializer);
 
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
-}
-
-void ASTSuperinitializer::generate(FnCodeGenerator *fncg) const {
-    SuperInitializerCallCodeGenerator(fncg, INS_SUPER_INITIALIZER).generate(superType_, arguments_, name_);
-    fncg->wr().writeInstruction(INS_POP);
 }
 
 }  // namespace EmojicodeCompiler
