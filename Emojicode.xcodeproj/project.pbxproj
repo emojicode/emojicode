@@ -779,7 +779,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# /usr/local/Cellar/llvm/4.0.1/share/clang/run-clang-tidy.py -p build/ -header-filter=EmojicodeCompiler/*/*";
+			shellScript = "/usr/local/Cellar/llvm/4.0.1/share/clang/run-clang-tidy.py -p build/ -header-filter=EmojicodeCompiler/*/*";
 		};
 		E4FD1FAB1E3693FC00313733 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -920,6 +920,7 @@
 			buildSettings = {
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/4.0.1/include;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-Wreorder",
@@ -934,6 +935,7 @@
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				COPY_PHASE_STRIP = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/4.0.1/include;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-Wreorder",

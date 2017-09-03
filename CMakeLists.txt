@@ -25,9 +25,12 @@ add_executable(emojicode ${EMOJICODE_SOURCES})
 target_compile_options(emojicode PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 target_link_libraries(emojicode dl pthread)
 
+link_directories(/usr/local/Cellar/llvm/4.0.1/lib)
 file(GLOB_RECURSE EMOJICODEC_SOURCES "EmojicodeCompiler/*")
 add_executable(emojicodec ${EMOJICODEC_SOURCES})
 target_compile_options(emojicodec PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
+include_directories(SYSTEM /usr/local/Cellar/llvm/4.0.1/include)
+target_link_libraries(emojicodec LLVMCore LLVMSupport LLVMDemangle curses z m)
 
 file(GLOB EMOJICODEMIG_SOURCES "Migrator/*")
 add_executable(emojicodemig ${EMOJICODEMIG_SOURCES})

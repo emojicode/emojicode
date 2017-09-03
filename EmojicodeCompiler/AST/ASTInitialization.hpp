@@ -22,7 +22,7 @@ public:
         setExpressionType(exprType);
     }
 
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void initialize(FnCodeGenerator *fncg);
     void toCode(Prettyprinter &pretty) const override {}
 
@@ -45,7 +45,7 @@ public:
                       ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 
     void setDestination(const std::shared_ptr<ASTVTInitDest> &vtInitable) { vtDestination_ = vtInitable; }

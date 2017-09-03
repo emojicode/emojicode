@@ -15,20 +15,23 @@
 
 namespace EmojicodeCompiler {
 
-void ASTStringLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTStringLiteral::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_GET_STRING_POOL);
     fncg->wr().writeInstruction(fncg->app()->stringPool().pool(value_));
+    return nullptr;
 }
 
-void ASTBooleanTrue::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBooleanTrue::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_GET_TRUE);
+    return nullptr;
 }
 
-void ASTBooleanFalse::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBooleanFalse::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_GET_FALSE);
+    return nullptr;
 }
 
-void ASTNumberLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTNumberLiteral::generateExpr(FnCodeGenerator *fncg) const {
     switch (type_) {
         case NumberType::Integer:
             fncg->writeInteger(integerValue_);
@@ -38,24 +41,28 @@ void ASTNumberLiteral::generateExpr(FnCodeGenerator *fncg) const {
             fncg->wr().writeDoubleCoin(doubleValue_);
             break;
     }
+    return nullptr;
 }
 
-void ASTSymbolLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSymbolLiteral::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_GET_SYMBOL);
     fncg->wr().writeInstruction(value_);
+    return nullptr;
 }
 
-void ASTThis::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTThis::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_THIS);
+    return nullptr;
 }
 
-void ASTNothingness::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTNothingness::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_GET_NOTHINGNESS);
     fncg->wr().writeInstruction(INS_PUSH_N);
     fncg->wr().writeInstruction(type_.size() - 1);
+    return nullptr;
 }
 
-void ASTDictionaryLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTDictionaryLiteral::generateExpr(FnCodeGenerator *fncg) const {
     auto &var = fncg->scoper().declareVariable(varId_, type_);
     auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
         fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
@@ -75,9 +82,10 @@ void ASTDictionaryLiteral::generateExpr(FnCodeGenerator *fncg) const {
         CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F437));
     }
     getVar.generateExpr(fncg);
+    return nullptr;
 }
 
-void ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
     auto &var = fncg->scoper().declareVariable(varId_, type_);
     auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
         fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
@@ -96,9 +104,10 @@ void ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
         CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F43B));
     }
     getVar.generateExpr(fncg);
+    return nullptr;
 }
 
-void ASTConcatenateLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTConcatenateLiteral::generateExpr(FnCodeGenerator *fncg) const {
     auto &var = fncg->scoper().declareVariable(varId_, type_);
     auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
         fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
@@ -119,6 +128,7 @@ void ASTConcatenateLiteral::generateExpr(FnCodeGenerator *fncg) const {
 
     CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_,
                                                           ASTArguments(position()), std::u32string(1, 0x1F521));
+    return nullptr;
 }
 
 }  // namespace EmojicodeCompiler

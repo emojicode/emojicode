@@ -12,7 +12,7 @@
 
 namespace EmojicodeCompiler {
 
-void ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
     auto rtype = expr_->expressionType();
     rtype.setOptional();
@@ -25,14 +25,16 @@ void ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
         fncg->wr().writeInstruction({ INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE,
             static_cast<EmojicodeInstruction>(rtype.size() - 1) });
     }
+    return nullptr;
 }
 
-void ASTSimpleToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSimpleToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_SIMPLE_OPTIONAL_PRODUCE);
     expr_->generate(fncg);
+    return nullptr;
 }
 
-void ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
     auto rtype = expr_->expressionType();
     if (rtype.remotelyStored()) {
@@ -45,9 +47,10 @@ void ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
             static_cast<EmojicodeInstruction>(rtype.boxIdentifier()),
             static_cast<EmojicodeInstruction>(rtype.size() - 1) });
     }
+    return nullptr;
 }
 
-void ASTSimpleToBox::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSimpleToBox::generateExpr(FnCodeGenerator *fncg) const {
     auto rtype = expr_->expressionType();
     if (rtype.remotelyStored()) {
         expr_->generate(fncg);
@@ -62,9 +65,10 @@ void ASTSimpleToBox::generateExpr(FnCodeGenerator *fncg) const {
         fncg->wr().writeInstruction(INS_PUSH_N);
         fncg->wr().writeInstruction(kBoxValueSize - rtype.size() - 1);
     }
+    return nullptr;
 }
 
-void ASTBoxToSimple::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBoxToSimple::generateExpr(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
     auto rtype = expr_->expressionType();
     rtype.unbox();
@@ -74,27 +78,31 @@ void ASTBoxToSimple::generateExpr(FnCodeGenerator *fncg) const {
     else {
         fncg->wr().writeInstruction({ INS_UNBOX, static_cast<EmojicodeInstruction>(rtype.size()) });
     }
+    return nullptr;
 }
 
-void ASTDereference::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTDereference::generateExpr(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
     fncg->wr().writeInstruction(INS_PUSH_VALUE_FROM_REFERENCE);
     fncg->wr().writeInstruction(expr_->expressionType().size());
+    return nullptr;
 }
 
-void ASTCallableBox::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTCallableBox::generateExpr(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
     fncg->wr().writeInstruction(INS_CLOSURE_BOX);
     fncg->wr().writeInstruction(boxingLayer_->vtiForUse());
+    return nullptr;
 }
 
-void ASTStoreTemporarily::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTStoreTemporarily::generateExpr(FnCodeGenerator *fncg) const {
     auto rtype = expr_->expressionType();
     auto &variable = fncg->scoper().declareVariable(varId_, rtype);
     expr_->generate(fncg);
     fncg->copyToVariable(variable.stackIndex, false, rtype);
     variable.initialize(fncg->wr().count());
     fncg->pushVariableReference(variable.stackIndex, false);
+    return nullptr;
 }
 
 }  // namespace EmojicodeCompiler

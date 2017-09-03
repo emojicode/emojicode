@@ -9,6 +9,9 @@
 #ifndef Application_hpp
 #define Application_hpp
 
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
 #include "Generation/StringPool.hpp"
 #include "Package/Package.hpp"
 #include "Parsing/CompatibilityInfoProvider.hpp"
@@ -138,6 +141,9 @@ public:
     std::vector<std::vector<ObjectVariableInformation>>& boxObjectVariableInformation() {
         return boxObjectVariableInformation_;
     }
+
+    llvm::LLVMContext& context() { return context_; }
+    llvm::Module* module() { return module_.get(); }
 private:
     void generateCode();
     void analyse(Package *underscorePackage);
@@ -159,6 +165,9 @@ private:
     std::unique_ptr<ApplicationDelegate> delegate_;
     std::unique_ptr<CompatibilityInfoProvider> compInfoProvider_;
     std::unique_ptr<Package> underscorePackage_;
+
+    llvm::LLVMContext context_;
+    std::unique_ptr<llvm::Module> module_ = std::make_unique<llvm::Module>("my cool jit", context());
 };
 
 }  // namespace EmojicodeCompiler

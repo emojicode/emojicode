@@ -36,6 +36,7 @@ bool Application::compile(bool parseOnly) {
 
     if (!hasError_) {
         generateCode();
+        module()->dump();
     }
 
     delegate_->finish();

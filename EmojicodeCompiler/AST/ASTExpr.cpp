@@ -25,7 +25,6 @@ Type ASTMetaTypeInstantiation::analyse(SemanticAnalyser *analyser, const TypeExp
     return type_;
 }
 
-
 Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
@@ -131,7 +130,6 @@ Type ASTSuperMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &
     return analyser->analyseFunctionCall(&args_, calleeType_, method);
 }
 
-
 Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false, false), &callable_);
     if (type.type() != TypeType::Callable) {
@@ -160,6 +158,5 @@ Type ASTCaptureTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpecta
     contextedFunction_ = type.type() == TypeType::ValueType || type.type() == TypeType::Enum;
     return function->type();
 }
-
 
 }  // namespace EmojicodeCompiler

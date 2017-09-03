@@ -7,6 +7,10 @@
 //
 
 #include "../Types/Enum.hpp"
+#include <llvm/IR/Function.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/DerivedTypes.h>
 #include "../AST/ASTStatements.hpp"
 #include "../Functions/BoxingLayer.hpp"
 #include "FnCodeGenerator.hpp"
@@ -19,6 +23,15 @@ void FnCodeGenerator::generate() {
         wr().writeInstruction({ INS_TRANSFER_CONTROL_TO_NATIVE, INS_RETURN });
         return;
     }
+
+    llvm::StructType::get(<#llvm::LLVMContext &Context#>, <#ArrayRef<llvm::Type *> Elements#>)
+
+    std::vector<llvm::Type *> args(3, llvm::Type::getDoubleTy(app()->context()));
+    auto ft = llvm::FunctionType::get(llvm::Type::getInt64Ty(app()->context()), args, false);
+    auto function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "tests3", app()->module());
+
+    auto basicBlock = llvm::BasicBlock::Create(app()->context(), "entry", function);
+    builder_.SetInsertPoint(basicBlock);
 
     scoper_.pushScope();
 

@@ -23,14 +23,15 @@ void ASTVTInitDest::initialize(FnCodeGenerator *fncg) {
     scoper(fncg).getVariable(varId_).initialize(fncg->wr().count());
 }
 
-void ASTVTInitDest::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTVTInitDest::generateExpr(FnCodeGenerator *fncg) const {
     if (declare_) {
         scoper(fncg).declareVariable(varId_, expressionType());
     }
     fncg->pushVariableReference(scoper(fncg).getVariable(varId_).stackIndex, inInstanceScope_);
+    return nullptr;
 }
 
-void ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
     switch (initType_) {
         case InitType::Class:
             InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(*typeExpr_, typeExpr_->expressionType(),
@@ -42,6 +43,7 @@ void ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
         case InitType::ValueType:
             VTInitializationCallCodeGenerator(fncg).generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
     }
+    return nullptr;
 }
 
 Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

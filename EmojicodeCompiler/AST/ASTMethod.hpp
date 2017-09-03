@@ -38,7 +38,7 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(Prettyprinter &pretty) const override;
 private:
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     std::u32string name_;
     std::shared_ptr<ASTExpr> callee_;
 };

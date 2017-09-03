@@ -9,10 +9,12 @@
 #ifndef FnCodeGenerator_hpp
 #define FnCodeGenerator_hpp
 
+#include <llvm/IR/IRBuilder.h>
 #include "../../EmojicodeInstructions.h"
 #include "../AST/ASTNode.hpp"
 #include "../Functions/Function.hpp"
 #include "../Scoping/CGScoper.hpp"
+#include "../Application.hpp"
 #include "FunctionWriter.hpp"
 #include <memory>
 
@@ -23,7 +25,7 @@ public:
     explicit FnCodeGenerator(Function *function)
     : fn_(function), scoper_(function->variableCount()),
     instanceScoper_(function->owningType().type() != TypeType::NoReturn ?
-                    &function->owningType().typeDefinition()->cgScoper() : nullptr) {}
+                    &function->owningType().typeDefinition()->cgScoper() : nullptr), builder_(app()->context()) {}
     void generate();
 
     FunctionWriter& wr() { return fn_->writer_; }
@@ -87,6 +89,8 @@ private:
     Function *fn_;
     CGScoper scoper_;
     CGScoper *instanceScoper_;
+
+    llvm::IRBuilder<> builder_;
 
     void generateBoxingLayer();
 };

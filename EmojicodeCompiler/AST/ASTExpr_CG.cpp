@@ -14,33 +14,36 @@
 
 namespace EmojicodeCompiler {
 
-void ASTExpr::generate(FnCodeGenerator *fncg) const {
+Value* ASTExpr::generate(FnCodeGenerator *fncg) const {
     if (temporarilyScoped_) {
         fncg->scoper().pushScope();
     }
-    generateExpr(fncg);
+    auto value = generateExpr(fncg);
     if (temporarilyScoped_) {
         fncg->scoper().popScope(fncg->wr().count());
     }
+    return value;
 }
 
-void ASTMetaTypeInstantiation::generateExpr(FnCodeGenerator *fncg) const {
-    fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-    fncg->wr().writeInstruction(type_.eclass()->index);
-}
-
-void ASTGetVariable::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTGetVariable::generateExpr(FnCodeGenerator *fncg) const {
     auto &var = inInstanceScope_ ? fncg->instanceScoper().getVariable(varId_) : fncg->scoper().getVariable(varId_);
     if (reference_) {
         fncg->pushVariableReference(var.stackIndex, inInstanceScope_);
-        return;
+        return nullptr;
     }
 
     fncg->pushVariable(var.stackIndex, inInstanceScope_, var.type);
+    return nullptr;
 }
 
 
-void ASTCast::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTMetaTypeInstantiation::generateExpr(FnCodeGenerator *fncg) const {
+    fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
+    fncg->wr().writeInstruction(type_.eclass()->index);
+    return nullptr;
+}
+
+Value* ASTCast::generateExpr(FnCodeGenerator *fncg) const {
     typeExpr_->generate(fncg);
     value_->generate(fncg);
     switch (castType_) {
@@ -59,9 +62,10 @@ void ASTCast::generateExpr(FnCodeGenerator *fncg) const {
             fncg->wr().writeInstruction(typeExpr_->expressionType().protocol()->index);
             break;
     }
+    return nullptr;
 }
 
-void ASTConditionalAssignment::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTConditionalAssignment::generateExpr(FnCodeGenerator *fncg) const {
     expr_->generate(fncg);
     auto &var = fncg->scoper().declareVariable(varId_, expr_->expressionType());
     fncg->copyToVariable(var.stackIndex, false, expr_->expressionType());
@@ -69,28 +73,34 @@ void ASTConditionalAssignment::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction({ INS_IS_NOTHINGNESS, INS_INVERT_BOOLEAN });
     var.stackIndex.increment();
     var.type.setOptional(false);
+    return nullptr;
 }
 
-void ASTTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
     auto ins = valueType_ ? INS_CALL_FUNCTION : INS_DISPATCH_TYPE_METHOD;
     TypeMethodCallCodeGenerator(fncg, ins).generate(*callee_, callee_->expressionType(), args_, name_);
+    return nullptr;
 }
 
-void ASTSuperMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSuperMethod::generateExpr(FnCodeGenerator *fncg) const {
     SuperCallCodeGenerator(fncg, INS_DISPATCH_SUPER).generate(calleeType_, args_, name_);
+    return nullptr;
 }
 
-void ASTCallableCall::generateExpr(FnCodeGenerator *fncg) const {
+
+Value* ASTCallableCall::generateExpr(FnCodeGenerator *fncg) const {
     CallableCallCodeGenerator(fncg).generate(*callable_, callable_->expressionType(), args_, std::u32string());
+    return nullptr;
 }
 
-void ASTCaptureMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTCaptureMethod::generateExpr(FnCodeGenerator *fncg) const {
     callee_->generate(fncg);
     fncg->wr().writeInstruction(INS_CAPTURE_METHOD);
     fncg->wr().writeInstruction(callee_->expressionType().eclass()->lookupMethod(name_)->vtiForUse());
+    return nullptr;
 }
 
-void ASTCaptureTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTCaptureTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
     if (contextedFunction_) {
         fncg->wr().writeInstruction(INS_CAPTURE_CONTEXTED_FUNCTION);
     }
@@ -99,6 +109,7 @@ void ASTCaptureTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
         fncg->wr().writeInstruction(INS_CAPTURE_TYPE_METHOD);
     }
     fncg->wr().writeInstruction(callee_->expressionType().typeDefinition()->lookupTypeMethod(name_)->vtiForUse());
+    return nullptr;
 }
 
 }  // namespace EmojicodeCompiler

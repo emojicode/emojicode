@@ -13,7 +13,7 @@
 
 namespace EmojicodeCompiler {
 
-void ASTClosure::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTClosure::generateExpr(FnCodeGenerator *fncg) const {
     auto closureGenerator = ClosureCodeGenerator(captures_, function_);
     closureGenerator.generate();
 
@@ -42,6 +42,7 @@ void ASTClosure::generateExpr(FnCodeGenerator *fncg) const {
     }
 
     fncg->wr().writeInstruction(captureSelf_ ? 1 : 0);
+    return nullptr;
 }
 
 }  // namespace EmojicodeCompiler

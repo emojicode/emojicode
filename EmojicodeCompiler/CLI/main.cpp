@@ -12,8 +12,6 @@
 #include "Options.hpp"
 #include "PackageReporter.hpp"
 #include <exception>
-#include <fstream>
-#include <iostream>
 
 namespace EmojicodeCompiler {
 
@@ -26,8 +24,8 @@ bool start(Options options) {
         return true;
     }
 
-    auto application = Application(options.mainFile(), options.outPath(), options.packageDirectory(),
-                                   options.applicationDelegate());
+    Application application(options.mainFile(), options.outPath(), options.packageDirectory(),
+                            options.applicationDelegate());
 
     if (!options.migrationFile().empty()) {
         application.loadMigrationFile(options.migrationFile());

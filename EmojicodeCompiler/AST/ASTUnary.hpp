@@ -31,7 +31,7 @@ class ASTIsNothigness final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };
 
@@ -39,7 +39,7 @@ class ASTIsError final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };
 
@@ -47,7 +47,7 @@ class ASTUnwrap final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     bool error_ = false;
@@ -57,7 +57,7 @@ class ASTMetaTypeFromInstance final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };
 

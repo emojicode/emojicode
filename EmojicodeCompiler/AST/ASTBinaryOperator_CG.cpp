@@ -12,16 +12,16 @@
 
 namespace EmojicodeCompiler {
 
-void ASTBinaryOperator::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBinaryOperator::generateExpr(FnCodeGenerator *fncg) const {
     if (builtIn_) {
         left_->generate(fncg);
         right_->generate(fncg);
         fncg->wr().writeInstruction(instruction_);
-        return;
+        return nullptr;
     }
 
     CallCodeGenerator(fncg, instruction_).generate(*left_, calleeType_, args_, operatorName(operator_));
+    return nullptr;
 }
-
 
 }  // namespace EmojicodeCompiler

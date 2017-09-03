@@ -11,12 +11,11 @@
 
 namespace EmojicodeCompiler {
 
-void ASTTypeFromExpr::generateExpr(FnCodeGenerator *fncg) const {
-    expr_->generate(fncg);
+Value* ASTTypeFromExpr::generateExpr(FnCodeGenerator *fncg) const {
+    return expr_->generate(fncg);
 }
 
-
-void ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
     if (type_.type() == TypeType::Class) {
         fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
         fncg->wr().writeInstruction(type_.eclass()->index);
@@ -24,10 +23,12 @@ void ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
     else {
         assert(availability() == TypeAvailability::StaticAndUnavailable);
     }
+    return nullptr;
 }
-
-void ASTThisType::generateExpr(FnCodeGenerator *fncg) const {
+    
+Value* ASTThisType::generateExpr(FnCodeGenerator *fncg) const {
     fncg->wr().writeInstruction(INS_THIS);
+    return nullptr;
 }
 
 }  // namespace EmojicodeCompiler

@@ -29,42 +29,42 @@ protected:
 class ASTBoxToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
 class ASTSimpleToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
 class ASTSimpleOptionalToBox final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
 class ASTSimpleToBox final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
 class ASTBoxToSimple final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
 class ASTDereference final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
@@ -74,7 +74,7 @@ public:
                    BoxingLayer *boxingLayer) : ASTBoxing(std::move(expr), exprType, p), boxingLayer_(boxingLayer) {}
 
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 private:
     BoxingLayer *boxingLayer_;
@@ -83,7 +83,7 @@ private:
 class ASTStoreTemporarily final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
-    void generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 public:
     void setVarId(VariableID id) { varId_ = id; }

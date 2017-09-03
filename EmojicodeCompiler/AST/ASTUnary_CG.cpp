@@ -10,15 +10,17 @@
 
 namespace EmojicodeCompiler {
 
-void ASTIsNothigness::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTIsNothigness::generateExpr(FnCodeGenerator *fncg) const {
     generateHelper(fncg, INS_IS_NOTHINGNESS);
+    return nullptr;
 }
 
-void ASTIsError::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTIsError::generateExpr(FnCodeGenerator *fncg) const {
     generateHelper(fncg, INS_IS_ERROR);
+    return nullptr;
 }
 
-void ASTUnwrap::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTUnwrap::generateExpr(FnCodeGenerator *fncg) const {
     value_->generate(fncg);
     auto type = value_->expressionType();
     if (type.storageType() == StorageType::Box) {
@@ -28,10 +30,12 @@ void ASTUnwrap::generateExpr(FnCodeGenerator *fncg) const {
         fncg->wr().writeInstruction(error_ ? INS_ERROR_CHECK_SIMPLE_OPTIONAL : INS_UNWRAP_SIMPLE_OPTIONAL);
         fncg->wr().writeInstruction(type.size() - 1);
     }
+    return nullptr;
 }
 
-void ASTMetaTypeFromInstance::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTMetaTypeFromInstance::generateExpr(FnCodeGenerator *fncg) const {
     generateHelper(fncg, INS_GET_CLASS_FROM_INSTANCE);
+    return nullptr;
 }
 
 }  // namespace EmojicodeCompiler

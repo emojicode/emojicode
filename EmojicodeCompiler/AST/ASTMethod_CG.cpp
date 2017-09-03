@@ -11,13 +11,14 @@
 
 namespace EmojicodeCompiler {
 
-void ASTMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTMethod::generateExpr(FnCodeGenerator *fncg) const {
     if (builtIn_) {
         callee_->generate(fncg);
         fncg->wr().writeInstruction(instruction_);
-        return;
+        return nullptr;
     }
     CallCodeGenerator(fncg, instruction_).generate(*callee_, calleeType_,  args_, name_);
+    return nullptr;
 }
-
+    
 }  // namespace EmojicodeCompiler
