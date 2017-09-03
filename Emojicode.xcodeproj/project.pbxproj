@@ -73,11 +73,9 @@
 		E483569B1F34CE3F000B80AE /* ASTLiterals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356991F34CE3F000B80AE /* ASTLiterals.cpp */; };
 		E483569F1F34D8BE000B80AE /* ASTBinaryOperator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E483569D1F34D8BE000B80AE /* ASTBinaryOperator.cpp */; };
 		E48356A11F34FAAF000B80AE /* SemanticAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A53D1F30EFA2006E3AC7 /* SemanticAnalyser.cpp */; };
-		E48356A41F35B6A7000B80AE /* ASTBoxing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356A21F35B6A7000B80AE /* ASTBoxing.cpp */; };
 		E48356AA1F35E1A2000B80AE /* ASTMethod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356A81F35E1A2000B80AE /* ASTMethod.cpp */; };
 		E48356AD1F361F61000B80AE /* CallCodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356AB1F361F61000B80AE /* CallCodeGenerator.cpp */; };
 		E48356AE1F3713FB000B80AE /* FnCodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5421F30EFA2006E3AC7 /* FnCodeGenerator.cpp */; };
-		E48356B11F373990000B80AE /* ASTProxyExpr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356AF1F373990000B80AE /* ASTProxyExpr.cpp */; };
 		E48356B41F375742000B80AE /* Extension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356B21F375742000B80AE /* Extension.cpp */; };
 		E48356B71F389144000B80AE /* ASTInitialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356B51F389144000B80AE /* ASTInitialization.cpp */; };
 		E48356BA1F3892C2000B80AE /* ASTVariables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356B81F3892C2000B80AE /* ASTVariables.cpp */; };
@@ -88,6 +86,18 @@
 		E49E6D181F4ABF2500B819CA /* ClosureCodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E49E6D161F4ABF2500B819CA /* ClosureCodeGenerator.cpp */; };
 		E49E6D1B1F4AD97F00B819CA /* VariableID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E49E6D191F4AD97F00B819CA /* VariableID.cpp */; };
 		E4D3EF8C1F5459A100A31C81 /* CompatibilityInfoProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4D3EF8A1F5459A100A31C81 /* CompatibilityInfoProvider.cpp */; };
+		E4DB9B5E1F5C24F800B566DD /* ASTVariables_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B531F5C24F600B566DD /* ASTVariables_CG.cpp */; };
+		E4DB9B5F1F5C24F800B566DD /* ASTStatements_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B541F5C24F600B566DD /* ASTStatements_CG.cpp */; };
+		E4DB9B601F5C24F800B566DD /* ASTClosure_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B551F5C24F600B566DD /* ASTClosure_CG.cpp */; };
+		E4DB9B611F5C24F800B566DD /* ASTMethod_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B561F5C24F600B566DD /* ASTMethod_CG.cpp */; };
+		E4DB9B621F5C24F800B566DD /* ASTTypeExpr_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B571F5C24F700B566DD /* ASTTypeExpr_CG.cpp */; };
+		E4DB9B631F5C24F800B566DD /* ASTLiterals_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B581F5C24F700B566DD /* ASTLiterals_CG.cpp */; };
+		E4DB9B641F5C24F800B566DD /* ASTInitialization_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B591F5C24F700B566DD /* ASTInitialization_CG.cpp */; };
+		E4DB9B651F5C24F800B566DD /* ASTUnary_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B5A1F5C24F800B566DD /* ASTUnary_CG.cpp */; };
+		E4DB9B661F5C24F800B566DD /* ASTControlFlow_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B5B1F5C24F800B566DD /* ASTControlFlow_CG.cpp */; };
+		E4DB9B671F5C24F800B566DD /* ASTBinaryOperator_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B5C1F5C24F800B566DD /* ASTBinaryOperator_CG.cpp */; };
+		E4DB9B681F5C24F800B566DD /* ASTBoxing_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B5D1F5C24F800B566DD /* ASTBoxing_CG.cpp */; };
+		E4DB9B6A1F5C256400B566DD /* ASTExpr_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B691F5C256400B566DD /* ASTExpr_CG.cpp */; };
 		E4DE8CAB1F57410400BFE7A9 /* CompatibleFunctionParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */; };
 		E4DF2B871E4602930006EA17 /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EEB9F71C8301A5009E7089 /* JSON.cpp */; };
 		E4EC74801E1D9644007A22AA /* Processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4EC747E1E1D9644007A22AA /* Processor.cpp */; };
@@ -266,13 +276,11 @@
 		E483569D1F34D8BE000B80AE /* ASTBinaryOperator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASTBinaryOperator.cpp; sourceTree = "<group>"; };
 		E483569E1F34D8BE000B80AE /* ASTBinaryOperator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTBinaryOperator.hpp; sourceTree = "<group>"; };
 		E48356A01F34F741000B80AE /* ASTNode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ASTNode.hpp; sourceTree = "<group>"; };
-		E48356A21F35B6A7000B80AE /* ASTBoxing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASTBoxing.cpp; sourceTree = "<group>"; };
 		E48356A31F35B6A7000B80AE /* ASTBoxing.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTBoxing.hpp; sourceTree = "<group>"; };
 		E48356A81F35E1A2000B80AE /* ASTMethod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASTMethod.cpp; sourceTree = "<group>"; };
 		E48356A91F35E1A2000B80AE /* ASTMethod.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTMethod.hpp; sourceTree = "<group>"; };
 		E48356AB1F361F61000B80AE /* CallCodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CallCodeGenerator.cpp; sourceTree = "<group>"; };
 		E48356AC1F361F61000B80AE /* CallCodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CallCodeGenerator.hpp; sourceTree = "<group>"; };
-		E48356AF1F373990000B80AE /* ASTProxyExpr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASTProxyExpr.cpp; sourceTree = "<group>"; };
 		E48356B01F373990000B80AE /* ASTProxyExpr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTProxyExpr.hpp; sourceTree = "<group>"; };
 		E48356B21F375742000B80AE /* Extension.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Extension.cpp; sourceTree = "<group>"; };
 		E48356B31F375742000B80AE /* Extension.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Extension.hpp; sourceTree = "<group>"; };
@@ -295,6 +303,18 @@
 		E49FD7741DE9A2BB00FD5170 /* EmojicodeInstructions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeInstructions.h; sourceTree = "<group>"; };
 		E4D3EF8A1F5459A100A31C81 /* CompatibilityInfoProvider.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompatibilityInfoProvider.cpp; sourceTree = "<group>"; };
 		E4D3EF8B1F5459A100A31C81 /* CompatibilityInfoProvider.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CompatibilityInfoProvider.hpp; sourceTree = "<group>"; };
+		E4DB9B531F5C24F600B566DD /* ASTVariables_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTVariables_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B541F5C24F600B566DD /* ASTStatements_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTStatements_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B551F5C24F600B566DD /* ASTClosure_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTClosure_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B561F5C24F600B566DD /* ASTMethod_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTMethod_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B571F5C24F700B566DD /* ASTTypeExpr_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTTypeExpr_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B581F5C24F700B566DD /* ASTLiterals_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTLiterals_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B591F5C24F700B566DD /* ASTInitialization_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTInitialization_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B5A1F5C24F800B566DD /* ASTUnary_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTUnary_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B5B1F5C24F800B566DD /* ASTControlFlow_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTControlFlow_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B5C1F5C24F800B566DD /* ASTBinaryOperator_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTBinaryOperator_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B5D1F5C24F800B566DD /* ASTBoxing_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTBoxing_CG.cpp; sourceTree = "<group>"; };
+		E4DB9B691F5C256400B566DD /* ASTExpr_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTExpr_CG.cpp; sourceTree = "<group>"; };
 		E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompatibleFunctionParser.cpp; sourceTree = "<group>"; };
 		E4DE8CAA1F57410400BFE7A9 /* CompatibleFunctionParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CompatibleFunctionParser.hpp; sourceTree = "<group>"; };
 		E4E404071A5B2E4300034386 /* Emojicode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Emojicode; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -566,34 +586,44 @@
 		E4C77A631F337AF500B5876A /* AST */ = {
 			isa = PBXGroup;
 			children = (
-				E460A5581F30EFA2006E3AC7 /* ASTNode.cpp */,
-				E48356A01F34F741000B80AE /* ASTNode.hpp */,
-				E48356871F33866F000B80AE /* ASTExpr.cpp */,
-				E48356881F33866F000B80AE /* ASTExpr.hpp */,
-				E48356A81F35E1A2000B80AE /* ASTMethod.cpp */,
-				E48356A91F35E1A2000B80AE /* ASTMethod.hpp */,
-				E48356991F34CE3F000B80AE /* ASTLiterals.cpp */,
-				E483569A1F34CE3F000B80AE /* ASTLiterals.hpp */,
-				E48356961F34CDBB000B80AE /* ASTTypeExpr.cpp */,
-				E48356971F34CDBB000B80AE /* ASTTypeExpr.hpp */,
-				E48356901F34C05B000B80AE /* ASTUnary.cpp */,
-				E48356911F34C05B000B80AE /* ASTUnary.hpp */,
-				E483568A1F349807000B80AE /* ASTStatements.cpp */,
-				E483568B1F349807000B80AE /* ASTStatements.hpp */,
-				E49E6D131F441F0900B819CA /* ASTClosure.cpp */,
-				E49E6D141F441F0900B819CA /* ASTClosure.hpp */,
-				E48356931F34C817000B80AE /* ASTControlFlow.cpp */,
-				E48356941F34C817000B80AE /* ASTControlFlow.hpp */,
+				E4DB9B5C1F5C24F800B566DD /* ASTBinaryOperator_CG.cpp */,
 				E483569D1F34D8BE000B80AE /* ASTBinaryOperator.cpp */,
 				E483569E1F34D8BE000B80AE /* ASTBinaryOperator.hpp */,
-				E48356A21F35B6A7000B80AE /* ASTBoxing.cpp */,
+				E4DB9B5D1F5C24F800B566DD /* ASTBoxing_CG.cpp */,
 				E48356A31F35B6A7000B80AE /* ASTBoxing.hpp */,
-				E48356AF1F373990000B80AE /* ASTProxyExpr.cpp */,
-				E48356B01F373990000B80AE /* ASTProxyExpr.hpp */,
-				E48356B81F3892C2000B80AE /* ASTVariables.cpp */,
-				E48356B91F3892C2000B80AE /* ASTVariables.hpp */,
+				E4DB9B551F5C24F600B566DD /* ASTClosure_CG.cpp */,
+				E49E6D131F441F0900B819CA /* ASTClosure.cpp */,
+				E49E6D141F441F0900B819CA /* ASTClosure.hpp */,
+				E4DB9B5B1F5C24F800B566DD /* ASTControlFlow_CG.cpp */,
+				E48356931F34C817000B80AE /* ASTControlFlow.cpp */,
+				E48356941F34C817000B80AE /* ASTControlFlow.hpp */,
+				E4DB9B691F5C256400B566DD /* ASTExpr_CG.cpp */,
+				E48356871F33866F000B80AE /* ASTExpr.cpp */,
+				E48356881F33866F000B80AE /* ASTExpr.hpp */,
+				E4DB9B591F5C24F700B566DD /* ASTInitialization_CG.cpp */,
 				E48356B51F389144000B80AE /* ASTInitialization.cpp */,
 				E48356B61F389144000B80AE /* ASTInitialization.hpp */,
+				E4DB9B581F5C24F700B566DD /* ASTLiterals_CG.cpp */,
+				E48356991F34CE3F000B80AE /* ASTLiterals.cpp */,
+				E483569A1F34CE3F000B80AE /* ASTLiterals.hpp */,
+				E4DB9B561F5C24F600B566DD /* ASTMethod_CG.cpp */,
+				E48356A81F35E1A2000B80AE /* ASTMethod.cpp */,
+				E48356A91F35E1A2000B80AE /* ASTMethod.hpp */,
+				E460A5581F30EFA2006E3AC7 /* ASTNode.cpp */,
+				E48356A01F34F741000B80AE /* ASTNode.hpp */,
+				E48356B01F373990000B80AE /* ASTProxyExpr.hpp */,
+				E4DB9B541F5C24F600B566DD /* ASTStatements_CG.cpp */,
+				E483568A1F349807000B80AE /* ASTStatements.cpp */,
+				E483568B1F349807000B80AE /* ASTStatements.hpp */,
+				E4DB9B571F5C24F700B566DD /* ASTTypeExpr_CG.cpp */,
+				E48356961F34CDBB000B80AE /* ASTTypeExpr.cpp */,
+				E48356971F34CDBB000B80AE /* ASTTypeExpr.hpp */,
+				E4DB9B5A1F5C24F800B566DD /* ASTUnary_CG.cpp */,
+				E48356901F34C05B000B80AE /* ASTUnary.cpp */,
+				E48356911F34C05B000B80AE /* ASTUnary.hpp */,
+				E4DB9B531F5C24F600B566DD /* ASTVariables_CG.cpp */,
+				E48356B81F3892C2000B80AE /* ASTVariables.cpp */,
+				E48356B91F3892C2000B80AE /* ASTVariables.hpp */,
 			);
 			path = AST;
 			sourceTree = "<group>";
@@ -773,15 +803,17 @@
 			files = (
 				E48356B71F389144000B80AE /* ASTInitialization.cpp in Sources */,
 				E460A5A61F30EFA2006E3AC7 /* ASTNode.cpp in Sources */,
-				E48356A41F35B6A7000B80AE /* ASTBoxing.cpp in Sources */,
 				E460A5A11F30EFA2006E3AC7 /* EmojiTokenization.cpp in Sources */,
 				E48356AE1F3713FB000B80AE /* FnCodeGenerator.cpp in Sources */,
 				E400909D1F516E80003F62FE /* Package.cpp in Sources */,
 				E478910C1F4EFD9C008DCB24 /* AttributesParser.cpp in Sources */,
 				E460A5B81F30EFA2006E3AC7 /* TypeContext.cpp in Sources */,
 				E460A5AB1F30EFA2006E3AC7 /* SemanticScoper.cpp in Sources */,
+				E4DB9B611F5C24F800B566DD /* ASTMethod_CG.cpp in Sources */,
 				E460A5991F30EFA2006E3AC7 /* PathAnalyser.cpp in Sources */,
 				E4969EBC1F30F1CF002DF345 /* CommonTypeFinder.cpp in Sources */,
+				E4DB9B641F5C24F800B566DD /* ASTInitialization_CG.cpp in Sources */,
+				E4DB9B631F5C24F800B566DD /* ASTLiterals_CG.cpp in Sources */,
 				E460A5B71F30EFA2006E3AC7 /* TypeAvailability.cpp in Sources */,
 				E460A5AA1F30EFA2006E3AC7 /* DocumentParser.cpp in Sources */,
 				E460A5A31F30EFA2006E3AC7 /* Token.cpp in Sources */,
@@ -791,14 +823,19 @@
 				E460A59E1F30EFA2006E3AC7 /* StringPool.cpp in Sources */,
 				E483568C1F349807000B80AE /* ASTStatements.cpp in Sources */,
 				E460A5B61F30EFA2006E3AC7 /* Type.cpp in Sources */,
+				E4DB9B681F5C24F800B566DD /* ASTBoxing_CG.cpp in Sources */,
 				E48356AD1F361F61000B80AE /* CallCodeGenerator.cpp in Sources */,
 				E49E6D181F4ABF2500B819CA /* ClosureCodeGenerator.cpp in Sources */,
 				E47838D71F41EA4D007B937C /* ProtocolFunction.cpp in Sources */,
 				E483569F1F34D8BE000B80AE /* ASTBinaryOperator.cpp in Sources */,
 				E460A5A01F30EFA2006E3AC7 /* Writer.cpp in Sources */,
 				E460A5BB1F30EFA2006E3AC7 /* TypeExpectation.cpp in Sources */,
+				E4DB9B5E1F5C24F800B566DD /* ASTVariables_CG.cpp in Sources */,
+				E4DB9B651F5C24F800B566DD /* ASTUnary_CG.cpp in Sources */,
 				E47891091F4EEA3A008DCB24 /* TypeBodyParser.cpp in Sources */,
+				E4DB9B661F5C24F800B566DD /* ASTControlFlow_CG.cpp in Sources */,
 				E45AF99F1F504D5C0077E343 /* Options.cpp in Sources */,
+				E4DB9B671F5C24F800B566DD /* ASTBinaryOperator_CG.cpp in Sources */,
 				E460A5AD1F30EFA2006E3AC7 /* Scope.cpp in Sources */,
 				E47838D41F41E34D007B937C /* STIProvider.cpp in Sources */,
 				E48356891F33866F000B80AE /* ASTExpr.cpp in Sources */,
@@ -806,7 +843,7 @@
 				E483569B1F34CE3F000B80AE /* ASTLiterals.cpp in Sources */,
 				E49E6D151F441F0900B819CA /* ASTClosure.cpp in Sources */,
 				E478910F1F4F3060008DCB24 /* Application.cpp in Sources */,
-				E48356B11F373990000B80AE /* ASTProxyExpr.cpp in Sources */,
+				E4DB9B621F5C24F800B566DD /* ASTTypeExpr_CG.cpp in Sources */,
 				E4431D651F4C4B7000D68379 /* Initializer.cpp in Sources */,
 				E460A5A81F30EFA2006E3AC7 /* FunctionParser.cpp in Sources */,
 				E483568F1F34A51C000B80AE /* OperatorHelper.cpp in Sources */,
@@ -814,6 +851,7 @@
 				E460A5B01F30EFA2006E3AC7 /* Variable.cpp in Sources */,
 				E460A5A21F30EFA2006E3AC7 /* Lexer.cpp in Sources */,
 				E47838DA1F41F9A6007B937C /* BoxingLayerBuilder.cpp in Sources */,
+				E4DB9B5F1F5C24F800B566DD /* ASTStatements_CG.cpp in Sources */,
 				E460A5BE1F30EFA2006E3AC7 /* CompilerError.cpp in Sources */,
 				E4D3EF8C1F5459A100A31C81 /* CompatibilityInfoProvider.cpp in Sources */,
 				E48356AA1F35E1A2000B80AE /* ASTMethod.cpp in Sources */,
@@ -822,6 +860,7 @@
 				E400909C1F515D80003F62FE /* RecordingPackage.cpp in Sources */,
 				E45AF99B1F5035F00077E343 /* JSONApplicationDelegate.cpp in Sources */,
 				E48356A11F34FAAF000B80AE /* SemanticAnalyser.cpp in Sources */,
+				E4DB9B601F5C24F800B566DD /* ASTClosure_CG.cpp in Sources */,
 				E460A5A41F30EFA2006E3AC7 /* TokenStream.cpp in Sources */,
 				E460A5BC1F30EFA2006E3AC7 /* ValueType.cpp in Sources */,
 				E40B59EF1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp in Sources */,
@@ -840,6 +879,7 @@
 				E426870E1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp in Sources */,
 				E460A5C21F30EFA2006E3AC7 /* main.cpp in Sources */,
 				E460A5B41F30EFA2006E3AC7 /* Protocol.cpp in Sources */,
+				E4DB9B6A1F5C256400B566DD /* ASTExpr_CG.cpp in Sources */,
 				E47891161F502F12008DCB24 /* HRFApplicationDelegate.cpp in Sources */,
 				E4969EB91F30F095002DF345 /* SourcePosition.cpp in Sources */,
 				E460A5BD1F30EFA2006E3AC7 /* BoxingLayer.cpp in Sources */,
