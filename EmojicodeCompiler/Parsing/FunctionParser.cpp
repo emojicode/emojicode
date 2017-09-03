@@ -223,6 +223,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             return parseClosure(token);
         case TokenType::New:
             return parseInitialization(token.position());
+        case TokenType::This:
+            return std::make_shared<ASTThis>(token.position());
         default:
             throw CompilerError(token.position(), "Unexpected token ", token.stringName(), ".");
     }
@@ -254,8 +256,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return parseListingLiteral<ASTListLiteral>(E_AUBERGINE, token);
         case E_HONEY_POT:
             return parseListingLiteral<ASTDictionaryLiteral>(E_AUBERGINE, token);
-        case E_DOG:
-            return std::make_shared<ASTThis>(token.position());
         case E_HIGH_VOLTAGE_SIGN:
             return std::make_shared<ASTNothingness>(token.position());
         case E_HOT_PEPPER: {
@@ -315,7 +315,7 @@ std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition 
     if (stream_.consumeTokenIf(E_MEDIUM_BLACK_CIRCLE)) {
         return std::make_shared<ASTInferType>(p);
     }
-    if (stream_.consumeTokenIf(E_DOG)) {
+    if (stream_.consumeTokenIf(TokenType::This)) {
         return std::make_shared<ASTThisType>(p);
     }
     Type ot = parseType(typeContext_, TypeDynamism::AllKinds);

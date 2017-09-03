@@ -50,6 +50,7 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::BlockBegin: return "BlockBegin";
         case TokenType::BlockEnd: return "BlockEnd";
         case TokenType::New: return "New";
+        case TokenType::This: return "This";
     }
 }
 
