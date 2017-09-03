@@ -131,7 +131,26 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
                             " arguments but ", node->arguments().size(), " were supplied.");
     }
 
+    ensureGenericArguments(node, type, function);
 
+    TypeContext typeContext = TypeContext(type, function, &node->genericArguments());
+    for (size_t i = 0; i < node->genericArguments().size(); i++) {
+        if (!node->genericArguments()[i].compatibleTo(function->constraintForIndex(i), typeContext)) {
+            throw CompilerError(node->position(), "Generic argument ", i + 1, " of type ",
+                                node->genericArguments()[i].toString(typeContext), " is not compatible to constraint ",
+                                function->constraintForIndex(i).toString(typeContext), ".");
+        }
+    }
+
+    for (size_t i = 0; i < function->arguments.size(); i++) {
+        expectType(function->arguments[i].type.resolveOn(typeContext), &node->arguments()[i]);
+    }
+    function->deprecatedWarning(node->position());
+    validateAccessLevel(function, node->position());
+    return function->returnType.resolveOn(typeContext);
+}
+
+void SemanticAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
     if (node->genericArguments().empty() && function->genericParameterCount() > 0) {
         std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameterCount(), CommonTypeFinder());
         TypeContext typeContext = TypeContext(type, function, nullptr);
@@ -146,23 +165,6 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
     else if (node->genericArguments().size() != function->genericParameterCount()) {
         throw CompilerError(node->position(), "Too few generic arguments provided.");
     }
-
-    TypeContext typeContext = TypeContext(type, function, &node->genericArguments());
-    for (size_t i = 0; i < node->genericArguments().size(); i++) {
-        if (!node->genericArguments()[i].compatibleTo(function->constraintForIndex(i), typeContext)) {
-            throw CompilerError(node->position(), "Generic argument ", i + 1, " of type ",
-                                node->genericArguments()[i].toString(typeContext), " is not compatible to constraint ",
-                                function->constraintForIndex(i).toString(typeContext), ".");
-        }
-    }
-
-    size_t i = 0;
-    for (auto arg : function->arguments) {
-        expectType(arg.type.resolveOn(typeContext), &node->arguments()[i++]);
-    }
-    function->deprecatedWarning(node->position());
-    validateAccessLevel(function, node->position());
-    return function->returnType.resolveOn(typeContext);
 }
 
 template<typename T, typename ...Args>
@@ -172,19 +174,7 @@ std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, const Type &type, 
     return std::static_pointer_cast<T>(*node);
 }
 
-bool SemanticAnalyser::callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) {
-    if (expectation.type() == TypeType::Callable && exprType.type() == TypeType::Callable &&
-        expectation.genericArguments().size() == exprType.genericArguments().size()) {
-        auto mismatch = std::mismatch(expectation.genericArguments().begin(), expectation.genericArguments().end(),
-                                      exprType.genericArguments().begin(), [](const Type &a, const Type &b) {
-                                          return a.storageType() == b.storageType();
-                                      });
-        return mismatch.first != expectation.genericArguments().end();
-    }
-    return false;
-}
-
-Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+Type SemanticAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     (*node)->setExpressionType(exprType);
     if (exprType.type() == TypeType::ValueType && !exprType.isReference() && expectation.isMutable()) {
         exprType.setMutable(true);
@@ -193,28 +183,32 @@ Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, st
         return exprType;
     }
 
-    if (callableBoxingRequired(expectation, exprType)) {
-        auto arguments = std::vector<Argument>();
-        arguments.reserve(expectation.genericArguments().size() - 1);
-        for (auto argumentType = expectation.genericArguments().begin() + 1;
-             argumentType != expectation.genericArguments().end(); argumentType++) {
-            arguments.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
-                                   *argumentType);
-        }
-        auto boxingLayer = new BoxingLayer(exprType, function_->package(), arguments,
-                                           expectation.genericArguments()[0], function_->position());
-        buildBoxingLayerAst(boxingLayer);
-        function_->package()->registerFunction(boxingLayer);
-        app()->analysisQueue.emplace(boxingLayer);
-
-        insertNode<ASTCallableBox>(node, exprType, boxingLayer);
-    }
+    exprType = callableBox(std::move(exprType), expectation, node);
 
     if (exprType.isReference() && !expectation.isReference()) {
         exprType.setReference(false);
         insertNode<ASTDereference>(node, exprType);
     }
 
+    exprType = box(std::move(exprType), expectation, node);
+
+    if (!exprType.isReference() && expectation.isReference() && exprType.isReferencable()) {
+        exprType.setReference(true);
+        if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(*node)) {
+            varNode->setReference();
+            varNode->setExpressionType(exprType);
+        }
+        else {
+            auto storeTemp = insertNode<ASTStoreTemporarily>(node, exprType);
+            scoper_->pushTemporaryScope();
+            auto &var = scoper_->currentScope().declareInternalVariable(exprType, storeTemp->position());
+            storeTemp->setVarId(var.id());
+        }
+    }
+    return exprType;
+}
+
+Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     switch (expectation.simplifyType(exprType)) {
         case StorageType::SimpleOptional:
             switch (exprType.storageType()) {
@@ -265,25 +259,43 @@ Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, st
             }
             break;
     }
+    return exprType;
+}
 
-    if (!exprType.isReference() && expectation.isReference() && exprType.isReferencable()) {
-        exprType.setReference(true);
-        if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(*node)) {
-            varNode->setReference();
-            varNode->setExpressionType(exprType);
+bool SemanticAnalyser::callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) {
+    if (expectation.type() == TypeType::Callable && exprType.type() == TypeType::Callable &&
+        expectation.genericArguments().size() == exprType.genericArguments().size()) {
+        auto mismatch = std::mismatch(expectation.genericArguments().begin(), expectation.genericArguments().end(),
+                                      exprType.genericArguments().begin(), [](const Type &a, const Type &b) {
+                                          return a.storageType() == b.storageType();
+                                      });
+        return mismatch.first != expectation.genericArguments().end();
+    }
+    return false;
+}
+
+Type SemanticAnalyser::callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+    if (callableBoxingRequired(expectation, exprType)) {
+        auto arguments = std::vector<Argument>();
+        arguments.reserve(expectation.genericArguments().size() - 1);
+        for (auto argumentType = expectation.genericArguments().begin() + 1;
+             argumentType != expectation.genericArguments().end(); argumentType++) {
+            arguments.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
+                                   *argumentType);
         }
-        else {
-            auto storeTemp = insertNode<ASTStoreTemporarily>(node, exprType);
-            scoper_->pushTemporaryScope();
-            auto &var = scoper_->currentScope().declareInternalVariable(exprType, storeTemp->position());
-            storeTemp->setVarId(var.id());
-        }
+        auto boxingLayer = new BoxingLayer(exprType, function_->package(), arguments,
+                                           expectation.genericArguments()[0], function_->position());
+        buildBoxingLayerAst(boxingLayer);
+        function_->package()->registerFunction(boxingLayer);
+        app()->analysisQueue.emplace(boxingLayer);
+
+        insertNode<ASTCallableBox>(node, exprType, boxingLayer);
     }
     return exprType;
 }
 
 Type SemanticAnalyser::expect(const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
-    return box((*node)->analyse(this, expectation), expectation, node);
+    return comply((*node)->analyse(this, expectation), expectation, node);
 }
 
 bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {

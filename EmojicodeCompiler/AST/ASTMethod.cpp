@@ -24,7 +24,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     if (pair.first) {
         return pair.second;
     }
-    calleeType_ = analyser->box(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+    calleeType_ = analyser->comply(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
 
     if (type.type() == TypeType::MultiProtocol) {
         for (auto &protocol : type.protocols()) {

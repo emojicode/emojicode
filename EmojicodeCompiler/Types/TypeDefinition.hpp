@@ -94,7 +94,7 @@ public:
     virtual void prepareForSemanticAnalysis();
 
     virtual void prepareForCG();
-    void finalizeProtocols(const Type &self);
+    void finalizeProtocols(const Type &type);
     void finalizeProtocol(const Type &type, const Type &protocol, bool enqueBoxingLayers);
 
     /// Calls the given function with every Function that is defined for this TypeDefinition, i.e. all methods,

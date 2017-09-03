@@ -46,8 +46,10 @@ public:
     Type expectType(const Type &type, std::shared_ptr<ASTExpr>*, std::vector<CommonTypeFinder> *ctargs = nullptr);
     /// Parses an expression node and boxes it according to the given expectation. Calls @c box internally.
     Type expect(const TypeExpectation &expectation, std::shared_ptr<ASTExpr>*);
-    /// Performs boxing on a node exactly as @c expect does. Only use this if @c expect has been ruled out.
-    Type box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
+    /// Makes the node comply with the expectation by dereferencing, temporarily storing or boxing it.
+    /// @param node A pointer to the node pointer. The pointer to which this pointer points might be changed.
+    /// @note Only use this if there is a good reason why expect() cannot be used.
+    Type comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
 
     void validateMetability(const Type &originalType, const SourcePosition &p) const {
         if (!originalType.allowsMetaType()) {
@@ -96,7 +98,17 @@ private:
     void analyseReturn(const std::shared_ptr<ASTBlock> &);
     void analyseInitializationRequirements();
 
+    /// Ensures that node has the required number of generic arguments for a call to function.
+    /// If none are provided but function expects generic arguments, this method tries to infer them.
+    void ensureGenericArguments(ASTArguments *node, const Type &type, Function *function);
+
+    /// Returns true if exprType and expectation are callables and there is a mismatch between the argument or return
+    /// StorageTypes.
     bool callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType);
+    /// Boxes or unboxes the value to the StorageType specified by expectation.simplifyType()
+    Type box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
+    /// Callable boxes the value if callableBoxingRequired() returns true.
+    Type callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
 };
 
 }  // namespace EmojicodeCompiler

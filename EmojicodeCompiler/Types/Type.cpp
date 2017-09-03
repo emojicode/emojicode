@@ -215,49 +215,44 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
         this->resolveOnSuperArgumentsAndConstraints(tc)
         .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
     }
-    if (this->type() == TypeType::GenericVariable) {
-        return this->resolveOnSuperArgumentsAndConstraints(tc).compatibleTo(to, tc, ctargs);
+    if (type() == TypeType::GenericVariable) {
+        return resolveOnSuperArgumentsAndConstraints(tc).compatibleTo(to, tc, ctargs);
     }
-    if (to.type() == TypeType::GenericVariable) {
-        return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
-    }
-    if (this->type() == TypeType::LocalGenericVariable) {
-        return ctargs != nullptr || this->resolveOnSuperArgumentsAndConstraints(tc).compatibleTo(to, tc, ctargs);
-    }
-    if (to.type() == TypeType::LocalGenericVariable) {
-        if (ctargs != nullptr) {
-            (*ctargs)[to.genericVariableIndex()].addType(*this, tc);
-            return true;
-        }
-        return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
+    if (type() == TypeType::LocalGenericVariable) {
+        return ctargs != nullptr || resolveOnSuperArgumentsAndConstraints(tc).compatibleTo(to, tc, ctargs);
     }
 
-    if (type() == TypeType::Class && to.type() == TypeType::Class) {
-        return this->eclass()->inheritsFrom(to.eclass()) && identicalGenericArguments(to, tc, ctargs);
-    }
-    if (type() == TypeType::ValueType && to.type() == TypeType::ValueType) {
-        return this->typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, tc, ctargs);
-    }
-    if (to.type() == TypeType::Enum) {
-        return type() == TypeType::Enum && eenum() == to.eenum();
-    }
-    if (to.type() == TypeType::Someobject) {
-        return type() == TypeType::Class || type() == TypeType::Someobject;
-    }
-    if (to.type() == TypeType::Error) {
-        return compatibleTo(to.genericArguments()[1], tc);
-    }
-    if (to.type() == TypeType::MultiProtocol) {
-        return isCompatibleToMultiProtocol(to, tc, ctargs);
-    }
-    if (to.type() == TypeType::Protocol) {
-        return isCompatibleToProtocol(to, tc, ctargs);
-    }
-    if (to.type() == TypeType::Callable) {
-        return isCompatibleToCallable(to, tc, ctargs);
-    }
-    if (to.type() == TypeType::NoReturn) {
-        return type() == TypeType::NoReturn;
+    switch (to.type()) {
+        case TypeType::GenericVariable:
+            return compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
+        case TypeType::LocalGenericVariable:
+            if (ctargs != nullptr) {
+                (*ctargs)[to.genericVariableIndex()].addType(*this, tc);
+                return true;
+            }
+            return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
+        case TypeType::Class:
+            return type() == TypeType::Class && eclass()->inheritsFrom(to.eclass()) &&
+                identicalGenericArguments(to, tc, ctargs);
+        case TypeType::ValueType:
+            return type() == TypeType::ValueType && typeDefinition() == to.typeDefinition() &&
+                identicalGenericArguments(to, tc, ctargs);
+        case TypeType::Enum:
+            return type() == TypeType::Enum && eenum() == to.eenum();
+        case TypeType::Someobject:
+            return type() == TypeType::Class || type() == TypeType::Someobject;
+        case TypeType::Error:
+            return compatibleTo(to.genericArguments()[1], tc);
+        case TypeType::MultiProtocol:
+            return isCompatibleToMultiProtocol(to, tc, ctargs);
+        case TypeType::Protocol:
+            return isCompatibleToProtocol(to, tc, ctargs);
+        case TypeType::Callable:
+            return isCompatibleToCallable(to, tc, ctargs);
+        case TypeType::NoReturn:
+            return type() == TypeType::NoReturn;
+        default:
+            break;
     }
     return false;
 }

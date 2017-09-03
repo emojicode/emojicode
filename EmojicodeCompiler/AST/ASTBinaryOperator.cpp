@@ -25,7 +25,7 @@ Type ASTBinaryOperator::analyse(SemanticAnalyser *analyser, const TypeExpectatio
     auto pair = builtInPrimitiveOperator(analyser, otype);
     if (pair.first) {
         builtIn_ = true;
-        Type type = analyser->box(otype, TypeExpectation(false, false, false), &left_);
+        Type type = analyser->comply(otype, TypeExpectation(false, false, false), &left_);
         analyser->expectType(type, &right_);
         if (pair.second.swap) {
             std::swap(left_, right_);
@@ -33,7 +33,7 @@ Type ASTBinaryOperator::analyse(SemanticAnalyser *analyser, const TypeExpectatio
         return pair.second.returnType;
     }
 
-    Type type = analyser->box(otype, TypeExpectation(true, false), &left_);
+    Type type = analyser->comply(otype, TypeExpectation(true, false), &left_);
     args_.addArguments(right_);
 
     return analyseMethodCall(analyser, operatorName(operator_), left_);
