@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['package',['Package',['../class_emojicode_compiler_1_1_package.html',1,'EmojicodeCompiler::Package'],['../class_emojicode_compiler_1_1_package.html#a6d05216a4cdee308d8d1c3fc65ba915b',1,'EmojicodeCompiler::Package::Package()'],['../class_emojicode_compiler_1_1_function.html#a57e57f40248ec81e6e5d0ec4acd509ea',1,'EmojicodeCompiler::Function::package()'],['../class_emojicode_compiler_1_1_type_definition.html#a41741bc734f851c03da15cae71612e93',1,'EmojicodeCompiler::TypeDefinition::package()']]],
+  ['package',['Package',['../class_emojicode_compiler_1_1_package.html',1,'EmojicodeCompiler::Package'],['../class_emojicode_compiler_1_1_function.html#a57e57f40248ec81e6e5d0ec4acd509ea',1,'EmojicodeCompiler::Function::package()'],['../class_emojicode_compiler_1_1_type_definition.html#a41741bc734f851c03da15cae71612e93',1,'EmojicodeCompiler::TypeDefinition::package()'],['../class_emojicode_compiler_1_1_package.html#a6d05216a4cdee308d8d1c3fc65ba915b',1,'EmojicodeCompiler::Package::Package()']]],
   ['packagesinorder',['packagesInOrder',['../class_emojicode_compiler_1_1_application.html#ad96583f2b3b41d8dd1e1b03c349602c7',1,'EmojicodeCompiler::Application']]],
   ['packageversion',['PackageVersion',['../struct_emojicode_1_1_package_version.html',1,'Emojicode::PackageVersion'],['../struct_emojicode_compiler_1_1_package_version.html',1,'EmojicodeCompiler::PackageVersion']]],
   ['parameters',['parameters',['../class_emojicode_compiler_1_1_generic.html#a83f87b43cff62132c52d8d6054929a03',1,'EmojicodeCompiler::Generic']]],
@@ -9,7 +9,7 @@ var searchData=
   ['parseerrorenumtype',['parseErrorEnumType',['../class_emojicode_compiler_1_1_abstract_parser.html#a0b57ea532baf9a96ce63a643146d42ff',1,'EmojicodeCompiler::AbstractParser']]],
   ['parsegenericargumentsfortype',['parseGenericArgumentsForType',['../class_emojicode_compiler_1_1_abstract_parser.html#a1892b03ecf6ba3e7f4907f56f71382da',1,'EmojicodeCompiler::AbstractParser']]],
   ['parsegenericparameters',['parseGenericParameters',['../class_emojicode_compiler_1_1_abstract_parser.html#ad898b007574de67f8e328a8507459821',1,'EmojicodeCompiler::AbstractParser']]],
-  ['parseinitializer',['parseInitializer',['../class_emojicode_compiler_1_1_type_body_parser.html#a060babbe4ac117b4dce6692660bc9d48',1,'EmojicodeCompiler::TypeBodyParser']]],
+  ['parseinitializer',['parseInitializer',['../class_emojicode_compiler_1_1_type_body_parser.html#a26ded4f2b8acf2df58b33297b21a4b03',1,'EmojicodeCompiler::TypeBodyParser']]],
   ['parseinstancevariable',['parseInstanceVariable',['../class_emojicode_compiler_1_1_type_body_parser.html#a94bd1170349f6eef4d21883426e7b93e',1,'EmojicodeCompiler::TypeBodyParser']]],
   ['parsemethod',['parseMethod',['../class_emojicode_compiler_1_1_type_body_parser.html#a7080719394a158465b3959a3d636959a',1,'EmojicodeCompiler::TypeBodyParser']]],
   ['parseparameters',['parseParameters',['../class_emojicode_compiler_1_1_abstract_parser.html#a1e386a067667d5543f390fa01ca1e15e',1,'EmojicodeCompiler::AbstractParser']]],
@@ -32,6 +32,7 @@ var searchData=
   ['protocoldispatchtable',['ProtocolDispatchTable',['../struct_emojicode_1_1_protocol_dispatch_table.html',1,'Emojicode']]],
   ['protocolfunction',['ProtocolFunction',['../class_emojicode_compiler_1_1_protocol_function.html',1,'EmojicodeCompiler']]],
   ['protocols',['protocols',['../class_emojicode_compiler_1_1_type.html#afcefa69711bf0ebfc4ef2922035fae15',1,'EmojicodeCompiler::Type::protocols()'],['../class_emojicode_compiler_1_1_type_definition.html#a5a930d6190c5617647d0bd4d523aa2ed',1,'EmojicodeCompiler::TypeDefinition::protocols()']]],
+  ['protocoltypebodyparser',['ProtocolTypeBodyParser',['../class_emojicode_compiler_1_1_protocol_type_body_parser.html',1,'EmojicodeCompiler']]],
   ['pushargumentsscope',['pushArgumentsScope',['../class_emojicode_compiler_1_1_capturing_semantic_scoper.html#a787cc8eb5312d773c9e3891d427af9fc',1,'EmojicodeCompiler::CapturingSemanticScoper::pushArgumentsScope()'],['../class_emojicode_compiler_1_1_semantic_scoper.html#a5fa4feb159c3a7f7f7d1d5601eafbe62',1,'EmojicodeCompiler::SemanticScoper::pushArgumentsScope()']]],
   ['pushscope',['pushScope',['../class_emojicode_compiler_1_1_semantic_scoper.html#a17637b0188450b62da32ecb797611043',1,'EmojicodeCompiler::SemanticScoper']]],
   ['pushstackframe',['pushStackFrame',['../class_emojicode_1_1_thread.html#adc141b15025be75850a78e9455e0c775',1,'Emojicode::Thread']]],

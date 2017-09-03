@@ -14,7 +14,7 @@ var searchData=
   ['frozen',['frozen',['../class_emojicode_compiler_1_1_variable.html#a9d5067bb90a7a62b2b1242ea89af1f6c',1,'EmojicodeCompiler::Variable']]],
   ['fullinitializercount',['fullInitializerCount',['../class_emojicode_compiler_1_1_class.html#a7e0543914e2ef981d61486291c79d2ed',1,'EmojicodeCompiler::Class']]],
   ['fullmethodcount',['fullMethodCount',['../class_emojicode_compiler_1_1_class.html#a51d7ccc7cabac429f5600153b74ca198',1,'EmojicodeCompiler::Class']]],
-  ['function',['Function',['../class_emojicode_compiler_1_1_function.html',1,'EmojicodeCompiler::Function'],['../struct_emojicode_1_1_function.html',1,'Emojicode::Function']]],
+  ['function',['Function',['../struct_emojicode_1_1_function.html',1,'Emojicode::Function'],['../class_emojicode_compiler_1_1_function.html',1,'EmojicodeCompiler::Function'],['../class_emojicode_compiler_1_1_type_context.html#a46df9aff6ea3a3712327372572a310e5',1,'EmojicodeCompiler::TypeContext::function()']]],
   ['functioncount',['functionCount',['../class_emojicode_compiler_1_1_s_t_i_provider.html#ac784779bef73606a95031916ec54a73f',1,'EmojicodeCompiler::STIProvider']]],
   ['functionobjectvariableinformation',['FunctionObjectVariableInformation',['../struct_emojicode_compiler_1_1_function_object_variable_information.html',1,'EmojicodeCompiler']]],
   ['functionobjectvariablerecord',['FunctionObjectVariableRecord',['../class_emojicode_1_1_function_object_variable_record.html',1,'Emojicode']]],

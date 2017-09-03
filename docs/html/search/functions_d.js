@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['package',['Package',['../class_emojicode_compiler_1_1_package.html#a6d05216a4cdee308d8d1c3fc65ba915b',1,'EmojicodeCompiler::Package::Package()'],['../class_emojicode_compiler_1_1_function.html#a57e57f40248ec81e6e5d0ec4acd509ea',1,'EmojicodeCompiler::Function::package()'],['../class_emojicode_compiler_1_1_type_definition.html#a41741bc734f851c03da15cae71612e93',1,'EmojicodeCompiler::TypeDefinition::package()']]],
+  ['package',['package',['../class_emojicode_compiler_1_1_function.html#a57e57f40248ec81e6e5d0ec4acd509ea',1,'EmojicodeCompiler::Function::package()'],['../class_emojicode_compiler_1_1_type_definition.html#a41741bc734f851c03da15cae71612e93',1,'EmojicodeCompiler::TypeDefinition::package()'],['../class_emojicode_compiler_1_1_package.html#a6d05216a4cdee308d8d1c3fc65ba915b',1,'EmojicodeCompiler::Package::Package()']]],
   ['packagesinorder',['packagesInOrder',['../class_emojicode_compiler_1_1_application.html#ad96583f2b3b41d8dd1e1b03c349602c7',1,'EmojicodeCompiler::Application']]],
   ['parameters',['parameters',['../class_emojicode_compiler_1_1_generic.html#a83f87b43cff62132c52d8d6054929a03',1,'EmojicodeCompiler::Generic']]],
   ['parse',['parse',['../class_emojicode_compiler_1_1_package.html#aebe291048780bc4d5a0df17ecd4e1d05',1,'EmojicodeCompiler::Package']]],
@@ -8,7 +8,7 @@ var searchData=
   ['parseerrorenumtype',['parseErrorEnumType',['../class_emojicode_compiler_1_1_abstract_parser.html#a0b57ea532baf9a96ce63a643146d42ff',1,'EmojicodeCompiler::AbstractParser']]],
   ['parsegenericargumentsfortype',['parseGenericArgumentsForType',['../class_emojicode_compiler_1_1_abstract_parser.html#a1892b03ecf6ba3e7f4907f56f71382da',1,'EmojicodeCompiler::AbstractParser']]],
   ['parsegenericparameters',['parseGenericParameters',['../class_emojicode_compiler_1_1_abstract_parser.html#ad898b007574de67f8e328a8507459821',1,'EmojicodeCompiler::AbstractParser']]],
-  ['parseinitializer',['parseInitializer',['../class_emojicode_compiler_1_1_type_body_parser.html#a060babbe4ac117b4dce6692660bc9d48',1,'EmojicodeCompiler::TypeBodyParser']]],
+  ['parseinitializer',['parseInitializer',['../class_emojicode_compiler_1_1_type_body_parser.html#a26ded4f2b8acf2df58b33297b21a4b03',1,'EmojicodeCompiler::TypeBodyParser']]],
   ['parseinstancevariable',['parseInstanceVariable',['../class_emojicode_compiler_1_1_type_body_parser.html#a94bd1170349f6eef4d21883426e7b93e',1,'EmojicodeCompiler::TypeBodyParser']]],
   ['parsemethod',['parseMethod',['../class_emojicode_compiler_1_1_type_body_parser.html#a7080719394a158465b3959a3d636959a',1,'EmojicodeCompiler::TypeBodyParser']]],
   ['parseparameters',['parseParameters',['../class_emojicode_compiler_1_1_abstract_parser.html#a1e386a067667d5543f390fa01ca1e15e',1,'EmojicodeCompiler::AbstractParser']]],

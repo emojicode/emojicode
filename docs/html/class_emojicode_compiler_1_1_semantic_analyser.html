@@ -103,10 +103,8 @@ const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeCo
 <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html#a2bf334c24638c706b9b3bf8351a0ffcf">expect</a> (const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation, std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; *)</td></tr>
 <tr class="memdesc:a2bf334c24638c706b9b3bf8351a0ffcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses an expression node and boxes it according to the given expectation. Calls <code>box</code> internally. <br /></td></tr>
 <tr class="separator:a2bf334c24638c706b9b3bf8351a0ffcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf0089f30f1813748b1b8f1775624513"><td class="memItemLeft" align="right" valign="top"><a id="adf0089f30f1813748b1b8f1775624513"></a>
-<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html#adf0089f30f1813748b1b8f1775624513">box</a> (<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> exprType, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation, std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; *node)</td></tr>
-<tr class="memdesc:adf0089f30f1813748b1b8f1775624513"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs boxing on a node exactly as <code>expect</code> does. Only use this if <code>expect</code> has been ruled out. <br /></td></tr>
-<tr class="separator:adf0089f30f1813748b1b8f1775624513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a041dab445bd87ada51c0c5155aa49bfd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html#a041dab445bd87ada51c0c5155aa49bfd">comply</a> (<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> exprType, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation, std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; *node)</td></tr>
+<tr class="separator:a041dab445bd87ada51c0c5155aa49bfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1174c633d9c9834e0b571b7f7b0fc873"><td class="memItemLeft" align="right" valign="top"><a id="a1174c633d9c9834e0b571b7f7b0fc873"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>validateMetability</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;originalType, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p) const</td></tr>
 <tr class="separator:a1174c633d9c9834e0b571b7f7b0fc873"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,6 +129,47 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>validateAccessLevel</
 <tr class="separator:a5cb7d2a7e9abeee92062e253c6a02415"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a041dab445bd87ada51c0c5155aa49bfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a041dab445bd87ada51c0c5155aa49bfd">&#9670;&nbsp;</a></span>comply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> EmojicodeCompiler::SemanticAnalyser::comply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td>
+          <td class="paramname"><em>exprType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;&#160;</td>
+          <td class="paramname"><em>expectation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; *&#160;</td>
+          <td class="paramname"><em>node</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Makes the node comply with the expectation by dereferencing, temporarily storing or boxing it. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">node</td><td>A pointer to the node pointer. The pointer to which this pointer points might be changed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Only use this if there is a good reason why <a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html#a2bf334c24638c706b9b3bf8351a0ffcf" title="Parses an expression node and boxes it according to the given expectation. Calls box internally...">expect()</a> cannot be used. </dd></dl>
+
+</div>
+</div>
 <a id="a8e99e16fe58ae4f949826ac3b4f0a4b3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8e99e16fe58ae4f949826ac3b4f0a4b3">&#9670;&nbsp;</a></span>expectType()</h2>
 

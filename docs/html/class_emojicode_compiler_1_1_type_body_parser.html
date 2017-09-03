@@ -79,10 +79,11 @@ Inheritance diagram for EmojicodeCompiler::TypeBodyParser:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_type_body_parser__inherit__graph.png" border="0" usemap="#_emojicode_compiler_1_1_type_body_parser_inherit__map" alt="Inheritance graph"/></div>
 <map name="_emojicode_compiler_1_1_type_body_parser_inherit__map" id="_emojicode_compiler_1_1_type_body_parser_inherit__map">
-<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_class_type_body_parser.html" title="EmojicodeCompiler::\lClassTypeBodyParser" alt="" coords="391,5,544,44"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_enum_type_body_parser.html" title="EmojicodeCompiler::\lEnumTypeBodyParser" alt="" coords="390,68,545,107"/>
-<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_value_type_body_parser.html" title="EmojicodeCompiler::\lValueTypeBodyParser" alt="" coords="391,131,544,169"/>
-<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="5,68,150,107"/>
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_class_type_body_parser.html" title="EmojicodeCompiler::\lClassTypeBodyParser" alt="" coords="398,5,551,44"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_enum_type_body_parser.html" title="EmojicodeCompiler::\lEnumTypeBodyParser" alt="" coords="397,68,552,107"/>
+<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_protocol_type_body_parser.html" title="EmojicodeCompiler::\lProtocolTypeBodyParser" alt="" coords="390,131,559,169"/>
+<area shape="rect" id="node6" href="class_emojicode_compiler_1_1_value_type_body_parser.html" title="EmojicodeCompiler::\lValueTypeBodyParser" alt="" coords="398,193,551,232"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="5,100,150,139"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -116,7 +117,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> ()<
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:acded72c1bb6eae7bcc2ad09b7c3ee316"><td class="memItemLeft" align="right" valign="top"><a id="acded72c1bb6eae7bcc2ad09b7c3ee316"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_body_parser.html#acded72c1bb6eae7bcc2ad09b7c3ee316">parseProtocolConformance</a> (const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_body_parser.html#acded72c1bb6eae7bcc2ad09b7c3ee316">parseProtocolConformance</a> (const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="memdesc:acded72c1bb6eae7bcc2ad09b7c3ee316"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called if an $protocol-conformance$ has been detected. The first token has already been parsed. <br /></td></tr>
 <tr class="separator:acded72c1bb6eae7bcc2ad09b7c3ee316"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08dec646a67e934b30be5f9c6f2433d4"><td class="memItemLeft" align="right" valign="top"><a id="a08dec646a67e934b30be5f9c6f2433d4"></a>
@@ -131,10 +132,13 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_body_parser.html#a7080719394a158465b3959a3d636959a">parseMethod</a> (const std::u32string &amp;name, <a class="el" href="class_emojicode_compiler_1_1_attribute_parser.html">TypeBodyAttributeParser</a> attributes, const <a class="el" href="class_emojicode_compiler_1_1_documentation.html">Documentation</a> &amp;documentation, AccessLevel access, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="memdesc:a7080719394a158465b3959a3d636959a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called if a $method$ has been detected. All tokens up to and including the name. <br /></td></tr>
 <tr class="separator:a7080719394a158465b3959a3d636959a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a060babbe4ac117b4dce6692660bc9d48"><td class="memItemLeft" align="right" valign="top"><a id="a060babbe4ac117b4dce6692660bc9d48"></a>
-virtual <a class="el" href="class_emojicode_compiler_1_1_initializer.html">Initializer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_body_parser.html#a060babbe4ac117b4dce6692660bc9d48">parseInitializer</a> (<a class="el" href="class_emojicode_compiler_1_1_attribute_parser.html">TypeBodyAttributeParser</a> attributes, const <a class="el" href="class_emojicode_compiler_1_1_documentation.html">Documentation</a> &amp;documentation, AccessLevel access, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
-<tr class="memdesc:a060babbe4ac117b4dce6692660bc9d48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called if an $initializer$ has been detected. The first token has already been parsed. <br /></td></tr>
-<tr class="separator:a060babbe4ac117b4dce6692660bc9d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26ded4f2b8acf2df58b33297b21a4b03"><td class="memItemLeft" align="right" valign="top"><a id="a26ded4f2b8acf2df58b33297b21a4b03"></a>
+virtual <a class="el" href="class_emojicode_compiler_1_1_initializer.html">Initializer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_body_parser.html#a26ded4f2b8acf2df58b33297b21a4b03">parseInitializer</a> (const std::u32string &amp;name, <a class="el" href="class_emojicode_compiler_1_1_attribute_parser.html">TypeBodyAttributeParser</a> attributes, const <a class="el" href="class_emojicode_compiler_1_1_documentation.html">Documentation</a> &amp;documentation, AccessLevel access, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
+<tr class="memdesc:a26ded4f2b8acf2df58b33297b21a4b03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called if an $initializer$ has been detected. The first token has already been parsed. <br /></td></tr>
+<tr class="separator:a26ded4f2b8acf2df58b33297b21a4b03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60742eb7ef51d046939ee1c0d48a87bb"><td class="memItemLeft" align="right" valign="top"><a id="a60742eb7ef51d046939ee1c0d48a87bb"></a>
+<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>owningType</b> ()</td></tr>
+<tr class="separator:a60742eb7ef51d046939ee1c0d48a87bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_emojicode_compiler_1_1_abstract_parser')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html">EmojicodeCompiler::AbstractParser</a></td></tr>
 <tr class="memitem:a5ebbc43652fb209e1d81636c0675548f inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="a5ebbc43652fb209e1d81636c0675548f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>AbstractParser</b> (<a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *pkg, <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;stream)</td></tr>

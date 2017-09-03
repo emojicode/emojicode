@@ -2,9 +2,10 @@
 <area shape="rect" id="node1" href="$class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="5,68,150,107"/>
 <area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_document_parser.html" title="EmojicodeCompiler::\lDocumentParser" alt="" coords="198,5,342,44"/>
 <area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_function_parser.html" title="EmojicodeCompiler::\lFunctionParser" alt="" coords="198,68,342,107"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_type_body_parser.html" title="EmojicodeCompiler::\lTypeBodyParser" alt="" coords="198,147,342,185"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_compatible_function_parser.html" title="EmojicodeCompiler::\lCompatibleFunctionParser" alt="" coords="390,52,569,91"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_class_type_body_parser.html" title="EmojicodeCompiler::\lClassTypeBodyParser" alt="" coords="403,115,556,153"/>
-<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_enum_type_body_parser.html" title="EmojicodeCompiler::\lEnumTypeBodyParser" alt="" coords="402,177,557,216"/>
-<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_value_type_body_parser.html" title="EmojicodeCompiler::\lValueTypeBodyParser" alt="" coords="403,240,556,279"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_type_body_parser.html" title="EmojicodeCompiler::\lTypeBodyParser" alt="" coords="198,161,342,200"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_compatible_function_parser.html" title="EmojicodeCompiler::\lCompatibleFunctionParser" alt="" coords="390,36,569,75"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_class_type_body_parser.html" title="EmojicodeCompiler::\lClassTypeBodyParser" alt="" coords="403,99,556,137"/>
+<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_enum_type_body_parser.html" title="EmojicodeCompiler::\lEnumTypeBodyParser" alt="" coords="402,161,557,200"/>
+<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_protocol_type_body_parser.html" title="EmojicodeCompiler::\lProtocolTypeBodyParser" alt="" coords="395,224,564,263"/>
+<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_value_type_body_parser.html" title="EmojicodeCompiler::\lValueTypeBodyParser" alt="" coords="403,287,556,325"/>
 </map>

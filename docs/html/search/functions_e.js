@@ -9,7 +9,6 @@ var searchData=
   ['release',['release',['../class_emojicode_1_1_thread.html#a3854326bb6324777fa77be079b566f60',1,'Emojicode::Thread']]],
   ['required',['required',['../class_emojicode_compiler_1_1_initializer.html#a5a4a74c354d76e389d2d2f7b689832e2',1,'EmojicodeCompiler::Initializer']]],
   ['requiredinitializers',['requiredInitializers',['../class_emojicode_compiler_1_1_class.html#ab1978c95968eab184c2f77bd73eaae25',1,'EmojicodeCompiler::Class']]],
-  ['requireidentifier',['requireIdentifier',['../class_emojicode_compiler_1_1_token_stream.html#aec0da458fff0b445af155a2bb7e50ed1',1,'EmojicodeCompiler::TokenStream']]],
   ['requiresbox',['requiresBox',['../class_emojicode_compiler_1_1_type.html#a51d2a0761a44a0aff876a1236651556d',1,'EmojicodeCompiler::Type']]],
   ['resolveon',['resolveOn',['../class_emojicode_compiler_1_1_type.html#aa17441319933692ad4f343a51956ee43',1,'EmojicodeCompiler::Type']]],
   ['resolveonsuperargumentsandconstraints',['resolveOnSuperArgumentsAndConstraints',['../class_emojicode_compiler_1_1_type.html#a0031099d9f5a6e69ff9f9235cd752a2b',1,'EmojicodeCompiler::Type']]],
