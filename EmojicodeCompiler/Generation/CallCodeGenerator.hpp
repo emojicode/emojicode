@@ -12,6 +12,7 @@
 #include "../AST/ASTExpr.hpp"
 #include "../AST/ASTInitialization.hpp"
 #include "../Functions/Initializer.hpp"
+#include "../Functions/CallType.h"
 #include "../Types/Protocol.hpp"
 #include "FnCodeGenerator.hpp"
 
@@ -19,32 +20,24 @@ namespace EmojicodeCompiler {
 
 class CallCodeGenerator {
 public:
-    explicit CallCodeGenerator(FnCodeGenerator *fncg, EmojicodeInstruction instruction)
-    : fncg_(fncg), instruction_(instruction) {}
-    void generate(const ASTExpr &callee, const Type &calleeType, const ASTArguments &args, const std::u32string &name) {
-        auto argSize = generateArguments(args);
-        callee.generate(fncg_);
-        writeInstructions(argSize, calleeType, name);
-    }
+    explicit CallCodeGenerator(FnCodeGenerator *fncg, CallType callType)
+    : fncg_(fncg), callType_(callType) {}
+    llvm::Value* generate(const ASTExpr &callee, const Type &calleeType, const ASTArguments &args,
+                          const std::u32string &name);
 protected:
     virtual Function* lookupFunction(const Type &type, const std::u32string &name) {
         return type.typeDefinition()->lookupMethod(name);
     }
 
-    virtual void writeInstructions(EmojicodeInstruction argSize, const Type &type, const std::u32string &name) {
-        fncg_->wr().writeInstruction(instruction_);
-        if (instruction_ == INS_DISPATCH_PROTOCOL) {
-            fncg()->wr().writeInstruction(type.protocol()->index);
-        }
-        fncg_->wr().writeInstruction(lookupFunction(type, name)->vtiForUse());
-        fncg_->wr().writeInstruction(argSize);
+    virtual llvm::Value* createCall(std::vector<Value *> args, const Type &type, const std::u32string &name) {
+        return fncg_->builder().CreateCall(lookupFunction(type, name)->llvmFunction(), args);
     }
 
     FnCodeGenerator* fncg() { return fncg_; }
     EmojicodeInstruction generateArguments(const ASTArguments &args);
 private:
     FnCodeGenerator *fncg_;
-    EmojicodeInstruction instruction_;
+    CallType callType_;
 };
 
 class TypeMethodCallCodeGenerator : public CallCodeGenerator {
@@ -68,48 +61,31 @@ protected:
 class VTInitializationCallCodeGenerator : private InitializationCallCodeGenerator {
 public:
     explicit VTInitializationCallCodeGenerator(FnCodeGenerator *fncg)
-    : InitializationCallCodeGenerator(fncg, INS_CALL_CONTEXTED_FUNCTION) {}
+    : InitializationCallCodeGenerator(fncg, CallType::StaticDispatch) {}
 
-    void generate(const std::shared_ptr<ASTVTInitDest> &dest, const Type &type, const ASTArguments &args,
-                  const std::u32string &name) {
-        EmojicodeInstruction argSize;
-        if (dest == nullptr) {
-            fncg()->wr().writeInstruction(INS_PUSH_N);
-            fncg()->wr().writeInstruction(type.size());
-            argSize = generateArguments(args);
-            fncg()->wr().writeInstruction(INS_PUSH_STACK_REFERENCE_N_BACK);
-            fncg()->wr().writeInstruction(argSize + type.size());
-        }
-        else {
-            argSize = generateArguments(args);
-            dest->generate(fncg());
-        }
-        writeInstructions(argSize, type, name);
-        if (dest != nullptr) {
-            dest->initialize(fncg());
-        }
-    }
-
+    llvm::Value* generate(const std::shared_ptr<ASTGetVariable> &dest, const Type &type, const ASTArguments &args,
+                          const std::u32string &name);
 };
 
 class CallableCallCodeGenerator : public CallCodeGenerator {
 public:
-    explicit CallableCallCodeGenerator(FnCodeGenerator *fncg) : CallCodeGenerator(fncg, 0) {}
+    explicit CallableCallCodeGenerator(FnCodeGenerator *fncg) : CallCodeGenerator(fncg, CallType::None) {}
 protected:
-    void writeInstructions(EmojicodeInstruction argSize, const Type &type, const std::u32string &name) override {
-        fncg()->wr().writeInstruction(INS_EXECUTE_CALLABLE);
-        fncg()->wr().writeInstruction(argSize);
-    }
+//    void writeInstructions(EmojicodeInstruction argSize, const Type &type, const std::u32string &name) override {
+//        fncg()->wr().writeInstruction(INS_EXECUTE_CALLABLE);
+//        fncg()->wr().writeInstruction(argSize);
+//    }
 };
 
 class SuperCallCodeGenerator : private CallCodeGenerator {
 public:
-    using CallCodeGenerator::CallCodeGenerator;
-    void generate(const Type& superType, const ASTArguments &args, const std::u32string &name) {
-        auto argSize = generateArguments(args);
-        fncg()->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-        fncg()->wr().writeInstruction(superType.eclass()->index);
-        writeInstructions(argSize, superType, name);
+    SuperCallCodeGenerator(FnCodeGenerator *fncg) : CallCodeGenerator(fncg, CallType::DynamicDispatch) {}
+    llvm::Value* generate(const Type& superType, const ASTArguments &args, const std::u32string &name) {
+//        auto argSize = generateArguments(args);
+//        fncg()->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
+//        fncg()->wr().writeInstruction(superType.eclass()->index);
+//        writeInstructions(argSize, superType, name);
+        return nullptr;
     }
 };
 

@@ -9,10 +9,6 @@
 #ifndef Application_hpp
 #define Application_hpp
 
-#include <llvm/IR/DerivedTypes.h>
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/Module.h>
-#include "Generation/StringPool.hpp"
 #include "Package/Package.hpp"
 #include "Parsing/CompatibilityInfoProvider.hpp"
 #include "Types/Type.hpp"
@@ -122,10 +118,6 @@ public:
     /// @see findPackage()
     Package* loadPackage(const std::string &name, const SourcePosition &p, Package *requestor);
 
-    /// Returns this application’s string pool
-    StringPool& stringPool() { return stringPool_; }
-
-    std::queue<Function *> compilationQueue;
     std::queue<Function *> analysisQueue;
 
     unsigned int classIndex() { return classes_++; }
@@ -141,9 +133,6 @@ public:
     std::vector<std::vector<ObjectVariableInformation>>& boxObjectVariableInformation() {
         return boxObjectVariableInformation_;
     }
-
-    llvm::LLVMContext& context() { return context_; }
-    llvm::Module* module() { return module_.get(); }
 private:
     void generateCode();
     void analyse(Package *underscorePackage);
@@ -161,13 +150,9 @@ private:
     std::string mainFile_;
     const std::string outPath_;
     const std::string packageDirectory_;
-    StringPool stringPool_;
     std::unique_ptr<ApplicationDelegate> delegate_;
     std::unique_ptr<CompatibilityInfoProvider> compInfoProvider_;
     std::unique_ptr<Package> underscorePackage_;
-
-    llvm::LLVMContext context_;
-    std::unique_ptr<llvm::Module> module_ = std::make_unique<llvm::Module>("my cool jit", context());
 };
 
 }  // namespace EmojicodeCompiler

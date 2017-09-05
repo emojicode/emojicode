@@ -11,6 +11,42 @@
 
 namespace EmojicodeCompiler {
 
+Value* ASTGetVariable::instanceVariablePointer(FnCodeGenerator *fncg, size_t index) {
+    std::vector<Value *> idxList{
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), index),
+    };
+    return fncg->builder().CreateGEP(fncg->thisValue(), idxList);
+}
+
+Value* ASTGetVariable::generateExpr(FnCodeGenerator *fncg) const {
+    if (inInstanceScope()) {
+        auto ptr = ASTGetVariable::instanceVariablePointer(fncg, varId_);
+        if (reference_) {
+            return ptr;
+        }
+        return fncg->builder().CreateLoad(ptr);
+    }
+
+    auto localVariable = fncg->scoper().getVariable(varId_);
+    if (!localVariable.isMutable) {
+        assert(!reference_);
+        return localVariable.value;
+    }
+    if (reference_) {
+        return localVariable.value;
+    }
+    return fncg->builder().CreateLoad(localVariable.value);
+}
+
+Value* ASTInitGetVariable::generateExpr(FnCodeGenerator *fncg) const {
+    if (declare_) {
+        auto alloca = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(type_));
+        fncg->scoper().getVariable(varId_) = LocalVariable(true, alloca);
+    }
+    return ASTGetVariable::generateExpr(fncg);
+}
+
 void ASTInitableCreator::generate(FnCodeGenerator *fncg) const {
     if (noAction_) {
         expr_->generate(fncg);
@@ -21,35 +57,34 @@ void ASTInitableCreator::generate(FnCodeGenerator *fncg) const {
 }
 
 void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
-    auto &var = fncg->scoper().declareVariable(id_, type_);
-    if (type_.optional()) {
-        fncg->wr().writeInstruction(INS_GET_NOTHINGNESS);
-        fncg->wr().writeInstruction(INS_COPY_TO_STACK);
-        fncg->wr().writeInstruction(var.stackIndex.value());
-    }
-}
+    auto alloca = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(type_));
+    fncg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
-CGScoper::Variable& ASTVariableAssignmentDecl::generateGetVariable(FnCodeGenerator *fncg) const {
-    if (declare_) {
-        return fncg->scoper().declareVariable(varId_, expr_->expressionType());
-    }
-    return inInstanceScope() ? fncg->instanceScoper().getVariable(varId_) : fncg->scoper().getVariable(varId_);
+//    if (type_.optional()) {
+//        fncg->wr().writeInstruction(INS_GET_NOTHINGNESS);
+//        fncg->wr().writeInstruction(INS_COPY_TO_STACK);
+//        fncg->wr().writeInstruction(var.stackIndex.value());
+//    }
 }
 
 void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) const {
-    expr_->generate(fncg);
+    llvm::Value *varPtr;
+    if (declare_) {
+        varPtr = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(expr_->expressionType()));
+        fncg->scoper().getVariable(varId_) = LocalVariable(true, varPtr);
+    }
+    else if (inInstanceScope()) {
+        varPtr = ASTGetVariable::instanceVariablePointer(fncg, varId_);
+    }
+    else {
+        varPtr = fncg->scoper().getVariable(varId_).value;
+    }
 
-    auto &var = generateGetVariable(fncg);
-    fncg->copyToVariable(var.stackIndex, inInstanceScope(), expr_->expressionType());
-    var.initialize(fncg->wr().count());
+    fncg->builder().CreateStore(expr_->generate(fncg), varPtr);
 }
 
 void ASTFrozenDeclaration::generateAssignment(FnCodeGenerator *fncg) const {
-    expr_->generate(fncg);
-
-    auto &var = fncg->scoper().declareVariable(id_, expr_->expressionType());
-    fncg->copyToVariable(var.stackIndex, false, expr_->expressionType());
-    var.initialize(fncg->wr().count());
+    fncg->scoper().getVariable(id_) = LocalVariable(false, expr_->generate(fncg));
 }
 
 }  // namespace EmojicodeCompiler

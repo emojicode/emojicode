@@ -10,7 +10,6 @@
 #define Function_hpp
 
 #include "../CompilerError.hpp"
-#include "../Generation/FunctionWriter.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Generic.hpp"
 #include "../Types/Type.hpp"
@@ -23,6 +22,10 @@
 #include <queue>
 #include <utility>
 #include <vector>
+
+namespace llvm {
+class Function;
+}  // namespace llvm
 
 namespace EmojicodeCompiler {
 
@@ -163,10 +166,9 @@ public:
     void setAst(const std::shared_ptr<ASTBlock> &ast) { ast_ = ast; }
     const std::shared_ptr<ASTBlock>& ast() const { return ast_; }
 
-    int fullSize() const { return fullSize_; }
-    void setFullSize(int c) { fullSize_ = c; }
+    llvm::Function* llvmFunction() { return llvmFunction_; }
+    void setLlvmFunction(llvm::Function *lf) { llvmFunction_ = lf; }
 
-    FunctionWriter writer_;
     std::vector<FunctionObjectVariableInformation>& objectVariableInformation() { return objectVariableInformation_; }
     size_t variableCount() const { return variableCount_; }
     void setVariableCount(size_t variableCount) { variableCount_ = variableCount; }
@@ -191,8 +193,8 @@ private:
     FunctionType functionType_;
     size_t variableCount_ = 0;
 
+    llvm::Function *llvmFunction_;
     std::vector<FunctionObjectVariableInformation> objectVariableInformation_;
-    int fullSize_ = -1;
 };
 
 }  // namespace EmojicodeCompiler

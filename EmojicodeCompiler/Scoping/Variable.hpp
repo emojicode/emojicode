@@ -13,11 +13,12 @@
 
 #include "../Lex/SourcePosition.hpp"
 #include "../Types/Type.hpp"
-#include "VariableID.hpp"
 
 namespace EmojicodeCompiler {
 
 class CapturingSemanticScoper;
+
+using VariableID = size_t;
 
 class Variable {
     friend CapturingSemanticScoper;

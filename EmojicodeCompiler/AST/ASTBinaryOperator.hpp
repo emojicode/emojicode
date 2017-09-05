@@ -23,11 +23,10 @@ public:
     Value* generateExpr(FnCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
+    
     struct BuiltIn {
-        explicit BuiltIn(Type type) : returnType(std::move(type)), swap(false) {}
-        BuiltIn(Type type, bool swap) : returnType(std::move(type)), swap(swap) {}
+        explicit BuiltIn(Type type) : returnType(std::move(type)) {}
         Type returnType;
-        bool swap;
     };
 
     std::pair<bool, BuiltIn> builtInPrimitiveOperator(SemanticAnalyser *analyser, const Type &type);

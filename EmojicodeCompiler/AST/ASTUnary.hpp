@@ -20,10 +20,6 @@ class ASTUnary : public ASTExpr {
 public:
     ASTUnary(std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
 protected:
-    void generateHelper(FnCodeGenerator *fncg, EmojicodeInstruction instruction) const {
-        value_->generate(fncg);
-        fncg->wr().writeInstruction(instruction);
-    }
     std::shared_ptr<ASTExpr> value_;
 };
 

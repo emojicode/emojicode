@@ -10,14 +10,14 @@
 
 namespace EmojicodeCompiler {
 
-void ClosureCodeGenerator::declareArguments() {
-    FnCodeGenerator::declareArguments();
+void ClosureCodeGenerator::declareArguments(llvm::Function *function) {
+    FnCodeGenerator::declareArguments(function);
 
-    captureDestIndex_ = scoper().nextIndex();
-    for (auto capture : captures_) {
-        scoper().declareVariable(capture.captureId, capture.type).initialize(0);
-        captureSize_ += capture.type.size();
-    }
+//    captureDestIndex_ = scoper().nextIndex();
+//    for (auto capture : captures_) {
+//        scoper().declareVariable(capture.captureId, capture.type).initialize(0);
+//        captureSize_ += capture.type.size();
+//    }
 }
 
 }  // namespace EmojicodeCompiler

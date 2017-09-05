@@ -14,12 +14,18 @@
 
 namespace EmojicodeCompiler {
 
+Type ASTGetVariable::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+    auto var = analyser->scoper().getVariable(name_, position());
+    copyVariableAstInfo(var, analyser);
+    return var.variable.type();
+}
+
 void ASTInitableCreator::setVtDestination(VariableID varId, bool inInstanceScope, bool declare) {
     if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_)) {
         if (init->initType() == ASTInitialization::InitType::ValueType) {
             noAction_ = true;
-            init->setDestination(std::make_shared<ASTVTInitDest>(varId, inInstanceScope, declare,
-                                                                 expr_->expressionType(), expr_->position()));
+            init->setDestination(std::make_shared<ASTInitGetVariable>(varId, inInstanceScope, declare,
+                                                                      expr_->expressionType(), expr_->position()));
         }
     }
 }

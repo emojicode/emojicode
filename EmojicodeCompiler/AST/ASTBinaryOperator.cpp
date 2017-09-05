@@ -7,7 +7,6 @@
 //
 
 #include "ASTBinaryOperator.hpp"
-#include "../../EmojicodeInstructions.h"
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Parsing/OperatorHelper.hpp"
 #include "../Types/TypeExpectation.hpp"
@@ -21,12 +20,8 @@ Type ASTBinaryOperator::analyse(SemanticAnalyser *analyser, const TypeExpectatio
 
     auto pair = builtInPrimitiveOperator(analyser, otype);
     if (pair.first) {
-        builtIn_ = true;
         Type type = analyser->comply(otype, TypeExpectation(false, false, false), &left_);
         analyser->expectType(type, &right_);
-        if (pair.second.swap) {
-            std::swap(left_, right_);
-        }
         return pair.second.returnType;
     }
 
@@ -38,38 +33,39 @@ Type ASTBinaryOperator::analyse(SemanticAnalyser *analyser, const TypeExpectatio
 
 std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveOperator(SemanticAnalyser *analyser,
                                                                                         const Type &type) {
-    bool swap = false;
     if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum) &&
         type.valueType()->isPrimitive()) {
         if (type.valueType() == VT_DOUBLE) {
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
-                    instruction_ = INS_MULTIPLY_DOUBLE;
+                    builtIn_ = BuiltInType::DoubleMultiply;
                     return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::LessOperator:
-                    swap = true;
+                    builtIn_ = BuiltInType::DoubleLess;
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::GreaterOperator:
-                    instruction_ = INS_GREATER_DOUBLE;
-                    return std::make_pair(true, BuiltIn(Type::boolean(), swap));
+                    builtIn_ = BuiltInType::DoubleGreater;
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::LessOrEqualOperator:
-                    swap = true;
+                    builtIn_ = BuiltInType::DoubleLessOrEqual;
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::GreaterOrEqualOperator:
-                    instruction_ = INS_GREATER_OR_EQUAL_DOUBLE;
-                    return std::make_pair(true, BuiltIn(Type::boolean(), swap));
+                    builtIn_ = BuiltInType::DoubleGreaterOrEqual;
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::DivisionOperator:
-                    instruction_ = INS_DIVIDE_DOUBLE;
+                    builtIn_ = BuiltInType::DoubleDivide;
                     return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::PlusOperator:
-                    instruction_ = INS_ADD_DOUBLE;
+                    builtIn_ = BuiltInType::DoubleAdd;
                     return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::MinusOperator:
-                    instruction_ = INS_SUBTRACT_DOUBLE;
+                    builtIn_ = BuiltInType::DoubleSubstract;
                     return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::RemainderOperator:
-                    instruction_ = INS_REMAINDER_DOUBLE;
+                    builtIn_ = BuiltInType::DoubleRemainder;
                     return std::make_pair(true, BuiltIn(Type::doubl()));
                 case OperatorType::EqualOperator:
-                    instruction_ = INS_EQUAL_DOUBLE;
+                    builtIn_ = BuiltInType::DoubleEqual;
                     return std::make_pair(true, BuiltIn(Type::boolean()));
                 default:
                     break;
@@ -78,44 +74,46 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
         else if (type.valueType() == VT_INTEGER) {
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
-                    instruction_ = INS_MULTIPLY_INTEGER;
+                    builtIn_ = BuiltInType::IntegerMultiply;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::BitwiseAndOperator:
-                    instruction_ = INS_BINARY_AND_INTEGER;
+                    builtIn_ = BuiltInType::IntegerAnd;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::BitwiseOrOperator:
-                    instruction_ = INS_BINARY_OR_INTEGER;
+                    builtIn_ = BuiltInType::IntegerOr;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::BitwiseXorOperator:
-                    instruction_ = INS_BINARY_XOR_INTEGER;
+                    builtIn_ = BuiltInType::IntegerXor;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::LessOperator:
-                    swap = true;
+                    builtIn_ = BuiltInType::IntegerLess;
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::GreaterOperator:
-                    instruction_ = INS_GREATER_INTEGER;
-                    return std::make_pair(true, BuiltIn(Type::boolean(), swap));
+                    builtIn_ = BuiltInType::IntegerGreater;
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::LessOrEqualOperator:
-                    swap = true;
+                    builtIn_ = BuiltInType::IntegerLessOrEqual;
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::GreaterOrEqualOperator:
-                    instruction_ = INS_GREATER_OR_EQUAL_INTEGER;
-                    return std::make_pair(true, BuiltIn(Type::boolean(), swap));
+                    builtIn_ = BuiltInType::IntegerGreaterOrEqual;
+                    return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::ShiftLeftOperator:
-                    instruction_ = INS_SHIFT_LEFT_INTEGER;
+                    builtIn_ = BuiltInType::IntegerLeftShift;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::ShiftRightOperator:
-                    instruction_ = INS_SHIFT_RIGHT_INTEGER;
+                    builtIn_ = BuiltInType::IntegerRightShift;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::DivisionOperator:
-                    instruction_ = INS_DIVIDE_INTEGER;
+                    builtIn_ = BuiltInType::IntegerDivide;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::PlusOperator:
-                    instruction_ = INS_ADD_INTEGER;
+                    builtIn_ = BuiltInType::IntegerAdd;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::MinusOperator:
-                    instruction_ = INS_SUBTRACT_INTEGER;
+                    builtIn_ = BuiltInType::IntegerSubstract;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 case OperatorType::RemainderOperator:
-                    instruction_ = INS_REMAINDER_INTEGER;
+                    builtIn_ = BuiltInType::IntegerRemainder;
                     return std::make_pair(true, BuiltIn(Type::integer()));
                 default:
                     break;
@@ -124,10 +122,10 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
         else if (type.valueType() == VT_BOOLEAN) {
             switch (operator_) {
                 case OperatorType::LogicalAndOperator:
-                    instruction_ = INS_AND_BOOLEAN;
+                    builtIn_ = BuiltInType::BooleanAnd;
                     return std::make_pair(true, BuiltIn(Type::boolean()));
                 case OperatorType::LogicalOrOperator:
-                    instruction_ = INS_OR_BOOLEAN;
+                    builtIn_ = BuiltInType::BooleanOr;
                     return std::make_pair(true, BuiltIn(Type::boolean()));
                 default:
                     break;
@@ -138,12 +136,12 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
             if (!type.compatibleTo(Type::someobject(), analyser->typeContext())) {
                 throw CompilerError(position(), "The identity operator can only be used with objects.");
             }
-            instruction_ = INS_SAME_OBJECT;
+            builtIn_ = BuiltInType::Equal;
             return std::make_pair(true, BuiltIn(Type::boolean()));
         }
 
         if (operator_ == OperatorType::EqualOperator) {
-            instruction_ = INS_EQUAL_PRIMITIVE;
+            builtIn_ = BuiltInType::Equal;
             return std::make_pair(true, BuiltIn(Type::boolean()));
         }
     }

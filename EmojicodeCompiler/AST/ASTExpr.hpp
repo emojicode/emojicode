@@ -20,7 +20,6 @@ class ASTTypeExpr;
 class SemanticAnalyser;
 class TypeExpectation;
 class FnCodeGenerator;
-class CGScoper;
 class Prettyprinter;
 
 class ASTExpr : public ASTNode {
@@ -41,22 +40,7 @@ private:
     Type expressionType_ = Type::noReturn();
     bool temporarilyScoped_ = false;
 };
-
-class ASTGetVariable final : public ASTExpr, public ASTVariable {
-public:
-    ASTGetVariable(std::u32string name, const SourcePosition &p) : ASTExpr(p), name_(std::move(name)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
-    void toCode(Prettyprinter &pretty) const override;
-
-    void setReference() { reference_ = true; }
-    bool reference() { return reference_; }
-    const std::u32string& name() { return name_; }
-private:
-    bool reference_ = false;
-    std::u32string name_;
-};
-
+    
 class ASTMetaTypeInstantiation final : public ASTExpr {
 public:
     ASTMetaTypeInstantiation(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}

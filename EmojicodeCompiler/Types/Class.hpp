@@ -70,8 +70,6 @@ public:
     int usedMethodCount() { return methodVtiProvider_.usedCount(); }
     int usedInitializerCount() { return initializerVtiProvider_.usedCount(); }
 private:
-    void createCGScope() override;
-
     VTIProvider *protocolMethodVtiProvider() override {
         return &methodVtiProvider_;
     }

@@ -11,6 +11,7 @@
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Verifier.h>
 #include "../AST/ASTStatements.hpp"
 #include "../Functions/BoxingLayer.hpp"
 #include "FnCodeGenerator.hpp"
@@ -20,48 +21,30 @@ namespace EmojicodeCompiler {
 
 void FnCodeGenerator::generate() {
     if (fn_->isNative()) {
-        wr().writeInstruction({ INS_TRANSFER_CONTROL_TO_NATIVE, INS_RETURN });
         return;
     }
 
-    llvm::StructType::get(<#llvm::LLVMContext &Context#>, <#ArrayRef<llvm::Type *> Elements#>)
-
-    std::vector<llvm::Type *> args(3, llvm::Type::getDoubleTy(app()->context()));
-    auto ft = llvm::FunctionType::get(llvm::Type::getInt64Ty(app()->context()), args, false);
-    auto function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "tests3", app()->module());
-
-    auto basicBlock = llvm::BasicBlock::Create(app()->context(), "entry", function);
+    auto basicBlock = llvm::BasicBlock::Create(generator()->context(), "entry", fn_->llvmFunction());
     builder_.SetInsertPoint(basicBlock);
 
-    scoper_.pushScope();
-
-    declareArguments();
+    declareArguments(fn_->llvmFunction());
 
     fn_->ast()->generate(this);
 
-    fn_->setFullSize(scoper_.size());
-    scoper_.popScope(wr().count());
+    if (llvm::verifyFunction(*fn_->llvmFunction(), &llvm::outs())) {
+        exit(0);
+    }
 }
 
-void FnCodeGenerator::declareArguments() {
+void FnCodeGenerator::declareArguments(llvm::Function *function) {
     unsigned int i = 0;
+    auto it = function->args().begin();
+    if (isSelfAllowed(fn_->functionType())) {
+        (it++)->setName("this");
+    }
     for (auto arg : fn_->arguments) {
-        scoper_.declareVariable(VariableID(i++), arg.type).initialize(0);
+        scoper_.getVariable(i++) = LocalVariable(false, &*(it++));
     }
-}
-
-void FnCodeGenerator::writeInteger(long long value)  {
-    if (std::llabs(value) > INT32_MAX) {
-        wr().writeInstruction(INS_GET_64_INTEGER);
-
-        wr().writeInstruction(value >> 32);
-        wr().writeInstruction(static_cast<EmojicodeInstruction>(value));
-        return;
-    }
-
-    wr().writeInstruction(INS_GET_32_INTEGER);
-    value += INT32_MAX;
-    wr().writeInstruction(static_cast<EmojicodeInstruction>(value));
 }
 
 }  // namespace EmojicodeCompiler

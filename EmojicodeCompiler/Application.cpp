@@ -8,7 +8,6 @@
 
 #include "Application.hpp"
 #include "Generation/CodeGenerator.hpp"
-#include "Generation/Writer.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -36,7 +35,6 @@ bool Application::compile(bool parseOnly) {
 
     if (!hasError_) {
         generateCode();
-        module()->dump();
     }
 
     delegate_->finish();
@@ -52,9 +50,7 @@ void Application::analyse(Package *underscorePackage) {
 }
 
 void Application::generateCode() {
-    Writer writer = Writer(outPath_);
-    EmojicodeCompiler::generateCode(&writer, this);
-    writer.finish();
+    CodeGenerator(this).generate(outPath_);
 }
 
 Package* Application::findPackage(const std::string &name) const {

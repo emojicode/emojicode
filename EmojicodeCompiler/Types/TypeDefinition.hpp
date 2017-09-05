@@ -104,13 +104,9 @@ public:
     /// type methods and initializers.
     void eachFunctionWithoutInitializers(const std::function<void(Function *)>& cb) const;
 
-    /// The size of an instance of this type in Emojicode words
-    virtual int size() const { return cgScoper_.size(); }
-
     /** Returns an object scope for an instance of the defined type.
      @warning @c prepareForCG() must be called before a call to this method. */
     Scope& instanceScope() { return scope_; }
-    CGScoper& cgScoper() { return cgScoper_; }
 
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 protected:
@@ -122,17 +118,10 @@ protected:
     const Type& superType() const { return superType_; }
 
     Scope scope_ = Scope(0);
-    CGScoper cgScoper_ = CGScoper(0);
 
     virtual VTIProvider *protocolMethodVtiProvider() = 0;
     virtual void handleRequiredInitializer(Initializer *init);
     void nativeCheck(Function *function);
-    
-    /// Called by prepareForCG to create the CG scope. Can be overridden by subclasses.
-    virtual void createCGScope() {
-        cgScoper_ = CGScoper(scope_.maxVariableId());
-        cgScoper_.pushScope();
-    }
 
     template <typename T>
     void duplicateDeclarationCheck(T p, std::map<std::u32string, T> dict, SourcePosition position) {

@@ -14,7 +14,7 @@
 namespace EmojicodeCompiler {
 
 Type ASTIsNothigness::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    Type type = analyser->expect(TypeExpectation(true, false), &value_);
+    Type type = analyser->expect(TypeExpectation(false, false), &value_);
     if (!type.optional() && type.type() != TypeType::Something) {
         throw CompilerError(position(), "☁️ can only be used with optionals and ⚪️.");
     }
@@ -22,7 +22,7 @@ Type ASTIsNothigness::analyse(SemanticAnalyser *analyser, const TypeExpectation 
 }
 
 Type ASTIsError::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    Type type = analyser->expect(TypeExpectation(true, false), &value_);
+    Type type = analyser->expect(TypeExpectation(false, false), &value_);
     if (type.type() != TypeType::Error) {
         throw CompilerError(position(), "🚥 can only be used with 🚨.");
     }
@@ -30,10 +30,7 @@ Type ASTIsError::analyse(SemanticAnalyser *analyser, const TypeExpectation &expe
 }
 
 Type ASTUnwrap::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    Type t = analyser->expect(TypeExpectation(true, false), &value_);
-    assert(t.isReference());
-
-    t.setReference(false);
+    Type t = analyser->expect(TypeExpectation(false, false), &value_);
 
     if (t.optional()) {
         t.setOptional(false);

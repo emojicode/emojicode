@@ -15,37 +15,6 @@
 
 namespace EmojicodeCompiler {
 
-CGScoper& ASTVTInitDest::scoper(FnCodeGenerator *fncg) const {
-    return inInstanceScope_ ? fncg->instanceScoper() : fncg->scoper();
-}
-
-void ASTVTInitDest::initialize(FnCodeGenerator *fncg) {
-    scoper(fncg).getVariable(varId_).initialize(fncg->wr().count());
-}
-
-Value* ASTVTInitDest::generateExpr(FnCodeGenerator *fncg) const {
-    if (declare_) {
-        scoper(fncg).declareVariable(varId_, expressionType());
-    }
-    fncg->pushVariableReference(scoper(fncg).getVariable(varId_).stackIndex, inInstanceScope_);
-    return nullptr;
-}
-
-Value* ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
-    switch (initType_) {
-        case InitType::Class:
-            InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(*typeExpr_, typeExpr_->expressionType(),
-                                                                           args_, name_);
-            break;
-        case InitType::Enum:
-            fncg->writeInteger(typeExpr_->expressionType().eenum()->getValueFor(name_).second);
-            break;
-        case InitType::ValueType:
-            VTInitializationCallCodeGenerator(fncg).generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
-    }
-    return nullptr;
-}
-
 Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 

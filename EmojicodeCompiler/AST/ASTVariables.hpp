@@ -15,6 +15,39 @@
 
 namespace EmojicodeCompiler {
 
+class ASTGetVariable : public ASTExpr, public ASTVariable {
+public:
+    ASTGetVariable(std::u32string name, const SourcePosition &p) : ASTExpr(p), name_(std::move(name)) {}
+
+    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    void toCode(Prettyprinter &pretty) const override;
+
+    void setReference() { reference_ = true; }
+    bool reference() { return reference_; }
+    const std::u32string& name() { return name_; }
+
+    static Value* instanceVariablePointer(FnCodeGenerator *fncg, size_t index);
+private:
+    bool reference_ = false;
+    std::u32string name_;
+};
+
+class ASTInitGetVariable final : public ASTGetVariable {
+public:
+    ASTInitGetVariable(VariableID varId, bool inInstanceScope, bool declare, Type type, const SourcePosition &p) :
+    ASTGetVariable(std::u32string(), p), declare_(declare), type_(std::move(type)) {
+        inInstanceScope_ = inInstanceScope;
+        varId_ = varId;
+        setReference();
+    }
+    Value* generateExpr(FnCodeGenerator *fncg) const;
+private:
+    bool declare_ = false;
+    Type type_;
+};
+
+
 class ASTInitableCreator : public ASTStatement {
 protected:
     ASTInitableCreator(std::shared_ptr<ASTExpr> e, const SourcePosition &p) : ASTStatement(p), expr_(std::move(e)) {}
@@ -52,8 +85,6 @@ protected:
     std::u32string varName_;
 private:
     bool declare_ = false;
-
-    CGScoper::Variable& generateGetVariable(FnCodeGenerator *fncg) const;
 };
 
 class ASTInstanceVariableAssignment final : public ASTVariableAssignmentDecl {

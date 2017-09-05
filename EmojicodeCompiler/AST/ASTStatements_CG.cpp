@@ -22,24 +22,19 @@ void ASTBlock::generate(FnCodeGenerator *fncg) const {
 
 void ASTReturn::generate(FnCodeGenerator *fncg) const {
     if (value_) {
-        value_->generate(fncg);
+        fncg->builder().CreateRet(value_->generate(fncg));
     }
-    fncg->wr().writeInstruction(INS_RETURN);
+    else {
+        fncg->builder().CreateRetVoid();
+    }
 }
 
 void ASTRaise::generate(FnCodeGenerator *fncg) const {
-    fncg->wr().writeInstruction(INS_PUSH_ERROR);
-    value_->generate(fncg);
-    if (boxed_) {
-        fncg->wr().writeInstruction(INS_PUSH_N),
-        fncg->wr().writeInstruction(kBoxValueSize - value_->expressionType().size() - 1);
-    }
-    fncg->wr().writeInstruction(INS_RETURN);
+    // TODO: implement
 }
 
 void ASTSuperinitializer::generate(FnCodeGenerator *fncg) const {
-    SuperInitializerCallCodeGenerator(fncg, INS_SUPER_INITIALIZER).generate(superType_, arguments_, name_);
-    fncg->wr().writeInstruction(INS_POP);
+    SuperInitializerCallCodeGenerator(fncg).generate(superType_, arguments_, name_);
 }
 
 }  // namespace EmojicodeCompiler

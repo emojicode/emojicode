@@ -7,9 +7,9 @@
 //
 
 #include "ASTMethod.hpp"
-#include "../../EmojicodeInstructions.h"
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
+#include "ASTVariables.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
 
@@ -29,7 +29,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
         for (auto &protocol : type.protocols()) {
             Function *method;
             if ((method = protocol.protocol()->lookupMethod(name)) != nullptr) {
-                instruction_ = INS_DISPATCH_PROTOCOL;
+                callType_ = CallType::DynamicProtocolDispatch;
                 calleeType_ = protocol;
                 return analyser->analyseFunctionCall(&args_, protocol, method);
             }
@@ -50,16 +50,16 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
             assert(varNode != nullptr && varNode->reference());
             analyser->scoper().currentScope().getLocalVariable(varNode->name()).mutate(position());
         }
-        instruction_ = INS_CALL_CONTEXTED_FUNCTION;
+        callType_ = CallType::StaticDispatch;
     }
     else if (type.type() == TypeType::Protocol) {
-        instruction_ = INS_DISPATCH_PROTOCOL;
+        callType_ = CallType::DynamicProtocolDispatch;
     }
     else if (type.type() == TypeType::Enum) {
-        instruction_ = INS_CALL_CONTEXTED_FUNCTION;
+        callType_ = CallType::StaticDispatch;
     }
     else if (type.type() == TypeType::Class) {
-        instruction_ = INS_DISPATCH_METHOD;
+        callType_ = CallType::DynamicDispatch;
     }
     else {
         auto typeString = type.toString(analyser->typeContext());
@@ -71,20 +71,17 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
 std::pair<bool, Type> ASTMethodable::builtIn(const Type &type, const std::u32string &name) {
     if (type.typeDefinition() == VT_BOOLEAN) {
         if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
-            builtIn_ = true;
-            instruction_ = INS_INVERT_BOOLEAN;
+            builtIn_ = BuiltInType::BooleanNegate;
             return std::make_pair(true, Type::boolean());
         }
     }
     else if (type.typeDefinition() == VT_INTEGER) {
         if (name.front() == E_ROCKET) {
-            builtIn_ = true;
-            instruction_ = INS_INT_TO_DOUBLE;
+            builtIn_ = BuiltInType::IntegerToDouble;
             return std::make_pair(true, Type::doubl());
         }
         if (name.front() == E_NO_ENTRY_SIGN) {
-            builtIn_ = true;
-            instruction_ = INS_BINARY_NOT_INTEGER;
+            builtIn_ = BuiltInType::IntegerNot;
             return std::make_pair(true, Type::integer());
         }
     }

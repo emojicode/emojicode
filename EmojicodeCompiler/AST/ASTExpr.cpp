@@ -13,12 +13,6 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTGetVariable::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    auto var = analyser->scoper().getVariable(name_, position());
-    copyVariableAstInfo(var, analyser);
-    return var.variable.type();
-}
-
 Type ASTMetaTypeInstantiation::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     analyser->validateMetability(type_, position());
     type_.setMeta(true);

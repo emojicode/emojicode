@@ -10,9 +10,9 @@
 #define ASTNode_hpp
 
 #include "../Lex/SourcePosition.hpp"
-#include "../Scoping/VariableID.hpp"
 #include "../Types/Type.hpp"
 #include "../Types/TypeAvailability.hpp"
+#include "../Scoping/Variable.hpp"
 #include <memory>
 #include <utility>
 

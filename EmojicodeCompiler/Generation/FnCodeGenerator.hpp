@@ -15,84 +15,86 @@
 #include "../Functions/Function.hpp"
 #include "../Scoping/CGScoper.hpp"
 #include "../Application.hpp"
-#include "FunctionWriter.hpp"
+#include "CodeGenerator.hpp"
 #include <memory>
 
 namespace EmojicodeCompiler {
 
+struct LocalVariable {
+    LocalVariable() = default;
+    LocalVariable(bool isMutable, llvm::Value *value) : isMutable(isMutable), value(value) {}
+    bool isMutable;
+    llvm::Value *value = nullptr;
+};
+
 class FnCodeGenerator {
 public:
-    explicit FnCodeGenerator(Function *function)
-    : fn_(function), scoper_(function->variableCount()),
-    instanceScoper_(function->owningType().type() != TypeType::NoReturn ?
-                    &function->owningType().typeDefinition()->cgScoper() : nullptr), builder_(app()->context()) {}
+    explicit FnCodeGenerator(Function *function, CodeGenerator *generator)
+    : fn_(function), scoper_(function->variableCount()),  generator_(generator), builder_(generator->context()) {}
     void generate();
 
-    FunctionWriter& wr() { return fn_->writer_; }
-    CGScoper& scoper() { return scoper_; }
-    CGScoper& instanceScoper() { return *instanceScoper_; }
-    Application* app() { return fn_->package()->app(); }
+    CGScoper<LocalVariable>& scoper() { return scoper_; }
+    Application* app() { return generator()->app(); }
+    CodeGenerator* generator() { return generator_; }
+    llvm::IRBuilder<>& builder() { return builder_; }
+    llvm::Value* thisValue() { return &*fn_->llvmFunction()->args().begin(); }
 
-    void writeInteger(long long value);
-
-    void writeInstructionForStackOrInstance(bool inInstanceScope, EmojicodeInstruction stack,
-                                            EmojicodeInstruction object, EmojicodeInstruction vt) {
-        if (!inInstanceScope) {
-            wr().writeInstruction(stack);
-        }
-        else {
-            writeValueTypeOrObject(object, vt);
-        }
-    }
-
-    void writeValueTypeOrObject(EmojicodeInstruction object, EmojicodeInstruction vt) {
-        wr().writeInstruction(fn_->contextType() == ContextType::ValueReference ? vt : object);
-    }
-
-    void copyToVariable(CGScoper::StackIndex index, bool inInstanceScope, const Type &type) {
-        if (type.size() == 1) {
-            writeInstructionForStackOrInstance(inInstanceScope, INS_COPY_TO_STACK, INS_COPY_TO_INSTANCE_VARIABLE,
-                                               INS_COPY_VT_VARIABLE);
-            wr().writeInstruction(index.value());
-        }
-        else {
-            writeInstructionForStackOrInstance(inInstanceScope, INS_COPY_TO_STACK_SIZE,
-                                               INS_COPY_TO_INSTANCE_VARIABLE_SIZE, INS_COPY_VT_VARIABLE_SIZE);
-            wr().writeInstruction(type.size());
-            wr().writeInstruction(index.value());
-
-        }
-    }
-
-    void pushVariable(CGScoper::StackIndex index, bool inInstanceScope, const Type &type) {
-        if (type.size() == 1) {
-            writeInstructionForStackOrInstance(inInstanceScope, INS_PUSH_SINGLE_STACK, INS_PUSH_SINGLE_OBJECT,
-                                                     INS_PUSH_SINGLE_VT);
-            wr().writeInstruction(index.value());
-        }
-        else {
-            writeInstructionForStackOrInstance(inInstanceScope, INS_PUSH_WITH_SIZE_STACK, INS_PUSH_WITH_SIZE_OBJECT,
-                                                     INS_PUSH_WITH_SIZE_VT);
-            wr().writeInstruction(index.value());
-            wr().writeInstruction(type.size());
-        }
-    }
-
-    void pushVariableReference(CGScoper::StackIndex index, bool inInstanceScope) {
-        writeInstructionForStackOrInstance(inInstanceScope, INS_PUSH_VT_REFERENCE_STACK,
-                                           INS_PUSH_VT_REFERENCE_OBJECT, INS_PUSH_VT_REFERENCE_VT);
-        wr().writeInstruction(index.value());
-    }
+//    void writeInstructionForStackOrInstance(bool inInstanceScope, EmojicodeInstruction stack,
+//                                            EmojicodeInstruction object, EmojicodeInstruction vt) {
+//        if (!inInstanceScope) {
+//            wr().writeInstruction(stack);
+//        }
+//        else {
+//            writeValueTypeOrObject(object, vt);
+//        }
+//    }
+//
+//    void writeValueTypeOrObject(EmojicodeInstruction object, EmojicodeInstruction vt) {
+//        wr().writeInstruction(fn_->contextType() == ContextType::ValueReference ? vt : object);
+//    }
+//
+//    void copyToVariable(CGScoper::StackIndex index, bool inInstanceScope, const Type &type) {
+//        if (type.size() == 1) {
+//            writeInstructionForStackOrInstance(inInstanceScope, INS_COPY_TO_STACK, INS_COPY_TO_INSTANCE_VARIABLE,
+//                                               INS_COPY_VT_VARIABLE);
+//            wr().writeInstruction(index.value());
+//        }
+//        else {
+//            writeInstructionForStackOrInstance(inInstanceScope, INS_COPY_TO_STACK_SIZE,
+//                                               INS_COPY_TO_INSTANCE_VARIABLE_SIZE, INS_COPY_VT_VARIABLE_SIZE);
+//            wr().writeInstruction(type.size());
+//            wr().writeInstruction(index.value());
+//
+//        }
+//    }
+//
+//    void pushVariable(CGScoper::StackIndex index, bool inInstanceScope, const Type &type) {
+//        if (type.size() == 1) {
+//            writeInstructionForStackOrInstance(inInstanceScope, INS_PUSH_SINGLE_STACK, INS_PUSH_SINGLE_OBJECT,
+//                                                     INS_PUSH_SINGLE_VT);
+//            wr().writeInstruction(index.value());
+//        }
+//        else {
+//            writeInstructionForStackOrInstance(inInstanceScope, INS_PUSH_WITH_SIZE_STACK, INS_PUSH_WITH_SIZE_OBJECT,
+//                                                     INS_PUSH_WITH_SIZE_VT);
+//            wr().writeInstruction(index.value());
+//            wr().writeInstruction(type.size());
+//        }
+//    }
+//
+//    void pushVariableReference(CGScoper::StackIndex index, bool inInstanceScope) {
+//        writeInstructionForStackOrInstance(inInstanceScope, INS_PUSH_VT_REFERENCE_STACK,
+//                                           INS_PUSH_VT_REFERENCE_OBJECT, INS_PUSH_VT_REFERENCE_VT);
+//        wr().writeInstruction(index.value());
+//    }
 protected:
-    virtual void declareArguments();
+    virtual void declareArguments(llvm::Function *function);
 private:
     Function *fn_;
-    CGScoper scoper_;
-    CGScoper *instanceScoper_;
+    CGScoper<LocalVariable> scoper_;
 
+    CodeGenerator *generator_;
     llvm::IRBuilder<> builder_;
-
-    void generateBoxingLayer();
 };
 
 }  // namespace EmojicodeCompiler

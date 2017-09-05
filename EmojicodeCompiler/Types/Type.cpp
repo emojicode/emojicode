@@ -356,37 +356,6 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
 
 // MARK: Storage
 
-int Type::size() const {
-    int basesize = 0;
-    switch (storageType()) {
-        case StorageType::SimpleOptional:
-            basesize = 1;
-        case StorageType::Simple:
-            switch (type()) {
-                case TypeType::ValueType:
-                case TypeType::Enum:
-                    return basesize + typeDefinition()->size();
-                case TypeType::Callable:
-                case TypeType::Class:
-                case TypeType::Someobject:
-                    return basesize + 1;
-                case TypeType::Error:
-                    if (genericArguments()[1].storageType() == StorageType::SimpleOptional) {
-                        return std::max(2, genericArguments()[1].size());
-                    }
-                    return std::max(1, genericArguments()[1].size()) + basesize;
-                case TypeType::NoReturn:
-                    return 0;
-                default:
-                    throw std::logic_error("Type is wrongly simply stored");
-            }
-        case StorageType::Box:
-            return 4;
-        default:
-            throw std::logic_error("Type has invalid storage type");
-    }
-}
-
 StorageType Type::storageType() const {
     if (forceBox_ || requiresBox()) {
         return StorageType::Box;

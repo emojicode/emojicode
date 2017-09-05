@@ -110,16 +110,6 @@ void Class::prepareForSemanticAnalysis() {
     TypeDefinition::finalizeProtocols(classType);
 }
 
-void Class::createCGScope() {
-    if (superclass() != nullptr) {
-        cgScoper_ = superclass()->cgScoper_;
-        cgScoper_.resizeVariables(scope_.maxVariableId());
-    }
-    else {
-        TypeDefinition::createCGScope();
-    }
-}
-
 Function* Class::findSuperFunction(Function *function) const {
     switch (function->functionType()) {
         case FunctionType::ObjectMethod:

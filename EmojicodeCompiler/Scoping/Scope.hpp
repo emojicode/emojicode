@@ -10,7 +10,6 @@
 #define Scope_hpp
 
 #include "Variable.hpp"
-#include "VariableID.hpp"
 #include <map>
 
 namespace EmojicodeCompiler {

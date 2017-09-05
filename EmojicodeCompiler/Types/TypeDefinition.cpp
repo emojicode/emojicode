@@ -156,12 +156,7 @@ void TypeDefinition::prepareForSemanticAnalysis() {
 }
 
 void TypeDefinition::prepareForCG() {
-    createCGScope();
 
-    for (auto &ivar : instanceVariables()) {
-        auto &var = scope_.getLocalVariable(ivar.name);
-        cgScoper_.declareVariable(var.id(), ivar.type).initialize(0);
-    }
 }
 
 void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bool enqueBoxingLayers) {

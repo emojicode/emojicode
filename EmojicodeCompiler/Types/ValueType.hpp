@@ -28,8 +28,6 @@ public:
     void prepareForCG() override;
     int usedFunctionCount() const { return vtiProvider_.usedCount(); };
 
-    int size() const override { return primitive_ ? 1 : TypeDefinition::size(); }
-
     void addMethod(Function *method) override;
     void addInitializer(Initializer *initializer) override;
     void addTypeMethod(Function *method) override;

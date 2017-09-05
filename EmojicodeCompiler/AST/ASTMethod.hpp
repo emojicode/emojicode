@@ -10,7 +10,7 @@
 #define ASTMethod_hpp
 
 #include <utility>
-
+#include "../Functions/CallType.h"
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
@@ -23,9 +23,21 @@ protected:
     ASTMethodable(const SourcePosition &p, ASTArguments args) : ASTExpr(p), args_(std::move(args)) {}
     Type analyseMethodCall(SemanticAnalyser *analyser, const std::u32string &name,
                            std::shared_ptr<ASTExpr> &callee);
-    EmojicodeInstruction instruction_;
+
+    enum class BuiltInType {
+        None,
+        DoubleMultiply, DoubleAdd, DoubleSubstract, DoubleDivide, DoubleGreater, DoubleGreaterOrEqual,
+        DoubleLess, DoubleLessOrEqual, DoubleRemainder, DoubleEqual,
+        IntegerMultiply, IntegerAdd, IntegerSubstract, IntegerDivide, IntegerGreater, IntegerGreaterOrEqual,
+        IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
+        IntegerRemainder, IntegerToDouble, IntegerNot,
+        BooleanAnd, BooleanOr, BooleanNegate,
+        Equal,
+    };
+
+    BuiltInType builtIn_ = BuiltInType::None;
     ASTArguments args_;
-    bool builtIn_ = false;
+    CallType callType_;
     Type calleeType_ = Type::noReturn();
 private:
     std::pair<bool, Type> builtIn(const Type &type, const std::u32string &name);
@@ -37,8 +49,8 @@ public:
     : ASTMethodable(p, args), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(Prettyprinter &pretty) const override;
-private:
     Value* generateExpr(FnCodeGenerator *fncg) const override;
+private:
     std::u32string name_;
     std::shared_ptr<ASTExpr> callee_;
 };

@@ -27,8 +27,6 @@ public:
         return resolutionConstraint == this;
     }
     void addMethod(Function *method) override;
-
-    int size() const override { return 1; }
 private:
     VTIProvider* protocolMethodVtiProvider() override { return nullptr; }
 };

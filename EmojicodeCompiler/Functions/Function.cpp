@@ -105,9 +105,6 @@ void Function::setUsed(bool enqueue) {
         if (vtiProvider_ != nullptr) {
             vtiProvider_->used();
         }
-        if (enqueue) {
-            package_->app()->compilationQueue.emplace(this);
-        }
         for (Function *function : overriders_) {
             function->setUsed();
         }

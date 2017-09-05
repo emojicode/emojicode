@@ -28,8 +28,6 @@ public:
 
     const std::map<std::u32string, std::pair<long, std::u32string>>& values() const { return map_; }
 
-    int size() const override { return 1; }
-
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 private:
     std::map<std::u32string, std::pair<long, std::u32string>> map_;

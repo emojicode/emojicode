@@ -110,9 +110,9 @@ public:
     Enum* eenum() const;
     ValueType* valueType() const;
     TypeDefinition* typeDefinition() const;
-    
+
     /// Returns the size of Emojicode Words this type instance will take in a scope or another type instance.
-    int size() const;
+    int size() const { return 0; }
     /// Returns the storage type that will be used, i.e. the boxing applied in memory.
     StorageType storageType() const;
     /// Returns a numeric identifier used to differentiate Nothingness, Object References and Value Types at run-time.
@@ -206,7 +206,7 @@ protected:
         : typeContent_(TypeType::StorageExpectation), optional_(false), isReference_(isReference),
           mutable_(isMutable), forceBox_(forceBox) {}
 private:
-    Type(TypeType t, bool o) : typeContent_(t), optional_(o) {}
+    Type(TypeType t, bool o) : typeContent_(t), optional_(o), typeDefinition_(nullptr) {}
     TypeType typeContent_;
 
     size_t genericArgumentIndex_;

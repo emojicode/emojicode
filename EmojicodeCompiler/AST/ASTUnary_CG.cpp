@@ -11,30 +11,26 @@
 namespace EmojicodeCompiler {
 
 Value* ASTIsNothigness::generateExpr(FnCodeGenerator *fncg) const {
-    generateHelper(fncg, INS_IS_NOTHINGNESS);
-    return nullptr;
+    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), std::vector<unsigned int>{0});
+    auto constant = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 0);
+    return fncg->builder().CreateICmpEQ(vf, constant);
 }
 
 Value* ASTIsError::generateExpr(FnCodeGenerator *fncg) const {
-    generateHelper(fncg, INS_IS_ERROR);
-    return nullptr;
+    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), std::vector<unsigned int>{0});
+    auto constant = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 0);
+    return fncg->builder().CreateICmpEQ(vf, constant);
 }
 
 Value* ASTUnwrap::generateExpr(FnCodeGenerator *fncg) const {
-    value_->generate(fncg);
-    auto type = value_->expressionType();
-    if (type.storageType() == StorageType::Box) {
-        fncg->wr().writeInstruction(error_ ? INS_ERROR_CHECK_BOX_OPTIONAL : INS_UNWRAP_BOX_OPTIONAL);
-    }
-    else {
-        fncg->wr().writeInstruction(error_ ? INS_ERROR_CHECK_SIMPLE_OPTIONAL : INS_UNWRAP_SIMPLE_OPTIONAL);
-        fncg->wr().writeInstruction(type.size() - 1);
-    }
-    return nullptr;
+    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), std::vector<unsigned int>{1});
+
+    // TODO: box
+    return vf;
 }
 
 Value* ASTMetaTypeFromInstance::generateExpr(FnCodeGenerator *fncg) const {
-    generateHelper(fncg, INS_GET_CLASS_FROM_INSTANCE);
+    // TODO: implement
     return nullptr;
 }
 

@@ -34,6 +34,8 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
     else {
         analyser->pathAnalyser().endUncertainBranches();
     }
+
+    certainlyReturned_ = analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::Returned);
 }
 
 void ASTRepeatWhile::analyse(SemanticAnalyser *analyser) {

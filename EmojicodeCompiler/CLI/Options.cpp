@@ -89,7 +89,7 @@ void Options::examineMainFile() {
 
     if (outPath_.empty()) {
         outPath_ = mainFile_;
-        outPath_.back() = 'b';
+        outPath_.replace(mainFile_.size() - 6, 6, "o");
     }
 }
 
