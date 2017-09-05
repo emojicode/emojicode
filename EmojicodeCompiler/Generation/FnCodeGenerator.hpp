@@ -34,7 +34,7 @@ public:
     void generate();
 
     CGScoper<LocalVariable>& scoper() { return scoper_; }
-    Application* app() { return generator()->app(); }
+    Application* app() { return generator()->package()->app(); }
     CodeGenerator* generator() { return generator_; }
     llvm::IRBuilder<>& builder() { return builder_; }
     llvm::Value* thisValue() { return &*fn_->llvmFunction()->args().begin(); }

@@ -21,33 +21,36 @@ namespace EmojicodeCompiler {
 
 class Application;
 
-/// Manages the generation of code
+/// Manages the generation of IR for one package. Each package is compiled to one LLVM module.
 class CodeGenerator {
 public:
-    CodeGenerator(Application *app);
+    CodeGenerator(Package *package);
     llvm::LLVMContext& context() { return context_; }
     llvm::Module* module() { return module_.get(); }
 
-    /// Returns the application for which this code generator was created.
-    Application* app() { return application_; }
+    /// Returns the package for which this code generator was created.
+    Package* package() { return package_; }
 
     void generate(const std::string &outPath);
 
     llvm::Type* llvmTypeForType(Type type);
-    std::string mangleFunctionName(Function *function);
+
+    static std::string mangleFunctionName(Function *function);
 private:
-    void mangleIdentifier(std::stringstream &stream, const std::u32string &string);
-    std::string mangleTypeName(TypeDefinition *typeDef);
+    static void mangleIdentifier(std::stringstream &stream, const std::u32string &string);
+    static std::string mangleTypeName(TypeDefinition *typeDef);
 
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
 
-    Application *application_;
+    Package *package_;
     llvm::LLVMContext context_;
     std::unique_ptr<llvm::Module> module_;
     std::map<Type, llvm::Type*> types_;
     std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
 
     void setUpPassManager();
+    void emit(const std::string &outPath);
+    void declareRunTime();
     void createLlvmFunction(Function *function);
 };
 

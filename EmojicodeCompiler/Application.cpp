@@ -50,7 +50,7 @@ void Application::analyse(Package *underscorePackage) {
 }
 
 void Application::generateCode() {
-    CodeGenerator(this).generate(outPath_);
+    CodeGenerator(underscorePackage()).generate(outPath_);
 }
 
 Package* Application::findPackage(const std::string &name) const {

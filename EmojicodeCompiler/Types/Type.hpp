@@ -206,7 +206,7 @@ protected:
         : typeContent_(TypeType::StorageExpectation), optional_(false), isReference_(isReference),
           mutable_(isMutable), forceBox_(forceBox) {}
 private:
-    Type(TypeType t, bool o) : typeContent_(t), optional_(o), typeDefinition_(nullptr) {}
+    Type(TypeType t, bool o) : typeContent_(t), typeDefinition_(nullptr), optional_(o) {}
     TypeType typeContent_;
 
     size_t genericArgumentIndex_;

@@ -28,8 +28,8 @@
 
 namespace EmojicodeCompiler {
 
-CodeGenerator::CodeGenerator(Application *app) : application_(app) {
-    module_ = std::make_unique<llvm::Module>(app->underscorePackage()->name(), context());
+CodeGenerator::CodeGenerator(Package *package) : package_(package) {
+    module_ = std::make_unique<llvm::Module>(package->name(), context());
 
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context()));
     types_.emplace(Type::integer(), llvm::Type::getInt64Ty(context()));
@@ -74,9 +74,12 @@ llvm::Type* CodeGenerator::llvmTypeForType(Type type) {
         auto it = types_.find(type);
         if (it != types_.end()) {
             llvmType = it->second;
-            if (type.type() == TypeType::Class) {
-                llvmType = llvmType->getPointerTo();
-            }
+        }
+        if (llvmType == nullptr && (type.type() == TypeType::ValueType || type.type() == TypeType::Class)) {
+            llvmType = createLlvmTypeForTypeDefinition(type);
+        }
+        if (llvmType != nullptr && type.type() == TypeType::Class) {
+            llvmType = llvmType->getPointerTo();
         }
     }
 
@@ -84,10 +87,6 @@ llvm::Type* CodeGenerator::llvmTypeForType(Type type) {
         std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context()),
                                          llvmTypeForType(type.genericArguments()[1]) };
         llvmType = llvm::StructType::get(context(), types);
-    }
-
-    if (llvmType == nullptr && (type.type() == TypeType::ValueType || type.type() == TypeType::Class)) {
-        llvmType = createLlvmTypeForTypeDefinition(type);
     }
 
     if (llvmType == nullptr) {
@@ -125,30 +124,36 @@ void CodeGenerator::createLlvmFunction(Function *function) {
 }
 
 void CodeGenerator::generate(const std::string &outPath) {
-    app()->startFlagFunction()->setVtiProvider(&STIProvider::globalStiProvider);
-    app()->startFlagFunction()->vtiForUse();
+    declareRunTime();
 
-    for (auto &package : app()->packagesInOrder()) {
-        for (auto valueType : package->valueTypes()) {
-            valueType->prepareForCG();
-        }
-        for (auto klass : package->classes()) {
-            klass->prepareForCG();
-            klass->eachFunction([this](auto *function) {
-                createLlvmFunction(function);
-            });
-        }
-        for (auto function : package->functions()) {
+    for (auto valueType : package_->valueTypes()) {
+        valueType->prepareForCG();
+    }
+    for (auto klass : package_->classes()) {
+        klass->prepareForCG();
+        klass->eachFunction([this](auto *function) {
             createLlvmFunction(function);
-        }
+        });
+    }
+    for (auto function : package_->functions()) {
+        createLlvmFunction(function);
     }
 
-    for (auto function : app()->underscorePackage()->functions()) {
+    for (auto function : package_->functions()) {
         FnCodeGenerator(function, this).generate();
     }
 
     module()->dump();
+    emit(outPath);
+}
 
+void CodeGenerator::declareRunTime() {
+    std::vector<llvm::Type *> args{ llvm::Type::getInt64Ty(context()) };
+    auto ft = llvm::FunctionType::get(llvm::Type::getInt8PtrTy(context()), args, false);
+    llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "emojicoreNew", module());
+}
+
+void CodeGenerator::emit(const std::string &outPath) {
     setUpPassManager();
 
     llvm::InitializeAllTargetInfos();
