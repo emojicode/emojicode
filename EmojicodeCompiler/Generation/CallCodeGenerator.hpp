@@ -20,8 +20,7 @@ namespace EmojicodeCompiler {
 
 class CallCodeGenerator {
 public:
-    explicit CallCodeGenerator(FnCodeGenerator *fncg, CallType callType)
-    : fncg_(fncg), callType_(callType) {}
+    explicit CallCodeGenerator(FnCodeGenerator *fncg, CallType callType) : fncg_(fncg), callType_(callType) {}
     llvm::Value* generate(const ASTExpr &callee, const Type &calleeType, const ASTArguments &args,
                           const std::u32string &name);
 protected:
@@ -29,19 +28,15 @@ protected:
         return type.typeDefinition()->lookupMethod(name);
     }
 
-    virtual llvm::Value* createCall(std::vector<Value *> args, const Type &type, const std::u32string &name) {
-        return fncg_->builder().CreateCall(lookupFunction(type, name)->llvmFunction(), args);
-    }
-
-    FnCodeGenerator* fncg() { return fncg_; }
-    EmojicodeInstruction generateArguments(const ASTArguments &args);
+    virtual llvm::Value* createCall(const std::vector<Value *> &args, const Type &type, const std::u32string &name);
+    FnCodeGenerator* fncg() const { return fncg_; }
 private:
+    llvm::Value* createDynamicDispatch(Function *function, const std::vector<Value *> &args);
     FnCodeGenerator *fncg_;
     CallType callType_;
 };
 
 class TypeMethodCallCodeGenerator : public CallCodeGenerator {
-public:
     using CallCodeGenerator::CallCodeGenerator;
 protected:
     Function* lookupFunction(const Type &type, const std::u32string &name) override {
@@ -50,21 +45,11 @@ protected:
 };
 
 class InitializationCallCodeGenerator : public CallCodeGenerator {
-public:
     using CallCodeGenerator::CallCodeGenerator;
 protected:
     Function* lookupFunction(const Type &type, const std::u32string &name) override {
         return type.typeDefinition()->lookupInitializer(name);
     }
-};
-
-class VTInitializationCallCodeGenerator : private InitializationCallCodeGenerator {
-public:
-    explicit VTInitializationCallCodeGenerator(FnCodeGenerator *fncg)
-    : InitializationCallCodeGenerator(fncg, CallType::StaticDispatch) {}
-
-    llvm::Value* generate(const std::shared_ptr<ASTGetVariable> &dest, const Type &type, const ASTArguments &args,
-                          const std::u32string &name);
 };
 
 class CallableCallCodeGenerator : public CallCodeGenerator {

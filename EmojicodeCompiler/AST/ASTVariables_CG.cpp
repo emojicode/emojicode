@@ -60,11 +60,7 @@ void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
     auto alloca = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(type_), nullptr);
     fncg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
-//    if (type_.optional()) {
-//        fncg->wr().writeInstruction(INS_GET_NOTHINGNESS);
-//        fncg->wr().writeInstruction(INS_COPY_TO_STACK);
-//        fncg->wr().writeInstruction(var.stackIndex.value());
-//    }
+    // TODO: init type_.optional()
 }
 
 void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) const {

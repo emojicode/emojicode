@@ -49,4 +49,18 @@ void FnCodeGenerator::declareArguments(llvm::Function *function) {
     }
 }
 
+llvm::Value* FnCodeGenerator::sizeFor(llvm::PointerType *type) {
+    auto one = llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1);
+    auto sizeg = builder().CreateGEP(llvm::ConstantPointerNull::getNullValue(type), one);
+    return builder().CreatePtrToInt(sizeg, llvm::Type::getInt64Ty(generator()->context()));
+}
+
+llvm::Value* FnCodeGenerator::getMetaFromObject(llvm::Value *object) {
+    std::vector<Value *> idx{
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),  // object
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),  // classMeta
+    };
+    return builder().CreateLoad(builder().CreateGEP(object, idx), "meta");
+}
+
 }  // namespace EmojicodeCompiler

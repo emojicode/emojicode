@@ -54,11 +54,6 @@ public:
     bool isPrimitive() { return primitive_; }
 private:
     bool primitive_ = false;
-
-    VTIProvider *protocolMethodVtiProvider() override {
-        return nullptr;
-    }
-
     std::map<std::vector<Type>, uint32_t> genericIds_;
 };
 

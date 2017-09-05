@@ -8,6 +8,7 @@
 
 #include "VariableNotFoundError.hpp"
 #include "../Functions/Function.hpp"
+#include "../Types/TypeDefinition.hpp"
 #include "../Scoping/SemanticScoper.hpp"
 #include <map>
 

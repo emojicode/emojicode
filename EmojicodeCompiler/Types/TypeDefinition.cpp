@@ -155,10 +155,6 @@ void TypeDefinition::prepareForSemanticAnalysis() {
     }
 }
 
-void TypeDefinition::prepareForCG() {
-
-}
-
 void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bool enqueBoxingLayers) {
     for (auto method : protocol.protocol()->methodList()) {
         try {

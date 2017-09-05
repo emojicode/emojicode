@@ -9,17 +9,13 @@
 #ifndef Function_hpp
 #define Function_hpp
 
-#include "../CompilerError.hpp"
-#include "../Types/Class.hpp"
 #include "../Types/Generic.hpp"
 #include "../Types/Type.hpp"
+#include "../Types/TypeContext.hpp"
+#include "../Functions/FunctionVariableObjectInformation.hpp"
 #include "FunctionType.hpp"
-#include <algorithm>
 #include <experimental/optional>
-#include <map>
 #include <memory>
-#include <numeric>
-#include <queue>
 #include <utility>
 #include <vector>
 
@@ -29,7 +25,6 @@ class Function;
 
 namespace EmojicodeCompiler {
 
-class VTIProvider;
 class ASTBlock;
 
 enum class AccessLevel {
@@ -47,8 +42,6 @@ struct Argument {
 
 /** Functions are callables that belong to a class or value type as either method, type method or initializer. */
 class Function : public Generic<Function> {
-    friend void Class::prepareForCG();
-    friend Protocol;
 public:
     Function(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, FunctionType type)
@@ -107,28 +100,12 @@ public:
 
     void registerOverrider(Function *f) { overriders_.push_back(f); }
 
-    /// Returns the VTI for this function. If the function is yet to be assigned a VTI, a VTI is obtained from the
-    /// VTI provider. If the function was not marked used, it will be.
-    /// This function is a shortcut to calling @c assignVti and @c setUsed and then getting the VTI.
-    /// @warning This method must only be called if the function will be needed at run-time and
-    /// should be assigned a VTI.
-    int vtiForUse();
-
-    /** Sets the @c VTIProvider which should be used to assign this method a VTI and to update the VTI counter. */
-    void setVtiProvider(VTIProvider *provider);
+    /// @returns True iff the function was assigned a virtual table index.
+    bool hasVti() const { return vti_ > -1; }
     /// Sets the VTI to the given value.
     void setVti(int vti);
     /// Returns the VTI this function was assigned.
-    /// @throws std::logic_error if the function wasn’t assigned a VTI
     int getVti() const;
-    /// Marks this function as used. Propagates to all overriders.
-    virtual void setUsed(bool enqueue = true);
-    /// @returns Whether the function was used.
-    bool used() const { return used_; }
-    /// Assigns this method a VTI without marking it as used. Propagates to all overriders.
-    virtual void assignVti();
-    /// @returns Whether the function was assigned a VTI.
-    virtual bool assigned() const;
 
     TypeContext typeContext() {
         auto type = owningType();
@@ -180,16 +157,17 @@ private:
     SourcePosition position_;
     std::u32string name_;
     int vti_ = -1;
+
     bool final_;
     bool overriding_;
     bool deprecated_;
     bool mutating_;
+
     unsigned int linkingTableIndex_ = 0;
     AccessLevel access_;
     Type owningType_;
     Package *package_;
     std::u32string documentation_;
-    VTIProvider *vtiProvider_ = nullptr;
     FunctionType functionType_;
     size_t variableCount_ = 0;
 

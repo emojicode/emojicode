@@ -11,7 +11,6 @@
 
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
-#include "../Generation/VTIProvider.hpp"
 #include "../Lex/SourcePosition.hpp"
 #include "../Scoping/CGScoper.hpp"
 #include "../Scoping/Scope.hpp"
@@ -93,7 +92,6 @@ public:
 
     virtual void prepareForSemanticAnalysis();
 
-    virtual void prepareForCG();
     void finalizeProtocols(const Type &type);
     void finalizeProtocol(const Type &type, const Type &protocol, bool enqueBoxingLayers);
 
@@ -116,10 +114,9 @@ protected:
     std::vector<Type> protocols_;
 
     const Type& superType() const { return superType_; }
+    std::vector<InstanceVariableDeclaration>& instanceVariablesMut() { return instanceVariables_; }
 
-    Scope scope_ = Scope(0);
-
-    virtual VTIProvider *protocolMethodVtiProvider() = 0;
+    /// Called if a required initializer is passed to addInitializer()
     virtual void handleRequiredInitializer(Initializer *init);
     void nativeCheck(Function *function);
 
@@ -130,6 +127,8 @@ protected:
         }
     }
 private:
+    Scope scope_ = Scope(0);
+
     std::map<std::u32string, Function *> methods_;
     std::map<std::u32string, Function *> typeMethods_;
     std::map<std::u32string, Initializer *> initializers_;

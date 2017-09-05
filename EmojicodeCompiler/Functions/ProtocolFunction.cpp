@@ -10,22 +10,4 @@
 
 namespace EmojicodeCompiler {
 
-void ProtocolFunction::assignVti() {
-    if (!assigned()) {
-        for (Function *function : overriders_) {
-            function->assignVti();
-        }
-        assigned_ = true;
-    }
-}
-
-void ProtocolFunction::setUsed(bool) {
-    if (!used_) {
-        used_ = true;
-        for (Function *function : overriders_) {
-            function->setUsed();
-        }
-    }
-}
-
 }  // namespace EmojicodeCompiler

@@ -9,6 +9,7 @@
 #include <llvm/Support/TargetRegistry.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/FileSystem.h>
+#include <llvm/IR/Verifier.h>
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
 #include <llvm/Support/raw_ostream.h>
@@ -32,6 +33,10 @@ namespace EmojicodeCompiler {
 CodeGenerator::CodeGenerator(Package *package) : package_(package) {
     module_ = std::make_unique<llvm::Module>(package->name(), context());
 
+    classMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
+        llvm::Type::getInt64Ty(context()), llvm::Type::getInt8PtrTy(context())->getPointerTo(),
+    }, "classMeta");
+
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context()));
     types_.emplace(Type::integer(), llvm::Type::getInt64Ty(context()));
     types_.emplace(Type::symbol(), llvm::Type::getInt32Ty(context()));
@@ -41,6 +46,10 @@ CodeGenerator::CodeGenerator(Package *package) : package_(package) {
 
 llvm::Type* CodeGenerator::llvmTypeForType(Type type) {
     llvm::Type *llvmType = nullptr;
+
+    if (type.meta()) {
+        return classMetaType_->getPointerTo();
+    }
 
     if (type.optional()) {
         type.setOptional(false);
@@ -76,6 +85,10 @@ llvm::Type* CodeGenerator::llvmTypeForType(Type type) {
 llvm::Type* CodeGenerator::createLlvmTypeForTypeDefinition(const Type &type) {
     std::vector<llvm::Type *> types;
 
+    if (type.type() == TypeType::Class) {
+        types.emplace_back(classMetaType_->getPointerTo());
+    }
+
     for (auto &ivar : type.typeDefinition()->instanceVariables()) {
         types.emplace_back(llvmTypeForType(ivar.type));
     }
@@ -85,7 +98,7 @@ llvm::Type* CodeGenerator::createLlvmTypeForTypeDefinition(const Type &type) {
     return llvmType;
 }
 
-void CodeGenerator::createLlvmFunction(Function *function) {
+void CodeGenerator::declareLlvmFunction(Function *function) {
     std::vector<llvm::Type *> args;
     if (isSelfAllowed(function->functionType())) {
         args.emplace_back(llvmTypeForType(function->typeContext().calleeType()));
@@ -111,16 +124,16 @@ void CodeGenerator::generate(const std::string &outPath) {
     declareRunTime();
 
     for (auto valueType : package_->valueTypes()) {
-        valueType->prepareForCG();
+        
     }
     for (auto klass : package_->classes()) {
-        klass->prepareForCG();
         klass->eachFunction([this](auto *function) {
-            createLlvmFunction(function);
+            declareLlvmFunction(function);
         });
+        createClassInfo(klass);
     }
     for (auto function : package_->functions()) {
-        createLlvmFunction(function);
+        declareLlvmFunction(function);
     }
 
     for (auto function : package_->functions()) {
@@ -132,8 +145,38 @@ void CodeGenerator::generate(const std::string &outPath) {
         });
     }
 
+    llvm::verifyModule(*module(), &llvm::outs());
     module()->dump();
     emit(outPath);
+}
+
+void CodeGenerator::createClassInfo(Class *klass) {
+    std::vector<llvm::Constant *> functions;
+    functions.resize(klass->virtualTableIndicesCount());
+
+    if (auto superclass = klass->superclass()) {
+        std::copy(superclass->virtualTable().begin(), superclass->virtualTable().end(), functions.begin());
+    }
+
+    klass->eachFunction([&functions, this] (Function *function) {
+        if (function->hasVti()) {
+            functions[function->getVti()] = function->llvmFunction();
+        }
+    });
+
+    auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context()), klass->virtualTableIndicesCount());
+    auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
+                                                 llvm::GlobalValue::LinkageTypes::ExternalLinkage,
+                                                 llvm::ConstantArray::get(type, functions));
+    auto initializer = llvm::ConstantStruct::get(classMetaType_, std::vector<llvm::Constant *> {
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable,
+    });
+    auto info = new llvm::GlobalVariable(*module(), classMetaType_, true,
+                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
+                                         mangleClassMetaName(klass));
+
+    klass->virtualTable() = std::move(functions);
+    klass->setClassInfo(info);
 }
 
 void CodeGenerator::generateFunction(Function *function) {

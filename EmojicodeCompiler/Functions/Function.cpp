@@ -10,10 +10,8 @@
 #include "../Application.hpp"
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
-#include "../Generation/VTIProvider.hpp"
 #include "../Types/TypeContext.hpp"
 #include <algorithm>
-#include <map>
 #include <stdexcept>
 
 namespace EmojicodeCompiler {
@@ -90,56 +88,12 @@ void Function::deprecatedWarning(const SourcePosition &p) const {
     }
 }
 
-void Function::assignVti() {
-    if (!assigned()) {
-        setVti(vtiProvider_->next());
-        for (Function *function : overriders_) {
-            function->assignVti();
-        }
-    }
-}
-
-void Function::setUsed(bool enqueue) {
-    if (!used_) {
-        used_ = true;
-        if (vtiProvider_ != nullptr) {
-            vtiProvider_->used();
-        }
-        for (Function *function : overriders_) {
-            function->setUsed();
-        }
-    }
-}
-
-int Function::vtiForUse() {
-    assignVti();
-    setUsed();
-    return vti_;
-}
-
 int Function::getVti() const {
-    if (!assigned()) {
-        throw std::logic_error("Getting VTI from unassinged function.");
-    }
     return vti_;
 }
 
 void Function::setVti(int vti) {
-    if (assigned()) {
-        throw std::logic_error("You cannot reassign the VTI.");
-    }
     vti_ = vti;
-}
-
-bool Function::assigned() const {
-    return vti_ >= 0;
-}
-
-void Function::setVtiProvider(VTIProvider *provider) {
-    if (vtiProvider_ != nullptr) {
-        throw std::logic_error("You cannot reassign the VTI provider.");
-    }
-    vtiProvider_ = provider;
 }
 
 Type Function::type() const {

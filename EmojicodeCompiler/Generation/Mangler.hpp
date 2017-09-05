@@ -15,9 +15,11 @@ namespace EmojicodeCompiler {
 
 class Function;
 class Type;
+class Class;
 
 std::string mangleFunctionName(Function *function);
 std::string mangleTypeName(const Type &type);
+std::string mangleClassMetaName(Class *klass);
 
 }  // namespace EmojicodeCompiler
 

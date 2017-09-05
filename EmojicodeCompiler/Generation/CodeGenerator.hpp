@@ -46,12 +46,14 @@ private:
     std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
 
     llvm::Function *runTimeNew_;
+    llvm::StructType *classMetaType_;
 
     void setUpPassManager();
     void emit(const std::string &outPath);
     void declareRunTime();
-    void createLlvmFunction(Function *function);
+    void declareLlvmFunction(Function *function);
     void generateFunction(Function *function);
+    void createClassInfo(Class *klass);
 };
 
 }  // namespace EmojicodeCompiler

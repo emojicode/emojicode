@@ -19,11 +19,6 @@ namespace EmojicodeCompiler {
 class ProtocolFunction : public Function {
 public:
     using Function::Function;
-private:
-    void assignVti() override;
-    void setUsed(bool enqueue = true) override;
-    bool assigned() const override { return assigned_; }
-    bool assigned_ = false;
 };
 
 } // namespace EmojicodeCompiler

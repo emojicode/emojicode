@@ -10,7 +10,6 @@
 #define SemanticAnalyser_hpp
 
 #include "../AST/ASTExpr.hpp"
-#include "../AST/ASTStatements.hpp"
 #include "../AST/ASTTypeExpr.hpp"
 #include "../CompilerError.hpp"
 #include "../Functions/FunctionType.hpp"
@@ -18,6 +17,7 @@
 #include "../Types/Type.hpp"
 #include "../Types/TypeContext.hpp"
 #include "../Types/TypeExpectation.hpp"
+#include "../Package/Package.hpp"
 #include "PathAnalyser.hpp"
 #include <memory>
 #include <utility>

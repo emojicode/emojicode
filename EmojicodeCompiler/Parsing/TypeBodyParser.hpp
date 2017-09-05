@@ -12,6 +12,7 @@
 #include "../Functions/Function.hpp"
 #include "AbstractParser.hpp"
 #include "AttributesParser.hpp"
+#include <set>
 
 namespace EmojicodeCompiler {
 

@@ -16,6 +16,7 @@
 #include "../Types/Protocol.hpp"
 #include "../Types/Type.hpp"
 #include "../Types/ValueType.hpp"
+#include "../Types/Class.hpp"
 #include <algorithm>
 #include <cstdio>
 

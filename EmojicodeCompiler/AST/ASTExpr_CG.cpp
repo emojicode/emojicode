@@ -9,6 +9,7 @@
 #include "ASTExpr.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
+#include "../Types/Class.hpp"
 #include "ASTProxyExpr.hpp"
 #include "ASTTypeExpr.hpp"
 
@@ -19,12 +20,11 @@ Value* ASTExpr::generate(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTMetaTypeInstantiation::generateExpr(FnCodeGenerator *fncg) const {
-//    fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-//    fncg->wr().writeInstruction(type_.eclass()->index);
-    return nullptr;
+    return type_.eclass()->classInfo();
 }
 
 Value* ASTCast::generateExpr(FnCodeGenerator *fncg) const {
+    // TODO: implement
 //    typeExpr_->generate(fncg);
 //    value_->generate(fncg);
 //    switch (castType_) {

@@ -37,6 +37,9 @@ public:
     CodeGenerator* generator() { return generator_; }
     llvm::IRBuilder<>& builder() { return builder_; }
     llvm::Value* thisValue() { return &*fn_->llvmFunction()->args().begin(); }
+
+    llvm::Value* sizeFor(llvm::PointerType *type);
+    llvm::Value* getMetaFromObject(llvm::Value *object);
 protected:
     virtual void declareArguments(llvm::Function *function);
 private:

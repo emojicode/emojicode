@@ -63,6 +63,7 @@ void ASTRepeatWhile::generate(FnCodeGenerator *fncg) const {
 }
 
 void ASTErrorHandler::generate(FnCodeGenerator *fncg) const {
+    // TODO: implement
 //    value_->generate(fncg);
 //    fncg->scoper().pushScope();
 //    auto &var = fncg->scoper().declareVariable(varId_, value_->expressionType());
@@ -89,6 +90,7 @@ void ASTErrorHandler::generate(FnCodeGenerator *fncg) const {
 }
 
 void ASTForIn::generate(FnCodeGenerator *fncg) const {
+    // TODO: implement
 //    fncg->scoper().pushScope();
 //
 //    auto callCG = CallCodeGenerator(fncg, INS_DISPATCH_PROTOCOL);

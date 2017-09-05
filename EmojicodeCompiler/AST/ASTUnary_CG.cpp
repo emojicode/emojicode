@@ -30,8 +30,7 @@ Value* ASTUnwrap::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTMetaTypeFromInstance::generateExpr(FnCodeGenerator *fncg) const {
-    // TODO: implement
-    return nullptr;
+    return fncg->getMetaFromObject(value_->generate(fncg));
 }
 
 }  // namespace EmojicodeCompiler

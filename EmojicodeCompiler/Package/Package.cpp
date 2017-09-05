@@ -16,6 +16,7 @@
 #include "../Parsing/DocumentParser.hpp"
 #include "../Prettyprint/Prettyprinter.hpp"
 #include "../Types/ValueType.hpp"
+#include "../Types/Class.hpp"
 #include "Package.hpp"
 #include <algorithm>
 #include <cstring>

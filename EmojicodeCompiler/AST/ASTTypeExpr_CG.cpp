@@ -16,12 +16,8 @@ Value* ASTTypeFromExpr::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
-    if (type_.type() == TypeType::Class) {
-        // TODO: type_.eclass()->index
-    }
-    else {
-        assert(availability() == TypeAvailability::StaticAndUnavailable);
-    }
+    assert(availability() == TypeAvailability::StaticAndUnavailable ||
+           availability() == TypeAvailability::StaticAndAvailabale);
     return nullptr;
 }
     

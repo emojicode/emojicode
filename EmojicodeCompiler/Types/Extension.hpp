@@ -31,7 +31,6 @@ public:
     const Type& extendedType() { return extendedType_; }
 private:
     Type extendedType_;
-    VTIProvider* protocolMethodVtiProvider() override { return nullptr; }
 };
 
 } // namespace EmojicodeCompiler

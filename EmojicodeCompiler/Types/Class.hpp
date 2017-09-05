@@ -9,16 +9,15 @@
 #ifndef Class_hpp
 #define Class_hpp
 
-#include "../Generation/VTIProvider.hpp"
 #include "../Package/Package.hpp"
-#include "../Scoping/Scope.hpp"
-#include "../Scoping/Variable.hpp"
 #include "../Types/TypeContext.hpp"
 #include "TypeDefinition.hpp"
-#include <list>
-#include <map>
 #include <set>
-#include <vector>
+
+namespace llvm {
+class GlobalVariable;
+class Constant;
+}  // namespace llvm
 
 namespace EmojicodeCompiler {
 
@@ -39,13 +38,8 @@ public:
 
     using TypeDefinition::superType;
 
-    uint16_t index;
-
-    bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override;
-
-    /** Returns true if @c a inherits from class @c from */
+    /// @returns True iff this class inherits from @c from
     bool inheritsFrom(Class *from) const;
-
     /** Whether this class can be subclassed. */
     bool final() const { return final_; }
     /** Whether this class is eligible for initializer inheritance. */
@@ -53,40 +47,44 @@ public:
     /** Returns a list of all required intializers. */
     const std::set<std::u32string>& requiredInitializers() const { return requiredInitializers_; }
 
+    void setClassInfo(llvm::GlobalVariable *classInfo) { classInfo_ = classInfo; }
+    llvm::GlobalVariable* classInfo() { return classInfo_; }
+
+    unsigned int virtualTableIndicesCount() { return virtualTableIndex_; }
+
+    std::vector<llvm::Constant *>& virtualTable() { return virtualTable_; }
+
     Function* lookupMethod(const std::u32string &name) override;
     Initializer* lookupInitializer(const std::u32string &name) override;
     Function* lookupTypeMethod(const std::u32string &name) override;
 
-    void prepareForCG() override;
     void prepareForSemanticAnalysis() override;
-
-    /** Returns the number of initializers including those inherited from the superclass.
-     @warning @c prepareForCG() must be called before a call to this method. */
-    size_t fullInitializerCount() const { return initializerVtiProvider_.peekNext(); }
-    /** Returns the number of methods and type methods including those inherited from the superclass.
-     @warning @c prepareForCG() must be called before a call to this method. */
-    size_t fullMethodCount() const { return methodVtiProvider_.peekNext(); }
-
-    int usedMethodCount() { return methodVtiProvider_.usedCount(); }
-    int usedInitializerCount() { return initializerVtiProvider_.usedCount(); }
+    bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override;
 private:
-    VTIProvider *protocolMethodVtiProvider() override {
-        return &methodVtiProvider_;
-    }
     std::set<std::u32string> requiredInitializers_;
 
+    /// @pre superclass() != nullptr
     Function* findSuperFunction(Function *function) const;
+    /// @pre superclass() != nullptr
     Initializer* findSuperFunction(Initializer *function) const;
-    /// Checks that @c function, if at all, is a valid override.
+
+    /// Checks that @c function, if at all, is a valid override. If it is, function is assigned the super functions
+    /// virtual table index.
+    /// @pre superclass() != nullptr
     /// @throws CompilerError if the override is improper, e.g. implicit
     void checkOverride(Function *function);
-    void overrideFunction(Function *function);
+    /// Checks whether initializer is the implementation of a required initializer. If it is the method validates
+    /// that the implementation is valid and assigns it the super initializers virtual table index.
+    /// @pre superclass() != nullptr
+    void checkInheritedRequiredInit(Initializer *initializer);
+
+    unsigned int virtualTableIndex_ = 0;
+    std::vector<llvm::Constant *> virtualTable_;
 
     bool final_;
     bool inheritsInitializers_ = false;
 
-    ClassVTIProvider methodVtiProvider_;
-    ClassVTIProvider initializerVtiProvider_;
+    llvm::GlobalVariable *classInfo_ = nullptr;
 
     void handleRequiredInitializer(Initializer *init) override;
 };

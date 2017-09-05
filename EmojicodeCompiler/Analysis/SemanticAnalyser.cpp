@@ -18,6 +18,7 @@
 #include "../Types/CommonTypeFinder.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
+#include "../Types/Class.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include "BoxingLayerBuilder.hpp"
 #include "SemanticAnalyser.hpp"

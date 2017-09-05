@@ -27,8 +27,6 @@ public:
         return resolutionConstraint == this;
     }
     void addMethod(Function *method) override;
-private:
-    VTIProvider* protocolMethodVtiProvider() override { return nullptr; }
 };
 
 }  // namespace EmojicodeCompiler

@@ -10,6 +10,7 @@
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
 #include "../Types/Enum.hpp"
+#include "../Types/Class.hpp"
 
 namespace EmojicodeCompiler {
 

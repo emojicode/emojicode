@@ -9,6 +9,7 @@
 #include "Mangler.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
+#include "../Types/Class.hpp"
 #include "../Types/Type.hpp"
 #include <sstream>
 
@@ -43,6 +44,13 @@ void mangleTypeName(std::stringstream &stream, const Type &type) {
             break;
     }
     mangleIdentifier(stream, type.typeDefinition()->name());
+}
+
+std::string mangleClassMetaName(Class *klass) {
+    std::stringstream stream;
+    stream << "class_meta_";
+    mangleIdentifier(stream, klass->name());
+    return stream.str();
 }
 
 std::string mangleFunctionName(Function *function) {

@@ -9,6 +9,7 @@
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Functions/CallType.h"
 #include "../Types/Enum.hpp"
+#include "../Types/Class.hpp"
 #include "ASTTypeExpr.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "ASTInitialization.hpp"
@@ -25,7 +26,8 @@ Value* ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
                                           typeExpr_->expressionType().eenum()->getValueFor(name_).second);
             break;
         case InitType::ValueType:
-            VTInitializationCallCodeGenerator(fncg).generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
+            InitializationCallCodeGenerator(fncg, CallType::StaticDispatch)
+            .generate(*vtDestination_, typeExpr_->expressionType(), args_, name_);
     }
     return nullptr;
 }
@@ -34,17 +36,22 @@ Value* ASTInitialization::generateClassInit(FnCodeGenerator *fncg) const {
     if (typeExpr_->availability() == TypeAvailability::StaticAndAvailabale) {
         auto callee = ASTProxyExpr(position(), typeExpr_->expressionType(), [this](FnCodeGenerator *fncg) {
             auto type = llvm::dyn_cast<llvm::PointerType>(fncg->generator()->llvmTypeForType(typeExpr_->expressionType()));
+            auto size = fncg->sizeFor(type);
 
-            auto one = llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 1);
-            auto sizeg = fncg->builder().CreateGEP(llvm::ConstantPointerNull::getNullValue(type), one);
-            auto size = fncg->builder().CreatePtrToInt(sizeg, llvm::Type::getInt64Ty(fncg->generator()->context()));
+            auto alloc = fncg->builder().CreateCall(fncg->generator()->runTimeNew(), size, "alloc");
+            auto obj = fncg->builder().CreateBitCast(alloc, type);
 
-            std::vector<llvm::Value *> args{ size };
-            auto alloc = fncg->builder().CreateCall(fncg->generator()->runTimeNew(), args, "alloc");
-            return fncg->builder().CreateBitCast(alloc, type);
+            auto classInfo = typeExpr_->expressionType().eclass()->classInfo();
+            auto metaIdx = std::vector<llvm::Value *> {
+                llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
+                llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0)
+            };
+            fncg->builder().CreateStore(classInfo, fncg->builder().CreateGEP(obj, metaIdx));
+
+            return obj;
         });
 
-        auto callGen = InitializationCallCodeGenerator(fncg, CallType::DynamicDispatch);
+        auto callGen = InitializationCallCodeGenerator(fncg, CallType::StaticDispatch);
         return callGen.generate(callee, typeExpr_->expressionType(), args_, name_);
     }
     // TODO: class table lookup

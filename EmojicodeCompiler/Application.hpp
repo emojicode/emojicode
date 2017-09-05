@@ -120,9 +120,6 @@ public:
 
     std::queue<Function *> analysisQueue;
 
-    unsigned int classIndex() { return classes_++; }
-    unsigned int classCount() { return classes_; }
-
     unsigned int protocolIndex() { return protocols_++; }
     unsigned int protocolCount() { return protocols_; }
 
@@ -145,7 +142,6 @@ private:
     std::vector<std::vector<ObjectVariableInformation>> boxObjectVariableInformation_ = std::vector<std::vector<ObjectVariableInformation>>(3);
     Function *startFlag_ = nullptr;
     bool hasError_ = false;
-    unsigned int classes_ = 0;
     unsigned int protocols_ = 0;
     std::string mainFile_;
     const std::string outPath_;
