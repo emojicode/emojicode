@@ -20,11 +20,11 @@ Value* ASTStringLiteral::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTBooleanTrue::generateExpr(FnCodeGenerator *fncg) const {
-    return llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 1);
+    return llvm::ConstantInt::getTrue(fncg->generator()->context());
 }
 
 Value* ASTBooleanFalse::generateExpr(FnCodeGenerator *fncg) const {
-    return llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 0);
+    return llvm::ConstantInt::getFalse(fncg->generator()->context());
 }
 
 Value* ASTNumberLiteral::generateExpr(FnCodeGenerator *fncg) const {

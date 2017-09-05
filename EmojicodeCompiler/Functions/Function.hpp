@@ -55,10 +55,10 @@ public:
         return protocolName + name()[0];
     }
 
-    /** Whether the method is implemented natively and Run-Time Native Linking must occur. */
-    bool isNative() const { return linkingTableIndex_ > 0; }
-    unsigned int linkingTabelIndex() const { return linkingTableIndex_; }
-    void setLinkingTableIndex(int index);
+    bool isExternal() const { return !externalName_.empty(); }
+    const std::string& externalName() const { return externalName_; }
+    void setExternalName(const std::string &name) { externalName_ = name; }
+
     /** Whether the method was marked as final and can’t be overriden. */
     bool final() const { return final_; }
     /** Whether the method is intended to override a super method. */
@@ -163,7 +163,7 @@ private:
     bool deprecated_;
     bool mutating_;
 
-    unsigned int linkingTableIndex_ = 0;
+    std::string externalName_;
     AccessLevel access_;
     Type owningType_;
     Package *package_;

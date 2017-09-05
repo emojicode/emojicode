@@ -148,7 +148,7 @@ void Package::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) const {
 }
 
 void Package::enqueueFunction(Function *function) const {
-    if (!function->isNative()) {
+    if (!function->isExternal()) {
         app_->analysisQueue.emplace(function);
     }
 }

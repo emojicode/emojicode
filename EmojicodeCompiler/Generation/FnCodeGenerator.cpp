@@ -20,10 +20,6 @@
 namespace EmojicodeCompiler {
 
 void FnCodeGenerator::generate() {
-    if (fn_->isNative()) {
-        return;
-    }
-
     auto basicBlock = llvm::BasicBlock::Create(generator()->context(), "entry", fn_->llvmFunction());
     builder_.SetInsertPoint(basicBlock);
 
@@ -32,7 +28,7 @@ void FnCodeGenerator::generate() {
     fn_->ast()->generate(this);
 
     if (llvm::verifyFunction(*fn_->llvmFunction(), &llvm::outs())) {
-        exit(0);
+        
     }
 }
 

@@ -21,6 +21,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     auto pair = builtIn(type, name);
     if (pair.first) {
+        analyser->comply(otype, TypeExpectation(false, false), &callee);
         return pair.second;
     }
     calleeType_ = analyser->comply(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());

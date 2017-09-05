@@ -20,7 +20,7 @@ Value* ASTMethod::generateExpr(FnCodeGenerator *fncg) const {
             case BuiltInType::IntegerToDouble:
                 return fncg->builder().CreateSIToFP(v, llvm::Type::getDoubleTy(fncg->generator()->context()));
             case BuiltInType::BooleanNegate:
-                return fncg->builder().CreateNot(v);
+                return fncg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fncg->generator()->context()), v);
             default:
                 break;
         }

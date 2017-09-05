@@ -75,6 +75,10 @@ llvm::Type* CodeGenerator::llvmTypeForType(Type type) {
         llvmType = llvm::StructType::get(context(), types);
     }
 
+    if (type.type() == TypeType::Protocol) {
+        llvmType = llvm::Type::getInt64Ty(context());
+    }
+
     if (llvmType == nullptr) {
         return llvm::Type::getVoidTy(context());
     }
@@ -123,8 +127,8 @@ void CodeGenerator::declareLlvmFunction(Function *function) {
         returnType = llvmTypeForType(function->returnType);
     }
     auto ft = llvm::FunctionType::get(returnType, args, false);
-    auto llvmFunction = llvm::Function::Create(ft, llvm::Function::ExternalLinkage,
-                                               mangleFunctionName(function), module());
+    auto name = function->isExternal() ? function->externalName() : mangleFunctionName(function);
+    auto llvmFunction = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, module());
     function->setLlvmFunction(llvmFunction);
 }
 
@@ -188,7 +192,9 @@ void CodeGenerator::createClassInfo(Class *klass) {
 }
 
 void CodeGenerator::generateFunction(Function *function) {
-    FnCodeGenerator(function, this).generate();
+    if (!function->isExternal()) {
+        FnCodeGenerator(function, this).generate();
+    }
 }
 
 void CodeGenerator::declareRunTime() {

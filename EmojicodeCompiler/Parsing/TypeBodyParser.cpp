@@ -16,22 +16,25 @@ namespace EmojicodeCompiler {
 
 void TypeBodyParser::parseFunctionBody(Function *function) {
     if (stream_.consumeTokenIf(E_RADIO)) {
-        auto &indexToken = stream_.consumeToken(TokenType::Integer);
-        auto index = std::stoll(utf8(indexToken.value()), nullptr, 0);
-        if (index < 1 || index > UINT16_MAX) {
-            throw CompilerError(indexToken.position(), "Linking Table Index is not in range.");
+        if (stream_.consumeTokenIf(TokenType::Integer)) {
+            function->setExternalName("toBeImplemented");
+            return;
         }
-        function->setLinkingTableIndex(static_cast<int>(index));
+        auto &token = stream_.consumeToken(TokenType::String);
+        if (token.value().empty()) {
+            throw CompilerError(token.position(), "The external name must not be empty.");
+        }
+        function->setExternalName(utf8(token.value()));
+        return;
     }
-    else {
-        stream_.consumeToken(TokenType::BlockBegin);
-        try {
-            auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
-            function->setAst(ast);
-        }
-        catch (CompilerError &ce) {
-            package_->app()->error(ce);
-        }
+
+    stream_.consumeToken(TokenType::BlockBegin);
+    try {
+        auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
+        function->setAst(ast);
+    }
+    catch (CompilerError &ce) {
+        package_->app()->error(ce);
     }
 }
 

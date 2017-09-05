@@ -35,6 +35,7 @@ llvm::Value* CallCodeGenerator::createCall(const std::vector<Value *> &args, con
             return createDynamicDispatch(function, args);
         case CallType::DynamicProtocolDispatch:
             // TODO: implement
+            return nullptr;
         case CallType::None:
             throw std::domain_error("CallType::None is not a valid call type");
     }

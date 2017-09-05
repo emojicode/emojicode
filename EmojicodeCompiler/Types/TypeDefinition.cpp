@@ -94,41 +94,24 @@ void TypeDefinition::addProtocol(const Type &type, const SourcePosition &p) {
 }
 
 void TypeDefinition::addTypeMethod(Function *method) {
-    nativeCheck(method);
     duplicateDeclarationCheck(method, typeMethods_, method->position());
     typeMethods_[method->name()] = method;
     typeMethodList_.push_back(method);
 }
 
 void TypeDefinition::addMethod(Function *method) {
-    nativeCheck(method);
     duplicateDeclarationCheck(method, methods_, method->position());
     methods_[method->name()] = method;
     methodList_.push_back(method);
 }
 
 void TypeDefinition::addInitializer(Initializer *initializer) {
-    nativeCheck(initializer);
     duplicateDeclarationCheck(initializer, initializers_, initializer->position());
     initializers_[initializer->name()] = initializer;
     initializerList_.push_back(initializer);
 
     if (initializer->required()) {
         handleRequiredInitializer(initializer);
-    }
-}
-
-void TypeDefinition::nativeCheck(Function *function) {
-    if (!function->isNative()) {
-        return;
-    }
-    if (!package_->requiresBinary()) {
-        throw CompilerError(position(), "Function was declared to have a native counterpart but package "\
-                            "does not have a native binary.");
-    }
-    if (function->package() != package_) {
-        throw CompilerError(position(), "Functions declared in another package than their owning type cannot have a "\
-                            "native counterpart");
     }
 }
 

@@ -116,9 +116,9 @@ protected:
     const Type& superType() const { return superType_; }
     std::vector<InstanceVariableDeclaration>& instanceVariablesMut() { return instanceVariables_; }
 
-    /// Called if a required initializer is passed to addInitializer()
+    /// Called if a required initializer is passed to addInitializer().
+    /// @param init The initializer passed to addInitializer().
     virtual void handleRequiredInitializer(Initializer *init);
-    void nativeCheck(Function *function);
 
     template <typename T>
     void duplicateDeclarationCheck(T p, std::map<std::u32string, T> dict, SourcePosition position) {

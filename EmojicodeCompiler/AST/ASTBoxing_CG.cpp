@@ -85,10 +85,7 @@ Value* ASTBoxToSimple::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTDereference::generateExpr(FnCodeGenerator *fncg) const {
-//    expr_->generate(fncg);
-//    fncg->wr().writeInstruction(INS_PUSH_VALUE_FROM_REFERENCE);
-//    fncg->wr().writeInstruction(expr_->expressionType().size());
-    return nullptr;
+    return fncg->builder().CreateLoad(expr_->generate(fncg));
 }
 
 Value* ASTCallableBox::generateExpr(FnCodeGenerator *fncg) const {

@@ -16,10 +16,6 @@
 
 namespace EmojicodeCompiler {
 
-void Function::setLinkingTableIndex(int index) {
-    linkingTableIndex_ = index;
-}
-
 bool Function::enforcePromises(Function *super, const TypeContext &typeContext, const Type &superSource,
                                std::experimental::optional<TypeContext> protocol) {
     try {
