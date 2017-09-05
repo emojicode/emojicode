@@ -10,7 +10,6 @@
 #define ValueType_hpp
 
 #include "../Application.hpp"
-#include "../Generation/STIProvider.hpp"
 #include "../Package/Package.hpp"
 #include "TypeDefinition.hpp"
 #include <utility>
@@ -24,9 +23,6 @@ public:
         : TypeDefinition(std::move(name), p, std::move(pos), documentation) {}
 
     void prepareForSemanticAnalysis() override;
-
-    void prepareForCG() override;
-    int usedFunctionCount() const { return vtiProvider_.usedCount(); };
 
     void addMethod(Function *method) override;
     void addInitializer(Initializer *initializer) override;
@@ -57,11 +53,10 @@ public:
     void makePrimitive() { primitive_ = true; }
     bool isPrimitive() { return primitive_; }
 private:
-    ValueTypeVTIProvider vtiProvider_;
     bool primitive_ = false;
 
     VTIProvider *protocolMethodVtiProvider() override {
-        return &vtiProvider_;
+        return nullptr;
     }
 
     std::map<std::vector<Type>, uint32_t> genericIds_;

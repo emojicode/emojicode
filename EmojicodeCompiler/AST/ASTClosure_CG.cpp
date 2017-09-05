@@ -9,7 +9,6 @@
 #include "ASTClosure.hpp"
 #include "../Generation/ClosureCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
-#include "../Generation/STIProvider.hpp"
 
 namespace EmojicodeCompiler {
 

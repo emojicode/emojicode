@@ -10,7 +10,6 @@
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
 #include "../Scoping/CGScoper.hpp"
-#include "../../EmojicodeInstructions.h"
 
 namespace EmojicodeCompiler {
 

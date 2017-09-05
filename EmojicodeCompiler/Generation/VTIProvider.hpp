@@ -22,7 +22,7 @@ private:
     int usedCount_ = 0;
 };
 
-class ClassVTIProvider : public VTIProvider {
+class ClassVTIProvider final : public VTIProvider {
 public:
     /** Returns a new VTI for a function. This method is called by @c Function’s @c assignVTI */
     int next() override { return nextVti_++; }

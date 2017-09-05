@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "../EmojicodeCompiler.hpp"
-#include "../Generation/STIProvider.hpp"
 #include "../Types/Type.hpp"
 #include "Function.hpp"
 #include "FunctionType.hpp"
@@ -45,7 +44,6 @@ public:
                std::u32string(), false, false, FunctionType::BoxingLayer),
       destinationArgumentTypes_(owningType().genericArguments().begin() + 1, owningType().genericArguments().end()),
       destinationReturnType_(owningType().genericArguments()[0]) {
-          setVtiProvider(&STIProvider::globalStiProvider);
           this->returnType = returnType;
           this->arguments = arguments;
     }

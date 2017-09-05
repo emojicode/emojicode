@@ -35,6 +35,8 @@ private:
     std::shared_ptr<ASTTypeExpr> typeExpr_;
     std::shared_ptr<ASTGetVariable> vtDestination_;
     ASTArguments args_;
+
+    Value* generateClassInit(FnCodeGenerator *fncg) const;
 };
 
 }  // namespace EmojicodeCompiler

@@ -57,7 +57,7 @@ void ASTInitableCreator::generate(FnCodeGenerator *fncg) const {
 }
 
 void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
-    auto alloca = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(type_));
+    auto alloca = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(type_), nullptr);
     fncg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
 //    if (type_.optional()) {

@@ -43,7 +43,9 @@ void FnCodeGenerator::declareArguments(llvm::Function *function) {
         (it++)->setName("this");
     }
     for (auto arg : fn_->arguments) {
-        scoper_.getVariable(i++) = LocalVariable(false, &*(it++));
+        auto &llvmArg = *(it++);
+        scoper_.getVariable(i++) = LocalVariable(false, &llvmArg);
+        llvmArg.setName(utf8(arg.variableName));
     }
 }
 

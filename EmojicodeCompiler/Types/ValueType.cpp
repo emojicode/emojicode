@@ -20,14 +20,6 @@ void ValueType::prepareForSemanticAnalysis() {
     TypeDefinition::finalizeProtocols(Type(this, false));
 }
 
-void ValueType::prepareForCG() {
-    TypeDefinition::prepareForCG();
-
-    eachFunction([this](auto *function) {
-        function->setVtiProvider(&vtiProvider_);
-    });
-}
-
 void ValueType::addMethod(Function *method) {
     TypeDefinition::addMethod(method);
     method->package()->registerFunction(method);

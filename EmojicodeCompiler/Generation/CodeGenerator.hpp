@@ -35,11 +35,8 @@ public:
 
     llvm::Type* llvmTypeForType(Type type);
 
-    static std::string mangleFunctionName(Function *function);
+    llvm::Function* runTimeNew() { return runTimeNew_; }
 private:
-    static void mangleIdentifier(std::stringstream &stream, const std::u32string &string);
-    static std::string mangleTypeName(TypeDefinition *typeDef);
-
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
 
     Package *package_;
@@ -48,10 +45,13 @@ private:
     std::map<Type, llvm::Type*> types_;
     std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
 
+    llvm::Function *runTimeNew_;
+
     void setUpPassManager();
     void emit(const std::string &outPath);
     void declareRunTime();
     void createLlvmFunction(Function *function);
+    void generateFunction(Function *function);
 };
 
 }  // namespace EmojicodeCompiler
