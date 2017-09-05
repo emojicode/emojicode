@@ -98,6 +98,14 @@ llvm::Type* CodeGenerator::createLlvmTypeForTypeDefinition(const Type &type) {
     return llvmType;
 }
 
+llvm::Value* CodeGenerator::optionalValue() {
+    return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 1);
+}
+
+llvm::Value* CodeGenerator::optionalNoValue() {
+    return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 0);
+}
+
 void CodeGenerator::declareLlvmFunction(Function *function) {
     std::vector<llvm::Type *> args;
     if (isSelfAllowed(function->functionType())) {

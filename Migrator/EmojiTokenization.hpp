@@ -9,7 +9,7 @@
 #ifndef EmojiTokenization_hpp
 #define EmojiTokenization_hpp
 
-#include "../EmojicodeShared.h"
+#include "EmojicodeShared.h"
 #include "EmojicodeCompiler.hpp"
 
 namespace EmojicodeCompiler {

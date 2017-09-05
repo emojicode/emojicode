@@ -60,7 +60,13 @@ void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
     auto alloca = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(type_), nullptr);
     fncg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
-    // TODO: init type_.optional()
+    if (type_.optional()) {
+        std::vector<Value *> idx {
+            llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
+            llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
+        };
+        fncg->builder().CreateStore(fncg->generator()->optionalNoValue(), fncg->builder().CreateGEP(alloca, idx));
+    }
 }
 
 void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) const {

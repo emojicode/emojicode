@@ -366,8 +366,8 @@ StorageType Type::storageType() const {
     return optional() ? StorageType::SimpleOptional : StorageType::Simple;
 }
 
-EmojicodeInstruction Type::boxIdentifier() const {
-    EmojicodeInstruction value;
+uint64_t Type::boxIdentifier() const {
+    uint64_t value;
     switch (type()) {
         case TypeType::ValueType:
         case TypeType::Enum:

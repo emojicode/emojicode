@@ -11,11 +11,16 @@
 
 #include <cstdint>
 
+/// A byte-code instruction
+using EmojicodeInstruction = uint32_t;
+
 #ifndef defaultPackagesDirectory
 #define defaultPackagesDirectory "/usr/local/EmojicodePackages"
 #endif
 
+#define T_NOTHINGNESS static_cast<EmojicodeInteger>(0)
 #define T_OBJECT 1
+#define T_OPTIONAL_VALUE static_cast<EmojicodeInteger>(1)
 #define T_ERROR static_cast<EmojicodeInteger>(2)
 
 #define T_BOOLEAN 3
@@ -30,6 +35,8 @@ inline bool isWhitespace(char32_t c) {
     return (0x9 <= c && c <= 0xD) || c == 0x20 || c == 0x85 || c == 0xA0 || c == 0x1680 || (0x2000 <= c && c <= 0x200A)
     || c == 0x2028 || c== 0x2029 || c == 0x2029 || c == 0x202F || c == 0x205F || c == 0x3000 || c == 0xFE0F;
 }
+
+#define PORTABLE_INTLEAST64_MAX ((int_least64_t)9223372036854775807)
 
 enum class ObjectVariableType {
     /// There is an object pointer a the given index

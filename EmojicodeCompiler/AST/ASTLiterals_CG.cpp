@@ -47,8 +47,7 @@ Value* ASTThis::generateExpr(FnCodeGenerator *fncg) const {
 Value* ASTNothingness::generateExpr(FnCodeGenerator *fncg) const {
     auto structType = fncg->generator()->llvmTypeForType(type_);
     auto undef = llvm::UndefValue::get(structType);
-    auto flag = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 0);
-    return fncg->builder().CreateInsertValue(undef, flag, std::vector<unsigned int>{0});
+    return fncg->builder().CreateInsertValue(undef, fncg->generator()->optionalNoValue(), 0);
 }
 
 Value* ASTDictionaryLiteral::generateExpr(FnCodeGenerator *fncg) const {

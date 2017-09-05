@@ -11,19 +11,17 @@
 namespace EmojicodeCompiler {
 
 Value* ASTIsNothigness::generateExpr(FnCodeGenerator *fncg) const {
-    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), std::vector<unsigned int>{0});
-    auto constant = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 0);
-    return fncg->builder().CreateICmpEQ(vf, constant);
+    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), 0);
+    return fncg->builder().CreateICmpEQ(vf, fncg->generator()->optionalNoValue());
 }
 
 Value* ASTIsError::generateExpr(FnCodeGenerator *fncg) const {
-    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), std::vector<unsigned int>{0});
-    auto constant = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 0);
-    return fncg->builder().CreateICmpEQ(vf, constant);
+    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), 0);
+    return fncg->builder().CreateICmpEQ(vf, fncg->generator()->optionalNoValue());
 }
 
 Value* ASTUnwrap::generateExpr(FnCodeGenerator *fncg) const {
-    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), std::vector<unsigned int>{1});
+    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), 1);
 
     // TODO: box
     return vf;

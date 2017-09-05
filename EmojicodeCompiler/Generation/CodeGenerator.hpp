@@ -33,6 +33,9 @@ public:
 
     void generate(const std::string &outPath);
 
+    llvm::Value* optionalValue();
+    llvm::Value* optionalNoValue();
+
     llvm::Type* llvmTypeForType(Type type);
 
     llvm::Function* runTimeNew() { return runTimeNew_; }
