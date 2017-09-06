@@ -8,11 +8,13 @@
 
 #include "Type.hpp"
 #include "../EmojicodeCompiler.hpp"
+#include "../Package/Package.hpp"
 #include "../Functions/Function.hpp"
 #include "Class.hpp"
 #include "CommonTypeFinder.hpp"
 #include "Enum.hpp"
 #include "Protocol.hpp"
+#include "Extension.hpp"
 #include "TypeContext.hpp"
 #include "ValueType.hpp"
 #include <algorithm>

@@ -76,9 +76,9 @@ public:
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     virtual Function* lookupTypeMethod(const std::u32string &name);
 
-    virtual void addMethod(Function *method);
-    virtual void addInitializer(Initializer *initializer);
-    virtual void addTypeMethod(Function *method);
+    void addMethod(Function *method);
+    void addInitializer(Initializer *initializer);
+    void addTypeMethod(Function *method);
     virtual void addInstanceVariable(const InstanceVariableDeclaration&);
 
     const std::vector<Function *>& methodList() const { return methodList_; }

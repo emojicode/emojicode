@@ -9,22 +9,21 @@
 #ifndef Protocol_hpp
 #define Protocol_hpp
 
-#include "../Package/Package.hpp"
-#include "TypeContext.hpp"
 #include "TypeDefinition.hpp"
-#include <map>
-#include <vector>
 
 namespace EmojicodeCompiler {
+
+class Package;
 
 class Protocol : public TypeDefinition {
 public:
     Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string);
-    
+
+    void prepareForSemanticAnalysis() override;
+
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
     }
-    void addMethod(Function *method) override;
 };
 
 }  // namespace EmojicodeCompiler
