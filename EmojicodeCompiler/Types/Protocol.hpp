@@ -20,9 +20,7 @@ namespace EmojicodeCompiler {
 class Protocol : public TypeDefinition {
 public:
     Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string);
-
-    uint_fast16_t index;
-
+    
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
     }

@@ -120,10 +120,6 @@ public:
 
     std::queue<Function *> analysisQueue;
 
-    unsigned int protocolIndex() { return protocols_++; }
-    unsigned int protocolCount() { return protocols_; }
-
-    uint32_t maxBoxIndetifier() const { return static_cast<uint32_t>(boxObjectVariableInformation_.size()); }
     const std::vector<std::vector<ObjectVariableInformation>>& boxObjectVariableInformation() const {
         return boxObjectVariableInformation_;
     }
@@ -142,7 +138,6 @@ private:
     std::vector<std::vector<ObjectVariableInformation>> boxObjectVariableInformation_ = std::vector<std::vector<ObjectVariableInformation>>(3);
     Function *startFlag_ = nullptr;
     bool hasError_ = false;
-    unsigned int protocols_ = 0;
     std::string mainFile_;
     const std::string outPath_;
     const std::string packageDirectory_;

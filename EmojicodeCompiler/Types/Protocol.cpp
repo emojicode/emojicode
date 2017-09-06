@@ -15,9 +15,7 @@
 namespace EmojicodeCompiler {
 
 Protocol::Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string)
-    : TypeDefinition(std::move(name), pkg, p, string) {
-    index = package()->app()->protocolIndex();
-}
+    : TypeDefinition(std::move(name), pkg, p, string) {}
 
 void Protocol::addMethod(Function *method) {
     method->setVti(static_cast<int>(methodList().size()));

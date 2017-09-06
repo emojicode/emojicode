@@ -80,7 +80,7 @@ bool Type::canHaveGenericArguments() const {
 
 void Type::sortMultiProtocolType() {
     std::sort(genericArguments_.begin(), genericArguments_.end(), [](const Type &a, const Type &b) {
-        return a.protocol()->index < b.protocol()->index;
+        return a.protocol() < b.protocol();
     });
 }
 
@@ -364,33 +364,6 @@ StorageType Type::storageType() const {
         return StorageType::SimpleOptional;
     }
     return optional() ? StorageType::SimpleOptional : StorageType::Simple;
-}
-
-uint64_t Type::boxIdentifier() const {
-    uint64_t value;
-    switch (type()) {
-        case TypeType::ValueType:
-        case TypeType::Enum:
-            value = valueType()->boxIdFor(genericArguments_);
-            break;
-        case TypeType::Callable:
-        case TypeType::Class:
-        case TypeType::Someobject:
-            value = T_OBJECT;
-            break;
-        case TypeType::NoReturn:
-        case TypeType::Protocol:
-        case TypeType::MultiProtocol:
-        case TypeType::Something:
-        case TypeType::GenericVariable:
-        case TypeType::LocalGenericVariable:
-        case TypeType::Error:
-            return 0;  // This can only be executed in the case of a semantic error, return any value
-        case TypeType::StorageExpectation:
-        case TypeType::Extension:
-            throw std::logic_error("Box identifier for StorageExpectation/Extension");
-    }
-    return remotelyStored() ? value | REMOTE_MASK : value;
 }
 
 bool Type::requiresBox() const {

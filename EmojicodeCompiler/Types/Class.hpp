@@ -9,7 +9,6 @@
 #ifndef Class_hpp
 #define Class_hpp
 
-#include "../Package/Package.hpp"
 #include "../Types/TypeContext.hpp"
 #include "TypeDefinition.hpp"
 #include <set>

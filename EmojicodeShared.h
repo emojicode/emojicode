@@ -9,19 +9,9 @@
 #ifndef EmojicodeShared_h
 #define EmojicodeShared_h
 
-#include <cstdint>
-
 #ifndef defaultPackagesDirectory
 #define defaultPackagesDirectory "/usr/local/EmojicodePackages"
 #endif
-
-#define T_OBJECT 1
-#define T_ERROR static_cast<EmojicodeInteger>(2)
-
-#define T_BOOLEAN 3
-#define T_INTEGER 4
-#define T_DOUBLE 5
-#define T_SYMBOL 6
 
 #define REMOTE_MASK (1 << 31)
 

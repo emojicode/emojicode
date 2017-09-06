@@ -115,8 +115,6 @@ public:
     int size() const { return 0; }
     /// Returns the storage type that will be used, i.e. the boxing applied in memory.
     StorageType storageType() const;
-    /// Returns a numeric identifier used to differentiate Nothingness, Object References and Value Types at run-time.
-    uint64_t boxIdentifier() const;
     /// Unboxes this type.
     /// @throws std::logic_error if unboxing is not possible according to @c requiresBox()
     void unbox() { forceBox_ = false; if (requiresBox()) { throw std::logic_error("Cannot unbox!"); } }

@@ -46,25 +46,21 @@ Protocol* getStandardProtocol(const std::u32string &name, Package *_, const Sour
     return type.protocol();
 }
 
-ValueType* getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition,
-                                unsigned int boxId) {
+ValueType* getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::noReturn();
     _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::ValueType) {
         throw CompilerError(errorPosition, "s package value type ", utf8(name), " is missing.");
-    }
-    if (type.boxIdentifier() != boxId) {
-        throw CompilerError(errorPosition, "s package value type ", utf8(name), " has improper box id.");
     }
     return type.valueType();
 }
 
 void loadStandard(Package *s, const SourcePosition &errorPosition) {
     // Order of the following calls is important as they will cause Box IDs to be assigned
-    VT_BOOLEAN = getStandardValueType(std::u32string(1, E_OK_HAND_SIGN), s, errorPosition, T_BOOLEAN);
-    VT_INTEGER = getStandardValueType(std::u32string(1, E_STEAM_LOCOMOTIVE), s, errorPosition, T_INTEGER);
-    VT_DOUBLE = getStandardValueType(std::u32string(1, E_ROCKET), s, errorPosition, T_DOUBLE);
-    VT_SYMBOL = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition, T_SYMBOL);
+    VT_BOOLEAN = getStandardValueType(std::u32string(1, E_OK_HAND_SIGN), s, errorPosition);
+    VT_INTEGER = getStandardValueType(std::u32string(1, E_STEAM_LOCOMOTIVE), s, errorPosition);
+    VT_DOUBLE = getStandardValueType(std::u32string(1, E_ROCKET), s, errorPosition);
+    VT_SYMBOL = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition);
 
     CL_STRING = getStandardClass(std::u32string(1, 0x1F521), s, errorPosition);
     CL_LIST = getStandardClass(std::u32string(1, 0x1F368), s, errorPosition);
