@@ -8,6 +8,7 @@
 
 #include "ASTMethod.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
+#include "../Generation/FnCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -26,7 +27,7 @@ Value* ASTMethod::generateExpr(FnCodeGenerator *fncg) const {
         }
     }
 
-    return CallCodeGenerator(fncg, callType_).generate(*callee_, calleeType_,  args_, name_);
+    return CallCodeGenerator(fncg, callType_).generate(callee_->generate(fncg), calleeType_,  args_, name_);
 }
     
 }  // namespace EmojicodeCompiler

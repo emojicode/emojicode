@@ -8,20 +8,26 @@
 
 #include "CallCodeGenerator.hpp"
 #include "../AST/ASTExpr.hpp"
+#include "../Functions/Initializer.hpp"
+#include "FnCodeGenerator.hpp"
 #include <stdexcept>
 
 namespace EmojicodeCompiler {
 
-llvm::Value* CallCodeGenerator::generate(const ASTExpr &callee, const Type &calleeType, const ASTArguments &args,
+llvm::Value* CallCodeGenerator::generate(Value *callee, const Type &calleeType, const ASTArguments &args,
                                          const std::u32string &name) {
     std::vector<Value *> argsVector;
     if (callType_ != CallType::StaticContextfreeDispatch) {
-        argsVector.emplace_back(callee.generate(fncg_));
+        argsVector.emplace_back(callee);
     }
     for (auto &arg : args.arguments()) {
         argsVector.emplace_back(arg->generate(fncg_));
     }
     return createCall(argsVector, calleeType, name);
+}
+
+Function* CallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name){
+    return type.typeDefinition()->lookupMethod(name);
 }
 
 llvm::Value* CallCodeGenerator::createCall(const std::vector<Value *> &args, const Type &type, const std::u32string &name) {
@@ -58,6 +64,14 @@ llvm::Value* CallCodeGenerator::createDynamicDispatch(Function *function, const 
     auto funcPointerType = function->llvmFunction()->getFunctionType()->getPointerTo();
     auto func = fncg()->builder().CreateBitCast(dispatchedFunc, funcPointerType, "dispatchFunc");
     return fncg_->builder().CreateCall(function->llvmFunction()->getFunctionType(), func, args);
+}
+
+Function* TypeMethodCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name) {
+    return type.typeDefinition()->lookupTypeMethod(name);
+}
+
+Function* InitializationCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name) {
+    return type.typeDefinition()->lookupInitializer(name);
 }
 
 }  // namespace EmojicodeCompiler

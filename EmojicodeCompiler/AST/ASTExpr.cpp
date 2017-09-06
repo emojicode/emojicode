@@ -121,7 +121,7 @@ Type ASTSuperMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &
     }
 
     Function *method = superclass->getMethod(name_, Type(superclass, false), analyser->typeContext(), position());
-    calleeType_ = Type(superclass, true);
+    calleeType_ = Type(superclass, false);
     return analyser->analyseFunctionCall(&args_, calleeType_, method);
 }
 

@@ -58,15 +58,18 @@ Value* ASTConditionalAssignment::generateExpr(FnCodeGenerator *fncg) const {
 
 Value* ASTTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
     auto ctype = valueType_ ? CallType::StaticContextfreeDispatch : CallType::DynamicDispatch;
-    return TypeMethodCallCodeGenerator(fncg, ctype).generate(*callee_, callee_->expressionType(), args_, name_);
+    return TypeMethodCallCodeGenerator(fncg, ctype).generate(callee_->generate(fncg), callee_->expressionType(),
+                                                             args_, name_);
 }
 
 Value* ASTSuperMethod::generateExpr(FnCodeGenerator *fncg) const {
-    return SuperCallCodeGenerator(fncg).generate(calleeType_, args_, name_);
+    auto castedThis = fncg->builder().CreateBitCast(fncg->thisValue(), fncg->typeHelper().llvmTypeFor(calleeType_));
+    return CallCodeGenerator(fncg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, name_);
 }
 
 Value* ASTCallableCall::generateExpr(FnCodeGenerator *fncg) const {
-    return CallableCallCodeGenerator(fncg).generate(*callable_, callable_->expressionType(), args_, std::u32string());
+    return CallableCallCodeGenerator(fncg).generate(callable_->generate(fncg), callable_->expressionType(),
+                                                    args_, std::u32string());
 }
 
 Value* ASTCaptureMethod::generateExpr(FnCodeGenerator *fncg) const {

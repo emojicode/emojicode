@@ -33,7 +33,8 @@ void ASTRaise::generate(FnCodeGenerator *fncg) const {
 }
 
 void ASTSuperinitializer::generate(FnCodeGenerator *fncg) const {
-    SuperInitializerCallCodeGenerator(fncg).generate(superType_, arguments_, name_);
+    auto castedThis = fncg->builder().CreateBitCast(fncg->thisValue(), fncg->typeHelper().llvmTypeFor(superType_));
+    InitializationCallCodeGenerator(fncg, CallType::StaticDispatch).generate(castedThis, superType_, arguments_, name_);
 }
 
 }  // namespace EmojicodeCompiler
