@@ -76,6 +76,11 @@ void CodeGenerator::generate(const std::string &outPath) {
 }
 
 void CodeGenerator::declarePackageSymbols() {
+    classValueTypeMeta = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
+                                                  llvm::GlobalValue::LinkageTypes::ExternalLinkage,
+                                                  llvm::Constant::getNullValue(typeHelper_.valueTypeMeta()),
+                                                  "classValueTypeMeta");
+
     for (auto valueType : package_->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
@@ -135,12 +140,33 @@ void CodeGenerator::createClassInfo(Class *klass) {
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
         llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable,
     });
-    auto info = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
+    auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleClassMetaName(klass));
 
     klass->virtualTable() = std::move(functions);
-    klass->setClassInfo(info);
+    klass->setClassMeta(meta);
+}
+
+llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
+    if (type.type() == TypeType::Class) {
+        return classValueTypeMeta;
+    }
+
+    if (auto meta = type.valueType()->valueTypeMetaFor(type.genericArguments())) {
+        return meta;
+    }
+
+    auto valueType = type.valueType();
+
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.valueTypeMeta(), std::vector<llvm::Constant *> {
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0),
+    });
+    auto meta = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
+                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
+                                         mangleValueTypeMetaName(type));
+    valueType->addValueTypeMetaFor(type.genericArguments(), meta);
+    return meta;
 }
 
 void CodeGenerator::declareRunTime() {

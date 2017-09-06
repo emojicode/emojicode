@@ -51,7 +51,7 @@ llvm::Type* LLVMTypeHelper::box() const {
     return box_;
 }
 
-llvm::Type* LLVMTypeHelper::valueTypeMetaTypePtr() const {
+llvm::Type* LLVMTypeHelper::valueTypeMetaPtr() const {
     return valueTypeMetaType_->getPointerTo();
 }
 

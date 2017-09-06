@@ -41,7 +41,7 @@ Value* ASTInitialization::generateClassInit(FnCodeGenerator *fncg) const {
             auto alloc = fncg->builder().CreateCall(fncg->generator()->runTimeNew(), size, "alloc");
             auto obj = fncg->builder().CreateBitCast(alloc, type);
 
-            auto classInfo = typeExpr_->expressionType().eclass()->classInfo();
+            auto classInfo = typeExpr_->expressionType().eclass()->classMeta();
             auto metaIdx = std::vector<llvm::Value *> {
                 llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
                 llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0)

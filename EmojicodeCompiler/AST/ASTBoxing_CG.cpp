@@ -35,7 +35,7 @@ Value* ASTBoxing::getSimpleOptionalWithoutValue(FnCodeGenerator *fncg) const {
 }
 
 void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fncg) const {
-    auto metaType = llvm::Constant::getNullValue(fncg->typeHelper().valueTypeMetaTypePtr());
+    auto metaType = fncg->generator()->valueTypeMetaFor(expr_->expressionType());
     fncg->builder().CreateStore(metaType, fncg->getMetaTypePtr(box));
 
     if (expr_->expressionType().remotelyStored()) {
@@ -112,7 +112,7 @@ Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
     fncg->builder().CreateCondBr(hasNoValue, noValueBlock, valueBlock);
 
     fncg->builder().SetInsertPoint(noValueBlock);
-    auto metaType = llvm::Constant::getNullValue(fncg->typeHelper().valueTypeMetaTypePtr());
+    auto metaType = llvm::Constant::getNullValue(fncg->typeHelper().valueTypeMetaPtr());
     fncg->builder().CreateStore(metaType, fncg->getMetaTypePtr(box));
     fncg->builder().CreateBr(mergeBlock);
 

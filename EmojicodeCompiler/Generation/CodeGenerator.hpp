@@ -40,6 +40,8 @@ public:
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();
 
+    llvm::GlobalVariable* valueTypeMetaFor(const Type &type);
+
     llvm::Function* runTimeNew() const { return runTimeNew_; }
 private:
     Package *package_;
@@ -49,6 +51,7 @@ private:
     std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
 
     llvm::Function *runTimeNew_;
+    llvm::GlobalVariable *classValueTypeMeta;
     LLVMTypeHelper typeHelper_ = LLVMTypeHelper(context());
 
     void setUpPassManager();

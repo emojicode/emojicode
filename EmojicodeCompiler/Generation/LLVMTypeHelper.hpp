@@ -26,7 +26,8 @@ public:
 
     llvm::Type* llvmTypeFor(Type type);
     llvm::Type* box() const;
-    llvm::Type* valueTypeMetaTypePtr() const;
+    llvm::Type* valueTypeMetaPtr() const;
+    llvm::StructType* valueTypeMeta() const { return valueTypeMetaType_; }
     llvm::StructType* classMeta() const { return classMetaType_; }
 
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);

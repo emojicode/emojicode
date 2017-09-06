@@ -10,6 +10,7 @@
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
 #include "../Types/Class.hpp"
+#include "../Types/ValueType.hpp"
 #include "../Types/Type.hpp"
 #include <sstream>
 
@@ -50,6 +51,16 @@ std::string mangleClassMetaName(Class *klass) {
     std::stringstream stream;
     stream << "class_meta_";
     mangleIdentifier(stream, klass->name());
+    return stream.str();
+}
+
+std::string mangleValueTypeMetaName(const Type &type) {
+    std::stringstream stream;
+    stream << "value_meta_";
+    mangleIdentifier(stream, type.typeDefinition()->name());
+    for (auto &arg : type.genericArguments()) {
+        mangleTypeName(stream, arg);
+    }
     return stream.str();
 }
 

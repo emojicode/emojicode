@@ -46,8 +46,8 @@ public:
     /** Returns a list of all required intializers. */
     const std::set<std::u32string>& requiredInitializers() const { return requiredInitializers_; }
 
-    void setClassInfo(llvm::GlobalVariable *classInfo) { classInfo_ = classInfo; }
-    llvm::GlobalVariable* classInfo() { return classInfo_; }
+    void setClassMeta(llvm::GlobalVariable *classInfo) { classMeta_ = classInfo; }
+    llvm::GlobalVariable* classMeta() { return classMeta_; }
 
     unsigned int virtualTableIndicesCount() { return virtualTableIndex_; }
 
@@ -83,7 +83,7 @@ private:
     bool final_;
     bool inheritsInitializers_ = false;
 
-    llvm::GlobalVariable *classInfo_ = nullptr;
+    llvm::GlobalVariable *classMeta_ = nullptr;
 
     void handleRequiredInitializer(Initializer *init) override;
 };

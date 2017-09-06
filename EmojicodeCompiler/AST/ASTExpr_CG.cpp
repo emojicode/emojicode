@@ -20,7 +20,7 @@ Value* ASTExpr::generate(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTMetaTypeInstantiation::generateExpr(FnCodeGenerator *fncg) const {
-    return type_.eclass()->classInfo();
+    return type_.eclass()->classMeta();
 }
 
 Value* ASTCast::generateExpr(FnCodeGenerator *fncg) const {

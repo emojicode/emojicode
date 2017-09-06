@@ -60,7 +60,7 @@ llvm::Value* FnCodeGenerator::getMetaFromObject(llvm::Value *object) {
 }
 
 llvm::Value* FnCodeGenerator::getHasBoxNoValue(llvm::Value *box) {
-    auto null = llvm::Constant::getNullValue(typeHelper().valueTypeMetaTypePtr());
+    auto null = llvm::Constant::getNullValue(typeHelper().valueTypeMetaPtr());
     return builder().CreateICmpEQ(builder().CreateLoad(getMetaTypePtr(box)), null);
 }
 
