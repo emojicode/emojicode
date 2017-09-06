@@ -9,7 +9,7 @@
 #ifndef Options_hpp
 #define Options_hpp
 
-#include "../../EmojicodeShared.h"
+#include "../EmojicodeCompiler.hpp"
 #include "../Application.hpp"
 #include <memory>
 #include <string>

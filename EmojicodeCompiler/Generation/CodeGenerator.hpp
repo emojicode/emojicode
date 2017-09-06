@@ -26,7 +26,7 @@ class Function;
 /// Manages the generation of IR for one package. Each package is compiled to one LLVM module.
 class CodeGenerator {
 public:
-    CodeGenerator(Package *package);
+    explicit CodeGenerator(Package *package);
     llvm::LLVMContext& context() { return context_; }
     llvm::Module* module() { return module_.get(); }
 
@@ -51,7 +51,7 @@ private:
     std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
 
     llvm::Function *runTimeNew_;
-    llvm::GlobalVariable *classValueTypeMeta;
+    llvm::GlobalVariable *classValueTypeMeta_;
     LLVMTypeHelper typeHelper_ = LLVMTypeHelper(context());
 
     void setUpPassManager();

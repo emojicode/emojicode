@@ -41,7 +41,7 @@ public:
         varId_ = varId;
         setReference();
     }
-    Value* generateExpr(FnCodeGenerator *fncg) const;
+    Value* generateExpr(FnCodeGenerator *fncg) const override;
 private:
     bool declare_ = false;
     Type type_;

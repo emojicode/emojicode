@@ -466,8 +466,6 @@ void Type::objectVariableRecords(int index, std::vector<T> *information, Us... a
 }
 
 template void Type::objectVariableRecords(int, std::vector<ObjectVariableInformation>*) const;
-template void Type::objectVariableRecords(int, std::vector<FunctionObjectVariableInformation>*,
-                                          InstructionCount, InstructionCount) const;
 
 // MARK: Type Visulisation
 

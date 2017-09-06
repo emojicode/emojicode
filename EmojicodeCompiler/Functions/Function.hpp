@@ -12,7 +12,6 @@
 #include "../Types/Generic.hpp"
 #include "../Types/Type.hpp"
 #include "../Types/TypeContext.hpp"
-#include "../Functions/FunctionVariableObjectInformation.hpp"
 #include "FunctionType.hpp"
 #include <experimental/optional>
 #include <memory>
@@ -146,7 +145,6 @@ public:
     llvm::Function* llvmFunction() { return llvmFunction_; }
     void setLlvmFunction(llvm::Function *lf) { llvmFunction_ = lf; }
 
-    std::vector<FunctionObjectVariableInformation>& objectVariableInformation() { return objectVariableInformation_; }
     size_t variableCount() const { return variableCount_; }
     void setVariableCount(size_t variableCount) { variableCount_ = variableCount; }
 protected:
@@ -172,7 +170,6 @@ private:
     size_t variableCount_ = 0;
 
     llvm::Function *llvmFunction_;
-    std::vector<FunctionObjectVariableInformation> objectVariableInformation_;
 };
 
 }  // namespace EmojicodeCompiler

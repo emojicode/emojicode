@@ -23,7 +23,7 @@ class Application;
 struct LocalVariable {
     LocalVariable() = default;
     LocalVariable(bool isMutable, llvm::Value *value) : isMutable(isMutable), value(value) {}
-    bool isMutable;
+    bool isMutable = true;
     llvm::Value *value = nullptr;
 };
 

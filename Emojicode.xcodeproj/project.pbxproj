@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		E400909C1F515D80003F62FE /* RecordingPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E400909A1F515D80003F62FE /* RecordingPackage.cpp */; };
 		E400909D1F516E80003F62FE /* Package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40090981F515CAA003F62FE /* Package.cpp */; };
-		E40B59EF1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40B59ED1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp */; };
 		E426870E1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E426870C1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp */; };
 		E4431D651F4C4B7000D68379 /* Initializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D631F4C4B7000D68379 /* Initializer.cpp */; };
 		E4431D741F4E17B100D68379 /* ASTToCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D731F4E17B000D68379 /* ASTToCode.cpp */; };
@@ -111,15 +110,12 @@
 		E400909B1F515D80003F62FE /* RecordingPackage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RecordingPackage.hpp; sourceTree = "<group>"; };
 		E400909E1F51ACE8003F62FE /* Generic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Generic.cpp; sourceTree = "<group>"; };
 		E400909F1F51ACE8003F62FE /* Generic.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Generic.hpp; sourceTree = "<group>"; };
-		E40B59ED1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FunctionVariableObjectInformation.cpp; sourceTree = "<group>"; };
-		E40B59EE1F31DFD900A27376 /* FunctionVariableObjectInformation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FunctionVariableObjectInformation.hpp; sourceTree = "<group>"; };
 		E426870C1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ProtocolTypeBodyParser.cpp; sourceTree = "<group>"; };
 		E426870D1F5AD49500B96A62 /* ProtocolTypeBodyParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProtocolTypeBodyParser.hpp; sourceTree = "<group>"; };
 		E4431D631F4C4B7000D68379 /* Initializer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializer.cpp; sourceTree = "<group>"; };
 		E4431D641F4C4B7000D68379 /* Initializer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Initializer.hpp; sourceTree = "<group>"; };
 		E4431D661F4C504200D68379 /* .clang-tidy */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
 		E4431D731F4E17B000D68379 /* ASTToCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTToCode.cpp; sourceTree = "<group>"; };
-		E455BC671B5BEB82002411C8 /* EmojicodeShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeShared.h; sourceTree = "<group>"; };
 		E45AF9991F5035F00077E343 /* JSONApplicationDelegate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JSONApplicationDelegate.cpp; sourceTree = "<group>"; };
 		E45AF99A1F5035F00077E343 /* JSONApplicationDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JSONApplicationDelegate.hpp; sourceTree = "<group>"; };
 		E45AF99C1F5039010077E343 /* JSONHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSONHelper.h; sourceTree = "<group>"; };
@@ -248,7 +244,6 @@
 		E49E6D141F441F0900B819CA /* ASTClosure.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTClosure.hpp; sourceTree = "<group>"; };
 		E49E6D161F4ABF2500B819CA /* ClosureCodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClosureCodeGenerator.cpp; sourceTree = "<group>"; };
 		E49E6D171F4ABF2500B819CA /* ClosureCodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ClosureCodeGenerator.hpp; sourceTree = "<group>"; };
-		E49FD7741DE9A2BB00FD5170 /* EmojicodeInstructions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmojicodeInstructions.h; sourceTree = "<group>"; };
 		E4D3EF8A1F5459A100A31C81 /* CompatibilityInfoProvider.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompatibilityInfoProvider.cpp; sourceTree = "<group>"; };
 		E4D3EF8B1F5459A100A31C81 /* CompatibilityInfoProvider.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CompatibilityInfoProvider.hpp; sourceTree = "<group>"; };
 		E4DB9B531F5C24F600B566DD /* ASTVariables_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTVariables_CG.cpp; sourceTree = "<group>"; };
@@ -334,15 +329,6 @@
 				E478910E1F4F3060008DCB24 /* Application.hpp */,
 			);
 			path = EmojicodeCompiler;
-			sourceTree = "<group>";
-		};
-		E45FA2FD1AA0E11300F032A8 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				E455BC671B5BEB82002411C8 /* EmojicodeShared.h */,
-				E49FD7741DE9A2BB00FD5170 /* EmojicodeInstructions.h */,
-			);
-			name = Shared;
 			sourceTree = "<group>";
 		};
 		E460A5361F30EFA2006E3AC7 /* Analysis */ = {
@@ -482,8 +468,6 @@
 				E4431D641F4C4B7000D68379 /* Initializer.hpp */,
 				E47838D61F41EA4D007B937C /* ProtocolFunction.hpp */,
 				E47838D51F41EA4D007B937C /* ProtocolFunction.cpp */,
-				E40B59ED1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp */,
-				E40B59EE1F31DFD900A27376 /* FunctionVariableObjectInformation.hpp */,
 				E460A5901F30EFA2006E3AC7 /* FunctionType.cpp */,
 				E460A5911F30EFA2006E3AC7 /* FunctionType.hpp */,
 				E4DB9B6B1F5D544100B566DD /* CallType.h */,
@@ -580,7 +564,6 @@
 			isa = PBXGroup;
 			children = (
 				E46C49701E633633003C40E5 /* tests.py */,
-				E45FA2FD1AA0E11300F032A8 /* Shared */,
 				E4DB9B7F1F5E8BAF00B566DD /* Runtime */,
 				E45FA2F41AA0D24200F032A8 /* EmojicodeCompiler */,
 				E4E404081A5B2E4300034386 /* Products */,
@@ -660,7 +643,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#/usr/local/Cellar/llvm/4.0.1/share/clang/run-clang-tidy.py -p build/ -header-filter=EmojicodeCompiler/*/*";
+			shellScript = "/usr/local/Cellar/llvm/4.0.1/share/clang/run-clang-tidy.py -p build/ -header-filter=EmojicodeCompiler/*/*";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -729,7 +712,6 @@
 				E4DB9B601F5C24F800B566DD /* ASTClosure_CG.cpp in Sources */,
 				E460A5A41F30EFA2006E3AC7 /* TokenStream.cpp in Sources */,
 				E460A5BC1F30EFA2006E3AC7 /* ValueType.cpp in Sources */,
-				E40B59EF1F31DFD900A27376 /* FunctionVariableObjectInformation.cpp in Sources */,
 				E48356BA1F3892C2000B80AE /* ASTVariables.cpp in Sources */,
 				E460A5B51F30EFA2006E3AC7 /* StorageType.cpp in Sources */,
 				E460A5BF1F30EFA2006E3AC7 /* Function.cpp in Sources */,

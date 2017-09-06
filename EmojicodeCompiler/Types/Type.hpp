@@ -14,7 +14,6 @@
 #include "StorageType.hpp"
 #include <stdexcept>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -22,7 +21,6 @@ namespace EmojicodeCompiler {
 
 /// The identifier value representing the default namespace.
 const std::u32string kDefaultNamespace = std::u32string(1, E_HOUSE_BUILDING);
-const int kBoxValueSize = 4;
 
 class TypeDefinition;
 class Enum;
@@ -56,6 +54,21 @@ enum class TypeType {
     Error,
     StorageExpectation,
     Extension,
+};
+
+enum class ObjectVariableType {
+    /// There is an object pointer a the given index
+    Simple = 0,
+    /// There is an object pointer a the given index if the value at @c condition is truthy
+    Condition = 1,
+    Box = 2,
+    ConditionalSkip = 3
+};
+
+enum class ContextType {
+    None = 0,
+    Object = 1,
+    ValueReference = 2,
 };
 
 struct ObjectVariableInformation {

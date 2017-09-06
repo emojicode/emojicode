@@ -9,16 +9,9 @@
 #ifndef CGScoper_hpp
 #define CGScoper_hpp
 
-#include "../Functions/FunctionVariableObjectInformation.hpp"
-#include "../Types/Type.hpp"
-#include <cassert>
 #include <vector>
 
 namespace EmojicodeCompiler {
-
-template <typename T>
-class CGScoper;
-class Scope;
 
 template <typename T>
 class CGScoper {
@@ -34,7 +27,6 @@ public:
     }
 private:
     std::vector<T> variables_;
-    std::vector<FunctionObjectVariableInformation> fovInfo_;
 };
 
 }  // namespace EmojicodeCompiler

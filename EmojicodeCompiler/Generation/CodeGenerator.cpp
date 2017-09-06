@@ -76,10 +76,10 @@ void CodeGenerator::generate(const std::string &outPath) {
 }
 
 void CodeGenerator::declarePackageSymbols() {
-    classValueTypeMeta = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
-                                                  llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-                                                  llvm::Constant::getNullValue(typeHelper_.valueTypeMeta()),
-                                                  "classValueTypeMeta");
+    classValueTypeMeta_ = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
+                                                   llvm::GlobalValue::LinkageTypes::ExternalLinkage,
+                                                   llvm::Constant::getNullValue(typeHelper_.valueTypeMeta()),
+                                                   "classValueTypeMeta");
 
     for (auto valueType : package_->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
@@ -150,7 +150,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
 
 llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
     if (type.type() == TypeType::Class) {
-        return classValueTypeMeta;
+        return classValueTypeMeta_;
     }
 
     if (auto meta = type.valueType()->valueTypeMetaFor(type.genericArguments())) {
@@ -185,8 +185,8 @@ void CodeGenerator::emit(const std::string &outPath) {
     llvm::InitializeAllAsmPrinters();
 
     auto targetTriple = llvm::sys::getDefaultTargetTriple();
-    std::string Error;
-    auto target = llvm::TargetRegistry::lookupTarget(targetTriple, Error);
+    std::string error;
+    auto target = llvm::TargetRegistry::lookupTarget(targetTriple, error);
 
     auto cpu = "generic";
     auto features = "";
@@ -201,8 +201,8 @@ void CodeGenerator::emit(const std::string &outPath) {
     llvm::legacy::PassManager pass;
 
     auto fileType = llvm::TargetMachine::CGFT_ObjectFile;
-    std::error_code EC;
-    llvm::raw_fd_ostream dest(outPath, EC, llvm::sys::fs::F_None);
+    std::error_code errorCode;
+    llvm::raw_fd_ostream dest(outPath, errorCode, llvm::sys::fs::F_None);
     if (targetMachine->addPassesToEmitFile(pass, dest, fileType)) {
         puts( "TargetMachine can't emit a file of this type" );
     }

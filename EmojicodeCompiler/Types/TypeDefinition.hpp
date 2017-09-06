@@ -10,9 +10,7 @@
 #define TypeDefinition_hpp
 
 #include "../CompilerError.hpp"
-#include "../EmojicodeCompiler.hpp"
 #include "../Lex/SourcePosition.hpp"
-#include "../Scoping/CGScoper.hpp"
 #include "../Scoping/Scope.hpp"
 #include "Generic.hpp"
 #include "Type.hpp"

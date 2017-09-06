@@ -18,7 +18,7 @@ llvm::Value* CallCodeGenerator::generate(const ASTExpr &callee, const Type &call
     if (callType_ != CallType::StaticContextfreeDispatch) {
         argsVector.emplace_back(callee.generate(fncg_));
     }
-    for (auto arg : args.arguments()) {
+    for (auto &arg : args.arguments()) {
         argsVector.emplace_back(arg->generate(fncg_));
     }
     return createCall(argsVector, calleeType, name);

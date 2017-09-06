@@ -22,7 +22,7 @@ namespace EmojicodeCompiler {
 /// This class is repsonsible for providing llvm::Type instances for Emojicode Type instances.
 class LLVMTypeHelper {
 public:
-    LLVMTypeHelper(llvm::LLVMContext &context);
+    explicit LLVMTypeHelper(llvm::LLVMContext &context);
 
     llvm::Type* llvmTypeFor(Type type);
     llvm::Type* box() const;
