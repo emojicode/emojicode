@@ -11,8 +11,7 @@
 namespace EmojicodeCompiler {
 
 Value* ASTIsNothigness::generateExpr(FnCodeGenerator *fncg) const {
-    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), 0);
-    return fncg->builder().CreateICmpEQ(vf, fncg->generator()->optionalNoValue());
+    return fncg->getHasNoValue(value_->generate(fncg));
 }
 
 Value* ASTIsError::generateExpr(FnCodeGenerator *fncg) const {

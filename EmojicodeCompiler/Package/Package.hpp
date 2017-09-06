@@ -13,7 +13,6 @@
 #include "../Lex/SourcePosition.hpp"
 #include "../Types/Extension.hpp"
 #include "../Types/Type.hpp"
-#include <array>
 #include <map>
 #include <utility>
 #include <vector>

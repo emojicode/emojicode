@@ -13,11 +13,12 @@
 #include "../AST/ASTNode.hpp"
 #include "../Functions/Function.hpp"
 #include "../Scoping/CGScoper.hpp"
-#include "../Application.hpp"
+#include "../Package/Package.hpp"
 #include "CodeGenerator.hpp"
-#include <memory>
 
 namespace EmojicodeCompiler {
+
+class Application;
 
 struct LocalVariable {
     LocalVariable() = default;
@@ -40,6 +41,11 @@ public:
 
     llvm::Value* sizeFor(llvm::PointerType *type);
     llvm::Value* getMetaFromObject(llvm::Value *object);
+    llvm::Value* getHasBoxNoValue(llvm::Value *box);
+    /// Gets a pointer to the meta type field of box.
+    /// @param box A pointer to a box.
+    llvm::Value* getMetaTypePtr(llvm::Value *box);
+    llvm::Value* getHasNoValue(llvm::Value *simpleOptional);
 protected:
     virtual void declareArguments(llvm::Function *function);
 private:

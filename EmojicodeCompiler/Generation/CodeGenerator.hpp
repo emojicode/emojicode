@@ -29,7 +29,7 @@ public:
     llvm::Module* module() { return module_.get(); }
 
     /// Returns the package for which this code generator was created.
-    Package* package() { return package_; }
+    Package* package() const { return package_; }
 
     void generate(const std::string &outPath);
 
@@ -37,8 +37,10 @@ public:
     llvm::Value* optionalNoValue();
 
     llvm::Type* llvmTypeForType(Type type);
+    llvm::Type* box() const;
+    llvm::Type* valueTypeMetaTypePtr() const;
 
-    llvm::Function* runTimeNew() { return runTimeNew_; }
+    llvm::Function* runTimeNew() const { return runTimeNew_; }
 private:
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
 
@@ -50,6 +52,8 @@ private:
 
     llvm::Function *runTimeNew_;
     llvm::StructType *classMetaType_;
+    llvm::StructType *valueTypeMetaType_;
+    llvm::StructType *box_;
 
     void setUpPassManager();
     void emit(const std::string &outPath);

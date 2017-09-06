@@ -24,7 +24,6 @@ Value* ASTMetaTypeInstantiation::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTCast::generateExpr(FnCodeGenerator *fncg) const {
-    // TODO: implement
 //    typeExpr_->generate(fncg);
 //    value_->generate(fncg);
 //    switch (castType_) {

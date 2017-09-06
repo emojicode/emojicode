@@ -24,6 +24,19 @@ public:
     }
 protected:
     std::shared_ptr<ASTExpr> expr_;
+    /// Gets a pointer to the value area of box and bit-casts it to the type matching the ASTExpr::expressionType()
+    /// of ::expr_.
+    /// @param box A pointer to a box.
+    Value* getBoxValuePtr(Value *box, FnCodeGenerator *fncg) const;
+    /// Constructs a simple optional struct according to expressionType() and populates it with value.
+    Value* getSimpleOptional(Value *value, FnCodeGenerator *fncg) const;
+    /// Constructs a simple optional struct according to expressionType() and populates it with value.
+    Value* getSimpleOptionalWithoutValue(FnCodeGenerator *fncg) const;
+
+    void getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fncg) const;
+    Value* getGetValueFromBox(Value *box, FnCodeGenerator *fncg) const;
+    /// Allocas space for a box and then calls ASTExpr::generate() of of ::expr_ and stores its value into the box.
+    Value* getAllocaTheBox(FnCodeGenerator *fncg) const;
 };
 
 class ASTBoxToSimpleOptional final : public ASTBoxing {

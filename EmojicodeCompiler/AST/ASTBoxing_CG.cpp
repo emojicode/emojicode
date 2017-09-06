@@ -12,76 +12,115 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
-//    expr_->generate(fncg);
-//    auto rtype = expr_->expressionType();
-//    rtype.setOptional();
-//    rtype.unbox();
-//    if (rtype.remotelyStored()) {
-//        fncg->wr().writeInstruction({ INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE_REMOTE,
-//            static_cast<EmojicodeInstruction>(rtype.size() - 1) });
-//    }
-//    else {
-//        fncg->wr().writeInstruction({ INS_BOX_TO_SIMPLE_OPTIONAL_PRODUCE,
-//            static_cast<EmojicodeInstruction>(rtype.size() - 1) });
-//    }
-    return nullptr;
+Value* ASTBoxing::getBoxValuePtr(Value *box, FnCodeGenerator *fncg) const {
+    std::vector<Value *> idx2{
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 1),
+    };
+    auto type = fncg->generator()->llvmTypeForType(expr_->expressionType())->getPointerTo();
+    return fncg->builder().CreateBitCast(fncg->builder().CreateGEP(box, idx2), type);
 }
 
-Value* ASTSimpleToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBoxing::getSimpleOptional(Value *value, FnCodeGenerator *fncg) const {
     auto structType = fncg->generator()->llvmTypeForType(expressionType());
-    auto value = expr_->generate(fncg);
     auto undef = llvm::UndefValue::get(structType);
-    auto simpleOptional = fncg->builder().CreateInsertValue(undef, value, std::vector<unsigned int>{1});
-    auto flag = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 1);
-    return fncg->builder().CreateInsertValue(simpleOptional, flag, std::vector<unsigned int>{0});
+    auto simpleOptional = fncg->builder().CreateInsertValue(undef, value, 1);
+    return fncg->builder().CreateInsertValue(simpleOptional, fncg->generator()->optionalValue(), 0);
 }
 
-Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
-//    expr_->generate(fncg);
-//    auto rtype = expr_->expressionType();
-//    if (rtype.remotelyStored()) {
-//        fncg->wr().writeInstruction({ INS_SIMPLE_OPTIONAL_TO_BOX_REMOTE,
-//            static_cast<EmojicodeInstruction>(rtype.boxIdentifier()),
-//            static_cast<EmojicodeInstruction>(rtype.size() - 1) });
-//    }
-//    else {
-//        fncg->wr().writeInstruction({ INS_SIMPLE_OPTIONAL_TO_BOX,
-//            static_cast<EmojicodeInstruction>(rtype.boxIdentifier()),
-//            static_cast<EmojicodeInstruction>(rtype.size() - 1) });
-//    }
-    return nullptr;
+Value* ASTBoxing::getSimpleOptionalWithoutValue(FnCodeGenerator *fncg) const {
+    auto structType = fncg->generator()->llvmTypeForType(expressionType());
+    auto undef = llvm::UndefValue::get(structType);
+    return fncg->builder().CreateInsertValue(undef, fncg->generator()->optionalNoValue(), 0);
 }
 
-Value* ASTSimpleToBox::generateExpr(FnCodeGenerator *fncg) const {
-//    auto rtype = expr_->expressionType();
-//    if (rtype.remotelyStored()) {
-//        expr_->generate(fncg);
-//        fncg->wr().writeInstruction({ INS_BOX_PRODUCE_REMOTE,
-//            static_cast<EmojicodeInstruction>(rtype.size()),
-//            static_cast<EmojicodeInstruction>(rtype.boxIdentifier()) });
-//    }
-//    else {
-//        fncg->wr().writeInstruction({ INS_BOX_PRODUCE,
-//            static_cast<EmojicodeInstruction>(rtype.boxIdentifier()) });
-//        expr_->generate(fncg);
-//        fncg->wr().writeInstruction(INS_PUSH_N);
-//        fncg->wr().writeInstruction(kBoxValueSize - rtype.size() - 1);
-//    }
-    return nullptr;
+void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fncg) const {
+    auto metaType = llvm::Constant::getNullValue(fncg->generator()->valueTypeMetaTypePtr());
+    fncg->builder().CreateStore(metaType, fncg->getMetaTypePtr(box));
+
+    if (expr_->expressionType().remotelyStored()) {
+        // TODO: Implement
+    }
+
+    fncg->builder().CreateStore(value, getBoxValuePtr(box, fncg));
+}
+
+Value* ASTBoxing::getAllocaTheBox(FnCodeGenerator *fncg) const {
+    auto box = fncg->builder().CreateAlloca(fncg->generator()->box());
+    return fncg->builder().CreateStore(expr_->generate(fncg), box);
+}
+
+Value* ASTBoxing::getGetValueFromBox(Value *box, FnCodeGenerator *fncg) const {
+    if (expr_->expressionType().remotelyStored()) {
+        // TODO: Implement
+    }
+    return fncg->builder().CreateLoad(getBoxValuePtr(box, fncg));
 }
 
 Value* ASTBoxToSimple::generateExpr(FnCodeGenerator *fncg) const {
-//    expr_->generate(fncg);
-//    auto rtype = expr_->expressionType();
-//    rtype.unbox();
-//    if (rtype.remotelyStored()) {
-//        fncg->wr().writeInstruction({ INS_UNBOX_REMOTE, static_cast<EmojicodeInstruction>(rtype.size()) });
-//    }
-//    else {
-//        fncg->wr().writeInstruction({ INS_UNBOX, static_cast<EmojicodeInstruction>(rtype.size()) });
-//    }
-    return nullptr;
+    return getGetValueFromBox(getAllocaTheBox(fncg), fncg);
+}
+
+Value* ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
+    auto box = getAllocaTheBox(fncg);
+
+    auto hasNoValue = fncg->getHasBoxNoValue(box);
+
+    auto function = fncg->builder().GetInsertBlock()->getParent();
+    auto noValueBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "noValue", function);
+    auto valueBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "value", function);
+    auto mergeBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "cont", function);
+
+    fncg->builder().CreateCondBr(hasNoValue, noValueBlock, valueBlock);
+
+    fncg->builder().SetInsertPoint(noValueBlock);
+    auto noValueValue = getSimpleOptionalWithoutValue(fncg);
+    fncg->builder().CreateBr(mergeBlock);
+
+    fncg->builder().SetInsertPoint(valueBlock);
+    auto value = getSimpleOptional(getGetValueFromBox(box, fncg), fncg);
+    fncg->builder().CreateBr(mergeBlock);
+
+    fncg->builder().SetInsertPoint(mergeBlock);
+    auto phi = fncg->builder().CreatePHI(fncg->generator()->llvmTypeForType(expressionType()), 2);
+    phi->addIncoming(noValueValue, noValueBlock);
+    phi->addIncoming(value, valueBlock);
+    return phi;
+}
+
+Value* ASTSimpleToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
+    return getSimpleOptional(expr_->generate(fncg), fncg);
+}
+
+Value* ASTSimpleToBox::generateExpr(FnCodeGenerator *fncg) const {
+    auto box = fncg->builder().CreateAlloca(fncg->generator()->box());
+    getPutValueIntoBox(box, expr_->generate(fncg), fncg);
+    return fncg->builder().CreateLoad(box);
+}
+
+Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
+    auto value = expr_->generate(fncg);
+    auto box = fncg->builder().CreateAlloca(fncg->generator()->box());
+
+    auto hasNoValue = fncg->getHasNoValue(value);
+
+    auto function = fncg->builder().GetInsertBlock()->getParent();
+    auto noValueBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "noValue", function);
+    auto valueBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "value", function);
+    auto mergeBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "cont", function);
+
+    fncg->builder().CreateCondBr(hasNoValue, noValueBlock, valueBlock);
+
+    fncg->builder().SetInsertPoint(noValueBlock);
+    auto metaType = llvm::Constant::getNullValue(fncg->generator()->valueTypeMetaTypePtr());
+    fncg->builder().CreateStore(metaType, fncg->getMetaTypePtr(box));
+    fncg->builder().CreateBr(mergeBlock);
+
+    fncg->builder().SetInsertPoint(valueBlock);
+    getPutValueIntoBox(box, value, fncg);
+    fncg->builder().CreateBr(mergeBlock);
+    fncg->builder().SetInsertPoint(mergeBlock);
+    return fncg->builder().CreateLoad(box);
 }
 
 Value* ASTDereference::generateExpr(FnCodeGenerator *fncg) const {

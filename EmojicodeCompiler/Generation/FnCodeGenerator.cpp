@@ -59,4 +59,22 @@ llvm::Value* FnCodeGenerator::getMetaFromObject(llvm::Value *object) {
     return builder().CreateLoad(builder().CreateGEP(object, idx), "meta");
 }
 
+llvm::Value* FnCodeGenerator::getHasBoxNoValue(llvm::Value *box) {
+    auto null = llvm::Constant::getNullValue(generator()->valueTypeMetaTypePtr());
+    return builder().CreateICmpEQ(builder().CreateLoad(getMetaTypePtr(box)), null);
+}
+
+Value* FnCodeGenerator::getMetaTypePtr(Value *box) {
+    std::vector<Value *> idx{
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
+    };
+    return builder().CreateGEP(box, idx);
+}
+
+Value* FnCodeGenerator::getHasNoValue(llvm::Value *simpleOptional) {
+    auto vf = builder().CreateExtractValue(simpleOptional, 0);
+    return builder().CreateICmpEQ(vf, generator()->optionalNoValue());
+}
+
 }  // namespace EmojicodeCompiler

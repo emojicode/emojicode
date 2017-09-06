@@ -36,6 +36,12 @@ CodeGenerator::CodeGenerator(Package *package) : package_(package) {
     classMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
         llvm::Type::getInt64Ty(context()), llvm::Type::getInt8PtrTy(context())->getPointerTo(),
     }, "classMeta");
+    valueTypeMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
+        llvm::Type::getInt64Ty(context()),
+    }, "valueTypeMeta");
+    box_ = llvm::StructType::create(std::vector<llvm::Type *> {
+        valueTypeMetaType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context()), 32),
+    }, "box");
 
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context()));
     types_.emplace(Type::integer(), llvm::Type::getInt64Ty(context()));
@@ -50,8 +56,11 @@ llvm::Type* CodeGenerator::llvmTypeForType(Type type) {
     if (type.meta()) {
         return classMetaType_->getPointerTo();
     }
-
-    if (type.optional()) {
+    
+    if (type.storageType() == StorageType::Box) {
+        llvmType = box_;
+    }
+    else if (type.optional()) {
         type.setOptional(false);
         std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context()), llvmTypeForType(type) };
         llvmType = llvm::StructType::get(context(), types);
@@ -73,10 +82,6 @@ llvm::Type* CodeGenerator::llvmTypeForType(Type type) {
         std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context()),
                                          llvmTypeForType(type.genericArguments()[1]) };
         llvmType = llvm::StructType::get(context(), types);
-    }
-
-    if (type.type() == TypeType::Protocol) {
-        llvmType = llvm::Type::getInt64Ty(context());
     }
 
     if (llvmType == nullptr) {
@@ -108,6 +113,14 @@ llvm::Value* CodeGenerator::optionalValue() {
 
 llvm::Value* CodeGenerator::optionalNoValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 0);
+}
+
+llvm::Type* CodeGenerator::box() const {
+    return box_;
+}
+
+llvm::Type* CodeGenerator::valueTypeMetaTypePtr() const {
+    return valueTypeMetaType_->getPointerTo();
 }
 
 void CodeGenerator::declareLlvmFunction(Function *function) {
