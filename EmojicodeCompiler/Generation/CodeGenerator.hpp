@@ -10,16 +10,18 @@
 #define CodeGenerator_hpp
 
 #include <llvm/IR/LegacyPassManager.h>
-#include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
-#include "../Types/Type.hpp"
-#include <map>
 #include <string>
+#include "LLVMTypeHelper.hpp"
+#include <memory>
 
 namespace EmojicodeCompiler {
 
 class Application;
+class Package;
+class Class;
+class Function;
 
 /// Manages the generation of IR for one package. Each package is compiled to one LLVM module.
 class CodeGenerator {
@@ -27,6 +29,8 @@ public:
     CodeGenerator(Package *package);
     llvm::LLVMContext& context() { return context_; }
     llvm::Module* module() { return module_.get(); }
+
+    LLVMTypeHelper& typeHelper() { return typeHelper_; }
 
     /// Returns the package for which this code generator was created.
     Package* package() const { return package_; }
@@ -36,27 +40,21 @@ public:
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();
 
-    llvm::Type* llvmTypeForType(Type type);
-    llvm::Type* box() const;
-    llvm::Type* valueTypeMetaTypePtr() const;
-
     llvm::Function* runTimeNew() const { return runTimeNew_; }
 private:
-    llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
-
     Package *package_;
     llvm::LLVMContext context_;
     std::unique_ptr<llvm::Module> module_;
-    std::map<Type, llvm::Type*> types_;
+
     std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
 
     llvm::Function *runTimeNew_;
-    llvm::StructType *classMetaType_;
-    llvm::StructType *valueTypeMetaType_;
-    llvm::StructType *box_;
+    LLVMTypeHelper typeHelper_ = LLVMTypeHelper(context());
 
     void setUpPassManager();
     void emit(const std::string &outPath);
+    void generateFunctions();
+    void declarePackageSymbols();
     void declareRunTime();
     void declareLlvmFunction(Function *function);
     void generateFunction(Function *function);

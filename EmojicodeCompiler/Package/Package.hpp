@@ -101,9 +101,8 @@ public:
     void registerClass(Class *cl) { classes_.push_back(cl); }
     /// A ValueType (and its derivates such as Enum) defined in this package must be registered with this method.
     void registerValueType(ValueType *vt) { valueTypes_.push_back(vt); }
-    /// Functions that technically belong to this package but are not contained in a Class must be
-    /// registered with this function.
-    /// @see STIProvider, which is the provider that is used for methods that must be registered with this function.
+    /// Functions that technically belong to this package but are not members of a TypeDefinition instance that is
+    /// registered with this package, must be registered with this function.
     void registerFunction(Function *function) { functions_.push_back(function); }
     /// An extension defined in this package that extends a type not defined in this package, must be registered
     /// with this method.

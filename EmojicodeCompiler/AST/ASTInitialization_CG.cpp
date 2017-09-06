@@ -35,7 +35,7 @@ Value* ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
 Value* ASTInitialization::generateClassInit(FnCodeGenerator *fncg) const {
     if (typeExpr_->availability() == TypeAvailability::StaticAndAvailabale) {
         auto callee = ASTProxyExpr(position(), typeExpr_->expressionType(), [this](FnCodeGenerator *fncg) {
-            auto type = llvm::dyn_cast<llvm::PointerType>(fncg->generator()->llvmTypeForType(typeExpr_->expressionType()));
+            auto type = llvm::dyn_cast<llvm::PointerType>(fncg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
             auto size = fncg->sizeFor(type);
 
             auto alloc = fncg->builder().CreateCall(fncg->generator()->runTimeNew(), size, "alloc");

@@ -45,7 +45,7 @@ Value* ASTThis::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTNothingness::generateExpr(FnCodeGenerator *fncg) const {
-    auto structType = fncg->generator()->llvmTypeForType(type_);
+    auto structType = fncg->typeHelper().llvmTypeFor(type_);
     auto undef = llvm::UndefValue::get(structType);
     return fncg->builder().CreateInsertValue(undef, fncg->generator()->optionalNoValue(), 0);
 }

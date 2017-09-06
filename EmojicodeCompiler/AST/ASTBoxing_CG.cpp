@@ -17,25 +17,25 @@ Value* ASTBoxing::getBoxValuePtr(Value *box, FnCodeGenerator *fncg) const {
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 1),
     };
-    auto type = fncg->generator()->llvmTypeForType(expr_->expressionType())->getPointerTo();
+    auto type = fncg->typeHelper().llvmTypeFor(expr_->expressionType())->getPointerTo();
     return fncg->builder().CreateBitCast(fncg->builder().CreateGEP(box, idx2), type);
 }
 
 Value* ASTBoxing::getSimpleOptional(Value *value, FnCodeGenerator *fncg) const {
-    auto structType = fncg->generator()->llvmTypeForType(expressionType());
+    auto structType = fncg->typeHelper().llvmTypeFor(expressionType());
     auto undef = llvm::UndefValue::get(structType);
     auto simpleOptional = fncg->builder().CreateInsertValue(undef, value, 1);
     return fncg->builder().CreateInsertValue(simpleOptional, fncg->generator()->optionalValue(), 0);
 }
 
 Value* ASTBoxing::getSimpleOptionalWithoutValue(FnCodeGenerator *fncg) const {
-    auto structType = fncg->generator()->llvmTypeForType(expressionType());
+    auto structType = fncg->typeHelper().llvmTypeFor(expressionType());
     auto undef = llvm::UndefValue::get(structType);
     return fncg->builder().CreateInsertValue(undef, fncg->generator()->optionalNoValue(), 0);
 }
 
 void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fncg) const {
-    auto metaType = llvm::Constant::getNullValue(fncg->generator()->valueTypeMetaTypePtr());
+    auto metaType = llvm::Constant::getNullValue(fncg->typeHelper().valueTypeMetaTypePtr());
     fncg->builder().CreateStore(metaType, fncg->getMetaTypePtr(box));
 
     if (expr_->expressionType().remotelyStored()) {
@@ -46,7 +46,7 @@ void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fn
 }
 
 Value* ASTBoxing::getAllocaTheBox(FnCodeGenerator *fncg) const {
-    auto box = fncg->builder().CreateAlloca(fncg->generator()->box());
+    auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
     return fncg->builder().CreateStore(expr_->generate(fncg), box);
 }
 
@@ -82,7 +82,7 @@ Value* ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
     fncg->builder().CreateBr(mergeBlock);
 
     fncg->builder().SetInsertPoint(mergeBlock);
-    auto phi = fncg->builder().CreatePHI(fncg->generator()->llvmTypeForType(expressionType()), 2);
+    auto phi = fncg->builder().CreatePHI(fncg->typeHelper().llvmTypeFor(expressionType()), 2);
     phi->addIncoming(noValueValue, noValueBlock);
     phi->addIncoming(value, valueBlock);
     return phi;
@@ -93,14 +93,14 @@ Value* ASTSimpleToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTSimpleToBox::generateExpr(FnCodeGenerator *fncg) const {
-    auto box = fncg->builder().CreateAlloca(fncg->generator()->box());
+    auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
     getPutValueIntoBox(box, expr_->generate(fncg), fncg);
     return fncg->builder().CreateLoad(box);
 }
 
 Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
     auto value = expr_->generate(fncg);
-    auto box = fncg->builder().CreateAlloca(fncg->generator()->box());
+    auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
 
     auto hasNoValue = fncg->getHasNoValue(value);
 
@@ -112,7 +112,7 @@ Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
     fncg->builder().CreateCondBr(hasNoValue, noValueBlock, valueBlock);
 
     fncg->builder().SetInsertPoint(noValueBlock);
-    auto metaType = llvm::Constant::getNullValue(fncg->generator()->valueTypeMetaTypePtr());
+    auto metaType = llvm::Constant::getNullValue(fncg->typeHelper().valueTypeMetaTypePtr());
     fncg->builder().CreateStore(metaType, fncg->getMetaTypePtr(box));
     fncg->builder().CreateBr(mergeBlock);
 

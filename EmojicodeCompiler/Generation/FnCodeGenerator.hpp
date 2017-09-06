@@ -37,6 +37,7 @@ public:
     Application* app() { return generator()->package()->app(); }
     CodeGenerator* generator() { return generator_; }
     llvm::IRBuilder<>& builder() { return builder_; }
+    LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }
     llvm::Value* thisValue() { return &*fn_->llvmFunction()->args().begin(); }
 
     llvm::Value* sizeFor(llvm::PointerType *type);

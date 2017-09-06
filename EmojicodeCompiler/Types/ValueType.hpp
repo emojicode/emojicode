@@ -24,10 +24,6 @@ public:
 
     void prepareForSemanticAnalysis() override;
 
-    void addMethod(Function *method) override;
-    void addInitializer(Initializer *initializer) override;
-    void addTypeMethod(Function *method) override;
-
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
     }

@@ -87,6 +87,7 @@
 		E4DB9B681F5C24F800B566DD /* ASTBoxing_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B5D1F5C24F800B566DD /* ASTBoxing_CG.cpp */; };
 		E4DB9B6A1F5C256400B566DD /* ASTExpr_CG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B691F5C256400B566DD /* ASTExpr_CG.cpp */; };
 		E4DB9B841F5EAA6700B566DD /* Mangler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B821F5EAA6700B566DD /* Mangler.cpp */; };
+		E4DB9B871F6014A300B566DD /* LLVMTypeHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B851F6014A200B566DD /* LLVMTypeHelper.cpp */; };
 		E4DE8CAB1F57410400BFE7A9 /* CompatibleFunctionParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */; };
 /* End PBXBuildFile section */
 
@@ -272,6 +273,8 @@
 		E4DB9B801F5E8BC400B566DD /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E4DB9B821F5EAA6700B566DD /* Mangler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mangler.cpp; sourceTree = "<group>"; };
 		E4DB9B831F5EAA6700B566DD /* Mangler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mangler.hpp; sourceTree = "<group>"; };
+		E4DB9B851F6014A200B566DD /* LLVMTypeHelper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LLVMTypeHelper.cpp; sourceTree = "<group>"; };
+		E4DB9B861F6014A200B566DD /* LLVMTypeHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LLVMTypeHelper.hpp; sourceTree = "<group>"; };
 		E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompatibleFunctionParser.cpp; sourceTree = "<group>"; };
 		E4DE8CAA1F57410400BFE7A9 /* CompatibleFunctionParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CompatibleFunctionParser.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -368,6 +371,8 @@
 				E49E6D171F4ABF2500B819CA /* ClosureCodeGenerator.hpp */,
 				E4DB9B821F5EAA6700B566DD /* Mangler.cpp */,
 				E4DB9B831F5EAA6700B566DD /* Mangler.hpp */,
+				E4DB9B851F6014A200B566DD /* LLVMTypeHelper.cpp */,
+				E4DB9B861F6014A200B566DD /* LLVMTypeHelper.hpp */,
 			);
 			path = Generation;
 			sourceTree = "<group>";
@@ -690,6 +695,7 @@
 				E48356AD1F361F61000B80AE /* CallCodeGenerator.cpp in Sources */,
 				E49E6D181F4ABF2500B819CA /* ClosureCodeGenerator.cpp in Sources */,
 				E47838D71F41EA4D007B937C /* ProtocolFunction.cpp in Sources */,
+				E4DB9B871F6014A300B566DD /* LLVMTypeHelper.cpp in Sources */,
 				E483569F1F34D8BE000B80AE /* ASTBinaryOperator.cpp in Sources */,
 				E460A5BB1F30EFA2006E3AC7 /* TypeExpectation.cpp in Sources */,
 				E4DB9B5E1F5C24F800B566DD /* ASTVariables_CG.cpp in Sources */,

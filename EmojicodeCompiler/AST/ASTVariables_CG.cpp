@@ -41,7 +41,7 @@ Value* ASTGetVariable::generateExpr(FnCodeGenerator *fncg) const {
 
 Value* ASTInitGetVariable::generateExpr(FnCodeGenerator *fncg) const {
     if (declare_) {
-        auto alloca = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(type_));
+        auto alloca = fncg->builder().CreateAlloca(fncg->typeHelper().llvmTypeFor(type_));
         fncg->scoper().getVariable(varId_) = LocalVariable(true, alloca);
     }
     return ASTGetVariable::generateExpr(fncg);
@@ -57,7 +57,7 @@ void ASTInitableCreator::generate(FnCodeGenerator *fncg) const {
 }
 
 void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
-    auto alloca = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(type_), nullptr);
+    auto alloca = fncg->builder().CreateAlloca(fncg->typeHelper().llvmTypeFor(type_), nullptr, utf8(varName_));
     fncg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
     if (type_.optional()) {
@@ -72,7 +72,7 @@ void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
 void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) const {
     llvm::Value *varPtr;
     if (declare_) {
-        varPtr = fncg->builder().CreateAlloca(fncg->generator()->llvmTypeForType(expr_->expressionType()));
+        varPtr = fncg->builder().CreateAlloca(fncg->typeHelper().llvmTypeFor(expr_->expressionType()), nullptr, utf8(varName_));
         fncg->scoper().getVariable(varId_) = LocalVariable(true, varPtr);
     }
     else if (inInstanceScope()) {

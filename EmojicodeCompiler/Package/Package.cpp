@@ -115,6 +115,7 @@ void Package::parse() {
 void Package::analyse() {
     for (auto vt : valueTypes_) {
         vt->prepareForSemanticAnalysis();
+        enqueueFunctionsOfTypeDefinition(vt);
     }
     for (auto eclass : classes()) {
         eclass->prepareForSemanticAnalysis();

@@ -32,79 +32,6 @@ namespace EmojicodeCompiler {
 
 CodeGenerator::CodeGenerator(Package *package) : package_(package) {
     module_ = std::make_unique<llvm::Module>(package->name(), context());
-
-    classMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt64Ty(context()), llvm::Type::getInt8PtrTy(context())->getPointerTo(),
-    }, "classMeta");
-    valueTypeMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt64Ty(context()),
-    }, "valueTypeMeta");
-    box_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        valueTypeMetaType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context()), 32),
-    }, "box");
-
-    types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context()));
-    types_.emplace(Type::integer(), llvm::Type::getInt64Ty(context()));
-    types_.emplace(Type::symbol(), llvm::Type::getInt32Ty(context()));
-    types_.emplace(Type::doubl(), llvm::Type::getDoubleTy(context()));
-    types_.emplace(Type::boolean(), llvm::Type::getInt1Ty(context()));
-}
-
-llvm::Type* CodeGenerator::llvmTypeForType(Type type) {
-    llvm::Type *llvmType = nullptr;
-
-    if (type.meta()) {
-        return classMetaType_->getPointerTo();
-    }
-    
-    if (type.storageType() == StorageType::Box) {
-        llvmType = box_;
-    }
-    else if (type.optional()) {
-        type.setOptional(false);
-        std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context()), llvmTypeForType(type) };
-        llvmType = llvm::StructType::get(context(), types);
-    }
-    else {
-        auto it = types_.find(type);
-        if (it != types_.end()) {
-            llvmType = it->second;
-        }
-        if (llvmType == nullptr && (type.type() == TypeType::ValueType || type.type() == TypeType::Class)) {
-            llvmType = createLlvmTypeForTypeDefinition(type);
-        }
-        if (llvmType != nullptr && type.type() == TypeType::Class) {
-            llvmType = llvmType->getPointerTo();
-        }
-    }
-
-    if (type.type() == TypeType::Error) {
-        std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context()),
-                                         llvmTypeForType(type.genericArguments()[1]) };
-        llvmType = llvm::StructType::get(context(), types);
-    }
-
-    if (llvmType == nullptr) {
-        return llvm::Type::getVoidTy(context());
-    }
-
-    return type.isReference() ? llvmType->getPointerTo() : llvmType;
-}
-
-llvm::Type* CodeGenerator::createLlvmTypeForTypeDefinition(const Type &type) {
-    std::vector<llvm::Type *> types;
-
-    if (type.type() == TypeType::Class) {
-        types.emplace_back(classMetaType_->getPointerTo());
-    }
-
-    for (auto &ivar : type.typeDefinition()->instanceVariables()) {
-        types.emplace_back(llvmTypeForType(ivar.type));
-    }
-
-    auto llvmType = llvm::StructType::create(context(), types, mangleTypeName(type));
-    types_.emplace(type, llvmType);
-    return llvmType;
 }
 
 llvm::Value* CodeGenerator::optionalValue() {
@@ -115,29 +42,21 @@ llvm::Value* CodeGenerator::optionalNoValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 0);
 }
 
-llvm::Type* CodeGenerator::box() const {
-    return box_;
-}
-
-llvm::Type* CodeGenerator::valueTypeMetaTypePtr() const {
-    return valueTypeMetaType_->getPointerTo();
-}
-
 void CodeGenerator::declareLlvmFunction(Function *function) {
     std::vector<llvm::Type *> args;
     if (isSelfAllowed(function->functionType())) {
-        args.emplace_back(llvmTypeForType(function->typeContext().calleeType()));
+        args.emplace_back(typeHelper_.llvmTypeFor(function->typeContext().calleeType()));
     }
     std::transform(function->arguments.begin(), function->arguments.end(), std::back_inserter(args), [this](auto &arg) {
-        return llvmTypeForType(arg.type);
+        return typeHelper_.llvmTypeFor(arg.type);
     });
     llvm::Type *returnType;
     if (function->functionType() == FunctionType::ObjectInitializer) {
         auto init = dynamic_cast<Initializer *>(function);
-        returnType = llvmTypeForType(init->constructedType(init->typeContext().calleeType()));
+        returnType = typeHelper_.llvmTypeFor(init->constructedType(init->typeContext().calleeType()));
     }
     else {
-        returnType = llvmTypeForType(function->returnType);
+        returnType = typeHelper_.llvmTypeFor(function->returnType);
     }
     auto ft = llvm::FunctionType::get(returnType, args, false);
     auto name = function->isExternal() ? function->externalName() : mangleFunctionName(function);
@@ -148,8 +67,19 @@ void CodeGenerator::declareLlvmFunction(Function *function) {
 void CodeGenerator::generate(const std::string &outPath) {
     declareRunTime();
 
+    declarePackageSymbols();
+    generateFunctions();
+
+    llvm::verifyModule(*module(), &llvm::outs());
+    module()->dump();
+    emit(outPath);
+}
+
+void CodeGenerator::declarePackageSymbols() {
     for (auto valueType : package_->valueTypes()) {
-        
+        valueType->eachFunction([this](auto *function) {
+            declareLlvmFunction(function);
+        });
     }
     for (auto klass : package_->classes()) {
         klass->eachFunction([this](auto *function) {
@@ -160,7 +90,14 @@ void CodeGenerator::generate(const std::string &outPath) {
     for (auto function : package_->functions()) {
         declareLlvmFunction(function);
     }
+}
 
+void CodeGenerator::generateFunctions() {
+    for (auto valueType : package_->valueTypes()) {
+        valueType->eachFunction([this](auto *function) {
+            generateFunction(function);
+        });
+    }
     for (auto function : package_->functions()) {
         generateFunction(function);
     }
@@ -169,10 +106,12 @@ void CodeGenerator::generate(const std::string &outPath) {
             generateFunction(function);
         });
     }
+}
 
-    llvm::verifyModule(*module(), &llvm::outs());
-    module()->dump();
-    emit(outPath);
+void CodeGenerator::generateFunction(Function *function) {
+    if (!function->isExternal()) {
+        FnCodeGenerator(function, this).generate();
+    }
 }
 
 void CodeGenerator::createClassInfo(Class *klass) {
@@ -193,21 +132,15 @@ void CodeGenerator::createClassInfo(Class *klass) {
     auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
                                                  llvm::GlobalValue::LinkageTypes::ExternalLinkage,
                                                  llvm::ConstantArray::get(type, functions));
-    auto initializer = llvm::ConstantStruct::get(classMetaType_, std::vector<llvm::Constant *> {
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
         llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable,
     });
-    auto info = new llvm::GlobalVariable(*module(), classMetaType_, true,
+    auto info = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleClassMetaName(klass));
 
     klass->virtualTable() = std::move(functions);
     klass->setClassInfo(info);
-}
-
-void CodeGenerator::generateFunction(Function *function) {
-    if (!function->isExternal()) {
-        FnCodeGenerator(function, this).generate();
-    }
 }
 
 void CodeGenerator::declareRunTime() {

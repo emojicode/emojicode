@@ -28,7 +28,7 @@ void FnCodeGenerator::generate() {
     fn_->ast()->generate(this);
 
     if (llvm::verifyFunction(*fn_->llvmFunction(), &llvm::outs())) {
-        
+
     }
 }
 
@@ -60,7 +60,7 @@ llvm::Value* FnCodeGenerator::getMetaFromObject(llvm::Value *object) {
 }
 
 llvm::Value* FnCodeGenerator::getHasBoxNoValue(llvm::Value *box) {
-    auto null = llvm::Constant::getNullValue(generator()->valueTypeMetaTypePtr());
+    auto null = llvm::Constant::getNullValue(typeHelper().valueTypeMetaTypePtr());
     return builder().CreateICmpEQ(builder().CreateLoad(getMetaTypePtr(box)), null);
 }
 
