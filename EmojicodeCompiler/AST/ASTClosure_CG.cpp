@@ -8,11 +8,11 @@
 
 #include "ASTClosure.hpp"
 #include "../Generation/ClosureCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
-Value* ASTClosure::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTClosure::generate(FunctionCodeGenerator *fncg) const {
     // TODO: implement
 //    auto closureGenerator = ClosureCodeGenerator(captures_, function_, fncg->generator());
 //    closureGenerator.generate();

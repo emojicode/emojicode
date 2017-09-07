@@ -7,7 +7,5 @@ var searchData=
   ['analyse',['analyse',['../class_emojicode_compiler_1_1_package.html#af6934bb68ac69b3a0ebe83acd47bb803',1,'EmojicodeCompiler::Package']]],
   ['app',['app',['../class_emojicode_compiler_1_1_package.html#ad10a32197b493b6ac042924b696726da',1,'EmojicodeCompiler::Package']]],
   ['application',['Application',['../class_emojicode_compiler_1_1_application.html#adc43eea77b7cff875d2b32548bed13bf',1,'EmojicodeCompiler::Application']]],
-  ['applicationdelegate',['applicationDelegate',['../class_emojicode_compiler_1_1_c_l_i_1_1_options.html#a926df5e31631caa1c3eb5deeb8fca75e',1,'EmojicodeCompiler::CLI::Options']]],
-  ['assigned',['assigned',['../class_emojicode_compiler_1_1_function.html#aa0240a05e83187552824b6b7460c3a96',1,'EmojicodeCompiler::Function']]],
-  ['assignvti',['assignVti',['../class_emojicode_compiler_1_1_function.html#a36a63a83c7e81e473fc43afd1a2021ce',1,'EmojicodeCompiler::Function']]]
+  ['applicationdelegate',['applicationDelegate',['../class_emojicode_compiler_1_1_c_l_i_1_1_options.html#a926df5e31631caa1c3eb5deeb8fca75e',1,'EmojicodeCompiler::CLI::Options']]]
 ];

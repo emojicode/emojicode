@@ -1,10 +1,15 @@
 var searchData=
 [
-  ['name',['name',['../class_emojicode_compiler_1_1_package.html#a61538dc9b5bed309f97c56c3d219dd2a',1,'EmojicodeCompiler::Package::name()'],['../class_emojicode_compiler_1_1_variable.html#a689982e2fd78472d85577b21b3eb98aa',1,'EmojicodeCompiler::Variable::name()'],['../class_emojicode_compiler_1_1_type_definition.html#a0b0cdc382c5e9af33f2a8e382e6312b1',1,'EmojicodeCompiler::TypeDefinition::name()']]],
-  ['newlocation',['newLocation',['../struct_emojicode_1_1_object.html#a521b830dcea88bf2070fc4c77ca54f96',1,'Emojicode::Object']]],
-  ['next',['next',['../struct_emojicode_1_1_emojicode_dictionary_node.html#a8d7cc3854357ec2965c2077fa49abe77',1,'Emojicode::EmojicodeDictionaryNode::next()'],['../class_emojicode_compiler_1_1_class_v_t_i_provider.html#aeba73ed5b79f4407184cbdf45eb2da61',1,'EmojicodeCompiler::ClassVTIProvider::next()']]],
-  ['nextargumentscount',['nextArgumentsCount',['../class_emojicode_compiler_1_1_compatibility_info_provider.html#a2e1177f0ddb6a2d716b73571ae73b987',1,'EmojicodeCompiler::CompatibilityInfoProvider']]],
-  ['nextthreshold',['nextThreshold',['../struct_emojicode_1_1_emojicode_dictionary.html#abe59a0d5440a2ebf83253d5d7b71d010',1,'Emojicode::EmojicodeDictionary']]],
-  ['nexttokenis',['nextTokenIs',['../class_emojicode_compiler_1_1_token_stream.html#a8848b34e75b9f1cdc3ce4f01c9a9ae41',1,'EmojicodeCompiler::TokenStream::nextTokenIs(TokenType type) const'],['../class_emojicode_compiler_1_1_token_stream.html#a53175304adad72387817146eb0dc3d2c',1,'EmojicodeCompiler::TokenStream::nextTokenIs(char32_t c, TokenType type=TokenType::Identifier) const']]],
-  ['nexttokeniseverythingbut',['nextTokenIsEverythingBut',['../class_emojicode_compiler_1_1_token_stream.html#acb7cd49bdef39a66dc50f97a791f6ece',1,'EmojicodeCompiler::TokenStream']]]
+  ['objectvariableinformation',['ObjectVariableInformation',['../struct_emojicode_compiler_1_1_object_variable_information.html',1,'EmojicodeCompiler']]],
+  ['objectvariablerecords',['objectVariableRecords',['../class_emojicode_compiler_1_1_type.html#a68ee4ecf2e0bb42d8a7bc4094c6e439c',1,'EmojicodeCompiler::Type']]],
+  ['offernewline',['offerNewLine',['../class_emojicode_compiler_1_1_prettyprinter.html#a6bce1e60ebf19f94bd4c4b4adbcd0ce0',1,'EmojicodeCompiler::Prettyprinter']]],
+  ['offernewlineunlessempty',['offerNewLineUnlessEmpty',['../class_emojicode_compiler_1_1_prettyprinter.html#a5cc3308a598874a1ebafee0f3e34e837',1,'EmojicodeCompiler::Prettyprinter']]],
+  ['offerspace',['offerSpace',['../class_emojicode_compiler_1_1_prettyprinter.html#ad146437df1464aeb89c0c37e33032b16',1,'EmojicodeCompiler::Prettyprinter']]],
+  ['offertype',['offerType',['../class_emojicode_compiler_1_1_package.html#a9c18a8704262b2b4c3b5b6f91e0fc419',1,'EmojicodeCompiler::Package::offerType()'],['../class_emojicode_compiler_1_1_recording_package.html#aacfecbc0d2091d20f66728ab0e0a887d',1,'EmojicodeCompiler::RecordingPackage::offerType()']]],
+  ['offsetindicesby',['offsetIndicesBy',['../class_emojicode_compiler_1_1_generic.html#a0c79cabfcb16443a688872ce959a87f4',1,'EmojicodeCompiler::Generic']]],
+  ['operator_3c_3c',['operator&lt;&lt;',['../class_emojicode_compiler_1_1_prettyprinter.html#a1f911bb94ed8cf433bab93cd63467996',1,'EmojicodeCompiler::Prettyprinter']]],
+  ['optional',['optional',['../class_emojicode_compiler_1_1_type.html#a519923dc0dd535480a8f7e872bb13dbb',1,'EmojicodeCompiler::Type']]],
+  ['options',['Options',['../class_emojicode_compiler_1_1_c_l_i_1_1_options.html',1,'EmojicodeCompiler::CLI::Options'],['../class_emojicode_compiler_1_1_c_l_i_1_1_options.html#a4b7a1f2db3bb2f95f02e1dc1cd917a54',1,'EmojicodeCompiler::CLI::Options::Options()']]],
+  ['overriding',['overriding',['../class_emojicode_compiler_1_1_function.html#a6f9b3334f4ff8c6984d1e335fe57687b',1,'EmojicodeCompiler::Function']]],
+  ['owningtype',['owningType',['../class_emojicode_compiler_1_1_function.html#a33a7cbc4182cbb7f8fc2d298017d2409',1,'EmojicodeCompiler::Function']]]
 ];

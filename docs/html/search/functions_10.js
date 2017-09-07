@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['thiscontext',['thisContext',['../class_emojicode_1_1_thread.html#ac4eb31840de8d45d406199fa80bbebed',1,'Emojicode::Thread']]],
-  ['thisobject',['thisObject',['../class_emojicode_1_1_thread.html#acf4f3adc3acaecb3ba63c71c3acd785b',1,'Emojicode::Thread']]],
-  ['thisobjectasretained',['thisObjectAsRetained',['../class_emojicode_1_1_thread.html#a6d5137d2d89d266a6c4c1edd07de32dc',1,'Emojicode::Thread']]],
   ['topmostlocalscope',['topmostLocalScope',['../class_emojicode_compiler_1_1_semantic_scoper.html#a857a650bdf9a4b8f8b02ea502ccd4e35',1,'EmojicodeCompiler::SemanticScoper']]],
   ['tostring',['toString',['../class_emojicode_compiler_1_1_type.html#a6b852e676e8cff888e434dbd37ab2670',1,'EmojicodeCompiler::Type']]],
   ['type',['Type',['../class_emojicode_compiler_1_1_type.html#ad661348edc053c83f2033f69969c235a',1,'EmojicodeCompiler::Type::Type(bool optional, size_t r, TypeDefinition *resolutionConstraint)'],['../class_emojicode_compiler_1_1_type.html#a5757725182e552b7c880f493a417db98',1,'EmojicodeCompiler::Type::Type(bool optional, size_t r, Function *function)'],['../class_emojicode_compiler_1_1_function.html#acb46a5e38b9a2d520067949a4b97b8ba',1,'EmojicodeCompiler::Function::type()'],['../class_emojicode_compiler_1_1_token.html#a74f6ba2962fd0f8e21b5ae9aa8900619',1,'EmojicodeCompiler::Token::type()'],['../class_emojicode_compiler_1_1_variable.html#a6dcaab7411f905c0ce2c9b7cf9b704a5',1,'EmojicodeCompiler::Variable::type()'],['../class_emojicode_compiler_1_1_type.html#ab0c47dad4ce12758e5e13e891e618a77',1,'EmojicodeCompiler::Type::type()']]],

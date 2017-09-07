@@ -7,17 +7,17 @@
 //
 
 #include "ASTTypeExpr.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/ValueType.hpp"
 
 namespace EmojicodeCompiler {
 
-Value* ASTTypeFromExpr::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTTypeFromExpr::generate(FunctionCodeGenerator *fncg) const {
     return expr_->generate(fncg);
 }
 
-Value* ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTStaticType::generate(FunctionCodeGenerator *fncg) const {
     assert(availability() == TypeAvailability::StaticAndUnavailable ||
            availability() == TypeAvailability::StaticAndAvailabale);
     if (type_.type() == TypeType::Class) {
@@ -29,7 +29,7 @@ Value* ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
     return nullptr;
 }
     
-Value* ASTThisType::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTThisType::generate(FunctionCodeGenerator *fncg) const {
     return fncg->thisValue();
 }
 

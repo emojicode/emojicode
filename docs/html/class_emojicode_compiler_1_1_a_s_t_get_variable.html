@@ -65,9 +65,10 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_a_s_t_get_variable-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">EmojicodeCompiler::ASTGetVariable Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
+<div class="title">EmojicodeCompiler::ASTGetVariable Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="dynheader">
@@ -75,6 +76,7 @@ Inheritance diagram for EmojicodeCompiler::ASTGetVariable:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_a_s_t_get_variable__inherit__graph.png" border="0" usemap="#_emojicode_compiler_1_1_a_s_t_get_variable_inherit__map" alt="Inheritance graph"/></div>
 <map name="_emojicode_compiler_1_1_a_s_t_get_variable_inherit__map" id="_emojicode_compiler_1_1_a_s_t_get_variable_inherit__map">
+<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_a_s_t_init_get_variable.html" title="EmojicodeCompiler::\lASTInitGetVariable" alt="" coords="89,265,234,304"/>
 <area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="5,92,150,131"/>
 <area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
 <area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="173,92,318,131"/>
@@ -85,10 +87,9 @@ Collaboration diagram for EmojicodeCompiler::ASTGetVariable:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_a_s_t_get_variable__coll__graph.png" border="0" usemap="#_emojicode_compiler_1_1_a_s_t_get_variable_coll__map" alt="Collaboration graph"/></div>
 <map name="_emojicode_compiler_1_1_a_s_t_get_variable_coll__map" id="_emojicode_compiler_1_1_a_s_t_get_variable_coll__map">
-<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="5,105,150,144"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="5,92,150,131"/>
 <area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="173,105,318,144"/>
-<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_variable_i_d.html" title="EmojicodeCompiler::\lVariableID" alt="" coords="173,5,318,44"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="173,92,318,131"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -100,9 +101,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5ff2485e281aa67f2d554c0ec1bdfa88"><td class="memItemLeft" align="right" valign="top"><a id="a5ff2485e281aa67f2d554c0ec1bdfa88"></a>
 <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation) override</td></tr>
 <tr class="separator:a5ff2485e281aa67f2d554c0ec1bdfa88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c086610d987c36e17863db121347395"><td class="memItemLeft" align="right" valign="top"><a id="a0c086610d987c36e17863db121347395"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generateExpr</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg) const override</td></tr>
-<tr class="separator:a0c086610d987c36e17863db121347395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87093661053963a950bdb9d35275a8e4"><td class="memItemLeft" align="right" valign="top"><a id="a87093661053963a950bdb9d35275a8e4"></a>
+Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg) const override</td></tr>
+<tr class="separator:a87093661053963a950bdb9d35275a8e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf0ff70348c8da8b5d914427da16402f"><td class="memItemLeft" align="right" valign="top"><a id="abf0ff70348c8da8b5d914427da16402f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (<a class="el" href="class_emojicode_compiler_1_1_prettyprinter.html">Prettyprinter</a> &amp;pretty) const override</td></tr>
 <tr class="separator:abf0ff70348c8da8b5d914427da16402f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,9 +128,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setExpressionType</b>
 <tr class="memitem:ae23d31aea9ccd1ec7b41e68e4d80f27d inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ae23d31aea9ccd1ec7b41e68e4d80f27d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTemporarilyScoped</b> ()</td></tr>
 <tr class="separator:ae23d31aea9ccd1ec7b41e68e4d80f27d inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e227b8b3271e46cd4e467c1fc5277c3 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="a0e227b8b3271e46cd4e467c1fc5277c3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg) const</td></tr>
-<tr class="separator:a0e227b8b3271e46cd4e467c1fc5277c3 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_emojicode_compiler_1_1_a_s_t_node')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_node.html">EmojicodeCompiler::ASTNode</a></td></tr>
 <tr class="memitem:a9e9d8252f628458755697eff2adc9160 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="memItemLeft" align="right" valign="top"><a id="a9e9d8252f628458755697eff2adc9160"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ASTNode</b> (<a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> p)</td></tr>
@@ -139,6 +137,12 @@ const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">So
 <tr class="memdesc:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">The source position that caused this node to be created. <br /></td></tr>
 <tr class="separator:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:af21aa7087e0ee2051167463ba1b4af75"><td class="memItemLeft" align="right" valign="top"><a id="af21aa7087e0ee2051167463ba1b4af75"></a>
+static Value *&#160;</td><td class="memItemRight" valign="bottom"><b>instanceVariablePointer</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg, size_t index)</td></tr>
+<tr class="separator:af21aa7087e0ee2051167463ba1b4af75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_emojicode_compiler_1_1_a_s_t_variable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_variable.html">EmojicodeCompiler::ASTVariable</a></td></tr>
@@ -146,7 +150,7 @@ Additional Inherited Members</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>inInstanceScope</b> () const</td></tr>
 <tr class="separator:ab51836150a4f11fc63aeb04cc9728829 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9367c98f4e9b05024f4c625241444b50 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a9367c98f4e9b05024f4c625241444b50"></a>
-<a class="el" href="class_emojicode_compiler_1_1_variable_i_d.html">VariableID</a>&#160;</td><td class="memItemRight" valign="bottom"><b>varId</b> ()</td></tr>
+VariableID&#160;</td><td class="memItemRight" valign="bottom"><b>varId</b> ()</td></tr>
 <tr class="separator:a9367c98f4e9b05024f4c625241444b50 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8dc96e7caebcd65e7c35316c64a91759 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a8dc96e7caebcd65e7c35316c64a91759"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>copyVariableAstInfo</b> (const <a class="el" href="struct_emojicode_compiler_1_1_resolved_variable.html">ResolvedVariable</a> &amp;, <a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser)</td></tr>
@@ -156,12 +160,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>copyVariableAstInfo</
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>inInstanceScope_</b> = false</td></tr>
 <tr class="separator:a30347685028497239dfeb1a24fb5b02f inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80af5c48b310943adac0b4a813a4909d inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a80af5c48b310943adac0b4a813a4909d"></a>
-<a class="el" href="class_emojicode_compiler_1_1_variable_i_d.html">VariableID</a>&#160;</td><td class="memItemRight" valign="bottom"><b>varId_</b></td></tr>
+VariableID&#160;</td><td class="memItemRight" valign="bottom"><b>varId_</b></td></tr>
 <tr class="separator:a80af5c48b310943adac0b4a813a4909d inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/<a class="el" href="_a_s_t_expr_8hpp_source.html">ASTExpr.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTExpr.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/<a class="el" href="_a_s_t_variables_8hpp_source.html">ASTVariables.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTVariables.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTVariables_CG.cpp</li>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Prettyprint/ASTToCode.cpp</li>
 </ul>
 </div><!-- contents -->

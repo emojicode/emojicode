@@ -97,9 +97,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a62e2b377c9995aa4e22c61c86aadb855"><td class="memItemLeft" align="right" valign="top"><a id="a62e2b377c9995aa4e22c61c86aadb855"></a>
 <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation) override</td></tr>
 <tr class="separator:a62e2b377c9995aa4e22c61c86aadb855"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2b459b5095f9e1956a7d48e8b6ddae8"><td class="memItemLeft" align="right" valign="top"><a id="af2b459b5095f9e1956a7d48e8b6ddae8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generateExpr</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg) const override</td></tr>
-<tr class="separator:af2b459b5095f9e1956a7d48e8b6ddae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae57412f45939a69fe25c288b0fa3b31e"><td class="memItemLeft" align="right" valign="top"><a id="ae57412f45939a69fe25c288b0fa3b31e"></a>
+Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg) const override</td></tr>
+<tr class="separator:ae57412f45939a69fe25c288b0fa3b31e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adacd5a2c21a085c90c58559b9b1fa7ea"><td class="memItemLeft" align="right" valign="top"><a id="adacd5a2c21a085c90c58559b9b1fa7ea"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (<a class="el" href="class_emojicode_compiler_1_1_prettyprinter.html">Prettyprinter</a> &amp;pretty) const override</td></tr>
 <tr class="separator:adacd5a2c21a085c90c58559b9b1fa7ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,9 +115,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setExpressionType</b>
 <tr class="memitem:ae23d31aea9ccd1ec7b41e68e4d80f27d inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ae23d31aea9ccd1ec7b41e68e4d80f27d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTemporarilyScoped</b> ()</td></tr>
 <tr class="separator:ae23d31aea9ccd1ec7b41e68e4d80f27d inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e227b8b3271e46cd4e467c1fc5277c3 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="a0e227b8b3271e46cd4e467c1fc5277c3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg) const</td></tr>
-<tr class="separator:a0e227b8b3271e46cd4e467c1fc5277c3 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_emojicode_compiler_1_1_a_s_t_node')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_node.html">EmojicodeCompiler::ASTNode</a></td></tr>
 <tr class="memitem:a9e9d8252f628458755697eff2adc9160 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="memItemLeft" align="right" valign="top"><a id="a9e9d8252f628458755697eff2adc9160"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ASTNode</b> (<a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> p)</td></tr>
@@ -126,13 +123,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a clas
 const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_node.html#a169020f6c66090c16b98247e339ac255">position</a> () const</td></tr>
 <tr class="memdesc:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">The source position that caused this node to be created. <br /></td></tr>
 <tr class="separator:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/<a class="el" href="_a_s_t_expr_8hpp_source.html">ASTExpr.hpp</a></li>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTExpr.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTExpr_CG.cpp</li>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Prettyprint/ASTToCode.cpp</li>
 </ul>
 </div><!-- contents -->

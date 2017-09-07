@@ -91,8 +91,6 @@ Collaboration diagram for EmojicodeCompiler::TypeDefinition:</div>
 <div class="center"><img src="class_emojicode_compiler_1_1_type_definition__coll__graph.png" border="0" usemap="#_emojicode_compiler_1_1_type_definition_coll__map" alt="Collaboration graph"/></div>
 <map name="_emojicode_compiler_1_1_type_definition_coll__map" id="_emojicode_compiler_1_1_type_definition_coll__map">
 <area shape="rect" id="node2" href="class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,5,181,44"/>
-<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_c_g_scoper.html" title="EmojicodeCompiler::\lCGScoper" alt="" coords="21,68,165,107"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_scope.html" title="EmojicodeCompiler::\lScope" alt="" coords="21,131,165,169"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -133,13 +131,13 @@ const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">So
 <tr class="memitem:aff26446522821b275c2f9f24f9b70e9a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_definition.html#aff26446522821b275c2f9f24f9b70e9a">lookupTypeMethod</a> (const std::u32string &amp;<a class="el" href="class_emojicode_compiler_1_1_type_definition.html#a0b0cdc382c5e9af33f2a8e382e6312b1">name</a>)</td></tr>
 <tr class="separator:aff26446522821b275c2f9f24f9b70e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbca795f68b0ac89d5578d64c3436d9b"><td class="memItemLeft" align="right" valign="top"><a id="afbca795f68b0ac89d5578d64c3436d9b"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>addMethod</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *method)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addMethod</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *method)</td></tr>
 <tr class="separator:afbca795f68b0ac89d5578d64c3436d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0d8b3b1944e97416f2b350bf0284c23"><td class="memItemLeft" align="right" valign="top"><a id="af0d8b3b1944e97416f2b350bf0284c23"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>addInitializer</b> (<a class="el" href="class_emojicode_compiler_1_1_initializer.html">Initializer</a> *initializer)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addInitializer</b> (<a class="el" href="class_emojicode_compiler_1_1_initializer.html">Initializer</a> *initializer)</td></tr>
 <tr class="separator:af0d8b3b1944e97416f2b350bf0284c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23484ff4bc9011b30ab0fbf1c009cbc4"><td class="memItemLeft" align="right" valign="top"><a id="a23484ff4bc9011b30ab0fbf1c009cbc4"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>addTypeMethod</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *method)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addTypeMethod</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *method)</td></tr>
 <tr class="separator:a23484ff4bc9011b30ab0fbf1c009cbc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad97d9f9c083f43dd9e4067f3ed263fc7"><td class="memItemLeft" align="right" valign="top"><a id="ad97d9f9c083f43dd9e4067f3ed263fc7"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>addInstanceVariable</b> (const <a class="el" href="struct_emojicode_compiler_1_1_instance_variable_declaration.html">InstanceVariableDeclaration</a> &amp;)</td></tr>
@@ -160,12 +158,9 @@ const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_function.
 <tr class="memitem:a924e2d9be6c186431871028ed8de142c"><td class="memItemLeft" align="right" valign="top"><a id="a924e2d9be6c186431871028ed8de142c"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>prepareForSemanticAnalysis</b> ()</td></tr>
 <tr class="separator:a924e2d9be6c186431871028ed8de142c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e0cba4914a6d5bc178d86630c99a2b1"><td class="memItemLeft" align="right" valign="top"><a id="a3e0cba4914a6d5bc178d86630c99a2b1"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>prepareForCG</b> ()</td></tr>
-<tr class="separator:a3e0cba4914a6d5bc178d86630c99a2b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3953779ba36209f1c8d276fb88510338"><td class="memItemLeft" align="right" valign="top"><a id="a3953779ba36209f1c8d276fb88510338"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>finalizeProtocols</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;self)</td></tr>
-<tr class="separator:a3953779ba36209f1c8d276fb88510338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a079bd3e462f782f2fa93233cec1eed15"><td class="memItemLeft" align="right" valign="top"><a id="a079bd3e462f782f2fa93233cec1eed15"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>finalizeProtocols</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
+<tr class="separator:a079bd3e462f782f2fa93233cec1eed15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55521aa1ab99e5ad76e9caa77cef4a17"><td class="memItemLeft" align="right" valign="top"><a id="a55521aa1ab99e5ad76e9caa77cef4a17"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>finalizeProtocol</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;protocol, bool enqueBoxingLayers)</td></tr>
 <tr class="separator:a55521aa1ab99e5ad76e9caa77cef4a17"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -173,15 +168,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>finalizeProtocol</b> 
 <tr class="separator:a1a3433cef24018ea83c4ab8e1f0fa558"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f1937132d87a49e21b7eab652555023"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_definition.html#a3f1937132d87a49e21b7eab652555023">eachFunctionWithoutInitializers</a> (const std::function&lt; void(<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *)&gt; &amp;cb) const</td></tr>
 <tr class="separator:a3f1937132d87a49e21b7eab652555023"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0f71f907f446d7d4a5ecbc5eb35b00f"><td class="memItemLeft" align="right" valign="top"><a id="af0f71f907f446d7d4a5ecbc5eb35b00f"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_definition.html#af0f71f907f446d7d4a5ecbc5eb35b00f">size</a> () const</td></tr>
-<tr class="memdesc:af0f71f907f446d7d4a5ecbc5eb35b00f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The size of an instance of this type in Emojicode words. <br /></td></tr>
-<tr class="separator:af0f71f907f446d7d4a5ecbc5eb35b00f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a084c733620ee0129ecb74fec03d5583e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_scope.html">Scope</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_definition.html#a084c733620ee0129ecb74fec03d5583e">instanceScope</a> ()</td></tr>
 <tr class="separator:a084c733620ee0129ecb74fec03d5583e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81378330e7524523d8a565252ae4c65a"><td class="memItemLeft" align="right" valign="top"><a id="a81378330e7524523d8a565252ae4c65a"></a>
-<a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>cgScoper</b> ()</td></tr>
-<tr class="separator:a81378330e7524523d8a565252ae4c65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb5436f767a72a9f09229f47a247ec7d"><td class="memItemLeft" align="right" valign="top"><a id="acb5436f767a72a9f09229f47a247ec7d"></a>
 const std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_instance_variable_declaration.html">InstanceVariableDeclaration</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>instanceVariables</b> () const</td></tr>
 <tr class="separator:acb5436f767a72a9f09229f47a247ec7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -209,19 +197,11 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a90517353df2804e6721f5562f8d3c3f8"><td class="memItemLeft" align="right" valign="top"><a id="a90517353df2804e6721f5562f8d3c3f8"></a>
 const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>superType</b> () const</td></tr>
 <tr class="separator:a90517353df2804e6721f5562f8d3c3f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8073b060b6a4cc1719e8136060e82f0f"><td class="memItemLeft" align="right" valign="top"><a id="a8073b060b6a4cc1719e8136060e82f0f"></a>
-virtual <a class="el" href="class_emojicode_compiler_1_1_v_t_i_provider.html">VTIProvider</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>protocolMethodVtiProvider</b> ()=0</td></tr>
-<tr class="separator:a8073b060b6a4cc1719e8136060e82f0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2ca56545b7e8659a91538255334ad43"><td class="memItemLeft" align="right" valign="top"><a id="ad2ca56545b7e8659a91538255334ad43"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>handleRequiredInitializer</b> (<a class="el" href="class_emojicode_compiler_1_1_initializer.html">Initializer</a> *init)</td></tr>
+<tr class="memitem:a024ab29d659e9e2bbb7187a99eaea7f7"><td class="memItemLeft" align="right" valign="top"><a id="a024ab29d659e9e2bbb7187a99eaea7f7"></a>
+std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_instance_variable_declaration.html">InstanceVariableDeclaration</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>instanceVariablesMut</b> ()</td></tr>
+<tr class="separator:a024ab29d659e9e2bbb7187a99eaea7f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2ca56545b7e8659a91538255334ad43"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_definition.html#ad2ca56545b7e8659a91538255334ad43">handleRequiredInitializer</a> (<a class="el" href="class_emojicode_compiler_1_1_initializer.html">Initializer</a> *init)</td></tr>
 <tr class="separator:ad2ca56545b7e8659a91538255334ad43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb04ec81340f88b7e413ef4d1c788a0e"><td class="memItemLeft" align="right" valign="top"><a id="afb04ec81340f88b7e413ef4d1c788a0e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>nativeCheck</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
-<tr class="separator:afb04ec81340f88b7e413ef4d1c788a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59f48c0811e2d858141196ff8ad37594"><td class="memItemLeft" align="right" valign="top"><a id="a59f48c0811e2d858141196ff8ad37594"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_type_definition.html#a59f48c0811e2d858141196ff8ad37594">createCGScope</a> ()</td></tr>
-<tr class="memdesc:a59f48c0811e2d858141196ff8ad37594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by prepareForCG to create the CG scope. Can be overridden by subclasses. <br /></td></tr>
-<tr class="separator:a59f48c0811e2d858141196ff8ad37594"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab40892e76392405fee16d5ddd58c4346"><td class="memTemplParams" colspan="2"><a id="ab40892e76392405fee16d5ddd58c4346"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ab40892e76392405fee16d5ddd58c4346"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>duplicateDeclarationCheck</b> (T p, std::map&lt; std::u32string, T &gt; dict, <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> <a class="el" href="class_emojicode_compiler_1_1_type_definition.html#a12a3c193d7b43bd6867aa9c0e4f4260b">position</a>)</td></tr>
@@ -237,12 +217,6 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a18852b47d81ee215f5388b959fc986fa"><td class="memItemLeft" align="right" valign="top"><a id="a18852b47d81ee215f5388b959fc986fa"></a>
 std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>protocols_</b></td></tr>
 <tr class="separator:a18852b47d81ee215f5388b959fc986fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b7becdf6b80b2695f4bd27ce6326d87"><td class="memItemLeft" align="right" valign="top"><a id="a9b7becdf6b80b2695f4bd27ce6326d87"></a>
-<a class="el" href="class_emojicode_compiler_1_1_scope.html">Scope</a>&#160;</td><td class="memItemRight" valign="bottom"><b>scope_</b> = <a class="el" href="class_emojicode_compiler_1_1_scope.html">Scope</a>(0)</td></tr>
-<tr class="separator:a9b7becdf6b80b2695f4bd27ce6326d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0dd0b74fd7a2d30c229e1f5e0462521f"><td class="memItemLeft" align="right" valign="top"><a id="a0dd0b74fd7a2d30c229e1f5e0462521f"></a>
-<a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cgScoper_</b> = <a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a>(0)</td></tr>
-<tr class="separator:a0dd0b74fd7a2d30c229e1f5e0462521f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a898349966a357d95d0d0574aa4591e30"></a>
@@ -299,7 +273,7 @@ std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type
 </div><div class="memdoc">
 <p>Determines whether the resolution constraint of TypeType::GenericVariable allows it to be resolved on an <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> instance representing an instance of this <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a>. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_type.html#aa17441319933692ad4f343a51956ee43">Type::resolveOn</a> </dd></dl>
 
-<p>Implemented in <a class="el" href="class_emojicode_compiler_1_1_class.html#abe79849e8aa5028d0cf3c651791117fe">EmojicodeCompiler::Class</a>, <a class="el" href="class_emojicode_compiler_1_1_value_type.html#a2ca746e079c35246a909252bdc1187cc">EmojicodeCompiler::ValueType</a>, <a class="el" href="class_emojicode_compiler_1_1_enum.html#a976595efa9a0cf4e31ffe0f52d4f3ad5">EmojicodeCompiler::Enum</a>, <a class="el" href="class_emojicode_compiler_1_1_protocol.html#af67f619426fa6e07ea45516d1fce3459">EmojicodeCompiler::Protocol</a>, and <a class="el" href="class_emojicode_compiler_1_1_extension.html#aed3496bbe2fd5a0f9aaf4271e6c5080f">EmojicodeCompiler::Extension</a>.</p>
+<p>Implemented in <a class="el" href="class_emojicode_compiler_1_1_class.html#abe79849e8aa5028d0cf3c651791117fe">EmojicodeCompiler::Class</a>, <a class="el" href="class_emojicode_compiler_1_1_enum.html#a976595efa9a0cf4e31ffe0f52d4f3ad5">EmojicodeCompiler::Enum</a>, <a class="el" href="class_emojicode_compiler_1_1_value_type.html#a2ca746e079c35246a909252bdc1187cc">EmojicodeCompiler::ValueType</a>, <a class="el" href="class_emojicode_compiler_1_1_protocol.html#af67f619426fa6e07ea45516d1fce3459">EmojicodeCompiler::Protocol</a>, and <a class="el" href="class_emojicode_compiler_1_1_extension.html#aed3496bbe2fd5a0f9aaf4271e6c5080f">EmojicodeCompiler::Extension</a>.</p>
 
 </div>
 </div>
@@ -473,6 +447,38 @@ std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type
 <p>Returns a method by the given identifier token or throws an exception if the method does not exist. </p><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="class_emojicode_compiler_1_1_compiler_error.html">CompilerError</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad2ca56545b7e8659a91538255334ad43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2ca56545b7e8659a91538255334ad43">&#9670;&nbsp;</a></span>handleRequiredInitializer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EmojicodeCompiler::TypeDefinition::handleRequiredInitializer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_initializer.html">Initializer</a> *&#160;</td>
+          <td class="paramname"><em>init</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Called if a required initializer is passed to addInitializer(). </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">init</td><td>The initializer passed to addInitializer(). </td></tr>
   </table>
   </dd>
 </dl>

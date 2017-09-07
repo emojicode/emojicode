@@ -22,7 +22,7 @@
 #include "../Types/Protocol.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include "../Types/ValueType.hpp"
-#include "FnCodeGenerator.hpp"
+#include "FunctionCodeGenerator.hpp"
 #include "Mangler.hpp"
 #include <algorithm>
 #include <cstring>
@@ -115,7 +115,7 @@ void CodeGenerator::generateFunctions() {
 
 void CodeGenerator::generateFunction(Function *function) {
     if (!function->isExternal()) {
-        FnCodeGenerator(function, this).generate();
+        FunctionCodeGenerator(function, this).generate();
     }
 }
 

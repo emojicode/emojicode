@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['framesize',['frameSize',['../struct_emojicode_1_1_function.html#a79b99c4e3cc3213790836d2a8e7824dc',1,'Emojicode::Function']]]
+  ['returntype',['returnType',['../class_emojicode_compiler_1_1_function.html#ad5c252f0bec2618ad7ceaaabc8fea842',1,'EmojicodeCompiler::Function']]]
 ];

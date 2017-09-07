@@ -7,11 +7,11 @@
 //
 
 #include "ASTVariables.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
-Value* ASTGetVariable::instanceVariablePointer(FnCodeGenerator *fncg, size_t index) {
+Value* ASTGetVariable::instanceVariablePointer(FunctionCodeGenerator *fncg, size_t index) {
     std::vector<Value *> idxList{
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), index),
@@ -19,7 +19,7 @@ Value* ASTGetVariable::instanceVariablePointer(FnCodeGenerator *fncg, size_t ind
     return fncg->builder().CreateGEP(fncg->thisValue(), idxList);
 }
 
-Value* ASTGetVariable::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTGetVariable::generate(FunctionCodeGenerator *fncg) const {
     if (inInstanceScope()) {
         auto ptr = ASTGetVariable::instanceVariablePointer(fncg, varId_);
         if (reference_) {
@@ -39,15 +39,15 @@ Value* ASTGetVariable::generateExpr(FnCodeGenerator *fncg) const {
     return fncg->builder().CreateLoad(localVariable.value);
 }
 
-Value* ASTInitGetVariable::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTInitGetVariable::generate(FunctionCodeGenerator *fncg) const {
     if (declare_) {
         auto alloca = fncg->builder().CreateAlloca(fncg->typeHelper().llvmTypeFor(type_));
         fncg->scoper().getVariable(varId_) = LocalVariable(true, alloca);
     }
-    return ASTGetVariable::generateExpr(fncg);
+    return ASTGetVariable::generate(fncg);
 }
 
-void ASTInitableCreator::generate(FnCodeGenerator *fncg) const {
+void ASTInitableCreator::generate(FunctionCodeGenerator *fncg) const {
     if (noAction_) {
         expr_->generate(fncg);
     }
@@ -56,7 +56,7 @@ void ASTInitableCreator::generate(FnCodeGenerator *fncg) const {
     }
 }
 
-void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
+void ASTVariableDeclaration::generate(FunctionCodeGenerator *fncg) const {
     auto alloca = fncg->builder().CreateAlloca(fncg->typeHelper().llvmTypeFor(type_), nullptr, utf8(varName_));
     fncg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
@@ -69,7 +69,7 @@ void ASTVariableDeclaration::generate(FnCodeGenerator *fncg) const {
     }
 }
 
-void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) const {
+void ASTVariableAssignmentDecl::generateAssignment(FunctionCodeGenerator *fncg) const {
     llvm::Value *varPtr;
     if (declare_) {
         varPtr = fncg->builder().CreateAlloca(fncg->typeHelper().llvmTypeFor(expr_->expressionType()), nullptr, utf8(varName_));
@@ -85,7 +85,7 @@ void ASTVariableAssignmentDecl::generateAssignment(FnCodeGenerator *fncg) const 
     fncg->builder().CreateStore(expr_->generate(fncg), varPtr);
 }
 
-void ASTFrozenDeclaration::generateAssignment(FnCodeGenerator *fncg) const {
+void ASTFrozenDeclaration::generateAssignment(FunctionCodeGenerator *fncg) const {
     fncg->scoper().getVariable(id_) = LocalVariable(false, expr_->generate(fncg));
 }
 

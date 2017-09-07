@@ -19,7 +19,7 @@ using llvm::Value;
 class ASTTypeExpr;
 class SemanticAnalyser;
 class TypeExpectation;
-class FnCodeGenerator;
+class FunctionCodeGenerator;
 class Prettyprinter;
 
 class ASTExpr : public ASTNode {
@@ -31,11 +31,9 @@ public:
     void setExpressionType(const Type &type) { expressionType_ = type; }
     void setTemporarilyScoped() { temporarilyScoped_ = true; }
 
-    Value* generate(FnCodeGenerator *fncg) const;
+    virtual Value* generate(FunctionCodeGenerator *fncg) const = 0;
     virtual Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) = 0;
     virtual void toCode(Prettyprinter &pretty) const = 0;
-protected:
-    virtual Value* generateExpr(FnCodeGenerator *fncg) const = 0;
 private:
     Type expressionType_ = Type::noReturn();
     bool temporarilyScoped_ = false;
@@ -45,7 +43,7 @@ class ASTMetaTypeInstantiation final : public ASTExpr {
 public:
     ASTMetaTypeInstantiation(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     Type type_;
@@ -70,7 +68,7 @@ public:
     ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTTypeExpr> type,
             const SourcePosition &p) : ASTExpr(p), value_(std::move(value)), typeExpr_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     enum class CastType {
@@ -79,9 +77,9 @@ private:
     CastType castType_;
     std::shared_ptr<ASTExpr> value_;
     std::shared_ptr<ASTTypeExpr> typeExpr_;
-    Value* downcast(FnCodeGenerator *fncg) const;
-    Value* castToClass(FnCodeGenerator *fncg, Value *box) const;
-    Value* castToValueType(FnCodeGenerator *fncg, Value *box) const;
+    Value* downcast(FunctionCodeGenerator *fncg) const;
+    Value* castToClass(FunctionCodeGenerator *fncg, Value *box) const;
+    Value* castToValueType(FunctionCodeGenerator *fncg, Value *box) const;
 };
 
 class ASTCallableCall final : public ASTExpr {
@@ -89,7 +87,7 @@ public:
     ASTCallableCall(std::shared_ptr<ASTExpr> value, ASTArguments args,
                     const SourcePosition &p) : ASTExpr(p), callable_(std::move(value)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> callable_;
@@ -101,7 +99,7 @@ public:
     ASTSuperMethod(std::u32string name, ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string name_;
@@ -114,7 +112,7 @@ public:
     ASTCaptureMethod(std::u32string name, std::shared_ptr<ASTExpr> callee, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string name_;
@@ -126,7 +124,7 @@ public:
     ASTCaptureTypeMethod(std::u32string name, std::shared_ptr<ASTTypeExpr> callee,
                          const SourcePosition &p) : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string name_;
@@ -140,7 +138,7 @@ public:
                   ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     bool valueType_ = false;
@@ -154,7 +152,7 @@ public:
     ASTConditionalAssignment(std::u32string varName, std::shared_ptr<ASTExpr> expr,
                              const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string varName_;

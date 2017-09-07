@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['argumentcount',['argumentCount',['../struct_emojicode_1_1_function.html#a13ad9c1b5df079a88d7ebea7f132fef5',1,'Emojicode::Function']]]
+  ['captureid',['captureId',['../struct_emojicode_compiler_1_1_variable_capture.html#a545da3e1ce36d0b4aaedb073bb4b088e',1,'EmojicodeCompiler::VariableCapture']]]
 ];

@@ -6,7 +6,7 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Functions/CallType.h"
 #include "../Types/Enum.hpp"
 #include "../Types/Class.hpp"
@@ -17,7 +17,7 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTInitialization::generate(FunctionCodeGenerator *fncg) const {
     switch (initType_) {
         case InitType::Class:
             return generateClassInit(fncg);
@@ -32,7 +32,7 @@ Value* ASTInitialization::generateExpr(FnCodeGenerator *fncg) const {
     return nullptr;
 }
 
-Value* ASTInitialization::generateClassInit(FnCodeGenerator *fncg) const {
+Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fncg) const {
     if (typeExpr_->availability() == TypeAvailability::StaticAndAvailabale) {
         auto type = llvm::dyn_cast<llvm::PointerType>(fncg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
         auto size = fncg->sizeFor(type);

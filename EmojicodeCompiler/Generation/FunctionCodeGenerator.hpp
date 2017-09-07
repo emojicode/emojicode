@@ -1,18 +1,17 @@
 //
-//  FnCodeGenerator.hpp
+//  FunctionCodeGenerator.hpp
 //  Emojicode
 //
 //  Created by Theo Weidmann on 29/07/2017.
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#ifndef FnCodeGenerator_hpp
-#define FnCodeGenerator_hpp
+#ifndef FunctionCodeGenerator_hpp
+#define FunctionCodeGenerator_hpp
 
 #include <llvm/IR/IRBuilder.h>
 #include "../Functions/Function.hpp"
 #include "../Scoping/CGScoper.hpp"
-#include "../Package/Package.hpp"
 #include "CodeGenerator.hpp"
 #include <functional>
 
@@ -20,22 +19,19 @@ namespace EmojicodeCompiler {
 
 class Application;
 
-struct LocalVariable {
-    LocalVariable() = default;
-    LocalVariable(bool isMutable, llvm::Value *value) : isMutable(isMutable), value(value) {}
-    bool isMutable = true;
-    llvm::Value *value = nullptr;
-};
-
-class FnCodeGenerator {
+/// A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function.
+class FunctionCodeGenerator {
 public:
-    explicit FnCodeGenerator(Function *function, CodeGenerator *generator)
+    /// Constructs a FunctionCodeGenerator.
+    /// @param function The function whose code shall be generated.
+    ///                 The function must have a value for Function::llvmFunction().
+    FunctionCodeGenerator(Function *function, CodeGenerator *generator)
     : fn_(function), scoper_(function->variableCount()),  generator_(generator), builder_(generator->context()) {}
     void generate();
 
-    CGScoper<LocalVariable>& scoper() { return scoper_; }
-    Application* app() { return generator()->package()->app(); }
-    CodeGenerator* generator() { return generator_; }
+    CGScoper& scoper() { return scoper_; }
+    Application* app() const;
+    CodeGenerator* generator() const { return generator_; }
     llvm::IRBuilder<>& builder() { return builder_; }
     LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }
     llvm::Value* thisValue() { return &*fn_->llvmFunction()->args().begin(); }
@@ -60,7 +56,7 @@ protected:
     virtual void declareArguments(llvm::Function *function);
 private:
     Function *fn_;
-    CGScoper<LocalVariable> scoper_;
+    CGScoper scoper_;
 
     CodeGenerator *generator_;
     llvm::IRBuilder<> builder_;
@@ -68,4 +64,4 @@ private:
 
 }  // namespace EmojicodeCompiler
 
-#endif /* FnCodeGenerator_hpp */
+#endif /* FunctionCodeGenerator_hpp */

@@ -10,7 +10,7 @@
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
 #include "../CompilerError.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Lex/Lexer.hpp"
 #include "../Parsing/CompatibilityInfoProvider.hpp"
 #include "../Parsing/DocumentParser.hpp"

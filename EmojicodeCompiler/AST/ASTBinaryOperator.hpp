@@ -20,7 +20,7 @@ public:
     ASTBinaryOperator(OperatorType op, std::shared_ptr<ASTExpr> left, std::shared_ptr<ASTExpr> right,
                       const SourcePosition &p) : ASTMethodable(p), operator_(op), left_(std::move(left)), right_(std::move(right)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     

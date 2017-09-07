@@ -22,7 +22,7 @@ public:
     void addBlock(const ASTBlock &ptr) { blocks_.emplace_back(ptr); }
 
     void analyse(SemanticAnalyser *) override;
-    void generate(FnCodeGenerator *) const override;
+    void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 
     bool hasElse() const { return conditions_.size() < blocks_.size(); }
@@ -38,7 +38,7 @@ public:
     : ASTStatement(p), condition_(std::move(condition)), block_(std::move(block)) {}
 
     void analyse(SemanticAnalyser *) override;
-    void generate(FnCodeGenerator *) const override;
+    void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> condition_;
@@ -52,7 +52,7 @@ public:
     : ASTStatement(p), iteratee_(std::move(iteratee)), block_(std::move(block)), varName_(std::move(varName)) {}
 
     void analyse(SemanticAnalyser *) override;
-    void generate(FnCodeGenerator *) const override;
+    void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> iteratee_;
@@ -72,7 +72,7 @@ public:
     valueVarName_(std::move(varNameValue)), errorVarName_(std::move(varNameError)) {}
 
     void analyse(SemanticAnalyser *) override;
-    void generate(FnCodeGenerator *) const override;
+    void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> value_;

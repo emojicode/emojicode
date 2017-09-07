@@ -8,18 +8,18 @@
 
 #include "ASTStatements.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Scoping/CGScoper.hpp"
 
 namespace EmojicodeCompiler {
 
-void ASTBlock::generate(FnCodeGenerator *fncg) const {
+void ASTBlock::generate(FunctionCodeGenerator *fncg) const {
     for (auto &stmt : stmts_) {
         stmt->generate(fncg);
     }
 }
 
-void ASTReturn::generate(FnCodeGenerator *fncg) const {
+void ASTReturn::generate(FunctionCodeGenerator *fncg) const {
     if (value_) {
         fncg->builder().CreateRet(value_->generate(fncg));
     }
@@ -28,11 +28,11 @@ void ASTReturn::generate(FnCodeGenerator *fncg) const {
     }
 }
 
-void ASTRaise::generate(FnCodeGenerator *fncg) const {
+void ASTRaise::generate(FunctionCodeGenerator *fncg) const {
     // TODO: implement
 }
 
-void ASTSuperinitializer::generate(FnCodeGenerator *fncg) const {
+void ASTSuperinitializer::generate(FunctionCodeGenerator *fncg) const {
     auto castedThis = fncg->builder().CreateBitCast(fncg->thisValue(), fncg->typeHelper().llvmTypeFor(superType_));
     InitializationCallCodeGenerator(fncg, CallType::StaticDispatch).generate(castedThis, superType_, arguments_, name_);
 }

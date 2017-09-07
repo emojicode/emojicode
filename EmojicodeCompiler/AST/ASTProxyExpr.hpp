@@ -17,7 +17,7 @@ namespace EmojicodeCompiler {
 
 class ASTProxyExpr final : public ASTExpr {
 public:
-    ASTProxyExpr(const SourcePosition &p, const Type &exprType, std::function<llvm::Value*(FnCodeGenerator*)> function)
+    ASTProxyExpr(const SourcePosition &p, const Type &exprType, std::function<llvm::Value*(FunctionCodeGenerator*)> function)
     : ASTExpr(p), function_(std::move(function)) {
         setExpressionType(exprType);
     }
@@ -25,12 +25,12 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override {
         throw std::logic_error("ASTProxyExpr cannot be analysed.");
     }
-    Value* generateExpr(FnCodeGenerator *fncg) const override {
+    Value* generate(FunctionCodeGenerator *fncg) const override {
         return function_(fncg);
     }
     void toCode(Prettyprinter &pretty) const override {}
 private:
-    std::function<llvm::Value*(FnCodeGenerator*)> function_;
+    std::function<llvm::Value*(FunctionCodeGenerator*)> function_;
 };
 
 } // namespace EmojicodeCompiler

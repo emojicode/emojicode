@@ -16,6 +16,10 @@
 
 namespace EmojicodeCompiler {
 
+/// Subclasses of this class represent type expressions. After analysis expressionType() contains the type the
+/// expression represents. This is not a meta type.
+///
+/// When generating type expressions, code to retrieve a meta type instance is written.
 class ASTTypeExpr : public ASTExpr {
 public:
     ASTTypeExpr(TypeAvailability av, const SourcePosition &p) : ASTExpr(p), availability_(av) {}
@@ -29,7 +33,7 @@ public:
     ASTTypeFromExpr(std::shared_ptr<ASTExpr> value, const SourcePosition &p)
     : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p), expr_(std::move(value)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> expr_;
@@ -40,7 +44,7 @@ public:
     ASTStaticType(Type type, TypeAvailability av, const SourcePosition &p)
     : ASTTypeExpr(av, p), type_(std::move(type)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 protected:
     Type type_;
@@ -57,7 +61,7 @@ class ASTThisType final : public ASTTypeExpr {
 public:
     explicit ASTThisType(const SourcePosition &p) : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };
 

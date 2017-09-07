@@ -8,22 +8,18 @@
 
 #include "ASTExpr.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Types/Class.hpp"
 #include "ASTProxyExpr.hpp"
 #include "ASTTypeExpr.hpp"
 
 namespace EmojicodeCompiler {
 
-Value* ASTExpr::generate(FnCodeGenerator *fncg) const {
-    return generateExpr(fncg);
-}
-
-Value* ASTMetaTypeInstantiation::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTMetaTypeInstantiation::generate(FunctionCodeGenerator *fncg) const {
     return type_.eclass()->classMeta();
 }
 
-Value* ASTCast::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTCast::generate(FunctionCodeGenerator *fncg) const {
     if (castType_ == CastType::ClassDowncast) {
         return downcast(fncg);
     }
@@ -51,7 +47,7 @@ Value* ASTCast::generateExpr(FnCodeGenerator *fncg) const {
     return fncg->builder().CreateLoad(box);
 }
 
-Value* ASTCast::downcast(FnCodeGenerator *fncg) const {
+Value* ASTCast::downcast(FunctionCodeGenerator *fncg) const {
     auto value = value_->generate(fncg);
     auto meta = fncg->getMetaFromObject(value);
     auto toType = typeExpr_->expressionType();
@@ -63,12 +59,12 @@ Value* ASTCast::downcast(FnCodeGenerator *fncg) const {
     });
 }
 
-Value* ASTCast::castToValueType(FnCodeGenerator *fncg, Value *box) const {
+Value* ASTCast::castToValueType(FunctionCodeGenerator *fncg, Value *box) const {
     auto meta = fncg->getMetaTypePtr(box);
     return fncg->builder().CreateICmpEQ(fncg->builder().CreateLoad(meta), typeExpr_->generate(fncg));
 }
 
-Value* ASTCast::castToClass(FnCodeGenerator *fncg, Value *box) const {
+Value* ASTCast::castToClass(FunctionCodeGenerator *fncg, Value *box) const {
     auto meta = fncg->getMetaTypePtr(box);
     auto toType = typeExpr_->expressionType();
     auto expMeta = fncg->generator()->valueTypeMetaFor(toType);
@@ -81,7 +77,7 @@ Value* ASTCast::castToClass(FnCodeGenerator *fncg, Value *box) const {
     return fncg->builder().CreateMul(isClass, isCorrectClass);
 }
 
-Value* ASTConditionalAssignment::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fncg) const {
     auto optional = expr_->generate(fncg);
 
     auto value = fncg->builder().CreateExtractValue(optional, 1, "condValue");
@@ -92,30 +88,30 @@ Value* ASTConditionalAssignment::generateExpr(FnCodeGenerator *fncg) const {
     return fncg->builder().CreateICmpEQ(flag, constant);
 }
 
-Value* ASTTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTTypeMethod::generate(FunctionCodeGenerator *fncg) const {
     auto ctype = valueType_ ? CallType::StaticContextfreeDispatch : CallType::DynamicDispatch;
     return TypeMethodCallCodeGenerator(fncg, ctype).generate(callee_->generate(fncg), callee_->expressionType(),
                                                              args_, name_);
 }
 
-Value* ASTSuperMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSuperMethod::generate(FunctionCodeGenerator *fncg) const {
     auto castedThis = fncg->builder().CreateBitCast(fncg->thisValue(), fncg->typeHelper().llvmTypeFor(calleeType_));
     return CallCodeGenerator(fncg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, name_);
 }
 
-Value* ASTCallableCall::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTCallableCall::generate(FunctionCodeGenerator *fncg) const {
     return CallableCallCodeGenerator(fncg).generate(callable_->generate(fncg), callable_->expressionType(),
                                                     args_, std::u32string());
 }
 
-Value* ASTCaptureMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTCaptureMethod::generate(FunctionCodeGenerator *fncg) const {
 //    callee_->generate(fncg);
 //    fncg->wr().writeInstruction(INS_CAPTURE_METHOD);
 //    fncg->wr().writeInstruction(callee_->expressionType().eclass()->lookupMethod(name_)->vtiForUse());
     return nullptr;
 }
 
-Value* ASTCaptureTypeMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTCaptureTypeMethod::generate(FunctionCodeGenerator *fncg) const {
 //    if (contextedFunction_) {
 //        fncg->wr().writeInstruction(INS_CAPTURE_CONTEXTED_FUNCTION);
 //    }

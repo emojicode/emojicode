@@ -18,24 +18,24 @@ class Value;
 
 namespace EmojicodeCompiler {
 
-class FnCodeGenerator;
+class FunctionCodeGenerator;
 class Type;
 class Function;
 class ASTArguments;
 
 class CallCodeGenerator {
 public:
-    CallCodeGenerator(FnCodeGenerator *fncg, CallType callType) : fncg_(fncg), callType_(callType) {}
+    CallCodeGenerator(FunctionCodeGenerator *fncg, CallType callType) : fncg_(fncg), callType_(callType) {}
     llvm::Value* generate(llvm::Value *callee, const Type &calleeType, const ASTArguments &args,
                           const std::u32string &name);
 protected:
     virtual Function* lookupFunction(const Type &type, const std::u32string &name);
     virtual llvm::Value* createCall(const std::vector<llvm::Value *> &args, const Type &type,
                                     const std::u32string &name);
-    FnCodeGenerator* fncg() const { return fncg_; }
+    FunctionCodeGenerator* fncg() const { return fncg_; }
 private:
     llvm::Value* createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args);
-    FnCodeGenerator *fncg_;
+    FunctionCodeGenerator *fncg_;
     CallType callType_;
 };
 
@@ -53,7 +53,7 @@ protected:
 
 class CallableCallCodeGenerator : public CallCodeGenerator {
 public:
-    explicit CallableCallCodeGenerator(FnCodeGenerator *fncg) : CallCodeGenerator(fncg, CallType::None) {}
+    explicit CallableCallCodeGenerator(FunctionCodeGenerator *fncg) : CallCodeGenerator(fncg, CallType::None) {}
 protected:
 //    void writeInstructions(EmojicodeInstruction argSize, const Type &type, const std::u32string &name) override {
 //        fncg()->wr().writeInstruction(INS_EXECUTE_CALLABLE);

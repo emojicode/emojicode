@@ -1,3 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$struct_emojicode_1_1_data.html" title="Emojicode::Data" alt="" coords="5,5,124,31"/>
+<area shape="rect" id="node1" href="$class_emojicode_compiler_1_1_call_code_generator.html" title="EmojicodeCompiler::\lCallCodeGenerator" alt="" coords="5,68,150,107"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_callable_call_code_generator.html" title="EmojicodeCompiler::\lCallableCallCodeGenerator" alt="" coords="210,5,395,44"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_initialization_call_code_generator.html" title="EmojicodeCompiler::\lInitializationCallCodeGenerator" alt="" coords="200,68,405,107"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_type_method_call_code_generator.html" title="EmojicodeCompiler::\lTypeMethodCallCodeGenerator" alt="" coords="198,131,407,169"/>
 </map>

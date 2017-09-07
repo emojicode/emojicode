@@ -10,9 +10,7 @@ var searchData=
   ['comply',['comply',['../class_emojicode_compiler_1_1_semantic_analyser.html#a041dab445bd87ada51c0c5155aa49bfd',1,'EmojicodeCompiler::SemanticAnalyser']]],
   ['constraintforindex',['constraintForIndex',['../class_emojicode_compiler_1_1_generic.html#a19b23c50a26c8e34882caf27d7fea2a4',1,'EmojicodeCompiler::Generic']]],
   ['constructedtype',['constructedType',['../class_emojicode_compiler_1_1_initializer.html#a308cd92a4fd64cfa6a0570dc158ae314',1,'EmojicodeCompiler::Initializer']]],
-  ['consumeinstruction',['consumeInstruction',['../class_emojicode_1_1_thread.html#a58cdd0fb63e291a155e08dff92f1f7c1',1,'Emojicode::Thread']]],
   ['consumetoken',['consumeToken',['../class_emojicode_compiler_1_1_token_stream.html#a0bcf67b7bbd2ab4363f428983d579bdb',1,'EmojicodeCompiler::TokenStream']]],
   ['consumetokenif',['consumeTokenIf',['../class_emojicode_compiler_1_1_token_stream.html#a7b9c7a47d2a2281bbeb7f0e96e0ed000',1,'EmojicodeCompiler::TokenStream::consumeTokenIf(char32_t c, TokenType type=TokenType::Identifier)'],['../class_emojicode_compiler_1_1_token_stream.html#a300a56a6fddcc61752c928cf2a3e826b',1,'EmojicodeCompiler::TokenStream::consumeTokenIf(TokenType type)']]],
-  ['createcgscope',['createCGScope',['../class_emojicode_compiler_1_1_type_definition.html#a59f48c0811e2d858141196ff8ad37594',1,'EmojicodeCompiler::TypeDefinition']]],
   ['currentscope',['currentScope',['../class_emojicode_compiler_1_1_semantic_scoper.html#a10bd4efdc5387eb0b97575d58c8fe876',1,'EmojicodeCompiler::SemanticScoper']]]
 ];

@@ -31,6 +31,7 @@ var searchData=
   ['astif',['ASTIf',['../class_emojicode_compiler_1_1_a_s_t_if.html',1,'EmojicodeCompiler']]],
   ['astinfertype',['ASTInferType',['../class_emojicode_compiler_1_1_a_s_t_infer_type.html',1,'EmojicodeCompiler']]],
   ['astinitablecreator',['ASTInitableCreator',['../class_emojicode_compiler_1_1_a_s_t_initable_creator.html',1,'EmojicodeCompiler']]],
+  ['astinitgetvariable',['ASTInitGetVariable',['../class_emojicode_compiler_1_1_a_s_t_init_get_variable.html',1,'EmojicodeCompiler']]],
   ['astinitialization',['ASTInitialization',['../class_emojicode_compiler_1_1_a_s_t_initialization.html',1,'EmojicodeCompiler']]],
   ['astinstancevariableassignment',['ASTInstanceVariableAssignment',['../class_emojicode_compiler_1_1_a_s_t_instance_variable_assignment.html',1,'EmojicodeCompiler']]],
   ['astiserror',['ASTIsError',['../class_emojicode_compiler_1_1_a_s_t_is_error.html',1,'EmojicodeCompiler']]],
@@ -67,6 +68,5 @@ var searchData=
   ['astvariable',['ASTVariable',['../class_emojicode_compiler_1_1_a_s_t_variable.html',1,'EmojicodeCompiler']]],
   ['astvariableassignmentdecl',['ASTVariableAssignmentDecl',['../class_emojicode_compiler_1_1_a_s_t_variable_assignment_decl.html',1,'EmojicodeCompiler']]],
   ['astvariabledeclaration',['ASTVariableDeclaration',['../class_emojicode_compiler_1_1_a_s_t_variable_declaration.html',1,'EmojicodeCompiler']]],
-  ['astvtinitdest',['ASTVTInitDest',['../class_emojicode_compiler_1_1_a_s_t_v_t_init_dest.html',1,'EmojicodeCompiler']]],
   ['attributeparser',['AttributeParser',['../class_emojicode_compiler_1_1_attribute_parser.html',1,'EmojicodeCompiler']]]
 ];

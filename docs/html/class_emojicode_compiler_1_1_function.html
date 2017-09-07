@@ -67,7 +67,6 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="class_emojicode_compiler_1_1_function-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EmojicodeCompiler::Function Class Reference</div>  </div>
@@ -91,13 +90,10 @@ Collaboration diagram for EmojicodeCompiler::Function:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_function__coll__graph.png" border="0" usemap="#_emojicode_compiler_1_1_function_coll__map" alt="Collaboration graph"/></div>
 <map name="_emojicode_compiler_1_1_function_coll__map" id="_emojicode_compiler_1_1_function_coll__map">
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="651,156,824,181"/>
-<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function \&gt;" alt="" coords="21,193,165,232"/>
-<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_function_writer.html" title="EmojicodeCompiler::\lFunctionWriter" alt="" coords="21,256,165,295"/>
-<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="296,77,440,116"/>
-<area shape="rect" id="node6" href="class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,5,181,44"/>
-<area shape="rect" id="node7" href="class_emojicode_compiler_1_1_c_g_scoper.html" title="EmojicodeCompiler::\lCGScoper" alt="" coords="21,68,165,107"/>
-<area shape="rect" id="node8" href="class_emojicode_compiler_1_1_scope.html" title="EmojicodeCompiler::\lScope" alt="" coords="21,131,165,169"/>
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="129,193,302,219"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function \&gt;" alt="" coords="270,5,414,44"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="21,93,165,132"/>
+<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,5,181,44"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -112,14 +108,15 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> ()
 <tr class="memitem:af13281d6102b1a4c7c0d42b667e934f1"><td class="memItemLeft" align="right" valign="top"><a id="af13281d6102b1a4c7c0d42b667e934f1"></a>
 std::u32string&#160;</td><td class="memItemRight" valign="bottom"><b>protocolBoxingLayerName</b> (const std::u32string &amp;protocolName)</td></tr>
 <tr class="separator:af13281d6102b1a4c7c0d42b667e934f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b7fcae49b4d424fc9f4fdc5a686ef61"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a1b7fcae49b4d424fc9f4fdc5a686ef61">isNative</a> () const</td></tr>
-<tr class="separator:a1b7fcae49b4d424fc9f4fdc5a686ef61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3710e9b3ea7a0a8b2c1c47a9fb059043"><td class="memItemLeft" align="right" valign="top"><a id="a3710e9b3ea7a0a8b2c1c47a9fb059043"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>linkingTabelIndex</b> () const</td></tr>
-<tr class="separator:a3710e9b3ea7a0a8b2c1c47a9fb059043"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d6d1e118c74e3c33ad79bcbc4197da1"><td class="memItemLeft" align="right" valign="top"><a id="a8d6d1e118c74e3c33ad79bcbc4197da1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setLinkingTableIndex</b> (int index)</td></tr>
-<tr class="separator:a8d6d1e118c74e3c33ad79bcbc4197da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7542f270899a2aefe94ef5cd2a929ebf"><td class="memItemLeft" align="right" valign="top"><a id="a7542f270899a2aefe94ef5cd2a929ebf"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isExternal</b> () const</td></tr>
+<tr class="separator:a7542f270899a2aefe94ef5cd2a929ebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b9fec85e7f742ccddae02f6d66e9834"><td class="memItemLeft" align="right" valign="top"><a id="a6b9fec85e7f742ccddae02f6d66e9834"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>externalName</b> () const</td></tr>
+<tr class="separator:a6b9fec85e7f742ccddae02f6d66e9834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a649c3bcd77bc3f05054244d525bd645c"><td class="memItemLeft" align="right" valign="top"><a id="a649c3bcd77bc3f05054244d525bd645c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setExternalName</b> (const std::string &amp;name)</td></tr>
+<tr class="separator:a649c3bcd77bc3f05054244d525bd645c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a765754c33f540998898d83e4cb863c09"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a765754c33f540998898d83e4cb863c09">final</a> () const</td></tr>
 <tr class="separator:a765754c33f540998898d83e4cb863c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f9b3334f4ff8c6984d1e335fe57687b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a6f9b3334f4ff8c6984d1e335fe57687b">overriding</a> () const</td></tr>
@@ -153,28 +150,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:aad43f824203079319b905691fa44c500"><td class="memItemLeft" align="right" valign="top"><a id="aad43f824203079319b905691fa44c500"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>registerOverrider</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *f)</td></tr>
 <tr class="separator:aad43f824203079319b905691fa44c500"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3364f6f0606e2575081ff026459134ad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a3364f6f0606e2575081ff026459134ad">vtiForUse</a> ()</td></tr>
-<tr class="separator:a3364f6f0606e2575081ff026459134ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ace7b3c8127a51a9321ef3abd790e26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a8ace7b3c8127a51a9321ef3abd790e26">setVtiProvider</a> (<a class="el" href="class_emojicode_compiler_1_1_v_t_i_provider.html">VTIProvider</a> *provider)</td></tr>
-<tr class="separator:a8ace7b3c8127a51a9321ef3abd790e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70abf71e476e30736ef3183c53deae05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a70abf71e476e30736ef3183c53deae05">hasVti</a> () const</td></tr>
+<tr class="separator:a70abf71e476e30736ef3183c53deae05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4eaf96cd74890a79af24f36b59449c0"><td class="memItemLeft" align="right" valign="top"><a id="ab4eaf96cd74890a79af24f36b59449c0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#ab4eaf96cd74890a79af24f36b59449c0">setVti</a> (int vti)</td></tr>
 <tr class="memdesc:ab4eaf96cd74890a79af24f36b59449c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the VTI to the given value. <br /></td></tr>
 <tr class="separator:ab4eaf96cd74890a79af24f36b59449c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60c6147c7d24212d85b5ab0ead5f88e3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a60c6147c7d24212d85b5ab0ead5f88e3">getVti</a> () const</td></tr>
+<tr class="memitem:a60c6147c7d24212d85b5ab0ead5f88e3"><td class="memItemLeft" align="right" valign="top"><a id="a60c6147c7d24212d85b5ab0ead5f88e3"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a60c6147c7d24212d85b5ab0ead5f88e3">getVti</a> () const</td></tr>
+<tr class="memdesc:a60c6147c7d24212d85b5ab0ead5f88e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the VTI this function was assigned. <br /></td></tr>
 <tr class="separator:a60c6147c7d24212d85b5ab0ead5f88e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84ba5985f3ef4f919ea6c79c0ac55a1e"><td class="memItemLeft" align="right" valign="top"><a id="a84ba5985f3ef4f919ea6c79c0ac55a1e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a84ba5985f3ef4f919ea6c79c0ac55a1e">setUsed</a> (bool enqueue=true)</td></tr>
-<tr class="memdesc:a84ba5985f3ef4f919ea6c79c0ac55a1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this function as used. Propagates to all overriders. <br /></td></tr>
-<tr class="separator:a84ba5985f3ef4f919ea6c79c0ac55a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55e794aab343b8a13d48a74a1624f7a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a55e794aab343b8a13d48a74a1624f7a6">used</a> () const</td></tr>
-<tr class="separator:a55e794aab343b8a13d48a74a1624f7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36a63a83c7e81e473fc43afd1a2021ce"><td class="memItemLeft" align="right" valign="top"><a id="a36a63a83c7e81e473fc43afd1a2021ce"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a36a63a83c7e81e473fc43afd1a2021ce">assignVti</a> ()</td></tr>
-<tr class="memdesc:a36a63a83c7e81e473fc43afd1a2021ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns this method a VTI without marking it as used. Propagates to all overriders. <br /></td></tr>
-<tr class="separator:a36a63a83c7e81e473fc43afd1a2021ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0240a05e83187552824b6b7460c3a96"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#aa0240a05e83187552824b6b7460c3a96">assigned</a> () const</td></tr>
-<tr class="separator:aa0240a05e83187552824b6b7460c3a96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0827f55078892db193f91bc669507fe6"><td class="memItemLeft" align="right" valign="top"><a id="a0827f55078892db193f91bc669507fe6"></a>
 <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a>&#160;</td><td class="memItemRight" valign="bottom"><b>typeContext</b> ()</td></tr>
 <tr class="separator:a0827f55078892db193f91bc669507fe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,15 +182,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setAst</b> (const std
 <tr class="memitem:ad7ac8f1378ac0c2a3df15cab03433370"><td class="memItemLeft" align="right" valign="top"><a id="ad7ac8f1378ac0c2a3df15cab03433370"></a>
 const std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_block.html">ASTBlock</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ast</b> () const</td></tr>
 <tr class="separator:ad7ac8f1378ac0c2a3df15cab03433370"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a69ef9dc43972dbf9472ee90fb8c3a4"><td class="memItemLeft" align="right" valign="top"><a id="a9a69ef9dc43972dbf9472ee90fb8c3a4"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>fullSize</b> () const</td></tr>
-<tr class="separator:a9a69ef9dc43972dbf9472ee90fb8c3a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8aa360fb97b8cc31109e1efd5f57a8ec"><td class="memItemLeft" align="right" valign="top"><a id="a8aa360fb97b8cc31109e1efd5f57a8ec"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setFullSize</b> (int c)</td></tr>
-<tr class="separator:a8aa360fb97b8cc31109e1efd5f57a8ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b752511463a4f9a6d431f2fdd837be9"><td class="memItemLeft" align="right" valign="top"><a id="a1b752511463a4f9a6d431f2fdd837be9"></a>
-std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_function_object_variable_information.html">FunctionObjectVariableInformation</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>objectVariableInformation</b> ()</td></tr>
-<tr class="separator:a1b752511463a4f9a6d431f2fdd837be9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2333d3623ea6fdebbe5a248496dcded"><td class="memItemLeft" align="right" valign="top"><a id="ac2333d3623ea6fdebbe5a248496dcded"></a>
+llvm::Function *&#160;</td><td class="memItemRight" valign="bottom"><b>llvmFunction</b> ()</td></tr>
+<tr class="separator:ac2333d3623ea6fdebbe5a248496dcded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c665235988e0d63513c87776382c8e8"><td class="memItemLeft" align="right" valign="top"><a id="a5c665235988e0d63513c87776382c8e8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setLlvmFunction</b> (llvm::Function *lf)</td></tr>
+<tr class="separator:a5c665235988e0d63513c87776382c8e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53319b257baa55127e7f1ddf1c86f1e9"><td class="memItemLeft" align="right" valign="top"><a id="a53319b257baa55127e7f1ddf1c86f1e9"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>variableCount</b> () const</td></tr>
 <tr class="separator:a53319b257baa55127e7f1ddf1c86f1e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -235,9 +217,6 @@ std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_argument.html"
 <tr class="separator:a2ce60ebbbe867b5a104532ccaa942477"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5c252f0bec2618ad7ceaaabc8fea842"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#ad5c252f0bec2618ad7ceaaabc8fea842">returnType</a> = Type::noReturn()</td></tr>
 <tr class="separator:ad5c252f0bec2618ad7ceaaabc8fea842"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f684bf15ff638da76ecdc04c122ff64"><td class="memItemLeft" align="right" valign="top"><a id="a4f684bf15ff638da76ecdc04c122ff64"></a>
-<a class="el" href="class_emojicode_compiler_1_1_function_writer.html">FunctionWriter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>writer_</b></td></tr>
-<tr class="separator:a4f684bf15ff638da76ecdc04c122ff64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -247,12 +226,6 @@ std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">
 <tr class="memitem:a10b0c0ebecc256d97d89fe7b14e2dd47"><td class="memItemLeft" align="right" valign="top"><a id="a10b0c0ebecc256d97d89fe7b14e2dd47"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>used_</b> = false</td></tr>
 <tr class="separator:a10b0c0ebecc256d97d89fe7b14e2dd47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:afa4fa88167bed0f564e45019e7826e10"><td class="memItemLeft" align="right" valign="top"><a id="afa4fa88167bed0f564e45019e7826e10"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Class::prepareForCG</b> ()</td></tr>
-<tr class="separator:afa4fa88167bed0f564e45019e7826e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -288,32 +261,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <p>Returns the access level to this method. </p>
-
-</div>
-</div>
-<a id="aa0240a05e83187552824b6b7460c3a96"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0240a05e83187552824b6b7460c3a96">&#9670;&nbsp;</a></span>assigned()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool EmojicodeCompiler::Function::assigned </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Whether the function was assigned a VTI. </dd></dl>
 
 </div>
 </div>
@@ -410,31 +357,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a60c6147c7d24212d85b5ab0ead5f88e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a60c6147c7d24212d85b5ab0ead5f88e3">&#9670;&nbsp;</a></span>getVti()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int EmojicodeCompiler::Function::getVti </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Returns the VTI this function was assigned. </p><dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::logic_error</td><td>if the function wasn’t assigned a VTI </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a1b7fcae49b4d424fc9f4fdc5a686ef61"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b7fcae49b4d424fc9f4fdc5a686ef61">&#9670;&nbsp;</a></span>isNative()</h2>
+<a id="a70abf71e476e30736ef3183c53deae05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70abf71e476e30736ef3183c53deae05">&#9670;&nbsp;</a></span>hasVti()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -443,7 +367,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool EmojicodeCompiler::Function::isNative </td>
+          <td class="memname">bool EmojicodeCompiler::Function::hasVti </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -455,7 +379,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Whether the method is implemented natively and Run-Time Native Linking must occur. </p>
+<dl class="section return"><dt>Returns</dt><dd>True iff the function was assigned a virtual table index. </dd></dl>
 
 </div>
 </div>
@@ -560,69 +484,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 <p>Returns the position at which this callable was defined. </p>
-
-</div>
-</div>
-<a id="a8ace7b3c8127a51a9321ef3abd790e26"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8ace7b3c8127a51a9321ef3abd790e26">&#9670;&nbsp;</a></span>setVtiProvider()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void EmojicodeCompiler::Function::setVtiProvider </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_v_t_i_provider.html">VTIProvider</a> *&#160;</td>
-          <td class="paramname"><em>provider</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Sets the <code><a class="el" href="class_emojicode_compiler_1_1_v_t_i_provider.html">VTIProvider</a></code> which should be used to assign this method a VTI and to update the VTI counter. </p>
-
-</div>
-</div>
-<a id="a55e794aab343b8a13d48a74a1624f7a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a55e794aab343b8a13d48a74a1624f7a6">&#9670;&nbsp;</a></span>used()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool EmojicodeCompiler::Function::used </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Whether the function was used. </dd></dl>
-
-</div>
-</div>
-<a id="a3364f6f0606e2575081ff026459134ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3364f6f0606e2575081ff026459134ad">&#9670;&nbsp;</a></span>vtiForUse()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int EmojicodeCompiler::Function::vtiForUse </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Returns the VTI for this function. If the function is yet to be assigned a VTI, a VTI is obtained from the VTI provider. If the function was not marked used, it will be. This function is a shortcut to calling <code>assignVti</code> and <code>setUsed</code> and then getting the VTI. </p><dl class="section warning"><dt>Warning</dt><dd>This method must only be called if the function will be needed at run-time and should be assigned a VTI. </dd></dl>
 
 </div>
 </div>

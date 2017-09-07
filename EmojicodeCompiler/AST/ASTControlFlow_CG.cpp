@@ -8,12 +8,12 @@
 
 #include "ASTControlFlow.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 #include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
 
-void ASTIf::generate(FnCodeGenerator *fncg) const {
+void ASTIf::generate(FunctionCodeGenerator *fncg) const {
     auto *function = fncg->builder().GetInsertBlock()->getParent();
 
     auto afterIfBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "afterIf");
@@ -42,7 +42,7 @@ void ASTIf::generate(FnCodeGenerator *fncg) const {
     }
 }
 
-void ASTRepeatWhile::generate(FnCodeGenerator *fncg) const {
+void ASTRepeatWhile::generate(FunctionCodeGenerator *fncg) const {
     auto *function = fncg->builder().GetInsertBlock()->getParent();
 
     auto afterBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "afterRepeatWhile");
@@ -62,7 +62,7 @@ void ASTRepeatWhile::generate(FnCodeGenerator *fncg) const {
     fncg->builder().SetInsertPoint(afterBlock);
 }
 
-void ASTErrorHandler::generate(FnCodeGenerator *fncg) const {
+void ASTErrorHandler::generate(FunctionCodeGenerator *fncg) const {
     // TODO: implement
 //    value_->generate(fncg);
 //    fncg->scoper().pushScope();
@@ -89,7 +89,7 @@ void ASTErrorHandler::generate(FnCodeGenerator *fncg) const {
 //    fncg->scoper().popScope(fncg->wr().count());
 }
 
-void ASTForIn::generate(FnCodeGenerator *fncg) const {
+void ASTForIn::generate(FunctionCodeGenerator *fncg) const {
     // TODO: implement
 //    fncg->scoper().pushScope();
 //

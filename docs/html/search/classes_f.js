@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['thread',['Thread',['../class_emojicode_1_1_thread.html',1,'Emojicode']]],
   ['token',['Token',['../class_emojicode_compiler_1_1_token.html',1,'EmojicodeCompiler']]],
   ['tokenstream',['TokenStream',['../class_emojicode_compiler_1_1_token_stream.html',1,'EmojicodeCompiler']]],
   ['type',['Type',['../class_emojicode_compiler_1_1_type.html',1,'EmojicodeCompiler']]],

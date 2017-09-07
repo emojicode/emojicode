@@ -8,11 +8,11 @@
 
 #include "ASTMethod.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
-Value* ASTMethod::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTMethod::generate(FunctionCodeGenerator *fncg) const {
     if (builtIn_ != BuiltInType::None) {
         auto v = callee_->generate(fncg);
         switch (builtIn_) {

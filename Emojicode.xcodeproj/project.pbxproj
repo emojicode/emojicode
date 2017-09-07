@@ -63,7 +63,7 @@
 		E48356A11F34FAAF000B80AE /* SemanticAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A53D1F30EFA2006E3AC7 /* SemanticAnalyser.cpp */; };
 		E48356AA1F35E1A2000B80AE /* ASTMethod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356A81F35E1A2000B80AE /* ASTMethod.cpp */; };
 		E48356AD1F361F61000B80AE /* CallCodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356AB1F361F61000B80AE /* CallCodeGenerator.cpp */; };
-		E48356AE1F3713FB000B80AE /* FnCodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5421F30EFA2006E3AC7 /* FnCodeGenerator.cpp */; };
+		E48356AE1F3713FB000B80AE /* FunctionCodeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5421F30EFA2006E3AC7 /* FunctionCodeGenerator.cpp */; };
 		E48356B41F375742000B80AE /* Extension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356B21F375742000B80AE /* Extension.cpp */; };
 		E48356B71F389144000B80AE /* ASTInitialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356B51F389144000B80AE /* ASTInitialization.cpp */; };
 		E48356BA1F3892C2000B80AE /* ASTVariables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E48356B81F3892C2000B80AE /* ASTVariables.cpp */; };
@@ -130,8 +130,8 @@
 		E460A53E1F30EFA2006E3AC7 /* SemanticAnalyser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SemanticAnalyser.hpp; sourceTree = "<group>"; };
 		E460A5401F30EFA2006E3AC7 /* CodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CodeGenerator.cpp; sourceTree = "<group>"; };
 		E460A5411F30EFA2006E3AC7 /* CodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CodeGenerator.hpp; sourceTree = "<group>"; };
-		E460A5421F30EFA2006E3AC7 /* FnCodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FnCodeGenerator.cpp; sourceTree = "<group>"; };
-		E460A5431F30EFA2006E3AC7 /* FnCodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FnCodeGenerator.hpp; sourceTree = "<group>"; };
+		E460A5421F30EFA2006E3AC7 /* FunctionCodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FunctionCodeGenerator.cpp; sourceTree = "<group>"; };
+		E460A5431F30EFA2006E3AC7 /* FunctionCodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FunctionCodeGenerator.hpp; sourceTree = "<group>"; };
 		E460A54D1F30EFA2006E3AC7 /* EmojiTokenization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EmojiTokenization.cpp; sourceTree = "<group>"; };
 		E460A54E1F30EFA2006E3AC7 /* EmojiTokenization.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EmojiTokenization.hpp; sourceTree = "<group>"; };
 		E460A54F1F30EFA2006E3AC7 /* Lexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lexer.cpp; sourceTree = "<group>"; };
@@ -349,8 +349,8 @@
 			children = (
 				E460A5401F30EFA2006E3AC7 /* CodeGenerator.cpp */,
 				E460A5411F30EFA2006E3AC7 /* CodeGenerator.hpp */,
-				E460A5431F30EFA2006E3AC7 /* FnCodeGenerator.hpp */,
-				E460A5421F30EFA2006E3AC7 /* FnCodeGenerator.cpp */,
+				E460A5431F30EFA2006E3AC7 /* FunctionCodeGenerator.hpp */,
+				E460A5421F30EFA2006E3AC7 /* FunctionCodeGenerator.cpp */,
 				E48356AC1F361F61000B80AE /* CallCodeGenerator.hpp */,
 				E48356AB1F361F61000B80AE /* CallCodeGenerator.cpp */,
 				E49E6D161F4ABF2500B819CA /* ClosureCodeGenerator.cpp */,
@@ -656,7 +656,7 @@
 				E460A5A61F30EFA2006E3AC7 /* ASTNode.cpp in Sources */,
 				E460A5A11F30EFA2006E3AC7 /* EmojiTokenization.cpp in Sources */,
 				E4DB9B841F5EAA6700B566DD /* Mangler.cpp in Sources */,
-				E48356AE1F3713FB000B80AE /* FnCodeGenerator.cpp in Sources */,
+				E48356AE1F3713FB000B80AE /* FunctionCodeGenerator.cpp in Sources */,
 				E400909D1F516E80003F62FE /* Package.cpp in Sources */,
 				E478910C1F4EFD9C008DCB24 /* AttributesParser.cpp in Sources */,
 				E460A5B81F30EFA2006E3AC7 /* TypeContext.cpp in Sources */,

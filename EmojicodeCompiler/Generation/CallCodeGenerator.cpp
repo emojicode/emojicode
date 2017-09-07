@@ -9,7 +9,8 @@
 #include "CallCodeGenerator.hpp"
 #include "../AST/ASTExpr.hpp"
 #include "../Functions/Initializer.hpp"
-#include "FnCodeGenerator.hpp"
+#include "../Types/TypeDefinition.hpp"
+#include "FunctionCodeGenerator.hpp"
 #include <stdexcept>
 
 namespace EmojicodeCompiler {

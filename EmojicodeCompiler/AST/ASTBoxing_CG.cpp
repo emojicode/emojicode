@@ -7,30 +7,30 @@
 //
 
 #include "ASTBoxing.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Functions/BoxingLayer.hpp"
 
 namespace EmojicodeCompiler {
 
-Value* ASTBoxing::getBoxValuePtr(Value *box, FnCodeGenerator *fncg) const {
+Value* ASTBoxing::getBoxValuePtr(Value *box, FunctionCodeGenerator *fncg) const {
     Type type = expr_->expressionType();
     type.unbox();
     type.setOptional(false);
     return fncg->getValuePtr(box, type);
 }
 
-Value* ASTBoxing::getSimpleOptional(Value *value, FnCodeGenerator *fncg) const {
+Value* ASTBoxing::getSimpleOptional(Value *value, FunctionCodeGenerator *fncg) const {
     auto structType = fncg->typeHelper().llvmTypeFor(expressionType());
     auto undef = llvm::UndefValue::get(structType);
     auto simpleOptional = fncg->builder().CreateInsertValue(undef, value, 1);
     return fncg->builder().CreateInsertValue(simpleOptional, fncg->generator()->optionalValue(), 0);
 }
 
-Value* ASTBoxing::getSimpleOptionalWithoutValue(FnCodeGenerator *fncg) const {
+Value* ASTBoxing::getSimpleOptionalWithoutValue(FunctionCodeGenerator *fncg) const {
     return fncg->getSimpleOptionalWithoutValue(expressionType());
 }
 
-void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fncg) const {
+void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fncg) const {
     auto metaType = fncg->generator()->valueTypeMetaFor(expr_->expressionType());
     fncg->builder().CreateStore(metaType, fncg->getMetaTypePtr(box));
 
@@ -41,24 +41,24 @@ void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fn
     fncg->builder().CreateStore(value, getBoxValuePtr(box, fncg));
 }
 
-Value* ASTBoxing::getAllocaTheBox(FnCodeGenerator *fncg) const {
+Value* ASTBoxing::getAllocaTheBox(FunctionCodeGenerator *fncg) const {
     auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
     fncg->builder().CreateStore(expr_->generate(fncg), box);
     return box;
 }
 
-Value* ASTBoxing::getGetValueFromBox(Value *box, FnCodeGenerator *fncg) const {
+Value* ASTBoxing::getGetValueFromBox(Value *box, FunctionCodeGenerator *fncg) const {
     if (expr_->expressionType().remotelyStored()) {
         // TODO: Implement
     }
     return fncg->builder().CreateLoad(getBoxValuePtr(box, fncg));
 }
 
-Value* ASTBoxToSimple::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBoxToSimple::generate(FunctionCodeGenerator *fncg) const {
     return getGetValueFromBox(getAllocaTheBox(fncg), fncg);
 }
 
-Value* ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBoxToSimpleOptional::generate(FunctionCodeGenerator *fncg) const {
     auto box = getAllocaTheBox(fncg);
 
     auto hasNoValue = fncg->getHasBoxNoValue(box);
@@ -69,17 +69,17 @@ Value* ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
     });
 }
 
-Value* ASTSimpleToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSimpleToSimpleOptional::generate(FunctionCodeGenerator *fncg) const {
     return getSimpleOptional(expr_->generate(fncg), fncg);
 }
 
-Value* ASTSimpleToBox::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fncg) const {
     auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
     getPutValueIntoBox(box, expr_->generate(fncg), fncg);
     return fncg->builder().CreateLoad(box);
 }
 
-Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fncg) const {
     auto value = expr_->generate(fncg);
     auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
 
@@ -93,18 +93,18 @@ Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
     return fncg->builder().CreateLoad(box);
 }
 
-Value* ASTDereference::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTDereference::generate(FunctionCodeGenerator *fncg) const {
     return fncg->builder().CreateLoad(expr_->generate(fncg));
 }
 
-Value* ASTCallableBox::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTCallableBox::generate(FunctionCodeGenerator *fncg) const {
 //    expr_->generate(fncg);
 //    fncg->wr().writeInstruction(INS_CLOSURE_BOX);
 //    fncg->wr().writeInstruction(boxingLayer_->vtiForUse());
     return nullptr;
 }
 
-Value* ASTStoreTemporarily::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTStoreTemporarily::generate(FunctionCodeGenerator *fncg) const {
 //    auto rtype = expr_->expressionType();
 //    auto &variable = fncg->scoper().declareVariable(varId_, rtype);
 //    expr_->generate(fncg);

@@ -10,23 +10,23 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTIsNothigness::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTIsNothigness::generate(FunctionCodeGenerator *fncg) const {
     return fncg->getHasNoValue(value_->generate(fncg));
 }
 
-Value* ASTIsError::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTIsError::generate(FunctionCodeGenerator *fncg) const {
     auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), 0);
     return fncg->builder().CreateICmpEQ(vf, fncg->generator()->optionalNoValue());
 }
 
-Value* ASTUnwrap::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTUnwrap::generate(FunctionCodeGenerator *fncg) const {
     auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), 1);
 
     // TODO: box
     return vf;
 }
 
-Value* ASTMetaTypeFromInstance::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTMetaTypeFromInstance::generate(FunctionCodeGenerator *fncg) const {
     return fncg->getMetaFromObject(value_->generate(fncg));
 }
 

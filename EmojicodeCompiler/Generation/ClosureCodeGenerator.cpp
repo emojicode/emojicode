@@ -11,7 +11,7 @@
 namespace EmojicodeCompiler {
 
 void ClosureCodeGenerator::declareArguments(llvm::Function *function) {
-    FnCodeGenerator::declareArguments(function);
+    FunctionCodeGenerator::declareArguments(function);
 
 //    captureDestIndex_ = scoper().nextIndex();
 //    for (auto capture : captures_) {

@@ -20,7 +20,7 @@ class ASTStringLiteral final : public ASTExpr {
 public:
     ASTStringLiteral(std::u32string value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string value_;
@@ -31,7 +31,7 @@ class ASTBooleanFalse final : public ASTExpr {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     explicit ASTBooleanFalse(const SourcePosition &p) : ASTExpr(p) {}
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };
 
@@ -39,7 +39,7 @@ class ASTBooleanTrue final : public ASTExpr {
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     explicit ASTBooleanTrue(const SourcePosition &p) : ASTExpr(p) {}
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };
 
@@ -51,7 +51,7 @@ public:
     : ASTExpr(p), string_(std::move(string)), integerValue_(value), type_(NumberType::Integer) {}
 
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     enum class NumberType {
@@ -68,7 +68,7 @@ class ASTSymbolLiteral final : public ASTExpr {
 public:
     ASTSymbolLiteral(char32_t value, const SourcePosition &p) : ASTExpr(p), value_(value) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     char32_t value_;
@@ -79,7 +79,7 @@ public:
     explicit ASTConcatenateLiteral(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
@@ -92,7 +92,7 @@ public:
     explicit ASTListLiteral(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
@@ -105,7 +105,7 @@ public:
     explicit ASTDictionaryLiteral(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
@@ -117,7 +117,7 @@ class ASTThis : public ASTExpr {
     using ASTExpr::ASTExpr;
 public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };
 
@@ -125,7 +125,7 @@ class ASTNothingness : public ASTExpr {
 public:
     explicit ASTNothingness(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generateExpr(FnCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fncg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     Type type_ = Type::noReturn();

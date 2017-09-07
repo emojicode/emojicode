@@ -19,11 +19,11 @@
 namespace EmojicodeCompiler {
 
 class SemanticAnalyser;
-class FnCodeGenerator;
+class FunctionCodeGenerator;
 
 class ASTStatement : public ASTNode {
 public:
-    virtual void generate(FnCodeGenerator *) const = 0;
+    virtual void generate(FunctionCodeGenerator *) const = 0;
     virtual void analyse(SemanticAnalyser *) = 0;
     virtual void toCode(Prettyprinter &pretty) const = 0;
 protected:
@@ -43,7 +43,7 @@ public:
     }
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) const override;
+    void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
     /// Prints the code that goes between the block delimiters.
     void innerToCode(Prettyprinter &pretty) const;
@@ -57,7 +57,7 @@ class ASTExprStatement final : public ASTStatement {
 public:
     void analyse(SemanticAnalyser *analyser) override;
 
-    void generate(FnCodeGenerator *fncg) const override {
+    void generate(FunctionCodeGenerator *fncg) const override {
         expr_->generate(fncg);
     }
     void toCode(Prettyprinter &pretty) const override;
@@ -72,7 +72,7 @@ public:
     ASTReturn(std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTStatement(p), value_(std::move(value)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) const override;
+    void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 protected:
     std::shared_ptr<ASTExpr> value_;
@@ -83,7 +83,7 @@ public:
     using ASTReturn::ASTReturn;
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) const override;
+    void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     bool boxed_ = false;
@@ -95,7 +95,7 @@ public:
                         const SourcePosition &p) : ASTStatement(p), name_(std::move(name)), arguments_(std::move(arguments)) {}
 
     void analyse(SemanticAnalyser *analyser) override;
-    void generate(FnCodeGenerator *) const override;
+    void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string name_;

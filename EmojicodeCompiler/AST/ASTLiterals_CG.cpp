@@ -8,26 +8,26 @@
 
 #include "ASTLiterals.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Application.hpp"
 #include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
 
-Value* ASTStringLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTStringLiteral::generate(FunctionCodeGenerator *fncg) const {
     auto data = llvm::ArrayRef<uint32_t>(reinterpret_cast<const uint32_t *>(value_.data()), value_.size());
     return llvm::ConstantDataArray::get(fncg->generator()->context(), data);
 }
 
-Value* ASTBooleanTrue::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBooleanTrue::generate(FunctionCodeGenerator *fncg) const {
     return llvm::ConstantInt::getTrue(fncg->generator()->context());
 }
 
-Value* ASTBooleanFalse::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBooleanFalse::generate(FunctionCodeGenerator *fncg) const {
     return llvm::ConstantInt::getFalse(fncg->generator()->context());
 }
 
-Value* ASTNumberLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fncg) const {
     switch (type_) {
         case NumberType::Integer:
             return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fncg->generator()->context()), integerValue_);
@@ -36,19 +36,19 @@ Value* ASTNumberLiteral::generateExpr(FnCodeGenerator *fncg) const {
     }
 }
 
-Value* ASTSymbolLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTSymbolLiteral::generate(FunctionCodeGenerator *fncg) const {
     return llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), value_);
 }
 
-Value* ASTThis::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTThis::generate(FunctionCodeGenerator *fncg) const {
     return fncg->thisValue();
 }
 
-Value* ASTNothingness::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTNothingness::generate(FunctionCodeGenerator *fncg) const {
     return fncg->getSimpleOptionalWithoutValue(type_);
 }
 
-Value* ASTDictionaryLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fncg) const {
 //    auto &var = fncg->scoper().declareVariable(varId_, type_);
 //    auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
 //        fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
@@ -67,11 +67,11 @@ Value* ASTDictionaryLiteral::generateExpr(FnCodeGenerator *fncg) const {
 //        args.addArguments(*(++it));
 //        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F437));
 //    }
-//    getVar.generateExpr(fncg);
+//    getVar.generate(fncg);
     return nullptr;
 }
 
-Value* ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTListLiteral::generate(FunctionCodeGenerator *fncg) const {
 //    auto &var = fncg->scoper().declareVariable(varId_, type_);
 //    auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
 //        fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
@@ -89,11 +89,11 @@ Value* ASTListLiteral::generateExpr(FnCodeGenerator *fncg) const {
 //        args.addArguments(stringNode);
 //        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F43B));
 //    }
-//    getVar.generateExpr(fncg);
+//    getVar.generate(fncg);
     return nullptr;
 }
 
-Value* ASTConcatenateLiteral::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fncg) const {
 //    auto &var = fncg->scoper().declareVariable(varId_, type_);
 //    auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
 //        fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);

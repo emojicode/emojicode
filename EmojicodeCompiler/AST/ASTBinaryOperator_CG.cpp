@@ -8,11 +8,11 @@
 
 #include "ASTBinaryOperator.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FnCodeGenerator.hpp"
+#include "../Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
-Value* ASTBinaryOperator::generateExpr(FnCodeGenerator *fncg) const {
+Value* ASTBinaryOperator::generate(FunctionCodeGenerator *fncg) const {
     if (builtIn_ != BuiltInType::None) {
         auto left = left_->generate(fncg);
         auto right = right_->generate(fncg);
