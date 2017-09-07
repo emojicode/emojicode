@@ -20,14 +20,14 @@ public:
     ASTGetVariable(std::u32string name, const SourcePosition &p) : ASTExpr(p), name_(std::move(name)) {}
 
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 
     void setReference() { reference_ = true; }
     bool reference() { return reference_; }
     const std::u32string& name() { return name_; }
 
-    static Value* instanceVariablePointer(FunctionCodeGenerator *fncg, size_t index);
+    static Value* instanceVariablePointer(FunctionCodeGenerator *fg, size_t index);
 private:
     bool reference_ = false;
     std::u32string name_;
@@ -41,7 +41,7 @@ public:
         varId_ = varId;
         setReference();
     }
-    Value* generate(FunctionCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fg) const override;
 private:
     bool declare_ = false;
     Type type_;

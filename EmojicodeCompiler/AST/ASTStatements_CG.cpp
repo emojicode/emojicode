@@ -13,28 +13,28 @@
 
 namespace EmojicodeCompiler {
 
-void ASTBlock::generate(FunctionCodeGenerator *fncg) const {
+void ASTBlock::generate(FunctionCodeGenerator *fg) const {
     for (auto &stmt : stmts_) {
-        stmt->generate(fncg);
+        stmt->generate(fg);
     }
 }
 
-void ASTReturn::generate(FunctionCodeGenerator *fncg) const {
+void ASTReturn::generate(FunctionCodeGenerator *fg) const {
     if (value_) {
-        fncg->builder().CreateRet(value_->generate(fncg));
+        fg->builder().CreateRet(value_->generate(fg));
     }
     else {
-        fncg->builder().CreateRetVoid();
+        fg->builder().CreateRetVoid();
     }
 }
 
-void ASTRaise::generate(FunctionCodeGenerator *fncg) const {
+void ASTRaise::generate(FunctionCodeGenerator *fg) const {
     // TODO: implement
 }
 
-void ASTSuperinitializer::generate(FunctionCodeGenerator *fncg) const {
-    auto castedThis = fncg->builder().CreateBitCast(fncg->thisValue(), fncg->typeHelper().llvmTypeFor(superType_));
-    InitializationCallCodeGenerator(fncg, CallType::StaticDispatch).generate(castedThis, superType_, arguments_, name_);
+void ASTSuperinitializer::generate(FunctionCodeGenerator *fg) const {
+    auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(superType_));
+    InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, superType_, arguments_, name_);
 }
 
 }  // namespace EmojicodeCompiler

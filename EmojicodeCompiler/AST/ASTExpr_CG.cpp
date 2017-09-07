@@ -15,24 +15,24 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTMetaTypeInstantiation::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTMetaTypeInstantiation::generate(FunctionCodeGenerator *fg) const {
     return type_.eclass()->classMeta();
 }
 
-Value* ASTCast::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
     if (castType_ == CastType::ClassDowncast) {
-        return downcast(fncg);
+        return downcast(fg);
     }
 
-    auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
-    fncg->builder().CreateStore(value_->generate(fncg), box);
+    auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
+    fg->builder().CreateStore(value_->generate(fg), box);
     Value *is = nullptr;
     switch (castType_) {
         case CastType::ToClass:
-            is = castToClass(fncg, box);
+            is = castToClass(fg, box);
             break;
         case CastType::ToValueType:
-            is = castToValueType(fncg, box);
+            is = castToValueType(fg, box);
             break;
         case CastType::ToProtocol:
             // TODO: implement
@@ -41,85 +41,85 @@ Value* ASTCast::generate(FunctionCodeGenerator *fncg) const {
             break;
     }
 
-    fncg->createIfElse(is, []() {}, [fncg, box]() {
-        fncg->getMakeNoValue(box);
+    fg->createIfElse(is, []() {}, [fg, box]() {
+        fg->getMakeNoValue(box);
     });
-    return fncg->builder().CreateLoad(box);
+    return fg->builder().CreateLoad(box);
 }
 
-Value* ASTCast::downcast(FunctionCodeGenerator *fncg) const {
-    auto value = value_->generate(fncg);
-    auto meta = fncg->getMetaFromObject(value);
+Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
+    auto value = value_->generate(fg);
+    auto meta = fg->getMetaFromObject(value);
     auto toType = typeExpr_->expressionType();
-    return fncg->createIfElsePhi(fncg->builder().CreateICmpEQ(meta, typeExpr_->generate(fncg)), [toType, fncg, value]() {
-        auto casted = fncg->builder().CreateBitCast(value, fncg->typeHelper().llvmTypeFor(toType));
-        return fncg->getSimpleOptionalWithValue(casted, toType.setOptional());
-    }, [fncg, toType]() {
-        return fncg->getSimpleOptionalWithoutValue(toType.setOptional());
+    return fg->createIfElsePhi(fg->builder().CreateICmpEQ(meta, typeExpr_->generate(fg)), [toType, fg, value]() {
+        auto casted = fg->builder().CreateBitCast(value, fg->typeHelper().llvmTypeFor(toType));
+        return fg->getSimpleOptionalWithValue(casted, toType.setOptional());
+    }, [fg, toType]() {
+        return fg->getSimpleOptionalWithoutValue(toType.setOptional());
     });
 }
 
-Value* ASTCast::castToValueType(FunctionCodeGenerator *fncg, Value *box) const {
-    auto meta = fncg->getMetaTypePtr(box);
-    return fncg->builder().CreateICmpEQ(fncg->builder().CreateLoad(meta), typeExpr_->generate(fncg));
+Value* ASTCast::castToValueType(FunctionCodeGenerator *fg, Value *box) const {
+    auto meta = fg->getMetaTypePtr(box);
+    return fg->builder().CreateICmpEQ(fg->builder().CreateLoad(meta), typeExpr_->generate(fg));
 }
 
-Value* ASTCast::castToClass(FunctionCodeGenerator *fncg, Value *box) const {
-    auto meta = fncg->getMetaTypePtr(box);
+Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box) const {
+    auto meta = fg->getMetaTypePtr(box);
     auto toType = typeExpr_->expressionType();
-    auto expMeta = fncg->generator()->valueTypeMetaFor(toType);
-    auto ptr = fncg->builder().CreateLoad(fncg->getValuePtr(box, typeExpr_->expressionType()));
-    auto obj = fncg->builder().CreateBitCast(ptr, fncg->typeHelper().llvmTypeFor(toType));
-    auto klassPtr = fncg->getObjectMetaPtr(obj);
+    auto expMeta = fg->generator()->valueTypeMetaFor(toType);
+    auto ptr = fg->builder().CreateLoad(fg->getValuePtr(box, typeExpr_->expressionType()));
+    auto obj = fg->builder().CreateBitCast(ptr, fg->typeHelper().llvmTypeFor(toType));
+    auto klassPtr = fg->getObjectMetaPtr(obj);
 
-    auto isClass = fncg->builder().CreateICmpEQ(fncg->builder().CreateLoad(meta), expMeta);
-    auto isCorrectClass = fncg->builder().CreateICmpEQ(typeExpr_->generate(fncg), fncg->builder().CreateLoad(klassPtr));
-    return fncg->builder().CreateMul(isClass, isCorrectClass);
+    auto isClass = fg->builder().CreateICmpEQ(fg->builder().CreateLoad(meta), expMeta);
+    auto isCorrectClass = fg->builder().CreateICmpEQ(typeExpr_->generate(fg), fg->builder().CreateLoad(klassPtr));
+    return fg->builder().CreateMul(isClass, isCorrectClass);
 }
 
-Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fncg) const {
-    auto optional = expr_->generate(fncg);
+Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
+    auto optional = expr_->generate(fg);
 
-    auto value = fncg->builder().CreateExtractValue(optional, 1, "condValue");
-    fncg->scoper().getVariable(varId_) = LocalVariable(false, value);
+    auto value = fg->builder().CreateExtractValue(optional, 1, "condValue");
+    fg->scoper().getVariable(varId_) = LocalVariable(false, value);
 
-    auto flag = fncg->builder().CreateExtractValue(optional, 0);
-    auto constant = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 1);
-    return fncg->builder().CreateICmpEQ(flag, constant);
+    auto flag = fg->builder().CreateExtractValue(optional, 0);
+    auto constant = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fg->generator()->context()), 1);
+    return fg->builder().CreateICmpEQ(flag, constant);
 }
 
-Value* ASTTypeMethod::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTTypeMethod::generate(FunctionCodeGenerator *fg) const {
     auto ctype = valueType_ ? CallType::StaticContextfreeDispatch : CallType::DynamicDispatch;
-    return TypeMethodCallCodeGenerator(fncg, ctype).generate(callee_->generate(fncg), callee_->expressionType(),
+    return TypeMethodCallCodeGenerator(fg, ctype).generate(callee_->generate(fg), callee_->expressionType(),
                                                              args_, name_);
 }
 
-Value* ASTSuperMethod::generate(FunctionCodeGenerator *fncg) const {
-    auto castedThis = fncg->builder().CreateBitCast(fncg->thisValue(), fncg->typeHelper().llvmTypeFor(calleeType_));
-    return CallCodeGenerator(fncg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, name_);
+Value* ASTSuperMethod::generate(FunctionCodeGenerator *fg) const {
+    auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(calleeType_));
+    return CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, name_);
 }
 
-Value* ASTCallableCall::generate(FunctionCodeGenerator *fncg) const {
-    return CallableCallCodeGenerator(fncg).generate(callable_->generate(fncg), callable_->expressionType(),
+Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {
+    return CallableCallCodeGenerator(fg).generate(callable_->generate(fg), callable_->expressionType(),
                                                     args_, std::u32string());
 }
 
-Value* ASTCaptureMethod::generate(FunctionCodeGenerator *fncg) const {
-//    callee_->generate(fncg);
-//    fncg->wr().writeInstruction(INS_CAPTURE_METHOD);
-//    fncg->wr().writeInstruction(callee_->expressionType().eclass()->lookupMethod(name_)->vtiForUse());
+Value* ASTCaptureMethod::generate(FunctionCodeGenerator *fg) const {
+//    callee_->generate(fg);
+//    fg->wr().writeInstruction(INS_CAPTURE_METHOD);
+//    fg->wr().writeInstruction(callee_->expressionType().eclass()->lookupMethod(name_)->vtiForUse());
     return nullptr;
 }
 
-Value* ASTCaptureTypeMethod::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTCaptureTypeMethod::generate(FunctionCodeGenerator *fg) const {
 //    if (contextedFunction_) {
-//        fncg->wr().writeInstruction(INS_CAPTURE_CONTEXTED_FUNCTION);
+//        fg->wr().writeInstruction(INS_CAPTURE_CONTEXTED_FUNCTION);
 //    }
 //    else {
-//        callee_->generate(fncg);
-//        fncg->wr().writeInstruction(INS_CAPTURE_TYPE_METHOD);
+//        callee_->generate(fg);
+//        fg->wr().writeInstruction(INS_CAPTURE_TYPE_METHOD);
 //    }
-//    fncg->wr().writeInstruction(callee_->expressionType().typeDefinition()->lookupTypeMethod(name_)->vtiForUse());
+//    fg->wr().writeInstruction(callee_->expressionType().typeDefinition()->lookupTypeMethod(name_)->vtiForUse());
     return nullptr;
 }
 

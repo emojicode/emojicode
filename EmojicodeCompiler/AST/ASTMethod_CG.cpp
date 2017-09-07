@@ -12,22 +12,22 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTMethod::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
     if (builtIn_ != BuiltInType::None) {
-        auto v = callee_->generate(fncg);
+        auto v = callee_->generate(fg);
         switch (builtIn_) {
             case BuiltInType::IntegerNot:
-                return fncg->builder().CreateNot(v);
+                return fg->builder().CreateNot(v);
             case BuiltInType::IntegerToDouble:
-                return fncg->builder().CreateSIToFP(v, llvm::Type::getDoubleTy(fncg->generator()->context()));
+                return fg->builder().CreateSIToFP(v, llvm::Type::getDoubleTy(fg->generator()->context()));
             case BuiltInType::BooleanNegate:
-                return fncg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fncg->generator()->context()), v);
+                return fg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fg->generator()->context()), v);
             default:
                 break;
         }
     }
 
-    return CallCodeGenerator(fncg, callType_).generate(callee_->generate(fncg), calleeType_,  args_, name_);
+    return CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_,  args_, name_);
 }
     
 }  // namespace EmojicodeCompiler

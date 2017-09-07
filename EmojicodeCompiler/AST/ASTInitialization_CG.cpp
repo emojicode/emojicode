@@ -17,32 +17,32 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTInitialization::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
     switch (initType_) {
         case InitType::Class:
-            return generateClassInit(fncg);
+            return generateClassInit(fg);
         case InitType::Enum:
-            return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fncg->generator()->context()),
+            return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fg->generator()->context()),
                                           typeExpr_->expressionType().eenum()->getValueFor(name_).second);
             break;
         case InitType::ValueType:
-            InitializationCallCodeGenerator(fncg, CallType::StaticDispatch)
-            .generate(vtDestination_->generate(fncg), typeExpr_->expressionType(), args_, name_);
+            InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
+            .generate(vtDestination_->generate(fg), typeExpr_->expressionType(), args_, name_);
     }
     return nullptr;
 }
 
-Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fncg) const {
+Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     if (typeExpr_->availability() == TypeAvailability::StaticAndAvailabale) {
-        auto type = llvm::dyn_cast<llvm::PointerType>(fncg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
-        auto size = fncg->sizeFor(type);
+        auto type = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
+        auto size = fg->sizeFor(type);
 
-        auto alloc = fncg->builder().CreateCall(fncg->generator()->runTimeNew(), size, "alloc");
-        auto obj = fncg->builder().CreateBitCast(alloc, type);
+        auto alloc = fg->builder().CreateCall(fg->generator()->runTimeNew(), size, "alloc");
+        auto obj = fg->builder().CreateBitCast(alloc, type);
 
-        fncg->builder().CreateStore(typeExpr_->expressionType().eclass()->classMeta(), fncg->getObjectMetaPtr(obj));
+        fg->builder().CreateStore(typeExpr_->expressionType().eclass()->classMeta(), fg->getObjectMetaPtr(obj));
 
-        auto callGen = InitializationCallCodeGenerator(fncg, CallType::StaticDispatch);
+        auto callGen = InitializationCallCodeGenerator(fg, CallType::StaticDispatch);
         return callGen.generate(obj, typeExpr_->expressionType(), args_, name_);
     }
     // TODO: class table lookup

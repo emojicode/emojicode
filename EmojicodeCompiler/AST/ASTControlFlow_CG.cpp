@@ -13,112 +13,112 @@
 
 namespace EmojicodeCompiler {
 
-void ASTIf::generate(FunctionCodeGenerator *fncg) const {
-    auto *function = fncg->builder().GetInsertBlock()->getParent();
+void ASTIf::generate(FunctionCodeGenerator *fg) const {
+    auto *function = fg->builder().GetInsertBlock()->getParent();
 
-    auto afterIfBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "afterIf");
+    auto afterIfBlock = llvm::BasicBlock::Create(fg->generator()->context(), "afterIf");
     for (size_t i = 0; i < conditions_.size(); i++) {
-        auto thenBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "then", function);
-        auto elseBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "else", function);
+        auto thenBlock = llvm::BasicBlock::Create(fg->generator()->context(), "then", function);
+        auto elseBlock = llvm::BasicBlock::Create(fg->generator()->context(), "else", function);
 
-        fncg->builder().CreateCondBr(conditions_[i]->generate(fncg), thenBlock, elseBlock);
-        fncg->builder().SetInsertPoint(thenBlock);
-        blocks_[i].generate(fncg);
+        fg->builder().CreateCondBr(conditions_[i]->generate(fg), thenBlock, elseBlock);
+        fg->builder().SetInsertPoint(thenBlock);
+        blocks_[i].generate(fg);
 
         if (!certainlyReturned_) {
-            fncg->builder().CreateBr(afterIfBlock);
+            fg->builder().CreateBr(afterIfBlock);
         }
-        fncg->builder().SetInsertPoint(elseBlock);
+        fg->builder().SetInsertPoint(elseBlock);
     }
 
     if (hasElse()) {
-        blocks_.back().generate(fncg);
+        blocks_.back().generate(fg);
     }
 
     if (!certainlyReturned_) {
-        fncg->builder().CreateBr(afterIfBlock);
+        fg->builder().CreateBr(afterIfBlock);
         function->getBasicBlockList().push_back(afterIfBlock);
-        fncg->builder().SetInsertPoint(afterIfBlock);
+        fg->builder().SetInsertPoint(afterIfBlock);
     }
 }
 
-void ASTRepeatWhile::generate(FunctionCodeGenerator *fncg) const {
-    auto *function = fncg->builder().GetInsertBlock()->getParent();
+void ASTRepeatWhile::generate(FunctionCodeGenerator *fg) const {
+    auto *function = fg->builder().GetInsertBlock()->getParent();
 
-    auto afterBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "afterRepeatWhile");
-    auto whileCondBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "whileCond", function);
-    auto repeatBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "repeat", function);
+    auto afterBlock = llvm::BasicBlock::Create(fg->generator()->context(), "afterRepeatWhile");
+    auto whileCondBlock = llvm::BasicBlock::Create(fg->generator()->context(), "whileCond", function);
+    auto repeatBlock = llvm::BasicBlock::Create(fg->generator()->context(), "repeat", function);
 
-    fncg->builder().CreateBr(whileCondBlock);
+    fg->builder().CreateBr(whileCondBlock);
 
-    fncg->builder().SetInsertPoint(whileCondBlock);
-    fncg->builder().CreateCondBr(condition_->generate(fncg), repeatBlock, afterBlock);
+    fg->builder().SetInsertPoint(whileCondBlock);
+    fg->builder().CreateCondBr(condition_->generate(fg), repeatBlock, afterBlock);
 
-    fncg->builder().SetInsertPoint(repeatBlock);
-    block_.generate(fncg);
-    fncg->builder().CreateBr(whileCondBlock);
+    fg->builder().SetInsertPoint(repeatBlock);
+    block_.generate(fg);
+    fg->builder().CreateBr(whileCondBlock);
 
     function->getBasicBlockList().push_back(afterBlock);
-    fncg->builder().SetInsertPoint(afterBlock);
+    fg->builder().SetInsertPoint(afterBlock);
 }
 
-void ASTErrorHandler::generate(FunctionCodeGenerator *fncg) const {
+void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     // TODO: implement
-//    value_->generate(fncg);
-//    fncg->scoper().pushScope();
-//    auto &var = fncg->scoper().declareVariable(varId_, value_->expressionType());
-//    fncg->copyToVariable(var.stackIndex, false, value_->expressionType());
-//    fncg->pushVariableReference(var.stackIndex, false);
-//    fncg->wr().writeInstruction(INS_IS_ERROR);
-//    fncg->wr().writeInstruction(INS_JUMP_FORWARD_IF);
-//    auto valueBlockCount = fncg->wr().writeInstructionsCountPlaceholderCoin();
+//    value_->generate(fg);
+//    fg->scoper().pushScope();
+//    auto &var = fg->scoper().declareVariable(varId_, value_->expressionType());
+//    fg->copyToVariable(var.stackIndex, false, value_->expressionType());
+//    fg->pushVariableReference(var.stackIndex, false);
+//    fg->wr().writeInstruction(INS_IS_ERROR);
+//    fg->wr().writeInstruction(INS_JUMP_FORWARD_IF);
+//    auto valueBlockCount = fg->wr().writeInstructionsCountPlaceholderCoin();
 //    if (!valueIsBoxed_) {
 //        var.stackIndex.increment();
 //    }
 //    var.type = valueType_;
-//    valueBlock_.generate(fncg);
-//    fncg->wr().writeInstruction(INS_JUMP_FORWARD);
-//    auto errorBlockCount = fncg->wr().writeInstructionsCountPlaceholderCoin();
+//    valueBlock_.generate(fg);
+//    fg->wr().writeInstruction(INS_JUMP_FORWARD);
+//    auto errorBlockCount = fg->wr().writeInstructionsCountPlaceholderCoin();
 //    valueBlockCount.write();
 //    if (valueIsBoxed_) {
 //        var.stackIndex.increment();
 //    }
 //    var.type = value_->expressionType().genericArguments()[0];
-//    errorBlock_.generate(fncg);
+//    errorBlock_.generate(fg);
 //    errorBlockCount.write();
-//    fncg->scoper().popScope(fncg->wr().count());
+//    fg->scoper().popScope(fg->wr().count());
 }
 
-void ASTForIn::generate(FunctionCodeGenerator *fncg) const {
+void ASTForIn::generate(FunctionCodeGenerator *fg) const {
     // TODO: implement
-//    fncg->scoper().pushScope();
+//    fg->scoper().pushScope();
 //
-//    auto callCG = CallCodeGenerator(fncg, INS_DISPATCH_PROTOCOL);
+//    auto callCG = CallCodeGenerator(fg, INS_DISPATCH_PROTOCOL);
 //
 //    callCG.generate(*iteratee_, iteratee_->expressionType(), ASTArguments(position()), std::u32string(1, E_DANGO));
 //
-//    auto &itVar = fncg->scoper().declareVariable(iteratorVar_, Type(PR_ENUMERATOR, false));
-//    auto &elementVar = fncg->scoper().declareVariable(elementVar_, elementType_);
+//    auto &itVar = fg->scoper().declareVariable(iteratorVar_, Type(PR_ENUMERATOR, false));
+//    auto &elementVar = fg->scoper().declareVariable(elementVar_, elementType_);
 //
-//    fncg->copyToVariable(itVar.stackIndex, false, Type(PR_ENUMERATEABLE, false));
+//    fg->copyToVariable(itVar.stackIndex, false, Type(PR_ENUMERATEABLE, false));
 //
-//    fncg->wr().writeInstruction(INS_JUMP_FORWARD);
-//    auto placeholder = fncg->wr().writeInstructionsCountPlaceholderCoin();
+//    fg->wr().writeInstruction(INS_JUMP_FORWARD);
+//    auto placeholder = fg->wr().writeInstructionsCountPlaceholderCoin();
 //
-//    auto getVar = ASTProxyExpr(position(), itVar.type, [&itVar](auto *fncg) {
-//        fncg->pushVariableReference(itVar.stackIndex, false);
+//    auto getVar = ASTProxyExpr(position(), itVar.type, [&itVar](auto *fg) {
+//        fg->pushVariableReference(itVar.stackIndex, false);
 //    });
 //
-//    auto delta = fncg->wr().count();
+//    auto delta = fg->wr().count();
 //    callCG.generate(getVar, itVar.type, ASTArguments(position()), std::u32string(1, 0x1F53D));
-//    fncg->copyToVariable(elementVar.stackIndex, false, Type(PR_ENUMERATEABLE, false));
-//    block_.generate(fncg);
+//    fg->copyToVariable(elementVar.stackIndex, false, Type(PR_ENUMERATEABLE, false));
+//    block_.generate(fg);
 //    placeholder.write();
 //
 //    callCG.generate(getVar, itVar.type, ASTArguments(position()), std::u32string(1, E_RED_QUESTION_MARK));
-//    fncg->wr().writeInstruction(INS_JUMP_BACKWARD_IF);
-//    fncg->wr().writeInstruction(fncg->wr().count() - delta + 1);
-//    fncg->scoper().popScope(fncg->wr().count());
+//    fg->wr().writeInstruction(INS_JUMP_BACKWARD_IF);
+//    fg->wr().writeInstruction(fg->wr().count() - delta + 1);
+//    fg->scoper().popScope(fg->wr().count());
 }
 
 }  // namespace EmojicodeCompiler

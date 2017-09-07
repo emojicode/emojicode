@@ -24,7 +24,7 @@ public:
                       ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 
     void setDestination(const std::shared_ptr<ASTGetVariable> &dest) { vtDestination_ = dest; }
@@ -36,7 +36,7 @@ private:
     std::shared_ptr<ASTGetVariable> vtDestination_;
     ASTArguments args_;
 
-    Value* generateClassInit(FunctionCodeGenerator *fncg) const;
+    Value* generateClassInit(FunctionCodeGenerator *fg) const;
 };
 
 }  // namespace EmojicodeCompiler

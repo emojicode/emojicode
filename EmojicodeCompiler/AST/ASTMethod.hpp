@@ -49,7 +49,7 @@ public:
     : ASTMethodable(p, args), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(Prettyprinter &pretty) const override;
-    Value* generate(FunctionCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fg) const override;
 private:
     std::u32string name_;
     std::shared_ptr<ASTExpr> callee_;

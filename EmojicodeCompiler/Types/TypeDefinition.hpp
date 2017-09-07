@@ -61,22 +61,22 @@ public:
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
     Function* getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                        const SourcePosition &p);
+                        const SourcePosition &p) const;
     /// Returns an initializer by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
     Initializer* getInitializer(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                                const SourcePosition &p);
+                                const SourcePosition &p) const;
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
     Function* getTypeMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                            const SourcePosition &p);
+                            const SourcePosition &p) const;
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupMethod(const std::u32string &name);
+    virtual Function* lookupMethod(const std::u32string &name) const;
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
-    virtual Initializer* lookupInitializer(const std::u32string &name);
+    virtual Initializer* lookupInitializer(const std::u32string &name) const;
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupTypeMethod(const std::u32string &name);
+    virtual Function* lookupTypeMethod(const std::u32string &name) const;
 
     void addMethod(Function *method);
     void addInitializer(Initializer *initializer);

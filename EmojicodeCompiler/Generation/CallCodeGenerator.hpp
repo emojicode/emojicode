@@ -25,21 +25,21 @@ class ASTArguments;
 
 class CallCodeGenerator {
 public:
-    CallCodeGenerator(FunctionCodeGenerator *fncg, CallType callType) : fncg_(fncg), callType_(callType) {}
+    CallCodeGenerator(FunctionCodeGenerator *fg, CallType callType) : fg_(fg), callType_(callType) {}
     llvm::Value* generate(llvm::Value *callee, const Type &calleeType, const ASTArguments &args,
                           const std::u32string &name);
 protected:
     virtual Function* lookupFunction(const Type &type, const std::u32string &name);
     virtual llvm::Value* createCall(const std::vector<llvm::Value *> &args, const Type &type,
                                     const std::u32string &name);
-    FunctionCodeGenerator* fncg() const { return fncg_; }
+    FunctionCodeGenerator* fg() const { return fg_; }
 private:
     llvm::Value* createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args);
     llvm::Value* createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
                                                const Type &calleeType);
     llvm::Value* dispatchFromVirtualTable(Function *function, llvm::Value *virtualTable,
                                           const std::vector<llvm::Value *> &args);
-    FunctionCodeGenerator *fncg_;
+    FunctionCodeGenerator *fg_;
     CallType callType_;
 };
 
@@ -57,11 +57,11 @@ protected:
 
 class CallableCallCodeGenerator : public CallCodeGenerator {
 public:
-    explicit CallableCallCodeGenerator(FunctionCodeGenerator *fncg) : CallCodeGenerator(fncg, CallType::None) {}
+    explicit CallableCallCodeGenerator(FunctionCodeGenerator *fg) : CallCodeGenerator(fg, CallType::None) {}
 protected:
 //    void writeInstructions(EmojicodeInstruction argSize, const Type &type, const std::u32string &name) override {
-//        fncg()->wr().writeInstruction(INS_EXECUTE_CALLABLE);
-//        fncg()->wr().writeInstruction(argSize);
+//        fg()->wr().writeInstruction(INS_EXECUTE_CALLABLE);
+//        fg()->wr().writeInstruction(argSize);
 //    }
 };
 

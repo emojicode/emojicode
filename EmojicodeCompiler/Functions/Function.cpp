@@ -85,7 +85,7 @@ void Function::deprecatedWarning(const SourcePosition &p) const {
     }
 }
 
-int Function::getVti() const {
+int Function::vti() const {
     return vti_;
 }
 

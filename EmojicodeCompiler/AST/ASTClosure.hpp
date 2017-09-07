@@ -19,7 +19,7 @@ public:
     ASTClosure(Function *function, const SourcePosition &p) : ASTExpr(p), function_(function) {}
 
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fncg) const override;
+    Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
     Function *function_;

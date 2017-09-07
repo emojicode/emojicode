@@ -25,8 +25,8 @@ public:
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override {
         throw std::logic_error("ASTProxyExpr cannot be analysed.");
     }
-    Value* generate(FunctionCodeGenerator *fncg) const override {
-        return function_(fncg);
+    Value* generate(FunctionCodeGenerator *fg) const override {
+        return function_(fg);
     }
     void toCode(Prettyprinter &pretty) const override {}
 private:

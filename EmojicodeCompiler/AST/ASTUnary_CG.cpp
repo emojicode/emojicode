@@ -10,24 +10,24 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTIsNothigness::generate(FunctionCodeGenerator *fncg) const {
-    return fncg->getHasNoValue(value_->generate(fncg));
+Value* ASTIsNothigness::generate(FunctionCodeGenerator *fg) const {
+    return fg->getHasNoValue(value_->generate(fg));
 }
 
-Value* ASTIsError::generate(FunctionCodeGenerator *fncg) const {
-    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), 0);
-    return fncg->builder().CreateICmpEQ(vf, fncg->generator()->optionalNoValue());
+Value* ASTIsError::generate(FunctionCodeGenerator *fg) const {
+    auto vf = fg->builder().CreateExtractValue(value_->generate(fg), 0);
+    return fg->builder().CreateICmpEQ(vf, fg->generator()->optionalNoValue());
 }
 
-Value* ASTUnwrap::generate(FunctionCodeGenerator *fncg) const {
-    auto vf = fncg->builder().CreateExtractValue(value_->generate(fncg), 1);
+Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
+    auto vf = fg->builder().CreateExtractValue(value_->generate(fg), 1);
 
     // TODO: box
     return vf;
 }
 
-Value* ASTMetaTypeFromInstance::generate(FunctionCodeGenerator *fncg) const {
-    return fncg->getMetaFromObject(value_->generate(fncg));
+Value* ASTMetaTypeFromInstance::generate(FunctionCodeGenerator *fg) const {
+    return fg->getMetaFromObject(value_->generate(fg));
 }
 
 }  // namespace EmojicodeCompiler

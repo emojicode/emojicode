@@ -14,105 +14,105 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTStringLiteral::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTStringLiteral::generate(FunctionCodeGenerator *fg) const {
     auto data = llvm::ArrayRef<uint32_t>(reinterpret_cast<const uint32_t *>(value_.data()), value_.size());
-    return llvm::ConstantDataArray::get(fncg->generator()->context(), data);
+    return llvm::ConstantDataArray::get(fg->generator()->context(), data);
 }
 
-Value* ASTBooleanTrue::generate(FunctionCodeGenerator *fncg) const {
-    return llvm::ConstantInt::getTrue(fncg->generator()->context());
+Value* ASTBooleanTrue::generate(FunctionCodeGenerator *fg) const {
+    return llvm::ConstantInt::getTrue(fg->generator()->context());
 }
 
-Value* ASTBooleanFalse::generate(FunctionCodeGenerator *fncg) const {
-    return llvm::ConstantInt::getFalse(fncg->generator()->context());
+Value* ASTBooleanFalse::generate(FunctionCodeGenerator *fg) const {
+    return llvm::ConstantInt::getFalse(fg->generator()->context());
 }
 
-Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fg) const {
     switch (type_) {
         case NumberType::Integer:
-            return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fncg->generator()->context()), integerValue_);
+            return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fg->generator()->context()), integerValue_);
         case NumberType::Double:
-            return llvm::ConstantFP::get(llvm::Type::getDoubleTy(fncg->generator()->context()), doubleValue_);
+            return llvm::ConstantFP::get(llvm::Type::getDoubleTy(fg->generator()->context()), doubleValue_);
     }
 }
 
-Value* ASTSymbolLiteral::generate(FunctionCodeGenerator *fncg) const {
-    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), value_);
+Value* ASTSymbolLiteral::generate(FunctionCodeGenerator *fg) const {
+    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg->generator()->context()), value_);
 }
 
-Value* ASTThis::generate(FunctionCodeGenerator *fncg) const {
-    return fncg->thisValue();
+Value* ASTThis::generate(FunctionCodeGenerator *fg) const {
+    return fg->thisValue();
 }
 
-Value* ASTNothingness::generate(FunctionCodeGenerator *fncg) const {
-    return fncg->getSimpleOptionalWithoutValue(type_);
+Value* ASTNothingness::generate(FunctionCodeGenerator *fg) const {
+    return fg->getSimpleOptionalWithoutValue(type_);
 }
 
-Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fncg) const {
-//    auto &var = fncg->scoper().declareVariable(varId_, type_);
-//    auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
-//        fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-//        fncg->wr().writeInstruction(type_.eclass()->index);
+Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
+//    auto &var = fg->scoper().declareVariable(varId_, type_);
+//    auto type = ASTProxyExpr(position(), type_, [this](auto *fg) {
+//        fg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
+//        fg->wr().writeInstruction(type_.eclass()->index);
 //    });
-//    InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
+//    InitializationCallCodeGenerator(fg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
 //                                                                   std::u32string(1, 0x1F438));
-//    fncg->copyToVariable(var.stackIndex, false, type_);
+//    fg->copyToVariable(var.stackIndex, false, type_);
 //
-//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fncg) {
-//        fncg->pushVariable(var.stackIndex, false, var.type);
+//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fg) {
+//        fg->pushVariable(var.stackIndex, false, var.type);
 //    });
 //    for (auto it = values_.begin(); it != values_.end(); it++) {
 //        auto args = ASTArguments(position());
 //        args.addArguments(*it);
 //        args.addArguments(*(++it));
-//        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F437));
+//        CallCodeGenerator(fg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F437));
 //    }
-//    getVar.generate(fncg);
+//    getVar.generate(fg);
     return nullptr;
 }
 
-Value* ASTListLiteral::generate(FunctionCodeGenerator *fncg) const {
-//    auto &var = fncg->scoper().declareVariable(varId_, type_);
-//    auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
-//        fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-//        fncg->wr().writeInstruction(type_.eclass()->index);
+Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
+//    auto &var = fg->scoper().declareVariable(varId_, type_);
+//    auto type = ASTProxyExpr(position(), type_, [this](auto *fg) {
+//        fg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
+//        fg->wr().writeInstruction(type_.eclass()->index);
 //    });
-//    InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
+//    InitializationCallCodeGenerator(fg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
 //                                                                   std::u32string(1, 0x1F438));
-//    fncg->copyToVariable(var.stackIndex, false, type_);
+//    fg->copyToVariable(var.stackIndex, false, type_);
 //
-//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fncg) {
-//        fncg->pushVariable(var.stackIndex, false, var.type);
+//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fg) {
+//        fg->pushVariable(var.stackIndex, false, var.type);
 //    });
 //    for (auto &stringNode : values_) {
 //        auto args = ASTArguments(position());
 //        args.addArguments(stringNode);
-//        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F43B));
+//        CallCodeGenerator(fg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F43B));
 //    }
-//    getVar.generate(fncg);
+//    getVar.generate(fg);
     return nullptr;
 }
 
-Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fncg) const {
-//    auto &var = fncg->scoper().declareVariable(varId_, type_);
-//    auto type = ASTProxyExpr(position(), type_, [this](auto *fncg) {
-//        fncg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-//        fncg->wr().writeInstruction(type_.eclass()->index);
+Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
+//    auto &var = fg->scoper().declareVariable(varId_, type_);
+//    auto type = ASTProxyExpr(position(), type_, [this](auto *fg) {
+//        fg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
+//        fg->wr().writeInstruction(type_.eclass()->index);
 //    });
-//    InitializationCallCodeGenerator(fncg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
+//    InitializationCallCodeGenerator(fg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
 //                                                                   std::u32string(1, 0x1F195));
-//    fncg->copyToVariable(var.stackIndex, false, type_);
+//    fg->copyToVariable(var.stackIndex, false, type_);
 //
-//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fncg) {
-//        fncg->pushVariable(var.stackIndex, false, var.type);
+//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fg) {
+//        fg->pushVariable(var.stackIndex, false, var.type);
 //    });
 //    for (auto &stringNode : values_) {
 //        auto args = ASTArguments(position());
 //        args.addArguments(stringNode);
-//        CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F43B));
+//        CallCodeGenerator(fg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F43B));
 //    }
 //
-//    CallCodeGenerator(fncg, INS_DISPATCH_METHOD).generate(getVar, type_,
+//    CallCodeGenerator(fg, INS_DISPATCH_METHOD).generate(getVar, type_,
 //                                                          ASTArguments(position()), std::u32string(1, 0x1F521));
     return nullptr;
 }

@@ -31,7 +31,7 @@ void TypeDefinition::setSuperType(const Type &type) {
     }
 }
 
-Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) {
+Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) const {
     auto pos = initializers_.find(name);
     if (pos != initializers_.end()) {
         return pos->second;
@@ -39,7 +39,7 @@ Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) {
     return nullptr;
 }
 
-Function* TypeDefinition::lookupMethod(const std::u32string &name) {
+Function* TypeDefinition::lookupMethod(const std::u32string &name) const {
     auto pos = methods_.find(name);
     if (pos != methods_.end()) {
         return pos->second;
@@ -47,7 +47,7 @@ Function* TypeDefinition::lookupMethod(const std::u32string &name) {
     return nullptr;
 }
 
-Function* TypeDefinition::lookupTypeMethod(const std::u32string &name) {
+Function* TypeDefinition::lookupTypeMethod(const std::u32string &name) const {
     auto pos = typeMethods_.find(name);
     if (pos != typeMethods_.end()) {
         return pos->second;
@@ -56,7 +56,7 @@ Function* TypeDefinition::lookupTypeMethod(const std::u32string &name) {
 }
 
 Initializer* TypeDefinition::getInitializer(const std::u32string &name, const Type &type,
-                                                      const TypeContext &typeContext, const SourcePosition &p) {
+                                            const TypeContext &typeContext, const SourcePosition &p) const {
     auto initializer = lookupInitializer(name);
     if (initializer == nullptr) {
         throw CompilerError(p, type.toString(typeContext), " has no initializer ", utf8(name), ".");
@@ -65,7 +65,7 @@ Initializer* TypeDefinition::getInitializer(const std::u32string &name, const Ty
 }
 
 Function* TypeDefinition::getMethod(const std::u32string &name, const Type &type,
-                                              const TypeContext &typeContext, const SourcePosition &p) {
+                                    const TypeContext &typeContext, const SourcePosition &p) const {
     auto method = lookupMethod(name);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext);
@@ -75,7 +75,7 @@ Function* TypeDefinition::getMethod(const std::u32string &name, const Type &type
 }
 
 Function* TypeDefinition::getTypeMethod(const std::u32string &name, const Type &type,
-                                                  const TypeContext &typeContext, const SourcePosition &p) {
+                                        const TypeContext &typeContext, const SourcePosition &p) const {
     auto method = lookupTypeMethod(name);
     if (method == nullptr) {
         throw CompilerError(p, type.toString(typeContext), " has no type method ", utf8(name), ".");

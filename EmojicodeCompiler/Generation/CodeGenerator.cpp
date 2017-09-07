@@ -126,7 +126,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
 
     klass->eachFunction([&functions, this] (Function *function) {
         if (function->hasVti()) {
-            functions[function->getVti()] = function->llvmFunction();
+            functions[function->vti()] = function->llvmFunction();
         }
     });
 
@@ -219,7 +219,7 @@ llvm::GlobalVariable* CodeGenerator::createProtocolVirtualTable(TypeDefinition *
     virtualTable.resize(protocol->methodList().size());
 
     for (auto protocolMethod : protocol->methodList()) {
-        virtualTable[protocolMethod->getVti()] = typeDef->lookupMethod(protocolMethod->name())->llvmFunction();
+        virtualTable[protocolMethod->vti()] = typeDef->lookupMethod(protocolMethod->name())->llvmFunction();
     }
 
     auto array = llvm::ConstantArray::get(type, virtualTable);

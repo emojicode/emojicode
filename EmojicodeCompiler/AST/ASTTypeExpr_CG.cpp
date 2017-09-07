@@ -13,11 +13,11 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTTypeFromExpr::generate(FunctionCodeGenerator *fncg) const {
-    return expr_->generate(fncg);
+Value* ASTTypeFromExpr::generate(FunctionCodeGenerator *fg) const {
+    return expr_->generate(fg);
 }
 
-Value* ASTStaticType::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
     assert(availability() == TypeAvailability::StaticAndUnavailable ||
            availability() == TypeAvailability::StaticAndAvailabale);
     if (type_.type() == TypeType::Class) {
@@ -29,8 +29,8 @@ Value* ASTStaticType::generate(FunctionCodeGenerator *fncg) const {
     return nullptr;
 }
     
-Value* ASTThisType::generate(FunctionCodeGenerator *fncg) const {
-    return fncg->thisValue();
+Value* ASTThisType::generate(FunctionCodeGenerator *fg) const {
+    return fg->thisValue();
 }
 
 }  // namespace EmojicodeCompiler

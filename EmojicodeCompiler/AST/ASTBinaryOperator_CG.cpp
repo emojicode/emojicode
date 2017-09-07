@@ -12,71 +12,71 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTBinaryOperator::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTBinaryOperator::generate(FunctionCodeGenerator *fg) const {
     if (builtIn_ != BuiltInType::None) {
-        auto left = left_->generate(fncg);
-        auto right = right_->generate(fncg);
+        auto left = left_->generate(fg);
+        auto right = right_->generate(fg);
         switch (builtIn_) {
             case BuiltInType::DoubleDivide:
-                return fncg->builder().CreateFDiv(left, right);
+                return fg->builder().CreateFDiv(left, right);
             case BuiltInType::DoubleRemainder:
-                return fncg->builder().CreateFRem(left, right);
+                return fg->builder().CreateFRem(left, right);
             case BuiltInType::DoubleSubstract:
-                return fncg->builder().CreateFSub(left, right);
+                return fg->builder().CreateFSub(left, right);
             case BuiltInType::DoubleAdd:
-                return fncg->builder().CreateFAdd(left, right);
+                return fg->builder().CreateFAdd(left, right);
             case BuiltInType::DoubleMultiply:
-                return fncg->builder().CreateFMul(left, right);
+                return fg->builder().CreateFMul(left, right);
             case BuiltInType::DoubleLessOrEqual:
-                return fncg->builder().CreateFCmpULE(left, right);
+                return fg->builder().CreateFCmpULE(left, right);
             case BuiltInType::DoubleLess:
-                return fncg->builder().CreateFCmpULT(left, right);
+                return fg->builder().CreateFCmpULT(left, right);
             case BuiltInType::DoubleGreaterOrEqual:
-                return fncg->builder().CreateFCmpUGE(left, right);
+                return fg->builder().CreateFCmpUGE(left, right);
             case BuiltInType::DoubleGreater:
-                return fncg->builder().CreateFCmpUGT(left, right);
+                return fg->builder().CreateFCmpUGT(left, right);
             case BuiltInType::DoubleEqual:
-                return fncg->builder().CreateFCmpUEQ(left, right);
+                return fg->builder().CreateFCmpUEQ(left, right);
             case BuiltInType::IntegerAdd:
-                return fncg->builder().CreateAdd(left, right);
+                return fg->builder().CreateAdd(left, right);
             case BuiltInType::IntegerMultiply:
-                return fncg->builder().CreateMul(left, right);
+                return fg->builder().CreateMul(left, right);
             case BuiltInType::IntegerDivide:
-                return fncg->builder().CreateSDiv(left, right);
+                return fg->builder().CreateSDiv(left, right);
             case BuiltInType::IntegerSubstract:
-                return fncg->builder().CreateSub(left, right);
+                return fg->builder().CreateSub(left, right);
             case BuiltInType::IntegerLess:
-                return fncg->builder().CreateICmpSLT(left, right);
+                return fg->builder().CreateICmpSLT(left, right);
             case BuiltInType::IntegerLessOrEqual:
-                return fncg->builder().CreateICmpSLE(left, right);
+                return fg->builder().CreateICmpSLE(left, right);
             case BuiltInType::IntegerGreater:
-                return fncg->builder().CreateICmpSGT(left, right);
+                return fg->builder().CreateICmpSGT(left, right);
             case BuiltInType::IntegerGreaterOrEqual:
-                return fncg->builder().CreateICmpSGE(left, right);
+                return fg->builder().CreateICmpSGE(left, right);
             case BuiltInType::IntegerRightShift:
-                return fncg->builder().CreateLShr(left, right);
+                return fg->builder().CreateLShr(left, right);
             case BuiltInType::IntegerLeftShift:
-                return fncg->builder().CreateShl(left, right);
+                return fg->builder().CreateShl(left, right);
             case BuiltInType::IntegerOr:
-                return fncg->builder().CreateOr(left, right);
+                return fg->builder().CreateOr(left, right);
             case BuiltInType::IntegerXor:
-                return fncg->builder().CreateXor(left, right);
+                return fg->builder().CreateXor(left, right);
             case BuiltInType::IntegerRemainder:
-                return fncg->builder().CreateSRem(left, right);
+                return fg->builder().CreateSRem(left, right);
             case BuiltInType::IntegerAnd:
-                return fncg->builder().CreateAnd(left, right);
+                return fg->builder().CreateAnd(left, right);
             case BuiltInType::BooleanOr:
-                return fncg->builder().CreateOr(left, right);
+                return fg->builder().CreateOr(left, right);
             case BuiltInType::BooleanAnd:
-                return fncg->builder().CreateAnd(left, right);
+                return fg->builder().CreateAnd(left, right);
             case BuiltInType::Equal:
-                return fncg->builder().CreateICmpEQ(left, right);
+                return fg->builder().CreateICmpEQ(left, right);
             default:
                 break;
         }
     }
 
-    return CallCodeGenerator(fncg, callType_).generate(left_->generate(fncg), calleeType_, args_,
+    return CallCodeGenerator(fg, callType_).generate(left_->generate(fg), calleeType_, args_,
                                                        operatorName(operator_));
 }
 

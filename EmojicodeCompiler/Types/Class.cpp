@@ -91,7 +91,7 @@ void Class::checkOverride(Function *function) {
         }
         function->enforcePromises(superFunction, TypeContext(Type(this, false)), Type(superclass(), false),
                                   std::experimental::nullopt);
-        function->setVti(superFunction->getVti());
+        function->setVti(superFunction->vti());
         superFunction->registerOverrider(function);
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
@@ -102,7 +102,7 @@ void Class::checkOverride(Function *function) {
 void Class::checkInheritedRequiredInit(Initializer *initializer) {
     auto superInit = findSuperFunction(initializer);
     if (initializer->required() && superInit != nullptr && superInit->required()) {
-        initializer->setVti(superInit->getVti());
+        initializer->setVti(superInit->vti());
         superInit->registerOverrider(initializer);
     }
 }
@@ -139,7 +139,7 @@ bool Class::inheritsFrom(Class *from) const {
     return false;
 }
 
-Initializer* Class::lookupInitializer(const std::u32string &name) {
+Initializer* Class::lookupInitializer(const std::u32string &name) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
         if (auto initializer = klass->TypeDefinition::lookupInitializer(name)) {
             return initializer;
@@ -151,7 +151,7 @@ Initializer* Class::lookupInitializer(const std::u32string &name) {
     return nullptr;
 }
 
-Function* Class::lookupMethod(const std::u32string &name) {
+Function* Class::lookupMethod(const std::u32string &name) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
         if (auto method = klass->TypeDefinition::lookupMethod(name)) {
             return method;
@@ -160,7 +160,7 @@ Function* Class::lookupMethod(const std::u32string &name) {
     return nullptr;
 }
 
-Function* Class::lookupTypeMethod(const std::u32string &name) {
+Function* Class::lookupTypeMethod(const std::u32string &name) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
         if (auto method = klass->TypeDefinition::lookupTypeMethod(name)) {
             return method;

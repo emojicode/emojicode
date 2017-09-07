@@ -105,7 +105,7 @@ public:
     /// Sets the VTI to the given value.
     void setVti(int vti);
     /// Returns the VTI this function was assigned.
-    int getVti() const;
+    int vti() const;
 
     TypeContext typeContext() {
         auto type = owningType();

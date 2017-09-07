@@ -57,8 +57,8 @@ class ASTExprStatement final : public ASTStatement {
 public:
     void analyse(SemanticAnalyser *analyser) override;
 
-    void generate(FunctionCodeGenerator *fncg) const override {
-        expr_->generate(fncg);
+    void generate(FunctionCodeGenerator *fg) const override {
+        expr_->generate(fg);
     }
     void toCode(Prettyprinter &pretty) const override;
 

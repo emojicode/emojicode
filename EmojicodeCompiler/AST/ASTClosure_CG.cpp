@@ -12,36 +12,36 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTClosure::generate(FunctionCodeGenerator *fncg) const {
+Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     // TODO: implement
-//    auto closureGenerator = ClosureCodeGenerator(captures_, function_, fncg->generator());
+//    auto closureGenerator = ClosureCodeGenerator(captures_, function_, fg->generator());
 //    closureGenerator.generate();
 //
-//    fncg->wr().writeInstruction(INS_CLOSURE);
+//    fg->wr().writeInstruction(INS_CLOSURE);
 //    function_->setVtiProvider(&STIProvider::globalStiProvider);
 //    function_->setUsed(false);
 //    function_->package()->registerFunction(function_);
-//    fncg->wr().writeInstruction(function_->vtiForUse());
-//    fncg->wr().writeInstruction(static_cast<EmojicodeInstruction>(captures_.size()));
-//    fncg->wr().writeInstruction(static_cast<EmojicodeInstruction>(closureGenerator.captureSize()));
-//    fncg->wr().writeInstruction(static_cast<EmojicodeInstruction>(closureGenerator.captureDestIndex()));
+//    fg->wr().writeInstruction(function_->vtiForUse());
+//    fg->wr().writeInstruction(static_cast<EmojicodeInstruction>(captures_.size()));
+//    fg->wr().writeInstruction(static_cast<EmojicodeInstruction>(closureGenerator.captureSize()));
+//    fg->wr().writeInstruction(static_cast<EmojicodeInstruction>(closureGenerator.captureDestIndex()));
 //
 //    auto objectVariableInformation = std::vector<ObjectVariableInformation>();
 //    objectVariableInformation.reserve(closureGenerator.captureSize());
 //    size_t index = 0;
 //    for (auto capture : captures_) {
-//        fncg->wr().writeInstruction(fncg->scoper().getVariable(capture.sourceId).stackIndex.value());
-//        fncg->wr().writeInstruction(capture.type.size());
+//        fg->wr().writeInstruction(fg->scoper().getVariable(capture.sourceId).stackIndex.value());
+//        fg->wr().writeInstruction(capture.type.size());
 //        capture.type.objectVariableRecords(index, &objectVariableInformation);
 //        index += capture.type.size();
 //    }
-//    fncg->wr().writeInstruction(static_cast<EmojicodeInstruction>(objectVariableInformation.size()));
+//    fg->wr().writeInstruction(static_cast<EmojicodeInstruction>(objectVariableInformation.size()));
 //    for (auto &record : objectVariableInformation) {
-//        fncg->wr().writeInstruction((record.conditionIndex << 16) | static_cast<uint16_t>(record.index));
-//        fncg->wr().writeInstruction(static_cast<uint16_t>(record.type));
+//        fg->wr().writeInstruction((record.conditionIndex << 16) | static_cast<uint16_t>(record.index));
+//        fg->wr().writeInstruction(static_cast<uint16_t>(record.type));
 //    }
 //
-//    fncg->wr().writeInstruction(captureSelf_ ? 1 : 0);
+//    fg->wr().writeInstruction(captureSelf_ ? 1 : 0);
     return nullptr;
 }
 
