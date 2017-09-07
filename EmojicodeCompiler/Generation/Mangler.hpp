@@ -17,6 +17,7 @@ class Function;
 class Type;
 class Class;
 class Type;
+class TypeDefinition;
 
 std::string mangleFunctionName(Function *function);
 std::string mangleTypeName(const Type &type);

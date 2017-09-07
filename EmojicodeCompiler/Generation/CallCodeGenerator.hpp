@@ -35,6 +35,10 @@ protected:
     FunctionCodeGenerator* fncg() const { return fncg_; }
 private:
     llvm::Value* createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args);
+    llvm::Value* createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
+                                               const Type &calleeType);
+    llvm::Value* dispatchFromVirtualTable(Function *function, llvm::Value *virtualTable,
+                                          const std::vector<llvm::Value *> &args);
     FunctionCodeGenerator *fncg_;
     CallType callType_;
 };

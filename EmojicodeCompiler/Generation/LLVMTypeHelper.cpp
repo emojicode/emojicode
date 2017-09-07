@@ -9,16 +9,23 @@
 #include <llvm/IR/DerivedTypes.h>
 #include "LLVMTypeHelper.hpp"
 #include "../Types/TypeDefinition.hpp"
+#include "../Functions/Function.hpp"
+#include "../Functions/Initializer.hpp"
 #include "Mangler.hpp"
+#include <vector>
 
 namespace EmojicodeCompiler {
 
 LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context) : context_(context) {
+    protocolsTable_ = llvm::StructType::create(std::vector<llvm::Type *> {
+        llvm::Type::getInt8PtrTy(context_)->getPointerTo()->getPointerTo(), llvm::Type::getInt16Ty(context_),
+        llvm::Type::getInt16Ty(context_)
+    }, "protocolsTable");
     classMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt64Ty(context_), llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
+        llvm::Type::getInt64Ty(context_), llvm::Type::getInt8PtrTy(context_)->getPointerTo(), protocolsTable_
     }, "classMeta");
     valueTypeMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt64Ty(context_),
+        protocolsTable_
     }, "valueTypeMeta");
     box_ = llvm::StructType::create(std::vector<llvm::Type *> {
         valueTypeMetaType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
@@ -29,6 +36,25 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context) : context_(context) {
     types_.emplace(Type::symbol(), llvm::Type::getInt32Ty(context_));
     types_.emplace(Type::doubl(), llvm::Type::getDoubleTy(context_));
     types_.emplace(Type::boolean(), llvm::Type::getInt1Ty(context_));
+}
+
+llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
+    std::vector<llvm::Type *> args;
+    if (isSelfAllowed(function->functionType())) {
+        args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
+    }
+    std::transform(function->arguments.begin(), function->arguments.end(), std::back_inserter(args), [this](auto &arg) {
+        return llvmTypeFor(arg.type);
+    });
+    llvm::Type *returnType;
+    if (function->functionType() == FunctionType::ObjectInitializer) {
+        auto init = dynamic_cast<Initializer *>(function);
+        returnType = llvmTypeFor(init->constructedType(init->typeContext().calleeType()));
+    }
+    else {
+        returnType = llvmTypeFor(function->returnType);
+    }
+    return llvm::FunctionType::get(returnType, args, false);
 }
 
 llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {

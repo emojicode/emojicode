@@ -195,6 +195,7 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
 
     auto protocolType = Type(protocol, false);
     package_->offerType(protocolType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
+    package_->registerProtocol(protocol);
     ProtocolTypeBodyParser(protocolType, package_, stream_).parse();
 }
 

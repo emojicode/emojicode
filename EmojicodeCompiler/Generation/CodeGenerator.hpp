@@ -15,6 +15,7 @@
 #include <string>
 #include "LLVMTypeHelper.hpp"
 #include <memory>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
@@ -22,6 +23,7 @@ class Application;
 class Package;
 class Class;
 class Function;
+class TypeDefinition;
 
 /// Manages the generation of IR for one package. Each package is compiled to one LLVM module.
 class CodeGenerator {
@@ -39,6 +41,7 @@ public:
 
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();
+    llvm::GlobalVariable* classValueTypeMeta() { return classValueTypeMeta_; }
 
     llvm::GlobalVariable* valueTypeMetaFor(const Type &type);
 
@@ -54,6 +57,14 @@ private:
     llvm::GlobalVariable *classValueTypeMeta_;
     LLVMTypeHelper typeHelper_ = LLVMTypeHelper(context());
 
+    struct ProtocolVirtualTables {
+        ProtocolVirtualTables(std::vector<llvm::Constant *> tables, size_t max, size_t min)
+        : tables(std::move(tables)), min(min), max(max) {}
+        std::vector<llvm::Constant *> tables;
+        size_t min;
+        size_t max;
+    };
+
     void setUpPassManager();
     void emit(const std::string &outPath);
     void generateFunctions();
@@ -62,6 +73,10 @@ private:
     void declareLlvmFunction(Function *function);
     void generateFunction(Function *function);
     void createClassInfo(Class *klass);
+    void createProtocolsTable(TypeDefinition *typeDef);
+    void createProtocolFunctionTypes(Protocol *protocol);
+    ProtocolVirtualTables createProtocolVirtualTables(TypeDefinition *typeDef);
+    llvm::GlobalVariable* createProtocolVirtualTable(TypeDefinition *typeDef, Protocol *protocol);
 };
 
 }  // namespace EmojicodeCompiler

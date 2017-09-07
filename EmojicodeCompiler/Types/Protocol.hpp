@@ -21,9 +21,14 @@ public:
 
     void prepareForSemanticAnalysis() override;
 
+    size_t index() { return index_; }
+    void setIndex(size_t index) { index_ = index; }
+
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
     }
+private:
+    size_t index_;
 };
 
 }  // namespace EmojicodeCompiler

@@ -19,6 +19,10 @@
 #include <utility>
 #include <vector>
 
+namespace llvm {
+class Constant;
+}  // namespace llvm
+
 namespace EmojicodeCompiler {
 
 struct InstanceVariableDeclaration {
@@ -105,6 +109,9 @@ public:
     Scope& instanceScope() { return scope_; }
 
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
+
+    void setProtocolsTable(llvm::Constant *table) { protocolsTable_ = table; }
+    llvm::Constant* protocolsTable() { return protocolsTable_; }
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation)
     : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(std::move(pos))  {}
@@ -141,6 +148,7 @@ private:
     SourcePosition position_;
 
     Type superType_ = Type::noReturn();
+    llvm::Constant *protocolsTable_ = nullptr;
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 };

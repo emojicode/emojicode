@@ -101,6 +101,8 @@ public:
     void registerClass(Class *cl) { classes_.push_back(cl); }
     /// A ValueType (and its derivates such as Enum) defined in this package must be registered with this method.
     void registerValueType(ValueType *vt) { valueTypes_.push_back(vt); }
+    /// A Protocol defined in this package must be registered with this method.
+    void registerProtocol(Protocol *vt) { protocols_.push_back(vt); }
     /// Functions that technically belong to this package but are not members of a TypeDefinition instance that is
     /// registered with this package, must be registered with this function.
     void registerFunction(Function *function) { functions_.push_back(function); }
@@ -125,7 +127,8 @@ public:
     /// @returns All classes registered with this package.
     const std::vector<Class *>& classes() const { return classes_; };
     const std::vector<Function *>& functions() const { return functions_; }
-    const std::vector<ValueType *>& valueTypes() const { return valueTypes_; };
+    const std::vector<ValueType *>& valueTypes() const { return valueTypes_; }
+    const std::vector<Protocol *>& protocols() const { return protocols_; }
     const std::vector<ExportedType>& exportedTypes() const { return exportedTypes_; };
 
     /// Tries to fetch a type by its name and namespace from the namespace and types available in this package and
@@ -158,6 +161,7 @@ private:
     std::vector<Class *> classes_;
     std::vector<ValueType *> valueTypes_;
     std::vector<Function *> functions_;
+    std::vector<Protocol *> protocols_;
     std::vector<Extension> extensions_;
 
     std::u32string documentation_;

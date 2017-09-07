@@ -20,6 +20,7 @@
 
 namespace llvm {
 class Function;
+class FunctionType;
 }  // namespace llvm
 
 namespace EmojicodeCompiler {
@@ -142,7 +143,8 @@ public:
     void setAst(const std::shared_ptr<ASTBlock> &ast) { ast_ = ast; }
     const std::shared_ptr<ASTBlock>& ast() const { return ast_; }
 
-    llvm::Function* llvmFunction() { return llvmFunction_; }
+    llvm::Function* llvmFunction() const { return llvmFunction_; }
+    virtual llvm::FunctionType* llvmFunctionType() const;
     void setLlvmFunction(llvm::Function *lf) { llvmFunction_ = lf; }
 
     size_t variableCount() const { return variableCount_; }

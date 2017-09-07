@@ -46,12 +46,17 @@ public:
     llvm::Value* getSimpleOptionalWithoutValue(const Type &type);
     llvm::Value* getSimpleOptionalWithValue(llvm::Value *value, const Type &type);
     llvm::Value* getValuePtr(llvm::Value *box, const Type &type);
+    llvm::Value* getValuePtr(llvm::Value *box, llvm::Type *llvmType);
     llvm::Value* getObjectMetaPtr(llvm::Value *object);
     llvm::Value* getMakeNoValue(llvm::Value *box);
 
     void createIfElse(llvm::Value* cond, const std::function<void()> &then, const std::function<void()> &otherwise);
     llvm::Value* createIfElsePhi(llvm::Value* cond, const std::function<llvm::Value* ()> &then,
                                  const std::function<llvm::Value *()> &otherwise);
+
+    using PairIfElseCallback = std::function<std::pair<llvm::Value*, llvm::Value*> ()>;
+    std::pair<llvm::Value*, llvm::Value*> createIfElsePhi(llvm::Value* cond, const PairIfElseCallback &then,
+                                                          const PairIfElseCallback &otherwise);
 protected:
     virtual void declareArguments(llvm::Function *function);
 private:

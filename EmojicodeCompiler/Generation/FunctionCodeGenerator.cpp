@@ -96,11 +96,15 @@ Value* FunctionCodeGenerator::getSimpleOptionalWithValue(llvm::Value *value, con
 }
 
 Value* FunctionCodeGenerator::getValuePtr(Value *box, const Type &type) {
+    auto llvmType = typeHelper().llvmTypeFor(type)->getPointerTo();
+    return getValuePtr(box, llvmType);
+}
+
+Value* FunctionCodeGenerator::getValuePtr(Value *box, llvm::Type *llvmType) {
     std::vector<Value *> idx2{
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1),
     };
-    auto llvmType = typeHelper().llvmTypeFor(type)->getPointerTo();
     return builder().CreateBitCast(builder().CreateGEP(box, idx2), llvmType);
 }
 
@@ -159,6 +163,34 @@ llvm::Value* FunctionCodeGenerator::createIfElsePhi(llvm::Value* cond, const std
     phi->addIncoming(thenValue, thenBlock);
     phi->addIncoming(otherwiseValue, otherwiseBlock);
     return phi;
+}
+
+std::pair<llvm::Value*, llvm::Value*>
+    FunctionCodeGenerator::createIfElsePhi(llvm::Value* cond, const FunctionCodeGenerator::PairIfElseCallback &then,
+                                           const FunctionCodeGenerator::PairIfElseCallback &otherwise) {
+    auto function = builder().GetInsertBlock()->getParent();
+    auto thenBlock = llvm::BasicBlock::Create(generator()->context(), "then", function);
+    auto otherwiseBlock = llvm::BasicBlock::Create(generator()->context(), "else", function);
+    auto mergeBlock = llvm::BasicBlock::Create(generator()->context(), "cont", function);
+
+    builder().CreateCondBr(cond, thenBlock, otherwiseBlock);
+
+    builder().SetInsertPoint(thenBlock);
+    auto thenValue = then();
+    builder().CreateBr(mergeBlock);
+
+    builder().SetInsertPoint(otherwiseBlock);
+    auto otherwiseValue = otherwise();
+    builder().CreateBr(mergeBlock);
+
+    builder().SetInsertPoint(mergeBlock);
+    auto phi1 = builder().CreatePHI(thenValue.first->getType(), 2);
+    phi1->addIncoming(thenValue.first, thenBlock);
+    phi1->addIncoming(otherwiseValue.first, otherwiseBlock);
+    auto phi2 = builder().CreatePHI(thenValue.second->getType(), 2);
+    phi2->addIncoming(thenValue.second, thenBlock);
+    phi2->addIncoming(otherwiseValue.second, otherwiseBlock);
+    return std::make_pair(phi1, phi2);
 }
 
 }  // namespace EmojicodeCompiler

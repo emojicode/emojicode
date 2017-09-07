@@ -13,12 +13,16 @@
 
 namespace EmojicodeCompiler {
 
-/// ProtocolFunction instances are the methods that are added to Protocols. ProtocolFunction instance pretend to not
-/// have a VTI until one was explicitely request and they ever enqueued for compilation. They do, however, propagate
-/// @c assignVti and @c setUsed to their overriders.
+/// ProtocolFunction instances are the methods that are added to Protocols. ProtocolFunction instance are never
+/// assigned a llvm::Function.
 class ProtocolFunction : public Function {
 public:
     using Function::Function;
+
+    llvm::FunctionType* llvmFunctionType() const override { return llvmFunctionType_; }
+    void setLlvmFunctionType(llvm::FunctionType *type) { llvmFunctionType_ = type; }
+private:
+    llvm::FunctionType* llvmFunctionType_;
 };
 
 } // namespace EmojicodeCompiler

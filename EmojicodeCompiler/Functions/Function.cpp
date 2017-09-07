@@ -11,6 +11,7 @@
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
 #include "../Types/TypeContext.hpp"
+#include <llvm/IR/Function.h>
 #include <algorithm>
 #include <stdexcept>
 
@@ -90,6 +91,10 @@ int Function::getVti() const {
 
 void Function::setVti(int vti) {
     vti_ = vti;
+}
+
+llvm::FunctionType* Function::llvmFunctionType() const {
+    return llvmFunction()->getFunctionType();
 }
 
 Type Function::type() const {

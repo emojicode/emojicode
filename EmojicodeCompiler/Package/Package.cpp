@@ -17,6 +17,7 @@
 #include "../Prettyprint/Prettyprinter.hpp"
 #include "../Types/ValueType.hpp"
 #include "../Types/Class.hpp"
+#include "../Types/Protocol.hpp"
 #include "Package.hpp"
 #include <algorithm>
 #include <cstring>
@@ -120,6 +121,11 @@ void Package::analyse() {
     for (auto &extension : extensions_) {
         extension.prepareForSemanticAnalysis();
         enqueueFunctionsOfTypeDefinition(&extension);
+    }
+    size_t protocolIndex = 0;
+    for (auto protocol : protocols_) {
+        protocol->setIndex(protocolIndex++);
+        protocol->prepareForSemanticAnalysis();
     }
 
     for (auto function : functions()) {

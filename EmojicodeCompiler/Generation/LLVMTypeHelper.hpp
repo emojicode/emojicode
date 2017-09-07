@@ -19,6 +19,8 @@ class Type;
 
 namespace EmojicodeCompiler {
 
+class Function;
+
 /// This class is repsonsible for providing llvm::Type instances for Emojicode Type instances.
 class LLVMTypeHelper {
 public:
@@ -29,12 +31,15 @@ public:
     llvm::Type* valueTypeMetaPtr() const;
     llvm::StructType* valueTypeMeta() const { return valueTypeMetaType_; }
     llvm::StructType* classMeta() const { return classMetaType_; }
+    llvm::StructType* protocolsTable() const { return protocolsTable_; }
 
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
+    llvm::FunctionType* functionTypeFor(Function *function);
 private:
     llvm::StructType *classMetaType_;
     llvm::StructType *valueTypeMetaType_;
     llvm::StructType *box_;
+    llvm::StructType *protocolsTable_;
 
     llvm::Type* getSimpleType(const Type &type);
 
