@@ -8,6 +8,8 @@
 
 #include "ASTTypeExpr.hpp"
 #include "../Generation/FnCodeGenerator.hpp"
+#include "../Types/Class.hpp"
+#include "../Types/ValueType.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -18,6 +20,12 @@ Value* ASTTypeFromExpr::generateExpr(FnCodeGenerator *fncg) const {
 Value* ASTStaticType::generateExpr(FnCodeGenerator *fncg) const {
     assert(availability() == TypeAvailability::StaticAndUnavailable ||
            availability() == TypeAvailability::StaticAndAvailabale);
+    if (type_.type() == TypeType::Class) {
+        return type_.eclass()->classMeta();
+    }
+    else if (type_.type() == TypeType::ValueType || type_.type() == TypeType::Enum) {
+        return type_.valueType()->valueTypeMetaFor(type_.genericArguments());
+    }
     return nullptr;
 }
     

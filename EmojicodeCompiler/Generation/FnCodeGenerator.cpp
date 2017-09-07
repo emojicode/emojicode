@@ -77,4 +77,83 @@ Value* FnCodeGenerator::getHasNoValue(llvm::Value *simpleOptional) {
     return builder().CreateICmpEQ(vf, generator()->optionalNoValue());
 }
 
+Value* FnCodeGenerator::getSimpleOptionalWithoutValue(const Type &type) {
+    auto structType = typeHelper().llvmTypeFor(type);
+    auto undef = llvm::UndefValue::get(structType);
+    return builder().CreateInsertValue(undef, generator()->optionalNoValue(), 0);
+}
+
+Value* FnCodeGenerator::getSimpleOptionalWithValue(llvm::Value *value, const Type &type) {
+    auto structType = typeHelper().llvmTypeFor(type);
+    auto undef = llvm::UndefValue::get(structType);
+    auto simpleOptional = builder().CreateInsertValue(undef, value, 1);
+    return builder().CreateInsertValue(simpleOptional, generator()->optionalValue(), 0);
+}
+
+Value* FnCodeGenerator::getValuePtr(Value *box, const Type &type) {
+    std::vector<Value *> idx2{
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1),
+    };
+    auto llvmType = typeHelper().llvmTypeFor(type)->getPointerTo();
+    return builder().CreateBitCast(builder().CreateGEP(box, idx2), llvmType);
+}
+
+Value* FnCodeGenerator::getObjectMetaPtr(Value *object) {
+    auto metaIdx = std::vector<llvm::Value *> {
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0)
+    };
+    return builder().CreateGEP(object, metaIdx);
+}
+
+Value* FnCodeGenerator::getMakeNoValue(Value *box) {
+    auto metaType = llvm::Constant::getNullValue(typeHelper().valueTypeMetaPtr());
+    return builder().CreateStore(metaType, getMetaTypePtr(box));
+}
+
+void FnCodeGenerator::createIfElse(llvm::Value *cond, const std::function<void()> &then,
+                                   const std::function<void()> &otherwise) {
+    auto function = builder().GetInsertBlock()->getParent();
+    auto success = llvm::BasicBlock::Create(generator()->context(), "then", function);
+    auto fail = llvm::BasicBlock::Create(generator()->context(), "else", function);
+    auto mergeBlock = llvm::BasicBlock::Create(generator()->context(), "cont", function);
+
+    builder().CreateCondBr(cond, success, fail);
+
+    builder().SetInsertPoint(success);
+    then();
+    builder().CreateBr(mergeBlock);
+
+    builder().SetInsertPoint(fail);
+    otherwise();
+    builder().CreateBr(mergeBlock);
+
+    builder().SetInsertPoint(mergeBlock);
+}
+
+llvm::Value* FnCodeGenerator::createIfElsePhi(llvm::Value* cond, const std::function<llvm::Value* ()> &then,
+                                              const std::function<llvm::Value *()> &otherwise) {
+    auto function = builder().GetInsertBlock()->getParent();
+    auto thenBlock = llvm::BasicBlock::Create(generator()->context(), "then", function);
+    auto otherwiseBlock = llvm::BasicBlock::Create(generator()->context(), "else", function);
+    auto mergeBlock = llvm::BasicBlock::Create(generator()->context(), "cont", function);
+
+    builder().CreateCondBr(cond, thenBlock, otherwiseBlock);
+
+    builder().SetInsertPoint(thenBlock);
+    auto thenValue = then();
+    builder().CreateBr(mergeBlock);
+
+    builder().SetInsertPoint(otherwiseBlock);
+    auto otherwiseValue = otherwise();
+    builder().CreateBr(mergeBlock);
+
+    builder().SetInsertPoint(mergeBlock);
+    auto phi = builder().CreatePHI(thenValue->getType(), 2);
+    phi->addIncoming(thenValue, thenBlock);
+    phi->addIncoming(otherwiseValue, otherwiseBlock);
+    return phi;
+}
+
 }  // namespace EmojicodeCompiler

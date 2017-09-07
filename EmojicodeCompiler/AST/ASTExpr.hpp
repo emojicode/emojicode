@@ -79,6 +79,9 @@ private:
     CastType castType_;
     std::shared_ptr<ASTExpr> value_;
     std::shared_ptr<ASTTypeExpr> typeExpr_;
+    Value* downcast(FnCodeGenerator *fncg) const;
+    Value* castToClass(FnCodeGenerator *fncg, Value *box) const;
+    Value* castToValueType(FnCodeGenerator *fncg, Value *box) const;
 };
 
 class ASTCallableCall final : public ASTExpr {

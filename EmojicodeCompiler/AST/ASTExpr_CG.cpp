@@ -24,34 +24,70 @@ Value* ASTMetaTypeInstantiation::generateExpr(FnCodeGenerator *fncg) const {
 }
 
 Value* ASTCast::generateExpr(FnCodeGenerator *fncg) const {
-//    typeExpr_->generate(fncg);
-//    value_->generate(fncg);
-//    switch (castType_) {
-//        case CastType::ClassDowncast:
-//            fncg->wr().writeInstruction(INS_DOWNCAST_TO_CLASS);
-//            break;
-//        case CastType::ToClass:
-//            fncg->wr().writeInstruction(INS_CAST_TO_CLASS);
-//            break;
-//        case CastType::ToValueType:
-//            fncg->wr().writeInstruction(INS_CAST_TO_VALUE_TYPE);
-//            fncg->wr().writeInstruction(typeExpr_->expressionType().boxIdentifier());
-//            break;
-//        case CastType::ToProtocol:
-//            fncg->wr().writeInstruction(INS_CAST_TO_PROTOCOL);
-//            fncg->wr().writeInstruction(typeExpr_->expressionType().protocol()->index);
-//            break;
-//    }
-    return nullptr;
+    if (castType_ == CastType::ClassDowncast) {
+        return downcast(fncg);
+    }
+
+    auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
+    fncg->builder().CreateStore(value_->generate(fncg), box);
+    Value *is = nullptr;
+    switch (castType_) {
+        case CastType::ToClass:
+            is = castToClass(fncg, box);
+            break;
+        case CastType::ToValueType:
+            is = castToValueType(fncg, box);
+            break;
+        case CastType::ToProtocol:
+            // TODO: implement
+            return nullptr;
+        case CastType::ClassDowncast:
+            break;
+    }
+
+    fncg->createIfElse(is, []() {}, [fncg, box]() {
+        fncg->getMakeNoValue(box);
+    });
+    return fncg->builder().CreateLoad(box);
+}
+
+Value* ASTCast::downcast(FnCodeGenerator *fncg) const {
+    auto value = value_->generate(fncg);
+    auto meta = fncg->getMetaFromObject(value);
+    auto toType = typeExpr_->expressionType();
+    return fncg->createIfElsePhi(fncg->builder().CreateICmpEQ(meta, typeExpr_->generate(fncg)), [toType, fncg, value]() {
+        auto casted = fncg->builder().CreateBitCast(value, fncg->typeHelper().llvmTypeFor(toType));
+        return fncg->getSimpleOptionalWithValue(casted, toType.setOptional());
+    }, [fncg, toType]() {
+        return fncg->getSimpleOptionalWithoutValue(toType.setOptional());
+    });
+}
+
+Value* ASTCast::castToValueType(FnCodeGenerator *fncg, Value *box) const {
+    auto meta = fncg->getMetaTypePtr(box);
+    return fncg->builder().CreateICmpEQ(fncg->builder().CreateLoad(meta), typeExpr_->generate(fncg));
+}
+
+Value* ASTCast::castToClass(FnCodeGenerator *fncg, Value *box) const {
+    auto meta = fncg->getMetaTypePtr(box);
+    auto toType = typeExpr_->expressionType();
+    auto expMeta = fncg->generator()->valueTypeMetaFor(toType);
+    auto ptr = fncg->builder().CreateLoad(fncg->getValuePtr(box, typeExpr_->expressionType()));
+    auto obj = fncg->builder().CreateBitCast(ptr, fncg->typeHelper().llvmTypeFor(toType));
+    auto klassPtr = fncg->getObjectMetaPtr(obj);
+
+    auto isClass = fncg->builder().CreateICmpEQ(fncg->builder().CreateLoad(meta), expMeta);
+    auto isCorrectClass = fncg->builder().CreateICmpEQ(typeExpr_->generate(fncg), fncg->builder().CreateLoad(klassPtr));
+    return fncg->builder().CreateMul(isClass, isCorrectClass);
 }
 
 Value* ASTConditionalAssignment::generateExpr(FnCodeGenerator *fncg) const {
     auto optional = expr_->generate(fncg);
 
-    auto value = fncg->builder().CreateExtractValue(optional, std::vector<unsigned int>{1}, "condValue");
+    auto value = fncg->builder().CreateExtractValue(optional, 1, "condValue");
     fncg->scoper().getVariable(varId_) = LocalVariable(false, value);
 
-    auto flag = fncg->builder().CreateExtractValue(optional, std::vector<unsigned int>{0});
+    auto flag = fncg->builder().CreateExtractValue(optional, 0);
     auto constant = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fncg->generator()->context()), 1);
     return fncg->builder().CreateICmpEQ(flag, constant);
 }

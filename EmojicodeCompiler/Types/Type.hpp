@@ -137,7 +137,8 @@ public:
 
     /// True if the type is an optional.
     bool optional() const { return optional_; }
-    void setOptional(bool o = true) { optional_ = o; }
+    void setOptional(bool o = true) { optional_ = o;}
+    Type setOptional(bool o = true) const { Type t = *this; t.optional_ = o; return t; }
 
     /// Returns true if this type is compatible to the given other type.
     bool compatibleTo(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;

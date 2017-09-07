@@ -13,12 +13,10 @@
 namespace EmojicodeCompiler {
 
 Value* ASTBoxing::getBoxValuePtr(Value *box, FnCodeGenerator *fncg) const {
-    std::vector<Value *> idx2{
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 0),
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fncg->generator()->context()), 1),
-    };
-    auto type = fncg->typeHelper().llvmTypeFor(expr_->expressionType())->getPointerTo();
-    return fncg->builder().CreateBitCast(fncg->builder().CreateGEP(box, idx2), type);
+    Type type = expr_->expressionType();
+    type.unbox();
+    type.setOptional(false);
+    return fncg->getValuePtr(box, type);
 }
 
 Value* ASTBoxing::getSimpleOptional(Value *value, FnCodeGenerator *fncg) const {
@@ -29,9 +27,7 @@ Value* ASTBoxing::getSimpleOptional(Value *value, FnCodeGenerator *fncg) const {
 }
 
 Value* ASTBoxing::getSimpleOptionalWithoutValue(FnCodeGenerator *fncg) const {
-    auto structType = fncg->typeHelper().llvmTypeFor(expressionType());
-    auto undef = llvm::UndefValue::get(structType);
-    return fncg->builder().CreateInsertValue(undef, fncg->generator()->optionalNoValue(), 0);
+    return fncg->getSimpleOptionalWithoutValue(expressionType());
 }
 
 void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fncg) const {
@@ -47,7 +43,8 @@ void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FnCodeGenerator *fn
 
 Value* ASTBoxing::getAllocaTheBox(FnCodeGenerator *fncg) const {
     auto box = fncg->builder().CreateAlloca(fncg->typeHelper().box());
-    return fncg->builder().CreateStore(expr_->generate(fncg), box);
+    fncg->builder().CreateStore(expr_->generate(fncg), box);
+    return box;
 }
 
 Value* ASTBoxing::getGetValueFromBox(Value *box, FnCodeGenerator *fncg) const {
@@ -65,27 +62,11 @@ Value* ASTBoxToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
     auto box = getAllocaTheBox(fncg);
 
     auto hasNoValue = fncg->getHasBoxNoValue(box);
-
-    auto function = fncg->builder().GetInsertBlock()->getParent();
-    auto noValueBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "noValue", function);
-    auto valueBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "value", function);
-    auto mergeBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "cont", function);
-
-    fncg->builder().CreateCondBr(hasNoValue, noValueBlock, valueBlock);
-
-    fncg->builder().SetInsertPoint(noValueBlock);
-    auto noValueValue = getSimpleOptionalWithoutValue(fncg);
-    fncg->builder().CreateBr(mergeBlock);
-
-    fncg->builder().SetInsertPoint(valueBlock);
-    auto value = getSimpleOptional(getGetValueFromBox(box, fncg), fncg);
-    fncg->builder().CreateBr(mergeBlock);
-
-    fncg->builder().SetInsertPoint(mergeBlock);
-    auto phi = fncg->builder().CreatePHI(fncg->typeHelper().llvmTypeFor(expressionType()), 2);
-    phi->addIncoming(noValueValue, noValueBlock);
-    phi->addIncoming(value, valueBlock);
-    return phi;
+    return fncg->createIfElsePhi(hasNoValue, [this, fncg]() {
+        return getSimpleOptionalWithoutValue(fncg);
+    }, [this, box, fncg]() {
+        return getSimpleOptional(getGetValueFromBox(box, fncg), fncg);
+    });
 }
 
 Value* ASTSimpleToSimpleOptional::generateExpr(FnCodeGenerator *fncg) const {
@@ -104,22 +85,11 @@ Value* ASTSimpleOptionalToBox::generateExpr(FnCodeGenerator *fncg) const {
 
     auto hasNoValue = fncg->getHasNoValue(value);
 
-    auto function = fncg->builder().GetInsertBlock()->getParent();
-    auto noValueBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "noValue", function);
-    auto valueBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "value", function);
-    auto mergeBlock = llvm::BasicBlock::Create(fncg->generator()->context(), "cont", function);
-
-    fncg->builder().CreateCondBr(hasNoValue, noValueBlock, valueBlock);
-
-    fncg->builder().SetInsertPoint(noValueBlock);
-    auto metaType = llvm::Constant::getNullValue(fncg->typeHelper().valueTypeMetaPtr());
-    fncg->builder().CreateStore(metaType, fncg->getMetaTypePtr(box));
-    fncg->builder().CreateBr(mergeBlock);
-
-    fncg->builder().SetInsertPoint(valueBlock);
-    getPutValueIntoBox(box, value, fncg);
-    fncg->builder().CreateBr(mergeBlock);
-    fncg->builder().SetInsertPoint(mergeBlock);
+    fncg->createIfElse(hasNoValue, [fncg, box]() {
+        fncg->getMakeNoValue(box);
+    }, [this, value, fncg, box]() {
+        getPutValueIntoBox(box, fncg->builder().CreateExtractValue(value, 1), fncg);
+    });
     return fncg->builder().CreateLoad(box);
 }
 

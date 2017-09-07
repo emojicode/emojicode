@@ -42,7 +42,7 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
                 throw CompilerError(position(), "Downcast on classes with optionals not possible.");
             }
             castType_ = CastType::ClassDowncast;
-            assert(originalType.storageType() == StorageType::Simple && originalType.size() == 1);
+            assert(originalType.storageType() == StorageType::Simple);
         }
         else {
             castType_ = CastType::ToClass;

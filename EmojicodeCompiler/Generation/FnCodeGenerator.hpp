@@ -10,11 +10,11 @@
 #define FnCodeGenerator_hpp
 
 #include <llvm/IR/IRBuilder.h>
-#include "../AST/ASTNode.hpp"
 #include "../Functions/Function.hpp"
 #include "../Scoping/CGScoper.hpp"
 #include "../Package/Package.hpp"
 #include "CodeGenerator.hpp"
+#include <functional>
 
 namespace EmojicodeCompiler {
 
@@ -47,6 +47,15 @@ public:
     /// @param box A pointer to a box.
     llvm::Value* getMetaTypePtr(llvm::Value *box);
     llvm::Value* getHasNoValue(llvm::Value *simpleOptional);
+    llvm::Value* getSimpleOptionalWithoutValue(const Type &type);
+    llvm::Value* getSimpleOptionalWithValue(llvm::Value *value, const Type &type);
+    llvm::Value* getValuePtr(llvm::Value *box, const Type &type);
+    llvm::Value* getObjectMetaPtr(llvm::Value *object);
+    llvm::Value* getMakeNoValue(llvm::Value *box);
+
+    void createIfElse(llvm::Value* cond, const std::function<void()> &then, const std::function<void()> &otherwise);
+    llvm::Value* createIfElsePhi(llvm::Value* cond, const std::function<llvm::Value* ()> &then,
+                                 const std::function<llvm::Value *()> &otherwise);
 protected:
     virtual void declareArguments(llvm::Function *function);
 private:
