@@ -30,6 +30,9 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context) : context_(context) {
     box_ = llvm::StructType::create(std::vector<llvm::Type *> {
         valueTypeMetaType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
     }, "box");
+    callable_ = llvm::StructType::create(std::vector<llvm::Type *> {
+        llvm::Type::getInt8PtrTy(context_), llvm::Type::getInt8PtrTy(context_)
+    }, "callable");
 
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
     types_.emplace(Type::integer(), llvm::Type::getInt64Ty(context_));
@@ -112,6 +115,10 @@ llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
 }
 
 llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
+    if (type.type() == TypeType::Callable) {
+        return callable_;
+    }
+
     llvm::Type *llvmType = nullptr;
     auto it = types_.find(type);
     if (it != types_.end()) {
@@ -122,7 +129,6 @@ llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
     }
     else {
         throw std::logic_error("No llvm type could be established.");
-        return llvm::Type::getVoidTy(context_);
     }
     if (type.type() == TypeType::Class) {
         llvmType = llvmType->getPointerTo();

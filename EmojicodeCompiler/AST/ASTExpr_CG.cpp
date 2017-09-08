@@ -100,8 +100,22 @@ Value* ASTSuperMethod::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {
-    return CallableCallCodeGenerator(fg).generate(callable_->generate(fg), callable_->expressionType(),
-                                                    args_, std::u32string());
+    auto callable = callable_->generate(fg);
+
+    auto genericArgs = callable_->expressionType().genericArguments();
+    auto returnType = fg->typeHelper().llvmTypeFor(genericArgs.front());
+    std::vector<llvm::Type *> argTypes { llvm::Type::getInt8PtrTy(fg->generator()->context()) };
+    std::transform(genericArgs.begin() + 1, genericArgs.end(), std::back_inserter(argTypes), [fg](auto &arg) {
+        return fg->typeHelper().llvmTypeFor(arg);
+    });
+    auto functionType = llvm::FunctionType::get(returnType, argTypes, false);
+
+    auto function = fg->builder().CreateBitCast(fg->builder().CreateExtractValue(callable, 0), functionType);
+    std::vector<llvm::Value *> args{ fg->builder().CreateExtractValue(callable, 1) };
+    for (auto arg : args_.arguments()) {
+        args.emplace_back(arg->generate(fg));
+    }
+    return fg->builder().CreateCall(functionType, function, args);
 }
 
 Value* ASTCaptureMethod::generate(FunctionCodeGenerator *fg) const {

@@ -40,6 +40,7 @@ private:
     llvm::StructType *valueTypeMetaType_;
     llvm::StructType *box_;
     llvm::StructType *protocolsTable_;
+    llvm::StructType *callable_;
 
     llvm::Type* getSimpleType(const Type &type);
 

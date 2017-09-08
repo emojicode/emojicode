@@ -55,16 +55,6 @@ protected:
     Function* lookupFunction(const Type &type, const std::u32string &name) override;
 };
 
-class CallableCallCodeGenerator : public CallCodeGenerator {
-public:
-    explicit CallableCallCodeGenerator(FunctionCodeGenerator *fg) : CallCodeGenerator(fg, CallType::None) {}
-protected:
-//    void writeInstructions(EmojicodeInstruction argSize, const Type &type, const std::u32string &name) override {
-//        fg()->wr().writeInstruction(INS_EXECUTE_CALLABLE);
-//        fg()->wr().writeInstruction(argSize);
-//    }
-};
-
 }  // namespace EmojicodeCompiler
 
 #endif /* CallCodeGenerator_hpp */
