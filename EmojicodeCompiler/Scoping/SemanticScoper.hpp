@@ -58,30 +58,6 @@ public:
         return scopes_.back();
     }
 
-    /// Pushes the temporary scope if it has not been pushed yet. No other scope may be pushed upon this scope.
-    /// The temporary scope is used to temporarily store value type i.a. instances that have no stack location to obtain
-    /// a reference to them.
-    Scope& pushTemporaryScope() {
-        if (pushedTemporaryScope_) {
-            return currentScope();
-        }
-        pushScopeInternal();
-        pushedTemporaryScope_ = true;
-        return currentScope();
-    }
-
-    /// Pops the temporary scope, if it was pushed.
-    /// @returns True if the scope had been pushed and was poped.
-    bool popTemporaryScope() {
-        if (!pushedTemporaryScope_) {
-            return false;
-        }
-        pushedTemporaryScope_ = false;
-        updateMaxVariableIdForPopping();
-        scopes_.pop_front();
-        return true;
-    }
-
     /// The number of variable ids that were assigned.
     size_t variableIdCount() const { return maxVariableId_; }
 protected:
@@ -100,7 +76,6 @@ private:
 
     std::list<Scope> scopes_;
     Scope *instanceScope_ = nullptr;
-    bool pushedTemporaryScope_ = false;
     int maxInitializationLevel_ = 1;
     size_t maxVariableId_ = 0;
 };

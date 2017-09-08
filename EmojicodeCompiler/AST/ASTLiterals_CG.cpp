@@ -10,7 +10,6 @@
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Application.hpp"
-#include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -49,72 +48,45 @@ Value* ASTNothingness::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
-//    auto &var = fg->scoper().declareVariable(varId_, type_);
-//    auto type = ASTProxyExpr(position(), type_, [this](auto *fg) {
-//        fg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-//        fg->wr().writeInstruction(type_.eclass()->index);
-//    });
-//    InitializationCallCodeGenerator(fg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
-//                                                                   std::u32string(1, 0x1F438));
-//    fg->copyToVariable(var.stackIndex, false, type_);
-//
-//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fg) {
-//        fg->pushVariable(var.stackIndex, false, var.type);
-//    });
-//    for (auto it = values_.begin(); it != values_.end(); it++) {
-//        auto args = ASTArguments(position());
-//        args.addArguments(*it);
-//        args.addArguments(*(++it));
-//        CallCodeGenerator(fg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F437));
-//    }
-//    getVar.generate(fg);
-    return nullptr;
+    auto dict = InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(nullptr, type_,
+                                                                                       ASTArguments(position()),
+                                                                                       std::u32string(1, 0x1F438));
+
+    for (auto it = values_.begin(); it != values_.end(); it++) {
+        auto args = ASTArguments(position());
+        args.addArguments(*it);
+        args.addArguments(*(++it));
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, std::u32string(1, 0x1F437));
+    }
+    return dict;
 }
 
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
-//    auto &var = fg->scoper().declareVariable(varId_, type_);
-//    auto type = ASTProxyExpr(position(), type_, [this](auto *fg) {
-//        fg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-//        fg->wr().writeInstruction(type_.eclass()->index);
-//    });
-//    InitializationCallCodeGenerator(fg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
-//                                                                   std::u32string(1, 0x1F438));
-//    fg->copyToVariable(var.stackIndex, false, type_);
-//
-//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fg) {
-//        fg->pushVariable(var.stackIndex, false, var.type);
-//    });
-//    for (auto &stringNode : values_) {
-//        auto args = ASTArguments(position());
-//        args.addArguments(stringNode);
-//        CallCodeGenerator(fg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F43B));
-//    }
-//    getVar.generate(fg);
-    return nullptr;
+    auto list = InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(nullptr, type_,
+                                                                                       ASTArguments(position()),
+                                                                                       std::u32string(1, 0x1F438));
+
+    for (auto it = values_.begin(); it != values_.end(); it++) {
+        auto args = ASTArguments(position());
+        args.addArguments(*it);
+        args.addArguments(*(++it));
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, std::u32string(1, 0x1F43B));
+    }
+    return list;
 }
 
 Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
-//    auto &var = fg->scoper().declareVariable(varId_, type_);
-//    auto type = ASTProxyExpr(position(), type_, [this](auto *fg) {
-//        fg->wr().writeInstruction(INS_GET_CLASS_FROM_INDEX);
-//        fg->wr().writeInstruction(type_.eclass()->index);
-//    });
-//    InitializationCallCodeGenerator(fg, INS_NEW_OBJECT).generate(type, type_, ASTArguments(position()),
-//                                                                   std::u32string(1, 0x1F195));
-//    fg->copyToVariable(var.stackIndex, false, type_);
-//
-//    auto getVar = ASTProxyExpr(position(), type_, [&var](auto *fg) {
-//        fg->pushVariable(var.stackIndex, false, var.type);
-//    });
-//    for (auto &stringNode : values_) {
-//        auto args = ASTArguments(position());
-//        args.addArguments(stringNode);
-//        CallCodeGenerator(fg, INS_DISPATCH_METHOD).generate(getVar, type_, args, std::u32string(1, 0x1F43B));
-//    }
-//
-//    CallCodeGenerator(fg, INS_DISPATCH_METHOD).generate(getVar, type_,
-//                                                          ASTArguments(position()), std::u32string(1, 0x1F521));
-    return nullptr;
+    auto strbuilder = InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(nullptr, type_,
+                                                                                             ASTArguments(position()),
+                                                                                             std::u32string(1, 0x1F195));
+
+    for (auto &stringNode : values_) {
+        auto args = ASTArguments(position());
+        args.addArguments(stringNode);
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, args, std::u32string(1, 0x1F43B));
+    }
+    return CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, ASTArguments(position()),
+                                                                    std::u32string(1, 0x1F521));
 }
 
 }  // namespace EmojicodeCompiler

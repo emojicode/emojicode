@@ -227,7 +227,6 @@
 		E48356A91F35E1A2000B80AE /* ASTMethod.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTMethod.hpp; sourceTree = "<group>"; };
 		E48356AB1F361F61000B80AE /* CallCodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CallCodeGenerator.cpp; sourceTree = "<group>"; };
 		E48356AC1F361F61000B80AE /* CallCodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CallCodeGenerator.hpp; sourceTree = "<group>"; };
-		E48356B01F373990000B80AE /* ASTProxyExpr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTProxyExpr.hpp; sourceTree = "<group>"; };
 		E48356B21F375742000B80AE /* Extension.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Extension.cpp; sourceTree = "<group>"; };
 		E48356B31F375742000B80AE /* Extension.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Extension.hpp; sourceTree = "<group>"; };
 		E48356B51F389144000B80AE /* ASTInitialization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASTInitialization.cpp; sourceTree = "<group>"; };
@@ -522,7 +521,6 @@
 				E48356A91F35E1A2000B80AE /* ASTMethod.hpp */,
 				E460A5581F30EFA2006E3AC7 /* ASTNode.cpp */,
 				E48356A01F34F741000B80AE /* ASTNode.hpp */,
-				E48356B01F373990000B80AE /* ASTProxyExpr.hpp */,
 				E4DB9B541F5C24F600B566DD /* ASTStatements_CG.cpp */,
 				E483568A1F349807000B80AE /* ASTStatements.cpp */,
 				E483568B1F349807000B80AE /* ASTStatements.hpp */,

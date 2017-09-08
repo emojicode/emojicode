@@ -24,7 +24,6 @@ void ASTBlock::analyse(SemanticAnalyser *analyser) {
 
 void ASTExprStatement::analyse(SemanticAnalyser *analyser)  {
     expr_->analyse(analyser, TypeExpectation());
-    analyser->popTemporaryScope(expr_);
 }
 
 void ASTReturn::analyse(SemanticAnalyser *analyser) {

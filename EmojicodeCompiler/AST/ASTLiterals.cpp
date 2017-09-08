@@ -76,10 +76,6 @@ Type ASTNothingness::analyse(SemanticAnalyser *analyser, const TypeExpectation &
 Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(CL_DICTIONARY, false);
 
-    analyser->scoper().pushTemporaryScope();
-    auto variable = analyser->scoper().currentScope().declareInternalVariable(type_, position());
-    varId_ = variable.id();
-
     CommonTypeFinder finder;
     for (auto it = values_.begin(); it != values_.end(); it++) {
         analyser->expectType(Type(CL_STRING, false), &*it);
@@ -96,10 +92,6 @@ Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpecta
 Type ASTListLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(CL_LIST, false);
 
-    analyser->scoper().pushTemporaryScope();
-    auto variable = analyser->scoper().currentScope().declareInternalVariable(type_, position());
-    varId_ = variable.id();
-
     CommonTypeFinder finder;
     for (auto &valueNode : values_) {
         Type type = analyser->expect(TypeExpectation(false, true, false), &valueNode);
@@ -113,10 +105,6 @@ Type ASTListLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &
 Type ASTConcatenateLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = analyser->function()->package()->getRawType(TypeIdentifier(std::u32string(1, 0x1F520), kDefaultNamespace,
                                                                        position()), false);
-
-    analyser->scoper().pushTemporaryScope();
-    auto variable = analyser->scoper().currentScope().declareInternalVariable(type_, position());
-    varId_ = variable.id();
 
     for (auto &stringNode : values_) {
         analyser->expectType(Type(CL_STRING, false), &stringNode);

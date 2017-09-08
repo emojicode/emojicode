@@ -16,7 +16,6 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
         analyser->pathAnalyser().beginBranch();
         analyser->scoper().pushScope();
         analyser->expectType(Type::boolean(), &conditions_[i]);
-        analyser->popTemporaryScope(conditions_[i]);
         blocks_[i].analyse(analyser);
         analyser->scoper().popScope(analyser->app());
         analyser->pathAnalyser().beginBranch();
@@ -42,7 +41,6 @@ void ASTRepeatWhile::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
     analyser->expectType(Type::boolean(), &condition_);
-    analyser->popTemporaryScope(condition_);
     block_.analyse(analyser);
     analyser->scoper().popScope(analyser->app());
     analyser->pathAnalyser().endBranch();
@@ -58,8 +56,6 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
 
     analyser->scoper().pushScope();
 
-    auto &var = analyser->scoper().currentScope().declareInternalVariable(type, position());
-
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
 
@@ -68,18 +64,15 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
     if (valueIsBoxed_) {
         valueType_.forceBox();
     }
-    analyser->scoper().currentScope().declareVariableWithId(valueVarName_, valueType_, true, var.id(),
-                                                            position()).initialize();
-    var.initialize();
-    varId_ = var.id();
+    analyser->scoper().currentScope().declareVariable(valueVarName_, valueType_, true, position()).initialize();
     valueBlock_.analyse(analyser);
     analyser->scoper().popScope(analyser->app());
     analyser->pathAnalyser().endBranch();
 
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
-    analyser->scoper().currentScope().declareVariableWithId(errorVarName_, type.genericArguments()[0], true, var.id(),
-                                                            position()).initialize();
+    analyser->scoper().currentScope().declareVariable(errorVarName_, type.genericArguments()[0], true,
+                                                      position()).initialize();
 
     errorBlock_.analyse(analyser);
     analyser->scoper().popScope(analyser->app());
@@ -92,7 +85,6 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     analyser->scoper().pushScope();
 
     Type iteratee = analyser->expect(TypeExpectation(true, true, false), &iteratee_);
-    analyser->popTemporaryScope(iteratee_);
 
     elementType_ = Type::noReturn();
     if (!analyser->typeIsEnumerable(iteratee, &elementType_)) {

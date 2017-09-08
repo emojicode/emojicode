@@ -57,14 +57,6 @@ public:
         }
     }
 
-    /// Tries to pop the temporary scope (see SemanticScoper) and wraps the node into a @c ASTTemporarilyScoped
-    // if necessary.
-    void popTemporaryScope(const std::shared_ptr<ASTExpr> &node) {
-        if (scoper_->popTemporaryScope()) {
-            node->setTemporarilyScoped();
-        }
-    }
-
     Type analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp) {
         auto type = node->analyse(this, exp).resolveOnSuperArgumentsAndConstraints(typeContext_);
         node->setExpressionType(type);

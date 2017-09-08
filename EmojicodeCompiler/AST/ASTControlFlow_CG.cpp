@@ -9,7 +9,6 @@
 #include "ASTControlFlow.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FunctionCodeGenerator.hpp"
-#include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
 

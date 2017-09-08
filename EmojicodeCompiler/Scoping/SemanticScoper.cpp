@@ -47,9 +47,6 @@ SemanticScoper SemanticScoper::scoperForFunction(Function *function)  {
 }
 
 Scope& SemanticScoper::pushScope() {
-    if (pushedTemporaryScope_) {
-        throw std::logic_error("Pushing on temporary scope");
-    }
     maxInitializationLevel_++;
     for (auto &scope : scopes_) {
         scope.pushInitializationLevel();

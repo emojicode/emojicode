@@ -13,7 +13,6 @@
 #include "ASTTypeExpr.hpp"
 #include "../Generation/CallCodeGenerator.hpp"
 #include "ASTInitialization.hpp"
-#include "ASTProxyExpr.hpp"
 
 namespace EmojicodeCompiler {
 

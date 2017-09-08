@@ -29,18 +29,6 @@ public:
     /// @throws CompilerError if a variable with this name already exists.
     Variable& declareVariable(const std::u32string &variable, const Type &type, bool frozen, const SourcePosition &p);
 
-    /// Sets a variable with the given ID in this scope and returns it.
-    /// @throws CompilerError if a variable with this name already exists.
-    Variable& declareVariableWithId(const std::u32string &variable, const Type &type, bool frozen, VariableID id,
-                                    const SourcePosition &p);
-
-    /// Creates an internal variable for the given type. It will be marked as mutated and non-frozen.
-    Variable& declareInternalVariable(const Type &type, const SourcePosition &p) {
-        auto &var = declareVariable(internalName(), type, false, p);
-        var.mutate(p);
-        return var;
-    }
-
     /// Retrieves a variable form the scope. Use @c hasLocalVariable to determine whether the variable with this name
     /// is in this scope.
     Variable& getLocalVariable(const std::u32string &variable);
@@ -70,18 +58,6 @@ public:
         return id;
     }
 private:
-    /// Returns a name for an internal variable
-    std::u32string internalName() {
-        auto string = std::u32string(1, E_LOCK);
-        auto number = std::to_string(internalCount_++);
-        string.resize(number.size() + 1);
-        auto stringData = &string[1];
-        for (auto numberChar : number) {
-            *stringData++ = numberChar;
-        }
-        return string;
-    }
-
     std::map<std::u32string, Variable> map_;
     int internalCount_ = 0;
     unsigned int maxVariableId_;

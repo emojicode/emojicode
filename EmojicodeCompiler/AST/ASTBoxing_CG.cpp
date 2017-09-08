@@ -9,7 +9,6 @@
 #include "ASTBoxing.hpp"
 #include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Functions/BoxingLayer.hpp"
-#include "ASTProxyExpr.hpp"
 #include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {
@@ -100,6 +99,7 @@ Value* ASTDereference::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
+    // TODO: implement
 //    expr_->generate(fg);
 //    fg->wr().writeInstruction(INS_CLOSURE_BOX);
 //    fg->wr().writeInstruction(boxingLayer_->vtiForUse());

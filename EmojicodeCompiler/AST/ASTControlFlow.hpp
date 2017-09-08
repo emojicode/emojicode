@@ -76,7 +76,6 @@ public:
 private:
     std::shared_ptr<ASTExpr> value_;
     bool valueIsBoxed_ = false;
-    VariableID varId_;
     ASTBlock valueBlock_;
     Type valueType_ = Type::noReturn();
     ASTBlock errorBlock_;

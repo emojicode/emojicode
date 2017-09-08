@@ -54,7 +54,6 @@ void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
         // Not declared, declaring as local variable
         declare_ = true;
         Type t = analyser->expect(TypeExpectation(false, true), &expr_);
-        analyser->popTemporaryScope(expr_);
         auto &var = analyser->scoper().currentScope().declareVariable(varName_, t, false, position());
         var.initialize();
         copyVariableAstInfo(ResolvedVariable(var, false), analyser);
@@ -72,7 +71,6 @@ void ASTInstanceVariableAssignment::analyse(SemanticAnalyser *analyser) {
 
 void ASTFrozenDeclaration::analyse(SemanticAnalyser *analyser) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
-    analyser->popTemporaryScope(expr_);
     auto &var = analyser->scoper().currentScope().declareVariable(varName_, t, true, position());
     var.initialize();
     id_ = var.id();
