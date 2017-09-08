@@ -33,31 +33,19 @@ private:
     std::u32string name_;
 };
 
-class ASTInitGetVariable final : public ASTGetVariable {
-public:
-    ASTInitGetVariable(VariableID varId, bool inInstanceScope, bool declare, Type type, const SourcePosition &p) :
-    ASTGetVariable(std::u32string(), p), declare_(declare), type_(std::move(type)) {
-        inInstanceScope_ = inInstanceScope;
-        varId_ = varId;
-        setReference();
-    }
-    Value* generate(FunctionCodeGenerator *fg) const override;
-private:
-    bool declare_ = false;
-    Type type_;
-};
-
-
-class ASTInitableCreator : public ASTStatement {
+class ASTInitableCreator : public ASTVariable, public ASTStatement {
 protected:
     ASTInitableCreator(std::shared_ptr<ASTExpr> e, const SourcePosition &p) : ASTStatement(p), expr_(std::move(e)) {}
     std::shared_ptr<ASTExpr> expr_;
 
-    void setVtDestination(VariableID varId, bool inInstanceScope, bool declare);
+    void setVtDestination(SemanticAnalyser *analyser, VariableID varId, bool inInstanceScope, bool declare,
+                          const Type &type);
     virtual void generateAssignment(FunctionCodeGenerator *) const = 0;
 private:
     void generate(FunctionCodeGenerator *) const final;
     bool noAction_ = false;
+    bool declare_;
+    Type type_ = Type::noReturn();
 };
 
 class ASTVariableDeclaration final : public ASTStatement {
@@ -74,7 +62,7 @@ private:
     VariableID id_;
 };
 
-class ASTVariableAssignmentDecl : public ASTVariable, public ASTInitableCreator {
+class ASTVariableAssignmentDecl : public ASTInitableCreator {
 public:
     ASTVariableAssignmentDecl(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                               const SourcePosition &p) : ASTInitableCreator(e, p), varName_(std::move(name)) {}

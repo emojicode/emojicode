@@ -8,6 +8,7 @@
 
 #include "ASTVariables.hpp"
 #include "../Generation/FunctionCodeGenerator.hpp"
+#include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -36,17 +37,18 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
     return fg->builder().CreateLoad(localVariable.value);
 }
 
-Value* ASTInitGetVariable::generate(FunctionCodeGenerator *fg) const {
-    if (declare_) {
-        auto alloca = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(type_));
-        fg->scoper().getVariable(varId_) = LocalVariable(true, alloca);
-    }
-    return ASTGetVariable::generate(fg);
-}
-
 void ASTInitableCreator::generate(FunctionCodeGenerator *fg) const {
     if (noAction_) {
+        auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_);
+
+        auto localVariable = fg->scoper().getVariable(varId_);
+        if (declare_) {
+            auto alloca = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(type_));
+            fg->scoper().getVariable(varId_) = LocalVariable(true, alloca);
+        }
+
         expr_->generate(fg);
+        init->setDestination(localVariable.value);
     }
     else {
         generateAssignment(fg);

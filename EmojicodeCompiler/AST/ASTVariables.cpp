@@ -10,7 +10,6 @@
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
-#include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -20,13 +19,12 @@ Type ASTGetVariable::analyse(SemanticAnalyser *analyser, const TypeExpectation &
     return var.variable.type();
 }
 
-void ASTInitableCreator::setVtDestination(VariableID varId, bool inInstanceScope, bool declare) {
-    if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_)) {
-        if (init->initType() == ASTInitialization::InitType::ValueType) {
-            noAction_ = true;
-            init->setDestination(std::make_shared<ASTInitGetVariable>(varId, inInstanceScope, declare,
-                                                                      expr_->expressionType(), expr_->position()));
-        }
+void ASTInitableCreator::setVtDestination(SemanticAnalyser *analyser, VariableID varId, bool inInstanceScope,
+                                          bool declare, const Type &type) {
+    if (analyser->isValueTypeInitialization(expr_)) {
+        noAction_ = true;
+        declare_ = declare;
+        type_ = type;
     }
 }
 
@@ -50,7 +48,7 @@ void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
         rvar.variable.mutate(position());
 
         analyser->expectType(rvar.variable.type(), &expr_);
-        setVtDestination(rvar.variable.id(), rvar.inInstanceScope, false);
+        setVtDestination(analyser, rvar.variable.id(), rvar.inInstanceScope, false, rvar.variable.type());
     }
     catch (VariableNotFoundError &vne) {
         // Not declared, declaring as local variable
@@ -60,7 +58,7 @@ void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
         auto &var = analyser->scoper().currentScope().declareVariable(varName_, t, false, position());
         var.initialize();
         copyVariableAstInfo(ResolvedVariable(var, false), analyser);
-        setVtDestination(var.id(), false, true);
+        setVtDestination(analyser, var.id(), false, true, t);
     }
 }
 
@@ -78,7 +76,7 @@ void ASTFrozenDeclaration::analyse(SemanticAnalyser *analyser) {
     auto &var = analyser->scoper().currentScope().declareVariable(varName_, t, true, position());
     var.initialize();
     id_ = var.id();
-    setVtDestination(var.id(), false, true);
+    setVtDestination(analyser, var.id(), false, true, t);
 }
 
 }  // namespace EmojicodeCompiler

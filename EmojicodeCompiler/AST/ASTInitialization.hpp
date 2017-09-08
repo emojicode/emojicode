@@ -9,8 +9,8 @@
 #ifndef ASTInitialization_hpp
 #define ASTInitialization_hpp
 
+#include "ASTExpr.hpp"
 #include <utility>
-#include "ASTVariables.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -24,16 +24,25 @@ public:
                       ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    /// @pre setDestination() must have been used to set a destination if initType() == InitType::ValueType
+    /// @see SemanticAnalyser::isValueTypeInitialization()
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 
-    void setDestination(const std::shared_ptr<ASTGetVariable> &dest) { vtDestination_ = dest; }
+    /// Sets the destination for a value type inititalization.
+    ///
+    /// A destination must be set via this setter before generating code for a value type initialization. The value
+    /// must evaluate to a pointer of the type, which is to be initialized.
+    /// @see ASTInitableCreator, ASTStoreTemporarily, SemanticAnalyser::comply(),
+    ///      SemanticAnalyser::isValueTypeInitialization()
+    void setDestination(llvm::Value *dest) { vtDestination_ = dest; }
+    /// Returns the type of type which is initialized.
     InitType initType() { return initType_; }
 private:
     InitType initType_ = InitType::Class;
     std::u32string name_;
     std::shared_ptr<ASTTypeExpr> typeExpr_;
-    std::shared_ptr<ASTGetVariable> vtDestination_;
+    llvm::Value *vtDestination_ = nullptr;
     ASTArguments args_;
 
     Value* generateClassInit(FunctionCodeGenerator *fg) const;

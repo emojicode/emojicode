@@ -9,6 +9,8 @@
 #include "ASTBoxing.hpp"
 #include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Functions/BoxingLayer.hpp"
+#include "ASTProxyExpr.hpp"
+#include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -105,13 +107,16 @@ Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTStoreTemporarily::generate(FunctionCodeGenerator *fg) const {
-//    auto rtype = expr_->expressionType();
-//    auto &variable = fg->scoper().declareVariable(varId_, rtype);
-//    expr_->generate(fg);
-//    fg->copyToVariable(variable.stackIndex, false, rtype);
-//    variable.initialize(fg->wr().count());
-//    fg->pushVariableReference(variable.stackIndex, false);
-    return nullptr;
+    auto store = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), nullptr, "temp");
+    if (init_) {
+        auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_);
+        init->setDestination(store);
+        expr_->generate(fg);
+    }
+    else {
+        fg->builder().CreateStore(expr_->generate(fg), store);
+    }
+    return store;
 }
 
 }  // namespace EmojicodeCompiler

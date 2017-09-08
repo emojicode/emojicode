@@ -95,13 +95,17 @@ private:
 
 class ASTStoreTemporarily final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
+public:
+    /// This setter must be called to indicate that the value that is temporarily stored by this node is the result
+    /// of a value type initialization. If called, the contained expression will be treated as a ASTInitialization
+    /// node and an address to the reserved space is passed to ASTInitialization::setDestination() upon generation.
+    /// @see SemanticAnalyser::comply()
+    void setInit() { init_ = true; }
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override {}
-public:
-    void setVarId(VariableID id) { varId_ = id; }
 private:
-    VariableID varId_;
+    bool init_ = false;
 };
 
 } // namespace EmojicodeCompiler

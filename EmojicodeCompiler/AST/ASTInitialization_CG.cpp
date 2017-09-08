@@ -27,7 +27,7 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
             break;
         case InitType::ValueType:
             InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
-            .generate(vtDestination_->generate(fg), typeExpr_->expressionType(), args_, name_);
+            .generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
     }
     return nullptr;
 }
