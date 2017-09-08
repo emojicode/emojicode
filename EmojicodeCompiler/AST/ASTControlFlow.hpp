@@ -58,7 +58,6 @@ private:
     std::shared_ptr<ASTExpr> iteratee_;
     ASTBlock block_;
     VariableID elementVar_;
-    VariableID iteratorVar_;
     std::u32string varName_;
     Type elementType_ = Type::noReturn();
 };

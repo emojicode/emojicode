@@ -90,35 +90,32 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
 }
 
 void ASTForIn::generate(FunctionCodeGenerator *fg) const {
-    // TODO: implement
-//    fg->scoper().pushScope();
-//
-//    auto callCG = CallCodeGenerator(fg, INS_DISPATCH_PROTOCOL);
-//
-//    callCG.generate(*iteratee_, iteratee_->expressionType(), ASTArguments(position()), std::u32string(1, E_DANGO));
-//
-//    auto &itVar = fg->scoper().declareVariable(iteratorVar_, Type(PR_ENUMERATOR, false));
-//    auto &elementVar = fg->scoper().declareVariable(elementVar_, elementType_);
-//
-//    fg->copyToVariable(itVar.stackIndex, false, Type(PR_ENUMERATEABLE, false));
-//
-//    fg->wr().writeInstruction(INS_JUMP_FORWARD);
-//    auto placeholder = fg->wr().writeInstructionsCountPlaceholderCoin();
-//
-//    auto getVar = ASTProxyExpr(position(), itVar.type, [&itVar](auto *fg) {
-//        fg->pushVariableReference(itVar.stackIndex, false);
-//    });
-//
-//    auto delta = fg->wr().count();
-//    callCG.generate(getVar, itVar.type, ASTArguments(position()), std::u32string(1, 0x1F53D));
-//    fg->copyToVariable(elementVar.stackIndex, false, Type(PR_ENUMERATEABLE, false));
-//    block_.generate(fg);
-//    placeholder.write();
-//
-//    callCG.generate(getVar, itVar.type, ASTArguments(position()), std::u32string(1, E_RED_QUESTION_MARK));
-//    fg->wr().writeInstruction(INS_JUMP_BACKWARD_IF);
-//    fg->wr().writeInstruction(fg->wr().count() - delta + 1);
-//    fg->scoper().popScope(fg->wr().count());
+    auto callg = CallCodeGenerator(fg, CallType::DynamicProtocolDispatch);
+    auto iterator = callg.generate(iteratee_->generate(fg), iteratee_->expressionType(),
+                                   ASTArguments(position()), std::u32string(1, E_DANGO));
+
+    auto *function = fg->builder().GetInsertBlock()->getParent();
+
+    auto afterBlock = llvm::BasicBlock::Create(fg->generator()->context(), "afterRepeatWhile");
+    auto whileCondBlock = llvm::BasicBlock::Create(fg->generator()->context(), "whileCond", function);
+    auto repeatBlock = llvm::BasicBlock::Create(fg->generator()->context(), "repeat", function);
+
+    fg->builder().CreateBr(whileCondBlock);
+
+    auto iteratorType = Type(PR_ENUMERATOR, false);
+
+    fg->builder().SetInsertPoint(whileCondBlock);
+    auto cont = callg.generate(iterator, iteratorType, ASTArguments(position()), std::u32string(1, E_RED_QUESTION_MARK));
+    fg->builder().CreateCondBr(cont, repeatBlock, afterBlock);
+
+    fg->builder().SetInsertPoint(repeatBlock);
+    auto element = callg.generate(iterator, iteratorType, ASTArguments(position()), std::u32string(1, 0x1F53D));
+    fg->scoper().getVariable(elementVar_) = LocalVariable(false, element);
+    block_.generate(fg);
+    fg->builder().CreateBr(whileCondBlock);
+
+    function->getBasicBlockList().push_back(afterBlock);
+    fg->builder().SetInsertPoint(afterBlock);
 }
 
 }  // namespace EmojicodeCompiler

@@ -103,7 +103,6 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     iteratee_->setExpressionType(Type(PR_ENUMERATEABLE, false));
 
     analyser->pathAnalyser().beginBranch();
-    iteratorVar_ = analyser->scoper().currentScope().declareInternalVariable(elementType_, position()).id();
     auto &elVar = analyser->scoper().currentScope().declareVariable(varName_, elementType_, true, position());
     elVar.initialize();
     elementVar_ = elVar.id();
