@@ -50,6 +50,10 @@ public:
     llvm::Value* getObjectMetaPtr(llvm::Value *object);
     llvm::Value* getMakeNoValue(llvm::Value *box);
 
+    llvm::Value* int16(int16_t value);
+    llvm::Value* int32(int32_t value);
+    llvm::Value* int64(int64_t value);
+
     void createIfElse(llvm::Value* cond, const std::function<void()> &then, const std::function<void()> &otherwise);
     llvm::Value* createIfElsePhi(llvm::Value* cond, const std::function<llvm::Value* ()> &then,
                                  const std::function<llvm::Value *()> &otherwise);

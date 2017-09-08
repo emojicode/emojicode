@@ -46,6 +46,7 @@ public:
     llvm::GlobalVariable* valueTypeMetaFor(const Type &type);
 
     llvm::Function* runTimeNew() const { return runTimeNew_; }
+    llvm::Function* errNoValue() const { return errNoValue_; }
 private:
     Package *package_;
     llvm::LLVMContext context_;
@@ -54,6 +55,7 @@ private:
     std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
 
     llvm::Function *runTimeNew_;
+    llvm::Function *errNoValue_;
     llvm::GlobalVariable *classValueTypeMeta_;
     LLVMTypeHelper typeHelper_ = LLVMTypeHelper(context());
 
@@ -75,6 +77,7 @@ private:
     void createClassInfo(Class *klass);
     void createProtocolsTable(TypeDefinition *typeDef);
     void createProtocolFunctionTypes(Protocol *protocol);
+    llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
     ProtocolVirtualTables createProtocolVirtualTables(TypeDefinition *typeDef);
     llvm::GlobalVariable* createProtocolVirtualTable(TypeDefinition *typeDef, Protocol *protocol);
 };

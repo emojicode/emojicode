@@ -79,7 +79,8 @@ Value* FunctionCodeGenerator::getMetaTypePtr(Value *box) {
 
 Value* FunctionCodeGenerator::getHasNoValue(llvm::Value *simpleOptional) {
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
-    return builder().CreateICmpEQ(vf, generator()->optionalNoValue());
+    auto testValue = builder().CreateBitCast(vf, llvm::Type::getInt1Ty(generator()->context()));
+    return builder().CreateICmpEQ(testValue, generator()->optionalNoValue());
 }
 
 Value* FunctionCodeGenerator::getSimpleOptionalWithoutValue(const Type &type) {
@@ -191,6 +192,18 @@ std::pair<llvm::Value*, llvm::Value*>
     phi2->addIncoming(thenValue.second, thenBlock);
     phi2->addIncoming(otherwiseValue.second, otherwiseBlock);
     return std::make_pair(phi1, phi2);
+}
+
+llvm::Value* FunctionCodeGenerator::int16(int16_t value) {
+    return llvm::ConstantInt::get(llvm::Type::getInt16Ty(generator()->context()), value);
+}
+
+llvm::Value* FunctionCodeGenerator::int32(int32_t value) {
+    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), value);
+}
+
+llvm::Value* FunctionCodeGenerator::int64(int64_t value) {
+    return llvm::ConstantInt::get(llvm::Type::getInt64Ty(generator()->context()), value);
 }
 
 }  // namespace EmojicodeCompiler

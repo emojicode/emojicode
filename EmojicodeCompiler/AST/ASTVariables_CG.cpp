@@ -12,10 +12,7 @@
 namespace EmojicodeCompiler {
 
 Value* ASTGetVariable::instanceVariablePointer(FunctionCodeGenerator *fg, size_t index) {
-    std::vector<Value *> idxList{
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg->generator()->context()), 0),
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg->generator()->context()), index),
-    };
+    std::vector<Value *> idxList{ fg->int32(0), fg->int32(index) };
     return fg->builder().CreateGEP(fg->thisValue(), idxList);
 }
 
@@ -61,10 +58,7 @@ void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
     fg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
     if (type_.optional()) {
-        std::vector<Value *> idx {
-            llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg->generator()->context()), 0),
-            llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg->generator()->context()), 0),
-        };
+        std::vector<Value *> idx { fg->int32(0), fg->int32(0) };
         fg->builder().CreateStore(fg->generator()->optionalNoValue(), fg->builder().CreateGEP(alloca, idx));
     }
 }

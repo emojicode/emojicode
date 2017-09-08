@@ -62,10 +62,7 @@ void CodeGenerator::generate(const std::string &outPath) {
 }
 
 void CodeGenerator::declarePackageSymbols() {
-    classValueTypeMeta_ = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
-                                                   llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-                                                   llvm::Constant::getNullValue(typeHelper_.valueTypeMeta()),
-                                                   "classValueTypeMeta");
+
 
     for (auto valueType : package_->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
@@ -227,9 +224,21 @@ llvm::GlobalVariable* CodeGenerator::createProtocolVirtualTable(TypeDefinition *
 }
 
 void CodeGenerator::declareRunTime() {
-    std::vector<llvm::Type *> args{ llvm::Type::getInt64Ty(context()) };
-    auto ft = llvm::FunctionType::get(llvm::Type::getInt8PtrTy(context()), args, false);
-    runTimeNew_ = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, "ejcRunTimeAlloc", module());
+    runTimeNew_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(context()),
+                                          llvm::Type::getInt64Ty(context()));
+    errNoValue_ = declareRunTimeFunction("ejcErrNoValue", llvm::Type::getVoidTy(context()), std::vector<llvm::Type *> {
+        llvm::Type::getInt64Ty(context()), llvm::Type::getInt64Ty(context())
+    });
+
+    classValueTypeMeta_ = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
+                                                   llvm::GlobalValue::LinkageTypes::ExternalLinkage,
+                                                   nullptr, "ejcRunTimeClassValueTypeMeta");
+}
+
+llvm::Function* CodeGenerator::declareRunTimeFunction(const char *name, llvm::Type *returnType,
+                                           llvm::ArrayRef<llvm::Type *> args) {
+    auto ft = llvm::FunctionType::get(returnType, args, false);
+    return llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, module());
 }
 
 void CodeGenerator::emit(const std::string &outPath) {

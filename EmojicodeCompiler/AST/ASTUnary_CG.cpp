@@ -20,10 +20,17 @@ Value* ASTIsError::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
-    auto vf = fg->builder().CreateExtractValue(value_->generate(fg), 1);
-
-    // TODO: box
-    return vf;
+    auto optional = value_->generate(fg);
+    fg->createIfElse(fg->getHasNoValue(optional), [this, fg]() {
+        fg->builder().CreateCall(fg->generator()->errNoValue(), std::vector<llvm::Value*> {
+            fg->int64(position().line), fg->int64(position().character),
+        });
+        fg->builder().CreateUnreachable();
+    }, []() {});
+    if (value_->expressionType().storageType() == StorageType::Box) {
+        return optional;
+    }
+    return fg->builder().CreateExtractValue(value_->generate(fg), 1);
 }
 
 Value* ASTMetaTypeFromInstance::generate(FunctionCodeGenerator *fg) const {
