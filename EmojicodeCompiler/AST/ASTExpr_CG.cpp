@@ -35,7 +35,7 @@ Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
             break;
         case CastType::ToProtocol:
             // TODO: implement
-            return nullptr;
+            throw std::logic_error("Unimplemented");
         case CastType::ClassDowncast:
             break;
     }
@@ -122,7 +122,7 @@ Value* ASTCaptureMethod::generate(FunctionCodeGenerator *fg) const {
 //    callee_->generate(fg);
 //    fg->wr().writeInstruction(INS_CAPTURE_METHOD);
 //    fg->wr().writeInstruction(callee_->expressionType().eclass()->lookupMethod(name_)->vtiForUse());
-    return nullptr;
+    throw std::logic_error("Unimplemented");
 }
 
 Value* ASTCaptureTypeMethod::generate(FunctionCodeGenerator *fg) const {
@@ -134,7 +134,7 @@ Value* ASTCaptureTypeMethod::generate(FunctionCodeGenerator *fg) const {
 //        fg->wr().writeInstruction(INS_CAPTURE_TYPE_METHOD);
 //    }
 //    fg->wr().writeInstruction(callee_->expressionType().typeDefinition()->lookupTypeMethod(name_)->vtiForUse());
-    return nullptr;
+    throw std::logic_error("Unimplemented");
 }
 
 }  // namespace EmojicodeCompiler

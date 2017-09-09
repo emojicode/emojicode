@@ -42,7 +42,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
 //    }
 //
 //    fg->wr().writeInstruction(captureSelf_ ? 1 : 0);
-    return nullptr;
+    throw std::logic_error("Unimplemented");
 }
 
 }  // namespace EmojicodeCompiler

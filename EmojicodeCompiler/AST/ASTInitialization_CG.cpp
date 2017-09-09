@@ -23,13 +23,13 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
         case InitType::Enum:
             return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fg->generator()->context()),
                                           typeExpr_->expressionType().eenum()->getValueFor(name_).second);
-            break;
         case InitType::ValueType:
             assert(vtDestination_ != nullptr);
             InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
             .generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
+            return nullptr;
     }
-    return nullptr;
+    throw std::logic_error("Unexpected init type");
 }
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
@@ -46,7 +46,7 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
         return callGen.generate(obj, typeExpr_->expressionType(), args_, name_);
     }
     // TODO: class table lookup
-    return nullptr;
+    throw std::logic_error("Unimplemented");
 }
 
 }  // namespace EmojicodeCompiler

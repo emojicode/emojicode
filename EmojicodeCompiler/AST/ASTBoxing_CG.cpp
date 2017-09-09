@@ -127,7 +127,7 @@ Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
 //    expr_->generate(fg);
 //    fg->wr().writeInstruction(INS_CLOSURE_BOX);
 //    fg->wr().writeInstruction(boxingLayer_->vtiForUse());
-    return nullptr;
+    throw std::logic_error("Unimplemented");
 }
 
 Value* ASTStoreTemporarily::generate(FunctionCodeGenerator *fg) const {

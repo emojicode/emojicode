@@ -57,7 +57,7 @@ void CodeGenerator::generate(const std::string &outPath) {
     generateFunctions();
 
     llvm::verifyModule(*module(), &llvm::outs());
-    module()->dump();
+    llvm::outs() << *module();
     emit(outPath);
 }
 
@@ -199,8 +199,8 @@ CodeGenerator::ProtocolVirtualTables CodeGenerator::createProtocolVirtualTables(
         protocolVirtualTablesUnordered.emplace_back(createProtocolVirtualTable(typeDef, protocol.protocol()), index);
     }
 
-    std::vector<llvm::Constant *> protocolVirtualTables;
-    protocolVirtualTables.resize(max - min + 1);
+    auto type = llvm::UndefValue::get(llvm::Type::getInt8PtrTy(context_)->getPointerTo());
+    std::vector<llvm::Constant *> protocolVirtualTables(max - min + 1, type);
     for (auto &pair : protocolVirtualTablesUnordered) {
         protocolVirtualTables[pair.second - min] = pair.first;
     }
