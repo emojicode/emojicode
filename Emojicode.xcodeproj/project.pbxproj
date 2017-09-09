@@ -326,7 +326,8 @@
 				E478910D1F4F3060008DCB24 /* Compiler.cpp */,
 				E478910E1F4F3060008DCB24 /* Compiler.hpp */,
 			);
-			path = EmojicodeCompiler;
+			name = EmojicodeCompiler;
+			path = Compiler;
 			sourceTree = "<group>";
 		};
 		E460A5361F30EFA2006E3AC7 /* Analysis */ = {
@@ -639,7 +640,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#/usr/local/Cellar/llvm/4.0.1/share/clang/run-clang-tidy.py -p build/ -header-filter=EmojicodeCompiler/*/*";
+			shellScript = "# /usr/local/Cellar/llvm/5.0.0/share/clang/run-clang-tidy.py -p build/ -header-filter=EmojicodeCompiler/*/*";
 		};
 /* End PBXShellScriptBuildPhase section */
 

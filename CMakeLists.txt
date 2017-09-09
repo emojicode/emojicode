@@ -24,7 +24,7 @@ add_subdirectory(Runtime)
 add_subdirectory(s)
 
 link_directories(/usr/local/Cellar/llvm/5.0.0/lib)
-file(GLOB_RECURSE EMOJICODEC_SOURCES "EmojicodeCompiler/*")
+file(GLOB_RECURSE EMOJICODEC_SOURCES "Compiler/*")
 add_executable(emojicodec ${EMOJICODEC_SOURCES})
 target_compile_options(emojicodec PUBLIC -Wall -Wno-unused-result -Wno-missing-braces -pedantic)
 include_directories(SYSTEM /usr/local/Cellar/llvm/5.0.0/include)

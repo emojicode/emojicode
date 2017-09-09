@@ -22,7 +22,7 @@ public:
     llvm::FunctionType* llvmFunctionType() const override { return llvmFunctionType_; }
     void setLlvmFunctionType(llvm::FunctionType *type) { llvmFunctionType_ = type; }
 private:
-    llvm::FunctionType* llvmFunctionType_;
+    llvm::FunctionType* llvmFunctionType_ = nullptr;
 };
 
 } // namespace EmojicodeCompiler

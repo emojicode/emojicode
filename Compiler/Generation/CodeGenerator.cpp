@@ -181,7 +181,7 @@ llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
 
 void CodeGenerator::createProtocolsTable(TypeDefinition *typeDef) {
     llvm::Constant* init;
-    if (typeDef->protocols().size() > 0) {
+    if (!typeDef->protocols().empty()) {
         auto tables = createProtocolVirtualTables(typeDef);
 
         auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
