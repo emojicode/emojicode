@@ -12,6 +12,7 @@
 #include "../Types/Class.hpp"
 #include "../Types/ValueType.hpp"
 #include "../Types/Type.hpp"
+#include "../Package/Package.hpp"
 #include <sstream>
 
 namespace EmojicodeCompiler {
@@ -30,6 +31,7 @@ void mangleIdentifier(std::stringstream &stream, const std::u32string &string) {
 }
 
 void mangleTypeName(std::stringstream &stream, const Type &type) {
+    stream << type.typePackage() << "_";
     switch (type.type()) {
         case TypeType::ValueType:
             stream << "vt_";
@@ -49,14 +51,14 @@ void mangleTypeName(std::stringstream &stream, const Type &type) {
 
 std::string mangleClassMetaName(Class *klass) {
     std::stringstream stream;
-    stream << "class_meta_";
+    stream << klass->package()->name() << "_class_meta_";
     mangleIdentifier(stream, klass->name());
     return stream.str();
 }
 
 std::string mangleValueTypeMetaName(const Type &type) {
     std::stringstream stream;
-    stream << "value_meta_";
+    stream << type.typePackage() << "_value_meta_";
     mangleIdentifier(stream, type.typeDefinition()->name());
     for (auto &arg : type.genericArguments()) {
         mangleTypeName(stream, arg);
