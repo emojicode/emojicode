@@ -185,8 +185,7 @@ void CodeGenerator::createProtocolsTable(TypeDefinition *typeDef) {
 }
 
 CodeGenerator::ProtocolVirtualTables CodeGenerator::createProtocolVirtualTables(TypeDefinition *typeDef) {
-    std::vector<llvm::Constant *> protocolVirtualTables;
-    protocolVirtualTables.resize(typeDef->protocols().size());
+    std::vector<std::pair<llvm::Constant *, size_t>> protocolVirtualTablesUnordered;
 
     size_t min = std::numeric_limits<size_t>::max();
     size_t max = 0;
@@ -199,13 +198,15 @@ CodeGenerator::ProtocolVirtualTables CodeGenerator::createProtocolVirtualTables(
         if (index > max) {
             max = index;
         }
-        protocolVirtualTables[index] = createProtocolVirtualTable(typeDef, protocol.protocol());
+        protocolVirtualTablesUnordered.emplace_back(createProtocolVirtualTable(typeDef, protocol.protocol()), index);
     }
 
-    // Compact the table
-    std::move(protocolVirtualTables.begin() + min, protocolVirtualTables.begin() + max,
-              protocolVirtualTables.begin());
+    std::vector<llvm::Constant *> protocolVirtualTables;
     protocolVirtualTables.resize(max - min + 1);
+    for (auto &pair : protocolVirtualTablesUnordered) {
+        protocolVirtualTables[pair.second - min] = pair.first;
+    }
+
     return CodeGenerator::ProtocolVirtualTables(protocolVirtualTables, max, min);
 }
 
