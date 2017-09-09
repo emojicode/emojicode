@@ -36,23 +36,26 @@ public:
     const std::string& packageToReport() const { return packageToReport_; }
     const std::string& outPath() const { return outPath_; }
     const std::string& mainFile() const { return mainFile_; }
-    const std::string& sizeVariable() const { return sizeVariable_; }
     const std::string& packageDirectory() const { return packageDirectory_; }
     const std::string& migrationFile() const { return migrationFile_; }
+    const std::string& mainPackageName() const { return mainPackageName_; }
+
+    bool isStandalone() { return standalone_; }
 
     /// Whether the main purpose of the invocation of the compiler is to prettyprint a file.
     /// This method returns true if prettyprint was explicitely requested or if a file is being migrated.
-    const bool prettyprint() const { return format_; }
+    bool prettyprint() const { return format_; }
 private:
     std::string packageToReport_;
     std::string outPath_;
     std::string mainFile_;
-    std::string sizeVariable_;
     std::string packageDirectory_ = defaultPackagesDirectory;
     std::string migrationFile_;
+    std::string mainPackageName_;
     bool format_ = false;
     bool jsonOutput_ = false;
     bool beginCompilation_ = true;
+    bool standalone_ = false;
 
     void readEnvironment();
     void parsePositionalArguments(int positionalArguments, char *argv[]);

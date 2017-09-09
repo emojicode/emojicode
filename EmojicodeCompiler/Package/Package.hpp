@@ -94,9 +94,6 @@ public:
     const std::u32string& documentation() const { return documentation_; }
     void setDocumentation(const std::u32string &doc) { documentation_ = doc; }
 
-    bool requiresBinary() const { return requiresNativeBinary_; }
-    void setRequiresBinary(bool b = true) { requiresNativeBinary_ = b; }
-
     /// A Class defined in this package must be registered with this method.
     void registerClass(Class *cl) { classes_.push_back(cl); }
     /// A ValueType (and its derivates such as Enum) defined in this package must be registered with this method.
@@ -151,7 +148,6 @@ private:
     const std::string name_;
     const std::string mainFile_;
     PackageVersion version_ = PackageVersion(0, 0);
-    bool requiresNativeBinary_ = false;
     bool finishedLoading_ = false;
 
     CompatibilityInfoProvider *compatibilityInfoProvider_ = nullptr;

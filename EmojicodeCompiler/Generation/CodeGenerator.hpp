@@ -1,4 +1,4 @@
-  //
+//
 //  CodeGenerator.hpp
 //  Emojicode
 //
@@ -37,7 +37,9 @@ public:
     /// Returns the package for which this code generator was created.
     Package* package() const { return package_; }
 
-    void generate(const std::string &outPath);
+    /// Generates an object file for the package.
+    /// @param outPath The path at which the object file will be placed.
+    void generate(const std::string &outPath, const std::vector<std::unique_ptr<Package>> &dependencies);
 
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();
@@ -72,6 +74,7 @@ private:
     void generateFunctions();
     void declarePackageSymbols();
     void declareRunTime();
+    void declareImportedPackageSymbols(Package *package);
     void declareLlvmFunction(Function *function);
     void generateFunction(Function *function);
     void createClassInfo(Class *klass);

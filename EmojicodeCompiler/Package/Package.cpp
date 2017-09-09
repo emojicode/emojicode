@@ -104,7 +104,6 @@ void Package::parse() {
 
     if (name_ == "s") {
         loadStandard(this, position());
-        requiresNativeBinary_ = false;
     }
     finishedLoading_ = true;
 }

@@ -24,20 +24,20 @@ bool start(Options options) {
         return true;
     }
 
-    Application application(options.mainFile(), options.outPath(), options.packageDirectory(),
-                            options.applicationDelegate());
+    Application application(options.mainPackageName(), options.mainFile(), options.outPath(),
+                            options.packageDirectory(), options.applicationDelegate(), options.isStandalone());
 
     if (!options.migrationFile().empty()) {
         application.loadMigrationFile(options.migrationFile());
     }
     if (options.prettyprint()) {
-        application.factorUnderscorePackage<RecordingPackage>();
+        application.factorMainPackage<RecordingPackage>();
     }
 
     bool success = application.compile(options.prettyprint());
 
     if (options.prettyprint()) {
-        auto recordingPackage = dynamic_cast<RecordingPackage *>(application.underscorePackage());
+        auto recordingPackage = dynamic_cast<RecordingPackage *>(application.mainPackage());
         Prettyprinter(recordingPackage, &application).print();
     }
 
@@ -48,10 +48,6 @@ bool start(Options options) {
         else {
             options.printCliMessage("Report failed as the request package was not loaded.");
         }
-    }
-
-    if (!options.sizeVariable().empty()) {
-        //            InformationDesk(&pkg).sizeOfVariable(sizeVariable);
     }
 
     return success;

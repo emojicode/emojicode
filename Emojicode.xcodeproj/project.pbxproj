@@ -243,6 +243,7 @@
 		E49E6D141F441F0900B819CA /* ASTClosure.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ASTClosure.hpp; sourceTree = "<group>"; };
 		E49E6D161F4ABF2500B819CA /* ClosureCodeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClosureCodeGenerator.cpp; sourceTree = "<group>"; };
 		E49E6D171F4ABF2500B819CA /* ClosureCodeGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ClosureCodeGenerator.hpp; sourceTree = "<group>"; };
+		E4A6E94D1F64338E00AD071D /* Runtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Runtime.h; sourceTree = "<group>"; };
 		E4D3EF8A1F5459A100A31C81 /* CompatibilityInfoProvider.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompatibilityInfoProvider.cpp; sourceTree = "<group>"; };
 		E4D3EF8B1F5459A100A31C81 /* CompatibilityInfoProvider.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CompatibilityInfoProvider.hpp; sourceTree = "<group>"; };
 		E4DB9B531F5C24F600B566DD /* ASTVariables_CG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ASTVariables_CG.cpp; sourceTree = "<group>"; };
@@ -553,6 +554,7 @@
 		E4DB9B7F1F5E8BAF00B566DD /* Runtime */ = {
 			isa = PBXGroup;
 			children = (
+				E4A6E94D1F64338E00AD071D /* Runtime.h */,
 				E4DB9B801F5E8BC400B566DD /* main.cpp */,
 			);
 			path = Runtime;
@@ -742,10 +744,10 @@
 			buildSettings = {
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/4.0.1/include;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/5.0.0/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/llvm/4.0.1/lib,
+					/usr/local/Cellar/llvm/5.0.0/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -755,12 +757,13 @@
 					"-lLLVMLTO",
 					"-lLLVMPasses",
 					"-lLLVMObjCARCOpts",
-					"-lLLVMMIRParser",
 					"-lLLVMSymbolize",
 					"-lLLVMDebugInfoPDB",
 					"-lLLVMDebugInfoDWARF",
+					"-lLLVMMIRParser",
 					"-lLLVMCoverage",
 					"-lLLVMTableGen",
+					"-lLLVMDlltoolDriver",
 					"-lLLVMOrcJIT",
 					"-lLLVMXCoreDisassembler",
 					"-lLLVMXCoreCodeGen",
@@ -779,9 +782,6 @@
 					"-lLLVMSparcDesc",
 					"-lLLVMSparcInfo",
 					"-lLLVMSparcAsmPrinter",
-					"-lLLVMRISCVDesc",
-					"-lLLVMRISCVCodeGen",
-					"-lLLVMRISCVInfo",
 					"-lLLVMPowerPCDisassembler",
 					"-lLLVMPowerPCCodeGen",
 					"-lLLVMPowerPCAsmParser",
@@ -806,7 +806,7 @@
 					"-lLLVMLanaiCodeGen",
 					"-lLLVMLanaiAsmParser",
 					"-lLLVMLanaiDesc",
-					"-lLLVMLanaiInstPrinter",
+					"-lLLVMLanaiAsmPrinter",
 					"-lLLVMLanaiInfo",
 					"-lLLVMHexagonDisassembler",
 					"-lLLVMHexagonCodeGen",
@@ -873,17 +873,18 @@
 					"-lLLVMTransformUtils",
 					"-lLLVMBitWriter",
 					"-lLLVMAnalysis",
+					"-lLLVMProfileData",
 					"-lLLVMObject",
 					"-lLLVMMCParser",
 					"-lLLVMMC",
 					"-lLLVMBitReader",
-					"-lLLVMProfileData",
 					"-lLLVMCore",
+					"-lLLVMBinaryFormat",
 					"-lLLVMSupport",
-					"-lLLVMDemangle\n-lcurses",
+					"-lLLVMDemangle",
+					"-lcurses",
 					"-lz",
-					"-lm
-",
+					"-lm",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -895,10 +896,10 @@
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				COPY_PHASE_STRIP = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/4.0.1/include;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/5.0.0/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/llvm/4.0.1/lib,
+					/usr/local/Cellar/llvm/5.0.0/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -908,12 +909,13 @@
 					"-lLLVMLTO",
 					"-lLLVMPasses",
 					"-lLLVMObjCARCOpts",
-					"-lLLVMMIRParser",
 					"-lLLVMSymbolize",
 					"-lLLVMDebugInfoPDB",
 					"-lLLVMDebugInfoDWARF",
+					"-lLLVMMIRParser",
 					"-lLLVMCoverage",
 					"-lLLVMTableGen",
+					"-lLLVMDlltoolDriver",
 					"-lLLVMOrcJIT",
 					"-lLLVMXCoreDisassembler",
 					"-lLLVMXCoreCodeGen",
@@ -932,9 +934,6 @@
 					"-lLLVMSparcDesc",
 					"-lLLVMSparcInfo",
 					"-lLLVMSparcAsmPrinter",
-					"-lLLVMRISCVDesc",
-					"-lLLVMRISCVCodeGen",
-					"-lLLVMRISCVInfo",
 					"-lLLVMPowerPCDisassembler",
 					"-lLLVMPowerPCCodeGen",
 					"-lLLVMPowerPCAsmParser",
@@ -959,7 +958,7 @@
 					"-lLLVMLanaiCodeGen",
 					"-lLLVMLanaiAsmParser",
 					"-lLLVMLanaiDesc",
-					"-lLLVMLanaiInstPrinter",
+					"-lLLVMLanaiAsmPrinter",
 					"-lLLVMLanaiInfo",
 					"-lLLVMHexagonDisassembler",
 					"-lLLVMHexagonCodeGen",
@@ -1026,17 +1025,18 @@
 					"-lLLVMTransformUtils",
 					"-lLLVMBitWriter",
 					"-lLLVMAnalysis",
+					"-lLLVMProfileData",
 					"-lLLVMObject",
 					"-lLLVMMCParser",
 					"-lLLVMMC",
 					"-lLLVMBitReader",
-					"-lLLVMProfileData",
 					"-lLLVMCore",
+					"-lLLVMBinaryFormat",
 					"-lLLVMSupport",
-					"-lLLVMDemangle\n-lcurses",
+					"-lLLVMDemangle",
+					"-lcurses",
 					"-lz",
-					"-lm
-",
+					"-lm",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

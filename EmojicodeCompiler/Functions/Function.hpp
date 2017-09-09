@@ -171,7 +171,7 @@ private:
     FunctionType functionType_;
     size_t variableCount_ = 0;
 
-    llvm::Function *llvmFunction_;
+    llvm::Function *llvmFunction_ = nullptr;
 };
 
 }  // namespace EmojicodeCompiler

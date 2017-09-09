@@ -42,14 +42,6 @@ void DocumentParser::parse() {
                 attributes.allow(Attribute::Export).check(theToken.position(), package_->app());
                 parseEnum(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
-            case E_RADIO:
-                attributes.check(theToken.position(), package_->app());
-                documentation.disallow();
-                package_->setRequiresBinary();
-                if (package_->name() == "_") {
-                    throw CompilerError(theToken.position(), "You may not set 📻 for the _ package.");
-                }
-                continue;
             case E_TRIANGLE_POINTED_DOWN: {
                 attributes.check(theToken.position(), package_->app());
                 TypeIdentifier alias = parseTypeIdentifier();

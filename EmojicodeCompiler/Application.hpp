@@ -48,43 +48,37 @@ public:
 class Application final {
 public:
     /// Constructs an Application instance.
-    /// @param mainFile The underscore package’s main file. (See Package::Package.)
+    /// @param mainPackage The name of the main package. This is the package for which the compiler will produce
+    ///                    an object file if compile(false) is called. It's also the file whose interface will be
+    ///                    created.
+    /// @param mainFile The main package’s main file. (See Package::Package.)
     /// @param outPath The path at which the Emojicode Binary will be written.
     /// @param pkgDir The path to the Emojicode packages directory. It will be searched if a package is loaded
     ///               via loadPackage().
-    Application(std::string mainFile, std::string outPath, std::string pkgDir,
-                std::unique_ptr<ApplicationDelegate> delegate);
+    Application(std::string mainPackage, std::string mainFile, std::string outPath, std::string pkgDir,
+                std::unique_ptr<ApplicationDelegate> delegate, bool standalone);
     /// Compile the application.
     /// @param parseOnly If this argument is true, all packages are only parsed and not semantically analysed.
     /// @returns True iff the application has been successfully compiled and an Emojicode binary was written.
     bool compile(bool parseOnly);
 
-    /// Constructs a Package instance that represents the underscore package. Appropriate values are set.
+    /// Constructs a Package instance that represents the main package. Appropriate values are set.
     template <typename T>
-    void factorUnderscorePackage() {
-        if (underscorePackage() == nullptr) {
-            underscorePackage_ = std::make_unique<T>("_", mainFile_, this);
-            underscorePackage_->setPackageVersion(PackageVersion(1, 0));
-            underscorePackage_->setRequiresBinary(false);
-            underscorePackage_->setCompatiblityInfoProvider(compInfoProvider_.get());
+    void factorMainPackage() {
+        if (mainPackage_ == nullptr) {
+            mainPackage_ = std::make_unique<T>(std::move(mainPackageName_), mainFile_, this);
+            if (standalone_) {
+                mainPackage_->setPackageVersion(PackageVersion(1, 0));
+            }
+            mainPackage_->setCompatiblityInfoProvider(compInfoProvider_.get());
         }
     }
 
-    /// Returns the underscore package.
-    /// If the underscore package has not been factored yet, nullptr is returned.
-    Package* underscorePackage() {
-        if (underscorePackage_ != nullptr) {
-            return underscorePackage_.get();
-        }
-        if (!packagesLoadingOrder_.empty()) {
-            return packagesLoadingOrder_.back().get();
-        }
-        return nullptr;
-    }
+    Package* mainPackage() const { return mainPackage_.get(); }
 
     /// @pre factorUnderscorePackage() must not have been called.
     void loadMigrationFile(const std::string &file) {
-        if (underscorePackage() != nullptr) {
+        if (mainPackage_ != nullptr) {
             throw std::logic_error("loadMigrationFile must not be called after factorUnderscorePackage");
         }
         compInfoProvider_ = std::make_unique<CompatibilityInfoProvider>(file);
@@ -108,8 +102,6 @@ public:
     /// Whether a start flag function was encountered and compiled.
     bool hasStartFlagFunction() const { return startFlag_ != nullptr; }
 
-    /// Returns all packages in the order in which they were loaded.
-    const std::vector<std::unique_ptr<Package>>& packagesInOrder() const { return packagesLoadingOrder_; }
     /// Searches the loaded packages for the package with the given name.
     /// If the package has not been loaded yet @c nullptr is returned.
     Package* findPackage(const std::string &name) const;
@@ -138,12 +130,14 @@ private:
     std::vector<std::vector<ObjectVariableInformation>> boxObjectVariableInformation_ = std::vector<std::vector<ObjectVariableInformation>>(3);
     Function *startFlag_ = nullptr;
     bool hasError_ = false;
+    bool standalone_;
     std::string mainFile_;
     const std::string outPath_;
+    const std::string mainPackageName_;
     const std::string packageDirectory_;
     std::unique_ptr<ApplicationDelegate> delegate_;
     std::unique_ptr<CompatibilityInfoProvider> compInfoProvider_;
-    std::unique_ptr<Package> underscorePackage_;
+    std::unique_ptr<Package> mainPackage_;
 };
 
 }  // namespace EmojicodeCompiler

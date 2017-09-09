@@ -21,7 +21,7 @@ Options::Options(int argc, char *argv[]) {
     readEnvironment();
 
     signed char ch;
-    while ((ch = getopt(argc, argv, "vrjR:o:S:f")) != -1) {
+    while ((ch = getopt(argc, argv, "vrjR:o:p:f")) != -1) {
         switch (ch) {
             case 'v':
                 puts("Emojicode 0.5. Created by Theo Weidmann.");
@@ -39,8 +39,8 @@ Options::Options(int argc, char *argv[]) {
             case 'j':
                 jsonOutput_ = true;
                 break;
-            case 'S':
-                sizeVariable_ = optarg;
+            case 'p':
+                mainPackageName_ = optarg;
                 break;
             case 'f':
                 format_ = true;
@@ -76,6 +76,11 @@ void Options::parsePositionalArguments(int positionalArguments, char *argv[]) {
     }
 
     mainFile_ = argv[0];
+
+    if (mainPackageName_.empty()) {
+        mainPackageName_ = "_";
+        standalone_ = true;
+    }
 
     examineMainFile();
 }

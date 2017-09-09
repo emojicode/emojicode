@@ -50,8 +50,12 @@ void CodeGenerator::declareLlvmFunction(Function *function) {
     function->setLlvmFunction(llvmFunction);
 }
 
-void CodeGenerator::generate(const std::string &outPath) {
+void CodeGenerator::generate(const std::string &outPath, const std::vector<std::unique_ptr<Package>> &dependencies) {
     declareRunTime();
+
+    for (auto &package : dependencies) {
+        declareImportedPackageSymbols(package.get());
+    }
 
     declarePackageSymbols();
     generateFunctions();
@@ -80,6 +84,22 @@ void CodeGenerator::declarePackageSymbols() {
     }
     for (auto protocol : package_->protocols()) {
         createProtocolFunctionTypes(protocol);
+    }
+}
+
+void CodeGenerator::declareImportedPackageSymbols(Package *package) {
+    for (auto valueType : package->valueTypes()) {
+        valueType->eachFunction([this](auto *function) {
+            declareLlvmFunction(function);
+        });
+    }
+    for (auto klass : package->classes()) {
+        klass->eachFunction([this](auto *function) {
+            declareLlvmFunction(function);
+        });
+    }
+    for (auto function : package->functions()) {
+        declareLlvmFunction(function);
     }
 }
 

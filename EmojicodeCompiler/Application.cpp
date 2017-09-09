@@ -11,23 +11,21 @@
 
 namespace EmojicodeCompiler {
 
-Application::Application(std::string mainFile, std::string outPath, std::string pkgDir,
-                         std::unique_ptr<ApplicationDelegate> delegate)
-: mainFile_(std::move(mainFile)), outPath_(std::move(outPath)), packageDirectory_(std::move(pkgDir)),
-    delegate_(std::move(delegate)) {}
+Application::Application(std::string mainPackage, std::string mainFile, std::string outPath, std::string pkgDir,
+                         std::unique_ptr<ApplicationDelegate> delegate, bool standalone)
+: standalone_(standalone), mainFile_(std::move(mainFile)), outPath_(std::move(outPath)),
+    mainPackageName_(std::move(mainPackage)), packageDirectory_(std::move(pkgDir)), delegate_(std::move(delegate)){}
 
 bool Application::compile(bool parseOnly) {
     delegate_->begin();
 
     try {
-        factorUnderscorePackage<Package>();
-        underscorePackage_->parse();
+        factorMainPackage<Package>();
+        mainPackage_->parse();
         if (parseOnly) {
             return !hasError_;
         }
-        analyse(underscorePackage_.get());
-        packagesLoadingOrder_.emplace_back(std::move(underscorePackage_));
-        underscorePackage_ = nullptr;
+        analyse(mainPackage_.get());
     }
     catch (CompilerError &ce) {
         error(ce);
@@ -44,13 +42,13 @@ bool Application::compile(bool parseOnly) {
 void Application::analyse(Package *underscorePackage) {
     underscorePackage->analyse();
 
-    if (!hasStartFlagFunction()) {
+    if (standalone_ && !hasStartFlagFunction()) {
         throw CompilerError(underscorePackage->position(), "No 🏁 block was found.");
     }
 }
 
 void Application::generateCode() {
-    CodeGenerator(underscorePackage()).generate(outPath_);
+    CodeGenerator(mainPackage_.get()).generate(outPath_, packagesLoadingOrder_);
 }
 
 Package* Application::findPackage(const std::string &name) const {
