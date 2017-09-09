@@ -24,7 +24,7 @@ void ASTIf::generate(FunctionCodeGenerator *fg) const {
         fg->builder().SetInsertPoint(thenBlock);
         blocks_[i].generate(fg);
 
-        if (!certainlyReturned_) {
+        if (!blocks_[i].returnedCertainly()) {
             fg->builder().CreateBr(afterIfBlock);
         }
         fg->builder().SetInsertPoint(elseBlock);
@@ -34,7 +34,7 @@ void ASTIf::generate(FunctionCodeGenerator *fg) const {
         blocks_.back().generate(fg);
     }
 
-    if (!certainlyReturned_) {
+    if (!blocks_.back().returnedCertainly()) {
         fg->builder().CreateBr(afterIfBlock);
         function->getBasicBlockList().push_back(afterIfBlock);
         fg->builder().SetInsertPoint(afterIfBlock);

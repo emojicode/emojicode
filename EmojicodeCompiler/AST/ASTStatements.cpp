@@ -20,6 +20,7 @@ void ASTBlock::analyse(SemanticAnalyser *analyser) {
     for (auto &stmt : stmts_) {
         stmt->analyse(analyser);
     }
+    returnedCertainly_ = analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::Returned);
 }
 
 void ASTExprStatement::analyse(SemanticAnalyser *analyser)  {

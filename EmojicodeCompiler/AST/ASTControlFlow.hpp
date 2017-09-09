@@ -29,7 +29,6 @@ public:
 private:
     std::vector<std::shared_ptr<ASTExpr>> conditions_;
     std::vector<ASTBlock> blocks_;
-    bool certainlyReturned_;
 };
 
 class ASTRepeatWhile final : public ASTStatement {

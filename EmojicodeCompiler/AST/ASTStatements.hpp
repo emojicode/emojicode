@@ -47,10 +47,12 @@ public:
     void toCode(Prettyprinter &pretty) const override;
     /// Prints the code that goes between the block delimiters.
     void innerToCode(Prettyprinter &pretty) const;
+    bool returnedCertainly() const { return returnedCertainly_; }
 
     const std::vector<std::shared_ptr<ASTStatement>>& nodes() const { return stmts_; }
 private:
     std::vector<std::shared_ptr<ASTStatement>> stmts_;
+    bool returnedCertainly_ = false;
 };
 
 class ASTExprStatement final : public ASTStatement {
