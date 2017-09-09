@@ -16,10 +16,6 @@ namespace EmojicodeCompiler {
 
 void TypeBodyParser::parseFunctionBody(Function *function) {
     if (stream_.consumeTokenIf(E_RADIO)) {
-        if (stream_.consumeTokenIf(TokenType::Integer)) {
-            function->setExternalName("toBeImplemented");
-            return;
-        }
         auto &token = stream_.consumeToken(TokenType::String);
         if (token.value().empty()) {
             throw CompilerError(token.position(), "The external name must not be empty.");
