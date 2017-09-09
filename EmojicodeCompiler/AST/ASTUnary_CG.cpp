@@ -21,13 +21,17 @@ Value* ASTIsError::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     auto optional = value_->generate(fg);
-    fg->createIfElse(fg->getHasNoValue(optional), [this, fg]() {
+    auto isBox = value_->expressionType().storageType() == StorageType::Box;
+    auto hasNoValue = isBox ? fg->getHasNoValueBox(optional) : fg->getHasNoValue(optional);
+
+    fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
         fg->builder().CreateCall(fg->generator()->errNoValue(), std::vector<llvm::Value*> {
             fg->int64(position().line), fg->int64(position().character),
         });
         fg->builder().CreateUnreachable();
-    }, []() {});
-    if (value_->expressionType().storageType() == StorageType::Box) {
+        return false;
+    }, []() { return true; });
+    if (isBox) {
         return optional;
     }
     return fg->builder().CreateExtractValue(value_->generate(fg), 1);

@@ -77,10 +77,14 @@ Value* FunctionCodeGenerator::getMetaTypePtr(Value *box) {
     return builder().CreateGEP(box, idx);
 }
 
+llvm::Value* FunctionCodeGenerator::getHasNoValueBox(llvm::Value *box) {
+    auto vf = builder().CreateExtractValue(box, 0);
+    return builder().CreateICmpEQ(vf, llvm::Constant::getNullValue(vf->getType()));
+}
+
 Value* FunctionCodeGenerator::getHasNoValue(llvm::Value *simpleOptional) {
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
-    auto testValue = builder().CreateBitCast(vf, llvm::Type::getInt1Ty(generator()->context()));
-    return builder().CreateICmpEQ(testValue, generator()->optionalNoValue());
+    return builder().CreateICmpEQ(vf, generator()->optionalNoValue());
 }
 
 Value* FunctionCodeGenerator::getSimpleOptionalWithoutValue(const Type &type) {
@@ -122,8 +126,8 @@ Value* FunctionCodeGenerator::getMakeNoValue(Value *box) {
     return builder().CreateStore(metaType, getMetaTypePtr(box));
 }
 
-void FunctionCodeGenerator::createIfElse(llvm::Value *cond, const std::function<void()> &then,
-                                   const std::function<void()> &otherwise) {
+void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std::function<bool()> &then,
+                                   const std::function<bool()> &otherwise) {
     auto function = builder().GetInsertBlock()->getParent();
     auto success = llvm::BasicBlock::Create(generator()->context(), "then", function);
     auto fail = llvm::BasicBlock::Create(generator()->context(), "else", function);
@@ -132,14 +136,20 @@ void FunctionCodeGenerator::createIfElse(llvm::Value *cond, const std::function<
     builder().CreateCondBr(cond, success, fail);
 
     builder().SetInsertPoint(success);
-    then();
-    builder().CreateBr(mergeBlock);
+    if (then()) {
+        builder().CreateBr(mergeBlock);
+    }
 
     builder().SetInsertPoint(fail);
-    otherwise();
-    builder().CreateBr(mergeBlock);
-
+    if (otherwise()) {
+        builder().CreateBr(mergeBlock);
+    }
     builder().SetInsertPoint(mergeBlock);
+}
+
+void FunctionCodeGenerator::createIfElse(llvm::Value *cond, const std::function<void()> &then,
+                                         const std::function<void()> &otherwise) {
+    createIfElseBranchCond(cond, [then]() { then(); return true; }, [otherwise]() { otherwise(); return true; });
 }
 
 llvm::Value* FunctionCodeGenerator::createIfElsePhi(llvm::Value* cond, const std::function<llvm::Value* ()> &then,

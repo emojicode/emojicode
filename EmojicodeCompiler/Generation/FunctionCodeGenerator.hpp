@@ -43,6 +43,7 @@ public:
     /// @param box A pointer to a box.
     llvm::Value* getMetaTypePtr(llvm::Value *box);
     llvm::Value* getHasNoValue(llvm::Value *simpleOptional);
+    llvm::Value* getHasNoValueBox(llvm::Value *box);
     llvm::Value* getSimpleOptionalWithoutValue(const Type &type);
     llvm::Value* getSimpleOptionalWithValue(llvm::Value *value, const Type &type);
     llvm::Value* getValuePtr(llvm::Value *box, const Type &type);
@@ -55,6 +56,8 @@ public:
     llvm::Value* int64(int64_t value);
 
     void createIfElse(llvm::Value* cond, const std::function<void()> &then, const std::function<void()> &otherwise);
+    void createIfElseBranchCond(llvm::Value* cond, const std::function<bool()> &then,
+                                const std::function<bool()> &otherwise);
     llvm::Value* createIfElsePhi(llvm::Value* cond, const std::function<llvm::Value* ()> &then,
                                  const std::function<llvm::Value *()> &otherwise);
 
