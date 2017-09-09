@@ -7,7 +7,7 @@
 //
 
 #include "../Types/CommonTypeFinder.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../Types/TypeContext.hpp"
 #include "../Types/TypeDefinition.hpp"
 #include <algorithm>
@@ -63,7 +63,7 @@ void CommonTypeFinder::updateCommonProtocols(const Type &type, const TypeContext
     }
 }
 
-Type CommonTypeFinder::getCommonType(const SourcePosition &p, Application *app) const {
+Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *app) const {
     if (!firstTypeFound_) {
         app->warn(p, "Type is ambigious without more context.");
     }

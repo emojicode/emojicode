@@ -24,7 +24,7 @@ Scope& SemanticScoper::pushArgumentsScope(const std::vector<Argument> &arguments
 }
 
 
-void SemanticScoper::popScope(Application *app) {
+void SemanticScoper::popScope(Compiler *app) {
     currentScope().recommendFrozenVariables(app);
 
     updateMaxVariableIdForPopping();

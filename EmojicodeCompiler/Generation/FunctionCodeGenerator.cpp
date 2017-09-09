@@ -33,8 +33,8 @@ void FunctionCodeGenerator::generate() {
     }
 }
 
-Application* FunctionCodeGenerator::app() const {
-    return generator()->package()->app();
+Compiler* FunctionCodeGenerator::compiler() const {
+    return generator()->package()->compiler();
 }
 
 void FunctionCodeGenerator::declareArguments(llvm::Function *function) {

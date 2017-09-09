@@ -8,7 +8,7 @@
 
 #include "TypeDefinition.hpp"
 #include "../Analysis/BoxingLayerBuilder.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../CompilerError.hpp"
 #include "../Functions/BoxingLayer.hpp"
 #include "../Functions/Function.hpp"
@@ -133,7 +133,7 @@ void TypeDefinition::prepareForSemanticAnalysis() {
     }
 
     if (!instanceVariables_.empty() && initializerList_.empty()) {
-        package_->app()->warn(position(), "Type defines ", instanceVariables_.size(),
+        package_->compiler()->warn(position(), "Type defines ", instanceVariables_.size(),
                               " instances variables but has no initializers.");
     }
 }
@@ -159,7 +159,7 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
                                           method->returnType.resolveOn(TypeContext(protocol)), clm->position());
                 buildBoxingLayerAst(bl);
                 if (enqueBoxingLayers) {
-                    package_->app()->analysisQueue.emplace(bl);
+                    package_->compiler()->analysisQueue.emplace(bl);
                 }
                 method->registerOverrider(bl);
                 addMethod(bl);
@@ -169,7 +169,7 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
             }
         }
         catch (CompilerError &ce) {
-            package_->app()->error(ce);
+            package_->compiler()->error(ce);
         }
     }
 }

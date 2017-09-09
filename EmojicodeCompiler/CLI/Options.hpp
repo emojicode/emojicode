@@ -10,7 +10,7 @@
 #define Options_hpp
 
 #include "../EmojicodeCompiler.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include <memory>
 #include <string>
 
@@ -30,8 +30,8 @@ public:
     /// This method must be used to print messages or errors about the command-line interface use.
     void printCliMessage(const std::string &message);
 
-    /// @returns An ApplicationDelegate that matches the options represented by the instance.
-    std::unique_ptr<ApplicationDelegate> applicationDelegate();
+    /// @returns An CompilerDelegate that matches the options represented by the instance.
+    std::unique_ptr<CompilerDelegate> applicationDelegate();
 
     const std::string& packageToReport() const { return packageToReport_; }
     const std::string& outPath() const { return outPath_; }

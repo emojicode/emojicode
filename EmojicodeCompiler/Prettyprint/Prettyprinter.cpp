@@ -8,7 +8,6 @@
 
 #include "Prettyprinter.hpp"
 #include "../AST/ASTStatements.hpp"
-#include "../Application.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
 #include "../Package/Package.hpp"
@@ -34,11 +33,11 @@ void Prettyprinter::print() {
         if (first) {
             first = false;
             stream_ << "🏁 ";
-            if (app_->startFlagFunction()->returnType.type() != TypeType::NoReturn) {
-                printReturnType(app_->startFlagFunction());
+            if (package_->startFlagFunction()->returnType.type() != TypeType::NoReturn) {
+                printReturnType(package_->startFlagFunction());
                 stream_ << " ";
             }
-            app_->startFlagFunction()->ast()->toCode(*this);
+            package_->startFlagFunction()->ast()->toCode(*this);
         }
     }
 }

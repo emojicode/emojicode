@@ -48,7 +48,7 @@ public:
     virtual Scope& pushArgumentsScope(const std::vector<Argument> &arguments, const SourcePosition &p);
 
     /// Pops the current scope and calls @c recommendFrozenVariables on it.
-    void popScope(Application *app);
+    void popScope(Compiler *app);
 
     /// Returns the instance scope or @c nullptr
     Scope* instanceScope() const { return instanceScope_; }

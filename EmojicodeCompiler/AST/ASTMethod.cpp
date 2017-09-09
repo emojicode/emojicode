@@ -8,7 +8,7 @@
 
 #include "ASTMethod.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "ASTVariables.hpp"
 #include "../Types/Enum.hpp"
 #include "../Types/Protocol.hpp"
@@ -44,7 +44,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     if (type.type() == TypeType::ValueType) {
         if (method->mutating()) {
             if (!type.isMutable()) {
-                analyser->app()->error(CompilerError(position(), utf8(method->name()),
+                analyser->compiler()->error(CompilerError(position(), utf8(method->name()),
                                                      " was marked 🖍 but callee is not mutable."));
             }
             auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee);

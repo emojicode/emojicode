@@ -8,7 +8,7 @@
 
 #include "ASTLiterals.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../Parsing/AbstractParser.hpp"
 #include "../Types/CommonTypeFinder.hpp"
 #include "../Types/TypeExpectation.hpp"
@@ -51,7 +51,7 @@ Type ASTThis::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     if (isSuperconstructorRequired(analyser->function()->functionType()) &&
         !analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
         analyser->typeContext().calleeType().eclass()->superclass() != nullptr) {
-        analyser->app()->error(CompilerError(position(), "Attempt to use 🐕 before superinitializer call."));
+        analyser->compiler()->error(CompilerError(position(), "Attempt to use 🐕 before superinitializer call."));
     }
     if (isFullyInitializedCheckRequired(analyser->function()->functionType())) {
         analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"",
@@ -85,7 +85,7 @@ Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpecta
         finder.addType(analyser->expect(TypeExpectation(false, true, false), &*it), analyser->typeContext());
     }
 
-    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->app()));
+    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
     return type_;
 }
 
@@ -98,7 +98,7 @@ Type ASTListLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &
         finder.addType(type, analyser->typeContext());
     }
 
-    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->app()));
+    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
     return type_;
 }
 

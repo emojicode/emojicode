@@ -17,7 +17,7 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
         analyser->scoper().pushScope();
         analyser->expectType(Type::boolean(), &conditions_[i]);
         blocks_[i].analyse(analyser);
-        analyser->scoper().popScope(analyser->app());
+        analyser->scoper().popScope(analyser->compiler());
         analyser->pathAnalyser().beginBranch();
     }
 
@@ -25,7 +25,7 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
         analyser->pathAnalyser().beginBranch();
         analyser->scoper().pushScope();
         blocks_.back().analyse(analyser);
-        analyser->scoper().popScope(analyser->app());
+        analyser->scoper().popScope(analyser->compiler());
         analyser->pathAnalyser().endBranch();
 
         analyser->pathAnalyser().endMutualExclusiveBranches();
@@ -40,7 +40,7 @@ void ASTRepeatWhile::analyse(SemanticAnalyser *analyser) {
     analyser->scoper().pushScope();
     analyser->expectType(Type::boolean(), &condition_);
     block_.analyse(analyser);
-    analyser->scoper().popScope(analyser->app());
+    analyser->scoper().popScope(analyser->compiler());
     analyser->pathAnalyser().endBranch();
     analyser->pathAnalyser().endUncertainBranches();
 }
@@ -64,7 +64,7 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
     }
     analyser->scoper().currentScope().declareVariable(valueVarName_, valueType_, true, position()).initialize();
     valueBlock_.analyse(analyser);
-    analyser->scoper().popScope(analyser->app());
+    analyser->scoper().popScope(analyser->compiler());
     analyser->pathAnalyser().endBranch();
 
     analyser->pathAnalyser().beginBranch();
@@ -73,10 +73,10 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
                                                       position()).initialize();
 
     errorBlock_.analyse(analyser);
-    analyser->scoper().popScope(analyser->app());
+    analyser->scoper().popScope(analyser->compiler());
     analyser->pathAnalyser().endBranch();
     analyser->pathAnalyser().endMutualExclusiveBranches();
-    analyser->scoper().popScope(analyser->app());
+    analyser->scoper().popScope(analyser->compiler());
 }
 
 void ASTForIn::analyse(SemanticAnalyser *analyser) {
@@ -99,7 +99,7 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     elVar.initialize();
     elementVar_ = elVar.id();
     block_.analyse(analyser);
-    analyser->scoper().popScope(analyser->app());
+    analyser->scoper().popScope(analyser->compiler());
     analyser->pathAnalyser().endBranch();
     analyser->pathAnalyser().endUncertainBranches();
 }

@@ -8,7 +8,7 @@
 
 #include "../Scoping/SemanticScoper.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../CompilerError.hpp"
 #include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Lex/Lexer.hpp"
@@ -73,7 +73,9 @@ void loadStandard(Package *s, const SourcePosition &errorPosition) {
 }
 
 void Package::importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {
-    auto import = app_->loadPackage(name, p, this);
+    auto import = compiler_->loadPackage(name, p, this);
+
+    importedPackages_.emplace_back(import);
 
     for (auto exported : import->exportedTypes_) {
         Type type = Type::noReturn();
@@ -131,15 +133,15 @@ void Package::analyse() {
         enqueueFunction(function);
     }
 
-    while (!app_->analysisQueue.empty()) {
+    while (!compiler_->analysisQueue.empty()) {
         try {
-            auto function = app_->analysisQueue.front();
+            auto function = compiler_->analysisQueue.front();
             SemanticAnalyser(function).analyse();
         }
         catch (CompilerError &ce) {
-            app_->error(ce);
+            compiler_->error(ce);
         }
-        app_->analysisQueue.pop();
+        compiler_->analysisQueue.pop();
     }
 }
 
@@ -151,7 +153,7 @@ void Package::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) const {
 
 void Package::enqueueFunction(Function *function) const {
     if (!function->isExternal()) {
-        app_->analysisQueue.emplace(function);
+        compiler_->analysisQueue.emplace(function);
     }
 }
 

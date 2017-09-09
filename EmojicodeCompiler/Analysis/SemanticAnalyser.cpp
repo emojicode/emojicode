@@ -11,7 +11,7 @@
 #include "../AST/ASTLiterals.hpp"
 #include "../AST/ASTVariables.hpp"
 #include "../AST/ASTInitialization.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../Functions/BoxingLayer.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
@@ -61,7 +61,7 @@ void SemanticAnalyser::analyse() {
     analyseReturn(function()->ast());
     analyseInitializationRequirements();
 
-    scoper_->popScope(app());
+    scoper_->popScope(compiler());
     function_->setVariableCount(scoper_->variableIdCount());
 }
 
@@ -161,7 +161,7 @@ void SemanticAnalyser::ensureGenericArguments(ASTArguments *node, const Type &ty
             expectType(arg.type.resolveOn(typeContext), &node->arguments()[i++], &genericArgsFinders);
         }
         for (auto &finder : genericArgsFinders) {
-            node->genericArguments().emplace_back(finder.getCommonType(node->position(), app()));
+            node->genericArguments().emplace_back(finder.getCommonType(node->position(), compiler()));
         }
     }
     else if (node->genericArguments().size() != function->genericParameterCount()) {
@@ -286,7 +286,7 @@ Type SemanticAnalyser::callableBox(Type exprType, const TypeExpectation &expecta
                                            expectation.genericArguments()[0], function_->position());
         buildBoxingLayerAst(boxingLayer);
         function_->package()->registerFunction(boxingLayer);
-        app()->analysisQueue.emplace(boxingLayer);
+        compiler()->analysisQueue.emplace(boxingLayer);
 
         insertNode<ASTCallableBox>(node, exprType, boxingLayer);
     }

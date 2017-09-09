@@ -14,7 +14,7 @@
 
 namespace EmojicodeCompiler {
 
-class Application;
+class Compiler;
 struct SourcePosition;
 
 class Scope {
@@ -41,7 +41,7 @@ public:
                                     const std::string &errorMessageBack);
 
     /// Emits a warning for each non-frozen variable that has not been mutated.
-    void recommendFrozenVariables(Application *app) const;
+    void recommendFrozenVariables(Compiler *app) const;
 
     const std::map<std::u32string, Variable>& map() const { return map_; }
 

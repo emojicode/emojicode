@@ -8,7 +8,7 @@
 
 #include "ASTStatements.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../Functions/FunctionType.hpp"
 #include "../Functions/Initializer.hpp"
 #include "../Types/Class.hpp"
@@ -68,7 +68,7 @@ void ASTSuperinitializer::analyse(SemanticAnalyser *analyser) {
         throw CompilerError(position(), "🐐 can only be used if the class inherits from another.");
     }
     if (analyser->pathAnalyser().hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
-        analyser->app()->error(CompilerError(position(), "Superinitializer might have already been called."));
+        analyser->compiler()->error(CompilerError(position(), "Superinitializer might have already been called."));
     }
 
     analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"", "\" must be "

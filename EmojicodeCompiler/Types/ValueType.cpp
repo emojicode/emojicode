@@ -35,9 +35,9 @@ llvm::GlobalVariable* ValueType::valueTypeMetaFor(const std::vector<Type> &gener
 
 void ValueType::addValueTypeMetaFor(const std::vector<Type> &genericArguments, llvm::GlobalVariable *valueTypeMeta) {
     valueTypeMetas_.emplace(genericArguments, valueTypeMeta);
-//    auto id = package()->app()->boxObjectVariableInformation().size();
+//    auto id = package()->compiler()->boxObjectVariableInformation().size();
 //    genericIds_.emplace(genericArguments, id);
-//    package()->app()->boxObjectVariableInformation().emplace_back();
+//    package()->compiler()->boxObjectVariableInformation().emplace_back();
 }
 
 }  // namespace EmojicodeCompiler

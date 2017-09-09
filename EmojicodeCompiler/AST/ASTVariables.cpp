@@ -8,7 +8,7 @@
 
 #include "ASTVariables.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
 #include "ASTInitialization.hpp"
 
@@ -41,7 +41,7 @@ void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
         auto rvar = analyser->scoper().getVariable(varName_, position());
         if (rvar.inInstanceScope && !analyser->function()->mutating() &&
             !isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-            analyser->app()->error(CompilerError(position(),
+            analyser->compiler()->error(CompilerError(position(),
                                                  "Can’t mutate instance variable as method is not marked with 🖍."));
         }
 

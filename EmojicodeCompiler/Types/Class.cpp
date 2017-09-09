@@ -7,7 +7,7 @@
 //
 
 #include "../EmojicodeCompiler.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../CompilerError.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"

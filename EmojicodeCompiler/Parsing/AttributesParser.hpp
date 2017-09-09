@@ -9,7 +9,7 @@
 #ifndef AttributesParser_hpp
 #define AttributesParser_hpp
 
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../Emojis.h"
 #include "../Lex/TokenStream.hpp"
 #include <array>
@@ -32,7 +32,7 @@ public:
     AttributeParser& allow(Attribute attr) { found_.find(attr)->second.allowed = true; return *this; }
     bool has(Attribute attr) const { return found_.find(attr)->second.found; }
 
-    void check(const SourcePosition &p, Application *app) const {
+    void check(const SourcePosition &p, Compiler *app) const {
         for (auto &pair : found_) {
             if (!pair.second.allowed && pair.second.found) {
                 auto name = utf8(std::u32string(1, static_cast<char32_t>(pair.first)));

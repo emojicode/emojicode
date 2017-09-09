@@ -7,8 +7,8 @@
 //
 
 #include "Options.hpp"
-#include "HRFApplicationDelegate.hpp"
-#include "JSONApplicationDelegate.hpp"
+#include "HRFCompilerDelegate.hpp"
+#include "JSONCompilerDelegate.hpp"
 #include <cstdlib>
 #include <getopt.h>
 #include <iostream>
@@ -98,11 +98,11 @@ void Options::examineMainFile() {
     }
 }
 
-std::unique_ptr<ApplicationDelegate> Options::applicationDelegate() {
+std::unique_ptr<CompilerDelegate> Options::applicationDelegate() {
     if (jsonOutput_) {
-        return std::make_unique<JSONApplicationDelegate>();
+        return std::make_unique<JSONCompilerDelegate>();
     }
-    return std::make_unique<HRFApplicationDelegate>();
+    return std::make_unique<HRFCompilerDelegate>();
 }
 
 }  // namespace CLI

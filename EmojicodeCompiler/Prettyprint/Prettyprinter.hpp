@@ -17,7 +17,7 @@ namespace EmojicodeCompiler {
 
 class Type;
 class Function;
-class Application;
+class Compiler;
 class Package;
 class TypeDefinition;
 
@@ -30,8 +30,7 @@ class TypeDefinition;
 /// before.
 class Prettyprinter {
 public:
-    Prettyprinter(RecordingPackage *package, Application *app)
-    : package_(package), app_(app) {}
+    Prettyprinter(RecordingPackage *package) : package_(package) {}
     void print();
 
     /// Appends the whitespace offer to the stream if any is available. Then appends rhs and returns this instance.
@@ -73,7 +72,6 @@ public:
 private:
     std::fstream stream_;
     RecordingPackage *package_;
-    Application *app_;
     TypeContext typeContext_;
     char whitespaceOffer_ = 0;
     unsigned int indentation_ = 0;

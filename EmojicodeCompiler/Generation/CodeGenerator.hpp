@@ -19,7 +19,7 @@
 
 namespace EmojicodeCompiler {
 
-class Application;
+class Compiler;
 class Package;
 class Class;
 class Function;
@@ -39,7 +39,7 @@ public:
 
     /// Generates an object file for the package.
     /// @param outPath The path at which the object file will be placed.
-    void generate(const std::string &outPath, const std::vector<std::unique_ptr<Package>> &dependencies);
+    void generate(const std::string &outPath);
 
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();

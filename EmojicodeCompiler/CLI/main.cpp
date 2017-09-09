@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../Package/RecordingPackage.hpp"
 #include "../Prettyprint/Prettyprinter.hpp"
 #include "Options.hpp"
@@ -24,7 +24,7 @@ bool start(Options options) {
         return true;
     }
 
-    Application application(options.mainPackageName(), options.mainFile(), options.outPath(),
+    Compiler application(options.mainPackageName(), options.mainFile(), options.outPath(),
                             options.packageDirectory(), options.applicationDelegate(), options.isStandalone());
 
     if (!options.migrationFile().empty()) {
@@ -38,7 +38,7 @@ bool start(Options options) {
 
     if (options.prettyprint()) {
         auto recordingPackage = dynamic_cast<RecordingPackage *>(application.mainPackage());
-        Prettyprinter(recordingPackage, &application).print();
+        Prettyprinter(recordingPackage).print();
     }
 
     if (!options.packageToReport().empty()) {

@@ -1,31 +1,32 @@
 //
-//  Application.cpp
+//  Compiler.cpp
 //  EmojicodeCompiler
 //
 //  Created by Theo Weidmann on 24/08/2017.
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Application.hpp"
+#include "Compiler.hpp"
 #include "Generation/CodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
-Application::Application(std::string mainPackage, std::string mainFile, std::string outPath, std::string pkgDir,
-                         std::unique_ptr<ApplicationDelegate> delegate, bool standalone)
+Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string outPath, std::string pkgDir,
+                         std::unique_ptr<CompilerDelegate> delegate, bool standalone)
 : standalone_(standalone), mainFile_(std::move(mainFile)), outPath_(std::move(outPath)),
     mainPackageName_(std::move(mainPackage)), packageDirectory_(std::move(pkgDir)), delegate_(std::move(delegate)){}
 
-bool Application::compile(bool parseOnly) {
+bool Compiler::compile(bool parseOnly) {
     delegate_->begin();
 
+    factorMainPackage<Package>();
+
     try {
-        factorMainPackage<Package>();
         mainPackage_->parse();
         if (parseOnly) {
             return !hasError_;
         }
-        analyse(mainPackage_.get());
+        analyse();
     }
     catch (CompilerError &ce) {
         error(ce);
@@ -39,24 +40,24 @@ bool Application::compile(bool parseOnly) {
     return !hasError_;
 }
 
-void Application::analyse(Package *underscorePackage) {
-    underscorePackage->analyse();
+void Compiler::analyse() {
+    mainPackage_->analyse();
 
-    if (standalone_ && !hasStartFlagFunction()) {
-        throw CompilerError(underscorePackage->position(), "No 🏁 block was found.");
+    if (standalone_ && !mainPackage_->hasStartFlagFunction()) {
+        throw CompilerError(mainPackage_->position(), "No 🏁 block was found.");
     }
 }
 
-void Application::generateCode() {
-    CodeGenerator(mainPackage_.get()).generate(outPath_, packagesLoadingOrder_);
+void Compiler::generateCode() {
+    CodeGenerator(mainPackage_.get()).generate(outPath_);
 }
 
-Package* Application::findPackage(const std::string &name) const {
+Package* Compiler::findPackage(const std::string &name) const {
     auto it = packages_.find(name);
-    return it != packages_.end() ? it->second : nullptr;
+    return it != packages_.end() ? it->second.get() : nullptr;
 }
 
-Package* Application::loadPackage(const std::string &name, const SourcePosition &p, Package *requestor) {
+Package* Compiler::loadPackage(const std::string &name, const SourcePosition &p, Package *requestor) {
     if (auto package = findPackage(name)) {
         if (!package->finishedLoading()) {
             throw CompilerError(p, "Circular dependency detected: ", requestor->name(), " and ", name,
@@ -68,19 +69,18 @@ Package* Application::loadPackage(const std::string &name, const SourcePosition 
     auto path = packageDirectory_ + "/" + name + "/header.emojic";
     auto package = std::make_unique<Package>(name, path, this);
     auto rawPtr = package.get();
-    packages_.emplace(name, rawPtr);
-    packagesLoadingOrder_.emplace_back(std::move(package));
+    packages_.emplace(name, std::move(package));
     rawPtr->parse();
     rawPtr->analyse();
     return rawPtr;
 }
 
-void Application::error(const CompilerError &ce) {
+void Compiler::error(const CompilerError &ce) {
     hasError_ = true;
     delegate_->error(ce.position(), ce.message());
 }
 
-void Application::warn(const SourcePosition &p, const std::string &warning) {
+void Compiler::warn(const SourcePosition &p, const std::string &warning) {
     delegate_->warn(p, warning);
 }
 

@@ -7,7 +7,7 @@
 //
 
 #include "Scope.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../CompilerError.hpp"
 #include "../Types/TypeDefinition.hpp"
 
@@ -63,7 +63,7 @@ void Scope::unintializedVariablesCheck(const SourcePosition &p, const std::strin
     }
 }
 
-void Scope::recommendFrozenVariables(Application *app) const {
+void Scope::recommendFrozenVariables(Compiler *app) const {
     for (auto &it : map_) {
         const Variable &cv = it.second;
         if (!cv.frozen() && !cv.mutated()) {

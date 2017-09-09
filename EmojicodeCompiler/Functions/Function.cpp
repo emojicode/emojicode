@@ -7,7 +7,7 @@
 //
 
 #include "Function.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
 #include "../Types/TypeContext.hpp"
@@ -68,7 +68,7 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
         }
     }
     catch (CompilerError &ce) {
-        package_->app()->error(ce);
+        package_->compiler()->error(ce);
     }
     return true;
 }
@@ -76,11 +76,11 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
 void Function::deprecatedWarning(const SourcePosition &p) const {
     if (deprecated()) {
         if (!documentation().empty()) {
-            package_->app()->warn(p, utf8(name()), " is deprecated. Please refer to the "\
+            package_->compiler()->warn(p, utf8(name()), " is deprecated. Please refer to the "\
                                   "documentation for further information: ", utf8(documentation()));
         }
         else {
-            package_->app()->warn(p, utf8(name()), " is deprecated.");
+            package_->compiler()->warn(p, utf8(name()), " is deprecated.");
         }
     }
 }

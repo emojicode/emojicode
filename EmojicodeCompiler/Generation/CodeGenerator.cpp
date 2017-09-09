@@ -14,7 +14,7 @@
 #include <llvm/Target/TargetOptions.h>
 #include <llvm/Support/raw_ostream.h>
 #include "CodeGenerator.hpp"
-#include "../Application.hpp"
+#include "../Compiler.hpp"
 #include "../CompilerError.hpp"
 #include "../EmojicodeCompiler.hpp"
 #include "../Functions/Initializer.hpp"
@@ -50,11 +50,11 @@ void CodeGenerator::declareLlvmFunction(Function *function) {
     function->setLlvmFunction(llvmFunction);
 }
 
-void CodeGenerator::generate(const std::string &outPath, const std::vector<std::unique_ptr<Package>> &dependencies) {
+void CodeGenerator::generate(const std::string &outPath) {
     declareRunTime();
 
-    for (auto &package : dependencies) {
-        declareImportedPackageSymbols(package.get());
+    for (auto package : package_->dependencies()) {
+        declareImportedPackageSymbols(package);
     }
 
     declarePackageSymbols();

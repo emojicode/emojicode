@@ -17,7 +17,7 @@
 
 namespace EmojicodeCompiler {
 
-class Application;
+class Compiler;
 
 /// A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function.
 class FunctionCodeGenerator {
@@ -30,7 +30,7 @@ public:
     void generate();
 
     CGScoper& scoper() { return scoper_; }
-    Application* app() const;
+    Compiler* compiler() const;
     CodeGenerator* generator() const { return generator_; }
     llvm::IRBuilder<>& builder() { return builder_; }
     LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }

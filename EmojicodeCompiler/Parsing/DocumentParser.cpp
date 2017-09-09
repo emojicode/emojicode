@@ -30,31 +30,31 @@ void DocumentParser::parse() {
         auto &theToken = stream_.consumeToken(TokenType::Identifier);
         switch (theToken.value()[0]) {
             case E_PACKAGE:
-                attributes.check(theToken.position(), package_->app());
+                attributes.check(theToken.position(), package_->compiler());
                 documentation.disallow();
                 parsePackageImport(theToken.position());
                 continue;
             case E_CROCODILE:
-                attributes.allow(Attribute::Export).check(theToken.position(), package_->app());
+                attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
                 parseProtocol(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
             case E_TURKEY:
-                attributes.allow(Attribute::Export).check(theToken.position(), package_->app());
+                attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
                 parseEnum(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
             case E_TRIANGLE_POINTED_DOWN: {
-                attributes.check(theToken.position(), package_->app());
+                attributes.check(theToken.position(), package_->compiler());
                 TypeIdentifier alias = parseTypeIdentifier();
                 Type type = package_->getRawType(parseTypeIdentifier(), false);
                 package_->offerType(type, alias.name, alias.ns, false, theToken.position());
                 continue;
             }
             case E_CRYSTAL_BALL:
-                attributes.check(theToken.position(), package_->app());
+                attributes.check(theToken.position(), package_->compiler());
                 parseVersion(documentation, theToken.position());
                 continue;
             case E_WALE:
-                attributes.check(theToken.position(), package_->app());
+                attributes.check(theToken.position(), package_->compiler());
                 documentation.disallow();
                 parseExtension(documentation, theToken.position());
                 continue;
@@ -63,16 +63,16 @@ void DocumentParser::parse() {
                            attributes.has(Attribute::Final));
                 continue;
             case E_DOVE_OF_PEACE:
-                attributes.allow(Attribute::Export).check(theToken.position(), package_->app());
+                attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
                 parseValueType(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
             case E_SCROLL:
-                attributes.check(theToken.position(), package_->app());
+                attributes.check(theToken.position(), package_->compiler());
                 documentation.disallow();
                 parseInclude(theToken.position());
                 continue;
             case E_CHEQUERED_FLAG:
-                attributes.check(theToken.position(), package_->app());
+                attributes.check(theToken.position(), package_->compiler());
                 parseStartFlag(documentation, theToken.position());
                 break;
             default:
@@ -101,7 +101,7 @@ void DocumentParser::parsePackageImport(const SourcePosition &p) {
 }
 
 void DocumentParser::parseStartFlag(const Documentation &documentation, const SourcePosition &p) {
-    if (package_->app()->hasStartFlagFunction()) {
+    if (package_->hasStartFlagFunction()) {
         throw CompilerError(p, "Duplicate 🏁.");
     }
 
@@ -119,11 +119,11 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
         function->setAst(ast);
     }
     catch (CompilerError &ce) {
-        package_->app()->error(ce);
+        package_->compiler()->error(ce);
     }
     package_->registerFunction(function);
 
-    package_->app()->setStartFlagFunction(function);
+    package_->setStartFlagFunction(function);
 }
 
 void DocumentParser::parseInclude(const SourcePosition &p) {
@@ -142,7 +142,7 @@ void DocumentParser::parseInclude(const SourcePosition &p) {
 
 void DocumentParser::parseVersion(const Documentation &documentation, const SourcePosition &p) {
     if (package_->validVersion()) {
-        package_->app()->error(CompilerError(p, "Package version already declared."));
+        package_->compiler()->error(CompilerError(p, "Package version already declared."));
         return;
     }
 
@@ -216,7 +216,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
             throw CompilerError(parsedTypeName.position, "The superclass must be a class.");
         }
         if (type.eclass()->final()) {
-            package_->app()->error(CompilerError(parsedTypeName.position, type.toString(TypeContext(classType)),
+            package_->compiler()->error(CompilerError(parsedTypeName.position, type.toString(TypeContext(classType)),
                                                  " can’t be used as superclass as it was marked with 🔏."));
         }
         eclass->setSuperType(type);

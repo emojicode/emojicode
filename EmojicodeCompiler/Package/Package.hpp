@@ -40,7 +40,7 @@ struct ExportedType {
 };
 
 struct TypeIdentifier;
-class Application;
+class Compiler;
 class CompatibilityInfoProvider;
 
 /// Package is the class used to load, parse and analyse packages.
@@ -49,17 +49,17 @@ public:
     /// Constructs a package. The package must be compiled with compile() before it can be loaded.
     /// @param name The name of the package. The package is registered with this name.
     /// @param mainFilePath The path to the package’s main file. This is the file that is parsed when parse() is called.
-    Package(std::string name, std::string mainFilePath, Application *app)
-    : name_(std::move(name)), mainFile_(std::move(mainFilePath)), app_(app) {}
+    Package(std::string name, std::string mainFilePath, Compiler *app)
+    : name_(std::move(name)), mainFile_(std::move(mainFilePath)), compiler_(app) {}
 
-    /// Ssemantically analyses and optimizes this package.
+    /// Ssemantically analyses this package.
     void analyse();
     /// Lexes and parses the package. If this package is the s package the s loading procedure is invoked.
     /// If the package is not the @c s package, the s package is first imported via importPackage().
     void parse();
 
     /// Tries to import the package identified by name into a namespace of this package.
-    /// @see Application::loadPackage
+    /// @see Compiler::loadPackage
     virtual void importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p);
 
     /// Loads, lexes and parses the document at path in the context of this package.
@@ -69,7 +69,7 @@ public:
     virtual void includeDocument(const std::string &path, const std::string &relativePath);
 
     /// @returns The application to which this package belongs.
-    Application* app() const { return app_; }
+    Compiler* compiler() const { return compiler_; }
 
     /// @returns The name of this package.
     const std::string& name() const { return name_; }
@@ -93,6 +93,11 @@ public:
 
     const std::u32string& documentation() const { return documentation_; }
     void setDocumentation(const std::u32string &doc) { documentation_ = doc; }
+
+    void setStartFlagFunction(Function *function) { startFlag_ = function; }
+    Function* startFlagFunction() const { return startFlag_; }
+    /// Whether a start flag function was encountered and compiled.
+    bool hasStartFlagFunction() const { return startFlag_ != nullptr; }
 
     /// A Class defined in this package must be registered with this method.
     void registerClass(Class *cl) { classes_.push_back(cl); }
@@ -126,7 +131,9 @@ public:
     const std::vector<Function *>& functions() const { return functions_; }
     const std::vector<ValueType *>& valueTypes() const { return valueTypes_; }
     const std::vector<Protocol *>& protocols() const { return protocols_; }
-    const std::vector<ExportedType>& exportedTypes() const { return exportedTypes_; };
+    const std::vector<ExportedType>& exportedTypes() const { return exportedTypes_; }
+
+    const std::vector<Package *>& dependencies() const { return importedPackages_; }
 
     /// Tries to fetch a type by its name and namespace from the namespace and types available in this package and
     /// stores it into @c type.
@@ -149,6 +156,7 @@ private:
     const std::string mainFile_;
     PackageVersion version_ = PackageVersion(0, 0);
     bool finishedLoading_ = false;
+    Function *startFlag_ = nullptr;
 
     CompatibilityInfoProvider *compatibilityInfoProvider_ = nullptr;
 
@@ -159,9 +167,10 @@ private:
     std::vector<Function *> functions_;
     std::vector<Protocol *> protocols_;
     std::vector<Extension> extensions_;
+    std::vector<Package *> importedPackages_;
 
     std::u32string documentation_;
-    Application *app_;
+    Compiler *compiler_;
 };
 
 }  // namespace EmojicodeCompiler

@@ -30,7 +30,7 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
         function->setAst(ast);
     }
     catch (CompilerError &ce) {
-        package_->app()->error(ce);
+        package_->compiler()->error(ce);
     }
 }
 
@@ -62,7 +62,7 @@ void TypeBodyParser::parseProtocolConformance(const SourcePosition &p) {
     Type type = parseType(TypeContext(type_), TypeDynamism::GenericTypeVariables);
 
     if (type.type() != TypeType::Protocol || type.optional()) {
-        package_->app()->error(CompilerError(p, "The given type is not a protocol."));
+        package_->compiler()->error(CompilerError(p, "The given type is not a protocol."));
         return;
     }
 
@@ -91,7 +91,7 @@ Initializer* EnumTypeBodyParser::parseInitializer(const std::u32string &name, Ty
 void ClassTypeBodyParser::parse() {
     TypeBodyParser::parse();
     for (auto &init : requiredInitializers_) {
-        package_->app()->error(CompilerError(type_.typeDefinition()->position(), "Required initializer ",
+        package_->compiler()->error(CompilerError(type_.typeDefinition()->position(), "Required initializer ",
                                              utf8(init), " was not implemented."));
     }
 }
@@ -127,7 +127,7 @@ void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
 
 void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
                                  const Documentation &documentation, AccessLevel access, const SourcePosition &p) {
-    attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).check(p, package_->app());
+    attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).check(p, package_->compiler());
 
     if (attributes.has(Attribute::StaticOnType)) {
         auto *typeMethod = new Function(name, access, attributes.has(Attribute::Final), owningType(),
@@ -152,7 +152,7 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
 Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                               const Documentation &documentation, AccessLevel access,
                                               const SourcePosition &p) {
-    attributes.check(p, package_->app());
+    attributes.check(p, package_->compiler());
 
     std::experimental::optional<Type> errorType = std::experimental::nullopt;
     if (stream_.nextTokenIs(TokenType::Error)) {
@@ -192,7 +192,7 @@ void TypeBodyParser::parse() {
                 parseMethod(token.value(), attributes, documentation, accessLevel, token.position());
                 break;
             case TokenType::Declaration:
-                attributes.check(token.position(), package_->app());
+                attributes.check(token.position(), package_->compiler());
                 documentation.disallow();
                 parseInstanceVariable(token.position());
                 break;
@@ -208,11 +208,11 @@ void TypeBodyParser::parse() {
             case TokenType::Identifier:
                 switch (token.value().front()) {
                     case E_RADIO_BUTTON:
-                        attributes.check(token.position(), package_->app());
+                        attributes.check(token.position(), package_->compiler());
                         parseEnumValue(token.position(), documentation);
                         break;
                     case E_CROCODILE:
-                        attributes.check(token.position(), package_->app());
+                        attributes.check(token.position(), package_->compiler());
                         documentation.disallow();
                         parseProtocolConformance(token.position());
                         break;
