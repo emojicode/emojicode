@@ -18,8 +18,7 @@ Type ASTInferType::analyse(SemanticAnalyser *analyser, const TypeExpectation &ex
     Type type = expectation.copyType();
     type.setOptional(false);
     type_ = type;
-    availability_ = expectation.type() == TypeType::Class ? TypeAvailability::DynamicAndAvailable
-    : TypeAvailability::StaticAndAvailabale;
+    availability_ = TypeAvailability::StaticAndAvailabale;
     return type;
 }
 
