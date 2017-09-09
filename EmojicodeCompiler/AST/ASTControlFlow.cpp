@@ -82,7 +82,9 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
 void ASTForIn::analyse(SemanticAnalyser *analyser) {
     analyser->scoper().pushScope();
 
-    Type iteratee = analyser->expect(TypeExpectation(true, true, false), &iteratee_);
+    auto iterateeType = Type(PR_ENUMERATEABLE, false);
+    iterateeType.setReference();
+    Type iteratee = analyser->expectType(iterateeType, &iteratee_);
 
     elementType_ = Type::noReturn();
     if (!analyser->typeIsEnumerable(iteratee, &elementType_)) {

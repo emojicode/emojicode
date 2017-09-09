@@ -92,6 +92,8 @@ void ASTForIn::generate(FunctionCodeGenerator *fg) const {
     auto callg = CallCodeGenerator(fg, CallType::DynamicProtocolDispatch);
     auto iterator = callg.generate(iteratee_->generate(fg), iteratee_->expressionType(),
                                    ASTArguments(position()), std::u32string(1, E_DANGO));
+    auto iteratorPtr = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(iteratee_->expressionType()));
+    fg->builder().CreateStore(iterator, iteratorPtr);
 
     auto *function = fg->builder().GetInsertBlock()->getParent();
 
@@ -104,11 +106,12 @@ void ASTForIn::generate(FunctionCodeGenerator *fg) const {
     auto iteratorType = Type(PR_ENUMERATOR, false);
 
     fg->builder().SetInsertPoint(whileCondBlock);
-    auto cont = callg.generate(iterator, iteratorType, ASTArguments(position()), std::u32string(1, E_RED_QUESTION_MARK));
+    auto cont = callg.generate(iteratorPtr, iteratorType, ASTArguments(position()),
+                               std::u32string(1, E_RED_QUESTION_MARK));
     fg->builder().CreateCondBr(cont, repeatBlock, afterBlock);
 
     fg->builder().SetInsertPoint(repeatBlock);
-    auto element = callg.generate(iterator, iteratorType, ASTArguments(position()), std::u32string(1, 0x1F53D));
+    auto element = callg.generate(iteratorPtr, iteratorType, ASTArguments(position()), std::u32string(1, 0x1F53D));
     fg->scoper().getVariable(elementVar_) = LocalVariable(false, element);
     block_.generate(fg);
     fg->builder().CreateBr(whileCondBlock);
