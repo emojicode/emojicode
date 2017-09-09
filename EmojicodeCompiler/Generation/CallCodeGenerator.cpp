@@ -102,7 +102,6 @@ llvm::Value* CallCodeGenerator::createDynamicProtocolDispatch(Function *function
     });
 
     auto protocolsTable = fg()->builder().CreateLoad(pair.first);
-    protocolsTable->print(llvm::outs());
     auto protocolsVtables = fg()->builder().CreateExtractValue(protocolsTable, 0);
 
     auto pindex = llvm::ConstantInt::get(llvm::Type::getInt16Ty(fg()->generator()->context()), calleeType.protocol()->index());
