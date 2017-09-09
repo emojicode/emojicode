@@ -62,8 +62,6 @@ void CodeGenerator::generate(const std::string &outPath) {
 }
 
 void CodeGenerator::declarePackageSymbols() {
-
-
     for (auto valueType : package_->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
             declareLlvmFunction(function);

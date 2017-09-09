@@ -79,10 +79,6 @@ public:
     void validateAccessLevel(Function *function, const SourcePosition &p) const;
 
     Type analyseFunctionCall(ASTArguments *node, const Type &type, Function *function);
-
-    /// @returns True iff expr is a ASTInitialization and ASTInitialization::initType() ==
-    ///          ASTInitialization::InitType::ValueType
-    bool isValueTypeInitialization(const std::shared_ptr<ASTExpr> &expr);
 private:
     PathAnalyser pathAnalyser_;
     /// The scoper responsible for scoping the function being compiled.

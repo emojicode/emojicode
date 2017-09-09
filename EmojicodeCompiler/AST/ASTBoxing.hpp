@@ -18,10 +18,13 @@ class BoxingLayer;
 
 class ASTBoxing : public ASTExpr {
 public:
-    ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType,
-              const SourcePosition &p) : ASTExpr(p), expr_(std::move(expr)) {
-        setExpressionType(exprType);
-    }
+    ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p);
+
+    /// This setter must be called to indicate that the value that is temporarily stored by this node is the result
+    /// of a value type initialization. If called, the contained expression will be treated as a ASTInitialization
+    /// node and an address to the reserved space is passed to ASTInitialization::setDestination() upon generation.
+    /// @see SemanticAnalyser::comply()
+    void setInit() { init_ = true; }
 protected:
     std::shared_ptr<ASTExpr> expr_;
     /// Gets a pointer to the value area of box and bit-casts it to the type matching the ASTExpr::expressionType()
@@ -37,6 +40,11 @@ protected:
     Value* getGetValueFromBox(Value *box, FunctionCodeGenerator *fg) const;
     /// Allocas space for a box and then calls ASTExpr::generate() of of ::expr_ and stores its value into the box.
     Value* getAllocaTheBox(FunctionCodeGenerator *fg) const;
+
+    bool isValueTypeInit() const { return init_; }
+    void valueTypeInit(FunctionCodeGenerator *fg, Value *destination) const;
+private:
+    bool init_ = false;
 };
 
 class ASTBoxToSimpleOptional final : public ASTBoxing {
@@ -95,17 +103,9 @@ private:
 
 class ASTStoreTemporarily final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
-public:
-    /// This setter must be called to indicate that the value that is temporarily stored by this node is the result
-    /// of a value type initialization. If called, the contained expression will be treated as a ASTInitialization
-    /// node and an address to the reserved space is passed to ASTInitialization::setDestination() upon generation.
-    /// @see SemanticAnalyser::comply()
-    void setInit() { init_ = true; }
     Type analyse(SemanticAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override {}
-private:
-    bool init_ = false;
 };
 
 } // namespace EmojicodeCompiler

@@ -25,7 +25,6 @@ public:
     : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     /// @pre setDestination() must have been used to set a destination if initType() == InitType::ValueType
-    /// @see SemanticAnalyser::isValueTypeInitialization()
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 
@@ -33,8 +32,7 @@ public:
     ///
     /// A destination must be set via this setter before generating code for a value type initialization. The value
     /// must evaluate to a pointer of the type, which is to be initialized.
-    /// @see ASTInitableCreator, ASTStoreTemporarily, SemanticAnalyser::comply(),
-    ///      SemanticAnalyser::isValueTypeInitialization()
+    /// @see ASTBoxing, SemanticAnalyser::comply(),
     void setDestination(llvm::Value *dest) { vtDestination_ = dest; }
     /// Returns the type of type which is initialized.
     InitType initType() { return initType_; }

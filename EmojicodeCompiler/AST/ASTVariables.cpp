@@ -10,6 +10,7 @@
 #include "../Analysis/SemanticAnalyser.hpp"
 #include "../Application.hpp"
 #include "../Scoping/VariableNotFoundError.hpp"
+#include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -21,10 +22,12 @@ Type ASTGetVariable::analyse(SemanticAnalyser *analyser, const TypeExpectation &
 
 void ASTInitableCreator::setVtDestination(SemanticAnalyser *analyser, VariableID varId, bool inInstanceScope,
                                           bool declare, const Type &type) {
-    if (analyser->isValueTypeInitialization(expr_)) {
-        noAction_ = true;
-        declare_ = declare;
-        type_ = type;
+    if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_)) {
+        if (init->initType() == ASTInitialization::InitType::ValueType) {
+            noAction_ = true;
+            declare_ = declare;
+            type_ = type;
+        }
     }
 }
 

@@ -25,6 +25,7 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
                                           typeExpr_->expressionType().eenum()->getValueFor(name_).second);
             break;
         case InitType::ValueType:
+            assert(vtDestination_ != nullptr);
             InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
             .generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
     }

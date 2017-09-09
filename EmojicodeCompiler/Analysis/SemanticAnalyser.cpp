@@ -201,21 +201,10 @@ Type SemanticAnalyser::comply(Type exprType, const TypeExpectation &expectation,
             varNode->setExpressionType(exprType);
         }
         else {
-            auto vtInit = isValueTypeInitialization(*node);
-            auto store = insertNode<ASTStoreTemporarily>(node, exprType);
-            if (vtInit) {
-                store->setInit();
-            }
+            insertNode<ASTStoreTemporarily>(node, exprType);
         }
     }
     return exprType;
-}
-
-bool SemanticAnalyser::isValueTypeInitialization(const std::shared_ptr<ASTExpr> &expr) {
-    if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr)) {
-        return init->initType() == ASTInitialization::InitType::ValueType;
-    }
-    return false;
 }
 
 Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {

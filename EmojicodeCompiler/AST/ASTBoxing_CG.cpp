@@ -13,6 +13,14 @@
 
 namespace EmojicodeCompiler {
 
+ASTBoxing::ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType,
+                     const SourcePosition &p) : ASTExpr(p), expr_(std::move(expr)) {
+    setExpressionType(exprType);
+    if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_)) {
+        init_ = init->initType() == ASTInitialization::InitType::ValueType;
+    }
+}
+
 Value* ASTBoxing::getBoxValuePtr(Value *box, FunctionCodeGenerator *fg) const {
     Type type = expr_->expressionType();
     type.unbox();
@@ -55,6 +63,12 @@ Value* ASTBoxing::getGetValueFromBox(Value *box, FunctionCodeGenerator *fg) cons
     return fg->builder().CreateLoad(getBoxValuePtr(box, fg));
 }
 
+void ASTBoxing::valueTypeInit(FunctionCodeGenerator *fg, Value *destination) const {
+    auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_);
+    init->setDestination(destination);
+    expr_->generate(fg);
+}
+
 Value* ASTBoxToSimple::generate(FunctionCodeGenerator *fg) const {
     return getGetValueFromBox(getAllocaTheBox(fg), fg);
 }
@@ -71,12 +85,22 @@ Value* ASTBoxToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTSimpleToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
+    if (isValueTypeInit()) {
+        auto value = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()));
+        valueTypeInit(fg, value);
+        return getSimpleOptional(value, fg);
+    }
     return getSimpleOptional(expr_->generate(fg), fg);
 }
 
 Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fg) const {
     auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
-    getPutValueIntoBox(box, expr_->generate(fg), fg);
+    if (isValueTypeInit()) {
+        valueTypeInit(fg, fg->getValuePtr(box, expr_->expressionType()));
+    }
+    else {
+        getPutValueIntoBox(box, expr_->generate(fg), fg);
+    }
     return fg->builder().CreateLoad(box);
 }
 
@@ -108,10 +132,8 @@ Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTStoreTemporarily::generate(FunctionCodeGenerator *fg) const {
     auto store = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), nullptr, "temp");
-    if (init_) {
-        auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_);
-        init->setDestination(store);
-        expr_->generate(fg);
+    if (isValueTypeInit()) {
+        valueTypeInit(fg, store);
     }
     else {
         fg->builder().CreateStore(expr_->generate(fg), store);
