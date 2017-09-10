@@ -27,6 +27,7 @@ void ASTInitableCreator::setVtDestination(SemanticAnalyser *analyser, VariableID
             noAction_ = true;
             declare_ = declare;
             type_ = type;
+            varId_ = varId;
         }
     }
 }

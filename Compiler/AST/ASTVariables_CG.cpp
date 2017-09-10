@@ -41,14 +41,14 @@ void ASTInitableCreator::generate(FunctionCodeGenerator *fg) const {
     if (noAction_) {
         auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_);
 
-        auto localVariable = fg->scoper().getVariable(varId_);
+        auto &localVariable = fg->scoper().getVariable(varId_);
         if (declare_) {
             auto alloca = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(type_));
-            fg->scoper().getVariable(varId_) = LocalVariable(true, alloca);
+            localVariable = LocalVariable(true, alloca);
         }
 
-        expr_->generate(fg);
         init->setDestination(localVariable.value);
+        expr_->generate(fg);
     }
     else {
         generateAssignment(fg);
