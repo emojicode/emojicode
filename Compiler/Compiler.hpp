@@ -19,6 +19,7 @@
 
 namespace EmojicodeCompiler {
 
+class CompilerError;
 class Package;
 class Function;
 struct SourcePosition;

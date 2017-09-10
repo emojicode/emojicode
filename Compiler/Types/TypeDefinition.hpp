@@ -36,6 +36,8 @@ struct InstanceVariableDeclaration {
 
 class TypeDefinition : public Generic<TypeDefinition> {
 public:
+    TypeDefinition(const TypeDefinition&) = delete;
+
     /// Returns a documentation token documenting this type definition.
     const std::u32string& documentation() const { return documentation_; }
     /// Returns the name of the type definition.
@@ -78,9 +80,9 @@ public:
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
     virtual Function* lookupTypeMethod(const std::u32string &name) const;
 
-    void addMethod(Function *method);
-    void addInitializer(Initializer *initializer);
-    void addTypeMethod(Function *method);
+    Function* addMethod(std::unique_ptr<Function> &&method);
+    Initializer* addInitializer(std::unique_ptr<Initializer> &&initializer);
+    Function* addTypeMethod(std::unique_ptr<Function> &&method);
     virtual void addInstanceVariable(const InstanceVariableDeclaration&);
 
     const std::vector<Function *>& methodList() const { return methodList_; }
@@ -113,8 +115,7 @@ public:
     void setProtocolsTable(llvm::Constant *table) { protocolsTable_ = table; }
     llvm::Constant* protocolsTable() { return protocolsTable_; }
 protected:
-    TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation)
-    : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(std::move(pos))  {}
+    TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation);
 
     std::vector<Type> protocols_;
 
@@ -126,17 +127,19 @@ protected:
     virtual void handleRequiredInitializer(Initializer *init);
 
     template <typename T>
-    void duplicateDeclarationCheck(T p, std::map<std::u32string, T> dict, SourcePosition position) {
-        if (dict.count(p->name())) {
-            throw CompilerError(position, utf8(p->name()), " is declared twice.");
+    void duplicateDeclarationCheck(T *p, const std::map<std::u32string, std::unique_ptr<T>> &dict) {
+        if (dict.find(p->name()) != dict.end()) {
+            throw CompilerError(p->position(), utf8(p->name()), " is declared twice.");
         }
     }
+
+    ~TypeDefinition();
 private:
     Scope scope_ = Scope(0);
 
-    std::map<std::u32string, Function *> methods_;
-    std::map<std::u32string, Function *> typeMethods_;
-    std::map<std::u32string, Initializer *> initializers_;
+    std::map<std::u32string, std::unique_ptr<Function>> methods_;
+    std::map<std::u32string, std::unique_ptr<Function>> typeMethods_;
+    std::map<std::u32string, std::unique_ptr<Initializer>> initializers_;
 
     std::vector<Function *> methodList_;
     std::vector<Initializer *> initializerList_;

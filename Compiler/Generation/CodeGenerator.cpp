@@ -66,53 +66,53 @@ void CodeGenerator::generate(const std::string &outPath) {
 }
 
 void CodeGenerator::declarePackageSymbols() {
-    for (auto valueType : package_->valueTypes()) {
+    for (auto &valueType : package_->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
         });
-        createProtocolsTable(valueType);
+        createProtocolsTable(valueType.get());
     }
-    for (auto klass : package_->classes()) {
+    for (auto &klass : package_->classes()) {
         klass->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
         });
-        createProtocolsTable(klass);
-        createClassInfo(klass);
+        createProtocolsTable(klass.get());
+        createClassInfo(klass.get());
     }
-    for (auto function : package_->functions()) {
-        declareLlvmFunction(function);
+    for (auto &function : package_->functions()) {
+        declareLlvmFunction(function.get());
     }
-    for (auto protocol : package_->protocols()) {
-        createProtocolFunctionTypes(protocol);
+    for (auto &protocol : package_->protocols()) {
+        createProtocolFunctionTypes(protocol.get());
     }
 }
 
 void CodeGenerator::declareImportedPackageSymbols(Package *package) {
-    for (auto valueType : package->valueTypes()) {
+    for (auto &valueType : package->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
         });
     }
-    for (auto klass : package->classes()) {
+    for (auto &klass : package->classes()) {
         klass->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
         });
     }
-    for (auto function : package->functions()) {
-        declareLlvmFunction(function);
+    for (auto &function : package->functions()) {
+        declareLlvmFunction(function.get());
     }
 }
 
 void CodeGenerator::generateFunctions() {
-    for (auto valueType : package_->valueTypes()) {
+    for (auto &valueType : package_->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
             generateFunction(function);
         });
     }
-    for (auto function : package_->functions()) {
-        generateFunction(function);
+    for (auto &function : package_->functions()) {
+        generateFunction(function.get());
     }
-    for (auto klass : package_->classes()) {
+    for (auto &klass : package_->classes()) {
         klass->eachFunction([this](auto *function) {
             generateFunction(function);
         });

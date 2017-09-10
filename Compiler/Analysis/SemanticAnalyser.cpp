@@ -282,13 +282,12 @@ Type SemanticAnalyser::callableBox(Type exprType, const TypeExpectation &expecta
             arguments.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
                                    *argumentType);
         }
-        auto boxingLayer = new BoxingLayer(exprType, function_->package(), arguments,
-                                           expectation.genericArguments()[0], function_->position());
-        buildBoxingLayerAst(boxingLayer);
-        function_->package()->registerFunction(boxingLayer);
-        compiler()->analysisQueue.emplace(boxingLayer);
-
-        insertNode<ASTCallableBox>(node, exprType, boxingLayer);
+        auto boxingLayer = std::make_unique<BoxingLayer>(exprType, function_->package(), arguments,
+                                                         expectation.genericArguments()[0], function_->position());
+        buildBoxingLayerAst(boxingLayer.get());
+        insertNode<ASTCallableBox>(node, exprType, boxingLayer.get());
+        compiler()->analysisQueue.emplace(boxingLayer.get());
+        function_->package()->add(std::move(boxingLayer));
     }
     return exprType;
 }

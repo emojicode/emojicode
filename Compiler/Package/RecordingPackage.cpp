@@ -7,6 +7,7 @@
 //
 
 #include "RecordingPackage.hpp"
+#include "TypeDefinition.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -25,9 +26,9 @@ void RecordingPackage::offerType(Type t, const std::u32string &name, const std::
     Package::offerType(std::move(t), name, ns, exportFromPkg, p);
 }
 
-Extension& RecordingPackage::registerExtension(Extension ext) {
-    auto &extension = Package::registerExtension(std::move(ext));
-    files_[currentFile_].recordings_.emplace_back(std::make_unique<RecordedType>(Type(&extension)));
+Extension* RecordingPackage::add(std::unique_ptr<Extension> &&ext) {
+    auto *extension = Package::add(std::move(ext));
+    files_[currentFile_].recordings_.emplace_back(std::make_unique<RecordedType>(Type(extension)));
     return extension;
 }
 

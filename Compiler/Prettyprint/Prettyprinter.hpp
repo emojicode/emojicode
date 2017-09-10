@@ -11,6 +11,7 @@
 
 #include "../Package/RecordingPackage.hpp"
 #include "../Types/TypeContext.hpp"
+#include "../Types/Generic.hpp"
 #include <fstream>
 
 namespace EmojicodeCompiler {

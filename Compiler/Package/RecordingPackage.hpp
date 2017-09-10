@@ -55,7 +55,7 @@ public:
     void importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) override;
     void offerType(Type t, const std::u32string &name, const std::u32string &ns, bool exportFromPkg,
                            const SourcePosition &p) override;
-    Extension& registerExtension(Extension ext) override;
+    Extension* add(std::unique_ptr<Extension> &&ext) override;
     void includeDocument(const std::string &path, const std::string &relativePath) override;
 private:
     std::vector<File> files_;

@@ -9,9 +9,7 @@
 #ifndef Package_hpp
 #define Package_hpp
 
-#include "../EmojicodeCompiler.hpp"
 #include "../Lex/SourcePosition.hpp"
-#include "../Types/Extension.hpp"
 #include "../Types/Type.hpp"
 #include <map>
 #include <utility>
@@ -20,6 +18,7 @@
 namespace EmojicodeCompiler {
 
 class Function;
+class BoxingLayer;
 
 #undef major
 #undef minor
@@ -49,8 +48,7 @@ public:
     /// Constructs a package. The package must be compiled with compile() before it can be loaded.
     /// @param name The name of the package. The package is registered with this name.
     /// @param mainFilePath The path to the package’s main file. This is the file that is parsed when parse() is called.
-    Package(std::string name, std::string mainFilePath, Compiler *app)
-    : name_(std::move(name)), mainFile_(std::move(mainFilePath)), compiler_(app) {}
+    Package(std::string name, std::string mainFilePath, Compiler *app);
 
     /// Ssemantically analyses this package.
     void analyse();
@@ -100,20 +98,17 @@ public:
     bool hasStartFlagFunction() const { return startFlag_ != nullptr; }
 
     /// A Class defined in this package must be registered with this method.
-    void registerClass(Class *cl) { classes_.push_back(cl); }
+    Class* add(std::unique_ptr<Class> &&cl);
     /// A ValueType (and its derivates such as Enum) defined in this package must be registered with this method.
-    void registerValueType(ValueType *vt) { valueTypes_.push_back(vt); }
+    ValueType* add(std::unique_ptr<ValueType> &&vt);
     /// A Protocol defined in this package must be registered with this method.
-    void registerProtocol(Protocol *vt) { protocols_.push_back(vt); }
+    Protocol* add(std::unique_ptr<Protocol> &&protocol);
     /// Functions that technically belong to this package but are not members of a TypeDefinition instance that is
     /// registered with this package, must be registered with this function.
-    void registerFunction(Function *function) { functions_.push_back(function); }
+    Function* add(std::unique_ptr<Function> &&function);
     /// An extension defined in this package that extends a type not defined in this package, must be registered
     /// with this method.
-    virtual Extension& registerExtension(Extension ext) {
-        extensions_.emplace_back(std::move(ext));
-        return extensions_.back();
-    }
+    virtual Extension* add(std::unique_ptr<Extension> &&extension);
 
     /// Make a type available in this package. A type may be provided under different names, so this method may be
     /// called with the same type multiple times with different names and namespaces.
@@ -127,10 +122,10 @@ public:
                            const SourcePosition &p);
 
     /// @returns All classes registered with this package.
-    const std::vector<Class *>& classes() const { return classes_; };
-    const std::vector<Function *>& functions() const { return functions_; }
-    const std::vector<ValueType *>& valueTypes() const { return valueTypes_; }
-    const std::vector<Protocol *>& protocols() const { return protocols_; }
+    const std::vector<std::unique_ptr<Class>>& classes() const { return classes_; };
+    const std::vector<std::unique_ptr<Function>>& functions() const { return functions_; }
+    const std::vector<std::unique_ptr<ValueType>>& valueTypes() const { return valueTypes_; }
+    const std::vector<std::unique_ptr<Protocol>>& protocols() const { return protocols_; }
     const std::vector<ExportedType>& exportedTypes() const { return exportedTypes_; }
 
     const std::vector<Package *>& dependencies() const { return importedPackages_; }
@@ -145,6 +140,8 @@ public:
 
     /// @complexity O(n)
     std::u32string findNamespace(const Type &type);
+
+    ~Package();
 private:
     /// Verifies that no type with name @c name has already been exported and adds the type to ::exportedTypes_
     void exportType(Type t, std::u32string name, const SourcePosition &p);
@@ -162,11 +159,11 @@ private:
 
     std::map<std::u32string, Type> types_;
     std::vector<ExportedType> exportedTypes_;
-    std::vector<Class *> classes_;
-    std::vector<ValueType *> valueTypes_;
-    std::vector<Function *> functions_;
-    std::vector<Protocol *> protocols_;
-    std::vector<Extension> extensions_;
+    std::vector<std::unique_ptr<Class>> classes_;
+    std::vector<std::unique_ptr<ValueType>> valueTypes_;
+    std::vector<std::unique_ptr<Function>> functions_;
+    std::vector<std::unique_ptr<Protocol>> protocols_;
+    std::vector<std::unique_ptr<Extension>> extensions_;
     std::vector<Package *> importedPackages_;
 
     std::u32string documentation_;

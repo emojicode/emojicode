@@ -18,6 +18,7 @@
 #include "../Types/ValueType.hpp"
 #include "../Types/Class.hpp"
 #include "../Types/Protocol.hpp"
+#include "../Types/Extension.hpp"
 #include "Package.hpp"
 #include <algorithm>
 #include <cstring>
@@ -72,6 +73,35 @@ void loadStandard(Package *s, const SourcePosition &errorPosition) {
     PR_ENUMERATEABLE = getStandardProtocol(std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
 }
 
+Class* Package::add(std::unique_ptr<Class> &&cl) {
+    classes_.emplace_back(std::move(cl));
+    return classes_.back().get();
+}
+
+ValueType* Package::add(std::unique_ptr<ValueType> &&vt) {
+    valueTypes_.emplace_back(std::move(vt));
+    return valueTypes_.back().get();
+}
+
+Protocol* Package::add(std::unique_ptr<Protocol> &&protocol) {
+    protocols_.emplace_back(std::move(protocol));
+    return protocols_.back().get();
+}
+
+Function* Package::add(std::unique_ptr<Function> &&function) {
+    functions_.emplace_back(std::move(function));
+    return functions_.back().get();
+}
+
+Extension* Package::add(std::unique_ptr<Extension> &&extension) {
+    extensions_.emplace_back(std::move(extension));
+    return extensions_.back().get();
+}
+
+Package::Package(std::string name, std::string mainFilePath, Compiler *app)
+    : name_(std::move(name)), mainFile_(std::move(mainFilePath)), compiler_(app) {}
+Package::~Package() = default;
+
 void Package::importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {
     auto import = compiler_->loadPackage(name, p, this);
 
@@ -111,26 +141,26 @@ void Package::parse() {
 }
 
 void Package::analyse() {
-    for (auto vt : valueTypes_) {
+    for (auto &vt : valueTypes_) {
         vt->prepareForSemanticAnalysis();
-        enqueueFunctionsOfTypeDefinition(vt);
+        enqueueFunctionsOfTypeDefinition(vt.get());
     }
-    for (auto eclass : classes()) {
+    for (auto &eclass : classes()) {
         eclass->prepareForSemanticAnalysis();
-        enqueueFunctionsOfTypeDefinition(eclass);
+        enqueueFunctionsOfTypeDefinition(eclass.get());
     }
     for (auto &extension : extensions_) {
-        extension.prepareForSemanticAnalysis();
-        enqueueFunctionsOfTypeDefinition(&extension);
+        extension->prepareForSemanticAnalysis();
+        enqueueFunctionsOfTypeDefinition(extension.get());
     }
     size_t protocolIndex = 0;
-    for (auto protocol : protocols_) {
+    for (auto &protocol : protocols_) {
         protocol->setIndex(protocolIndex++);
         protocol->prepareForSemanticAnalysis();
     }
 
-    for (auto function : functions()) {
-        enqueueFunction(function);
+    for (auto &function : functions()) {
+        enqueueFunction(function.get());
     }
 
     while (!compiler_->analysisQueue.empty()) {

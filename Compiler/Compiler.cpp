@@ -6,6 +6,7 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "CompilerError.hpp"
 #include "Compiler.hpp"
 #include "Generation/CodeGenerator.hpp"
 

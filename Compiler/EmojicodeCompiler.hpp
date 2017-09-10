@@ -30,9 +30,6 @@ inline bool isWhitespace(char32_t c) {
 
 class Class;
 class Protocol;
-class Type;
-class Package;
-class CompilerError;
 class ValueType;
 
 extern Class *CL_STRING;

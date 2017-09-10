@@ -105,9 +105,9 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
         throw CompilerError(p, "Duplicate 🏁.");
     }
 
-    auto function = new Function(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public, false,
-                                 Type::noReturn(), package_, p, false,
-                                 documentation.get(), false, false, FunctionType::Function);
+    auto function = package_->add(std::make_unique<Function>(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public,
+                                                             false, Type::noReturn(), package_, p, false,
+                                                             documentation.get(), false, false, FunctionType::Function));
     parseReturnType(function, TypeContext());
     if (function->returnType.type() != TypeType::NoReturn &&
         !function->returnType.compatibleTo(Type::integer(), TypeContext())) {
@@ -121,8 +121,6 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
     catch (CompilerError &ce) {
         package_->compiler()->error(ce);
     }
-    package_->registerFunction(function);
-
     package_->setStartFlagFunction(function);
 }
 
@@ -161,9 +159,9 @@ void DocumentParser::parseExtension(const Documentation &documentation, const So
     Type type = package_->getRawType(parseTypeIdentifier(), false);
     Type extendedType = type;
 
-    auto extension = Extension(type, package_, p, documentation.get());
     if (type.typeDefinition()->package() != package_) {
-        type = Type(&extension);
+        auto extension = package_->add(std::make_unique<Extension>(type, package_, p, documentation.get()));
+        type = Type(extension);
     }
 
     switch (extendedType.type()) {
@@ -176,35 +174,36 @@ void DocumentParser::parseExtension(const Documentation &documentation, const So
         default:
             throw CompilerError(p, "Only classes and value types are extendable.");
     }
-    package_->registerExtension(extension);
 }
 
 void DocumentParser::parseProtocol(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
-    auto protocol = new Protocol(parsedTypeName.name, package_, theToken.position(), documentation);
+    auto protocol = package_->add(std::make_unique<Protocol>(parsedTypeName.name, package_,
+                                                             theToken.position(), documentation));
 
     parseGenericParameters(protocol, TypeContext(Type(protocol, false)));
 
     auto protocolType = Type(protocol, false);
     package_->offerType(protocolType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    package_->registerProtocol(protocol);
     ProtocolTypeBodyParser(protocolType, package_, stream_).parse();
 }
 
 void DocumentParser::parseEnum(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
-    Enum *enumeration = new Enum(parsedTypeName.name, package_, theToken.position(), documentation);
+    auto enumUniq = std::make_unique<Enum>(parsedTypeName.name, package_, theToken.position(), documentation);
+    Enum *enumeration = enumUniq.get();
+    package_->add(std::move(enumUniq));
 
     auto type = Type(enumeration, false);
     package_->offerType(type, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    package_->registerValueType(enumeration);
     EnumTypeBodyParser(type, package_, stream_).parse();
 }
 
 void DocumentParser::parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
-    auto eclass = new Class(parsedTypeName.name, package_, theToken.position(), documentation, final);
+    auto eclass = package_->add(std::make_unique<Class>(parsedTypeName.name, package_, theToken.position(),
+                                                        documentation, final));
 
     parseGenericParameters(eclass, TypeContext(Type(eclass, false)));
 
@@ -224,7 +223,6 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
 
     auto classType = Type(eclass, false);  // New Type due to generic arguments now available.
     package_->offerType(classType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    package_->registerClass(eclass);
 
     auto requiredInits = eclass->superclass() != nullptr ? eclass->superclass()->requiredInitializers() : std::set<std::u32string>();
     ClassTypeBodyParser(classType, package_, stream_, requiredInits).parse();
@@ -233,7 +231,8 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
 void DocumentParser::parseValueType(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
-    auto valueType = new ValueType(parsedTypeName.name, package_, theToken.position(), documentation);
+    auto valueType = package_->add(std::make_unique<ValueType>(parsedTypeName.name, package_,
+                                                               theToken.position(), documentation));
 
     if (stream_.consumeTokenIf(E_WHITE_CIRCLE)) {
         valueType->makePrimitive();
@@ -243,7 +242,6 @@ void DocumentParser::parseValueType(const std::u32string &documentation, const T
 
     auto valueTypeContent = Type(valueType, false);
     package_->offerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    package_->registerValueType(valueType);
     ValueTypeBodyParser(valueTypeContent, package_, stream_).parse();
 }
 

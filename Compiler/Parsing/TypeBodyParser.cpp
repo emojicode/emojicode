@@ -130,22 +130,23 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
     attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).check(p, package_->compiler());
 
     if (attributes.has(Attribute::StaticOnType)) {
-        auto *typeMethod = new Function(name, access, attributes.has(Attribute::Final), owningType(),
-                                        package_, p, attributes.has(Attribute::Override), documentation.get(),
-                                        attributes.has(Attribute::Deprecated), true, type_.type() == TypeType::Class ?
-                                        FunctionType::ClassMethod : FunctionType::Function);
-        parseFunction(typeMethod, false);
-        type_.typeDefinition()->addTypeMethod(typeMethod);
+        auto typeMethod = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
+                                                     package_, p, attributes.has(Attribute::Override),
+                                                     documentation.get(), attributes.has(Attribute::Deprecated),
+                                                     true, type_.type() == TypeType::Class ?
+                                                     FunctionType::ClassMethod : FunctionType::Function);
+        parseFunction(typeMethod.get(), false);
+        type_.typeDefinition()->addTypeMethod(std::move(typeMethod));
     }
     else {
         auto mutating = type_.type() == TypeType::ValueType ? attributes.has(Attribute::Mutating) : true;
-        auto *method = new Function(name, access, attributes.has(Attribute::Final), owningType(),
-                                    package_, p, attributes.has(Attribute::Override), documentation.get(),
-                                    attributes.has(Attribute::Deprecated), mutating,
-                                    type_.type() == TypeType::Class ? FunctionType::ObjectMethod :
-                                    FunctionType::ValueTypeMethod);
-        parseFunction(method, false);
-        type_.typeDefinition()->addMethod(method);
+        auto method = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
+                                                 package_, p, attributes.has(Attribute::Override), documentation.get(),
+                                                 attributes.has(Attribute::Deprecated), mutating,
+                                                 type_.type() == TypeType::Class ? FunctionType::ObjectMethod :
+                                                 FunctionType::ValueTypeMethod);
+        parseFunction(method.get(), false);
+        type_.typeDefinition()->addMethod(std::move(method));
     }
 }
 
@@ -164,14 +165,14 @@ Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBo
     }
 
 
-    auto initializer = new Initializer(name, access, attributes.has(Attribute::Final), owningType(),
-                                       package_, p, attributes.has(Attribute::Override), documentation.get(),
-                                       attributes.has(Attribute::Deprecated), attributes.has(Attribute::Required),
-                                       errorType, type_.type() == TypeType::Class ? FunctionType::ObjectInitializer :
-                                       FunctionType::ValueTypeInitializer);
-    parseFunction(initializer, true);
-    type_.typeDefinition()->addInitializer(initializer);
-    return initializer;
+    auto initializer = std::make_unique<Initializer>(name, access, attributes.has(Attribute::Final), owningType(),
+                                                     package_, p, attributes.has(Attribute::Override),
+                                                     documentation.get(), attributes.has(Attribute::Deprecated),
+                                                     attributes.has(Attribute::Required), errorType,
+                                                     type_.type() == TypeType::Class ? FunctionType::ObjectInitializer :
+                                                     FunctionType::ValueTypeInitializer);
+    parseFunction(initializer.get(), true);
+    return type_.typeDefinition()->addInitializer(std::move(initializer));
 }
 
 void TypeBodyParser::parse() {

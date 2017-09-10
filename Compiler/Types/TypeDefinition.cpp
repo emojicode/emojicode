@@ -20,6 +20,11 @@
 
 namespace EmojicodeCompiler {
 
+TypeDefinition::TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation)
+    : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(std::move(pos))  {}
+
+TypeDefinition::~TypeDefinition() = default;
+
 void TypeDefinition::setSuperType(const Type &type) {
     offsetIndicesBy(type.genericArguments().size());
     superType_ = type;
@@ -34,7 +39,7 @@ void TypeDefinition::setSuperType(const Type &type) {
 Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) const {
     auto pos = initializers_.find(name);
     if (pos != initializers_.end()) {
-        return pos->second;
+        return pos->second.get();
     }
     return nullptr;
 }
@@ -42,7 +47,7 @@ Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) const
 Function* TypeDefinition::lookupMethod(const std::u32string &name) const {
     auto pos = methods_.find(name);
     if (pos != methods_.end()) {
-        return pos->second;
+        return pos->second.get();
     }
     return nullptr;
 }
@@ -50,7 +55,7 @@ Function* TypeDefinition::lookupMethod(const std::u32string &name) const {
 Function* TypeDefinition::lookupTypeMethod(const std::u32string &name) const {
     auto pos = typeMethods_.find(name);
     if (pos != typeMethods_.end()) {
-        return pos->second;
+        return pos->second.get();
     }
     return nullptr;
 }
@@ -93,26 +98,32 @@ void TypeDefinition::addProtocol(const Type &type, const SourcePosition &p) {
     protocols_.push_back(type);
 }
 
-void TypeDefinition::addTypeMethod(Function *method) {
-    duplicateDeclarationCheck(method, typeMethods_, method->position());
-    typeMethods_[method->name()] = method;
-    typeMethodList_.push_back(method);
+Function* TypeDefinition::addTypeMethod(std::unique_ptr<Function> &&method) {
+    duplicateDeclarationCheck(method.get(), typeMethods_);
+    auto rawPtr = method.get();
+    typeMethods_.emplace(method->name(), std::move(method));
+    typeMethodList_.push_back(rawPtr);
+    return rawPtr;
 }
 
-void TypeDefinition::addMethod(Function *method) {
-    duplicateDeclarationCheck(method, methods_, method->position());
-    methods_[method->name()] = method;
-    methodList_.push_back(method);
+Function* TypeDefinition::addMethod(std::unique_ptr<Function> &&method) {
+    duplicateDeclarationCheck(method.get(), methods_);
+    auto rawPtr = method.get();
+    methods_.emplace(method->name(), std::move(method));
+    methodList_.push_back(rawPtr);
+    return rawPtr;
 }
 
-void TypeDefinition::addInitializer(Initializer *initializer) {
-    duplicateDeclarationCheck(initializer, initializers_, initializer->position());
-    initializers_[initializer->name()] = initializer;
-    initializerList_.push_back(initializer);
+Initializer* TypeDefinition::addInitializer(std::unique_ptr<Initializer> &&initializer) {
+    duplicateDeclarationCheck(initializer.get(), initializers_);
+    auto rawPtr = initializer.get();
+    initializers_.emplace(initializer->name(), std::move(initializer));
+    initializerList_.push_back(rawPtr);
 
-    if (initializer->required()) {
-        handleRequiredInitializer(initializer);
+    if (rawPtr->required()) {
+        handleRequiredInitializer(rawPtr);
     }
+    return rawPtr;
 }
 
 void TypeDefinition::addInstanceVariable(const InstanceVariableDeclaration &variable) {
@@ -155,14 +166,15 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
                 for (auto &arg : method->arguments) {
                     arguments.emplace_back(arg.variableName, arg.type.resolveOn(TypeContext(protocol)));
                 }
-                auto bl = new BoxingLayer(clm, protocol.protocol()->name(), arguments,
-                                          method->returnType.resolveOn(TypeContext(protocol)), clm->position());
-                buildBoxingLayerAst(bl);
+                auto bl = std::make_unique<BoxingLayer>(clm, protocol.protocol()->name(), arguments,
+                                                        method->returnType.resolveOn(TypeContext(protocol)),
+                                                        clm->position());
+                buildBoxingLayerAst(bl.get());
                 if (enqueBoxingLayers) {
-                    package_->compiler()->analysisQueue.emplace(bl);
+                    package_->compiler()->analysisQueue.emplace(bl.get());
                 }
-                method->registerOverrider(bl);
-                addMethod(bl);
+                method->registerOverrider(bl.get());
+                addMethod(std::move(bl));
             }
             else {
                 method->registerOverrider(clm);

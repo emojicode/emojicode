@@ -10,6 +10,7 @@
 #define TypeBodyParser_hpp
 
 #include "../Functions/Function.hpp"
+#include "../Types/Extension.hpp"
 #include "AbstractParser.hpp"
 #include "AttributesParser.hpp"
 #include <set>
@@ -17,6 +18,7 @@
 namespace EmojicodeCompiler {
 
 class Initializer;
+class CompilerError;
 
 using TypeBodyAttributeParser = AttributeParser<Attribute::Deprecated, Attribute::Final, Attribute::Override,
     Attribute::StaticOnType, Attribute::Mutating, Attribute::Required>;
