@@ -26,9 +26,14 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
         return fg->builder().CreateLoad(ptr);
     }
 
-    auto localVariable = fg->scoper().getVariable(varId_);
+    auto &localVariable = fg->scoper().getVariable(varId_);
     if (!localVariable.isMutable) {
-        assert(!reference_);
+        if (reference_) {
+            auto alloca = fg->builder().CreateAlloca(localVariable.value->getType());
+            fg->builder().CreateStore(localVariable.value, alloca);
+            localVariable = LocalVariable(true, alloca);
+            return localVariable.value;
+        }
         return localVariable.value;
     }
     if (reference_) {
