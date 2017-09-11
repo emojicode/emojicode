@@ -36,6 +36,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context) : context_(context) {
     }, "callable");
 
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
+    types_.emplace(Type::someobject(), llvm::Type::getInt8PtrTy(context_));
     types_.emplace(Type::integer(), llvm::Type::getInt64Ty(context_));
     types_.emplace(Type::symbol(), llvm::Type::getInt32Ty(context_));
     types_.emplace(Type::doubl(), llvm::Type::getDoubleTy(context_));
