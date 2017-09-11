@@ -97,6 +97,7 @@ void CodeGenerator::declareImportedPackageSymbols(Package *package) {
         klass->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
         });
+        declareImportedClassMeta(klass.get());
     }
     for (auto &function : package->functions()) {
         declareLlvmFunction(function.get());
@@ -129,6 +130,13 @@ void CodeGenerator::createProtocolFunctionTypes(Protocol *protocol) {
     for (auto method : protocol->methodList()) {
         dynamic_cast<ProtocolFunction *>(method)->setLlvmFunctionType(typeHelper().functionTypeFor(method));
     }
+}
+
+void CodeGenerator::declareImportedClassMeta(Class *klass) {
+    auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
+                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
+                                         mangleClassMetaName(klass));
+    klass->setClassMeta(meta);
 }
 
 void CodeGenerator::createClassInfo(Class *klass) {

@@ -79,6 +79,7 @@ private:
     void declareImportedPackageSymbols(Package *package);
     void generateFunction(Function *function);
     void createClassInfo(Class *klass);
+    void declareImportedClassMeta(Class *klass);
     void createProtocolsTable(TypeDefinition *typeDef);
     void createProtocolFunctionTypes(Protocol *protocol);
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
