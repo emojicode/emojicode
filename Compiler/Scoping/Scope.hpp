@@ -28,6 +28,10 @@ public:
     /// Sets a variable in this scope and returns it.
     /// @throws CompilerError if a variable with this name already exists.
     Variable& declareVariable(const std::u32string &variable, const Type &type, bool frozen, const SourcePosition &p);
+    /// Sets a variable with the given ID in this scope and returns it.
+    /// @throws CompilerError if a variable with this name already exists.
+    Variable& declareVariableWithId(const std::u32string &variable, const Type &type, bool frozen, VariableID id,
+                                    const SourcePosition &p);
 
     /// Retrieves a variable form the scope. Use @c hasLocalVariable to determine whether the variable with this name
     /// is in this scope.

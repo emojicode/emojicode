@@ -16,13 +16,13 @@ namespace EmojicodeCompiler {
 
 class ASTClosure : public ASTExpr {
 public:
-    ASTClosure(Function *function, const SourcePosition &p) : ASTExpr(p), function_(function) {}
+    ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p);
 
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
+    Value* generate(FunctionCodeGenerator *fg) const override final;
     void toCode(Prettyprinter &pretty) const override;
 private:
-    Function *function_;
+    std::unique_ptr<Function> closure_;
     std::vector<VariableCapture> captures_;
     bool captureSelf_ = false;
 };

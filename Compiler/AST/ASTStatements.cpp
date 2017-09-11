@@ -24,7 +24,7 @@ void ASTBlock::analyse(SemanticAnalyser *analyser) {
 }
 
 void ASTExprStatement::analyse(SemanticAnalyser *analyser)  {
-    expr_->analyse(analyser, TypeExpectation());
+    expr_->setExpressionType(expr_->analyse(analyser, TypeExpectation()));
 }
 
 void ASTReturn::analyse(SemanticAnalyser *analyser) {

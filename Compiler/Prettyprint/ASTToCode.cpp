@@ -86,7 +86,7 @@ void ASTIf::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTClosure::toCode(Prettyprinter &pretty) const {
-    pretty.printClosure(function_);
+    pretty.printClosure(closure_.get());
 }
 
 void ASTErrorHandler::toCode(Prettyprinter &pretty) const {

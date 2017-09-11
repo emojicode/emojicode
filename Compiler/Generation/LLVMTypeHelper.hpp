@@ -20,6 +20,7 @@ class Type;
 namespace EmojicodeCompiler {
 
 class Function;
+struct VariableCapture;
 
 /// This class is repsonsible for providing llvm::Type instances for Emojicode Type instances.
 class LLVMTypeHelper {
@@ -35,6 +36,8 @@ public:
 
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
     llvm::FunctionType* functionTypeFor(Function *function);
+
+    llvm::StructType* llvmTypeForClosureCaptures(const std::vector<VariableCapture> &captures);
 private:
     llvm::StructType *classMetaType_;
     llvm::StructType *valueTypeMetaType_;

@@ -11,6 +11,7 @@
 #include "../Types/TypeDefinition.hpp"
 #include "../Functions/Function.hpp"
 #include "../Functions/Initializer.hpp"
+#include "../Scoping/CapturingSemanticScoper.hpp"
 #include "Mangler.hpp"
 #include <vector>
 
@@ -41,9 +42,20 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context) : context_(context) {
     types_.emplace(Type::boolean(), llvm::Type::getInt1Ty(context_));
 }
 
+llvm::StructType* LLVMTypeHelper::llvmTypeForClosureCaptures(const std::vector<VariableCapture> &captures) {
+    std::vector<llvm::Type *> types;
+    std::transform(captures.begin(), captures.end(), std::back_inserter(types), [this](auto &capture) {
+        return llvmTypeFor(capture.type);
+    });
+    return llvm::StructType::get(context_, types);
+}
+
 llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     std::vector<llvm::Type *> args;
-    if (isSelfAllowed(function->functionType())) {
+    if (function->functionType() == FunctionType::Closure) {
+        args.emplace_back(llvm::Type::getInt8PtrTy(context_));
+    }
+    else if (isSelfAllowed(function->functionType())) {
         args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
     }
     std::transform(function->arguments.begin(), function->arguments.end(), std::back_inserter(args), [this](auto &arg) {

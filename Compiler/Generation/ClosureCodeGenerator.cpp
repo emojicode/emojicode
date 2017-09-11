@@ -7,17 +7,27 @@
 //
 
 #include "ClosureCodeGenerator.hpp"
+#include "../Functions/Function.hpp"
 
 namespace EmojicodeCompiler {
 
-void ClosureCodeGenerator::declareArguments(llvm::Function *function) {
-    FunctionCodeGenerator::declareArguments(function);
+void ClosureCodeGenerator::declareArguments(llvm::Function *llvmFunction) {
+    unsigned int i = 0;
+    auto it = llvmFunction->args().begin();
+    (it++)->setName("captures");
+    for (auto arg : function()->arguments) {
+        auto &llvmArg = *(it++);
+        scoper().getVariable(i++) = LocalVariable(false, &llvmArg);
+        llvmArg.setName(utf8(arg.variableName));
+    }
 
-//    captureDestIndex_ = scoper().nextIndex();
-//    for (auto capture : captures_) {
-//        scoper().declareVariable(capture.captureId, capture.type).initialize(0);
-//        captureSize_ += capture.type.size();
-//    }
+    auto type = typeHelper().llvmTypeForClosureCaptures(captures_);
+    llvm::Value *captures = builder().CreateBitCast(llvmFunction->args().begin(), type->getPointerTo());
+
+    for (size_t i = 0; i < captures_.size(); i++) {
+        auto *value = builder().CreateLoad(builder().CreateConstGEP2_32(type, captures, 0, i));
+        scoper().getVariable(captures_[i].captureId) = LocalVariable(false, value);
+    }
 }
 
 }  // namespace EmojicodeCompiler

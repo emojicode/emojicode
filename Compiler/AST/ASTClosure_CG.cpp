@@ -13,36 +13,35 @@
 namespace EmojicodeCompiler {
 
 Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
-    // TODO: implement
-//    auto closureGenerator = ClosureCodeGenerator(captures_, function_, fg->generator());
-//    closureGenerator.generate();
-//
-//    fg->wr().writeInstruction(INS_CLOSURE);
-//    function_->setVtiProvider(&STIProvider::globalStiProvider);
-//    function_->setUsed(false);
-//    function_->package()->registerFunction(function_);
-//    fg->wr().writeInstruction(function_->vtiForUse());
-//    fg->wr().writeInstruction(static_cast<EmojicodeInstruction>(captures_.size()));
-//    fg->wr().writeInstruction(static_cast<EmojicodeInstruction>(closureGenerator.captureSize()));
-//    fg->wr().writeInstruction(static_cast<EmojicodeInstruction>(closureGenerator.captureDestIndex()));
-//
-//    auto objectVariableInformation = std::vector<ObjectVariableInformation>();
-//    objectVariableInformation.reserve(closureGenerator.captureSize());
-//    size_t index = 0;
-//    for (auto capture : captures_) {
-//        fg->wr().writeInstruction(fg->scoper().getVariable(capture.sourceId).stackIndex.value());
-//        fg->wr().writeInstruction(capture.type.size());
-//        capture.type.objectVariableRecords(index, &objectVariableInformation);
-//        index += capture.type.size();
-//    }
-//    fg->wr().writeInstruction(static_cast<EmojicodeInstruction>(objectVariableInformation.size()));
-//    for (auto &record : objectVariableInformation) {
-//        fg->wr().writeInstruction((record.conditionIndex << 16) | static_cast<uint16_t>(record.index));
-//        fg->wr().writeInstruction(static_cast<uint16_t>(record.type));
-//    }
-//
-//    fg->wr().writeInstruction(captureSelf_ ? 1 : 0);
-    throw std::logic_error("Unimplemented");
+    fg->generator()->declareLlvmFunction(closure_.get());
+
+    auto closureGenerator = ClosureCodeGenerator(captures_, closure_.get(), fg->generator());
+    closureGenerator.generate();
+
+    auto capturesType = fg->generator()->typeHelper().llvmTypeForClosureCaptures(captures_);
+    auto alloc = fg->builder().CreateCall(fg->generator()->runTimeNew(), fg->sizeFor(capturesType->getPointerTo()));
+    auto captures = fg->builder().CreateBitCast(alloc, capturesType->getPointerTo());
+
+
+    auto i = 0;
+    for (auto &capture : captures_) {
+        llvm::Value *value;
+        auto &variable = fg->scoper().getVariable(capture.sourceId);
+        if (variable.isMutable) {
+            value = fg->builder().CreateLoad(variable.value);
+        }
+        else {
+            value = variable.value;
+        }
+
+        fg->builder().CreateStore(value, fg->builder().CreateConstGEP2_32(capturesType, captures, 1, i++));
+    }
+
+    auto *structType = llvm::dyn_cast<llvm::StructType>(fg->generator()->typeHelper().llvmTypeFor(expressionType()));
+
+
+    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(structType), closure_->llvmFunction(), 0);
+    return fg->builder().CreateInsertValue(callable, alloc, 1);
 }
 
 }  // namespace EmojicodeCompiler

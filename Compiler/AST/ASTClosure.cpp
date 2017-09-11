@@ -8,21 +8,25 @@
 
 #include "ASTClosure.hpp"
 #include "../Analysis/SemanticAnalyser.hpp"
-#include "../Functions/Function.hpp"
+#include "../Functions/BoxingLayer.hpp"
+#include "../Types/TypeDefinition.hpp"
+#include "../Analysis/BoxingLayerBuilder.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTClosure::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    function_->setOwningType(analyser->function()->owningType());
-    function_->setFunctionType(analyser->function()->functionType());
+ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p) :
+    ASTExpr(p), closure_(std::move(closure)) {}
 
-    auto closureAnalyser = SemanticAnalyser(function_, std::make_unique<CapturingSemanticScoper>(analyser->scoper()));
-    closureAnalyser.analyse();
-    captures_ = dynamic_cast<CapturingSemanticScoper&>(closureAnalyser.scoper()).captures();
-    if (closureAnalyser.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
+Type ASTClosure::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+    closure_->setOwningType(analyser->function()->owningType());
+
+    auto closureAnaly = SemanticAnalyser(closure_.get(), std::make_unique<CapturingSemanticScoper>(analyser->scoper()));
+    closureAnaly.analyse();
+    captures_ = dynamic_cast<CapturingSemanticScoper&>(closureAnaly.scoper()).captures();
+    if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
         captureSelf_ = true;
     }
-    return function_->type();
+    return closure_->type();
 }
 
 }  // namespace EmojicodeCompiler

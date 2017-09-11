@@ -49,6 +49,8 @@ public:
 
     llvm::Function* runTimeNew() const { return runTimeNew_; }
     llvm::Function* errNoValue() const { return errNoValue_; }
+
+    void declareLlvmFunction(Function *function);
 private:
     Package *package_;
     llvm::LLVMContext context_;
@@ -75,7 +77,6 @@ private:
     void declarePackageSymbols();
     void declareRunTime();
     void declareImportedPackageSymbols(Package *package);
-    void declareLlvmFunction(Function *function);
     void generateFunction(Function *function);
     void createClassInfo(Class *klass);
     void createProtocolsTable(TypeDefinition *typeDef);

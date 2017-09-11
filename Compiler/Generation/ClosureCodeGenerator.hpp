@@ -18,13 +18,12 @@ class ClosureCodeGenerator : public FunctionCodeGenerator {
 public:
     ClosureCodeGenerator(std::vector<VariableCapture> captures, Function *f, CodeGenerator *generator)
     : FunctionCodeGenerator(f, generator), captures_(std::move(captures)) {}
-    size_t captureSize() const { return captureSize_; }
-    size_t captureDestIndex() const { return captureDestIndex_; }
+
+    llvm::Value* thisValue() const override { return thisValue_; }
 private:
-    void declareArguments(llvm::Function *function) override;
-    size_t captureSize_ = 0;
+    void declareArguments(llvm::Function *llvmFunction) override;
     std::vector<VariableCapture> captures_;
-    size_t captureDestIndex_ = 0;
+    llvm::Value *thisValue_;
 };
 
 } // namespace EmojicodeCompiler

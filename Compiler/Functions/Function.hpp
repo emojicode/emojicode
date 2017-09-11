@@ -119,26 +119,6 @@ public:
     bool mutating() const { return mutating_; }
 
     FunctionType functionType() const { return functionType_; }
-    void setFunctionType(FunctionType type) { functionType_ = type; }
-
-    virtual ContextType contextType() const {
-        switch (functionType()) {
-            case FunctionType::ObjectMethod:
-            case FunctionType::ObjectInitializer:
-                return ContextType::Object;
-                break;
-            case FunctionType::ValueTypeMethod:
-            case FunctionType::ValueTypeInitializer:
-                return ContextType::ValueReference;
-                break;
-            case FunctionType::ClassMethod:
-            case FunctionType::Function:
-                return ContextType::None;
-                break;
-            case FunctionType::BoxingLayer:
-                throw std::logic_error("contextType for BoxingLayer called on Function class");
-        }
-    }
 
     void setAst(const std::shared_ptr<ASTBlock> &ast) { ast_ = ast; }
     const std::shared_ptr<ASTBlock>& ast() const { return ast_; }

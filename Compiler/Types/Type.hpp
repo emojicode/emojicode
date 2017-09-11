@@ -65,12 +65,6 @@ enum class ObjectVariableType {
     ConditionalSkip = 3
 };
 
-enum class ContextType {
-    None = 0,
-    Object = 1,
-    ValueReference = 2,
-};
-
 struct ObjectVariableInformation {
     ObjectVariableInformation(int index, ObjectVariableType type) : index(index), type(type) {}
     ObjectVariableInformation(int index, int condition, ObjectVariableType type)

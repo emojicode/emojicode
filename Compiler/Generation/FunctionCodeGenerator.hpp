@@ -34,7 +34,7 @@ public:
     CodeGenerator* generator() const { return generator_; }
     llvm::IRBuilder<>& builder() { return builder_; }
     LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }
-    llvm::Value* thisValue() { return &*fn_->llvmFunction()->args().begin(); }
+    virtual llvm::Value* thisValue() const { return &*fn_->llvmFunction()->args().begin(); }
 
     llvm::Value* sizeFor(llvm::PointerType *type);
     llvm::Value* getMetaFromObject(llvm::Value *object);
@@ -66,6 +66,7 @@ public:
                                                           const PairIfElseCallback &otherwise);
 protected:
     virtual void declareArguments(llvm::Function *function);
+    Function* function() const { return fn_; }
 private:
     Function *fn_;
     CGScoper scoper_;

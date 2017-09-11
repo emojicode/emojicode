@@ -37,11 +37,16 @@ void Scope::popInitializationLevel() {
 }
 
 Variable& Scope::declareVariable(const std::u32string &variable, const Type &type, bool frozen,
-                                  const SourcePosition &p) {
+                                 const SourcePosition &p) {
+    return declareVariableWithId(variable, type, frozen, VariableID(maxVariableId_++), p);
+}
+
+Variable& Scope::declareVariableWithId(const std::u32string &variable, const Type &type, bool frozen, VariableID id,
+                                       const SourcePosition &p) {
     if (hasLocalVariable(variable)) {
         throw CompilerError(p, "Cannot redeclare variable.");
     }
-    Variable &v = map_.emplace(variable, Variable(type, maxVariableId_++, frozen, variable, p)).first->second;
+    Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, p)).first->second;
     return v;
 }
 

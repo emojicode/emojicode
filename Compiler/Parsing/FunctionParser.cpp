@@ -297,15 +297,15 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
-    auto function = new Function(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::noReturn(),
-                                 package_, token.position(), false, std::u32string(), false, false,
-                                 FunctionType::Function);
+    auto function = std::make_unique<Function>(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::noReturn(),
+                                               package_, token.position(), false, std::u32string(), false, false,
+                                               FunctionType::Closure);
 
-    parseParameters(function, typeContext_);
-    parseReturnType(function, typeContext_);
+    parseParameters(function.get(), typeContext_);
+    parseReturnType(function.get(), typeContext_);
 
-    function->setAst(factorFunctionParser(package_, stream_, typeContext_, function)->parse());
-    return std::make_shared<ASTClosure>(function, token.position());
+    function->setAst(factorFunctionParser(package_, stream_, typeContext_, function.get())->parse());
+    return std::make_shared<ASTClosure>(std::move(function), token.position());
 }
 
 std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition &p) {

@@ -12,7 +12,6 @@
 #include "../AST/ASTExpr.hpp"
 #include "../AST/ASTTypeExpr.hpp"
 #include "../CompilerError.hpp"
-#include "../Functions/FunctionType.hpp"
 #include "../Scoping/SemanticScoper.hpp"
 #include "../Types/Type.hpp"
 #include "../Types/TypeContext.hpp"

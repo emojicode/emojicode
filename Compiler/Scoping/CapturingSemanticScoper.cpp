@@ -13,18 +13,18 @@ namespace EmojicodeCompiler {
 
 ResolvedVariable CapturingSemanticScoper::getVariable(const std::u32string &name,
                                                       const SourcePosition &errorPosition) {
-//    try {
+    try {
         return SemanticScoper::getVariable(name, errorPosition);
-//    }
-//    catch (VariableNotFoundError &e) {
-//        auto pair = capturedScoper_.getVariable(name, errorPosition);
-//        auto &variable = pair.variable;
-//        auto &captureVariable = topmostLocalScope().declareVariableWithId(variable.name(), variable.type(), true,
-//                                                                          VariableID(captureId_++), errorPosition);
-//        captureVariable.initialized_ = maxInitializationLevel();
-//        captures_.emplace_back(VariableCapture(variable.id(), variable.type(), captureVariable.id()));
-//        return ResolvedVariable(captureVariable, false);
-//    }
+    }
+    catch (VariableNotFoundError &e) {
+        auto pair = capturedScoper_.getVariable(name, errorPosition);
+        auto &variable = pair.variable;
+        auto &captureVariable = topmostLocalScope().declareVariableWithId(variable.name(), variable.type(), true,
+                                                                          VariableID(captureId_++), errorPosition);
+        captureVariable.initialized_ = maxInitializationLevel();
+        captures_.emplace_back(VariableCapture(variable.id(), variable.type(), captureVariable.id()));
+        return ResolvedVariable(captureVariable, false);
+    }
 }
 
 }  // namespace EmojicodeCompiler

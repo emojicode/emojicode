@@ -7,7 +7,7 @@
 //
 
 #include "RecordingPackage.hpp"
-#include "TypeDefinition.hpp"
+#include "../Types/TypeDefinition.hpp"
 
 namespace EmojicodeCompiler {
 
