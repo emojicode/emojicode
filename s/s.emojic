@@ -493,7 +493,10 @@
   ❗️ 🚂 ➡️ 🚂 📻 🔤sSymbolToInt🔤
 🍉
 
-👴 🐋 🔡 🍇
+🐋 🔡 🍇
+  🍰 codePoints 🔵
+  🍰 count 🚂
+
 👴   🐊 🔂🐚🔣
 👴   🐊 🐽🐚🔣
 👴   🐊 😛🐚🔡
@@ -510,8 +513,8 @@
 👴   🌮
 👴   🆕 🍨 list 🍨🐚🔡 separator 🔡 📻 🔤sStringJoin🔤
 
-👴   🌮 Puts this 🔡 to the standard output. 🌮
-👴   ❗️ 😀 📻 🔤sStringPrint🔤
+  🌮 Puts this 🔡 to the standard output. 🌮
+  ❗️ 😀 📻 🔤sStringPrint🔤
 
 👴   🌮 Returns 👍 if this 🔡 is equal to b. 🌮
 👴   🙌 b 🔡 ➡️ 👌📻 🔤sStringEqual🔤
@@ -569,12 +572,14 @@
 👴   🌮
 👴   ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 📻 🔤sStringSplitSymbol🔤
 
-👴   🌮
-👴     This method returns the number of Unicode code points of this string. This
-👴     is possibly not the number of bytes needed to write the string to a file,
-👴     since Emojicode encodes everything into UTF8.
-👴   🌮
-👴   ❗️ 🐔 ➡️ 🚂 📻 🔤sStringLength🔤
+  🌮
+    This method returns the number of Unicode code points of this string. This
+    is possibly not the number of bytes needed to write the string to a file,
+    since Emojicode encodes everything into UTF8.
+  🌮
+  ❗️ 🐔 ➡️ 🚂 🍇
+    ↩️ count
+  🍉
 
 👴   🌮
 👴     Returns the number of bytes needed to encode this string into proper UTF8.
@@ -650,7 +655,7 @@
 👴   ❗️ 🔡 ➡️  🔡 🍇
 👴     ↩️ 🆕🔡🎙❕symbols❗️
 👴   🍉
-👴 🍉
+🍉
 
 👴 🐋 🍨 🍇
 👴   🐊 🔂🐚Element

@@ -68,10 +68,7 @@ llvm::Value* CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
 llvm::Value* CallCodeGenerator::createDynamicDispatch(Function *function, const std::vector<Value *> &args) {
     auto meta = fg()->getMetaFromObject(args.front());
 
-    std::vector<Value *> idx2{
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg()->generator()->context()), 0),  // classMeta
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg()->generator()->context()), 1),  // table
-    };
+    std::vector<Value *> idx2{ fg()->int32(0), fg()->int32(1) };  // classMeta.table
     auto table = fg()->builder().CreateLoad(fg()->builder().CreateGEP(meta, idx2), "table");
     return dispatchFromVirtualTable(function, table, args);
 }
@@ -86,17 +83,11 @@ llvm::Value* CallCodeGenerator::createDynamicProtocolDispatch(Function *function
         auto obj = fg()->builder().CreateLoad(fg()->getValuePtr(args.front(), gtype));
         auto meta = fg()->builder().CreateLoad(obj);
 
-        std::vector<Value *> idx{
-            llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg()->generator()->context()), 0),  // classMeta
-            llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg()->generator()->context()), 2),  // protocols table
-        };
+        std::vector<Value *> idx{ fg()->int32(0), fg()->int32(2) };  // classMeta.protocolsTable
         return std::make_pair(fg()->builder().CreateGEP(meta, idx, "protocolsTable"),
                               fg()->builder().CreateBitCast(obj, i8PtrType));
     }, [this, valueTypeMeta, args, i8PtrType]() {
-        std::vector<Value *> idx{
-            llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg()->generator()->context()), 0),  // value type meta
-            llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg()->generator()->context()), 0),  // protocols table
-        };
+        std::vector<Value *> idx{ fg()->int32(0), fg()->int32(0) };  // valueTypeMeta.protocolsTable
         return std::make_pair(fg()->builder().CreateGEP(valueTypeMeta, idx, "protocolsTable"),
                               fg()->getValuePtr(args.front(), i8PtrType));
     });
@@ -104,7 +95,7 @@ llvm::Value* CallCodeGenerator::createDynamicProtocolDispatch(Function *function
     auto protocolsTable = fg()->builder().CreateLoad(pair.first);
     auto protocolsVtables = fg()->builder().CreateExtractValue(protocolsTable, 0);
 
-    auto pindex = llvm::ConstantInt::get(llvm::Type::getInt16Ty(fg()->generator()->context()), calleeType.protocol()->index());
+    auto pindex = fg()->int16(calleeType.protocol()->index());
     auto index = fg()->builder().CreateSub(pindex, fg()->builder().CreateExtractValue(protocolsTable, 1));
     auto vtable = fg()->builder().CreateLoad(fg()->builder().CreateGEP(protocolsVtables, index, "protocolVtable"));
     args.front() = pair.second;

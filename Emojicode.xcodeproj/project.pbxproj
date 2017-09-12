@@ -10,6 +10,7 @@
 		E400909C1F515D80003F62FE /* RecordingPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E400909A1F515D80003F62FE /* RecordingPackage.cpp */; };
 		E400909D1F516E80003F62FE /* Package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40090981F515CAA003F62FE /* Package.cpp */; };
 		E426870E1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E426870C1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp */; };
+		E4321ADF1F6801260028049A /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = E4321ADE1F6801250028049A /* utf8.c */; };
 		E4431D651F4C4B7000D68379 /* Initializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D631F4C4B7000D68379 /* Initializer.cpp */; };
 		E4431D741F4E17B100D68379 /* ASTToCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D731F4E17B000D68379 /* ASTToCode.cpp */; };
 		E45AF99B1F5035F00077E343 /* JSONCompilerDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45AF9991F5035F00077E343 /* JSONCompilerDelegate.cpp */; };
@@ -88,6 +89,8 @@
 		E4DB9B841F5EAA6700B566DD /* Mangler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B821F5EAA6700B566DD /* Mangler.cpp */; };
 		E4DB9B871F6014A300B566DD /* LLVMTypeHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DB9B851F6014A200B566DD /* LLVMTypeHelper.cpp */; };
 		E4DE8CAB1F57410400BFE7A9 /* CompatibleFunctionParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */; };
+		E4E5DC911F66C1B800829A22 /* StringPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4E5DC8F1F66C1B700829A22 /* StringPool.cpp */; };
+		E4F252501F66EB1E00E06C18 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4F2524E1F66EB1E00E06C18 /* String.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -112,6 +115,8 @@
 		E400909F1F51ACE8003F62FE /* Generic.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Generic.hpp; sourceTree = "<group>"; };
 		E426870C1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ProtocolTypeBodyParser.cpp; sourceTree = "<group>"; };
 		E426870D1F5AD49500B96A62 /* ProtocolTypeBodyParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProtocolTypeBodyParser.hpp; sourceTree = "<group>"; };
+		E4321ADD1F6801250028049A /* utf8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		E4321ADE1F6801250028049A /* utf8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		E4431D631F4C4B7000D68379 /* Initializer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializer.cpp; sourceTree = "<group>"; };
 		E4431D641F4C4B7000D68379 /* Initializer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Initializer.hpp; sourceTree = "<group>"; };
 		E4431D661F4C504200D68379 /* .clang-tidy */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
@@ -270,6 +275,14 @@
 		E4DB9B861F6014A200B566DD /* LLVMTypeHelper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LLVMTypeHelper.hpp; sourceTree = "<group>"; };
 		E4DE8CA91F57410400BFE7A9 /* CompatibleFunctionParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompatibleFunctionParser.cpp; sourceTree = "<group>"; };
 		E4DE8CAA1F57410400BFE7A9 /* CompatibleFunctionParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CompatibleFunctionParser.hpp; sourceTree = "<group>"; };
+		E4E5DC8F1F66C1B700829A22 /* StringPool.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StringPool.cpp; sourceTree = "<group>"; };
+		E4E5DC901F66C1B800829A22 /* StringPool.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringPool.hpp; sourceTree = "<group>"; };
+		E4F2524A1F66EB0A00E06C18 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		E4F2524B1F66EB0A00E06C18 /* Integer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Integer.cpp; sourceTree = "<group>"; };
+		E4F2524C1F66EB0A00E06C18 /* Real.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Real.cpp; sourceTree = "<group>"; };
+		E4F2524D1F66EB0A00E06C18 /* s.emojic */ = {isa = PBXFileReference; lastKnownFileType = text; path = s.emojic; sourceTree = "<group>"; };
+		E4F2524E1F66EB1E00E06C18 /* String.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = String.cpp; sourceTree = "<group>"; };
+		E4F2524F1F66EB1E00E06C18 /* String.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = String.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -356,6 +369,8 @@
 				E49E6D171F4ABF2500B819CA /* ClosureCodeGenerator.hpp */,
 				E4DB9B821F5EAA6700B566DD /* Mangler.cpp */,
 				E4DB9B831F5EAA6700B566DD /* Mangler.hpp */,
+				E4E5DC8F1F66C1B700829A22 /* StringPool.cpp */,
+				E4E5DC901F66C1B800829A22 /* StringPool.hpp */,
 				E4DB9B851F6014A200B566DD /* LLVMTypeHelper.cpp */,
 				E4DB9B861F6014A200B566DD /* LLVMTypeHelper.hpp */,
 			);
@@ -561,6 +576,7 @@
 			isa = PBXGroup;
 			children = (
 				E46C49701E633633003C40E5 /* tests.py */,
+				E4F252491F66EB0A00E06C18 /* s */,
 				E4DB9B7F1F5E8BAF00B566DD /* Runtime */,
 				E45FA2F41AA0D24200F032A8 /* EmojicodeCompiler */,
 				E4E404081A5B2E4300034386 /* Products */,
@@ -574,6 +590,21 @@
 				E45FA2F31AA0D24200F032A8 /* EmojicodeCompiler */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E4F252491F66EB0A00E06C18 /* s */ = {
+			isa = PBXGroup;
+			children = (
+				E4F2524A1F66EB0A00E06C18 /* CMakeLists.txt */,
+				E4F2524B1F66EB0A00E06C18 /* Integer.cpp */,
+				E4F2524C1F66EB0A00E06C18 /* Real.cpp */,
+				E4F2524D1F66EB0A00E06C18 /* s.emojic */,
+				E4F2524E1F66EB1E00E06C18 /* String.cpp */,
+				E4F2524F1F66EB1E00E06C18 /* String.hpp */,
+				E4321ADE1F6801250028049A /* utf8.c */,
+				E4321ADD1F6801250028049A /* utf8.h */,
+			);
+			path = s;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -679,6 +710,7 @@
 				E483569F1F34D8BE000B80AE /* ASTBinaryOperator.cpp in Sources */,
 				E460A5BB1F30EFA2006E3AC7 /* TypeExpectation.cpp in Sources */,
 				E4DB9B5E1F5C24F800B566DD /* ASTVariables_CG.cpp in Sources */,
+				E4E5DC911F66C1B800829A22 /* StringPool.cpp in Sources */,
 				E4DB9B651F5C24F800B566DD /* ASTUnary_CG.cpp in Sources */,
 				E47891091F4EEA3A008DCB24 /* TypeBodyParser.cpp in Sources */,
 				E4DB9B661F5C24F800B566DD /* ASTControlFlow_CG.cpp in Sources */,
@@ -702,6 +734,7 @@
 				E460A5BE1F30EFA2006E3AC7 /* CompilerError.cpp in Sources */,
 				E4D3EF8C1F5459A100A31C81 /* CompatibilityInfoProvider.cpp in Sources */,
 				E48356AA1F35E1A2000B80AE /* ASTMethod.cpp in Sources */,
+				E4321ADF1F6801260028049A /* utf8.c in Sources */,
 				E460A5C31F30EFA2006E3AC7 /* PackageReporter.cpp in Sources */,
 				E400909C1F515D80003F62FE /* RecordingPackage.cpp in Sources */,
 				E45AF99B1F5035F00077E343 /* JSONCompilerDelegate.cpp in Sources */,
@@ -729,6 +762,7 @@
 				E460A5B21F30EFA2006E3AC7 /* Class.cpp in Sources */,
 				E4431D741F4E17B100D68379 /* ASTToCode.cpp in Sources */,
 				E4DE8CAB1F57410400BFE7A9 /* CompatibleFunctionParser.cpp in Sources */,
+				E4F252501F66EB1E00E06C18 /* String.cpp in Sources */,
 				E460A5B11F30EFA2006E3AC7 /* VariableNotFoundError.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

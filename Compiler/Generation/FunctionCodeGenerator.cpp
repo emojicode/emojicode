@@ -216,4 +216,9 @@ llvm::Value* FunctionCodeGenerator::int64(int64_t value) {
     return llvm::ConstantInt::get(llvm::Type::getInt64Ty(generator()->context()), value);
 }
 
+llvm::Value* FunctionCodeGenerator::alloc(llvm::PointerType *type) {
+    auto alloc = builder().CreateCall(generator()->runTimeNew(), sizeFor(type), "alloc");
+    return builder().CreateBitCast(alloc, type);
+}
+
 }  // namespace EmojicodeCompiler

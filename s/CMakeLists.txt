@@ -1,4 +1,4 @@
-file(GLOB S_SOURCES "*.cpp")
+file(GLOB S_SOURCES "*.cpp" "*.c")
 
 get_filename_component(MAIN_FILE s.emojic ABSOLUTE)
 

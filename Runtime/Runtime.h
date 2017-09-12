@@ -11,6 +11,6 @@
 
 #include <cstdint>
 
-int8_t* ejcAlloc(int64_t size);
+extern "C" int8_t* ejcAlloc(int64_t size);
 
 #endif /* Runtime_h */

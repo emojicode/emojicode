@@ -10,12 +10,19 @@
 #include "../Generation/CallCodeGenerator.hpp"
 #include "../Generation/FunctionCodeGenerator.hpp"
 #include "../Compiler.hpp"
+#include "../Types/Class.hpp"
 
 namespace EmojicodeCompiler {
 
 Value* ASTStringLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto data = llvm::ArrayRef<uint32_t>(reinterpret_cast<const uint32_t *>(value_.data()), value_.size());
-    return llvm::ConstantDataArray::get(fg->generator()->context(), data);
+    auto type = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(Type(CL_STRING, false)));
+    auto stringObj = fg->alloc(type);
+    fg->builder().CreateStore(CL_STRING->classMeta(), fg->getObjectMetaPtr(stringObj));
+    fg->builder().CreateStore(fg->generator()->stringPool().pool(value_),
+                              fg->builder().CreateConstGEP2_32(type->getElementType(), stringObj, 0, 1));
+    fg->builder().CreateStore(fg->int64(value_.size()),
+                              fg->builder().CreateConstGEP2_32(type->getElementType(), stringObj, 0, 2));
+    return stringObj;
 }
 
 Value* ASTBooleanTrue::generate(FunctionCodeGenerator *fg) const {
@@ -29,7 +36,7 @@ Value* ASTBooleanFalse::generate(FunctionCodeGenerator *fg) const {
 Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fg) const {
     switch (type_) {
         case NumberType::Integer:
-            return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fg->generator()->context()), integerValue_);
+            return fg->int64(integerValue_);
         case NumberType::Double:
             return llvm::ConstantFP::get(llvm::Type::getDoubleTy(fg->generator()->context()), doubleValue_);
     }

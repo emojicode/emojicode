@@ -55,6 +55,8 @@ public:
     llvm::Value* int32(int32_t value);
     llvm::Value* int64(int64_t value);
 
+    llvm::Value* alloc(llvm::PointerType *type);
+
     void createIfElse(llvm::Value* cond, const std::function<void()> &then, const std::function<void()> &otherwise);
     void createIfElseBranchCond(llvm::Value* cond, const std::function<bool()> &then,
                                 const std::function<bool()> &otherwise);

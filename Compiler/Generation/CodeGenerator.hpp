@@ -14,6 +14,7 @@
 #include <llvm/IR/Module.h>
 #include <string>
 #include "LLVMTypeHelper.hpp"
+#include "StringPool.hpp"
 #include <memory>
 #include <vector>
 
@@ -33,6 +34,7 @@ public:
     llvm::Module* module() { return module_.get(); }
 
     LLVMTypeHelper& typeHelper() { return typeHelper_; }
+    StringPool& stringPool() { return pool_; }
 
     /// Returns the package for which this code generator was created.
     Package* package() const { return package_; }
@@ -62,6 +64,7 @@ private:
     llvm::Function *errNoValue_;
     llvm::GlobalVariable *classValueTypeMeta_;
     LLVMTypeHelper typeHelper_ = LLVMTypeHelper(context());
+    StringPool pool_ = StringPool(this);
 
     struct ProtocolVirtualTables {
         ProtocolVirtualTables(std::vector<llvm::Constant *> tables, size_t max, size_t min)

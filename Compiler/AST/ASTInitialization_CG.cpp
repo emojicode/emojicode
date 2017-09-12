@@ -35,10 +35,8 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     if (typeExpr_->availability() == TypeAvailability::StaticAndAvailabale) {
         auto type = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
-        auto size = fg->sizeFor(type);
 
-        auto alloc = fg->builder().CreateCall(fg->generator()->runTimeNew(), size, "alloc");
-        auto obj = fg->builder().CreateBitCast(alloc, type);
+        auto obj = fg->alloc(type);
 
         fg->builder().CreateStore(typeExpr_->expressionType().eclass()->classMeta(), fg->getObjectMetaPtr(obj));
 
