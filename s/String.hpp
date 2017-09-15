@@ -14,11 +14,14 @@
 namespace s {
 
 struct String {
+    using Character = uint32_t;
+
     void *meta;
-    uint32_t *characters;
-    int64_t count;
+    const Character *characters;
+    const int64_t count;
 
     const char* cString();
+    int compare(String *other);
 };
 
 }

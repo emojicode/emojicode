@@ -499,7 +499,7 @@
 
 👴   🐊 🔂🐚🔣
 👴   🐊 🐽🐚🔣
-👴   🐊 😛🐚🔡
+  🐊 😛🐚🔡
 
 👴   🌮 Prompts the user for input. (via the standard input/output) 🌮
 👴   🆕 😯 prompt 🔡 📻 🔤sStringPrompt🔤
@@ -516,61 +516,61 @@
   🌮 Puts this 🔡 to the standard output. 🌮
   ❗️ 😀 📻 🔤sStringPrint🔤
 
-👴   🌮 Returns 👍 if this 🔡 is equal to b. 🌮
-👴   🙌 b 🔡 ➡️ 👌📻 🔤sStringEqual🔤
+  🌮 Returns 👍 if this 🔡 is equal to b. 🌮
+  🙌 b 🔡 ➡️ 👌📻 🔤sStringEqual🔤
 
-👴   🌮
-👴     Compares this string to `b` and returns -1, 0, or 1 depending on whether
-👴     this string is less than, equal to, or greater than `b`.
+  🌮
+    Compares this string to `b` and returns -1, 0, or 1 depending on whether
+    this string is less than, equal to, or greater than `b`.
 
-👴     >!N Note that this method compares the strings byte per byte
-👴     >!N and is only meant for use with non-localized sorting. The results of
-👴     >!N the sort will always be the same, but may not appear logical to human
-👴     >!N beings.
-👴   🌮
-👴   ❗️ ↔️ b 🔡 ➡️ 🚂 📻 🔤sStringCompare🔤
+    >!N Note that this method compares the strings byte per byte
+    >!N and is only meant for use with non-localized sorting. The results of
+    >!N the sort will always be the same, but may not appear logical to human
+    >!N beings.
+  🌮
+  ❗️ ↔️ b 🔡 ➡️ 🚂 📻 🔤sStringCompare🔤
 
-👴   🌮
-👴     Returns the characters in a string beginning at the specified location
-👴     through the specified number of characters.
+  👴 🌮
+  👴   Returns the characters in a string beginning at the specified location
+  👴   through the specified number of characters.
 
-👴     from: Location at which to begin extracting characters. If a negative number
-👴     is given, it is treated as strLength + start where strLength = to the length
-👴     of the string (for example, if start is -3 it is treated as strLength - 3.)
-👴   🌮
-👴   ❗️ 🔪 from 🚂 length 🚂 ➡️ 🔡 📻 🔤sStringSubstring🔤
+  👴   from: Location at which to begin extracting characters. If a negative number
+  👴   is given, it is treated as strLength + start where strLength = to the length
+  👴   of the string (for example, if start is -3 it is treated as strLength - 3.)
+  👴 🌮
+  👴 ❗️ 🔪 from 🚂 length 🚂 ➡️ 🔡 📻 🔤sStringSubstring🔤
 
-👴   🌮
-👴     Finds the first occurrences of a string in this string. Search is done from
-👴     left to right. Nothingness is returned if *search* cannot be found.
-👴   🌮
-👴   ❗️ 🔍 search 🔡 ➡️ 🍬🚂 📻 🔤sStringFind🔤
+  👴 🌮
+  👴   Finds the first occurrences of a string in this string. Search is done from
+  👴   left to right. Nothingness is returned if *search* cannot be found.
+  👴 🌮
+  👴 ❗️ 🔍 search 🔡 ➡️ 🍬🚂 📻 🔤sStringFind🔤
 
-👴   🌮 Whether this strings begins with another string. 🌮
-👴   ❗️ 🎼 testString 🔡 ➡️ 👌 📻 🔤sStringBeginsWith🔤
+  🌮 Whether this strings begins with another string. 🌮
+  ❗️ 🎼 testString 🔡 ➡️ 👌 📻 🔤sStringBeginsWith🔤
 
-👴   🌮 Whether this strings ends with another string. 🌮
-👴   ❗️ ⛳️ testString 🔡 ➡️ 👌 📻 🔤sStringEndsWith🔤
+  🌮 Whether this strings ends with another string. 🌮
+  ❗️ ⛳️ testString 🔡 ➡️ 👌 📻 🔤sStringEndsWith🔤
 
-👴   🌮
-👴     The 🔧 method returns a new string, on which whitespace has been removed
-👴     from both ends of a string.
-👴   🌮
-👴   ❗️ 🔧 ➡️ 🔡 📻 🔤sStringTrim🔤
+  👴 🌮
+  👴   The 🔧 method returns a new string, on which whitespace has been removed
+  👴   from both ends of a string.
+  👴 🌮
+  👴 ❗️ 🔧 ➡️ 🔡 📻 🔤sStringTrim🔤
 
-👴   🌮
-👴     This string is split up into substring at each place *seperator* is found.
-👴     *seperator* itself is removed from the string.
-👴   🌮
-👴   ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡 📻 🔤sStringSplitString🔤
+  👴 🌮
+  👴   This string is split up into substring at each place *seperator* is found.
+  👴   *seperator* itself is removed from the string.
+  👴 🌮
+  👴 ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡 📻 🔤sStringSplitString🔤
 
-👴   🌮
-👴     This string is split up into substring at each place *seperator* is found.
-👴     *seperator* itself is removed from the string.
+  👴 🌮
+  👴   This string is split up into substring at each place *seperator* is found.
+  👴   *seperator* itself is removed from the string.
 
-👴     Prefer this method over `🔫` if the separator is just a single character.
-👴   🌮
-👴   ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 📻 🔤sStringSplitSymbol🔤
+  👴   Prefer this method over `🔫` if the separator is just a single character.
+  👴 🌮
+  👴 ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 📻 🔤sStringSplitSymbol🔤
 
   🌮
     This method returns the number of Unicode code points of this string. This
@@ -581,10 +581,10 @@
     ↩️ count
   🍉
 
-👴   🌮
-👴     Returns the number of bytes needed to encode this string into proper UTF8.
-👴   🌮
-👴   ❗️ 📐 ➡️ 🚂 📻 🔤sStringByteCount🔤
+  🌮
+    Returns the number of bytes needed to encode this string into proper UTF8.
+  🌮
+  ❗️ 📐 ➡️ 🚂 📻 🔤sStringUtf8ByteCount🔤
 👴   🌮
 👴     This methods tries to construct an integer from this string in the given
 👴     base. It returns the integer or Nothingness if the string does not match the

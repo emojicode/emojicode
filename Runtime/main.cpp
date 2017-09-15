@@ -27,6 +27,5 @@ extern "C" void ejcErrNoValue(int64_t line, int64_t character) {
 
 int main(int argc, char **argv) {
     auto code = fn_1f3c1();
-    printf("%llu\n", code);
     return static_cast<int>(code);
 }
