@@ -414,7 +414,12 @@
 
   🌮 Returns the number of numbers in this range. 🌮
   🐖 🐔 ➡️ 🚂 🍇
-    🍎 ➗➖ stop start step
+    🍊 ◀️ step 0 🍇
+      🍎 ➗➕➖ stop start ➕step 1 step
+    🍉
+    🍓 🍇
+      🍎 ➗➕➖ stop start ➖step 1 step
+    🍉
   🍉
 
   🌮 Returns an iterator to iterate over the symbols of this string. 🌮
