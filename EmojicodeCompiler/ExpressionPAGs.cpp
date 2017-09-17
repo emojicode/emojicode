@@ -356,14 +356,8 @@ Type pagMethodCapture(const Token &token, const TypeExpectation &expectation, Fu
         if (type.type() == TypeContent::Class) {
             placeholder.write(INS_CAPTURE_METHOD);
         }
-        else if (type.type() == TypeContent::ValueType) {
-            placeholder.write(INS_CAPTURE_CONTEXTED_FUNCTION);
-            if (type.size() > 1) {
-                throw CompilerError(token.position(), "Type not eligible for method capturing.");  // TODO: Improve
-            }
-        }
         else {
-            throw CompilerError(token.position(), "You can’t capture method calls on this kind of type.");
+            throw CompilerError(token.position(), "Type not eligible for method capturing.");
         }
         function = type.typeDefinitionFunctional()->getMethod(methodName, type, functionPag.typeContext());
     }
