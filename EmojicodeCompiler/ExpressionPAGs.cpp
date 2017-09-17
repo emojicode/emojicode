@@ -519,10 +519,10 @@ Type pagSuperMethod(const Token &token, const TypeExpectation &expectation, Func
 Type pagIdentityCheck(const Token &token, const TypeExpectation &expectation, FunctionPAGInterface &functionPag) {
     functionPag.box(expectation, Type::boolean());
     functionPag.writer().writeInstruction(INS_SAME_OBJECT);
-    
+
     functionPag.parseTypeSafeExpr(Type::someobject());
     functionPag.parseTypeSafeExpr(Type::someobject());
-    
+
     return Type::boolean();
 }
 

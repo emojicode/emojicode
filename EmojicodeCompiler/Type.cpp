@@ -93,7 +93,7 @@ size_t Type::genericVariableIndex() const {
 }
 
 bool Type::allowsMetaType() {
-    return type() == TypeContent::Class || type() == TypeContent::Enum || type() == TypeContent::ValueType;
+    return type() == TypeContent::Class;
 }
 
 Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const {
