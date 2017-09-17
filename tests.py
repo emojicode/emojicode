@@ -60,6 +60,11 @@ compilation_tests = [
     "errorPerfect",
     "errorAvocado",
     "errorInitializer",
+    "metaTypes",
+    "privateMethod",
+    "sequenceTypes",
+    "callable",
+    "closureCaptureThis",
     "gcStressTest1",
     "gcStressTest2",
     "gcStressTest3",
@@ -125,13 +130,29 @@ def reject_test(filename):
         fail_test(filename)
 
 
+def available_compilation_tests():
+    paths = glob.glob(os.path.join(dist.source, "tests", "compilation",
+                                   "*.emojic"))
+
+    map_it = map(lambda f: os.path.splitext(os.path.basename(f))[0], paths)
+    tests = list(map_it)
+    tests.remove('included')
+    return tests
+
+
+avl_compilation_tests = available_compilation_tests()
+
 for test in compilation_tests:
+    avl_compilation_tests.remove(test)
     compilation_test(test)
 for test in reject_tests:
     reject_test(test)
 os.chdir(os.path.join(dist.source, "tests", "s"))
 for test in library_tests:
     library_test(test)
+
+for file in avl_compilation_tests:
+    print("☢️  {0} is not in compilation test list.".format(file))
 
 if len(failed_tests) == 0:
     print("✅ ✅  All tests passed.")
