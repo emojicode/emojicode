@@ -43,7 +43,7 @@ Steps:
 1. Clone Emojicode (or download the source code and extract it) and navigate
   into it:
 
-   ```
+   ```sh
    git clone https://github.com/emojicode/emojicode
    cd emojicode
    ```
@@ -53,7 +53,7 @@ Steps:
 
 2. Create a `build` directory and run CMake in it:
 
-   ```
+   ```sh
    mkdir build
    cd build
    cmake .. -GNinja
@@ -68,26 +68,26 @@ Steps:
 
 3. Build the Compiler and Real-Time Engine:
 
-   ```
+   ```sh
    ninja
    ```
 
 4. You can now test Emojicode:
 
-   ```
+   ```sh
    ninja tests
    ```
 
 5. The binaries are ready for use!
    You can the perform a magic installation right away
 
-   ```
+   ```sh
    ninja magicinstall
    ```
 
    or just package the binaries and headers properly
 
-   ```
+   ```sh
    ninja dist
    ```
 
@@ -108,26 +108,26 @@ Steps:
 1. Clone Emojicode (or download the source code and extract it) and navigate
   into it:
 
-   ```
+   ```sh
    git clone https://github.com/emojicode/emojicode
    cd emojicode
    ```
 2. Build and create a container
 
-   ```
+   ```sh
    docker build -f DockerfileClang -t emojicode_clang .
    docker create --name emojicontainer -ti emojicode_clang bash
    ```
 
 3. Start and enter the container:
 
-   ```
+   ```sh
    docker start -ai emojicontainer
    ```
 
 4. You can now build Emojicode:
 
-   ```
+   ```sh
    mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests
    ```
 
