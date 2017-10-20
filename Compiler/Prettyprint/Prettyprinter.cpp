@@ -104,6 +104,7 @@ void Prettyprinter::printTypeDef(const Type &type) {
             print("❗️", method, false, true);
         }
         stream_ << "🍉\n\n";
+        decreaseIndent();
         return;
     }
     if (auto enumeration = type.eenum()) {
