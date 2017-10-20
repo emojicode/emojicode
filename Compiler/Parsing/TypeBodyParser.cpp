@@ -155,7 +155,7 @@ Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBo
                                               const SourcePosition &p) {
     attributes.check(p, package_->compiler());
 
-    std::experimental::optional<Type> errorType = std::experimental::nullopt;
+    Type errorType = Type::noReturn();
     if (stream_.nextTokenIs(TokenType::Error)) {
         if (type_.type() != TypeType::Class) {
             throw CompilerError(p, "Only classes can have error-prone initializers.");

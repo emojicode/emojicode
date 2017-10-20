@@ -18,8 +18,9 @@ class Initializer : public Function {
 public:
     Initializer(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, std::u32string documentationToken, bool deprecated, bool r,
-                std::experimental::optional<Type> errorType, FunctionType mode)
-    : Function(std::move(name), level, final, std::move(owningType), package, std::move(p), overriding, std::move(documentationToken), deprecated, true, mode),
+                Type errorType, FunctionType mode)
+    : Function(std::move(name), level, final, std::move(owningType), package, std::move(p), overriding,
+               std::move(documentationToken), deprecated, true, mode),
     required_(r), errorType_(std::move(errorType)) {
         returnType = Type::noReturn();
     }
@@ -27,15 +28,15 @@ public:
     /// Whether all subclassess are required to implement this initializer as well. Never true for non-class types.
     bool required() const { return required_; }
     /// Whether this initalizer might return an error.
-    bool errorProne() const { return static_cast<bool>(errorType_); }
-    const Type& errorType() const { return *errorType_; }
+    bool errorProne() const { return errorType_.type() != TypeType::NoReturn; }
+    const Type& errorType() const { return errorType_; }
 
     /// Returns the actual type constructed with this initializer for the given initialized type @c type
     Type constructedType(Type type) {
         type.unbox();
-        if (errorType_) {
+        if (errorProne()) {
             Type errorType = Type::error();
-            errorType.genericArguments_ = { *errorType_, type };
+            errorType.genericArguments_ = { errorType_, type };
             return errorType;
         }
         return type;
@@ -50,7 +51,7 @@ public:
     const std::vector<std::u32string>& argumentsToVariables() const { return argumentsToVariables_; }
 private:
     bool required_;
-    std::experimental::optional<Type> errorType_;
+    Type errorType_ = Type::noReturn();
     std::vector<std::u32string> argumentsToVariables_;
 };
 
