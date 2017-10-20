@@ -55,9 +55,13 @@ public:
         return protocolName + name()[0];
     }
 
-    bool isExternal() const { return !externalName_.empty(); }
+    bool isExternal() const { return external_; }
     const std::string& externalName() const { return externalName_; }
-    void setExternalName(const std::string &name) { externalName_ = name; }
+    void makeExternal() { external_ = true; }
+    void setExternalName(const std::string &name) {
+        external_ = true;
+        externalName_ = name;
+    }
 
     /** Whether the method was marked as final and can’t be overriden. */
     bool final() const { return final_; }
@@ -142,6 +146,7 @@ private:
     bool overriding_;
     bool deprecated_;
     bool mutating_;
+    bool external_ = false;
 
     std::string externalName_;
     AccessLevel access_;

@@ -45,7 +45,7 @@ llvm::Value* CodeGenerator::optionalNoValue() {
 
 void CodeGenerator::declareLlvmFunction(Function *function) {
     auto ft = typeHelper().functionTypeFor(function);
-    auto name = function->isExternal() ? function->externalName() : mangleFunctionName(function);
+    auto name = function->externalName().empty() ? mangleFunctionName(function) : function->externalName();
     auto llvmFunction = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, module());
     function->setLlvmFunction(llvmFunction);
 }
