@@ -23,7 +23,7 @@ Options::Options(int argc, char *argv[]) {
     readEnvironment();
 
     signed char ch;
-    while ((ch = getopt(argc, argv, "vrjR:o:p:fc")) != -1) {
+    while ((ch = getopt(argc, argv, "vrjR:o:p:fci:")) != -1) {
         switch (ch) {
             case 'v':
                 puts("Emojicode 0.5. Created by Theo Weidmann.");
@@ -44,6 +44,9 @@ Options::Options(int argc, char *argv[]) {
             case 'p':
                 mainPackageName_ = optarg;
                 linkToExec_ = false;
+                break;
+            case 'i':
+                interfaceFile_ = optarg;
                 break;
             case 'f':
                 format_ = true;
@@ -112,7 +115,7 @@ void Options::configureOutPath() {
         }
     }
 
-    if (!linkToExec_) {
+    if (!linkToExec_ && interfaceFile_.empty()) {
         std::string parentPath = llvm::sys::path::parent_path(mainFile_);
         interfaceFile_ = parentPath + "/" + "interface.emojii";
     }
