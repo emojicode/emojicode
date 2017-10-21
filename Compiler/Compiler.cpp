@@ -10,13 +10,16 @@
 #include "Compiler.hpp"
 #include "Generation/CodeGenerator.hpp"
 #include "Prettyprint/Prettyprinter.hpp"
+#include <llvm/Support/FileSystem.h>
 
 namespace EmojicodeCompiler {
 
-Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string interfaceFile, std::string outPath, std::string pkgDir,
-                   std::unique_ptr<CompilerDelegate> delegate, bool standalone)
-: standalone_(standalone), mainFile_(std::move(mainFile)), interfaceFile_(interfaceFile), outPath_(std::move(outPath)),
-    mainPackageName_(std::move(mainPackage)), packageDirectory_(std::move(pkgDir)), delegate_(std::move(delegate)){}
+Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string interfaceFile, std::string outPath,
+                   std::string linker, std::vector<std::string> pkgSearchPaths,
+                   std::unique_ptr<CompilerDelegate> delegate, bool linkToExec)
+: linkToExec_(linkToExec), mainFile_(std::move(mainFile)), interfaceFile_(interfaceFile), outPath_(std::move(outPath)),
+  mainPackageName_(std::move(mainPackage)), packageSearchPaths_(std::move(pkgSearchPaths)), linker_(std::move(linker)),
+  delegate_(std::move(delegate)) {}
 
 bool Compiler::compile(bool parseOnly) {
     delegate_->begin();
@@ -24,21 +27,27 @@ bool Compiler::compile(bool parseOnly) {
     factorMainPackage<RecordingPackage>();
 
     try {
-        mainPackage_->parse();
+        mainPackage_->parse(mainFile_);
         if (parseOnly) {
             return !hasError_;
         }
 
-        Prettyprinter(dynamic_cast<RecordingPackage *>(mainPackage_.get())).printInterface(interfaceFile_);
+        if (!interfaceFile_.empty()) {
+            Prettyprinter(dynamic_cast<RecordingPackage *>(mainPackage_.get())).printInterface(interfaceFile_);
+        }
 
         analyse();
+
+        if (!hasError_) {
+            generateCode();
+
+            if (linkToExec_) {
+                linkToExecutable();
+            }
+        }
     }
     catch (CompilerError &ce) {
         error(ce);
-    }
-
-    if (!hasError_) {
-        generateCode();
     }
 
     delegate_->finish();
@@ -48,13 +57,49 @@ bool Compiler::compile(bool parseOnly) {
 void Compiler::analyse() {
     mainPackage_->analyse();
 
-    if (standalone_ && !mainPackage_->hasStartFlagFunction()) {
+    if (linkToExec_ && !mainPackage_->hasStartFlagFunction()) {
         throw CompilerError(mainPackage_->position(), "No 🏁 block was found.");
     }
 }
 
 void Compiler::generateCode() {
-    CodeGenerator(mainPackage_.get()).generate(outPath_);
+    CodeGenerator(mainPackage_.get()).generate(objectFileName());
+}
+
+std::string Compiler::objectFileName() const {
+    return linkToExec_ ? outPath_ + ".o" : outPath_;
+}
+
+void Compiler::linkToExecutable() {
+    std::stringstream cmd;
+
+    auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition(0, 0, mainFile_)), "runtime");
+    cmd << linker_ << " " << runtimeLib;
+
+    for (auto &package : packages_) {
+        auto path = findBinaryPathPackage(package.second->path(), package.second->name());
+        if (llvm::sys::fs::exists(path)) {
+            cmd << " " << path;
+        }
+    }
+
+    cmd << " " << objectFileName() << " -o " << outPath_;
+
+    system(cmd.str().c_str());
+}
+
+std::string Compiler::searchPackage(const std::string &name, const SourcePosition &p) {
+    for (auto &path : packageSearchPaths_) {
+        auto full = path + "/" + name;
+        if (llvm::sys::fs::is_directory(full)) {
+            return full;
+        }
+    }
+    throw CompilerError(p, "Could not find package ", name, ".");
+}
+
+std::string Compiler::findBinaryPathPackage(const std::string &packagePath, const std::string &packageName) {
+    return packagePath + "/lib" + packageName + ".a";
 }
 
 Package* Compiler::findPackage(const std::string &name) const {
@@ -71,8 +116,7 @@ Package* Compiler::loadPackage(const std::string &name, const SourcePosition &p,
         return package;
     }
 
-    auto path = packageDirectory_ + "/" + name + "/interface.emojii";
-    auto package = std::make_unique<Package>(name, path, this);
+    auto package = std::make_unique<Package>(name, searchPackage(name, p), this);
     auto rawPtr = package.get();
     packages_.emplace(name, std::move(package));
     rawPtr->parse();

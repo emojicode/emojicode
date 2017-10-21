@@ -47,14 +47,16 @@ class Package {
 public:
     /// Constructs a package. The package must be compiled with compile() before it can be loaded.
     /// @param name The name of the package. The package is registered with this name.
-    /// @param mainFilePath The path to the package’s main file. This is the file that is parsed when parse() is called.
-    Package(std::string name, std::string mainFilePath, Compiler *app);
+    /// @param path The path to the directory of the package.
+    Package(std::string name, std::string path, Compiler *app);
 
     /// Ssemantically analyses this package.
     void analyse();
-    /// Lexes and parses the package. If this package is the s package the s loading procedure is invoked.
+    /// Lexes and parses the package. The file interface.emojii in path() is used to begin compilation.
+    /// If this package is the s package the s loading procedure is invoked.
     /// If the package is not the @c s package, the s package is first imported via importPackage().
     void parse();
+    void parse(const std::string &mainFilePath);
 
     /// Tries to import the package identified by name into a namespace of this package.
     /// @see Compiler::loadPackage
@@ -72,10 +74,13 @@ public:
     /// @returns The name of this package.
     const std::string& name() const { return name_; }
     /// @returns A SourcePosition that can be used to relate to this package.
-    SourcePosition position() const { return SourcePosition(0, 0, mainFile_); }
+    SourcePosition position() const { return SourcePosition(0, 0, path_); }
     /// @returns True iff compile() was called on this package and returned.
     /// If this method returns false and another method tries to load this package, this indicates a circular depedency.
     bool finishedLoading() const { return finishedLoading_; }
+
+    /// @returns The path to the directory of this package.
+    const std::string& path() const { return path_; }
 
     PackageVersion version() const { return version_; }
     /** Whether this package has declared a valid package version. */
@@ -150,7 +155,7 @@ private:
     void enqueueFunction(Function *) const;
 
     const std::string name_;
-    const std::string mainFile_;
+    const std::string path_;
     PackageVersion version_ = PackageVersion(0, 0);
     bool finishedLoading_ = false;
     Function *startFlag_ = nullptr;

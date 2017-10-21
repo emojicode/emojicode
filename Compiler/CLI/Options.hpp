@@ -13,6 +13,7 @@
 #include "../Compiler.hpp"
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace EmojicodeCompiler {
 
@@ -31,17 +32,18 @@ public:
     void printCliMessage(const std::string &message);
 
     /// @returns An CompilerDelegate that matches the options represented by the instance.
-    std::unique_ptr<CompilerDelegate> applicationDelegate();
+    std::unique_ptr<CompilerDelegate> applicationDelegate() const;
 
     const std::string& packageToReport() const { return packageToReport_; }
     const std::string& outPath() const { return outPath_; }
     const std::string& mainFile() const { return mainFile_; }
     const std::string& interfaceFile() const { return interfaceFile_; }
-    const std::string& packageDirectory() const { return packageDirectory_; }
+    const std::vector<std::string>& packageSearchPaths() const { return packageSearchPaths_; }
     const std::string& migrationFile() const { return migrationFile_; }
     const std::string& mainPackageName() const { return mainPackageName_; }
+    std::string linker() const;
 
-    bool isStandalone() { return standalone_; }
+    bool linkToExec() const { return linkToExec_; }
 
     /// Whether the main purpose of the invocation of the compiler is to prettyprint a file.
     /// This method returns true if prettyprint was explicitely requested or if a file is being migrated.
@@ -51,19 +53,20 @@ private:
     std::string outPath_;
     std::string mainFile_;
     std::string interfaceFile_;
-    std::string packageDirectory_ = defaultPackagesDirectory;
+    std::vector<std::string> packageSearchPaths_;
     std::string migrationFile_;
-    std::string mainPackageName_;
+    std::string mainPackageName_ = "_";
     bool format_ = false;
     bool jsonOutput_ = false;
     bool beginCompilation_ = true;
-    bool standalone_ = false;
+    bool linkToExec_ = true;
 
     void readEnvironment();
     void parsePositionalArguments(int positionalArguments, char *argv[]);
     /// If the file ends in ".emojimig", the migration file migrationFile_ will be set to it and prettyprint_ to true.
     /// The main file is then derived from by replacing ".emojimig" with ".emojic".
     void examineMainFile();
+    void configureOutPath();
 };
 
 }  // namespace CLI

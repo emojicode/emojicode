@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <getopt.h>
 #include <llvm/Support/Path.h>
+#include <llvm/Support/FileSystem.h>
 #include <iostream>
 
 namespace EmojicodeCompiler {
@@ -22,7 +23,7 @@ Options::Options(int argc, char *argv[]) {
     readEnvironment();
 
     signed char ch;
-    while ((ch = getopt(argc, argv, "vrjR:o:p:f")) != -1) {
+    while ((ch = getopt(argc, argv, "vrjR:o:p:fc")) != -1) {
         switch (ch) {
             case 'v':
                 puts("Emojicode 0.5. Created by Theo Weidmann.");
@@ -42,9 +43,13 @@ Options::Options(int argc, char *argv[]) {
                 break;
             case 'p':
                 mainPackageName_ = optarg;
+                linkToExec_ = false;
                 break;
             case 'f':
                 format_ = true;
+                break;
+            case 'c':
+                linkToExec_ = false;
                 break;
             default:
                 break;
@@ -57,9 +62,15 @@ Options::Options(int argc, char *argv[]) {
 }
 
 void Options::readEnvironment() {
+    llvm::SmallString<8> packages("packages");
+    llvm::sys::fs::make_absolute(packages);
+    packageSearchPaths_.emplace_back(packages.c_str());
+
     if (const char *ppath = getenv("EMOJICODE_PACKAGES_PATH")) {
-        packageDirectory_ = ppath;
+        packageSearchPaths_.emplace_back(ppath);
     }
+
+    packageSearchPaths_.emplace_back(defaultPackagesDirectory);
 }
 
 void Options::printCliMessage(const std::string &message) {
@@ -78,12 +89,8 @@ void Options::parsePositionalArguments(int positionalArguments, char *argv[]) {
 
     mainFile_ = argv[0];
 
-    if (mainPackageName_.empty()) {
-        mainPackageName_ = "_";
-        standalone_ = true;
-    }
-
     examineMainFile();
+    configureOutPath();
 }
 
 void Options::examineMainFile() {
@@ -92,21 +99,37 @@ void Options::examineMainFile() {
         format_ = true;
         mainFile_.replace(mainFile_.size() - 8, 8, "emojic");
     }
-
-    if (outPath_.empty()) {
-        outPath_ = mainFile_;
-        outPath_.replace(mainFile_.size() - 6, 6, "o");
-    }
-
-    std::string parentPath = llvm::sys::path::parent_path(mainFile_);
-    interfaceFile_ = parentPath + "/" + "interface.emojii";
 }
 
-std::unique_ptr<CompilerDelegate> Options::applicationDelegate() {
+void Options::configureOutPath() {
+    if (outPath_.empty()) {
+        outPath_ = mainFile_;
+        if (linkToExec()) {
+            outPath_.resize(mainFile_.size() - 7);
+        }
+        else {
+            outPath_.replace(mainFile_.size() - 6, 6, "o");
+        }
+    }
+
+    if (!linkToExec_) {
+        std::string parentPath = llvm::sys::path::parent_path(mainFile_);
+        interfaceFile_ = parentPath + "/" + "interface.emojii";
+    }
+}
+
+std::unique_ptr<CompilerDelegate> Options::applicationDelegate() const {
     if (jsonOutput_) {
         return std::make_unique<JSONCompilerDelegate>();
     }
     return std::make_unique<HRFCompilerDelegate>();
+}
+
+std::string Options::linker() const {
+    if (auto var = getenv("cc")) {
+        return var;
+    }
+    return "cc";
 }
 
 }  // namespace CLI

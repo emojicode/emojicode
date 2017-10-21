@@ -98,8 +98,8 @@ Extension* Package::add(std::unique_ptr<Extension> &&extension) {
     return extensions_.back().get();
 }
 
-Package::Package(std::string name, std::string mainFilePath, Compiler *app)
-    : name_(std::move(name)), mainFile_(std::move(mainFilePath)), compiler_(app) {}
+Package::Package(std::string name, std::string path, Compiler *app)
+    : name_(std::move(name)), path_(std::move(path)), compiler_(app) {}
 Package::~Package() = default;
 
 void Package::importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {
@@ -124,14 +124,18 @@ void Package::includeDocument(const std::string &path, const std::string &relati
 }
 
 void Package::parse() {
+    parse(path_ + "/interface.emojii");
+}
+
+void Package::parse(const std::string &mainFilePath) {
     if (name_ != "s") {
         importPackage("s", kDefaultNamespace, position());
     }
     
-    includeDocument(mainFile_, "");
+    includeDocument(mainFilePath, "");
 
     if (!validVersion()) {
-        throw CompilerError(position(), "Package ", name(), " does not provide a valid version.");
+        compiler_->warn(position(), "Package ", name(), " does not provide a valid version.");
     }
 
     if (name_ == "s") {
