@@ -16,13 +16,13 @@ namespace EmojicodeCompiler {
 class Extension : public TypeDefinition {
 public:
     Extension(Type extendedType, Package *pkg, SourcePosition p, const std::u32string &documentation)
-    : TypeDefinition(extendedType.typeDefinition()->name(), pkg, std::move(p), documentation),
+    : TypeDefinition(extendedType.typeDefinition()->name(), pkg, std::move(p), documentation, false),
     extendedType_(std::move(extendedType)) {}
 
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 
     void addInstanceVariable(const InstanceVariableDeclaration&) override {
-        throw CompilerError(position(), "An extension cannot add an instance variable to a type from another package.");
+        throw CompilerError(position(), "An extension cannot add an instance variable.");
     }
 
     void prepareForSemanticAnalysis() override { extend(); }

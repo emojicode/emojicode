@@ -13,21 +13,20 @@
 namespace EmojicodeCompiler {
 
 void Extension::extend() {
-    throw std::logic_error("Unimplemented");
-//    auto typeDef = extendedType_.typeDefinition();
-//    for (auto method : methodList()) {
-//        typeDef->addMethod(method);
-//    }
-//    for (auto initializer : initializerList()) {
-//        typeDef->addInitializer(initializer);
-//    }
-//    for (auto method : typeMethodList()) {
-//        typeDef->addTypeMethod(method);
-//    }
-//    for (auto &protocol : protocols_) {
-//        typeDef->addProtocol(protocol, position());
-//        typeDef->finalizeProtocol(extendedType_, protocol, true);
-//    }
+    auto typeDef = extendedType_.typeDefinition();
+    for (auto &method : methods_) {
+        typeDef->addMethod(std::move(method.second));
+    }
+    for (auto &initializer : initializers_) {
+        typeDef->addInitializer(std::move(initializer.second));
+    }
+    for (auto &method : typeMethods_) {
+        typeDef->addTypeMethod(std::move(method.second));
+    }
+    for (auto &protocol : protocols_) {
+        typeDef->addProtocol(protocol, position());
+        typeDef->finalizeProtocol(extendedType_, protocol, true);
+    }
 }
 
 }  // namespace EmojicodeCompiler

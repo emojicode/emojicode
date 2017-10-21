@@ -16,6 +16,7 @@
 #include "../Types/Type.hpp"
 #include "../Types/ValueType.hpp"
 #include "../Types/Class.hpp"
+#include "../Parsing/OperatorHelper.hpp"
 #include <algorithm>
 #include <cstdio>
 
@@ -94,6 +95,11 @@ void Prettyprinter::printTypeDef(const Type &type) {
     auto typeDef = type.typeDefinition();
 
     printDocumentation(typeDef->documentation());
+
+    if (typeDef->exported()) {
+        stream_ << "🌍 ";
+    }
+
     printTypeDefName(type);
 
     increaseIndent();
@@ -246,9 +252,8 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
         }
     }
 
-    stream_ << key;
-
     if (auto initializer = dynamic_cast<Initializer *>(function)) {
+        stream_ << key;
         if (initializer->name().front() != E_NEW_SIGN) {
             stream_ << " " << utf8(function->name()) << " ";
         }
@@ -259,7 +264,11 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
         }
     }
     else {
-        stream_ << " " << utf8(function->name()) << " ";
+        if (!hasInstanceScope(function->functionType()) || operatorType(function->name()) == OperatorType::Invalid) {
+            stream_ << key << " ";
+        }
+
+        stream_ << utf8(function->name()) << " ";
     }
 
     printArguments(function);
@@ -267,6 +276,9 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
     if (body) {
         function->ast()->toCode(*this);
         offerNewLine();
+    }
+    else {
+        stream_ << "\n";
     }
     typeContext_ = TypeContext();
 }

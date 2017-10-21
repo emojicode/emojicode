@@ -179,7 +179,7 @@ void DocumentParser::parseExtension(const Documentation &documentation, const So
 void DocumentParser::parseProtocol(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
     auto protocol = package_->add(std::make_unique<Protocol>(parsedTypeName.name, package_,
-                                                             theToken.position(), documentation));
+                                                             theToken.position(), documentation, exported));
 
     parseGenericParameters(protocol, TypeContext(Type(protocol, false)));
 
@@ -190,7 +190,7 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
 
 void DocumentParser::parseEnum(const std::u32string &documentation, const Token &theToken, bool exported) {
     auto parsedTypeName = parseAndValidateNewTypeName();
-    auto enumUniq = std::make_unique<Enum>(parsedTypeName.name, package_, theToken.position(), documentation);
+    auto enumUniq = std::make_unique<Enum>(parsedTypeName.name, package_, theToken.position(), documentation, exported);
     Enum *enumeration = enumUniq.get();
     package_->add(std::move(enumUniq));
 
@@ -203,7 +203,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
     auto parsedTypeName = parseAndValidateNewTypeName();
 
     auto eclass = package_->add(std::make_unique<Class>(parsedTypeName.name, package_, theToken.position(),
-                                                        documentation, final));
+                                                        documentation, exported, final));
 
     parseGenericParameters(eclass, TypeContext(Type(eclass, false)));
 
@@ -232,7 +232,7 @@ void DocumentParser::parseValueType(const std::u32string &documentation, const T
     auto parsedTypeName = parseAndValidateNewTypeName();
 
     auto valueType = package_->add(std::make_unique<ValueType>(parsedTypeName.name, package_,
-                                                               theToken.position(), documentation));
+                                                               theToken.position(), documentation, exported));
 
     if (stream_.consumeTokenIf(E_WHITE_CIRCLE)) {
         valueType->makePrimitive();

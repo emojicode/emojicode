@@ -53,7 +53,7 @@ OperatorType operatorType(const std::u32string &value) {
         case E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK:
             return OperatorType::CallOperator;
     }
-    throw std::invalid_argument("Operator token has invalid value.");
+    return OperatorType::Invalid;
 }
 
 std::u32string operatorName(OperatorType type) {
@@ -97,6 +97,7 @@ std::u32string operatorName(OperatorType type) {
         case OperatorType::CallOperator:
             return std::u32string(1, E_WHITE_EXCLAMATION_MARK);
     }
+    throw std::invalid_argument("Invalid operator");
 }
 
 int operatorPrecedence(OperatorType type) {
@@ -132,6 +133,7 @@ int operatorPrecedence(OperatorType type) {
         case OperatorType::LogicalOrOperator:
             return 1;
     }
+    throw std::invalid_argument("Invalid operator");
 }
 
 }  // namespace EmojicodeCompiler

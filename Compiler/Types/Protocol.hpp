@@ -17,7 +17,7 @@ class Package;
 
 class Protocol : public TypeDefinition {
 public:
-    Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string);
+    Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string, bool exported);
 
     void prepareForSemanticAnalysis() override;
 

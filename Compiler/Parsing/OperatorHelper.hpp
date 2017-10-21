@@ -14,6 +14,7 @@
 namespace EmojicodeCompiler {
 
 enum class OperatorType {
+    Invalid,
     MultiplicationOperator,
     DivisionOperator,
     RemainderOperator,

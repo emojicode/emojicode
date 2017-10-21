@@ -18,8 +18,9 @@ namespace EmojicodeCompiler {
 
 class Enum : public ValueType {
 public:
-    Enum(std::u32string name, Package *package, SourcePosition position, const std::u32string &documentation)
-        : ValueType(std::move(name), package, std::move(position), documentation) {
+    Enum(std::u32string name, Package *package, SourcePosition position,
+         const std::u32string &documentation, bool exported)
+        : ValueType(std::move(name), package, std::move(position), documentation, exported) {
             makePrimitive();
     }
 

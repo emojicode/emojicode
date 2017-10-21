@@ -34,7 +34,10 @@ struct InstanceVariableDeclaration {
     SourcePosition position;
 };
 
+class Extension;
+
 class TypeDefinition : public Generic<TypeDefinition> {
+    friend Extension;
 public:
     TypeDefinition(const TypeDefinition&) = delete;
 
@@ -110,12 +113,15 @@ public:
      @warning @c prepareForCG() must be called before a call to this method. */
     Scope& instanceScope() { return scope_; }
 
+    /// Whether the type was exported in the package it was defined.
+    bool exported() const { return exported_; }
+
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 
     void setProtocolsTable(llvm::Constant *table) { protocolsTable_ = table; }
     llvm::Constant* protocolsTable() { return protocolsTable_; }
 protected:
-    TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation);
+    TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation, bool exported);
 
     std::vector<Type> protocols_;
 
@@ -149,6 +155,7 @@ private:
     Package *package_;
     std::u32string documentation_;
     SourcePosition position_;
+    bool exported_;
 
     Type superType_ = Type::noReturn();
     llvm::Constant *protocolsTable_ = nullptr;

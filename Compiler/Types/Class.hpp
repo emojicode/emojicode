@@ -24,7 +24,8 @@ class Type;
 
 class Class : public TypeDefinition {
 public:
-    Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool final);
+    Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool exported,
+          bool final);
 
     /// The class's superclass.
     /// @returns TypeDefinition::superType().eclass(). Guaranteed to be @c nullptr if the class has no superclass.
