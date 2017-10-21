@@ -20,9 +20,12 @@ using PackageAttributeParser = AttributeParser<Attribute::Export, Attribute::Fin
 /// parse() therefore expects $document-statement$s.
 class DocumentParser : AbstractParser {
 public:
-    DocumentParser(Package *pkg, TokenStream stream) : AbstractParser(pkg, stream) {}
+    DocumentParser(Package *pkg, TokenStream stream, bool interface)
+    : AbstractParser(pkg, stream), interface_(interface) {}
     void parse();
 private:
+    bool interface_;
+
     /// Parses a $type-identifier$ and ensures that a type with this name can be declared in the current package.
     /// This method is used with type declarations.
     TypeIdentifier parseAndValidateNewTypeName();

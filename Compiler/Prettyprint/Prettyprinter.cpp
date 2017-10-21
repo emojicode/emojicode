@@ -43,6 +43,21 @@ void Prettyprinter::print() {
     }
 }
 
+void Prettyprinter::printInterface(const std::string &out) {
+    interface_ = true;
+    stream_ = std::fstream(out, std::ios_base::out);
+
+    printDocumentation(package_->documentation());
+    stream_ << "🔮 " << package_->version().major << " " << package_->version().minor << "\n";
+    offerNewLine();
+
+    for (auto &file : package_->files()) {
+        for (auto &recording : file.recordings_) {
+            print(recording.get());
+        }
+    }
+}
+
 void Prettyprinter::print(RecordingPackage::Recording *recording) {
     if (auto import = dynamic_cast<RecordingPackage::Import *>(recording)) {
         refuseOffer() << "📦 " << import->package << " " << utf8(import->destNamespace) << "\n";
@@ -151,7 +166,7 @@ void Prettyprinter::printTypeDefName(const Type &type) {
     printGenericParameters(type.typeDefinition());
 
     if (auto klass = type.eclass()) {
-        if (klass->superclass() != nullptr) {
+        if (klass->superclass() != nullptr && type.type() != TypeType::Extension) {
             print(klass->superType(), TypeContext(type));
             stream_ << " ";
         }
@@ -273,9 +288,12 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
 
     printArguments(function);
     printReturnType(function);
-    if (body) {
+    if (body && !interface_) {
         function->ast()->toCode(*this);
         offerNewLine();
+    }
+    else if (!function->externalName().empty()) {
+        stream_ << " 📻 🔤" << function->externalName() << "🔤\n";
     }
     else {
         stream_ << "\n";

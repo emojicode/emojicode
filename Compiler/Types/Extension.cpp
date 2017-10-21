@@ -25,7 +25,6 @@ void Extension::extend() {
     }
     for (auto &protocol : protocols_) {
         typeDef->addProtocol(protocol, position());
-        typeDef->finalizeProtocol(extendedType_, protocol, true);
     }
 }
 

@@ -24,6 +24,11 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
         return;
     }
 
+    if (interface_) {
+        function->makeExternal();
+        return;
+    }
+
     stream_.consumeToken(TokenType::BlockBegin);
     try {
         auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();

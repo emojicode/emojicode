@@ -24,8 +24,8 @@ bool start(Options options) {
         return true;
     }
 
-    Compiler application(options.mainPackageName(), options.mainFile(), options.outPath(),
-                            options.packageDirectory(), options.applicationDelegate(), options.isStandalone());
+    Compiler application(options.mainPackageName(), options.mainFile(), options.interfaceFile(), options.outPath(),
+                         options.packageDirectory(), options.applicationDelegate(), options.isStandalone());
 
     if (!options.migrationFile().empty()) {
         application.loadMigrationFile(options.migrationFile());

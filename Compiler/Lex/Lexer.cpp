@@ -79,7 +79,7 @@ bool Lexer::detectWhitespace() {
 }
     
 TokenStream Lexer::lexFile(const std::string &path) {
-    if (!endsWith(path, ".emojic")) {
+    if (!endsWith(path, ".emojic") && !endsWith(path, ".emojii")) {
         throw CompilerError(SourcePosition(0, 0, path), "Emojicode files must be suffixed with .emojic: ", path);
     }
 

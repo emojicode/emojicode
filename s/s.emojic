@@ -274,7 +274,10 @@
 🌮
   The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings)
 🌮
-🌍 🐇 🔡 🍇🍉
+🌍 🐇 🔡 🍇
+  🍰 codePoints 🔵
+  🍰 count 🚂
+🍉
 🌮
   The 🍨 class represents an ordered mutable collection. [Read more in the
   language reference.](../../reference/the-s-package.html#-lists)
@@ -494,9 +497,6 @@
 🍉
 
 🐋 🔡 🍇
-  🍰 codePoints 🔵
-  🍰 count 🚂
-
 👴   🐊 🔂🐚🔣
 👴   🐊 🐽🐚🔣
   🐊 😛🐚🔡

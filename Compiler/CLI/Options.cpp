@@ -11,6 +11,7 @@
 #include "JSONCompilerDelegate.hpp"
 #include <cstdlib>
 #include <getopt.h>
+#include <llvm/Support/Path.h>
 #include <iostream>
 
 namespace EmojicodeCompiler {
@@ -96,6 +97,9 @@ void Options::examineMainFile() {
         outPath_ = mainFile_;
         outPath_.replace(mainFile_.size() - 6, 6, "o");
     }
+
+    std::string parentPath = llvm::sys::path::parent_path(mainFile_);
+    interfaceFile_ = parentPath + "/" + "interface.emojii";
 }
 
 std::unique_ptr<CompilerDelegate> Options::applicationDelegate() {

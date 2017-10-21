@@ -36,6 +36,7 @@ public:
     const std::string& packageToReport() const { return packageToReport_; }
     const std::string& outPath() const { return outPath_; }
     const std::string& mainFile() const { return mainFile_; }
+    const std::string& interfaceFile() const { return interfaceFile_; }
     const std::string& packageDirectory() const { return packageDirectory_; }
     const std::string& migrationFile() const { return migrationFile_; }
     const std::string& mainPackageName() const { return mainPackageName_; }
@@ -49,6 +50,7 @@ private:
     std::string packageToReport_;
     std::string outPath_;
     std::string mainFile_;
+    std::string interfaceFile_;
     std::string packageDirectory_ = defaultPackagesDirectory;
     std::string migrationFile_;
     std::string mainPackageName_;

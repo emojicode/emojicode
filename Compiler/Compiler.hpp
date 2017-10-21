@@ -56,8 +56,8 @@ public:
     /// @param outPath The path at which the Emojicode Binary will be written.
     /// @param pkgDir The path to the Emojicode packages directory. It will be searched if a package is loaded
     ///               via loadPackage().
-    Compiler(std::string mainPackage, std::string mainFile, std::string outPath, std::string pkgDir,
-            std::unique_ptr<CompilerDelegate> delegate, bool standalone);
+    Compiler(std::string mainPackage, std::string mainFile, std::string interfaceFile, std::string outPath, std::string pkgDir,
+             std::unique_ptr<CompilerDelegate> delegate, bool standalone);
     /// Compile the application.
     /// @param parseOnly If this argument is true, the main package is only parsed and not semantically analysed.
     /// @returns True iff the application has been successfully parsed and — optionally — analysed.
@@ -124,6 +124,7 @@ private:
     bool hasError_ = false;
     bool standalone_;
     std::string mainFile_;
+    std::string interfaceFile_;
     const std::string outPath_;
     const std::string mainPackageName_;
     const std::string packageDirectory_;

@@ -32,6 +32,7 @@ class TypeDefinition;
 class Prettyprinter {
 public:
     Prettyprinter(RecordingPackage *package) : package_(package) {}
+    void printInterface(const std::string &out);
     void print();
 
     /// Appends the whitespace offer to the stream if any is available. Then appends rhs and returns this instance.
@@ -76,6 +77,7 @@ private:
     TypeContext typeContext_;
     char whitespaceOffer_ = 0;
     unsigned int indentation_ = 0;
+    bool interface_ = false;
 
     void print(const char *key, Function *function, bool body, bool noMutate);
     void print(RecordingPackage::Recording *recording);

@@ -157,19 +157,16 @@ void DocumentParser::parseVersion(const Documentation &documentation, const Sour
 
 void DocumentParser::parseExtension(const Documentation &documentation, const SourcePosition &p) {
     Type type = package_->getRawType(parseTypeIdentifier(), false);
-    Type extendedType = type;
 
-    if (type.typeDefinition()->package() != package_) {
-        auto extension = package_->add(std::make_unique<Extension>(type, package_, p, documentation.get()));
-        type = Type(extension);
-    }
+    auto extension = package_->add(std::make_unique<Extension>(type, package_, p, documentation.get()));
+    Type extendedType = Type(extension);
 
-    switch (extendedType.type()) {
+    switch (type.type()) {
         case TypeType::Class:
-            ClassTypeBodyParser(type, package_, stream_, std::set<std::u32string>()).parse();
+            ClassTypeBodyParser(extendedType, package_, stream_, interface_, std::set<std::u32string>()).parse();
             break;
         case TypeType::ValueType:
-            ValueTypeBodyParser(type, package_, stream_).parse();
+            ValueTypeBodyParser(extendedType, package_, stream_, interface_).parse();
             break;
         default:
             throw CompilerError(p, "Only classes and value types are extendable.");
@@ -185,7 +182,7 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
 
     auto protocolType = Type(protocol, false);
     package_->offerType(protocolType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    ProtocolTypeBodyParser(protocolType, package_, stream_).parse();
+    ProtocolTypeBodyParser(protocolType, package_, stream_, interface_).parse();
 }
 
 void DocumentParser::parseEnum(const std::u32string &documentation, const Token &theToken, bool exported) {
@@ -196,7 +193,7 @@ void DocumentParser::parseEnum(const std::u32string &documentation, const Token 
 
     auto type = Type(enumeration, false);
     package_->offerType(type, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    EnumTypeBodyParser(type, package_, stream_).parse();
+    EnumTypeBodyParser(type, package_, stream_, interface_).parse();
 }
 
 void DocumentParser::parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final) {
@@ -225,7 +222,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
     package_->offerType(classType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
 
     auto requiredInits = eclass->superclass() != nullptr ? eclass->superclass()->requiredInitializers() : std::set<std::u32string>();
-    ClassTypeBodyParser(classType, package_, stream_, requiredInits).parse();
+    ClassTypeBodyParser(classType, package_, stream_, interface_, requiredInits).parse();
 }
 
 void DocumentParser::parseValueType(const std::u32string &documentation, const Token &theToken, bool exported) {
@@ -242,7 +239,7 @@ void DocumentParser::parseValueType(const std::u32string &documentation, const T
 
     auto valueTypeContent = Type(valueType, false);
     package_->offerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    ValueTypeBodyParser(valueTypeContent, package_, stream_).parse();
+    ValueTypeBodyParser(valueTypeContent, package_, stream_, interface_).parse();
 }
 
 }  // namespace EmojicodeCompiler

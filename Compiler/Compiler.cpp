@@ -9,24 +9,28 @@
 #include "CompilerError.hpp"
 #include "Compiler.hpp"
 #include "Generation/CodeGenerator.hpp"
+#include "Prettyprint/Prettyprinter.hpp"
 
 namespace EmojicodeCompiler {
 
-Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string outPath, std::string pkgDir,
-                         std::unique_ptr<CompilerDelegate> delegate, bool standalone)
-: standalone_(standalone), mainFile_(std::move(mainFile)), outPath_(std::move(outPath)),
+Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string interfaceFile, std::string outPath, std::string pkgDir,
+                   std::unique_ptr<CompilerDelegate> delegate, bool standalone)
+: standalone_(standalone), mainFile_(std::move(mainFile)), interfaceFile_(interfaceFile), outPath_(std::move(outPath)),
     mainPackageName_(std::move(mainPackage)), packageDirectory_(std::move(pkgDir)), delegate_(std::move(delegate)){}
 
 bool Compiler::compile(bool parseOnly) {
     delegate_->begin();
 
-    factorMainPackage<Package>();
+    factorMainPackage<RecordingPackage>();
 
     try {
         mainPackage_->parse();
         if (parseOnly) {
             return !hasError_;
         }
+
+        Prettyprinter(dynamic_cast<RecordingPackage *>(mainPackage_.get())).printInterface(interfaceFile_);
+
         analyse();
     }
     catch (CompilerError &ce) {
@@ -67,7 +71,7 @@ Package* Compiler::loadPackage(const std::string &name, const SourcePosition &p,
         return package;
     }
 
-    auto path = packageDirectory_ + "/" + name + "/header.emojic";
+    auto path = packageDirectory_ + "/" + name + "/interface.emojii";
     auto package = std::make_unique<Package>(name, path, this);
     auto rawPtr = package.get();
     packages_.emplace(name, std::move(package));

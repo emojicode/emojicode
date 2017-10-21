@@ -120,7 +120,7 @@ void Package::importPackage(const std::string &name, const std::u32string &ns, c
 }
 
 void Package::includeDocument(const std::string &path, const std::string &relativePath) {
-    DocumentParser(this, Lexer::lexFile(path)).parse();
+    DocumentParser(this, Lexer::lexFile(path), endsWith(path, "emojii")).parse();
 }
 
 void Package::parse() {
@@ -141,6 +141,9 @@ void Package::parse() {
 }
 
 void Package::analyse() {
+    for (auto &extension : extensions_) {
+        extension->prepareForSemanticAnalysis();
+    }
     for (auto &vt : valueTypes_) {
         vt->prepareForSemanticAnalysis();
         enqueueFunctionsOfTypeDefinition(vt.get());
@@ -149,10 +152,7 @@ void Package::analyse() {
         eclass->prepareForSemanticAnalysis();
         enqueueFunctionsOfTypeDefinition(eclass.get());
     }
-    for (auto &extension : extensions_) {
-        extension->prepareForSemanticAnalysis();
-        enqueueFunctionsOfTypeDefinition(extension.get());
-    }
+
     size_t protocolIndex = 0;
     for (auto &protocol : protocols_) {
         protocol->setIndex(protocolIndex++);

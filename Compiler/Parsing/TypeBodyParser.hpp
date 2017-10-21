@@ -27,7 +27,8 @@ using TypeBodyAttributeParser = AttributeParser<Attribute::Deprecated, Attribute
 /// represented by TypeDefinition. This class is abstract.
 class TypeBodyParser : protected AbstractParser {
 public:
-    TypeBodyParser(Type type, Package *pkg, TokenStream &stream) : AbstractParser(pkg, stream), type_(std::move(type)) {
+    TypeBodyParser(Type type, Package *pkg, TokenStream &stream, bool interface)
+        : AbstractParser(pkg, stream), type_(std::move(type)), interface_(interface) {
 
     }
 
@@ -57,6 +58,7 @@ protected:
     
     Type type_;
 private:
+    bool interface_;
     AccessLevel readAccessLevel();
     void parseFunctionBody(Function *function);
     void parseFunction(Function *function, bool inititalizer);
@@ -81,8 +83,9 @@ private:
 
 class ClassTypeBodyParser : public TypeBodyParser {
 public:
-    ClassTypeBodyParser(Type type, Package *pkg, TokenStream &stream, std::set<std::u32string> requiredInits)
-    : TypeBodyParser(std::move(type), pkg, stream), requiredInitializers_(std::move(requiredInits)) {}
+    ClassTypeBodyParser(Type type, Package *pkg, TokenStream &stream, bool interface,
+                        std::set<std::u32string> requiredInits)
+    : TypeBodyParser(std::move(type), pkg, stream, interface), requiredInitializers_(std::move(requiredInits)) {}
     void parse() override;
 private:
     void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes, const Documentation &documentation,
