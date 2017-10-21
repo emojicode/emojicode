@@ -81,7 +81,7 @@ reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject",
 
 failed_tests = []
 
-emojicodec = os.path.abspath("emojicodec")
+emojicodec = os.path.abspath("Compiler/emojicodec")
 os.environ["EMOJICODE_PACKAGES_PATH"] = os.path.abspath(".")
 
 

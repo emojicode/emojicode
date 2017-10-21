@@ -1,7 +1,7 @@
 - type: parallel
   name: test
   services:
-    - gcc_test
+    # - gcc_test
     - clang_test
   steps:
     - command: bash -c "cmake . -GNinja && ninja && ninja tests"

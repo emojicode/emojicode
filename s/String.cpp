@@ -6,7 +6,7 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "../Runtime/Runtime.h"
+#include "../runtime/Runtime.h"
 #include "String.hpp"
 #include <cinttypes>
 #include <cstdio>

@@ -11,6 +11,7 @@
 
 #include "../Functions/CallType.h"
 #include <string>
+#include <vector>
 
 namespace llvm {
 class Value;
