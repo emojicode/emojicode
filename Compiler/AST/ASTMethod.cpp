@@ -47,9 +47,9 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
                 analyser->compiler()->error(CompilerError(position(), utf8(method->name()),
                                                      " was marked 🖍 but callee is not mutable."));
             }
-            auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee);
-            assert(varNode != nullptr && varNode->reference());
-            analyser->scoper().currentScope().getLocalVariable(varNode->name()).mutate(position());
+            if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee)) {
+                analyser->scoper().currentScope().getLocalVariable(varNode->name()).mutate(position());
+            }
         }
         callType_ = CallType::StaticDispatch;
     }
