@@ -73,8 +73,7 @@ std::string Compiler::objectFileName() const {
 void Compiler::linkToExecutable() {
     std::stringstream cmd;
 
-    auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition(0, 0, mainFile_)), "runtime");
-    cmd << linker_ << " " << runtimeLib;
+    cmd << linker_ << " " << objectFileName();
 
     for (auto &package : packages_) {
         auto path = findBinaryPathPackage(package.second->path(), package.second->name());
@@ -83,7 +82,8 @@ void Compiler::linkToExecutable() {
         }
     }
 
-    cmd << " " << objectFileName() << " -o " << outPath_;
+    auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition(0, 0, mainFile_)), "runtime");
+    cmd << " " << runtimeLib << " -lm -o " << outPath_;
 
     system(cmd.str().c_str());
 }
