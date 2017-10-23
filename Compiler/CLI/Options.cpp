@@ -129,7 +129,7 @@ std::unique_ptr<CompilerDelegate> Options::applicationDelegate() const {
 }
 
 std::string Options::linker() const {
-    if (auto var = getenv("cc")) {
+    if (auto var = getenv("CC")) {
         return var;
     }
     return "cc";
