@@ -145,7 +145,7 @@ private:
     bool final_;
     bool overriding_;
     bool deprecated_;
-    bool mutating_;
+    const bool mutating_;
     bool external_ = false;
 
     std::string externalName_;
