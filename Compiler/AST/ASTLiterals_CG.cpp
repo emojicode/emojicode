@@ -18,8 +18,9 @@ Value* ASTStringLiteral::generate(FunctionCodeGenerator *fg) const {
     auto type = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(Type(CL_STRING, false)));
     auto stringObj = fg->alloc(type);
     fg->builder().CreateStore(CL_STRING->classMeta(), fg->getObjectMetaPtr(stringObj));
-    fg->builder().CreateStore(fg->generator()->stringPool().pool(value_),
-                              fg->builder().CreateConstGEP2_32(type->getElementType(), stringObj, 0, 1));
+    auto ptr = fg->builder().CreateBitCast(fg->generator()->stringPool().pool(value_),
+                                           llvm::Type::getInt8PtrTy(fg->generator()->context()));
+    fg->builder().CreateStore(ptr, fg->builder().CreateConstGEP2_32(type->getElementType(), stringObj, 0, 1));
     fg->builder().CreateStore(fg->int64(value_.size()),
                               fg->builder().CreateConstGEP2_32(type->getElementType(), stringObj, 0, 2));
     return stringObj;
