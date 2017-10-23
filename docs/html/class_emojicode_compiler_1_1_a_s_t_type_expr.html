@@ -71,6 +71,8 @@ $(function() {
 <div class="title">EmojicodeCompiler::ASTTypeExpr Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_a_s_t_type_expr_8hpp_source.html">ASTTypeExpr.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for EmojicodeCompiler::ASTTypeExpr:</div>
 <div class="dyncontent">
@@ -114,9 +116,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setExpressionType</b>
 <tr class="memitem:ae23d31aea9ccd1ec7b41e68e4d80f27d inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ae23d31aea9ccd1ec7b41e68e4d80f27d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTemporarilyScoped</b> ()</td></tr>
 <tr class="separator:ae23d31aea9ccd1ec7b41e68e4d80f27d inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e227b8b3271e46cd4e467c1fc5277c3 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="a0e227b8b3271e46cd4e467c1fc5277c3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg) const</td></tr>
-<tr class="separator:a0e227b8b3271e46cd4e467c1fc5277c3 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6a534886ff51e7f7fac7b687b4dc2e8 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ae6a534886ff51e7f7fac7b687b4dc2e8"></a>
+virtual Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg) const =0</td></tr>
+<tr class="separator:ae6a534886ff51e7f7fac7b687b4dc2e8 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaecf4662e6de0b352c98dd146da224c0 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="aaecf4662e6de0b352c98dd146da224c0"></a>
 virtual <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation)=0</td></tr>
 <tr class="separator:aaecf4662e6de0b352c98dd146da224c0 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,15 +139,11 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a4ecad7d94384b4240d3fb28972f82a58"><td class="memItemLeft" align="right" valign="top"><a id="a4ecad7d94384b4240d3fb28972f82a58"></a>
 TypeAvailability&#160;</td><td class="memItemRight" valign="bottom"><b>availability_</b></td></tr>
 <tr class="separator:a4ecad7d94384b4240d3fb28972f82a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_emojicode_compiler_1_1_a_s_t_expr')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">EmojicodeCompiler::ASTExpr</a></td></tr>
-<tr class="memitem:ab6067674635559e0b416dc477f038651 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ab6067674635559e0b416dc477f038651"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>generateExpr</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg) const =0</td></tr>
-<tr class="separator:ab6067674635559e0b416dc477f038651 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Subclasses of this class represent type expressions. After analysis <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html#a18f821492abfa8829651b3e62cde0582">expressionType()</a> contains the type the expression represents. This is not a meta type.</p>
+<p>When generating type expressions, code to retrieve a meta type instance is written. </p>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/<a class="el" href="_a_s_t_type_expr_8hpp_source.html">ASTTypeExpr.hpp</a></li>
 </ul>
 </div><!-- contents -->

@@ -65,7 +65,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="class_emojicode_compiler_1_1_a_s_t_unary-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -112,9 +111,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setExpressionType</b>
 <tr class="memitem:ae23d31aea9ccd1ec7b41e68e4d80f27d inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ae23d31aea9ccd1ec7b41e68e4d80f27d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTemporarilyScoped</b> ()</td></tr>
 <tr class="separator:ae23d31aea9ccd1ec7b41e68e4d80f27d inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e227b8b3271e46cd4e467c1fc5277c3 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="a0e227b8b3271e46cd4e467c1fc5277c3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg) const</td></tr>
-<tr class="separator:a0e227b8b3271e46cd4e467c1fc5277c3 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6a534886ff51e7f7fac7b687b4dc2e8 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ae6a534886ff51e7f7fac7b687b4dc2e8"></a>
+virtual Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg) const =0</td></tr>
+<tr class="separator:ae6a534886ff51e7f7fac7b687b4dc2e8 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaecf4662e6de0b352c98dd146da224c0 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="aaecf4662e6de0b352c98dd146da224c0"></a>
 virtual <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation)=0</td></tr>
 <tr class="separator:aaecf4662e6de0b352c98dd146da224c0 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,16 +128,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (<
 const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_node.html#a169020f6c66090c16b98247e339ac255">position</a> () const</td></tr>
 <tr class="memdesc:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">The source position that caused this node to be created. <br /></td></tr>
 <tr class="separator:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:aeb29f590a6fede8d1e1e069f96990932"><td class="memItemLeft" align="right" valign="top"><a id="aeb29f590a6fede8d1e1e069f96990932"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generateHelper</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg, EmojicodeInstruction instruction) const</td></tr>
-<tr class="separator:aeb29f590a6fede8d1e1e069f96990932"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_emojicode_compiler_1_1_a_s_t_expr')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">EmojicodeCompiler::ASTExpr</a></td></tr>
-<tr class="memitem:ab6067674635559e0b416dc477f038651 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ab6067674635559e0b416dc477f038651"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>generateExpr</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg) const =0</td></tr>
-<tr class="separator:ab6067674635559e0b416dc477f038651 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>

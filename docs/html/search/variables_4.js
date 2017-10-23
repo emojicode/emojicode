@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['globalstiprovider',['globalStiProvider',['../class_emojicode_compiler_1_1_s_t_i_provider.html#ab9f86f4c973c888062b900bd7a8eebab',1,'EmojicodeCompiler::STIProvider']]]
+  ['type',['type',['../struct_emojicode_compiler_1_1_argument.html#a89c03f42d46a740b0b4eecc600fa7f4f',1,'EmojicodeCompiler::Argument']]]
 ];

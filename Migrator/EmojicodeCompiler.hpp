@@ -12,7 +12,7 @@
 #define EmojicodeCompiler_hpp
 
 #include <string>
-#include "../EmojicodeShared.h"
+#include "EmojicodeShared.h"
 #include "Emojis.h"
 
 namespace EmojicodeCompiler {

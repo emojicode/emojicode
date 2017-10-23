@@ -1,10 +1,7 @@
 <map id="EmojicodeCompiler::ExportedType" name="EmojicodeCompiler::ExportedType">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="580,163,754,188"/>
-<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="964,91,1108,129"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="296,156,440,195"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,93,181,132"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_c_g_scoper.html" title="EmojicodeCompiler::\lCGScoper" alt="" coords="21,156,165,195"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_scope.html" title="EmojicodeCompiler::\lScope" alt="" coords="21,219,165,257"/>
-<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function \&gt;" alt="" coords="595,5,739,44"/>
-<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_function_writer.html" title="EmojicodeCompiler::\lFunctionWriter" alt="" coords="595,68,739,107"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="514,89,687,115"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="898,39,1042,77"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="230,83,374,121"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,83,181,121"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function \&gt;" alt="" coords="529,5,673,44"/>
 </map>

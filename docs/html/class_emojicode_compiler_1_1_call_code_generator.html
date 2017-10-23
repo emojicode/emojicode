@@ -78,36 +78,30 @@ Inheritance diagram for EmojicodeCompiler::CallCodeGenerator:</div>
 <map name="_emojicode_compiler_1_1_call_code_generator_inherit__map" id="_emojicode_compiler_1_1_call_code_generator_inherit__map">
 <area shape="rect" id="node2" href="class_emojicode_compiler_1_1_callable_call_code_generator.html" title="EmojicodeCompiler::\lCallableCallCodeGenerator" alt="" coords="210,5,395,44"/>
 <area shape="rect" id="node3" href="class_emojicode_compiler_1_1_initialization_call_code_generator.html" title="EmojicodeCompiler::\lInitializationCallCodeGenerator" alt="" coords="200,68,405,107"/>
-<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_super_call_code_generator.html" title="EmojicodeCompiler::\lSuperCallCodeGenerator" alt="" coords="217,131,388,169"/>
-<area shape="rect" id="node7" href="class_emojicode_compiler_1_1_type_method_call_code_generator.html" title="EmojicodeCompiler::\lTypeMethodCallCodeGenerator" alt="" coords="198,193,407,232"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_v_t_initialization_call_code_generator.html" title="EmojicodeCompiler::\lVTInitializationCallCodeGenerator" alt="" coords="456,68,679,107"/>
-<area shape="rect" id="node6" href="class_emojicode_compiler_1_1_super_initializer_call_code_generator.html" title="EmojicodeCompiler::\lSuperInitializerCallCodeGenerator" alt="" coords="455,131,680,169"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_type_method_call_code_generator.html" title="EmojicodeCompiler::\lTypeMethodCallCodeGenerator" alt="" coords="198,131,407,169"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3259159dbdb3dd5e95ed06ad670a4b7b"><td class="memItemLeft" align="right" valign="top"><a id="a3259159dbdb3dd5e95ed06ad670a4b7b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CallCodeGenerator</b> (<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *fncg, EmojicodeInstruction instruction)</td></tr>
-<tr class="separator:a3259159dbdb3dd5e95ed06ad670a4b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a883e90db7e8bfd9e5b52dcdbedf80ce3"><td class="memItemLeft" align="right" valign="top"><a id="a883e90db7e8bfd9e5b52dcdbedf80ce3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (const <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &amp;callee, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;calleeType, const <a class="el" href="class_emojicode_compiler_1_1_a_s_t_arguments.html">ASTArguments</a> &amp;args, const std::u32string &amp;name)</td></tr>
-<tr class="separator:a883e90db7e8bfd9e5b52dcdbedf80ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8299ff74b8935c01f1ff59146e3c4cba"><td class="memItemLeft" align="right" valign="top"><a id="a8299ff74b8935c01f1ff59146e3c4cba"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CallCodeGenerator</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg, CallType callType)</td></tr>
+<tr class="separator:a8299ff74b8935c01f1ff59146e3c4cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a652e64ede19e9cb348ef8fe7ed23e0c6"><td class="memItemLeft" align="right" valign="top"><a id="a652e64ede19e9cb348ef8fe7ed23e0c6"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (llvm::Value *callee, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;calleeType, const <a class="el" href="class_emojicode_compiler_1_1_a_s_t_arguments.html">ASTArguments</a> &amp;args, const std::u32string &amp;name)</td></tr>
+<tr class="separator:a652e64ede19e9cb348ef8fe7ed23e0c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:aaac81a84a5c5ca90555e1b582974a270"><td class="memItemLeft" align="right" valign="top"><a id="aaac81a84a5c5ca90555e1b582974a270"></a>
+<tr class="memitem:a44a92b8621c3a74181b1700bab91ea9e"><td class="memItemLeft" align="right" valign="top"><a id="a44a92b8621c3a74181b1700bab91ea9e"></a>
 virtual <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>lookupFunction</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type, const std::u32string &amp;name)</td></tr>
-<tr class="separator:aaac81a84a5c5ca90555e1b582974a270"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c0e0ac7f3282a7cb43fcb7d1d5409e2"><td class="memItemLeft" align="right" valign="top"><a id="a3c0e0ac7f3282a7cb43fcb7d1d5409e2"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>writeInstructions</b> (EmojicodeInstruction argSize, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type, const std::u32string &amp;name)</td></tr>
-<tr class="separator:a3c0e0ac7f3282a7cb43fcb7d1d5409e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab253ee126f9e5248a1b3f3ba9b2ce7ae"><td class="memItemLeft" align="right" valign="top"><a id="ab253ee126f9e5248a1b3f3ba9b2ce7ae"></a>
-<a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">FnCodeGenerator</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>fncg</b> ()</td></tr>
-<tr class="separator:ab253ee126f9e5248a1b3f3ba9b2ce7ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a234d06a37819491e8b475187de9149e6"><td class="memItemLeft" align="right" valign="top"><a id="a234d06a37819491e8b475187de9149e6"></a>
-EmojicodeInstruction&#160;</td><td class="memItemRight" valign="bottom"><b>generateArguments</b> (const <a class="el" href="class_emojicode_compiler_1_1_a_s_t_arguments.html">ASTArguments</a> &amp;args)</td></tr>
-<tr class="separator:a234d06a37819491e8b475187de9149e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a44a92b8621c3a74181b1700bab91ea9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a4166b06568e1d804c3a4c83cfec7c9"><td class="memItemLeft" align="right" valign="top"><a id="a5a4166b06568e1d804c3a4c83cfec7c9"></a>
+virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>createCall</b> (const std::vector&lt; llvm::Value *&gt; &amp;args, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type, const std::u32string &amp;name)</td></tr>
+<tr class="separator:a5a4166b06568e1d804c3a4c83cfec7c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36cff637186a7f753a48768e6fea02e2"><td class="memItemLeft" align="right" valign="top"><a id="a36cff637186a7f753a48768e6fea02e2"></a>
+<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>fncg</b> () const</td></tr>
+<tr class="separator:a36cff637186a7f753a48768e6fea02e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Generation/<a class="el" href="_call_code_generator_8hpp_source.html">CallCodeGenerator.hpp</a></li>

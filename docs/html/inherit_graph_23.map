@@ -1,3 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_emojicode_compiler_1_1_application.html" title="EmojicodeCompiler::\lApplication" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node1" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,100,181,139"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="229,100,373,139"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_class.html" title="EmojicodeCompiler::\lClass" alt="" coords="421,5,565,44"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_extension.html" title="EmojicodeCompiler::\lExtension" alt="" coords="421,68,565,107"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_protocol.html" title="EmojicodeCompiler::\lProtocol" alt="" coords="421,131,565,169"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_value_type.html" title="EmojicodeCompiler::\lValueType" alt="" coords="421,193,565,232"/>
+<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_enum.html" title="EmojicodeCompiler::Enum" alt="" coords="613,200,792,225"/>
 </map>

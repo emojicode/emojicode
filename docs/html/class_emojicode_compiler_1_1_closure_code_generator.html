@@ -75,7 +75,7 @@ Inheritance diagram for EmojicodeCompiler::ClosureCodeGenerator:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_closure_code_generator__inherit__graph.png" border="0" usemap="#_emojicode_compiler_1_1_closure_code_generator_inherit__map" alt="Inheritance graph"/></div>
 <map name="_emojicode_compiler_1_1_closure_code_generator_inherit__map" id="_emojicode_compiler_1_1_closure_code_generator_inherit__map">
-<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_fn_code_generator.html" title="EmojicodeCompiler::\lFnCodeGenerator" alt="" coords="13,5,157,44"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_function_code_generator.html" title="A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function..." alt="" coords="5,5,170,44"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -83,58 +83,80 @@ Collaboration diagram for EmojicodeCompiler::ClosureCodeGenerator:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_closure_code_generator__coll__graph.png" border="0" usemap="#_emojicode_compiler_1_1_closure_code_generator_coll__map" alt="Collaboration graph"/></div>
 <map name="_emojicode_compiler_1_1_closure_code_generator_coll__map" id="_emojicode_compiler_1_1_closure_code_generator_coll__map">
-<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_fn_code_generator.html" title="EmojicodeCompiler::\lFnCodeGenerator" alt="" coords="13,5,157,44"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_function_code_generator.html" title="A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function..." alt="" coords="5,5,170,44"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0f376550b63a5839e9059b18ec191fd9"><td class="memItemLeft" align="right" valign="top"><a id="a0f376550b63a5839e9059b18ec191fd9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ClosureCodeGenerator</b> (std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_variable_capture.html">VariableCapture</a> &gt; captures, <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *f)</td></tr>
-<tr class="separator:a0f376550b63a5839e9059b18ec191fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add4ac320ef31578ef84f2e0f7407406b"><td class="memItemLeft" align="right" valign="top"><a id="add4ac320ef31578ef84f2e0f7407406b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ClosureCodeGenerator</b> (std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_variable_capture.html">VariableCapture</a> &gt; captures, <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *f, <a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *generator)</td></tr>
+<tr class="separator:add4ac320ef31578ef84f2e0f7407406b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae28f3b024d9d44680bca906ca806b17d"><td class="memItemLeft" align="right" valign="top"><a id="ae28f3b024d9d44680bca906ca806b17d"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>captureSize</b> () const</td></tr>
 <tr class="separator:ae28f3b024d9d44680bca906ca806b17d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad439a4a39710cb6083d65cf90c5f0ed8"><td class="memItemLeft" align="right" valign="top"><a id="ad439a4a39710cb6083d65cf90c5f0ed8"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>captureDestIndex</b> () const</td></tr>
 <tr class="separator:ad439a4a39710cb6083d65cf90c5f0ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_emojicode_compiler_1_1_fn_code_generator')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_fn_code_generator.html">EmojicodeCompiler::FnCodeGenerator</a></td></tr>
-<tr class="memitem:afd2bafab3a9b6aa8ff0fa8c61a964209 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="afd2bafab3a9b6aa8ff0fa8c61a964209"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>FnCodeGenerator</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
-<tr class="separator:afd2bafab3a9b6aa8ff0fa8c61a964209 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5915248ebdbc6df6e64b8d4dec1b8492 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a5915248ebdbc6df6e64b8d4dec1b8492"></a>
+<tr class="inherit_header pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_emojicode_compiler_1_1_function_code_generator')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">EmojicodeCompiler::FunctionCodeGenerator</a></td></tr>
+<tr class="memitem:af26f494fe88c957c18ee91d39d9dafa9 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#af26f494fe88c957c18ee91d39d9dafa9">FunctionCodeGenerator</a> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, <a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *generator)</td></tr>
+<tr class="separator:af26f494fe88c957c18ee91d39d9dafa9 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affbed7cea6ab51881ecfd9e5b95a9b18 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="affbed7cea6ab51881ecfd9e5b95a9b18"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> ()</td></tr>
-<tr class="separator:a5915248ebdbc6df6e64b8d4dec1b8492 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afef93a5bef3d15f591adcaaef91385df inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="afef93a5bef3d15f591adcaaef91385df"></a>
-<a class="el" href="class_emojicode_compiler_1_1_function_writer.html">FunctionWriter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>wr</b> ()</td></tr>
-<tr class="separator:afef93a5bef3d15f591adcaaef91385df inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbaf5267cc3eafdbf234b6b4b0a98517 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="abbaf5267cc3eafdbf234b6b4b0a98517"></a>
+<tr class="separator:affbed7cea6ab51881ecfd9e5b95a9b18 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa79a9db4005d1490b83e6240a90c0085 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="aa79a9db4005d1490b83e6240a90c0085"></a>
 <a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>scoper</b> ()</td></tr>
-<tr class="separator:abbaf5267cc3eafdbf234b6b4b0a98517 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c65c942ab758cfb824d6382148cefdd inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a6c65c942ab758cfb824d6382148cefdd"></a>
-<a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>instanceScoper</b> ()</td></tr>
-<tr class="separator:a6c65c942ab758cfb824d6382148cefdd inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee95fb07a6e644727830ff65cc1b872f inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="aee95fb07a6e644727830ff65cc1b872f"></a>
-<a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>app</b> ()</td></tr>
-<tr class="separator:aee95fb07a6e644727830ff65cc1b872f inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4a6c2f051fa53481b8723e9b4516d38 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="ab4a6c2f051fa53481b8723e9b4516d38"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>writeInteger</b> (long long value)</td></tr>
-<tr class="separator:ab4a6c2f051fa53481b8723e9b4516d38 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae770ac03133338b937915159fc949287 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="ae770ac03133338b937915159fc949287"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>writeInstructionForStackOrInstance</b> (bool inInstanceScope, EmojicodeInstruction stack, EmojicodeInstruction object, EmojicodeInstruction vt)</td></tr>
-<tr class="separator:ae770ac03133338b937915159fc949287 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b7dbd69a718fee9a38a9a64f2bdb15a inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a4b7dbd69a718fee9a38a9a64f2bdb15a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>writeValueTypeOrObject</b> (EmojicodeInstruction object, EmojicodeInstruction vt)</td></tr>
-<tr class="separator:a4b7dbd69a718fee9a38a9a64f2bdb15a inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae109600ad43e933ce412777e2edf15c9 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="ae109600ad43e933ce412777e2edf15c9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>copyToVariable</b> (<a class="el" href="struct_emojicode_compiler_1_1_c_g_scoper_1_1_stack_index.html">CGScoper::StackIndex</a> index, bool inInstanceScope, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
-<tr class="separator:ae109600ad43e933ce412777e2edf15c9 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a887bf113150d5c760871281d45325c08 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a887bf113150d5c760871281d45325c08"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pushVariable</b> (<a class="el" href="struct_emojicode_compiler_1_1_c_g_scoper_1_1_stack_index.html">CGScoper::StackIndex</a> index, bool inInstanceScope, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
-<tr class="separator:a887bf113150d5c760871281d45325c08 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af648e86985715c327cb4c6cf3cf0e3b6 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="af648e86985715c327cb4c6cf3cf0e3b6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pushVariableReference</b> (<a class="el" href="struct_emojicode_compiler_1_1_c_g_scoper_1_1_stack_index.html">CGScoper::StackIndex</a> index, bool inInstanceScope)</td></tr>
-<tr class="separator:af648e86985715c327cb4c6cf3cf0e3b6 inherit pub_methods_class_emojicode_compiler_1_1_fn_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:aa79a9db4005d1490b83e6240a90c0085 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a491b36ffbeeffbd7fbd5134941720ebc inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a491b36ffbeeffbd7fbd5134941720ebc"></a>
+<a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>app</b> () const</td></tr>
+<tr class="separator:a491b36ffbeeffbd7fbd5134941720ebc inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadd4cf4b398cff5fe73b36414da65391 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="aadd4cf4b398cff5fe73b36414da65391"></a>
+<a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>generator</b> () const</td></tr>
+<tr class="separator:aadd4cf4b398cff5fe73b36414da65391 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3d5d31e0832790b1e3887bff9d0568f inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="ab3d5d31e0832790b1e3887bff9d0568f"></a>
+llvm::IRBuilder &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>builder</b> ()</td></tr>
+<tr class="separator:ab3d5d31e0832790b1e3887bff9d0568f inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77eaa8a1a40dadac7a22898d669774e1 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a77eaa8a1a40dadac7a22898d669774e1"></a>
+<a class="el" href="class_emojicode_compiler_1_1_l_l_v_m_type_helper.html">LLVMTypeHelper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>typeHelper</b> ()</td></tr>
+<tr class="separator:a77eaa8a1a40dadac7a22898d669774e1 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78615be0b7749a712e16f843b587a353 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a78615be0b7749a712e16f843b587a353"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>thisValue</b> ()</td></tr>
+<tr class="separator:a78615be0b7749a712e16f843b587a353 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71106dcc8d7f148b1aaacd75f82cc631 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a71106dcc8d7f148b1aaacd75f82cc631"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>sizeFor</b> (llvm::PointerType *type)</td></tr>
+<tr class="separator:a71106dcc8d7f148b1aaacd75f82cc631 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3eeffcaa80cd51ec7f4e5a0d263c016 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="ab3eeffcaa80cd51ec7f4e5a0d263c016"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaFromObject</b> (llvm::Value *object)</td></tr>
+<tr class="separator:ab3eeffcaa80cd51ec7f4e5a0d263c016 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a087285653be4d367e89bae4958b56b02 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a087285653be4d367e89bae4958b56b02"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasBoxNoValue</b> (llvm::Value *box)</td></tr>
+<tr class="separator:a087285653be4d367e89bae4958b56b02 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a939cc26f0416ce36ca05bc5c975358c2 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top">llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#a939cc26f0416ce36ca05bc5c975358c2">getMetaTypePtr</a> (llvm::Value *box)</td></tr>
+<tr class="separator:a939cc26f0416ce36ca05bc5c975358c2 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4c6b5cdef800569223d481f2b845c85 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="ac4c6b5cdef800569223d481f2b845c85"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasNoValue</b> (llvm::Value *simpleOptional)</td></tr>
+<tr class="separator:ac4c6b5cdef800569223d481f2b845c85 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9163a3e81e4d8403e1874ca94b4cf3c4 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a9163a3e81e4d8403e1874ca94b4cf3c4"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getSimpleOptionalWithoutValue</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
+<tr class="separator:a9163a3e81e4d8403e1874ca94b4cf3c4 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a160530c10c8902c2296a531d4852053e inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a160530c10c8902c2296a531d4852053e"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getSimpleOptionalWithValue</b> (llvm::Value *value, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
+<tr class="separator:a160530c10c8902c2296a531d4852053e inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a441a875e2e1549f37e01c67b14b75a5b inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a441a875e2e1549f37e01c67b14b75a5b"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getValuePtr</b> (llvm::Value *box, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
+<tr class="separator:a441a875e2e1549f37e01c67b14b75a5b inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a735c97898670b1fb6b6c2efb52b643ef inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a735c97898670b1fb6b6c2efb52b643ef"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getObjectMetaPtr</b> (llvm::Value *object)</td></tr>
+<tr class="separator:a735c97898670b1fb6b6c2efb52b643ef inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a414c01a7115a4b9f4dd51077fa2100b0 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a414c01a7115a4b9f4dd51077fa2100b0"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getMakeNoValue</b> (llvm::Value *box)</td></tr>
+<tr class="separator:a414c01a7115a4b9f4dd51077fa2100b0 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ff5eb7788bbbebaeaf9f3ef6b9ab7c9 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="a7ff5eb7788bbbebaeaf9f3ef6b9ab7c9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>createIfElse</b> (llvm::Value *cond, const std::function&lt; void()&gt; &amp;then, const std::function&lt; void()&gt; &amp;otherwise)</td></tr>
+<tr class="separator:a7ff5eb7788bbbebaeaf9f3ef6b9ab7c9 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada32e69b9c9cee563cb980eeac2a3887 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memItemLeft" align="right" valign="top"><a id="ada32e69b9c9cee563cb980eeac2a3887"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>createIfElsePhi</b> (llvm::Value *cond, const std::function&lt; llvm::Value *()&gt; &amp;then, const std::function&lt; llvm::Value *()&gt; &amp;otherwise)</td></tr>
+<tr class="separator:ada32e69b9c9cee563cb980eeac2a3887 inherit pub_methods_class_emojicode_compiler_1_1_function_code_generator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>

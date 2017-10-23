@@ -64,21 +64,15 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_c_g_scoper-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EmojicodeCompiler::CGScoper Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_c_g_scoper_8hpp_source.html">CGScoper.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_emojicode_compiler_1_1_c_g_scoper_1_1_stack_index.html">StackIndex</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_emojicode_compiler_1_1_c_g_scoper_1_1_variable.html">Variable</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abe5589a1253bfcdfc4987e028fab2aee"><td class="memItemLeft" align="right" valign="top"><a id="abe5589a1253bfcdfc4987e028fab2aee"></a>
@@ -87,25 +81,40 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7802281fed44d5eba46e6fc3475b430d"><td class="memItemLeft" align="right" valign="top"><a id="a7802281fed44d5eba46e6fc3475b430d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>resizeVariables</b> (size_t to)</td></tr>
 <tr class="separator:a7802281fed44d5eba46e6fc3475b430d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a588e2aedcf6ab76975b517a5449185e2"><td class="memItemLeft" align="right" valign="top"><a id="a588e2aedcf6ab76975b517a5449185e2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pushScope</b> ()</td></tr>
-<tr class="separator:a588e2aedcf6ab76975b517a5449185e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8ed7b44e0bfc0c3066a1b8327a5901c"><td class="memItemLeft" align="right" valign="top"><a id="ab8ed7b44e0bfc0c3066a1b8327a5901c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>popScope</b> (InstructionCount count)</td></tr>
-<tr class="separator:ab8ed7b44e0bfc0c3066a1b8327a5901c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78519ebb03f3df50a84a41593cf995e9"><td class="memItemLeft" align="right" valign="top"><a id="a78519ebb03f3df50a84a41593cf995e9"></a>
-<a class="el" href="struct_emojicode_compiler_1_1_c_g_scoper_1_1_variable.html">Variable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getVariable</b> (<a class="el" href="class_emojicode_compiler_1_1_variable_i_d.html">VariableID</a> id)</td></tr>
-<tr class="separator:a78519ebb03f3df50a84a41593cf995e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06f77e84819ee940b753fcd726d785e1"><td class="memItemLeft" align="right" valign="top"><a id="a06f77e84819ee940b753fcd726d785e1"></a>
-<a class="el" href="struct_emojicode_compiler_1_1_c_g_scoper_1_1_variable.html">Variable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>declareVariable</b> (<a class="el" href="class_emojicode_compiler_1_1_variable_i_d.html">VariableID</a> id, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;declarationType)</td></tr>
-<tr class="separator:a06f77e84819ee940b753fcd726d785e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40879f6c31999ddf0c27815f74eb2302"><td class="memItemLeft" align="right" valign="top"><a id="a40879f6c31999ddf0c27815f74eb2302"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td></tr>
-<tr class="separator:a40879f6c31999ddf0c27815f74eb2302"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69e7e61ebaec7786e082c9a420f218b0"><td class="memItemLeft" align="right" valign="top"><a id="a69e7e61ebaec7786e082c9a420f218b0"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>nextIndex</b> () const</td></tr>
-<tr class="separator:a69e7e61ebaec7786e082c9a420f218b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed910af55066c70330c2c9460e422b77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_emojicode_compiler_1_1_local_variable.html">LocalVariable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html#aed910af55066c70330c2c9460e422b77">getVariable</a> (size_t id)</td></tr>
+<tr class="separator:aed910af55066c70330c2c9460e422b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a> is used to keep track of the llvm::Value instances that are currently assigned to local variables during their generation with <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html" title="A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function...">FunctionCodeGenerator</a>.</p>
+<p><a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a> is only a thin layer over a vector. It simply and strictly works like a table and relies on that <a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html">SemanticScoper</a> correctly issues VariableIDs, which are the indices by which the vector is accessed. Variables can therefore be retrieved in constant time. No real scoping meachnics are provided by this class, all scoping mechanics are implemented in <a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html">SemanticScoper</a>, which issues ids so that rows of a <a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a> are reused once the corresponding variable dropped out of scope. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="aed910af55066c70330c2c9460e422b77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed910af55066c70330c2c9460e422b77">&#9670;&nbsp;</a></span>getVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_emojicode_compiler_1_1_local_variable.html">LocalVariable</a>&amp; EmojicodeCompiler::CGScoper::getVariable </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Gets the variable with the given ID.  O(1) </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Scoping/<a class="el" href="_c_g_scoper_8hpp_source.html">CGScoper.hpp</a></li>
 </ul>

@@ -1,4 +1,4 @@
-# Ignore compiled tests and outputs
-*.emojib
-*.out.txt
-prettyprint/*.emojic
+# Ignore everything except tests
+*
+!*.emojic
+!*.txt
