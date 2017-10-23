@@ -10,6 +10,7 @@
 #define CGScoper_hpp
 
 #include <vector>
+#include <cstddef>
 
 namespace llvm {
 class Value;

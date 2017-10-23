@@ -61,7 +61,7 @@ void CodeGenerator::generate(const std::string &outPath) {
     generateFunctions();
 
     llvm::verifyModule(*module(), &llvm::outs());
-    llvm::outs() << *module();
+//    llvm::outs() << *module();
     emit(outPath);
 }
 
@@ -285,8 +285,7 @@ void CodeGenerator::emit(const std::string &outPath) {
     auto features = "";
 
     llvm::TargetOptions opt;
-    auto rm = llvm::Optional<llvm::Reloc::Model>();
-    auto targetMachine = target->createTargetMachine(targetTriple, cpu, features, opt, rm);
+    auto targetMachine = target->createTargetMachine(targetTriple, cpu, features, opt, llvm::Reloc::PIC_);
 
     module()->setDataLayout(targetMachine->createDataLayout());
     module()->setTargetTriple(targetTriple);

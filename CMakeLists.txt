@@ -8,8 +8,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-add_compile_options(-fcolor-diagnostics)
-add_compile_options(-fcolor-diagnostics)
+  add_compile_options(-fcolor-diagnostics)
 endif()
 
 if(defaultPackagesDirectory)

@@ -8,6 +8,7 @@
 
 #include "ClosureCodeGenerator.hpp"
 #include "../Functions/Function.hpp"
+#include <llvm/IR/Function.h>
 
 namespace EmojicodeCompiler {
 
@@ -22,7 +23,7 @@ void ClosureCodeGenerator::declareArguments(llvm::Function *llvmFunction) {
     }
 
     auto type = typeHelper().llvmTypeForClosureCaptures(captures_);
-    llvm::Value *captures = builder().CreateBitCast(llvmFunction->args().begin(), type->getPointerTo());
+    llvm::Value *captures = builder().CreateBitCast(&*llvmFunction->args().begin(), type->getPointerTo());
 
     for (size_t i = 0; i < captures_.size(); i++) {
         auto *value = builder().CreateLoad(builder().CreateConstGEP2_32(type, captures, 0, i));
