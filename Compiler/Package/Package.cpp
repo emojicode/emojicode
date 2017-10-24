@@ -6,19 +6,19 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include "../Scoping/SemanticScoper.hpp"
-#include "../Analysis/SemanticAnalyser.hpp"
-#include "../Compiler.hpp"
-#include "../CompilerError.hpp"
-#include "../Generation/FunctionCodeGenerator.hpp"
-#include "../Lex/Lexer.hpp"
-#include "../Parsing/CompatibilityInfoProvider.hpp"
-#include "../Parsing/DocumentParser.hpp"
-#include "../Prettyprint/Prettyprinter.hpp"
-#include "../Types/ValueType.hpp"
-#include "../Types/Class.hpp"
-#include "../Types/Protocol.hpp"
-#include "../Types/Extension.hpp"
+#include "Scoping/SemanticScoper.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
+#include "Compiler.hpp"
+#include "CompilerError.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
+#include "Lex/Lexer.hpp"
+#include "Parsing/CompatibilityInfoProvider.hpp"
+#include "Parsing/DocumentParser.hpp"
+#include "Prettyprint/Prettyprinter.hpp"
+#include "Types/ValueType.hpp"
+#include "Types/Class.hpp"
+#include "Types/Protocol.hpp"
+#include "Types/Extension.hpp"
 #include "Package.hpp"
 #include <algorithm>
 #include <cstring>

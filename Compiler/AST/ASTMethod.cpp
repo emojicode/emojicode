@@ -7,11 +7,11 @@
 //
 
 #include "ASTMethod.hpp"
-#include "../Analysis/SemanticAnalyser.hpp"
-#include "../Compiler.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
+#include "Compiler.hpp"
 #include "ASTVariables.hpp"
-#include "../Types/Enum.hpp"
-#include "../Types/Protocol.hpp"
+#include "Types/Enum.hpp"
+#include "Types/Protocol.hpp"
 
 namespace EmojicodeCompiler {
 

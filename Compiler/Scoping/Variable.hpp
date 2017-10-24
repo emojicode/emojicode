@@ -11,8 +11,8 @@
 
 #include <utility>
 
-#include "../Lex/SourcePosition.hpp"
-#include "../Types/Type.hpp"
+#include "Lex/SourcePosition.hpp"
+#include "Types/Type.hpp"
 
 namespace EmojicodeCompiler {
 

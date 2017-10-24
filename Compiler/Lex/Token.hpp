@@ -9,7 +9,7 @@
 #ifndef Token_hpp
 #define Token_hpp
 
-#include "../EmojicodeCompiler.hpp"
+#include "EmojicodeCompiler.hpp"
 #include "SourcePosition.hpp"
 #include <string>
 #include <utility>

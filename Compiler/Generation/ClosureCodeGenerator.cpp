@@ -7,7 +7,7 @@
 //
 
 #include "ClosureCodeGenerator.hpp"
-#include "../Functions/Function.hpp"
+#include "Functions/Function.hpp"
 #include <llvm/IR/Function.h>
 
 namespace EmojicodeCompiler {

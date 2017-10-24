@@ -9,9 +9,9 @@
 #ifndef Function_hpp
 #define Function_hpp
 
-#include "../Types/Generic.hpp"
-#include "../Types/Type.hpp"
-#include "../Types/TypeContext.hpp"
+#include "Types/Generic.hpp"
+#include "Types/Type.hpp"
+#include "Types/TypeContext.hpp"
 #include "FunctionType.hpp"
 #include <experimental/optional>
 #include <memory>

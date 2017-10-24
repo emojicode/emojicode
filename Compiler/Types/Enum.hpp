@@ -9,7 +9,7 @@
 #ifndef Enum_hpp
 #define Enum_hpp
 
-#include "../EmojicodeCompiler.hpp"
+#include "EmojicodeCompiler.hpp"
 #include "ValueType.hpp"
 #include <map>
 #include <utility>

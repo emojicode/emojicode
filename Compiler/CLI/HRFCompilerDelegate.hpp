@@ -9,7 +9,7 @@
 #ifndef HRFCompilerDelegate_hpp
 #define HRFCompilerDelegate_hpp
 
-#include "../Compiler.hpp"
+#include "Compiler.hpp"
 
 namespace EmojicodeCompiler {
 

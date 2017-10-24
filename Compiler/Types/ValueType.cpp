@@ -7,8 +7,8 @@
 //
 
 #include "ValueType.hpp"
-#include "../Functions/Function.hpp"
-#include "../Functions/Initializer.hpp"
+#include "Functions/Function.hpp"
+#include "Functions/Initializer.hpp"
 
 namespace EmojicodeCompiler {
 

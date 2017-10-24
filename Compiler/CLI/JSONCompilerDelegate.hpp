@@ -9,7 +9,7 @@
 #ifndef JSONCompilerDelegate_hpp
 #define JSONCompilerDelegate_hpp
 
-#include "../Compiler.hpp"
+#include "Compiler.hpp"
 #include "JSONHelper.h"
 
 namespace EmojicodeCompiler {

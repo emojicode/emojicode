@@ -10,7 +10,7 @@
 #define ASTMethod_hpp
 
 #include <utility>
-#include "../Functions/CallType.h"
+#include "Functions/CallType.h"
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {

@@ -9,7 +9,7 @@
 #ifndef CommonTypeFinder_hpp
 #define CommonTypeFinder_hpp
 
-#include "../Types/Type.hpp"
+#include "Types/Type.hpp"
 #include <vector>
 
 namespace EmojicodeCompiler {

@@ -6,12 +6,12 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "../Generation/FunctionCodeGenerator.hpp"
-#include "../Functions/CallType.h"
-#include "../Types/Enum.hpp"
-#include "../Types/Class.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
+#include "Functions/CallType.h"
+#include "Types/Enum.hpp"
+#include "Types/Class.hpp"
 #include "ASTTypeExpr.hpp"
-#include "../Generation/CallCodeGenerator.hpp"
+#include "Generation/CallCodeGenerator.hpp"
 #include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {

@@ -9,8 +9,8 @@
 #ifndef TypeBodyParser_hpp
 #define TypeBodyParser_hpp
 
-#include "../Functions/Function.hpp"
-#include "../Types/Extension.hpp"
+#include "Functions/Function.hpp"
+#include "Types/Extension.hpp"
 #include "AbstractParser.hpp"
 #include "AttributesParser.hpp"
 #include <set>

@@ -7,9 +7,9 @@
 //
 
 #include "ASTUnary.hpp"
-#include "../Analysis/SemanticAnalyser.hpp"
-#include "../CompilerError.hpp"
-#include "../Types/TypeExpectation.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
+#include "CompilerError.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 

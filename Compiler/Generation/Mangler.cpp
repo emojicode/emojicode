@@ -7,12 +7,12 @@
 //
 
 #include "Mangler.hpp"
-#include "../Functions/Function.hpp"
-#include "../Functions/Initializer.hpp"
-#include "../Types/Class.hpp"
-#include "../Types/ValueType.hpp"
-#include "../Types/Type.hpp"
-#include "../Package/Package.hpp"
+#include "Functions/Function.hpp"
+#include "Functions/Initializer.hpp"
+#include "Types/Class.hpp"
+#include "Types/ValueType.hpp"
+#include "Types/Type.hpp"
+#include "Package/Package.hpp"
 #include <sstream>
 
 namespace EmojicodeCompiler {

@@ -9,7 +9,7 @@
 #ifndef CallCodeGenerator_hpp
 #define CallCodeGenerator_hpp
 
-#include "../Functions/CallType.h"
+#include "Functions/CallType.h"
 #include <string>
 #include <vector>
 

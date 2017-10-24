@@ -1,6 +1,7 @@
 find_package(LLVM REQUIRED CONFIG)
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
+include_directories(.)
 
 file(GLOB_RECURSE EMOJICODEC_SOURCES "*")
 add_executable(emojicodec ${EMOJICODEC_SOURCES})

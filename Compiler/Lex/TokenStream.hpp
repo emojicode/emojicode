@@ -9,7 +9,7 @@
 #ifndef TokenStream_hpp
 #define TokenStream_hpp
 
-#include "../CompilerError.hpp"
+#include "CompilerError.hpp"
 #include "Token.hpp"
 #include <vector>
 

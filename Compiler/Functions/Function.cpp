@@ -7,10 +7,10 @@
 //
 
 #include "Function.hpp"
-#include "../Compiler.hpp"
-#include "../CompilerError.hpp"
-#include "../EmojicodeCompiler.hpp"
-#include "../Types/TypeContext.hpp"
+#include "Compiler.hpp"
+#include "CompilerError.hpp"
+#include "EmojicodeCompiler.hpp"
+#include "Types/TypeContext.hpp"
 #include <llvm/IR/Function.h>
 #include <algorithm>
 #include <stdexcept>

@@ -7,7 +7,7 @@
 //
 
 #include "Extension.hpp"
-#include "../Functions/Function.hpp"
+#include "Functions/Function.hpp"
 #include <functional>
 
 namespace EmojicodeCompiler {

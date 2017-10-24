@@ -9,7 +9,7 @@
 #ifndef Generic_hpp
 #define Generic_hpp
 
-#include "../CompilerError.hpp"
+#include "CompilerError.hpp"
 #include "Type.hpp"
 #include <map>
 #include <string>

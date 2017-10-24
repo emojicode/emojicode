@@ -9,9 +9,9 @@
 #ifndef CallableScoper_hpp
 #define CallableScoper_hpp
 
-#include "../EmojicodeCompiler.hpp"
+#include "EmojicodeCompiler.hpp"
 #include "Scope.hpp"
-#include "../Functions/Function.hpp"
+#include "Functions/Function.hpp"
 #include <list>
 #include <vector>
 

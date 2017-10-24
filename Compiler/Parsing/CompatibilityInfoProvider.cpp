@@ -7,8 +7,8 @@
 //
 
 #include "CompatibilityInfoProvider.hpp"
-#include "../CompilerError.hpp"
-#include "../Functions/Function.hpp"
+#include "CompilerError.hpp"
+#include "Functions/Function.hpp"
 #include <fstream>
 #include <iostream>
 

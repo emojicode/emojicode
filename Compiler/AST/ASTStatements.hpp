@@ -11,8 +11,8 @@
 
 #include <utility>
 
-#include "../Scoping/CGScoper.hpp"
-#include "../Types/TypeExpectation.hpp"
+#include "Scoping/CGScoper.hpp"
+#include "Types/TypeExpectation.hpp"
 #include "ASTExpr.hpp"
 #include "ASTNode.hpp"
 

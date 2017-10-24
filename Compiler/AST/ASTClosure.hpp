@@ -9,7 +9,7 @@
 #ifndef ASTClosure_hpp
 #define ASTClosure_hpp
 
-#include "../Scoping/CapturingSemanticScoper.hpp"
+#include "Scoping/CapturingSemanticScoper.hpp"
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {

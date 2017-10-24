@@ -11,7 +11,7 @@
 
 #include <utility>
 
-#include "../Generation/FunctionCodeGenerator.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {

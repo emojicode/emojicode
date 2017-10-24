@@ -7,7 +7,7 @@
 //
 
 #include "ASTTypeExpr.hpp"
-#include "../Analysis/SemanticAnalyser.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 

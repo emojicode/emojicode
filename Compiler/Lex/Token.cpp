@@ -7,7 +7,7 @@
 //
 
 #include "Token.hpp"
-#include "../CompilerError.hpp"
+#include "CompilerError.hpp"
 #include "EmojiTokenization.hpp"
 
 namespace EmojicodeCompiler {

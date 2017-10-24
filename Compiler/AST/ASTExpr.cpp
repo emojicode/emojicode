@@ -7,10 +7,10 @@
 //
 
 #include "ASTExpr.hpp"
-#include "../Analysis/SemanticAnalyser.hpp"
-#include "../Compiler.hpp"
-#include "../Types/Enum.hpp"
-#include "../Types/Class.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
+#include "Compiler.hpp"
+#include "Types/Enum.hpp"
+#include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {
 

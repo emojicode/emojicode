@@ -7,8 +7,8 @@
 //
 
 #include "ASTClosure.hpp"
-#include "../Generation/ClosureCodeGenerator.hpp"
-#include "../Generation/FunctionCodeGenerator.hpp"
+#include "Generation/ClosureCodeGenerator.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 

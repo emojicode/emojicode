@@ -6,10 +6,10 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include "../Types/CommonTypeFinder.hpp"
-#include "../Compiler.hpp"
-#include "../Types/TypeContext.hpp"
-#include "../Types/TypeDefinition.hpp"
+#include "Types/CommonTypeFinder.hpp"
+#include "Compiler.hpp"
+#include "Types/TypeContext.hpp"
+#include "Types/TypeDefinition.hpp"
 #include <algorithm>
 
 namespace EmojicodeCompiler {

@@ -7,7 +7,7 @@
 //
 
 #include "Variable.hpp"
-#include "../CompilerError.hpp"
+#include "CompilerError.hpp"
 
 namespace EmojicodeCompiler {
 

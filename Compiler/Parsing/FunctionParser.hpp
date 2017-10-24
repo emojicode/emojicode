@@ -11,11 +11,11 @@
 
 #include <utility>
 
-#include "../AST/ASTExpr.hpp"
-#include "../AST/ASTStatements.hpp"
-#include "../Lex/TokenStream.hpp"
-#include "../Parsing/OperatorHelper.hpp"
-#include "../Types/TypeContext.hpp"
+#include "AST/ASTExpr.hpp"
+#include "AST/ASTStatements.hpp"
+#include "Lex/TokenStream.hpp"
+#include "Parsing/OperatorHelper.hpp"
+#include "Types/TypeContext.hpp"
 #include "AbstractParser.hpp"
 
 namespace EmojicodeCompiler {

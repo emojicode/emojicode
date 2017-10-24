@@ -10,7 +10,7 @@
 #define LLVMTypeHelper_hpp
 
 #include <llvm/IR/LLVMContext.h>
-#include "../Types/Type.hpp"
+#include "Types/Type.hpp"
 #include <map>
 
 namespace llvm {

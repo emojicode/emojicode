@@ -7,9 +7,9 @@
 //
 
 #include "TypeBodyParser.hpp"
-#include "../Functions/Function.hpp"
-#include "../Functions/Initializer.hpp"
-#include "../Types/Enum.hpp"
+#include "Functions/Function.hpp"
+#include "Functions/Initializer.hpp"
+#include "Types/Enum.hpp"
 #include "FunctionParser.hpp"
 
 namespace EmojicodeCompiler {

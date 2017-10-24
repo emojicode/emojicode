@@ -7,7 +7,7 @@
 //
 
 #include "HRFCompilerDelegate.hpp"
-#include "../Lex/SourcePosition.hpp"
+#include "Lex/SourcePosition.hpp"
 #include <iostream>
 
 namespace EmojicodeCompiler {

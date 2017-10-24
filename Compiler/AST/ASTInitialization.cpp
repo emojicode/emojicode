@@ -7,9 +7,9 @@
 //
 
 #include "ASTInitialization.hpp"
-#include "../Analysis/SemanticAnalyser.hpp"
-#include "../Types/Enum.hpp"
-#include "../Functions/Initializer.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
+#include "Types/Enum.hpp"
+#include "Functions/Initializer.hpp"
 
 namespace EmojicodeCompiler {
 

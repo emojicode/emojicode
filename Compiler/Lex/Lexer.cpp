@@ -7,8 +7,8 @@
 //
 
 #include "Lexer.hpp"
-#include "../CompilerError.hpp"
-#include "../Emojis.h"
+#include "CompilerError.hpp"
+#include "Emojis.h"
 #include "EmojiTokenization.hpp"
 #include <codecvt>
 #include <fstream>

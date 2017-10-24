@@ -7,17 +7,17 @@
 //
 
 #include "PackageReporter.hpp"
-#include "../EmojicodeCompiler.hpp"
-#include "../Functions/Function.hpp"
-#include "../Functions/Initializer.hpp"
-#include "../Package/Package.hpp"
-#include "../Types/Class.hpp"
-#include "../Types/Enum.hpp"
-#include "../Types/Generic.hpp"
-#include "../Types/Protocol.hpp"
-#include "../Types/TypeContext.hpp"
-#include "../Types/TypeDefinition.hpp"
-#include "../Types/ValueType.hpp"
+#include "EmojicodeCompiler.hpp"
+#include "Functions/Function.hpp"
+#include "Functions/Initializer.hpp"
+#include "Package/Package.hpp"
+#include "Types/Class.hpp"
+#include "Types/Enum.hpp"
+#include "Types/Generic.hpp"
+#include "Types/Protocol.hpp"
+#include "Types/TypeContext.hpp"
+#include "Types/TypeDefinition.hpp"
+#include "Types/ValueType.hpp"
 #include "JSONHelper.h"
 #include <cstring>
 #include <iostream>

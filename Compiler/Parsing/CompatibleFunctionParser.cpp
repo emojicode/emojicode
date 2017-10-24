@@ -7,9 +7,9 @@
 //
 
 #include "CompatibleFunctionParser.hpp"
-#include "../AST/ASTBinaryOperator.hpp"
-#include "../AST/ASTVariables.hpp"
-#include "../Package/Package.hpp"
+#include "AST/ASTBinaryOperator.hpp"
+#include "AST/ASTVariables.hpp"
+#include "Package/Package.hpp"
 #include "CompatibilityInfoProvider.hpp"
 #include <cassert>
 

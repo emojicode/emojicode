@@ -7,10 +7,10 @@
 //
 
 #include "ASTLiterals.hpp"
-#include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FunctionCodeGenerator.hpp"
-#include "../Compiler.hpp"
-#include "../Types/Class.hpp"
+#include "Generation/CallCodeGenerator.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
+#include "Compiler.hpp"
+#include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {
 

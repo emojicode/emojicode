@@ -6,17 +6,17 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "../Lex/Token.hpp"
-#include "../AST/ASTBinaryOperator.hpp"
-#include "../AST/ASTClosure.hpp"
-#include "../AST/ASTControlFlow.hpp"
-#include "../AST/ASTInitialization.hpp"
-#include "../AST/ASTLiterals.hpp"
-#include "../AST/ASTMethod.hpp"
-#include "../AST/ASTNode.hpp"
-#include "../AST/ASTTypeExpr.hpp"
-#include "../AST/ASTUnary.hpp"
-#include "../AST/ASTVariables.hpp"
+#include "Lex/Token.hpp"
+#include "AST/ASTBinaryOperator.hpp"
+#include "AST/ASTClosure.hpp"
+#include "AST/ASTControlFlow.hpp"
+#include "AST/ASTInitialization.hpp"
+#include "AST/ASTLiterals.hpp"
+#include "AST/ASTMethod.hpp"
+#include "AST/ASTNode.hpp"
+#include "AST/ASTTypeExpr.hpp"
+#include "AST/ASTUnary.hpp"
+#include "AST/ASTVariables.hpp"
 #include "FunctionParser.hpp"
 
 namespace EmojicodeCompiler {

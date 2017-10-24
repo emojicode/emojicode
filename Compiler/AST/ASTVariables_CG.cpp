@@ -7,7 +7,7 @@
 //
 
 #include "ASTVariables.hpp"
-#include "../Generation/FunctionCodeGenerator.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
 #include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {

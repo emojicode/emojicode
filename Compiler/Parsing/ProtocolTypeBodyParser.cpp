@@ -7,8 +7,8 @@
 //
 
 #include "ProtocolTypeBodyParser.hpp"
-#include "../Functions/ProtocolFunction.hpp"
-#include "../Types/Protocol.hpp"
+#include "Functions/ProtocolFunction.hpp"
+#include "Types/Protocol.hpp"
 
 namespace EmojicodeCompiler {
 

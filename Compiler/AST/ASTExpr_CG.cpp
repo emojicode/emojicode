@@ -7,9 +7,9 @@
 //
 
 #include "ASTExpr.hpp"
-#include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FunctionCodeGenerator.hpp"
-#include "../Types/Class.hpp"
+#include "Generation/CallCodeGenerator.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
+#include "Types/Class.hpp"
 #include "ASTTypeExpr.hpp"
 
 namespace EmojicodeCompiler {

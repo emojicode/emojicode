@@ -9,9 +9,9 @@
 #ifndef TypeDefinition_hpp
 #define TypeDefinition_hpp
 
-#include "../CompilerError.hpp"
-#include "../Lex/SourcePosition.hpp"
-#include "../Scoping/Scope.hpp"
+#include "CompilerError.hpp"
+#include "Lex/SourcePosition.hpp"
+#include "Scoping/Scope.hpp"
 #include "Generic.hpp"
 #include "Type.hpp"
 #include <functional>

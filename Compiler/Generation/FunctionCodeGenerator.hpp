@@ -10,8 +10,8 @@
 #define FunctionCodeGenerator_hpp
 
 #include <llvm/IR/IRBuilder.h>
-#include "../Functions/Function.hpp"
-#include "../Scoping/CGScoper.hpp"
+#include "Functions/Function.hpp"
+#include "Scoping/CGScoper.hpp"
 #include "CodeGenerator.hpp"
 #include <functional>
 

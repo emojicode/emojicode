@@ -9,9 +9,9 @@
 #ifndef AbstractParser_hpp
 #define AbstractParser_hpp
 
-#include "../Lex/TokenStream.hpp"
-#include "../Types/Generic.hpp"
-#include "../Types/TypeContext.hpp"
+#include "Lex/TokenStream.hpp"
+#include "Types/Generic.hpp"
+#include "Types/TypeContext.hpp"
 #include <memory>
 #include <utility>
 

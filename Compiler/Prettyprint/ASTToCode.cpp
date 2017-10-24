@@ -6,19 +6,19 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "../Parsing/OperatorHelper.hpp"
-#include "../AST/ASTBinaryOperator.hpp"
-#include "../AST/ASTClosure.hpp"
-#include "../AST/ASTControlFlow.hpp"
-#include "../AST/ASTExpr.hpp"
-#include "../AST/ASTInitialization.hpp"
-#include "../AST/ASTLiterals.hpp"
-#include "../AST/ASTMethod.hpp"
-#include "../AST/ASTStatements.hpp"
-#include "../AST/ASTTypeExpr.hpp"
-#include "../AST/ASTUnary.hpp"
-#include "../AST/ASTVariables.hpp"
-#include "../Types/Type.hpp"
+#include "Parsing/OperatorHelper.hpp"
+#include "AST/ASTBinaryOperator.hpp"
+#include "AST/ASTClosure.hpp"
+#include "AST/ASTControlFlow.hpp"
+#include "AST/ASTExpr.hpp"
+#include "AST/ASTInitialization.hpp"
+#include "AST/ASTLiterals.hpp"
+#include "AST/ASTMethod.hpp"
+#include "AST/ASTStatements.hpp"
+#include "AST/ASTTypeExpr.hpp"
+#include "AST/ASTUnary.hpp"
+#include "AST/ASTVariables.hpp"
+#include "Types/Type.hpp"
 #include "Prettyprinter.hpp"
 #include <sstream>
 

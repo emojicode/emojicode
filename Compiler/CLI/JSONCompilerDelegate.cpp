@@ -7,7 +7,7 @@
 //
 
 #include "JSONCompilerDelegate.hpp"
-#include "../Lex/SourcePosition.hpp"
+#include "Lex/SourcePosition.hpp"
 #include <iostream>
 
 namespace EmojicodeCompiler {

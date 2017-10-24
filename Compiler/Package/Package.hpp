@@ -9,8 +9,8 @@
 #ifndef Package_hpp
 #define Package_hpp
 
-#include "../Lex/SourcePosition.hpp"
-#include "../Types/Type.hpp"
+#include "Lex/SourcePosition.hpp"
+#include "Types/Type.hpp"
 #include <map>
 #include <utility>
 #include <vector>

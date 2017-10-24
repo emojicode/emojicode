@@ -6,11 +6,11 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "../EmojicodeCompiler.hpp"
-#include "../Compiler.hpp"
-#include "../CompilerError.hpp"
-#include "../Functions/Function.hpp"
-#include "../Functions/Initializer.hpp"
+#include "EmojicodeCompiler.hpp"
+#include "Compiler.hpp"
+#include "CompilerError.hpp"
+#include "Functions/Function.hpp"
+#include "Functions/Initializer.hpp"
 #include "Class.hpp"
 #include "TypeContext.hpp"
 #include <algorithm>

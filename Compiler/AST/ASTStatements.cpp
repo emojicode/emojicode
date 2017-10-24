@@ -7,12 +7,12 @@
 //
 
 #include "ASTStatements.hpp"
-#include "../Analysis/SemanticAnalyser.hpp"
-#include "../Compiler.hpp"
-#include "../Functions/FunctionType.hpp"
-#include "../Functions/Initializer.hpp"
-#include "../Types/Class.hpp"
-#include "../Scoping/VariableNotFoundError.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
+#include "Compiler.hpp"
+#include "Functions/FunctionType.hpp"
+#include "Functions/Initializer.hpp"
+#include "Types/Class.hpp"
+#include "Scoping/VariableNotFoundError.hpp"
 
 namespace EmojicodeCompiler {
 

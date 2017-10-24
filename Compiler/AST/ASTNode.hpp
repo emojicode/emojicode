@@ -9,10 +9,10 @@
 #ifndef ASTNode_hpp
 #define ASTNode_hpp
 
-#include "../Lex/SourcePosition.hpp"
-#include "../Types/Type.hpp"
-#include "../Types/TypeAvailability.hpp"
-#include "../Scoping/Variable.hpp"
+#include "Lex/SourcePosition.hpp"
+#include "Types/Type.hpp"
+#include "Types/TypeAvailability.hpp"
+#include "Scoping/Variable.hpp"
 #include <memory>
 #include <utility>
 

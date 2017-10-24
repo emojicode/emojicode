@@ -8,10 +8,10 @@
 
 #include <llvm/IR/DerivedTypes.h>
 #include "LLVMTypeHelper.hpp"
-#include "../Types/TypeDefinition.hpp"
-#include "../Functions/Function.hpp"
-#include "../Functions/Initializer.hpp"
-#include "../Scoping/CapturingSemanticScoper.hpp"
+#include "Types/TypeDefinition.hpp"
+#include "Functions/Function.hpp"
+#include "Functions/Initializer.hpp"
+#include "Scoping/CapturingSemanticScoper.hpp"
 #include "Mangler.hpp"
 #include <vector>
 

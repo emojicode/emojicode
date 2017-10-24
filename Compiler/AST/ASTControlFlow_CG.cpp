@@ -7,8 +7,8 @@
 //
 
 #include "ASTControlFlow.hpp"
-#include "../Generation/CallCodeGenerator.hpp"
-#include "../Generation/FunctionCodeGenerator.hpp"
+#include "Generation/CallCodeGenerator.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 

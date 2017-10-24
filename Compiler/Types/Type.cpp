@@ -7,9 +7,9 @@
 //
 
 #include "Type.hpp"
-#include "../EmojicodeCompiler.hpp"
-#include "../Package/Package.hpp"
-#include "../Functions/Function.hpp"
+#include "EmojicodeCompiler.hpp"
+#include "Package/Package.hpp"
+#include "Functions/Function.hpp"
 #include "Class.hpp"
 #include "CommonTypeFinder.hpp"
 #include "Enum.hpp"

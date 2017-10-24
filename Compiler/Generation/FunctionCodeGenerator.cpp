@@ -6,15 +6,15 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "../Types/Enum.hpp"
+#include "Types/Enum.hpp"
 #include <llvm/IR/Function.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Verifier.h>
-#include "../AST/ASTStatements.hpp"
-#include "../Package/Package.hpp"
-#include "../Functions/BoxingLayer.hpp"
+#include "AST/ASTStatements.hpp"
+#include "Package/Package.hpp"
+#include "Functions/BoxingLayer.hpp"
 #include "FunctionCodeGenerator.hpp"
 #include <cstdlib>
 

@@ -9,8 +9,8 @@
 #ifndef Type_hpp
 #define Type_hpp
 
-#include "../EmojicodeCompiler.hpp"
-#include "../Emojis.h"
+#include "EmojicodeCompiler.hpp"
+#include "Emojis.h"
 #include "StorageType.hpp"
 #include <stdexcept>
 #include <string>

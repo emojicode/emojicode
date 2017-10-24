@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "../Compiler.hpp"
-#include "../Package/RecordingPackage.hpp"
-#include "../Prettyprint/Prettyprinter.hpp"
+#include "Compiler.hpp"
+#include "Package/RecordingPackage.hpp"
+#include "Prettyprint/Prettyprinter.hpp"
 #include "Options.hpp"
 #include "PackageReporter.hpp"
 #include <exception>

@@ -7,7 +7,7 @@
 //
 
 #include "TypeAvailability.hpp"
-#include "../CompilerError.hpp"
+#include "CompilerError.hpp"
 
 namespace EmojicodeCompiler {
 
