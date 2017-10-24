@@ -6,25 +6,25 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
-#include <llvm/Support/TargetRegistry.h>
-#include <llvm/Support/TargetSelect.h>
-#include <llvm/Support/FileSystem.h>
-#include <llvm/IR/Verifier.h>
-#include <llvm/Target/TargetMachine.h>
-#include <llvm/Target/TargetOptions.h>
-#include <llvm/Support/raw_ostream.h>
 #include "CodeGenerator.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "EmojicodeCompiler.hpp"
+#include "FunctionCodeGenerator.hpp"
 #include "Functions/Initializer.hpp"
+#include "Functions/ProtocolFunction.hpp"
+#include "Mangler.hpp"
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/ValueType.hpp"
-#include "Functions/ProtocolFunction.hpp"
-#include "FunctionCodeGenerator.hpp"
-#include "Mangler.hpp"
+#include <llvm/IR/Verifier.h>
+#include <llvm/Support/FileSystem.h>
+#include <llvm/Support/TargetRegistry.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Support/raw_ostream.h>
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/Target/TargetOptions.h>
 #include <algorithm>
 #include <limits>
 #include <vector>
@@ -33,6 +33,7 @@ namespace EmojicodeCompiler {
 
 CodeGenerator::CodeGenerator(Package *package) : package_(package) {
     module_ = std::make_unique<llvm::Module>(package->name(), context());
+    declareRunTime();
 }
 
 llvm::Value* CodeGenerator::optionalValue() {
@@ -51,8 +52,6 @@ void CodeGenerator::declareLlvmFunction(Function *function) {
 }
 
 void CodeGenerator::generate(const std::string &outPath) {
-    declareRunTime();
-
     for (auto package : package_->dependencies()) {
         declareImportedPackageSymbols(package);
     }
@@ -147,7 +146,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
         std::copy(superclass->virtualTable().begin(), superclass->virtualTable().end(), functions.begin());
     }
 
-    klass->eachFunction([&functions, this] (Function *function) {
+    klass->eachFunction([&functions](Function *function) {
         if (function->hasVti()) {
             functions[function->vti()] = function->llvmFunction();
         }

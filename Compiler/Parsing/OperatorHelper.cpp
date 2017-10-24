@@ -96,8 +96,9 @@ std::u32string operatorName(OperatorType type) {
             return std::u32string(1, E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE);
         case OperatorType::CallOperator:
             return std::u32string(1, E_WHITE_EXCLAMATION_MARK);
+        case OperatorType::Invalid:
+            throw std::invalid_argument("Invalid operator");
     }
-    throw std::invalid_argument("Invalid operator");
 }
 
 int operatorPrecedence(OperatorType type) {
@@ -132,8 +133,9 @@ int operatorPrecedence(OperatorType type) {
             return 2;
         case OperatorType::LogicalOrOperator:
             return 1;
+        case OperatorType::Invalid:
+            throw std::invalid_argument("Invalid operator");
     }
-    throw std::invalid_argument("Invalid operator");
 }
 
 }  // namespace EmojicodeCompiler

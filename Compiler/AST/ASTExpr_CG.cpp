@@ -7,10 +7,10 @@
 //
 
 #include "ASTExpr.hpp"
+#include "ASTTypeExpr.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/Class.hpp"
-#include "ASTTypeExpr.hpp"
 
 namespace EmojicodeCompiler {
 

@@ -12,12 +12,14 @@
 #include "Prettyprint/Prettyprinter.hpp"
 #include <llvm/Support/FileSystem.h>
 
+#include <utility>
+
 namespace EmojicodeCompiler {
 
 Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string interfaceFile, std::string outPath,
                    std::string linker, std::vector<std::string> pkgSearchPaths,
                    std::unique_ptr<CompilerDelegate> delegate, bool linkToExec)
-: linkToExec_(linkToExec), mainFile_(std::move(mainFile)), interfaceFile_(interfaceFile), outPath_(std::move(outPath)),
+: linkToExec_(linkToExec), mainFile_(std::move(mainFile)), interfaceFile_(std::move(interfaceFile)), outPath_(std::move(outPath)),
   mainPackageName_(std::move(mainPackage)), packageSearchPaths_(std::move(pkgSearchPaths)), linker_(std::move(linker)),
   delegate_(std::move(delegate)) {}
 

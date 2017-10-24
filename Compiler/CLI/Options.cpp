@@ -9,10 +9,10 @@
 #include "Options.hpp"
 #include "HRFCompilerDelegate.hpp"
 #include "JSONCompilerDelegate.hpp"
+#include <llvm/Support/FileSystem.h>
+#include <llvm/Support/Path.h>
 #include <cstdlib>
 #include <getopt.h>
-#include <llvm/Support/Path.h>
-#include <llvm/Support/FileSystem.h>
 #include <iostream>
 
 namespace EmojicodeCompiler {

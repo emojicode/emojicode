@@ -6,10 +6,10 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include "CodeGenerator.hpp"
+#include "StringPool.hpp"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/GlobalVariable.h>
-#include "StringPool.hpp"
-#include "CodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 

@@ -7,10 +7,10 @@
 //
 
 #include "ASTVariables.hpp"
+#include "ASTInitialization.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
-#include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {
 

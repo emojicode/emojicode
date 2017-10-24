@@ -15,6 +15,7 @@
 
 namespace llvm {
 class Type;
+class StructType;
 }  // namespace llvm
 
 namespace EmojicodeCompiler {

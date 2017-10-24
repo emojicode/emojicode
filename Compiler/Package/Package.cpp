@@ -12,14 +12,14 @@
 #include "CompilerError.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Lex/Lexer.hpp"
+#include "Package.hpp"
 #include "Parsing/CompatibilityInfoProvider.hpp"
 #include "Parsing/DocumentParser.hpp"
 #include "Prettyprint/Prettyprinter.hpp"
-#include "Types/ValueType.hpp"
 #include "Types/Class.hpp"
-#include "Types/Protocol.hpp"
 #include "Types/Extension.hpp"
-#include "Package.hpp"
+#include "Types/Protocol.hpp"
+#include "Types/ValueType.hpp"
 #include <algorithm>
 #include <cstring>
 #include <iostream>

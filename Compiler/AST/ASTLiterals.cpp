@@ -10,9 +10,9 @@
 #include "Analysis/SemanticAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Parsing/AbstractParser.hpp"
+#include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {
 

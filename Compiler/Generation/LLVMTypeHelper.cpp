@@ -6,13 +6,13 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include <llvm/IR/DerivedTypes.h>
-#include "LLVMTypeHelper.hpp"
-#include "Types/TypeDefinition.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
-#include "Scoping/CapturingSemanticScoper.hpp"
+#include "LLVMTypeHelper.hpp"
 #include "Mangler.hpp"
+#include "Scoping/CapturingSemanticScoper.hpp"
+#include "Types/TypeDefinition.hpp"
+#include <llvm/IR/DerivedTypes.h>
 #include <vector>
 
 namespace EmojicodeCompiler {

@@ -10,6 +10,7 @@
 #include "EmojicodeCompiler.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
+#include "JSONHelper.h"
 #include "Package/Package.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
@@ -18,7 +19,6 @@
 #include "Types/TypeContext.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/ValueType.hpp"
-#include "JSONHelper.h"
 #include <cstring>
 #include <iostream>
 #include <list>

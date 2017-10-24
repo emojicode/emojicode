@@ -18,8 +18,8 @@
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTVariables.hpp"
-#include "Types/Type.hpp"
 #include "Prettyprinter.hpp"
+#include "Types/Type.hpp"
 #include <sstream>
 
 namespace EmojicodeCompiler {

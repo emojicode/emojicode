@@ -8,12 +8,12 @@
 
 #include "CallCodeGenerator.hpp"
 #include "AST/ASTExpr.hpp"
-#include "Functions/Initializer.hpp"
-#include "Types/TypeDefinition.hpp"
-#include "Types/Protocol.hpp"
 #include "FunctionCodeGenerator.hpp"
-#include <stdexcept>
+#include "Functions/Initializer.hpp"
+#include "Types/Protocol.hpp"
+#include "Types/TypeDefinition.hpp"
 #include <llvm/Support/raw_ostream.h>
+#include <stdexcept>
 
 namespace EmojicodeCompiler {
 

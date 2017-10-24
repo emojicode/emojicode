@@ -11,12 +11,12 @@
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
+#include "Parsing/OperatorHelper.hpp"
+#include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
 #include "Types/ValueType.hpp"
-#include "Types/Class.hpp"
-#include "Parsing/OperatorHelper.hpp"
 #include <algorithm>
 #include <cstdio>
 

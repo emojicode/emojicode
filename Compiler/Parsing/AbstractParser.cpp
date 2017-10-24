@@ -7,13 +7,13 @@
 //
 
 #include "AbstractParser.hpp"
-#include "Package/Package.hpp"
+#include "CompatibilityInfoProvider.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
+#include "Package/Package.hpp"
 #include "Parsing/CompatibleFunctionParser.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeContext.hpp"
-#include "CompatibilityInfoProvider.hpp"
 #include <map>
 #include <vector>
 

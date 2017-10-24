@@ -7,9 +7,9 @@
 //
 
 #include "ASTMethod.hpp"
+#include "ASTVariables.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
 #include "Compiler.hpp"
-#include "ASTVariables.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 

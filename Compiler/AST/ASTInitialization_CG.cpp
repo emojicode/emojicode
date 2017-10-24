@@ -7,12 +7,12 @@
 //
 
 #include "Generation/FunctionCodeGenerator.hpp"
-#include "Functions/CallType.h"
-#include "Types/Enum.hpp"
-#include "Types/Class.hpp"
-#include "ASTTypeExpr.hpp"
-#include "Generation/CallCodeGenerator.hpp"
 #include "ASTInitialization.hpp"
+#include "ASTTypeExpr.hpp"
+#include "Functions/CallType.h"
+#include "Generation/CallCodeGenerator.hpp"
+#include "Types/Class.hpp"
+#include "Types/Enum.hpp"
 
 namespace EmojicodeCompiler {
 

@@ -8,21 +8,21 @@
 
 #include "AST/ASTNode.hpp"
 #include "AST/ASTBoxing.hpp"
+#include "AST/ASTInitialization.hpp"
 #include "AST/ASTLiterals.hpp"
 #include "AST/ASTVariables.hpp"
-#include "AST/ASTInitialization.hpp"
+#include "BoxingLayerBuilder.hpp"
 #include "Compiler.hpp"
 #include "Functions/BoxingLayer.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
+#include "SemanticAnalyser.hpp"
+#include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
-#include "Types/Class.hpp"
 #include "Types/TypeDefinition.hpp"
-#include "BoxingLayerBuilder.hpp"
-#include "SemanticAnalyser.hpp"
 #include <memory>
 
 namespace EmojicodeCompiler {

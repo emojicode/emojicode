@@ -7,17 +7,17 @@
 //
 
 #include "DocumentParser.hpp"
+#include "FunctionParser.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Functions/ProtocolFunction.hpp"
+#include "ProtocolTypeBodyParser.hpp"
+#include "TypeBodyParser.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/ValueType.hpp"
-#include "FunctionParser.hpp"
-#include "ProtocolTypeBodyParser.hpp"
-#include "TypeBodyParser.hpp"
 #include <cstring>
 #include <experimental/optional>
 
