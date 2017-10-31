@@ -7,7 +7,7 @@ import re
 
 compilation_tests = [
     "hello",
-    # "intTest",
+    "intTest",
     "if",
     "vars",
     # "namespace",

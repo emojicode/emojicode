@@ -10,20 +10,23 @@
 #define String_hpp
 
 #include <cstdint>
+#include "../runtime/Runtime.h"
 
 namespace s {
 
-struct String {
-    using Character = uint32_t;
+class String : public runtime::Object<String>  {
+public:
+    using Character = runtime::Symbol;
 
-    void *meta;
-    const Character *characters;
-    const int64_t count;
+    Character *characters;
+    runtime::Integer count;
 
     const char* cString();
     int compare(String *other);
 };
 
 }
+
+SET_META_FOR(s::String, s, 1f521)
 
 #endif /* String_hpp */

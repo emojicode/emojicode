@@ -27,8 +27,6 @@ Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32
 }
 
 void Class::prepareForSemanticAnalysis() {
-    Type classType = Type(this, false);
-
     if (superclass() != nullptr) {
         instanceScope() = superclass()->instanceScope();
         instanceScope().markInherited();
@@ -41,34 +39,10 @@ void Class::prepareForSemanticAnalysis() {
     }
 
     if (superclass() != nullptr) {
-        instanceVariablesMut().insert(instanceVariables().begin(), superclass()->instanceVariables().begin(),
-                                      superclass()->instanceVariables().end());
-
-        protocols_.reserve(superclass()->protocols().size());
-        for (auto &protocol : superclass()->protocols()) {
-            auto find = std::find_if(protocols_.begin(), protocols_.end(), [&classType, &protocol](const Type &a) {
-                return a.identicalTo(protocol, TypeContext(classType), nullptr);
-            });
-            if (find != protocols_.end()) {
-                throw CompilerError(position(), "Superclass already declared conformance to ",
-                                    protocol.toString(TypeContext(classType)), ".");
-            }
-            protocols_.emplace_back(protocol);
-        }
-
-        eachFunctionWithoutInitializers([this](Function *function) {
-            if (function->functionType() == FunctionType::ObjectInitializer) {
-                checkInheritedRequiredInit(dynamic_cast<Initializer *>(function));
-            }
-            else {
-                checkOverride(function);
-            }
-        });
-
-        virtualTableIndex_ = superclass()->virtualTableIndex_;
+        inherit();
     }
 
-    TypeDefinition::finalizeProtocols(classType);
+    TypeDefinition::finalizeProtocols(Type(this, false));
 
     eachFunction([this](Function *function) {
         if (function->functionType() == FunctionType::ObjectInitializer) {
@@ -81,6 +55,35 @@ void Class::prepareForSemanticAnalysis() {
             function->setVti(virtualTableIndex_++);
         }
     });
+}
+
+void Class::inherit() {
+    Type classType = Type(this, false);
+    instanceVariablesMut().insert(instanceVariables().begin(), superclass()->instanceVariables().begin(),
+                                  superclass()->instanceVariables().end());
+
+    protocols_.reserve(superclass()->protocols().size());
+    for (auto &protocol : superclass()->protocols()) {
+        auto find = std::find_if(protocols_.begin(), protocols_.end(), [&classType, &protocol](const Type &a) {
+            return a.identicalTo(protocol, TypeContext(classType), nullptr);
+        });
+        if (find != protocols_.end()) {
+            throw CompilerError(position(), "Superclass already declared conformance to ",
+                                protocol.toString(TypeContext(classType)), ".");
+        }
+        protocols_.emplace_back(protocol);
+    }
+
+    eachFunctionWithoutInitializers([this](Function *function) {
+        if (function->functionType() == FunctionType::ObjectInitializer) {
+            checkInheritedRequiredInit(dynamic_cast<Initializer *>(function));
+        }
+        else {
+            checkOverride(function);
+        }
+    });
+
+    virtualTableIndex_ = superclass()->virtualTableIndex_;
 }
 
 void Class::checkOverride(Function *function) {

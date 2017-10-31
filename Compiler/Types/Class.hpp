@@ -63,6 +63,8 @@ public:
 private:
     std::set<std::u32string> requiredInitializers_;
 
+    void inherit();
+
     /// @pre superclass() != nullptr
     Function* findSuperFunction(Function *function) const;
     /// @pre superclass() != nullptr

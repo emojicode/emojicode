@@ -17,7 +17,7 @@ using s::String;
 
 const char* String::cString() {
     size_t ds = u8_codingsize(characters, count);
-    auto *utf8str = reinterpret_cast<char*>(ejcAlloc(ds + 1));
+    auto *utf8str = runtime::allocate<char>(ds + 1);
     // Convert
     size_t written = u8_toutf8(utf8str, ds, characters, count);
     utf8str[written] = 0;
@@ -36,7 +36,7 @@ extern "C" void sStringPrint(String *string) {
     puts(string->cString());
 }
 
-extern "C" int64_t sStringCompare(String *string, String *b) {
+extern "C" runtime::Integer sStringCompare(String *string, String *b) {
     return string->compare(b);
 }
 
@@ -60,6 +60,6 @@ extern "C" char sStringEndsWith(String *string, String *ending) {
                        ending->count * sizeof(String::Character)) == 0;
 }
 
-extern "C" int64_t sStringUtf8ByteCount(String *string) {
+extern "C" runtime::Integer sStringUtf8ByteCount(String *string) {
     return u8_codingsize(string->characters, string->count);
 }
