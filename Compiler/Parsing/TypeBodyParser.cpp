@@ -40,7 +40,7 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
 }
 
 void TypeBodyParser::parseFunction(Function *function, bool inititalizer) {
-    auto context = TypeContext(type_, function);
+    auto context = TypeContext(owningType(), function);
     parseGenericParameters(function, context);
     parseParameters(function, context, inititalizer);
     if (!inititalizer) {
@@ -80,7 +80,7 @@ void TypeBodyParser::parseEnumValue(const SourcePosition &p, const Documentation
 
 void EnumTypeBodyParser::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
     auto &token = stream_.consumeToken(TokenType::Identifier);
-    type_.eenum()->addValueFor(token.value(), token.position(), documentation.get());
+    owningType().eenum()->addValueFor(token.value(), token.position(), documentation.get());
 }
 
 void EnumTypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
@@ -96,7 +96,7 @@ Initializer* EnumTypeBodyParser::parseInitializer(const std::u32string &name, Ty
 void ClassTypeBodyParser::parse() {
     TypeBodyParser::parse();
     for (auto &init : requiredInitializers_) {
-        package_->compiler()->error(CompilerError(type_.typeDefinition()->position(), "Required initializer ",
+        package_->compiler()->error(CompilerError(owningType().typeDefinition()->position(), "Required initializer ",
                                              utf8(init), " was not implemented."));
     }
 }

@@ -36,7 +36,7 @@ public:
 
     const Token& consumeToken(TokenType type) {
         if (!hasMoreTokens()) {
-            throw CompilerError(nextToken().position(), "Unexpected end of program.");
+            throw CompilerError(tokens_[index_ - 1].position(), "Unexpected end of program.");
         }
         if (nextToken().type() != type) {
             throw CompilerError(nextToken().position(), "Expected ", Token::stringNameForType(type),

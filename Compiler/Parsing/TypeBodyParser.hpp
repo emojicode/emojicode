@@ -55,9 +55,8 @@ protected:
         }
         return type_;
     }
-    
-    Type type_;
 private:
+    Type type_;
     bool interface_;
     AccessLevel readAccessLevel();
     void parseFunctionBody(Function *function);

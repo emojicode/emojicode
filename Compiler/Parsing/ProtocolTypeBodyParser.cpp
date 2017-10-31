@@ -19,10 +19,10 @@ void ProtocolTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAtt
                                                      p, false, documentation.get(),
                                                      attributes.has(Attribute::Deprecated), false,
                                                      FunctionType::ObjectMethod);
-    parseParameters(method.get(), TypeContext(type_), false);
-    parseReturnType(method.get(), TypeContext(type_));
+    parseParameters(method.get(), TypeContext(owningType()), false);
+    parseReturnType(method.get(), TypeContext(owningType()));
 
-    type_.protocol()->addMethod(std::move(method));
+    owningType().protocol()->addMethod(std::move(method));
 }
 
 Initializer* ProtocolTypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
