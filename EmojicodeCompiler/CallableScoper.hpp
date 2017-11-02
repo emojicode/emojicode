@@ -84,7 +84,7 @@ private:
     std::list<Scope> scopes_;
     Scope *instanceScope_ = nullptr;
     bool pushedTemporaryScope_ = false;
-    int maxInitializationLevel_ = 1;
+    int maxInitializationLevel_ = 0;
     std::vector<FunctionObjectVariableInformation> *info_ = nullptr;
 };
 
