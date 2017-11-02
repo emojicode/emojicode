@@ -171,6 +171,7 @@ public:
     bool mutating() const { return mutating_; }
 
     FunctionPAGMode compilationMode() const { return compilationMode_; }
+    void setCompilationMode(FunctionPAGMode mode) { compilationMode_ = mode; }
 
     virtual ContextType contextType() const {
         switch (compilationMode()) {

@@ -975,6 +975,9 @@ Type FunctionPAG::parseExprIdentifier(const Token &token, const TypeExpectation 
                 writer_.writeInstruction(static_cast<uint16_t>(record.type));
             }
             writer_.writeInstruction(pag.usedSelfInBody() ? 1 : 0);
+            if (!pag.usedSelfInBody()) {
+                function->setCompilationMode(FunctionPAGMode::Function);
+            }
 
             auto type = function->type();
             box(expectation, type, insertionPoint);
