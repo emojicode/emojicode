@@ -334,13 +334,15 @@ static void closureMark(Object *o) {
     if (c->thisContext.object != nullptr) {
         mark(&c->thisContext.object);
     }
-    mark(&c->capturedVariables);
-    mark(&c->capturesInformation);
+    if (c->capturesInformation != nullptr) {
+        mark(&c->capturedVariables);
+        mark(&c->capturesInformation);
 
-    auto value = c->capturedVariables->val<Value>();
-    auto records = c->capturesInformation->val<ObjectVariableRecord>();
-    for (size_t i = 0; i < c->recordsCount; i++) {
-        markByObjectVariableRecord(records[i], value, i);
+        auto value = c->capturedVariables->val<Value>();
+        auto records = c->capturesInformation->val<ObjectVariableRecord>();
+        for (size_t i = 0; i < c->recordsCount; i++) {
+            markByObjectVariableRecord(records[i], value, i);
+        }
     }
 }
 
