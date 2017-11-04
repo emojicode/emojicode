@@ -907,12 +907,15 @@ void produce(Thread *thread, Value *destination) {
             return;
         }
         case INS_CLOSURE_BOX: {
-            Object *closure = newObject(CL_CLOSURE);
+            auto destFn = thread->consumeInstruction();
+            Value value;
+            produce(thread, &value);
+
+            auto closure = newObject(CL_CLOSURE);
 
             auto *c = closure->val<Closure>();
-
-            c->function = functionTable[thread->consumeInstruction()];
-            produce(thread, &c->thisContext);
+            c->function = functionTable[destFn];
+            c->thisContext = value;
             destination->object = closure;
             return;
         }
