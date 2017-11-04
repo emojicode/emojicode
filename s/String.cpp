@@ -24,6 +24,7 @@ const char* String::cString() {
     return utf8str;
 }
 
+
 int String::compare(String *other) {
     if (count != other->count) {
         return count > other->count ? 1 : -1;
@@ -34,6 +35,14 @@ int String::compare(String *other) {
 
 extern "C" void sStringPrint(String *string) {
     puts(string->cString());
+}
+
+extern "C" void sCodePointToString(String *string) {
+    CString codepoint(string->cString());
+    std::wstring codepoint2(codepoint);
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> cnvt;
+    std::string stringout = cnvt.to_bytes(codepoint2);
+    return stringout.c_str();
 }
 
 extern "C" runtime::Integer sStringCompare(String *string, String *b) {
