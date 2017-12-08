@@ -654,14 +654,13 @@ void FunctionPAG::parseStatement() {
                 insertionPoint.insert({ INS_PRODUCE_WITH_STACK_DESTINATION,
                     static_cast<EmojicodeInstruction>(iteratorVar.id()), INS_DISPATCH_PROTOCOL,
                 });
-                box(TypeExpectation(true, true, false), iteratee, insertionPoint);
-                iteratorVar.initialize(writer_.count());
-
-                scoper_.clearTemporaryScope();
-
                 writer_.writeInstruction({ static_cast<EmojicodeInstruction>(PR_ENUMERATEABLE->index),
                     static_cast<EmojicodeInstruction>(iteratorMethodIndex)
                 });
+                box(TypeExpectation(true, true, false), iteratee, insertionPoint);
+                iteratorVar.initialize(writer_.count());
+                scoper_.clearTemporaryScope();
+
                 writer_.writeInstruction(INS_JUMP_FORWARD);
                 auto placeholder = writer_.writeInstructionsCountPlaceholderCoin();
                 auto delta = writer_.count();
@@ -673,7 +672,6 @@ void FunctionPAG::parseStatement() {
                 pathAnalyser.beginBranch();
 
                 flowControlBlock(false, [this, iteratorVar, &var, nextVTI]{
-                    var.initialize(writer_.count());
                     writer_.writeInstruction({ INS_PRODUCE_WITH_STACK_DESTINATION,
                         static_cast<EmojicodeInstruction>(var.id()), INS_DISPATCH_PROTOCOL,
                         INS_GET_VT_REFERENCE_STACK,
@@ -681,6 +679,7 @@ void FunctionPAG::parseStatement() {
                         static_cast<EmojicodeInstruction>(PR_ENUMERATOR->index),
                         static_cast<EmojicodeInstruction>(nextVTI)
                     });
+                    var.initialize(writer_.count());
                 });
                 placeholder.write();
                 writer_.writeInstruction({ INS_JUMP_BACKWARD_IF, INS_DISPATCH_PROTOCOL,
