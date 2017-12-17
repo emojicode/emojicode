@@ -76,7 +76,9 @@ void serverAccept(Thread *thread) {
     int listenerDescriptor = *thread->thisObject()->val<int>();
     struct sockaddr_storage clientAddress{};
     unsigned int addressSize = sizeof(clientAddress);
+    Emojicode::allowGC();
     int connectionAddress = accept(listenerDescriptor, reinterpret_cast<struct sockaddr *>(&clientAddress), &addressSize);
+    Emojicode::disallowGCAndPauseIfNeeded();
 
     if (connectionAddress == -1) {
         thread->returnNothingnessFromFunction();
