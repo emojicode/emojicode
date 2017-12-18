@@ -136,22 +136,4 @@ Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation 
     return type.genericArguments()[0];
 }
 
-Type ASTCaptureMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    Type type = analyser->expect(TypeExpectation(false, false, false), &callee_);
-
-    analyser->validateMethodCapturability(type, position());
-    auto function = type.typeDefinition()->getMethod(name_, type, analyser->typeContext(), position());
-    function->deprecatedWarning(position());
-    return function->type();
-}
-
-Type ASTCaptureTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = analyser->analyseTypeExpr(callee_, expectation);
-    analyser->validateMethodCapturability(type, position());
-    auto function = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), position());
-    function->deprecatedWarning(position());
-    contextedFunction_ = type.type() == TypeType::ValueType || type.type() == TypeType::Enum;
-    return function->type();
-}
-
 }  // namespace EmojicodeCompiler

@@ -258,15 +258,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return parseListingLiteral<ASTDictionaryLiteral>(E_AUBERGINE, token);
         case E_HIGH_VOLTAGE_SIGN:
             return std::make_shared<ASTNothingness>(token.position());
-        case E_HOT_PEPPER: {
-            if (stream_.consumeTokenIf(E_DOUGHNUT)) {
-                auto name = stream_.consumeToken(TokenType::Identifier).value();
-                return std::make_shared<ASTCaptureTypeMethod>(name, parseTypeExpr(token.position()), token.position());
-            }
-
-            auto name = stream_.consumeToken(TokenType::Identifier).value();
-            return std::make_shared<ASTCaptureMethod>(name, parseExpr(0), token.position());
-        }
         case E_CHIPMUNK: {
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             return std::make_shared<ASTSuperMethod>(name, parseArguments(token.position()), token.position());

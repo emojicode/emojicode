@@ -107,31 +107,6 @@ private:
     ASTArguments args_;
 };
 
-class ASTCaptureMethod final : public ASTExpr {
-public:
-    ASTCaptureMethod(std::u32string name, std::shared_ptr<ASTExpr> callee, const SourcePosition &p)
-    : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
-private:
-    std::u32string name_;
-    std::shared_ptr<ASTExpr> callee_;
-};
-
-class ASTCaptureTypeMethod final : public ASTExpr {
-public:
-    ASTCaptureTypeMethod(std::u32string name, std::shared_ptr<ASTTypeExpr> callee,
-                         const SourcePosition &p) : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
-private:
-    std::u32string name_;
-    std::shared_ptr<ASTTypeExpr> callee_;
-    bool contextedFunction_ = false;
-};
-
 class ASTTypeMethod final : public ASTExpr {
 public:
     ASTTypeMethod(std::u32string name, std::shared_ptr<ASTTypeExpr> callee,

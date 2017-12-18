@@ -137,16 +137,6 @@ void ASTTypeMethod::toCode(Prettyprinter &pretty) const {
     args_.toCode(pretty);
 }
 
-void ASTCaptureTypeMethod::toCode(Prettyprinter &pretty) const {
-    pretty << "🌶🍩" << utf8(name_);
-    callee_->toCode(pretty);
-}
-
-void ASTCaptureMethod::toCode(Prettyprinter &pretty) const {
-    pretty << "🌶" << utf8(name_);
-    callee_->toCode(pretty);
-}
-
 void ASTInitialization::toCode(Prettyprinter &pretty) const {
     pretty << "🆕";
     typeExpr_->toCode(pretty);
