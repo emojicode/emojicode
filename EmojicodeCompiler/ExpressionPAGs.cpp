@@ -329,6 +329,9 @@ Type pagMethodCapture(const Token &token, const TypeExpectation &expectation, Fu
     functionPag.box(expectation, Type::callableIncomplete());
     Function *function;
 
+    compilerWarning(token.position(), "🌶 is deprecated and will be removed in an upcoming version. "
+                    "Use a normal closure instead.");
+
     auto placeholder = functionPag.writer().writeInstructionPlaceholder();
     if (functionPag.stream().consumeTokenIf(E_DOUGHNUT)) {
         auto &methodName = functionPag.stream().consumeToken();
