@@ -339,7 +339,7 @@ static void closureMark(Object *o) {
         mark(&c->capturesInformation);
 
         auto value = c->capturedVariables->val<Value>();
-        auto records = c->capturesInformation->val<ObjectVariableRecord>();
+        auto records = c->objectVariableRecords->val<ObjectVariableRecord>();
         for (size_t i = 0; i < c->recordsCount; i++) {
             markByObjectVariableRecord(records[i], value, i);
         }
