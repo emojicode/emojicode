@@ -36,7 +36,13 @@ public:
     LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }
     virtual llvm::Value* thisValue() const { return &*fn_->llvmFunction()->args().begin(); }
 
-    llvm::Value* sizeFor(llvm::PointerType *type);
+    /// @returns The number of bytes an instance of @c type takes up in memory.
+    /// @see sizeOfReferencedType
+    llvm::Value* sizeOf(llvm::Type *type);
+    /// @returns The number of bytes an instance of the type pointed to by a pointer of @c ptrType takes up.
+    ///          Behaves like `sizeOf(ptrType->getElementType())`, although this method does not call sizeOf().
+    /// @see sizeOf
+    llvm::Value* sizeOfReferencedType(llvm::PointerType *ptrType);
     llvm::Value* getMetaFromObject(llvm::Value *object);
     llvm::Value* getHasBoxNoValue(llvm::Value *box);
     /// Gets a pointer to the meta type field of box.

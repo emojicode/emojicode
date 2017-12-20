@@ -19,7 +19,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     closureGenerator.generate();
 
     auto capturesType = fg->generator()->typeHelper().llvmTypeForClosureCaptures(captures_);
-    auto alloc = fg->builder().CreateCall(fg->generator()->runTimeNew(), fg->sizeFor(capturesType->getPointerTo()));
+    auto alloc = fg->builder().CreateCall(fg->generator()->runTimeNew(), fg->sizeOf(capturesType));
     auto captures = fg->builder().CreateBitCast(alloc, capturesType->getPointerTo());
 
 

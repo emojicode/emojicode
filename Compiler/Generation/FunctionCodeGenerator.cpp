@@ -50,10 +50,14 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     }
 }
 
-llvm::Value* FunctionCodeGenerator::sizeFor(llvm::PointerType *type) {
+llvm::Value* FunctionCodeGenerator::sizeOfReferencedType(llvm::PointerType *type) {
     auto one = llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1);
     auto sizeg = builder().CreateGEP(llvm::ConstantPointerNull::getNullValue(type), one);
     return builder().CreatePtrToInt(sizeg, llvm::Type::getInt64Ty(generator()->context()));
+}
+
+llvm::Value* FunctionCodeGenerator::sizeOf(llvm::Type *type) {
+    return sizeOfReferencedType(type->getPointerTo());
 }
 
 llvm::Value* FunctionCodeGenerator::getMetaFromObject(llvm::Value *object) {
@@ -217,7 +221,7 @@ llvm::Value* FunctionCodeGenerator::int64(int64_t value) {
 }
 
 llvm::Value* FunctionCodeGenerator::alloc(llvm::PointerType *type) {
-    auto alloc = builder().CreateCall(generator()->runTimeNew(), sizeFor(type), "alloc");
+    auto alloc = builder().CreateCall(generator()->runTimeNew(), sizeOfReferencedType(type), "alloc");
     return builder().CreateBitCast(alloc, type);
 }
 
