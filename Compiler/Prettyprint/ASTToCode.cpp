@@ -165,6 +165,10 @@ void ASTMetaTypeInstantiation::toCode(Prettyprinter &pretty) const {
     pretty << "⬛️" << type_;
 }
 
+void ASTSizeOf::toCode(Prettyprinter &pretty) const {
+    pretty << "⚖️" << type_;
+}
+
 void ASTCallableCall::toCode(Prettyprinter &pretty) const {
     callable_->toCode(pretty);
     pretty << "⁉️";

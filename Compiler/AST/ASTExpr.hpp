@@ -49,6 +49,16 @@ private:
     Type type_;
 };
 
+class ASTSizeOf final : public ASTExpr {
+public:
+    ASTSizeOf(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
+    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(Prettyprinter &pretty) const override;
+private:
+    Type type_;
+};
+
 class ASTArguments final : public ASTNode {
 public:
     explicit ASTArguments(const SourcePosition &p) : ASTNode(p) {}

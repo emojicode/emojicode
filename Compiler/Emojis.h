@@ -114,6 +114,7 @@ enum Emojis {
     E_LEFT_FACING_FIST = 0x1F91B,
     E_NEW_SIGN = 0x1F195,
     E_GREEN_TEXTBOOK = 0x1F4D7,
+    E_SCALES = 0x2696,
 };
 
 }  // namespace EmojicodeCompiler

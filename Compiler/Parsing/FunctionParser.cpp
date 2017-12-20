@@ -242,6 +242,10 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             Type t = parseType(typeContext_);
             return std::make_shared<ASTMetaTypeInstantiation>(t, token.position());
         }
+        case E_SCALES: {
+            Type t = parseType(typeContext_, TypeDynamism::None);
+            return std::make_shared<ASTSizeOf>(t, token.position());
+        }
         case E_BLACK_SQUARE_BUTTON: {
             auto expr = parseExpr(kPrefixPrecedence);
             return std::make_shared<ASTCast>(expr, parseTypeExpr(token.position()), token.position());

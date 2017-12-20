@@ -18,6 +18,10 @@ Value* ASTMetaTypeInstantiation::generate(FunctionCodeGenerator *fg) const {
     return type_.eclass()->classMeta();
 }
 
+Value* ASTSizeOf::generate(FunctionCodeGenerator *fg) const {
+    return fg->sizeOf(fg->typeHelper().llvmTypeFor(type_));
+}
+
 Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
     if (castType_ == CastType::ClassDowncast) {
         return downcast(fg);

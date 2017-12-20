@@ -20,6 +20,10 @@ Type ASTMetaTypeInstantiation::analyse(SemanticAnalyser *analyser, const TypeExp
     return type_;
 }
 
+Type ASTSizeOf::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+    return Type::integer();
+}
+
 Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
