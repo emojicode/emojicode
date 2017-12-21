@@ -19,7 +19,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
                                       std::shared_ptr<ASTExpr> &callee) {
     Type otype = callee->analyse(analyser, TypeExpectation());
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
-    auto pair = builtIn(type, name);
+    auto pair = builtIn(analyser, type, name);
     if (pair.first) {
         analyser->comply(otype, TypeExpectation(false, false), &callee);
         return pair.second;
@@ -69,21 +69,21 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     return analyser->analyseFunctionCall(&args_, type, method);
 }
 
-std::pair<bool, Type> ASTMethodable::builtIn(const Type &type, const std::u32string &name) {
-    if (type.typeDefinition() == VT_BOOLEAN) {
+std::pair<bool, Type> ASTMethodable::builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name) {
+    if (type.typeDefinition() == analyser->compiler()->sBoolean) {
         if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
             builtIn_ = BuiltInType::BooleanNegate;
-            return std::make_pair(true, Type::boolean());
+            return std::make_pair(true, analyser->boolean());
         }
     }
-    else if (type.typeDefinition() == VT_INTEGER) {
+    else if (type.typeDefinition() == analyser->compiler()->sInteger) {
         if (name.front() == E_ROCKET) {
             builtIn_ = BuiltInType::IntegerToDouble;
-            return std::make_pair(true, Type::doubl());
+            return std::make_pair(true, analyser->doubleType());
         }
         if (name.front() == E_NO_ENTRY_SIGN) {
             builtIn_ = BuiltInType::IntegerNot;
-            return std::make_pair(true, Type::integer());
+            return std::make_pair(true, analyser->integer());
         }
     }
     return std::make_pair(false, Type::noReturn());

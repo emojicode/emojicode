@@ -98,11 +98,7 @@ public:
         : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)), optional_(optional) {
             sortMultiProtocolType();
         }
-    
-    static Type integer() { return Type(VT_INTEGER, false); }
-    static Type boolean() { return Type(VT_BOOLEAN, false); }
-    static Type symbol() { return Type(VT_SYMBOL, false); }
-    static Type doubl() { return Type(VT_DOUBLE, false); }
+
     static Type something() { return Type(TypeType::Something, false); }
     static Type noReturn() { return Type(TypeType::NoReturn, false); }
     static Type error() { return Type(TypeType::Error, false); }

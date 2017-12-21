@@ -84,7 +84,7 @@ Type ASTConditionalAssignment::analyse(SemanticAnalyser *analyser, const TypeExp
     variable.initialize();
     varId_ = variable.id();
 
-    return Type::boolean();
+    return analyser->boolean();
 }
 
 Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

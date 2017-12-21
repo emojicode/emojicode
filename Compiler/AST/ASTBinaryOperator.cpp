@@ -7,10 +7,8 @@
 //
 
 #include "ASTBinaryOperator.hpp"
-#include "ASTExpr.hpp"
+#include "Compiler.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
-#include "Parsing/OperatorHelper.hpp"
-#include "Types/TypeExpectation.hpp"
 #include "Types/ValueType.hpp"
 
 namespace EmojicodeCompiler {
@@ -35,98 +33,98 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                                                                                         const Type &type) {
     if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum) &&
         type.valueType()->isPrimitive()) {
-        if (type.valueType() == VT_DOUBLE) {
+        if (type.valueType() == analyser->compiler()->sDouble) {
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
                     builtIn_ = BuiltInType::DoubleMultiply;
-                    return std::make_pair(true, BuiltIn(Type::doubl()));
+                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
                 case OperatorType::LessOperator:
                     builtIn_ = BuiltInType::DoubleLess;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::GreaterOperator:
                     builtIn_ = BuiltInType::DoubleGreater;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::LessOrEqualOperator:
                     builtIn_ = BuiltInType::DoubleLessOrEqual;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::GreaterOrEqualOperator:
                     builtIn_ = BuiltInType::DoubleGreaterOrEqual;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::DivisionOperator:
                     builtIn_ = BuiltInType::DoubleDivide;
-                    return std::make_pair(true, BuiltIn(Type::doubl()));
+                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
                 case OperatorType::PlusOperator:
                     builtIn_ = BuiltInType::DoubleAdd;
-                    return std::make_pair(true, BuiltIn(Type::doubl()));
+                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
                 case OperatorType::MinusOperator:
                     builtIn_ = BuiltInType::DoubleSubstract;
-                    return std::make_pair(true, BuiltIn(Type::doubl()));
+                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
                 case OperatorType::RemainderOperator:
                     builtIn_ = BuiltInType::DoubleRemainder;
-                    return std::make_pair(true, BuiltIn(Type::doubl()));
+                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
                 case OperatorType::EqualOperator:
                     builtIn_ = BuiltInType::DoubleEqual;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 default:
                     break;
             }
         }
-        else if (type.valueType() == VT_INTEGER) {
+        else if (type.valueType() == analyser->compiler()->sInteger) {
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
                     builtIn_ = BuiltInType::IntegerMultiply;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::BitwiseAndOperator:
                     builtIn_ = BuiltInType::IntegerAnd;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::BitwiseOrOperator:
                     builtIn_ = BuiltInType::IntegerOr;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::BitwiseXorOperator:
                     builtIn_ = BuiltInType::IntegerXor;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::LessOperator:
                     builtIn_ = BuiltInType::IntegerLess;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::GreaterOperator:
                     builtIn_ = BuiltInType::IntegerGreater;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::LessOrEqualOperator:
                     builtIn_ = BuiltInType::IntegerLessOrEqual;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::GreaterOrEqualOperator:
                     builtIn_ = BuiltInType::IntegerGreaterOrEqual;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::ShiftLeftOperator:
                     builtIn_ = BuiltInType::IntegerLeftShift;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::ShiftRightOperator:
                     builtIn_ = BuiltInType::IntegerRightShift;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::DivisionOperator:
                     builtIn_ = BuiltInType::IntegerDivide;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::PlusOperator:
                     builtIn_ = BuiltInType::IntegerAdd;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::MinusOperator:
                     builtIn_ = BuiltInType::IntegerSubstract;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 case OperatorType::RemainderOperator:
                     builtIn_ = BuiltInType::IntegerRemainder;
-                    return std::make_pair(true, BuiltIn(Type::integer()));
+                    return std::make_pair(true, BuiltIn(analyser->integer()));
                 default:
                     break;
             }
         }
-        else if (type.valueType() == VT_BOOLEAN) {
+        else if (type.valueType() == analyser->compiler()->sBoolean) {
             switch (operator_) {
                 case OperatorType::LogicalAndOperator:
                     builtIn_ = BuiltInType::BooleanAnd;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::LogicalOrOperator:
                     builtIn_ = BuiltInType::BooleanOr;
-                    return std::make_pair(true, BuiltIn(Type::boolean()));
+                    return std::make_pair(true, BuiltIn(analyser->boolean()));
                 default:
                     break;
             }
@@ -137,12 +135,12 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                 throw CompilerError(position(), "The identity operator can only be used with objects.");
             }
             builtIn_ = BuiltInType::Equal;
-            return std::make_pair(true, BuiltIn(Type::boolean()));
+            return std::make_pair(true, BuiltIn(analyser->boolean()));
         }
 
         if (operator_ == OperatorType::EqualOperator) {
             builtIn_ = BuiltInType::Equal;
-            return std::make_pair(true, BuiltIn(Type::boolean()));
+            return std::make_pair(true, BuiltIn(analyser->boolean()));
         }
     }
 

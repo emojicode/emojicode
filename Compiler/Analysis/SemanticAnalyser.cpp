@@ -27,6 +27,22 @@
 
 namespace EmojicodeCompiler {
 
+Type SemanticAnalyser::doubleType() {
+    return Type(compiler()->sDouble, false);
+}
+
+Type SemanticAnalyser::integer() {
+    return Type(compiler()->sInteger, false);
+}
+
+Type SemanticAnalyser::boolean() {
+    return Type(compiler()->sBoolean, false);
+}
+
+Type SemanticAnalyser::symbol() {
+    return Type(compiler()->sSymbol, false);
+}
+
 void SemanticAnalyser::analyse() {
     Scope &methodScope = scoper_->pushArgumentsScope(function_->arguments, function_->position());
 
@@ -300,8 +316,8 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
     if (type.type() == TypeType::Class && !type.optional()) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
-                if (protocol.protocol() == PR_ENUMERATEABLE) {
-                    auto itemType = Type(false, 0, PR_ENUMERATEABLE);
+                if (protocol.protocol() == compiler()->sEnumeratable) {
+                    auto itemType = Type(false, 0, compiler()->sEnumeratable);
                     *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
                     return true;
                 }
@@ -310,14 +326,14 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
     }
     else if (type.canHaveProtocol() && !type.optional()) {
         for (auto &protocol : type.typeDefinition()->protocols()) {
-            if (protocol.protocol() == PR_ENUMERATEABLE) {
-                auto itemType = Type(   false, 0, PR_ENUMERATEABLE);
+            if (protocol.protocol() == compiler()->sEnumeratable) {
+                auto itemType = Type(   false, 0, compiler()->sEnumeratable);
                 *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
                 return true;
             }
         }
     }
-    else if (type.type() == TypeType::Protocol && type.protocol() == PR_ENUMERATEABLE) {
+    else if (type.type() == TypeType::Protocol && type.protocol() == compiler()->sEnumeratable) {
         *elementType = Type(false, 0, type.protocol()).resolveOn(TypeContext(type));
         return true;
     }

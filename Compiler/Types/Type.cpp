@@ -23,17 +23,6 @@
 
 namespace EmojicodeCompiler {
 
-Class *CL_STRING;
-Class *CL_LIST;
-Class *CL_DATA;
-Class *CL_DICTIONARY;
-Protocol *PR_ENUMERATEABLE;
-Protocol *PR_ENUMERATOR;
-ValueType *VT_BOOLEAN;
-ValueType *VT_SYMBOL;
-ValueType *VT_INTEGER;
-ValueType *VT_DOUBLE;
-
 Type::Type(Protocol *protocol, bool optional)
     : typeContent_(TypeType::Protocol), typeDefinition_(protocol), optional_(optional) {}
 

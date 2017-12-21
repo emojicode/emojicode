@@ -40,7 +40,7 @@ protected:
     CallType callType_;
     Type calleeType_ = Type::noReturn();
 private:
-    std::pair<bool, Type> builtIn(const Type &type, const std::u32string &name);
+    std::pair<bool, Type> builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name);
 };
 
 class ASTMethod final : public ASTMethodable {

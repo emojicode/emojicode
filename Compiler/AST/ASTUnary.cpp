@@ -18,7 +18,7 @@ Type ASTIsNothigness::analyse(SemanticAnalyser *analyser, const TypeExpectation 
     if (!type.optional() && type.type() != TypeType::Something) {
         throw CompilerError(position(), "☁️ can only be used with optionals and ⚪️.");
     }
-    return Type::boolean();
+    return analyser->boolean();
 }
 
 Type ASTIsError::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
@@ -26,7 +26,7 @@ Type ASTIsError::analyse(SemanticAnalyser *analyser, const TypeExpectation &expe
     if (type.type() != TypeType::Error) {
         throw CompilerError(position(), "🚥 can only be used with 🚨.");
     }
-    return Type::boolean();
+    return analyser->boolean();
 }
 
 Type ASTUnwrap::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

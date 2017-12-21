@@ -10,6 +10,7 @@
 #include "Compiler.hpp"
 #include "Generation/CodeGenerator.hpp"
 #include "Prettyprint/Prettyprinter.hpp"
+#include "Parsing/AbstractParser.hpp"
 #include <llvm/Support/FileSystem.h>
 
 #include <utility>
@@ -133,6 +134,49 @@ void Compiler::error(const CompilerError &ce) {
 
 void Compiler::warn(const SourcePosition &p, const std::string &warning) {
     delegate_->warn(p, warning);
+}
+
+Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+    Type type = Type::noReturn();
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
+    if (type.type() != TypeType::Class) {
+        throw CompilerError(errorPosition, "s package class ", utf8(name), " is missing.");
+    }
+    return type.eclass();
+}
+
+Protocol* getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+    Type type = Type::noReturn();
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
+    if (type.type() != TypeType::Protocol) {
+        throw CompilerError(errorPosition, "s package protocol ", utf8(name), " is missing.");
+    }
+    return type.protocol();
+}
+
+ValueType* getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+    Type type = Type::noReturn();
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
+    if (type.type() != TypeType::ValueType) {
+        throw CompilerError(errorPosition, "s package value type ", utf8(name), " is missing.");
+    }
+    return type.valueType();
+}
+
+void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
+    // Order of the following calls is important as they will cause Box IDs to be assigned
+    sBoolean = getStandardValueType(std::u32string(1, E_OK_HAND_SIGN), s, errorPosition);
+    sInteger = getStandardValueType(std::u32string(1, E_STEAM_LOCOMOTIVE), s, errorPosition);
+    sDouble = getStandardValueType(std::u32string(1, E_ROCKET), s, errorPosition);
+    sSymbol = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition);
+
+    sString = getStandardClass(std::u32string(1, 0x1F521), s, errorPosition);
+    sList = getStandardClass(std::u32string(1, 0x1F368), s, errorPosition);
+    sData = getStandardClass(std::u32string(1, 0x1F4C7), s, errorPosition);
+    sDictionary = getStandardClass(std::u32string(1, 0x1F36F), s, errorPosition);
+
+    sEnumerator = getStandardProtocol(std::u32string(1, 0x1F361), s, errorPosition);
+    sEnumeratable = getStandardProtocol(std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
 }
 
 } // namespace EmojicodeCompiler

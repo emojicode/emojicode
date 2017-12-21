@@ -40,6 +40,11 @@ public:
     Function* function() { return function_; }
     Compiler* compiler() { return function_->package()->compiler(); }
 
+    Type integer();
+    Type boolean();
+    Type doubleType();
+    Type symbol();
+
     /// Parses an expression node, verifies it return type and boxes it according to the given expectation.
     /// Calls @c expect internally.
     Type expectType(const Type &type, std::shared_ptr<ASTExpr>*, std::vector<CommonTypeFinder> *ctargs = nullptr);

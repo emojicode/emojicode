@@ -63,7 +63,7 @@ private:
     llvm::Function *runTimeNew_;
     llvm::Function *errNoValue_;
     llvm::GlobalVariable *classValueTypeMeta_;
-    LLVMTypeHelper typeHelper_ = LLVMTypeHelper(context());
+    LLVMTypeHelper typeHelper_;
     StringPool pool_ = StringPool(this);
 
     struct ProtocolVirtualTables {

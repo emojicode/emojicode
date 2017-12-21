@@ -7,6 +7,7 @@
 //
 
 #include "ASTControlFlow.hpp"
+#include "Compiler.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 
@@ -103,7 +104,7 @@ void ASTForIn::generate(FunctionCodeGenerator *fg) const {
 
     fg->builder().CreateBr(whileCondBlock);
 
-    auto iteratorType = Type(PR_ENUMERATOR, false);
+    auto iteratorType = Type(fg->compiler()->sEnumerator, false);
 
     fg->builder().SetInsertPoint(whileCondBlock);
     auto cont = callg.generate(iteratorPtr, iteratorType, ASTArguments(position()),

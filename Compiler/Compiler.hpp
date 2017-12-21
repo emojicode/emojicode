@@ -23,6 +23,9 @@ class CompilerError;
 class Package;
 class Function;
 struct SourcePosition;
+class Class;
+class Protocol;
+class ValueType;
 
 /// CompilerDelegate is an interface class, which is used by Compiler to notify about certain events, like
 /// compiler errors.
@@ -116,6 +119,20 @@ public:
     std::vector<std::vector<ObjectVariableInformation>>& boxObjectVariableInformation() {
         return boxObjectVariableInformation_;
     }
+
+    void assignSTypes(Package *s, const SourcePosition &errorPosition);
+
+    Class *sString;
+    Class *sList;
+    Class *sError;
+    Class *sData;
+    Class *sDictionary;
+    Protocol *sEnumerator;
+    Protocol *sEnumeratable;
+    ValueType *sBoolean;
+    ValueType *sSymbol;
+    ValueType *sInteger;
+    ValueType *sDouble;
 private:
     void generateCode();
     void analyse();

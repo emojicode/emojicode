@@ -9,8 +9,6 @@
 #ifndef EmojicodeCompiler_hpp
 #define EmojicodeCompiler_hpp
 
-#define EmojicodeCompiler_hpp
-
 #include <codecvt>
 #include <locale>
 #include <sstream>
@@ -27,22 +25,6 @@ inline bool isWhitespace(char32_t c) {
     return (0x9 <= c && c <= 0xD) || c == 0x20 || c == 0x85 || c == 0xA0 || c == 0x1680 || (0x2000 <= c && c <= 0x200A)
     || c == 0x2028 || c== 0x2029 || c == 0x2029 || c == 0x202F || c == 0x205F || c == 0x3000 || c == 0xFE0F;
 }
-
-class Class;
-class Protocol;
-class ValueType;
-
-extern Class *CL_STRING;
-extern Class *CL_LIST;
-extern Class *CL_ERROR;
-extern Class *CL_DATA;
-extern Class *CL_DICTIONARY;
-extern Protocol *PR_ENUMERATOR;
-extern Protocol *PR_ENUMERATEABLE;
-extern ValueType *VT_BOOLEAN;
-extern ValueType *VT_SYMBOL;
-extern ValueType *VT_INTEGER;
-extern ValueType *VT_DOUBLE;
 
 inline std::string utf8(const std::u32string &s) {
     return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>().to_bytes(s);

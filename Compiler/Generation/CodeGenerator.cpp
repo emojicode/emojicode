@@ -31,7 +31,7 @@
 
 namespace EmojicodeCompiler {
 
-CodeGenerator::CodeGenerator(Package *package) : package_(package) {
+CodeGenerator::CodeGenerator(Package *package) : package_(package), typeHelper_(context(), package->compiler()) {
     module_ = std::make_unique<llvm::Module>(package->name(), context());
     declareRunTime();
 }

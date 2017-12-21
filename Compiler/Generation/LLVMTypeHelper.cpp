@@ -12,12 +12,12 @@
 #include "Mangler.hpp"
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "Types/TypeDefinition.hpp"
+#include "Compiler.hpp"
 #include <llvm/IR/DerivedTypes.h>
-#include <vector>
 
 namespace EmojicodeCompiler {
 
-LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context) : context_(context) {
+LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) : context_(context) {
     protocolsTable_ = llvm::StructType::create(std::vector<llvm::Type *> {
         llvm::Type::getInt8PtrTy(context_)->getPointerTo()->getPointerTo(), llvm::Type::getInt16Ty(context_),
         llvm::Type::getInt16Ty(context_)
@@ -37,10 +37,10 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context) : context_(context) {
 
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
     types_.emplace(Type::someobject(), llvm::Type::getInt8PtrTy(context_));
-    types_.emplace(Type::integer(), llvm::Type::getInt64Ty(context_));
-    types_.emplace(Type::symbol(), llvm::Type::getInt32Ty(context_));
-    types_.emplace(Type::doubl(), llvm::Type::getDoubleTy(context_));
-    types_.emplace(Type::boolean(), llvm::Type::getInt1Ty(context_));
+    types_.emplace(Type(compiler->sInteger, false), llvm::Type::getInt64Ty(context_));
+    types_.emplace(Type(compiler->sSymbol, false), llvm::Type::getInt32Ty(context_));
+    types_.emplace(Type(compiler->sDouble, false), llvm::Type::getDoubleTy(context_));
+    types_.emplace(Type(compiler->sBoolean, false), llvm::Type::getInt1Ty(context_));
 }
 
 llvm::StructType* LLVMTypeHelper::llvmTypeForClosureCaptures(const std::vector<VariableCapture> &captures) {

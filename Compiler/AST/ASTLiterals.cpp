@@ -12,24 +12,23 @@
 #include "Parsing/AbstractParser.hpp"
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
-#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
 Type ASTStringLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type(CL_STRING, false);
+    return Type(analyser->compiler()->sString, false);
 }
 
 Type ASTBooleanTrue::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type::boolean();
+    return analyser->boolean();
 }
 
 Type ASTBooleanFalse::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type::boolean();
+    return analyser->boolean();
 }
 
 Type ASTNumberLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeType::ValueType && expectation.valueType() == VT_DOUBLE
+    if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sDouble
         && type_ == NumberType::Integer) {
         type_ = NumberType::Double;
         doubleValue_ = integerValue_;
@@ -37,14 +36,14 @@ Type ASTNumberLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation
 
     switch (type_) {
         case NumberType::Integer:
-            return Type::integer();
+            return analyser->integer();
         case NumberType::Double:
-            return Type::doubl();
+            return analyser->doubleType();
     }
 }
 
 Type ASTSymbolLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type::symbol();
+    return analyser->symbol();
 }
 
 Type ASTThis::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
@@ -74,11 +73,11 @@ Type ASTNothingness::analyse(SemanticAnalyser *analyser, const TypeExpectation &
 }
 
 Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = Type(CL_DICTIONARY, false);
+    type_ = Type(analyser->compiler()->sDictionary, false);
 
     CommonTypeFinder finder;
     for (auto it = values_.begin(); it != values_.end(); it++) {
-        analyser->expectType(Type(CL_STRING, false), &*it);
+        analyser->expectType(Type(analyser->compiler()->sString, false), &*it);
         if (++it == values_.end()) {
             throw CompilerError(position(), "A value must be provided for every key.");
         }
@@ -90,7 +89,7 @@ Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpecta
 }
 
 Type ASTListLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = Type(CL_LIST, false);
+    type_ = Type(analyser->compiler()->sList, false);
 
     CommonTypeFinder finder;
     for (auto &valueNode : values_) {
@@ -106,10 +105,11 @@ Type ASTConcatenateLiteral::analyse(SemanticAnalyser *analyser, const TypeExpect
     type_ = analyser->function()->package()->getRawType(TypeIdentifier(std::u32string(1, 0x1F520), kDefaultNamespace,
                                                                        position()), false);
 
+    auto stringType = Type(analyser->compiler()->sString, false);
     for (auto &stringNode : values_) {
-        analyser->expectType(Type(CL_STRING, false), &stringNode);
+        analyser->expectType(stringType, &stringNode);
     }
-    return Type(CL_STRING, false);
+    return stringType;
 }
 
 }  // namespace EmojicodeCompiler

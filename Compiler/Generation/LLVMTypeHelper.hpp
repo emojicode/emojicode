@@ -22,11 +22,12 @@ namespace EmojicodeCompiler {
 
 class Function;
 struct VariableCapture;
+class Compiler;
 
 /// This class is repsonsible for providing llvm::Type instances for Emojicode Type instances.
 class LLVMTypeHelper {
 public:
-    explicit LLVMTypeHelper(llvm::LLVMContext &context);
+    explicit LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler);
 
     llvm::Type* llvmTypeFor(Type type);
     llvm::Type* box() const;

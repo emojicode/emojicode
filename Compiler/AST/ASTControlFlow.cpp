@@ -7,6 +7,7 @@
 //
 
 #include "ASTControlFlow.hpp"
+#include "Compiler.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
 
 namespace EmojicodeCompiler {
@@ -15,7 +16,7 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
     for (size_t i = 0; i < conditions_.size(); i++) {
         analyser->pathAnalyser().beginBranch();
         analyser->scoper().pushScope();
-        analyser->expectType(Type::boolean(), &conditions_[i]);
+        analyser->expectType(analyser->boolean(), &conditions_[i]);
         blocks_[i].analyse(analyser);
         analyser->scoper().popScope(analyser->compiler());
         analyser->pathAnalyser().beginBranch();
@@ -38,7 +39,7 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
 void ASTRepeatWhile::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
-    analyser->expectType(Type::boolean(), &condition_);
+    analyser->expectType(analyser->boolean(), &condition_);
     block_.analyse(analyser);
     analyser->scoper().popScope(analyser->compiler());
     analyser->pathAnalyser().endBranch();
@@ -82,7 +83,7 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
 void ASTForIn::analyse(SemanticAnalyser *analyser) {
     analyser->scoper().pushScope();
 
-    auto iterateeType = Type(PR_ENUMERATEABLE, false);
+    auto iterateeType = Type(analyser->compiler()->sEnumeratable, false);
     iterateeType.setReference();
     Type iteratee = analyser->expectType(iterateeType, &iteratee_);
 
@@ -92,7 +93,7 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
         throw CompilerError(position(), iterateeString, " does not conform to s🔂.");
     }
 
-    iteratee_->setExpressionType(Type(PR_ENUMERATEABLE, false));
+    iteratee_->setExpressionType(Type(analyser->compiler()->sEnumeratable, false));
 
     analyser->pathAnalyser().beginBranch();
     auto &elVar = analyser->scoper().currentScope().declareVariable(varName_, elementType_, true, position());
