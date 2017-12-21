@@ -133,6 +133,7 @@ public:
     ValueType *sSymbol = nullptr;
     ValueType *sInteger = nullptr;
     ValueType *sDouble = nullptr;
+    ValueType *sMemory = nullptr;
 private:
     void generateCode();
     void analyse();

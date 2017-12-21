@@ -21,7 +21,7 @@ Type ASTMetaTypeInstantiation::analyse(SemanticAnalyser *analyser, const TypeExp
 }
 
 Type ASTSizeOf::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type::integer();
+    return analyser->integer();
 }
 
 Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

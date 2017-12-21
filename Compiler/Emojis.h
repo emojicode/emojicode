@@ -115,6 +115,7 @@ enum Emojis {
     E_NEW_SIGN = 0x1F195,
     E_GREEN_TEXTBOOK = 0x1F4D7,
     E_SCALES = 0x2696,
+    E_BRAIN = 0x1F9E0,
 };
 
 }  // namespace EmojicodeCompiler

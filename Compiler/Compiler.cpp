@@ -169,6 +169,7 @@ void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
     sInteger = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_NUMBERS), s, errorPosition);
     sDouble = getStandardValueType(std::u32string(1, E_ROCKET), s, errorPosition);
     sSymbol = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition);
+    sMemory = getStandardValueType(std::u32string(1, E_BRAIN), s, errorPosition);
 
     sString = getStandardClass(std::u32string(1, 0x1F521), s, errorPosition);
     sList = getStandardClass(std::u32string(1, 0x1F368), s, errorPosition);

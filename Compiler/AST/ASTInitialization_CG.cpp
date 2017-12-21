@@ -28,6 +28,8 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
             InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
             .generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
             return nullptr;
+        case InitType::MemoryAllocation:
+            return generateMemoryAllocation(fg);
     }
     throw std::logic_error("Unexpected init type");
 }
@@ -45,6 +47,10 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     }
     // TODO: class table lookup
     throw std::logic_error("Unimplemented");
+}
+
+Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {
+    return fg->builder().CreateCall(fg->generator()->runTimeNew(), args_.arguments()[0]->generate(fg), "alloc");
 }
 
 }  // namespace EmojicodeCompiler

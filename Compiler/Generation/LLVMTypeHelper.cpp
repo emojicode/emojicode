@@ -41,6 +41,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) :
     types_.emplace(Type(compiler->sSymbol, false), llvm::Type::getInt32Ty(context_));
     types_.emplace(Type(compiler->sDouble, false), llvm::Type::getDoubleTy(context_));
     types_.emplace(Type(compiler->sBoolean, false), llvm::Type::getInt1Ty(context_));
+    types_.emplace(Type(compiler->sMemory, false), llvm::Type::getInt8PtrTy(context_));
 }
 
 llvm::StructType* LLVMTypeHelper::llvmTypeForClosureCaptures(const std::vector<VariableCapture> &captures) {

@@ -10,7 +10,7 @@
 #include "Analysis/SemanticAnalyser.hpp"
 #include "Functions/Initializer.hpp"
 #include "Types/Enum.hpp"
-
+#include "Compiler.hpp"
 namespace EmojicodeCompiler {
 
 Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
@@ -29,7 +29,8 @@ Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectatio
     }
 
     if (type.type() == TypeType::ValueType) {
-        initType_ = InitType::ValueType;
+        initType_ = type.valueType() == analyser->compiler()->sMemory ? InitType::MemoryAllocation : InitType::ValueType;
+
         type.setMutable(expectation.isMutable());
         notStaticError(typeExpr_->availability(), position(), "Value Types");
     }
