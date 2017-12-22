@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -86,26 +87,31 @@ Inheritance diagram for EmojicodeCompiler::Package:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6d05216a4cdee308d8d1c3fc65ba915b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a6d05216a4cdee308d8d1c3fc65ba915b">Package</a> (std::string <a class="el" href="class_emojicode_compiler_1_1_package.html#a61538dc9b5bed309f97c56c3d219dd2a">name</a>, std::string mainFilePath, <a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> *<a class="el" href="class_emojicode_compiler_1_1_package.html#ad10a32197b493b6ac042924b696726da">app</a>)</td></tr>
-<tr class="separator:a6d05216a4cdee308d8d1c3fc65ba915b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d4c8f894dead1452473348daafaa0e2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a2d4c8f894dead1452473348daafaa0e2">Package</a> (std::string <a class="el" href="class_emojicode_compiler_1_1_package.html#a61538dc9b5bed309f97c56c3d219dd2a">name</a>, std::string <a class="el" href="class_emojicode_compiler_1_1_package.html#aa10daa159585fb40edf5073a6a87553c">path</a>, <a class="el" href="class_emojicode_compiler_1_1_compiler.html">Compiler</a> *app)</td></tr>
+<tr class="separator:a2d4c8f894dead1452473348daafaa0e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6934bb68ac69b3a0ebe83acd47bb803"><td class="memItemLeft" align="right" valign="top"><a id="af6934bb68ac69b3a0ebe83acd47bb803"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#af6934bb68ac69b3a0ebe83acd47bb803">analyse</a> ()</td></tr>
-<tr class="memdesc:af6934bb68ac69b3a0ebe83acd47bb803"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ssemantically analyses and optimizes this package. <br /></td></tr>
+<tr class="memdesc:af6934bb68ac69b3a0ebe83acd47bb803"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ssemantically analyses this package. <br /></td></tr>
 <tr class="separator:af6934bb68ac69b3a0ebe83acd47bb803"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebe291048780bc4d5a0df17ecd4e1d05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#aebe291048780bc4d5a0df17ecd4e1d05">parse</a> ()</td></tr>
 <tr class="separator:aebe291048780bc4d5a0df17ecd4e1d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2330dc00b08e8ba9c482f1958c344985"><td class="memItemLeft" align="right" valign="top"><a id="a2330dc00b08e8ba9c482f1958c344985"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> (const std::string &amp;mainFilePath)</td></tr>
+<tr class="separator:a2330dc00b08e8ba9c482f1958c344985"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2371089e5f0ba70ab7a3d28b66bfa4dd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a2371089e5f0ba70ab7a3d28b66bfa4dd">importPackage</a> (const std::string &amp;<a class="el" href="class_emojicode_compiler_1_1_package.html#a61538dc9b5bed309f97c56c3d219dd2a">name</a>, const std::u32string &amp;ns, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="separator:a2371089e5f0ba70ab7a3d28b66bfa4dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a520b6c2d7b7f06a33e6a3ba09b990ab9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a520b6c2d7b7f06a33e6a3ba09b990ab9">includeDocument</a> (const std::string &amp;path, const std::string &amp;relativePath)</td></tr>
+<tr class="memitem:a520b6c2d7b7f06a33e6a3ba09b990ab9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a520b6c2d7b7f06a33e6a3ba09b990ab9">includeDocument</a> (const std::string &amp;<a class="el" href="class_emojicode_compiler_1_1_package.html#aa10daa159585fb40edf5073a6a87553c">path</a>, const std::string &amp;relativePath)</td></tr>
 <tr class="separator:a520b6c2d7b7f06a33e6a3ba09b990ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad10a32197b493b6ac042924b696726da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#ad10a32197b493b6ac042924b696726da">app</a> () const</td></tr>
-<tr class="separator:ad10a32197b493b6ac042924b696726da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fd223f146a3d722364654a105114cb0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_compiler.html">Compiler</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a4fd223f146a3d722364654a105114cb0">compiler</a> () const</td></tr>
+<tr class="separator:a4fd223f146a3d722364654a105114cb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61538dc9b5bed309f97c56c3d219dd2a"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a61538dc9b5bed309f97c56c3d219dd2a">name</a> () const</td></tr>
 <tr class="separator:a61538dc9b5bed309f97c56c3d219dd2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf1b2af30f98893b975b4e7dab11b757"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#aaf1b2af30f98893b975b4e7dab11b757">position</a> () const</td></tr>
 <tr class="separator:aaf1b2af30f98893b975b4e7dab11b757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a60b11196729adf1c4d3c18c6491065"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a2a60b11196729adf1c4d3c18c6491065">finishedLoading</a> () const</td></tr>
 <tr class="separator:a2a60b11196729adf1c4d3c18c6491065"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa10daa159585fb40edf5073a6a87553c"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#aa10daa159585fb40edf5073a6a87553c">path</a> () const</td></tr>
+<tr class="separator:aa10daa159585fb40edf5073a6a87553c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73f21566d6f65cfe9a5d899cff55df6c"><td class="memItemLeft" align="right" valign="top"><a id="a73f21566d6f65cfe9a5d899cff55df6c"></a>
 <a class="el" href="struct_emojicode_compiler_1_1_package_version.html">PackageVersion</a>&#160;</td><td class="memItemRight" valign="bottom"><b>version</b> () const</td></tr>
 <tr class="separator:a73f21566d6f65cfe9a5d899cff55df6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,37 +134,51 @@ const std::u32string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b
 <tr class="memitem:a82a4f4196b867d9ed6af5447903706cb"><td class="memItemLeft" align="right" valign="top"><a id="a82a4f4196b867d9ed6af5447903706cb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setDocumentation</b> (const std::u32string &amp;doc)</td></tr>
 <tr class="separator:a82a4f4196b867d9ed6af5447903706cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91e1c22e3c6af15a3192a0ef4e4276fd"><td class="memItemLeft" align="right" valign="top"><a id="a91e1c22e3c6af15a3192a0ef4e4276fd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>requiresBinary</b> () const</td></tr>
-<tr class="separator:a91e1c22e3c6af15a3192a0ef4e4276fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac59d95eea96a7a5bf7240a5ea5818bf6"><td class="memItemLeft" align="right" valign="top"><a id="ac59d95eea96a7a5bf7240a5ea5818bf6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setRequiresBinary</b> (bool b=true)</td></tr>
-<tr class="separator:ac59d95eea96a7a5bf7240a5ea5818bf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a690051089f538ff2f3d1b1cc0fe87880"><td class="memItemLeft" align="right" valign="top"><a id="a690051089f538ff2f3d1b1cc0fe87880"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a690051089f538ff2f3d1b1cc0fe87880">registerClass</a> (<a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> *cl)</td></tr>
-<tr class="memdesc:a690051089f538ff2f3d1b1cc0fe87880"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> defined in this package must be registered with this method. <br /></td></tr>
-<tr class="separator:a690051089f538ff2f3d1b1cc0fe87880"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7166a584aba6f96ebe2ce4ab9d65e664"><td class="memItemLeft" align="right" valign="top"><a id="a7166a584aba6f96ebe2ce4ab9d65e664"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a7166a584aba6f96ebe2ce4ab9d65e664">registerValueType</a> (<a class="el" href="class_emojicode_compiler_1_1_value_type.html">ValueType</a> *vt)</td></tr>
-<tr class="memdesc:a7166a584aba6f96ebe2ce4ab9d65e664"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="class_emojicode_compiler_1_1_value_type.html">ValueType</a> (and its derivates such as <a class="el" href="class_emojicode_compiler_1_1_enum.html">Enum</a>) defined in this package must be registered with this method. <br /></td></tr>
-<tr class="separator:a7166a584aba6f96ebe2ce4ab9d65e664"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace8a146731481881341c0598dd4416cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#ace8a146731481881341c0598dd4416cf">registerFunction</a> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
-<tr class="separator:ace8a146731481881341c0598dd4416cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a2fad73ec024e333a9ddc988c62c36e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_emojicode_compiler_1_1_extension.html">Extension</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a5a2fad73ec024e333a9ddc988c62c36e">registerExtension</a> (<a class="el" href="class_emojicode_compiler_1_1_extension.html">Extension</a> ext)</td></tr>
-<tr class="separator:a5a2fad73ec024e333a9ddc988c62c36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40616bb9291ef1740e9c9dfbe6fd21ea"><td class="memItemLeft" align="right" valign="top"><a id="a40616bb9291ef1740e9c9dfbe6fd21ea"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setStartFlagFunction</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
+<tr class="separator:a40616bb9291ef1740e9c9dfbe6fd21ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b92d1891cfc215146f576ad5480797c"><td class="memItemLeft" align="right" valign="top"><a id="a2b92d1891cfc215146f576ad5480797c"></a>
+<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>startFlagFunction</b> () const</td></tr>
+<tr class="separator:a2b92d1891cfc215146f576ad5480797c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af762ec3a719805cd3630c239c5e83025"><td class="memItemLeft" align="right" valign="top"><a id="af762ec3a719805cd3630c239c5e83025"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#af762ec3a719805cd3630c239c5e83025">hasStartFlagFunction</a> () const</td></tr>
+<tr class="memdesc:af762ec3a719805cd3630c239c5e83025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a start flag function was encountered and compiled. <br /></td></tr>
+<tr class="separator:af762ec3a719805cd3630c239c5e83025"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a7bc7c6c55bd10c918af4ef7b3e00fd"><td class="memItemLeft" align="right" valign="top"><a id="a3a7bc7c6c55bd10c918af4ef7b3e00fd"></a>
+<a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a3a7bc7c6c55bd10c918af4ef7b3e00fd">add</a> (std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> &gt; &amp;&amp;cl)</td></tr>
+<tr class="memdesc:a3a7bc7c6c55bd10c918af4ef7b3e00fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> defined in this package must be registered with this method. <br /></td></tr>
+<tr class="separator:a3a7bc7c6c55bd10c918af4ef7b3e00fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc4abce3cbd1d0a9158e6b6cdfebf66c"><td class="memItemLeft" align="right" valign="top"><a id="acc4abce3cbd1d0a9158e6b6cdfebf66c"></a>
+<a class="el" href="class_emojicode_compiler_1_1_value_type.html">ValueType</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#acc4abce3cbd1d0a9158e6b6cdfebf66c">add</a> (std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_value_type.html">ValueType</a> &gt; &amp;&amp;vt)</td></tr>
+<tr class="memdesc:acc4abce3cbd1d0a9158e6b6cdfebf66c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="class_emojicode_compiler_1_1_value_type.html">ValueType</a> (and its derivates such as <a class="el" href="class_emojicode_compiler_1_1_enum.html">Enum</a>) defined in this package must be registered with this method. <br /></td></tr>
+<tr class="separator:acc4abce3cbd1d0a9158e6b6cdfebf66c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa638319815e38586628da20c02939dd"><td class="memItemLeft" align="right" valign="top"><a id="aaa638319815e38586628da20c02939dd"></a>
+<a class="el" href="class_emojicode_compiler_1_1_protocol.html">Protocol</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#aaa638319815e38586628da20c02939dd">add</a> (std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_protocol.html">Protocol</a> &gt; &amp;&amp;protocol)</td></tr>
+<tr class="memdesc:aaa638319815e38586628da20c02939dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="class_emojicode_compiler_1_1_protocol.html">Protocol</a> defined in this package must be registered with this method. <br /></td></tr>
+<tr class="separator:aaa638319815e38586628da20c02939dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70c90a28f15b39c8612ee1104d6e012f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a70c90a28f15b39c8612ee1104d6e012f">add</a> (std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt; &amp;&amp;function)</td></tr>
+<tr class="separator:a70c90a28f15b39c8612ee1104d6e012f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81c0d989a5c08f2a7ad5d7c322df03b2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_emojicode_compiler_1_1_extension.html">Extension</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a81c0d989a5c08f2a7ad5d7c322df03b2">add</a> (std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_extension.html">Extension</a> &gt; &amp;&amp;extension)</td></tr>
+<tr class="separator:a81c0d989a5c08f2a7ad5d7c322df03b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c18a8704262b2b4c3b5b6f91e0fc419"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a9c18a8704262b2b4c3b5b6f91e0fc419">offerType</a> (<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> t, const std::u32string &amp;<a class="el" href="class_emojicode_compiler_1_1_package.html#a61538dc9b5bed309f97c56c3d219dd2a">name</a>, const std::u32string &amp;ns, bool exportFromPkg, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="separator:a9c18a8704262b2b4c3b5b6f91e0fc419"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94ccb64e85b8c247330a195448c51393"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a94ccb64e85b8c247330a195448c51393">classes</a> () const</td></tr>
-<tr class="separator:a94ccb64e85b8c247330a195448c51393"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adba7fe329d982937c624b8cb25122598"><td class="memItemLeft" align="right" valign="top"><a id="adba7fe329d982937c624b8cb25122598"></a>
-const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>functions</b> () const</td></tr>
-<tr class="separator:adba7fe329d982937c624b8cb25122598"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5359586429018f0f9f484875bf402810"><td class="memItemLeft" align="right" valign="top"><a id="a5359586429018f0f9f484875bf402810"></a>
-const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_value_type.html">ValueType</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>valueTypes</b> () const</td></tr>
-<tr class="separator:a5359586429018f0f9f484875bf402810"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade3b17cb952c2f7cb7d8b548b59e3179"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#ade3b17cb952c2f7cb7d8b548b59e3179">classes</a> () const</td></tr>
+<tr class="separator:ade3b17cb952c2f7cb7d8b548b59e3179"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6a808720f1bd36e2345dd5811251760"><td class="memItemLeft" align="right" valign="top"><a id="ab6a808720f1bd36e2345dd5811251760"></a>
+const std::vector&lt; std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>functions</b> () const</td></tr>
+<tr class="separator:ab6a808720f1bd36e2345dd5811251760"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b2743043ddf78b3dd3c930d34f53132"><td class="memItemLeft" align="right" valign="top"><a id="a6b2743043ddf78b3dd3c930d34f53132"></a>
+const std::vector&lt; std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_value_type.html">ValueType</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>valueTypes</b> () const</td></tr>
+<tr class="separator:a6b2743043ddf78b3dd3c930d34f53132"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5d5cab49285bce64a82a6eb25e46d4f"><td class="memItemLeft" align="right" valign="top"><a id="ae5d5cab49285bce64a82a6eb25e46d4f"></a>
+const std::vector&lt; std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_protocol.html">Protocol</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>protocols</b> () const</td></tr>
+<tr class="separator:ae5d5cab49285bce64a82a6eb25e46d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d4749321136b1197bb6830667acbcf7"><td class="memItemLeft" align="right" valign="top"><a id="a9d4749321136b1197bb6830667acbcf7"></a>
 const std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_exported_type.html">ExportedType</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>exportedTypes</b> () const</td></tr>
 <tr class="separator:a9d4749321136b1197bb6830667acbcf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe48f58c7b8bf3a2e8e89870cc01e27e"><td class="memItemLeft" align="right" valign="top"><a id="abe48f58c7b8bf3a2e8e89870cc01e27e"></a>
+const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dependencies</b> () const</td></tr>
+<tr class="separator:abe48f58c7b8bf3a2e8e89870cc01e27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f1ea1e83745e9fb94a88ab077fea9a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a8f1ea1e83745e9fb94a88ab077fea9a5">lookupRawType</a> (const <a class="el" href="struct_emojicode_compiler_1_1_type_identifier.html">TypeIdentifier</a> &amp;typeId, bool optional, <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> *type) const</td></tr>
 <tr class="separator:a8f1ea1e83745e9fb94a88ab077fea9a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab69cf33ca0a89978c24916c52ac98994"><td class="memItemLeft" align="right" valign="top"><a id="ab69cf33ca0a89978c24916c52ac98994"></a>
@@ -173,14 +193,11 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="class_emojicode_compiler_1_1_package.html" title="Package is the class used to load, parse and analyse packages. ">Package</a> is the class used to load, parse and analyse packages. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a6d05216a4cdee308d8d1c3fc65ba915b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6d05216a4cdee308d8d1c3fc65ba915b">&#9670;&nbsp;</a></span>Package()</h2>
+<a id="a2d4c8f894dead1452473348daafaa0e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d4c8f894dead1452473348daafaa0e2">&#9670;&nbsp;</a></span>Package()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">EmojicodeCompiler::Package::Package </td>
@@ -192,12 +209,12 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>mainFilePath</em>, </td>
+          <td class="paramname"><em>path</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_compiler.html">Compiler</a> *&#160;</td>
           <td class="paramname"><em>app</em>&#160;</td>
         </tr>
         <tr>
@@ -206,16 +223,11 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p>Constructs a package. The package must be compiled with compile() before it can be loaded. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">name</td><td>The name of the package. The package is registered with this name. </td></tr>
-    <tr><td class="paramname">mainFilePath</td><td>The path to the package’s main file. This is the file that is parsed when <a class="el" href="class_emojicode_compiler_1_1_package.html#aebe291048780bc4d5a0df17ecd4e1d05">parse()</a> is called. </td></tr>
+    <tr><td class="paramname">path</td><td>The path to the directory of the package. </td></tr>
   </table>
   </dd>
 </dl>
@@ -223,8 +235,27 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad10a32197b493b6ac042924b696726da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad10a32197b493b6ac042924b696726da">&#9670;&nbsp;</a></span>app()</h2>
+<a id="a70c90a28f15b39c8612ee1104d6e012f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70c90a28f15b39c8612ee1104d6e012f">&#9670;&nbsp;</a></span>add() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> * EmojicodeCompiler::Package::add </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>function</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Functions that technically belong to this package but are not members of a <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a> instance that is registered with this package, must be registered with this function. </p>
+
+</div>
+</div>
+<a id="a81c0d989a5c08f2a7ad5d7c322df03b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81c0d989a5c08f2a7ad5d7c322df03b2">&#9670;&nbsp;</a></span>add() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -233,24 +264,27 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a>* EmojicodeCompiler::Package::app </td>
+          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_extension.html">Extension</a> * EmojicodeCompiler::Package::add </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_extension.html">Extension</a> &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>extension</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The application to which this package belongs. </dd></dl>
+<p>An extension defined in this package that extends a type not defined in this package, must be registered with this method. </p>
+
+<p>Reimplemented in <a class="el" href="class_emojicode_compiler_1_1_recording_package.html#ae1bffb087fb36bacdcb5cc7d871d43d2">EmojicodeCompiler::RecordingPackage</a>.</p>
 
 </div>
 </div>
-<a id="a94ccb64e85b8c247330a195448c51393"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a94ccb64e85b8c247330a195448c51393">&#9670;&nbsp;</a></span>classes()</h2>
+<a id="ade3b17cb952c2f7cb7d8b548b59e3179"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade3b17cb952c2f7cb7d8b548b59e3179">&#9670;&nbsp;</a></span>classes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -259,7 +293,7 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt;<a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> *&gt;&amp; EmojicodeCompiler::Package::classes </td>
+          <td class="memname">const std::vector&lt;std::unique_ptr&lt;<a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a>&gt; &gt;&amp; EmojicodeCompiler::Package::classes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -298,6 +332,32 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </table>
 </div><div class="memdoc">
 <p>If the compatibility mode is on the, the parsers will try to parse Emojicode 0.5 syntax. If this is true, a MigArgs object is provided. </p><dl class="section return"><dt>Returns</dt><dd>Whether the compatiblity mode is on. </dd></dl>
+
+</div>
+</div>
+<a id="a4fd223f146a3d722364654a105114cb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fd223f146a3d722364654a105114cb0">&#9670;&nbsp;</a></span>compiler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_compiler.html">Compiler</a>* EmojicodeCompiler::Package::compiler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The application to which this package belongs. </dd></dl>
 
 </div>
 </div>
@@ -366,7 +426,7 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Tries to import the package identified by name into a namespace of this package. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_application.html#a4bdc13f124fa31026b933b61c299a637">Application::loadPackage</a> </dd></dl>
+<p>Tries to import the package identified by name into a namespace of this package. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_compiler.html#a28f61c2cba37fba3dc365f06767dbf9f">Compiler::loadPackage</a> </dd></dl>
 
 <p>Reimplemented in <a class="el" href="class_emojicode_compiler_1_1_recording_package.html#ad979edf11351a2b0112ec548f5696acc">EmojicodeCompiler::RecordingPackage</a>.</p>
 
@@ -564,7 +624,33 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Lexes and parses the package. If this package is the s package the s loading procedure is invoked. If the package is not the <code>s</code> package, the s package is first imported via <a class="el" href="class_emojicode_compiler_1_1_package.html#a2371089e5f0ba70ab7a3d28b66bfa4dd">importPackage()</a>. </p>
+<p>Lexes and parses the package. The file interface.emojii in <a class="el" href="class_emojicode_compiler_1_1_package.html#aa10daa159585fb40edf5073a6a87553c">path()</a> is used to begin compilation. If this package is the s package the s loading procedure is invoked. If the package is not the <code>s</code> package, the s package is first imported via <a class="el" href="class_emojicode_compiler_1_1_package.html#a2371089e5f0ba70ab7a3d28b66bfa4dd">importPackage()</a>. </p>
+
+</div>
+</div>
+<a id="aa10daa159585fb40edf5073a6a87553c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa10daa159585fb40edf5073a6a87553c">&#9670;&nbsp;</a></span>path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string&amp; EmojicodeCompiler::Package::path </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The path to the directory of this package. </dd></dl>
 
 </div>
 </div>
@@ -591,62 +677,6 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> that can be used to relate to this package. </dd></dl>
-
-</div>
-</div>
-<a id="a5a2fad73ec024e333a9ddc988c62c36e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a2fad73ec024e333a9ddc988c62c36e">&#9670;&nbsp;</a></span>registerExtension()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="class_emojicode_compiler_1_1_extension.html">Extension</a>&amp; EmojicodeCompiler::Package::registerExtension </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_extension.html">Extension</a>&#160;</td>
-          <td class="paramname"><em>ext</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>An extension defined in this package that extends a type not defined in this package, must be registered with this method. </p>
-
-<p>Reimplemented in <a class="el" href="class_emojicode_compiler_1_1_recording_package.html#a8b029786d2d99ddc88c48db7e3039000">EmojicodeCompiler::RecordingPackage</a>.</p>
-
-</div>
-</div>
-<a id="ace8a146731481881341c0598dd4416cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace8a146731481881341c0598dd4416cf">&#9670;&nbsp;</a></span>registerFunction()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void EmojicodeCompiler::Package::registerFunction </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *&#160;</td>
-          <td class="paramname"><em>function</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Functions that technically belong to this package but are not members of a <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a> instance that is registered with this package, must be registered with this function. </p>
 
 </div>
 </div>
@@ -677,8 +707,8 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Package/<a class="el" href="_package_8hpp_source.html">Package.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Package/Package.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Package/<a class="el" href="_package_8hpp_source.html">Package.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Package/Package.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

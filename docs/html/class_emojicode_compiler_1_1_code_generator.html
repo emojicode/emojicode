@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -64,6 +65,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_code_generator-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -90,12 +92,14 @@ llvm::Module *&#160;</td><td class="memItemRight" valign="bottom"><b>module</b> 
 <tr class="memitem:a526e7d67139e9a8f73ec2df6e2aed300"><td class="memItemLeft" align="right" valign="top"><a id="a526e7d67139e9a8f73ec2df6e2aed300"></a>
 <a class="el" href="class_emojicode_compiler_1_1_l_l_v_m_type_helper.html">LLVMTypeHelper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>typeHelper</b> ()</td></tr>
 <tr class="separator:a526e7d67139e9a8f73ec2df6e2aed300"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b60b80bd8e945376527a7fd9ad91c01"><td class="memItemLeft" align="right" valign="top"><a id="a5b60b80bd8e945376527a7fd9ad91c01"></a>
+<a class="el" href="class_emojicode_compiler_1_1_string_pool.html">StringPool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>stringPool</b> ()</td></tr>
+<tr class="separator:a5b60b80bd8e945376527a7fd9ad91c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa30f705522584ae7d9fe66d14e92285e"><td class="memItemLeft" align="right" valign="top"><a id="aa30f705522584ae7d9fe66d14e92285e"></a>
 <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_code_generator.html#aa30f705522584ae7d9fe66d14e92285e">package</a> () const</td></tr>
 <tr class="memdesc:aa30f705522584ae7d9fe66d14e92285e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the package for which this code generator was created. <br /></td></tr>
 <tr class="separator:aa30f705522584ae7d9fe66d14e92285e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac71df21ae6de857066f1eacea59f82d8"><td class="memItemLeft" align="right" valign="top"><a id="ac71df21ae6de857066f1eacea59f82d8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (const std::string &amp;outPath)</td></tr>
+<tr class="memitem:ac71df21ae6de857066f1eacea59f82d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_code_generator.html#ac71df21ae6de857066f1eacea59f82d8">generate</a> (const std::string &amp;outPath)</td></tr>
 <tr class="separator:ac71df21ae6de857066f1eacea59f82d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b1e9c50b6872d613f4d06d3a4045877"><td class="memItemLeft" align="right" valign="top"><a id="a3b1e9c50b6872d613f4d06d3a4045877"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>optionalValue</b> ()</td></tr>
@@ -103,18 +107,52 @@ llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>optionalValu
 <tr class="memitem:af4d3cc46f4b072e350b90d1afd55acd0"><td class="memItemLeft" align="right" valign="top"><a id="af4d3cc46f4b072e350b90d1afd55acd0"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>optionalNoValue</b> ()</td></tr>
 <tr class="separator:af4d3cc46f4b072e350b90d1afd55acd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1c886e644d914bd5087045b075ef879"><td class="memItemLeft" align="right" valign="top"><a id="aa1c886e644d914bd5087045b075ef879"></a>
+llvm::GlobalVariable *&#160;</td><td class="memItemRight" valign="bottom"><b>classValueTypeMeta</b> ()</td></tr>
+<tr class="separator:aa1c886e644d914bd5087045b075ef879"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0dea175aadc4c87db18ccbeafd86cbd"><td class="memItemLeft" align="right" valign="top"><a id="ab0dea175aadc4c87db18ccbeafd86cbd"></a>
 llvm::GlobalVariable *&#160;</td><td class="memItemRight" valign="bottom"><b>valueTypeMetaFor</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
 <tr class="separator:ab0dea175aadc4c87db18ccbeafd86cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01fcf5212049848597cd849e08633f02"><td class="memItemLeft" align="right" valign="top"><a id="a01fcf5212049848597cd849e08633f02"></a>
 llvm::Function *&#160;</td><td class="memItemRight" valign="bottom"><b>runTimeNew</b> () const</td></tr>
 <tr class="separator:a01fcf5212049848597cd849e08633f02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3d2d73deee9537180e8b6bde054a80f"><td class="memItemLeft" align="right" valign="top"><a id="ae3d2d73deee9537180e8b6bde054a80f"></a>
+llvm::Function *&#160;</td><td class="memItemRight" valign="bottom"><b>errNoValue</b> () const</td></tr>
+<tr class="separator:ae3d2d73deee9537180e8b6bde054a80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab616f62ae36315bd0a645b7dc178a96"><td class="memItemLeft" align="right" valign="top"><a id="aab616f62ae36315bd0a645b7dc178a96"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>declareLlvmFunction</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
+<tr class="separator:aab616f62ae36315bd0a645b7dc178a96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages the generation of IR for one package. Each package is compiled to one LLVM module. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Generation/<a class="el" href="_code_generator_8hpp_source.html">CodeGenerator.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Generation/CodeGenerator.cpp</li>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac71df21ae6de857066f1eacea59f82d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac71df21ae6de857066f1eacea59f82d8">&#9670;&nbsp;</a></span>generate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EmojicodeCompiler::CodeGenerator::generate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>outPath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Generates an object file for the package. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outPath</td><td>The path at which the object file will be placed. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/<a class="el" href="_code_generator_8hpp_source.html">CodeGenerator.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/CodeGenerator.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

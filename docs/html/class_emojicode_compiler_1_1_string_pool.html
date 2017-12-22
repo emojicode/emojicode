@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -78,24 +79,23 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae572f354a55e198afdfb7543708b902a"><td class="memItemLeft" align="right" valign="top">EmojicodeInstruction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_string_pool.html#ae572f354a55e198afdfb7543708b902a">pool</a> (const std::u32string &amp;string)</td></tr>
-<tr class="separator:ae572f354a55e198afdfb7543708b902a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a395a1104c377b2ddd6f09bad0f34b60f"><td class="memItemLeft" align="right" valign="top"><a id="a395a1104c377b2ddd6f09bad0f34b60f"></a>
-const std::vector&lt; std::u32string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_string_pool.html#a395a1104c377b2ddd6f09bad0f34b60f">strings</a> () const</td></tr>
-<tr class="memdesc:a395a1104c377b2ddd6f09bad0f34b60f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector of all strings in the order in which they must appear in the pool at run-time. <br /></td></tr>
-<tr class="separator:a395a1104c377b2ddd6f09bad0f34b60f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39b094e0d7df61c49e8747e29cff45b4"><td class="memItemLeft" align="right" valign="top"><a id="a39b094e0d7df61c49e8747e29cff45b4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>StringPool</b> (<a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *cg)</td></tr>
+<tr class="separator:a39b094e0d7df61c49e8747e29cff45b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af31e3e37611d74b0f468d58c2a38d804"><td class="memItemLeft" align="right" valign="top">llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_string_pool.html#af31e3e37611d74b0f468d58c2a38d804">pool</a> (const std::u32string &amp;string)</td></tr>
+<tr class="separator:af31e3e37611d74b0f468d58c2a38d804"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="class_emojicode_compiler_1_1_string_pool.html" title="StringPool represents an application’s string pool. ">StringPool</a> represents an application’s string pool. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae572f354a55e198afdfb7543708b902a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae572f354a55e198afdfb7543708b902a">&#9670;&nbsp;</a></span>pool()</h2>
+<a id="af31e3e37611d74b0f468d58c2a38d804"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af31e3e37611d74b0f468d58c2a38d804">&#9670;&nbsp;</a></span>pool()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">EmojicodeInstruction EmojicodeCompiler::StringPool::pool </td>
+          <td class="memname">llvm::Value * EmojicodeCompiler::StringPool::pool </td>
           <td>(</td>
           <td class="paramtype">const std::u32string &amp;&#160;</td>
           <td class="paramname"><em>string</em></td><td>)</td>
@@ -108,8 +108,8 @@ const std::vector&lt; std::u32string &gt; &amp;&#160;</td><td class="memItemRigh
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Generation/<a class="el" href="_string_pool_8hpp_source.html">StringPool.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Generation/StringPool.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/<a class="el" href="_string_pool_8hpp_source.html">StringPool.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/StringPool.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -66,7 +67,6 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="class_emojicode_compiler_1_1_type_body_parser-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EmojicodeCompiler::TypeBodyParser Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -91,22 +91,17 @@ Collaboration diagram for EmojicodeCompiler::TypeBodyParser:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_type_body_parser__coll__graph.png" border="0" usemap="#_emojicode_compiler_1_1_type_body_parser_coll__map" alt="Collaboration graph"/></div>
 <map name="_emojicode_compiler_1_1_type_body_parser_coll__map" id="_emojicode_compiler_1_1_type_body_parser_coll__map">
-<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="529,60,673,99"/>
-<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_token_stream.html" title="EmojicodeCompiler::\lTokenStream" alt="" coords="230,68,374,107"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_package.html" title="Package is the class used to load, parse and analyse packages. " alt="" coords="230,5,374,44"/>
-<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="514,144,687,169"/>
-<area shape="rect" id="node8" href="class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="898,181,1042,220"/>
-<area shape="rect" id="node6" href="class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="230,137,374,176"/>
-<area shape="rect" id="node7" href="class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,137,181,176"/>
-<area shape="rect" id="node9" href="class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function \&gt;" alt="" coords="529,225,673,264"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="89,105,234,144"/>
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_token_stream.html" title="EmojicodeCompiler::\lTokenStream" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_package.html" title="Package is the class used to load, parse and analyse packages. " alt="" coords="173,5,318,44"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7d642421bfaf602020f455a7787fbad4"><td class="memItemLeft" align="right" valign="top"><a id="a7d642421bfaf602020f455a7787fbad4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TypeBodyParser</b> (<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> type, <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *pkg, <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;stream)</td></tr>
-<tr class="separator:a7d642421bfaf602020f455a7787fbad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fc8e3cb14256473f99126c57f958942"><td class="memItemLeft" align="right" valign="top"><a id="a7fc8e3cb14256473f99126c57f958942"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TypeBodyParser</b> (<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> type, <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *pkg, <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;stream, bool interface)</td></tr>
+<tr class="separator:a7fc8e3cb14256473f99126c57f958942"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2763dca254cbebd37da7a7c2d03ae07"><td class="memItemLeft" align="right" valign="top"><a id="aa2763dca254cbebd37da7a7c2d03ae07"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> ()</td></tr>
 <tr class="separator:aa2763dca254cbebd37da7a7c2d03ae07"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,11 +166,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function_parser.html">FunctionParser</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>factorFunctionParser</b> (<a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *pkg, <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;stream, <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> context, <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
 <tr class="separator:ad35fce68313f851bda20eb9510830b5a inherit pro_methods_class_emojicode_compiler_1_1_abstract_parser"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:a0b67fd0b3d3eab850e5a8b36728b72c5"><td class="memItemLeft" align="right" valign="top"><a id="a0b67fd0b3d3eab850e5a8b36728b72c5"></a>
-<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>type_</b></td></tr>
-<tr class="separator:a0b67fd0b3d3eab850e5a8b36728b72c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_class_emojicode_compiler_1_1_abstract_parser"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_emojicode_compiler_1_1_abstract_parser')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_emojicode_compiler_1_1_abstract_parser.html">EmojicodeCompiler::AbstractParser</a></td></tr>
 <tr class="memitem:acf31fcf4134aa757d77db7f4f20c9476 inherit pro_attribs_class_emojicode_compiler_1_1_abstract_parser"><td class="memItemLeft" align="right" valign="top"><a id="acf31fcf4134aa757d77db7f4f20c9476"></a>
 <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>package_</b></td></tr>
@@ -187,8 +179,8 @@ Protected Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Instances of subclasses of <a class="el" href="class_emojicode_compiler_1_1_type_body_parser.html">TypeBodyParser</a> are used to parse the $type-body$ of $type-definition$s, which are represented by <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a>. This class is abstract. </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Parsing/<a class="el" href="_type_body_parser_8hpp_source.html">TypeBodyParser.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Parsing/TypeBodyParser.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Parsing/<a class="el" href="_type_body_parser_8hpp_source.html">TypeBodyParser.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Parsing/TypeBodyParser.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

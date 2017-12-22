@@ -1,8 +1,6 @@
 var searchData=
 [
   ['abstractparser',['AbstractParser',['../class_emojicode_compiler_1_1_abstract_parser.html',1,'EmojicodeCompiler']]],
-  ['application',['Application',['../class_emojicode_compiler_1_1_application.html',1,'EmojicodeCompiler']]],
-  ['applicationdelegate',['ApplicationDelegate',['../class_emojicode_compiler_1_1_application_delegate.html',1,'EmojicodeCompiler']]],
   ['argument',['Argument',['../struct_emojicode_compiler_1_1_argument.html',1,'EmojicodeCompiler']]],
   ['astarguments',['ASTArguments',['../class_emojicode_compiler_1_1_a_s_t_arguments.html',1,'EmojicodeCompiler']]],
   ['astbinaryoperator',['ASTBinaryOperator',['../class_emojicode_compiler_1_1_a_s_t_binary_operator.html',1,'EmojicodeCompiler']]],
@@ -14,8 +12,6 @@ var searchData=
   ['astboxtosimpleoptional',['ASTBoxToSimpleOptional',['../class_emojicode_compiler_1_1_a_s_t_box_to_simple_optional.html',1,'EmojicodeCompiler']]],
   ['astcallablebox',['ASTCallableBox',['../class_emojicode_compiler_1_1_a_s_t_callable_box.html',1,'EmojicodeCompiler']]],
   ['astcallablecall',['ASTCallableCall',['../class_emojicode_compiler_1_1_a_s_t_callable_call.html',1,'EmojicodeCompiler']]],
-  ['astcapturemethod',['ASTCaptureMethod',['../class_emojicode_compiler_1_1_a_s_t_capture_method.html',1,'EmojicodeCompiler']]],
-  ['astcapturetypemethod',['ASTCaptureTypeMethod',['../class_emojicode_compiler_1_1_a_s_t_capture_type_method.html',1,'EmojicodeCompiler']]],
   ['astcast',['ASTCast',['../class_emojicode_compiler_1_1_a_s_t_cast.html',1,'EmojicodeCompiler']]],
   ['astclosure',['ASTClosure',['../class_emojicode_compiler_1_1_a_s_t_closure.html',1,'EmojicodeCompiler']]],
   ['astconcatenateliteral',['ASTConcatenateLiteral',['../class_emojicode_compiler_1_1_a_s_t_concatenate_literal.html',1,'EmojicodeCompiler']]],
@@ -31,7 +27,6 @@ var searchData=
   ['astif',['ASTIf',['../class_emojicode_compiler_1_1_a_s_t_if.html',1,'EmojicodeCompiler']]],
   ['astinfertype',['ASTInferType',['../class_emojicode_compiler_1_1_a_s_t_infer_type.html',1,'EmojicodeCompiler']]],
   ['astinitablecreator',['ASTInitableCreator',['../class_emojicode_compiler_1_1_a_s_t_initable_creator.html',1,'EmojicodeCompiler']]],
-  ['astinitgetvariable',['ASTInitGetVariable',['../class_emojicode_compiler_1_1_a_s_t_init_get_variable.html',1,'EmojicodeCompiler']]],
   ['astinitialization',['ASTInitialization',['../class_emojicode_compiler_1_1_a_s_t_initialization.html',1,'EmojicodeCompiler']]],
   ['astinstancevariableassignment',['ASTInstanceVariableAssignment',['../class_emojicode_compiler_1_1_a_s_t_instance_variable_assignment.html',1,'EmojicodeCompiler']]],
   ['astiserror',['ASTIsError',['../class_emojicode_compiler_1_1_a_s_t_is_error.html',1,'EmojicodeCompiler']]],
@@ -44,7 +39,6 @@ var searchData=
   ['astnode',['ASTNode',['../class_emojicode_compiler_1_1_a_s_t_node.html',1,'EmojicodeCompiler']]],
   ['astnothingness',['ASTNothingness',['../class_emojicode_compiler_1_1_a_s_t_nothingness.html',1,'EmojicodeCompiler']]],
   ['astnumberliteral',['ASTNumberLiteral',['../class_emojicode_compiler_1_1_a_s_t_number_literal.html',1,'EmojicodeCompiler']]],
-  ['astproxyexpr',['ASTProxyExpr',['../class_emojicode_compiler_1_1_a_s_t_proxy_expr.html',1,'EmojicodeCompiler']]],
   ['astraise',['ASTRaise',['../class_emojicode_compiler_1_1_a_s_t_raise.html',1,'EmojicodeCompiler']]],
   ['astrepeatwhile',['ASTRepeatWhile',['../class_emojicode_compiler_1_1_a_s_t_repeat_while.html',1,'EmojicodeCompiler']]],
   ['astreturn',['ASTReturn',['../class_emojicode_compiler_1_1_a_s_t_return.html',1,'EmojicodeCompiler']]],

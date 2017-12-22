@@ -7,6 +7,7 @@ var searchData=
   ['inheritsfrom',['inheritsFrom',['../class_emojicode_compiler_1_1_class.html#a1ad80989cb606c774caea84814cd051d',1,'EmojicodeCompiler::Class']]],
   ['inheritsinitializers',['inheritsInitializers',['../class_emojicode_compiler_1_1_class.html#a0e1c08af67f50a3702821a1fab648437',1,'EmojicodeCompiler::Class']]],
   ['initialized',['initialized',['../class_emojicode_compiler_1_1_variable.html#a3951609849ede2e471e71aa8990eafc2',1,'EmojicodeCompiler::Variable']]],
+  ['inittype',['initType',['../class_emojicode_compiler_1_1_a_s_t_initialization.html#a354d8d06e40f7b0135758e0e9e4c250e',1,'EmojicodeCompiler::ASTInitialization']]],
   ['innertocode',['innerToCode',['../class_emojicode_compiler_1_1_a_s_t_block.html#a4b79c0254fe3ccf02fa0f363babb4ee1',1,'EmojicodeCompiler::ASTBlock']]],
   ['instancescope',['instanceScope',['../class_emojicode_compiler_1_1_semantic_scoper.html#a6f268019744219efe1e795f29ffdf83d',1,'EmojicodeCompiler::SemanticScoper::instanceScope()'],['../class_emojicode_compiler_1_1_type_definition.html#a084c733620ee0129ecb74fec03d5583e',1,'EmojicodeCompiler::TypeDefinition::instanceScope()']]],
   ['isreferencable',['isReferencable',['../class_emojicode_compiler_1_1_type.html#af4d87bc34a092c831109ebe8446ff636',1,'EmojicodeCompiler::Type']]],

@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -90,8 +91,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_c_l_i_1_1_options.html#a2def42bb22cdd21d47540f156dbfedda">printCliMessage</a> (const std::string &amp;message)</td></tr>
 <tr class="memdesc:a2def42bb22cdd21d47540f156dbfedda"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method must be used to print messages or errors about the command-line interface use. <br /></td></tr>
 <tr class="separator:a2def42bb22cdd21d47540f156dbfedda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a926df5e31631caa1c3eb5deeb8fca75e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_application_delegate.html">ApplicationDelegate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_c_l_i_1_1_options.html#a926df5e31631caa1c3eb5deeb8fca75e">applicationDelegate</a> ()</td></tr>
-<tr class="separator:a926df5e31631caa1c3eb5deeb8fca75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94c47a0f3100f32d92a484952e05ef84"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_compiler_delegate.html">CompilerDelegate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_c_l_i_1_1_options.html#a94c47a0f3100f32d92a484952e05ef84">applicationDelegate</a> () const</td></tr>
+<tr class="separator:a94c47a0f3100f32d92a484952e05ef84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab33864c3143563add2a0dca566f642db"><td class="memItemLeft" align="right" valign="top"><a id="ab33864c3143563add2a0dca566f642db"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>packageToReport</b> () const</td></tr>
 <tr class="separator:ab33864c3143563add2a0dca566f642db"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -101,41 +102,50 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ou
 <tr class="memitem:a37879ff3316ff1341c3f33fc1ccdbc45"><td class="memItemLeft" align="right" valign="top"><a id="a37879ff3316ff1341c3f33fc1ccdbc45"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>mainFile</b> () const</td></tr>
 <tr class="separator:a37879ff3316ff1341c3f33fc1ccdbc45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa122376bee754ac741551e24d14299b2"><td class="memItemLeft" align="right" valign="top"><a id="aa122376bee754ac741551e24d14299b2"></a>
-const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>sizeVariable</b> () const</td></tr>
-<tr class="separator:aa122376bee754ac741551e24d14299b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5e4ffa621087a3d8a7ea6dd3b673d8f"><td class="memItemLeft" align="right" valign="top"><a id="ac5e4ffa621087a3d8a7ea6dd3b673d8f"></a>
-const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>packageDirectory</b> () const</td></tr>
-<tr class="separator:ac5e4ffa621087a3d8a7ea6dd3b673d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa63ab2dcb8c82103aa8064f0224efe6b"><td class="memItemLeft" align="right" valign="top"><a id="aa63ab2dcb8c82103aa8064f0224efe6b"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>interfaceFile</b> () const</td></tr>
+<tr class="separator:aa63ab2dcb8c82103aa8064f0224efe6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a876bd0363f1a00ed85e84323c00eeff4"><td class="memItemLeft" align="right" valign="top"><a id="a876bd0363f1a00ed85e84323c00eeff4"></a>
+const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>packageSearchPaths</b> () const</td></tr>
+<tr class="separator:a876bd0363f1a00ed85e84323c00eeff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d226450595dd173cceeec2eebd69f3f"><td class="memItemLeft" align="right" valign="top"><a id="a3d226450595dd173cceeec2eebd69f3f"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>migrationFile</b> () const</td></tr>
 <tr class="separator:a3d226450595dd173cceeec2eebd69f3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b80dc9887c4812aa2edabef0e6f08eb"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_c_l_i_1_1_options.html#a0b80dc9887c4812aa2edabef0e6f08eb">prettyprint</a> () const</td></tr>
-<tr class="separator:a0b80dc9887c4812aa2edabef0e6f08eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2d1c4dc57b96e755183e793bb1dec3f"><td class="memItemLeft" align="right" valign="top"><a id="af2d1c4dc57b96e755183e793bb1dec3f"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>mainPackageName</b> () const</td></tr>
+<tr class="separator:af2d1c4dc57b96e755183e793bb1dec3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a256cfbc03feb332d4a11a7f4ea37a436"><td class="memItemLeft" align="right" valign="top"><a id="a256cfbc03feb332d4a11a7f4ea37a436"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>linker</b> () const</td></tr>
+<tr class="separator:a256cfbc03feb332d4a11a7f4ea37a436"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee818306e4d24b889c340b875c0e70bc"><td class="memItemLeft" align="right" valign="top"><a id="aee818306e4d24b889c340b875c0e70bc"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>linkToExec</b> () const</td></tr>
+<tr class="separator:aee818306e4d24b889c340b875c0e70bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad108516cd2866ece0d6d09fd2b608a24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_c_l_i_1_1_options.html#ad108516cd2866ece0d6d09fd2b608a24">prettyprint</a> () const</td></tr>
+<tr class="separator:ad108516cd2866ece0d6d09fd2b608a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An instance of this class represents the command-line options with which the compiler was started. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a926df5e31631caa1c3eb5deeb8fca75e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a926df5e31631caa1c3eb5deeb8fca75e">&#9670;&nbsp;</a></span>applicationDelegate()</h2>
+<a id="a94c47a0f3100f32d92a484952e05ef84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94c47a0f3100f32d92a484952e05ef84">&#9670;&nbsp;</a></span>applicationDelegate()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_application_delegate.html">ApplicationDelegate</a> &gt; EmojicodeCompiler::CLI::Options::applicationDelegate </td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_compiler_delegate.html">CompilerDelegate</a> &gt; EmojicodeCompiler::CLI::Options::applicationDelegate </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>An <a class="el" href="class_emojicode_compiler_1_1_application_delegate.html">ApplicationDelegate</a> that matches the options represented by the instance. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>An <a class="el" href="class_emojicode_compiler_1_1_compiler_delegate.html">CompilerDelegate</a> that matches the options represented by the instance. </dd></dl>
 
 </div>
 </div>
-<a id="a0b80dc9887c4812aa2edabef0e6f08eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b80dc9887c4812aa2edabef0e6f08eb">&#9670;&nbsp;</a></span>prettyprint()</h2>
+<a id="ad108516cd2866ece0d6d09fd2b608a24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad108516cd2866ece0d6d09fd2b608a24">&#9670;&nbsp;</a></span>prettyprint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -144,7 +154,7 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>mi
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const bool EmojicodeCompiler::CLI::Options::prettyprint </td>
+          <td class="memname">bool EmojicodeCompiler::CLI::Options::prettyprint </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -161,8 +171,8 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>mi
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/CLI/<a class="el" href="_options_8hpp_source.html">Options.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/CLI/Options.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/CLI/<a class="el" href="_options_8hpp_source.html">Options.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/CLI/Options.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

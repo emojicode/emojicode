@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -76,7 +77,6 @@ Inheritance diagram for EmojicodeCompiler::ASTGetVariable:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_a_s_t_get_variable__inherit__graph.png" border="0" usemap="#_emojicode_compiler_1_1_a_s_t_get_variable_inherit__map" alt="Inheritance graph"/></div>
 <map name="_emojicode_compiler_1_1_a_s_t_get_variable_inherit__map" id="_emojicode_compiler_1_1_a_s_t_get_variable_inherit__map">
-<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_a_s_t_init_get_variable.html" title="EmojicodeCompiler::\lASTInitGetVariable" alt="" coords="89,265,234,304"/>
 <area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="5,92,150,131"/>
 <area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
 <area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="173,92,318,131"/>
@@ -101,9 +101,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5ff2485e281aa67f2d554c0ec1bdfa88"><td class="memItemLeft" align="right" valign="top"><a id="a5ff2485e281aa67f2d554c0ec1bdfa88"></a>
 <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation) override</td></tr>
 <tr class="separator:a5ff2485e281aa67f2d554c0ec1bdfa88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87093661053963a950bdb9d35275a8e4"><td class="memItemLeft" align="right" valign="top"><a id="a87093661053963a950bdb9d35275a8e4"></a>
-Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg) const override</td></tr>
-<tr class="separator:a87093661053963a950bdb9d35275a8e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c636f5c1156eed5ed19ae7ce4a61e8f"><td class="memItemLeft" align="right" valign="top"><a id="a0c636f5c1156eed5ed19ae7ce4a61e8f"></a>
+Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg) const override</td></tr>
+<tr class="separator:a0c636f5c1156eed5ed19ae7ce4a61e8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf0ff70348c8da8b5d914427da16402f"><td class="memItemLeft" align="right" valign="top"><a id="abf0ff70348c8da8b5d914427da16402f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (<a class="el" href="class_emojicode_compiler_1_1_prettyprinter.html">Prettyprinter</a> &amp;pretty) const override</td></tr>
 <tr class="separator:abf0ff70348c8da8b5d914427da16402f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,9 +139,9 @@ const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">So
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:af21aa7087e0ee2051167463ba1b4af75"><td class="memItemLeft" align="right" valign="top"><a id="af21aa7087e0ee2051167463ba1b4af75"></a>
-static Value *&#160;</td><td class="memItemRight" valign="bottom"><b>instanceVariablePointer</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg, size_t index)</td></tr>
-<tr class="separator:af21aa7087e0ee2051167463ba1b4af75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0476c8a66395d90e9759584aa17fb833"><td class="memItemLeft" align="right" valign="top"><a id="a0476c8a66395d90e9759584aa17fb833"></a>
+static Value *&#160;</td><td class="memItemRight" valign="bottom"><b>instanceVariablePointer</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg, size_t index)</td></tr>
+<tr class="separator:a0476c8a66395d90e9759584aa17fb833"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -164,10 +164,10 @@ VariableID&#160;</td><td class="memItemRight" valign="bottom"><b>varId_</b></td>
 <tr class="separator:a80af5c48b310943adac0b4a813a4909d inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/<a class="el" href="_a_s_t_variables_8hpp_source.html">ASTVariables.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTVariables.cpp</li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTVariables_CG.cpp</li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Prettyprint/ASTToCode.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/<a class="el" href="_a_s_t_variables_8hpp_source.html">ASTVariables.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/ASTVariables.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/ASTVariables_CG.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Prettyprint/ASTToCode.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

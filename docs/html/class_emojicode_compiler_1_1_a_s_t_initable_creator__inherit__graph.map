@@ -1,7 +1,8 @@
 <map id="EmojicodeCompiler::ASTInitableCreator" name="EmojicodeCompiler::ASTInitableCreator">
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_frozen_declaration.html" title="EmojicodeCompiler::\lASTFrozenDeclaration" alt="" coords="600,5,756,44"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_variable_assignment_decl.html" title="EmojicodeCompiler::\lASTVariableAssignmentDecl" alt="" coords="582,68,774,107"/>
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="198,37,342,76"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,37,150,76"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_instance_variable_assignment.html" title="EmojicodeCompiler::\lASTInstanceVariableAssignment" alt="" coords="822,68,1037,107"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_frozen_declaration.html" title="EmojicodeCompiler::\lASTFrozenDeclaration" alt="" coords="600,5,756,44"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_variable_assignment_decl.html" title="EmojicodeCompiler::\lASTVariableAssignmentDecl" alt="" coords="582,68,774,107"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="198,5,342,44"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="198,68,342,107"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,68,150,107"/>
+<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_a_s_t_instance_variable_assignment.html" title="EmojicodeCompiler::\lASTInstanceVariableAssignment" alt="" coords="822,68,1037,107"/>
 </map>

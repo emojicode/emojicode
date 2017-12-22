@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -75,9 +76,10 @@ Inheritance diagram for EmojicodeCompiler::ASTFrozenDeclaration:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_a_s_t_frozen_declaration__inherit__graph.png" border="0" usemap="#_emojicode_compiler_1_1_a_s_t_frozen_declaration_inherit__map" alt="Inheritance graph"/></div>
 <map name="_emojicode_compiler_1_1_a_s_t_frozen_declaration_inherit__map" id="_emojicode_compiler_1_1_a_s_t_frozen_declaration_inherit__map">
-<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_initable_creator.html" title="EmojicodeCompiler::\lASTInitableCreator" alt="" coords="11,179,156,217"/>
-<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="11,92,156,131"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="11,5,156,44"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_initable_creator.html" title="EmojicodeCompiler::\lASTInitableCreator" alt="" coords="89,179,234,217"/>
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="5,92,150,131"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="173,92,318,131"/>
+<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="173,5,318,44"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -85,9 +87,10 @@ Collaboration diagram for EmojicodeCompiler::ASTFrozenDeclaration:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_emojicode_compiler_1_1_a_s_t_frozen_declaration__coll__graph.png" border="0" usemap="#_emojicode_compiler_1_1_a_s_t_frozen_declaration_coll__map" alt="Collaboration graph"/></div>
 <map name="_emojicode_compiler_1_1_a_s_t_frozen_declaration_coll__map" id="_emojicode_compiler_1_1_a_s_t_frozen_declaration_coll__map">
-<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_initable_creator.html" title="EmojicodeCompiler::\lASTInitableCreator" alt="" coords="11,179,156,217"/>
-<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="11,92,156,131"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="11,5,156,44"/>
+<area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_initable_creator.html" title="EmojicodeCompiler::\lASTInitableCreator" alt="" coords="89,179,234,217"/>
+<area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="5,92,150,131"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="173,92,318,131"/>
+<area shape="rect" id="node5" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="173,5,318,44"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -120,19 +123,36 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a9586d9381bbbacf5c65ebcaa0df45847 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td class="memItemLeft" align="right" valign="top"><a id="a9586d9381bbbacf5c65ebcaa0df45847"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ASTInitableCreator</b> (std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; e, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="separator:a9586d9381bbbacf5c65ebcaa0df45847 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5748b73ff92f0df01b0e93cf18b6d04c inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td class="memItemLeft" align="right" valign="top"><a id="a5748b73ff92f0df01b0e93cf18b6d04c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setVtDestination</b> (VariableID varId, bool inInstanceScope, bool declare)</td></tr>
-<tr class="separator:a5748b73ff92f0df01b0e93cf18b6d04c inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea19fb08dfcbe2b14417df37e0c39e10 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td class="memItemLeft" align="right" valign="top"><a id="aea19fb08dfcbe2b14417df37e0c39e10"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setVtDestination</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, VariableID varId, bool inInstanceScope, bool declare, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
+<tr class="separator:aea19fb08dfcbe2b14417df37e0c39e10 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_emojicode_compiler_1_1_a_s_t_variable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_variable.html">EmojicodeCompiler::ASTVariable</a></td></tr>
+<tr class="memitem:ab51836150a4f11fc63aeb04cc9728829 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="ab51836150a4f11fc63aeb04cc9728829"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>inInstanceScope</b> () const</td></tr>
+<tr class="separator:ab51836150a4f11fc63aeb04cc9728829 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9367c98f4e9b05024f4c625241444b50 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a9367c98f4e9b05024f4c625241444b50"></a>
+VariableID&#160;</td><td class="memItemRight" valign="bottom"><b>varId</b> ()</td></tr>
+<tr class="separator:a9367c98f4e9b05024f4c625241444b50 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dc96e7caebcd65e7c35316c64a91759 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a8dc96e7caebcd65e7c35316c64a91759"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>copyVariableAstInfo</b> (const <a class="el" href="struct_emojicode_compiler_1_1_resolved_variable.html">ResolvedVariable</a> &amp;, <a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser)</td></tr>
+<tr class="separator:a8dc96e7caebcd65e7c35316c64a91759 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_emojicode_compiler_1_1_a_s_t_initable_creator')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_initable_creator.html">EmojicodeCompiler::ASTInitableCreator</a></td></tr>
 <tr class="memitem:afb0c6dc7d7b0a9119fb0c1dd939331e5 inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td class="memItemLeft" align="right" valign="top"><a id="afb0c6dc7d7b0a9119fb0c1dd939331e5"></a>
 std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>expr_</b></td></tr>
 <tr class="separator:afb0c6dc7d7b0a9119fb0c1dd939331e5 inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_initable_creator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_variable.html">EmojicodeCompiler::ASTVariable</a></td></tr>
+<tr class="memitem:a30347685028497239dfeb1a24fb5b02f inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a30347685028497239dfeb1a24fb5b02f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>inInstanceScope_</b> = false</td></tr>
+<tr class="separator:a30347685028497239dfeb1a24fb5b02f inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80af5c48b310943adac0b4a813a4909d inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a80af5c48b310943adac0b4a813a4909d"></a>
+VariableID&#160;</td><td class="memItemRight" valign="bottom"><b>varId_</b></td></tr>
+<tr class="separator:a80af5c48b310943adac0b4a813a4909d inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/<a class="el" href="_a_s_t_variables_8hpp_source.html">ASTVariables.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTVariables.cpp</li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTVariables_CG.cpp</li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Prettyprint/ASTToCode.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/<a class="el" href="_a_s_t_variables_8hpp_source.html">ASTVariables.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/ASTVariables.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/ASTVariables_CG.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Prettyprint/ASTToCode.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

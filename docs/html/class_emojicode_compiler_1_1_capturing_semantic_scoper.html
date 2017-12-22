@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -117,10 +118,10 @@ const std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_variable
 <a class="el" href="class_emojicode_compiler_1_1_scope.html">Scope</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html#a17637b0188450b62da32ecb797611043">pushScope</a> ()</td></tr>
 <tr class="memdesc:a17637b0188450b62da32ecb797611043 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pushes a new subscope and returns a reference to it. <br /></td></tr>
 <tr class="separator:a17637b0188450b62da32ecb797611043 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35941018b86d46df324554d4bbb2810b inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memItemLeft" align="right" valign="top"><a id="a35941018b86d46df324554d4bbb2810b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html#a35941018b86d46df324554d4bbb2810b">popScope</a> (<a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> *app)</td></tr>
-<tr class="memdesc:a35941018b86d46df324554d4bbb2810b inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops the current scope and calls <code>recommendFrozenVariables</code> on it. <br /></td></tr>
-<tr class="separator:a35941018b86d46df324554d4bbb2810b inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad3e717584cfde7912919cf3c74a0b34 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memItemLeft" align="right" valign="top"><a id="aad3e717584cfde7912919cf3c74a0b34"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html#aad3e717584cfde7912919cf3c74a0b34">popScope</a> (<a class="el" href="class_emojicode_compiler_1_1_compiler.html">Compiler</a> *app)</td></tr>
+<tr class="memdesc:aad3e717584cfde7912919cf3c74a0b34 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops the current scope and calls <code>recommendFrozenVariables</code> on it. <br /></td></tr>
+<tr class="separator:aad3e717584cfde7912919cf3c74a0b34 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f268019744219efe1e795f29ffdf83d inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memItemLeft" align="right" valign="top"><a id="a6f268019744219efe1e795f29ffdf83d"></a>
 <a class="el" href="class_emojicode_compiler_1_1_scope.html">Scope</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html#a6f268019744219efe1e795f29ffdf83d">instanceScope</a> () const</td></tr>
 <tr class="memdesc:a6f268019744219efe1e795f29ffdf83d inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the instance scope or <code>nullptr</code>. <br /></td></tr>
@@ -129,10 +130,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a class="el" href="class_emojicode_compiler_1_1_scope.html">Scope</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html#a857a650bdf9a4b8f8b02ea502ccd4e35">topmostLocalScope</a> ()</td></tr>
 <tr class="memdesc:a857a650bdf9a4b8f8b02ea502ccd4e35 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the topmost local scope, i.e. the one in which all other locals scopes are subscopes. <br /></td></tr>
 <tr class="separator:a857a650bdf9a4b8f8b02ea502ccd4e35 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20c64df68f0a04f2068ee2967f2e7486 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_scope.html">Scope</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html#a20c64df68f0a04f2068ee2967f2e7486">pushTemporaryScope</a> ()</td></tr>
-<tr class="separator:a20c64df68f0a04f2068ee2967f2e7486 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a4bd76847734de87247b630b642e514 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html#a3a4bd76847734de87247b630b642e514">popTemporaryScope</a> ()</td></tr>
-<tr class="separator:a3a4bd76847734de87247b630b642e514 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89fd6825867740955dc42fbc5197a923 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="memItemLeft" align="right" valign="top"><a id="a89fd6825867740955dc42fbc5197a923"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_semantic_scoper.html#a89fd6825867740955dc42fbc5197a923">variableIdCount</a> () const</td></tr>
 <tr class="memdesc:a89fd6825867740955dc42fbc5197a923 inherit pub_methods_class_emojicode_compiler_1_1_semantic_scoper"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of variable ids that were assigned. <br /></td></tr>
@@ -152,8 +149,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>maxInitializationLevel
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <code>CapturingCallableScoper</code> can automatically capture unknown variables from another scope. These two scopes must share the same instance scope as capturing from instance scopes is not supported. </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Scoping/<a class="el" href="_capturing_semantic_scoper_8hpp_source.html">CapturingSemanticScoper.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Scoping/CapturingSemanticScoper.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Scoping/<a class="el" href="_capturing_semantic_scoper_8hpp_source.html">CapturingSemanticScoper.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Scoping/CapturingSemanticScoper.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

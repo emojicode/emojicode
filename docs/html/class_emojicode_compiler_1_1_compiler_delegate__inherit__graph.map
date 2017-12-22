@@ -1,0 +1,4 @@
+<map id="EmojicodeCompiler::CompilerDelegate" name="EmojicodeCompiler::CompilerDelegate">
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_c_l_i_1_1_h_r_f_compiler_delegate.html" title="An CompilerDelegate that prints errors and warnings to stderr in a **h**uman **r**eadable **f**ormat..." alt="" coords="202,5,385,44"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_c_l_i_1_1_j_s_o_n_compiler_delegate.html" title="An CompilerDelegate that prints errors and warnings to stderr as JSON. " alt="" coords="198,68,389,107"/>
+</map>

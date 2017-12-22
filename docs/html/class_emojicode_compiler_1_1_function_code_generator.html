@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -64,6 +65,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_function_code_generator-members.html">List of all members</a>  </div>
@@ -85,6 +87,12 @@ Inheritance diagram for EmojicodeCompiler::FunctionCodeGenerator:</div>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a25a52731e124b9bf3015982f1bc8ebeb"><td class="memItemLeft" align="right" valign="top"><a id="a25a52731e124b9bf3015982f1bc8ebeb"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>PairIfElseCallback</b> = std::function&lt; std::pair&lt; llvm::Value *, llvm::Value * &gt;()&gt;</td></tr>
+<tr class="separator:a25a52731e124b9bf3015982f1bc8ebeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af26f494fe88c957c18ee91d39d9dafa9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#af26f494fe88c957c18ee91d39d9dafa9">FunctionCodeGenerator</a> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, <a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *generator)</td></tr>
@@ -95,9 +103,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> ()</td><
 <tr class="memitem:aa79a9db4005d1490b83e6240a90c0085"><td class="memItemLeft" align="right" valign="top"><a id="aa79a9db4005d1490b83e6240a90c0085"></a>
 <a class="el" href="class_emojicode_compiler_1_1_c_g_scoper.html">CGScoper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>scoper</b> ()</td></tr>
 <tr class="separator:aa79a9db4005d1490b83e6240a90c0085"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a491b36ffbeeffbd7fbd5134941720ebc"><td class="memItemLeft" align="right" valign="top"><a id="a491b36ffbeeffbd7fbd5134941720ebc"></a>
-<a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>app</b> () const</td></tr>
-<tr class="separator:a491b36ffbeeffbd7fbd5134941720ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add531bb1cb5c00b4a7f5b09058d34488"><td class="memItemLeft" align="right" valign="top"><a id="add531bb1cb5c00b4a7f5b09058d34488"></a>
+<a class="el" href="class_emojicode_compiler_1_1_compiler.html">Compiler</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>compiler</b> () const</td></tr>
+<tr class="separator:add531bb1cb5c00b4a7f5b09058d34488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aadd4cf4b398cff5fe73b36414da65391"><td class="memItemLeft" align="right" valign="top"><a id="aadd4cf4b398cff5fe73b36414da65391"></a>
 <a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>generator</b> () const</td></tr>
 <tr class="separator:aadd4cf4b398cff5fe73b36414da65391"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,9 +115,9 @@ llvm::IRBuilder &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>buil
 <tr class="memitem:a77eaa8a1a40dadac7a22898d669774e1"><td class="memItemLeft" align="right" valign="top"><a id="a77eaa8a1a40dadac7a22898d669774e1"></a>
 <a class="el" href="class_emojicode_compiler_1_1_l_l_v_m_type_helper.html">LLVMTypeHelper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>typeHelper</b> ()</td></tr>
 <tr class="separator:a77eaa8a1a40dadac7a22898d669774e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78615be0b7749a712e16f843b587a353"><td class="memItemLeft" align="right" valign="top"><a id="a78615be0b7749a712e16f843b587a353"></a>
-llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>thisValue</b> ()</td></tr>
-<tr class="separator:a78615be0b7749a712e16f843b587a353"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af603e9c48bacd7d1c0007e344149519e"><td class="memItemLeft" align="right" valign="top"><a id="af603e9c48bacd7d1c0007e344149519e"></a>
+virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>thisValue</b> () const</td></tr>
+<tr class="separator:af603e9c48bacd7d1c0007e344149519e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71106dcc8d7f148b1aaacd75f82cc631"><td class="memItemLeft" align="right" valign="top"><a id="a71106dcc8d7f148b1aaacd75f82cc631"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>sizeFor</b> (llvm::PointerType *type)</td></tr>
 <tr class="separator:a71106dcc8d7f148b1aaacd75f82cc631"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,33 +132,60 @@ llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasBoxNoV
 <tr class="memitem:ac4c6b5cdef800569223d481f2b845c85"><td class="memItemLeft" align="right" valign="top"><a id="ac4c6b5cdef800569223d481f2b845c85"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasNoValue</b> (llvm::Value *simpleOptional)</td></tr>
 <tr class="separator:ac4c6b5cdef800569223d481f2b845c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeca99dd094f63321847d4f73288abd36"><td class="memItemLeft" align="right" valign="top"><a id="aeca99dd094f63321847d4f73288abd36"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasNoValueBox</b> (llvm::Value *box)</td></tr>
+<tr class="separator:aeca99dd094f63321847d4f73288abd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9163a3e81e4d8403e1874ca94b4cf3c4"><td class="memItemLeft" align="right" valign="top"><a id="a9163a3e81e4d8403e1874ca94b4cf3c4"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getSimpleOptionalWithoutValue</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
 <tr class="separator:a9163a3e81e4d8403e1874ca94b4cf3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a160530c10c8902c2296a531d4852053e"><td class="memItemLeft" align="right" valign="top"><a id="a160530c10c8902c2296a531d4852053e"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getSimpleOptionalWithValue</b> (llvm::Value *value, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
 <tr class="separator:a160530c10c8902c2296a531d4852053e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a441a875e2e1549f37e01c67b14b75a5b"><td class="memItemLeft" align="right" valign="top"><a id="a441a875e2e1549f37e01c67b14b75a5b"></a>
+<tr class="memitem:a6c6e3a19c030e1d5affc5183aa4e77f5"><td class="memItemLeft" align="right" valign="top"><a id="a6c6e3a19c030e1d5affc5183aa4e77f5"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getValuePtr</b> (llvm::Value *box, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
-<tr class="separator:a441a875e2e1549f37e01c67b14b75a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a6c6e3a19c030e1d5affc5183aa4e77f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85d1cd091f9318a34683bc3613634e5b"><td class="memItemLeft" align="right" valign="top"><a id="a85d1cd091f9318a34683bc3613634e5b"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getValuePtr</b> (llvm::Value *box, llvm::Type *llvmType)</td></tr>
+<tr class="separator:a85d1cd091f9318a34683bc3613634e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a735c97898670b1fb6b6c2efb52b643ef"><td class="memItemLeft" align="right" valign="top"><a id="a735c97898670b1fb6b6c2efb52b643ef"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getObjectMetaPtr</b> (llvm::Value *object)</td></tr>
 <tr class="separator:a735c97898670b1fb6b6c2efb52b643ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a414c01a7115a4b9f4dd51077fa2100b0"><td class="memItemLeft" align="right" valign="top"><a id="a414c01a7115a4b9f4dd51077fa2100b0"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getMakeNoValue</b> (llvm::Value *box)</td></tr>
 <tr class="separator:a414c01a7115a4b9f4dd51077fa2100b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dc621729fdf30d9336fe8de3b530c88"><td class="memItemLeft" align="right" valign="top"><a id="a0dc621729fdf30d9336fe8de3b530c88"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>int16</b> (int16_t value)</td></tr>
+<tr class="separator:a0dc621729fdf30d9336fe8de3b530c88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b0377d9029958cfe5327a0d450b55c0"><td class="memItemLeft" align="right" valign="top"><a id="a8b0377d9029958cfe5327a0d450b55c0"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>int32</b> (int32_t value)</td></tr>
+<tr class="separator:a8b0377d9029958cfe5327a0d450b55c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a553ea08288c60b811a9c61d37cd448c8"><td class="memItemLeft" align="right" valign="top"><a id="a553ea08288c60b811a9c61d37cd448c8"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>int64</b> (int64_t value)</td></tr>
+<tr class="separator:a553ea08288c60b811a9c61d37cd448c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bfb895d760758786b0c6167f13a6c17"><td class="memItemLeft" align="right" valign="top"><a id="a0bfb895d760758786b0c6167f13a6c17"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>alloc</b> (llvm::PointerType *type)</td></tr>
+<tr class="separator:a0bfb895d760758786b0c6167f13a6c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ff5eb7788bbbebaeaf9f3ef6b9ab7c9"><td class="memItemLeft" align="right" valign="top"><a id="a7ff5eb7788bbbebaeaf9f3ef6b9ab7c9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>createIfElse</b> (llvm::Value *cond, const std::function&lt; void()&gt; &amp;then, const std::function&lt; void()&gt; &amp;otherwise)</td></tr>
 <tr class="separator:a7ff5eb7788bbbebaeaf9f3ef6b9ab7c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af79f21782210dcbebecbd669afbd4522"><td class="memItemLeft" align="right" valign="top"><a id="af79f21782210dcbebecbd669afbd4522"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>createIfElseBranchCond</b> (llvm::Value *cond, const std::function&lt; bool()&gt; &amp;then, const std::function&lt; bool()&gt; &amp;otherwise)</td></tr>
+<tr class="separator:af79f21782210dcbebecbd669afbd4522"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada32e69b9c9cee563cb980eeac2a3887"><td class="memItemLeft" align="right" valign="top"><a id="ada32e69b9c9cee563cb980eeac2a3887"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>createIfElsePhi</b> (llvm::Value *cond, const std::function&lt; llvm::Value *()&gt; &amp;then, const std::function&lt; llvm::Value *()&gt; &amp;otherwise)</td></tr>
 <tr class="separator:ada32e69b9c9cee563cb980eeac2a3887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ceae11a3f2fbb987d6f3365073ff254"><td class="memItemLeft" align="right" valign="top"><a id="a9ceae11a3f2fbb987d6f3365073ff254"></a>
+std::pair&lt; llvm::Value *, llvm::Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createIfElsePhi</b> (llvm::Value *cond, const PairIfElseCallback &amp;then, const PairIfElseCallback &amp;otherwise)</td></tr>
+<tr class="separator:a9ceae11a3f2fbb987d6f3365073ff254"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a6953e5c90bd0b70b0b7042e7691b3259"><td class="memItemLeft" align="right" valign="top"><a id="a6953e5c90bd0b70b0b7042e7691b3259"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>declareArguments</b> (llvm::Function *function)</td></tr>
 <tr class="separator:a6953e5c90bd0b70b0b7042e7691b3259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf700b8e4467391ccc01ddbbaf8c52da"><td class="memItemLeft" align="right" valign="top"><a id="aaf700b8e4467391ccc01ddbbaf8c52da"></a>
+<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>function</b> () const</td></tr>
+<tr class="separator:aaf700b8e4467391ccc01ddbbaf8c52da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html" title="A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function...">FunctionCodeGenerator</a> instance is responsible for generating the LLVM IR for a single function. </p>
@@ -223,8 +258,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>declareArgume
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Generation/<a class="el" href="_function_code_generator_8hpp_source.html">FunctionCodeGenerator.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Generation/FunctionCodeGenerator.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/<a class="el" href="_function_code_generator_8hpp_source.html">FunctionCodeGenerator.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/FunctionCodeGenerator.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

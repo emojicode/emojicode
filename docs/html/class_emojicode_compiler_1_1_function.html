@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -114,6 +115,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isExternal</b> () con
 <tr class="memitem:a6b9fec85e7f742ccddae02f6d66e9834"><td class="memItemLeft" align="right" valign="top"><a id="a6b9fec85e7f742ccddae02f6d66e9834"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>externalName</b> () const</td></tr>
 <tr class="separator:a6b9fec85e7f742ccddae02f6d66e9834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09e184ccc4eb97006c933d5f4aa882c7"><td class="memItemLeft" align="right" valign="top"><a id="a09e184ccc4eb97006c933d5f4aa882c7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>makeExternal</b> ()</td></tr>
+<tr class="separator:a09e184ccc4eb97006c933d5f4aa882c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a649c3bcd77bc3f05054244d525bd645c"><td class="memItemLeft" align="right" valign="top"><a id="a649c3bcd77bc3f05054244d525bd645c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setExternalName</b> (const std::string &amp;name)</td></tr>
 <tr class="separator:a649c3bcd77bc3f05054244d525bd645c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,13 +157,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>registerOverrider</b>
 <tr class="memitem:a70abf71e476e30736ef3183c53deae05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a70abf71e476e30736ef3183c53deae05">hasVti</a> () const</td></tr>
 <tr class="separator:a70abf71e476e30736ef3183c53deae05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4eaf96cd74890a79af24f36b59449c0"><td class="memItemLeft" align="right" valign="top"><a id="ab4eaf96cd74890a79af24f36b59449c0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#ab4eaf96cd74890a79af24f36b59449c0">setVti</a> (int vti)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#ab4eaf96cd74890a79af24f36b59449c0">setVti</a> (int <a class="el" href="class_emojicode_compiler_1_1_function.html#a5788b25bc5c355481b0f01696aecfb89">vti</a>)</td></tr>
 <tr class="memdesc:ab4eaf96cd74890a79af24f36b59449c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the VTI to the given value. <br /></td></tr>
 <tr class="separator:ab4eaf96cd74890a79af24f36b59449c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60c6147c7d24212d85b5ab0ead5f88e3"><td class="memItemLeft" align="right" valign="top"><a id="a60c6147c7d24212d85b5ab0ead5f88e3"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a60c6147c7d24212d85b5ab0ead5f88e3">getVti</a> () const</td></tr>
-<tr class="memdesc:a60c6147c7d24212d85b5ab0ead5f88e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the VTI this function was assigned. <br /></td></tr>
-<tr class="separator:a60c6147c7d24212d85b5ab0ead5f88e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5788b25bc5c355481b0f01696aecfb89"><td class="memItemLeft" align="right" valign="top"><a id="a5788b25bc5c355481b0f01696aecfb89"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function.html#a5788b25bc5c355481b0f01696aecfb89">vti</a> () const</td></tr>
+<tr class="memdesc:a5788b25bc5c355481b0f01696aecfb89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the VTI this function was assigned. <br /></td></tr>
+<tr class="separator:a5788b25bc5c355481b0f01696aecfb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0827f55078892db193f91bc669507fe6"><td class="memItemLeft" align="right" valign="top"><a id="a0827f55078892db193f91bc669507fe6"></a>
 <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a>&#160;</td><td class="memItemRight" valign="bottom"><b>typeContext</b> ()</td></tr>
 <tr class="separator:a0827f55078892db193f91bc669507fe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -170,21 +174,18 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:ac0dc57a38eef634e6ff5735c4d84e1d4"><td class="memItemLeft" align="right" valign="top"><a id="ac0dc57a38eef634e6ff5735c4d84e1d4"></a>
 FunctionType&#160;</td><td class="memItemRight" valign="bottom"><b>functionType</b> () const</td></tr>
 <tr class="separator:ac0dc57a38eef634e6ff5735c4d84e1d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeabcb17ba0cc7f05c8630ef4f1d091f1"><td class="memItemLeft" align="right" valign="top"><a id="aeabcb17ba0cc7f05c8630ef4f1d091f1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setFunctionType</b> (FunctionType <a class="el" href="class_emojicode_compiler_1_1_function.html#acb46a5e38b9a2d520067949a4b97b8ba">type</a>)</td></tr>
-<tr class="separator:aeabcb17ba0cc7f05c8630ef4f1d091f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96374bb382fcaade44ca975501275217"><td class="memItemLeft" align="right" valign="top"><a id="a96374bb382fcaade44ca975501275217"></a>
-virtual ContextType&#160;</td><td class="memItemRight" valign="bottom"><b>contextType</b> () const</td></tr>
-<tr class="separator:a96374bb382fcaade44ca975501275217"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64053deea868e1b3b59292ad5f3fd2b8"><td class="memItemLeft" align="right" valign="top"><a id="a64053deea868e1b3b59292ad5f3fd2b8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setAst</b> (const std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_block.html">ASTBlock</a> &gt; &amp;ast)</td></tr>
 <tr class="separator:a64053deea868e1b3b59292ad5f3fd2b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7ac8f1378ac0c2a3df15cab03433370"><td class="memItemLeft" align="right" valign="top"><a id="ad7ac8f1378ac0c2a3df15cab03433370"></a>
 const std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_block.html">ASTBlock</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ast</b> () const</td></tr>
 <tr class="separator:ad7ac8f1378ac0c2a3df15cab03433370"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2333d3623ea6fdebbe5a248496dcded"><td class="memItemLeft" align="right" valign="top"><a id="ac2333d3623ea6fdebbe5a248496dcded"></a>
-llvm::Function *&#160;</td><td class="memItemRight" valign="bottom"><b>llvmFunction</b> ()</td></tr>
-<tr class="separator:ac2333d3623ea6fdebbe5a248496dcded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ab90b61d593ef173b6f1fdcf960d9fb"><td class="memItemLeft" align="right" valign="top"><a id="a8ab90b61d593ef173b6f1fdcf960d9fb"></a>
+llvm::Function *&#160;</td><td class="memItemRight" valign="bottom"><b>llvmFunction</b> () const</td></tr>
+<tr class="separator:a8ab90b61d593ef173b6f1fdcf960d9fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a4e80f6dc2916301e97ea05715b2e45"><td class="memItemLeft" align="right" valign="top"><a id="a4a4e80f6dc2916301e97ea05715b2e45"></a>
+virtual llvm::FunctionType *&#160;</td><td class="memItemRight" valign="bottom"><b>llvmFunctionType</b> () const</td></tr>
+<tr class="separator:a4a4e80f6dc2916301e97ea05715b2e45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c665235988e0d63513c87776382c8e8"><td class="memItemLeft" align="right" valign="top"><a id="a5c665235988e0d63513c87776382c8e8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setLlvmFunction</b> (llvm::Function *lf)</td></tr>
 <tr class="separator:a5c665235988e0d63513c87776382c8e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -504,8 +505,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Functions/<a class="el" href="_function_8hpp_source.html">Function.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Functions/Function.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Functions/<a class="el" href="_function_8hpp_source.html">Function.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Functions/Function.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

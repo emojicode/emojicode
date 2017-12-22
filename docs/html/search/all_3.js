@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['declareinternalvariable',['declareInternalVariable',['../class_emojicode_compiler_1_1_scope.html#ac9808f52d1eec0d1ef0bd307500959bd',1,'EmojicodeCompiler::Scope']]],
   ['declarevariable',['declareVariable',['../class_emojicode_compiler_1_1_scope.html#aeb8c975cc792706d59c7e38774f9053d',1,'EmojicodeCompiler::Scope']]],
   ['declarevariablewithid',['declareVariableWithId',['../class_emojicode_compiler_1_1_scope.html#a5816593ee713e4b264963242f64e21b5',1,'EmojicodeCompiler::Scope']]],
   ['deprecated',['deprecated',['../class_emojicode_compiler_1_1_function.html#ade7fe764fbabea00531e998ddd469eea',1,'EmojicodeCompiler::Function']]],

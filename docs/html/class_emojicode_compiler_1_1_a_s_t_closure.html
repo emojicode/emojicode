@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -91,15 +92,15 @@ Collaboration diagram for EmojicodeCompiler::ASTClosure:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5f5f0a2c18fb3d678c22bedcf84f6bba"><td class="memItemLeft" align="right" valign="top"><a id="a5f5f0a2c18fb3d678c22bedcf84f6bba"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ASTClosure</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
-<tr class="separator:a5f5f0a2c18fb3d678c22bedcf84f6bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83a1157b942396a203b174a1ab50cd27"><td class="memItemLeft" align="right" valign="top"><a id="a83a1157b942396a203b174a1ab50cd27"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ASTClosure</b> (std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt; &amp;&amp;closure, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
+<tr class="separator:a83a1157b942396a203b174a1ab50cd27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab77221b1c7cbd2b52b6ce67177ba2223"><td class="memItemLeft" align="right" valign="top"><a id="ab77221b1c7cbd2b52b6ce67177ba2223"></a>
 <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation) override</td></tr>
 <tr class="separator:ab77221b1c7cbd2b52b6ce67177ba2223"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adec42bb2fe8f2b228a20080807994cf4"><td class="memItemLeft" align="right" valign="top"><a id="adec42bb2fe8f2b228a20080807994cf4"></a>
-Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fncg) const override</td></tr>
-<tr class="separator:adec42bb2fe8f2b228a20080807994cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a000ee1d797399b8d7cc3e1d6c8b18672"><td class="memItemLeft" align="right" valign="top"><a id="a000ee1d797399b8d7cc3e1d6c8b18672"></a>
+Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg) const override final</td></tr>
+<tr class="separator:a000ee1d797399b8d7cc3e1d6c8b18672"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a679132c571d575795ce85e0c4985c9ee"><td class="memItemLeft" align="right" valign="top"><a id="a679132c571d575795ce85e0c4985c9ee"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (<a class="el" href="class_emojicode_compiler_1_1_prettyprinter.html">Prettyprinter</a> &amp;pretty) const override</td></tr>
 <tr class="separator:a679132c571d575795ce85e0c4985c9ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -125,10 +126,10 @@ const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">So
 <tr class="separator:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/<a class="el" href="_a_s_t_closure_8hpp_source.html">ASTClosure.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTClosure.cpp</li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/AST/ASTClosure_CG.cpp</li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Prettyprint/ASTToCode.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/<a class="el" href="_a_s_t_closure_8hpp_source.html">ASTClosure.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/ASTClosure.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/ASTClosure_CG.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Prettyprint/ASTToCode.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

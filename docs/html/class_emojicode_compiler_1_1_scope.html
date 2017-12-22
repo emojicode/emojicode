@@ -24,6 +24,7 @@
    <div id="projectname">Emojicode
    &#160;<span id="projectnumber">0.6</span>
    </div>
+   <div id="projectbrief">World’s only programming language that’s bursting with emojis</div>
   </td>
  </tr>
  </tbody>
@@ -89,10 +90,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>popInitializationLeve
 <tr class="separator:aeb8c975cc792706d59c7e38774f9053d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5816593ee713e4b264963242f64e21b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_variable.html">Variable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_scope.html#a5816593ee713e4b264963242f64e21b5">declareVariableWithId</a> (const std::u32string &amp;variable, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type, bool frozen, VariableID id, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="separator:a5816593ee713e4b264963242f64e21b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9808f52d1eec0d1ef0bd307500959bd"><td class="memItemLeft" align="right" valign="top"><a id="ac9808f52d1eec0d1ef0bd307500959bd"></a>
-<a class="el" href="class_emojicode_compiler_1_1_variable.html">Variable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_scope.html#ac9808f52d1eec0d1ef0bd307500959bd">declareInternalVariable</a> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
-<tr class="memdesc:ac9808f52d1eec0d1ef0bd307500959bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an internal variable for the given type. It will be marked as mutated and non-frozen. <br /></td></tr>
-<tr class="separator:ac9808f52d1eec0d1ef0bd307500959bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6ee5d011d79ba62d212ac91ad022ef8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_variable.html">Variable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_scope.html#ab6ee5d011d79ba62d212ac91ad022ef8">getLocalVariable</a> (const std::u32string &amp;variable)</td></tr>
 <tr class="separator:ab6ee5d011d79ba62d212ac91ad022ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a150a722354238d7b5d2fd613820c4dca"><td class="memItemLeft" align="right" valign="top"><a id="a150a722354238d7b5d2fd613820c4dca"></a>
@@ -101,10 +98,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a150a722354238d7b5d2fd613820c4dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9eac48a2c9dc16b5c9dd84b3b59fd4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_scope.html#af9eac48a2c9dc16b5c9dd84b3b59fd4b">unintializedVariablesCheck</a> (const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p, const std::string &amp;errorMessageFront, const std::string &amp;errorMessageBack)</td></tr>
 <tr class="separator:af9eac48a2c9dc16b5c9dd84b3b59fd4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14a2ef66627ed4c0f71ab013cb209788"><td class="memItemLeft" align="right" valign="top"><a id="a14a2ef66627ed4c0f71ab013cb209788"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_scope.html#a14a2ef66627ed4c0f71ab013cb209788">recommendFrozenVariables</a> (<a class="el" href="class_emojicode_compiler_1_1_application.html">Application</a> *app) const</td></tr>
-<tr class="memdesc:a14a2ef66627ed4c0f71ab013cb209788"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits a warning for each non-frozen variable that has not been mutated. <br /></td></tr>
-<tr class="separator:a14a2ef66627ed4c0f71ab013cb209788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2049990e7c49ec1ec5bae9327384a68d"><td class="memItemLeft" align="right" valign="top"><a id="a2049990e7c49ec1ec5bae9327384a68d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_scope.html#a2049990e7c49ec1ec5bae9327384a68d">recommendFrozenVariables</a> (<a class="el" href="class_emojicode_compiler_1_1_compiler.html">Compiler</a> *app) const</td></tr>
+<tr class="memdesc:a2049990e7c49ec1ec5bae9327384a68d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits a warning for each non-frozen variable that has not been mutated. <br /></td></tr>
+<tr class="separator:a2049990e7c49ec1ec5bae9327384a68d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35e1a09ecb16b2f010da535cfab1a2e0"><td class="memItemLeft" align="right" valign="top"><a id="a35e1a09ecb16b2f010da535cfab1a2e0"></a>
 const std::map&lt; std::u32string, <a class="el" href="class_emojicode_compiler_1_1_variable.html">Variable</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>map</b> () const</td></tr>
 <tr class="separator:a35e1a09ecb16b2f010da535cfab1a2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -272,8 +269,8 @@ unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>reserveIds</b
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Scoping/<a class="el" href="_scope_8hpp_source.html">Scope.hpp</a></li>
-<li>/Users/theo/Documents/emojicode/emojicode/EmojicodeCompiler/Scoping/Scope.cpp</li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Scoping/<a class="el" href="_scope_8hpp_source.html">Scope.hpp</a></li>
+<li>/Users/theo/Documents/emojicode/emojicode/Compiler/Scoping/Scope.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -4,11 +4,11 @@ var searchData=
   ['lexer',['Lexer',['../class_emojicode_compiler_1_1_lexer.html',1,'EmojicodeCompiler']]],
   ['lexfile',['lexFile',['../class_emojicode_compiler_1_1_lexer.html#aea7a59a3f27380e546e89adb7ca36f01',1,'EmojicodeCompiler::Lexer']]],
   ['llvmtypehelper',['LLVMTypeHelper',['../class_emojicode_compiler_1_1_l_l_v_m_type_helper.html',1,'EmojicodeCompiler']]],
-  ['loadmigrationfile',['loadMigrationFile',['../class_emojicode_compiler_1_1_application.html#a1351eddb0b08eb19e3c0514787ad4674',1,'EmojicodeCompiler::Application']]],
-  ['loadpackage',['loadPackage',['../class_emojicode_compiler_1_1_application.html#a4bdc13f124fa31026b933b61c299a637',1,'EmojicodeCompiler::Application']]],
+  ['loadmigrationfile',['loadMigrationFile',['../class_emojicode_compiler_1_1_compiler.html#aacdd6a012555398e17cf4db1851d6d96',1,'EmojicodeCompiler::Compiler']]],
+  ['loadpackage',['loadPackage',['../class_emojicode_compiler_1_1_compiler.html#a28f61c2cba37fba3dc365f06767dbf9f',1,'EmojicodeCompiler::Compiler']]],
   ['localvariable',['LocalVariable',['../struct_emojicode_compiler_1_1_local_variable.html',1,'EmojicodeCompiler']]],
-  ['lookupinitializer',['lookupInitializer',['../class_emojicode_compiler_1_1_class.html#a59c3b93dde30fd97407db298f2b3df13',1,'EmojicodeCompiler::Class::lookupInitializer()'],['../class_emojicode_compiler_1_1_type_definition.html#abc257af465c7b6f86201d874cb2c8fbf',1,'EmojicodeCompiler::TypeDefinition::lookupInitializer()']]],
-  ['lookupmethod',['lookupMethod',['../class_emojicode_compiler_1_1_class.html#a7a6e0d867ea20b7a4794465bb4bb6c1d',1,'EmojicodeCompiler::Class::lookupMethod()'],['../class_emojicode_compiler_1_1_type_definition.html#afb968b34710427cd2c13856b625f45bb',1,'EmojicodeCompiler::TypeDefinition::lookupMethod()']]],
+  ['lookupinitializer',['lookupInitializer',['../class_emojicode_compiler_1_1_class.html#a5cc253f1805cd7bf2fc3a0c66239e638',1,'EmojicodeCompiler::Class::lookupInitializer()'],['../class_emojicode_compiler_1_1_type_definition.html#aa77a5df19a71fcb42128fa3d428fdd0f',1,'EmojicodeCompiler::TypeDefinition::lookupInitializer()']]],
+  ['lookupmethod',['lookupMethod',['../class_emojicode_compiler_1_1_class.html#afc7a778a41153986a6fe5d719e5a02dd',1,'EmojicodeCompiler::Class::lookupMethod()'],['../class_emojicode_compiler_1_1_type_definition.html#a7daa0c8b0062a4894d2b3fe22a41bd1e',1,'EmojicodeCompiler::TypeDefinition::lookupMethod()']]],
   ['lookuprawtype',['lookupRawType',['../class_emojicode_compiler_1_1_package.html#a8f1ea1e83745e9fb94a88ab077fea9a5',1,'EmojicodeCompiler::Package']]],
-  ['lookuptypemethod',['lookupTypeMethod',['../class_emojicode_compiler_1_1_class.html#a58dbcf2f356920276acc68cd1a6e7a7b',1,'EmojicodeCompiler::Class::lookupTypeMethod()'],['../class_emojicode_compiler_1_1_type_definition.html#aff26446522821b275c2f9f24f9b70e9a',1,'EmojicodeCompiler::TypeDefinition::lookupTypeMethod()']]]
+  ['lookuptypemethod',['lookupTypeMethod',['../class_emojicode_compiler_1_1_class.html#a3993617440975fcf3ad26874947ddb4b',1,'EmojicodeCompiler::Class::lookupTypeMethod()'],['../class_emojicode_compiler_1_1_type_definition.html#acaf94b914a666d6141199278480ab2b5',1,'EmojicodeCompiler::TypeDefinition::lookupTypeMethod()']]]
 ];

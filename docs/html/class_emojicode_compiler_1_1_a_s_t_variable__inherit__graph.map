@@ -1,6 +1,7 @@
 <map id="EmojicodeCompiler::ASTVariable" name="EmojicodeCompiler::ASTVariable">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_get_variable.html" title="EmojicodeCompiler::\lASTGetVariable" alt="" coords="221,5,366,44"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_variable_assignment_decl.html" title="EmojicodeCompiler::\lASTVariableAssignmentDecl" alt="" coords="198,68,389,107"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_init_get_variable.html" title="EmojicodeCompiler::\lASTInitGetVariable" alt="" coords="473,5,617,44"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_instance_variable_assignment.html" title="EmojicodeCompiler::\lASTInstanceVariableAssignment" alt="" coords="437,68,652,107"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_get_variable.html" title="EmojicodeCompiler::\lASTGetVariable" alt="" coords="198,5,342,44"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_initable_creator.html" title="EmojicodeCompiler::\lASTInitableCreator" alt="" coords="198,68,342,107"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_frozen_declaration.html" title="EmojicodeCompiler::\lASTFrozenDeclaration" alt="" coords="408,36,564,75"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_variable_assignment_decl.html" title="EmojicodeCompiler::\lASTVariableAssignmentDecl" alt="" coords="390,99,582,137"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_instance_variable_assignment.html" title="EmojicodeCompiler::\lASTInstanceVariableAssignment" alt="" coords="630,99,845,137"/>
 </map>

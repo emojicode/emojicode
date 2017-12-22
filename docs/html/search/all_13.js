@@ -8,5 +8,6 @@ var searchData=
   ['variablecapture',['VariableCapture',['../struct_emojicode_compiler_1_1_variable_capture.html',1,'EmojicodeCompiler']]],
   ['variableidcount',['variableIdCount',['../class_emojicode_compiler_1_1_semantic_scoper.html#a89fd6825867740955dc42fbc5197a923',1,'EmojicodeCompiler::SemanticScoper']]],
   ['variablename',['variableName',['../struct_emojicode_compiler_1_1_argument.html#aade62556cde4ff190806abf08a8f9948',1,'EmojicodeCompiler::Argument']]],
-  ['variablenotfounderror',['VariableNotFoundError',['../class_emojicode_compiler_1_1_variable_not_found_error.html',1,'EmojicodeCompiler']]]
+  ['variablenotfounderror',['VariableNotFoundError',['../class_emojicode_compiler_1_1_variable_not_found_error.html',1,'EmojicodeCompiler']]],
+  ['vti',['vti',['../class_emojicode_compiler_1_1_function.html#a5788b25bc5c355481b0f01696aecfb89',1,'EmojicodeCompiler::Function']]]
 ];
