@@ -154,7 +154,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
 
     auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context()), klass->virtualTableIndicesCount());
     auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
-                                                 llvm::GlobalValue::LinkageTypes::ExternalLinkage,
+                                                 llvm::GlobalValue::LinkageTypes::InternalLinkage,
                                                  llvm::ConstantArray::get(type, functions));
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
         llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable, klass->protocolsTable()
@@ -194,7 +194,7 @@ void CodeGenerator::createProtocolsTable(TypeDefinition *typeDef) {
         auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
                                               tables.tables.size());
         auto protocols = new llvm::GlobalVariable(*module(), arrayType, true,
-                                                  llvm::GlobalValue::LinkageTypes::ExternalLinkage,
+                                                  llvm::GlobalValue::LinkageTypes::InternalLinkage,
                                                   llvm::ConstantArray::get(arrayType, tables.tables));
 
         init = llvm::ConstantStruct::get(typeHelper_.protocolsTable(), std::vector<llvm::Constant *>{
@@ -246,7 +246,7 @@ llvm::GlobalVariable* CodeGenerator::createProtocolVirtualTable(TypeDefinition *
     }
 
     auto array = llvm::ConstantArray::get(type, virtualTable);
-    return new llvm::GlobalVariable(*module(), type, true, llvm::GlobalValue::LinkageTypes::ExternalLinkage, array);
+    return new llvm::GlobalVariable(*module(), type, true, llvm::GlobalValue::LinkageTypes::InternalLinkage, array);
 }
 
 void CodeGenerator::declareRunTime() {
