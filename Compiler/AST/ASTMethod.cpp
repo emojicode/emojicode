@@ -27,19 +27,11 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     calleeType_ = analyser->comply(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
 
     if (type.type() == TypeType::MultiProtocol) {
-        for (auto &protocol : type.protocols()) {
-            Function *method;
-            if ((method = protocol.protocol()->lookupMethod(name)) != nullptr) {
-                callType_ = CallType::DynamicProtocolDispatch;
-                calleeType_ = protocol;
-                return analyser->analyseFunctionCall(&args_, protocol, method);
-            }
-        }
-        throw CompilerError(position(), "No type in ", type.toString(analyser->typeContext()),
-                            " provides a method called ", utf8(name), ".");
+        return analyseMultiProtocolCall(analyser, name, type);
     }
 
-    auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), position());
+    auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), args_.isImperative(),
+                                                   position());
 
     if (type.type() == TypeType::ValueType) {
         if (method->mutating()) {
@@ -67,6 +59,19 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
         throw CompilerError(position(), "You cannot call methods on ", typeString, ".");
     }
     return analyser->analyseFunctionCall(&args_, type, method);
+}
+
+Type ASTMethodable::analyseMultiProtocolCall(SemanticAnalyser *analyser, const std::u32string &name, const Type &type) {
+    for (auto &protocol : type.protocols()) {
+        Function *method;
+        if ((method = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
+            callType_ = CallType::DynamicProtocolDispatch;
+            calleeType_ = protocol;
+            return analyser->analyseFunctionCall(&args_, protocol, method);
+        }
+    }
+    throw CompilerError(position(), "No type in ", type.toString(analyser->typeContext()),
+                        " provides a method called ", utf8(name), ".");
 }
 
 std::pair<bool, Type> ASTMethodable::builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name) {

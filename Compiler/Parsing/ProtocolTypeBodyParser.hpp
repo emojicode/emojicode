@@ -16,8 +16,9 @@ namespace EmojicodeCompiler {
 class ProtocolTypeBodyParser : public TypeBodyParser {
     using TypeBodyParser::TypeBodyParser;
 private:
-    void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes, const Documentation &documentation,
-                     AccessLevel access, const SourcePosition &p) override;
+    void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                         const Documentation &documentation, AccessLevel access, bool imperative,
+                         const SourcePosition &p) override;
     Initializer* parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                   const Documentation &documentation, AccessLevel access,
                                   const SourcePosition &p) override;

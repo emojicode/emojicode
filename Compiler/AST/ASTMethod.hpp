@@ -41,6 +41,8 @@ protected:
     Type calleeType_ = Type::noReturn();
 private:
     std::pair<bool, Type> builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name);
+
+    Type analyseMultiProtocolCall(SemanticAnalyser *analyser, const std::u32string &name, const Type &type);
 };
 
 class ASTMethod final : public ASTMethodable {

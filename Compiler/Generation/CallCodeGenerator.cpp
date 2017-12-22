@@ -26,15 +26,16 @@ llvm::Value* CallCodeGenerator::generate(Value *callee, const Type &calleeType, 
     for (auto &arg : args.arguments()) {
         argsVector.emplace_back(arg->generate(fg_));
     }
-    return createCall(argsVector, calleeType, name);
+    return createCall(argsVector, calleeType, name, args.isImperative());
 }
 
-Function* CallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name){
-    return type.typeDefinition()->lookupMethod(name);
+Function* CallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {
+    return type.typeDefinition()->lookupMethod(name, imperative);
 }
 
-llvm::Value* CallCodeGenerator::createCall(const std::vector<Value *> &args, const Type &type, const std::u32string &name) {
-    auto function = lookupFunction(type, name);
+llvm::Value * CallCodeGenerator::createCall(const std::vector<Value *> &args, const Type &type,
+                                            const std::u32string &name, bool imperative) {
+    auto function = lookupFunction(type, name, imperative);
     switch (callType_) {
         case CallType::StaticContextfreeDispatch:
         case CallType::StaticDispatch:
@@ -102,11 +103,11 @@ llvm::Value* CallCodeGenerator::createDynamicProtocolDispatch(Function *function
     return dispatchFromVirtualTable(function, vtable, args);
 }
 
-Function* TypeMethodCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name) {
-    return type.typeDefinition()->lookupTypeMethod(name);
+Function* TypeMethodCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {
+    return type.typeDefinition()->lookupTypeMethod(name, imperative);
 }
 
-Function* InitializationCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name) {
+Function* InitializationCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {
     return type.typeDefinition()->lookupInitializer(name);
 }
 

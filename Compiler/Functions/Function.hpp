@@ -44,10 +44,11 @@ struct Argument {
 class Function : public Generic<Function> {
 public:
     Function(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
-             bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, FunctionType type)
-    : position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding), deprecated_(deprecated), mutating_(mutating),
-    access_(level), owningType_(std::move(owningType)), package_(package), documentation_(std::move(documentationToken)),
-    functionType_(type) {}
+             bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
+             FunctionType type)
+    : position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding), deprecated_(deprecated),
+      imperative_(imperative), mutating_(mutating), access_(level), owningType_(std::move(owningType)),
+      package_(package), documentation_(std::move(documentationToken)), functionType_(type) {}
 
     std::u32string name() const { return name_; }
 
@@ -63,12 +64,15 @@ public:
         externalName_ = name;
     }
 
-    /** Whether the method was marked as final and can’t be overriden. */
+    /** Whether the method was marked as final and can’t be overridden. */
     bool final() const { return final_; }
     /** Whether the method is intended to override a super method. */
     bool overriding() const { return overriding_; }
     /** Whether the method is deprecated. */
     bool deprecated() const { return deprecated_; }
+
+    bool isImperative() const { return imperative_; }
+
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
 
@@ -145,6 +149,8 @@ private:
     bool final_;
     bool overriding_;
     bool deprecated_;
+    bool imperative_;
+
     const bool mutating_;
     bool external_ = false;
 

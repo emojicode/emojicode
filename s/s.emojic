@@ -296,7 +296,7 @@
   🍡 can enumerate a collection and generates elements from the object it
   enumerates.
 
-  To get the items from an iterator call the 🔽 method on it, until ❓ returns
+  To get the items from an iterator call the 🔽 method on it, until 🔽❓ returns
   👎 which indicates that there are no more items.
 🌮
 🌍 🐊 🍡🐚Element ⚪️ 🍇
@@ -308,7 +308,7 @@
   🌮
     Whether the enumerator has more elements to provide.
   🌮
-  ❗️ ❓ ➡️ 👌
+  ❓ 🔽 ➡️ 👌
 🍉
 
 🌮
@@ -357,7 +357,7 @@
     ↩️ sy
   🍉
 
-  ❗️ ❓ ➡️ 👌 🍇
+  ❓ 🔽 ➡️ 👌 🍇
     ↩️ index ◀️ 🐔 iteratee❗️
   🍉
 

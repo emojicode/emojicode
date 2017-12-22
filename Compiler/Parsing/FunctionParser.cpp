@@ -59,15 +59,27 @@ ASTArguments FunctionParser::parseArguments(const SourcePosition &position) {
     if (stream_.consumeTokenIf(TokenType::EndArgumentList)) {
         return args;
     }
+    if (stream_.consumeTokenIf(TokenType::EndInterrogativeArgumentList)) {
+        args.setImperative(false);
+        return args;
+    }
 
     parseMainArguments(&args, position);
     return args;
 }
 
 void FunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePosition &position) {
-    stream_.consumeToken(TokenType::BeginArgumentList);
-    while (stream_.nextTokenIsEverythingBut(TokenType::EndArgumentList)) {
-        arguments->addArguments(parseExpr(0));
+    if (stream_.consumeTokenIf(TokenType::BeginInterrogativeArgumentList)) {
+        while (stream_.nextTokenIsEverythingBut(TokenType::EndInterrogativeArgumentList)) {
+            arguments->addArguments(parseExpr(0));
+        }
+        arguments->setImperative(false);
+    }
+    else {
+        stream_.consumeToken(TokenType::BeginArgumentList);
+        while (stream_.nextTokenIsEverythingBut(TokenType::EndArgumentList)) {
+            arguments->addArguments(parseExpr(0));
+        }
     }
     stream_.consumeToken();
 }
@@ -289,7 +301,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
     auto function = std::make_unique<Function>(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::noReturn(),
-                                               package_, token.position(), false, std::u32string(), false, false,
+                                               package_, token.position(), false, std::u32string(), false, false, true,
                                                FunctionType::Closure);
 
     parseParameters(function.get(), typeContext_);

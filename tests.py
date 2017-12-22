@@ -15,6 +15,7 @@ compilation_tests = [
     # "enumMethod",
     # "enumTypeMethod",
     "unwrap",
+    "imperativeInterrogative",
     # "assignmentByCall",
     # "repeatWhile",
     # "conditionalProduce",

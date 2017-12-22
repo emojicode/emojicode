@@ -54,9 +54,9 @@ public:
 
     std::vector<llvm::Constant *>& virtualTable() { return virtualTable_; }
 
-    Function* lookupMethod(const std::u32string &name) const override;
+    Function *lookupMethod(const std::u32string &name, bool imperative) const override;
     Initializer* lookupInitializer(const std::u32string &name) const override;
-    Function* lookupTypeMethod(const std::u32string &name) const override;
+    Function *lookupTypeMethod(const std::u32string &name, bool imperative) const override;
 
     void prepareForSemanticAnalysis() override;
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override;

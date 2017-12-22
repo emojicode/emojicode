@@ -30,9 +30,9 @@ public:
     llvm::Value* generate(llvm::Value *callee, const Type &calleeType, const ASTArguments &args,
                           const std::u32string &name);
 protected:
-    virtual Function* lookupFunction(const Type &type, const std::u32string &name);
-    virtual llvm::Value* createCall(const std::vector<llvm::Value *> &args, const Type &type,
-                                    const std::u32string &name);
+    virtual Function *lookupFunction(const Type &type, const std::u32string &name, bool imperative);
+    llvm::Value* createCall(const std::vector<llvm::Value *> &args, const Type &type, const std::u32string &name,
+                            bool imperative);
     FunctionCodeGenerator* fg() const { return fg_; }
 private:
     llvm::Value* createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args);
@@ -47,13 +47,13 @@ private:
 class TypeMethodCallCodeGenerator : public CallCodeGenerator {
     using CallCodeGenerator::CallCodeGenerator;
 protected:
-    Function* lookupFunction(const Type &type, const std::u32string &name) override;
+    Function *lookupFunction(const Type &type, const std::u32string &name, bool imperative) override;
 };
 
 class InitializationCallCodeGenerator : public CallCodeGenerator {
     using CallCodeGenerator::CallCodeGenerator;
 protected:
-    Function* lookupFunction(const Type &type, const std::u32string &name) override;
+    Function *lookupFunction(const Type &type, const std::u32string &name, bool imperative) override;
 };
 
 }  // namespace EmojicodeCompiler

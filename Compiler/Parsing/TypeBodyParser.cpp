@@ -102,17 +102,19 @@ void ClassTypeBodyParser::parse() {
 }
 
 void ClassTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                      const Documentation &documentation, AccessLevel access, const SourcePosition &p) {
+                                      const Documentation &documentation, AccessLevel access, bool imperative,
+                                      const SourcePosition &p) {
     TypeBodyParser::parseMethod(name, attributes.allow(Attribute::Final).allow(Attribute::Override), documentation,
-                                access, p);
+                                access, imperative, p);
 }
 
 void ValueTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                      const Documentation &documentation, AccessLevel access, const SourcePosition &p) {
+                                      const Documentation &documentation, AccessLevel access, bool imperative,
+                                      const SourcePosition &p) {
     if (!attributes.has(Attribute::StaticOnType)) {
         attributes.allow(Attribute::Mutating);
     }
-    TypeBodyParser::parseMethod(name, attributes, documentation, access, p);
+    TypeBodyParser::parseMethod(name, attributes, documentation, access, imperative, p);
 }
 
 Initializer* ClassTypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
@@ -131,14 +133,15 @@ void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
 }
 
 void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                 const Documentation &documentation, AccessLevel access, const SourcePosition &p) {
+                                 const Documentation &documentation, AccessLevel access, bool imperative,
+                                 const SourcePosition &p) {
     attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).check(p, package_->compiler());
 
     if (attributes.has(Attribute::StaticOnType)) {
         auto typeMethod = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
                                                      package_, p, attributes.has(Attribute::Override),
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
-                                                     true, type_.type() == TypeType::Class ?
+                                                     true, imperative, type_.type() == TypeType::Class ?
                                                      FunctionType::ClassMethod : FunctionType::Function);
         parseFunction(typeMethod.get(), false);
         type_.typeDefinition()->addTypeMethod(std::move(typeMethod));
@@ -147,7 +150,7 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
         auto mutating = owningType().type() == TypeType::ValueType ? attributes.has(Attribute::Mutating) : true;
         auto method = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
                                                  package_, p, attributes.has(Attribute::Override), documentation.get(),
-                                                 attributes.has(Attribute::Deprecated), mutating,
+                                                 attributes.has(Attribute::Deprecated), mutating, imperative,
                                                  type_.type() == TypeType::Class ? FunctionType::ObjectMethod :
                                                  FunctionType::ValueTypeMethod);
         parseFunction(method.get(), false);
@@ -189,13 +192,15 @@ void TypeBodyParser::parse() {
 
         auto &token = stream_.consumeToken();
         switch (token.type()) {
+            case TokenType::EndInterrogativeArgumentList:
             case TokenType::EndArgumentList: {
                 auto &methodName = stream_.consumeToken(TokenType::Identifier);
-                parseMethod(methodName.value(), attributes, documentation, accessLevel, token.position());
+                parseMethod(methodName.value(), attributes, documentation, accessLevel,
+                            token.type() == TokenType::EndArgumentList, token.position());
                 break;
             }
             case TokenType::Operator:
-                parseMethod(token.value(), attributes, documentation, accessLevel, token.position());
+                parseMethod(token.value(), attributes, documentation, accessLevel, true, token.position());
                 break;
             case TokenType::Declaration:
                 attributes.check(token.position(), package_->compiler());

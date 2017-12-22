@@ -96,11 +96,13 @@ Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
 
     Function *method;
     if (type.type() == TypeType::Class) {
-        method = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), position());
+        method = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), args_.isImperative(),
+                                                      position());
     }
     else if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum)
              && isStatic(callee_->availability())) {
-        method = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), position());
+        method = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), args_.isImperative(),
+                                                      position());
         valueType_ = true;
     }
     else {
@@ -120,7 +122,8 @@ Type ASTSuperMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &
         throw CompilerError(position(), "Class has no superclass.");
     }
 
-    Function *method = superclass->getMethod(name_, Type(superclass, false), analyser->typeContext(), position());
+    Function *method = superclass->getMethod(name_, Type(superclass, false), analyser->typeContext(),
+                                             args_.isImperative(), position());
     calleeType_ = Type(superclass, false);
     return analyser->analyseFunctionCall(&args_, calleeType_, method);
 }

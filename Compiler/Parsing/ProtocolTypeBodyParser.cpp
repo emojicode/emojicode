@@ -13,11 +13,11 @@
 namespace EmojicodeCompiler {
 
 void ProtocolTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                         const Documentation &documentation, AccessLevel access,
+                                         const Documentation &documentation, AccessLevel access, bool imperative,
                                          const SourcePosition &p) {
     auto method = std::make_unique<ProtocolFunction>(name, AccessLevel::Public, false, owningType(), package_,
                                                      p, false, documentation.get(),
-                                                     attributes.has(Attribute::Deprecated), false,
+                                                     attributes.has(Attribute::Deprecated), false, imperative,
                                                      FunctionType::ObjectMethod);
     parseParameters(method.get(), TypeContext(owningType()), false);
     parseReturnType(method.get(), TypeContext(owningType()));

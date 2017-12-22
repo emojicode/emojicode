@@ -20,7 +20,7 @@ public:
                 SourcePosition p, bool overriding, std::u32string documentationToken, bool deprecated, bool r,
                 Type errorType, FunctionType mode)
     : Function(std::move(name), level, final, std::move(owningType), package, std::move(p), overriding,
-               std::move(documentationToken), deprecated, true, mode),
+               std::move(documentationToken), deprecated, true, true, mode),
     required_(r), errorType_(std::move(errorType)) {
         returnType = Type::noReturn();
     }

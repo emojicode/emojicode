@@ -26,7 +26,7 @@ public:
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
     : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
                destinationFunction->owningType(), destinationFunction->package(), p, false, std::u32string(), false,
-               false, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
+               false, true, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
         destinationFunction_(destinationFunction) {
         this->arguments = arguments;
         this->returnType = returnType;
@@ -41,7 +41,7 @@ public:
     BoxingLayer(Type thisCallable, Package *pkg, const std::vector<Argument> &arguments, const Type &returnType,
                 const SourcePosition &p)
     : Function(std::u32string(), AccessLevel::Private, true, std::move(thisCallable), pkg, p, false,
-               std::u32string(), false, false, FunctionType::BoxingLayer),
+               std::u32string(), false, false, true, FunctionType::BoxingLayer),
       destinationArgumentTypes_(owningType().genericArguments().begin() + 1, owningType().genericArguments().end()),
       destinationReturnType_(owningType().genericArguments()[0]) {
           this->returnType = returnType;

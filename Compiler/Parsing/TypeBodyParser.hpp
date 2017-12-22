@@ -43,7 +43,8 @@ protected:
     virtual void parseInstanceVariable(const SourcePosition &p);
     /// Called if a $method$ has been detected. All tokens up to and including the name.
     virtual void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                             const Documentation &documentation, AccessLevel access, const SourcePosition &p);
+                             const Documentation &documentation, AccessLevel access, bool imperative,
+                             const SourcePosition &p);
     /// Called if an $initializer$ has been detected. The first token has already been parsed.
     virtual Initializer* parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                           const Documentation &documentation, AccessLevel access,
@@ -76,8 +77,9 @@ private:
 class ValueTypeBodyParser : public TypeBodyParser {
 private:
     using TypeBodyParser::TypeBodyParser;
-    void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes, const Documentation &documentation,
-                     AccessLevel access, const SourcePosition &p) override;
+    void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                         const Documentation &documentation, AccessLevel access, bool imperative,
+                         const SourcePosition &p) override;
 };
 
 class ClassTypeBodyParser : public TypeBodyParser {
@@ -87,8 +89,9 @@ public:
     : TypeBodyParser(std::move(type), pkg, stream, interface), requiredInitializers_(std::move(requiredInits)) {}
     void parse() override;
 private:
-    void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes, const Documentation &documentation,
-                     AccessLevel access, const SourcePosition &p) override;
+    void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                         const Documentation &documentation, AccessLevel access, bool imperative,
+                         const SourcePosition &p) override;
     Initializer* parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                   const Documentation &documentation, AccessLevel access,
                                   const SourcePosition &p) override;

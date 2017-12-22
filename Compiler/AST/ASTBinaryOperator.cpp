@@ -25,7 +25,6 @@ Type ASTBinaryOperator::analyse(SemanticAnalyser *analyser, const TypeExpectatio
 
     Type type = analyser->comply(otype, TypeExpectation(true, false), &left_);
     args_.addArguments(right_);
-
     return analyseMethodCall(analyser, operatorName(operator_), left_);
 }
 

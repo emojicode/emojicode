@@ -115,9 +115,9 @@ Function* Class::findSuperFunction(Function *function) const {
     switch (function->functionType()) {
         case FunctionType::ObjectMethod:
         case FunctionType::BoxingLayer:
-            return superclass()->lookupMethod(function->name());
+            return superclass()->lookupMethod(function->name(), function->isImperative());
         case FunctionType::ClassMethod:
-            return superclass()->lookupTypeMethod(function->name());
+            return superclass()->lookupTypeMethod(function->name(), function->isImperative());
         default:
             throw std::logic_error("Function of unexpected type in class");
     }
@@ -155,18 +155,18 @@ Initializer* Class::lookupInitializer(const std::u32string &name) const {
     return nullptr;
 }
 
-Function* Class::lookupMethod(const std::u32string &name) const {
+Function * Class::lookupMethod(const std::u32string &name, bool imperative) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto method = klass->TypeDefinition::lookupMethod(name)) {
+        if (auto method = klass->TypeDefinition::lookupMethod(name, imperative)) {
             return method;
         }
     }
     return nullptr;
 }
 
-Function* Class::lookupTypeMethod(const std::u32string &name) const {
+Function * Class::lookupTypeMethod(const std::u32string &name, bool imperative) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto method = klass->TypeDefinition::lookupTypeMethod(name)) {
+        if (auto method = klass->TypeDefinition::lookupTypeMethod(name, imperative)) {
             return method;
         }
     }

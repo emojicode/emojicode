@@ -24,6 +24,8 @@ Lexer::Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::
     loadOperatorSingleTokens();
     singleTokens_.emplace(E_WHITE_EXCLAMATION_MARK, TokenType::BeginArgumentList);
     singleTokens_.emplace(E_RED_EXCLAMATION_MARK, TokenType::EndArgumentList);
+    singleTokens_.emplace(E_WHITE_QUESTION_MARK, TokenType::BeginInterrogativeArgumentList);
+    singleTokens_.emplace(E_RED_QUESTION_MARK, TokenType::EndInterrogativeArgumentList);
     singleTokens_.emplace(E_RIGHT_FACING_FIST, TokenType::GroupBegin);
     singleTokens_.emplace(E_LEFT_FACING_FIST, TokenType::GroupEnd);
     singleTokens_.emplace(E_RIGHT_ARROW_CURVING_LEFT, TokenType::Return);

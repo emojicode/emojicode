@@ -46,16 +46,16 @@ Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) const
     return nullptr;
 }
 
-Function* TypeDefinition::lookupMethod(const std::u32string &name) const {
-    auto pos = methods_.find(name);
+Function* TypeDefinition::lookupMethod(const std::u32string &name, bool imperative) const {
+    auto pos = methods_.find(methodTableName(name, imperative));
     if (pos != methods_.end()) {
         return pos->second.get();
     }
     return nullptr;
 }
 
-Function* TypeDefinition::lookupTypeMethod(const std::u32string &name) const {
-    auto pos = typeMethods_.find(name);
+Function* TypeDefinition::lookupTypeMethod(const std::u32string &name, bool imperative) const {
+    auto pos = typeMethods_.find(methodTableName(name, imperative));
     if (pos != typeMethods_.end()) {
         return pos->second.get();
     }
@@ -71,9 +71,9 @@ Initializer* TypeDefinition::getInitializer(const std::u32string &name, const Ty
     return initializer;
 }
 
-Function* TypeDefinition::getMethod(const std::u32string &name, const Type &type,
-                                    const TypeContext &typeContext, const SourcePosition &p) const {
-    auto method = lookupMethod(name);
+Function* TypeDefinition::getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
+                                    bool imperative, const SourcePosition &p) const {
+    auto method = lookupMethod(name, imperative);
     if (method == nullptr) {
         auto eclass = type.toString(typeContext);
         throw CompilerError(p, type.toString(typeContext), " has no method ", utf8(name), ".");
@@ -81,9 +81,9 @@ Function* TypeDefinition::getMethod(const std::u32string &name, const Type &type
     return method;
 }
 
-Function* TypeDefinition::getTypeMethod(const std::u32string &name, const Type &type,
-                                        const TypeContext &typeContext, const SourcePosition &p) const {
-    auto method = lookupTypeMethod(name);
+Function * TypeDefinition::getTypeMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
+                                         bool imperative, const SourcePosition &p) const {
+    auto method = lookupTypeMethod(name, imperative);
     if (method == nullptr) {
         throw CompilerError(p, type.toString(typeContext), " has no type method ", utf8(name), ".");
     }
@@ -103,7 +103,7 @@ void TypeDefinition::addProtocol(const Type &type, const SourcePosition &p) {
 Function* TypeDefinition::addTypeMethod(std::unique_ptr<Function> &&method) {
     duplicateDeclarationCheck(method.get(), typeMethods_);
     auto rawPtr = method.get();
-    typeMethods_.emplace(method->name(), std::move(method));
+    typeMethods_.emplace(methodTableName(rawPtr->name(), rawPtr->isImperative()), std::move(method));
     typeMethodList_.push_back(rawPtr);
     return rawPtr;
 }
@@ -111,9 +111,13 @@ Function* TypeDefinition::addTypeMethod(std::unique_ptr<Function> &&method) {
 Function* TypeDefinition::addMethod(std::unique_ptr<Function> &&method) {
     duplicateDeclarationCheck(method.get(), methods_);
     auto rawPtr = method.get();
-    methods_.emplace(method->name(), std::move(method));
+    methods_.emplace(methodTableName(rawPtr->name(), rawPtr->isImperative()), std::move(method));
     methodList_.push_back(rawPtr);
     return rawPtr;
+}
+
+std::u32string TypeDefinition::methodTableName(const std::u32string &name, bool imperative) const {
+    return imperative ? name : name + std::u32string(1, '?');
 }
 
 Initializer* TypeDefinition::addInitializer(std::unique_ptr<Initializer> &&initializer) {
@@ -154,7 +158,7 @@ void TypeDefinition::prepareForSemanticAnalysis() {
 void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bool enqueBoxingLayers) {
     for (auto method : protocol.protocol()->methodList()) {
         try {
-            Function *clm = lookupMethod(method->name());
+            Function *clm = lookupMethod(method->name(), method->isImperative());
             if (clm == nullptr) {
                 auto typeName = type.toString(TypeContext());
                 auto protocolName = protocol.toString(TypeContext());

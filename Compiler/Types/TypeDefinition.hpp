@@ -65,23 +65,23 @@ public:
 
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function* getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                        const SourcePosition &p) const;
+    Function *getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext, bool imperative,
+                            const SourcePosition &p) const;
     /// Returns an initializer by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
     Initializer* getInitializer(const std::u32string &name, const Type &type, const TypeContext &typeContext,
                                 const SourcePosition &p) const;
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function* getTypeMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                            const SourcePosition &p) const;
+    Function *getTypeMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
+                            bool imperative, const SourcePosition &p) const;
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupMethod(const std::u32string &name) const;
+    virtual Function *lookupMethod(const std::u32string &name, bool imperative) const;
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
     virtual Initializer* lookupInitializer(const std::u32string &name) const;
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function* lookupTypeMethod(const std::u32string &name) const;
+    virtual Function *lookupTypeMethod(const std::u32string &name, bool imperative) const;
 
     Function* addMethod(std::unique_ptr<Function> &&method);
     Initializer* addInitializer(std::unique_ptr<Initializer> &&initializer);
@@ -133,9 +133,9 @@ protected:
     virtual void handleRequiredInitializer(Initializer *init);
 
     template <typename T>
-    void duplicateDeclarationCheck(T *p, const std::map<std::u32string, std::unique_ptr<T>> &dict) {
-        if (dict.find(p->name()) != dict.end()) {
-            throw CompilerError(p->position(), utf8(p->name()), " is declared twice.");
+    void duplicateDeclarationCheck(T *function, const std::map<std::u32string, std::unique_ptr<T>> &dict) {
+        if (dict.find(methodTableName(function->name(), function->isImperative())) != dict.end()) {
+            throw CompilerError(function->position(), utf8(function->name()), " is declared twice.");
         }
     }
 
@@ -161,6 +161,8 @@ private:
     llvm::Constant *protocolsTable_ = nullptr;
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
+
+    std::u32string methodTableName(const std::u32string &name, bool imperative) const;
 };
 
 }  // namespace EmojicodeCompiler

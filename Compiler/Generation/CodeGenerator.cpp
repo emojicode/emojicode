@@ -242,7 +242,8 @@ llvm::GlobalVariable* CodeGenerator::createProtocolVirtualTable(TypeDefinition *
     virtualTable.resize(protocol->methodList().size());
 
     for (auto protocolMethod : protocol->methodList()) {
-        virtualTable[protocolMethod->vti()] = typeDef->lookupMethod(protocolMethod->name())->llvmFunction();
+        virtualTable[protocolMethod->vti()] = typeDef->lookupMethod(protocolMethod->name(),
+                                                                    protocolMethod->isImperative())->llvmFunction();
     }
 
     auto array = llvm::ConstantArray::get(type, virtualTable);

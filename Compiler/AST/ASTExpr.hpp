@@ -58,7 +58,10 @@ public:
     std::vector<std::shared_ptr<ASTExpr>>& arguments() { return arguments_; }
     const std::vector<std::shared_ptr<ASTExpr>>& arguments() const { return arguments_; }
     void toCode(Prettyprinter &pretty) const;
+    bool isImperative() const { return imperative_; }
+    void setImperative(bool imperative) { imperative_ = imperative; }
 private:
+    bool imperative_ = true;
     std::vector<Type> genericArguments_;
     std::vector<std::shared_ptr<ASTExpr>> arguments_;
 };

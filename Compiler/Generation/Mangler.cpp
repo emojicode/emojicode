@@ -80,6 +80,9 @@ std::string mangleFunctionName(Function *function) {
     }
 
     mangleIdentifier(stream, function->name());
+    if (!function->isImperative()) {
+        stream << "_intrg";
+    }
     return stream.str();
 }
 
