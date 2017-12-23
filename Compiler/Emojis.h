@@ -74,7 +74,6 @@ enum Emojis {
     E_RIGHT_POINTING_TRIANGLE = 0x25B6,
     E_LEFTWARDS_ARROW = 0x2B05,
     E_OLDER_WOMAN = 0x1F475,
-    E_TACO = 0x1F32E,
     E_INPUT_SYMBOL_LATIN_LETTERS = 0x1F524,
     E_CROSS_MARK = 0x274C,
     E_OLDER_MAN = 0x1F474,
@@ -114,6 +113,7 @@ enum Emojis {
     E_RIGHT_FACING_FIST = 0x1F91C,
     E_LEFT_FACING_FIST = 0x1F91B,
     E_NEW_SIGN = 0x1F195,
+    E_GREEN_TEXTBOOK = 0x1F4D7,
 };
 
 }  // namespace EmojicodeCompiler

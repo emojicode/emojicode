@@ -171,7 +171,7 @@ bool Lexer::beginToken(Token *token) {
         case E_OLDER_MAN:
             token->type_ = TokenType::SinglelineComment;
             return true;
-        case E_TACO:
+        case E_GREEN_TEXTBOOK:
             token->type_ = TokenType::DocumentationComment;
             return true;
         case E_KEYCAP_10:
@@ -226,7 +226,7 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
             }
             return TokenState::Continues;
         case TokenType::DocumentationComment:
-            if (codePoint() == E_TACO) {
+            if (codePoint() == E_GREEN_TEXTBOOK) {
                 return TokenState::Ended;
             }
             token->value_.push_back(codePoint());

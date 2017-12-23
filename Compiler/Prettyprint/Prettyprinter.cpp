@@ -102,7 +102,7 @@ void Prettyprinter::printReturnType(Function *function) {
 
 void Prettyprinter::printDocumentation(const std::u32string &doc) {
     if (!doc.empty()) {
-        indent() << "🌮" << utf8(doc) << "🌮\n";
+        indent() << "📗" << utf8(doc) << "📗\n";
     }
 }
 
