@@ -56,32 +56,16 @@ ASTArguments FunctionParser::parseArguments(const SourcePosition &position) {
         args.addGenericArgument(parseType(typeContext_, TypeDynamism::AllKinds));
     }
 
-    if (stream_.consumeTokenIf(TokenType::EndArgumentList)) {
-        return args;
-    }
-    if (stream_.consumeTokenIf(TokenType::EndInterrogativeArgumentList)) {
-        args.setImperative(false);
-        return args;
-    }
-
     parseMainArguments(&args, position);
     return args;
 }
 
 void FunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePosition &position) {
-    if (stream_.consumeTokenIf(TokenType::BeginInterrogativeArgumentList)) {
-        while (stream_.nextTokenIsEverythingBut(TokenType::EndInterrogativeArgumentList)) {
-            arguments->addArguments(parseExpr(0));
-        }
-        arguments->setImperative(false);
+    while (stream_.nextTokenIsEverythingBut(TokenType::EndArgumentList) &&
+           stream_.nextTokenIsEverythingBut(TokenType::EndInterrogativeArgumentList)) {
+        arguments->addArguments(parseExpr(0));
     }
-    else {
-        stream_.consumeToken(TokenType::BeginArgumentList);
-        while (stream_.nextTokenIsEverythingBut(TokenType::EndArgumentList)) {
-            arguments->addArguments(parseExpr(0));
-        }
-    }
-    stream_.consumeToken();
+    arguments->setImperative(stream_.consumeToken().type() == TokenType::EndArgumentList);
 }
 
 std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
