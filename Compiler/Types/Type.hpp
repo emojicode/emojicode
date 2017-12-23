@@ -10,7 +10,6 @@
 #define Type_hpp
 
 #include "EmojicodeCompiler.hpp"
-#include "Emojis.h"
 #include "StorageType.hpp"
 #include <stdexcept>
 #include <string>
@@ -20,7 +19,7 @@
 namespace EmojicodeCompiler {
 
 /// The identifier value representing the default namespace.
-const std::u32string kDefaultNamespace = std::u32string(1, E_HOUSE_BUILDING);
+extern const std::u32string kDefaultNamespace;
 
 class TypeDefinition;
 class Enum;

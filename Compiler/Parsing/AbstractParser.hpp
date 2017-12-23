@@ -12,6 +12,7 @@
 #include "Lex/TokenStream.hpp"
 #include "Types/Generic.hpp"
 #include "Types/TypeContext.hpp"
+#include "Emojis.h"
 #include <memory>
 #include <utility>
 

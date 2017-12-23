@@ -166,7 +166,7 @@ ValueType* getStandardValueType(const std::u32string &name, Package *_, const So
 void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
     // Order of the following calls is important as they will cause Box IDs to be assigned
     sBoolean = getStandardValueType(std::u32string(1, E_OK_HAND_SIGN), s, errorPosition);
-    sInteger = getStandardValueType(std::u32string(1, E_STEAM_LOCOMOTIVE), s, errorPosition);
+    sInteger = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_NUMBERS), s, errorPosition);
     sDouble = getStandardValueType(std::u32string(1, E_ROCKET), s, errorPosition);
     sSymbol = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition);
 

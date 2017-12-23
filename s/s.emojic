@@ -48,76 +48,76 @@
 📗
   Integer
 📗
-🌍 🕊 🚂 ⚪️ 🍇
-  🐊 😛🐚🚂
+🌍 🕊 🔢 ⚪️ 🍇
+  🐊 😛🐚🔢
 
   📗 Whether this value and *other* are considered equal. 📗
-  🙌 other 🚂 ➡️ 👌 🍇
+  🙌 other 🔢 ➡️ 👌 🍇
     ↩️ 🐕 🙌 other
   🍉
 
   📗 Returns the receiver minus *other*. 📗
-  ➖ other 🚂 ➡️ 🚂 🍇
+  ➖ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ➖ other
   🍉
   📗 Returns the receiver plus *other*. 📗
-  ➕ other 🚂 ➡️ 🚂 🍇
+  ➕ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ➕ other
   🍉
   📗 Returns the receiver divided by *other*. 📗
-  ➗ other 🚂 ➡️ 🚂 🍇
+  ➗ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ➗ other
   🍉
   📗 Returns the receiver multiplied by *other*. 📗
-  ✖️ other 🚂 ➡️ 🚂 🍇
+  ✖️ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ✖️ other
   🍉
   📗 Returns the receiver modulus *other*. 📗
-  🚮 other 🚂 ➡️ 🚂 🍇
+  🚮 other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 🚮 other
   🍉
   📗 Returns true if the receiver is smaller than *other*. 📗
-  ◀️ other 🚂 ➡️ 👌 🍇
+  ◀️ other 🔢 ➡️ 👌 🍇
     ↩️ 🐕 ◀️ other
   🍉
   📗 Returns true if the receiver is greater than *other*. 📗
-  ▶️ other 🚂 ➡️ 👌 🍇
+  ▶️ other 🔢 ➡️ 👌 🍇
     ↩️ 🐕 ▶️ other
   🍉
   📗 Returns true if the receiver is smaller than or equal to *other*. 📗
-  ⬅️ other 🚂 ➡️ 👌 🍇
+  ⬅️ other 🔢 ➡️ 👌 🍇
     ↩️ 🐕 ⬅️ other
   🍉
   📗 Returns true if the receiver is greater than or equal to *other*. 📗
-  ➡️ other 🚂 ➡️ 👌 🍇
+  ➡️ other 🔢 ➡️ 👌 🍇
     ↩️ 🐕 ➡️ other
   🍉
   📗 Returns this integer AND *other*. 📗
-  ⭕️ other 🚂 ➡️ 🚂 🍇
+  ⭕️ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ⭕️ other
   🍉
   📗 Returns this integer OR *other*. 📗
-  💢 other 🚂 ➡️ 🚂 🍇
+  💢 other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 💢 other
   🍉
   📗 Returns this integer XOR *other*. 📗
-  ❌ other 🚂 ➡️ 🚂 🍇
+  ❌ other 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 ❌ other
   🍉
   📗 Returns NOT applied to this integer. 📗
-  ❗️ 🚫 ➡️ 🚂 🍇
+  ❗️ 🚫 ➡️ 🔢 🍇
     ↩️ 🚫 🐕 ❗️
   🍉
   📗 Shifts this integer by *n* bits to the left. 📗
-  👈 n 🚂 ➡️ 🚂 🍇
+  👈 n 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 👈 n
   🍉
   📗 Shifts this integer by *n* bits to the right. 📗
-  👉 n 🚂 ➡️ 🚂 🍇
+  👉 n 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 👉 n
   🍉
-  📗 Returns the absolute value of this 🚂. 📗
-  ❗️ 🏧 ➡️ 🚂 📻 🔤sIntAbsolute🔤
+  📗 Returns the absolute value of this 🔢. 📗
+  ❗️ 🏧 ➡️ 🔢 📻 🔤sIntAbsolute🔤
 🍉
 
 📗
@@ -235,11 +235,11 @@
   📗
     Returns the smallest integer greater than or equal to this 🚀.
   📗
-  ❗️ 🚴 ➡️ 🚂 📻 🔤sRealFloor🔤
+  ❗️ 🚴 ➡️ 🔢 📻 🔤sRealFloor🔤
   📗
     Returns the largest integer less than or equal to this 🚀.
   📗
-  ❗️ 🚵 ➡️ 🚂 📻 🔤sRealCeil🔤
+  ❗️ 🚵 ➡️ 🔢 📻 🔤sRealCeil🔤
   📗
     Returns the value of this 🚀 rounded to the nearest integer.
 
@@ -247,7 +247,7 @@
     rounded to the next higher integer. If the fractional portion of this 🚀 is
     less than 0.5, the argument is rounded to the next lower integer.
   📗
-  ❗️ 🏇 ➡️ 🚂 📻 🔤sRealRound🔤
+  ❗️ 🏇 ➡️ 🔢 📻 🔤sRealRound🔤
   📗
     Returns the base 2 logarithm of this 🚀.
   📗
@@ -276,7 +276,7 @@
 📗
 🌍 🐇 🔡 🍇
   🍰 codePoints 🔵
-  🍰 count 🚂
+  🍰 count 🔢
 🍉
 📗
   The 🍨 class represents an ordered mutable collection. [Read more in the
@@ -331,9 +331,9 @@
   📗
     Gets the item at `index`. If the index is invalid Nothingness is returned.
   📗
-  ❗️ 🐽 index 🚂 ➡️ 🍬Element
+  ❗️ 🐽 index 🔢 ➡️ 🍬Element
   📗 Returns the number of items in the list. 📗
-  ❗️ 🐔 ➡️ 🚂
+  ❗️ 🐔 ➡️ 🔢
 🍉
 
 📗
@@ -345,7 +345,7 @@
   🐊 🔂🐚Element
 
   🍰 iteratee 🐽🐚Element
-  🍰 index 🚂
+  🍰 index 🔢
 
   🆕 🍼 iteratee 🐽🐚Element 🍇
     🍮 index 0
@@ -372,17 +372,17 @@
   language reference.](../../reference/the-s-package.html#-ranges)
 📗
 🌍 🕊 ⏩ 🍇
-  🐊 🔂🐚🚂
-  🐊 🐽️🐚🚂
+  🐊 🔂🐚🔢
+  🐊 🐽️🐚🔢
 
-  🍰 start 🚂
-  🍰 stop 🚂
-  🍰 step 🚂
+  🍰 start 🔢
+  🍰 stop 🔢
+  🍰 step 🔢
 
   📗
     Creates a range from start to stop.
   📗
-  🆕 ⏩ 🍼 start 🚂 🍼 stop 🚂 🍇
+  🆕 ⏩ 🍼 start 🔢 🍼 stop 🔢 🍇
     🍮 step 1
     🍊 stop ◀️ start 🍇
       🍮 step -1
@@ -392,14 +392,14 @@
   📗
     Creates a range from start to stop with the given step.
   📗
-  🆕 ⏭ 🍼 start 🚂 🍼 stop 🚂 🍼 step 🚂 🍇🍉
+  🆕 ⏭ 🍼 start 🔢 🍼 stop 🔢 🍼 step 🔢 🍇🍉
 
   📗
     Returns the `n`th element of the range. `n` is only valid if
     `start + step * n` is `>= start` and `< stop`. If `n` is invalid
     Nothingness is returned.
   📗
-  ❗️ 🐽 n 🚂 ➡️ 🍬🚂 🍇
+  ❗️ 🐽 n 🔢 ➡️ 🍬🔢 🍇
     🍦 v start ➕ n ✖️ step
     🍊 step ◀️ 0 🍇
       🍊 stop ◀️ v 🤝 v ⬅️ start 🍇
@@ -415,13 +415,13 @@
   🍉
 
   📗 Returns the number of numbers in this range. 📗
-  ❗️ 🐔 ➡️ 🚂 🍇
+  ❗️ 🐔 ➡️ 🔢 🍇
     ↩️ stop ➖ start ➗ step
   🍉
 
   📗 Returns an iterator to iterate over the symbols of this string. 📗
-  ❗️ 🍡 ➡️ 🌳🐚🚂 🍇
-    ↩️ 🆕🌳🐚🚂🆕  🐕❗️
+  ❗️ 🍡 ➡️ 🌳🐚🔢 🍇
+    ↩️ 🆕🌳🐚🔢🆕  🐕❗️
   🍉
 🍉
 
@@ -435,7 +435,7 @@
 👴   🐊 🔂🐚🍬Element
 
 👴   🍰 iteratee 🍨🐚Element
-👴   🍰 index 🚂
+👴   🍰 index 🔢
 
 👴   🆕 🍼 iteratee 🍨🐚Element 🍇
 👴     🍮 index 0
@@ -465,7 +465,7 @@
 👴   🍉
 👴 🍉
 
-🐋 🚂 🍇
+🐋 🔢 🍇
   📗
     Creates a string representation of this integer. *base* must be greater than
     or equal to 2 and less than or equal to 35.
@@ -473,7 +473,7 @@
     The digits used to represent the integer are
     `0123456789abcdefghijklmnopqrstuvxyz`.
   📗
-  ❗️ 🔡 base 🚂 ➡️ 🔡 📻 🔤sIntToString🔤
+  ❗️ 🔡 base 🔢 ➡️ 🔡 📻 🔤sIntToString🔤
 
   📗 Returns the double representation of this integer. 📗
   ❗️ 🚀 ➡️ 🚀 🍇
@@ -486,14 +486,14 @@
     Creates a 🔡 representation of this 🚀 and the given precision – the number
     of digits after the decimal separator “.”.
   📗
-  ❗️ 🔡 precision 🚂 ➡️ 🔡 📻 🔤sRealToString🔤
+  ❗️ 🔡 precision 🔢 ➡️ 🔡 📻 🔤sRealToString🔤
 🍉
 
 🐋 🔣 🍇
   📗 Creates a 🔡 from this symbol. 📗
   ❗️ 🔡 ➡️ 🔡 📻 🔤sSymbolToString🔤
   📗 Returns the Unicode code point of this symbol. 📗
-  ❗️ 🚂 ➡️ 🚂 📻 🔤sSymbolToInt🔤
+  ❗️ 🔢 ➡️ 🔢 📻 🔤sSymbolToInt🔤
 🍉
 
 🐋 🔡 🍇
@@ -528,7 +528,7 @@
     >!N the sort will always be the same, but may not appear logical to human
     >!N beings.
   📗
-  ❗️ ↔️ b 🔡 ➡️ 🚂 📻 🔤sStringCompare🔤
+  ❗️ ↔️ b 🔡 ➡️ 🔢 📻 🔤sStringCompare🔤
 
   👴 📗
   👴   Returns the characters in a string beginning at the specified location
@@ -538,13 +538,13 @@
   👴   is given, it is treated as strLength + start where strLength = to the length
   👴   of the string (for example, if start is -3 it is treated as strLength - 3.)
   👴 📗
-  👴 ❗️ 🔪 from 🚂 length 🚂 ➡️ 🔡 📻 🔤sStringSubstring🔤
+  👴 ❗️ 🔪 from 🔢 length 🔢 ➡️ 🔡 📻 🔤sStringSubstring🔤
 
   👴 📗
   👴   Finds the first occurrences of a string in this string. Search is done from
   👴   left to right. Nothingness is returned if *search* cannot be found.
   👴 📗
-  👴 ❗️ 🔍 search 🔡 ➡️ 🍬🚂 📻 🔤sStringFind🔤
+  👴 ❗️ 🔍 search 🔡 ➡️ 🍬🔢 📻 🔤sStringFind🔤
 
   📗 Whether this strings begins with another string. 📗
   ❗️ 🎼 testString 🔡 ➡️ 👌 📻 🔤sStringBeginsWith🔤
@@ -577,21 +577,21 @@
     is possibly not the number of bytes needed to write the string to a file,
     since Emojicode encodes everything into UTF8.
   📗
-  ❗️ 🐔 ➡️ 🚂 🍇
+  ❗️ 🐔 ➡️ 🔢 🍇
     ↩️ count
   🍉
 
   📗
     Returns the number of bytes needed to encode this string into proper UTF8.
   📗
-  ❗️ 📐 ➡️ 🚂 📻 🔤sStringUtf8ByteCount🔤
+  ❗️ 📐 ➡️ 🔢 📻 🔤sStringUtf8ByteCount🔤
 👴   📗
 👴     This methods tries to construct an integer from this string in the given
 👴     base. It returns the integer or Nothingness if the string does not match the
 👴     regular expression `[+-]?[0-9a-zA-Z]+` or it does not represent a valid
 👴     value in the given base.
 👴   📗
-👴   ❗️ 🚂 base 🚂 ➡️ 🍬🚂 📻 🔤sStringToInt🔤
+👴   ❗️ 🔢 base 🔢 ➡️ 🍬🔢 📻 🔤sStringToInt🔤
 
 👴   📗
 👴     This methods tries to construct a 🚀 from this 🔡. It returns the 🚀, or ✨
@@ -605,7 +605,7 @@
 👴   ❗️ 📝 symbol 🔣 ➡️ 🔡 📻 🔤sStringAppendSymbol🔤
 
 👴   📗 Gets a symbol by its index. 📗
-👴   ❗️ 🐽 index 🚂 ➡️ 🍬🔣 📻 🔤sStringToInt🔤
+👴   ❗️ 🐽 index 🔢 ➡️ 🍬🔣 📻 🔤sStringToInt🔤
 
 👴   📗 Converts the string to data encoded as UTF8. 📗
 👴   ❗️ 📇 ➡️ 📇 📻 🔤sStringToData🔤
@@ -644,7 +644,7 @@
 👴     🍮 symbols 🆕🍨🐚🔣🐸❗️
 👴   🍉
 
-👴   🆕 🐧 capacity 🚂 🍇
+👴   🆕 🐧 capacity 🔢 🍇
 👴     🍮 symbols 🆕🍨🐚🔣🐧  capacity❗️
 👴   🍉
 
@@ -665,7 +665,7 @@
 👴   🆕 🐸 📻 58
 
 👴   📗 Creates an empty list with the given initial capacity. 📗
-👴   🆕 🐧 capacity 🚂 📻 57
+👴   🆕 🐧 capacity 🔢 📻 57
 
 👴   📗 Returns a shallow copy of this list. 📗
 👴   ❗️ 🐮 ➡️ 🍨🐚Element 📻 52
@@ -677,13 +677,13 @@
 👴     Gets the item at `index` in `O(1)`. If the index is invalid Nothingness is
 👴     returned.
 👴   📗
-👴   ❗️ 🐽 index 🚂 ➡️ 🍬Element 📻 46
+👴   ❗️ 🐽 index 🔢 ➡️ 🍬Element 📻 46
 
 👴   📗
 👴     Sets `value` at `index`. If `index` is bigger than the capacity of the list,
 👴     the list is resized to a capacity of `index + 1`. Complexity: `O(1)`.
 👴   📗
-👴   ❗️ 🐷 index 🚂 value Element 📻 55
+👴   ❗️ 🐷 index 🔢 value Element 📻 55
 
 👴   📗
 👴     Removes the item at `index` and shifts all following items to the left in
@@ -691,7 +691,7 @@
 
 👴     Returns 👍 unless the index is out of range.
 👴   📗
-👴   ❗️ 🐨 index 🚂 ➡️ 👌 📻 47
+👴   ❗️ 🐨 index 🔢 ➡️ 👌 📻 47
 
 👴   📗
 👴     Inserts the given values before the element with the given index.
@@ -699,10 +699,10 @@
 👴     All items beginning from `index` are shifted to the right and `item` is
 👴     then inserted at `index`. Complexity: `O(count - index)`.
 👴   📗
-👴   ❗️ 🐵 index 🚂 item Element 📻 48
+👴   ❗️ 🐵 index 🔢 item Element 📻 48
 
 👴   📗 Returns the number of items in the list. 📗
-👴   ❗️ 🐔 ➡️ 🚂 📻 49
+👴   ❗️ 🐔 ➡️ 🔢 📻 49
 
 👴   📗 Appends the content of `list` to this list. 📗
 👴   ❗️ 🐥 list 🍨🐚Element 📻 97
@@ -729,7 +729,7 @@
 
 👴     Complexity: `O(1)`.
 👴   📗
-👴   ❗️ 🐴 capacity 🚂 📻 56
+👴   ❗️ 🐴 capacity 🔢 📻 56
 
 👴   📗
 👴     Sorts this array in place using the quick sort algorithm.
@@ -738,7 +738,7 @@
 👴     if the first argument is considered respectively less than, equal to, or
 👴     greater than the second.
 👴   📗
-👴   ❗️ 🦁 comparator 🍇Element Element➡️🚂🍉 📻 53
+👴   ❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 📻 53
 
 👴   📗
 👴     Shuffles the list in place.
@@ -807,14 +807,14 @@
 👴 🍉
 
 👴 🐋 📇 🍇
-👴   🐊 🐽🐚🚂
-👴   🐊 🔂🐚🚂
+👴   🐊 🐽🐚🔢
+👴   🐊 🔂🐚🔢
 👴   🐊 😛🐚📇
 
 👴   📗 Returns 👍 if this is equal to b. 📗
 👴   🙌 b 📇 ➡️ 👌 📻 1
 👴   📗 Returns the number of bytes represented by this instance. 📗
-👴   ❗️ 🐔 ➡️ 🚂 📻 2
+👴   ❗️ 🐔 ➡️ 🔢 📻 2
 👴   📗
 👴     Returns an integer representing the value of the byte at the given index
 👴     `index`. A negative index is assumed to be relative to the end of the data.
@@ -825,7 +825,7 @@
 
 👴     Nothingness is returned if the index is out of range.
 👴   📗
-👴   ❗️ 🐽 index 🚂 ➡️ 🍬🚂 📻 3
+👴   ❗️ 🐽 index 🔢 ➡️ 🍬🔢 📻 3
 👴   📗
 👴     If this object represents the bytes of a UTF8 encoded text this method
 👴     returns a string representing that text. Nothingness is returned if this
@@ -836,13 +836,13 @@
 👴     Returns a copy of the data within the given range. This method employes
 👴     various techniques to make this as efficient as possible.
 👴   📗
-👴   ❗️ 🔪 from 🚂 length 🚂 ➡️ 📇 📻 5
+👴   ❗️ 🔪 from 🔢 length 🔢 ➡️ 📇 📻 5
 👴   📗
 👴     Finds the first occurrences of *search* in the bytes represented by this
 👴     instance. Search is done from left to right. Nothingness is returned if
 👴     *search* cannot be found. 0 is returned if *search* is empty.
 👴   📗
-👴   ❗️ 🔍 search 📇 ➡️ 🍬🚂 📻 6
+👴   ❗️ 🔍 search 📇 ➡️ 🍬🔢 📻 6
 👴   📗
 👴     Creates a new data object by with the bytes of this instance and *b*
 👴     concatenated.
@@ -850,8 +850,8 @@
 👴   ❗️ 📝 b 📇 ➡️ 📇 📻 7
 
 👴   📗 Returns an iterator to iterate over the bytes of this data object. 📗
-👴   ❗️ 🍡 ➡️ 🌳🐚🚂 🍇
-👴     ↩️ 🆕🌳🐚🚂🆕 🐕❗️
+👴   ❗️ 🍡 ➡️ 🌳🐚🔢 🍇
+👴     ↩️ 🆕🌳🐚🔢🆕 🐕❗️
 👴   🍉
 👴 🍉
 
@@ -884,13 +884,13 @@
 👴     Removes all key-value pairs in this 🍯 and returns the number of deleted
 👴     items.
 👴   📗
-👴   ❗️ 🐗 ➡️ 🚂 📻 91
+👴   ❗️ 🐗 ➡️ 🔢 📻 91
 
 👴   📗 Checks whether *key* is in this 🍯. 📗
 👴   ❗️ 🐣 key 🔡 ➡️ 👌📻 92
 
 👴   📗 Returns the number of items. 📗
-👴   ❗️ 🐔 ➡️ 🚂📻 93
+👴   ❗️ 🐔 ➡️ 🔢📻 93
 👴 🍉
 
 👴 📗
@@ -914,7 +914,7 @@
 👴     Immediately exits the program with the given status code. The code may
 👴     not be larger than 255 on most operating systems.
 👴   📗
-👴   🐇❗️ 🚪 status 🚂 📻 🔤sSystemExit🔤
+👴   🐇❗️ 🚪 status 🔢 📻 🔤sSystemExit🔤
 
 👴   📗
 👴     Returns the standard output of running `command` in a subshell.
@@ -927,7 +927,7 @@
 👴   📗
 👴     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
 👴   📗
-👴   🐇❗️ 🕰 ➡️ 🚂📻 🔤sSystemUnixTimestamp🔤
+👴   🐇❗️ 🕰 ➡️ 🔢📻 🔤sSystemUnixTimestamp🔤
 👴 🍉
 
 👴 📗
@@ -947,7 +947,7 @@
 👴     Suspends the calling thread from execution for at least the number of
 👴     microseconds specified by the argument *microseconds*.
 👴   📗
-👴   🐇❗️ ⏲ microseconds 🚂 📻 10
+👴   🐇❗️ ⏲ microseconds 🔢 📻 10
 👴 🍉
 
 👴 📗
@@ -989,7 +989,7 @@
 👴     Generates an integer. Integers are uniformly distributed on the
 👴     closed interval `[a, b]`.
 👴   📗
-👴   ❗️ 🚂 a 🚂 b 🚂 ➡️ 🚂 📻 95
+👴   ❗️ 🔢 a 🔢 b 🔢 ➡️ 🔢 📻 95
 👴   📗
 👴     Generates a double, where doubles are uniformly distributed on the interval
 👴     `[0, 1)`.

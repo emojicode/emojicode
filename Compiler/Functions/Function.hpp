@@ -13,6 +13,7 @@
 #include "Types/Type.hpp"
 #include "Types/TypeContext.hpp"
 #include "FunctionType.hpp"
+#include "Emojis.h"
 #include <experimental/optional>
 #include <memory>
 #include <utility>

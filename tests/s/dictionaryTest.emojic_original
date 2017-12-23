@@ -50,11 +50,11 @@
 
     🍦keysDictionary 🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆
     🍦keys 🍨 🔤Grapefruit🔤 🔤Birne🔤 🔤Apfel🔤 🍆
-    🦁 keys 🍇 a 🔡 b 🔡 ➡️ 🚂
+    🦁 keys 🍇 a 🔡 b 🔡 ➡️ 🔢
       ↩️ ↔️ a b
     🍉
     🍦dictKeys  🐙keysDictionary
-    🦁 dictKeys 🍇 a 🔡 b 🔡 ➡️ 🚂
+    🦁 dictKeys 🍇 a 🔡 b 🔡 ➡️ 🔢
       ↩️ ↔️ a b
     🍉
     ⛔️🐕 😛 keys dictKeys 🔤🍯 🐙 should be equal to its keys🔤
@@ -77,7 +77,7 @@
   🍉
 🍉
 
-🏁 ➡️ 🚂 🍇
+🏁 ➡️ 🔢 🍇
   🍦 tester 🆕💯🆕
   🏁 tester
   ↩️ 👔 tester

@@ -17,11 +17,14 @@
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 #include "ValueType.hpp"
+#include "Emojis.h"
 #include <algorithm>
 #include <cstring>
 #include <vector>
 
 namespace EmojicodeCompiler {
+
+const std::u32string kDefaultNamespace = std::u32string(1, E_HOUSE_BUILDING);
 
 Type::Type(Protocol *protocol, bool optional)
     : typeContent_(TypeType::Protocol), typeDefinition_(protocol), optional_(optional) {}

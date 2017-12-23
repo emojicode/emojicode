@@ -14,6 +14,7 @@
 #include "Parsing/CompatibleFunctionParser.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeContext.hpp"
+#include "Emojis.h"
 #include <map>
 #include <vector>
 
