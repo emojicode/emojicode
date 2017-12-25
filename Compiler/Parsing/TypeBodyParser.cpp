@@ -64,7 +64,7 @@ AccessLevel TypeBodyParser::readAccessLevel() {
 }
 
 void TypeBodyParser::parseProtocolConformance(const SourcePosition &p) {
-    Type type = parseType(TypeContext(type_), TypeDynamism::GenericTypeVariables);
+    Type type = parseType(TypeContext(type_));
 
     if (type.type() != TypeType::Protocol || type.optional()) {
         package_->compiler()->error(CompilerError(p, "The given type is not a protocol."));
@@ -127,7 +127,7 @@ Initializer* ClassTypeBodyParser::parseInitializer(const std::u32string &name, T
 
 void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
     auto &variableName = stream_.consumeToken(TokenType::Variable);
-    auto type = parseType(TypeContext(type_), TypeDynamism::GenericTypeVariables);
+    auto type = parseType(TypeContext(type_));
     auto instanceVar = InstanceVariableDeclaration(variableName.value(), type, variableName.position());
     type_.typeDefinition()->addInstanceVariable(instanceVar);
 }
@@ -169,7 +169,7 @@ Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBo
             throw CompilerError(p, "Only classes can have error-prone initializers.");
         }
         auto &token = stream_.consumeToken(TokenType::Error);
-        errorType = parseErrorEnumType(TypeContext(type_), TypeDynamism::None, token.position());
+        errorType = parseErrorEnumType(TypeContext(type_), token.position());
     }
 
 

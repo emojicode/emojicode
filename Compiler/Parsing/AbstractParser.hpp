@@ -53,25 +53,6 @@ struct TypeIdentifier {
     SourcePosition position;
 };
 
-enum class TypeDynamism {
-    /** No dynamism is allowed or no dynamism was used. */
-    None = 0,
-    /** No kind of dynamism is allowed. This value never comes from a call to @c parseAndFetchType . */
-    AllKinds = 0b11,
-    /** Generic Variables are allowed or were used. */
-    GenericTypeVariables = 0b1,
-    /** Self is allowed or was used. */
-    Self = 0b10
-};
-
-inline TypeDynamism operator&(TypeDynamism a, TypeDynamism b) {
-    return static_cast<TypeDynamism>(static_cast<int>(a) & static_cast<int>(b));
-}
-
-inline TypeDynamism operator|(TypeDynamism a, TypeDynamism b) {
-    return static_cast<TypeDynamism>(static_cast<int>(a) | static_cast<int>(b));
-}
-
 class AbstractParser {
 protected:
     AbstractParser(Package *pkg, TokenStream &stream) : package_(pkg), stream_(stream) {};
@@ -81,13 +62,13 @@ protected:
     /// Reads a $type-identifier$
     TypeIdentifier parseTypeIdentifier();
     /// Reads a $type$ and fetches it
-    Type parseType(const TypeContext &typeContext, TypeDynamism dynamism);
+    Type parseType(const TypeContext &typeContext);
     /// Parses $generic-parameters$
     template <typename T>
     void parseGenericParameters(Generic<T> *generic, const TypeContext &typeContext) {
         while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
             auto &variable = stream_.consumeToken(TokenType::Variable);
-            auto constraint = parseType(typeContext, TypeDynamism::GenericTypeVariables);
+            auto constraint = parseType(typeContext);
             generic->addGenericArgument(variable.value(), constraint, variable.position());
         }
     }
@@ -98,23 +79,24 @@ protected:
     /// Parses a $return-type$ for a function one is specified.
     void parseReturnType(Function *function, const TypeContext &typeContext);
     /// Parses $generic-arguments$ for a type.
-    void parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,
-                                      const SourcePosition &p);
+    void parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, const SourcePosition &p);
 
     /// Parses and validates the error type
-    Type parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p);
+    Type parseErrorEnumType(const TypeContext &typeContext, const SourcePosition &p);
 
     std::unique_ptr<FunctionParser> factorFunctionParser(Package *pkg, TokenStream &stream, TypeContext context,
                                                          Function *function);
 private:
     /// Parses a $multi-protocol$
-    Type parseMultiProtocol(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
+    Type parseMultiProtocol(bool optional, const TypeContext &typeContext);
     /// Parses a $callable-type$. The first token has already been consumed.
-    Type parseCallableType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
+    Type parseCallableType(bool optional, const TypeContext &typeContext);
 
-    Type parseGenericVariable(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
+    Type parseGenericVariable(bool optional, const TypeContext &typeContext);
 
-    Type parseErrorType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism);
+    Type parseErrorType(bool optional, const TypeContext &typeContext);
+    /// Parses a $type-main$
+    Type parseTypeMain(bool optional, const TypeContext &typeContext);
 };
 
 }  // namespace EmojicodeCompiler

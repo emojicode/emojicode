@@ -208,7 +208,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
     if (!stream_.nextTokenIs(TokenType::BlockBegin)) {
         auto classType = Type(eclass, false);  // New Type due to generic arguments now (partly) available.
 
-        Type type = parseType(TypeContext(classType), TypeDynamism::GenericTypeVariables);
+        Type type = parseType(TypeContext(classType));
         if (type.type() != TypeType::Class && !type.optional() && !type.meta()) {
             throw CompilerError(parsedTypeName.position, "The superclass must be a class.");
         }

@@ -51,13 +51,13 @@ std::unique_ptr<FunctionParser> AbstractParser::factorFunctionParser(Package *pk
     return std::make_unique<FunctionParser>(pkg, stream, context);
 }
 
-Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dynamism) {
+Type AbstractParser::parseType(const TypeContext &typeContext) {
     if (stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE)) {
         throw CompilerError(stream_.consumeToken().position(), "⚫️ not allowed here.");
     }
     if (stream_.nextTokenIs(E_WHITE_SQUARE_BUTTON)) {
         auto &token = stream_.consumeToken();
-        Type type = parseType(typeContext, dynamism);
+        Type type = parseType(typeContext);
         if (!type.allowsMetaType() || type.meta()) {
             throw CompilerError(token.position(), "Meta type of ", type.toString(typeContext), " is restricted.");
         }
@@ -67,34 +67,37 @@ Type AbstractParser::parseType(const TypeContext &typeContext, TypeDynamism dyna
 
     bool optional = stream_.consumeTokenIf(E_CANDY);
 
-    if ((dynamism & TypeDynamism::GenericTypeVariables) != TypeDynamism::None &&
-        (typeContext.calleeType().canHaveGenericArguments() || typeContext.function() != nullptr) &&
+    if ((typeContext.calleeType().canHaveGenericArguments() || typeContext.function() != nullptr) &&
         stream_.nextTokenIs(TokenType::Variable)) {
-        return parseGenericVariable(optional, typeContext, dynamism);
+        return parseGenericVariable(optional, typeContext);
     }
     if (stream_.nextTokenIs(E_BENTO_BOX)) {
-        return parseMultiProtocol(optional, typeContext, dynamism);
+        return parseMultiProtocol(optional, typeContext);
     }
     if (stream_.nextTokenIs(TokenType::Error)) {
-        return parseErrorType(optional, typeContext, dynamism);
+        return parseErrorType(optional, typeContext);
     }
+    return parseTypeMain(optional, typeContext);
+}
+
+Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext) {
     if (stream_.consumeTokenIf(TokenType::BlockBegin)) {
-        return parseCallableType(optional, typeContext, dynamism);
+        return parseCallableType(optional, typeContext);
     }
 
     auto parsedTypeIdentifier = parseTypeIdentifier();
     auto type = package_->getRawType(parsedTypeIdentifier, optional);
     if (type.canHaveGenericArguments()) {
-        parseGenericArgumentsForType(&type, typeContext, dynamism, parsedTypeIdentifier.position);
+        parseGenericArgumentsForType(&type, typeContext, parsedTypeIdentifier.position);
     }
     return type;
 }
 
-Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeContext) {
     auto &bentoToken = stream_.consumeToken(TokenType::Identifier);
     Type type = Type(TypeType::MultiProtocol, optional);
     while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
-        auto protocolType = parseType(typeContext, dynamism);
+        auto protocolType = parseType(typeContext);
         if (protocolType.type() != TypeType::Protocol || protocolType.optional() || protocolType.meta()) {
             throw CompilerError(bentoToken.position(), "🍱 may only consist of non-optional protocol types.");
         }
@@ -108,24 +111,24 @@ Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeCo
     return type;
 }
 
-Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeContext) {
     Type t = Type::callableIncomplete(optional);
     t.genericArguments_.push_back(Type::noReturn());
 
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd) &&
            stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
-        t.genericArguments_.push_back(parseType(typeContext, dynamism));
+        t.genericArguments_.push_back(parseType(typeContext));
     }
 
     if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
-        t.genericArguments_[0] = parseType(typeContext, dynamism);
+        t.genericArguments_[0] = parseType(typeContext);
     }
 
     stream_.consumeToken(TokenType::BlockEnd);
     return t;
 }
 
-Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &typeContext) {
     auto &varToken = stream_.consumeToken(TokenType::Variable);
 
     Type type = Type::noReturn();
@@ -140,29 +143,28 @@ Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &type
     throw CompilerError(varToken.position(), "No such generic type variable \"", utf8(varToken.value()), "\".");
 }
 
-Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, TypeDynamism dynamism, const SourcePosition &p) {
-    auto errorType = parseType(typeContext, dynamism);
+Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, const SourcePosition &p) {
+    auto errorType = parseType(typeContext);
     if (errorType.type() != TypeType::Enum || errorType.optional() || errorType.meta()) {
         throw CompilerError(p, "Error type must be a non-optional 🦃.");
     }
     return errorType;
 }
 
-Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContext, TypeDynamism dynamism) {
+Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContext) {
     auto &token = stream_.consumeToken(TokenType::Error);
-    Type errorType = parseErrorEnumType(typeContext, dynamism, token.position());
+    Type errorType = parseErrorEnumType(typeContext, token.position());
     if (optional) {
         throw CompilerError(token.position(), "The error type itself cannot be an optional. "
                             "Maybe you meant to make the contained type an optional?");
     }
     Type type = Type::error();
     type.genericArguments_.emplace_back(errorType);
-    type.genericArguments_.emplace_back(parseType(typeContext, dynamism));
+    type.genericArguments_.emplace_back(parseType(typeContext));
     return type;
 }
 
-void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, TypeDynamism dynamism,
-                                                  const SourcePosition &p) {
+void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, const SourcePosition &p) {
     auto typeDef = type->typeDefinition();
     auto offset = typeDef->superGenericArguments().size();
     type->genericArguments_ = typeDef->superGenericArguments();
@@ -171,7 +173,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
     for (; stream_.nextTokenIs(E_SPIRAL_SHELL) && count < typeDef->genericParameterCount(); count++) {
         auto &token = stream_.consumeToken(TokenType::Identifier);
 
-        Type argument = parseType(typeContext, dynamism);
+        Type argument = parseType(typeContext);
         if (!argument.compatibleTo(typeDef->constraintForIndex(offset + count), typeContext)) {
             throw CompilerError(token.position(), "Generic argument for ", argument.toString(typeContext),
                                 " is not compatible to constraint ",
@@ -198,7 +200,7 @@ void AbstractParser::parseParameters(Function *function, const TypeContext &type
         }
 
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
-        auto type = parseType(typeContext, TypeDynamism::GenericTypeVariables);
+        auto type = parseType(typeContext);
 
         function->arguments.emplace_back(variableToken.value(), type);
 
@@ -214,7 +216,7 @@ void AbstractParser::parseParameters(Function *function, const TypeContext &type
 
 void AbstractParser::parseReturnType(Function *function, const TypeContext &typeContext) {
     if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
-        function->returnType = parseType(typeContext, TypeDynamism::GenericTypeVariables);
+        function->returnType = parseType(typeContext);
     }
 }
 

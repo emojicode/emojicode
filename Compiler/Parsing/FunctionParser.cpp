@@ -53,7 +53,7 @@ ASTArguments FunctionParser::parseArguments(const SourcePosition &position) {
     auto args = ASTArguments(position);
 
     while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
-        args.addGenericArgument(parseType(typeContext_, TypeDynamism::AllKinds));
+        args.addGenericArgument(parseType(typeContext_));
     }
 
     parseMainArguments(&args, position);
@@ -74,7 +74,7 @@ std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
         case TokenType::Declaration: {
             auto &varName = stream_.consumeToken(TokenType::Variable);
 
-            Type type = parseType(typeContext_, TypeDynamism::AllKinds);
+            Type type = parseType(typeContext_);
             return std::make_shared<ASTVariableDeclaration>(type, varName.value(), token.position());
         }
         case TokenType::Assignment:
@@ -239,7 +239,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
         case E_METRO:
             return parseUnaryPrefix<ASTUnwrap>(token);
         case E_WHITE_SQUARE_BUTTON: {
-            Type t = parseType(typeContext_, TypeDynamism::None);
+            Type t = parseType(typeContext_);
             return std::make_shared<ASTMetaTypeInstantiation>(t, token.position());
         }
         case E_BLACK_SQUARE_BUTTON: {
@@ -305,7 +305,7 @@ std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition 
     if (stream_.consumeTokenIf(TokenType::This)) {
         return std::make_shared<ASTThisType>(p);
     }
-    Type ot = parseType(typeContext_, TypeDynamism::AllKinds);
+    Type ot = parseType(typeContext_);
     switch (ot.type()) {
         case TypeType::GenericVariable:
             throw CompilerError(p, "Generic Arguments are not yet available for reflection.");
