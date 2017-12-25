@@ -178,17 +178,17 @@
   📗
     Returns an approximation of 𝜋.
   📗
-  🐇❗️ ⚾️ ➡️ 🚀 🍇
+  🐇❗️ 🥧 ➡️ 🚀 🍇
     ↩️ 3.14159265358979323846264338327950288
   🍉
   📗
-    Returns an approximation of 𝜏 which is equal to 𝜋/2.
+    Returns an approximation of 𝜋 divided by 2.
   📗
   🐇❗️ 🏉 ➡️ 🚀 🍇
     ↩️ 1.57079632679489661923132169163975144
   🍉
   📗
-    Returns an approximation of 𝜏/2 which is equal to 𝜋/4.
+    Returns an approximation of 𝜋 divided by 4.
   📗
   🐇❗️ 🎾 ➡️ 🚀 🍇
     ↩️ 0.785398163397448309615660845819875721
@@ -196,7 +196,7 @@
   📗
     Returns an approximation of ℇ (Euler’s number).
   📗
-  🐇❗️ 🏹 ➡️ 🚀 🍇
+  🐇❗️ 🛎 ➡️ 🚀 🍇
     ↩️ 2.71828182845904523536028747135266250
   🍉
 
