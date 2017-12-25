@@ -47,6 +47,7 @@ Lexer::Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::
     singleTokens_.emplace(E_WATERMELON, TokenType::BlockEnd);
     singleTokens_.emplace(E_NEW_SIGN, TokenType::New);
     singleTokens_.emplace(E_DOG, TokenType::This);
+    singleTokens_.emplace(E_BIOHAZARD, TokenType::Unsafe);
 }
 
 void Lexer::loadOperatorSingleTokens() {

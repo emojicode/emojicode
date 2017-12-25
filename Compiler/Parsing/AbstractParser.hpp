@@ -67,9 +67,10 @@ protected:
     template <typename T>
     void parseGenericParameters(Generic<T> *generic, const TypeContext &typeContext) {
         while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
+            bool rejectBoxing = stream_.consumeTokenIf(TokenType::Unsafe);
             auto &variable = stream_.consumeToken(TokenType::Variable);
             auto constraint = parseType(typeContext);
-            generic->addGenericArgument(variable.value(), constraint, variable.position());
+            generic->addGenericParameter(variable.value(), constraint, rejectBoxing, variable.position());
         }
     }
 

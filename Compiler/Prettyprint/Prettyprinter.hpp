@@ -88,7 +88,11 @@ private:
     template<typename T>
     void printGenericParameters(Generic<T> *generic) {
         for (auto &param : generic->parameters()) {
-            refuseOffer() << "🐚" << utf8(param.first) << " " << param.second;
+            refuseOffer() << "🐚";
+            if (param.rejectsBoxing) {
+                thisStream() << "☣️";
+            }
+            thisStream() << utf8(param.name) << " " << param.constraint;
             offerSpace();
         }
     }

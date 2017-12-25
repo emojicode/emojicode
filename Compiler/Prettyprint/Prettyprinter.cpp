@@ -286,6 +286,7 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
         stream_ << utf8(function->name()) << " ";
     }
 
+    printGenericParameters(function);
     printArguments(function);
     printReturnType(function);
     if (body && !interface_) {

@@ -55,6 +55,7 @@ enum class TokenType {
     ErrorHandler,
     New,
     This,
+    Unsafe,
 };
 
 class Token {

@@ -32,15 +32,15 @@ protected:
         IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
         IntegerRemainder, IntegerToDouble, IntegerNot,
         BooleanAnd, BooleanOr, BooleanNegate,
-        Equal,
+        Equal, Store, Load,
     };
 
     BuiltInType builtIn_ = BuiltInType::None;
     ASTArguments args_;
-    CallType callType_;
+    CallType callType_ = CallType::None;
     Type calleeType_ = Type::noReturn();
 private:
-    std::pair<bool, Type> builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name);
+    bool builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name);
 
     Type analyseMultiProtocolCall(SemanticAnalyser *analyser, const std::u32string &name, const Type &type);
 };

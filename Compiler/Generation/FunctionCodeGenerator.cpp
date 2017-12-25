@@ -21,6 +21,7 @@
 namespace EmojicodeCompiler {
 
 void FunctionCodeGenerator::generate() {
+    assert(fn_->llvmFunction() != nullptr);
     auto basicBlock = llvm::BasicBlock::Create(generator()->context(), "entry", fn_->llvmFunction());
     builder_.SetInsertPoint(basicBlock);
 

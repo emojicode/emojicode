@@ -38,13 +38,13 @@ Type::Type(Extension *extension)
 Type::Type(ValueType *valueType, bool optional)
 : typeContent_(TypeType::ValueType), typeDefinition_(valueType), optional_(optional), mutable_(false) {
     for (size_t i = 0; i < valueType->genericParameterCount(); i++) {
-        genericArguments_.emplace_back(false, i, valueType);
+        genericArguments_.emplace_back(false, i, valueType, true);
     }
 }
 
 Type::Type(Class *klass, bool optional) : typeContent_(TypeType::Class), typeDefinition_(klass), optional_(optional) {
     for (size_t i = 0; i < klass->genericParameterCount() + klass->superGenericArguments().size(); i++) {
-        genericArguments_.emplace_back(false, i, klass);
+        genericArguments_.emplace_back(false, i, klass, true);
     }
 }
 
@@ -362,23 +362,17 @@ StorageType Type::storageType() const {
 
 bool Type::requiresBox() const {
     switch (type()) {
-        case TypeType::ValueType:
-        case TypeType::Enum:
-        case TypeType::Callable:
-        case TypeType::Class:
-        case TypeType::Someobject:
-        case TypeType::NoReturn:
-        case TypeType::StorageExpectation:
-        case TypeType::Extension:
-            return false;
         case TypeType::Error:
             return genericArguments()[1].storageType() == StorageType::Box;
         case TypeType::Something:
-        case TypeType::GenericVariable:
-        case TypeType::LocalGenericVariable:
         case TypeType::Protocol:
         case TypeType::MultiProtocol:
             return true;
+        case TypeType::GenericVariable:
+        case TypeType::LocalGenericVariable:
+            return forceBox_;
+        default:
+            return false;
     }
 }
 

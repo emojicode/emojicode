@@ -45,10 +45,12 @@ llvm::Value* CodeGenerator::optionalNoValue() {
 }
 
 void CodeGenerator::declareLlvmFunction(Function *function) {
-    auto ft = typeHelper().functionTypeFor(function);
-    auto name = function->externalName().empty() ? mangleFunctionName(function) : function->externalName();
-    auto llvmFunction = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, module());
-    function->setLlvmFunction(llvmFunction);
+    if (!function->requiresReificationCopy()) {
+        auto ft = typeHelper().functionTypeFor(function);
+        auto name = function->externalName().empty() ? mangleFunctionName(function) : function->externalName();
+        auto llvmFunction = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, module());
+        function->setLlvmFunction(llvmFunction);
+    }
 }
 
 void CodeGenerator::generate(const std::string &outPath) {
@@ -120,7 +122,7 @@ void CodeGenerator::generateFunctions() {
 }
 
 void CodeGenerator::generateFunction(Function *function) {
-    if (!function->isExternal()) {
+    if (!function->isExternal() && !function->requiresReificationCopy()) {
         FunctionCodeGenerator(function, this).generate();
     }
 }

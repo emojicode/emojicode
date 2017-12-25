@@ -116,6 +116,7 @@ enum Emojis {
     E_GREEN_TEXTBOOK = 0x1F4D7,
     E_SCALES = 0x2696,
     E_BRAIN = 0x1F9E0,
+    E_BIOHAZARD = 0x2623,
 };
 
 }  // namespace EmojicodeCompiler

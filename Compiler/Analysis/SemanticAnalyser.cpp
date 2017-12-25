@@ -317,7 +317,7 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
                 if (protocol.protocol() == compiler()->sEnumeratable) {
-                    auto itemType = Type(false, 0, compiler()->sEnumeratable);
+                    auto itemType = Type(false, 0, compiler()->sEnumeratable, true);
                     *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
                     return true;
                 }
@@ -327,14 +327,14 @@ bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
     else if (type.canHaveProtocol() && !type.optional()) {
         for (auto &protocol : type.typeDefinition()->protocols()) {
             if (protocol.protocol() == compiler()->sEnumeratable) {
-                auto itemType = Type(   false, 0, compiler()->sEnumeratable);
+                auto itemType = Type(false, 0, compiler()->sEnumeratable, true);
                 *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
                 return true;
             }
         }
     }
     else if (type.type() == TypeType::Protocol && type.protocol() == compiler()->sEnumeratable) {
-        *elementType = Type(false, 0, type.protocol()).resolveOn(TypeContext(type));
+        *elementType = Type(false, 0, type.protocol(), true).resolveOn(TypeContext(type));
         return true;
     }
     return false;

@@ -19,12 +19,12 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
                                       std::shared_ptr<ASTExpr> &callee) {
     Type otype = callee->analyse(analyser, TypeExpectation());
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
-    auto pair = builtIn(analyser, type, name);
-    if (pair.first) {
+    if (builtIn(analyser, type, name)) {
         analyser->comply(otype, TypeExpectation(false, false), &callee);
-        return pair.second;
     }
-    calleeType_ = analyser->comply(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+    else {
+        calleeType_ = analyser->comply(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+    }
 
     if (type.type() == TypeType::MultiProtocol) {
         return analyseMultiProtocolCall(analyser, name, type);
@@ -37,7 +37,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
         if (method->mutating()) {
             if (!type.isMutable()) {
                 analyser->compiler()->error(CompilerError(position(), utf8(method->name()),
-                                                     " was marked 🖍 but callee is not mutable."));
+                                                          " was marked 🖍 but callee is not mutable."));
             }
             if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee)) {
                 analyser->scoper().currentScope().getLocalVariable(varNode->name()).mutate(position());
@@ -74,24 +74,34 @@ Type ASTMethodable::analyseMultiProtocolCall(SemanticAnalyser *analyser, const s
                         " provides a method called ", utf8(name), ".");
 }
 
-std::pair<bool, Type> ASTMethodable::builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name) {
+bool ASTMethodable::builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name) {
     if (type.typeDefinition() == analyser->compiler()->sBoolean) {
         if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
             builtIn_ = BuiltInType::BooleanNegate;
-            return std::make_pair(true, analyser->boolean());
+            return true;
         }
     }
     else if (type.typeDefinition() == analyser->compiler()->sInteger) {
         if (name.front() == E_ROCKET) {
             builtIn_ = BuiltInType::IntegerToDouble;
-            return std::make_pair(true, analyser->doubleType());
+            return true;
         }
         if (name.front() == E_NO_ENTRY_SIGN) {
             builtIn_ = BuiltInType::IntegerNot;
-            return std::make_pair(true, analyser->integer());
+            return true;
         }
     }
-    return std::make_pair(false, Type::noReturn());
+    else if (type.typeDefinition() == analyser->compiler()->sMemory) {
+        if (name.front() == 0x1F43D) {
+            builtIn_ = BuiltInType::Load;
+            return true;
+        }
+        if (name.front() == 0x1F437) {
+            builtIn_ = BuiltInType::Store;
+            return true;
+        }
+    }
+    return false;
 }
 
 Type ASTMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

@@ -63,6 +63,7 @@ class ASTArguments final : public ASTNode {
 public:
     explicit ASTArguments(const SourcePosition &p) : ASTNode(p) {}
     void addGenericArgument(const Type &type) { genericArguments_.emplace_back(type); }
+    const std::vector<Type>& genericArguments() const { return genericArguments_; }
     std::vector<Type>& genericArguments() { return genericArguments_; }
     void addArguments(const std::shared_ptr<ASTExpr> &arg) { arguments_.emplace_back(arg); }
     std::vector<std::shared_ptr<ASTExpr>>& arguments() { return arguments_; }

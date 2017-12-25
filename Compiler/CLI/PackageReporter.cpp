@@ -59,9 +59,9 @@ void reportGenericParameters(Generic<T> *generic, const TypeContext &tc) {
     for (auto &param : generic->parameters()) {
         printer.print();
         printf("{\"name\":");
-        jsonString(utf8(param.first), std::cout);
+        jsonString(utf8(param.name), std::cout);
         printf(",\"constraint\":");
-        reportType(param.second, tc);
+        reportType(param.constraint, tc);
         printf("}");
     }
 

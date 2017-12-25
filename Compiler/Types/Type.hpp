@@ -86,13 +86,13 @@ public:
     Type(ValueType *valueType, bool optional);
     explicit Type(Extension *extension);
     /// Creates a generic variable to the generic argument @c r.
-    Type(bool optional, size_t r, TypeDefinition *resolutionConstraint)
+    Type(bool optional, size_t r, TypeDefinition *resolutionConstraint, bool forceBox)
     : typeContent_(TypeType::GenericVariable), genericArgumentIndex_(r),
-      typeDefinition_(resolutionConstraint), optional_(optional) {}
+      typeDefinition_(resolutionConstraint), optional_(optional), forceBox_(forceBox) {}
     /// Creates a local generic variable (generic function) to the generic argument @c r.
-    Type(bool optional, size_t r, Function *function)
+    Type(bool optional, size_t r, Function *function, bool forceBox)
     : typeContent_(TypeType::LocalGenericVariable), genericArgumentIndex_(r),
-      localResolutionConstraint_(function), optional_(optional) {}
+      localResolutionConstraint_(function), optional_(optional), forceBox_(forceBox) {}
     Type(std::vector<Type> protocols, bool optional)
         : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)), optional_(optional) {
             sortMultiProtocolType();
@@ -183,17 +183,18 @@ public:
     bool meta() const { return meta_; }
     bool allowsMetaType() const;
 
+    /// @returns true if the type always requires a box to store important dynamic type information.
+    /// A protocol box, for instance, requires a box to store dynamic type information, while
+    /// class instances may, of course, be unboxed.
+    /// @note This method determines its return regardless of whether this instance represents a boxed value already.
+    bool requiresBox() const;
+
     /// Returns true if this represents a reference to (a) value(s) of the type represented by this instance.
     /// Values to which references point are normally located on the stack.
     bool isReference() const { return isReference_; }
     void setReference(bool v = true) { isReference_ = v; }
     /// Returns true if it makes sense to pass this value with the given storage type per reference to avoid copying.
     bool isReferencable() const;
-    /// Returns true if the type requires a box to store important dynamic type information.
-    /// A protocol box, for instance, requires a box to store dynamic type information, while
-    /// class instances may, of course, be unboxed.
-    /// @note This method determines its return regardless of whether this instance represents a boxed value.
-    bool requiresBox() const;
 
     bool isMutable() const { return mutable_; }
     void setMutable(bool b) { mutable_ = b; }
