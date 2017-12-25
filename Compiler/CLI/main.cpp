@@ -25,7 +25,7 @@ bool start(Options options) {
     }
 
     Compiler application(options.mainPackageName(), options.mainFile(), options.interfaceFile(), options.outPath(),
-                         options.linker(), options.packageSearchPaths(), options.applicationDelegate(),
+                         options.linker(), options.packageSearchPaths(), options.compilerDelegate(),
                          options.linkToExec());
 
     if (!options.migrationFile().empty()) {

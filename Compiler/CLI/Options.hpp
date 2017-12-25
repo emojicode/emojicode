@@ -31,8 +31,8 @@ public:
     /// This method must be used to print messages or errors about the command-line interface use.
     void printCliMessage(const std::string &message);
 
-    /// @returns An CompilerDelegate that matches the options represented by the instance.
-    std::unique_ptr<CompilerDelegate> applicationDelegate() const;
+    /// @returns A CompilerDelegate that matches the options represented by the instance.
+    std::unique_ptr<CompilerDelegate> compilerDelegate() const;
 
     const std::string& packageToReport() const { return packageToReport_; }
     const std::string& outPath() const { return outPath_; }

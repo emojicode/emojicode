@@ -122,17 +122,17 @@ public:
 
     void assignSTypes(Package *s, const SourcePosition &errorPosition);
 
-    Class *sString;
-    Class *sList;
-    Class *sError;
-    Class *sData;
-    Class *sDictionary;
-    Protocol *sEnumerator;
-    Protocol *sEnumeratable;
-    ValueType *sBoolean;
-    ValueType *sSymbol;
-    ValueType *sInteger;
-    ValueType *sDouble;
+    Class *sString = nullptr;
+    Class *sList = nullptr;
+    Class *sError = nullptr;
+    Class *sData = nullptr;
+    Class *sDictionary = nullptr;
+    Protocol *sEnumerator = nullptr;
+    Protocol *sEnumeratable = nullptr;
+    ValueType *sBoolean = nullptr;
+    ValueType *sSymbol = nullptr;
+    ValueType *sInteger = nullptr;
+    ValueType *sDouble = nullptr;
 private:
     void generateCode();
     void analyse();

@@ -50,6 +50,15 @@ private:
 
     bool isNewline() { return codePoint() == 0x0A || codePoint() == 0x2028 || codePoint() == 0x2029; }
 
+    /// @returns True if the code point is  a whitespace character.
+    /// See http://www.unicode.org/Public/6.3.0/ucd/PropList.txt
+    bool isWhitespace() {
+        return (0x9 <= codePoint() && codePoint() <= 0xD) || codePoint() == 0x20 || codePoint() == 0x85
+               || codePoint() == 0xA0 || codePoint() == 0x1680 || (0x2000 <= codePoint() && codePoint() <= 0x200A)
+               || codePoint() == 0x2028 || codePoint()== 0x2029 || codePoint() == 0x2029 || codePoint() == 0x202F
+               || codePoint() == 0x205F || codePoint() == 0x3000 || codePoint() == 0xFE0F;
+    }
+
     void nextChar();
     bool hasMoreChars() { return i_ < string_.size(); }
     void nextCharOrEnd();

@@ -56,19 +56,12 @@ Type AbstractParser::parseType(const TypeContext &typeContext) {
         throw CompilerError(stream_.consumeToken().position(), "⚫️ not allowed here.");
     }
     if (stream_.nextTokenIs(E_WHITE_SQUARE_BUTTON)) {
-        auto &token = stream_.consumeToken();
-        Type type = parseType(typeContext);
-        if (!type.allowsMetaType() || type.meta()) {
-            throw CompilerError(token.position(), "Meta type of ", type.toString(typeContext), " is restricted.");
-        }
-        type.setMeta(true);
-        return type;
+        return parseMetatype(typeContext);
     }
 
     bool optional = stream_.consumeTokenIf(E_CANDY);
 
-    if ((typeContext.calleeType().canHaveGenericArguments() || typeContext.function() != nullptr) &&
-        stream_.nextTokenIs(TokenType::Variable)) {
+    if (stream_.nextTokenIs(TokenType::Variable)) {
         return parseGenericVariable(optional, typeContext);
     }
     if (stream_.nextTokenIs(E_BENTO_BOX)) {
@@ -78,6 +71,16 @@ Type AbstractParser::parseType(const TypeContext &typeContext) {
         return parseErrorType(optional, typeContext);
     }
     return parseTypeMain(optional, typeContext);
+}
+
+Type AbstractParser::parseMetatype(const TypeContext &typeContext) {
+    auto &token = stream_.consumeToken();
+    Type type = parseType(typeContext);
+    if (!type.allowsMetaType() || type.meta()) {
+        throw CompilerError(token.position(), "Meta type of ", type.toString(typeContext), " is restricted.");
+    }
+    type.setMeta(true);
+    return type;
 }
 
 Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext) {

@@ -97,6 +97,8 @@ private:
     Type parseErrorType(bool optional, const TypeContext &typeContext);
     /// Parses a $type-main$
     Type parseTypeMain(bool optional, const TypeContext &typeContext);
+
+    Type parseMetatype(const TypeContext &typeContext);
 };
 
 }  // namespace EmojicodeCompiler

@@ -16,16 +16,6 @@
 
 namespace EmojicodeCompiler {
 
-#ifndef defaultPackagesDirectory
-#define defaultPackagesDirectory "/usr/local/EmojicodePackages"
-#endif
-
-/// @returns True if @c c is a whitespace character. See http://www.unicode.org/Public/6.3.0/ucd/PropList.txt
-inline bool isWhitespace(char32_t c) {
-    return (0x9 <= c && c <= 0xD) || c == 0x20 || c == 0x85 || c == 0xA0 || c == 0x1680 || (0x2000 <= c && c <= 0x200A)
-    || c == 0x2028 || c== 0x2029 || c == 0x2029 || c == 0x202F || c == 0x205F || c == 0x3000 || c == 0xFE0F;
-}
-
 inline std::string utf8(const std::u32string &s) {
     return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>().to_bytes(s);
 }

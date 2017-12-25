@@ -77,7 +77,7 @@ bool Lexer::detectWhitespace() {
         sourcePosition_.line++;
         return true;
     }
-    return isWhitespace(codePoint());
+    return isWhitespace();
 }
     
 TokenStream Lexer::lexFile(const std::string &path) {
@@ -268,7 +268,7 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
         case TokenType::Variable:
             // A variable can consist of everything except for whitespaces and identifiers (that is emojis)
             // isWhitespace used here because if it is whitespace, the detection will take place below
-            if (isWhitespace(codePoint()) || isEmoji(codePoint())) {
+            if (isWhitespace() || isEmoji(codePoint())) {
                 return TokenState::NextBegun;
             }
 

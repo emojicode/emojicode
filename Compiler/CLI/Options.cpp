@@ -19,6 +19,10 @@ namespace EmojicodeCompiler {
 
 namespace CLI {
 
+#ifndef defaultPackagesDirectory
+#define defaultPackagesDirectory "/usr/local/EmojicodePackages"
+#endif
+
 Options::Options(int argc, char *argv[]) {
     readEnvironment();
 
@@ -121,7 +125,7 @@ void Options::configureOutPath() {
     }
 }
 
-std::unique_ptr<CompilerDelegate> Options::applicationDelegate() const {
+std::unique_ptr<CompilerDelegate> Options::compilerDelegate() const {
     if (jsonOutput_) {
         return std::make_unique<JSONCompilerDelegate>();
     }
