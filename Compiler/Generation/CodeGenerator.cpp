@@ -151,7 +151,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
     }
 
     klass->eachFunction([&functions](Function *function) {
-        function->eachReification([&functions, function](auto &reification) {
+        function->eachReification([&functions](auto &reification) {
             reification.entity.setVti(functions.size());
             functions.emplace_back(reification.entity.function);
         });

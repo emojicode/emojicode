@@ -16,6 +16,7 @@
 #include <vector>
 #include <cassert>
 #include <functional>
+#include <algorithm>
 
 namespace EmojicodeCompiler {
 

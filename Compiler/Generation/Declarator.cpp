@@ -58,7 +58,7 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
         size_t vti = 0;
         klass->eachFunction([this, &vti](auto *function) {
             function->createUnspecificReification();
-            function->eachReification([&vti, function](auto &reification) {
+            function->eachReification([&vti](auto &reification) {
                 reification.entity.setVti(vti++);
             });
             declareLlvmFunction(function);
