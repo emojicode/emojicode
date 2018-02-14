@@ -171,6 +171,11 @@ void Prettyprinter::printTypeDefName(const Type &type) {
             stream_ << " ";
         }
     }
+    if (auto valueType = type.valueType()) {
+        if (valueType->isPrimitive()) {
+            thisStream() << "⚪️ ";
+        }
+    }
 }
 
 void Prettyprinter::printMethodsAndInitializers(TypeDefinition *typeDef) {
