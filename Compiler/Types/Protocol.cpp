@@ -16,10 +16,4 @@ Protocol::Protocol(std::u32string name, Package *pkg, const SourcePosition &p, c
                    bool exported)
     : TypeDefinition(std::move(name), pkg, p, string, exported) {}
 
-void Protocol::prepareForSemanticAnalysis() {
-    for (size_t i = 0; i < methodList().size(); i++) {
-        methodList()[i]->setVti(static_cast<int>(i));
-    }
-}
-
 }  // namespace EmojicodeCompiler

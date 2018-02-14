@@ -173,7 +173,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
     type->genericArguments_ = typeDef->superGenericArguments();
 
     size_t count = 0;
-    for (; stream_.nextTokenIs(E_SPIRAL_SHELL) && count < typeDef->genericParameterCount(); count++) {
+    for (; stream_.nextTokenIs(E_SPIRAL_SHELL) && count < typeDef->genericParameters().size(); count++) {
         auto &token = stream_.consumeToken(TokenType::Identifier);
 
         Type argument = parseType(typeContext);
@@ -185,9 +185,9 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
         type->genericArguments_.emplace_back(argument);
     }
 
-    if (count != typeDef->genericParameterCount()) {
+    if (count != typeDef->genericParameters().size()) {
         throw CompilerError(p, "Type ", type->toString(TypeContext()), " requires ",
-                            typeDef->genericParameterCount(), " generic arguments, but ", count, " were given.");
+                            typeDef->genericParameters().size(), " generic arguments, but ", count, " were given.");
     }
 }
 

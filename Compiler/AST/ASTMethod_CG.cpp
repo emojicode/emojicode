@@ -39,7 +39,7 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
         }
     }
 
-    return CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_,  args_, name_);
+    return CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_, args_, name_);
 }
     
 }  // namespace EmojicodeCompiler

@@ -93,8 +93,8 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTTypeMethod::generate(FunctionCodeGenerator *fg) const {
     auto ctype = valueType_ ? CallType::StaticContextfreeDispatch : CallType::DynamicDispatch;
-    return TypeMethodCallCodeGenerator(fg, ctype).generate(callee_->generate(fg), callee_->expressionType(),
-                                                             args_, name_);
+    return TypeMethodCallCodeGenerator(fg, ctype).generate(callee_->generate(fg), callee_->expressionType(), args_,
+                                                           name_);
 }
 
 Value* ASTSuperMethod::generate(FunctionCodeGenerator *fg) const {

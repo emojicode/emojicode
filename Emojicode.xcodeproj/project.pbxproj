@@ -10,6 +10,8 @@
 		E400909C1F515D80003F62FE /* RecordingPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E400909A1F515D80003F62FE /* RecordingPackage.cpp */; };
 		E400909D1F516E80003F62FE /* Package.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E40090981F515CAA003F62FE /* Package.cpp */; };
 		E426870E1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E426870C1F5AD49500B96A62 /* ProtocolTypeBodyParser.cpp */; };
+		E43D4867202B7C8200E634BA /* ProtocolsTableGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E43D4864202B7C8200E634BA /* ProtocolsTableGenerator.cpp */; };
+		E43D4868202B7C8200E634BA /* Declarator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E43D4865202B7C8200E634BA /* Declarator.cpp */; };
 		E4431D651F4C4B7000D68379 /* Initializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D631F4C4B7000D68379 /* Initializer.cpp */; };
 		E4431D741F4E17B100D68379 /* ASTToCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4431D731F4E17B000D68379 /* ASTToCode.cpp */; };
 		E45AF99B1F5035F00077E343 /* JSONCompilerDelegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E45AF9991F5035F00077E343 /* JSONCompilerDelegate.cpp */; };
@@ -45,7 +47,6 @@
 		E460A5C01F30EFA2006E3AC7 /* FunctionType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5901F30EFA2006E3AC7 /* FunctionType.cpp */; };
 		E460A5C21F30EFA2006E3AC7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5941F30EFA2006E3AC7 /* main.cpp */; };
 		E460A5C31F30EFA2006E3AC7 /* PackageReporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E460A5951F30EFA2006E3AC7 /* PackageReporter.cpp */; };
-		E47838D71F41EA4D007B937C /* ProtocolFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47838D51F41EA4D007B937C /* ProtocolFunction.cpp */; };
 		E47838DA1F41F9A6007B937C /* BoxingLayerBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47838D81F41F9A6007B937C /* BoxingLayerBuilder.cpp */; };
 		E47891091F4EEA3A008DCB24 /* TypeBodyParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E47891071F4EEA3A008DCB24 /* TypeBodyParser.cpp */; };
 		E478910C1F4EFD9C008DCB24 /* AttributesParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E478910A1F4EFD9C008DCB24 /* AttributesParser.cpp */; };
@@ -119,6 +120,10 @@
 		E426870D1F5AD49500B96A62 /* ProtocolTypeBodyParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProtocolTypeBodyParser.hpp; sourceTree = "<group>"; };
 		E4321ADD1F6801250028049A /* utf8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		E4321ADE1F6801250028049A /* utf8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
+		E43D4863202B7C8200E634BA /* Declarator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Declarator.hpp; sourceTree = "<group>"; };
+		E43D4864202B7C8200E634BA /* ProtocolsTableGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProtocolsTableGenerator.cpp; sourceTree = "<group>"; };
+		E43D4865202B7C8200E634BA /* Declarator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Declarator.cpp; sourceTree = "<group>"; };
+		E43D4866202B7C8200E634BA /* ProtocolsTableGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ProtocolsTableGenerator.hpp; sourceTree = "<group>"; };
 		E4431D631F4C4B7000D68379 /* Initializer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializer.cpp; sourceTree = "<group>"; };
 		E4431D641F4C4B7000D68379 /* Initializer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Initializer.hpp; sourceTree = "<group>"; };
 		E4431D661F4C504200D68379 /* .clang-tidy */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-tidy"; sourceTree = "<group>"; };
@@ -198,8 +203,6 @@
 		E460A5951F30EFA2006E3AC7 /* PackageReporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PackageReporter.cpp; sourceTree = "<group>"; };
 		E460A5961F30EFA2006E3AC7 /* PackageReporter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PackageReporter.hpp; sourceTree = "<group>"; };
 		E46C49701E633633003C40E5 /* tests.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = tests.py; sourceTree = "<group>"; };
-		E47838D51F41EA4D007B937C /* ProtocolFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProtocolFunction.cpp; sourceTree = "<group>"; };
-		E47838D61F41EA4D007B937C /* ProtocolFunction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ProtocolFunction.hpp; sourceTree = "<group>"; };
 		E47838D81F41F9A6007B937C /* BoxingLayerBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxingLayerBuilder.cpp; sourceTree = "<group>"; };
 		E47838D91F41F9A6007B937C /* BoxingLayerBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BoxingLayerBuilder.hpp; sourceTree = "<group>"; };
 		E47891071F4EEA3A008DCB24 /* TypeBodyParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypeBodyParser.cpp; sourceTree = "<group>"; };
@@ -369,6 +372,10 @@
 		E460A53F1F30EFA2006E3AC7 /* Generation */ = {
 			isa = PBXGroup;
 			children = (
+				E43D4865202B7C8200E634BA /* Declarator.cpp */,
+				E43D4863202B7C8200E634BA /* Declarator.hpp */,
+				E43D4864202B7C8200E634BA /* ProtocolsTableGenerator.cpp */,
+				E43D4866202B7C8200E634BA /* ProtocolsTableGenerator.hpp */,
 				E460A5401F30EFA2006E3AC7 /* CodeGenerator.cpp */,
 				E460A5411F30EFA2006E3AC7 /* CodeGenerator.hpp */,
 				E460A5431F30EFA2006E3AC7 /* FunctionCodeGenerator.hpp */,
@@ -490,8 +497,6 @@
 				E460A58F1F30EFA2006E3AC7 /* Function.hpp */,
 				E4431D631F4C4B7000D68379 /* Initializer.cpp */,
 				E4431D641F4C4B7000D68379 /* Initializer.hpp */,
-				E47838D61F41EA4D007B937C /* ProtocolFunction.hpp */,
-				E47838D51F41EA4D007B937C /* ProtocolFunction.cpp */,
 				E460A5901F30EFA2006E3AC7 /* FunctionType.cpp */,
 				E460A5911F30EFA2006E3AC7 /* FunctionType.hpp */,
 				E4DB9B6B1F5D544100B566DD /* CallType.h */,
@@ -723,6 +728,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E43D4867202B7C8200E634BA /* ProtocolsTableGenerator.cpp in Sources */,
 				E48356B71F389144000B80AE /* ASTInitialization.cpp in Sources */,
 				E460A5A61F30EFA2006E3AC7 /* ASTNode.cpp in Sources */,
 				E460A5A11F30EFA2006E3AC7 /* EmojiTokenization.cpp in Sources */,
@@ -738,6 +744,7 @@
 				E4DB9B641F5C24F800B566DD /* ASTInitialization_CG.cpp in Sources */,
 				E4DB9B631F5C24F800B566DD /* ASTLiterals_CG.cpp in Sources */,
 				E460A5B71F30EFA2006E3AC7 /* TypeAvailability.cpp in Sources */,
+				E43D4868202B7C8200E634BA /* Declarator.cpp in Sources */,
 				E460A5AA1F30EFA2006E3AC7 /* DocumentParser.cpp in Sources */,
 				E460A5A31F30EFA2006E3AC7 /* Token.cpp in Sources */,
 				E48356981F34CDBB000B80AE /* ASTTypeExpr.cpp in Sources */,
@@ -748,7 +755,6 @@
 				E4DB9B681F5C24F800B566DD /* ASTBoxing_CG.cpp in Sources */,
 				E48356AD1F361F61000B80AE /* CallCodeGenerator.cpp in Sources */,
 				E49E6D181F4ABF2500B819CA /* ClosureCodeGenerator.cpp in Sources */,
-				E47838D71F41EA4D007B937C /* ProtocolFunction.cpp in Sources */,
 				E4DB9B871F6014A300B566DD /* LLVMTypeHelper.cpp in Sources */,
 				E483569F1F34D8BE000B80AE /* ASTBinaryOperator.cpp in Sources */,
 				E460A5BB1F30EFA2006E3AC7 /* TypeExpectation.cpp in Sources */,
@@ -827,10 +833,10 @@
 			buildSettings = {
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/5.0.0/include;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/5.0.1/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/llvm/5.0.0/lib,
+					/usr/local/Cellar/llvm/5.0.1/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -980,10 +986,10 @@
 				CLANG_DEBUG_INFORMATION_LEVEL = default;
 				COPY_PHASE_STRIP = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/5.0.0/include;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/llvm/5.0.1/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/llvm/5.0.0/lib,
+					/usr/local/Cellar/llvm/5.0.1/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",

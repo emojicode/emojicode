@@ -23,10 +23,9 @@ class Compiler;
 class FunctionCodeGenerator {
 public:
     /// Constructs a FunctionCodeGenerator.
-    /// @param function The function whose code shall be generated.
-    ///                 The function must have a value for Function::llvmFunction().
-    FunctionCodeGenerator(Function *function, CodeGenerator *generator)
-    : fn_(function), scoper_(function->variableCount()),  generator_(generator), builder_(generator->context()) {}
+    FunctionCodeGenerator(Function *function, llvm::Function *llvmFunc, CodeGenerator *generator)
+    : fn_(function), function_(llvmFunc), scoper_(function->variableCount()),
+      generator_(generator), builder_(generator->context()) {}
     void generate();
 
     CGScoper& scoper() { return scoper_; }
@@ -34,7 +33,7 @@ public:
     CodeGenerator* generator() const { return generator_; }
     llvm::IRBuilder<>& builder() { return builder_; }
     LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }
-    virtual llvm::Value* thisValue() const { return &*fn_->llvmFunction()->args().begin(); }
+    virtual llvm::Value* thisValue() const { return &*function_->args().begin(); }
 
     /// @returns The number of bytes an instance of @c type takes up in memory.
     /// @see sizeOfReferencedType
@@ -76,10 +75,11 @@ protected:
     virtual void declareArguments(llvm::Function *function);
     Function* function() const { return fn_; }
 private:
-    Function *fn_;
+    Function *const fn_;
+    llvm::Function *const function_;
     CGScoper scoper_;
 
-    CodeGenerator *generator_;
+    CodeGenerator *const generator_;
     llvm::IRBuilder<> builder_;
 };
 

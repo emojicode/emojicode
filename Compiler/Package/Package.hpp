@@ -90,7 +90,7 @@ public:
     /// If the compatibility mode is on the, the parsers will try to parse Emojicode 0.5 syntax.
     /// If this is true, a MigArgs object is provided.
     /// @returns Whether the compatiblity mode is on.
-    bool compatibilityMode() { return compatibilityInfoProvider_ != nullptr; }
+    bool compatibilityMode() const { return compatibilityInfoProvider_ != nullptr; }
     CompatibilityInfoProvider* compatibilityInfoProvider() { return compatibilityInfoProvider_; }
     void setCompatiblityInfoProvider(CompatibilityInfoProvider *cac) { compatibilityInfoProvider_ = cac; }
 

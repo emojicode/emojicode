@@ -85,9 +85,9 @@ private:
     void printEnumValues(Enum *enumeration);
     void printProtocolConformances(TypeDefinition *typeDef, const TypeContext &typeContext);
     void printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext);
-    template<typename T>
-    void printGenericParameters(Generic<T> *generic) {
-        for (auto &param : generic->parameters()) {
+    template<typename T, typename E>
+    void printGenericParameters(Generic<T, E> *generic) {
+        for (auto &param : generic->genericParameters()) {
             refuseOffer() << "🐚";
             if (param.rejectsBoxing) {
                 thisStream() << "☣️";

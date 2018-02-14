@@ -51,12 +51,12 @@ void reportType(const Type &type, const TypeContext &tc) {
            type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
 }
 
-template <typename T>
-void reportGenericParameters(Generic<T> *generic, const TypeContext &tc) {
+template <typename T, typename E>
+void reportGenericParameters(Generic<T, E> *generic, const TypeContext &tc) {
     printf("\"genericArguments\":[");
 
     CommaPrinter printer;
-    for (auto &param : generic->parameters()) {
+    for (auto &param : generic->genericParameters()) {
         printer.print();
         printf("{\"name\":");
         jsonString(utf8(param.name), std::cout);

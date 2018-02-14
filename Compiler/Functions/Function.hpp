@@ -41,9 +41,22 @@ struct Argument {
     Type type;
 };
 
-/** Functions are callables that belong to a class or value type as either method, type method or initializer. */
-class Function : public Generic<Function> {
+class FunctionReification {
 public:
+    llvm::Function *function;
+    unsigned int vti() { return vti_; }
+    void setVti(unsigned int vti) { vti_ = vti; }
+    llvm::FunctionType* functionType();
+    void setFunctionType(llvm::FunctionType *type) { functionType_ = type; }
+private:
+    llvm::FunctionType* functionType_;
+    unsigned int vti_ = 0;
+};
+
+/** Functions are callables that belong to a class or value type as either method, type method or initializer. */
+class Function : public Generic<Function, FunctionReification> {
+public:
+    Function() = delete;
     Function(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
              FunctionType type)
@@ -73,6 +86,8 @@ public:
     bool deprecated() const { return deprecated_; }
 
     bool isImperative() const { return imperative_; }
+    /// Whether the function mutates the callee. Only relevant for value type instance methods.
+    bool mutating() const { return mutating_; }
 
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
@@ -107,14 +122,9 @@ public:
     bool enforcePromises(Function *super, const TypeContext &typeContext, const Type &superSource,
                          std::experimental::optional<TypeContext> protocol);
 
-    void registerOverrider(Function *f) { overriders_.push_back(f); }
-
-    /// @returns True iff the function was assigned a virtual table index.
-    bool hasVti() const { return vti_ > -1; }
-    /// Sets the VTI to the given value.
-    void setVti(int vti);
-    /// Returns the VTI this function was assigned.
-    int vti() const;
+    /// Use this method to make a function a *heir* of this function, i.e. the heir function is guaranteed to have the
+    /// same VTI’s for its reifications as this one and to be reified for all requests this function was.
+    void appointHeir(Function *f) { tablePlaceHeirs_.push_back(f); }
 
     TypeContext typeContext() {
         auto type = owningType();
@@ -124,28 +134,20 @@ public:
         return TypeContext(type, this);
     }
 
-    /// Whether the function mutates the callee. Only relevant for value type instance methods.
-    bool mutating() const { return mutating_; }
-
     FunctionType functionType() const { return functionType_; }
 
     void setAst(const std::shared_ptr<ASTBlock> &ast) { ast_ = ast; }
     const std::shared_ptr<ASTBlock>& ast() const { return ast_; }
 
-    llvm::Function* llvmFunction() const { return llvmFunction_; }
-    virtual llvm::FunctionType* llvmFunctionType() const;
-    void setLlvmFunction(llvm::Function *lf) { llvmFunction_ = lf; }
-
     size_t variableCount() const { return variableCount_; }
     void setVariableCount(size_t variableCount) { variableCount_ = variableCount; }
-protected:
-    std::vector<Function*> overriders_;
-    bool used_ = false;
+
+    virtual ~Function() = default;
 private:
     std::shared_ptr<ASTBlock> ast_;
     SourcePosition position_;
     std::u32string name_;
-    int vti_ = -1;
+    std::vector<Function*> tablePlaceHeirs_;
 
     bool final_;
     bool overriding_;
@@ -162,8 +164,6 @@ private:
     std::u32string documentation_;
     FunctionType functionType_;
     size_t variableCount_ = 0;
-
-    llvm::Function *llvmFunction_ = nullptr;
 };
 
 }  // namespace EmojicodeCompiler

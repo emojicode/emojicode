@@ -164,13 +164,14 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
         expectType(function->arguments[i].type.resolveOn(typeContext), &node->arguments()[i]);
     }
     function->deprecatedWarning(node->position());
+    function->requestReification(node->genericArguments());
     validateAccessLevel(function, node->position());
     return function->returnType.resolveOn(typeContext);
 }
 
 void SemanticAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
-    if (node->genericArguments().empty() && function->genericParameterCount() > 0) {
-        std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameterCount(), CommonTypeFinder());
+    if (node->genericArguments().empty() && !function->genericParameters().empty()) {
+        std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameters().size(), CommonTypeFinder());
         TypeContext typeContext = TypeContext(type, function, nullptr);
         size_t i = 0;
         for (auto arg : function->arguments) {
@@ -180,7 +181,7 @@ void SemanticAnalyser::ensureGenericArguments(ASTArguments *node, const Type &ty
             node->genericArguments().emplace_back(finder.getCommonType(node->position(), compiler()));
         }
     }
-    else if (node->genericArguments().size() != function->genericParameterCount()) {
+    else if (node->genericArguments().size() != function->genericParameters().size()) {
         throw CompilerError(node->position(), "Too few generic arguments provided.");
     }
 }

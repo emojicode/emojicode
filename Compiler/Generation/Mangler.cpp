@@ -49,6 +49,13 @@ void mangleTypeName(std::stringstream &stream, const Type &type) {
     mangleIdentifier(stream, type.typeDefinition()->name());
 }
 
+void mangleGenericArguments(std::stringstream &stream, const std::map<size_t, Type> &genericArgs) {
+    for (auto &pair : genericArgs) {
+        stream << '$' << pair.first << '_';
+        mangleTypeName(stream, pair.second);
+    }
+}
+
 std::string mangleClassMetaName(Class *klass) {
     std::stringstream stream;
     stream << klass->package()->name() << "_class_meta_";
@@ -66,7 +73,7 @@ std::string mangleValueTypeMetaName(const Type &type) {
     return stream.str();
 }
 
-std::string mangleFunctionName(Function *function) {
+std::string mangleFunction(Function *function, const std::map<size_t, Type> &genericArgs) {
     std::stringstream stream;
     if (function->owningType().type() != TypeType::NoReturn) {
         mangleTypeName(stream, function->owningType());
@@ -83,6 +90,7 @@ std::string mangleFunctionName(Function *function) {
     if (!function->isImperative()) {
         stream << "_intrg";
     }
+    mangleGenericArguments(stream, genericArgs);
     return stream.str();
 }
 

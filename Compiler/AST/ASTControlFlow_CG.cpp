@@ -91,8 +91,8 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
 
 void ASTForIn::generate(FunctionCodeGenerator *fg) const {
     auto callg = CallCodeGenerator(fg, CallType::DynamicProtocolDispatch);
-    auto iterator = callg.generate(iteratee_->generate(fg), iteratee_->expressionType(),
-                                   ASTArguments(position()), std::u32string(1, E_DANGO));
+    auto iterator = callg.generate(iteratee_->generate(fg), iteratee_->expressionType(), ASTArguments(position()),
+                                   std::u32string(1, E_DANGO));
     auto iteratorPtr = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(iteratee_->expressionType()));
     fg->builder().CreateStore(iterator, iteratorPtr);
 

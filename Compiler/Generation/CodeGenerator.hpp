@@ -15,6 +15,8 @@
 #include <string>
 #include "LLVMTypeHelper.hpp"
 #include "StringPool.hpp"
+#include "Declarator.hpp"
+#include "ProtocolsTableGenerator.hpp"
 #include <memory>
 #include <vector>
 
@@ -35,6 +37,7 @@ public:
 
     LLVMTypeHelper& typeHelper() { return typeHelper_; }
     StringPool& stringPool() { return pool_; }
+    Declarator& declarator() { return declarator_; }
 
     /// Returns the package for which this code generator was created.
     Package* package() const { return package_; }
@@ -45,49 +48,28 @@ public:
 
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();
-    llvm::GlobalVariable* classValueTypeMeta() { return classValueTypeMeta_; }
 
     llvm::GlobalVariable* valueTypeMetaFor(const Type &type);
-
-    llvm::Function* runTimeNew() const { return runTimeNew_; }
-    llvm::Function* errNoValue() const { return errNoValue_; }
-
-    void declareLlvmFunction(Function *function);
 private:
-    Package *package_;
+    Package *const package_;
     llvm::LLVMContext context_;
     std::unique_ptr<llvm::Module> module_;
 
     std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
 
-    llvm::Function *runTimeNew_;
-    llvm::Function *errNoValue_;
-    llvm::GlobalVariable *classValueTypeMeta_;
     LLVMTypeHelper typeHelper_;
     StringPool pool_ = StringPool(this);
-
-    struct ProtocolVirtualTables {
-        ProtocolVirtualTables(std::vector<llvm::Constant *> tables, size_t max, size_t min)
-        : tables(std::move(tables)), min(min), max(max) {}
-        std::vector<llvm::Constant *> tables;
-        size_t min;
-        size_t max;
-    };
+    Declarator declarator_;
+    ProtocolsTableGenerator protocolsTableGenerator_;
 
     void setUpPassManager();
     void emit(const std::string &outPath);
     void generateFunctions();
-    void declarePackageSymbols();
-    void declareRunTime();
-    void declareImportedPackageSymbols(Package *package);
+
     void generateFunction(Function *function);
     void createClassInfo(Class *klass);
-    void declareImportedClassMeta(Class *klass);
-    void createProtocolsTable(TypeDefinition *typeDef);
+
     void createProtocolFunctionTypes(Protocol *protocol);
-    llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
-    ProtocolVirtualTables createProtocolVirtualTables(TypeDefinition *typeDef);
-    llvm::GlobalVariable* createProtocolVirtualTable(TypeDefinition *typeDef, Protocol *protocol);
 };
 
 }  // namespace EmojicodeCompiler

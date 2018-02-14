@@ -37,13 +37,13 @@ Type::Type(Extension *extension)
 
 Type::Type(ValueType *valueType, bool optional)
 : typeContent_(TypeType::ValueType), typeDefinition_(valueType), optional_(optional), mutable_(false) {
-    for (size_t i = 0; i < valueType->genericParameterCount(); i++) {
+    for (size_t i = 0; i < valueType->genericParameters().size(); i++) {
         genericArguments_.emplace_back(false, i, valueType, true);
     }
 }
 
 Type::Type(Class *klass, bool optional) : typeContent_(TypeType::Class), typeDefinition_(klass), optional_(optional) {
-    for (size_t i = 0; i < klass->genericParameterCount() + klass->superGenericArguments().size(); i++) {
+    for (size_t i = 0; i < klass->genericParameters().size() + klass->superGenericArguments().size(); i++) {
         genericArguments_.emplace_back(false, i, klass, true);
     }
 }

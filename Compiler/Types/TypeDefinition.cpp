@@ -166,6 +166,7 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
                                     utf8(method->name()), "is missing.");
             }
 
+            clm->createUnspecificReification();
             if (!clm->enforcePromises(method, TypeContext(type), protocol, TypeContext(protocol))) {
                 auto arguments = std::vector<Argument>();
                 arguments.reserve(method->arguments.size());
@@ -179,11 +180,11 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
                 if (enqueBoxingLayers) {
                     package_->compiler()->analysisQueue.emplace(bl.get());
                 }
-                method->registerOverrider(bl.get());
+                method->appointHeir(bl.get());
                 addMethod(std::move(bl));
             }
             else {
-                method->registerOverrider(clm);
+                method->appointHeir(clm);
             }
         }
         catch (CompilerError &ce) {

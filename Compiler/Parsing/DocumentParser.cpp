@@ -10,7 +10,6 @@
 #include "FunctionParser.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
-#include "Functions/ProtocolFunction.hpp"
 #include "ProtocolTypeBodyParser.hpp"
 #include "TypeBodyParser.hpp"
 #include "Types/Class.hpp"

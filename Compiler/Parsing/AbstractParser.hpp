@@ -64,8 +64,8 @@ protected:
     /// Reads a $type$ and fetches it
     Type parseType(const TypeContext &typeContext);
     /// Parses $generic-parameters$
-    template <typename T>
-    void parseGenericParameters(Generic<T> *generic, const TypeContext &typeContext) {
+    template <typename T, typename E>
+    void parseGenericParameters(Generic<T, E> *generic, const TypeContext &typeContext) {
         while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
             bool rejectBoxing = stream_.consumeTokenIf(TokenType::Unsafe);
             auto &variable = stream_.consumeToken(TokenType::Variable);

@@ -14,7 +14,7 @@
 
 namespace EmojicodeCompiler {
 
-class Initializer : public Function {
+class Initializer final : public Function {
 public:
     Initializer(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, std::u32string documentationToken, bool deprecated, bool r,

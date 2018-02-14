@@ -8,20 +8,18 @@
 
 #include "ASTClosure.hpp"
 #include "Generation/ClosureCodeGenerator.hpp"
-#include "Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
 Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
-    fg->generator()->declareLlvmFunction(closure_.get());
+    fg->generator()->declarator().declareLlvmFunction(closure_.get());
 
     auto closureGenerator = ClosureCodeGenerator(captures_, closure_.get(), fg->generator());
     closureGenerator.generate();
 
     auto capturesType = fg->generator()->typeHelper().llvmTypeForClosureCaptures(captures_);
-    auto alloc = fg->builder().CreateCall(fg->generator()->runTimeNew(), fg->sizeOf(capturesType));
+    auto alloc = fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(), fg->sizeOf(capturesType));
     auto captures = fg->builder().CreateBitCast(alloc, capturesType->getPointerTo());
-
 
     auto i = 0;
     for (auto &capture : captures_) {
@@ -40,7 +38,8 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     auto *structType = llvm::dyn_cast<llvm::StructType>(fg->generator()->typeHelper().llvmTypeFor(expressionType()));
 
 
-    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(structType), closure_->llvmFunction(), 0);
+    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(structType),
+                                                    closure_->unspecificReification().function, 0);
     return fg->builder().CreateInsertValue(callable, alloc, 1);
 }
 

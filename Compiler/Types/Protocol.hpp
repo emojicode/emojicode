@@ -19,8 +19,6 @@ class Protocol : public TypeDefinition {
 public:
     Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string, bool exported);
 
-    void prepareForSemanticAnalysis() override;
-
     size_t index() { return index_; }
     void setIndex(size_t index) { index_ = index; }
 

@@ -14,6 +14,8 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <cassert>
+#include <functional>
 
 namespace EmojicodeCompiler {
 
@@ -27,9 +29,14 @@ struct GenericParameter {
     bool rejectsBoxing;
 };
 
-template <typename T>
+template <typename T, typename Entity>
 class Generic {
 public:
+    struct Reification {
+        Entity entity;
+        std::map<size_t, Type> arguments;
+    };
+
     /**
      * Tries to fetch the type reference type for the given generic variable name and stores it into @c type.
      * @returns Whether the variable could be found or not. @c type is untouched if @c false was returned.
@@ -45,13 +52,6 @@ public:
             return true;
         }
         return false;
-    }
-
-
-    bool requiresReificationCopy() const {
-        return std::any_of(genericParameters_.begin(), genericParameters_.end(), [](const GenericParameter &param) {
-            return param.rejectsBoxing;
-        });
     }
 
     /// Adds a new generic argument to the end of the list.
@@ -70,6 +70,44 @@ public:
         parameterVariables_.emplace(variableName, parameterVariables_.size());
     }
 
+    void requestReification(const std::vector<Type> &arguments) {
+        if (reifications_.find(arguments) != reifications_.end()) {
+            return;
+        }
+        auto &reification = reifications_[arguments] = Reification();
+        for (size_t i = 0; i < genericParameters_.size(); i++) {
+            if (genericParameters_[i].rejectsBoxing) {
+                reification.arguments.emplace(i + offset_, arguments[i]);
+            }
+        }
+    }
+
+    Entity& reificationFor(const std::vector<Type> &arguments) {
+        return reifications_.find(arguments)->second.entity;
+    }
+    /// @returns Any reification of this instance.
+    /// @note This method is intended to be used when there is only ever one possible reification of an instance.
+    Entity& unspecificReification() {
+        assert(!reifications_.empty());
+        return reifications_.begin()->second.entity;
+    }
+
+    /// Creates an unspecific reification if no reification was requested yet.
+    /// @note This method asserts that there is only one reification as this method
+    /// should only be called in combination with unspecificReification()
+    void createUnspecificReification() {
+        if (reifications_.empty()) {
+            reifications_.emplace();
+        }
+        assert(reifications_.size() == 1);
+    }
+
+    bool requiresCopyReification() const {
+        return std::any_of(genericParameters_.begin(), genericParameters_.end(), [](auto &param) {
+            return param.rejectsBoxing;
+        });
+    }
+
     /// Returns the type constraint of the generic parameter at the index.
     /// @pre The index must be greater than the offset passed to offsetIndicesBy() (e.g. the number of super generic
     /// arguments for a TypeDefinition) if applicable.
@@ -83,12 +121,17 @@ public:
         return genericParameters_[index - offset_].name;
     }
 
-    /// The number of generic parameters defined.
-    size_t genericParameterCount() const { return genericParameters_.size(); }
-
     /// @returns A vector with pairs of std::u32string and Type. These represent the generic parameter name and the
     /// the type constraint.
-    const std::vector<GenericParameter>& parameters() const { return genericParameters_; }
+    const std::vector<GenericParameter>& genericParameters() const { return genericParameters_; }
+
+    void eachReification(const std::function<void (Reification&)> &callback) {
+        for (auto &reification : reifications_) {
+            callback(reification.second);
+        }
+    }
+
+    const std::map<std::vector<Type>, Reification>& reificationMap() const { return reifications_; }
 protected:
     /// Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset.
     void offsetIndicesBy(size_t offset) {
@@ -103,6 +146,8 @@ private:
     std::vector<GenericParameter> genericParameters_;
     /** Generic type arguments as variables */
     std::map<std::u32string, size_t> parameterVariables_;
+
+    std::map<std::vector<Type>, Reification> reifications_;
 
     size_t offset_ = 0;
 };

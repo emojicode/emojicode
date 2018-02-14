@@ -51,9 +51,6 @@ void Class::prepareForSemanticAnalysis() {
                 return;
             }
         }
-        if (!function->hasVti()) {
-            function->setVti(virtualTableIndex_++);
-        }
     });
 }
 
@@ -82,8 +79,6 @@ void Class::inherit() {
             checkOverride(function);
         }
     });
-
-    virtualTableIndex_ = superclass()->virtualTableIndex_;
 }
 
 void Class::checkOverride(Function *function) {
@@ -95,8 +90,7 @@ void Class::checkOverride(Function *function) {
         }
         function->enforcePromises(superFunction, TypeContext(Type(this, false)), Type(superclass(), false),
                                   std::experimental::nullopt);
-        function->setVti(superFunction->vti());
-        superFunction->registerOverrider(function);
+        superFunction->appointHeir(function);
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
         throw CompilerError(function->position(), "If you want to override ", utf8(function->name()), " add ✒️.");
@@ -106,8 +100,7 @@ void Class::checkOverride(Function *function) {
 void Class::checkInheritedRequiredInit(Initializer *initializer) {
     auto superInit = findSuperFunction(initializer);
     if (initializer->required() && superInit != nullptr && superInit->required()) {
-        initializer->setVti(superInit->vti());
-        superInit->registerOverrider(initializer);
+        superInit->appointHeir(initializer);
     }
 }
 

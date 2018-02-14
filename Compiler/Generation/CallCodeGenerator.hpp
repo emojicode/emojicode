@@ -31,15 +31,16 @@ public:
                           const std::u32string &name);
 protected:
     virtual Function *lookupFunction(const Type &type, const std::u32string &name, bool imperative);
-    llvm::Value* createCall(const std::vector<llvm::Value *> &args, const Type &type, const std::u32string &name,
-                            bool imperative);
+    llvm::Value *createCall(const std::vector<llvm::Value *> &args, const Type &type, const std::u32string &name,
+                            bool imperative, const std::vector<Type> &genericArguments);
     FunctionCodeGenerator* fg() const { return fg_; }
 private:
-    llvm::Value* createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args);
-    llvm::Value* createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
-                                               const Type &calleeType);
-    llvm::Value* dispatchFromVirtualTable(Function *function, llvm::Value *virtualTable,
-                                          const std::vector<llvm::Value *> &args);
+    llvm::Value *createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args, const std::vector<Type> &genericArgs);
+    llvm::Value *createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args, const Type &calleeType,
+                                                   const std::vector<Type> &genericArgs);
+    llvm::Value *dispatchFromVirtualTable(Function *function, llvm::Value *virtualTable,
+                                              const std::vector<llvm::Value *> &args,
+                                              const std::vector<Type> &genericArguments);
     FunctionCodeGenerator *fg_;
     CallType callType_;
 };

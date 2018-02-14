@@ -17,6 +17,14 @@
 
 namespace EmojicodeCompiler {
 
+llvm::FunctionType* FunctionReification::functionType() {
+    if (functionType_ != nullptr) {
+        return functionType_;
+    }
+    assert(function != nullptr);
+    return function->getFunctionType();
+}
+
 bool Function::enforcePromises(Function *super, const TypeContext &typeContext, const Type &superSource,
                                std::experimental::optional<TypeContext> protocol) {
     try {
@@ -83,18 +91,6 @@ void Function::deprecatedWarning(const SourcePosition &p) const {
             package_->compiler()->warn(p, utf8(name()), " is deprecated.");
         }
     }
-}
-
-int Function::vti() const {
-    return vti_;
-}
-
-void Function::setVti(int vti) {
-    vti_ = vti;
-}
-
-llvm::FunctionType* Function::llvmFunctionType() const {
-    return llvmFunction()->getFunctionType();
 }
 
 Type Function::type() const {

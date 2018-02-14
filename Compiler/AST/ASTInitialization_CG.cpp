@@ -26,7 +26,7 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
         case InitType::ValueType:
             assert(vtDestination_ != nullptr);
             InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
-            .generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
+                    .generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
             return nullptr;
         case InitType::MemoryAllocation:
             return generateMemoryAllocation(fg);
@@ -50,7 +50,8 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {
-    return fg->builder().CreateCall(fg->generator()->runTimeNew(), args_.arguments()[0]->generate(fg), "alloc");
+    return fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(),
+                                    args_.arguments()[0]->generate(fg), "alloc");
 }
 
 }  // namespace EmojicodeCompiler

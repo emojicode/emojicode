@@ -36,7 +36,7 @@ struct InstanceVariableDeclaration {
 
 class Extension;
 
-class TypeDefinition : public Generic<TypeDefinition> {
+class TypeDefinition : public Generic<TypeDefinition, int> {
     friend Extension;
 public:
     TypeDefinition(const TypeDefinition&) = delete;
@@ -88,8 +88,11 @@ public:
     Function* addTypeMethod(std::unique_ptr<Function> &&method);
     virtual void addInstanceVariable(const InstanceVariableDeclaration&);
 
+    /// A vector containing all methods in the order they were added via ::addMethod
     const std::vector<Function *>& methodList() const { return methodList_; }
+    /// A vector containing all initializers in the order they were added via ::addInitializer
     const std::vector<Initializer *>& initializerList() const { return initializerList_; }
+    /// A vector containing all type methods in the order they were added via ::addTypeMethod
     const std::vector<Function *>& typeMethodList() const { return typeMethodList_; }
 
     /** Declares that this class agrees to the given protocol. */

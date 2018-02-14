@@ -13,6 +13,7 @@
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Compiler.hpp"
+#include "Generation/ReificationContext.hpp"
 #include <llvm/IR/DerivedTypes.h>
 
 namespace EmojicodeCompiler {
@@ -99,6 +100,11 @@ llvm::Type* LLVMTypeHelper::valueTypeMetaPtr() const {
 }
 
 llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
+    if (reifiContext_ != nullptr && type.type() == TypeType ::LocalGenericVariable &&
+            reifiContext_->providesActualTypeFor(type.genericVariableIndex())) {
+        return llvmTypeFor(reifiContext_->actualType(type.genericVariableIndex()));
+    }
+
     llvm::Type *llvmType = nullptr;
 
     if (type.meta()) {
@@ -125,6 +131,7 @@ llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
             llvmType = getSimpleType(type);
             break;
     }
+    assert(llvmType != nullptr);
     return type.isReference() ? llvmType->getPointerTo() : llvmType;
 }
 

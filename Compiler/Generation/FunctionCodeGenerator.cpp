@@ -11,25 +11,23 @@
 #include "FunctionCodeGenerator.hpp"
 #include "Functions/BoxingLayer.hpp"
 #include "Package/Package.hpp"
+#include "Declarator.hpp"
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
-#include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
-#include <cstdlib>
 
 namespace EmojicodeCompiler {
 
 void FunctionCodeGenerator::generate() {
-    assert(fn_->llvmFunction() != nullptr);
-    auto basicBlock = llvm::BasicBlock::Create(generator()->context(), "entry", fn_->llvmFunction());
+    auto basicBlock = llvm::BasicBlock::Create(generator()->context(), "entry", function_);
     builder_.SetInsertPoint(basicBlock);
 
-    declareArguments(fn_->llvmFunction());
+    declareArguments(function_);
 
     fn_->ast()->generate(this);
 
-    if (llvm::verifyFunction(*fn_->llvmFunction(), &llvm::outs())) {
+    if (llvm::verifyFunction(*function_, &llvm::outs())) {
 
     }
 }
@@ -222,7 +220,7 @@ llvm::Value* FunctionCodeGenerator::int64(int64_t value) {
 }
 
 llvm::Value* FunctionCodeGenerator::alloc(llvm::PointerType *type) {
-    auto alloc = builder().CreateCall(generator()->runTimeNew(), sizeOfReferencedType(type), "alloc");
+    auto alloc = builder().CreateCall(generator()->declarator().runTimeNew(), sizeOfReferencedType(type), "alloc");
     return builder().CreateBitCast(alloc, type);
 }
 

@@ -50,8 +50,6 @@ public:
     void setClassMeta(llvm::GlobalVariable *classInfo) { classMeta_ = classInfo; }
     llvm::GlobalVariable* classMeta() { return classMeta_; }
 
-    unsigned int virtualTableIndicesCount() { return virtualTableIndex_; }
-
     std::vector<llvm::Constant *>& virtualTable() { return virtualTable_; }
 
     Function *lookupMethod(const std::u32string &name, bool imperative) const override;
@@ -80,7 +78,6 @@ private:
     /// @pre superclass() != nullptr
     void checkInheritedRequiredInit(Initializer *initializer);
 
-    unsigned int virtualTableIndex_ = 0;
     std::vector<llvm::Constant *> virtualTable_;
 
     bool final_;

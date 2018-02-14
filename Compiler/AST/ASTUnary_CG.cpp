@@ -25,7 +25,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     auto hasNoValue = isBox ? fg->getHasNoValueBox(optional) : fg->getHasNoValue(optional);
 
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
-        fg->builder().CreateCall(fg->generator()->errNoValue(), std::vector<llvm::Value*> {
+        fg->builder().CreateCall(fg->generator()->declarator().errNoValue(), std::vector<llvm::Value*> {
             fg->int64(position().line), fg->int64(position().character),
         });
         fg->builder().CreateUnreachable();

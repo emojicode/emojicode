@@ -10,6 +10,7 @@
 #define Mangler_hpp
 
 #include <string>
+#include <map>
 
 namespace EmojicodeCompiler {
 
@@ -19,7 +20,7 @@ class Class;
 class Type;
 class TypeDefinition;
 
-std::string mangleFunctionName(Function *function);
+std::string mangleFunction(Function *function, const std::map<size_t, Type> &genericArgs);
 std::string mangleTypeName(const Type &type);
 std::string mangleClassMetaName(Class *klass);
 std::string mangleValueTypeMetaName(const Type &type);

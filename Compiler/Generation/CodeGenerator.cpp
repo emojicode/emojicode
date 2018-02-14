@@ -12,11 +12,10 @@
 #include "EmojicodeCompiler.hpp"
 #include "FunctionCodeGenerator.hpp"
 #include "Functions/Initializer.hpp"
-#include "Functions/ProtocolFunction.hpp"
 #include "Mangler.hpp"
+#include "ReificationContext.hpp"
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
-#include "Types/TypeDefinition.hpp"
 #include "Types/ValueType.hpp"
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/FileSystem.h>
@@ -31,10 +30,11 @@
 
 namespace EmojicodeCompiler {
 
-CodeGenerator::CodeGenerator(Package *package) : package_(package), typeHelper_(context(), package->compiler()) {
-    module_ = std::make_unique<llvm::Module>(package->name(), context());
-    declareRunTime();
-}
+CodeGenerator::CodeGenerator(Package *package) : package_(package),
+                                                 module_(std::make_unique<llvm::Module>(package->name(), context())),
+                                                 typeHelper_(context(), package->compiler()),
+                                                 declarator_(context_, *module_, typeHelper_),
+                                                 protocolsTableGenerator_(context_, *module_, typeHelper_) {}
 
 llvm::Value* CodeGenerator::optionalValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 1);
@@ -44,134 +44,9 @@ llvm::Value* CodeGenerator::optionalNoValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 0);
 }
 
-void CodeGenerator::declareLlvmFunction(Function *function) {
-    if (!function->requiresReificationCopy()) {
-        auto ft = typeHelper().functionTypeFor(function);
-        auto name = function->externalName().empty() ? mangleFunctionName(function) : function->externalName();
-        auto llvmFunction = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, module());
-        function->setLlvmFunction(llvmFunction);
-    }
-}
-
-void CodeGenerator::generate(const std::string &outPath) {
-    for (auto package : package_->dependencies()) {
-        declareImportedPackageSymbols(package);
-    }
-
-    declarePackageSymbols();
-    generateFunctions();
-
-    llvm::verifyModule(*module(), &llvm::outs());
-    llvm::outs() << *module();
-    emit(outPath);
-}
-
-void CodeGenerator::declarePackageSymbols() {
-    for (auto &valueType : package_->valueTypes()) {
-        valueType->eachFunction([this](auto *function) {
-            declareLlvmFunction(function);
-        });
-        createProtocolsTable(valueType.get());
-    }
-    for (auto &klass : package_->classes()) {
-        klass->eachFunction([this](auto *function) {
-            declareLlvmFunction(function);
-        });
-        createProtocolsTable(klass.get());
-        createClassInfo(klass.get());
-    }
-    for (auto &function : package_->functions()) {
-        declareLlvmFunction(function.get());
-    }
-    for (auto &protocol : package_->protocols()) {
-        createProtocolFunctionTypes(protocol.get());
-    }
-}
-
-void CodeGenerator::declareImportedPackageSymbols(Package *package) {
-    for (auto &valueType : package->valueTypes()) {
-        valueType->eachFunction([this](auto *function) {
-            declareLlvmFunction(function);
-        });
-    }
-    for (auto &klass : package->classes()) {
-        klass->eachFunction([this](auto *function) {
-            declareLlvmFunction(function);
-        });
-        declareImportedClassMeta(klass.get());
-    }
-    for (auto &function : package->functions()) {
-        declareLlvmFunction(function.get());
-    }
-}
-
-void CodeGenerator::generateFunctions() {
-    for (auto &valueType : package_->valueTypes()) {
-        valueType->eachFunction([this](auto *function) {
-            generateFunction(function);
-        });
-    }
-    for (auto &function : package_->functions()) {
-        generateFunction(function.get());
-    }
-    for (auto &klass : package_->classes()) {
-        klass->eachFunction([this](auto *function) {
-            generateFunction(function);
-        });
-    }
-}
-
-void CodeGenerator::generateFunction(Function *function) {
-    if (!function->isExternal() && !function->requiresReificationCopy()) {
-        FunctionCodeGenerator(function, this).generate();
-    }
-}
-
-void CodeGenerator::createProtocolFunctionTypes(Protocol *protocol) {
-    for (auto method : protocol->methodList()) {
-        dynamic_cast<ProtocolFunction *>(method)->setLlvmFunctionType(typeHelper().functionTypeFor(method));
-    }
-}
-
-void CodeGenerator::declareImportedClassMeta(Class *klass) {
-    auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
-                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
-                                         mangleClassMetaName(klass));
-    klass->setClassMeta(meta);
-}
-
-void CodeGenerator::createClassInfo(Class *klass) {
-    std::vector<llvm::Constant *> functions;
-    functions.resize(klass->virtualTableIndicesCount());
-
-    if (auto superclass = klass->superclass()) {
-        std::copy(superclass->virtualTable().begin(), superclass->virtualTable().end(), functions.begin());
-    }
-
-    klass->eachFunction([&functions](Function *function) {
-        if (function->hasVti()) {
-            functions[function->vti()] = function->llvmFunction();
-        }
-    });
-
-    auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context()), klass->virtualTableIndicesCount());
-    auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
-                                                 llvm::GlobalValue::LinkageTypes::InternalLinkage,
-                                                 llvm::ConstantArray::get(type, functions));
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
-        llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable, klass->protocolsTable()
-    });
-    auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
-                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
-                                         mangleClassMetaName(klass));
-
-    klass->virtualTable() = std::move(functions);
-    klass->setClassMeta(meta);
-}
-
 llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
     if (type.type() == TypeType::Class) {
-        return classValueTypeMeta_;
+        return declarator_.classValueTypeMeta();
     }
 
     if (auto meta = type.valueType()->valueTypeMetaFor(type.genericArguments())) {
@@ -188,86 +63,113 @@ llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
     return meta;
 }
 
-void CodeGenerator::createProtocolsTable(TypeDefinition *typeDef) {
-    llvm::Constant* init;
-    if (!typeDef->protocols().empty()) {
-        auto tables = createProtocolVirtualTables(typeDef);
 
-        auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
-                                              tables.tables.size());
-        auto protocols = new llvm::GlobalVariable(*module(), arrayType, true,
-                                                  llvm::GlobalValue::LinkageTypes::InternalLinkage,
-                                                  llvm::ConstantArray::get(arrayType, tables.tables));
+void CodeGenerator::generate(const std::string &outPath) {
+    for (auto package : package_->dependencies()) {
+        declarator_.declareImportedPackageSymbols(package);
+    }
 
-        init = llvm::ConstantStruct::get(typeHelper_.protocolsTable(), std::vector<llvm::Constant *>{
-            protocols,
-            llvm::ConstantInt::get(llvm::Type::getInt16Ty(context()), tables.min),
-            llvm::ConstantInt::get(llvm::Type::getInt16Ty(context()), tables.max)
+    for (auto &protocol : package_->protocols()) {
+        createProtocolFunctionTypes(protocol.get());
+    }
+    for (auto &valueType : package_->valueTypes()) {
+        valueType->eachFunction([this](Function *function) {
+            if (!function->requiresCopyReification()) {
+                function->createUnspecificReification();
+            }
+            declarator_.declareLlvmFunction(function);
+        });
+        protocolsTableGenerator_.createProtocolsTable(valueType.get());
+    }
+    for (auto &klass : package_->classes()) {
+        klass->eachFunction([this](auto *function) {
+            function->createUnspecificReification();
+            declarator_.declareLlvmFunction(function);
+        });
+
+        protocolsTableGenerator_.createProtocolsTable(klass.get());
+        createClassInfo(klass.get());
+    }
+    for (auto &function : package_->functions()) {
+        function->createUnspecificReification();
+        declarator_.declareLlvmFunction(function.get());
+    }
+
+    generateFunctions();
+
+    llvm::verifyModule(*module(), &llvm::outs());
+    llvm::outs() << *module();
+    emit(outPath);
+}
+
+void CodeGenerator::generateFunctions() {
+    for (auto &valueType : package_->valueTypes()) {
+        valueType->eachFunction([this](auto *function) {
+            generateFunction(function);
         });
     }
-    else {
-        init = llvm::ConstantAggregateZero::get(typeHelper_.protocolsTable());
+    for (auto &klass : package_->classes()) {
+        klass->eachFunction([this](auto *function) {
+            generateFunction(function);
+        });
     }
-    typeDef->setProtocolsTable(init);
+    for (auto &function : package_->functions()) {
+        generateFunction(function.get());
+    }
 }
 
-CodeGenerator::ProtocolVirtualTables CodeGenerator::createProtocolVirtualTables(TypeDefinition *typeDef) {
-    std::vector<std::pair<llvm::Constant *, size_t>> protocolVirtualTablesUnordered;
-
-    size_t min = std::numeric_limits<size_t>::max();
-    size_t max = 0;
-
-    for (auto &protocol : typeDef->protocols()) {
-        auto index = protocol.protocol()->index();
-        if (index < min) {
-            min = index;
-        }
-        if (index > max) {
-            max = index;
-        }
-        protocolVirtualTablesUnordered.emplace_back(createProtocolVirtualTable(typeDef, protocol.protocol()), index);
+void CodeGenerator::generateFunction(Function *function) {
+    if (!function->isExternal()) {
+        function->eachReification([this, function](auto &reification) {
+            auto context = ReificationContext(*function, reification);
+            typeHelper_.setReificationContext(&context);
+            FunctionCodeGenerator(function, reification.entity.function, this).generate();
+            typeHelper_.setReificationContext(nullptr);
+        });
     }
-
-    auto type = llvm::UndefValue::get(llvm::Type::getInt8PtrTy(context_)->getPointerTo());
-    std::vector<llvm::Constant *> protocolVirtualTables(max - min + 1, type);
-    for (auto &pair : protocolVirtualTablesUnordered) {
-        protocolVirtualTables[pair.second - min] = pair.first;
-    }
-
-    return CodeGenerator::ProtocolVirtualTables(protocolVirtualTables, max, min);
 }
 
-llvm::GlobalVariable* CodeGenerator::createProtocolVirtualTable(TypeDefinition *typeDef, Protocol *protocol) {
-    auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_), protocol->methodList().size());
-
-    std::vector<llvm::Constant *> virtualTable;
-    virtualTable.resize(protocol->methodList().size());
-
-    for (auto protocolMethod : protocol->methodList()) {
-        virtualTable[protocolMethod->vti()] = typeDef->lookupMethod(protocolMethod->name(),
-                                                                    protocolMethod->isImperative())->llvmFunction();
+void CodeGenerator::createProtocolFunctionTypes(Protocol *protocol) {
+    size_t tableIndex = 0;
+    for (auto function : protocol->methodList()) {
+        function->createUnspecificReification();
+        function->eachReification([this, function, &tableIndex](auto &reification) {
+            auto context = ReificationContext(*function, reification);
+            typeHelper().setReificationContext(&context);
+            reification.entity.setFunctionType(typeHelper().functionTypeFor(function));
+            reification.entity.setVti(tableIndex++);
+        });
     }
-
-    auto array = llvm::ConstantArray::get(type, virtualTable);
-    return new llvm::GlobalVariable(*module(), type, true, llvm::GlobalValue::LinkageTypes::InternalLinkage, array);
 }
 
-void CodeGenerator::declareRunTime() {
-    runTimeNew_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(context()),
-                                          llvm::Type::getInt64Ty(context()));
-    errNoValue_ = declareRunTimeFunction("ejcErrNoValue", llvm::Type::getVoidTy(context()), std::vector<llvm::Type *> {
-        llvm::Type::getInt64Ty(context()), llvm::Type::getInt64Ty(context())
+void CodeGenerator::createClassInfo(Class *klass) {
+    std::vector<llvm::Constant *> functions;
+
+    if (auto superclass = klass->superclass()) {
+        functions.resize(superclass->virtualTable().size());
+        std::copy(superclass->virtualTable().begin(), superclass->virtualTable().end(), functions.begin());
+    }
+
+    klass->eachFunction([&functions](Function *function) {
+        function->eachReification([&functions, function](auto &reification) {
+            reification.entity.setVti(functions.size());
+            functions.emplace_back(reification.entity.function);
+        });
     });
 
-    classValueTypeMeta_ = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
-                                                   llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-                                                   nullptr, "ejcRunTimeClassValueTypeMeta");
-}
+    auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context()), functions.size());
+    auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
+                                                 llvm::GlobalValue::LinkageTypes::InternalLinkage,
+                                                 llvm::ConstantArray::get(type, functions));
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable, klass->protocolsTable()
+    });
+    auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
+                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
+                                         mangleClassMetaName(klass));
 
-llvm::Function* CodeGenerator::declareRunTimeFunction(const char *name, llvm::Type *returnType,
-                                           llvm::ArrayRef<llvm::Type *> args) {
-    auto ft = llvm::FunctionType::get(returnType, args, false);
-    return llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, module());
+    klass->virtualTable() = std::move(functions);
+    klass->setClassMeta(meta);
 }
 
 void CodeGenerator::emit(const std::string &outPath) {

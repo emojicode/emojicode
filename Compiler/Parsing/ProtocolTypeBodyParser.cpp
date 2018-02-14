@@ -7,7 +7,6 @@
 //
 
 #include "ProtocolTypeBodyParser.hpp"
-#include "Functions/ProtocolFunction.hpp"
 #include "Types/Protocol.hpp"
 
 namespace EmojicodeCompiler {
@@ -15,10 +14,10 @@ namespace EmojicodeCompiler {
 void ProtocolTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
                                          const Documentation &documentation, AccessLevel access, bool imperative,
                                          const SourcePosition &p) {
-    auto method = std::make_unique<ProtocolFunction>(name, AccessLevel::Public, false, owningType(), package_,
-                                                     p, false, documentation.get(),
-                                                     attributes.has(Attribute::Deprecated), false, imperative,
-                                                     FunctionType::ObjectMethod);
+    auto method = std::make_unique<Function>(name, AccessLevel::Public, false, owningType(), package_,
+                                             p, false, documentation.get(),
+                                             attributes.has(Attribute::Deprecated), false, imperative,
+                                             FunctionType::ObjectMethod);
     parseParameters(method.get(), TypeContext(owningType()), false);
     parseReturnType(method.get(), TypeContext(owningType()));
 
