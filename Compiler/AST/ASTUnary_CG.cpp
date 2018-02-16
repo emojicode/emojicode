@@ -34,7 +34,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     if (isBox) {
         return optional;
     }
-    return fg->builder().CreateExtractValue(value_->generate(fg), 1);
+    return fg->builder().CreateExtractValue(optional, 1);
 }
 
 Value* ASTMetaTypeFromInstance::generate(FunctionCodeGenerator *fg) const {
