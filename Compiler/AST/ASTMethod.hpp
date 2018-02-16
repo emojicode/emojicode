@@ -43,6 +43,9 @@ private:
     bool builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name);
 
     Type analyseMultiProtocolCall(SemanticAnalyser *analyser, const std::u32string &name, const Type &type);
+
+    void checkMutation(SemanticAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
+                       const Function *method) const;
 };
 
 class ASTMethod final : public ASTMethodable {

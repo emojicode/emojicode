@@ -56,6 +56,7 @@ enum class TokenType {
     New,
     This,
     Unsafe,
+    NoValue,
 };
 
 class Token {

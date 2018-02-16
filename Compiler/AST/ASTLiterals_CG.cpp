@@ -51,7 +51,7 @@ Value* ASTThis::generate(FunctionCodeGenerator *fg) const {
     return fg->thisValue();
 }
 
-Value* ASTNothingness::generate(FunctionCodeGenerator *fg) const {
+Value* ASTNoValue::generate(FunctionCodeGenerator *fg) const {
     return fg->getSimpleOptionalWithoutValue(type_);
 }
 

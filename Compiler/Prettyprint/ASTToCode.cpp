@@ -216,8 +216,8 @@ void ASTSymbolLiteral::toCode(Prettyprinter &pretty) const {
     pretty << "🔟" << utf8(std::u32string(1, value_));
 }
 
-void ASTNothingness::toCode(Prettyprinter &pretty) const {
-    pretty << "⚡️";
+void ASTNoValue::toCode(Prettyprinter &pretty) const {
+    pretty << "🤷‍♀️";
 }
 
 void ASTStringLiteral::toCode(Prettyprinter &pretty) const {

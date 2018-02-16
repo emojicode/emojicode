@@ -117,6 +117,7 @@ enum Emojis {
     E_SCALES = 0x2696,
     E_BRAIN = 0x1F9E0,
     E_BIOHAZARD = 0x2623,
+    E_PERSON_SHRUGGING = 0x1F937,
 };
 
 }  // namespace EmojicodeCompiler

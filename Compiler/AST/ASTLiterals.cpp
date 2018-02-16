@@ -64,9 +64,9 @@ Type ASTThis::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     return analyser->typeContext().calleeType();
 }
 
-Type ASTNothingness::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNoValue::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     if (!expectation.optional() && expectation.type() != TypeType::Something) {
-        throw CompilerError(position(), "⚡ can only be used when an optional is expected.");
+        throw CompilerError(position(), "🤷‍ can only be used when an optional is expected.");
     }
     type_ = expectation.copyType();
     return type_;

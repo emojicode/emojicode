@@ -215,6 +215,9 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
             if (codePoint() == 0xFE0F) {  // Emojicode ignores the Emoji modifier behind an emoji character
                 return TokenState::Continues;
             }
+            if (token->value_.front() == E_PERSON_SHRUGGING) {
+                token->type_ = TokenType::NoValue;
+            }
             return TokenState::NextBegun;
         case TokenType::SinglelineComment:
             if (isNewline()) {

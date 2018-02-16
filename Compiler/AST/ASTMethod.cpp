@@ -30,19 +30,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
         return analyseMultiProtocolCall(analyser, name, type);
     }
 
-    auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), args_.isImperative(),
-                                                   position());
-
     if (type.type() == TypeType::ValueType) {
-        if (method->mutating()) {
-            if (!type.isMutable()) {
-                analyser->compiler()->error(CompilerError(position(), utf8(method->name()),
-                                                          " was marked 🖍 but callee is not mutable."));
-            }
-            if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee)) {
-                analyser->scoper().currentScope().getLocalVariable(varNode->name()).mutate(position());
-            }
-        }
         callType_ = CallType::StaticDispatch;
     }
     else if (type.type() == TypeType::Protocol) {
@@ -56,9 +44,26 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     }
     else {
         auto typeString = type.toString(analyser->typeContext());
-        throw CompilerError(position(), "You cannot call methods on ", typeString, ".");
+        throw CompilerError(position(), typeString, " does not provide methods.");
     }
+
+    auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), args_.isImperative(),
+                                                   position());
+    checkMutation(analyser, callee, type, method);
     return analyser->analyseFunctionCall(&args_, type, method);
+}
+
+void ASTMethodable::checkMutation(SemanticAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
+                                  const Function *method) const {
+    if (type.type() == TypeType::ValueType && method->mutating()) {
+        if (!type.isMutable()) {
+            analyser->compiler()->error(CompilerError(position(), utf8(method->name()),
+                                                      " was marked 🖍 but callee is not mutable."));
+        }
+        if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee)) {
+            analyser->scoper().currentScope().getLocalVariable(varNode->name()).mutate(position());
+        }
+    }
 }
 
 Type ASTMethodable::analyseMultiProtocolCall(SemanticAnalyser *analyser, const std::u32string &name, const Type &type) {

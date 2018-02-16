@@ -219,6 +219,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             return parseClosure(token);
         case TokenType::New:
             return parseInitialization(token.position());
+        case TokenType::NoValue:
+            return std::make_shared<ASTNoValue>(token.position());
         case TokenType::This:
             return std::make_shared<ASTThis>(token.position());
         default:
@@ -256,8 +258,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return parseListingLiteral<ASTListLiteral>(E_AUBERGINE, token);
         case E_HONEY_POT:
             return parseListingLiteral<ASTDictionaryLiteral>(E_AUBERGINE, token);
-        case E_HIGH_VOLTAGE_SIGN:
-            return std::make_shared<ASTNothingness>(token.position());
         case E_CHIPMUNK: {
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             return std::make_shared<ASTSuperMethod>(name, parseArguments(token.position()), token.position());

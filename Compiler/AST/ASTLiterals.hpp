@@ -118,9 +118,9 @@ public:
     void toCode(Prettyprinter &pretty) const override;
 };
 
-class ASTNothingness : public ASTExpr {
+class ASTNoValue : public ASTExpr {
 public:
-    explicit ASTNothingness(const SourcePosition &p) : ASTExpr(p) {}
+    explicit ASTNoValue(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;

@@ -506,7 +506,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             string.append("🍱");
             return;
         case TypeType::NoReturn:
-            string.append("✨");
+            string.append("(no return)");
             return;
         case TypeType::Something:
             string.append("⚪️");
