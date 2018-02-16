@@ -68,11 +68,17 @@
   🍰 codePoints 🔵
   🍰 count 🔢
 🍉
+
 📗
   The 🍨 class represents an ordered mutable collection. [Read more in the
   language reference.](../../reference/the-s-package.html#-lists)
 📗
-🌍 🐇 🍨🐚Element ⚪️ 🍇🍉
+🌍 🐇 🍨🐚Element ⚪️ 🍇
+  🍰 data 🧠
+  🍰 count 🔢
+  🍰 size 🔢
+🍉
+
 📗 📇 is an abstract interface to binary data. 📗
 🌍 🐇 📇 🍇🍉
 📗

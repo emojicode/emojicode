@@ -1,24 +1,57 @@
-👴 🐋 🍨 🍇
+🐋 🍨 🍇
 👴   🐊 🔂🐚Element
 👴   🐊 🐽🐚Element
 
-👴   📗 Creates an empty list. 📗
-👴   🆕 🐸 📻 58
+  📗 Creates an empty list. 📗
+  🆕 🐸 🍇
+		🍮 count 0
+		🍮 size 10
+		🍮 data 🆕🧠🆕 10✖️⚖️Element❗️
+  🍉
 
-👴   📗 Creates an empty list with the given initial capacity. 📗
-👴   🆕 🐧 capacity 🔢 📻 57
+	📗 Creates an empty list with the given initial capacity. 📗
+	🆕 🐴 capacity 🔢 🍇
+		🍮 count 0
+		🍮 size capacity
+		🍮 data 🆕🧠🆕 capacity✖️⚖️Element❗️
+  🍉
 
-👴   📗 Returns a shallow copy of this list. 📗
-👴   ❗️ 🐮 ➡️ 🍨🐚Element 📻 52
+	🔒❗️🧠 ➡️ 🧠 🍇
+		↩️ data
+	🍉
 
-👴   📗 Appends `item` to the end of the list in `O(1)`. 📗
-👴   ❗️ 🐻 item Element 📻 45
+	🔒❗️ ↕️ 🍇
+    🍊 size 🙌 count 🍇
+			🍮 size ✖️ 2
+			🏗 data size✖️⚖️Element❗️
+		🍉
+	🍉
 
-👴   📗
-👴     Gets the item at `index` in `O(1)`. If the index is invalid Nothingness is
-👴     returned.
-👴   📗
-👴   ❗️ 🐽 index 🔢 ➡️ 🍬Element 📻 46
+	📗 Creates a shallow copy of the given list. 📗
+	🆕 🐮 list 🍨🐚Element 🍇
+		🍮 count 🐔list❗️
+		🍮 size 🦍list❗️
+		🍮 data 🆕🧠🆕 size✖️⚖️Element❗️
+		🚜 data 0 🧠list❗️ 0 size✖️⚖️Element❗️
+	🍉
+
+	📗 Appends `item` to the end of the list in `O(1)`. 📗
+	❗️ 🐻 item Element 🍇
+		↕️🐕❗️
+		🐷 data item count✖️⚖️Element❗️
+		🍮 count ➕ 1
+	🍉
+
+  📗
+		Gets the item at `index` in `O(1)`. If the index is invalid no value is
+		returned.
+	📗
+	❗️ 🐽 index 🔢 ➡️ 🍬Element 🍇
+		🍊 index ◀️ count 🍇
+			↩️ 🐽 data index✖️⚖️Element❗️
+		🍉
+		↩️ ⚡️
+	🍉
 
 👴   📗
 👴     Sets `value` at `index`. If `index` is bigger than the capacity of the list,
@@ -26,33 +59,64 @@
 👴   📗
 👴   ❗️ 🐷 index 🔢 value Element 📻 55
 
-👴   📗
-👴     Removes the item at `index` and shifts all following items to the left in
-👴     `O(count - index)`.
+		 📗
+			 Removes the item at `index` and shifts all following items to the left in
+			 `O(count - index)`.
 
-👴     Returns 👍 unless the index is out of range.
-👴   📗
-👴   ❗️ 🐨 index 🔢 ➡️ 👌 📻 47
+			 Returns 👍 unless the index is out of range.
+		 📗
+		 ❗️ 🐨 index 🔢 ➡️ 👌 🍇
+				🍊 index ◀️ count 🍇
+					🚜 data index✖️⚖️Element data 🤜index ➕ 1🤛✖️⚖️Element 🤜count ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
+					🍮 count ➖ 1
+					↩️ 👍
+				🍉
+				↩️ 👎
+			🍉
 
-👴   📗
-👴     Inserts the given values before the element with the given index.
+     📗
+       Inserts the given values before the element with the given index.
+  
+       All items beginning from `index` are shifted to the right and `item` is
+       then inserted at `index`. Complexity: `O(count - index)`.
+     📗
+     ❗️ 🐵 index 🔢 item Element ➡️ 👌 🍇
+				↕️🐕❗️
+				🍊 index ◀️ count 🍇
+					🚜 data 🤜index ➕ 1🤛✖️⚖️Element data index✖️⚖️Element 🤜count ➖ index 🤛✖️⚖️Element❗️
+					🐷 data item index✖️⚖️Element❗️
+					🍮 count ➕ 1
+					↩️ 👍
+				🍉
+				↩️ 👎
+			🍉
 
-👴     All items beginning from `index` are shifted to the right and `item` is
-👴     then inserted at `index`. Complexity: `O(count - index)`.
-👴   📗
-👴   ❗️ 🐵 index 🔢 item Element 📻 48
+		 📗 Returns the number of items in the list. 📗
+		 ❗️ 🐔 ➡️ 🔢 🍇 
+				↩️ count
+			🍉
 
-👴   📗 Returns the number of items in the list. 📗
-👴   ❗️ 🐔 ➡️ 🔢 📻 49
+		 ❗️ 🦍 ➡️ 🔢 🍇 
+				↩️ size
+			🍉
 
-👴   📗 Appends the content of `list` to this list. 📗
-👴   ❗️ 🐥 list 🍨🐚Element 📻 97
+	  📗 Appends the content of `list` to this list. 📗
+	  ❗️ 🐥 list 🍨🐚Element 🍇
+			🍦oldCount count
+			🍮 count ➕ 🐔list❗️
+			🐴🐕 count❗️
+			🚜 data oldCount✖️⚖️Element 🧠list❗️ 0 🐔list❗️✖️⚖️Element❗️
+		🍉
 
-👴   📗
-👴     Removes the last item from the list and returns it in `O(1)`.
-👴     If the list is empty ✨ is returned.
-👴   📗
-👴   ❗️ 🐼 ➡️ 🍬Element 📻 50
+		 📗
+			 Removes the last item from the list and returns it in `O(1)`.
+			 If the list is empty ✨ is returned.
+		 📗
+		 ❗️ 🐼 ➡️ 🍬Element 🍇
+				🍮 count ➖ 1
+				🍦 value 🐽 data count✖️⚖️Element❗️
+				↩️ value
+			🍉
 
 👴   📗
 👴     Removes all elements from the list but keeps the list’s capacity.
@@ -62,15 +126,20 @@
 👴   📗
 👴   ❗️ 🐗 📻 54
 
-👴   📗
-👴     Ensures that the list is large enoguh to store at least `capacity` elements.
-
-👴     You should use this method if you plan to heavily use 🐷 with large indices
-👴     in order to avoid automatic, useless allocations.
-
-👴     Complexity: `O(1)`.
-👴   📗
-👴   ❗️ 🐴 capacity 🔢 📻 56
+		📗
+		  Ensures that the list is large enoguh to store at least `capacity` elements.
+		
+		  You should use this method if you plan to heavily use 🐷 with large indices
+		  in order to avoid automatic, useless allocations.
+		
+		  Complexity: `O(1)`.
+		📗
+		❗️ 🐴 capacity 🔢 🍇
+			🍊 capacity ▶️ size 🍇
+				🍮 size capacity
+				🏗 data size✖️⚖️Element❗️
+			🍉
+    🍉
 
 👴   📗
 👴     Sorts this array in place using the quick sort algorithm.
@@ -145,4 +214,4 @@
 👴   ❗️ 🍡 ➡️ 🌳🐚Element 🍇
 👴     ↩️ 🆕⚫️🆕 🐕❗️
 👴   🍉
-👴 🍉
+🍉
