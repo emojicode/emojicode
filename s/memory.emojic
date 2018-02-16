@@ -1,0 +1,11 @@
+📗
+  Represents a region in memory
+📗
+🌍 🕊 🧠 🍇
+  🆕 size 🔢 🍇🍉
+  ❗️ 🐷🐚☣️️T⚪️ value T offset 🔢 📻 🔤ejcBuiltIn🔤
+  ❗️ 🐽🐚☣️️T⚪️ offset 🔢 ➡️ T 📻 🔤ejcBuiltIn🔤
+  ❗️ 🏗 newSize 🔢 📻 🔤ejcMemoryRealloc🔤
+  ❗️ 🚜 destinationOffset 🔢 source 🧠 sourceOffset 🔢 bytes 🔢 📻 🔤ejcMemoryMove🔤
+  ❗️ ✍️ byteValue 🔢 offset 🔢 bytes 🔢 📻 🔤ejcMemorySet🔤
+🍉

@@ -1,0 +1,138 @@
+📗
+  Double
+📗
+🌍 🕊 🚀 ⚪️ 🍇
+  🐊 😛🐚🚀
+
+  📗 Whether this value and *other* are considered equal. 📗
+  🙌 other 🚀 ➡️ 👌 🍇
+    ↩️ 🐕 🙌 other
+  🍉
+
+  📗 Returns the receiver minus *other*. 📗
+  ➖ other 🚀 ➡️ 🚀 🍇
+    ↩️ 🐕 ➖ other
+  🍉
+  📗 Returns the receiver plus *other*. 📗
+  ➕ other 🚀 ➡️ 🚀 🍇
+    ↩️ 🐕 ➕ other
+  🍉
+  📗 Returns the receiver divided by *other*. 📗
+  ➗ other 🚀 ➡️ 🚀 🍇
+    ↩️ 🐕 ➗ other
+  🍉
+  📗 Returns the receiver multiplied by *other*. 📗
+  ✖️ other 🚀 ➡️ 🚀 🍇
+    ↩️ 🐕 ✖️ other
+  🍉
+  📗
+    Returns the floating-point remainder of the division operation
+    `receiver/other`. This will always be the value of `receiver - n*other` and
+    will always have the same sign as the receiver.
+  📗
+  🚮 other 🚀 ➡️ 🚀 🍇
+    ↩️ 🐕 🚮 other
+  🍉
+  📗 Returns true if the receiver is smaller than *other*. 📗
+  ◀️ other 🚀 ➡️ 👌 🍇
+    ↩️ 🐕 ◀️ other
+  🍉
+  📗 Returns true if the receiver is greater than *other*. 📗
+  ▶️ other 🚀 ➡️ 👌 🍇
+    ↩️ 🐕 ▶️ other
+  🍉
+  📗 Returns true if the receiver is smaller than or equal to *other*. 📗
+  ⬅️ other 🚀 ➡️ 👌 🍇
+    ↩️ 🐕 ⬅️ other
+  🍉
+  📗 Returns true if the receiver is greater than or equal to *other*. 📗
+  ➡️ other 🚀 ➡️ 👌 🍇
+    ↩️ 🐕 ➡️ other
+  🍉
+
+  📗 Returns the absolute value of this 🚀. 📗
+  ❗️ 🏧 ➡️ 🚀 📻 🔤sRealAbsolute🔤
+
+  📗
+    Returns an approximation of 𝜋.
+  📗
+  🐇❗️ 🥧 ➡️ 🚀 🍇
+    ↩️ 3.14159265358979323846264338327950288
+  🍉
+  📗
+    Returns an approximation of 𝜋 divided by 2.
+  📗
+  🐇❗️ 🏉 ➡️ 🚀 🍇
+    ↩️ 1.57079632679489661923132169163975144
+  🍉
+  📗
+    Returns an approximation of 𝜋 divided by 4.
+  📗
+  🐇❗️ 🎾 ➡️ 🚀 🍇
+    ↩️ 0.785398163397448309615660845819875721
+  🍉
+  📗
+    Returns an approximation of ℇ (Euler’s number).
+  📗
+  🐇❗️ 🛎 ➡️ 🚀 🍇
+    ↩️ 2.71828182845904523536028747135266250
+  🍉
+
+  📗
+    Returns the sine of this 🚀.
+  📗
+  ❗️ 📓 ➡️ 🚀 📻 🔤sRealSin🔤
+  📗
+    Returns the cosine of this 🚀.
+  📗
+  ❗️ 📕 ➡️ 🚀 📻 🔤sRealCos🔤
+  📗
+    Returns the tangent of this 🚀.
+  📗
+  ❗️ 📘 ➡️ 🚀 📻 🔤sRealTan🔤
+  📗
+    Returns the arcsine of this 🚀.
+  📗
+  ❗️ 📔 ➡️ 🚀 📻 🔤sRealASin🔤
+  📗
+    Returns the arccosine of this 🚀.
+  📗
+  ❗️ 📙 ➡️ 🚀 📻 🔤sRealACos🔤
+  📗
+    Returns the arctangent of this 🚀.
+  📗
+  ❗️ 📒 ➡️ 🚀 📻 🔤sRealATan🔤
+  📗
+    Returns this 🚀 to the exponent power, that is, base<sup>exponent</sup>.
+  📗
+  ❗️ 🏂 exponent 🚀 ➡️ 🚀 📻 🔤sRealPower🔤
+  📗
+    Returns the positive square root of this 🚀.
+  📗
+  ❗️ ⛷ ➡️ 🚀 📻 🔤sRealSqrt🔤
+  📗
+    Returns the smallest integer greater than or equal to this 🚀.
+  📗
+  ❗️ 🚴 ➡️ 🔢 📻 🔤sRealFloor🔤
+  📗
+    Returns the largest integer less than or equal to this 🚀.
+  📗
+  ❗️ 🚵 ➡️ 🔢 📻 🔤sRealCeil🔤
+  📗
+    Returns the value of this 🚀 rounded to the nearest integer.
+
+    If the fractional portion of this 🚀 is 0.5 or greater, the argument is
+    rounded to the next higher integer. If the fractional portion of this 🚀 is
+    less than 0.5, the argument is rounded to the next lower integer.
+  📗
+  ❗️ 🏇 ➡️ 🔢 📻 🔤sRealRound🔤
+  📗
+    Returns the base 2 logarithm of this 🚀.
+  📗
+  ❗️ 🚣 ➡️ 🚀 📻 🔤sRealLog2🔤
+
+  📗
+    Returns the natural (base ℇ) logarithm of this 🚀.
+  📗
+  ❗️ 🏄 ➡️ 🚀 📻 🔤sRealLn🔤
+🍉

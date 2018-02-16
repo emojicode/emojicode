@@ -1,0 +1,148 @@
+👴 🐋 🍨 🍇
+👴   🐊 🔂🐚Element
+👴   🐊 🐽🐚Element
+
+👴   📗 Creates an empty list. 📗
+👴   🆕 🐸 📻 58
+
+👴   📗 Creates an empty list with the given initial capacity. 📗
+👴   🆕 🐧 capacity 🔢 📻 57
+
+👴   📗 Returns a shallow copy of this list. 📗
+👴   ❗️ 🐮 ➡️ 🍨🐚Element 📻 52
+
+👴   📗 Appends `item` to the end of the list in `O(1)`. 📗
+👴   ❗️ 🐻 item Element 📻 45
+
+👴   📗
+👴     Gets the item at `index` in `O(1)`. If the index is invalid Nothingness is
+👴     returned.
+👴   📗
+👴   ❗️ 🐽 index 🔢 ➡️ 🍬Element 📻 46
+
+👴   📗
+👴     Sets `value` at `index`. If `index` is bigger than the capacity of the list,
+👴     the list is resized to a capacity of `index + 1`. Complexity: `O(1)`.
+👴   📗
+👴   ❗️ 🐷 index 🔢 value Element 📻 55
+
+👴   📗
+👴     Removes the item at `index` and shifts all following items to the left in
+👴     `O(count - index)`.
+
+👴     Returns 👍 unless the index is out of range.
+👴   📗
+👴   ❗️ 🐨 index 🔢 ➡️ 👌 📻 47
+
+👴   📗
+👴     Inserts the given values before the element with the given index.
+
+👴     All items beginning from `index` are shifted to the right and `item` is
+👴     then inserted at `index`. Complexity: `O(count - index)`.
+👴   📗
+👴   ❗️ 🐵 index 🔢 item Element 📻 48
+
+👴   📗 Returns the number of items in the list. 📗
+👴   ❗️ 🐔 ➡️ 🔢 📻 49
+
+👴   📗 Appends the content of `list` to this list. 📗
+👴   ❗️ 🐥 list 🍨🐚Element 📻 97
+
+👴   📗
+👴     Removes the last item from the list and returns it in `O(1)`.
+👴     If the list is empty ✨ is returned.
+👴   📗
+👴   ❗️ 🐼 ➡️ 🍬Element 📻 50
+
+👴   📗
+👴     Removes all elements from the list but keeps the list’s capacity.
+
+👴     This can be much more efficient than using a new list. Complexity:
+👴     `O(count)`.
+👴   📗
+👴   ❗️ 🐗 📻 54
+
+👴   📗
+👴     Ensures that the list is large enoguh to store at least `capacity` elements.
+
+👴     You should use this method if you plan to heavily use 🐷 with large indices
+👴     in order to avoid automatic, useless allocations.
+
+👴     Complexity: `O(1)`.
+👴   📗
+👴   ❗️ 🐴 capacity 🔢 📻 56
+
+👴   📗
+👴     Sorts this array in place using the quick sort algorithm.
+
+👴     `comparator` must return an integer less than, equal to, or greater than 0,
+👴     if the first argument is considered respectively less than, equal to, or
+👴     greater than the second.
+👴   📗
+👴   ❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 📻 53
+
+👴   📗
+👴     Shuffles the list in place.
+👴   📗
+👴   ❗️ 🐹 📻 51
+
+👴   📗
+👴     Calls callback with each element in the list and appends the returned
+👴     value to the end of a new list.
+👴   📗
+👴   ❗️ 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
+👴     🍦 g 🆕🍨🐚A🐧  🐔 🐕❗️❗️
+👴     🔂 element 🐕 🍇
+👴       🐻 g callback⁉️ element❗️❗️
+👴     🍉
+👴     ↩️ g
+👴   🍉
+
+👴   📗
+👴     Returns a new array with all elements that pass the test implemented by
+👴     `callback`.
+👴   📗
+👴   ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
+👴     🍦 g 🆕🍨🐚Element🐸❗️
+👴     🔂 element 🐕 🍇
+👴       🍊 callback⁉️ element❗️ 🍇
+👴         🐻 g element❗️
+👴       🍉
+👴     🍉
+👴     ↩️ g
+👴   🍉
+
+👴   📗
+👴     Tests whether all elements in the array pass the test implemented by
+👴     `callback`.
+
+👴     The method immdiately returns 👎 if `callback` returned 👎 for one element.
+👴   📗
+👴   ❗️ 🐯 callback 🍇Element➡️👌🍉 ➡️ 👌 🍇
+👴     🔂 element 🐕 🍇
+👴       🍊 ❎ callback⁉️ element❗️ ❗️ 🍇
+👴         ↩️ 👎
+👴       🍉
+👴     🍉
+👴     ↩️ 👍
+👴   🍉
+
+👴   📗 Tests whether this array and `other` are equal. 📗
+👴   🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
+👴     🍊 ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
+👴       ↩️ 👎
+👴     🍉
+
+👴     🔂 i 🆕⏩⏩  0 🐔🐕❗️ ❗️ 🍇
+👴       🍊 ❎ 🍺🐽 other i❗️ 🙌 🍺 🐽 🐕  i❗️ ❗️ 🍇
+👴         ↩️ 👎
+👴       🍉
+👴     🍉
+👴     ↩️ 👍
+👴   🍉
+
+👴   📗 Returns an iterator to iterate over the elements of this list. 📗
+👴   ❗️ 🍡 ➡️ 🌳🐚Element 🍇
+👴     ↩️ 🆕⚫️🆕 🐕❗️
+👴   🍉
+👴 🍉

@@ -78,7 +78,9 @@ private:
     char whitespaceOffer_ = 0;
     unsigned int indentation_ = 0;
     bool interface_ = false;
+    size_t interfaceFileIndex = 1;
 
+    void printRecordings(const std::vector<std::unique_ptr<RecordingPackage::Recording>> &recordings);
     void print(const char *key, Function *function, bool body, bool noMutate);
     void print(RecordingPackage::Recording *recording);
     void printNamespaceAccessor(const Type &type);

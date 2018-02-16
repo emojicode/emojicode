@@ -22,14 +22,18 @@
 
 namespace EmojicodeCompiler {
 
+void Prettyprinter::printRecordings(const std::vector<std::unique_ptr<RecordingPackage::Recording>> &recordings) {
+    for (auto &recording : recordings) {
+        print(recording.get());
+    }
+}
+
 void Prettyprinter::print() {
     auto first = true;
     for (auto &file : package_->files()) {
         stream_ = std::fstream(filePath(file.path_), std::ios_base::out);
 
-        for (auto &recording : file.recordings_) {
-            print(recording.get());
-        }
+        printRecordings(file.recordings_);
 
         if (first) {
             first = false;
@@ -51,11 +55,7 @@ void Prettyprinter::printInterface(const std::string &out) {
     stream_ << "🔮 " << package_->version().major << " " << package_->version().minor << "\n";
     offerNewLine();
 
-    for (auto &file : package_->files()) {
-        for (auto &recording : file.recordings_) {
-            print(recording.get());
-        }
-    }
+    printRecordings(package_->files().front().recordings_);
 }
 
 void Prettyprinter::print(RecordingPackage::Recording *recording) {
@@ -67,8 +67,13 @@ void Prettyprinter::print(RecordingPackage::Recording *recording) {
         printTypeDef(type->type_);
     }
     if (auto include = dynamic_cast<RecordingPackage::Include *>(recording)) {
-        refuseOffer() << "📜 🔤" << include->path_ << "🔤\n";
-        offerNewLine();
+        if (interface_) {
+            printRecordings(package_->files()[interfaceFileIndex++].recordings_);
+        }
+        else {
+            refuseOffer() << "📜 🔤" << include->path_ << "🔤\n";
+            offerNewLine();
+        }
     }
 }
 

@@ -1,0 +1,58 @@
+📗
+  Represents a range which per definition is an immutable sequence of
+  numbers. [Read more in the
+  language reference.](../../reference/the-s-package.html#-ranges)
+📗
+🌍 🕊 ⏩ 🍇
+  🐊 🔂🐚🔢
+  🐊 🐽️🐚🔢
+
+  🍰 start 🔢
+  🍰 stop 🔢
+  🍰 step 🔢
+
+  📗
+    Creates a range from start to stop.
+  📗
+  🆕 ⏩ 🍼 start 🔢 🍼 stop 🔢 🍇
+    🍮 step 1
+    🍊 stop ◀️ start 🍇
+      🍮 step -1
+    🍉
+  🍉
+
+  📗
+    Creates a range from start to stop with the given step.
+  📗
+  🆕 ⏭ 🍼 start 🔢 🍼 stop 🔢 🍼 step 🔢 🍇🍉
+
+  📗
+    Returns the `n`th element of the range. `n` is only valid if
+    `start + step * n` is `>= start` and `< stop`. If `n` is invalid
+    Nothingness is returned.
+  📗
+  ❗️ 🐽 n 🔢 ➡️ 🍬🔢 🍇
+    🍦 v start ➕ n ✖️ step
+    🍊 step ◀️ 0 🍇
+      🍊 stop ◀️ v 🤝 v ⬅️ start 🍇
+        ↩️ v
+      🍉
+    🍉
+    🍓 🍇
+      🍊 start ⬅️ v 🤝 v ◀️ stop 🍇
+        ↩️ v
+      🍉
+    🍉
+    ↩️ ⚡️
+  🍉
+
+  📗 Returns the number of numbers in this range. 📗
+  ❗️ 🐔 ➡️ 🔢 🍇
+    ↩️ stop ➖ start ➗ step
+  🍉
+
+  📗 Returns an iterator to iterate over the symbols of this string. 📗
+  ❗️ 🍡 ➡️ 🌳🐚🔢 🍇
+    ↩️ 🆕🌳🐚🔢🆕  🐕❗️
+  🍉
+🍉
