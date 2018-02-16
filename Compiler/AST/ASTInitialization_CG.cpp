@@ -43,7 +43,8 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
         fg->builder().CreateStore(typeExpr_->expressionType().eclass()->classMeta(), fg->getObjectMetaPtr(obj));
 
         auto callGen = InitializationCallCodeGenerator(fg, CallType::StaticDispatch);
-        return callGen.generate(obj, typeExpr_->expressionType(), args_, name_);
+        callGen.generate(obj, typeExpr_->expressionType(), args_, name_);
+        return obj;
     }
     // TODO: class table lookup
     throw std::logic_error("Unimplemented");
