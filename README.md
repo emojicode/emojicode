@@ -15,12 +15,6 @@ You can easily install Emojicode from our stable prebuilt binaries. [See Install
 
 We highly recommend to follow Emojicode’s Twitter account [@Real\_Emojicode][6] to stay up with the latest.
 
-## 📝 Contribute
-
-Want to improve something? Great! First of all, please be nice and helpful.
-
-If you want to actively help develop the next version of Emojicode, Emojicode 0.6, have a look at [“The 🛣 to Emojicode 0.6”][7]. We are looking for people like you to help us refine the syntax.
-
 ## 🔨 Building from source
 
 If you don’t want to use the prebuilt binaries or want to work on Emojicode, you
