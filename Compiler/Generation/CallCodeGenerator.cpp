@@ -42,6 +42,7 @@ llvm::Value * CallCodeGenerator::createCall(const std::vector<Value *> &args, co
         case CallType::StaticDispatch:
             return fg_->builder().CreateCall(function->reificationFor(genericArguments).function, args);
         case CallType::DynamicDispatch:
+        case CallType::DynamicDispatchMeta:
             assert(type.type() == TypeType::Class);
             return createDynamicDispatch(function, args, genericArguments);
         case CallType::DynamicProtocolDispatch:
@@ -60,7 +61,6 @@ llvm::Value * CallCodeGenerator::dispatchFromVirtualTable(Function *function, ll
     auto dispatchedFunc = fg()->builder().CreateLoad(fg()->builder().CreateGEP(virtualTable, id));
 
     std::vector<llvm::Type *> argTypes = reification.functionType()->params();
-    argTypes.front() = args.front()->getType();
 
     auto funcType = llvm::FunctionType::get(reification.functionType()->getReturnType(), argTypes, false);
     auto func = fg()->builder().CreateBitCast(dispatchedFunc, funcType->getPointerTo(), "dispatchFunc");
@@ -69,7 +69,7 @@ llvm::Value * CallCodeGenerator::dispatchFromVirtualTable(Function *function, ll
 
 llvm::Value * CallCodeGenerator::createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args,
                                                        const std::vector<Type> &genericArgs) {
-    auto meta = fg()->getMetaFromObject(args.front());
+    auto meta = callType_ == CallType::DynamicDispatchMeta ? args.front() : fg()->getMetaFromObject(args.front());
 
     std::vector<Value *> idx2{ fg()->int32(0), fg()->int32(1) };  // classMeta.table
     auto table = fg()->builder().CreateLoad(fg()->builder().CreateGEP(meta, idx2), "table");

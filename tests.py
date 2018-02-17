@@ -10,7 +10,7 @@ compilation_tests = [
     "intTest",
     "if",
     "vars",
-    # "namespace",
+    "repeatedPackageImport",
     "enum",
     # "enumMethod",
     # "enumTypeMethod",

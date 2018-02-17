@@ -62,7 +62,7 @@ Package::~Package() = default;
 void Package::importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {
     auto import = compiler_->loadPackage(name, p, this);
 
-    importedPackages_.emplace_back(import);
+    importedPackages_.emplace(import);
 
     for (auto exported : import->exportedTypes_) {
         Type type = Type::noReturn();

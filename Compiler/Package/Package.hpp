@@ -14,6 +14,7 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include <set>
 
 namespace EmojicodeCompiler {
 
@@ -133,7 +134,7 @@ public:
     const std::vector<std::unique_ptr<Protocol>>& protocols() const { return protocols_; }
     const std::vector<ExportedType>& exportedTypes() const { return exportedTypes_; }
 
-    const std::vector<Package *>& dependencies() const { return importedPackages_; }
+    const std::set<Package *>& dependencies() const { return importedPackages_; }
 
     /// Tries to fetch a type by its name and namespace from the namespace and types available in this package and
     /// stores it into @c type.
@@ -169,7 +170,7 @@ private:
     std::vector<std::unique_ptr<Function>> functions_;
     std::vector<std::unique_ptr<Protocol>> protocols_;
     std::vector<std::unique_ptr<Extension>> extensions_;
-    std::vector<Package *> importedPackages_;
+    std::set<Package *> importedPackages_;
 
     std::u32string documentation_;
     Compiler *compiler_;
