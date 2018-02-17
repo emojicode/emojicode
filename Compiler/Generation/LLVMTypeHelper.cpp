@@ -100,7 +100,7 @@ llvm::Type* LLVMTypeHelper::valueTypeMetaPtr() const {
 }
 
 llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
-    if (reifiContext_ != nullptr && type.type() == TypeType ::LocalGenericVariable &&
+    if (reifiContext_ != nullptr && type.type() == TypeType::LocalGenericVariable &&
             reifiContext_->providesActualTypeFor(type.genericVariableIndex())) {
         return llvmTypeFor(reifiContext_->actualType(type.genericVariableIndex()));
     }
@@ -147,6 +147,9 @@ llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
     }
     else if (type.type() == TypeType::ValueType || type.type() == TypeType::Class) {
         llvmType = createLlvmTypeForTypeDefinition(type);
+    }
+    else if (type.type() == TypeType::Enum) {
+        llvmType = llvm::Type::getInt64Ty(context_);
     }
     else {
         throw std::logic_error("No llvm type could be established.");
