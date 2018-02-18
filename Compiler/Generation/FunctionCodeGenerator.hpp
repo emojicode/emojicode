@@ -50,6 +50,7 @@ public:
     llvm::Value* getHasNoValueBox(llvm::Value *box);
     llvm::Value* getHasNoValueBoxPtr(llvm::Value *box);
     llvm::Value* getSimpleOptionalWithoutValue(const Type &type);
+    llvm::Value* getBoxOptionalWithoutValue();
     llvm::Value* getSimpleOptionalWithValue(llvm::Value *value, const Type &type);
     llvm::Value* getValuePtr(llvm::Value *box, const Type &type);
     llvm::Value* getValuePtr(llvm::Value *box, llvm::Type *llvmType);

@@ -96,6 +96,11 @@ Value* FunctionCodeGenerator::getSimpleOptionalWithoutValue(const Type &type) {
     return builder().CreateInsertValue(undef, generator()->optionalNoValue(), 0);
 }
 
+Value* FunctionCodeGenerator::getBoxOptionalWithoutValue() {
+    auto undef = llvm::UndefValue::get(typeHelper().box());
+    return builder().CreateInsertValue(undef, llvm::Constant::getNullValue(typeHelper().valueTypeMetaPtr()), 0);
+}
+
 Value* FunctionCodeGenerator::getSimpleOptionalWithValue(llvm::Value *value, const Type &type) {
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
