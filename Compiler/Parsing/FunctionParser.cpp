@@ -230,8 +230,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
 
 std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token) {
     switch (token.value()[0]) {
-        case E_CLOUD:
-            return parseUnaryPrefix<ASTIsNothigness>(token);
         case E_TRAFFIC_LIGHT:
             return parseUnaryPrefix<ASTIsError>(token);
         case E_WHITE_LARGE_SQUARE:

@@ -13,14 +13,6 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTIsNothigness::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    Type type = analyser->expect(TypeExpectation(false, false), &value_);
-    if (!type.optional() && type.type() != TypeType::Something) {
-        throw CompilerError(position(), "☁️ can only be used with optionals and ⚪️.");
-    }
-    return analyser->boolean();
-}
-
 Type ASTIsError::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false), &value_);
     if (type.type() != TypeType::Error) {

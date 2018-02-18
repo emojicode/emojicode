@@ -67,7 +67,7 @@ llvm::Value* FunctionCodeGenerator::getMetaFromObject(llvm::Value *object) {
     return builder().CreateLoad(builder().CreateGEP(object, idx), "meta");
 }
 
-llvm::Value* FunctionCodeGenerator::getHasBoxNoValue(llvm::Value *box) {
+llvm::Value* FunctionCodeGenerator::getHasNoValueBoxPtr(llvm::Value *box) {
     auto null = llvm::Constant::getNullValue(typeHelper().valueTypeMetaPtr());
     return builder().CreateICmpEQ(builder().CreateLoad(getMetaTypePtr(box)), null);
 }

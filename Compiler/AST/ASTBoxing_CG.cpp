@@ -76,7 +76,7 @@ Value* ASTBoxToSimple::generate(FunctionCodeGenerator *fg) const {
 Value* ASTBoxToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
     auto box = getAllocaTheBox(fg);
 
-    auto hasNoValue = fg->getHasBoxNoValue(box);
+    auto hasNoValue = fg->getHasNoValueBoxPtr(box);
     return fg->createIfElsePhi(hasNoValue, [this, fg]() {
         return getSimpleOptionalWithoutValue(fg);
     }, [this, box, fg]() {

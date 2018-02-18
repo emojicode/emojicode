@@ -71,6 +71,12 @@ Value* ASTBinaryOperator::generate(FunctionCodeGenerator *fg) const {
                 return fg->builder().CreateAnd(left, right);
             case BuiltInType::Equal:
                 return fg->builder().CreateICmpEQ(left, right);
+            case BuiltInType::IsNoValueLeft:
+                return left_->expressionType().storageType() == StorageType::Box ? fg->getHasNoValueBox(left)
+                                                                                 : fg->getHasNoValue(left);
+            case BuiltInType::IsNoValueRight:
+                return right_->expressionType().storageType() == StorageType::Box ? fg->getHasNoValueBox(right)
+                                                                                  : fg->getHasNoValue(right);
             default:
                 break;
         }

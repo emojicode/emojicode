@@ -10,10 +10,6 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTIsNothigness::generate(FunctionCodeGenerator *fg) const {
-    return fg->getHasNoValue(value_->generate(fg));
-}
-
 Value* ASTIsError::generate(FunctionCodeGenerator *fg) const {
     auto vf = fg->builder().CreateExtractValue(value_->generate(fg), 0);
     return fg->builder().CreateICmpEQ(vf, fg->generator()->optionalNoValue());

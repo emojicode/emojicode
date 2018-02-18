@@ -23,14 +23,6 @@ protected:
     std::shared_ptr<ASTExpr> value_;
 };
 
-class ASTIsNothigness final : public ASTUnary {
-    using ASTUnary::ASTUnary;
-public:
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
-};
-
 class ASTIsError final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:

@@ -43,12 +43,12 @@ public:
     /// @see sizeOf
     llvm::Value* sizeOfReferencedType(llvm::PointerType *ptrType);
     llvm::Value* getMetaFromObject(llvm::Value *object);
-    llvm::Value* getHasBoxNoValue(llvm::Value *box);
     /// Gets a pointer to the meta type field of box.
     /// @param box A pointer to a box.
     llvm::Value* getMetaTypePtr(llvm::Value *box);
     llvm::Value* getHasNoValue(llvm::Value *simpleOptional);
     llvm::Value* getHasNoValueBox(llvm::Value *box);
+    llvm::Value* getHasNoValueBoxPtr(llvm::Value *box);
     llvm::Value* getSimpleOptionalWithoutValue(const Type &type);
     llvm::Value* getSimpleOptionalWithValue(llvm::Value *value, const Type &type);
     llvm::Value* getValuePtr(llvm::Value *box, const Type &type);

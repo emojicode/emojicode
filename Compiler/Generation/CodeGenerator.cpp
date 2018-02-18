@@ -55,7 +55,7 @@ llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
 
     auto valueType = type.valueType();
 
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.valueTypeMeta(), valueType->protocolsTable());
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.valueTypeMeta(), llvm::ConstantPointerNull::get(typeHelper_.protocolsTable()->getPointerTo()));
     auto meta = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleValueTypeMetaName(type));

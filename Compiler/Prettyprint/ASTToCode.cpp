@@ -187,11 +187,6 @@ void ASTThis::toCode(Prettyprinter &pretty) const {
     pretty << "🐕";
 }
 
-void ASTIsNothigness::toCode(Prettyprinter &pretty) const {
-    pretty << "☁️";
-    value_->toCode(pretty);
-}
-
 void ASTIsError::toCode(Prettyprinter &pretty) const {
     pretty << "🚥";
     value_->toCode(pretty);

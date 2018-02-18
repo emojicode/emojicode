@@ -32,7 +32,7 @@ protected:
         IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
         IntegerRemainder, IntegerToDouble, IntegerNot,
         BooleanAnd, BooleanOr, BooleanNegate,
-        Equal, Store, Load,
+        Equal, Store, Load, IsNoValueLeft, IsNoValueRight,
     };
 
     BuiltInType builtIn_ = BuiltInType::None;

@@ -32,7 +32,7 @@ compilation_tests = [
     # "valueType",
     # "valueTypeSelf",
     # "valueTypeMutate",
-    # "isNothingness",
+    "compareNoValue",
     # "downcastClass",
     # "castAny",
     # "castGenericValueType",
