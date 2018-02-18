@@ -31,16 +31,6 @@ private:
     SourcePosition sourcePosition_;
 };
 
-class ASTVariable {
-protected:
-    bool inInstanceScope() const { return inInstanceScope_; }
-    VariableID varId() { return varId_; }
-    void copyVariableAstInfo(const ResolvedVariable &, SemanticAnalyser *analyser);
-protected:
-    bool inInstanceScope_ = false;
-    VariableID varId_;
-};
-
 }  // namespace EmojicodeCompiler
 
 #endif /* ASTNode_hpp */

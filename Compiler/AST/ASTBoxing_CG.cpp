@@ -85,11 +85,6 @@ Value* ASTBoxToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTSimpleToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
-    if (isValueTypeInit()) {
-        auto value = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()));
-        valueTypeInit(fg, value);
-        return getSimpleOptional(value, fg);
-    }
     return getSimpleOptional(expr_->generate(fg), fg);
 }
 

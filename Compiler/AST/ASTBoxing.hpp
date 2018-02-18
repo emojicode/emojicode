@@ -19,12 +19,6 @@ class BoxingLayer;
 class ASTBoxing : public ASTExpr {
 public:
     ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p);
-
-    /// This setter must be called to indicate that the value that is temporarily stored by this node is the result
-    /// of a value type initialization. If called, the contained expression will be treated as a ASTInitialization
-    /// node and an address to the reserved space is passed to ASTInitialization::setDestination() upon generation.
-    /// @see SemanticAnalyser::comply()
-    void setInit() { init_ = true; }
 protected:
     std::shared_ptr<ASTExpr> expr_;
     /// Gets a pointer to the value area of box and bit-casts it to the type matching the ASTExpr::expressionType()
@@ -41,7 +35,14 @@ protected:
     /// Allocas space for a box and then calls ASTExpr::generate() of of ::expr_ and stores its value into the box.
     Value* getAllocaTheBox(FunctionCodeGenerator *fg) const;
 
+    /// @returns True if the value to be boxed is the result of a value type initialization.
+    /// Some boxing operations perform certain optimizations, i.e. avoid copying of the value type, by directly
+    /// initializing the value type into the box.
+    /// @see valueTypeInit
     bool isValueTypeInit() const { return init_; }
+    /// If isValueTypeInit() returns true, this method can be used to initialize the value type to a certain
+    /// location. This can be useful for optimizations.
+    /// @param destination Pointer to the location at which the value type shall be initialized.
     void valueTypeInit(FunctionCodeGenerator *fg, Value *destination) const;
 private:
     bool init_ = false;

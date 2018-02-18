@@ -6,6 +6,7 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "Generation/FunctionCodeGenerator.hpp"
 #include "ASTVariables.hpp"
 #include "ASTInitialization.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
@@ -14,22 +15,18 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTGetVariable::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    auto var = analyser->scoper().getVariable(name_, position());
-    copyVariableAstInfo(var, analyser);
-    return var.variable.type();
+void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, SemanticAnalyser *analyser) {
+    id_ = var.variable.id();
+    inInstanceScope_ = var.inInstanceScope;
+    if (inInstanceScope_) {
+        analyser->pathAnalyser().recordIncident(PathAnalyserIncident::UsedSelf);
+    }
 }
 
-void ASTInitableCreator::setVtDestination(SemanticAnalyser *analyser, VariableID varId, bool inInstanceScope,
-                                          bool declare, const Type &type) {
-    if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_)) {
-        if (init->initType() == ASTInitialization::InitType::ValueType) {
-            noAction_ = true;
-            declare_ = declare;
-            type_ = type;
-            varId_ = varId;
-        }
-    }
+Type ASTGetVariable::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+    auto var = analyser->scoper().getVariable(name(), position());
+    setVariableAccess(var, analyser);
+    return var.variable.type();
 }
 
 void ASTVariableDeclaration::analyse(SemanticAnalyser *analyser) {
@@ -39,46 +36,43 @@ void ASTVariableDeclaration::analyse(SemanticAnalyser *analyser) {
 
 void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
     try {
-        auto rvar = analyser->scoper().getVariable(varName_, position());
+        auto rvar = analyser->scoper().getVariable(name(), position());
         if (rvar.inInstanceScope && !analyser->function()->mutating() &&
             !isFullyInitializedCheckRequired(analyser->function()->functionType())) {
             analyser->compiler()->error(CompilerError(position(),
-                                                 "Can’t mutate instance variable as method is not marked with 🖍."));
+                                                      "Can’t mutate instance variable as method is not marked with 🖍."));
         }
 
-        copyVariableAstInfo(rvar, analyser);
-
+        setVariableAccess(rvar, analyser);
         rvar.variable.initialize();
         rvar.variable.mutate(position());
 
         analyser->expectType(rvar.variable.type(), &expr_);
-        setVtDestination(analyser, rvar.variable.id(), rvar.inInstanceScope, false, rvar.variable.type());
     }
     catch (VariableNotFoundError &vne) {
         // Not declared, declaring as local variable
-        declare_ = true;
+        setDeclares();
         Type t = analyser->expect(TypeExpectation(false, true), &expr_);
-        auto &var = analyser->scoper().currentScope().declareVariable(varName_, t, false, position());
+        auto &var = analyser->scoper().currentScope().declareVariable(name(), t, false, position());
         var.initialize();
-        copyVariableAstInfo(ResolvedVariable(var, false), analyser);
-        setVtDestination(analyser, var.id(), false, true, t);
+        setVariableAccess(ResolvedVariable(var, false), analyser);
     }
 }
 
-void ASTInstanceVariableAssignment::analyse(SemanticAnalyser *analyser) {
-    auto &var = analyser->scoper().instanceScope()->getLocalVariable(varName_);
+void ASTInstanceVariableInitialization::analyse(SemanticAnalyser *analyser) {
+    auto &var = analyser->scoper().instanceScope()->getLocalVariable(name());
     var.initialize();
     var.mutate(position());
-    copyVariableAstInfo(ResolvedVariable(var, true), analyser);
+    setVariableAccess(ResolvedVariable(var, true), analyser);
     analyser->expectType(var.type(), &expr_);
 }
 
 void ASTFrozenDeclaration::analyse(SemanticAnalyser *analyser) {
+    setDeclares();
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
-    auto &var = analyser->scoper().currentScope().declareVariable(varName_, t, true, position());
+    auto &var = analyser->scoper().currentScope().declareVariable(name(), t, true, position());
     var.initialize();
-    id_ = var.id();
-    setVtDestination(analyser, var.id(), false, true, t);
+    setVariableAccess(ResolvedVariable(var, false), analyser);
 }
 
 }  // namespace EmojicodeCompiler

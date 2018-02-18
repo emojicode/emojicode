@@ -12,21 +12,22 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTGetVariable::instanceVariablePointer(FunctionCodeGenerator *fg, size_t index) {
-    std::vector<Value *> idxList{ fg->int32(0), fg->int32(index) };
+Value* AccessesAnyVariable::instanceVariablePointer(FunctionCodeGenerator *fg) const {
+    assert(inInstanceScope());
+    std::vector<Value *> idxList{ fg->int32(0), fg->int32(id()) };
     return fg->builder().CreateGEP(fg->thisValue(), idxList);
 }
 
 Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
     if (inInstanceScope()) {
-        auto ptr = ASTGetVariable::instanceVariablePointer(fg, varId_);
+        auto ptr = instanceVariablePointer(fg);
         if (reference_) {
             return ptr;
         }
         return fg->builder().CreateLoad(ptr);
     }
 
-    auto &localVariable = fg->scoper().getVariable(varId_);
+    auto &localVariable = fg->scoper().getVariable(id());
     if (!localVariable.isMutable) {
         if (reference_) {
             auto alloca = fg->builder().CreateAlloca(localVariable.value->getType());
@@ -42,22 +43,31 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
     return fg->builder().CreateLoad(localVariable.value);
 }
 
-void ASTInitableCreator::generate(FunctionCodeGenerator *fg) const {
-    if (noAction_) {
-        auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_);
-
-        auto &localVariable = fg->scoper().getVariable(varId_);
-        if (declare_) {
-            auto alloca = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(type_));
-            localVariable = LocalVariable(true, alloca);
+void ASTVariableInit::generate(FunctionCodeGenerator *fg) const {
+    if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_)) {
+        if (init->initType() == ASTInitialization::InitType::ValueType) {
+            init->setDestination(variablePointer(fg));
+            expr_->generate(fg);
+            return;
         }
+    }
 
-        init->setDestination(localVariable.value);
-        expr_->generate(fg);
+    generateAssignment(fg);
+}
+
+llvm::Value* ASTVariableInit::variablePointer(EmojicodeCompiler::FunctionCodeGenerator *fg) const {
+    if (declare_) {
+        auto varPtr = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), nullptr,
+                                            utf8(name()));
+        fg->scoper().getVariable(id()) = LocalVariable(true, varPtr);
+        return varPtr;
     }
-    else {
-        generateAssignment(fg);
+
+    if (inInstanceScope()) {
+        return instanceVariablePointer(fg);
     }
+
+    return fg->scoper().getVariable(id()).value;
 }
 
 void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
@@ -71,23 +81,11 @@ void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
 }
 
 void ASTVariableAssignmentDecl::generateAssignment(FunctionCodeGenerator *fg) const {
-    llvm::Value *varPtr;
-    if (declare_) {
-        varPtr = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), nullptr, utf8(varName_));
-        fg->scoper().getVariable(varId_) = LocalVariable(true, varPtr);
-    }
-    else if (inInstanceScope()) {
-        varPtr = ASTGetVariable::instanceVariablePointer(fg, varId_);
-    }
-    else {
-        varPtr = fg->scoper().getVariable(varId_).value;
-    }
-
-    fg->builder().CreateStore(expr_->generate(fg), varPtr);
+    fg->builder().CreateStore(expr_->generate(fg), variablePointer(fg));
 }
 
 void ASTFrozenDeclaration::generateAssignment(FunctionCodeGenerator *fg) const {
-    fg->scoper().getVariable(id_) = LocalVariable(false, expr_->generate(fg));
+    fg->scoper().getVariable(id()) = LocalVariable(false, expr_->generate(fg));
 }
 
 }  // namespace EmojicodeCompiler

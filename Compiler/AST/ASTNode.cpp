@@ -12,12 +12,4 @@
 
 namespace EmojicodeCompiler {
 
-void ASTVariable::copyVariableAstInfo(const ResolvedVariable &resVar, SemanticAnalyser *analyser) {
-    inInstanceScope_ = resVar.inInstanceScope;
-    varId_ = resVar.variable.id();
-    if (inInstanceScope_) {
-        analyser->pathAnalyser().recordIncident(PathAnalyserIncident::UsedSelf);
-    }
-}
-
 }  // namespace EmojicodeCompiler

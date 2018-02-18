@@ -66,7 +66,7 @@ void SemanticAnalyser::analyse() {
             instanceVariable.initialize();
 
             auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
-            auto assign = std::make_shared<ASTInstanceVariableAssignment>(instanceVariable.name(),
+            auto assign = std::make_shared<ASTInstanceVariableInitialization>(instanceVariable.name(),
                                                                           getVar, initializer->position());
             function()->ast()->preprendNode(assign);
         }

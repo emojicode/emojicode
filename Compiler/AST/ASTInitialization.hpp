@@ -48,6 +48,7 @@ private:
 
     Value* generateClassInit(FunctionCodeGenerator *fg) const;
     Value* generateMemoryAllocation(FunctionCodeGenerator *fg) const;
+    Value* generateInitValueType(FunctionCodeGenerator *fg) const;
 };
 
 }  // namespace EmojicodeCompiler

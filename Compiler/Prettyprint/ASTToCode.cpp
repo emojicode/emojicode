@@ -108,12 +108,12 @@ void ASTVariableDeclaration::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTVariableAssignmentDecl::toCode(Prettyprinter &pretty) const {
-    pretty.indent() << "🍮 " << utf8(varName_) << " ";
+    pretty.indent() << "🍮 " << utf8(name()) << " ";
     expr_->toCode(pretty);
 }
 
 void ASTFrozenDeclaration::toCode(Prettyprinter &pretty) const {
-    pretty.indent() << "🍦 " << utf8(varName_) << " ";
+    pretty.indent() << "🍦 " << utf8(name()) << " ";
     expr_->toCode(pretty);
 }
 
@@ -123,7 +123,7 @@ void ASTConditionalAssignment::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTGetVariable::toCode(Prettyprinter &pretty) const {
-    pretty << utf8(name_);
+    pretty << utf8(name());
 }
 
 void ASTSuperMethod::toCode(Prettyprinter &pretty) const {

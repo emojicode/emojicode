@@ -24,10 +24,7 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
             return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fg->generator()->context()),
                                           typeExpr_->expressionType().eenum()->getValueFor(name_).second);
         case InitType::ValueType:
-            assert(vtDestination_ != nullptr);
-            InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
-                    .generate(vtDestination_, typeExpr_->expressionType(), args_, name_);
-            return nullptr;
+            return generateInitValueType(fg);
         case InitType::MemoryAllocation:
             return generateMemoryAllocation(fg);
     }
@@ -42,7 +39,17 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     throw std::logic_error("Unimplemented");
 }
 
-Value * ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArguments &args, const std::u32string &name,
+Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const {
+    auto destination = vtDestination_;
+    if (vtDestination_ == nullptr) {
+        destination = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
+    }
+    InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
+            .generate(destination, typeExpr_->expressionType(), args_, name_);
+    return vtDestination_ == nullptr ? fg->builder().CreateLoad(destination) : nullptr;
+}
+
+Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArguments &args, const std::u32string &name,
                                       const Type &type) {
     auto llvmType = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(type));
 
