@@ -27,7 +27,7 @@ class TypeExpectation : public Type {
 public:
     /// Creates a type expectation from the given type. The mode is set to "convert".
     explicit TypeExpectation(const Type &type) : Type(type), expectationMode_(ExpectationMode::Convert) {}
-    /// Creates a type expectation with the given parameteres that expects the value to be simplified as far as possible
+    /// Creates a type expectation with the given parameters that expects the value to be simplified as far as possible
     TypeExpectation(bool isReference, bool isMutable)
         : Type(isReference, false, isMutable), expectationMode_(ExpectationMode::Simplify) {}
     TypeExpectation(bool isReference, bool forceBox, bool isMutable)

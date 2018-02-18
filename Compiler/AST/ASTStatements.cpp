@@ -34,7 +34,7 @@ void ASTReturn::analyse(SemanticAnalyser *analyser) {
     }
 
     if (isOnlyNothingnessReturnAllowed(analyser->function()->functionType())) {
-        throw CompilerError(position(), "🍎 cannot be used inside an initializer.");
+        throw CompilerError(position(), "↩️ cannot be used inside an initializer.");
     }
 
     analyser->expectType(analyser->function()->returnType, &value_);

@@ -53,9 +53,10 @@ class Compiler final {
 public:
     /// Constructs an Compiler instance.
     /// @param mainPackage The name of the main package. This is the package for which the compiler will produce
-    ///                    an object file if compile(false) is called. It's also the file whose interface will be
-    ///                    created.
+    ///                    an object file and/or an interface.
     /// @param mainFile The main package’s main file. (See Package::Package.)
+    /// @param interfaceFile The path at which an interface file for the main package shall be created. Pass an empty
+    ///                      string to prevent the creation of an interface file.
     /// @param linker The name or path of an executable that can be used to link object files and static libraries.
     /// @param pkgSearchPaths The paths the compiler will search for a requested package.
     /// @param linkToExec If true an executable is written to outPath, if false an object file representing the package
