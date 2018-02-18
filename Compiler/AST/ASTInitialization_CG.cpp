@@ -36,18 +36,23 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     if (typeExpr_->availability() == TypeAvailability::StaticAndAvailabale) {
-        auto type = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
-
-        auto obj = fg->alloc(type);
-
-        fg->builder().CreateStore(typeExpr_->expressionType().eclass()->classMeta(), fg->getObjectMetaPtr(obj));
-
-        auto callGen = InitializationCallCodeGenerator(fg, CallType::StaticDispatch);
-        callGen.generate(obj, typeExpr_->expressionType(), args_, name_);
-        return obj;
+        return initObject(fg, args_, name_, typeExpr_->expressionType());
     }
     // TODO: class table lookup
     throw std::logic_error("Unimplemented");
+}
+
+Value * ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArguments &args, const std::u32string &name,
+                                      const Type &type) {
+    auto llvmType = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(type));
+
+    auto obj = fg->alloc(llvmType);
+
+    fg->builder().CreateStore(type.eclass()->classMeta(), fg->getObjectMetaPtr(obj));
+
+    auto callGen = InitializationCallCodeGenerator(fg, CallType::StaticDispatch);
+    callGen.generate(obj, type, args, name);
+    return obj;
 }
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {

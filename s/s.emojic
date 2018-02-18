@@ -65,7 +65,7 @@
   The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings)
 📗
 🌍 🐇 🔡 🍇
-  🍰 codePoints 🔵
+  🍰 codePoints 🧠
   🍰 count 🔢
 🍉
 
@@ -163,46 +163,7 @@
 🍉
 
 📜 🔤range.emojic🔤
-
-👴 📗
-👴   Iterator over a 🍨. This iterator does *not* unwrap any values retrieved from
-👴   the list and therefore returns optionals. You can use [[🌳]] to have
-👴 	optionals automatically unwrapped.
-👴 📗
-👴 🌍 🐇 🌱🐚Element⚪️ 🍇
-👴   🐊 🍡🐚🍬Element
-👴   🐊 🔂🐚🍬Element
-
-👴   🍰 iteratee 🍨🐚Element
-👴   🍰 index 🔢
-
-👴   🆕 🍼 iteratee 🍨🐚Element 🍇
-👴     🍮 index 0
-👴   🍉
-
-👴   ❗️ 🔽 ➡️ 🍬Element 🍇
-👴     🍦 sy 🐽 iteratee  index❗️
-👴     🍮 index ➕ 1
-👴     ↩️ sy
-👴   🍉
-
-👴   ❗️ ❓ ➡️ 👌 🍇
-👴     ↩️ index ◀️ 🐔 iteratee❗️
-👴   🍉
-
-👴   📗
-👴     Removes the element last returned by 🔽 from the list. Calling this method
-👴     before having called 🔽 results in undefined behavior.
-👴   📗
-👴   ❗️ 🚯  🍇
-👴     🍮 index ➖ 1
-👴     🐨 iteratee  index❗️
-👴   🍉
-
-👴   ❗️ 🍡 ➡️ 🍡🐚🍬Element 🍇
-👴     ↩️ 🐕
-👴   🍉
-👴 🍉
+📜 🔤list_iterator.emojic🔤
 
 🐋 🔢 🍇
   📗

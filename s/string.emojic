@@ -3,6 +3,17 @@
 👴   🐊 🐽🐚🔣
   🐊 😛🐚🔡
 
+  📗 Creates a string by copying the memory from the given memory. 📗
+  🆕 🧠 memory 🧠 🍼 count 🔢 🍇
+    🍦 size count ✖️⚖️🔣
+    🍮 codePoints 🆕🧠🆕 size❗️
+    🚜 codePoints 0 memory 0 size❗️
+  🍉
+
+  ❗️🧠 ➡️ 🧠 🍇
+    ↩️ codePoints
+  🍉
+
 👴   📗 Prompts the user for input. (via the standard input/output) 📗
 👴   🆕 😯 prompt 🔡 📻 🔤sStringPrompt🔤
 
@@ -137,24 +148,37 @@
 👴   ❗️ 🍡 ➡️ 🌳🐚🔣 🍇
 👴     ↩️ 🆕🌳🐚🔣🆕 🐕❗️
 👴   🍉
-👴 🍉
+🍉
 
-👴 🌍 🐇 🔠 🍇
-👴   🍰 symbols 🍨🐚🔣
+🌍 🐇 🔠 🍇
+  🍰 data 🧠
+  🍰 count 🔢
+  🍰 size 🔢
 
-👴   🆕 🍇
-👴     🍮 symbols 🆕🍨🐚🔣🐸❗️
-👴   🍉
+  🆕 🍇
+    🍮 count 0
+    🍮 size 10
+    🍮 data 🆕🧠🆕 10✖️⚖️🔣❗️
+  🍉
 
-👴   🆕 🐧 capacity 🔢 🍇
-👴     🍮 symbols 🆕🍨🐚🔣🐧  capacity❗️
-👴   🍉
+  🆕 🐧 capacity 🔢 🍇
+    🍮 count 0
+    🍮 size capacity
+    🍮 data 🆕🧠🆕 capacity✖️⚖️🔣❗️
+  🍉
 
-👴   ❗️ 🐻 string 🔡 🍇
-👴     🐥 symbols 🎶 string❗️❗️
-👴   🍉
+  ❗️ 🐻 string 🔡 🍇
+    🍦 stringSize 🐔string❗️
+    🍊 size ➕ stringSize ▶️ size 🍇
+      🍮 size ➕ stringSize
+      🏗 data size✖️⚖️🔣❗️
+    🍉
 
-👴   ❗️ 🔡 ➡️  🔡 🍇
-👴     ↩️ 🆕🔡🎙 symbols❗️
-👴   🍉
+    🚜 data count✖️⚖️🔣 🧠 string❗️ 0 stringSize✖️⚖️🔣❗️
+    🍮 count ➕ stringSize
+  🍉
+
+  ❗️ 🔡 ➡️ 🔡 🍇
+    ↩️ 🆕🔡🧠 data count❗️
+  🍉
 🍉

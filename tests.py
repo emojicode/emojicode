@@ -19,7 +19,7 @@ compilation_tests = [
     # "assignmentByCall",
     "repeatWhile",
     # "conditionalProduce",
-    # "stringConcat",
+    "stringConcat",
     "babyBottleInitializer",
     "classInheritance",
     "classOverride",

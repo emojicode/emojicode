@@ -36,6 +36,9 @@ public:
     void setDestination(llvm::Value *dest) { vtDestination_ = dest; }
     /// Returns the type of type which is initialized.
     InitType initType() { return initType_; }
+
+    static Value *initObject(FunctionCodeGenerator *fg, const ASTArguments &args, const std::u32string &name,
+                                 const Type &type);
 private:
     InitType initType_ = InitType::Class;
     std::u32string name_;

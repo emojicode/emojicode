@@ -11,6 +11,7 @@
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/Class.hpp"
+#include "ASTInitialization.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -56,10 +57,7 @@ Value* ASTNoValue::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto dict = InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(nullptr, type_,
-                                                                                       ASTArguments(position()),
-                                                                                       std::u32string(1, 0x1F438));
-
+    auto dict = ASTInitialization::initObject(fg, ASTArguments(position()), std::u32string(1, 0x1F438), type_);
     for (auto it = values_.begin(); it != values_.end(); it++) {
         auto args = ASTArguments(position());
         args.addArguments(*it);
@@ -70,10 +68,7 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto list = InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(nullptr, type_,
-                                                                                       ASTArguments(position()),
-                                                                                       std::u32string(1, 0x1F438));
-
+    auto list = ASTInitialization::initObject(fg, ASTArguments(position()), std::u32string(1, 0x1F438), type_);
     for (auto it = values_.begin(); it != values_.end(); it++) {
         auto args = ASTArguments(position());
         args.addArguments(*it);
@@ -84,10 +79,7 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto strbuilder = InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(nullptr, type_,
-                                                                                             ASTArguments(position()),
-                                                                                             std::u32string(1, 0x1F195));
-
+    auto strbuilder = ASTInitialization::initObject(fg, ASTArguments(position()), std::u32string(1, 0x1F195), type_);
     for (auto &stringNode : values_) {
         auto args = ASTArguments(position());
         args.addArguments(stringNode);
