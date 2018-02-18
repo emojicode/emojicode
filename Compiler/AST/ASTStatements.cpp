@@ -60,27 +60,4 @@ void ASTRaise::analyse(SemanticAnalyser *analyser) {
     analyser->expectType(analyser->function()->returnType.genericArguments()[0], &value_);
 }
 
-void ASTSuperinitializer::analyse(SemanticAnalyser *analyser) {
-    if (!isSuperconstructorRequired(analyser->function()->functionType())) {
-        throw CompilerError(position(), "🐐 can only be used inside initializers.");
-    }
-    if (analyser->typeContext().calleeType().eclass()->superclass() == nullptr) {
-        throw CompilerError(position(), "🐐 can only be used if the class inherits from another.");
-    }
-    if (analyser->pathAnalyser().hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
-        analyser->compiler()->error(CompilerError(position(), "Superinitializer might have already been called."));
-    }
-
-    analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"", "\" must be "
-                                                                   "initialized before calling the superinitializer.");
-
-    Class *eclass = analyser->typeContext().calleeType().eclass();
-    auto initializer = eclass->superclass()->getInitializer(name_, Type(eclass, false),
-                                                            analyser->typeContext(), position());
-    superType_ = Type(eclass->superclass(), false);
-    analyser->analyseFunctionCall(&arguments_, superType_, initializer);
-
-    analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
-}
-
 }  // namespace EmojicodeCompiler

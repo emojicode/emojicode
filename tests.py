@@ -24,7 +24,7 @@ compilation_tests = [
     "classInheritance",
     "classOverride",
     # "classSuper",
-    # "classSubInstanceVar",
+    "classSubInstanceVar",
     # "extension",
     # "piglatin",
     # "class",

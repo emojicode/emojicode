@@ -126,8 +126,8 @@ void ASTGetVariable::toCode(Prettyprinter &pretty) const {
     pretty << utf8(name());
 }
 
-void ASTSuperMethod::toCode(Prettyprinter &pretty) const {
-    pretty << "🐿" << utf8(name_);
+void ASTSuper::toCode(Prettyprinter &pretty) const {
+    pretty << "⤴️" << utf8(name_);
     args_.toCode(pretty);
 }
 
@@ -229,11 +229,6 @@ void ASTReturn::toCode(Prettyprinter &pretty) const {
     if (value_ != nullptr) {
         value_->toCode(pretty);
     }
-}
-
-void ASTSuperinitializer::toCode(Prettyprinter &pretty) const {
-    pretty.indent() << "🐐" << utf8(name_);
-    arguments_.toCode(pretty);
 }
 
 void ASTCast::toCode(Prettyprinter &pretty) const {

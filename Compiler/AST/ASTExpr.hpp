@@ -108,17 +108,19 @@ private:
     ASTArguments args_;
 };
 
-class ASTSuperMethod final : public ASTExpr {
+class ASTSuper final : public ASTExpr {
 public:
-    ASTSuperMethod(std::u32string name, ASTArguments args, const SourcePosition &p)
+    ASTSuper(std::u32string name, ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
+    void analyseSuperInit(SemanticAnalyser *analyser);
     std::u32string name_;
     Type calleeType_ = Type::noReturn();
     ASTArguments args_;
+    bool init_ = false;
 };
 
 class ASTTypeMethod final : public ASTExpr {

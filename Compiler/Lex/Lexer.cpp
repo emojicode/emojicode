@@ -41,13 +41,13 @@ Lexer::Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::
     singleTokens_.emplace(E_CUSTARD, TokenType::Assignment);
     singleTokens_.emplace(E_SOFT_ICE_CREAM, TokenType::FrozenDeclaration);
     singleTokens_.emplace(E_SHORTCAKE, TokenType::Declaration);
-    singleTokens_.emplace(E_GOAT, TokenType::SuperInit);
     singleTokens_.emplace(E_AVOCADO, TokenType::ErrorHandler);
     singleTokens_.emplace(E_GRAPES, TokenType::BlockBegin);
     singleTokens_.emplace(E_WATERMELON, TokenType::BlockEnd);
     singleTokens_.emplace(E_NEW_SIGN, TokenType::New);
     singleTokens_.emplace(E_DOG, TokenType::This);
     singleTokens_.emplace(E_BIOHAZARD, TokenType::Unsafe);
+    singleTokens_.emplace(E_RIGHT_ARROW_CURVING_UP, TokenType::Super);
 }
 
 void Lexer::loadOperatorSingleTokens() {

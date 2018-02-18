@@ -32,9 +32,5 @@ void ASTRaise::generate(FunctionCodeGenerator *fg) const {
     // TODO: implement
 }
 
-void ASTSuperinitializer::generate(FunctionCodeGenerator *fg) const {
-    auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(superType_));
-    InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, superType_, arguments_, name_);
-}
 
 }  // namespace EmojicodeCompiler

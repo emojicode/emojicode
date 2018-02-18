@@ -44,7 +44,7 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::If: return "If";
         case TokenType::ElseIf: return "ElseIf";
         case TokenType::Else: return "Else";
-        case TokenType::SuperInit: return "SuperInit";
+        case TokenType::Super: return "Super";
         case TokenType::FrozenDeclaration: return "FrozenDeclaration";
         case TokenType::Declaration: return "Declaration";
         case TokenType::Assignment: return "Assignment";

@@ -48,7 +48,6 @@ enum class TokenType {
     If,
     ElseIf,
     Else,
-    SuperInit,
     FrozenDeclaration,
     Declaration,
     Assignment,
@@ -57,6 +56,7 @@ enum class TokenType {
     This,
     Unsafe,
     NoValue,
+    Super,
 };
 
 class Token {

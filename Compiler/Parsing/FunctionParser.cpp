@@ -98,11 +98,6 @@ std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
             auto block = parseBlock();
             return std::make_shared<ASTForIn>(iteratee, variableToken.value(), block, token.position());
         }
-        case TokenType::SuperInit: {
-            auto &initializerToken = stream_.consumeToken();  // TODO: TokenType::Identifier
-            auto arguments = parseArguments(token.position());
-            return std::make_shared<ASTSuperinitializer>(initializerToken.value(), arguments, token.position());
-        }
         case TokenType::Error:
             return std::make_shared<ASTRaise>(parseExpr(0), token.position());
         case TokenType::Return:
@@ -223,6 +218,11 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             return std::make_shared<ASTNoValue>(token.position());
         case TokenType::This:
             return std::make_shared<ASTThis>(token.position());
+        case TokenType::Super: {
+            auto &initializerToken = stream_.consumeToken();
+            auto arguments = parseArguments(token.position());
+            return std::make_shared<ASTSuper>(initializerToken.value(), arguments, token.position());
+        }
         default:
             throw CompilerError(token.position(), "Unexpected token ", token.stringName(), ".");
     }
@@ -256,10 +256,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return parseListingLiteral<ASTListLiteral>(E_AUBERGINE, token);
         case E_HONEY_POT:
             return parseListingLiteral<ASTDictionaryLiteral>(E_AUBERGINE, token);
-        case E_CHIPMUNK: {
-            auto name = stream_.consumeToken(TokenType::Identifier).value();
-            return std::make_shared<ASTSuperMethod>(name, parseArguments(token.position()), token.position());
-        }
         case E_DOUGHNUT: {
             auto name = stream_.consumeToken(TokenType::Identifier).value();
             auto callee = parseTypeExpr(token.position());

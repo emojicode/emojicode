@@ -91,20 +91,6 @@ private:
     bool boxed_ = false;
 };
 
-class ASTSuperinitializer final : public ASTStatement {
-public:
-    ASTSuperinitializer(std::u32string name, ASTArguments arguments,
-                        const SourcePosition &p) : ASTStatement(p), name_(std::move(name)), arguments_(std::move(arguments)) {}
-
-    void analyse(SemanticAnalyser *analyser) override;
-    void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
-private:
-    std::u32string name_;
-    ASTArguments arguments_;
-    Type superType_ = Type::noReturn();
-};
-    
 } // namespace EmojicodeCompiler
 
 #endif /* ASTStatements_hpp */

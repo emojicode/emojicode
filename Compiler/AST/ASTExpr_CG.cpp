@@ -97,7 +97,13 @@ Value* ASTTypeMethod::generate(FunctionCodeGenerator *fg) const {
                                                            name_);
 }
 
-Value* ASTSuperMethod::generate(FunctionCodeGenerator *fg) const {
+Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {
+    if (init_) {
+        auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(calleeType_));
+        InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, name_);
+        return nullptr;
+    }
+
     auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(calleeType_));
     return CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, name_);
 }

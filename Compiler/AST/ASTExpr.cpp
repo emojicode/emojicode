@@ -11,6 +11,7 @@
 #include "Compiler.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
+#include "Functions/Initializer.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -115,7 +116,11 @@ Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
     return analyser->analyseFunctionCall(&args_, type, method);
 }
 
-Type ASTSuperMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTSuper::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+    if (analyser->function()->functionType() == FunctionType::ObjectInitializer) {
+        analyseSuperInit(analyser);
+        return Type::noReturn();
+    }
     if (analyser->function()->functionType() != FunctionType::ObjectMethod) {
         throw CompilerError(position(), "Not within an object-context.");
     }
@@ -130,6 +135,30 @@ Type ASTSuperMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &
                                              args_.isImperative(), position());
     calleeType_ = Type(superclass, false);
     return analyser->analyseFunctionCall(&args_, calleeType_, method);
+}
+
+void ASTSuper::analyseSuperInit(SemanticAnalyser *analyser) {
+    if (!isSuperconstructorRequired(analyser->function()->functionType())) {
+        throw CompilerError(position(), "🐐 can only be used inside initializers.");
+    }
+    if (analyser->typeContext().calleeType().eclass()->superclass() == nullptr) {
+        throw CompilerError(position(), "🐐 can only be used if the class inherits from another.");
+    }
+    if (analyser->pathAnalyser().hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
+        analyser->compiler()->error(CompilerError(position(), "Superinitializer might have already been called."));
+    }
+
+    analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"", "\" must be "
+            "initialized before calling the superinitializer.");
+
+    init_ = true;
+    Class *eclass = analyser->typeContext().calleeType().eclass();
+    auto initializer = eclass->superclass()->getInitializer(name_, Type(eclass, false),
+                                                            analyser->typeContext(), position());
+    calleeType_ = Type(eclass->superclass(), false);
+    analyser->analyseFunctionCall(&args_, calleeType_, initializer);
+
+    analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
 }
 
 Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
