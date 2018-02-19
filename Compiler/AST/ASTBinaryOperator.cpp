@@ -52,7 +52,7 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                                                                                         const Type &type) {
     if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum) &&
         type.valueType()->isPrimitive()) {
-        if (type.valueType() == analyser->compiler()->sDouble) {
+        if (type.valueType() == analyser->compiler()->sReal) {
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
                     builtIn_ = BuiltInType::DoubleMultiply;

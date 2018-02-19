@@ -87,7 +87,7 @@ bool ASTMethodable::builtIn(SemanticAnalyser *analyser, const Type &type, const 
         }
     }
     else if (type.typeDefinition() == analyser->compiler()->sInteger) {
-        if (name.front() == E_ROCKET) {
+        if (name.front() == E_HUNDRED_POINTS_SYMBOL) {
             builtIn_ = BuiltInType::IntegerToDouble;
             return true;
         }

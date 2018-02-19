@@ -47,7 +47,7 @@
 
 📜 🔤integer.emojic🔤
 📜 🔤memory.emojic🔤
-📜 🔤double.emojic🔤
+📜 🔤real.emojic🔤
 
 📗
   Symbol
@@ -176,14 +176,14 @@
   ❗️ 🔡 base 🔢 ➡️ 🔡 📻 🔤sIntToString🔤
 
   📗 Returns the double representation of this integer. 📗
-  ❗️ 🚀 ➡️ 🚀 🍇
-    ↩️ 🚀 🐕❗️
+  ❗️ 💯 ➡️ 💯 🍇
+    ↩️ 💯 🐕❗️
   🍉
 🍉
 
-🐋 🚀 🍇
+🐋 💯 🍇
   📗
-    Creates a 🔡 representation of this 🚀 and the given precision – the number
+    Creates a 🔡 representation of this 💯 and the given precision – the number
     of digits after the decimal separator “.”.
   📗
   ❗️ 🔡 precision 🔢 ➡️ 🔡 📻 🔤sRealToString🔤
@@ -387,5 +387,5 @@
 👴     Generates a double, where doubles are uniformly distributed on the interval
 👴     `[0, 1)`.
 👴   📗
-👴   ❗️ 🚀 ➡️ 🚀 📻 96
+👴   ❗️ 💯 ➡️ 💯 📻 96
 👴 🍉

@@ -40,7 +40,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) :
     types_.emplace(Type::someobject(), llvm::Type::getInt8PtrTy(context_));
     types_.emplace(Type(compiler->sInteger, false), llvm::Type::getInt64Ty(context_));
     types_.emplace(Type(compiler->sSymbol, false), llvm::Type::getInt32Ty(context_));
-    types_.emplace(Type(compiler->sDouble, false), llvm::Type::getDoubleTy(context_));
+    types_.emplace(Type(compiler->sReal, false), llvm::Type::getDoubleTy(context_));
     types_.emplace(Type(compiler->sBoolean, false), llvm::Type::getInt1Ty(context_));
     types_.emplace(Type(compiler->sMemory, false), llvm::Type::getInt8PtrTy(context_));
 }

@@ -28,7 +28,7 @@
 namespace EmojicodeCompiler {
 
 Type SemanticAnalyser::doubleType() {
-    return Type(compiler()->sDouble, false);
+    return Type(compiler()->sReal, false);
 }
 
 Type SemanticAnalyser::integer() {

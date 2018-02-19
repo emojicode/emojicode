@@ -28,7 +28,7 @@ Type ASTBooleanFalse::analyse(SemanticAnalyser *analyser, const TypeExpectation 
 }
 
 Type ASTNumberLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sDouble
+    if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sReal
         && type_ == NumberType::Integer) {
         type_ = NumberType::Double;
         doubleValue_ = integerValue_;

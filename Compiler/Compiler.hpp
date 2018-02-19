@@ -133,7 +133,7 @@ public:
     ValueType *sBoolean = nullptr;
     ValueType *sSymbol = nullptr;
     ValueType *sInteger = nullptr;
-    ValueType *sDouble = nullptr;
+    ValueType *sReal = nullptr;
     ValueType *sMemory = nullptr;
 private:
     void generateCode();

@@ -167,7 +167,7 @@ void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
     // Order of the following calls is important as they will cause Box IDs to be assigned
     sBoolean = getStandardValueType(std::u32string(1, E_OK_HAND_SIGN), s, errorPosition);
     sInteger = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_NUMBERS), s, errorPosition);
-    sDouble = getStandardValueType(std::u32string(1, E_ROCKET), s, errorPosition);
+    sReal = getStandardValueType(std::u32string(1, E_HUNDRED_POINTS_SYMBOL), s, errorPosition);
     sSymbol = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition);
     sMemory = getStandardValueType(std::u32string(1, E_BRAIN), s, errorPosition);
 
