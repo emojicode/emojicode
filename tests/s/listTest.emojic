@@ -1,6 +1,6 @@
 📜 🔤testsHelper.emojic🔤
 
-🐇 💯🚉  🍇
+🐇🦔🚉  🍇
   ✒️ ❗️ 🏁 🍇
     🍦 emptyList 🆕🍨🐚🔡🐸❗️
     ⛔🐕 🐔emptyList❗️ 🙌 0 🔤Correct Length 0🔤❗️
@@ -10,31 +10,33 @@
     🐻emptyList 🔤Grüß dich🔤❗️
     🐻emptyList 🔤Sarah🔤❗️
     🐻emptyList 🔤Hansl🔤❗️
-    ⛔🐕 🐔emptyList❗️ 🙌 5 🔤Correct Length 4🔤❗️
+    ⛔🐕 🐔emptyList❗️ 🙌 5 🔤Correct Length 5🔤❗️
+
     🐼emptyList❗️
-    ⛔🐕 🐔emptyList❗️ 🙌 4 🔤Correct Length 3🔤❗️
+    ⛔🐕 🐔emptyList❗️ 🙌 4 🔤Correct Length 4🔤❗️
     ⛔🐕  🍺🐽emptyList 1❗️ 🙌 🔤Josef🔤🔤Index 1 Value Correct🔤❗️
     ⛔🐕  🍺🐽emptyList 2❗️ 🙌 🔤Grüß dich🔤🔤Index 2 Value Correct🔤❗️
     ⛔🐕  🍺🐽emptyList 3❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
-    ⛔🐕  🍺🐽emptyList -1❗️ 🙌 🔤Sarah🔤🔤Index -1 Value Correct🔤❗️
-    ⛔🐕  🍺🐽emptyList -2❗️ 🙌 🔤Grüß dich🔤🔤Index -2 Value Correct🔤❗️
+
     ⛔🐕 🐨emptyList 0❗️🔤Remove by index success🔤❗️
     ⛔🐕 ❎🐨emptyList 899❗️❗️🔤Remove by index failure🔤❗️
     ⛔🐕 🐔emptyList❗️ 🙌 3 🔤Correct Length 3🔤❗️
     ⛔🐕  🍺🐽emptyList 0❗️ 🙌 🔤Josef🔤🔤Index 0 Value Correct🔤❗️
     ⛔🐕  🍺🐽emptyList 1❗️ 🙌 🔤Grüß dich🔤🔤Index 1 Value Correct🔤❗️
     ⛔🐕  🍺🐽emptyList 2❗️ 🙌 🔤Sarah🔤🔤Index 2 Value Correct🔤❗️
+
     🐵emptyList 1 🔤Robert🔤❗️
     ⛔🐕 🐔emptyList❗️ 🙌 4 🔤Correct Length 4🔤❗️
     ⛔🐕  🍺🐽emptyList 0❗️ 🙌 🔤Josef🔤🔤Index 0 Value Correct🔤❗️
     ⛔🐕  🍺🐽emptyList 1❗️ 🙌 🔤Robert🔤🔤Index 1 Value Correct🔤❗️
     ⛔🐕  🍺🐽emptyList 2❗️ 🙌 🔤Grüß dich🔤🔤Index 2 Value Correct🔤❗️
     ⛔🐕  🍺🐽emptyList 3❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
-    🍦 copiedList 🐮emptyList❗️
-    🐵emptyList -1 🔤Peter🔤❗️
+
+    🍦 copiedList 🆕🍨🐚🔡🐮emptyList❗️
+    🐵emptyList 3 🔤Peter🔤❗️
     ⛔🐕  🍺🐽emptyList 3❗️ 🙌 🔤Peter🔤🔤Index 3 Value Correct🔤❗️
     ⛔🐕  🍺🐽emptyList 4❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
-    🐨emptyList -2❗️
+    🐨emptyList 3❗️
     ⛔🐕  🍺🐽emptyList 3❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
     ⛔🐕 🐔emptyList❗️ 🙌 4 🔤Correct Length 4🔤❗️
     ⛔🐕  🍺🐽emptyList 0❗️ 🙌 🔤Josef🔤🔤Index 0 Value Correct🔤❗️
@@ -45,10 +47,12 @@
     ⛔🐕  🍺🐽copiedList 3❗️ 🙌 🔤Sarah🔤🔤Copied List Index 3 Value Correct🔤❗️
     ⛔🐕  🍺🐼copiedList❗️ 🙌 🔤Sarah🔤🔤🐼 Value Correct🔤❗️
     ⛔🐕 🐔copiedList❗️ 🙌 3 🔤Correct Length 3🔤❗️
+
     🍦 literalList 🍨 🔤Götz🔤 🔤Bert🔤 🔤Igor🔤 🔤Hans🔤 🔤Franz🔤 🍆
     ⛔🐕 🐔literalList❗️ 🙌 5 🔤Correct Length 5🔤❗️
     ⛔🐕  🍺🐼literalList❗️ 🙌 🔤Franz🔤🔤Pop = Franz🔤❗️
     ⛔🐕 🐔literalList❗️ 🙌 4 🔤Correct Length 4🔤❗️
+👵
     🍦 g 🐰🍨 🔤aa🔤 🔤12345🔤 🍆 🍇a 🔡 ➡️ 🔡
       ↩️ 🍪 a 🔤!🔤 🍪
 🍉
@@ -117,11 +121,12 @@
     ⛔🐕 ☁️🐽getList 1❗️🔤Correct Value Nothingness🔤❗️
     ⛔🐕 ☁️🐽getList 0❗️🔤Correct Value Nothingness🔤❗️
     ⛔🐕 ☁️🐽getList 88❗️🔤Correct Value Nothingness🔤❗️
+👵
   🍉
 🍉
 
 🏁 ➡️ 🔢 🍇
-  🍦 tester 🆕💯🆕❗️
+  🍦 tester 🆕🦔🆕❗️
   🏁tester❗️
   ↩️ 👔tester❗️
 🍉

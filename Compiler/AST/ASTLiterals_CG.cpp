@@ -75,7 +75,6 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
     for (auto it = values_.begin(); it != values_.end(); it++) {
         auto args = ASTArguments(position());
         args.addArguments(*it);
-        args.addArguments(*(++it));
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, std::u32string(1, 0x1F43B));
     }
     return list;
