@@ -169,12 +169,12 @@ void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bo
             clm->createUnspecificReification();
             if (!clm->enforcePromises(method, TypeContext(type), protocol, TypeContext(protocol))) {
                 auto arguments = std::vector<Argument>();
-                arguments.reserve(method->arguments.size());
-                for (auto &arg : method->arguments) {
+                arguments.reserve(method->arguments().size());
+                for (auto &arg : method->arguments()) {
                     arguments.emplace_back(arg.variableName, arg.type.resolveOn(TypeContext(protocol)));
                 }
                 auto bl = std::make_unique<BoxingLayer>(clm, protocol.protocol()->name(), arguments,
-                                                        method->returnType.resolveOn(TypeContext(protocol)),
+                                                        method->returnType().resolveOn(TypeContext(protocol)),
                                                         clm->position());
                 buildBoxingLayerAst(bl.get());
                 if (enqueBoxingLayers) {

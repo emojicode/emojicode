@@ -26,15 +26,15 @@ public:
                 const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
     : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
                destinationFunction->owningType(), destinationFunction->package(), p, false, std::u32string(), false,
-               false, true, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType),
+               false, true, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType()),
         destinationFunction_(destinationFunction) {
-        this->arguments = arguments;
-        this->returnType = returnType;
+        this->setArguments(arguments);
+        this->setReturnType(returnType);
 
-        destinationArgumentTypes_.reserve(destinationFunction->arguments.size());
-        for (auto &arg : destinationFunction->arguments) {
+        destinationArgumentTypes_.reserve(destinationFunction->arguments().size());
+        for (auto &arg : destinationFunction->arguments()) {
             destinationArgumentTypes_.emplace_back(arg.type);
-        }                                                                                           
+        }
     }
     /// Creates a boxing layer for a callable. The argument/return conversions will be performed and
     /// INS_EXECUTE_CALLABLE callable will be applied to the this context.
@@ -44,8 +44,8 @@ public:
                std::u32string(), false, false, true, FunctionType::BoxingLayer),
       destinationArgumentTypes_(owningType().genericArguments().begin() + 1, owningType().genericArguments().end()),
       destinationReturnType_(owningType().genericArguments()[0]) {
-          this->returnType = returnType;
-          this->arguments = arguments;
+        this->setArguments(arguments);
+        this->setReturnType(returnType);
     }
 
     const std::vector<Type>& destinationArgumentTypes() const { return destinationArgumentTypes_; }

@@ -38,7 +38,7 @@ void Prettyprinter::print() {
         if (first) {
             first = false;
             stream_ << "🏁 ";
-            if (package_->startFlagFunction()->returnType.type() != TypeType::NoReturn) {
+            if (package_->startFlagFunction()->returnType().type() != TypeType::NoReturn) {
                 printReturnType(package_->startFlagFunction());
                 stream_ << " ";
             }
@@ -85,7 +85,7 @@ std::string Prettyprinter::filePath(const std::string &path) {
 void Prettyprinter::printArguments(Function *function) {
     if (auto initializer = dynamic_cast<Initializer *>(function)) {
         auto it = initializer->argumentsToVariables().begin();
-        for (auto &arg : function->arguments) {
+        for (auto &arg : function->arguments()) {
             if (it != initializer->argumentsToVariables().end() && arg.variableName == *it) {
                 it++;
                 stream_ << "🍼 ";
@@ -94,14 +94,14 @@ void Prettyprinter::printArguments(Function *function) {
         }
         return;
     }
-    for (auto &arg : function->arguments) {
+    for (auto &arg : function->arguments()) {
         *this << utf8(arg.variableName) << " " << arg.type << " ";
     }
 }
 
 void Prettyprinter::printReturnType(Function *function) {
-    if (function->returnType.type() != TypeType::NoReturn) {
-        *this << "➡️ " << function->returnType;
+    if (function->returnType().type() != TypeType::NoReturn) {
+        *this << "➡️ " << function->returnType();
     }
 }
 

@@ -84,7 +84,7 @@ void reportFunction(Function *function, ReturnKind returnKind, const TypeContext
 
     if (returnKind == ReturnKind::Return) {
         printf("\"returnType\":");
-        reportType(function->returnType, tc);
+        reportType(function->returnType(), tc);
         putc(',', stdout);
     }
     else if (returnKind == ReturnKind::ErrorProneInitializer) {
@@ -98,7 +98,7 @@ void reportFunction(Function *function, ReturnKind returnKind, const TypeContext
 
     printf("\"arguments\":[");
     CommaPrinter printer;
-    for (auto &argument : function->arguments) {
+    for (auto &argument : function->arguments()) {
         printer.print();
         printf("{\"type\":");
         reportType(argument.type, tc);

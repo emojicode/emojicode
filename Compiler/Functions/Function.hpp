@@ -92,9 +92,13 @@ public:
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
 
-    std::vector<Argument> arguments;
-    /** Return type of the method */
-    Type returnType = Type::noReturn();
+    const std::vector<Argument>& arguments() const { return arguments_; }
+
+    void setArguments(std::vector<Argument> arguments) { arguments_ = std::move(arguments); }
+
+    const Type& returnType() const { return returnType_; }
+
+    void setReturnType(const Type &returnType) { returnType_ = returnType; }
 
     /** Returns the position at which this callable was defined. */
     const SourcePosition& position() const { return position_; }
@@ -147,6 +151,9 @@ public:
 
     virtual ~Function() = default;
 private:
+    std::vector<Argument> arguments_;
+    Type returnType_ = Type::noReturn();
+
     std::shared_ptr<ASTBlock> ast_;
     SourcePosition position_;
     std::u32string name_;

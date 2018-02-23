@@ -193,6 +193,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
 
 void AbstractParser::parseParameters(Function *function, const TypeContext &typeContext, bool initializer) {
     bool argumentToVariable;
+    std::vector<Argument> args;
 
     while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {
         if (argumentToVariable) {
@@ -205,21 +206,18 @@ void AbstractParser::parseParameters(Function *function, const TypeContext &type
         auto &variableToken = stream_.consumeToken(TokenType::Variable);
         auto type = parseType(typeContext);
 
-        function->arguments.emplace_back(variableToken.value(), type);
+        args.emplace_back(variableToken.value(), type);
 
         if (argumentToVariable) {
             dynamic_cast<Initializer *>(function)->addArgumentToVariable(variableToken.value(), variableToken.position());
         }
     }
-
-    if (function->arguments.size() > UINT8_MAX) {
-        throw CompilerError(function->position(), "A function cannot take more than 255 arguments.");
-    }
+    function->setArguments(std::move(args));
 }
 
 void AbstractParser::parseReturnType(Function *function, const TypeContext &typeContext) {
     if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
-        function->returnType = parseType(typeContext);
+        function->setReturnType(parseType(typeContext));
     }
 }
 

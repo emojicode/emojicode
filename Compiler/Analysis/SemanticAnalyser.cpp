@@ -44,7 +44,7 @@ Type SemanticAnalyser::symbol() {
 }
 
 void SemanticAnalyser::analyse() {
-    Scope &methodScope = scoper_->pushArgumentsScope(function_->arguments, function_->position());
+    Scope &methodScope = scoper_->pushArgumentsScope(function_->arguments(), function_->position());
 
     if (hasInstanceScope(function_->functionType())) {
         scoper_->instanceScope()->setVariableInitialization(!isFullyInitializedCheckRequired(function_->functionType()));
@@ -90,7 +90,7 @@ void SemanticAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
         root->appendNode(std::make_shared<ASTReturn>(nullptr, root->position()));
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
-        if (function_->returnType.type() != TypeType::NoReturn) {
+        if (function_->returnType().type() != TypeType::NoReturn) {
             throw CompilerError(function_->position(), "An explicit return is missing.");
         }
         else {
@@ -144,8 +144,8 @@ void SemanticAnalyser::validateAccessLevel(Function *function, const SourcePosit
 }
 
 Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
-    if (node->arguments().size() != function->arguments.size()) {
-        throw CompilerError(node->position(), utf8(function->name()), " expects ", function->arguments.size(),
+    if (node->arguments().size() != function->arguments().size()) {
+        throw CompilerError(node->position(), utf8(function->name()), " expects ", function->arguments().size(),
                             " arguments but ", node->arguments().size(), " were supplied.");
     }
 
@@ -160,13 +160,13 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
         }
     }
 
-    for (size_t i = 0; i < function->arguments.size(); i++) {
-        expectType(function->arguments[i].type.resolveOn(typeContext), &node->arguments()[i]);
+    for (size_t i = 0; i < function->arguments().size(); i++) {
+        expectType(function->arguments()[i].type.resolveOn(typeContext), &node->arguments()[i]);
     }
     function->deprecatedWarning(node->position());
     function->requestReification(node->genericArguments());
     validateAccessLevel(function, node->position());
-    return function->returnType.resolveOn(typeContext);
+    return function->returnType().resolveOn(typeContext);
 }
 
 void SemanticAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
@@ -174,7 +174,7 @@ void SemanticAnalyser::ensureGenericArguments(ASTArguments *node, const Type &ty
         std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameters().size(), CommonTypeFinder());
         TypeContext typeContext = TypeContext(type, function, nullptr);
         size_t i = 0;
-        for (auto arg : function->arguments) {
+        for (auto arg : function->arguments()) {
             expectType(arg.type.resolveOn(typeContext), &node->arguments()[i++], &genericArgsFinders);
         }
         for (auto &finder : genericArgsFinders) {

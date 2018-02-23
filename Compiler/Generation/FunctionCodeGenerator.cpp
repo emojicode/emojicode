@@ -42,7 +42,7 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     if (hasThisArgument(fn_->functionType())) {
         (it++)->setName("this");
     }
-    for (auto arg : fn_->arguments) {
+    for (auto arg : fn_->arguments()) {
         auto &llvmArg = *(it++);
         scoper_.getVariable(i++) = LocalVariable(false, &llvmArg);
         llvmArg.setName(utf8(arg.variableName));

@@ -22,7 +22,7 @@ void buildBoxingLayerAst(BoxingLayer *layer) {
     auto args = ASTArguments(p);
 
     for (size_t i = 0; i < layer->destinationArgumentTypes().size(); i++) {
-        args.addArguments(std::make_shared<ASTGetVariable>(layer->arguments[i].variableName, p));
+        args.addArguments(std::make_shared<ASTGetVariable>(layer->arguments()[i].variableName, p));
     }
 
     std::shared_ptr<ASTExpr> expr;
@@ -34,7 +34,7 @@ void buildBoxingLayerAst(BoxingLayer *layer) {
     }
 
     std::shared_ptr<ASTBlock> block = std::make_shared<ASTBlock>(p);
-    if (layer->returnType.type() == TypeType::NoReturn) {
+    if (layer->returnType().type() == TypeType::NoReturn) {
         block->appendNode(std::make_shared<ASTExprStatement>(expr, p));
     }
     else {

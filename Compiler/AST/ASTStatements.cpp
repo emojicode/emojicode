@@ -29,7 +29,7 @@ void ASTExprStatement::analyse(SemanticAnalyser *analyser)  {
 
 void ASTReturn::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
-    if (analyser->function()->returnType.type() == TypeType::NoReturn) {
+    if (analyser->function()->returnType().type() == TypeType::NoReturn) {
         return;
     }
 
@@ -37,7 +37,7 @@ void ASTReturn::analyse(SemanticAnalyser *analyser) {
         throw CompilerError(position(), "↩️ cannot be used inside an initializer.");
     }
 
-    analyser->expectType(analyser->function()->returnType, &value_);
+    analyser->expectType(analyser->function()->returnType(), &value_);
 }
 
 void ASTRaise::analyse(SemanticAnalyser *analyser) {
@@ -51,13 +51,13 @@ void ASTRaise::analyse(SemanticAnalyser *analyser) {
         return;
     }
 
-    if (analyser->function()->returnType.type() != TypeType::Error) {
+    if (analyser->function()->returnType().type() != TypeType::Error) {
         throw CompilerError(position(), "Function is not declared to return a 🚨.");
     }
 
-    boxed_ = analyser->function()->returnType.storageType() == StorageType::Box;
+    boxed_ = analyser->function()->returnType().storageType() == StorageType::Box;
 
-    analyser->expectType(analyser->function()->returnType.genericArguments()[0], &value_);
+    analyser->expectType(analyser->function()->returnType().genericArguments()[0], &value_);
 }
 
 }  // namespace EmojicodeCompiler

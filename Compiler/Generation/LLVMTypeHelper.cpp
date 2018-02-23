@@ -65,7 +65,7 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     else if (hasThisArgument(function->functionType())) {
         args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
     }
-    std::transform(function->arguments.begin(), function->arguments.end(), std::back_inserter(args), [this](auto &arg) {
+    std::transform(function->arguments().begin(), function->arguments().end(), std::back_inserter(args), [this](auto &arg) {
         return llvmTypeFor(arg.type);
     });
     llvm::Type *returnType;
@@ -74,7 +74,7 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
         returnType = llvmTypeFor(init->constructedType(init->typeContext().calleeType()));
     }
     else {
-        returnType = llvmTypeFor(function->returnType);
+        returnType = llvmTypeFor(function->returnType());
     }
     return llvm::FunctionType::get(returnType, args, false);
 }
