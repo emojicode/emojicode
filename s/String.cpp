@@ -63,3 +63,15 @@ extern "C" char sStringEndsWith(String *string, String *ending) {
 extern "C" runtime::Integer sStringUtf8ByteCount(String *string) {
     return u8_codingsize(string->characters, string->count);
 }
+
+extern "C" String* sStringAppendSymbol(String *string, runtime::Symbol symbol) {
+    auto characters = runtime::allocate<String::Character>(string->count + 1);
+
+    std::memcpy(characters, string->characters, string->count * sizeof(String::Character));
+    characters[string->count] = symbol;
+
+    auto newString = String::allocateAndInitType();
+    newString->count = string->count + 1;
+    newString->characters = characters;
+    return newString;
+}

@@ -114,8 +114,8 @@
 👴   📗
 👴   ❗️ 💯 ➡️ 🍬💯 📻 🔤sStringToFloat🔤
 
-👴   📗 Creates a new string by appending *symbol*. 📗
-👴   ❗️ 📝 symbol 🔣 ➡️ 🔡 📻 🔤sStringAppendSymbol🔤
+     📗 Creates a new string by appending *symbol*. 📗
+     ❗️ 📝 symbol 🔣 ➡️ 🔡 📻 🔤sStringAppendSymbol🔤
 
 👴   📗 Gets a symbol by its index. 📗
 👴   ❗️ 🐽 index 🔢 ➡️ 🍬🔣 📻 🔤sStringToInt🔤
