@@ -28,7 +28,7 @@ compilation_tests = [
     # "extension",
     # "piglatin",
     # "class",
-    # "assignmentByCallInstanceVariable",
+    "assignmentByCallInstanceVariable",
     "valueType",
     "valueTypeSelf",
     "valueTypeMutate",
