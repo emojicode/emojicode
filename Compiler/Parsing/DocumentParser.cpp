@@ -109,9 +109,9 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
                                                              documentation.get(), false, false, true,
                                                              FunctionType::Function));
     parseReturnType(function, TypeContext());
-    if (function->returnType.type() != TypeType::NoReturn &&
-        !function->returnType.compatibleTo(Type(package_->compiler()->sInteger, false), TypeContext())) {
-        throw CompilerError(p, "🏁 must either return ✨ or 🚂.");
+    if (function->returnType().type() != TypeType::NoReturn &&
+        !function->returnType().compatibleTo(Type(package_->compiler()->sInteger, false), TypeContext())) {
+        package_->compiler()->error(CompilerError(p, "🏁 must either have no return or return 🔢."));
     }
     stream_.consumeToken(TokenType::BlockBegin);
     try {
