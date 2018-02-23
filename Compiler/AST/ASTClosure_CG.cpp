@@ -6,25 +6,43 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include <llvm/Support/raw_ostream.h>
 #include "ASTClosure.hpp"
 #include "Generation/ClosureCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
 Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
+    closure_->createUnspecificReification();
     fg->generator()->declarator().declareLlvmFunction(closure_.get());
 
-    auto closureGenerator = ClosureCodeGenerator(captures_, closure_.get(), fg->generator());
+    auto thisValue = capture_.captureSelf ? fg->thisValue()->getType() : nullptr;
+    auto capture = capture_;
+    capture.type = fg->generator()->typeHelper().llvmTypeForCapture(capture_, thisValue);
+
+    auto closureGenerator = ClosureCodeGenerator(capture, closure_.get(), fg->generator());
     closureGenerator.generate();
 
-    auto capturesType = fg->generator()->typeHelper().llvmTypeForClosureCaptures(captures_);
-    auto alloc = fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(), fg->sizeOf(capturesType));
-    auto captures = fg->builder().CreateBitCast(alloc, capturesType->getPointerTo());
+    llvm::CallInst *alloc = storeCapturedVariables(fg, capture);
+
+    auto *structType = llvm::dyn_cast<llvm::StructType>(fg->generator()->typeHelper().llvmTypeFor(expressionType()));
+
+    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(structType),
+                                                    closure_->unspecificReification().function, 0);
+    return fg->builder().CreateInsertValue(callable, alloc, 1);
+}
+
+llvm::CallInst *ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const {
+    auto alloc = fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(), fg->sizeOf(capture.type));
+    auto captures = fg->builder().CreateBitCast(alloc, capture.type->getPointerTo());
 
     auto i = 0;
-    for (auto &capture : captures_) {
-        llvm::Value *value;
-        auto &variable = fg->scoper().getVariable(capture.sourceId);
+    if (capture.captureSelf) {
+        fg->builder().CreateStore(fg->thisValue(), fg->builder().CreateConstGEP2_32(capture.type, captures, 0, i++));
+    }
+    for (auto &capturedVar : capture.captures) {
+        Value *value;
+        auto &variable = fg->scoper().getVariable(capturedVar.sourceId);
         if (variable.isMutable) {
             value = fg->builder().CreateLoad(variable.value);
         }
@@ -32,15 +50,9 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
             value = variable.value;
         }
 
-        fg->builder().CreateStore(value, fg->builder().CreateConstGEP2_32(capturesType, captures, 1, i++));
+        fg->builder().CreateStore(value, fg->builder().CreateConstGEP2_32(capture.type, captures, 0, i++));
     }
-
-    auto *structType = llvm::dyn_cast<llvm::StructType>(fg->generator()->typeHelper().llvmTypeFor(expressionType()));
-
-
-    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(structType),
-                                                    closure_->unspecificReification().function, 0);
-    return fg->builder().CreateInsertValue(callable, alloc, 1);
+    return alloc;
 }
 
 }  // namespace EmojicodeCompiler

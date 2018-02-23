@@ -15,6 +15,7 @@
 #include "Compiler.hpp"
 #include "Generation/ReificationContext.hpp"
 #include <llvm/IR/DerivedTypes.h>
+#include <AST/ASTClosure.hpp>
 
 namespace EmojicodeCompiler {
 
@@ -45,9 +46,12 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) :
     types_.emplace(Type(compiler->sMemory, false), llvm::Type::getInt8PtrTy(context_));
 }
 
-llvm::StructType* LLVMTypeHelper::llvmTypeForClosureCaptures(const std::vector<VariableCapture> &captures) {
+llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType) {
     std::vector<llvm::Type *> types;
-    std::transform(captures.begin(), captures.end(), std::back_inserter(types), [this](auto &capture) {
+    if (capture.captureSelf) {
+        types.emplace_back(thisType);
+    }
+    std::transform(capture.captures.begin(), capture.captures.end(), std::back_inserter(types), [this](auto &capture) {
         return llvmTypeFor(capture.type);
     });
     return llvm::StructType::get(context_, types);
@@ -58,7 +62,7 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     if (function->functionType() == FunctionType::Closure) {
         args.emplace_back(llvm::Type::getInt8PtrTy(context_));
     }
-    else if (isSelfAllowed(function->functionType())) {
+    else if (hasThisArgument(function->functionType())) {
         args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
     }
     std::transform(function->arguments.begin(), function->arguments.end(), std::back_inserter(args), [this](auto &arg) {

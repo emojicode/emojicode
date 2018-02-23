@@ -9,14 +9,14 @@
   🍉
 
   👴 Returns a functional ID card
-  🐇❗️ 👌🏾 name 🔡 age 🔢 birthplace 🔡 height 🚀 ➡️ 🍇➡️🔡🍉 🍇
+  🐇❗️ 👌🏾 name 🔡 age 🔢 birthplace 🔡 height 🔢 ➡️ 🍇➡️🔡🍉 🍇
     🍊 age ⬅️ 12 🍇
       ↩️ 🍇 ➡️🔡
         ↩️ 🍪 🔤It’s a kid born in 🔤 birthplace 🔤 named 🔤 name 🍪
       🍉
     🍉
 		↩️ 🍇 ➡️🔡
-      ↩️ 🍪 name 🔤: Born in 🔤 birthplace  🔤 and 🔤 🔡 height  3❗️ 🔤 meters tall.🔤 🍪
+      ↩️ 🍪 name 🔤: Born in 🔤 birthplace  🔤 and 🔤 🔡 height 10❗️ 🔤 centimeters tall.🔤 🍪
     🍉
   🍉
 🍉
@@ -32,9 +32,9 @@
   😀 violetGreeter ⁉️ 12❗️❗️
   😀 violetGreeter ⁉️ 12❗️❗️
 
-	🍦 alistairID 🍩👌🏾🍤 🔤Alistair🔤 10	🔤Cambridge🔤 1.41❗️
+	🍦 alistairID 🍩👌🏾🍤 🔤Alistair🔤 10	🔤Cambridge🔤 141❗️
 	😀 alistairID⁉️❗️❗️
 
-	🍦 zachID 🍩👌🏾🍤 🔤Zach🔤 32 🔤Derry🔤 1.83❗️
+	🍦 zachID 🍩👌🏾🍤 🔤Zach🔤 32 🔤Derry🔤 183❗️
 	😀 zachID⁉️❗️❗️
 🍉

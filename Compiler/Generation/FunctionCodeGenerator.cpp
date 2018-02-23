@@ -39,7 +39,7 @@ Compiler* FunctionCodeGenerator::compiler() const {
 void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     unsigned int i = 0;
     auto it = function->args().begin();
-    if (isSelfAllowed(fn_->functionType())) {
+    if (hasThisArgument(fn_->functionType())) {
         (it++)->setName("this");
     }
     for (auto arg : fn_->arguments) {
@@ -51,6 +51,8 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
 
 llvm::Value* FunctionCodeGenerator::sizeOfReferencedType(llvm::PointerType *type) {
     auto one = llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1);
+    type->print(llvm::outs(), true);
+    llvm::outs() << "\n";
     auto sizeg = builder().CreateGEP(llvm::ConstantPointerNull::getNullValue(type), one);
     return builder().CreatePtrToInt(sizeg, llvm::Type::getInt64Ty(generator()->context()));
 }

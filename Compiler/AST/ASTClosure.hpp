@@ -9,22 +9,30 @@
 #ifndef ASTClosure_hpp
 #define ASTClosure_hpp
 
+#include <llvm/IR/Instructions.h>
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
+
+struct Capture {
+    std::vector<VariableCapture> captures;
+    bool captureSelf = false;
+    llvm::Type *type = nullptr;
+};
 
 class ASTClosure : public ASTExpr {
 public:
     ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p);
 
     Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override final;
+    Value* generate(FunctionCodeGenerator *fg) const final;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::unique_ptr<Function> closure_;
-    std::vector<VariableCapture> captures_;
-    bool captureSelf_ = false;
+    Capture capture_;
+
+    llvm::CallInst *storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const;
 };
 
 }  // namespace EmojicodeCompiler

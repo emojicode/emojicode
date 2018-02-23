@@ -31,4 +31,8 @@ bool isOnlyNothingnessReturnAllowed(FunctionType type) {
     return type == FunctionType::ObjectInitializer || type == FunctionType::ValueTypeInitializer;
 }
 
+bool hasThisArgument(FunctionType type) {
+    return isSelfAllowed(type) || type == FunctionType::ClassMethod;
+}
+
 } // namespace EmojicodeCompiler

@@ -22,9 +22,9 @@ Type ASTClosure::analyse(SemanticAnalyser *analyser, const TypeExpectation &expe
 
     auto closureAnaly = SemanticAnalyser(closure_.get(), std::make_unique<CapturingSemanticScoper>(analyser->scoper()));
     closureAnaly.analyse();
-    captures_ = dynamic_cast<CapturingSemanticScoper&>(closureAnaly.scoper()).captures();
+    capture_.captures = dynamic_cast<CapturingSemanticScoper&>(closureAnaly.scoper()).captures();
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
-        captureSelf_ = true;
+        capture_.captureSelf = true;
     }
     return closure_->type();
 }

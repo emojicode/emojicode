@@ -22,12 +22,19 @@ void ClosureCodeGenerator::declareArguments(llvm::Function *llvmFunction) {
         llvmArg.setName(utf8(arg.variableName));
     }
 
-    auto type = typeHelper().llvmTypeForClosureCaptures(captures_);
-    llvm::Value *captures = builder().CreateBitCast(&*llvmFunction->args().begin(), type->getPointerTo());
+    loadCapturedVariables(&*llvmFunction->args().begin());
+}
 
-    for (size_t i = 0; i < captures_.size(); i++) {
-        auto *value = builder().CreateLoad(builder().CreateConstGEP2_32(type, captures, 0, i));
-        scoper().getVariable(captures_[i].captureId) = LocalVariable(false, value);
+void ClosureCodeGenerator::loadCapturedVariables(Value *value) {
+    Value *captures = builder().CreateBitCast(value, capture_.type->getPointerTo());
+
+    size_t index = 0;
+    if (capture_.captureSelf) {
+        thisValue_ = builder().CreateLoad(builder().CreateConstGEP2_32(capture_.type, captures, 0, index++));
+    }
+    for (; index < capture_.captures.size(); index++) {
+        auto *value = builder().CreateLoad(builder().CreateConstGEP2_32(capture_.type, captures, 0, index));
+        scoper().getVariable(capture_.captures[index].captureId) = LocalVariable(false, value);
     }
 }
 

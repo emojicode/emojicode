@@ -24,6 +24,7 @@ class Function;
 struct VariableCapture;
 class Compiler;
 class ReificationContext;
+struct Capture;
 
 /// This class is responsible for providing llvm::Type instances for Emojicode Type instances.
 class LLVMTypeHelper {
@@ -40,7 +41,7 @@ public:
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
     llvm::FunctionType* functionTypeFor(Function *function);
 
-    llvm::StructType* llvmTypeForClosureCaptures(const std::vector<VariableCapture> &captures);
+    llvm::StructType *llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
 
     void setReificationContext(ReificationContext *context) { reifiContext_ = context; };
 private:

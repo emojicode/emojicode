@@ -33,6 +33,7 @@ bool isFullyInitializedCheckRequired(FunctionType);
 bool isSelfAllowed(FunctionType);
 bool hasInstanceScope(FunctionType);
 bool isOnlyNothingnessReturnAllowed(FunctionType);
+bool hasThisArgument(FunctionType);
 
 }  // namespace EmojicodeCompiler
 

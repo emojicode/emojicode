@@ -131,6 +131,9 @@ public:
         if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
             type.setReference();
         }
+        if (functionType() == FunctionType::ClassMethod) {
+            type.setMeta(true);
+        }
         return TypeContext(type, this);
     }
 

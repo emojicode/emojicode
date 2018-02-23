@@ -11,17 +11,25 @@
 
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "FunctionCodeGenerator.hpp"
+#include "AST/ASTClosure.hpp"
 
 namespace EmojicodeCompiler {
 
 class ClosureCodeGenerator : public FunctionCodeGenerator {
 public:
-    ClosureCodeGenerator(std::vector<VariableCapture> captures, Function *f, CodeGenerator *generator)
-    : FunctionCodeGenerator(f, f->unspecificReification().function, generator), captures_(std::move(captures)) {}
+    ClosureCodeGenerator(const Capture &capture, Function *f, CodeGenerator *generator)
+    : FunctionCodeGenerator(f, f->unspecificReification().function, generator), capture_(capture) {}
 
+    llvm::Value* thisValue() const override {
+        assert(capture_.captureSelf);
+        return thisValue_;
+    }
 private:
     void declareArguments(llvm::Function *llvmFunction) override;
-    std::vector<VariableCapture> captures_;
+    const Capture &capture_;
+    llvm::Value *thisValue_ = nullptr;
+
+    void loadCapturedVariables(Value *value);
 };
 
 } // namespace EmojicodeCompiler
