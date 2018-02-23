@@ -436,8 +436,8 @@ FunctionFunctionPointer sLinkingTable[] = {
     stringGetInput,  //😮
     stringFromSymbolListBridge,  //🎙
     stringFromStringList,  //🍨
-    nullptr,
-    nullptr,
+    stringPrintNoNLStdoutBridge,  // 👄
+    stringReadLine,  // 👂🏼
     nullptr,
     initDictionaryBridge,
     bridgeDictionaryGet,  //🐽

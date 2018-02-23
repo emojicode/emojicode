@@ -97,6 +97,11 @@ void stringPrintStdoutBrigde(Thread *thread) {
     thread->returnFromFunction();
 }
 
+void stringPrintNoNLStdoutBridge(Thread *thread) {
+    printf("%s", stringToCString(thread->thisObject()));
+    thread->returnFromFunction();
+}
+
 void stringEqualBridge(Thread *thread) {
     auto *a = thread->thisObject()->val<String>();
     auto *b = thread->variable(0).object->val<String>();
@@ -151,13 +156,9 @@ void stringTrimBridge(Thread *thread) {
     thread->returnFromFunction(stringSubstring(start, stop - start + 1, thread));
 }
 
-void stringGetInput(Thread *thread) {
-    printf("%s\n", stringToCString(thread->variable(0).object));
-    fflush(stdout);
-
-    int bufferSize = 50, oldBufferSize = 0;
+void stringReadLine(Thread *thread) {
+    size_t bufferUsedSize = 0, bufferSize = 50, oldBufferSize = 0;
     Object *buffer = newArray(bufferSize);
-    size_t bufferUsedSize = 0;
 
     while (true) {
         fgets(buffer->val<char>() + oldBufferSize, bufferSize - oldBufferSize, stdin);
@@ -187,6 +188,13 @@ void stringGetInput(Thread *thread) {
 
     u8_toucs(string->characters(), len, buffer->val<char>(), bufferUsedSize);
     thread->returnFromFunction(thread->thisContext());
+}
+
+void stringGetInput(Thread *thread) {
+    printf("%s\n", stringToCString(thread->variable(0).object));
+    fflush(stdout);
+
+    stringReadLine(thread);
 }
 
 void stringSplitByStringBridge(Thread *thread) {

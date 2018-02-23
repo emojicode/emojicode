@@ -504,8 +504,19 @@
   🐊 🐽🐚🔣
   🐊 😛🐚🔡
 
-  🌮 Prompts the user for input. (via the standard input/output) 🌮
+  🌮
+    Displays `prompt` followed by a new line and waits for the user to
+    input a text and confirm it with enter. No new line character is
+    included as part of the string. (Via the standard input/output)
+  🌮
   🐈 😯 prompt 🔡 📻 80
+
+  🌮
+    Waits for the user to input a text and confirm it with enter.
+    No new line character is included as part of the string.
+    (Via the standard input/output)
+  🌮
+  🐈 👂🏼 📻 84
 
   🌮 Creates a string from the given list of symbols. 🌮
   🐈 🎙 symbolList 🍨🐚🔣 📻 81
@@ -516,8 +527,11 @@
   🌮
   🐈 🍨 list 🍨🐚🔡 separator 🔡 📻 82
 
-  🌮 Puts this 🔡 to the standard output. 🌮
+  🌮 Puts this 🔡 to the standard output adding a new line at the end. 🌮
   🐖 😀 📻 59
+
+  🌮 Puts this 🔡 to the standard output without adding a new line. 🌮
+  🐖 👄 📻 83
 
   🌮 Returns 👍 if this 🔡 is equal to b. 🌮
   🐖 😛 b 🔡 ➡️ 👌📻 60

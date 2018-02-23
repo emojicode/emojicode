@@ -71,6 +71,8 @@ void stringToDouble(Thread *thread);
 void stringToUppercase(Thread *thread);
 void stringToLowercase(Thread *thread);
 void stringCompareBridge(Thread *thread);
+void stringReadLine(Thread *thread);
+void stringPrintNoNLStdoutBridge(Thread *thread);
 
 }
 
