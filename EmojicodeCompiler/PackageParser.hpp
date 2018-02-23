@@ -44,7 +44,8 @@ private:
     void parseValueType(const EmojicodeString &string, const Token &theToken, bool exported);
     
     /** Parses the body of a TypeDefinitionFunctional type. */
-    void parseTypeDefinitionBody(Type typed, std::set<EmojicodeString> *requiredInitializers, bool allowNative);
+    void parseTypeDefinitionBody(Type typed, std::set<EmojicodeString> *requiredInitializers, bool allowNative,
+                                     bool isExtension);
 };
 
 template<EmojicodeChar attributeName>

@@ -99,7 +99,7 @@ void PackageParser::parse() {
                 }
 
                 // Native extensions are allowed if the class was defined in this package.
-                parseTypeDefinitionBody(type, nullptr, type.typeDefinitionFunctional()->package() == package_);
+                parseTypeDefinitionBody(type, nullptr, type.typeDefinitionFunctional()->package() == package_, true);
 
                 continue;
             }
@@ -267,7 +267,7 @@ void PackageParser::parseEnum(const EmojicodeString &documentation, const Token 
 
     auto type = Type(eenum, false);
     package_->registerType(type, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    parseTypeDefinitionBody(type, nullptr, true);
+    parseTypeDefinitionBody(type, nullptr, true, false);
 }
 
 void PackageParser::parseClass(const EmojicodeString &documentation, const Token &theToken, bool exported, bool final) {
@@ -316,7 +316,7 @@ void PackageParser::parseClass(const EmojicodeString &documentation, const Token
         requiredInitializers = std::set<EmojicodeString>(eclass->superclass()->requiredInitializers());
     }
 
-    parseTypeDefinitionBody(classType, &requiredInitializers, true);
+    parseTypeDefinitionBody(classType, &requiredInitializers, true, false);
 
     if (!requiredInitializers.empty()) {
         throw CompilerError(eclass->position(), "Required initializer %s was not implemented.",
@@ -338,11 +338,11 @@ void PackageParser::parseValueType(const EmojicodeString &documentation, const T
     valueType->finalizeGenericArguments();
 
     package_->registerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    parseTypeDefinitionBody(valueTypeContent, nullptr, true);
+    parseTypeDefinitionBody(valueTypeContent, nullptr, true, false);
 }
 
 void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString> *requiredInitializers,
-                                            bool allowNative) {
+                                            bool allowNative, bool isExtension) {
     allowNative = allowNative && package_->requiresBinary();
 
     stream_.requireIdentifier(E_GRAPES);
@@ -370,6 +370,11 @@ void PackageParser::parseTypeDefinitionBody(Type typed, std::set<EmojicodeString
 
                 if (typed.type() == TypeContent::Enum) {
                     throw CompilerError(token.position(), "Enums cannot have instance variable.");
+                }
+
+                if (isExtension) {
+                    compilerWarning(token.position(), "Addition of instance variables in extensions is deprecated "\
+                    "and will be removed in an upcoming version.");
                 }
 
                 auto &variableName = stream_.consumeToken(TokenType::Variable);
