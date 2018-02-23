@@ -252,6 +252,9 @@ TokenStream lexString(const std::string &string, SourcePosition sourcePosition) 
     if (!nextToken && tokens->back().type() == TokenType::Comment && !oneLineComment) {
         throw CompilerError(tokens->back().position(), "Expected 👵 but found end of file instead.");
     }
+    if (tokens->back().type() == TokenType::NoType) {
+        tokens->pop_back();
+    }
     tokens->back().validate();
 
     return TokenStream(tokens);
