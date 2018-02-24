@@ -9,9 +9,9 @@
 #include "ASTExpr.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
 #include "Compiler.hpp"
+#include "Functions/Initializer.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
-#include "Functions/Initializer.hpp"
 
 namespace EmojicodeCompiler {
 

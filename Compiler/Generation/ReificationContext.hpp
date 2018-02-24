@@ -5,8 +5,8 @@
 #ifndef EMOJICODE_REIFICATIONCONTEXT_HPP
 #define EMOJICODE_REIFICATIONCONTEXT_HPP
 
-#include "Types/Type.hpp"
 #include "Types/Generic.hpp"
+#include "Types/Type.hpp"
 #include <map>
 
 namespace EmojicodeCompiler {

@@ -10,8 +10,8 @@
 #define Prettyprinter_hpp
 
 #include "Package/RecordingPackage.hpp"
-#include "Types/TypeContext.hpp"
 #include "Types/Generic.hpp"
+#include "Types/TypeContext.hpp"
 #include <fstream>
 
 namespace EmojicodeCompiler {
@@ -31,7 +31,7 @@ class TypeDefinition;
 /// before.
 class Prettyprinter {
 public:
-    Prettyprinter(RecordingPackage *package) : package_(package) {}
+    explicit Prettyprinter(RecordingPackage *package) : package_(package) {}
     void printInterface(const std::string &out);
     void print();
 

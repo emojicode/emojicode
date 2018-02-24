@@ -10,8 +10,8 @@
 #define Lexer_hpp
 
 #include "TokenStream.hpp"
-#include <string>
 #include <map>
+#include <string>
 
 namespace EmojicodeCompiler {
 

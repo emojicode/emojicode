@@ -9,10 +9,10 @@
 #ifndef FunctionCodeGenerator_hpp
 #define FunctionCodeGenerator_hpp
 
-#include <llvm/IR/IRBuilder.h>
+#include "CodeGenerator.hpp"
 #include "Functions/Function.hpp"
 #include "Scoping/CGScoper.hpp"
-#include "CodeGenerator.hpp"
+#include <llvm/IR/IRBuilder.h>
 #include <functional>
 
 namespace EmojicodeCompiler {

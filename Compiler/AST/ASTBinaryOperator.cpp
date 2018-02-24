@@ -7,10 +7,10 @@
 //
 
 #include "ASTBinaryOperator.hpp"
-#include "Compiler.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
-#include "Types/ValueType.hpp"
 #include "ASTLiterals.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
+#include "Compiler.hpp"
+#include "Types/ValueType.hpp"
 
 namespace EmojicodeCompiler {
 

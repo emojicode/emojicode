@@ -11,12 +11,12 @@
 
 #include "CompilerError.hpp"
 #include "Type.hpp"
+#include <algorithm>
+#include <cassert>
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
-#include <cassert>
-#include <functional>
-#include <algorithm>
 
 namespace EmojicodeCompiler {
 

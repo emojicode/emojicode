@@ -12,9 +12,9 @@
 #include "Lex/SourcePosition.hpp"
 #include "Types/Type.hpp"
 #include <map>
+#include <set>
 #include <utility>
 #include <vector>
-#include <set>
 
 namespace EmojicodeCompiler {
 

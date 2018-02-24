@@ -9,8 +9,8 @@
 #include "CompilerError.hpp"
 #include "Compiler.hpp"
 #include "Generation/CodeGenerator.hpp"
-#include "Prettyprint/Prettyprinter.hpp"
 #include "Parsing/AbstractParser.hpp"
+#include "Prettyprint/Prettyprinter.hpp"
 #include <llvm/Support/FileSystem.h>
 
 #include <utility>

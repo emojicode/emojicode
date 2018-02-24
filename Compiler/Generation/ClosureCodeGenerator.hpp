@@ -9,9 +9,9 @@
 #ifndef ClosureCodeGenerator_hpp
 #define ClosureCodeGenerator_hpp
 
-#include "Scoping/CapturingSemanticScoper.hpp"
-#include "FunctionCodeGenerator.hpp"
 #include "AST/ASTClosure.hpp"
+#include "FunctionCodeGenerator.hpp"
+#include "Scoping/CapturingSemanticScoper.hpp"
 
 namespace EmojicodeCompiler {
 

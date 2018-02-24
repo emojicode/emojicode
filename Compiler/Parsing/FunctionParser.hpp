@@ -13,10 +13,10 @@
 
 #include "AST/ASTExpr.hpp"
 #include "AST/ASTStatements.hpp"
+#include "AbstractParser.hpp"
 #include "Lex/TokenStream.hpp"
 #include "Parsing/OperatorHelper.hpp"
 #include "Types/TypeContext.hpp"
-#include "AbstractParser.hpp"
 
 namespace EmojicodeCompiler {
 

@@ -9,8 +9,8 @@
 #ifndef Options_hpp
 #define Options_hpp
 
-#include "EmojicodeCompiler.hpp"
 #include "Compiler.hpp"
+#include "EmojicodeCompiler.hpp"
 #include <memory>
 #include <string>
 #include <vector>

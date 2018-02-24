@@ -10,6 +10,7 @@
 #include "Class.hpp"
 #include "CommonTypeFinder.hpp"
 #include "EmojicodeCompiler.hpp"
+#include "Emojis.h"
 #include "Enum.hpp"
 #include "Extension.hpp"
 #include "Functions/Function.hpp"
@@ -17,7 +18,6 @@
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
 #include "ValueType.hpp"
-#include "Emojis.h"
 #include <algorithm>
 #include <cstring>
 #include <vector>

@@ -2,19 +2,19 @@
 // Created by Theo Weidmann on 03.02.18.
 //
 
-#include <llvm/IR/Type.h>
-#include <llvm/IR/GlobalVariable.h>
-#include <llvm/IR/GlobalValue.h>
-#include <llvm/IR/Function.h>
-#include <llvm/IR/DerivedTypes.h>
-#include <llvm/Support/raw_ostream.h>
 #include "Declarator.hpp"
-#include "Mangler.hpp"
-#include "Package/Package.hpp"
-#include "LLVMTypeHelper.hpp"
-#include "Types/ValueType.hpp"
 #include "Functions/Function.hpp"
 #include "Generation/ReificationContext.hpp"
+#include "LLVMTypeHelper.hpp"
+#include "Mangler.hpp"
+#include "Package/Package.hpp"
+#include "Types/ValueType.hpp"
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/GlobalValue.h>
+#include <llvm/IR/GlobalVariable.h>
+#include <llvm/IR/Type.h>
+#include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {
 

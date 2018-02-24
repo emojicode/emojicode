@@ -12,9 +12,9 @@
 #include <utility>
 
 #include "EmojicodeCompiler.hpp"
-#include "Types/Type.hpp"
 #include "Function.hpp"
 #include "FunctionType.hpp"
+#include "Types/Type.hpp"
 
 namespace EmojicodeCompiler {
 

@@ -9,11 +9,11 @@
 #ifndef Function_hpp
 #define Function_hpp
 
+#include "Emojis.h"
+#include "FunctionType.hpp"
 #include "Types/Generic.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeContext.hpp"
-#include "FunctionType.hpp"
-#include "Emojis.h"
 #include <experimental/optional>
 #include <memory>
 #include <utility>

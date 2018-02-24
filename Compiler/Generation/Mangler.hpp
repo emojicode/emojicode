@@ -9,8 +9,8 @@
 #ifndef Mangler_hpp
 #define Mangler_hpp
 
-#include <string>
 #include <map>
+#include <string>
 
 namespace EmojicodeCompiler {
 

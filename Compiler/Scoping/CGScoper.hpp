@@ -9,8 +9,8 @@
 #ifndef CGScoper_hpp
 #define CGScoper_hpp
 
-#include <vector>
 #include <cstddef>
+#include <vector>
 
 namespace llvm {
 class Value;

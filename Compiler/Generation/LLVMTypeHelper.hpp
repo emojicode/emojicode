@@ -9,8 +9,8 @@
 #ifndef LLVMTypeHelper_hpp
 #define LLVMTypeHelper_hpp
 
-#include <llvm/IR/LLVMContext.h>
 #include "Types/Type.hpp"
+#include <llvm/IR/LLVMContext.h>
 #include <map>
 
 namespace llvm {

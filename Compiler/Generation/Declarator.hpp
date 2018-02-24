@@ -5,11 +5,11 @@
 #ifndef EMOJICODE_DECLARATOR_HPP
 #define EMOJICODE_DECLARATOR_HPP
 
-#include <llvm/IR/Function.h>
-#include <llvm/IR/LegacyPassManager.h>
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/Module.h>
 #include "Types/Class.hpp"
+#include <llvm/IR/Function.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/LegacyPassManager.h>
+#include <llvm/IR/Module.h>
 
 namespace EmojicodeCompiler {
 

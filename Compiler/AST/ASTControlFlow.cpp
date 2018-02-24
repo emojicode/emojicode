@@ -7,8 +7,8 @@
 //
 
 #include "ASTControlFlow.hpp"
-#include "Compiler.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
+#include "Compiler.hpp"
 
 namespace EmojicodeCompiler {
 

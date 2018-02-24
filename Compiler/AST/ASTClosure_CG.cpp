@@ -6,9 +6,9 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include <llvm/Support/raw_ostream.h>
 #include "ASTClosure.hpp"
 #include "Generation/ClosureCodeGenerator.hpp"
+#include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {
 

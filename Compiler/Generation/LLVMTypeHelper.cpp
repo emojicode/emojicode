@@ -7,13 +7,13 @@
 //
 
 #include "Functions/Function.hpp"
+#include "Compiler.hpp"
 #include "Functions/Initializer.hpp"
+#include "Generation/ReificationContext.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Mangler.hpp"
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "Types/TypeDefinition.hpp"
-#include "Compiler.hpp"
-#include "Generation/ReificationContext.hpp"
 #include <llvm/IR/DerivedTypes.h>
 #include <AST/ASTClosure.hpp>
 

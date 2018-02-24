@@ -3,14 +3,14 @@
 //
 
 #include "ProtocolsTableGenerator.hpp"
+#include "Functions/Function.hpp"
+#include "Generation/Mangler.hpp"
+#include "LLVMTypeHelper.hpp"
+#include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeDefinition.hpp"
-#include "Types/Protocol.hpp"
-#include "Generation/Mangler.hpp"
-#include "Functions/Function.hpp"
-#include "LLVMTypeHelper.hpp"
-#include <llvm/IR/Module.h>
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/Module.h>
 
 namespace EmojicodeCompiler {
 

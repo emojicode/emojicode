@@ -9,9 +9,9 @@
 #ifndef ASTMethod_hpp
 #define ASTMethod_hpp
 
-#include <utility>
-#include "Functions/CallType.h"
 #include "ASTExpr.hpp"
+#include "Functions/CallType.h"
+#include <utility>
 
 namespace EmojicodeCompiler {
 

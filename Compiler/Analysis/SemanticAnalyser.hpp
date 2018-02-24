@@ -12,12 +12,12 @@
 #include "AST/ASTExpr.hpp"
 #include "AST/ASTTypeExpr.hpp"
 #include "CompilerError.hpp"
+#include "Package/Package.hpp"
+#include "PathAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "Package/Package.hpp"
-#include "PathAnalyser.hpp"
 #include <memory>
 #include <utility>
 

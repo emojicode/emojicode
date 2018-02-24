@@ -35,7 +35,7 @@ public:
     /// @returns The name of the variable to be accessed.
     const std::u32string& name() const { return name_; }
 protected:
-    AccessesAnyVariable(std::u32string name) : name_(std::move(name)) {}
+    explicit AccessesAnyVariable(std::u32string name) : name_(std::move(name)) {}
     void setVariableAccess(const ResolvedVariable &var, SemanticAnalyser *analyser);
     bool inInstanceScope() const { return inInstanceScope_; }
     VariableID id() const { return id_; }

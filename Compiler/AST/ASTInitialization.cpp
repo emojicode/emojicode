@@ -8,9 +8,9 @@
 
 #include "ASTInitialization.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
+#include "Compiler.hpp"
 #include "Functions/Initializer.hpp"
 #include "Types/Enum.hpp"
-#include "Compiler.hpp"
 namespace EmojicodeCompiler {
 
 Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {

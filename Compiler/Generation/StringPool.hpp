@@ -23,7 +23,7 @@ class CodeGenerator;
 /// StringPool represents an application’s string pool.
 class StringPool {
 public:
-    StringPool(CodeGenerator *cg) : codeGenerator_(cg) {}
+    explicit StringPool(CodeGenerator *cg) : codeGenerator_(cg) {}
 
     /// Pools the given string. The pool is searched for an identical strings first, if no such string is found,
     /// the string is added to the end of the pool.
