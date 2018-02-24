@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['lex',['lex',['../class_emojicode_compiler_1_1_lexer.html#a88c5d49ef5ea41cb1b9f345ddb80ec3a',1,'EmojicodeCompiler::Lexer']]],
-  ['lexer',['Lexer',['../class_emojicode_compiler_1_1_lexer.html',1,'EmojicodeCompiler']]],
-  ['lexfile',['lexFile',['../class_emojicode_compiler_1_1_lexer.html#aea7a59a3f27380e546e89adb7ca36f01',1,'EmojicodeCompiler::Lexer']]],
+  ['lex',['lex',['../class_emojicode_compiler_1_1_lexer.html#a798b79af8b79b1d876df128af5832a80',1,'EmojicodeCompiler::Lexer']]],
+  ['lexer',['Lexer',['../class_emojicode_compiler_1_1_lexer.html',1,'EmojicodeCompiler::Lexer'],['../class_emojicode_compiler_1_1_lexer.html#a303c136cd42860707de0ad8d42708e9b',1,'EmojicodeCompiler::Lexer::Lexer()']]],
   ['llvmtypehelper',['LLVMTypeHelper',['../class_emojicode_compiler_1_1_l_l_v_m_type_helper.html',1,'EmojicodeCompiler']]],
   ['loadmigrationfile',['loadMigrationFile',['../class_emojicode_compiler_1_1_compiler.html#aacdd6a012555398e17cf4db1851d6d96',1,'EmojicodeCompiler::Compiler']]],
   ['loadpackage',['loadPackage',['../class_emojicode_compiler_1_1_compiler.html#a28f61c2cba37fba3dc365f06767dbf9f',1,'EmojicodeCompiler::Compiler']]],

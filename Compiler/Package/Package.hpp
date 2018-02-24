@@ -20,6 +20,7 @@ namespace EmojicodeCompiler {
 
 class Function;
 class BoxingLayer;
+class TokenStream;
 
 #undef major
 #undef minor
@@ -154,6 +155,8 @@ private:
 
     void enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) const;
     void enqueueFunction(Function *) const;
+
+    TokenStream lexFile(const std::string &path);
 
     const std::string name_;
     const std::string path_;

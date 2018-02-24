@@ -31,7 +31,7 @@ std::shared_ptr<ASTBlock> FunctionParser::parse() {
 }
 
 ASTBlock FunctionParser::parseBlock() {
-    auto &token = stream_.consumeToken(TokenType::BlockBegin);
+    auto token = stream_.consumeToken(TokenType::BlockBegin);
 
     auto block = ASTBlock(token.position());
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
@@ -43,7 +43,7 @@ ASTBlock FunctionParser::parseBlock() {
 
 std::shared_ptr<ASTExpr> FunctionParser::parseCondition() {
     if (stream_.consumeTokenIf(TokenType::FrozenDeclaration)) {
-        auto &varName = stream_.consumeToken(TokenType::Variable);
+        auto varName = stream_.consumeToken(TokenType::Variable);
         return std::make_shared<ASTConditionalAssignment>(varName.value(), parseExpr(0), varName.position());
     }
     return parseExpr(0);
@@ -72,7 +72,7 @@ std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
     const Token &token = stream_.consumeToken();
     switch (token.type()) {
         case TokenType::Declaration: {
-            auto &varName = stream_.consumeToken(TokenType::Variable);
+            auto varName = stream_.consumeToken(TokenType::Variable);
 
             Type type = parseType(typeContext_);
             return std::make_shared<ASTVariableDeclaration>(type, varName.value(), token.position());
@@ -80,7 +80,7 @@ std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
         case TokenType::Assignment:
             return parseVariableAssignment(token);
         case TokenType::FrozenDeclaration: {
-            auto &varName = stream_.consumeToken(TokenType::Variable);
+            auto varName = stream_.consumeToken(TokenType::Variable);
             return std::make_shared<ASTFrozenDeclaration>(varName.value(), parseExpr(0), token.position());
         }
         case TokenType::If:
@@ -93,7 +93,7 @@ std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
             return std::make_shared<ASTRepeatWhile>(cond, block, token.position());
         }
         case TokenType::ForIn: {
-            auto &variableToken = stream_.consumeToken(TokenType::Variable);
+            auto variableToken = stream_.consumeToken(TokenType::Variable);
             auto iteratee = parseExpr(0);
             auto block = parseBlock();
             return std::make_shared<ASTForIn>(iteratee, variableToken.value(), block, token.position());
@@ -109,7 +109,7 @@ std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
 }
 
 std::shared_ptr<ASTStatement> FunctionParser::parseErrorHandler(const SourcePosition &position) {
-    auto &variableToken = stream_.consumeToken(TokenType::Variable);
+    auto variableToken = stream_.consumeToken(TokenType::Variable);
     auto value = parseExpr(0);
     auto valueBlock = parseBlock();
 
@@ -135,8 +135,8 @@ std::shared_ptr<ASTStatement> FunctionParser::parseIf(const SourcePosition &posi
 
 std::shared_ptr<ASTStatement> FunctionParser::parseVariableAssignment(const Token &token) {
     if (stream_.nextToken().type() == TokenType::Identifier) {
-        auto &method = stream_.consumeToken();
-        auto &varName = stream_.consumeToken(TokenType::Variable);
+        auto method = stream_.consumeToken();
+        auto varName = stream_.consumeToken(TokenType::Variable);
 
         auto varGet = std::make_shared<ASTGetVariable>(varName.value(), token.position());
         auto mc = std::make_shared<ASTMethod>(method.value(), varGet, parseArguments(token.position()),
@@ -144,9 +144,9 @@ std::shared_ptr<ASTStatement> FunctionParser::parseVariableAssignment(const Toke
         return std::make_shared<ASTVariableAssignmentDecl>(varName.value(), mc, token.position());
     }
 
-    auto &varName = stream_.consumeToken(TokenType::Variable);
+    auto varName = stream_.consumeToken(TokenType::Variable);
     if (stream_.nextToken().type() == TokenType::Operator) {
-        auto &token = stream_.consumeToken();
+        auto token = stream_.consumeToken();
 
         auto varGet = std::make_shared<ASTGetVariable>(varName.value(), token.position());
         auto mc = std::make_shared<ASTBinaryOperator>(operatorType(token.value()), varGet,
@@ -171,7 +171,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprTokens(const Token &token, int
 std::shared_ptr<ASTExpr> FunctionParser::parseRight(std::shared_ptr<ASTExpr> left, int precendence) {
     int peakedPre;
     while (precendence < (peakedPre = peakOperatorPrecedence())) {
-        auto &token = stream_.consumeToken();
+        auto token = stream_.consumeToken();
         OperatorType type = operatorType(token.value());
         if (type == OperatorType::CallOperator) {
             left = std::make_shared<ASTCallableCall>(left, parseArguments(token.position()), token.position());
@@ -219,7 +219,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
         case TokenType::This:
             return std::make_shared<ASTThis>(token.position());
         case TokenType::Super: {
-            auto &initializerToken = stream_.consumeToken();
+            auto initializerToken = stream_.consumeToken();
             auto arguments = parseArguments(token.position());
             return std::make_shared<ASTSuper>(initializerToken.value(), arguments, token.position());
         }

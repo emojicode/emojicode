@@ -72,20 +72,23 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>This class manages the Tokens for the parser. Allows one token of lookahead.  
- <a href="class_emojicode_compiler_1_1_token_stream.html#details">More...</a></p>
-
 <p><code>#include &lt;<a class="el" href="_token_stream_8hpp_source.html">TokenStream.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aadc94758d8e98406112cc96ad1b0d6ef"><td class="memItemLeft" align="right" valign="top"><a id="aadc94758d8e98406112cc96ad1b0d6ef"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TokenStream</b> (std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &gt; tokens)</td></tr>
-<tr class="separator:aadc94758d8e98406112cc96ad1b0d6ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bcf67b7bbd2ab4363f428983d579bdb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a0bcf67b7bbd2ab4363f428983d579bdb">consumeToken</a> ()</td></tr>
-<tr class="separator:a0bcf67b7bbd2ab4363f428983d579bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0733249ac9bfdbdb715e856e972f4e1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#ac0733249ac9bfdbdb715e856e972f4e1">consumeToken</a> (TokenType type)</td></tr>
-<tr class="separator:ac0733249ac9bfdbdb715e856e972f4e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aead92226375806ce6f2d7f65525e384b"><td class="memItemLeft" align="right" valign="top"><a id="aead92226375806ce6f2d7f65525e384b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TokenStream</b> (<a class="el" href="class_emojicode_compiler_1_1_lexer.html">Lexer</a> lexer)</td></tr>
+<tr class="separator:aead92226375806ce6f2d7f65525e384b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87957705b17295f1a88b33b9913bc786"><td class="memItemLeft" align="right" valign="top"><a id="a87957705b17295f1a88b33b9913bc786"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TokenStream</b> (const <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;)=delete</td></tr>
+<tr class="separator:a87957705b17295f1a88b33b9913bc786"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a100401e4c8d18c0ad09d65fb08677708"><td class="memItemLeft" align="right" valign="top"><a id="a100401e4c8d18c0ad09d65fb08677708"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TokenStream</b> (<a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a100401e4c8d18c0ad09d65fb08677708"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7ec2de2a80b1196bc353d6d154d755c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#ac7ec2de2a80b1196bc353d6d154d755c">consumeToken</a> ()</td></tr>
+<tr class="separator:ac7ec2de2a80b1196bc353d6d154d755c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae836ecb8d9a59d6b3a94c0cd927a08f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#ae836ecb8d9a59d6b3a94c0cd927a08f4">consumeToken</a> (TokenType type)</td></tr>
+<tr class="separator:ae836ecb8d9a59d6b3a94c0cd927a08f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a32226367ed08bdc83f2f5d695a73bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a7a32226367ed08bdc83f2f5d695a73bd">hasMoreTokens</a> () const</td></tr>
 <tr class="separator:a7a32226367ed08bdc83f2f5d695a73bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8848b34e75b9f1cdc3ce4f01c9a9ae41"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a8848b34e75b9f1cdc3ce4f01c9a9ae41">nextTokenIs</a> (TokenType type) const</td></tr>
@@ -105,10 +108,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>nextTokenIsEverything
 <tr class="separator:a300a56a6fddcc61752c928cf2a3e826b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This class manages the Tokens for the parser. Allows one token of lookahead. </p>
+<div class="textblock"><p><a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> provides a convenient interface to <a class="el" href="class_emojicode_compiler_1_1_lexer.html">Lexer</a>. It allows a lookahead of one token. <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a> skips comments. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0bcf67b7bbd2ab4363f428983d579bdb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0bcf67b7bbd2ab4363f428983d579bdb">&#9670;&nbsp;</a></span>consumeToken() <span class="overload">[1/2]</span></h2>
+<a id="ac7ec2de2a80b1196bc353d6d154d755c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7ec2de2a80b1196bc353d6d154d755c">&#9670;&nbsp;</a></span>consumeToken() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -117,7 +120,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>nextTokenIsEverything
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a>&amp; EmojicodeCompiler::TokenStream::consumeToken </td>
+          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> EmojicodeCompiler::TokenStream::consumeToken </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -139,8 +142,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>nextTokenIsEverything
 
 </div>
 </div>
-<a id="ac0733249ac9bfdbdb715e856e972f4e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0733249ac9bfdbdb715e856e972f4e1">&#9670;&nbsp;</a></span>consumeToken() <span class="overload">[2/2]</span></h2>
+<a id="ae836ecb8d9a59d6b3a94c0cd927a08f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae836ecb8d9a59d6b3a94c0cd927a08f4">&#9670;&nbsp;</a></span>consumeToken() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -149,7 +152,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>nextTokenIsEverything
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a>&amp; EmojicodeCompiler::TokenStream::consumeToken </td>
+          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> EmojicodeCompiler::TokenStream::consumeToken </td>
           <td>(</td>
           <td class="paramtype">TokenType&#160;</td>
           <td class="paramname"><em>type</em></td><td>)</td>
@@ -268,7 +271,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>nextTokenIsEverything
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The next token. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The next token without consuming it. </dd></dl>
 <dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a7a32226367ed08bdc83f2f5d695a73bd">hasMoreTokens()</a> must return true. </dd></dl>
 
 </div>

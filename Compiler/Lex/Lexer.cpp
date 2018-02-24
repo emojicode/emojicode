@@ -10,16 +10,12 @@
 #include "CompilerError.hpp"
 #include "EmojiTokenization.hpp"
 #include "Emojis.h"
-#include <codecvt>
-#include <fstream>
-#include <iostream>
-#include <locale>
-#include <memory>
 
 namespace EmojicodeCompiler {
 
-Lexer::Lexer(std::u32string str, std::string sourcePositionFile) : string_(std::move(str)) {
-    sourcePosition_.file = std::move(sourcePositionFile);
+Lexer::Lexer(std::u32string sourceCode, std::string sourcePositionFile) :
+        string_(std::move(sourceCode)), sourcePosition_(1, 0, std::move(sourcePositionFile)) {
+    prepare();
 
     loadOperatorSingleTokens();
     singleTokens_.emplace(E_WHITE_EXCLAMATION_MARK, TokenType::BeginArgumentList);
@@ -72,6 +68,12 @@ void Lexer::loadOperatorSingleTokens() {
     singleTokens_.emplace(E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK, TokenType::Operator);
 }
 
+void Lexer::prepare() {
+    do {
+        nextCharOrEnd();
+    } while (continue_ && detectWhitespace());
+}
+
 bool Lexer::detectWhitespace() {
     if (isNewline()) {
         sourcePosition_.character = 0;
@@ -80,25 +82,10 @@ bool Lexer::detectWhitespace() {
     }
     return isWhitespace();
 }
-    
-TokenStream Lexer::lexFile(const std::string &path) {
-    if (!endsWith(path, ".emojic") && !endsWith(path, ".emojii")) {
-        throw CompilerError(SourcePosition(0, 0, path), "Emojicode files must be suffixed with .emojic: ", path);
-    }
-
-    std::ifstream f(path, std::ios_base::binary | std::ios_base::in);
-    if (f.fail()) {
-        throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file ", path, ".");
-    }
-
-    auto string = std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
-    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-    return Lexer(conv.from_bytes(string), path).lex();
-}
 
 void Lexer::nextChar() {
     if (!hasMoreChars()) {
-        throw CompilerError(tokens_.back().position(), "Unexpected end of file.");
+        throw CompilerError(sourcePosition_, "Unexpected end of file.");
     }
     codePoint_ = string_[i_++];
     sourcePosition_.character++;
@@ -113,20 +100,15 @@ void Lexer::nextCharOrEnd() {
     }
 }
 
-TokenStream Lexer::lex() {
-    nextCharOrEnd();
-    while (continue_) {
-        if (detectWhitespace()) {
-            nextCharOrEnd();
-            continue;
-        }
+Token Lexer::lex() {
+    Token token(sourcePosition_);
+    readToken(&token);
 
-        tokens_.emplace_back(sourcePosition_);
-
-        readToken(&tokens_.back());
+    while (continue_ && detectWhitespace()) {  // Remove all whitespace after token in order to make continues() accurate.
+        nextCharOrEnd();
     }
 
-    return TokenStream(std::move(tokens_));
+    return token;
 }
 
 void Lexer::readToken(Token *token) {
@@ -134,11 +116,6 @@ void Lexer::readToken(Token *token) {
     while (true) {
         if (state == TokenState::Ended) {
             token->validate();
-            nextCharOrEnd();
-            return;
-        }
-        if (state == TokenState::Discard) {
-            tokens_.pop_back();
             nextCharOrEnd();
             return;
         }
@@ -221,12 +198,12 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
             return TokenState::NextBegun;
         case TokenType::SinglelineComment:
             if (isNewline()) {
-                return TokenState::Discard;
+                return TokenState::Ended;
             }
             return TokenState::Continues;
         case TokenType::MultilineComment:
             if (codePoint() == E_OLDER_WOMAN) {
-                return TokenState::Discard;
+                return TokenState::Ended;
             }
             return TokenState::Continues;
         case TokenType::DocumentationComment:

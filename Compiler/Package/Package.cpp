@@ -27,6 +27,10 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <codecvt>
+#include <fstream>
+#include <iostream>
+#include <locale>
 
 namespace EmojicodeCompiler {
 
@@ -76,8 +80,23 @@ void Package::importPackage(const std::string &name, const std::u32string &ns, c
     }
 }
 
+TokenStream Package::lexFile(const std::string &path) {
+    if (!endsWith(path, ".emojic") && !endsWith(path, ".emojii")) {
+        throw CompilerError(SourcePosition(0, 0, path), "Emojicode files must be suffixed with .emojic: ", path);
+    }
+
+    std::ifstream f(path, std::ios_base::binary | std::ios_base::in);
+    if (f.fail()) {
+        throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file ", path, ".");
+    }
+
+    auto string = std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    return TokenStream(Lexer(conv.from_bytes(string), path));
+}
+
 void Package::includeDocument(const std::string &path, const std::string &relativePath) {
-    DocumentParser(this, Lexer::lexFile(path), endsWith(path, "emojii")).parse();
+    DocumentParser(this, lexFile(path), endsWith(path, "emojii")).parse();
 }
 
 void Package::parse() {

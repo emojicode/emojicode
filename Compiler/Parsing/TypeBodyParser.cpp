@@ -16,7 +16,7 @@ namespace EmojicodeCompiler {
 
 void TypeBodyParser::parseFunctionBody(Function *function) {
     if (stream_.consumeTokenIf(E_RADIO)) {
-        auto &token = stream_.consumeToken(TokenType::String);
+        auto token = stream_.consumeToken(TokenType::String);
         if (token.value().empty()) {
             throw CompilerError(token.position(), "The external name must not be empty.");
         }
@@ -79,7 +79,7 @@ void TypeBodyParser::parseEnumValue(const SourcePosition &p, const Documentation
 }
 
 void EnumTypeBodyParser::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
-    auto &token = stream_.consumeToken(TokenType::Identifier);
+    auto token = stream_.consumeToken(TokenType::Identifier);
     owningType().eenum()->addValueFor(token.value(), token.position(), documentation.get());
 }
 
@@ -95,7 +95,7 @@ Initializer* EnumTypeBodyParser::parseInitializer(const std::u32string &name, Ty
 
 void ClassTypeBodyParser::parse() {
     TypeBodyParser::parse();
-    for (auto &init : requiredInitializers_) {
+    for (auto init : requiredInitializers_) {
         package_->compiler()->error(CompilerError(owningType().typeDefinition()->position(), "Required initializer ",
                                              utf8(init), " was not implemented."));
     }
@@ -126,7 +126,7 @@ Initializer* ClassTypeBodyParser::parseInitializer(const std::u32string &name, T
 }
 
 void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
-    auto &variableName = stream_.consumeToken(TokenType::Variable);
+    auto variableName = stream_.consumeToken(TokenType::Variable);
     auto type = parseType(TypeContext(type_));
     auto instanceVar = InstanceVariableDeclaration(variableName.value(), type, variableName.position());
     type_.typeDefinition()->addInstanceVariable(instanceVar);
@@ -168,7 +168,7 @@ Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBo
         if (type_.type() != TypeType::Class) {
             throw CompilerError(p, "Only classes can have error-prone initializers.");
         }
-        auto &token = stream_.consumeToken(TokenType::Error);
+        auto token = stream_.consumeToken(TokenType::Error);
         errorType = parseErrorEnumType(TypeContext(type_), token.position());
     }
 
@@ -190,11 +190,11 @@ void TypeBodyParser::parse() {
         auto attributes = TypeBodyAttributeParser().parse(&stream_);
         AccessLevel accessLevel = readAccessLevel();
 
-        auto &token = stream_.consumeToken();
+        auto token = stream_.consumeToken();
         switch (token.type()) {
             case TokenType::EndInterrogativeArgumentList:
             case TokenType::EndArgumentList: {
-                auto &methodName = stream_.consumeToken(TokenType::Identifier);
+                auto methodName = stream_.consumeToken(TokenType::Identifier);
                 parseMethod(methodName.value(), attributes, documentation, accessLevel,
                             token.type() == TokenType::EndArgumentList, token.position());
                 break;

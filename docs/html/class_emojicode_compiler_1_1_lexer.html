@@ -66,30 +66,144 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_lexer-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EmojicodeCompiler::Lexer Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_lexer_8hpp_source.html">Lexer.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0f10df481188944400c78221efc30cd5"><td class="memItemLeft" align="right" valign="top"><a id="a0f10df481188944400c78221efc30cd5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Lexer</b> (std::u32string str, std::string sourcePositionFile)</td></tr>
-<tr class="separator:a0f10df481188944400c78221efc30cd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88c5d49ef5ea41cb1b9f345ddb80ec3a"><td class="memItemLeft" align="right" valign="top"><a id="a88c5d49ef5ea41cb1b9f345ddb80ec3a"></a>
-<a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_lexer.html#a88c5d49ef5ea41cb1b9f345ddb80ec3a">lex</a> ()</td></tr>
-<tr class="memdesc:a88c5d49ef5ea41cb1b9f345ddb80ec3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lexes the string and returns a <a class="el" href="class_emojicode_compiler_1_1_token_stream.html" title="This class manages the Tokens for the parser. Allows one token of lookahead. ">TokenStream</a>. <br /></td></tr>
-<tr class="separator:a88c5d49ef5ea41cb1b9f345ddb80ec3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aea7a59a3f27380e546e89adb7ca36f01"><td class="memItemLeft" align="right" valign="top"><a id="aea7a59a3f27380e546e89adb7ca36f01"></a>
-static <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_lexer.html#aea7a59a3f27380e546e89adb7ca36f01">lexFile</a> (const std::string &amp;path)</td></tr>
-<tr class="memdesc:aea7a59a3f27380e546e89adb7ca36f01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the file at path, creates a <a class="el" href="class_emojicode_compiler_1_1_lexer.html">Lexer</a> instance and returns the result of calling <a class="el" href="class_emojicode_compiler_1_1_lexer.html#a88c5d49ef5ea41cb1b9f345ddb80ec3a" title="Lexes the string and returns a TokenStream. ">lex()</a>. <br /></td></tr>
-<tr class="separator:aea7a59a3f27380e546e89adb7ca36f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a303c136cd42860707de0ad8d42708e9b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_lexer.html#a303c136cd42860707de0ad8d42708e9b">Lexer</a> (std::u32string sourceCode, std::string sourcePositionFile)</td></tr>
+<tr class="separator:a303c136cd42860707de0ad8d42708e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a798b79af8b79b1d876df128af5832a80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_lexer.html#a798b79af8b79b1d876df128af5832a80">lex</a> ()</td></tr>
+<tr class="separator:a798b79af8b79b1d876df128af5832a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fe87eb7d2fc0b8f545efa59f869c999"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_lexer.html#a7fe87eb7d2fc0b8f545efa59f869c999">continues</a> () const</td></tr>
+<tr class="separator:a7fe87eb7d2fc0b8f545efa59f869c999"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f7344bf4c88774aa01ed3681b3e76cb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_lexer.html#a6f7344bf4c88774aa01ed3681b3e76cb">position</a> () const</td></tr>
+<tr class="separator:a6f7344bf4c88774aa01ed3681b3e76cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="class_emojicode_compiler_1_1_lexer.html">Lexer</a> is responsible for the lexical analysis of a source code file.</p>
+<p>It takes the content of the source code file as a string and provides three methods: <a class="el" href="class_emojicode_compiler_1_1_lexer.html#a798b79af8b79b1d876df128af5832a80">lex()</a> which returns the next token, <a class="el" href="class_emojicode_compiler_1_1_lexer.html#a7fe87eb7d2fc0b8f545efa59f869c999">continues()</a> to determine if there are more tokens and <a class="el" href="class_emojicode_compiler_1_1_lexer.html#a6f7344bf4c88774aa01ed3681b3e76cb">position()</a> to determine the position of the lexer.</p>
+<p><a class="el" href="class_emojicode_compiler_1_1_lexer.html">Lexer</a> is normally not directly accessed but used through <a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a>, which provides a more convenient interface.</p>
+<p><a class="el" href="class_emojicode_compiler_1_1_lexer.html">Lexer</a> also returns tokens representing comments. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a303c136cd42860707de0ad8d42708e9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a303c136cd42860707de0ad8d42708e9b">&#9670;&nbsp;</a></span>Lexer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EmojicodeCompiler::Lexer::Lexer </td>
+          <td>(</td>
+          <td class="paramtype">std::u32string&#160;</td>
+          <td class="paramname"><em>sourceCode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>sourcePositionFile</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sourceCode</td><td>The Emojicode source code that shall be analyzed. </td></tr>
+    <tr><td class="paramname">sourcePositionFile</td><td>The name or path to the file that contained the source code. This string is used as SourcePosition::file value for the position of all tokens created by this <a class="el" href="class_emojicode_compiler_1_1_lexer.html">Lexer</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a7fe87eb7d2fc0b8f545efa59f869c999"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fe87eb7d2fc0b8f545efa59f869c999">&#9670;&nbsp;</a></span>continues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EmojicodeCompiler::Lexer::continues </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>True iff characters to be tokenized are left. </dd></dl>
+
+</div>
+</div>
+<a id="a798b79af8b79b1d876df128af5832a80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a798b79af8b79b1d876df128af5832a80">&#9670;&nbsp;</a></span>lex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> EmojicodeCompiler::Lexer::lex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The next token. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_emojicode_compiler_1_1_compiler_error.html">CompilerError</a></td><td>if an error occurs during tokenization. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="class_emojicode_compiler_1_1_lexer.html#a7fe87eb7d2fc0b8f545efa59f869c999">continues()</a> must be true. </dd></dl>
+
+</div>
+</div>
+<a id="a6f7344bf4c88774aa01ed3681b3e76cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f7344bf4c88774aa01ed3681b3e76cb">&#9670;&nbsp;</a></span>position()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a>&amp; EmojicodeCompiler::Lexer::position </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The position which would be the position of the next token returned by <a class="el" href="class_emojicode_compiler_1_1_lexer.html#a798b79af8b79b1d876df128af5832a80">lex()</a>. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/Lex/<a class="el" href="_lexer_8hpp_source.html">Lexer.hpp</a></li>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/Lex/Lexer.cpp</li>

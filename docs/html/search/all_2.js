@@ -27,8 +27,9 @@ var searchData=
   ['comply',['comply',['../class_emojicode_compiler_1_1_function_analyser.html#afb761390b7649bafbaa89cf31ecbaec1',1,'EmojicodeCompiler::FunctionAnalyser']]],
   ['constraintforindex',['constraintForIndex',['../class_emojicode_compiler_1_1_generic.html#a349814ab1594cd56d50f2125d068d8e2',1,'EmojicodeCompiler::Generic']]],
   ['constructedtype',['constructedType',['../class_emojicode_compiler_1_1_initializer.html#a308cd92a4fd64cfa6a0570dc158ae314',1,'EmojicodeCompiler::Initializer']]],
-  ['consumetoken',['consumeToken',['../class_emojicode_compiler_1_1_token_stream.html#a0bcf67b7bbd2ab4363f428983d579bdb',1,'EmojicodeCompiler::TokenStream::consumeToken()'],['../class_emojicode_compiler_1_1_token_stream.html#ac0733249ac9bfdbdb715e856e972f4e1',1,'EmojicodeCompiler::TokenStream::consumeToken(TokenType type)']]],
+  ['consumetoken',['consumeToken',['../class_emojicode_compiler_1_1_token_stream.html#ac7ec2de2a80b1196bc353d6d154d755c',1,'EmojicodeCompiler::TokenStream::consumeToken()'],['../class_emojicode_compiler_1_1_token_stream.html#ae836ecb8d9a59d6b3a94c0cd927a08f4',1,'EmojicodeCompiler::TokenStream::consumeToken(TokenType type)']]],
   ['consumetokenif',['consumeTokenIf',['../class_emojicode_compiler_1_1_token_stream.html#a7b9c7a47d2a2281bbeb7f0e96e0ed000',1,'EmojicodeCompiler::TokenStream::consumeTokenIf(char32_t c, TokenType type=TokenType::Identifier)'],['../class_emojicode_compiler_1_1_token_stream.html#a300a56a6fddcc61752c928cf2a3e826b',1,'EmojicodeCompiler::TokenStream::consumeTokenIf(TokenType type)']]],
+  ['continues',['continues',['../class_emojicode_compiler_1_1_lexer.html#a7fe87eb7d2fc0b8f545efa59f869c999',1,'EmojicodeCompiler::Lexer']]],
   ['createunspecificreification',['createUnspecificReification',['../class_emojicode_compiler_1_1_generic.html#a8caf09a1c46beda83bf68b4763ca6b33',1,'EmojicodeCompiler::Generic']]],
   ['currentscope',['currentScope',['../class_emojicode_compiler_1_1_semantic_scoper.html#a10bd4efdc5387eb0b97575d58c8fe876',1,'EmojicodeCompiler::SemanticScoper']]]
 ];

@@ -26,7 +26,7 @@ void DocumentParser::parse() {
     while (stream_.hasMoreTokens()) {
         auto documentation = Documentation().parse(&stream_);
         auto attributes = PackageAttributeParser().parse(&stream_);
-        auto &theToken = stream_.consumeToken(TokenType::Identifier);
+        auto theToken = stream_.consumeToken(TokenType::Identifier);
         switch (theToken.value()[0]) {
             case E_PACKAGE:
                 attributes.check(theToken.position(), package_->compiler());
@@ -93,8 +93,8 @@ TypeIdentifier DocumentParser::parseAndValidateNewTypeName() {
 }
 
 void DocumentParser::parsePackageImport(const SourcePosition &p) {
-    auto &nameToken = stream_.consumeToken(TokenType::Variable);
-    auto &namespaceToken = stream_.consumeToken(TokenType::Identifier);
+    auto nameToken = stream_.consumeToken(TokenType::Variable);
+    auto namespaceToken = stream_.consumeToken(TokenType::Identifier);
 
     package_->importPackage(utf8(nameToken.value()), namespaceToken.value(), p);
 }
@@ -125,7 +125,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
 }
 
 void DocumentParser::parseInclude(const SourcePosition &p) {
-    auto &pathString = stream_.consumeToken(TokenType::String);
+    auto pathString = stream_.consumeToken(TokenType::String);
     auto relativePath = std::string(pathString.position().file);
     auto originalPathString = utf8(pathString.value());
     auto fileString = originalPathString;

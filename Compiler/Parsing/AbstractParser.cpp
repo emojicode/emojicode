@@ -38,7 +38,7 @@ TypeIdentifier AbstractParser::parseTypeIdentifier() {
         enamespace = kDefaultNamespace;
     }
 
-    auto &typeName = stream_.consumeToken();
+    auto typeName = stream_.consumeToken();
     return TypeIdentifier(typeName.value(), enamespace, typeName.position());
 }
 
@@ -74,7 +74,7 @@ Type AbstractParser::parseType(const TypeContext &typeContext) {
 }
 
 Type AbstractParser::parseMetatype(const TypeContext &typeContext) {
-    auto &token = stream_.consumeToken();
+    auto token = stream_.consumeToken();
     Type type = parseType(typeContext);
     if (!type.allowsMetaType() || type.meta()) {
         throw CompilerError(token.position(), "Meta type of ", type.toString(typeContext), " is restricted.");
@@ -97,7 +97,7 @@ Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext
 }
 
 Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeContext) {
-    auto &bentoToken = stream_.consumeToken(TokenType::Identifier);
+    auto bentoToken = stream_.consumeToken(TokenType::Identifier);
     Type type = Type(TypeType::MultiProtocol, optional);
     while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
         auto protocolType = parseType(typeContext);
@@ -132,7 +132,7 @@ Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeCon
 }
 
 Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &typeContext) {
-    auto &varToken = stream_.consumeToken(TokenType::Variable);
+    auto varToken = stream_.consumeToken(TokenType::Variable);
 
     Type type = Type::noReturn();
     if (typeContext.function() != nullptr && typeContext.function()->fetchVariable(varToken.value(), optional, &type)) {
@@ -155,7 +155,7 @@ Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, const So
 }
 
 Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContext) {
-    auto &token = stream_.consumeToken(TokenType::Error);
+    auto token = stream_.consumeToken(TokenType::Error);
     Type errorType = parseErrorEnumType(typeContext, token.position());
     if (optional) {
         throw CompilerError(token.position(), "The error type itself cannot be an optional. "
@@ -174,7 +174,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
 
     size_t count = 0;
     for (; stream_.nextTokenIs(E_SPIRAL_SHELL) && count < typeDef->genericParameters().size(); count++) {
-        auto &token = stream_.consumeToken(TokenType::Identifier);
+        auto token = stream_.consumeToken(TokenType::Identifier);
 
         Type argument = parseType(typeContext);
         if (!argument.compatibleTo(typeDef->constraintForIndex(offset + count), typeContext)) {
@@ -197,13 +197,13 @@ void AbstractParser::parseParameters(Function *function, const TypeContext &type
 
     while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {
         if (argumentToVariable) {
-            auto &token = stream_.consumeToken(TokenType::Identifier);
+            auto token = stream_.consumeToken(TokenType::Identifier);
             if (!initializer) {
                 throw CompilerError(token.position(), "🍼 can only be used with initializers.");
             }
         }
 
-        auto &variableToken = stream_.consumeToken(TokenType::Variable);
+        auto variableToken = stream_.consumeToken(TokenType::Variable);
         auto type = parseType(typeContext);
 
         args.emplace_back(variableToken.value(), type);

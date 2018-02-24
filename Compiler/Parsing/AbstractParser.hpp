@@ -26,7 +26,7 @@ class Documentation {
 public:
     Documentation& parse(TokenStream *tokenStream) {
         if (tokenStream->nextTokenIs(TokenType::DocumentationComment)) {
-            auto &token = tokenStream->consumeToken(TokenType::DocumentationComment);
+            auto token = tokenStream->consumeToken(TokenType::DocumentationComment);
             position_ = token.position();
             documentation_ = token.value();
             found_ = true;
@@ -68,7 +68,7 @@ protected:
     void parseGenericParameters(Generic<T, E> *generic, const TypeContext &typeContext) {
         while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
             bool rejectBoxing = stream_.consumeTokenIf(TokenType::Unsafe);
-            auto &variable = stream_.consumeToken(TokenType::Variable);
+            auto variable = stream_.consumeToken(TokenType::Variable);
             auto constraint = parseType(typeContext);
             generic->addGenericParameter(variable.value(), constraint, rejectBoxing, variable.position());
         }

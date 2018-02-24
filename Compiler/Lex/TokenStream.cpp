@@ -12,7 +12,7 @@ namespace EmojicodeCompiler {
 
 bool TokenStream::consumeTokenIf(char32_t c, TokenType type) {
     if (nextTokenIs(c, type)) {
-        index_++;
+        advanceLexer();
         return true;
     }
     return false;
@@ -20,7 +20,7 @@ bool TokenStream::consumeTokenIf(char32_t c, TokenType type) {
 
 bool TokenStream::consumeTokenIf(TokenType type) {
     if (nextTokenIs(type)) {
-        index_++;
+        advanceLexer();
         return true;
     }
     return false;
