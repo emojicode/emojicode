@@ -45,7 +45,7 @@ Steps:
    ```
 
    If you want to build the latest stable version, check it out first. E.g.
-   `git checkout v0.5.3`.
+   `git checkout v0.5.4`.
 
 2. Create a `build` directory and run CMake in it:
 
