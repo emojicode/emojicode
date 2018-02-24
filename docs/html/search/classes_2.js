@@ -1,6 +1,7 @@
 var searchData=
 [
   ['callcodegenerator',['CallCodeGenerator',['../class_emojicode_compiler_1_1_call_code_generator.html',1,'EmojicodeCompiler']]],
+  ['capture',['Capture',['../struct_emojicode_compiler_1_1_capture.html',1,'EmojicodeCompiler']]],
   ['capturingsemanticscoper',['CapturingSemanticScoper',['../class_emojicode_compiler_1_1_capturing_semantic_scoper.html',1,'EmojicodeCompiler']]],
   ['cgscoper',['CGScoper',['../class_emojicode_compiler_1_1_c_g_scoper.html',1,'EmojicodeCompiler']]],
   ['class',['Class',['../class_emojicode_compiler_1_1_class.html',1,'EmojicodeCompiler']]],

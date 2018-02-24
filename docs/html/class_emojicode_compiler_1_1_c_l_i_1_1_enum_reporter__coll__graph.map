@@ -1,7 +1,7 @@
 <map id="EmojicodeCompiler::CLI::EnumReporter" name="EmojicodeCompiler::CLI::EnumReporter">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_c_l_i_1_1_type_definition_reporter.html" title="EmojicodeCompiler::\lCLI::TypeDefinitionReporter\l\&lt; Enum \&gt;" alt="" coords="5,356,191,408"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_enum.html" title="EmojicodeCompiler::Enum" alt="" coords="9,269,188,295"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_value_type.html" title="EmojicodeCompiler::\lValueType" alt="" coords="26,181,170,220"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="26,93,170,132"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="11,5,186,44"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_c_l_i_1_1_type_definition_reporter.html" title="EmojicodeCompiler::\lCLI::TypeDefinitionReporter\l\&lt; Enum \&gt;" alt="" coords="5,369,191,421"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_enum.html" title="EmojicodeCompiler::Enum" alt="" coords="9,283,188,308"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_value_type.html" title="EmojicodeCompiler::\lValueType" alt="" coords="26,195,170,233"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="26,107,170,145"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition,\l int \&gt;" alt="" coords="15,5,182,57"/>
 </map>

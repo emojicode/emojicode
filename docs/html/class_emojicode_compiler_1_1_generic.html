@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Emojicode: EmojicodeCompiler::Generic&lt; T &gt; Class Template Reference</title>
+<title>Emojicode: EmojicodeCompiler::Generic&lt; T, Entity &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -65,52 +65,73 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_generic-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">EmojicodeCompiler::Generic&lt; T &gt; Class Template Reference</div>  </div>
+<div class="title">EmojicodeCompiler::Generic&lt; T, Entity &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_emojicode_compiler_1_1_generic_1_1_reification.html">Reification</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a21d76cd9040a60b24e60145deee232c7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a21d76cd9040a60b24e60145deee232c7">fetchVariable</a> (const std::u32string &amp;name, bool optional, <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> *destType)</td></tr>
-<tr class="separator:a21d76cd9040a60b24e60145deee232c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a460c7374c043499d62e97ba263c84ee5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a460c7374c043499d62e97ba263c84ee5">addGenericArgument</a> (const std::u32string &amp;variableName, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;constraint, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
-<tr class="separator:a460c7374c043499d62e97ba263c84ee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19b23c50a26c8e34882caf27d7fea2a4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a19b23c50a26c8e34882caf27d7fea2a4">constraintForIndex</a> (size_t index) const</td></tr>
-<tr class="separator:a19b23c50a26c8e34882caf27d7fea2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a531bf83c0fee07710558936ec4930cf9"><td class="memItemLeft" align="right" valign="top">const std::u32string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a531bf83c0fee07710558936ec4930cf9">findGenericName</a> (size_t index) const</td></tr>
-<tr class="separator:a531bf83c0fee07710558936ec4930cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37f60284df47466d15c88c788a964ea8"><td class="memItemLeft" align="right" valign="top"><a id="a37f60284df47466d15c88c788a964ea8"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a37f60284df47466d15c88c788a964ea8">genericParameterCount</a> () const</td></tr>
-<tr class="memdesc:a37f60284df47466d15c88c788a964ea8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of generic parameters defined. <br /></td></tr>
-<tr class="separator:a37f60284df47466d15c88c788a964ea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83f87b43cff62132c52d8d6054929a03"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::pair&lt; std::u32string, <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a83f87b43cff62132c52d8d6054929a03">parameters</a> () const</td></tr>
-<tr class="separator:a83f87b43cff62132c52d8d6054929a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6621c4327df5ffb6bc808142d814cbb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#ad6621c4327df5ffb6bc808142d814cbb">fetchVariable</a> (const std::u32string &amp;name, bool optional, <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> *destType)</td></tr>
+<tr class="separator:ad6621c4327df5ffb6bc808142d814cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc47081eeaa0415351d83bfbbc48f449"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#adc47081eeaa0415351d83bfbbc48f449">addGenericParameter</a> (const std::u32string &amp;variableName, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;constraint, bool rejectsBoxing, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
+<tr class="separator:adc47081eeaa0415351d83bfbbc48f449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f190b39f63044b6ab50dfe66006957c"><td class="memItemLeft" align="right" valign="top"><a id="a7f190b39f63044b6ab50dfe66006957c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>requestReification</b> (const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &gt; &amp;arguments)</td></tr>
+<tr class="separator:a7f190b39f63044b6ab50dfe66006957c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a6c925120676ac7e61798df0545ec53"><td class="memItemLeft" align="right" valign="top"><a id="a2a6c925120676ac7e61798df0545ec53"></a>
+Entity &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>reificationFor</b> (const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &gt; &amp;arguments)</td></tr>
+<tr class="separator:a2a6c925120676ac7e61798df0545ec53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a953606bd0c089539b9f74c9080171b97"><td class="memItemLeft" align="right" valign="top">Entity &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a953606bd0c089539b9f74c9080171b97">unspecificReification</a> ()</td></tr>
+<tr class="separator:a953606bd0c089539b9f74c9080171b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8caf09a1c46beda83bf68b4763ca6b33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a8caf09a1c46beda83bf68b4763ca6b33">createUnspecificReification</a> ()</td></tr>
+<tr class="separator:a8caf09a1c46beda83bf68b4763ca6b33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abff2cbfbd4bcdfa2aa2a9dd95f67136f"><td class="memItemLeft" align="right" valign="top"><a id="abff2cbfbd4bcdfa2aa2a9dd95f67136f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>requiresCopyReification</b> () const</td></tr>
+<tr class="separator:abff2cbfbd4bcdfa2aa2a9dd95f67136f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a349814ab1594cd56d50f2125d068d8e2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a349814ab1594cd56d50f2125d068d8e2">constraintForIndex</a> (size_t index) const</td></tr>
+<tr class="separator:a349814ab1594cd56d50f2125d068d8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8916784d2c613f4149eaefbd573b98d0"><td class="memItemLeft" align="right" valign="top">const std::u32string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a8916784d2c613f4149eaefbd573b98d0">findGenericName</a> (size_t index) const</td></tr>
+<tr class="separator:a8916784d2c613f4149eaefbd573b98d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c3e439cdcd5f0d6f03ac77b0d64c140"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_generic_parameter.html">GenericParameter</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a9c3e439cdcd5f0d6f03ac77b0d64c140">genericParameters</a> () const</td></tr>
+<tr class="separator:a9c3e439cdcd5f0d6f03ac77b0d64c140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a844ab2a5baee122a28eacfb42da97989"><td class="memItemLeft" align="right" valign="top"><a id="a844ab2a5baee122a28eacfb42da97989"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>eachReification</b> (const std::function&lt; void(<a class="el" href="struct_emojicode_compiler_1_1_generic_1_1_reification.html">Reification</a> &amp;)&gt; &amp;callback)</td></tr>
+<tr class="separator:a844ab2a5baee122a28eacfb42da97989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22685a49c25c7104ea1e37680875edea"><td class="memItemLeft" align="right" valign="top"><a id="a22685a49c25c7104ea1e37680875edea"></a>
+const std::map&lt; std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &gt;, <a class="el" href="struct_emojicode_compiler_1_1_generic_1_1_reification.html">Reification</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>reificationMap</b> () const</td></tr>
+<tr class="separator:a22685a49c25c7104ea1e37680875edea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a0c79cabfcb16443a688872ce959a87f4"><td class="memItemLeft" align="right" valign="top"><a id="a0c79cabfcb16443a688872ce959a87f4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a0c79cabfcb16443a688872ce959a87f4">offsetIndicesBy</a> (size_t offset)</td></tr>
-<tr class="memdesc:a0c79cabfcb16443a688872ce959a87f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offsets the genericVariableIndex() of the <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> instances returned by <a class="el" href="class_emojicode_compiler_1_1_generic.html#a21d76cd9040a60b24e60145deee232c7">fetchVariable()</a> by offset. <br /></td></tr>
-<tr class="separator:a0c79cabfcb16443a688872ce959a87f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76ff09d66f8c328cef4ae2fa09cfab24"><td class="memItemLeft" align="right" valign="top"><a id="a76ff09d66f8c328cef4ae2fa09cfab24"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_generic.html#a76ff09d66f8c328cef4ae2fa09cfab24">offsetIndicesBy</a> (size_t offset)</td></tr>
+<tr class="memdesc:a76ff09d66f8c328cef4ae2fa09cfab24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offsets the genericVariableIndex() of the <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> instances returned by <a class="el" href="class_emojicode_compiler_1_1_generic.html#ad6621c4327df5ffb6bc808142d814cbb">fetchVariable()</a> by offset. <br /></td></tr>
+<tr class="separator:a76ff09d66f8c328cef4ae2fa09cfab24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a460c7374c043499d62e97ba263c84ee5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a460c7374c043499d62e97ba263c84ee5">&#9670;&nbsp;</a></span>addGenericArgument()</h2>
+<a id="adc47081eeaa0415351d83bfbbc48f449"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc47081eeaa0415351d83bfbbc48f449">&#9670;&nbsp;</a></span>addGenericParameter()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T, typename Entity&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T &gt;::addGenericArgument </td>
+          <td class="memname">void <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T, Entity &gt;::addGenericParameter </td>
           <td>(</td>
           <td class="paramtype">const std::u32string &amp;&#160;</td>
           <td class="paramname"><em>variableName</em>, </td>
@@ -120,6 +141,12 @@ template&lt;typename T&gt; </div>
           <td></td>
           <td class="paramtype">const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;&#160;</td>
           <td class="paramname"><em>constraint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>rejectsBoxing</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -143,25 +170,26 @@ template&lt;typename T&gt; </div>
   <table class="params">
     <tr><td class="paramname">variableName</td><td>The name which is used to refer to this argument. </td></tr>
     <tr><td class="paramname">constraint</td><td>The constraint that applies for the argument. </td></tr>
+    <tr><td class="paramname">rejectsBoxing</td><td>If this argument is true, no boxing will be performed when treating a compatible value as an instance of the type of this generic parameter. The storage type will always be StorageType::Simple or StorageType::SimpleOptional. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a19b23c50a26c8e34882caf27d7fea2a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19b23c50a26c8e34882caf27d7fea2a4">&#9670;&nbsp;</a></span>constraintForIndex()</h2>
+<a id="a349814ab1594cd56d50f2125d068d8e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a349814ab1594cd56d50f2125d068d8e2">&#9670;&nbsp;</a></span>constraintForIndex()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T, typename Entity&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&amp; <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T &gt;::constraintForIndex </td>
+          <td class="memname">const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&amp; <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T, Entity &gt;::constraintForIndex </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>index</em></td><td>)</td>
@@ -174,23 +202,51 @@ template&lt;typename T&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Returns the type constraint of the generic parameter at the index. </p><dl class="section pre"><dt>Precondition</dt><dd>The index must be greater than the offset passed to <a class="el" href="class_emojicode_compiler_1_1_generic.html#a0c79cabfcb16443a688872ce959a87f4" title="Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset...">offsetIndicesBy()</a> (e.g. the number of super generic arguments for a <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a>) if applicable. </dd></dl>
+<p>Returns the type constraint of the generic parameter at the index. </p><dl class="section pre"><dt>Precondition</dt><dd>The index must be greater than the offset passed to <a class="el" href="class_emojicode_compiler_1_1_generic.html#a76ff09d66f8c328cef4ae2fa09cfab24" title="Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset...">offsetIndicesBy()</a> (e.g. the number of super generic arguments for a <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a>) if applicable. </dd></dl>
 
 </div>
 </div>
-<a id="a21d76cd9040a60b24e60145deee232c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21d76cd9040a60b24e60145deee232c7">&#9670;&nbsp;</a></span>fetchVariable()</h2>
+<a id="a8caf09a1c46beda83bf68b4763ca6b33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8caf09a1c46beda83bf68b4763ca6b33">&#9670;&nbsp;</a></span>createUnspecificReification()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T, typename Entity&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T &gt;::fetchVariable </td>
+          <td class="memname">void <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T, Entity &gt;::createUnspecificReification </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Creates an unspecific reification if no reification was requested yet. </p><dl class="section note"><dt>Note</dt><dd>This method asserts that there is only one reification as this method should only be called in combination with <a class="el" href="class_emojicode_compiler_1_1_generic.html#a953606bd0c089539b9f74c9080171b97">unspecificReification()</a> </dd></dl>
+
+</div>
+</div>
+<a id="ad6621c4327df5ffb6bc808142d814cbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6621c4327df5ffb6bc808142d814cbb">&#9670;&nbsp;</a></span>fetchVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename Entity&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T, Entity &gt;::fetchVariable </td>
           <td>(</td>
           <td class="paramtype">const std::u32string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -223,19 +279,19 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="a531bf83c0fee07710558936ec4930cf9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a531bf83c0fee07710558936ec4930cf9">&#9670;&nbsp;</a></span>findGenericName()</h2>
+<a id="a8916784d2c613f4149eaefbd573b98d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8916784d2c613f4149eaefbd573b98d0">&#9670;&nbsp;</a></span>findGenericName()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T, typename Entity&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::u32string&amp; <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T &gt;::findGenericName </td>
+          <td class="memname">const std::u32string&amp; <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T, Entity &gt;::findGenericName </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>index</em></td><td>)</td>
@@ -248,23 +304,23 @@ template&lt;typename T&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Returns the name of the generic parameter at the index. </p><dl class="section pre"><dt>Precondition</dt><dd>The index must be greater than the offset passed to <a class="el" href="class_emojicode_compiler_1_1_generic.html#a0c79cabfcb16443a688872ce959a87f4" title="Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset...">offsetIndicesBy()</a> (e.g. the number of super generic arguments for a <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a>) if applicable. </dd></dl>
+<p>Returns the name of the generic parameter at the index. </p><dl class="section pre"><dt>Precondition</dt><dd>The index must be greater than the offset passed to <a class="el" href="class_emojicode_compiler_1_1_generic.html#a76ff09d66f8c328cef4ae2fa09cfab24" title="Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset...">offsetIndicesBy()</a> (e.g. the number of super generic arguments for a <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a>) if applicable. </dd></dl>
 
 </div>
 </div>
-<a id="a83f87b43cff62132c52d8d6054929a03"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83f87b43cff62132c52d8d6054929a03">&#9670;&nbsp;</a></span>parameters()</h2>
+<a id="a9c3e439cdcd5f0d6f03ac77b0d64c140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c3e439cdcd5f0d6f03ac77b0d64c140">&#9670;&nbsp;</a></span>genericParameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T&gt; </div>
+template&lt;typename T, typename Entity&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt;std::pair&lt;std::u32string, <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&gt; &gt;&amp; <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T &gt;::parameters </td>
+          <td class="memname">const std::vector&lt;<a class="el" href="struct_emojicode_compiler_1_1_generic_parameter.html">GenericParameter</a>&gt;&amp; <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T, Entity &gt;::genericParameters </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -277,6 +333,35 @@ template&lt;typename T&gt; </div>
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>A vector with pairs of std::u32string and <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>. These represent the generic parameter name and the the type constraint. </dd></dl>
+
+</div>
+</div>
+<a id="a953606bd0c089539b9f74c9080171b97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a953606bd0c089539b9f74c9080171b97">&#9670;&nbsp;</a></span>unspecificReification()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename Entity&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Entity&amp; <a class="el" href="class_emojicode_compiler_1_1_generic.html">EmojicodeCompiler::Generic</a>&lt; T, Entity &gt;::unspecificReification </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Any reification of this instance. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This method is intended to be used when there is only ever one possible reification of an instance. </dd></dl>
 
 </div>
 </div>

@@ -72,7 +72,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>This class is repsonsible for providing llvm::Type instances for Emojicode <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> instances.  
+<p>This class is responsible for providing llvm::Type instances for Emojicode <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> instances.  
  <a href="class_emojicode_compiler_1_1_l_l_v_m_type_helper.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_l_l_v_m_type_helper_8hpp_source.html">LLVMTypeHelper.hpp</a>&gt;</code></p>
@@ -106,12 +106,15 @@ llvm::Type *&#160;</td><td class="memItemRight" valign="bottom"><b>createLlvmTyp
 <tr class="memitem:abe1d51b5004c8d53e02c6d81229f3738"><td class="memItemLeft" align="right" valign="top"><a id="abe1d51b5004c8d53e02c6d81229f3738"></a>
 llvm::FunctionType *&#160;</td><td class="memItemRight" valign="bottom"><b>functionTypeFor</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
 <tr class="separator:abe1d51b5004c8d53e02c6d81229f3738"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3a1b5a71682d8e4ab865cc2b21d57f9"><td class="memItemLeft" align="right" valign="top"><a id="ae3a1b5a71682d8e4ab865cc2b21d57f9"></a>
-llvm::StructType *&#160;</td><td class="memItemRight" valign="bottom"><b>llvmTypeForClosureCaptures</b> (const std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_variable_capture.html">VariableCapture</a> &gt; &amp;captures)</td></tr>
-<tr class="separator:ae3a1b5a71682d8e4ab865cc2b21d57f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97c6dc974df11e4a8e815ccfe241a0cb"><td class="memItemLeft" align="right" valign="top"><a id="a97c6dc974df11e4a8e815ccfe241a0cb"></a>
+llvm::StructType *&#160;</td><td class="memItemRight" valign="bottom"><b>llvmTypeForCapture</b> (const <a class="el" href="struct_emojicode_compiler_1_1_capture.html">Capture</a> &amp;capture, llvm::Type *thisType)</td></tr>
+<tr class="separator:a97c6dc974df11e4a8e815ccfe241a0cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc834702f3591350c40da09ec8855242"><td class="memItemLeft" align="right" valign="top"><a id="afc834702f3591350c40da09ec8855242"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setReificationContext</b> (<a class="el" href="class_emojicode_compiler_1_1_reification_context.html">ReificationContext</a> *context)</td></tr>
+<tr class="separator:afc834702f3591350c40da09ec8855242"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This class is repsonsible for providing llvm::Type instances for Emojicode <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> instances. </p>
+<div class="textblock"><p>This class is responsible for providing llvm::Type instances for Emojicode <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> instances. </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/<a class="el" href="_l_l_v_m_type_helper_8hpp_source.html">LLVMTypeHelper.hpp</a></li>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/LLVMTypeHelper.cpp</li>

@@ -1,6 +1,6 @@
 <map id="EmojicodeCompiler::CLI::ClassReporter" name="EmojicodeCompiler::CLI::ClassReporter">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_c_l_i_1_1_type_definition_reporter.html" title="EmojicodeCompiler::\lCLI::TypeDefinitionReporter\l\&lt; Class \&gt;" alt="" coords="5,281,191,333"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_class.html" title="EmojicodeCompiler::\lClass" alt="" coords="26,181,170,220"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="26,93,170,132"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="11,5,186,44"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_c_l_i_1_1_type_definition_reporter.html" title="EmojicodeCompiler::\lCLI::TypeDefinitionReporter\l\&lt; Class \&gt;" alt="" coords="5,295,191,347"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_class.html" title="EmojicodeCompiler::\lClass" alt="" coords="26,195,170,233"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="26,107,170,145"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition,\l int \&gt;" alt="" coords="15,5,182,57"/>
 </map>

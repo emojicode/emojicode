@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_emojicode_compiler_1_1_documentation.html" title="EmojicodeCompiler::\lDocumentation" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_compiler_error.html" title="EmojicodeCompiler::\lCompilerError" alt="" coords="132,5,276,44"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_variable_not_found_error.html" title="EmojicodeCompiler::\lVariableNotFoundError" alt="" coords="324,5,482,44"/>
 </map>

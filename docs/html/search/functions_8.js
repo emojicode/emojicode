@@ -7,9 +7,12 @@ var searchData=
   ['inheritsfrom',['inheritsFrom',['../class_emojicode_compiler_1_1_class.html#a1ad80989cb606c774caea84814cd051d',1,'EmojicodeCompiler::Class']]],
   ['inheritsinitializers',['inheritsInitializers',['../class_emojicode_compiler_1_1_class.html#a0e1c08af67f50a3702821a1fab648437',1,'EmojicodeCompiler::Class']]],
   ['initialized',['initialized',['../class_emojicode_compiler_1_1_variable.html#a3951609849ede2e471e71aa8990eafc2',1,'EmojicodeCompiler::Variable']]],
+  ['initializerlist',['initializerList',['../class_emojicode_compiler_1_1_type_definition.html#a2dc8eed28201d31eb50b16b38613c3eb',1,'EmojicodeCompiler::TypeDefinition']]],
   ['inittype',['initType',['../class_emojicode_compiler_1_1_a_s_t_initialization.html#a354d8d06e40f7b0135758e0e9e4c250e',1,'EmojicodeCompiler::ASTInitialization']]],
   ['innertocode',['innerToCode',['../class_emojicode_compiler_1_1_a_s_t_block.html#a4b79c0254fe3ccf02fa0f363babb4ee1',1,'EmojicodeCompiler::ASTBlock']]],
   ['instancescope',['instanceScope',['../class_emojicode_compiler_1_1_semantic_scoper.html#a6f268019744219efe1e795f29ffdf83d',1,'EmojicodeCompiler::SemanticScoper::instanceScope()'],['../class_emojicode_compiler_1_1_type_definition.html#a084c733620ee0129ecb74fec03d5583e',1,'EmojicodeCompiler::TypeDefinition::instanceScope()']]],
+  ['instancevariablepointer',['instanceVariablePointer',['../class_emojicode_compiler_1_1_accesses_any_variable.html#ab6cbc14d63d7879377041cc1161c18d0',1,'EmojicodeCompiler::AccessesAnyVariable']]],
   ['isreferencable',['isReferencable',['../class_emojicode_compiler_1_1_type.html#af4d87bc34a092c831109ebe8446ff636',1,'EmojicodeCompiler::Type']]],
-  ['isreference',['isReference',['../class_emojicode_compiler_1_1_type.html#ac2aa55ad309fb93a8e2a67954d3a0689',1,'EmojicodeCompiler::Type']]]
+  ['isreference',['isReference',['../class_emojicode_compiler_1_1_type.html#ac2aa55ad309fb93a8e2a67954d3a0689',1,'EmojicodeCompiler::Type']]],
+  ['isvaluetypeinit',['isValueTypeInit',['../class_emojicode_compiler_1_1_a_s_t_boxing.html#a8b88d47b56ebcc9751bcd105c009fb64',1,'EmojicodeCompiler::ASTBoxing']]]
 ];

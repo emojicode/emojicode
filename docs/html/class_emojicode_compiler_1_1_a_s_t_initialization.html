@@ -67,6 +67,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_a_s_t_initialization-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EmojicodeCompiler::ASTInitialization Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
@@ -95,7 +96,8 @@ Collaboration diagram for EmojicodeCompiler::ASTInitialization:</div>
 Public Types</h2></td></tr>
 <tr class="memitem:ad2796922a7dbd1723a1273290cb2b80c"><td class="memItemLeft" align="right" valign="top"><a id="ad2796922a7dbd1723a1273290cb2b80c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>InitType</b> { <b>Enum</b>, 
 <b>ValueType</b>, 
-<b>Class</b>
+<b>Class</b>, 
+<b>MemoryAllocation</b>
  }</td></tr>
 <tr class="separator:ad2796922a7dbd1723a1273290cb2b80c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -104,9 +106,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7b6afa68ac5ffada2672070c4ae4be03"><td class="memItemLeft" align="right" valign="top"><a id="a7b6afa68ac5ffada2672070c4ae4be03"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ASTInitialization</b> (std::u32string name, std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_type_expr.html">ASTTypeExpr</a> &gt; type, <a class="el" href="class_emojicode_compiler_1_1_a_s_t_arguments.html">ASTArguments</a> args, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="separator:a7b6afa68ac5ffada2672070c4ae4be03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2e055f975a5a001ffec637b6496433d"><td class="memItemLeft" align="right" valign="top"><a id="af2e055f975a5a001ffec637b6496433d"></a>
-<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation) override</td></tr>
-<tr class="separator:af2e055f975a5a001ffec637b6496433d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02bf40df79ea73621d4c7550804f6435"><td class="memItemLeft" align="right" valign="top"><a id="a02bf40df79ea73621d4c7550804f6435"></a>
+<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_function_analyser.html">FunctionAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation) override</td></tr>
+<tr class="separator:a02bf40df79ea73621d4c7550804f6435"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e566825924ff5907cb86748e0372551"><td class="memItemLeft" align="right" valign="top">Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_initialization.html#a5e566825924ff5907cb86748e0372551">generate</a> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg) const override</td></tr>
 <tr class="separator:a5e566825924ff5907cb86748e0372551"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1827de421417f08042061f03c95e650d"><td class="memItemLeft" align="right" valign="top"><a id="a1827de421417f08042061f03c95e650d"></a>
@@ -138,6 +140,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setTemporarilyScoped<
 const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_node.html#a169020f6c66090c16b98247e339ac255">position</a> () const</td></tr>
 <tr class="memdesc:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">The source position that caused this node to be created. <br /></td></tr>
 <tr class="separator:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ac73c8a3753136479050b444d181500c5"><td class="memItemLeft" align="right" valign="top"><a id="ac73c8a3753136479050b444d181500c5"></a>
+static Value *&#160;</td><td class="memItemRight" valign="bottom"><b>initObject</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg, const <a class="el" href="class_emojicode_compiler_1_1_a_s_t_arguments.html">ASTArguments</a> &amp;args, const std::u32string &amp;name, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
+<tr class="separator:ac73c8a3753136479050b444d181500c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a5e566825924ff5907cb86748e0372551"></a>
@@ -193,7 +201,7 @@ const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">So
 </table>
 </div><div class="memdoc">
 <p>Sets the destination for a value type inititalization.</p>
-<p>A destination must be set via this setter before generating code for a value type initialization. The value must evaluate to a pointer of the type, which is to be initialized. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_a_s_t_boxing.html">ASTBoxing</a>, <a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html#a041dab445bd87ada51c0c5155aa49bfd">SemanticAnalyser::comply()</a>, </dd></dl>
+<p>A destination must be set via this setter before generating code for a value type initialization. The value must evaluate to a pointer of the type, which is to be initialized. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_a_s_t_boxing.html">ASTBoxing</a>, SemanticAnalyser::comply(), </dd></dl>
 
 </div>
 </div>

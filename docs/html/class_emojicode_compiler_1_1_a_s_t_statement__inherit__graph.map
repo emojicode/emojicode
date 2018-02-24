@@ -4,14 +4,13 @@
 <area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_expr_statement.html" title="EmojicodeCompiler::\lASTExprStatement" alt="" coords="399,131,544,169"/>
 <area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_for_in.html" title="EmojicodeCompiler::\lASTForIn" alt="" coords="399,193,544,232"/>
 <area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_a_s_t_if.html" title="EmojicodeCompiler::\lASTIf" alt="" coords="399,256,544,295"/>
-<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_a_s_t_initable_creator.html" title="EmojicodeCompiler::\lASTInitableCreator" alt="" coords="399,319,544,357"/>
-<area shape="rect" id="node12" href="$class_emojicode_compiler_1_1_a_s_t_repeat_while.html" title="EmojicodeCompiler::\lASTRepeatWhile" alt="" coords="399,381,544,420"/>
-<area shape="rect" id="node13" href="$class_emojicode_compiler_1_1_a_s_t_return.html" title="EmojicodeCompiler::\lASTReturn" alt="" coords="399,444,544,483"/>
-<area shape="rect" id="node15" href="$class_emojicode_compiler_1_1_a_s_t_superinitializer.html" title="EmojicodeCompiler::\lASTSuperinitializer" alt="" coords="399,507,544,545"/>
-<area shape="rect" id="node16" href="$class_emojicode_compiler_1_1_a_s_t_variable_declaration.html" title="EmojicodeCompiler::\lASTVariableDeclaration" alt="" coords="390,569,553,608"/>
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,288,150,327"/>
-<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_a_s_t_frozen_declaration.html" title="EmojicodeCompiler::\lASTFrozenDeclaration" alt="" coords="618,288,775,327"/>
-<area shape="rect" id="node10" href="$class_emojicode_compiler_1_1_a_s_t_variable_assignment_decl.html" title="EmojicodeCompiler::\lASTVariableAssignmentDecl" alt="" coords="601,351,792,389"/>
-<area shape="rect" id="node11" href="$class_emojicode_compiler_1_1_a_s_t_instance_variable_assignment.html" title="EmojicodeCompiler::\lASTInstanceVariableAssignment" alt="" coords="840,351,1055,389"/>
-<area shape="rect" id="node14" href="$class_emojicode_compiler_1_1_a_s_t_raise.html" title="EmojicodeCompiler::\lASTRaise" alt="" coords="624,444,769,483"/>
+<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_a_s_t_repeat_while.html" title="EmojicodeCompiler::\lASTRepeatWhile" alt="" coords="399,319,544,357"/>
+<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_a_s_t_return.html" title="EmojicodeCompiler::\lASTReturn" alt="" coords="399,381,544,420"/>
+<area shape="rect" id="node11" href="$class_emojicode_compiler_1_1_a_s_t_variable_declaration.html" title="Represents the declaration of a variable. " alt="" coords="390,444,553,483"/>
+<area shape="rect" id="node12" href="$class_emojicode_compiler_1_1_a_s_t_variable_init.html" title="EmojicodeCompiler::\lASTVariableInit" alt="" coords="399,507,544,545"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,256,150,295"/>
+<area shape="rect" id="node10" href="$class_emojicode_compiler_1_1_a_s_t_raise.html" title="EmojicodeCompiler::\lASTRaise" alt="" coords="624,381,769,420"/>
+<area shape="rect" id="node13" href="$class_emojicode_compiler_1_1_a_s_t_frozen_declaration.html" title="EmojicodeCompiler::\lASTFrozenDeclaration" alt="" coords="618,475,775,513"/>
+<area shape="rect" id="node14" href="$class_emojicode_compiler_1_1_a_s_t_variable_assignment_decl.html" title="EmojicodeCompiler::\lASTVariableAssignmentDecl" alt="" coords="601,537,792,576"/>
+<area shape="rect" id="node15" href="$class_emojicode_compiler_1_1_a_s_t_instance_variable_initialization.html" title="Inserted by the compiler to initialize an instance variable as specified by a baby bottle initializer..." alt="" coords="840,537,1055,576"/>
 </map>

@@ -1,7 +1,7 @@
 <map id="EmojicodeCompiler::Compiler" name="EmojicodeCompiler::Compiler">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_value_type.html" title="EmojicodeCompiler::\lValueType" alt="" coords="5,181,150,220"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="173,93,318,132"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_protocol.html" title="EmojicodeCompiler::\lProtocol" alt="" coords="173,181,318,220"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_class.html" title="EmojicodeCompiler::\lClass" alt="" coords="341,181,486,220"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="158,5,333,44"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_value_type.html" title="EmojicodeCompiler::\lValueType" alt="" coords="5,195,150,233"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="173,107,318,145"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_protocol.html" title="EmojicodeCompiler::\lProtocol" alt="" coords="173,195,318,233"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_class.html" title="EmojicodeCompiler::\lClass" alt="" coords="341,195,486,233"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition,\l int \&gt;" alt="" coords="162,5,329,57"/>
 </map>

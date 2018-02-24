@@ -1,11 +1,11 @@
 <map id="EmojicodeCompiler::ASTInferType" name="EmojicodeCompiler::ASTInferType">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_static_type.html" title="EmojicodeCompiler::\lASTStaticType" alt="" coords="898,23,1042,61"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_type_expr.html" title="EmojicodeCompiler::\lASTTypeExpr" alt="" coords="529,5,673,44"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="230,5,374,44"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="21,5,165,44"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="514,89,687,115"/>
-<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="898,127,1042,165"/>
-<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="230,83,374,121"/>
-<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,83,181,121"/>
-<area shape="rect" id="node10" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function \&gt;" alt="" coords="529,171,673,209"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_static_type.html" title="EmojicodeCompiler::\lASTStaticType" alt="" coords="856,48,1000,87"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_type_expr.html" title="EmojicodeCompiler::\lASTTypeExpr" alt="" coords="613,16,757,55"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="244,7,388,45"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="28,5,172,44"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="599,81,772,107"/>
+<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="244,75,388,113"/>
+<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition,\l int \&gt;" alt="" coords="16,68,184,120"/>
+<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="244,144,388,183"/>
+<area shape="rect" id="node10" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function, Function\lReification \&gt;" alt="" coords="5,144,195,196"/>
 </map>

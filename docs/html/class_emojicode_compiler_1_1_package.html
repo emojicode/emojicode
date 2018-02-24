@@ -120,8 +120,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> (const std:
 <tr class="memitem:afd1df755bf8ba42529d79e0fd28fdc3e"><td class="memItemLeft" align="right" valign="top"><a id="afd1df755bf8ba42529d79e0fd28fdc3e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setPackageVersion</b> (<a class="el" href="struct_emojicode_compiler_1_1_package_version.html">PackageVersion</a> v)</td></tr>
 <tr class="separator:afd1df755bf8ba42529d79e0fd28fdc3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a1e4acbffead7ef9d81d283e9665603"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a0a1e4acbffead7ef9d81d283e9665603">compatibilityMode</a> ()</td></tr>
-<tr class="separator:a0a1e4acbffead7ef9d81d283e9665603"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac66ce7b7e5c7af794652052fc59c7ba6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#ac66ce7b7e5c7af794652052fc59c7ba6">compatibilityMode</a> () const</td></tr>
+<tr class="separator:ac66ce7b7e5c7af794652052fc59c7ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6199a90a985f8cf0abaef55ed522d681"><td class="memItemLeft" align="right" valign="top"><a id="a6199a90a985f8cf0abaef55ed522d681"></a>
 <a class="el" href="class_emojicode_compiler_1_1_compatibility_info_provider.html">CompatibilityInfoProvider</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>compatibilityInfoProvider</b> ()</td></tr>
 <tr class="separator:a6199a90a985f8cf0abaef55ed522d681"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,9 +176,9 @@ const std::vector&lt; std::unique_ptr&lt; <a class="el" href="class_emojicode_co
 <tr class="memitem:a9d4749321136b1197bb6830667acbcf7"><td class="memItemLeft" align="right" valign="top"><a id="a9d4749321136b1197bb6830667acbcf7"></a>
 const std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_exported_type.html">ExportedType</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>exportedTypes</b> () const</td></tr>
 <tr class="separator:a9d4749321136b1197bb6830667acbcf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe48f58c7b8bf3a2e8e89870cc01e27e"><td class="memItemLeft" align="right" valign="top"><a id="abe48f58c7b8bf3a2e8e89870cc01e27e"></a>
-const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dependencies</b> () const</td></tr>
-<tr class="separator:abe48f58c7b8bf3a2e8e89870cc01e27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fdf3fdf21541900e86229b3dd28fd37"><td class="memItemLeft" align="right" valign="top"><a id="a9fdf3fdf21541900e86229b3dd28fd37"></a>
+const std::set&lt; <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dependencies</b> () const</td></tr>
+<tr class="separator:a9fdf3fdf21541900e86229b3dd28fd37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f1ea1e83745e9fb94a88ab077fea9a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_package.html#a8f1ea1e83745e9fb94a88ab077fea9a5">lookupRawType</a> (const <a class="el" href="struct_emojicode_compiler_1_1_type_identifier.html">TypeIdentifier</a> &amp;typeId, bool optional, <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> *type) const</td></tr>
 <tr class="separator:a8f1ea1e83745e9fb94a88ab077fea9a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab69cf33ca0a89978c24916c52ac98994"><td class="memItemLeft" align="right" valign="top"><a id="ab69cf33ca0a89978c24916c52ac98994"></a>
@@ -309,8 +309,8 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 
 </div>
 </div>
-<a id="a0a1e4acbffead7ef9d81d283e9665603"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a1e4acbffead7ef9d81d283e9665603">&#9670;&nbsp;</a></span>compatibilityMode()</h2>
+<a id="ac66ce7b7e5c7af794652052fc59c7ba6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac66ce7b7e5c7af794652052fc59c7ba6">&#9670;&nbsp;</a></span>compatibilityMode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -322,7 +322,7 @@ std::u32string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
           <td class="memname">bool EmojicodeCompiler::Package::compatibilityMode </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>

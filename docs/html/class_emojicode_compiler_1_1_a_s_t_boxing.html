@@ -105,8 +105,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac1e7de67477f6f70d4978a5a71490d4b"><td class="memItemLeft" align="right" valign="top"><a id="ac1e7de67477f6f70d4978a5a71490d4b"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ASTBoxing</b> (std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; expr, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;exprType, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="separator:ac1e7de67477f6f70d4978a5a71490d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36f08341823ad1e9f5e2681e54160dbf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_boxing.html#a36f08341823ad1e9f5e2681e54160dbf">setInit</a> ()</td></tr>
-<tr class="separator:a36f08341823ad1e9f5e2681e54160dbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_emojicode_compiler_1_1_a_s_t_expr')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">EmojicodeCompiler::ASTExpr</a></td></tr>
 <tr class="memitem:a9f7ccc96d0269ed9df889100b9198ee7 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="a9f7ccc96d0269ed9df889100b9198ee7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ASTExpr</b> (const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
@@ -122,9 +120,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setTemporarilyScoped<
 <tr class="memitem:a8407d64d03ce051b0f4c5fe39233a2c6 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="a8407d64d03ce051b0f4c5fe39233a2c6"></a>
 virtual Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg) const =0</td></tr>
 <tr class="separator:a8407d64d03ce051b0f4c5fe39233a2c6 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaecf4662e6de0b352c98dd146da224c0 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="aaecf4662e6de0b352c98dd146da224c0"></a>
-virtual <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation)=0</td></tr>
-<tr class="separator:aaecf4662e6de0b352c98dd146da224c0 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70ad005a62f27266c6071e86d42694bf inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="a70ad005a62f27266c6071e86d42694bf"></a>
+virtual <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_function_analyser.html">FunctionAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation)=0</td></tr>
+<tr class="separator:a70ad005a62f27266c6071e86d42694bf inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab622b20640634e189035a02345d5a1bc inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="ab622b20640634e189035a02345d5a1bc"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (<a class="el" href="class_emojicode_compiler_1_1_prettyprinter.html">Prettyprinter</a> &amp;pretty) const =0</td></tr>
 <tr class="separator:ab622b20640634e189035a02345d5a1bc inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -159,11 +157,9 @@ Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getGetValueFromBox
 Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_boxing.html#a05999b2ddc01be8d04e7c11e63d775fb">getAllocaTheBox</a> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg) const</td></tr>
 <tr class="memdesc:a05999b2ddc01be8d04e7c11e63d775fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocas space for a box and then calls ASTExpr::generate() of of ::expr_ and stores its value into the box. <br /></td></tr>
 <tr class="separator:a05999b2ddc01be8d04e7c11e63d775fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b88d47b56ebcc9751bcd105c009fb64"><td class="memItemLeft" align="right" valign="top"><a id="a8b88d47b56ebcc9751bcd105c009fb64"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isValueTypeInit</b> () const</td></tr>
+<tr class="memitem:a8b88d47b56ebcc9751bcd105c009fb64"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_boxing.html#a8b88d47b56ebcc9751bcd105c009fb64">isValueTypeInit</a> () const</td></tr>
 <tr class="separator:a8b88d47b56ebcc9751bcd105c009fb64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62ade9e11f4c5b5ed570e02f28ad4660"><td class="memItemLeft" align="right" valign="top"><a id="a62ade9e11f4c5b5ed570e02f28ad4660"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>valueTypeInit</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg, Value *destination) const</td></tr>
+<tr class="memitem:a62ade9e11f4c5b5ed570e02f28ad4660"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_boxing.html#a62ade9e11f4c5b5ed570e02f28ad4660">valueTypeInit</a> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg, Value *destination) const</td></tr>
 <tr class="separator:a62ade9e11f4c5b5ed570e02f28ad4660"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
@@ -215,8 +211,8 @@ std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.
 
 </div>
 </div>
-<a id="a36f08341823ad1e9f5e2681e54160dbf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36f08341823ad1e9f5e2681e54160dbf">&#9670;&nbsp;</a></span>setInit()</h2>
+<a id="a8b88d47b56ebcc9751bcd105c009fb64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b88d47b56ebcc9751bcd105c009fb64">&#9670;&nbsp;</a></span>isValueTypeInit()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -225,19 +221,62 @@ std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void EmojicodeCompiler::ASTBoxing::setInit </td>
+          <td class="memname">bool EmojicodeCompiler::ASTBoxing::isValueTypeInit </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>This setter must be called to indicate that the value that is temporarily stored by this node is the result of a value type initialization. If called, the contained expression will be treated as a <a class="el" href="class_emojicode_compiler_1_1_a_s_t_initialization.html">ASTInitialization</a> node and an address to the reserved space is passed to <a class="el" href="class_emojicode_compiler_1_1_a_s_t_initialization.html#a406b95d0f50081ca96eb544d09598c29">ASTInitialization::setDestination()</a> upon generation. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html#a041dab445bd87ada51c0c5155aa49bfd">SemanticAnalyser::comply()</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the value to be boxed is the result of a value type initialization. Some boxing operations perform certain optimizations, i.e. avoid copying of the value type, by directly initializing the value type into the box. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_a_s_t_boxing.html#a62ade9e11f4c5b5ed570e02f28ad4660">valueTypeInit</a> </dd></dl>
+
+</div>
+</div>
+<a id="a62ade9e11f4c5b5ed570e02f28ad4660"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62ade9e11f4c5b5ed570e02f28ad4660">&#9670;&nbsp;</a></span>valueTypeInit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EmojicodeCompiler::ASTBoxing::valueTypeInit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *&#160;</td>
+          <td class="paramname"><em>fg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Value *&#160;</td>
+          <td class="paramname"><em>destination</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If <a class="el" href="class_emojicode_compiler_1_1_a_s_t_boxing.html#a8b88d47b56ebcc9751bcd105c009fb64">isValueTypeInit()</a> returns true, this method can be used to initialize the value type to a certain location. This can be useful for optimizations. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">destination</td><td>Pointer to the location at which the value type shall be initialized. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

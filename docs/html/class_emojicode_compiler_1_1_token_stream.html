@@ -66,12 +66,16 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="class_emojicode_compiler_1_1_token_stream-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EmojicodeCompiler::TokenStream Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This class manages the Tokens for the parser. Allows one token of lookahead.  
+ <a href="class_emojicode_compiler_1_1_token_stream.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_token_stream_8hpp_source.html">TokenStream.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -80,8 +84,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aadc94758d8e98406112cc96ad1b0d6ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bcf67b7bbd2ab4363f428983d579bdb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a0bcf67b7bbd2ab4363f428983d579bdb">consumeToken</a> ()</td></tr>
 <tr class="separator:a0bcf67b7bbd2ab4363f428983d579bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0733249ac9bfdbdb715e856e972f4e1"><td class="memItemLeft" align="right" valign="top"><a id="ac0733249ac9bfdbdb715e856e972f4e1"></a>
-const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>consumeToken</b> (TokenType type)</td></tr>
+<tr class="memitem:ac0733249ac9bfdbdb715e856e972f4e1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#ac0733249ac9bfdbdb715e856e972f4e1">consumeToken</a> (TokenType type)</td></tr>
 <tr class="separator:ac0733249ac9bfdbdb715e856e972f4e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a32226367ed08bdc83f2f5d695a73bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a7a32226367ed08bdc83f2f5d695a73bd">hasMoreTokens</a> () const</td></tr>
 <tr class="separator:a7a32226367ed08bdc83f2f5d695a73bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -89,8 +92,7 @@ const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &am
 <tr class="separator:a8848b34e75b9f1cdc3ce4f01c9a9ae41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53175304adad72387817146eb0dc3d2c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a53175304adad72387817146eb0dc3d2c">nextTokenIs</a> (char32_t c, TokenType type=TokenType::Identifier) const</td></tr>
 <tr class="separator:a53175304adad72387817146eb0dc3d2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61e71e6b8bd2a7a27219574cccf0e266"><td class="memItemLeft" align="right" valign="top"><a id="a61e71e6b8bd2a7a27219574cccf0e266"></a>
-const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>nextToken</b> () const</td></tr>
+<tr class="memitem:a61e71e6b8bd2a7a27219574cccf0e266"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a61e71e6b8bd2a7a27219574cccf0e266">nextToken</a> () const</td></tr>
 <tr class="separator:a61e71e6b8bd2a7a27219574cccf0e266"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb7cd49bdef39a66dc50f97a791f6ece"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#acb7cd49bdef39a66dc50f97a791f6ece">nextTokenIsEverythingBut</a> (char32_t c, TokenType type=TokenType::Identifier) const</td></tr>
 <tr class="separator:acb7cd49bdef39a66dc50f97a791f6ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -101,16 +103,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>nextTokenIsEverything
 <tr class="separator:a7b9c7a47d2a2281bbeb7f0e96e0ed000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a300a56a6fddcc61752c928cf2a3e826b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a300a56a6fddcc61752c928cf2a3e826b">consumeTokenIf</a> (TokenType type)</td></tr>
 <tr class="separator:a300a56a6fddcc61752c928cf2a3e826b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a8936749855dae4dbaf753987ed688859"><td class="memItemLeft" align="right" valign="top"><a id="a8936749855dae4dbaf753987ed688859"></a>
-<a class="el" href="class_emojicode_compiler_1_1_token_stream.html">TokenStream</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lex</b> (const std::string &amp;)</td></tr>
-<tr class="separator:a8936749855dae4dbaf753987ed688859"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This class manages the Tokens for the parser. Allows one token of lookahead. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a0bcf67b7bbd2ab4363f428983d579bdb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0bcf67b7bbd2ab4363f428983d579bdb">&#9670;&nbsp;</a></span>consumeToken()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bcf67b7bbd2ab4363f428983d579bdb">&#9670;&nbsp;</a></span>consumeToken() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -131,7 +129,46 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Returns the next token if it matches the given type. If it does not match or the end of the stream was reached an error is issued. </p>
+<dl class="section return"><dt>Returns</dt><dd>The next token. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_emojicode_compiler_1_1_compiler_error.html">CompilerError</a></td><td>if the end of the stream was reached. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac0733249ac9bfdbdb715e856e972f4e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0733249ac9bfdbdb715e856e972f4e1">&#9670;&nbsp;</a></span>consumeToken() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a>&amp; EmojicodeCompiler::TokenStream::consumeToken </td>
+          <td>(</td>
+          <td class="paramtype">TokenType&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the next token but only if it is of the specified type. </p><dl class="section return"><dt>Returns</dt><dd>The next token. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_emojicode_compiler_1_1_compiler_error.html">CompilerError</a></td><td>if the end of the stream was reached or the next token is not of the specified type. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -205,7 +242,34 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Whether there are tokens left or the end of the stream was reached. </p>
+<dl class="section return"><dt>Returns</dt><dd>True iff the end of the stream was reached and no more tokens are available. </dd></dl>
+
+</div>
+</div>
+<a id="a61e71e6b8bd2a7a27219574cccf0e266"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61e71e6b8bd2a7a27219574cccf0e266">&#9670;&nbsp;</a></span>nextToken()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_emojicode_compiler_1_1_token.html">Token</a>&amp; EmojicodeCompiler::TokenStream::nextToken </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The next token. </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd><a class="el" href="class_emojicode_compiler_1_1_token_stream.html#a7a32226367ed08bdc83f2f5d695a73bd">hasMoreTokens()</a> must return true. </dd></dl>
 
 </div>
 </div>
@@ -232,7 +296,7 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Tests whether the next token is of the given type. </p>
+<dl class="section return"><dt>Returns</dt><dd>True iff the end of the stream has not been reached and the next token is of the specified type. </dd></dl>
 
 </div>
 </div>
@@ -269,7 +333,7 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Tests whether the next token is an identifier and the value’s first element matches the given character. </p>
+<dl class="section return"><dt>Returns</dt><dd>True iff the end of the stream has not been reached and the next token is of the specified type and the first value of the token is the specified one. </dd></dl>
 
 </div>
 </div>

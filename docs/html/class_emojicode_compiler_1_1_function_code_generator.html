@@ -95,8 +95,10 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>PairIfElseCallback</
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af26f494fe88c957c18ee91d39d9dafa9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#af26f494fe88c957c18ee91d39d9dafa9">FunctionCodeGenerator</a> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, <a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *generator)</td></tr>
-<tr class="separator:af26f494fe88c957c18ee91d39d9dafa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affefc3ad26c128db17d46f73218e928a"><td class="memItemLeft" align="right" valign="top"><a id="affefc3ad26c128db17d46f73218e928a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#affefc3ad26c128db17d46f73218e928a">FunctionCodeGenerator</a> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, llvm::Function *llvmFunc, <a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *generator)</td></tr>
+<tr class="memdesc:affefc3ad26c128db17d46f73218e928a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html" title="A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function...">FunctionCodeGenerator</a>. <br /></td></tr>
+<tr class="separator:affefc3ad26c128db17d46f73218e928a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affbed7cea6ab51881ecfd9e5b95a9b18"><td class="memItemLeft" align="right" valign="top"><a id="affbed7cea6ab51881ecfd9e5b95a9b18"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> ()</td></tr>
 <tr class="separator:affbed7cea6ab51881ecfd9e5b95a9b18"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,15 +120,13 @@ llvm::IRBuilder &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>buil
 <tr class="memitem:af603e9c48bacd7d1c0007e344149519e"><td class="memItemLeft" align="right" valign="top"><a id="af603e9c48bacd7d1c0007e344149519e"></a>
 virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>thisValue</b> () const</td></tr>
 <tr class="separator:af603e9c48bacd7d1c0007e344149519e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71106dcc8d7f148b1aaacd75f82cc631"><td class="memItemLeft" align="right" valign="top"><a id="a71106dcc8d7f148b1aaacd75f82cc631"></a>
-llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>sizeFor</b> (llvm::PointerType *type)</td></tr>
-<tr class="separator:a71106dcc8d7f148b1aaacd75f82cc631"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16b43c52f8f94f3b95a73b2a32e7b771"><td class="memItemLeft" align="right" valign="top">llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#a16b43c52f8f94f3b95a73b2a32e7b771">sizeOf</a> (llvm::Type *type)</td></tr>
+<tr class="separator:a16b43c52f8f94f3b95a73b2a32e7b771"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0175a433a6ee1783793a5d4287dff4ed"><td class="memItemLeft" align="right" valign="top">llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#a0175a433a6ee1783793a5d4287dff4ed">sizeOfReferencedType</a> (llvm::PointerType *ptrType)</td></tr>
+<tr class="separator:a0175a433a6ee1783793a5d4287dff4ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3eeffcaa80cd51ec7f4e5a0d263c016"><td class="memItemLeft" align="right" valign="top"><a id="ab3eeffcaa80cd51ec7f4e5a0d263c016"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaFromObject</b> (llvm::Value *object)</td></tr>
 <tr class="separator:ab3eeffcaa80cd51ec7f4e5a0d263c016"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a087285653be4d367e89bae4958b56b02"><td class="memItemLeft" align="right" valign="top"><a id="a087285653be4d367e89bae4958b56b02"></a>
-llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasBoxNoValue</b> (llvm::Value *box)</td></tr>
-<tr class="separator:a087285653be4d367e89bae4958b56b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a939cc26f0416ce36ca05bc5c975358c2"><td class="memItemLeft" align="right" valign="top">llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#a939cc26f0416ce36ca05bc5c975358c2">getMetaTypePtr</a> (llvm::Value *box)</td></tr>
 <tr class="separator:a939cc26f0416ce36ca05bc5c975358c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4c6b5cdef800569223d481f2b845c85"><td class="memItemLeft" align="right" valign="top"><a id="ac4c6b5cdef800569223d481f2b845c85"></a>
@@ -135,9 +135,15 @@ llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasNoValu
 <tr class="memitem:aeca99dd094f63321847d4f73288abd36"><td class="memItemLeft" align="right" valign="top"><a id="aeca99dd094f63321847d4f73288abd36"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasNoValueBox</b> (llvm::Value *box)</td></tr>
 <tr class="separator:aeca99dd094f63321847d4f73288abd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3afe9523bb7982d61d18bccfe5a022d"><td class="memItemLeft" align="right" valign="top"><a id="aa3afe9523bb7982d61d18bccfe5a022d"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getHasNoValueBoxPtr</b> (llvm::Value *box)</td></tr>
+<tr class="separator:aa3afe9523bb7982d61d18bccfe5a022d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9163a3e81e4d8403e1874ca94b4cf3c4"><td class="memItemLeft" align="right" valign="top"><a id="a9163a3e81e4d8403e1874ca94b4cf3c4"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getSimpleOptionalWithoutValue</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
 <tr class="separator:a9163a3e81e4d8403e1874ca94b4cf3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff8e2b595b100c1bf31ef81956ec1627"><td class="memItemLeft" align="right" valign="top"><a id="aff8e2b595b100c1bf31ef81956ec1627"></a>
+llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getBoxOptionalWithoutValue</b> ()</td></tr>
+<tr class="separator:aff8e2b595b100c1bf31ef81956ec1627"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a160530c10c8902c2296a531d4852053e"><td class="memItemLeft" align="right" valign="top"><a id="a160530c10c8902c2296a531d4852053e"></a>
 llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><b>getSimpleOptionalWithValue</b> (llvm::Value *value, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
 <tr class="separator:a160530c10c8902c2296a531d4852053e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,50 +195,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>declareArgume
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html" title="A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function...">FunctionCodeGenerator</a> instance is responsible for generating the LLVM IR for a single function. </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="af26f494fe88c957c18ee91d39d9dafa9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af26f494fe88c957c18ee91d39d9dafa9">&#9670;&nbsp;</a></span>FunctionCodeGenerator()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">EmojicodeCompiler::FunctionCodeGenerator::FunctionCodeGenerator </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *&#160;</td>
-          <td class="paramname"><em>function</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="class_emojicode_compiler_1_1_code_generator.html">CodeGenerator</a> *&#160;</td>
-          <td class="paramname"><em>generator</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Constructs a <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html" title="A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function...">FunctionCodeGenerator</a>. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">function</td><td>The function whose code shall be generated. The function must have a value for Function::llvmFunction(). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a939cc26f0416ce36ca05bc5c975358c2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a939cc26f0416ce36ca05bc5c975358c2">&#9670;&nbsp;</a></span>getMetaTypePtr()</h2>
 
@@ -254,6 +217,46 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>declareArgume
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a16b43c52f8f94f3b95a73b2a32e7b771"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16b43c52f8f94f3b95a73b2a32e7b771">&#9670;&nbsp;</a></span>sizeOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">llvm::Value * EmojicodeCompiler::FunctionCodeGenerator::sizeOf </td>
+          <td>(</td>
+          <td class="paramtype">llvm::Type *&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The number of bytes an instance of <code>type</code> takes up in memory. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#a0175a433a6ee1783793a5d4287dff4ed">sizeOfReferencedType</a> </dd></dl>
+
+</div>
+</div>
+<a id="a0175a433a6ee1783793a5d4287dff4ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0175a433a6ee1783793a5d4287dff4ed">&#9670;&nbsp;</a></span>sizeOfReferencedType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">llvm::Value * EmojicodeCompiler::FunctionCodeGenerator::sizeOfReferencedType </td>
+          <td>(</td>
+          <td class="paramtype">llvm::PointerType *&#160;</td>
+          <td class="paramname"><em>ptrType</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The number of bytes an instance of the type pointed to by a pointer of <code>ptrType</code> takes up. Behaves like <code>sizeOf(ptrType-&gt;getElementType())</code>, although this method does not call <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#a16b43c52f8f94f3b95a73b2a32e7b771">sizeOf()</a>. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#a16b43c52f8f94f3b95a73b2a32e7b771">sizeOf</a> </dd></dl>
 
 </div>
 </div>

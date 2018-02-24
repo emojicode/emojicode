@@ -1,7 +1,4 @@
 <map id="EmojicodeCompiler::Initializer" name="EmojicodeCompiler::Initializer">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="337,93,481,132"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="129,200,302,225"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function \&gt;" alt="" coords="337,5,481,44"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="21,93,165,132"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition \&gt;" alt="" coords="5,5,181,44"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="28,105,172,144"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function, Function\lReification \&gt;" alt="" coords="5,5,195,57"/>
 </map>

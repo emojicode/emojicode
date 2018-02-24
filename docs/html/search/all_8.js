@@ -11,11 +11,14 @@ var searchData=
   ['initializationcallcodegenerator',['InitializationCallCodeGenerator',['../class_emojicode_compiler_1_1_initialization_call_code_generator.html',1,'EmojicodeCompiler']]],
   ['initialized',['initialized',['../class_emojicode_compiler_1_1_variable.html#a3951609849ede2e471e71aa8990eafc2',1,'EmojicodeCompiler::Variable']]],
   ['initializer',['Initializer',['../class_emojicode_compiler_1_1_initializer.html',1,'EmojicodeCompiler']]],
+  ['initializerlist',['initializerList',['../class_emojicode_compiler_1_1_type_definition.html#a2dc8eed28201d31eb50b16b38613c3eb',1,'EmojicodeCompiler::TypeDefinition']]],
   ['inittype',['initType',['../class_emojicode_compiler_1_1_a_s_t_initialization.html#a354d8d06e40f7b0135758e0e9e4c250e',1,'EmojicodeCompiler::ASTInitialization']]],
   ['innertocode',['innerToCode',['../class_emojicode_compiler_1_1_a_s_t_block.html#a4b79c0254fe3ccf02fa0f363babb4ee1',1,'EmojicodeCompiler::ASTBlock']]],
   ['instancescope',['instanceScope',['../class_emojicode_compiler_1_1_semantic_scoper.html#a6f268019744219efe1e795f29ffdf83d',1,'EmojicodeCompiler::SemanticScoper::instanceScope()'],['../class_emojicode_compiler_1_1_type_definition.html#a084c733620ee0129ecb74fec03d5583e',1,'EmojicodeCompiler::TypeDefinition::instanceScope()']]],
   ['instancevariabledeclaration',['InstanceVariableDeclaration',['../struct_emojicode_compiler_1_1_instance_variable_declaration.html',1,'EmojicodeCompiler']]],
+  ['instancevariablepointer',['instanceVariablePointer',['../class_emojicode_compiler_1_1_accesses_any_variable.html#ab6cbc14d63d7879377041cc1161c18d0',1,'EmojicodeCompiler::AccessesAnyVariable']]],
   ['ismutable',['isMutable',['../struct_emojicode_compiler_1_1_local_variable.html#a7dadd87cf93df9cfbd077285c84b51cc',1,'EmojicodeCompiler::LocalVariable']]],
   ['isreferencable',['isReferencable',['../class_emojicode_compiler_1_1_type.html#af4d87bc34a092c831109ebe8446ff636',1,'EmojicodeCompiler::Type']]],
-  ['isreference',['isReference',['../class_emojicode_compiler_1_1_type.html#ac2aa55ad309fb93a8e2a67954d3a0689',1,'EmojicodeCompiler::Type']]]
+  ['isreference',['isReference',['../class_emojicode_compiler_1_1_type.html#ac2aa55ad309fb93a8e2a67954d3a0689',1,'EmojicodeCompiler::Type']]],
+  ['isvaluetypeinit',['isValueTypeInit',['../class_emojicode_compiler_1_1_a_s_t_boxing.html#a8b88d47b56ebcc9751bcd105c009fb64',1,'EmojicodeCompiler::ASTBoxing']]]
 ];

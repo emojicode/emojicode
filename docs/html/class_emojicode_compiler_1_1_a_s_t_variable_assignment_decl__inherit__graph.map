@@ -1,7 +1,7 @@
 <map id="EmojicodeCompiler::ASTVariableAssignmentDecl" name="EmojicodeCompiler::ASTVariableAssignmentDecl">
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_instance_variable_assignment.html" title="EmojicodeCompiler::\lASTInstanceVariableAssignment" alt="" coords="54,352,269,391"/>
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_initable_creator.html" title="EmojicodeCompiler::\lASTInitableCreator" alt="" coords="89,179,234,217"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="5,92,150,131"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="173,92,318,131"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="173,5,318,44"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_instance_variable_initialization.html" title="Inserted by the compiler to initialize an instance variable as specified by a baby bottle initializer..." alt="" coords="55,352,270,391"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_variable_init.html" title="EmojicodeCompiler::\lASTVariableInit" alt="" coords="91,179,235,217"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="5,92,150,131"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_accesses_any_variable.html" title="EmojicodeCompiler::\lAccessesAnyVariable" alt="" coords="174,92,323,131"/>
 </map>

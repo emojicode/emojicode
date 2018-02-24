@@ -66,12 +66,16 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="class_emojicode_compiler_1_1_a_s_t_get_variable-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">EmojicodeCompiler::ASTGetVariable Class Reference</div>  </div>
+<div class="title">EmojicodeCompiler::ASTGetVariable Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents the retrieval of the contents of a variable or the address of the content of the variable.  
+ <a href="class_emojicode_compiler_1_1_a_s_t_get_variable.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_a_s_t_variables_8hpp_source.html">ASTVariables.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for EmojicodeCompiler::ASTGetVariable:</div>
 <div class="dyncontent">
@@ -79,7 +83,7 @@ Inheritance diagram for EmojicodeCompiler::ASTGetVariable:</div>
 <map name="_emojicode_compiler_1_1_a_s_t_get_variable_inherit__map" id="_emojicode_compiler_1_1_a_s_t_get_variable_inherit__map">
 <area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="5,92,150,131"/>
 <area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="173,92,318,131"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_accesses_any_variable.html" title="EmojicodeCompiler::\lAccessesAnyVariable" alt="" coords="174,92,323,131"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -89,33 +93,28 @@ Collaboration diagram for EmojicodeCompiler::ASTGetVariable:</div>
 <map name="_emojicode_compiler_1_1_a_s_t_get_variable_coll__map" id="_emojicode_compiler_1_1_a_s_t_get_variable_coll__map">
 <area shape="rect" id="node2" href="class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="5,92,150,131"/>
 <area shape="rect" id="node3" href="class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
-<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_a_s_t_variable.html" title="EmojicodeCompiler::\lASTVariable" alt="" coords="173,92,318,131"/>
+<area shape="rect" id="node4" href="class_emojicode_compiler_1_1_accesses_any_variable.html" title="EmojicodeCompiler::\lAccessesAnyVariable" alt="" coords="174,92,323,131"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a98977f0a77511a0cb473005ab41e8795"><td class="memItemLeft" align="right" valign="top"><a id="a98977f0a77511a0cb473005ab41e8795"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ASTGetVariable</b> (std::u32string name, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ASTGetVariable</b> (std::u32string <a class="el" href="class_emojicode_compiler_1_1_accesses_any_variable.html#afe3e418c36141428ba9476009311a851">name</a>, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
 <tr class="separator:a98977f0a77511a0cb473005ab41e8795"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ff2485e281aa67f2d554c0ec1bdfa88"><td class="memItemLeft" align="right" valign="top"><a id="a5ff2485e281aa67f2d554c0ec1bdfa88"></a>
-<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation) override</td></tr>
-<tr class="separator:a5ff2485e281aa67f2d554c0ec1bdfa88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac545bd6e9bb45d5022caea4c07157f56"><td class="memItemLeft" align="right" valign="top"><a id="ac545bd6e9bb45d5022caea4c07157f56"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_get_variable.html#ac545bd6e9bb45d5022caea4c07157f56">setReference</a> ()</td></tr>
+<tr class="memdesc:ac545bd6e9bb45d5022caea4c07157f56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures this node to generate code to retrieve the variable’s address instead of its value. <br /></td></tr>
+<tr class="separator:ac545bd6e9bb45d5022caea4c07157f56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37ee630c19499b45c304b2def014d62b"><td class="memItemLeft" align="right" valign="top"><a id="a37ee630c19499b45c304b2def014d62b"></a>
+<a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>analyse</b> (<a class="el" href="class_emojicode_compiler_1_1_function_analyser.html">FunctionAnalyser</a> *analyser, const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation) override</td></tr>
+<tr class="separator:a37ee630c19499b45c304b2def014d62b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c636f5c1156eed5ed19ae7ce4a61e8f"><td class="memItemLeft" align="right" valign="top"><a id="a0c636f5c1156eed5ed19ae7ce4a61e8f"></a>
 Value *&#160;</td><td class="memItemRight" valign="bottom"><b>generate</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg) const override</td></tr>
 <tr class="separator:a0c636f5c1156eed5ed19ae7ce4a61e8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf0ff70348c8da8b5d914427da16402f"><td class="memItemLeft" align="right" valign="top"><a id="abf0ff70348c8da8b5d914427da16402f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>toCode</b> (<a class="el" href="class_emojicode_compiler_1_1_prettyprinter.html">Prettyprinter</a> &amp;pretty) const override</td></tr>
 <tr class="separator:abf0ff70348c8da8b5d914427da16402f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac545bd6e9bb45d5022caea4c07157f56"><td class="memItemLeft" align="right" valign="top"><a id="ac545bd6e9bb45d5022caea4c07157f56"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setReference</b> ()</td></tr>
-<tr class="separator:ac545bd6e9bb45d5022caea4c07157f56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61daaa02301346922e1bfcf7f852c37d"><td class="memItemLeft" align="right" valign="top"><a id="a61daaa02301346922e1bfcf7f852c37d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>reference</b> ()</td></tr>
-<tr class="separator:a61daaa02301346922e1bfcf7f852c37d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab054f6e1b79374141ee3efde69776d69"><td class="memItemLeft" align="right" valign="top"><a id="ab054f6e1b79374141ee3efde69776d69"></a>
-const std::u32string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> ()</td></tr>
-<tr class="separator:ab054f6e1b79374141ee3efde69776d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_emojicode_compiler_1_1_a_s_t_expr')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">EmojicodeCompiler::ASTExpr</a></td></tr>
 <tr class="memitem:a9f7ccc96d0269ed9df889100b9198ee7 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_expr"><td class="memItemLeft" align="right" valign="top"><a id="a9f7ccc96d0269ed9df889100b9198ee7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ASTExpr</b> (const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
@@ -136,34 +135,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setTemporarilyScoped<
 const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_node.html#a169020f6c66090c16b98247e339ac255">position</a> () const</td></tr>
 <tr class="memdesc:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="mdescLeft">&#160;</td><td class="mdescRight">The source position that caused this node to be created. <br /></td></tr>
 <tr class="separator:a169020f6c66090c16b98247e339ac255 inherit pub_methods_class_emojicode_compiler_1_1_a_s_t_node"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a0476c8a66395d90e9759584aa17fb833"><td class="memItemLeft" align="right" valign="top"><a id="a0476c8a66395d90e9759584aa17fb833"></a>
-static Value *&#160;</td><td class="memItemRight" valign="bottom"><b>instanceVariablePointer</b> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg, size_t index)</td></tr>
-<tr class="separator:a0476c8a66395d90e9759584aa17fb833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_emojicode_compiler_1_1_accesses_any_variable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_accesses_any_variable.html">EmojicodeCompiler::AccessesAnyVariable</a></td></tr>
+<tr class="memitem:afe3e418c36141428ba9476009311a851 inherit pub_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memItemLeft" align="right" valign="top">const std::u32string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_accesses_any_variable.html#afe3e418c36141428ba9476009311a851">name</a> () const</td></tr>
+<tr class="separator:afe3e418c36141428ba9476009311a851 inherit pub_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_emojicode_compiler_1_1_a_s_t_variable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_variable.html">EmojicodeCompiler::ASTVariable</a></td></tr>
-<tr class="memitem:ab51836150a4f11fc63aeb04cc9728829 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="ab51836150a4f11fc63aeb04cc9728829"></a>
+<tr class="inherit_header pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_emojicode_compiler_1_1_accesses_any_variable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_emojicode_compiler_1_1_accesses_any_variable.html">EmojicodeCompiler::AccessesAnyVariable</a></td></tr>
+<tr class="memitem:aba96bdf90f5ee4aeb6472a62c4a85d5f inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memItemLeft" align="right" valign="top"><a id="aba96bdf90f5ee4aeb6472a62c4a85d5f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>AccessesAnyVariable</b> (std::u32string <a class="el" href="class_emojicode_compiler_1_1_accesses_any_variable.html#afe3e418c36141428ba9476009311a851">name</a>)</td></tr>
+<tr class="separator:aba96bdf90f5ee4aeb6472a62c4a85d5f inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a9b0bdd483f909c04e26a4d45f1e35a inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memItemLeft" align="right" valign="top"><a id="a4a9b0bdd483f909c04e26a4d45f1e35a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setVariableAccess</b> (const <a class="el" href="struct_emojicode_compiler_1_1_resolved_variable.html">ResolvedVariable</a> &amp;var, <a class="el" href="class_emojicode_compiler_1_1_function_analyser.html">FunctionAnalyser</a> *analyser)</td></tr>
+<tr class="separator:a4a9b0bdd483f909c04e26a4d45f1e35a inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a1e331f1ec9b349d5613541af6a92b4 inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memItemLeft" align="right" valign="top"><a id="a3a1e331f1ec9b349d5613541af6a92b4"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>inInstanceScope</b> () const</td></tr>
-<tr class="separator:ab51836150a4f11fc63aeb04cc9728829 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9367c98f4e9b05024f4c625241444b50 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a9367c98f4e9b05024f4c625241444b50"></a>
-VariableID&#160;</td><td class="memItemRight" valign="bottom"><b>varId</b> ()</td></tr>
-<tr class="separator:a9367c98f4e9b05024f4c625241444b50 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8dc96e7caebcd65e7c35316c64a91759 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a8dc96e7caebcd65e7c35316c64a91759"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>copyVariableAstInfo</b> (const <a class="el" href="struct_emojicode_compiler_1_1_resolved_variable.html">ResolvedVariable</a> &amp;, <a class="el" href="class_emojicode_compiler_1_1_semantic_analyser.html">SemanticAnalyser</a> *analyser)</td></tr>
-<tr class="separator:a8dc96e7caebcd65e7c35316c64a91759 inherit pro_methods_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_emojicode_compiler_1_1_a_s_t_variable.html">EmojicodeCompiler::ASTVariable</a></td></tr>
-<tr class="memitem:a30347685028497239dfeb1a24fb5b02f inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a30347685028497239dfeb1a24fb5b02f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>inInstanceScope_</b> = false</td></tr>
-<tr class="separator:a30347685028497239dfeb1a24fb5b02f inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80af5c48b310943adac0b4a813a4909d inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memItemLeft" align="right" valign="top"><a id="a80af5c48b310943adac0b4a813a4909d"></a>
-VariableID&#160;</td><td class="memItemRight" valign="bottom"><b>varId_</b></td></tr>
-<tr class="separator:a80af5c48b310943adac0b4a813a4909d inherit pro_attribs_class_emojicode_compiler_1_1_a_s_t_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a3a1e331f1ec9b349d5613541af6a92b4 inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dd5ad854a7ebf0757fdd46255da60fd inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memItemLeft" align="right" valign="top"><a id="a8dd5ad854a7ebf0757fdd46255da60fd"></a>
+VariableID&#160;</td><td class="memItemRight" valign="bottom"><b>id</b> () const</td></tr>
+<tr class="separator:a8dd5ad854a7ebf0757fdd46255da60fd inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6cbc14d63d7879377041cc1161c18d0 inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memItemLeft" align="right" valign="top"><a id="ab6cbc14d63d7879377041cc1161c18d0"></a>
+Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_accesses_any_variable.html#ab6cbc14d63d7879377041cc1161c18d0">instanceVariablePointer</a> (<a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *fg) const</td></tr>
+<tr class="memdesc:ab6cbc14d63d7879377041cc1161c18d0 inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates code to retrieve a pointer to the instance variable, whose ID is stored in this instance. <br /></td></tr>
+<tr class="separator:ab6cbc14d63d7879377041cc1161c18d0 inherit pro_methods_class_emojicode_compiler_1_1_accesses_any_variable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents the retrieval of the contents of a variable or the address of the content of the variable. </p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/<a class="el" href="_a_s_t_variables_8hpp_source.html">ASTVariables.hpp</a></li>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/ASTVariables.cpp</li>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/AST/ASTVariables_CG.cpp</li>
