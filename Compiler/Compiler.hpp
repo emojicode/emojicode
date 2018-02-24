@@ -73,7 +73,7 @@ public:
     template <typename T>
     void factorMainPackage() {
         if (mainPackage_ == nullptr) {
-            mainPackage_ = std::make_unique<T>(std::move(mainPackageName_), mainFile_, this);
+            mainPackage_ = std::make_unique<T>(mainPackageName_, mainFile_, this);
             if (linkToExec_) {
                 mainPackage_->setPackageVersion(PackageVersion(1, 0));
             }
