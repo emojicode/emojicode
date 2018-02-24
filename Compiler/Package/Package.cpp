@@ -7,7 +7,7 @@
 //
 
 #include "Scoping/SemanticScoper.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
@@ -126,7 +126,7 @@ void Package::analyse() {
     while (!compiler_->analysisQueue.empty()) {
         try {
             auto function = compiler_->analysisQueue.front();
-            SemanticAnalyser(function).analyse();
+            FunctionAnalyser(function).analyse();
         }
         catch (CompilerError &ce) {
             compiler_->error(ce);

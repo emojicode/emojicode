@@ -78,8 +78,4 @@ void Token::validate() const {
     }
 }
 
-bool Token::isIdentifier(char32_t ch) const {
-    return type() == TokenType::Identifier && value_.size() == 1 && value_[0] == ch;
-}
-
 }  // namespace EmojicodeCompiler

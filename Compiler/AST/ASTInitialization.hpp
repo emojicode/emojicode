@@ -23,7 +23,7 @@ public:
     ASTInitialization(std::u32string name, std::shared_ptr<ASTTypeExpr> type,
                       ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     /// @pre setDestination() must have been used to set a destination if initType() == InitType::ValueType
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;

@@ -25,7 +25,7 @@ class ASTClosure : public ASTExpr {
 public:
     ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p);
 
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const final;
     void toCode(Prettyprinter &pretty) const override;
 private:

@@ -15,13 +15,13 @@
 
 namespace EmojicodeCompiler {
 
-class SemanticAnalyser;
+class FunctionAnalyser;
 
 class ASTMethodable : public ASTExpr {
 protected:
     explicit ASTMethodable(const SourcePosition &p) : ASTExpr(p), args_(p) {}
     ASTMethodable(const SourcePosition &p, ASTArguments args) : ASTExpr(p), args_(std::move(args)) {}
-    Type analyseMethodCall(SemanticAnalyser *analyser, const std::u32string &name,
+    Type analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
                            std::shared_ptr<ASTExpr> &callee);
 
     enum class BuiltInType {
@@ -40,11 +40,11 @@ protected:
     CallType callType_ = CallType::None;
     Type calleeType_ = Type::noReturn();
 private:
-    bool builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name);
+    bool builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name);
 
-    Type analyseMultiProtocolCall(SemanticAnalyser *analyser, const std::u32string &name, const Type &type);
+    Type analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name, const Type &type);
 
-    void checkMutation(SemanticAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
+    void checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
                        const Function *method) const;
 };
 
@@ -52,7 +52,7 @@ class ASTMethod final : public ASTMethodable {
 public:
     ASTMethod(std::u32string name, std::shared_ptr<ASTExpr> callee, const ASTArguments &args, const SourcePosition &p)
     : ASTMethodable(p, args), name_(std::move(name)), callee_(std::move(callee)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(Prettyprinter &pretty) const override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 private:

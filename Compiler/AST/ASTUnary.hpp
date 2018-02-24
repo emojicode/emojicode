@@ -26,7 +26,7 @@ protected:
 class ASTIsError final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };
@@ -34,7 +34,7 @@ public:
 class ASTUnwrap final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -44,7 +44,7 @@ private:
 class ASTMetaTypeFromInstance final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };

@@ -1,44 +1,44 @@
 //
-//  SemanticAnalyser.hpp
+//  FunctionAnalyser.hpp
 //  EmojicodeCompiler
 //
 //  Created by Theo Weidmann on 28/07/2017.
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#ifndef SemanticAnalyser_hpp
-#define SemanticAnalyser_hpp
+#ifndef FunctionAnalyser_hpp
+#define FunctionAnalyser_hpp
 
 #include "AST/ASTExpr.hpp"
 #include "AST/ASTTypeExpr.hpp"
-#include "CompilerError.hpp"
 #include "Package/Package.hpp"
 #include "PathAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeContext.hpp"
-#include "Types/TypeExpectation.hpp"
 #include <memory>
 #include <utility>
 
 namespace EmojicodeCompiler {
 
 class ASTArguments;
+class TypeExpectation;
 
-class SemanticAnalyser {
+class FunctionAnalyser {
 public:
-    explicit SemanticAnalyser(Function *function)
-    : scoper_(std::make_unique<SemanticScoper>(SemanticScoper::scoperForFunction(function))),
-    typeContext_(function->typeContext()), function_(function) {}
-    SemanticAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper)
-    : scoper_(std::move(scoper)), typeContext_(function->typeContext()), function_(function) {}
+    explicit FunctionAnalyser(Function *function) :
+            scoper_(std::make_unique<SemanticScoper>(SemanticScoper::scoperForFunction(function))),
+            typeContext_(function->typeContext()), function_(function) {}
+
+    FunctionAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper) :
+            scoper_(std::move(scoper)), typeContext_(function->typeContext()), function_(function) {}
     void analyse();
 
     PathAnalyser& pathAnalyser() { return pathAnalyser_; }
     SemanticScoper& scoper() { return *scoper_; }
     const TypeContext& typeContext() const { return typeContext_; }
-    Function* function() { return function_; }
-    Compiler* compiler() { return function_->package()->compiler(); }
+    Function* function() const { return function_; }
+    Compiler* compiler() const { return function_->package()->compiler(); }
 
     Type integer();
     Type boolean();
@@ -55,32 +55,15 @@ public:
     /// @note Only use this if there is a good reason why expect() cannot be used.
     Type comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
 
-    void validateMetability(const Type &originalType, const SourcePosition &p) const {
-        if (!originalType.allowsMetaType()) {
-            throw CompilerError(p, "Metatype of ", originalType.toString(typeContext_), " is not available.");
-        }
-    }
+    void validateMetability(const Type &originalType, const SourcePosition &p) const;
 
-    Type analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp) {
-        auto type = node->analyse(this, exp).resolveOnSuperArgumentsAndConstraints(typeContext_);
-        node->setExpressionType(type);
-        return type;
-    }
+    /// Analyses @c node and sets the expression type of the node to the type that will be returned.
+    /// @returns The type denoted by the $type-expression$ resolved by Type::resolveOnSuperArgumentsAndConstraints.
+    Type analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp);
 
-    bool typeIsEnumerable(const Type &type, Type *elementType);
-
-    void validateMethodCapturability(const Type &type, const SourcePosition &p) const {
-        if (type.type() == TypeType::ValueType) {
-            if (type.size() > 1) {
-                throw CompilerError(p, "Type not eligible for method capturing.");
-            }
-        }
-        else if (type.type() != TypeType::Class) {
-            throw CompilerError(p, "You can’t capture method calls on this kind of type.");
-        }
-    }
-
-    void validateAccessLevel(Function *function, const SourcePosition &p) const;
+    /// Checks that the function can be accessed or issues an error. Checks that the function is not deprecated
+    /// and issues a warning otherwise.
+    void checkFunctionUse(Function *function, const SourcePosition &p) const;
 
     Type analyseFunctionCall(ASTArguments *node, const Type &type, Function *function);
 private:
@@ -90,6 +73,9 @@ private:
     TypeContext typeContext_;
 
     Function *function_;
+
+    /// Issues a warning at the given position if the function is deprecated.
+    void deprecatedWarning(Function *function, const SourcePosition &p) const;
 
     void analyseReturn(const std::shared_ptr<ASTBlock> &);
     void analyseInitializationRequirements();
@@ -109,4 +95,4 @@ private:
 
 }  // namespace EmojicodeCompiler
 
-#endif /* SemanticAnalyser_hpp */
+#endif /* FunctionAnalyser_hpp */

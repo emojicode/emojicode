@@ -7,13 +7,15 @@
 //
 
 #include "ASTInitialization.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Functions/Initializer.hpp"
 #include "Types/Enum.hpp"
+#include "Types/TypeExpectation.hpp"
+
 namespace EmojicodeCompiler {
 
-Type ASTInitialization::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
     if (type.type() == TypeType::Enum) {

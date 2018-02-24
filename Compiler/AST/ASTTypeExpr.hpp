@@ -32,7 +32,7 @@ class ASTTypeFromExpr final : public ASTTypeExpr {
 public:
     ASTTypeFromExpr(std::shared_ptr<ASTExpr> value, const SourcePosition &p)
     : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p), expr_(std::move(value)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -43,7 +43,7 @@ class ASTStaticType : public ASTTypeExpr {
 public:
     ASTStaticType(Type type, TypeAvailability av, const SourcePosition &p)
     : ASTTypeExpr(av, p), type_(std::move(type)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 protected:
@@ -53,14 +53,14 @@ protected:
 class ASTInferType final : public ASTStaticType {
 public:
     explicit ASTInferType(const SourcePosition &p) : ASTStaticType(Type::noReturn(), TypeAvailability::StaticAndUnavailable, p) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(Prettyprinter &pretty) const override;
 };
 
 class ASTThisType final : public ASTTypeExpr {
 public:
     explicit ASTThisType(const SourcePosition &p) : ASTTypeExpr(TypeAvailability::DynamicAndAvailable, p) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 };

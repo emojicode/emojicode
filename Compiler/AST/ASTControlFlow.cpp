@@ -6,13 +6,16 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "Types/Class.hpp"
+#include "AST/ASTNode.hpp"
 #include "ASTControlFlow.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
+#include "Types/Protocol.hpp"
 
 namespace EmojicodeCompiler {
 
-void ASTIf::analyse(SemanticAnalyser *analyser) {
+void ASTIf::analyse(FunctionAnalyser *analyser) {
     for (size_t i = 0; i < conditions_.size(); i++) {
         analyser->pathAnalyser().beginBranch();
         analyser->scoper().pushScope();
@@ -36,7 +39,7 @@ void ASTIf::analyse(SemanticAnalyser *analyser) {
     }
 }
 
-void ASTRepeatWhile::analyse(SemanticAnalyser *analyser) {
+void ASTRepeatWhile::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
     analyser->expectType(analyser->boolean(), &condition_);
@@ -46,7 +49,7 @@ void ASTRepeatWhile::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().endUncertainBranches();
 }
 
-void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
+void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
     Type type = analyser->expect(TypeExpectation(false, false), &value_);
 
     if (type.type() != TypeType::Error) {
@@ -80,7 +83,7 @@ void ASTErrorHandler::analyse(SemanticAnalyser *analyser) {
     analyser->scoper().popScope(analyser->compiler());
 }
 
-void ASTForIn::analyse(SemanticAnalyser *analyser) {
+void ASTForIn::analyse(FunctionAnalyser *analyser) {
     analyser->scoper().pushScope();
 
     auto iterateeType = Type(analyser->compiler()->sEnumeratable, false);
@@ -88,7 +91,7 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     Type iteratee = analyser->expectType(iterateeType, &iteratee_);
 
     elementType_ = Type::noReturn();
-    if (!analyser->typeIsEnumerable(iteratee, &elementType_)) {
+    if (!typeIsEnumerable(analyser, &elementType_, iteratee)) {
         auto iterateeString = iteratee.toString(analyser->typeContext());
         throw CompilerError(position(), iterateeString, " does not conform to s🔂.");
     }
@@ -104,5 +107,34 @@ void ASTForIn::analyse(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().endBranch();
     analyser->pathAnalyser().endUncertainBranches();
 }
+
+bool EmojicodeCompiler::ASTForIn::typeIsEnumerable(FunctionAnalyser *analyser, Type *elementType, const Type &type) {
+    if (type.type() == TypeType::Class && !type.optional()) {
+        for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
+            for (auto &protocol : a->protocols()) {
+                if (protocol.protocol() == analyser->compiler()->sEnumeratable) {
+                    auto itemType = Type(false, 0, analyser->compiler()->sEnumeratable, true);
+                    *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
+                    return true;
+                }
+            }
+        }
+    }
+    else if (type.canHaveProtocol() && !type.optional()) {
+        for (auto &protocol : type.typeDefinition()->protocols()) {
+            if (protocol.protocol() == analyser->compiler()->sEnumeratable) {
+                auto itemType = Type(false, 0, analyser->compiler()->sEnumeratable, true);
+                *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
+                return true;
+            }
+        }
+    }
+    else if (type.type() == TypeType::Protocol && type.protocol() == analyser->compiler()->sEnumeratable) {
+        *elementType = Type(false, 0, type.protocol(), true).resolveOn(TypeContext(type));
+        return true;
+    }
+    return false;
+}
+
 
 }  // namespace EmojicodeCompiler

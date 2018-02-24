@@ -17,7 +17,7 @@ namespace EmojicodeCompiler {
 
 using llvm::Value;
 class ASTTypeExpr;
-class SemanticAnalyser;
+class FunctionAnalyser;
 class TypeExpectation;
 class FunctionCodeGenerator;
 class Prettyprinter;
@@ -32,7 +32,7 @@ public:
     void setTemporarilyScoped() { temporarilyScoped_ = true; }
 
     virtual Value* generate(FunctionCodeGenerator *fg) const = 0;
-    virtual Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) = 0;
+    virtual Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) = 0;
     virtual void toCode(Prettyprinter &pretty) const = 0;
 private:
     Type expressionType_ = Type::noReturn();
@@ -42,7 +42,7 @@ private:
 class ASTMetaTypeInstantiation final : public ASTExpr {
 public:
     ASTMetaTypeInstantiation(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -52,7 +52,7 @@ private:
 class ASTSizeOf final : public ASTExpr {
 public:
     ASTSizeOf(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -81,7 +81,7 @@ class ASTCast final : public ASTExpr {
 public:
     ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTTypeExpr> type,
             const SourcePosition &p) : ASTExpr(p), value_(std::move(value)), typeExpr_(std::move(type)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -100,7 +100,7 @@ class ASTCallableCall final : public ASTExpr {
 public:
     ASTCallableCall(std::shared_ptr<ASTExpr> value, ASTArguments args,
                     const SourcePosition &p) : ASTExpr(p), callable_(std::move(value)), args_(std::move(args)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -112,11 +112,11 @@ class ASTSuper final : public ASTExpr {
 public:
     ASTSuper(std::u32string name, ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
-    void analyseSuperInit(SemanticAnalyser *analyser);
+    void analyseSuperInit(FunctionAnalyser *analyser);
     std::u32string name_;
     Type calleeType_ = Type::noReturn();
     ASTArguments args_;
@@ -128,7 +128,7 @@ public:
     ASTTypeMethod(std::u32string name, std::shared_ptr<ASTTypeExpr> callee,
                   ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)), args_(std::move(args)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -142,7 +142,7 @@ class ASTConditionalAssignment final : public ASTExpr {
 public:
     ASTConditionalAssignment(std::u32string varName, std::shared_ptr<ASTExpr> expr,
                              const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:

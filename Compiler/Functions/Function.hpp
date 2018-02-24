@@ -59,10 +59,11 @@ public:
     Function() = delete;
     Function(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
-             FunctionType type)
-    : position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding), deprecated_(deprecated),
-      imperative_(imperative), mutating_(mutating), access_(level), owningType_(std::move(owningType)),
-      package_(package), documentation_(std::move(documentationToken)), functionType_(type) {}
+             FunctionType type) : position_(std::move(p)), name_(std::move(name)), final_(final),
+                                  overriding_(overriding), deprecated_(deprecated), imperative_(imperative),
+                                  mutating_(mutating), access_(level), owningType_(std::move(owningType)),
+                                  package_(package), documentation_(std::move(documentationToken)),
+                                  functionType_(type) {}
 
     std::u32string name() const { return name_; }
 
@@ -116,9 +117,6 @@ public:
     /// The package in which the function was defined.
     /// This does not necessarily match the package of @c owningType.
     Package* package() const { return package_; }
-
-    /// Issues a warning at the given position if the function is deprecated.
-    void deprecatedWarning(const SourcePosition &p) const;
 
     /// Checks that no promises were broken and applies boxing if necessary.
     /// @returns false iff a value for protocol was given and the arguments or the return type are storage incompatible.

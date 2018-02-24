@@ -18,13 +18,13 @@
 
 namespace EmojicodeCompiler {
 
-class SemanticAnalyser;
+class FunctionAnalyser;
 class FunctionCodeGenerator;
 
 class ASTStatement : public ASTNode {
 public:
     virtual void generate(FunctionCodeGenerator *) const = 0;
-    virtual void analyse(SemanticAnalyser *) = 0;
+    virtual void analyse(FunctionAnalyser *) = 0;
     virtual void toCode(Prettyprinter &pretty) const = 0;
 protected:
     using ASTNode::ASTNode;
@@ -42,7 +42,7 @@ public:
         stmts_.emplace(stmts_.begin(), node);
     }
 
-    void analyse(SemanticAnalyser *analyser) override;
+    void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
     /// Prints the code that goes between the block delimiters.
@@ -57,7 +57,7 @@ private:
 
 class ASTExprStatement final : public ASTStatement {
 public:
-    void analyse(SemanticAnalyser *analyser) override;
+    void analyse(FunctionAnalyser *analyser) override;
 
     void generate(FunctionCodeGenerator *fg) const override {
         expr_->generate(fg);
@@ -73,7 +73,7 @@ class ASTReturn : public ASTStatement {
 public:
     ASTReturn(std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTStatement(p), value_(std::move(value)) {}
 
-    void analyse(SemanticAnalyser *analyser) override;
+    void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 protected:
@@ -84,7 +84,7 @@ class ASTRaise final : public ASTReturn {
 public:
     using ASTReturn::ASTReturn;
 
-    void analyse(SemanticAnalyser *analyser) override;
+    void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:

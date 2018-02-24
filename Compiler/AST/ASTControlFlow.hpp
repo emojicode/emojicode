@@ -21,7 +21,7 @@ public:
     void addCondition(const std::shared_ptr<ASTExpr> &ptr) { conditions_.emplace_back(ptr); }
     void addBlock(const ASTBlock &ptr) { blocks_.emplace_back(ptr); }
 
-    void analyse(SemanticAnalyser *) override;
+    void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 
@@ -36,7 +36,7 @@ public:
     ASTRepeatWhile(std::shared_ptr<ASTExpr> condition, ASTBlock block, const SourcePosition &p)
     : ASTStatement(p), condition_(std::move(condition)), block_(std::move(block)) {}
 
-    void analyse(SemanticAnalyser *) override;
+    void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -50,9 +50,12 @@ public:
              const SourcePosition &p)
     : ASTStatement(p), iteratee_(std::move(iteratee)), block_(std::move(block)), varName_(std::move(varName)) {}
 
-    void analyse(SemanticAnalyser *) override;
+    void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
+
+    bool typeIsEnumerable(FunctionAnalyser *analyser, Type *elementType, const Type &type);
+
 private:
     std::shared_ptr<ASTExpr> iteratee_;
     ASTBlock block_;
@@ -69,7 +72,7 @@ public:
     : ASTStatement(p), value_(std::move(value)), valueBlock_(std::move(valueBlock)), errorBlock_(std::move(errorBlock)),
     valueVarName_(std::move(varNameValue)), errorVarName_(std::move(varNameError)) {}
 
-    void analyse(SemanticAnalyser *) override;
+    void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:

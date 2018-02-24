@@ -7,25 +7,26 @@
 //
 
 #include "ASTExpr.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Functions/Initializer.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTMetaTypeInstantiation::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTMetaTypeInstantiation::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     analyser->validateMetability(type_, position());
     type_.setMeta(true);
     return type_;
 }
 
-Type ASTSizeOf::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTSizeOf::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->integer();
 }
 
-Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
     Type originalType = value_->analyse(analyser, expectation);
@@ -76,7 +77,7 @@ Type ASTCast::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     return type;
 }
 
-Type ASTConditionalAssignment::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     if (!t.optional()) {
         throw CompilerError(position(), "Condition assignment can only be used with optionals.");
@@ -92,7 +93,7 @@ Type ASTConditionalAssignment::analyse(SemanticAnalyser *analyser, const TypeExp
     return analyser->boolean();
 }
 
-Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTTypeMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(callee_, expectation);
 
     if (type.optional()) {
@@ -116,7 +117,7 @@ Type ASTTypeMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &e
     return analyser->analyseFunctionCall(&args_, type, method);
 }
 
-Type ASTSuper::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (analyser->function()->functionType() == FunctionType::ObjectInitializer) {
         analyseSuperInit(analyser);
         return Type::noReturn();
@@ -137,7 +138,7 @@ Type ASTSuper::analyse(SemanticAnalyser *analyser, const TypeExpectation &expect
     return analyser->analyseFunctionCall(&args_, calleeType_, method);
 }
 
-void ASTSuper::analyseSuperInit(SemanticAnalyser *analyser) {
+void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
     if (!isSuperconstructorRequired(analyser->function()->functionType())) {
         throw CompilerError(position(), "🐐 can only be used inside initializers.");
     }
@@ -161,7 +162,7 @@ void ASTSuper::analyseSuperInit(SemanticAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
 }
 
-Type ASTCallableCall::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false, false), &callable_);
     if (type.type() != TypeType::Callable) {
         throw CompilerError(position(), "Given value is not callable.");

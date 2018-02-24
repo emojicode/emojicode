@@ -81,18 +81,6 @@ bool Function::enforcePromises(Function *super, const TypeContext &typeContext, 
     return true;
 }
 
-void Function::deprecatedWarning(const SourcePosition &p) const {
-    if (deprecated()) {
-        if (!documentation().empty()) {
-            package_->compiler()->warn(p, utf8(name()), " is deprecated. Please refer to the "\
-                                  "documentation for further information: ", utf8(documentation()));
-        }
-        else {
-            package_->compiler()->warn(p, utf8(name()), " is deprecated.");
-        }
-    }
-}
-
 Type Function::type() const {
     Type t = Type::callableIncomplete();
     t.genericArguments_.reserve(arguments().size() + 1);

@@ -21,7 +21,7 @@ public:
     ASTVariableDeclaration(Type type, std::u32string name, const SourcePosition &p)
             : ASTStatement(p), varName_(std::move(name)), type_(std::move(type)) {}
 
-    void analyse(SemanticAnalyser *analyser) override;
+    void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -36,7 +36,7 @@ public:
     const std::u32string& name() const { return name_; }
 protected:
     explicit AccessesAnyVariable(std::u32string name) : name_(std::move(name)) {}
-    void setVariableAccess(const ResolvedVariable &var, SemanticAnalyser *analyser);
+    void setVariableAccess(const ResolvedVariable &var, FunctionAnalyser *analyser);
     bool inInstanceScope() const { return inInstanceScope_; }
     VariableID id() const { return id_; }
 
@@ -56,7 +56,7 @@ public:
     /// Configures this node to generate code to retrieve the variable’s address instead of its value.
     void setReference() { reference_ = true; }
 
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -87,7 +87,7 @@ class ASTVariableAssignmentDecl : public ASTVariableInit {
 public:
     ASTVariableAssignmentDecl(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                               const SourcePosition &p) : ASTVariableInit(e, p, std::move(name)) {}
-    void analyse(SemanticAnalyser *analyser) override;
+    void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const final;
     void toCode(Prettyprinter &pretty) const override;
 };
@@ -96,7 +96,7 @@ public:
 class ASTInstanceVariableInitialization final : public ASTVariableAssignmentDecl {
 public:
     using ASTVariableAssignmentDecl::ASTVariableAssignmentDecl;
-    void analyse(SemanticAnalyser *analyser) override;
+    void analyse(FunctionAnalyser *analyser) override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
@@ -105,7 +105,7 @@ public:
     ASTFrozenDeclaration(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                          const SourcePosition &p) : ASTVariableInit(e, p, std::move(name)) {}
 
-    void analyse(SemanticAnalyser *analyser) override;
+    void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 };

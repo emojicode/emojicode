@@ -71,8 +71,6 @@ public:
     /** Represents the value of this token. */
     const std::u32string& value() const { return value_; }
 
-    bool isIdentifier(char32_t ch) const;
-
     /** Returns a string describing the token */
     const char* stringName() const;
     /** Returns a string describing the token */

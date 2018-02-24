@@ -8,13 +8,14 @@
 
 #include "ASTBinaryOperator.hpp"
 #include "ASTLiterals.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Types/ValueType.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTBinaryOperator::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBinaryOperator::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (operator_ == OperatorType::EqualOperator) {
         if (std::dynamic_pointer_cast<ASTNoValue>(right_) != nullptr) {
             return analyseIsNoValue(analyser, left_, BuiltInType::IsNoValueLeft);
@@ -38,7 +39,7 @@ Type ASTBinaryOperator::analyse(SemanticAnalyser *analyser, const TypeExpectatio
     return analyseMethodCall(analyser, operatorName(operator_), left_);
 }
 
-Type ASTBinaryOperator::analyseIsNoValue(SemanticAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
+Type ASTBinaryOperator::analyseIsNoValue(FunctionAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
                                          BuiltInType builtInType) {
     Type type = analyser->expect(TypeExpectation(false, false), &expr);
     if (!type.optional() && type.type() != TypeType::Something) {
@@ -48,7 +49,7 @@ Type ASTBinaryOperator::analyseIsNoValue(SemanticAnalyser *analyser, std::shared
     return analyser->boolean();
 }
 
-std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveOperator(SemanticAnalyser *analyser,
+std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveOperator(FunctionAnalyser *analyser,
                                                                                         const Type &type) {
     if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum) &&
         type.valueType()->isPrimitive()) {

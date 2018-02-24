@@ -1,5 +1,5 @@
 //
-//  SemanticAnalyser.cpp
+//  FunctionAnalyser.cpp
 //  EmojicodeCompiler
 //
 //  Created by Theo Weidmann on 28/07/2017.
@@ -17,33 +17,73 @@
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
-#include "SemanticAnalyser.hpp"
+#include "FunctionAnalyser.hpp"
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
-#include <memory>
 
 namespace EmojicodeCompiler {
 
-Type SemanticAnalyser::doubleType() {
+Type FunctionAnalyser::doubleType() {
     return Type(compiler()->sReal, false);
 }
 
-Type SemanticAnalyser::integer() {
+Type FunctionAnalyser::integer() {
     return Type(compiler()->sInteger, false);
 }
 
-Type SemanticAnalyser::boolean() {
+Type FunctionAnalyser::boolean() {
     return Type(compiler()->sBoolean, false);
 }
 
-Type SemanticAnalyser::symbol() {
+Type FunctionAnalyser::symbol() {
     return Type(compiler()->sSymbol, false);
 }
 
-void SemanticAnalyser::analyse() {
+Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp) {
+    auto type = node->analyse(this, exp).resolveOnSuperArgumentsAndConstraints(typeContext_);
+    node->setExpressionType(type);
+    return type;
+}
+
+void FunctionAnalyser::validateMetability(const Type &originalType, const SourcePosition &p) const {
+    if (!originalType.allowsMetaType()) {
+        throw CompilerError(p, "Metatype of ", originalType.toString(typeContext_), " is not available.");
+    }
+}
+
+void FunctionAnalyser::checkFunctionUse(Function *function, const SourcePosition &p) const {
+    if (function->accessLevel() == AccessLevel::Private) {
+        if (typeContext_.calleeType().type() != function->owningType().type()
+            || function->owningType().typeDefinition() != typeContext_.calleeType().typeDefinition()) {
+            throw CompilerError(p, utf8(function->name()), " is 🔒.");
+        }
+    }
+    else if (function->accessLevel() == AccessLevel::Protected) {
+        if (typeContext_.calleeType().type() != function->owningType().type()
+            || !this->typeContext_.calleeType().eclass()->inheritsFrom(function->owningType().eclass())) {
+            throw CompilerError(p, utf8(function->name()), " is 🔐.");
+        }
+    }
+
+    deprecatedWarning(function, p);
+}
+
+void FunctionAnalyser::deprecatedWarning(Function *function, const SourcePosition &p) const {
+    if (function->deprecated()) {
+        if (!function->documentation().empty()) {
+            compiler()->warn(p, utf8(function->name()), " is deprecated. Please refer to the "\
+            "documentation for further information: ", utf8(function->documentation()));
+        }
+        else {
+            compiler()->warn(p, utf8(function->name()), " is deprecated.");
+        }
+    }
+}
+
+void FunctionAnalyser::analyse() {
     Scope &methodScope = scoper_->pushArgumentsScope(function_->arguments(), function_->position());
 
     if (hasInstanceScope(function_->functionType())) {
@@ -81,7 +121,7 @@ void SemanticAnalyser::analyse() {
     function_->setVariableCount(scoper_->variableIdCount());
 }
 
-void SemanticAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
+void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
     if (function_->functionType() == FunctionType::ObjectInitializer) {
         auto thisNode = std::make_shared<ASTThis>(root->position());
         root->appendNode(std::make_shared<ASTReturn>(thisNode, root->position()));
@@ -99,7 +139,7 @@ void SemanticAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
     }
 }
 
-void SemanticAnalyser::analyseInitializationRequirements() {
+void FunctionAnalyser::analyseInitializationRequirements() {
     if (isFullyInitializedCheckRequired(function_->functionType())) {
         scoper_->instanceScope()->unintializedVariablesCheck(function_->position(), "Instance variable \"",
                                                              "\" must be initialized.");
@@ -118,7 +158,7 @@ void SemanticAnalyser::analyseInitializationRequirements() {
     }
 }
 
-Type SemanticAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node, std::vector<CommonTypeFinder> *ctargs) {
+Type FunctionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node, std::vector<CommonTypeFinder> *ctargs) {
     auto returnType = ctargs != nullptr ? (*node)->analyse(this, TypeExpectation()) : expect(TypeExpectation(type),
                                                                                              node);
     if (!returnType.compatibleTo(type, typeContext_, ctargs)) {
@@ -128,22 +168,7 @@ Type SemanticAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *no
     return returnType;
 }
 
-void SemanticAnalyser::validateAccessLevel(Function *function, const SourcePosition &p) const {
-    if (function->accessLevel() == AccessLevel::Private) {
-        if (typeContext_.calleeType().type() != function->owningType().type()
-            || function->owningType().typeDefinition() != typeContext_.calleeType().typeDefinition()) {
-            throw CompilerError(p, utf8(function->name()), " is 🔒.");
-        }
-    }
-    else if (function->accessLevel() == AccessLevel::Protected) {
-        if (typeContext_.calleeType().type() != function->owningType().type()
-            || !this->typeContext_.calleeType().eclass()->inheritsFrom(function->owningType().eclass())) {
-            throw CompilerError(p, utf8(function->name()), " is 🔐.");
-        }
-    }
-}
-
-Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
+Type FunctionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
     if (node->arguments().size() != function->arguments().size()) {
         throw CompilerError(node->position(), utf8(function->name()), " expects ", function->arguments().size(),
                             " arguments but ", node->arguments().size(), " were supplied.");
@@ -163,13 +188,12 @@ Type SemanticAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
     for (size_t i = 0; i < function->arguments().size(); i++) {
         expectType(function->arguments()[i].type.resolveOn(typeContext), &node->arguments()[i]);
     }
-    function->deprecatedWarning(node->position());
     function->requestReification(node->genericArguments());
-    validateAccessLevel(function, node->position());
+    checkFunctionUse(function, node->position());
     return function->returnType().resolveOn(typeContext);
 }
 
-void SemanticAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
+void FunctionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
     if (node->genericArguments().empty() && !function->genericParameters().empty()) {
         std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameters().size(), CommonTypeFinder());
         TypeContext typeContext = TypeContext(type, function, nullptr);
@@ -193,7 +217,7 @@ std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, const Type &type, 
     return std::static_pointer_cast<T>(*node);
 }
 
-Type SemanticAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     (*node)->setExpressionType(exprType);
     if (exprType.type() == TypeType::ValueType && !exprType.isReference() && expectation.isMutable()) {
         exprType.setMutable(true);
@@ -224,7 +248,7 @@ Type SemanticAnalyser::comply(Type exprType, const TypeExpectation &expectation,
     return exprType;
 }
 
-Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+Type FunctionAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     switch (expectation.simplifyType(exprType)) {
         case StorageType::SimpleOptional:
             switch (exprType.storageType()) {
@@ -278,7 +302,7 @@ Type SemanticAnalyser::box(Type exprType, const TypeExpectation &expectation, st
     return exprType;
 }
 
-bool SemanticAnalyser::callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) {
+bool FunctionAnalyser::callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) {
     if (expectation.type() == TypeType::Callable && exprType.type() == TypeType::Callable &&
         expectation.genericArguments().size() == exprType.genericArguments().size()) {
         auto mismatch = std::mismatch(expectation.genericArguments().begin(), expectation.genericArguments().end(),
@@ -290,7 +314,7 @@ bool SemanticAnalyser::callableBoxingRequired(const TypeExpectation &expectation
     return false;
 }
 
-Type SemanticAnalyser::callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+Type FunctionAnalyser::callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     if (callableBoxingRequired(expectation, exprType)) {
         auto arguments = std::vector<Argument>();
         arguments.reserve(expectation.genericArguments().size() - 1);
@@ -309,36 +333,8 @@ Type SemanticAnalyser::callableBox(Type exprType, const TypeExpectation &expecta
     return exprType;
 }
 
-Type SemanticAnalyser::expect(const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+Type FunctionAnalyser::expect(const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     return comply((*node)->analyse(this, expectation), expectation, node);
-}
-
-bool SemanticAnalyser::typeIsEnumerable(const Type &type, Type *elementType) {
-    if (type.type() == TypeType::Class && !type.optional()) {
-        for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
-            for (auto &protocol : a->protocols()) {
-                if (protocol.protocol() == compiler()->sEnumeratable) {
-                    auto itemType = Type(false, 0, compiler()->sEnumeratable, true);
-                    *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
-                    return true;
-                }
-            }
-        }
-    }
-    else if (type.canHaveProtocol() && !type.optional()) {
-        for (auto &protocol : type.typeDefinition()->protocols()) {
-            if (protocol.protocol() == compiler()->sEnumeratable) {
-                auto itemType = Type(false, 0, compiler()->sEnumeratable, true);
-                *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
-                return true;
-            }
-        }
-    }
-    else if (type.type() == TypeType::Protocol && type.protocol() == compiler()->sEnumeratable) {
-        *elementType = Type(false, 0, type.protocol(), true).resolveOn(TypeContext(type));
-        return true;
-    }
-    return false;
 }
 
 }  // namespace EmojicodeCompiler

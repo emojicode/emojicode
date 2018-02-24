@@ -19,7 +19,7 @@
 namespace EmojicodeCompiler {
 
 struct ResolvedVariable;
-class SemanticAnalyser;
+class FunctionAnalyser;
 
 class ASTNode {
 public:

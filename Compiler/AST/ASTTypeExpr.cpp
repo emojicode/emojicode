@@ -7,11 +7,12 @@
 //
 
 #include "ASTTypeExpr.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTInferType::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTInferType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::NoReturn) {
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
@@ -22,7 +23,7 @@ Type ASTInferType::analyse(SemanticAnalyser *analyser, const TypeExpectation &ex
     return type;
 }
 
-Type ASTTypeFromExpr::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTTypeFromExpr::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = expr_->analyse(analyser, expectation);
     if (!type.meta()) {
         throw CompilerError(position(), "Expected meta type.");
@@ -34,11 +35,11 @@ Type ASTTypeFromExpr::analyse(SemanticAnalyser *analyser, const TypeExpectation 
     return type;
 }
 
-Type ASTStaticType::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTStaticType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return type_;
 }
 
-Type ASTThisType::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTThisType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->typeContext().calleeType();
 }
 

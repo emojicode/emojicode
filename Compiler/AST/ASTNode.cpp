@@ -7,7 +7,7 @@
 //
 
 #include "ASTNode.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
 
 namespace EmojicodeCompiler {

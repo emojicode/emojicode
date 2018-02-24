@@ -9,13 +9,13 @@
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "ASTInitialization.hpp"
 #include "ASTVariables.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
 
 namespace EmojicodeCompiler {
 
-void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, SemanticAnalyser *analyser) {
+void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, FunctionAnalyser *analyser) {
     id_ = var.variable.id();
     inInstanceScope_ = var.inInstanceScope;
     if (inInstanceScope_) {
@@ -23,18 +23,18 @@ void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, Semanti
     }
 }
 
-Type ASTGetVariable::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTGetVariable::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto var = analyser->scoper().getVariable(name(), position());
     setVariableAccess(var, analyser);
     return var.variable.type();
 }
 
-void ASTVariableDeclaration::analyse(SemanticAnalyser *analyser) {
+void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
     auto &var = analyser->scoper().currentScope().declareVariable(varName_, type_, false, position());
     id_ = var.id();
 }
 
-void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
+void ASTVariableAssignmentDecl::analyse(FunctionAnalyser *analyser) {
     try {
         auto rvar = analyser->scoper().getVariable(name(), position());
         if (rvar.inInstanceScope && !analyser->function()->mutating() &&
@@ -59,7 +59,7 @@ void ASTVariableAssignmentDecl::analyse(SemanticAnalyser *analyser) {
     }
 }
 
-void ASTInstanceVariableInitialization::analyse(SemanticAnalyser *analyser) {
+void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
     auto &var = analyser->scoper().instanceScope()->getLocalVariable(name());
     var.initialize();
     var.mutate(position());
@@ -67,7 +67,7 @@ void ASTInstanceVariableInitialization::analyse(SemanticAnalyser *analyser) {
     analyser->expectType(var.type(), &expr_);
 }
 
-void ASTFrozenDeclaration::analyse(SemanticAnalyser *analyser) {
+void ASTFrozenDeclaration::analyse(FunctionAnalyser *analyser) {
     setDeclares();
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, true, position());

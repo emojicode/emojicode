@@ -7,27 +7,28 @@
 //
 
 #include "ASTLiterals.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Parsing/AbstractParser.hpp"
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTStringLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTStringLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return Type(analyser->compiler()->sString, false);
 }
 
-Type ASTBooleanTrue::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBooleanTrue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->boolean();
 }
 
-Type ASTBooleanFalse::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBooleanFalse::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->boolean();
 }
 
-Type ASTNumberLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNumberLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sReal
         && type_ == NumberType::Integer) {
         type_ = NumberType::Double;
@@ -42,11 +43,11 @@ Type ASTNumberLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation
     }
 }
 
-Type ASTSymbolLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTSymbolLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->symbol();
 }
 
-Type ASTThis::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (isSuperconstructorRequired(analyser->function()->functionType()) &&
         !analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
         analyser->typeContext().calleeType().eclass()->superclass() != nullptr) {
@@ -64,7 +65,7 @@ Type ASTThis::analyse(SemanticAnalyser *analyser, const TypeExpectation &expecta
     return analyser->typeContext().calleeType();
 }
 
-Type ASTNoValue::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (!expectation.optional() && expectation.type() != TypeType::Something) {
         throw CompilerError(position(), "🤷‍ can only be used when an optional is expected.");
     }
@@ -72,7 +73,7 @@ Type ASTNoValue::analyse(SemanticAnalyser *analyser, const TypeExpectation &expe
     return type_;
 }
 
-Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(analyser->compiler()->sDictionary, false);
 
     CommonTypeFinder finder;
@@ -88,7 +89,7 @@ Type ASTDictionaryLiteral::analyse(SemanticAnalyser *analyser, const TypeExpecta
     return type_;
 }
 
-Type ASTListLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(analyser->compiler()->sList, false);
 
     CommonTypeFinder finder;
@@ -101,7 +102,7 @@ Type ASTListLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &
     return type_;
 }
 
-Type ASTConcatenateLiteral::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = analyser->function()->package()->getRawType(TypeIdentifier(std::u32string(1, 0x1F520), kDefaultNamespace,
                                                                        position()), false);
 

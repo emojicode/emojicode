@@ -8,14 +8,14 @@
 
 #include "ASTMethod.hpp"
 #include "ASTVariables.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32string &name,
+Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee) {
     Type otype = callee->analyse(analyser, TypeExpectation());
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
@@ -53,7 +53,7 @@ Type ASTMethodable::analyseMethodCall(SemanticAnalyser *analyser, const std::u32
     return analyser->analyseFunctionCall(&args_, type, method);
 }
 
-void ASTMethodable::checkMutation(SemanticAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
+void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
                                   const Function *method) const {
     if (type.type() == TypeType::ValueType && method->mutating()) {
         if (!type.isMutable()) {
@@ -66,7 +66,7 @@ void ASTMethodable::checkMutation(SemanticAnalyser *analyser, const std::shared_
     }
 }
 
-Type ASTMethodable::analyseMultiProtocolCall(SemanticAnalyser *analyser, const std::u32string &name, const Type &type) {
+Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name, const Type &type) {
     for (auto &protocol : type.protocols()) {
         Function *method;
         if ((method = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
@@ -79,7 +79,7 @@ Type ASTMethodable::analyseMultiProtocolCall(SemanticAnalyser *analyser, const s
                         " provides a method called ", utf8(name), ".");
 }
 
-bool ASTMethodable::builtIn(SemanticAnalyser *analyser, const Type &type, const std::u32string &name) {
+bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name) {
     if (type.typeDefinition() == analyser->compiler()->sBoolean) {
         if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
             builtIn_ = BuiltInType::BooleanNegate;
@@ -109,7 +109,7 @@ bool ASTMethodable::builtIn(SemanticAnalyser *analyser, const Type &type, const 
     return false;
 }
 
-Type ASTMethod::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyseMethodCall(analyser, name_, callee_);
 }
 

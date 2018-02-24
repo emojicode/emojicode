@@ -19,7 +19,7 @@ class ASTBinaryOperator : public ASTMethodable {
 public:
     ASTBinaryOperator(OperatorType op, std::shared_ptr<ASTExpr> left, std::shared_ptr<ASTExpr> right,
                       const SourcePosition &p) : ASTMethodable(p), operator_(op), left_(std::move(left)), right_(std::move(right)) {}
-    Type analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
@@ -29,9 +29,9 @@ private:
         Type returnType;
     };
 
-    std::pair<bool, BuiltIn> builtInPrimitiveOperator(SemanticAnalyser *analyser, const Type &type);
+    std::pair<bool, BuiltIn> builtInPrimitiveOperator(FunctionAnalyser *analyser, const Type &type);
     void printBinaryOperand(int precedence, const std::shared_ptr<ASTExpr> &expr, Prettyprinter &pretty) const;
-    Type analyseIsNoValue(SemanticAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
+    Type analyseIsNoValue(FunctionAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
                               BuiltInType builtInType);
 
     OperatorType operator_;

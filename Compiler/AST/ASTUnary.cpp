@@ -7,13 +7,13 @@
 //
 
 #include "ASTUnary.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "CompilerError.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTIsError::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false), &value_);
     if (type.type() != TypeType::Error) {
         throw CompilerError(position(), "🚥 can only be used with 🚨.");
@@ -21,7 +21,7 @@ Type ASTIsError::analyse(SemanticAnalyser *analyser, const TypeExpectation &expe
     return analyser->boolean();
 }
 
-Type ASTUnwrap::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &value_);
 
     if (t.optional()) {
@@ -36,7 +36,7 @@ Type ASTUnwrap::analyse(SemanticAnalyser *analyser, const TypeExpectation &expec
     throw CompilerError(position(), "🍺 can only be used with optionals or 🚨.");
 }
 
-Type ASTMetaTypeFromInstance::analyse(SemanticAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTMetaTypeFromInstance::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type originalType = analyser->expect(TypeExpectation(false, false, false), &value_);
     analyser->validateMetability(originalType, position());
     originalType.setMeta(true);

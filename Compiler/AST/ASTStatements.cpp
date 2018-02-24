@@ -7,7 +7,7 @@
 //
 
 #include "ASTStatements.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
+#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Functions/FunctionType.hpp"
 #include "Functions/Initializer.hpp"
@@ -16,18 +16,18 @@
 
 namespace EmojicodeCompiler {
 
-void ASTBlock::analyse(SemanticAnalyser *analyser) {
+void ASTBlock::analyse(FunctionAnalyser *analyser) {
     for (auto &stmt : stmts_) {
         stmt->analyse(analyser);
     }
     returnedCertainly_ = analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::Returned);
 }
 
-void ASTExprStatement::analyse(SemanticAnalyser *analyser)  {
+void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {
     expr_->setExpressionType(expr_->analyse(analyser, TypeExpectation()));
 }
 
-void ASTReturn::analyse(SemanticAnalyser *analyser) {
+void ASTReturn::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
     if (analyser->function()->returnType().type() == TypeType::NoReturn) {
         return;
@@ -40,7 +40,7 @@ void ASTReturn::analyse(SemanticAnalyser *analyser) {
     analyser->expectType(analyser->function()->returnType(), &value_);
 }
 
-void ASTRaise::analyse(SemanticAnalyser *analyser) {
+void ASTRaise::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
     if (isOnlyNothingnessReturnAllowed(analyser->function()->functionType())) {
         auto *initializer = dynamic_cast<Initializer *>(analyser->function());
