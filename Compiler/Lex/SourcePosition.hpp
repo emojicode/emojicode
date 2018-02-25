@@ -14,8 +14,10 @@
 
 namespace EmojicodeCompiler {
 
+/// SourcePosition denotes a location in a source code file.
 struct SourcePosition {
-    SourcePosition(size_t line, size_t character, std::string file) : line(line), character(character), file(std::move(file)) {};
+    SourcePosition(size_t line, size_t character, std::string file) : line(line), character(character),
+                                                                      file(std::move(file)) {}
     size_t line;
     size_t character;
     std::string file;

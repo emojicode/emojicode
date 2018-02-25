@@ -46,9 +46,13 @@ private:
         Continues, Ended, NextBegun
     };
 
-    void loadOperatorSingleTokens();
+    struct TokenConstructionState {
+        bool isHex_ = false;
+        bool escapeSequence_ = false;
+        bool foundZWJ_ = false;
+    };
 
-    SourcePosition sourcePosition_;
+    void loadOperatorSingleTokens();
 
     /// Checks for a whitespace character and updates ::sourcePosition_.
     /// @returns True if @c is whitespace according to isWhitespace().
@@ -58,49 +62,50 @@ private:
     /// Called if a new code point is available.
     /// @returns True if the token continues (e.g. a string) or false if the token ended (i.e. it only consists of this
     /// single code point).
-    bool beginToken(Token *token);
+    bool beginToken(Token *token, TokenConstructionState *constState) const;
 
     /// Called if a new code point is available and beginToken returned true and all previous calls for this token
     /// returned TokenState::Continues.
-    TokenState continueToken(Token *token);
+    TokenState continueToken(Token *token, TokenConstructionState *constState) const;
 
     /// Reads exactly one token.
     /// This method calls nextChar() as necessary. On return, ::codePoint() already returns the next code point for
     /// another call to beginToken(), if ::continue_ is true.
-    void readToken(Token *token);
+    Token readToken();
 
-    bool isNewline() { return codePoint() == 0x0A || codePoint() == 0x2028 || codePoint() == 0x2029; }
+    bool isNewline() const { return codePoint() == 0x0A || codePoint() == 0x2028 || codePoint() == 0x2029; }
 
     /// @returns True if the code point is  a whitespace character.
     /// See http://www.unicode.org/Public/6.3.0/ucd/PropList.txt
-    bool isWhitespace() {
+    bool isWhitespace() const {
         return (0x9 <= codePoint() && codePoint() <= 0xD) || codePoint() == 0x20 || codePoint() == 0x85
                || codePoint() == 0xA0 || codePoint() == 0x1680 || (0x2000 <= codePoint() && codePoint() <= 0x200A)
                || codePoint() == 0x2028 || codePoint() == 0x2029 || codePoint() == 0x2029 || codePoint() == 0x202F
                || codePoint() == 0x205F || codePoint() == 0x3000 || codePoint() == 0xFE0F;
     }
 
-    /// Loads the first character and removes leading whitespace.
-    void prepare();
+    /// Calls nextCharOrEnd() until the codePoint() does not return a whitespace character or the end of the source code
+    /// was reached.
+    void skipWhitespace();
 
+    /// @returns The current code point to be examined.
+    char32_t codePoint() const { return string_[i_]; }
+
+    /// Makes codePoint() provide the next character of the source code.
+    /// @throws CompilerError if the end of the source code string was reached, i.e. hasMoreChars() returns false.
     void nextChar();
 
-    bool hasMoreChars() { return i_ < string_.size(); }
-
+    /// Makes codePoint() provide the next character of the source code or sets continue_ to false if the end of
+    /// the source code was reached, i.e. hasMoreChars() returns false.
     void nextCharOrEnd();
 
-    char32_t codePoint() { return codePoint_; }
+    /// @returns True iff not all characters of the source code string has been tokenized yet.
+    bool hasMoreChars() const { return i_ + 1 < string_.size(); }
 
-    bool isHex_ = false;
-    bool escapeSequence_ = false;
-    bool foundZWJ_ = false;
-
+    SourcePosition sourcePosition_;
     bool continue_ = true;
-
-    char32_t codePoint_ = 0;
-    std::u32string string_;
+    const std::u32string string_;
     size_t i_ = 0;
-
     std::map<char32_t, TokenType> singleTokens_;
 };
 

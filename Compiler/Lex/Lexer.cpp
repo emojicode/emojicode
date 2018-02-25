@@ -14,8 +14,8 @@
 namespace EmojicodeCompiler {
 
 Lexer::Lexer(std::u32string sourceCode, std::string sourcePositionFile) :
-        string_(std::move(sourceCode)), sourcePosition_(1, 0, std::move(sourcePositionFile)) {
-    prepare();
+        sourcePosition_(1, 0, std::move(sourcePositionFile)), string_(std::move(sourceCode)) {
+    skipWhitespace();
 
     loadOperatorSingleTokens();
     singleTokens_.emplace(E_WHITE_EXCLAMATION_MARK, TokenType::BeginArgumentList);
@@ -68,10 +68,10 @@ void Lexer::loadOperatorSingleTokens() {
     singleTokens_.emplace(E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK, TokenType::Operator);
 }
 
-void Lexer::prepare() {
-    do {
+void Lexer::skipWhitespace() {
+    while (continue_ && detectWhitespace()) {
         nextCharOrEnd();
-    } while (continue_ && detectWhitespace());
+    }
 }
 
 bool Lexer::detectWhitespace() {
@@ -87,7 +87,7 @@ void Lexer::nextChar() {
     if (!hasMoreChars()) {
         throw CompilerError(sourcePosition_, "Unexpected end of file.");
     }
-    codePoint_ = string_[i_++];
+    i_++;
     sourcePosition_.character++;
 }
 
@@ -101,29 +101,27 @@ void Lexer::nextCharOrEnd() {
 }
 
 Token Lexer::lex() {
-    Token token(sourcePosition_);
-    readToken(&token);
-
-    while (continue_ && detectWhitespace()) {  // Remove all whitespace after token in order to make continues() accurate.
-        nextCharOrEnd();
-    }
-
+    auto token = readToken();
+    skipWhitespace();
     return token;
 }
 
-void Lexer::readToken(Token *token) {
-    TokenState state = beginToken(token) ? TokenState::Continues : TokenState::Ended;
+Token Lexer::readToken() {
+    Token token(sourcePosition_);
+    TokenConstructionState constState;
+
+    TokenState state = beginToken(&token, &constState) ? TokenState::Continues : TokenState::Ended;
     while (true) {
         if (state == TokenState::Ended) {
-            token->validate();
+            token.validate();
             nextCharOrEnd();
-            return;
+            return token;
         }
         nextChar();
-        state = continueToken(token);
+        state = continueToken(&token, &constState);
         if (state == TokenState::NextBegun) {
-            token->validate();
-            return;
+            token.validate();
+            return token;
         }
         // Whitespace must be detected here so that this method returns on NextBegun without calling detectWhitespace()
         // as the detectWhitespace() would otherwise be called twice for the same character. (Here and in lex())
@@ -131,7 +129,7 @@ void Lexer::readToken(Token *token) {
     }
 }
 
-bool Lexer::beginToken(Token *token) {
+bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
     auto it = singleTokens_.find(codePoint());
     if (it != singleTokens_.end()) {
         token->type_ = it->second;
@@ -159,7 +157,7 @@ bool Lexer::beginToken(Token *token) {
 
     if (('0' <= codePoint() && codePoint() <= '9') || codePoint() == '-' || codePoint() == '+') {
         token->type_ = TokenType::Integer;
-        isHex_ = false;
+        constState->isHex_ = false;
     }
     else if (isEmoji(codePoint())) {
         token->type_ = TokenType::Identifier;
@@ -171,12 +169,12 @@ bool Lexer::beginToken(Token *token) {
     return true;
 }
 
-Lexer::TokenState Lexer::continueToken(Token *token) {
+Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *constState) const {
     switch (token->type()) {
         case TokenType::Identifier:
-            if (foundZWJ_ && isEmoji(codePoint())) {
+            if (constState->foundZWJ_ && isEmoji(codePoint())) {
                 token->value_.push_back(codePoint());
-                foundZWJ_ = false;
+                constState->foundZWJ_ = false;
                 return TokenState::Continues;
             }
             if ((isEmojiModifier(codePoint()) && isEmojiModifierBase(token->value_.back())) ||
@@ -186,7 +184,7 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
              }
             if (codePoint() == 0x200D) {
                 token->value_.push_back(codePoint());
-                foundZWJ_ = true;
+                constState->foundZWJ_ = true;
                 return TokenState::Continues;
             }
             if (codePoint() == 0xFE0F) {  // Emojicode ignores the Emoji modifier behind an emoji character
@@ -213,7 +211,7 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
             token->value_.push_back(codePoint());
             return TokenState::Continues;
         case TokenType::String:
-            if (escapeSequence_) {
+            if (constState->escapeSequence_) {
                 switch (codePoint()) {
                     case E_INPUT_SYMBOL_LATIN_LETTERS:
                     case E_CROSS_MARK:
@@ -234,10 +232,10 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
                     }
                 }
 
-                escapeSequence_ = false;
+                constState->escapeSequence_ = false;
             }
             else if (codePoint() == E_CROSS_MARK) {
-                escapeSequence_ = true;
+                constState->escapeSequence_ = true;
                 return TokenState::Continues;
             }
             else if (codePoint() == E_INPUT_SYMBOL_LATIN_LETTERS) {
@@ -256,7 +254,7 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
             token->value_.push_back(codePoint());
             return TokenState::Continues;
         case TokenType::Integer:
-            if (('0' <= codePoint() && codePoint() <= '9') || (((64 < codePoint() && codePoint() < 71) || (96 < codePoint() && codePoint() < 103)) && isHex_)) {
+            if (('0' <= codePoint() && codePoint() <= '9') || (((64 < codePoint() && codePoint() < 71) || (96 < codePoint() && codePoint() < 103)) && constState->isHex_)) {
                 token->value_.push_back(codePoint());
                 return TokenState::Continues;
             }
@@ -266,7 +264,7 @@ Lexer::TokenState Lexer::continueToken(Token *token) {
                 return TokenState::Continues;
             }
             else if ((codePoint() == 'x' || codePoint() == 'X') && token->value_.size() == 1 && token->value_[0] == '0') {
-                isHex_ = true;
+                constState->isHex_ = true;
                 token->value_.push_back(codePoint());
                 return TokenState::Continues;
             }
