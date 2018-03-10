@@ -11,6 +11,7 @@
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Types/Enum.hpp"
+#include "Package/Package.hpp"
 
 namespace EmojicodeCompiler {
 

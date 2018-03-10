@@ -57,6 +57,8 @@ private:
 
     std::map<Type, llvm::Type*> types_;
     ReificationContext *reifiContext_ = nullptr;
+
+    llvm::Type *typeForOrdinaryType(Type type);
 };
 
 }  // namespace EmojicodeCompiler

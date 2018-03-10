@@ -85,17 +85,17 @@ std::string Prettyprinter::filePath(const std::string &path) {
 void Prettyprinter::printArguments(Function *function) {
     if (auto initializer = dynamic_cast<Initializer *>(function)) {
         auto it = initializer->argumentsToVariables().begin();
-        for (auto &arg : function->arguments()) {
-            if (it != initializer->argumentsToVariables().end() && arg.variableName == *it) {
+        for (auto &arg : function->parameters()) {
+            if (it != initializer->argumentsToVariables().end() && arg.name == *it) {
                 it++;
                 stream_ << "🍼 ";
             }
-            *this << utf8(arg.variableName) << " " << arg.type << " ";
+            *this << utf8(arg.name) << " " << arg.type << " ";
         }
         return;
     }
-    for (auto &arg : function->arguments()) {
-        *this << utf8(arg.variableName) << " " << arg.type << " ";
+    for (auto &arg : function->parameters()) {
+        *this << utf8(arg.name) << " " << arg.type << " ";
     }
 }
 

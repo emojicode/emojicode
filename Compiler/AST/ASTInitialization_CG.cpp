@@ -64,7 +64,7 @@ Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArgumen
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {
     return fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(),
-                                    args_.arguments()[0]->generate(fg), "alloc");
+                                    args_.parameters()[0]->generate(fg), "alloc");
 }
 
 }  // namespace EmojicodeCompiler

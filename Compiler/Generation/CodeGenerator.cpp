@@ -17,6 +17,7 @@
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
+#include "Package/Package.hpp"
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/TargetRegistry.h>
@@ -62,7 +63,6 @@ llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
     valueType->addValueTypeMetaFor(type.genericArguments(), meta);
     return meta;
 }
-
 
 void CodeGenerator::generate(const std::string &outPath) {
     for (auto package : package_->dependencies()) {

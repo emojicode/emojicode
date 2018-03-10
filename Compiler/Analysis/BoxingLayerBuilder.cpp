@@ -22,7 +22,7 @@ void buildBoxingLayerAst(BoxingLayer *layer) {
     auto args = ASTArguments(p);
 
     for (size_t i = 0; i < layer->destinationArgumentTypes().size(); i++) {
-        args.addArguments(std::make_shared<ASTGetVariable>(layer->arguments()[i].variableName, p));
+        args.addArguments(std::make_shared<ASTGetVariable>(layer->parameters()[i].name, p));
     }
 
     std::shared_ptr<ASTExpr> expr;

@@ -168,7 +168,7 @@ Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation 
         throw CompilerError(position(), "Given value is not callable.");
     }
     for (size_t i = 1; i < type.genericArguments().size(); i++) {
-        analyser->expectType(type.genericArguments()[i], &args_.arguments()[i - 1]);
+        analyser->expectType(type.genericArguments()[i], &args_.parameters()[i - 1]);
     }
     return type.genericArguments()[0];
 }

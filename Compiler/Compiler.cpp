@@ -8,10 +8,12 @@
 
 #include "CompilerError.hpp"
 #include "Compiler.hpp"
+#include "Package/RecordingPackage.hpp"
 #include "Generation/CodeGenerator.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
 #include "Parsing/AbstractParser.hpp"
 #include "Prettyprint/Prettyprinter.hpp"
+#include "Parsing/CompatibilityInfoProvider.hpp"
 #include <llvm/Support/FileSystem.h>
 
 #include <utility>
@@ -23,12 +25,16 @@ Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string in
                    std::unique_ptr<CompilerDelegate> delegate, bool linkToExec)
 : linkToExec_(linkToExec), mainFile_(std::move(mainFile)), interfaceFile_(std::move(interfaceFile)), outPath_(std::move(outPath)),
   mainPackageName_(std::move(mainPackage)), packageSearchPaths_(std::move(pkgSearchPaths)), linker_(std::move(linker)),
-  delegate_(std::move(delegate)) {}
+  delegate_(std::move(delegate)), mainPackage_(std::make_unique<RecordingPackage>(mainPackageName_, mainFile_, this)) {
+    if (linkToExec_) {
+        mainPackage_->setPackageVersion(PackageVersion(1, 0));
+    }
+}
+
+Compiler::~Compiler() = default;
 
 bool Compiler::compile(bool parseOnly) {
     delegate_->begin();
-
-    factorMainPackage<RecordingPackage>();
 
     try {
         mainPackage_->parse(mainFile_);
@@ -37,7 +43,7 @@ bool Compiler::compile(bool parseOnly) {
         }
 
         if (!interfaceFile_.empty()) {
-            Prettyprinter(dynamic_cast<RecordingPackage *>(mainPackage_.get())).printInterface(interfaceFile_);
+            Prettyprinter(mainPackage_.get()).printInterface(interfaceFile_);
         }
 
         analyse();
@@ -175,6 +181,11 @@ void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
 
     sEnumerator = getStandardProtocol(std::u32string(1, 0x1F361), s, errorPosition);
     sEnumeratable = getStandardProtocol(std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
+}
+
+void Compiler::loadMigrationFile(const std::string &file) {
+    mainPackage_->setCompatiblityInfoProvider(compInfoProvider_.get());
+    compInfoProvider_ = std::make_unique<CompatibilityInfoProvider>(file);
 }
 
 } // namespace EmojicodeCompiler

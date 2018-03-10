@@ -23,7 +23,7 @@ llvm::Value * CallCodeGenerator::generate(llvm::Value *callee, const Type &calle
     if (callType_ != CallType::StaticContextfreeDispatch) {
         argsVector.emplace_back(callee);
     }
-    for (auto &arg : args.arguments()) {
+    for (auto &arg : args.parameters()) {
         argsVector.emplace_back(arg->generate(fg_));
     }
     return createCall(argsVector, calleeType, name, args.isImperative(), args.genericArguments());

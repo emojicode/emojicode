@@ -31,24 +31,24 @@ enum class AccessLevel {
     Public, Private, Protected
 };
 
-struct Argument {
-    Argument(std::u32string n, Type t) : variableName(std::move(n)), type(std::move(t)) {}
+struct Parameter {
+    Parameter(std::u32string n, Type t) : name(std::move(n)), type(std::move(t)) {}
 
     /// The name of the variable
-    std::u32string variableName;
+    std::u32string name;
     /// The type
     Type type;
 };
 
 class FunctionReification {
 public:
-    llvm::Function *function;
+    llvm::Function *function = nullptr;
     unsigned int vti() { return vti_; }
     void setVti(unsigned int vti) { vti_ = vti; }
     llvm::FunctionType* functionType();
     void setFunctionType(llvm::FunctionType *type) { functionType_ = type; }
 private:
-    llvm::FunctionType* functionType_;
+    llvm::FunctionType* functionType_ = nullptr;
     unsigned int vti_ = 0;
 };
 
@@ -92,9 +92,9 @@ public:
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
 
-    const std::vector<Argument>& arguments() const { return arguments_; }
+    const std::vector<Parameter>& parameters() const { return parameters_; }
 
-    void setArguments(std::vector<Argument> arguments) { arguments_ = std::move(arguments); }
+    void setParameters(std::vector<Parameter> parameters) { parameters_ = std::move(parameters); }
 
     const Type& returnType() const { return returnType_; }
 
@@ -143,7 +143,7 @@ public:
     virtual ~Function() = default;
 
 private:
-    std::vector<Argument> arguments_;
+    std::vector<Parameter> parameters_;
     Type returnType_ = Type::noReturn();
 
     std::shared_ptr<ASTBlock> ast_;

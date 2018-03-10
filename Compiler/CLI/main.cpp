@@ -32,26 +32,16 @@ bool start(Options options) {
     if (!options.migrationFile().empty()) {
         application.loadMigrationFile(options.migrationFile());
     }
-    if (options.prettyprint()) {
-        application.factorMainPackage<RecordingPackage>();
-    }
 
     bool success = application.compile(options.prettyprint());
 
     if (options.prettyprint()) {
-        auto recordingPackage = dynamic_cast<RecordingPackage *>(application.mainPackage());
-        Prettyprinter(recordingPackage).print();
+        Prettyprinter(application.mainPackage()).print();
     }
 
     if (!options.packageToReport().empty()) {
-        if (auto package = application.findPackage(options.packageToReport())) {
-            reportPackage(package);
-        }
-        else {
-            options.printCliMessage("Report failed as the request package was not loaded.");
-        }
+        reportPackage(application.mainPackage());
     }
-
     return success;
 }
 

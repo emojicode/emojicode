@@ -42,18 +42,18 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     if (hasThisArgument(fn_->functionType())) {
         (it++)->setName("this");
     }
-    for (auto arg : fn_->arguments()) {
+    for (auto arg : fn_->parameters()) {
         auto &llvmArg = *(it++);
         scoper_.getVariable(i++) = LocalVariable(false, &llvmArg);
-        llvmArg.setName(utf8(arg.variableName));
+        llvmArg.setName(utf8(arg.name));
     }
 }
 
-llvm::Value* FunctionCodeGenerator::sizeOfReferencedType(llvm::PointerType *type) {
+llvm::Value* FunctionCodeGenerator::sizeOfReferencedType(llvm::PointerType *ptrType) {
     auto one = llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1);
-    type->print(llvm::outs(), true);
+    ptrType->print(llvm::outs(), true);
     llvm::outs() << "\n";
-    auto sizeg = builder().CreateGEP(llvm::ConstantPointerNull::getNullValue(type), one);
+    auto sizeg = builder().CreateGEP(llvm::ConstantPointerNull::getNullValue(ptrType), one);
     return builder().CreatePtrToInt(sizeg, llvm::Type::getInt64Ty(generator()->context()));
 }
 

@@ -110,21 +110,21 @@ bool SemanticAnalyser::enforcePromises(const Function *sub, const Function *supe
 
 bool SemanticAnalyser::checkArgumentPromise(const Function *sub, const Function *super, const TypeContext &subContext,
                                             const TypeContext &superContext) const {
-    if (super->arguments().size() != sub->arguments().size()) {
-        package_->compiler()->error(CompilerError(sub->position(), "Argument count does not match."));
+    if (super->parameters().size() != sub->parameters().size()) {
+        package_->compiler()->error(CompilerError(sub->position(), "Parameter count does not match."));
     }
 
     bool compatible = true;
-    for (size_t i = 0; i < super->arguments().size(); i++) { // More general arguments are OK
-        auto superArgumentType = super->arguments()[i].type.resolveOn(superContext);
-        if (!superArgumentType.compatibleTo(sub->arguments()[i].type.resolveOn(subContext), subContext)) {
+    for (size_t i = 0; i < super->parameters().size(); i++) { // More general arguments are OK
+        auto superArgumentType = super->parameters()[i].type.resolveOn(superContext);
+        if (!superArgumentType.compatibleTo(sub->parameters()[i].type.resolveOn(subContext), subContext)) {
             auto supertype = superArgumentType.toString(subContext);
-            auto thisname = sub->arguments()[i].type.toString(subContext);
+            auto thisname = sub->parameters()[i].type.toString(subContext);
             package_->compiler()->error(CompilerError(sub->position(), "Type ", thisname, " of argument ", i + 1,
                                                       " is not compatible with its ", thisname, " argument type ",
                                                       supertype, "."));
         }
-        if (sub->arguments()[i].type.resolveOn(subContext).storageType() != superArgumentType.storageType()) {
+        if (sub->parameters()[i].type.resolveOn(subContext).storageType() != superArgumentType.storageType()) {
             compatible = false;  // BoxingLayer required for parameter i
         }
     }
@@ -154,10 +154,10 @@ void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol) 
 
 void SemanticAnalyser::buildBoxingLayer(const Type &type, const Type &protocol, Function *method,
                                         Function *methodImplementation) {
-    auto arguments = std::vector<Argument>();
-    arguments.reserve(method->arguments().size());
-    for (auto &arg : method->arguments()) {
-        arguments.emplace_back(arg.variableName, arg.type.resolveOn(TypeContext(protocol)));
+    auto arguments = std::vector<Parameter>();
+    arguments.reserve(method->parameters().size());
+    for (auto &arg : method->parameters()) {
+        arguments.emplace_back(arg.name, arg.type.resolveOn(TypeContext(protocol)));
     }
     auto bl = std::make_unique<BoxingLayer>(methodImplementation, protocol.protocol()->name(), arguments,
                                             method->returnType().resolveOn(TypeContext(protocol)),

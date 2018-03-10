@@ -27,9 +27,9 @@ llvm::FunctionType* FunctionReification::functionType() {
 
 Type Function::type() const {
     Type t = Type::callableIncomplete();
-    t.genericArguments_.reserve(arguments().size() + 1);
+    t.genericArguments_.reserve(parameters().size() + 1);
     t.genericArguments_.push_back(returnType());
-    for (auto &argument : arguments()) {
+    for (auto &argument : parameters()) {
         t.genericArguments_.push_back(argument.type);
     }
     return t;

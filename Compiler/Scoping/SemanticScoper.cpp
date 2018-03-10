@@ -14,10 +14,10 @@
 
 namespace EmojicodeCompiler {
 
-Scope& SemanticScoper::pushArgumentsScope(const std::vector<Argument> &arguments, const SourcePosition &p) {
+Scope& SemanticScoper::pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p) {
     Scope &methodScope = pushScope();
     for (auto &variable : arguments) {
-        auto &var = methodScope.declareVariable(variable.variableName, variable.type, true, p);
+        auto &var = methodScope.declareVariable(variable.name, variable.type, true, p);
         var.initializeAbsolutely();
     }
     return methodScope;

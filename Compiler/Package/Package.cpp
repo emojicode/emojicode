@@ -136,8 +136,6 @@ bool Package::lookupRawType(const TypeIdentifier &typeId, bool optional, Type *t
             case E_LARGE_BLUE_CIRCLE:
                 *type = Type::someobject(optional);
                 return true;
-            case E_SPARKLES:
-                throw CompilerError(typeId.position, "The Nothingness type may not be referenced to.");
         }
     }
 

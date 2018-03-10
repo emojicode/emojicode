@@ -24,13 +24,13 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 return fg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fg->generator()->context()), v);
             case BuiltInType::Store: {
                 auto pointerType = fg->typeHelper().llvmTypeFor(args_.genericArguments().front())->getPointerTo();
-                auto offset = args_.arguments()[1]->generate(fg);
+                auto offset = args_.parameters()[1]->generate(fg);
                 auto ptr = fg->builder().CreateBitCast(fg->builder().CreateGEP(v, offset), pointerType);
-                return fg->builder().CreateStore(args_.arguments().front()->generate(fg), ptr);
+                return fg->builder().CreateStore(args_.parameters().front()->generate(fg), ptr);
             }
             case BuiltInType::Load: {
                 auto pointerType = fg->typeHelper().llvmTypeFor(args_.genericArguments().front())->getPointerTo();
-                auto offset = args_.arguments().front()->generate(fg);
+                auto offset = args_.parameters().front()->generate(fg);
                 auto ptr = fg->builder().CreateBitCast(fg->builder().CreateGEP(v, offset), pointerType);
                 return fg->builder().CreateLoad(ptr);
             }

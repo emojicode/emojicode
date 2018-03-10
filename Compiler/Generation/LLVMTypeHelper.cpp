@@ -65,7 +65,7 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     else if (hasThisArgument(function->functionType())) {
         args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
     }
-    std::transform(function->arguments().begin(), function->arguments().end(), std::back_inserter(args), [this](auto &arg) {
+    std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [this](auto &arg) {
         return llvmTypeFor(arg.type);
     });
     llvm::Type *returnType;
@@ -121,22 +121,23 @@ llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
         llvmType = llvm::StructType::get(context_, types);
     }
 
+    llvmType = typeForOrdinaryType(type);
+    assert(llvmType != nullptr);
+    return type.isReference() ? llvmType->getPointerTo() : llvmType;
+}
+
+llvm::Type* LLVMTypeHelper::typeForOrdinaryType(Type type) {
     switch (type.storageType()) {
         case StorageType::Box:
-            llvmType = box_;
-            break;
+            return box_;
         case StorageType::SimpleOptional: {
             type.setOptional(false);
             std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context_), llvmTypeFor(type) };
-            llvmType = llvm::StructType::get(context_, types);
-            break;
+            return llvm::StructType::get(context_, types);
         }
         case StorageType::Simple:
-            llvmType = getSimpleType(type);
-            break;
+            return getSimpleType(type);
     }
-    assert(llvmType != nullptr);
-    return type.isReference() ? llvmType->getPointerTo() : llvmType;
 }
 
 llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {

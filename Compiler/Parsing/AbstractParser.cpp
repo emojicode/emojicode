@@ -193,7 +193,7 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
 
 void AbstractParser::parseParameters(Function *function, const TypeContext &typeContext, bool initializer) {
     bool argumentToVariable;
-    std::vector<Argument> args;
+    std::vector<Parameter> params;
 
     while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {
         if (argumentToVariable) {
@@ -206,13 +206,13 @@ void AbstractParser::parseParameters(Function *function, const TypeContext &type
         auto variableToken = stream_.consumeToken(TokenType::Variable);
         auto type = parseType(typeContext);
 
-        args.emplace_back(variableToken.value(), type);
+        params.emplace_back(variableToken.value(), type);
 
         if (argumentToVariable) {
             dynamic_cast<Initializer *>(function)->addArgumentToVariable(variableToken.value(), variableToken.position());
         }
     }
-    function->setArguments(std::move(args));
+    function->setParameters(std::move(params));
 }
 
 void AbstractParser::parseReturnType(Function *function, const TypeContext &typeContext) {

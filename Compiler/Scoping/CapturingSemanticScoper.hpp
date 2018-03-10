@@ -30,7 +30,7 @@ public:
     explicit CapturingSemanticScoper(SemanticScoper &captured)
     : SemanticScoper(captured.instanceScope()), capturedScoper_(captured) {}
 
-    Scope& pushArgumentsScope(const std::vector<Argument> &arguments, const SourcePosition &p) override {
+    Scope& pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p) override {
         auto &scope = SemanticScoper::pushArgumentsScope(arguments, p);
         captureId_ = scope.reserveIds(capturedScoper_.currentScope().maxVariableId());
         return scope;

@@ -85,7 +85,7 @@ void FunctionAnalyser::deprecatedWarning(Function *function, const SourcePositio
 }
 
 void FunctionAnalyser::analyse() {
-    Scope &methodScope = scoper_->pushArgumentsScope(function_->arguments(), function_->position());
+    Scope &methodScope = scoper_->pushArgumentsScope(function_->parameters(), function_->position());
 
     if (hasInstanceScope(function_->functionType())) {
         scoper_->instanceScope()->setVariableInitialization(!isFullyInitializedCheckRequired(function_->functionType()));
@@ -170,9 +170,9 @@ Type FunctionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *no
 }
 
 Type FunctionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
-    if (node->arguments().size() != function->arguments().size()) {
-        throw CompilerError(node->position(), utf8(function->name()), " expects ", function->arguments().size(),
-                            " arguments but ", node->arguments().size(), " were supplied.");
+    if (node->parameters().size() != function->parameters().size()) {
+        throw CompilerError(node->position(), utf8(function->name()), " expects ", function->parameters().size(),
+                            " arguments but ", node->parameters().size(), " were supplied.");
     }
 
     ensureGenericArguments(node, type, function);
@@ -186,8 +186,8 @@ Type FunctionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
         }
     }
 
-    for (size_t i = 0; i < function->arguments().size(); i++) {
-        expectType(function->arguments()[i].type.resolveOn(typeContext), &node->arguments()[i]);
+    for (size_t i = 0; i < function->parameters().size(); i++) {
+        expectType(function->parameters()[i].type.resolveOn(typeContext), &node->parameters()[i]);
     }
     function->requestReification(node->genericArguments());
     checkFunctionUse(function, node->position());
@@ -199,8 +199,8 @@ void FunctionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &ty
         std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameters().size(), CommonTypeFinder());
         TypeContext typeContext = TypeContext(type, function, nullptr);
         size_t i = 0;
-        for (auto arg : function->arguments()) {
-            expectType(arg.type.resolveOn(typeContext), &node->arguments()[i++], &genericArgsFinders);
+        for (auto arg : function->parameters()) {
+            expectType(arg.type.resolveOn(typeContext), &node->parameters()[i++], &genericArgsFinders);
         }
         for (auto &finder : genericArgsFinders) {
             node->genericArguments().emplace_back(finder.getCommonType(node->position(), compiler()));
@@ -331,7 +331,7 @@ bool FunctionAnalyser::callableBoxingRequired(const TypeExpectation &expectation
 
 Type FunctionAnalyser::callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     if (callableBoxingRequired(expectation, exprType)) {
-        auto arguments = std::vector<Argument>();
+        auto arguments = std::vector<Parameter>();
         arguments.reserve(expectation.genericArguments().size() - 1);
         for (auto argumentType = expectation.genericArguments().begin() + 1;
              argumentType != expectation.genericArguments().end(); argumentType++) {

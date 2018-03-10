@@ -98,12 +98,12 @@ void reportFunction(Function *function, ReturnKind returnKind, const TypeContext
 
     printf("\"arguments\":[");
     CommaPrinter printer;
-    for (auto &argument : function->arguments()) {
+    for (auto &argument : function->parameters()) {
         printer.print();
         printf("{\"type\":");
         reportType(argument.type, tc);
         printf(",\"name\":");
-        jsonString(utf8(argument.variableName), std::cout);
+        jsonString(utf8(argument.name), std::cout);
         printf("}");
     }
     printf("]}");

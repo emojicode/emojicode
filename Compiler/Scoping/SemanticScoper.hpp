@@ -45,7 +45,7 @@ public:
     Scope& pushScope();
 
     /// Pushes a new subscope and sets the argument variables in it.
-    virtual Scope& pushArgumentsScope(const std::vector<Argument> &arguments, const SourcePosition &p);
+    virtual Scope& pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p);
 
     /// Pops the current scope and calls @c recommendFrozenVariables on it.
     void popScope(Compiler *app);

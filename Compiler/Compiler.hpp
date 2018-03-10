@@ -9,22 +9,24 @@
 #ifndef Compiler_hpp
 #define Compiler_hpp
 
-#include "Package/Package.hpp"
-#include "Parsing/CompatibilityInfoProvider.hpp"
 #include <exception>
 #include <map>
 #include <memory>
 #include <vector>
+#include <string>
+#include <sstream>
 
 namespace EmojicodeCompiler {
 
 class CompilerError;
+class RecordingPackage;
 class Package;
 class Function;
 struct SourcePosition;
 class Class;
 class Protocol;
 class ValueType;
+class CompatibilityInfoProvider;
 
 /// CompilerDelegate is an interface class, which is used by Compiler to notify about certain events, like
 /// compiler errors.
@@ -68,27 +70,9 @@ public:
     /// @returns True iff the application has been successfully parsed and — optionally — analysed.
     bool compile(bool parseOnly);
 
-    /// Constructs a Package instance that represents the main package. Appropriate values are set.
-    template <typename T>
-    void factorMainPackage() {
-        if (mainPackage_ == nullptr) {
-            mainPackage_ = std::make_unique<T>(mainPackageName_, mainFile_, this);
-            if (linkToExec_) {
-                mainPackage_->setPackageVersion(PackageVersion(1, 0));
-            }
-            mainPackage_->setCompatiblityInfoProvider(compInfoProvider_.get());
-        }
-    }
+    RecordingPackage* mainPackage() const { return mainPackage_.get(); }
 
-    Package* mainPackage() const { return mainPackage_.get(); }
-
-    /// @pre factorUnderscorePackage() must not have been called.
-    void loadMigrationFile(const std::string &file) {
-        if (mainPackage_ != nullptr) {
-            throw std::logic_error("loadMigrationFile must not be called after factorMainPackage");
-        }
-        compInfoProvider_ = std::make_unique<CompatibilityInfoProvider>(file);
-    }
+    void loadMigrationFile(const std::string &file);
 
     /// Issues a compiler warning. The compilation is continued normally.
     /// @param args All arguments will be concatenated.
@@ -103,9 +87,6 @@ public:
     /// Issues a compiler error. The compilation can continue, but no code will be generated.
     void error(const CompilerError &ce);
 
-    /// Searches the loaded packages for the package with the given name.
-    /// If the package has not been loaded yet @c nullptr is returned.
-    Package* findPackage(const std::string &name) const;
     /// Loads the package with the given name. If the package has already been loaded it is returned immediately.
     /// @param requestor The package that caused the call to this method.
     /// @see findPackage()
@@ -126,6 +107,8 @@ public:
     ValueType *sReal = nullptr;
     ValueType *sMemory = nullptr;
 
+    ~Compiler();
+
 private:
     void generateCode();
     void analyse();
@@ -133,6 +116,10 @@ private:
     std::string objectFileName() const;
     std::string searchPackage(const std::string &name, const SourcePosition &p);
     std::string findBinaryPathPackage(const std::string &packagePath, const std::string &packageName);
+
+    /// Searches the loaded packages for the package with the given name.
+    /// If the package has not been loaded yet @c nullptr is returned.
+    Package* findPackage(const std::string &name) const;
 
     std::map<std::string, std::unique_ptr<Package>> packages_;
 
@@ -146,7 +133,7 @@ private:
     const std::string linker_;
     const std::unique_ptr<CompilerDelegate> delegate_;
     std::unique_ptr<CompatibilityInfoProvider> compInfoProvider_;
-    std::unique_ptr<Package> mainPackage_;
+    std::unique_ptr<RecordingPackage> mainPackage_;
 };
 
 }  // namespace EmojicodeCompiler

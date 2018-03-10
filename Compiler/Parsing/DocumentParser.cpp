@@ -17,8 +17,8 @@
 #include "Types/Protocol.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/ValueType.hpp"
+#include "Package/Package.hpp"
 #include <cstring>
-#include <experimental/optional>
 
 namespace EmojicodeCompiler {
 

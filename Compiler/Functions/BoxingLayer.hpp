@@ -23,28 +23,28 @@ public:
     /// Creates a boxing layer for a protocol function.
     /// @parameter destinationFunction That function that should be called by the boxing layer. The "actual" method.
     BoxingLayer(Function *destinationFunction, const std::u32string &protocolName,
-                const std::vector<Argument> &arguments, const Type &returnType, const SourcePosition &p)
+                const std::vector<Parameter> &arguments, const Type &returnType, const SourcePosition &p)
     : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
                destinationFunction->owningType(), destinationFunction->package(), p, false, std::u32string(), false,
                false, true, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType()),
         destinationFunction_(destinationFunction) {
-        this->setArguments(arguments);
+        this->setParameters(arguments);
         this->setReturnType(returnType);
 
-        destinationArgumentTypes_.reserve(destinationFunction->arguments().size());
-        for (auto &arg : destinationFunction->arguments()) {
+        destinationArgumentTypes_.reserve(destinationFunction->parameters().size());
+        for (auto &arg : destinationFunction->parameters()) {
             destinationArgumentTypes_.emplace_back(arg.type);
         }
     }
     /// Creates a boxing layer for a callable. The argument/return conversions will be performed and
     /// INS_EXECUTE_CALLABLE callable will be applied to the this context.
-    BoxingLayer(Type thisCallable, Package *pkg, const std::vector<Argument> &arguments, const Type &returnType,
+    BoxingLayer(Type thisCallable, Package *pkg, const std::vector<Parameter> &arguments, const Type &returnType,
                 const SourcePosition &p)
     : Function(std::u32string(), AccessLevel::Private, true, std::move(thisCallable), pkg, p, false,
                std::u32string(), false, false, true, FunctionType::BoxingLayer),
       destinationArgumentTypes_(owningType().genericArguments().begin() + 1, owningType().genericArguments().end()),
       destinationReturnType_(owningType().genericArguments()[0]) {
-        this->setArguments(arguments);
+        this->setParameters(arguments);
         this->setReturnType(returnType);
     }
 
