@@ -10,23 +10,24 @@
 #define Options_hpp
 
 #include "Compiler.hpp"
-#include "EmojicodeCompiler.hpp"
 #include <memory>
 #include <string>
 #include <vector>
+#include <exception>
 
 namespace EmojicodeCompiler {
 
 namespace CLI {
 
+/// Thrown by Options if the cancellation should not begin.
+class CompilationCancellation : public std::exception {};
+
 /// An instance of this class represents the command-line options with which the compiler was started.
 class Options {
 public:
     /// Constructs an Options instance from the command-line arguments and environment variables.
+    /// @throws CompilationCancellation
     Options(int argc, char *argv[]);
-
-    /// Whether the compilation should begin at all. False, if the options are invalid or the version was printed.
-    bool beginCompilation() const { return beginCompilation_; }
 
     /// This method must be used to print messages or errors about the command-line interface use.
     void printCliMessage(const std::string &message);
@@ -34,7 +35,7 @@ public:
     /// @returns A CompilerDelegate that matches the options represented by the instance.
     std::unique_ptr<CompilerDelegate> compilerDelegate() const;
 
-    const std::string& packageToReport() const { return packageToReport_; }
+    bool shouldReport() const { return report_; }
     const std::string& outPath() const { return outPath_; }
     const std::string& mainFile() const { return mainFile_; }
     const std::string& interfaceFile() const { return interfaceFile_; }
@@ -49,7 +50,6 @@ public:
     /// This method returns true if prettyprint was explicitely requested or if a file is being migrated.
     bool prettyprint() const { return format_; }
 private:
-    std::string packageToReport_;
     std::string outPath_;
     std::string mainFile_;
     std::string interfaceFile_;
@@ -58,11 +58,11 @@ private:
     std::string mainPackageName_ = "_";
     bool format_ = false;
     bool jsonOutput_ = false;
-    bool beginCompilation_ = true;
     bool linkToExec_ = true;
+    bool report_ = false;
 
     void readEnvironment();
-    void parsePositionalArguments(int positionalArguments, char *argv[]);
+
     /// If the file ends in ".emojimig", the migration file migrationFile_ will be set to it and prettyprint_ to true.
     /// The main file is then derived from by replacing ".emojimig" with ".emojic".
     void examineMainFile();

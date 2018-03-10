@@ -20,11 +20,7 @@ namespace CLI {
 
 /// The compiler CLI main function
 /// @returns True if the requested operation was successful.
-bool start(Options options) {
-    if (!options.beginCompilation()) {
-        return true;
-    }
-
+bool start(const Options &options) {
     Compiler application(options.mainPackageName(), options.mainFile(), options.interfaceFile(), options.outPath(),
                          options.linker(), options.packageSearchPaths(), options.compilerDelegate(),
                          options.linkToExec());
@@ -39,7 +35,7 @@ bool start(Options options) {
         Prettyprinter(application.mainPackage()).print();
     }
 
-    if (!options.packageToReport().empty()) {
+    if (options.shouldReport()) {
         reportPackage(application.mainPackage());
     }
     return success;
@@ -53,6 +49,7 @@ int main(int argc, char *argv[]) {
     try {
         return EmojicodeCompiler::CLI::start(EmojicodeCompiler::CLI::Options(argc, argv)) ? 0 : 1;
     }
+    catch (EmojicodeCompiler::CLI::CompilationCancellation &e) {}
     catch (std::exception &ex) {
         std::cout << "💣 The compiler crashed due to an internal problem: " << ex.what() << std::endl;
         std::cout << "Please report this message and the code that you were trying to compile as an issue on GitHub.";

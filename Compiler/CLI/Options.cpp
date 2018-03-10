@@ -9,10 +9,10 @@
 #include "Options.hpp"
 #include "HRFCompilerDelegate.hpp"
 #include "JSONCompilerDelegate.hpp"
+#include "Utils/args.hxx"
+#include "EmojicodeCompiler.hpp"
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/Path.h>
-#include <cstdlib>
-#include <getopt.h>
 #include <iostream>
 
 namespace EmojicodeCompiler {
@@ -26,46 +26,56 @@ namespace CLI {
 Options::Options(int argc, char *argv[]) {
     readEnvironment();
 
-    signed char ch;
-    while ((ch = getopt(argc, argv, "vrjR:o:p:fci:")) != -1) {
-        switch (ch) {
-            case 'v':
-                puts("Emojicode 0.5. Created by Theo Weidmann.");
-                beginCompilation_ = false;
-                return;
-            case 'R':
-                packageToReport_ = optarg;
-                break;
-            case 'r':
-                packageToReport_ = "_";
-                break;
-            case 'o':
-                outPath_ = optarg;
-                break;
-            case 'j':
-                jsonOutput_ = true;
-                break;
-            case 'p':
-                mainPackageName_ = optarg;
-                linkToExec_ = false;
-                break;
-            case 'i':
-                interfaceFile_ = optarg;
-                break;
-            case 'f':
-                format_ = true;
-                break;
-            case 'c':
-                linkToExec_ = false;
-                break;
-            default:
-                break;
+    args::ArgumentParser parser("Emojicode Compiler 0.6.");
+    args::Positional<std::string> file(parser, "file", "The main file of the package to be compiled", std::string(),
+                                       args::Options::Required);
+    args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
+    args::ValueFlag<std::string> package(parser, "package", "The name of the package", {'p'});
+    args::ValueFlag<std::string> out(parser, "out", "Output path for binary or assembly", {'o'});
+    args::ValueFlag<std::string> interfaceOut(parser, "interface", "Output interface to given path", {'i'});
+    args::Flag report(parser, "report", "Generate a JSON report about the package", {'r'});
+    args::Flag object(parser, "object", "Produce object file, do not link", {'c'});
+    args::Flag json(parser, "json", "Show compiler messages as JSON", {"json"});
+    args::Flag format(parser, "format", "Format source code", {"format"});
+
+    try {
+        parser.ParseCLI(argc, argv);
+
+        report_ = report.Get();
+        mainFile_ = file.Get();
+        jsonOutput_ = json.Get();
+        format_ = format.Get();
+
+        if (package) {
+            mainPackageName_ = package.Get();
+            linkToExec_ = false;
+        }
+        if (object) {
+            linkToExec_ = false;
+        }
+        if (out) {
+            outPath_ = out.Get();
+        }
+        if (interfaceOut) {
+            interfaceFile_ = interfaceOut.Get();
         }
     }
-    argc -= optind;
-    argv += optind;
+    catch (args::Help &e) {
+        std::cout << parser;
+        throw CompilationCancellation();
+    }
+    catch (args::ParseError &e) {
+        printCliMessage(e.what());
+        std::cerr << parser;
+        throw CompilationCancellation();
+    }
+    catch (args::ValidationError &e) {
+        printCliMessage(e.what());
+        throw CompilationCancellation();
+    }
 
-    parsePositionalArguments(argc, argv);
+    examineMainFile();
+    configureOutPath();
 }
 
 void Options::readEnvironment() {
@@ -82,22 +92,6 @@ void Options::readEnvironment() {
 
 void Options::printCliMessage(const std::string &message) {
     std::cout << "👉  " << message << std::endl;
-}
-
-void Options::parsePositionalArguments(int positionalArguments, char *argv[]) {
-    if (positionalArguments == 0) {
-        printCliMessage("No input file provided.");
-        beginCompilation_ = false;
-        return;
-    }
-    if (positionalArguments > 1) {
-        printCliMessage("Only the first document provided will be compiled.");
-    }
-
-    mainFile_ = argv[0];
-
-    examineMainFile();
-    configureOutPath();
 }
 
 void Options::examineMainFile() {
