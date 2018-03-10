@@ -14,7 +14,6 @@
 #include "Types/Generic.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeContext.hpp"
-#include <experimental/optional>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -118,12 +117,6 @@ public:
     /// This does not necessarily match the package of @c owningType.
     Package* package() const { return package_; }
 
-    /// Checks that no promises were broken and applies boxing if necessary.
-    /// @returns false iff a value for protocol was given and the arguments or the return type are storage incompatible.
-    /// This indicates that a BoxingLayer must be created.
-    bool enforcePromises(Function *super, const TypeContext &typeContext, const Type &superSource,
-                         std::experimental::optional<TypeContext> protocol);
-
     /// Use this method to make a function a *heir* of this function, i.e. the heir function is guaranteed to have the
     /// same VTI’s for its reifications as this one and to be reified for all requests this function was.
     void appointHeir(Function *f) { tablePlaceHeirs_.push_back(f); }
@@ -148,6 +141,7 @@ public:
     void setVariableCount(size_t variableCount) { variableCount_ = variableCount; }
 
     virtual ~Function() = default;
+
 private:
     std::vector<Argument> arguments_;
     Type returnType_ = Type::noReturn();

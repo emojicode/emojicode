@@ -21,11 +21,10 @@ public:
 
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 
-    void addInstanceVariable(const InstanceVariableDeclaration&) override {
+    void addInstanceVariable(const InstanceVariableDeclaration &declaration) override {
         throw CompilerError(position(), "An extension cannot add an instance variable.");
     }
 
-    void prepareForSemanticAnalysis() override { extend(); }
     void extend();
 
     const Type& extendedType() { return extendedType_; }

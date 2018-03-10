@@ -24,10 +24,15 @@ public:
     ValueType(std::u32string name, Package *p, SourcePosition pos, const std::u32string &documentation, bool exported)
         : TypeDefinition(std::move(name), p, std::move(pos), documentation, exported) {}
 
-    void prepareForSemanticAnalysis() override;
-
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
+    }
+
+    void addInstanceVariable(const InstanceVariableDeclaration &declaration) override {
+        if (primitive_ && !instanceVariables().empty()) {
+            throw CompilerError(position(), "A value type marked with ⚪️ cannot have instance variables.");
+        }
+        TypeDefinition::addInstanceVariable(declaration);
     }
 
     llvm::GlobalVariable* valueTypeMetaFor(const std::vector<Type> &genericArguments);

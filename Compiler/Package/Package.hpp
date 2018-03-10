@@ -52,8 +52,6 @@ public:
     /// @param path The path to the directory of the package.
     Package(std::string name, std::string path, Compiler *app);
 
-    /// Ssemantically analyses this package.
-    void analyse();
     /// Lexes and parses the package. The file interface.emojii in path() is used to begin compilation.
     /// If this package is the s package the s loading procedure is invoked.
     /// If the package is not the @c s package, the s package is first imported via importPackage().
@@ -121,7 +119,7 @@ public:
     /// called with the same type multiple times with different names and namespaces.
     /// @param t The type to add to the package.
     /// @param name The name under which to make the type available in the namespace.
-    /// @param ns The aformentioned namespace.
+    /// @param ns The aforementioned namespace.
     /// @param exportFromPkg Whether the type should be exported from the package. Note that the type will be imported
     ///                      in other packages with @c name.
     /// @throws CompilerError If a type with the same name has already been exported.
@@ -133,6 +131,7 @@ public:
     const std::vector<std::unique_ptr<Function>>& functions() const { return functions_; }
     const std::vector<std::unique_ptr<ValueType>>& valueTypes() const { return valueTypes_; }
     const std::vector<std::unique_ptr<Protocol>>& protocols() const { return protocols_; }
+    const std::vector<std::unique_ptr<Extension>>& extensions() const { return extensions_; }
     const std::vector<ExportedType>& exportedTypes() const { return exportedTypes_; }
 
     const std::set<Package *>& dependencies() const { return importedPackages_; }
@@ -152,9 +151,6 @@ public:
 private:
     /// Verifies that no type with name @c name has already been exported and adds the type to ::exportedTypes_
     void exportType(Type t, std::u32string name, const SourcePosition &p);
-
-    void enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) const;
-    void enqueueFunction(Function *) const;
 
     TokenStream lexFile(const std::string &path);
 

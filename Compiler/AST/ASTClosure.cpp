@@ -20,7 +20,8 @@ ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition
 Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     closure_->setOwningType(analyser->function()->owningType());
 
-    auto closureAnaly = FunctionAnalyser(closure_.get(), std::make_unique<CapturingSemanticScoper>(analyser->scoper()));
+    auto closureAnaly = FunctionAnalyser(closure_.get(), std::make_unique<CapturingSemanticScoper>(analyser->scoper()),
+                                         analyser->semanticAnalyser());
     closureAnaly.analyse();
     capture_.captures = dynamic_cast<CapturingSemanticScoper&>(closureAnaly.scoper()).captures();
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {

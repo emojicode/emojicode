@@ -23,6 +23,8 @@ public:
     explicit TokenStream(Lexer lexer) : lexer_(std::move(lexer)), nextToken_(lexer_.lex()) {}
     TokenStream(const TokenStream&) = delete;
     TokenStream(TokenStream&&) = default;
+    TokenStream& operator=(const TokenStream&) = delete;
+    TokenStream& operator=(TokenStream&&) = delete;
 
     /// @returns The next token.
     /// @throws CompilerError if the end of the stream was reached.

@@ -172,28 +172,7 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
 Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *constState) const {
     switch (token->type()) {
         case TokenType::Identifier:
-            if (constState->foundZWJ_ && isEmoji(codePoint())) {
-                token->value_.push_back(codePoint());
-                constState->foundZWJ_ = false;
-                return TokenState::Continues;
-            }
-            if ((isEmojiModifier(codePoint()) && isEmojiModifierBase(token->value_.back())) ||
-                (isRegionalIndicator(codePoint()) && token->value().size() == 1 && isRegionalIndicator(token->value().front()))) {
-                 token->value_.push_back(codePoint());
-                 return TokenState::Continues;
-             }
-            if (codePoint() == 0x200D) {
-                token->value_.push_back(codePoint());
-                constState->foundZWJ_ = true;
-                return TokenState::Continues;
-            }
-            if (codePoint() == 0xFE0F) {  // Emojicode ignores the Emoji modifier behind an emoji character
-                return TokenState::Continues;
-            }
-            if (token->value_.front() == E_PERSON_SHRUGGING) {
-                token->type_ = TokenType::NoValue;
-            }
-            return TokenState::NextBegun;
+            return continueIdentifierToken(token, constState);
         case TokenType::SinglelineComment:
             if (isNewline()) {
                 return TokenState::Ended;
@@ -211,79 +190,123 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
             token->value_.push_back(codePoint());
             return TokenState::Continues;
         case TokenType::String:
-            if (constState->escapeSequence_) {
-                switch (codePoint()) {
-                    case E_INPUT_SYMBOL_LATIN_LETTERS:
-                    case E_CROSS_MARK:
-                        token->value_.push_back(codePoint());
-                        break;
-                    case 'n':
-                        token->value_.push_back('\n');
-                        break;
-                    case 't':
-                        token->value_.push_back('\t');
-                        break;
-                    case 'r':
-                        token->value_.push_back('\r');
-                        break;
-                    default: {
-                        throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌",
-                                            utf8(std::u32string(1, codePoint())), ".");
-                    }
-                }
-
-                constState->escapeSequence_ = false;
-            }
-            else if (codePoint() == E_CROSS_MARK) {
-                constState->escapeSequence_ = true;
-                return TokenState::Continues;
-            }
-            else if (codePoint() == E_INPUT_SYMBOL_LATIN_LETTERS) {
-                return TokenState::Ended;
-            }
-
-            token->value_.push_back(codePoint());
-            return TokenState::Continues;
+            return continueStringToken(token, constState);
         case TokenType::Variable:
-            // A variable can consist of everything except for whitespaces and identifiers (that is emojis)
-            // isWhitespace used here because if it is whitespace, the detection will take place below
-            if (isWhitespace() || isEmoji(codePoint())) {
-                return TokenState::NextBegun;
-            }
-
-            token->value_.push_back(codePoint());
-            return TokenState::Continues;
+            return continueVariableToken(token);
         case TokenType::Integer:
-            if (('0' <= codePoint() && codePoint() <= '9') || (((64 < codePoint() && codePoint() < 71) || (96 < codePoint() && codePoint() < 103)) && constState->isHex_)) {
-                token->value_.push_back(codePoint());
-                return TokenState::Continues;
-            }
-            else if (codePoint() == '.') {
-                token->type_ = TokenType::Double;
-                token->value_.push_back(codePoint());
-                return TokenState::Continues;
-            }
-            else if ((codePoint() == 'x' || codePoint() == 'X') && token->value_.size() == 1 && token->value_[0] == '0') {
-                constState->isHex_ = true;
-                token->value_.push_back(codePoint());
-                return TokenState::Continues;
-            }
-            else if (codePoint() == '_') {
-                return TokenState::Continues;
-            }
-            return TokenState::NextBegun;
+            return continueIntegerToken(token, constState);
         case TokenType::Double:
-            if ('0' <= codePoint() && codePoint() <= '9') {
-                token->value_.push_back(codePoint());
-                return TokenState::Continues;
-            }
-            return TokenState::NextBegun;
+            return continueDoubleToken(token);
         case TokenType::Symbol:
             token->value_.push_back(codePoint());
             return TokenState::Ended;
         default:
             throw std::logic_error("Lexer: Token continued but not handled.");
     }
+}
+
+Lexer::TokenState Lexer::continueDoubleToken(Token *token) const {
+    if ('0' <= codePoint() && codePoint() <= '9') {
+        token->value_.push_back(codePoint());
+        return TokenState::Continues;
+    }
+    return TokenState::NextBegun;
+}
+
+Lexer::TokenState Lexer::continueVariableToken(Token *token) const {
+    // A variable can consist of everything except for whitespaces and identifiers (that is emojis)
+    // isWhitespace used here because if it is whitespace, the detection will take place below
+    if (isWhitespace() || isEmoji(codePoint())) {
+        return TokenState::NextBegun;
+    }
+
+    token->value_.push_back(codePoint());
+    return TokenState::Continues;
+}
+
+Lexer::TokenState Lexer::continueIntegerToken(Token *token, Lexer::TokenConstructionState *constState) const {
+    if (('0' <= codePoint() && codePoint() <= '9') ||
+        (((64 < codePoint() && codePoint() < 71) || (96 < codePoint() && codePoint() < 103)) &&
+         constState->isHex_)) {
+        token->value_.push_back(codePoint());
+        return TokenState::Continues;
+    }
+    if (codePoint() == '.') {
+        token->type_ = TokenType::Double;
+        token->value_.push_back(codePoint());
+        return TokenState::Continues;
+    }
+    if ((codePoint() == 'x' || codePoint() == 'X') && token->value_.size() == 1 && token->value_[0] == '0') {
+        constState->isHex_ = true;
+        token->value_.push_back(codePoint());
+        return TokenState::Continues;
+    }
+    if (codePoint() == '_') {
+        return TokenState::Continues;
+    }
+    return TokenState::NextBegun;
+}
+
+Lexer::TokenState Lexer::continueStringToken(Token *token, Lexer::TokenConstructionState *constState) const {
+    if (constState->escapeSequence_) {
+        switch (codePoint()) {
+            case E_INPUT_SYMBOL_LATIN_LETTERS:
+            case E_CROSS_MARK:
+                token->value_.push_back(codePoint());
+                break;
+            case 'n':
+                token->value_.push_back('\n');
+                break;
+            case 't':
+                token->value_.push_back('\t');
+                break;
+            case 'r':
+                token->value_.push_back('\r');
+                break;
+            default: {
+                throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌",
+                                    utf8(std::__1::u32string(1, codePoint())), ".");
+            }
+        }
+
+        constState->escapeSequence_ = false;
+    }
+    else if (codePoint() == E_CROSS_MARK) {
+        constState->escapeSequence_ = true;
+        return TokenState::Continues;
+    }
+    else if (codePoint() == E_INPUT_SYMBOL_LATIN_LETTERS) {
+        return TokenState::Ended;
+    }
+
+    token->value_.push_back(codePoint());
+    return TokenState::Continues;
+}
+
+Lexer::TokenState Lexer::continueIdentifierToken(Token *token, Lexer::TokenConstructionState *constState) const {
+    if (constState->foundZWJ_ && isEmoji(codePoint())) {
+        token->value_.push_back(codePoint());
+        constState->foundZWJ_ = false;
+        return TokenState::Continues;
+    }
+    if ((isEmojiModifier(codePoint()) && isEmojiModifierBase(token->value_.back())) ||
+        (isRegionalIndicator(codePoint()) && token->value().size() == 1 &&
+         isRegionalIndicator(token->value().front()))) {
+        token->value_.push_back(codePoint());
+        return TokenState::Continues;
+    }
+    if (codePoint() == 0x200D) {
+        token->value_.push_back(codePoint());
+        constState->foundZWJ_ = true;
+        return TokenState::Continues;
+    }
+    if (codePoint() == 0xFE0F) {  // Emojicode ignores the Emoji modifier behind an emoji character
+        return TokenState::Continues;
+    }
+    if (token->value_.front() == E_PERSON_SHRUGGING) {
+        token->type_ = TokenType::NoValue;
+    }
+    return TokenState::NextBegun;
 }
 
 }  // namespace EmojicodeCompiler

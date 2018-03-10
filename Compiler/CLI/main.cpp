@@ -12,6 +12,7 @@
 #include "PackageReporter.hpp"
 #include "Prettyprint/Prettyprinter.hpp"
 #include <exception>
+#include <iostream>
 
 namespace EmojicodeCompiler {
 
@@ -63,14 +64,15 @@ int main(int argc, char *argv[]) {
         return EmojicodeCompiler::CLI::start(EmojicodeCompiler::CLI::Options(argc, argv)) ? 0 : 1;
     }
     catch (std::exception &ex) {
-        printf("💣 The compiler crashed due to an internal problem: %s\nPlease report this message and the code that "
-               "you were trying to compile as an issue on GitHub.", ex.what());
+        std::cout << "💣 The compiler crashed due to an internal problem: " << ex.what() << std::endl;
+        std::cout << "Please report this message and the code that you were trying to compile as an issue on GitHub.";
+        std::cout << std::endl;
         return 1;
     }
     catch (...) {
-        printf("💣 The compiler crashed due to an unidentifiable internal problem.\nPlease report this message and the "
-               "code that you were trying to compile as an issue on GitHub.");
+        std::cout << "💣 The compiler crashed due to an unidentifiable internal problem." << std::endl;
+        std::cout << "Please report this message and the code that you were trying to compile as an issue on GitHub.";
+        std::cout << std::endl;
         return 1;
     }
-    return 0;
 }

@@ -29,16 +29,14 @@ public:
     /// Iff this node represents an expression type this type is the exact type produced by this node.
     const Type& expressionType() const { return expressionType_; }
     void setExpressionType(const Type &type) { expressionType_ = type; }
-    void setTemporarilyScoped() { temporarilyScoped_ = true; }
 
     virtual Value* generate(FunctionCodeGenerator *fg) const = 0;
     virtual Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) = 0;
     virtual void toCode(Prettyprinter &pretty) const = 0;
 private:
     Type expressionType_ = Type::noReturn();
-    bool temporarilyScoped_ = false;
 };
-    
+
 class ASTMetaTypeInstantiation final : public ASTExpr {
 public:
     ASTMetaTypeInstantiation(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}

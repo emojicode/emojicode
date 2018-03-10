@@ -23,18 +23,22 @@ namespace EmojicodeCompiler {
 
 class ASTArguments;
 class TypeExpectation;
+class SemanticAnalyser;
 
+/// This class is responsible for managing the semantic analysis of a function.
 class FunctionAnalyser {
 public:
-    explicit FunctionAnalyser(Function *function) :
+    FunctionAnalyser(Function *function, SemanticAnalyser *analyser) :
             scoper_(std::make_unique<SemanticScoper>(SemanticScoper::scoperForFunction(function))),
-            typeContext_(function->typeContext()), function_(function) {}
+            typeContext_(function->typeContext()), function_(function), analyser_(analyser) {}
 
-    FunctionAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper) :
-            scoper_(std::move(scoper)), typeContext_(function->typeContext()), function_(function) {}
+    FunctionAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper, SemanticAnalyser *analyser) :
+            scoper_(std::move(scoper)), typeContext_(function->typeContext()), function_(function),
+            analyser_(analyser) {}
     void analyse();
 
     PathAnalyser& pathAnalyser() { return pathAnalyser_; }
+    SemanticAnalyser* semanticAnalyser() const { return analyser_; }
     SemanticScoper& scoper() { return *scoper_; }
     const TypeContext& typeContext() const { return typeContext_; }
     Function* function() const { return function_; }
@@ -73,6 +77,7 @@ private:
     TypeContext typeContext_;
 
     Function *function_;
+    SemanticAnalyser *analyser_;
 
     /// Issues a warning at the given position if the function is deprecated.
     void deprecatedWarning(Function *function, const SourcePosition &p) const;

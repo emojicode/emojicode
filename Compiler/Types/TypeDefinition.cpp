@@ -7,7 +7,6 @@
 //
 
 #include "TypeDefinition.hpp"
-#include "Analysis/BoxingLayerBuilder.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Functions/BoxingLayer.hpp"
@@ -138,65 +137,6 @@ void TypeDefinition::addInstanceVariable(const InstanceVariableDeclaration &vari
 
 void TypeDefinition::handleRequiredInitializer(Initializer *init) {
     throw CompilerError(init->position(), "Required initializer not supported.");
-}
-
-void TypeDefinition::prepareForSemanticAnalysis() {
-    for (auto &var : instanceVariables_) {
-        instanceScope().declareVariable(var.name, var.type, false, var.position);
-    }
-
-    if (instanceVariables_.size() > 65536) {
-        throw CompilerError(position(), "You exceeded the limit of 65,536 instance variables.");
-    }
-
-    if (!instanceVariables_.empty() && initializerList_.empty()) {
-        package_->compiler()->warn(position(), "Type defines ", instanceVariables_.size(),
-                              " instances variables but has no initializers.");
-    }
-}
-
-void TypeDefinition::finalizeProtocol(const Type &type, const Type &protocol, bool enqueBoxingLayers) {
-    for (auto method : protocol.protocol()->methodList()) {
-        try {
-            Function *clm = lookupMethod(method->name(), method->isImperative());
-            if (clm == nullptr) {
-                auto typeName = type.toString(TypeContext());
-                auto protocolName = protocol.toString(TypeContext());
-                throw CompilerError(position(), typeName, " does not agree to protocol ", protocolName ,": Method ",
-                                    utf8(method->name()), "is missing.");
-            }
-
-            clm->createUnspecificReification();
-            if (!clm->enforcePromises(method, TypeContext(type), protocol, TypeContext(protocol))) {
-                auto arguments = std::vector<Argument>();
-                arguments.reserve(method->arguments().size());
-                for (auto &arg : method->arguments()) {
-                    arguments.emplace_back(arg.variableName, arg.type.resolveOn(TypeContext(protocol)));
-                }
-                auto bl = std::make_unique<BoxingLayer>(clm, protocol.protocol()->name(), arguments,
-                                                        method->returnType().resolveOn(TypeContext(protocol)),
-                                                        clm->position());
-                buildBoxingLayerAst(bl.get());
-                if (enqueBoxingLayers) {
-                    package_->compiler()->analysisQueue.emplace(bl.get());
-                }
-                method->appointHeir(bl.get());
-                addMethod(std::move(bl));
-            }
-            else {
-                method->appointHeir(clm);
-            }
-        }
-        catch (CompilerError &ce) {
-            package_->compiler()->error(ce);
-        }
-    }
-}
-
-void TypeDefinition::finalizeProtocols(const Type &type) {
-    for (const Type &protocol : protocols()) {
-        finalizeProtocol(type, protocol, true);
-    }
 }
 
 void TypeDefinition::eachFunction(const std::function<void (Function *)>& cb) const {

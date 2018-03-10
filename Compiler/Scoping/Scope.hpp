@@ -63,7 +63,6 @@ public:
     }
 private:
     std::map<std::u32string, Variable> map_;
-    int internalCount_ = 0;
     unsigned int maxVariableId_;
 };
 

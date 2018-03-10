@@ -16,22 +16,22 @@ namespace EmojicodeCompiler {
 
 void ProtocolsTableGenerator::createProtocolsTable(TypeDefinition *typeDef) {
     llvm::Constant* init;
-    if (!typeDef->protocols().empty()) {
-        auto tables = createVirtualTables(typeDef);
-        auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_)->getPointerTo(), tables.tables.size());
-        auto protocols = new llvm::GlobalVariable(module_, arrayType, true,
-                                                  llvm::GlobalValue::LinkageTypes::InternalLinkage,
-                                                  llvm::ConstantArray::get(arrayType, tables.tables));
-
-        init = llvm::ConstantStruct::get(typeHelper_.protocolsTable(), std::vector<llvm::Constant *> {
-            protocols,
-            llvm::ConstantInt::get(llvm::Type::getInt16Ty(context_), tables.min),
-            llvm::ConstantInt::get(llvm::Type::getInt16Ty(context_), tables.max)
-        });
-    }
-    else {
+//    if (!typeDef->protocols().empty()) {
+//        auto tables = createVirtualTables(typeDef);
+//        auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_)->getPointerTo(), tables.tables.size());
+//        auto protocols = new llvm::GlobalVariable(module_, arrayType, true,
+//                                                  llvm::GlobalValue::LinkageTypes::InternalLinkage,
+//                                                  llvm::ConstantArray::get(arrayType, tables.tables));
+//
+//        init = llvm::ConstantStruct::get(typeHelper_.protocolsTable(), std::vector<llvm::Constant *> {
+//            protocols,
+//            llvm::ConstantInt::get(llvm::Type::getInt16Ty(context_), tables.min),
+//            llvm::ConstantInt::get(llvm::Type::getInt16Ty(context_), tables.max)
+//        });
+//    }
+//    else {
         init = llvm::ConstantAggregateZero::get(typeHelper_.protocolsTable());
-    }
+//    }
     typeDef->setProtocolsTable(init);
 }
 

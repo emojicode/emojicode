@@ -107,6 +107,16 @@ private:
     const std::u32string string_;
     size_t i_ = 0;
     std::map<char32_t, TokenType> singleTokens_;
+
+    TokenState continueIdentifierToken(Token *token, TokenConstructionState *constState) const;
+
+    TokenState continueStringToken(Token *token, TokenConstructionState *constState) const;
+
+    TokenState continueIntegerToken(Token *token, TokenConstructionState *constState) const;
+
+    TokenState continueVariableToken(Token *token) const;
+
+    TokenState continueDoubleToken(Token *token) const;
 };
 
 }  // namespace EmojicodeCompiler

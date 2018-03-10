@@ -14,47 +14,31 @@
 #include "Functions/Initializer.hpp"
 #include "TypeContext.hpp"
 #include <algorithm>
-#include <map>
 #include <utility>
-#include <vector>
+#include "Analysis/SemanticAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
 Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool exported,
-             bool final)
-: TypeDefinition(std::move(name), pkg, std::move(p), documentation, exported), final_(final) {
+             bool final) : TypeDefinition(std::move(name), pkg, std::move(p), documentation, exported), final_(final) {
     instanceScope() = Scope(1);  // reassign a scoper with one offset for the pointer to the class meta
 }
 
-void Class::prepareForSemanticAnalysis() {
-    if (superclass() != nullptr) {
-        instanceScope() = superclass()->instanceScope();
-        instanceScope().markInherited();
+void Class::inherit(SemanticAnalyser *analyser) {
+    if (superclass() == nullptr) {
+        analyser->declareInstanceVariables(this);
+        return;
     }
-
-    TypeDefinition::prepareForSemanticAnalysis();
 
     if (instanceVariables().empty() && initializerList().empty()) {
         inheritsInitializers_ = true;
     }
 
-    if (superclass() != nullptr) {
-        inherit();
-    }
+    instanceScope() = superclass()->instanceScope();
+    instanceScope().markInherited();
 
-    TypeDefinition::finalizeProtocols(Type(this, false));
+    analyser->declareInstanceVariables(this);
 
-    eachFunction([this](Function *function) {
-        if (function->functionType() == FunctionType::ObjectInitializer) {
-            auto init = dynamic_cast<Initializer *>(function);
-            if (!init->required()) {
-                return;
-            }
-        }
-    });
-}
-
-void Class::inherit() {
     Type classType = Type(this, false);
     instanceVariablesMut().insert(instanceVariables().begin(), superclass()->instanceVariables().begin(),
                                   superclass()->instanceVariables().end());
@@ -65,40 +49,41 @@ void Class::inherit() {
             return a.identicalTo(protocol, TypeContext(classType), nullptr);
         });
         if (find != protocols_.end()) {
-            throw CompilerError(position(), "Superclass already declared conformance to ",
-                                protocol.toString(TypeContext(classType)), ".");
+            analyser->compiler()->error(CompilerError(position(), "Superclass already declared conformance to ",
+                                                      protocol.toString(TypeContext(classType)), "."));
         }
         protocols_.emplace_back(protocol);
     }
 
-    eachFunctionWithoutInitializers([this](Function *function) {
+    eachFunction([this](Function *function) {
         if (function->functionType() == FunctionType::ObjectInitializer) {
             checkInheritedRequiredInit(dynamic_cast<Initializer *>(function));
         }
         else {
-            checkOverride(function);
+            checkOverride(function, nullptr);
         }
     });
 }
 
-void Class::checkOverride(Function *function) {
+void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
     auto superFunction = findSuperFunction(function);
     if (function->overriding()) {
         if (superFunction == nullptr || superFunction->accessLevel() == AccessLevel::Private) {
-            throw CompilerError(function->position(), utf8(function->name()),
-                                " was declared ✒️ but does not override anything.");
+            analyser->compiler()->error(CompilerError(function->position(), utf8(function->name()),
+                                                      " was declared ✒️ but does not override anything."));
         }
-        function->enforcePromises(superFunction, TypeContext(Type(this, false)), Type(superclass(), false),
-                                  std::experimental::nullopt);
+        analyser->enforcePromises(function, superFunction, Type(superclass(), false), TypeContext(Type(this, false)),
+                                  TypeContext());
         superFunction->appointHeir(function);
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
-        throw CompilerError(function->position(), "If you want to override ", utf8(function->name()), " add ✒️.");
+        analyser->compiler()->error(CompilerError(function->position(), "If you want to override ",
+                                                  utf8(function->name()), " add ✒️."));
     }
 }
 
 void Class::checkInheritedRequiredInit(Initializer *initializer) {
-    auto superInit = findSuperFunction(initializer);
+    auto superInit = findSuperInitializer(initializer);
     if (initializer->required() && superInit != nullptr && superInit->required()) {
         superInit->appointHeir(initializer);
     }
@@ -116,7 +101,7 @@ Function* Class::findSuperFunction(Function *function) const {
     }
 }
 
-Initializer* Class::findSuperFunction(Initializer *function) const {
+Initializer* Class::findSuperInitializer(Initializer *function) const {
     return superclass()->lookupInitializer(function->name());
 }
 

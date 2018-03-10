@@ -100,11 +100,6 @@ public:
     /** Returns a list of all protocols to which this class conforms. */
     const std::vector<Type>& protocols() const { return protocols_; };
 
-    virtual void prepareForSemanticAnalysis();
-
-    void finalizeProtocols(const Type &type);
-    void finalizeProtocol(const Type &type, const Type &protocol, bool enqueBoxingLayers);
-
     /// Calls the given function with every Function that is defined for this TypeDefinition, i.e. all methods,
     /// type methods and initializers.
     void eachFunction(const std::function<void(Function *)>& cb) const;
@@ -123,6 +118,7 @@ public:
 
     void setProtocolsTable(llvm::Constant *table) { protocolsTable_ = table; }
     llvm::Constant* protocolsTable() { return protocolsTable_; }
+
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation, bool exported);
 
@@ -143,6 +139,7 @@ protected:
     }
 
     ~TypeDefinition();
+
 private:
     Scope scope_ = Scope(0);
 

@@ -21,6 +21,7 @@ class Constant;
 namespace EmojicodeCompiler {
 
 class Type;
+class SemanticAnalyser;
 
 class Class : public TypeDefinition {
 public:
@@ -56,23 +57,22 @@ public:
     Initializer* lookupInitializer(const std::u32string &name) const override;
     Function *lookupTypeMethod(const std::u32string &name, bool imperative) const override;
 
-    void prepareForSemanticAnalysis() override;
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override;
+
+    void inherit(SemanticAnalyser *analyser);
 private:
     std::set<std::u32string> requiredInitializers_;
-
-    void inherit();
 
     /// @pre superclass() != nullptr
     Function* findSuperFunction(Function *function) const;
     /// @pre superclass() != nullptr
-    Initializer* findSuperFunction(Initializer *function) const;
+    Initializer* findSuperInitializer(Initializer *function) const;
 
     /// Checks that @c function, if at all, is a valid override. If it is, function is assigned the super functions
     /// virtual table index.
     /// @pre superclass() != nullptr
     /// @throws CompilerError if the override is improper, e.g. implicit
-    void checkOverride(Function *function);
+    void checkOverride(Function *function, SemanticAnalyser *analyser);
     /// Checks whether initializer is the implementation of a required initializer. If it is the method validates
     /// that the implementation is valid and assigns it the super initializers virtual table index.
     /// @pre superclass() != nullptr

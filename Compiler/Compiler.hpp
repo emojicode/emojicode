@@ -14,7 +14,6 @@
 #include <exception>
 #include <map>
 #include <memory>
-#include <queue>
 #include <vector>
 
 namespace EmojicodeCompiler {
@@ -112,15 +111,6 @@ public:
     /// @see findPackage()
     Package* loadPackage(const std::string &name, const SourcePosition &p, Package *requestor);
 
-    std::queue<Function *> analysisQueue;
-
-    const std::vector<std::vector<ObjectVariableInformation>>& boxObjectVariableInformation() const {
-        return boxObjectVariableInformation_;
-    }
-    std::vector<std::vector<ObjectVariableInformation>>& boxObjectVariableInformation() {
-        return boxObjectVariableInformation_;
-    }
-
     void assignSTypes(Package *s, const SourcePosition &errorPosition);
 
     Class *sString = nullptr;
@@ -135,6 +125,7 @@ public:
     ValueType *sInteger = nullptr;
     ValueType *sReal = nullptr;
     ValueType *sMemory = nullptr;
+
 private:
     void generateCode();
     void analyse();
@@ -144,8 +135,7 @@ private:
     std::string findBinaryPathPackage(const std::string &packagePath, const std::string &packageName);
 
     std::map<std::string, std::unique_ptr<Package>> packages_;
-    std::vector<std::vector<ObjectVariableInformation>> boxObjectVariableInformation_ = std::vector<std::vector<ObjectVariableInformation>>(3);
-    
+
     bool hasError_ = false;
     bool linkToExec_;
     std::string mainFile_;

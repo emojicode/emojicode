@@ -7,15 +7,12 @@
 //
 
 #include "Scoping/SemanticScoper.hpp"
-#include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
-#include "Generation/FunctionCodeGenerator.hpp"
 #include "Lex/Lexer.hpp"
 #include "Package.hpp"
 #include "Parsing/CompatibilityInfoProvider.hpp"
 #include "Parsing/DocumentParser.hpp"
-#include "Prettyprint/Prettyprinter.hpp"
 #include "Types/Class.hpp"
 #include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
@@ -23,7 +20,6 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
-#include <list>
 #include <map>
 #include <sstream>
 #include <string>
@@ -117,53 +113,6 @@ void Package::parse(const std::string &mainFilePath) {
         compiler()->assignSTypes(this, position());
     }
     finishedLoading_ = true;
-}
-
-void Package::analyse() {
-    for (auto &extension : extensions_) {
-        extension->prepareForSemanticAnalysis();
-    }
-    for (auto &vt : valueTypes_) {
-        vt->prepareForSemanticAnalysis();
-        enqueueFunctionsOfTypeDefinition(vt.get());
-    }
-    for (auto &eclass : classes()) {
-        eclass->prepareForSemanticAnalysis();
-        enqueueFunctionsOfTypeDefinition(eclass.get());
-    }
-
-    size_t protocolIndex = 0;
-    for (auto &protocol : protocols_) {
-        protocol->setIndex(protocolIndex++);
-        protocol->prepareForSemanticAnalysis();
-    }
-
-    for (auto &function : functions()) {
-        enqueueFunction(function.get());
-    }
-
-    while (!compiler_->analysisQueue.empty()) {
-        try {
-            auto function = compiler_->analysisQueue.front();
-            FunctionAnalyser(function).analyse();
-        }
-        catch (CompilerError &ce) {
-            compiler_->error(ce);
-        }
-        compiler_->analysisQueue.pop();
-    }
-}
-
-void Package::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef) const {
-    typeDef->eachFunction([this](Function *function) {
-        enqueueFunction(function);
-    });
-}
-
-void Package::enqueueFunction(Function *function) const {
-    if (!function->isExternal()) {
-        compiler_->analysisQueue.emplace(function);
-    }
 }
 
 Type Package::getRawType(const TypeIdentifier &typeId, bool optional) const {

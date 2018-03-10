@@ -18,6 +18,7 @@
 #include "Functions/Initializer.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
 #include "FunctionAnalyser.hpp"
+#include "SemanticAnalyser.hpp"
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/Enum.hpp"
@@ -218,7 +219,7 @@ std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, const Type &type, 
 }
 
 Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
-    (*node)->setExpressionType(exprType);
+    (*node)->setExpressionType(exprType.resolveOnSuperArgumentsAndConstraints(typeContext()));
     if (exprType.type() == TypeType::ValueType && !exprType.isReference() && expectation.isMutable()) {
         exprType.setMutable(true);
     }
@@ -327,7 +328,7 @@ Type FunctionAnalyser::callableBox(Type exprType, const TypeExpectation &expecta
                                                          expectation.genericArguments()[0], function_->position());
         buildBoxingLayerAst(boxingLayer.get());
         insertNode<ASTCallableBox>(node, exprType, boxingLayer.get());
-        compiler()->analysisQueue.emplace(boxingLayer.get());
+        analyser_->enqueueFunction(boxingLayer.get());
         function_->package()->add(std::move(boxingLayer));
     }
     return exprType;

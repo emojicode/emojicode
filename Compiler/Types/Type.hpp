@@ -55,24 +55,6 @@ enum class TypeType {
     Extension,
 };
 
-enum class ObjectVariableType {
-    /// There is an object pointer a the given index
-    Simple = 0,
-    /// There is an object pointer a the given index if the value at @c condition is truthy
-    Condition = 1,
-    Box = 2,
-    ConditionalSkip = 3
-};
-
-struct ObjectVariableInformation {
-    ObjectVariableInformation(int index, ObjectVariableType type) : index(index), type(type) {}
-    ObjectVariableInformation(int index, int condition, ObjectVariableType type)
-        : index(index), conditionIndex(condition), type(type) {}
-    int index;
-    int conditionIndex;
-    ObjectVariableType type;
-};
-
 /// Represents the type of variable, an argument or the return value of a Function such as a method, an initializer,
 /// or type method.
 class Type {
@@ -139,13 +121,6 @@ public:
     /// @throws std::domain_error if the Type is not a generic variable.
     size_t genericVariableIndex() const;
 
-    /// Appends all records necessary to inform the garbage collector about any object variables inside this type at
-    /// index @c index to the end of @c information by constructing an instance of @c T with a constructors as
-    /// those provided by @c ObjectVariableInformation. @c args are passed forward to the constructors at the end of the
-    /// argument list.
-    template <typename T, typename... Us>
-    void objectVariableRecords(int index, std::vector<T> *information, Us... args) const;
-
     /// Returns the generic arguments with which this type was specialized.
     const std::vector<Type>& genericArguments() const { return genericArguments_; }
     /// Allows to change a specific generic argument. @c index must be smaller than @c genericArguments().size()
@@ -208,15 +183,14 @@ protected:
         : typeContent_(TypeType::StorageExpectation), optional_(false), isReference_(isReference),
           mutable_(isMutable), forceBox_(forceBox) {}
 private:
-    Type(TypeType t, bool o) : typeContent_(t), typeDefinition_(nullptr), optional_(o) {}
-    TypeType typeContent_;
+    Type(TypeType t, bool o) : typeContent_(t), optional_(o) {}
 
-    size_t genericArgumentIndex_;
-    union {
-        TypeDefinition *typeDefinition_;
-        Function *localResolutionConstraint_;
-    };
+    TypeType typeContent_;
+    size_t genericArgumentIndex_ = 0;
+    TypeDefinition *typeDefinition_ = nullptr;
+    Function *localResolutionConstraint_ = nullptr;
     std::vector<Type> genericArguments_;
+
     bool optional_;
     bool meta_ = false;
     bool isReference_ = false;

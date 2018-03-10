@@ -9,6 +9,7 @@
 #include "CompilerError.hpp"
 #include "Compiler.hpp"
 #include "Generation/CodeGenerator.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 #include "Parsing/AbstractParser.hpp"
 #include "Prettyprint/Prettyprinter.hpp"
 #include <llvm/Support/FileSystem.h>
@@ -58,11 +59,7 @@ bool Compiler::compile(bool parseOnly) {
 }
 
 void Compiler::analyse() {
-    mainPackage_->analyse();
-
-    if (linkToExec_ && !mainPackage_->hasStartFlagFunction()) {
-        throw CompilerError(mainPackage_->position(), "No 🏁 block was found.");
-    }
+    SemanticAnalyser(mainPackage_.get()).analyse(linkToExec_);
 }
 
 void Compiler::generateCode() {
@@ -123,7 +120,7 @@ Package* Compiler::loadPackage(const std::string &name, const SourcePosition &p,
     auto rawPtr = package.get();
     packages_.emplace(name, std::move(package));
     rawPtr->parse();
-    rawPtr->analyse();
+    SemanticAnalyser(rawPtr).analyse(false);
     return rawPtr;
 }
 
