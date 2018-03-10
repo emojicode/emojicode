@@ -132,6 +132,11 @@ Initializer* TypeDefinition::addInitializer(std::unique_ptr<Initializer> &&initi
 }
 
 void TypeDefinition::addInstanceVariable(const InstanceVariableDeclaration &variable) {
+    auto duplicate = std::find_if(instanceVariables_.begin(), instanceVariables_.end(),
+                                  [&variable](auto &b) { return variable.name == b.name; });
+    if (duplicate != instanceVariables_.end()) {
+        throw CompilerError(variable.position, "Redeclaration of instance variable.");
+    }
     instanceVariables_.push_back(variable);
 }
 
