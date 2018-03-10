@@ -19,14 +19,9 @@ class Protocol : public TypeDefinition {
 public:
     Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string, bool exported);
 
-    size_t index() { return index_; }
-    void setIndex(size_t index) { index_ = index; }
-
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
     }
-private:
-    size_t index_;
 };
 
 }  // namespace EmojicodeCompiler

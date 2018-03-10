@@ -96,6 +96,12 @@ private:
     Type box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
     /// Callable boxes the value if callableBoxingRequired() returns true.
     Type callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
+
+    void boxToBox(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
+
+    void boxToSimple(Type &exprType, std::shared_ptr<ASTExpr> *node) const;
+
+    void boxToSimpleOptional(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
 };
 
 }  // namespace EmojicodeCompiler

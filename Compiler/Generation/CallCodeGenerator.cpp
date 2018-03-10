@@ -61,6 +61,9 @@ llvm::Value * CallCodeGenerator::dispatchFromVirtualTable(Function *function, ll
     auto dispatchedFunc = fg()->builder().CreateLoad(fg()->builder().CreateGEP(virtualTable, id));
 
     std::vector<llvm::Type *> argTypes = reification.functionType()->params();
+    if (callType_ == CallType::DynamicProtocolDispatch) {
+        argTypes.front() = llvm::Type::getInt8PtrTy(fg()->generator()->context());
+    }
 
     auto funcType = llvm::FunctionType::get(reification.functionType()->getReturnType(), argTypes, false);
     auto func = fg()->builder().CreateBitCast(dispatchedFunc, funcType->getPointerTo(), "dispatchFunc");
@@ -80,30 +83,10 @@ llvm::Value * CallCodeGenerator::createDynamicProtocolDispatch(Function *functio
                                                                const Type &calleeType,
                                                                const std::vector<Type> &genericArgs) {
     auto valueTypeMeta = fg()->builder().CreateLoad(fg()->getMetaTypePtr(args.front()));
-    auto isClass = fg()->builder().CreateICmpEQ(valueTypeMeta, fg()->generator()->declarator().classValueTypeMeta());
-    auto i8PtrType = llvm::Type::getInt8Ty(fg()->generator()->context())->getPointerTo();
-    auto pair = fg()->createIfElsePhi(isClass, [this, args, calleeType, i8PtrType]() {
-        auto gtype = fg()->typeHelper().classMeta()->getPointerTo()->getPointerTo()->getPointerTo();
-        auto obj = fg()->builder().CreateLoad(fg()->getValuePtr(args.front(), gtype));
-        auto meta = fg()->builder().CreateLoad(obj);
-
-        std::vector<Value *> idx{ fg()->int32(0), fg()->int32(2) };  // classMeta.protocolsTable
-        return std::make_pair(fg()->builder().CreateGEP(meta, idx, "protocolsTable"),
-                              fg()->builder().CreateBitCast(obj, i8PtrType));
-    }, [this, valueTypeMeta, args, i8PtrType]() {
-        std::vector<Value *> idx{ fg()->int32(0), fg()->int32(0) };  // valueTypeMeta.protocolsTable
-        return std::make_pair(fg()->builder().CreateGEP(valueTypeMeta, idx, "protocolsTable"),
-                              fg()->getValuePtr(args.front(), i8PtrType));
-    });
-
-    auto protocolsTable = fg()->builder().CreateLoad(pair.first);
-    auto protocolsVtables = fg()->builder().CreateExtractValue(protocolsTable, 0);
-
-    auto pindex = fg()->int16(calleeType.protocol()->index());
-    auto index = fg()->builder().CreateSub(pindex, fg()->builder().CreateExtractValue(protocolsTable, 1));
-    auto vtable = fg()->builder().CreateLoad(fg()->builder().CreateGEP(protocolsVtables, index, "protocolVtable"));
-    args.front() = pair.second;
-    return dispatchFromVirtualTable(function, vtable, args, genericArgs);
+    auto i8PtrType = llvm::Type::getInt8Ty(fg()->generator()->context())->getPointerTo()->getPointerTo();
+    auto protocolTable = fg()->builder().CreateBitCast(valueTypeMeta, i8PtrType, "protocolTable");
+    args.front() = fg()->builder().CreateLoad(fg()->getValuePtr(args.front(), llvm::Type::getInt8PtrTy(fg()->generator()->context())->getPointerTo()));
+    return dispatchFromVirtualTable(function, protocolTable, args, genericArgs);
 }
 
 Function* TypeMethodCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {

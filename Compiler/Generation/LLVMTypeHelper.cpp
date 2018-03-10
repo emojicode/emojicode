@@ -25,7 +25,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) :
         llvm::Type::getInt16Ty(context_)
     }, "protocolsTable");
     classMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt64Ty(context_), llvm::Type::getInt8PtrTy(context_)->getPointerTo(), protocolsTable_
+        llvm::Type::getInt64Ty(context_), llvm::Type::getInt8PtrTy(context_)->getPointerTo()
     }, "classMeta");
     valueTypeMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
         protocolsTable_

@@ -39,17 +39,6 @@ Value* ASTBoxing::getSimpleOptionalWithoutValue(FunctionCodeGenerator *fg) const
     return fg->getSimpleOptionalWithoutValue(expressionType());
 }
 
-void ASTBoxing::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const {
-    auto metaType = fg->generator()->valueTypeMetaFor(expr_->expressionType());
-    fg->builder().CreateStore(metaType, fg->getMetaTypePtr(box));
-
-    if (expr_->expressionType().remotelyStored()) {
-        // TODO: Implement
-    }
-
-    fg->builder().CreateStore(value, getBoxValuePtr(box, fg));
-}
-
 Value* ASTBoxing::getAllocaTheBox(FunctionCodeGenerator *fg) const {
     auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
     fg->builder().CreateStore(expr_->generate(fg), box);
@@ -91,6 +80,7 @@ Value* ASTSimpleToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
 Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fg) const {
     auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
     if (isValueTypeInit()) {
+        setBoxMeta(box, fg);
         valueTypeInit(fg, fg->getValuePtr(box, expr_->expressionType()));
     }
     else {
@@ -111,6 +101,24 @@ Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fg) const {
         getPutValueIntoBox(box, fg->builder().CreateExtractValue(value, 1), fg);
     });
     return fg->builder().CreateLoad(box);
+}
+
+void ASTToBox::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const {
+    setBoxMeta(box, fg);
+    if (expr_->expressionType().remotelyStored()) {
+        // TODO: Implement
+    }
+    fg->builder().CreateStore(value, getBoxValuePtr(box, fg));
+}
+
+void ASTToBox::setBoxMeta(Value *box, FunctionCodeGenerator *fg) const {
+    if (toType().type() == TypeType::Protocol) {
+        fg->builder().CreateStore(expr_->expressionType().typeDefinition()->protocolTableFor(toType()),
+                                  fg->getMetaTypePtr(box));
+        return;
+    }
+    auto metaType = fg->generator()->valueTypeMetaFor(expr_->expressionType());
+    fg->builder().CreateStore(metaType, fg->getMetaTypePtr(box));
 }
 
 Value* ASTDereference::generate(FunctionCodeGenerator *fg) const {

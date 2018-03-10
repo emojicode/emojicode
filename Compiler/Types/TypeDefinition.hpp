@@ -116,9 +116,8 @@ public:
 
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 
-    void setProtocolsTable(llvm::Constant *table) { protocolsTable_ = table; }
-    llvm::Constant* protocolsTable() { return protocolsTable_; }
-
+    void setProtocolTables(std::map<Type, llvm::Constant*> &&tables) { protocolTables_ = std::move(tables); }
+    llvm::Constant* protocolTableFor(const Type &type) { return protocolTables_.find(type)->second; }
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation, bool exported);
 
@@ -158,7 +157,7 @@ private:
     bool exported_;
 
     Type superType_ = Type::noReturn();
-    llvm::Constant *protocolsTable_ = nullptr;
+    std::map<Type, llvm::Constant*> protocolTables_;
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 

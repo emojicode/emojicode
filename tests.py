@@ -36,7 +36,7 @@ compilation_tests = [
     # "downcastClass",
     # "castAny",
     # "castGenericValueType",
-    # "protocolClass",
+    "protocolClass",
     # "protocolSubclass",
     # "protocolValueType",
     # "protocolValueTypeRemote",

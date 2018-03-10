@@ -34,7 +34,7 @@ CodeGenerator::CodeGenerator(Package *package) : package_(package),
                                                  module_(std::make_unique<llvm::Module>(package->name(), context())),
                                                  typeHelper_(context(), package->compiler()),
                                                  declarator_(context_, *module_, typeHelper_),
-                                                 protocolsTableGenerator_(context_, *module_, typeHelper_) {}
+                                                 protocolsTableGenerator_(context_, *module_) {}
 
 llvm::Value* CodeGenerator::optionalValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 1);
@@ -162,7 +162,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
                                                  llvm::GlobalValue::LinkageTypes::InternalLinkage,
                                                  llvm::ConstantArray::get(type, functions));
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
-        llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable, klass->protocolsTable()
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable
     });
     auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,

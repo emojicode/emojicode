@@ -30,7 +30,6 @@ protected:
     /// Constructs a simple optional struct according to expressionType() and populates it with value.
     Value* getSimpleOptionalWithoutValue(FunctionCodeGenerator *fg) const;
 
-    void getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const;
     Value* getGetValueFromBox(Value *box, FunctionCodeGenerator *fg) const;
     /// Allocas space for a box and then calls ASTExpr::generate() of of ::expr_ and stores its value into the box.
     Value* getAllocaTheBox(FunctionCodeGenerator *fg) const;
@@ -44,6 +43,7 @@ protected:
     /// location. This can be useful for optimizations.
     /// @param destination Pointer to the location at which the value type shall be initialized.
     void valueTypeInit(FunctionCodeGenerator *fg, Value *destination) const;
+
 private:
     bool init_ = false;
 };
@@ -62,15 +62,28 @@ class ASTSimpleToSimpleOptional final : public ASTBoxing {
     void toCode(Prettyprinter &pretty) const override {}
 };
 
-class ASTSimpleOptionalToBox final : public ASTBoxing {
-    using ASTBoxing::ASTBoxing;
+class ASTToBox : public ASTBoxing {
+public:
+    ASTToBox(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p, Type toType)
+            : ASTBoxing(expr, exprType, p), toType_(std::move(toType)) {}
+protected:
+    const Type& toType() const { return toType_; }
+
+    void getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const;
+    void setBoxMeta(Value *box, FunctionCodeGenerator *fg) const;
+private:
+    Type toType_;
+};
+
+class ASTSimpleOptionalToBox final : public ASTToBox {
+    using ASTToBox::ASTToBox;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
-class ASTSimpleToBox final : public ASTBoxing {
-    using ASTBoxing::ASTBoxing;
+class ASTSimpleToBox final : public ASTToBox {
+    using ASTToBox::ASTToBox;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override {}
