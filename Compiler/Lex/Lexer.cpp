@@ -265,7 +265,7 @@ Lexer::TokenState Lexer::continueStringToken(Token *token, Lexer::TokenConstruct
                 break;
             default: {
                 throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌",
-                                    utf8(std::__1::u32string(1, codePoint())), ".");
+                                    utf8(std::u32string(1, codePoint())), ".");
             }
         }
 
