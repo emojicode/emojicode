@@ -38,9 +38,9 @@ compilation_tests = [
     # "castGenericValueType",
     "protocolClass",
     # "protocolSubclass",
-    # "protocolValueType",
+    "protocolValueType",
     # "protocolValueTypeRemote",
-    # "protocolEnum",
+    "protocolEnum",
     # "protocolGenericLayerClass",
     # "protocolGenericLayerValueType",
     # "protocolMulti",
@@ -71,8 +71,12 @@ compilation_tests = [
     # # "threads",
 ]
 library_tests = [
-    "stringTest", "primitives", "mathTest", "dataTest", "systemTest",
-    "listTest", "enumerator", "rangeTest", "dictionaryTest",
+    "primitives",
+    "mathTest",
+    "rangeTest",
+    # "stringTest", "dataTest", "systemTest",
+    "listTest",
+    # "enumerator",  "dictionaryTest",
     # "jsonTest", "fileTest"
 ]
 reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject",
@@ -144,9 +148,9 @@ for test in compilation_tests:
 
 # for test in reject_tests:
 #     reject_test(test)
-# os.chdir(os.path.join(dist.source, "tests", "s"))
-# for test in library_tests:
-#     library_test(test)
+os.chdir(os.path.join(dist.source, "tests", "s"))
+for test in library_tests:
+    library_test(test)
 
 if len(failed_tests) == 0:
     print("✅ ✅  All tests passed.")

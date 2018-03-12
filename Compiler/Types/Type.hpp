@@ -9,12 +9,11 @@
 #ifndef Type_hpp
 #define Type_hpp
 
-#include "EmojicodeCompiler.hpp"
 #include "StorageType.hpp"
 #include <stdexcept>
 #include <string>
-#include <utility>
 #include <vector>
+#include <tuple>
 
 namespace EmojicodeCompiler {
 
@@ -36,6 +35,7 @@ class Initializer;
 class Extension;
 
 enum class TypeType {
+    Optional,
     Class,
     MultiProtocol,
     Protocol,
@@ -50,10 +50,17 @@ enum class TypeType {
     GenericVariable,
     LocalGenericVariable,
     Callable,
+    TypeAsValue,
     Error,
     StorageExpectation,
     Extension,
 };
+
+struct MakeOptionalType {};
+constexpr MakeOptionalType MakeOptional {};
+
+struct MakeTypeAsValueType {};
+constexpr MakeTypeAsValueType MakeTypeAsValue {};
 
 /// Represents the type of variable, an argument or the return value of a Function such as a method, an initializer,
 /// or type method.
@@ -62,29 +69,37 @@ class Type {
     friend Initializer;
     friend Function;
 public:
-    Type(Class *klass, bool optional);
-    Type(Protocol *protocol, bool optional);
-    Type(Enum *enumeration, bool optional);
-    Type(ValueType *valueType, bool optional);
+    Type(MakeOptionalType makeOptional, Type type)
+            : typeContent_(TypeType::Optional), genericArguments_({ std::move(type) }) {}
+    Type(MakeTypeAsValueType makeTypeAsValue, Type type)
+            : typeContent_(TypeType::TypeAsValue), genericArguments_({ std::move(type) }) {}
+
+    explicit Type(Class *klass);
+    explicit Type(Protocol *protocol);
+    explicit Type(Enum *enumeration);
+    explicit Type(ValueType *valueType);
     explicit Type(Extension *extension);
+
     /// Creates a generic variable to the generic argument @c r.
-    Type(bool optional, size_t r, TypeDefinition *resolutionConstraint, bool forceBox)
-    : typeContent_(TypeType::GenericVariable), genericArgumentIndex_(r),
-      typeDefinition_(resolutionConstraint), optional_(optional), forceBox_(forceBox) {}
+    Type(size_t r, TypeDefinition *resolutionConstraint, bool forceBox)
+            : typeContent_(TypeType::GenericVariable), genericArgumentIndex_(r),
+              typeDefinition_(resolutionConstraint), forceBox_(forceBox) {}
+
     /// Creates a local generic variable (generic function) to the generic argument @c r.
-    Type(bool optional, size_t r, Function *function, bool forceBox)
+    Type(size_t r, Function *function, bool forceBox)
     : typeContent_(TypeType::LocalGenericVariable), genericArgumentIndex_(r),
-      localResolutionConstraint_(function), optional_(optional), forceBox_(forceBox) {}
-    Type(std::vector<Type> protocols, bool optional)
-        : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)), optional_(optional) {
+      localResolutionConstraint_(function), forceBox_(forceBox) {}
+
+    explicit Type(std::vector<Type> protocols)
+        : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)) {
             sortMultiProtocolType();
         }
 
-    static Type something() { return Type(TypeType::Something, false); }
-    static Type noReturn() { return Type(TypeType::NoReturn, false); }
-    static Type error() { return Type(TypeType::Error, false); }
-    static Type someobject(bool optional = false) { return Type(TypeType::Someobject, optional); }
-    static Type callableIncomplete(bool optional = false) { return Type(TypeType::Callable, optional); }
+    static Type something() { return Type(TypeType::Something); }
+    static Type noReturn() { return Type(TypeType::NoReturn); }
+    static Type error() { return Type(TypeType::Error); }
+    static Type someobject() { return Type(TypeType::Someobject); }
+    static Type callableIncomplete() { return Type(TypeType::Callable); }
     
     /// @returns The type of this type, i.e. Protocol, Class instance etc.
     TypeType type() const { return typeContent_; }
@@ -102,14 +117,27 @@ public:
     /// Unboxes this type.
     /// @throws std::logic_error if unboxing is not possible according to @c requiresBox()
     void unbox() { forceBox_ = false; if (requiresBox()) { throw std::logic_error("Cannot unbox!"); } }
+    Type unboxed() const {
+        auto copy = *this;
+        copy.unbox();
+        return copy;
+    }
     void forceBox() { forceBox_ = true; }
 
-    bool remotelyStored() const { return (size() > 3 && !optional()) || size() > 4; }
+    bool remotelyStored() const { return false; }
 
-    /// True if the type is an optional.
-    bool optional() const { return optional_; }
-    void setOptional(bool o = true) { optional_ = o;}
-    Type setOptional(bool o = true) const { Type t = *this; t.optional_ = o; return t; }
+    /// @returns The type this optional contains. If this type is force boxed, so will be the returned type.
+    Type optionalType() const {
+        auto t = genericArguments_[0];
+        if (forceBox_) {
+            t.forceBox_ = true;
+        }
+        return t;
+    }
+    /// @returns The type itself if type() does not return TypeType::Optional or optionalType() if it does.
+    Type unoptionalized() const { return type() == TypeType::Optional ? optionalType() : *this; }
+
+    const Type& typeOfTypeValue() const { return genericArguments_[0]; }
 
     /// Returns true if this type is compatible to the given other type.
     bool compatibleTo(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
@@ -153,10 +181,6 @@ public:
     /// @param typeContext The type context to be used when resolving generic argument names. Can be Nothingeness if the
     /// type is not in a context.
     std::string toString(const TypeContext &typeContext, bool package = true) const;
-    
-    void setMeta(bool meta) { meta_ = meta; }
-    bool meta() const { return meta_; }
-    bool allowsMetaType() const;
 
     /// @returns true if the type always requires a box to store important dynamic type information.
     /// A protocol box, for instance, requires a box to store dynamic type information, while
@@ -175,15 +199,15 @@ public:
     void setMutable(bool b) { mutable_ = b; }
 
     inline bool operator<(const Type &rhs) const {
-        return std::tie(typeContent_, optional_, meta_, typeDefinition_)
-                < std::tie(rhs.typeContent_, rhs.optional_, rhs.meta_, rhs.typeDefinition_);
+        return std::tie(typeContent_, typeDefinition_, rhs.genericArguments_)
+                < std::tie(rhs.typeContent_, rhs.typeDefinition_, rhs.genericArguments_);
     }
 protected:
     Type(bool isReference, bool forceBox, bool isMutable)
-        : typeContent_(TypeType::StorageExpectation), optional_(false), isReference_(isReference),
+        : typeContent_(TypeType::StorageExpectation), isReference_(isReference),
           mutable_(isMutable), forceBox_(forceBox) {}
 private:
-    Type(TypeType t, bool o) : typeContent_(t), optional_(o) {}
+    explicit Type(TypeType t) : typeContent_(t) {}
 
     TypeType typeContent_;
     size_t genericArgumentIndex_ = 0;
@@ -191,8 +215,6 @@ private:
     Function *localResolutionConstraint_ = nullptr;
     std::vector<Type> genericArguments_;
 
-    bool optional_;
-    bool meta_ = false;
     bool isReference_ = false;
     bool mutable_ = true;
     /// Indicates that the value is boxed although the type would normally not require boxing. Used with generics

@@ -22,9 +22,7 @@ ASTBoxing::ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType,
 }
 
 Value* ASTBoxing::getBoxValuePtr(Value *box, FunctionCodeGenerator *fg) const {
-    Type type = expr_->expressionType();
-    type.unbox();
-    type.setOptional(false);
+    Type type = expr_->expressionType().unboxed().unoptionalized();
     return fg->getValuePtr(box, type);
 }
 
@@ -117,7 +115,7 @@ void ASTToBox::setBoxMeta(Value *box, FunctionCodeGenerator *fg) const {
                                   fg->getMetaTypePtr(box));
         return;
     }
-    auto metaType = fg->generator()->valueTypeMetaFor(expr_->expressionType());
+    auto metaType = fg->generator()->valueTypeMetaFor(expr_->expressionType().unoptionalized());
     fg->builder().CreateStore(metaType, fg->getMetaTypePtr(box));
 }
 

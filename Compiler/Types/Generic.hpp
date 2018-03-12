@@ -45,10 +45,10 @@ public:
     bool fetchVariable(const std::u32string &name, bool optional, Type *destType) {
         auto it = parameterVariables_.find(name);
         if (it != parameterVariables_.end()) {
-            Type type = Type(false, it->second, static_cast<T *>(this),
+            Type type = Type(it->second, static_cast<T *>(this),
                              !genericParameters_[it->second - offset_].rejectsBoxing);
             if (optional) {
-                type.setOptional();
+                type = Type(MakeOptional, type);
             }
             *destType = type;
             return true;

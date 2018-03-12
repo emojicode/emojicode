@@ -6,7 +6,8 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "EmojicodeCompiler.hpp"
+#include "Utils/StringUtils.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 #include "Class.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
@@ -15,7 +16,6 @@
 #include "TypeContext.hpp"
 #include <algorithm>
 #include <utility>
-#include "Analysis/SemanticAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -39,7 +39,7 @@ void Class::inherit(SemanticAnalyser *analyser) {
 
     analyser->declareInstanceVariables(this);
 
-    Type classType = Type(this, false);
+    Type classType = Type(this);
     instanceVariablesMut().insert(instanceVariables().begin(), superclass()->instanceVariables().begin(),
                                   superclass()->instanceVariables().end());
 
@@ -72,8 +72,7 @@ void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
             analyser->compiler()->error(CompilerError(function->position(), utf8(function->name()),
                                                       " was declared ✒️ but does not override anything."));
         }
-        analyser->enforcePromises(function, superFunction, Type(superclass(), false), TypeContext(Type(this, false)),
-                                  TypeContext());
+        analyser->enforcePromises(function, superFunction, Type(superclass()), TypeContext(Type(this)), TypeContext());
         superFunction->appointHeir(function);
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {

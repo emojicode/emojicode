@@ -17,7 +17,7 @@
 namespace EmojicodeCompiler {
 
 Type ASTStringLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type(analyser->compiler()->sString, false);
+    return Type(analyser->compiler()->sString);
 }
 
 Type ASTBooleanTrue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -66,7 +66,7 @@ Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
 }
 
 Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (!expectation.optional() && expectation.type() != TypeType::Something) {
+    if (expectation.type() != TypeType::Optional && expectation.type() != TypeType::Something) {
         throw CompilerError(position(), "🤷‍ can only be used when an optional is expected.");
     }
     type_ = expectation.copyType();
@@ -74,11 +74,11 @@ Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
 }
 
 Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = Type(analyser->compiler()->sDictionary, false);
+    type_ = Type(analyser->compiler()->sDictionary);
 
     CommonTypeFinder finder;
     for (auto it = values_.begin(); it != values_.end(); it++) {
-        analyser->expectType(Type(analyser->compiler()->sString, false), &*it);
+        analyser->expectType(Type(analyser->compiler()->sString), &*it);
         if (++it == values_.end()) {
             throw CompilerError(position(), "A value must be provided for every key.");
         }
@@ -90,7 +90,7 @@ Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpecta
 }
 
 Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = Type(analyser->compiler()->sList, false);
+    type_ = Type(analyser->compiler()->sList);
 
     CommonTypeFinder finder;
     for (auto &valueNode : values_) {
@@ -106,7 +106,7 @@ Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpect
     type_ = analyser->function()->package()->getRawType(TypeIdentifier(std::u32string(1, 0x1F520), kDefaultNamespace,
                                                                        position()), false);
 
-    auto stringType = Type(analyser->compiler()->sString, false);
+    auto stringType = Type(analyser->compiler()->sString);
     for (auto &stringNode : values_) {
         analyser->expectType(stringType, &stringNode);
     }

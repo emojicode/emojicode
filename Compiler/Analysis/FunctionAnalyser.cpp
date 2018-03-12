@@ -13,11 +13,11 @@
 #include "AST/ASTVariables.hpp"
 #include "BoxingLayerBuilder.hpp"
 #include "Compiler.hpp"
+#include "FunctionAnalyser.hpp"
 #include "Functions/BoxingLayer.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
-#include "FunctionAnalyser.hpp"
 #include "SemanticAnalyser.hpp"
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
@@ -28,19 +28,19 @@
 namespace EmojicodeCompiler {
 
 Type FunctionAnalyser::doubleType() {
-    return Type(compiler()->sReal, false);
+    return Type(compiler()->sReal);
 }
 
 Type FunctionAnalyser::integer() {
-    return Type(compiler()->sInteger, false);
+    return Type(compiler()->sInteger);
 }
 
 Type FunctionAnalyser::boolean() {
-    return Type(compiler()->sBoolean, false);
+    return Type(compiler()->sBoolean);
 }
 
 Type FunctionAnalyser::symbol() {
-    return Type(compiler()->sSymbol, false);
+    return Type(compiler()->sSymbol);
 }
 
 Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp) {
@@ -50,8 +50,8 @@ Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node,
 }
 
 void FunctionAnalyser::validateMetability(const Type &originalType, const SourcePosition &p) const {
-    if (!originalType.allowsMetaType()) {
-        throw CompilerError(p, "Metatype of ", originalType.toString(typeContext_), " is not available.");
+    if (originalType.type() != TypeType::Class) {
+        throw CompilerError(p, "Type ", originalType.toString(typeContext_), " is not available as a value.");
     }
 }
 
@@ -270,14 +270,13 @@ void FunctionAnalyser::boxToSimpleOptional(Type &exprType, const TypeExpectation
         case StorageType::SimpleOptional:
             break;
         case StorageType::Box:
-            exprType.unbox();
-            exprType.setOptional();  // TODO: ERROR?!
+            exprType = Type(MakeOptional, exprType.unboxed());  // TODO: ERROR?!
 
             insertNode<ASTBoxToSimpleOptional>(node, exprType);
             break;
         case StorageType::Simple:
             if (expectation.type() != TypeType::Error) {
-                exprType.setOptional();
+                exprType = Type(MakeOptional, exprType);
             }
             else {
                 Type prty = exprType;

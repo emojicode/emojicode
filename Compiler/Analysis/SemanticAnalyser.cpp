@@ -2,17 +2,17 @@
 // Created by Theo Weidmann on 26.02.18.
 //
 
-#include <experimental/optional>
-#include "SemanticAnalyser.hpp"
-#include "Types/TypeDefinition.hpp"
-#include "FunctionAnalyser.hpp"
-#include "Types/ValueType.hpp"
-#include "Types/Extension.hpp"
-#include "Types/Class.hpp"
-#include "Types/Protocol.hpp"
-#include "Functions/BoxingLayer.hpp"
-#include "Compiler.hpp"
 #include "BoxingLayerBuilder.hpp"
+#include "Compiler.hpp"
+#include "FunctionAnalyser.hpp"
+#include "Functions/BoxingLayer.hpp"
+#include "SemanticAnalyser.hpp"
+#include "Types/Class.hpp"
+#include "Types/Extension.hpp"
+#include "Types/Protocol.hpp"
+#include "Types/TypeDefinition.hpp"
+#include "Types/ValueType.hpp"
+#include <experimental/optional>
 #include <iostream>
 
 namespace EmojicodeCompiler {
@@ -26,13 +26,13 @@ void SemanticAnalyser::analyse(bool executable) {
         extension->extend();
     }
     for (auto &vt : package_->valueTypes()) {
-        finalizeProtocols(Type(vt.get(), false));
+        finalizeProtocols(Type(vt.get()));
         declareInstanceVariables(vt.get());
         enqueueFunctionsOfTypeDefinition(vt.get());
     }
     for (auto &eclass : package_->classes()) {
         eclass->inherit(this);
-        finalizeProtocols(Type(eclass.get(), false));
+        finalizeProtocols(Type(eclass.get()));
         enqueueFunctionsOfTypeDefinition(eclass.get());
     }
     for (auto &function : package_->functions()) {

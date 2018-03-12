@@ -18,15 +18,15 @@
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include <algorithm>
+#include <codecvt>
 #include <cstring>
+#include <fstream>
 #include <iostream>
+#include <iostream>
+#include <locale>
 #include <map>
 #include <sstream>
 #include <string>
-#include <codecvt>
-#include <fstream>
-#include <iostream>
-#include <locale>
 
 namespace EmojicodeCompiler {
 
@@ -134,7 +134,7 @@ bool Package::lookupRawType(const TypeIdentifier &typeId, bool optional, Type *t
                 *type = Type::something();
                 return true;
             case E_LARGE_BLUE_CIRCLE:
-                *type = Type::someobject(optional);
+                *type = optional ? Type(MakeOptional, Type::someobject()) : Type::someobject();
                 return true;
         }
     }
@@ -145,7 +145,7 @@ bool Package::lookupRawType(const TypeIdentifier &typeId, bool optional, Type *t
     if (it != types_.end()) {
         auto xtype = it->second;
         if (optional) {
-            xtype.setOptional();
+            xtype = Type(MakeOptional, xtype);
         }
         *type = xtype;
         return true;

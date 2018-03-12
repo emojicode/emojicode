@@ -15,6 +15,7 @@
 #include <set>
 #include <utility>
 #include <vector>
+#include <memory>
 
 namespace EmojicodeCompiler {
 

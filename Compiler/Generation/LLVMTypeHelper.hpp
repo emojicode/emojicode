@@ -36,7 +36,7 @@ public:
     llvm::Type* valueTypeMetaPtr() const;
     llvm::StructType* valueTypeMeta() const { return valueTypeMetaType_; }
     llvm::StructType* classMeta() const { return classMetaType_; }
-    llvm::StructType* protocolsTable() const { return protocolsTable_; }
+    llvm::StructType* protocolConformance() const { return protocolsTable_; }
 
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
     llvm::FunctionType* functionTypeFor(Function *function);
@@ -59,6 +59,8 @@ private:
     ReificationContext *reifiContext_ = nullptr;
 
     llvm::Type *typeForOrdinaryType(Type type);
+
+    llvm::Type *getComposedType(const Type &type);
 };
 
 }  // namespace EmojicodeCompiler

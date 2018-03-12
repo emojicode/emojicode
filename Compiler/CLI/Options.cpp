@@ -9,8 +9,8 @@
 #include "Options.hpp"
 #include "HRFCompilerDelegate.hpp"
 #include "JSONCompilerDelegate.hpp"
+#include "Utils/StringUtils.hpp"
 #include "Utils/args.hxx"
-#include "EmojicodeCompiler.hpp"
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/Path.h>
 #include <iostream>

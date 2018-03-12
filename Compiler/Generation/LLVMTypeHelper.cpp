@@ -21,29 +21,29 @@ namespace EmojicodeCompiler {
 
 LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) : context_(context) {
     protocolsTable_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt8PtrTy(context_)->getPointerTo()->getPointerTo(), llvm::Type::getInt16Ty(context_),
-        llvm::Type::getInt16Ty(context_)
-    }, "protocolsTable");
+            llvm::Type::getInt1Ty(context_),
+            llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
+    }, "protocolConformance");
     classMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt64Ty(context_), llvm::Type::getInt8PtrTy(context_)->getPointerTo()
+            llvm::Type::getInt64Ty(context_), llvm::Type::getInt8PtrTy(context_)->getPointerTo()
     }, "classMeta");
     valueTypeMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        protocolsTable_
+            protocolsTable_
     }, "valueTypeMeta");
     box_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        valueTypeMetaType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
+            valueTypeMetaType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
     }, "box");
     callable_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt8PtrTy(context_), llvm::Type::getInt8PtrTy(context_)
+            llvm::Type::getInt8PtrTy(context_), llvm::Type::getInt8PtrTy(context_)
     }, "callable");
 
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
     types_.emplace(Type::someobject(), llvm::Type::getInt8PtrTy(context_));
-    types_.emplace(Type(compiler->sInteger, false), llvm::Type::getInt64Ty(context_));
-    types_.emplace(Type(compiler->sSymbol, false), llvm::Type::getInt32Ty(context_));
-    types_.emplace(Type(compiler->sReal, false), llvm::Type::getDoubleTy(context_));
-    types_.emplace(Type(compiler->sBoolean, false), llvm::Type::getInt1Ty(context_));
-    types_.emplace(Type(compiler->sMemory, false), llvm::Type::getInt8PtrTy(context_));
+    types_.emplace(Type(compiler->sInteger), llvm::Type::getInt64Ty(context_));
+    types_.emplace(Type(compiler->sSymbol), llvm::Type::getInt32Ty(context_));
+    types_.emplace(Type(compiler->sReal), llvm::Type::getDoubleTy(context_));
+    types_.emplace(Type(compiler->sBoolean), llvm::Type::getInt1Ty(context_));
+    types_.emplace(Type(compiler->sMemory), llvm::Type::getInt8PtrTy(context_));
 }
 
 llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType) {
@@ -79,22 +79,6 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     return llvm::FunctionType::get(returnType, args, false);
 }
 
-llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
-    std::vector<llvm::Type *> types;
-
-    if (type.type() == TypeType::Class) {
-        types.emplace_back(classMetaType_->getPointerTo());
-    }
-
-    for (auto &ivar : type.typeDefinition()->instanceVariables()) {
-        types.emplace_back(llvmTypeFor(ivar.type));
-    }
-
-    auto llvmType = llvm::StructType::create(context_, types, mangleTypeName(type));
-    types_.emplace(type, llvmType);
-    return llvmType;
-}
-
 llvm::Type* LLVMTypeHelper::box() const {
     return box_;
 }
@@ -110,10 +94,6 @@ llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
     }
 
     llvm::Type *llvmType = nullptr;
-
-    if (type.meta()) {
-        return classMetaType_->getPointerTo();
-    }
 
     // Error is always a simple optional, so we have to catch it before switching below
     if (type.type() == TypeType::Error) {
@@ -131,8 +111,7 @@ llvm::Type* LLVMTypeHelper::typeForOrdinaryType(Type type) {
         case StorageType::Box:
             return box_;
         case StorageType::SimpleOptional: {
-            type.setOptional(false);
-            std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context_), llvmTypeFor(type) };
+            std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context_), llvmTypeFor(type.optionalType()) };
             return llvm::StructType::get(context_, types);
         }
         case StorageType::Simple:
@@ -144,7 +123,19 @@ llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
     if (type.type() == TypeType::Callable) {
         return callable_;
     }
+    if (type.type() == TypeType::TypeAsValue) {
+        if (type.typeOfTypeValue().type() == TypeType::Class) {
+            return classMetaType_->getPointerTo();
+        }
+        return llvm::Type::getVoidTy(context_);
+    }
+    if (type.type() == TypeType::Enum) {
+        return llvm::Type::getInt64Ty(context_);
+    }
+    return getComposedType(type);
+}
 
+llvm::Type *LLVMTypeHelper::getComposedType(const Type &type) {
     llvm::Type *llvmType = nullptr;
     auto it = types_.find(type);
     if (it != types_.end()) {
@@ -153,15 +144,29 @@ llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
     else if (type.type() == TypeType::ValueType || type.type() == TypeType::Class) {
         llvmType = createLlvmTypeForTypeDefinition(type);
     }
-    else if (type.type() == TypeType::Enum) {
-        llvmType = llvm::Type::getInt64Ty(context_);
-    }
     else {
         throw std::logic_error("No llvm type could be established.");
     }
+
     if (type.type() == TypeType::Class) {
         llvmType = llvmType->getPointerTo();
     }
+    return llvmType;
+}
+
+llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
+    std::vector<llvm::Type *> types;
+
+    if (type.type() == TypeType::Class) {
+        types.emplace_back(classMetaType_->getPointerTo());
+    }
+
+    for (auto &ivar : type.typeDefinition()->instanceVariables()) {
+        types.emplace_back(llvmTypeFor(ivar.type));
+    }
+
+    auto llvmType = llvm::StructType::create(context_, types, mangleTypeName(type));
+    types_.emplace(type, llvmType);
     return llvmType;
 }
 

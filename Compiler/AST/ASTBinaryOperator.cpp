@@ -10,8 +10,8 @@
 #include "ASTLiterals.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
-#include "Types/ValueType.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "Types/ValueType.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -42,7 +42,7 @@ Type ASTBinaryOperator::analyse(FunctionAnalyser *analyser, const TypeExpectatio
 Type ASTBinaryOperator::analyseIsNoValue(FunctionAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
                                          BuiltInType builtInType) {
     Type type = analyser->expect(TypeExpectation(false, false), &expr);
-    if (!type.optional() && type.type() != TypeType::Something) {
+    if (type.type() != TypeType::Optional && type.type() != TypeType::Something) {
         throw CompilerError(position(), "Only optionals and ⚪️ can be compared to 🤷‍♀️.");
     }
     builtIn_ = builtInType;

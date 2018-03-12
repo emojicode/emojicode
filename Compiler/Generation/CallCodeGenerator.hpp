@@ -12,6 +12,7 @@
 #include "Functions/CallType.h"
 #include <string>
 #include <vector>
+#include <llvm/IR/Instructions.h>
 
 namespace llvm {
 class Value;
@@ -43,6 +44,8 @@ private:
                                               const std::vector<Type> &genericArguments);
     FunctionCodeGenerator *fg_;
     CallType callType_;
+
+    llvm::Value *getProtocolCallee(std::vector<llvm::Value *> &args, llvm::LoadInst *conformance) const;
 };
 
 class TypeMethodCallCodeGenerator : public CallCodeGenerator {

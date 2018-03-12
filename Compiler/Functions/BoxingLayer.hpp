@@ -9,12 +9,10 @@
 #ifndef BoxingLayer_hpp
 #define BoxingLayer_hpp
 
-#include <utility>
-
-#include "EmojicodeCompiler.hpp"
 #include "Function.hpp"
 #include "FunctionType.hpp"
 #include "Types/Type.hpp"
+#include <utility>
 
 namespace EmojicodeCompiler {
 

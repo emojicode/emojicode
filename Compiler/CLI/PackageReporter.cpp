@@ -7,7 +7,6 @@
 //
 
 #include "PackageReporter.hpp"
-#include "EmojicodeCompiler.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "JSONHelper.h"
@@ -19,6 +18,7 @@
 #include "Types/TypeContext.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/ValueType.hpp"
+#include "Utils/StringUtils.hpp"
 #include <cstring>
 #include <iostream>
 #include <list>
@@ -48,7 +48,7 @@ void reportDocumentation(const std::u32string &documentation) {
 void reportType(const Type &type, const TypeContext &tc) {
     auto returnTypeName = type.toString(tc);
     printf("{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
-           type.typePackage().c_str(), returnTypeName.c_str(), type.optional() ? "true" : "false");
+           type.typePackage().c_str(), returnTypeName.c_str(), "false");
 }
 
 template <typename T, typename E>
@@ -128,11 +128,11 @@ protected:
         CommaPrinter printer;
         for (auto &protocol : typeDef_->protocols()) {
             printer.print();
-            reportType(protocol, TypeContext(Type(typeDef_, false)));
+            reportType(protocol, TypeContext(Type(typeDef_)));
         }
         printf("],");
 
-        reportGenericParameters(typeDef_, TypeContext(Type(typeDef_, false)));
+        reportGenericParameters(typeDef_, TypeContext(Type(typeDef_)));
         reportDocumentation(typeDef_->documentation());
 
         printf("\"methods\":[");
@@ -144,7 +144,7 @@ protected:
         for (auto initializer : typeDef_->initializerList()) {
             initializerPrinter.print();
             reportFunction(initializer, initializer->errorProne() ? ReturnKind::ErrorProneInitializer
-                           : ReturnKind::NoReturn, TypeContext(Type(typeDef_, false), initializer));
+                           : ReturnKind::NoReturn, TypeContext(Type(typeDef_), initializer));
         }
         printf("],");
 
@@ -157,7 +157,7 @@ protected:
         CommaPrinter printer;
         for (auto function : functions) {
             printer.print();
-            reportFunction(function, ReturnKind::Return, TypeContext(Type(typeDef_, false), function));
+            reportFunction(function, ReturnKind::Return, TypeContext(Type(typeDef_), function));
         }
     }
 };

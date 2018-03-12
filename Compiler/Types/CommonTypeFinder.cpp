@@ -69,7 +69,7 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *app) con
     }
     else if (commonType_.type() == TypeType::Something || commonType_.type() == TypeType::Someobject) {
         if (commonProtocols_.size() > 1) {
-            return Type(commonProtocols_, false);
+            return Type(commonProtocols_);
         }
         if (commonProtocols_.size() == 1) {
             return commonProtocols_.front();

@@ -46,7 +46,10 @@ public:
             if (type.requiresBox()) {
                 return StorageType::Box;
             }
-            return type.optional() ? StorageType::SimpleOptional : StorageType::Simple;
+            if (type.type() == TypeType::Optional) {
+                return StorageType::SimpleOptional;
+            }
+            return StorageType::Simple;
         }
         return storageType();
     }

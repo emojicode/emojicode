@@ -32,7 +32,7 @@ void TypeDefinition::setSuperType(const Type &type) {
     for (size_t i = superType_.typeDefinition()->superGenericArguments().size(); i < superType_.genericArguments().size(); i++) {
         if (type.genericArguments()[i].type() == TypeType::GenericVariable) {
             auto newIndex = superType_.genericArguments()[i].genericVariableIndex() + superType_.genericArguments().size();
-            superType_.setGenericArgument(i, Type(false, newIndex, this, true));
+            superType_.setGenericArgument(i, Type(newIndex, this, true));
         }
     }
 }

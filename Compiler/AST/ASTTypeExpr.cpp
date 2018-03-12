@@ -16,23 +16,16 @@ Type ASTInferType::analyse(FunctionAnalyser *analyser, const TypeExpectation &ex
     if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::NoReturn) {
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
-    Type type = expectation.copyType();
-    type.setOptional(false);
-    type_ = type;
-    availability_ = TypeAvailability::StaticAndAvailabale;
-    return type;
+    type_ = expectation.copyType().unoptionalized();
+    return type_;
 }
 
 Type ASTTypeFromExpr::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = expr_->analyse(analyser, expectation);
-    if (!type.meta()) {
-        throw CompilerError(position(), "Expected meta type.");
+    auto value = expr_->analyse(analyser, expectation);
+    if (value.type() != TypeType::TypeAsValue) {
+        throw CompilerError(position(), "Expected type value.");
     }
-    if (type.optional()) {
-        throw CompilerError(position(), "🍬 can’t be used as meta type.");
-    }
-    type.setMeta(false);
-    return type;
+    return value.typeOfTypeValue();
 }
 
 Type ASTStaticType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {

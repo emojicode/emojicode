@@ -104,7 +104,7 @@ void ASTForIn::generate(FunctionCodeGenerator *fg) const {
 
     fg->builder().CreateBr(whileCondBlock);
 
-    auto iteratorType = Type(fg->compiler()->sEnumerator, false);
+    auto iteratorType = Type(fg->compiler()->sEnumerator);
 
     fg->builder().SetInsertPoint(whileCondBlock);
     auto cont = callg.generate(iteratorPtr, iteratorType, ASTArguments(position()),

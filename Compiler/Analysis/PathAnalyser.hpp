@@ -9,7 +9,6 @@
 #ifndef PathAnalyser_hpp
 #define PathAnalyser_hpp
 
-#include "EmojicodeCompiler.hpp"
 #include <algorithm>
 #include <cassert>
 #include <vector>

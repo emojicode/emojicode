@@ -9,7 +9,6 @@
 #include "Type.hpp"
 #include "Class.hpp"
 #include "CommonTypeFinder.hpp"
-#include "EmojicodeCompiler.hpp"
 #include "Emojis.h"
 #include "Enum.hpp"
 #include "Extension.hpp"
@@ -17,6 +16,7 @@
 #include "Package/Package.hpp"
 #include "Protocol.hpp"
 #include "TypeContext.hpp"
+#include "Utils/StringUtils.hpp"
 #include "ValueType.hpp"
 #include <algorithm>
 #include <cstring>
@@ -26,25 +26,25 @@ namespace EmojicodeCompiler {
 
 const std::u32string kDefaultNamespace = std::u32string(1, E_HOUSE_BUILDING);
 
-Type::Type(Protocol *protocol, bool optional)
-    : typeContent_(TypeType::Protocol), typeDefinition_(protocol), optional_(optional) {}
+Type::Type(Protocol *protocol)
+    : typeContent_(TypeType::Protocol), typeDefinition_(protocol) {}
 
-Type::Type(Enum *enumeration, bool optional)
-    : typeContent_(TypeType::Enum), typeDefinition_(enumeration), optional_(optional) {}
+Type::Type(Enum *enumeration)
+    : typeContent_(TypeType::Enum), typeDefinition_(enumeration) {}
 
 Type::Type(Extension *extension)
-    : typeContent_(TypeType::Extension), typeDefinition_(extension), optional_(false) {}
+    : typeContent_(TypeType::Extension), typeDefinition_(extension) {}
 
-Type::Type(ValueType *valueType, bool optional)
-: typeContent_(TypeType::ValueType), typeDefinition_(valueType), optional_(optional), mutable_(false) {
+Type::Type(ValueType *valueType)
+: typeContent_(TypeType::ValueType), typeDefinition_(valueType), mutable_(false) {
     for (size_t i = 0; i < valueType->genericParameters().size(); i++) {
-        genericArguments_.emplace_back(false, i, valueType, true);
+        genericArguments_.emplace_back(i, valueType, true);
     }
 }
 
-Type::Type(Class *klass, bool optional) : typeContent_(TypeType::Class), typeDefinition_(klass), optional_(optional) {
+Type::Type(Class *klass) : typeContent_(TypeType::Class), typeDefinition_(klass) {
     for (size_t i = 0; i < klass->genericParameters().size() + klass->superGenericArguments().size(); i++) {
-        genericArguments_.emplace_back(false, i, klass, true);
+        genericArguments_.emplace_back(i, klass, true);
     }
 }
 
@@ -85,10 +85,6 @@ size_t Type::genericVariableIndex() const {
     return genericArgumentIndex_;
 }
 
-bool Type::allowsMetaType() const {
-    return type() == TypeType::Class || type() == TypeType::Enum || type() == TypeType::ValueType;
-}
-
 Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const {
     TypeDefinition *c = typeContext.calleeType().typeDefinition();
     Type t = *this;
@@ -115,7 +111,11 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
     if (type() == TypeType::NoReturn) {
         return t;
     }
-    bool optional = t.optional();
+    if (type() == TypeType::Optional) {
+        t.genericArguments_[0] = genericArguments_[0].resolveOnSuperArgumentsAndConstraints(typeContext);
+        return t;
+    }
+
     bool box = t.storageType() == StorageType::Box;
 
     // Try to resolve on the generic arguments to the superclass.
@@ -130,9 +130,6 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
         t = typeContext.calleeType().typeDefinition()->constraintForIndex(t.genericArgumentIndex_);
     }
 
-    if (optional) {
-        t.setOptional();
-    }
     if (box) {
         t.forceBox_ = true;
     }
@@ -144,7 +141,11 @@ Type Type::resolveOn(const TypeContext &typeContext) const {
     if (type() == TypeType::NoReturn) {
         return t;
     }
-    bool optional = t.optional();
+    if (type() == TypeType::Optional) {
+        t.genericArguments_[0] = genericArguments()[0].resolveOn(typeContext);
+        return t;
+    }
+
     bool box = t.storageType() == StorageType::Box;
 
     while (t.type() == TypeType::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_
@@ -162,10 +163,6 @@ Type Type::resolveOn(const TypeContext &typeContext) const {
             }
             t = tn;
         }
-    }
-
-    if (optional) {
-        t.setOptional();
     }
 
     for (auto &arg : t.genericArguments_) {
@@ -195,11 +192,15 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
     if (to.type() == TypeType::Something) {
         return true;
     }
-    if (to.meta_ != meta_) {
-        return false;
+
+    if (this->type() == TypeType::Optional) {
+        if (to.type() != TypeType::Optional) {
+            return false;
+        }
+        return optionalType().compatibleTo(to.optionalType(), tc, ctargs);
     }
-    if (this->optional() && !to.optional()) {
-        return false;
+    if (this->type() != TypeType::Optional && to.type() == TypeType::Optional) {
+        return compatibleTo(to.optionalType(), tc, ctargs);
     }
 
     if ((this->type() == TypeType::GenericVariable && to.type() == TypeType::GenericVariable) ||
@@ -217,6 +218,8 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
     }
 
     switch (to.type()) {
+        case TypeType::TypeAsValue:
+            return type() == TypeType::TypeAsValue && typeOfTypeValue().compatibleTo(to.typeOfTypeValue(), tc, ctargs);
         case TypeType::GenericVariable:
             return compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
         case TypeType::LocalGenericVariable:
@@ -305,9 +308,6 @@ bool Type::isCompatibleToCallable(const Type &to, const TypeContext &ct, std::ve
 }
 
 bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const {
-    if (optional() != to.optional()) {
-        return false;
-    }
     if (ctargs != nullptr && to.type() == TypeType::LocalGenericVariable) {
         (*ctargs)[to.genericVariableIndex()].addType(*this, tc);
         return true;
@@ -323,6 +323,9 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::Callable:
                 return to.genericArguments_.size() == this->genericArguments_.size()
                 && identicalGenericArguments(to, tc, ctargs);
+            case TypeType::Optional:
+            case TypeType::TypeAsValue:
+                return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, ctargs);
             case TypeType::Enum:
                 return eenum() == to.eenum();
             case TypeType::GenericVariable:
@@ -354,16 +357,18 @@ StorageType Type::storageType() const {
     if (forceBox_ || requiresBox()) {
         return StorageType::Box;
     }
-    if (type() == TypeType::Error) {
+    if (type() == TypeType::Optional || type() == TypeType::Error) {
         return StorageType::SimpleOptional;
     }
-    return optional() ? StorageType::SimpleOptional : StorageType::Simple;
+    return StorageType::Simple;
 }
 
 bool Type::requiresBox() const {
     switch (type()) {
         case TypeType::Error:
             return genericArguments()[1].storageType() == StorageType::Box;
+        case TypeType::Optional:
+            return optionalType().storageType() == StorageType::Box;
         case TypeType::Something:
         case TypeType::Protocol:
         case TypeType::MultiProtocol:
@@ -383,6 +388,7 @@ bool Type::isReferencable() const {
         case TypeType::Someobject:
         case TypeType::GenericVariable:
         case TypeType::LocalGenericVariable:
+        case TypeType::TypeAsValue:
             return storageType() != StorageType::Simple;
         case TypeType::NoReturn:
             return false;
@@ -393,6 +399,7 @@ bool Type::isReferencable() const {
         case TypeType::Something:
         case TypeType::Error:
             return true;
+        case TypeType::Optional:
         case TypeType::StorageExpectation:
         case TypeType::Extension:
             throw std::logic_error("isReferenceWorthy for StorageExpectation/Extension");
@@ -408,36 +415,28 @@ std::string Type::typePackage() const {
         case TypeType::Protocol:
         case TypeType::Enum:
             return typeDefinition()->package()->name();
-        case TypeType::NoReturn:
-        case TypeType::Something:
-        case TypeType::Someobject:
-        case TypeType::GenericVariable:
-        case TypeType::LocalGenericVariable:
-        case TypeType::Callable:
-        case TypeType::MultiProtocol:  // should actually never come in here
-        case TypeType::Error:
-            return "";
         case TypeType::StorageExpectation:
         case TypeType::Extension:
             throw std::logic_error("typePackage for StorageExpectation/Extension");
+        default:
+            return "";
     }
 }
 
 void Type::typeName(Type type, const TypeContext &typeContext, std::string &string, bool package) const {
-    if (type.meta_) {
-        string.append("🔳");
-    }
-
-
-    if (type.optional()) {
-        string.append("🍬");
-    }
-
     if (package) {
         string.append(type.typePackage());
     }
 
     switch (type.type()) {
+        case TypeType::Optional:
+            string.append("🍬");
+            typeName(type.genericArguments_[0], typeContext, string, package);
+            return;
+        case TypeType::TypeAsValue:
+            string.append("🔳");
+            typeName(type.genericArguments_[0], typeContext, string, package);
+            return;
         case TypeType::Class:
         case TypeType::Protocol:
         case TypeType::Enum:

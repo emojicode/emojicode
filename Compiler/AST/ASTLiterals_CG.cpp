@@ -16,7 +16,7 @@
 namespace EmojicodeCompiler {
 
 Value* ASTStringLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto type = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(Type(fg->compiler()->sString, false)));
+    auto type = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(Type(fg->compiler()->sString)));
     auto stringObj = fg->alloc(type);
     fg->builder().CreateStore(fg->compiler()->sString->classMeta(), fg->getObjectMetaPtr(stringObj));
     auto ptr = fg->builder().CreateBitCast(fg->generator()->stringPool().pool(value_),

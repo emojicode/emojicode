@@ -9,15 +9,14 @@
 #include "CodeGenerator.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
-#include "EmojicodeCompiler.hpp"
 #include "FunctionCodeGenerator.hpp"
 #include "Functions/Initializer.hpp"
 #include "Mangler.hpp"
+#include "Package/Package.hpp"
 #include "ReificationContext.hpp"
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
-#include "Package/Package.hpp"
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/TargetRegistry.h>
@@ -35,7 +34,7 @@ CodeGenerator::CodeGenerator(Package *package) : package_(package),
                                                  module_(std::make_unique<llvm::Module>(package->name(), context())),
                                                  typeHelper_(context(), package->compiler()),
                                                  declarator_(context_, *module_, typeHelper_),
-                                                 protocolsTableGenerator_(context_, *module_) {}
+                                                 protocolsTableGenerator_(context_, *module_, typeHelper_) {}
 
 llvm::Value* CodeGenerator::optionalValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 1);
@@ -56,7 +55,8 @@ llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
 
     auto valueType = type.valueType();
 
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.valueTypeMeta(), llvm::ConstantPointerNull::get(typeHelper_.protocolsTable()->getPointerTo()));
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.valueTypeMeta(), llvm::ConstantPointerNull::get(
+            typeHelper_.protocolConformance()->getPointerTo()));
     auto meta = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleValueTypeMetaName(type));

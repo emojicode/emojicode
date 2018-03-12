@@ -62,7 +62,7 @@ void Scope::unintializedVariablesCheck(const SourcePosition &p, const std::strin
                                            const std::string &errorMessageBack) {
     for (auto &it : map_) {
         Variable &cv = it.second;
-        if (!cv.initialized() && !cv.type().optional() && !cv.inherited()) {
+        if (!cv.initialized() && cv.type().type() != TypeType::Optional && !cv.inherited()) {
             throw CompilerError(p, errorMessageFront, utf8(cv.name()), errorMessageBack);
         }
     }

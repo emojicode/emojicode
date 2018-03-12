@@ -65,7 +65,3 @@ extern "C" double sRealLog2(double *real) {
 extern "C" double sRealLn(double *real) {
     return std::log(*real);
 }
-
-extern "C" double sRealToString(double *real) {
-    return std::log(*real);
-}

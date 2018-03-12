@@ -127,7 +127,7 @@ public:
             type.setReference();
         }
         if (functionType() == FunctionType::ClassMethod) {
-            type.setMeta(true);
+            type = Type(MakeTypeAsValue, type);
         }
         return TypeContext(type, this);
     }

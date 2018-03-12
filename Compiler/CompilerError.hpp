@@ -9,8 +9,8 @@
 #ifndef CompilerError_hpp
 #define CompilerError_hpp
 
-#include "EmojicodeCompiler.hpp"
 #include "Lex/SourcePosition.hpp"
+#include "Utils/StringUtils.hpp"
 #include <exception>
 #include <sstream>
 

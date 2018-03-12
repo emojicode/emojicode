@@ -9,7 +9,6 @@
 #ifndef CallableScoper_hpp
 #define CallableScoper_hpp
 
-#include "EmojicodeCompiler.hpp"
 #include "Functions/Function.hpp"
 #include "Scope.hpp"
 #include <list>

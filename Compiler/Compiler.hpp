@@ -9,12 +9,12 @@
 #ifndef Compiler_hpp
 #define Compiler_hpp
 
+#include "Utils/StringUtils.hpp"
 #include <exception>
 #include <map>
 #include <memory>
-#include <vector>
 #include <string>
-#include <sstream>
+#include <vector>
 
 namespace EmojicodeCompiler {
 

@@ -10,10 +10,10 @@
 #define Options_hpp
 
 #include "Compiler.hpp"
+#include <exception>
 #include <memory>
 #include <string>
 #include <vector>
-#include <exception>
 
 namespace EmojicodeCompiler {
 

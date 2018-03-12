@@ -96,7 +96,7 @@ private:
                 moreTokens_ = false;
                 break;
             }
-        } while (nextToken_.type() == TokenType::SinglelineComment);
+        } while (nextToken_.type() == TokenType::SinglelineComment || nextToken_.type() == TokenType::MultilineComment);
         return temp;
     }
 

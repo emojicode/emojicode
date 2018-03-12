@@ -10,8 +10,8 @@
 #include "FunctionParser.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
-#include "Types/Enum.hpp"
 #include "Package/Package.hpp"
+#include "Types/Enum.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -67,7 +67,7 @@ AccessLevel TypeBodyParser::readAccessLevel() {
 void TypeBodyParser::parseProtocolConformance(const SourcePosition &p) {
     Type type = parseType(TypeContext(type_));
 
-    if (type.type() != TypeType::Protocol || type.optional()) {
+    if (type.type() != TypeType::Protocol) {
         package_->compiler()->error(CompilerError(p, "The given type is not a protocol."));
         return;
     }

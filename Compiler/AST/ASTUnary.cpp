@@ -24,9 +24,8 @@ Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
 Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &value_);
 
-    if (t.optional()) {
-        t.setOptional(false);
-        return t;
+    if (t.type() == TypeType::Optional) {
+        return t.optionalType();
     }
     if (t.type() == TypeType::Error) {
         error_ = true;
@@ -39,8 +38,7 @@ Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
 Type ASTMetaTypeFromInstance::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type originalType = analyser->expect(TypeExpectation(false, false, false), &value_);
     analyser->validateMetability(originalType, position());
-    originalType.setMeta(true);
-    return originalType;
+    return Type(MakeTypeAsValue, originalType);
 }
 
 }  // namespace EmojicodeCompiler

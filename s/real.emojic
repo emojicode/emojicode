@@ -113,11 +113,11 @@
   📗
     Returns the smallest integer greater than or equal to this 💯.
   📗
-  ❗️ 🚴 ➡️ 🔢 📻 🔤sRealFloor🔤
+  ❗️ 🚴 ➡️ 🔢 📻 🔤sRealCeil🔤
   📗
     Returns the largest integer less than or equal to this 💯.
   📗
-  ❗️ 🚵 ➡️ 🔢 📻 🔤sRealCeil🔤
+  ❗️ 🚵 ➡️ 🔢 📻 🔤sRealFloor🔤
   📗
     Returns the value of this 💯 rounded to the nearest integer.
 

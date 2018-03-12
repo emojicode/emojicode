@@ -10,6 +10,7 @@
 #include "FunctionParser.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
+#include "Package/Package.hpp"
 #include "ProtocolTypeBodyParser.hpp"
 #include "TypeBodyParser.hpp"
 #include "Types/Class.hpp"
@@ -17,7 +18,6 @@
 #include "Types/Protocol.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/ValueType.hpp"
-#include "Package/Package.hpp"
 #include <cstring>
 
 namespace EmojicodeCompiler {
@@ -110,7 +110,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
                                                              FunctionType::Function));
     parseReturnType(function, TypeContext());
     if (function->returnType().type() != TypeType::NoReturn &&
-        !function->returnType().compatibleTo(Type(package_->compiler()->sInteger, false), TypeContext())) {
+        !function->returnType().compatibleTo(Type(package_->compiler()->sInteger), TypeContext())) {
         package_->compiler()->error(CompilerError(p, "🏁 must either have no return or return 🔢."));
     }
     stream_.consumeToken(TokenType::BlockBegin);
@@ -178,9 +178,9 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
     auto protocol = package_->add(std::make_unique<Protocol>(parsedTypeName.name, package_,
                                                              theToken.position(), documentation, exported));
 
-    parseGenericParameters(protocol, TypeContext(Type(protocol, false)));
+    parseGenericParameters(protocol, TypeContext(Type(protocol)));
 
-    auto protocolType = Type(protocol, false);
+    auto protocolType = Type(protocol);
     package_->offerType(protocolType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
     ProtocolTypeBodyParser(protocolType, package_, stream_, interface_).parse();
 }
@@ -191,7 +191,7 @@ void DocumentParser::parseEnum(const std::u32string &documentation, const Token 
     Enum *enumeration = enumUniq.get();
     package_->add(std::move(enumUniq));
 
-    auto type = Type(enumeration, false);
+    auto type = Type(enumeration);
     package_->offerType(type, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
     EnumTypeBodyParser(type, package_, stream_, interface_).parse();
 }
@@ -202,13 +202,13 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
     auto eclass = package_->add(std::make_unique<Class>(parsedTypeName.name, package_, theToken.position(),
                                                         documentation, exported, final));
 
-    parseGenericParameters(eclass, TypeContext(Type(eclass, false)));
+    parseGenericParameters(eclass, TypeContext(Type(eclass)));
 
     if (!stream_.nextTokenIs(TokenType::BlockBegin)) {
-        auto classType = Type(eclass, false);  // New Type due to generic arguments now (partly) available.
+        auto classType = Type(eclass);  // New Type due to generic arguments now (partly) available.
 
         Type type = parseType(TypeContext(classType));
-        if (type.type() != TypeType::Class && !type.optional() && !type.meta()) {
+        if (type.type() != TypeType::Class) {
             throw CompilerError(parsedTypeName.position, "The superclass must be a class.");
         }
         if (type.eclass()->final()) {
@@ -218,7 +218,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
         eclass->setSuperType(type);
     }
 
-    auto classType = Type(eclass, false);  // New Type due to generic arguments now available.
+    auto classType = Type(eclass);  // New Type due to generic arguments now available.
     package_->offerType(classType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
 
     auto requiredInits = eclass->superclass() != nullptr ? eclass->superclass()->requiredInitializers() : std::set<std::u32string>();
@@ -235,9 +235,9 @@ void DocumentParser::parseValueType(const std::u32string &documentation, const T
         valueType->makePrimitive();
     }
 
-    parseGenericParameters(valueType, TypeContext(Type(valueType, false)));
+    parseGenericParameters(valueType, TypeContext(Type(valueType)));
 
-    auto valueTypeContent = Type(valueType, false);
+    auto valueTypeContent = Type(valueType);
     package_->offerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
     ValueTypeBodyParser(valueTypeContent, package_, stream_, interface_).parse();
 }

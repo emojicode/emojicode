@@ -74,7 +74,7 @@ void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
     auto alloca = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(type_), nullptr, utf8(varName_));
     fg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
-    if (type_.optional()) {
+    if (type_.type() == TypeType::Optional) {
         std::vector<Value *> idx { fg->int32(0), fg->int32(0) };
         fg->builder().CreateStore(fg->generator()->optionalNoValue(), fg->builder().CreateGEP(alloca, idx));
     }

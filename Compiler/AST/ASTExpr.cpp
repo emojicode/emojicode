@@ -18,8 +18,7 @@ namespace EmojicodeCompiler {
 
 Type ASTMetaTypeInstantiation::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     analyser->validateMetability(type_, position());
-    type_.setMeta(true);
-    return type_;
+    return Type(MakeTypeAsValue, type_);
 }
 
 Type ASTSizeOf::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -44,9 +43,6 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
         }
 
         if (originalType.type() == TypeType::Someobject || originalType.type() == TypeType::Class) {
-            if (originalType.optional()) {
-                throw CompilerError(position(), "Downcast on classes with optionals not possible.");
-            }
             castType_ = CastType::ClassDowncast;
             assert(originalType.storageType() == StorageType::Simple);
         }
@@ -73,18 +69,16 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
         throw CompilerError(position(), "You cannot cast to ", typeString, ".");
     }
 
-    type.setOptional(true);
-    return type;
+    return Type(MakeOptional, type);
 }
 
 Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
-    if (!t.optional()) {
+    if (t.type() != TypeType::Optional) {
         throw CompilerError(position(), "Condition assignment can only be used with optionals.");
     }
 
-    t.setReference(false);
-    t.setOptional(false);
+    t = t.optionalType();
 
     auto &variable = analyser->scoper().currentScope().declareVariable(varName_, t, true, position());
     variable.initialize();
@@ -95,10 +89,6 @@ Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExp
 
 Type ASTTypeMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(callee_, expectation);
-
-    if (type.optional()) {
-        analyser->compiler()->warn(position(), "You cannot call optionals on 🍬.");
-    }
 
     Function *method;
     if (type.type() == TypeType::Class) {
@@ -132,9 +122,9 @@ Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expect
         throw CompilerError(position(), "Class has no superclass.");
     }
 
-    Function *method = superclass->getMethod(name_, Type(superclass, false), analyser->typeContext(),
+    Function *method = superclass->getMethod(name_, Type(superclass), analyser->typeContext(),
                                              args_.isImperative(), position());
-    calleeType_ = Type(superclass, false);
+    calleeType_ = Type(superclass);
     return analyser->analyseFunctionCall(&args_, calleeType_, method);
 }
 
@@ -154,9 +144,9 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
 
     init_ = true;
     Class *eclass = analyser->typeContext().calleeType().eclass();
-    auto initializer = eclass->superclass()->getInitializer(name_, Type(eclass, false),
+    auto initializer = eclass->superclass()->getInitializer(name_, Type(eclass),
                                                             analyser->typeContext(), position());
-    calleeType_ = Type(eclass->superclass(), false);
+    calleeType_ = Type(eclass->superclass());
     analyser->analyseFunctionCall(&args_, calleeType_, initializer);
 
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);

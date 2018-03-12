@@ -75,12 +75,7 @@ Type AbstractParser::parseType(const TypeContext &typeContext) {
 
 Type AbstractParser::parseMetatype(const TypeContext &typeContext) {
     auto token = stream_.consumeToken();
-    Type type = parseType(typeContext);
-    if (!type.allowsMetaType() || type.meta()) {
-        throw CompilerError(token.position(), "Meta type of ", type.toString(typeContext), " is restricted.");
-    }
-    type.setMeta(true);
-    return type;
+    return Type(MakeTypeAsValue, parseType(typeContext));
 }
 
 Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext) {
@@ -98,10 +93,10 @@ Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext
 
 Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeContext) {
     auto bentoToken = stream_.consumeToken(TokenType::Identifier);
-    Type type = Type(TypeType::MultiProtocol, optional);
+    Type type = Type(TypeType::MultiProtocol);
     while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
         auto protocolType = parseType(typeContext);
-        if (protocolType.type() != TypeType::Protocol || protocolType.optional() || protocolType.meta()) {
+        if (protocolType.type() != TypeType::Protocol) {
             throw CompilerError(bentoToken.position(), "🍱 may only consist of non-optional protocol types.");
         }
         type.genericArguments_.push_back(protocolType);
@@ -111,11 +106,14 @@ Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeCo
     }
     type.sortMultiProtocolType();
     stream_.consumeToken(TokenType::Identifier);
+    if (optional) {
+        return Type(MakeOptional, type);
+    }
     return type;
 }
 
 Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeContext) {
-    Type t = Type::callableIncomplete(optional);
+    Type t = Type::callableIncomplete();
     t.genericArguments_.push_back(Type::noReturn());
 
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd) &&
@@ -128,7 +126,7 @@ Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeCon
     }
 
     stream_.consumeToken(TokenType::BlockEnd);
-    return t;
+    return optional ? Type(MakeOptional, t) : t;
 }
 
 Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &typeContext) {
@@ -148,7 +146,7 @@ Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &type
 
 Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, const SourcePosition &p) {
     auto errorType = parseType(typeContext);
-    if (errorType.type() != TypeType::Enum || errorType.optional() || errorType.meta()) {
+    if (errorType.type() != TypeType::Enum) {
         throw CompilerError(p, "Error type must be a non-optional 🦃.");
     }
     return errorType;
