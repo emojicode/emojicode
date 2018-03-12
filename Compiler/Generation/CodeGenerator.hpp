@@ -49,7 +49,7 @@ public:
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();
 
-    llvm::GlobalVariable* valueTypeMetaFor(const Type &type);
+    llvm::Constant * valueTypeMetaFor(const Type &type);
 private:
     Package *const package_;
     llvm::LLVMContext context_;

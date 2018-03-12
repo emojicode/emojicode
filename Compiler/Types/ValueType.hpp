@@ -35,14 +35,10 @@ public:
         TypeDefinition::addInstanceVariable(declaration);
     }
 
-    llvm::GlobalVariable* valueTypeMetaFor(const std::vector<Type> &genericArguments);
-    void addValueTypeMetaFor(const std::vector<Type> &genericArguments, llvm::GlobalVariable *valueTypeMeta);
-
     void makePrimitive() { primitive_ = true; }
     bool isPrimitive() { return primitive_; }
 private:
     bool primitive_ = false;
-    std::map<std::vector<Type>, llvm::GlobalVariable*> valueTypeMetas_;
 };
 
 }  // namespace EmojicodeCompiler

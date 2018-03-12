@@ -44,24 +44,12 @@ llvm::Value* CodeGenerator::optionalNoValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 0);
 }
 
-llvm::GlobalVariable* CodeGenerator::valueTypeMetaFor(const Type &type) {
+llvm::Constant * CodeGenerator::valueTypeMetaFor(const Type &type) {
     if (type.type() == TypeType::Class) {
         return declarator_.classValueTypeMeta();
     }
 
-    if (auto meta = type.valueType()->valueTypeMetaFor(type.genericArguments())) {
-        return meta;
-    }
-
-    auto valueType = type.valueType();
-
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.valueTypeMeta(), llvm::ConstantPointerNull::get(
-            typeHelper_.protocolConformance()->getPointerTo()));
-    auto meta = new llvm::GlobalVariable(*module(), typeHelper_.valueTypeMeta(), true,
-                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
-                                         mangleValueTypeMetaName(type));
-    valueType->addValueTypeMetaFor(type.genericArguments(), meta);
-    return meta;
+    return llvm::ConstantAggregateZero::get(typeHelper_.valueTypeMeta());
 }
 
 void CodeGenerator::generate(const std::string &outPath) {

@@ -23,10 +23,7 @@ Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
     if (type_.type() == TypeType::Class) {
         return type_.eclass()->classMeta();
     }
-    if (type_.type() == TypeType::ValueType || type_.type() == TypeType::Enum) {
-        return type_.valueType()->valueTypeMetaFor(type_.genericArguments());
-    }
-    throw std::logic_error("Unimplemented");
+    return fg->generator()->valueTypeMetaFor(type_);
 }
     
 Value* ASTThisType::generate(FunctionCodeGenerator *fg) const {
