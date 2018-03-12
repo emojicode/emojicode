@@ -51,8 +51,6 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
 
 llvm::Value* FunctionCodeGenerator::sizeOfReferencedType(llvm::PointerType *ptrType) {
     auto one = llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1);
-    ptrType->print(llvm::outs(), true);
-    llvm::outs() << "\n";
     auto sizeg = builder().CreateGEP(llvm::ConstantPointerNull::getNullValue(ptrType), one);
     return builder().CreatePtrToInt(sizeg, llvm::Type::getInt64Ty(generator()->context()));
 }
