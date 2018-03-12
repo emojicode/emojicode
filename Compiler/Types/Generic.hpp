@@ -85,7 +85,9 @@ public:
     }
 
     Entity& reificationFor(const std::vector<Type> &arguments) {
-        return reifications_.find(arguments)->second.entity;
+        auto ref = reifications_.find(arguments);
+        assert(ref != reifications_.end());
+        return ref->second.entity;
     }
     /// @returns Any reification of this instance.
     /// @note This method is intended to be used when there is only ever one possible reification of an instance.
