@@ -123,7 +123,7 @@ def compilation_test(name):
 def reject_test(filename):
     completed = run([emojicodec, filename], stderr=PIPE)
     output = completed.stderr.decode('utf-8')
-    if completed.returncode == 0 or len(re.findall(r"(^|\n)🚨", output)) != 1:
+    if completed.returncode != 1 or len(re.findall(r"(^|\n)🚨", output)) != 1:
         print(output)
         fail_test(filename)
 
@@ -146,8 +146,8 @@ for test in compilation_tests:
 # included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
 # os.rename(included + '_original', included)
 
-# for test in reject_tests:
-#     reject_test(test)
+for test in reject_tests:
+    reject_test(test)
 os.chdir(os.path.join(dist.source, "tests", "s"))
 for test in library_tests:
     library_test(test)

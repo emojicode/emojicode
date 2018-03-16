@@ -350,9 +350,6 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
     return false;
 }
 
-
-// MARK: Storage
-
 StorageType Type::storageType() const {
     if (forceBox_ || requiresBox()) {
         return StorageType::Box;
@@ -391,6 +388,7 @@ bool Type::isReferencable() const {
         case TypeType::TypeAsValue:
             return storageType() != StorageType::Simple;
         case TypeType::NoReturn:
+        case TypeType::Optional:  // only reached in case of error, CompilerError will be/was raised
             return false;
         case TypeType::ValueType:
         case TypeType::Enum:
@@ -399,14 +397,11 @@ bool Type::isReferencable() const {
         case TypeType::Something:
         case TypeType::Error:
             return true;
-        case TypeType::Optional:
         case TypeType::StorageExpectation:
         case TypeType::Extension:
             throw std::logic_error("isReferenceWorthy for StorageExpectation/Extension");
     }
 }
-
-// MARK: Type Visulisation
 
 std::string Type::typePackage() const {
     switch (this->type()) {

@@ -26,11 +26,15 @@ void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, Functio
 Type ASTGetVariable::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto var = analyser->scoper().getVariable(name(), position());
     setVariableAccess(var, analyser);
+    var.variable.uninitalizedError(position());
     return var.variable.type();
 }
 
 void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
     auto &var = analyser->scoper().currentScope().declareVariable(varName_, type_, false, position());
+    if (type_.type() == TypeType::Optional) {
+        var.initialize();
+    }
     id_ = var.id();
 }
 
@@ -44,10 +48,10 @@ void ASTVariableAssignmentDecl::analyse(FunctionAnalyser *analyser) {
         }
 
         setVariableAccess(rvar, analyser);
+        analyser->expectType(rvar.variable.type(), &expr_);
+
         rvar.variable.initialize();
         rvar.variable.mutate(position());
-
-        analyser->expectType(rvar.variable.type(), &expr_);
     }
     catch (VariableNotFoundError &vne) {
         // Not declared, declaring as local variable

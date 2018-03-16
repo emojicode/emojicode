@@ -17,23 +17,23 @@
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTVariables.hpp"
+#include "Package/Package.hpp"
+#include "Compiler.hpp"
 #include "FunctionParser.hpp"
 
 namespace EmojicodeCompiler {
 
 std::shared_ptr<ASTBlock> FunctionParser::parse() {
-    auto block = std::make_shared<ASTBlock>(SourcePosition(0, 0, ""));
-    while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
-        block->appendNode(parseStatement());
-    }
-    stream_.consumeToken();
-    return block;
+    return std::make_shared<ASTBlock>(parseBlockToEnd(SourcePosition(0, 0, "")));
 }
 
 ASTBlock FunctionParser::parseBlock() {
     auto token = stream_.consumeToken(TokenType::BlockBegin);
+    return parseBlockToEnd(token.position());
+}
 
-    auto block = ASTBlock(token.position());
+ASTBlock FunctionParser::parseBlockToEnd(SourcePosition pos) {
+    auto block = ASTBlock(SourcePosition(0, 0, ""));
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
         block.appendNode(parseStatement());
     }
@@ -69,7 +69,18 @@ void FunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePos
 }
 
 std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
-    const Token &token = stream_.consumeToken();
+    const Token token = stream_.consumeToken();
+    try {
+        return handleStatementToken(token);
+    }
+    catch (CompilerError &e) {
+        package_->compiler()->error(e);
+        recover();
+    }
+    return std::make_shared<ASTBlock>(token.position());
+}
+
+std::shared_ptr<ASTStatement> FunctionParser::handleStatementToken(const Token &token) {
     switch (token.type()) {
         case TokenType::Declaration: {
             auto varName = stream_.consumeToken(TokenType::Variable);
@@ -105,6 +116,16 @@ std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
         default:
             // None of the TokenTypes that begin a statement were detected so this must be an expression
             return std::make_shared<ASTExprStatement>(parseExprTokens(token, 0), token.position());
+    }
+}
+
+void FunctionParser::recover() {
+    size_t blockLevel = 0;
+    while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd) || blockLevel-- > 0) {
+        auto token = stream_.consumeToken();
+        if (token.type() == TokenType::BlockBegin) {
+            blockLevel++;
+        }
     }
 }
 
@@ -208,8 +229,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             return parseExprIdentifier(token);
         case TokenType::GroupBegin:
             return parseGroup();
-        case TokenType::DocumentationComment:
-            throw CompilerError(token.position(), "Misplaced documentation comment.");
         case TokenType::BlockBegin:
             return parseClosure(token);
         case TokenType::New:

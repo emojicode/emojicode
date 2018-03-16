@@ -25,7 +25,8 @@ class ASTBinaryOperator;
 
 class FunctionParser : protected AbstractParser {
 public:
-    FunctionParser(Package *pkg, TokenStream &stream, TypeContext context) : AbstractParser(pkg, stream), typeContext_(std::move(context)) {}
+    FunctionParser(Package *pkg, TokenStream &stream, TypeContext context)
+            : AbstractParser(pkg, stream), typeContext_(std::move(context)) {}
     std::shared_ptr<ASTBlock> parse();
 protected:
     virtual void parseMainArguments(ASTArguments *arguments, const SourcePosition &position);
@@ -71,6 +72,14 @@ private:
     }
 
     int peakOperatorPrecedence();
+
+    ASTBlock parseBlockToEnd(SourcePosition pos);
+
+    /// Tries to recover from a syntax error by consuming all tokens up to a synchronization token. Must only be used
+    /// at statement level.
+    void recover();
+
+    std::shared_ptr<ASTStatement> handleStatementToken(const Token &token);
 };
 
 }  // namespace EmojicodeCompiler

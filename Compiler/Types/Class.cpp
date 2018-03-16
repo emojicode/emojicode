@@ -55,12 +55,12 @@ void Class::inherit(SemanticAnalyser *analyser) {
         protocols_.emplace_back(protocol);
     }
 
-    eachFunction([this](Function *function) {
+    eachFunction([this, analyser](Function *function) {
         if (function->functionType() == FunctionType::ObjectInitializer) {
             checkInheritedRequiredInit(dynamic_cast<Initializer *>(function));
         }
         else {
-            checkOverride(function, nullptr);
+            checkOverride(function, analyser);
         }
     });
 }

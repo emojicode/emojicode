@@ -22,7 +22,7 @@ void ASTIf::analyse(FunctionAnalyser *analyser) {
         analyser->expectType(analyser->boolean(), &conditions_[i]);
         blocks_[i].analyse(analyser);
         analyser->scoper().popScope(analyser->compiler());
-        analyser->pathAnalyser().beginBranch();
+        analyser->pathAnalyser().endBranch();
     }
 
     if (hasElse()) {

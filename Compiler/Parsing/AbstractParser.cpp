@@ -14,7 +14,7 @@
 #include "Package/Package.hpp"
 #include "Parsing/CompatibleFunctionParser.hpp"
 #include "Types/Protocol.hpp"
-#include "Types/TypeContext.hpp"
+#include "Compiler.hpp"
 #include <map>
 #include <vector>
 
@@ -97,7 +97,9 @@ Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeCo
     while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
         auto protocolType = parseType(typeContext);
         if (protocolType.type() != TypeType::Protocol) {
-            throw CompilerError(bentoToken.position(), "🍱 may only consist of non-optional protocol types.");
+            package_->compiler()->error(CompilerError(bentoToken.position(),
+                                                      "🍱 may only consist of non-optional protocol types."));
+            continue;
         }
         type.genericArguments_.push_back(protocolType);
     }

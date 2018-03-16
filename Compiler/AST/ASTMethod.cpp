@@ -60,7 +60,7 @@ void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_
             analyser->compiler()->error(CompilerError(position(), utf8(method->name()),
                                                       " was marked 🖍 but callee is not mutable."));
         }
-        if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee)) {
+        else if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee)) {
             analyser->scoper().currentScope().getLocalVariable(varNode->name()).mutate(position());
         }
     }

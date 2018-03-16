@@ -141,7 +141,7 @@ void TypeDefinition::addInstanceVariable(const InstanceVariableDeclaration &vari
 }
 
 void TypeDefinition::handleRequiredInitializer(Initializer *init) {
-    throw CompilerError(init->position(), "Required initializer not supported.");
+
 }
 
 void TypeDefinition::eachFunction(const std::function<void (Function *)>& cb) const {
