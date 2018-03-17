@@ -139,13 +139,13 @@ void DocumentParser::parseInclude(const SourcePosition &p) {
 }
 
 void DocumentParser::parseVersion(const Documentation &documentation, const SourcePosition &p) {
+    auto major = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
+    auto minor = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
+
     if (package_->validVersion()) {
         package_->compiler()->error(CompilerError(p, "Package version already declared."));
         return;
     }
-
-    auto major = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
-    auto minor = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
 
     package_->setPackageVersion(PackageVersion(major, minor));
     if (!package_->validVersion()) {
