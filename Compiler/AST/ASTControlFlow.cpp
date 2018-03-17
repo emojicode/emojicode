@@ -86,7 +86,7 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 void ASTForIn::analyse(FunctionAnalyser *analyser) {
     analyser->scoper().pushScope();
 
-    auto iterateeType = Type(analyser->compiler()->sEnumeratable);
+    auto iterateeType = Type(analyser->compiler()->sEnumerable);
     iterateeType.setReference();
     Type iteratee = analyser->expectType(iterateeType, &iteratee_);
 
@@ -96,7 +96,7 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
         throw CompilerError(position(), iterateeString, " does not conform to s🔂.");
     }
 
-    iteratee_->setExpressionType(Type(analyser->compiler()->sEnumeratable));
+    iteratee_->setExpressionType(Type(analyser->compiler()->sEnumerable));
 
     analyser->pathAnalyser().beginBranch();
     auto &elVar = analyser->scoper().currentScope().declareVariable(varName_, elementType_, true, position());
@@ -112,8 +112,8 @@ bool EmojicodeCompiler::ASTForIn::typeIsEnumerable(FunctionAnalyser *analyser, T
     if (type.type() == TypeType::Class) {
         for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
-                if (protocol.protocol() == analyser->compiler()->sEnumeratable) {
-                    auto itemType = Type(0, analyser->compiler()->sEnumeratable, true);
+                if (protocol.protocol() == analyser->compiler()->sEnumerable) {
+                    auto itemType = Type(0, analyser->compiler()->sEnumerable, true);
                     *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
                     return true;
                 }
@@ -122,14 +122,14 @@ bool EmojicodeCompiler::ASTForIn::typeIsEnumerable(FunctionAnalyser *analyser, T
     }
     else if (type.canHaveProtocol()) {
         for (auto &protocol : type.typeDefinition()->protocols()) {
-            if (protocol.protocol() == analyser->compiler()->sEnumeratable) {
-                auto itemType = Type(0, analyser->compiler()->sEnumeratable, true);
+            if (protocol.protocol() == analyser->compiler()->sEnumerable) {
+                auto itemType = Type(0, analyser->compiler()->sEnumerable, true);
                 *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
                 return true;
             }
         }
     }
-    else if (type.type() == TypeType::Protocol && type.protocol() == analyser->compiler()->sEnumeratable) {
+    else if (type.type() == TypeType::Protocol && type.protocol() == analyser->compiler()->sEnumerable) {
         *elementType = Type(0, type.protocol(), true).resolveOn(TypeContext(type));
         return true;
     }

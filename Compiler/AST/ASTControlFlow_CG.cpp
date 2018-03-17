@@ -107,8 +107,9 @@ void ASTForIn::generate(FunctionCodeGenerator *fg) const {
     auto iteratorType = Type(fg->compiler()->sEnumerator);
 
     fg->builder().SetInsertPoint(whileCondBlock);
-    auto cont = callg.generate(iteratorPtr, iteratorType, ASTArguments(position()),
-                               std::u32string(1, E_RED_QUESTION_MARK));
+    auto args = ASTArguments(position());
+    args.setImperative(false);
+    auto cont = callg.generate(iteratorPtr, iteratorType, args, std::u32string(1, 0x1F53D));
     fg->builder().CreateCondBr(cont, repeatBlock, afterBlock);
 
     fg->builder().SetInsertPoint(repeatBlock);

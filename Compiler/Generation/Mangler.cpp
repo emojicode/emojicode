@@ -42,6 +42,9 @@ void mangleTypeName(std::stringstream &stream, const Type &type) {
         case TypeType::Enum:
             stream << "enum_";
             break;
+        case TypeType::Protocol:
+            stream << "protocol_";
+            break;
         default:
             stream << "ty_";
             break;
@@ -97,6 +100,14 @@ std::string mangleFunction(Function *function, const std::map<size_t, Type> &gen
 std::string mangleTypeName(const Type &type) {
     std::stringstream stream;
     mangleTypeName(stream, type);
+    return stream.str();
+}
+
+std::string mangleProtocolConformance(const Type &type, const Type &protocol) {
+    std::stringstream stream;
+    mangleTypeName(stream, type);
+    stream << "_conformance_";
+    mangleTypeName(stream, protocol);
     return stream.str();
 }
 

@@ -100,7 +100,7 @@ public:
     Class *sData = nullptr;
     Class *sDictionary = nullptr;
     Protocol *sEnumerator = nullptr;
-    Protocol *sEnumeratable = nullptr;
+    Protocol *sEnumerable = nullptr;
     ValueType *sBoolean = nullptr;
     ValueType *sSymbol = nullptr;
     ValueType *sInteger = nullptr;

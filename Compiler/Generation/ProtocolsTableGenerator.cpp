@@ -15,39 +15,60 @@
 
 namespace EmojicodeCompiler {
 
-void ProtocolsTableGenerator::createProtocolsTable(TypeDefinition *typeDef) {
+void ProtocolsTableGenerator::createProtocolsTable(const Type &type) {
     std::map<Type, llvm::Constant *> tables;
 
-    for (auto &protocol : typeDef->protocols()) {
-        tables.emplace(protocol, createVirtualTable(typeDef, protocol.protocol()));
+    for (auto &protocol : type.typeDefinition()->protocols()) {
+        tables.emplace(protocol, createVirtualTable(type, protocol));
     }
 
-    typeDef->setProtocolTables(std::move(tables));
+    type.typeDefinition()->setProtocolTables(std::move(tables));
 }
 
-llvm::GlobalVariable *ProtocolsTableGenerator::createVirtualTable(TypeDefinition *typeDef, Protocol *protocol) {
-    auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_), protocol->methodList().size());
+void ProtocolsTableGenerator::declareImportedProtocolsTable(const Type &type) {
+    std::map<Type, llvm::Constant *> tables;
+
+    for (auto &protocol : type.typeDefinition()->protocols()) {
+        tables.emplace(protocol, getConformanceVariable(type, protocol, nullptr));
+    }
+
+    type.typeDefinition()->setProtocolTables(std::move(tables));
+}
+
+llvm::GlobalVariable *ProtocolsTableGenerator::createVirtualTable(const Type &type, const Type &protocol) {
+    auto typeDef = type.typeDefinition();
+    auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_), protocol.protocol()->methodList().size());
 
     std::vector<llvm::Constant *> virtualTable;
-    virtualTable.resize(protocol->methodList().size());
+    virtualTable.resize(protocol.protocol()->methodList().size());
 
-    for (auto protocolMethod : protocol->methodList()) {
+    for (auto protocolMethod : protocol.protocol()->methodList()) {
         for (auto reification : protocolMethod->reificationMap()) {
-            auto implFunction = typeDef->lookupMethod(protocolMethod->name(), protocolMethod->isImperative());
+            auto implFunction = typeDef->lookupMethod(protocolMethod->protocolBoxingLayerName(protocol.protocol()->name()),
+                                                      protocolMethod->isImperative());
+            if (implFunction == nullptr) {
+                implFunction = typeDef->lookupMethod(protocolMethod->name(), protocolMethod->isImperative());
+            }
             auto implReif = implFunction->reificationFor(reification.first).function;
             assert(implReif != nullptr);
             virtualTable[reification.second.entity.vti()] = implReif;
         }
     }
 
-    auto array = llvm::ConstantArray::get(type, virtualTable);
-    auto arrayVar = new llvm::GlobalVariable(module_, type, true, llvm::GlobalValue::LinkageTypes::InternalLinkage,
+    auto array = llvm::ConstantArray::get(arrayType, virtualTable);
+    auto arrayVar = new llvm::GlobalVariable(module_, arrayType, true, llvm::GlobalValue::LinkageTypes::InternalLinkage,
                                              array);
     auto load = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context_),
                                        dynamic_cast<Class *>(typeDef) != nullptr ? 1 : 0);
     auto conformance = llvm::ConstantStruct::get(typeHelper_.protocolConformance(), {load, arrayVar});
+    return getConformanceVariable(type, protocol, conformance);
+}
+
+llvm::GlobalVariable *ProtocolsTableGenerator::getConformanceVariable(const Type &type, const Type &protocol,
+                                                                      llvm::Constant *conformance) const {
     return new llvm::GlobalVariable(module_, typeHelper_.protocolConformance(), true,
-                                    llvm::GlobalValue::LinkageTypes::InternalLinkage, conformance);
+                                    llvm::GlobalValue::ExternalLinkage, conformance,
+                                    mangleProtocolConformance(type, protocol));
 }
 
 }  // namespace EmojicodeCompiler

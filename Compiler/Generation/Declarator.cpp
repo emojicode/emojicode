@@ -7,8 +7,10 @@
 #include "Generation/ReificationContext.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Mangler.hpp"
+#include "ProtocolsTableGenerator.hpp"
 #include "Package/Package.hpp"
 #include "Types/ValueType.hpp"
+#include "Types/Protocol.hpp"
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/GlobalValue.h>
@@ -49,10 +51,25 @@ void Declarator::declareImportedClassMeta(Class *klass) {
 }
 
 void Declarator::declareImportedPackageSymbols(Package *package) {
+    auto ptg = ProtocolsTableGenerator(context_, module_, typeHelper_);
     for (auto &valueType : package->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
         });
+        ptg.declareImportedProtocolsTable(Type(valueType.get()));
+    }
+    for (auto &protocol : package->protocols()) {
+        size_t tableIndex = 0;
+        for (auto function : protocol->methodList()) {
+            function->createUnspecificReification();
+            function->eachReification([this, function, &tableIndex](auto &reification) {
+                auto context = ReificationContext(*function, reification);
+                typeHelper_.setReificationContext(&context);
+                reification.entity.setFunctionType(typeHelper_.functionTypeFor(function));
+                reification.entity.setVti(tableIndex++);
+                typeHelper_.setReificationContext(nullptr);
+            });
+        }
     }
     for (auto &klass : package->classes()) {
         size_t vti = 0;
@@ -63,6 +80,7 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
             });
             declareLlvmFunction(function);
         });
+        ptg.declareImportedProtocolsTable(Type(klass.get()));
         declareImportedClassMeta(klass.get());
     }
     for (auto &function : package->functions()) {

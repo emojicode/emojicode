@@ -24,6 +24,7 @@ std::string mangleFunction(Function *function, const std::map<size_t, Type> &gen
 std::string mangleTypeName(const Type &type);
 std::string mangleClassMetaName(Class *klass);
 std::string mangleValueTypeMetaName(const Type &type);
+std::string mangleProtocolConformance(const Type &type, const Type &protocol);
 
 }  // namespace EmojicodeCompiler
 

@@ -73,11 +73,7 @@ llvm::Value* FunctionCodeGenerator::getHasNoValueBoxPtr(llvm::Value *box) {
 }
 
 Value* FunctionCodeGenerator::getMetaTypePtr(Value *box) {
-    std::vector<Value *> idx{
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
-    };
-    return builder().CreateGEP(box, idx);
+    return builder().CreateConstGEP2_32(typeHelper().box(), box, 0, 0);
 }
 
 llvm::Value* FunctionCodeGenerator::getHasNoValueBox(llvm::Value *box) {

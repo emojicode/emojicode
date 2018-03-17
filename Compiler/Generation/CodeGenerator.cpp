@@ -36,20 +36,16 @@ CodeGenerator::CodeGenerator(Package *package) : package_(package),
                                                  declarator_(context_, *module_, typeHelper_),
                                                  protocolsTableGenerator_(context_, *module_, typeHelper_) {}
 
-llvm::Value* CodeGenerator::optionalValue() {
+llvm::Value *CodeGenerator::optionalValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 1);
 }
 
-llvm::Value* CodeGenerator::optionalNoValue() {
+llvm::Value *CodeGenerator::optionalNoValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 0);
 }
 
-llvm::Constant * CodeGenerator::valueTypeMetaFor(const Type &type) {
-    if (type.type() == TypeType::Class) {
-        return declarator_.classValueTypeMeta();
-    }
-
-    return llvm::ConstantAggregateZero::get(typeHelper_.valueTypeMeta());
+llvm::Constant *CodeGenerator::valueTypeMetaFor(const Type &type) {
+    return declarator_.classValueTypeMeta();
 }
 
 void CodeGenerator::generate(const std::string &outPath) {
@@ -67,7 +63,7 @@ void CodeGenerator::generate(const std::string &outPath) {
             }
             declarator_.declareLlvmFunction(function);
         });
-        protocolsTableGenerator_.createProtocolsTable(valueType.get());
+        protocolsTableGenerator_.createProtocolsTable(Type(valueType.get()));
     }
     for (auto &klass : package_->classes()) {
         klass->eachFunction([this](auto *function) {
@@ -75,7 +71,7 @@ void CodeGenerator::generate(const std::string &outPath) {
             declarator_.declareLlvmFunction(function);
         });
 
-        protocolsTableGenerator_.createProtocolsTable(klass.get());
+        protocolsTableGenerator_.createProtocolsTable(Type(klass.get()));
         createClassInfo(klass.get());
     }
     for (auto &function : package_->functions()) {
@@ -126,6 +122,7 @@ void CodeGenerator::createProtocolFunctionTypes(Protocol *protocol) {
             typeHelper().setReificationContext(&context);
             reification.entity.setFunctionType(typeHelper().functionTypeFor(function));
             reification.entity.setVti(tableIndex++);
+            typeHelper().setReificationContext(nullptr);
         });
     }
 }
@@ -150,7 +147,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
                                                  llvm::GlobalValue::LinkageTypes::InternalLinkage,
                                                  llvm::ConstantArray::get(type, functions));
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
-        llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable
+            llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable
     });
     auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
@@ -188,7 +185,7 @@ void CodeGenerator::emit(const std::string &outPath) {
     std::error_code errorCode;
     llvm::raw_fd_ostream dest(outPath, errorCode, llvm::sys::fs::F_None);
     if (targetMachine->addPassesToEmitFile(pass, dest, fileType)) {
-        puts( "TargetMachine can't emit a file of this type" );
+        puts("TargetMachine can't emit a file of this type");
     }
     pass.run(*module());
     dest.flush();

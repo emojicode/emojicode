@@ -180,7 +180,7 @@ void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
     sDictionary = getStandardClass(std::u32string(1, 0x1F36F), s, errorPosition);
 
     sEnumerator = getStandardProtocol(std::u32string(1, 0x1F361), s, errorPosition);
-    sEnumeratable = getStandardProtocol(std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
+    sEnumerable = getStandardProtocol(std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
 }
 
 void Compiler::loadMigrationFile(const std::string &file) {
