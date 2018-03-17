@@ -74,7 +74,8 @@ library_tests = [
     "primitives",
     "mathTest",
     "rangeTest",
-    # "stringTest", "dataTest", "systemTest",
+    # "stringTest", "dataTest",
+    "systemTest",
     "listTest",
     # "enumerator",  "dictionaryTest",
     # "jsonTest", "fileTest"
@@ -149,6 +150,7 @@ for test in compilation_tests:
 for test in reject_tests:
     reject_test(test)
 os.chdir(os.path.join(dist.source, "tests", "s"))
+os.environ["TEST_ENV_1"] = "The day starts like the rest I've seen"
 for test in library_tests:
     library_test(test)
 

@@ -19,6 +19,8 @@ namespace runtime {
 
 using Integer = int64_t;
 using Symbol = uint32_t;
+using Boolean = int8_t;
+using ClassType = void*;
 
 template <typename T>
 inline T* allocate(int64_t n = 1) {
@@ -52,6 +54,19 @@ protected:
     Object() = default;
 private:
     void *meta_;
+};
+
+struct NoValue_t {};
+constexpr NoValue_t NoValue {};
+
+template <typename Type>
+class SimpleOptional {
+public:
+    SimpleOptional(NoValue_t) : value_(0) {}
+    SimpleOptional(Type content) : value_(1), content_(content) {}
+private:
+    Boolean value_;
+    Type content_;
 };
 
 #define OBJECT_META_NAME(package, emojitypename) package ## _class_meta_ ## emojitypename

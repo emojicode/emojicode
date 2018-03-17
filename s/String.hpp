@@ -23,9 +23,11 @@ public:
 
     const char* cString();
     int compare(String *other);
+
+    static String* fromCString(const char *string);
 };
 
-}
+}  // namespace s
 
 SET_META_FOR(s::String, s, 1f521)
 

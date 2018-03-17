@@ -24,6 +24,22 @@ const char* String::cString() {
     return utf8str;
 }
 
+String* String::fromCString(const char *cstring) {
+    auto len = u8_strlen(cstring);
+
+    auto *string = String::allocateAndInitType();
+    string->count = len;
+
+    if (len == 0) {
+        return string;
+    }
+
+    string->characters = runtime::allocate<String::Character>(string->count);
+    u8_toucs(string->characters, string->count, cstring, strlen(cstring));
+
+    return string;
+}
+
 int String::compare(String *other) {
     if (count != other->count) {
         return count > other->count ? 1 : -1;

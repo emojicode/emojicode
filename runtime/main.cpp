@@ -11,6 +11,9 @@
 #include <cstring>
 #include "Runtime.h"
 
+int argc;
+char **argv;
+
 extern "C" runtime::Integer fn_1f3c1();
 
 extern "C" int ejcRunTimeClassValueTypeMeta = 0;
@@ -38,7 +41,10 @@ extern "C" void ejcErrNoValue(int64_t line, runtime::Integer character) {
     abort();
 }
 
-int main(int argc, char **argv) {
+int main(int largc, char **largv) {
+    argc = largc;
+    argv = largv;
+
     auto code = fn_1f3c1();
     return static_cast<int>(code);
 }
