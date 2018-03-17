@@ -35,6 +35,10 @@ extern "C" void ejcMemorySet(int8_t **self, runtime::Integer value, runtime::Int
     memset(*self + offset, value, bytes);
 }
 
+extern "C" runtime::Integer ejcMemoryCompare(int8_t **self, int8_t *other, runtime::Integer bytes) {
+    return std::memcmp(*self, other, bytes);
+}
+
 extern "C" void ejcErrNoValue(int64_t line, runtime::Integer character) {
     printf("💣 Fatal Error: Unwrapped an optional that contained no value. (line %" PRId64 ", character %"
            PRId64 ")\n", line, character);
