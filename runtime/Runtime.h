@@ -58,6 +58,10 @@ private:
     void *meta_;
 };
 
+#define OBJECT_META_NAME(package, emojitypename) package ## _class_meta_ ## emojitypename
+#define SET_META_FOR(type, package, emojitypename) extern "C" char OBJECT_META_NAME(package, emojitypename)[]; \
+template<> struct runtime::Meta<type> { constexpr static void *const value = &OBJECT_META_NAME(package, emojitypename); };
+
 struct NoValue_t {};
 constexpr NoValue_t NoValue {};
 
@@ -71,9 +75,16 @@ private:
     Type content_;
 };
 
-#define OBJECT_META_NAME(package, emojitypename) package ## _class_meta_ ## emojitypename
-#define SET_META_FOR(type, package, emojitypename) extern "C" char OBJECT_META_NAME(package, emojitypename)[]; \
-template<> struct runtime::Meta<type> { constexpr static void *const value = &OBJECT_META_NAME(package, emojitypename); };
+template <typename Return, typename ...Args>
+class Callable {
+public:
+    Return operator ()(Args... args) const {
+        return function_(catpures_, args...);
+    }
+private:
+    Return (*function_)(void*, Args...);
+    void *catpures_;
+};
 
 }
 

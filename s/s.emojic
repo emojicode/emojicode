@@ -287,50 +287,5 @@
 👴 🍉
 
 📜 🔤system.emojic🔤
-
-👴 📗
-👴   Represents an execution thread of the program.
-👴 📗
-👴 🌍 🐇 💈 🍇
-👴   📗
-👴     Creates an new thread and calls the given callable `callable` on the newly
-👴     created thread.
-👴   📗
-👴   🆕 callable 🍇🍉 📻 8
-👴   📗
-👴     Blocks the calling thread until this thread has finished work.
-👴   📗
-👴   ❗️ 🛂 📻 11
-👴   📗
-👴     Suspends the calling thread from execution for at least the number of
-👴     microseconds specified by the argument *microseconds*.
-👴   📗
-👴   🐇❗️ ⏲ microseconds 🔢 📻 10
-👴 🍉
-
-👴 📗
-👴   🔐 represents a mutex. A mutex is a simple semaphore that can be used to
-👴   coordinate access to shared data from multiple concurrent threads.
-👴 📗
-👴 🌍 🐇 🔐 🍇
-👴   📗
-👴     Creates an new mutex.
-👴   📗
-👴   🆕 📻 12
-👴   📗
-👴     Attempts to lock the mutex and waits until it becomes available if it is
-👴     already locked.
-👴   📗
-👴   ❗️ 🔒 📻 13
-👴   📗
-👴     Unlocks the mutex.
-👴   📗
-👴   ❗️ 🔓 📻 14
-👴   📗
-👴     Attempts to lock the mutex and returns immediately. Returns 👍 if the mutex
-👴     could be locked.
-👴   📗
-👴   ❗️ 🔐 ➡️ 👌 📻 15
-👴 🍉
-
+📜 🔤thread.emojic🔤
 📜 🔤prng.emojic🔤

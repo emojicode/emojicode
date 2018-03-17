@@ -1,0 +1,49 @@
+📗
+  Represents an execution thread of the program.
+📗
+🌍 📻 🐇 💈 🍇
+  📗
+    Creates an new thread and calls the given callable `callable` on the newly
+    created thread.
+  📗
+  🆕 callable 🍇🍉 📻 🔤sThreadNew🔤
+
+  📗
+    Blocks the calling thread until this thread has finished work.
+  📗
+  ❗️ 🛂 📻 🔤sThreadJoin🔤
+
+  📗
+    Suspends the calling thread from execution for at least the number of
+    microseconds specified by the argument *microseconds*.
+  📗
+  🐇❗️ ⏲ microseconds 🔢 📻 🔤sThreadDelay🔤
+🍉
+
+📗
+  🔐 represents a mutex. A mutex is a simple semaphore that can be used to
+  coordinate access to shared data from multiple concurrent threads.
+📗
+🌍 📻 🐇 🔐 🍇
+  📗
+    Creates an new mutex.
+  📗
+  🆕 📻 🔤sMutexNew🔤
+
+  📗
+    Attempts to lock the mutex and waits until it becomes available if it is
+    already locked.
+  📗
+  ❗️ 🔒 📻 🔤sMutexLock🔤
+
+  📗
+    Unlocks the mutex.
+  📗
+  ❗️ 🔓 📻 🔤sMutexUnlock🔤
+
+  📗
+    Attempts to lock the mutex and returns immediately. Returns 👍 if the mutex
+    could be locked.
+  📗
+  ❗️ 🔐 ➡️ 👌 📻 🔤sMutexTryLock🔤
+🍉
