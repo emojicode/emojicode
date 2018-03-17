@@ -461,8 +461,10 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
                 typeName(type.genericArguments_[i], typeContext, string, package);
             }
 
-            string.append("➡️");
-            typeName(type.genericArguments_[0], typeContext, string, package);
+            if (type.genericArguments().front().type() != TypeType::NoReturn) {
+                string.append("➡️");
+                typeName(type.genericArguments().front(), typeContext, string, package);
+            }
             string.append("🍉");
             return;
         case TypeType::Error:
