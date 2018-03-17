@@ -119,6 +119,11 @@ void Prettyprinter::printTypeDef(const Type &type) {
     if (typeDef->exported()) {
         stream_ << "🌍 ";
     }
+    if (auto klass = type.eclass()) {
+        if (klass->foreign()) {
+            stream_ << "📻 ";
+        }
+    }
 
     printTypeDefName(type);
 

@@ -14,24 +14,26 @@
 
 namespace EmojicodeCompiler {
 
-using PackageAttributeParser = AttributeParser<Attribute::Export, Attribute::Final>;
+using PackageAttributeParser = AttributeParser<Attribute::Export, Attribute::Final, Attribute::Foreign>;
 
 /// DocumentParser instances parse the direct output from the lexer for one source code document (one source file).
 /// parse() therefore expects $document-statement$s.
 class DocumentParser : AbstractParser {
 public:
     DocumentParser(Package *pkg, TokenStream stream, bool interface)
-    : AbstractParser(pkg, stream), interface_(interface) {}
+            : AbstractParser(pkg, stream_), stream_(std::move(stream)), interface_(interface) {}
     void parse();
 private:
     bool interface_;
+    TokenStream stream_;
 
     /// Parses a $type-identifier$ and ensures that a type with this name can be declared in the current package.
     /// This method is used with type declarations.
     TypeIdentifier parseAndValidateNewTypeName();
     
     /// Called if a $class$ has been detected. The first token has already been parsed.
-    void parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final);
+    void parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final,
+                    bool foreign);
     /// Called if a $enum$ has been detected. The first token has already been parsed.
     void parseEnum(const std::u32string &documentation, const Token &theToken, bool exported);
     /// Called if a $protocol$ has been detected. The first token has already been parsed.

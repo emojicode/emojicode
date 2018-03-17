@@ -37,6 +37,7 @@ llvm::Value *CallCodeGenerator::createCall(const std::vector<Value *> &args, con
                                            const std::u32string &name, bool imperative,
                                            const std::vector<Type> &genericArguments) {
     auto function = lookupFunction(type, name, imperative);
+    assert(function != nullptr);
     switch (callType_) {
         case CallType::StaticContextfreeDispatch:
         case CallType::StaticDispatch:

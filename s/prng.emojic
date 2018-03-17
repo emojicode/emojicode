@@ -1,0 +1,21 @@
+📗
+  🎰 is a pseudo-random number generator. The default implementation relies on
+  the Mersenne Twister algorithm.
+📗
+🌍 📻 🐇 🎰 🍇
+  📗
+    Creates a new generator and seeds it with a random value, if possible using
+    hardware entropy.
+  📗
+  🆕 📻 🔤sPrngNew🔤
+  📗
+    Generates an integer. Integers are uniformly distributed on the
+    closed interval `[a, b]`.
+  📗
+  ❗️ 🔢 a 🔢 b 🔢 ➡️ 🔢 📻 🔤sPrngGetInteger🔤
+  📗
+    Generates a real, where reals are uniformly distributed on the interval
+    `[0, 1)`.
+  📗
+  ❗️ 💯 ➡️ 💯 📻 🔤sPrngGetReal🔤
+🍉

@@ -59,7 +59,7 @@ void DocumentParser::parse() {
                 continue;
             case E_RABBIT:
                 parseClass(documentation.get(), theToken, attributes.has(Attribute::Export),
-                           attributes.has(Attribute::Final));
+                           attributes.has(Attribute::Final), attributes.has(Attribute::Foreign));
                 continue;
             case E_DOVE_OF_PEACE:
                 attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
@@ -196,11 +196,12 @@ void DocumentParser::parseEnum(const std::u32string &documentation, const Token 
     EnumTypeBodyParser(type, package_, stream_, interface_).parse();
 }
 
-void DocumentParser::parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final) {
+void DocumentParser::parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final,
+                                bool foreign) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
     auto eclass = package_->add(std::make_unique<Class>(parsedTypeName.name, package_, theToken.position(),
-                                                        documentation, exported, final));
+                                                        documentation, exported, final, foreign));
 
     parseGenericParameters(eclass, TypeContext(Type(eclass)));
 

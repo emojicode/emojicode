@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <new>
 #include <type_traits>
 
 extern "C" int8_t* ejcAlloc(int64_t size);
@@ -20,6 +21,7 @@ namespace runtime {
 using Integer = int64_t;
 using Symbol = uint32_t;
 using Boolean = int8_t;
+using Real = double;
 using ClassType = void*;
 
 template <typename T>
@@ -44,7 +46,7 @@ template <typename Subclass>
 class Object {
 public:
     static Subclass* allocateAndInitType() {
-        auto obj = allocate<Subclass>();
+        auto obj = new(allocate<Subclass>()) Subclass;
         static_assert(util::is_complete<Meta<Subclass>>::value,
                       "Provide the meta type for this class with SET_META_FOR.");
         obj->meta_ = Meta<Subclass>::value;

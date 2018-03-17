@@ -29,7 +29,7 @@ public:
     }
 
     void addInstanceVariable(const InstanceVariableDeclaration &declaration) override {
-        if (primitive_ && !instanceVariables().empty()) {
+        if (primitive_) {
             throw CompilerError(position(), "A value type marked with ⚪️ cannot have instance variables.");
         }
         TypeDefinition::addInstanceVariable(declaration);

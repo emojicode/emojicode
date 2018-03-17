@@ -333,24 +333,4 @@
 👴   ❗️ 🔐 ➡️ 👌 📻 15
 👴 🍉
 
-👴 📗
-👴   🎰 is a pseudo-random number generator. The default implementation relies on
-👴   the Mersenne Twister algorithm.
-👴 📗
-👴 🌍 🐇 🎰 🍇
-👴   📗
-👴     Creates a new generator and seeds it with a random value, if possible using
-👴     hardware entropy.
-👴   📗
-👴   🆕 📻 94
-👴   📗
-👴     Generates an integer. Integers are uniformly distributed on the
-👴     closed interval `[a, b]`.
-👴   📗
-👴   ❗️ 🔢 a 🔢 b 🔢 ➡️ 🔢 📻 95
-👴   📗
-👴     Generates a double, where doubles are uniformly distributed on the interval
-👴     `[0, 1)`.
-👴   📗
-👴   ❗️ 💯 ➡️ 💯 📻 96
-👴 🍉
+📜 🔤prng.emojic🔤

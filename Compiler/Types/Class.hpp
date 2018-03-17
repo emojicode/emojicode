@@ -26,7 +26,7 @@ class SemanticAnalyser;
 class Class : public TypeDefinition {
 public:
     Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool exported,
-          bool final);
+          bool final, bool foreign);
 
     /// The class's superclass.
     /// @returns TypeDefinition::superType().eclass(). Guaranteed to be @c nullptr if the class has no superclass.
@@ -45,6 +45,8 @@ public:
     bool final() const { return final_; }
     /** Whether this class is eligible for initializer inheritance. */
     bool inheritsInitializers() const { return inheritsInitializers_; }
+
+    bool foreign() const { return foreign_; }
     /** Returns a list of all required intializers. */
     const std::set<std::u32string>& requiredInitializers() const { return requiredInitializers_; }
 
@@ -58,6 +60,7 @@ public:
     Function *lookupTypeMethod(const std::u32string &name, bool imperative) const override;
 
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override;
+    void addInstanceVariable(const InstanceVariableDeclaration &declaration) override;
 
     void inherit(SemanticAnalyser *analyser);
 private:
@@ -81,6 +84,7 @@ private:
     std::vector<llvm::Constant *> virtualTable_;
 
     bool final_;
+    bool foreign_;
     bool inheritsInitializers_ = false;
 
     llvm::GlobalVariable *classMeta_ = nullptr;

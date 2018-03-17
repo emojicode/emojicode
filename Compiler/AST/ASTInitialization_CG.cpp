@@ -32,6 +32,10 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
+    if (typeExpr_->expressionType().eclass()->foreign()) {
+        return InitializationCallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
+                .generate(nullptr, typeExpr_->expressionType(), args_, name_);
+    }
     if (typeExpr_->availability() == TypeAvailability::StaticAndAvailabale) {
         return initObject(fg, args_, name_, typeExpr_->expressionType());
     }

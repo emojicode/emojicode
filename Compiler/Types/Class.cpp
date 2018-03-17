@@ -20,7 +20,8 @@
 namespace EmojicodeCompiler {
 
 Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool exported,
-             bool final) : TypeDefinition(std::move(name), pkg, std::move(p), documentation, exported), final_(final) {
+             bool final, bool foreign) : TypeDefinition(std::move(name), pkg, std::move(p), documentation, exported),
+                                         final_(final), foreign_(foreign) {
     instanceScope() = Scope(1);  // reassign a scoper with one offset for the pointer to the class meta
 }
 
@@ -102,6 +103,13 @@ Function* Class::findSuperFunction(Function *function) const {
 
 Initializer* Class::findSuperInitializer(Initializer *function) const {
     return superclass()->lookupInitializer(function->name());
+}
+
+void Class::addInstanceVariable(const InstanceVariableDeclaration &declaration) {
+    if (foreign()) {
+        throw CompilerError(position(), "Instance variable is not allowed in foreign class.");
+    }
+    TypeDefinition::addInstanceVariable(declaration);
 }
 
 bool Class::canBeUsedToResolve(TypeDefinition *resolutionConstraint) const {

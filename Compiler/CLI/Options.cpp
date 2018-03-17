@@ -127,10 +127,10 @@ std::unique_ptr<CompilerDelegate> Options::compilerDelegate() const {
 }
 
 std::string Options::linker() const {
-    if (auto var = getenv("CC")) {
+    if (auto var = getenv("CXX")) {
         return var;
     }
-    return "cc";
+    return "c++";
 }
 
 }  // namespace CLI
