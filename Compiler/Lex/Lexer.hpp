@@ -117,6 +117,8 @@ private:
     TokenState continueVariableToken(Token *token) const;
 
     TokenState continueDoubleToken(Token *token) const;
+
+    TokenState continueOperator(Token *token) const;
 };
 
 }  // namespace EmojicodeCompiler

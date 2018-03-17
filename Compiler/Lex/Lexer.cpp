@@ -44,6 +44,7 @@ Lexer::Lexer(std::u32string sourceCode, std::string sourcePositionFile) :
     singleTokens_.emplace(E_DOG, TokenType::This);
     singleTokens_.emplace(E_BIOHAZARD, TokenType::Unsafe);
     singleTokens_.emplace(E_RIGHT_ARROW_CURVING_UP, TokenType::Super);
+    singleTokens_.emplace(E_RIGHTWARDS_ARROW, TokenType::RightProductionOperator);
 }
 
 void Lexer::loadOperatorSingleTokens() {
@@ -53,10 +54,6 @@ void Lexer::loadOperatorSingleTokens() {
     singleTokens_.emplace(E_HEAVY_MULTIPLICATION_SIGN, TokenType::Operator);
     singleTokens_.emplace(E_OPEN_HANDS, TokenType::Operator);
     singleTokens_.emplace(E_HANDSHAKE, TokenType::Operator);
-    singleTokens_.emplace(E_LEFT_POINTING_TRIANGLE, TokenType::Operator);
-    singleTokens_.emplace(E_RIGHT_POINTING_TRIANGLE, TokenType::Operator);
-    singleTokens_.emplace(E_LEFTWARDS_ARROW, TokenType::Operator);
-    singleTokens_.emplace(E_RIGHTWARDS_ARROW, TokenType::Operator);
     singleTokens_.emplace(E_HEAVY_LARGE_CIRCLE, TokenType::Operator);
     singleTokens_.emplace(E_ANGER_SYMBOL, TokenType::Operator);
     singleTokens_.emplace(E_CROSS_MARK, TokenType::Operator);
@@ -153,6 +150,11 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
         case E_KEYCAP_10:
             token->type_ = TokenType::Symbol;
             return true;
+        case E_LEFT_POINTING_TRIANGLE:
+        case E_RIGHT_POINTING_TRIANGLE:
+            token->type_ = TokenType::Operator;
+            token->value_.push_back(codePoint());
+            return true;
     }
 
     if (('0' <= codePoint() && codePoint() <= '9') || codePoint() == '-' || codePoint() == '+') {
@@ -173,6 +175,8 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
     switch (token->type()) {
         case TokenType::Identifier:
             return continueIdentifierToken(token, constState);
+        case TokenType::Operator:
+            return continueOperator(token);
         case TokenType::SinglelineComment:
             if (isNewline()) {
                 return TokenState::Ended;
@@ -305,6 +309,17 @@ Lexer::TokenState Lexer::continueIdentifierToken(Token *token, Lexer::TokenConst
     }
     if (token->value_.front() == E_PERSON_SHRUGGING) {
         token->type_ = TokenType::NoValue;
+    }
+    return TokenState::NextBegun;
+}
+
+Lexer::TokenState Lexer::continueOperator(Token *token) const {
+    if (codePoint() == 0xFE0F) {  // Emojicode ignores the Emoji modifier behind an emoji character
+        return TokenState::Continues;
+    }
+    if (codePoint() == E_HANDS_RAISED_IN_CELEBRATION) {
+        token->value_.push_back(codePoint());
+        return TokenState::Ended;
     }
     return TokenState::NextBegun;
 }

@@ -42,12 +42,12 @@
     ↩️ 🐕 ▶️ other
   🍉
   📗 Returns true if the receiver is smaller than or equal to *other*. 📗
-  ⬅️ other 💯 ➡️ 👌 🍇
-    ↩️ 🐕 ⬅️ other
+  ◀️🙌 other 💯 ➡️ 👌 🍇
+    ↩️ 🐕 ◀️🙌 other
   🍉
   📗 Returns true if the receiver is greater than or equal to *other*. 📗
-  ➡️ other 💯 ➡️ 👌 🍇
-    ↩️ 🐕 ➡️ other
+  ▶️🙌 other 💯 ➡️ 👌 🍇
+    ↩️ 🐕 ▶️🙌 other
   🍉
 
   📗 Returns the absolute value of this 💯. 📗

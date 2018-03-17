@@ -13,6 +13,14 @@
 namespace EmojicodeCompiler {
 
 OperatorType operatorType(const std::u32string &value) {
+    if (value.size() >= 2) {
+        switch (value.front()) {
+            case E_LEFT_POINTING_TRIANGLE:
+                return OperatorType::LessOrEqualOperator;
+            case E_RIGHT_POINTING_TRIANGLE:
+                return OperatorType::GreaterOrEqualOperator;
+        }
+    }
     switch (value.front()) {
         case E_HEAVY_PLUS_SIGN:
             return OperatorType::PlusOperator;
@@ -30,10 +38,6 @@ OperatorType operatorType(const std::u32string &value) {
             return OperatorType::LessOperator;
         case E_RIGHT_POINTING_TRIANGLE:
             return OperatorType::GreaterOperator;
-        case E_LEFTWARDS_ARROW:
-            return OperatorType::LessOrEqualOperator;
-        case E_RIGHTWARDS_ARROW:
-            return OperatorType::GreaterOrEqualOperator;
         case E_HEAVY_LARGE_CIRCLE:
             return OperatorType::BitwiseAndOperator;
         case E_ANGER_SYMBOL:

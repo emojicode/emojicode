@@ -119,11 +119,11 @@ Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeCon
     t.genericArguments_.push_back(Type::noReturn());
 
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd) &&
-           stream_.nextTokenIsEverythingBut(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
+            stream_.nextTokenIsEverythingBut(TokenType::RightProductionOperator)) {
         t.genericArguments_.push_back(parseType(typeContext));
     }
 
-    if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
+    if (stream_.consumeTokenIf(TokenType::RightProductionOperator)) {
         t.genericArguments_[0] = parseType(typeContext);
     }
 
@@ -216,7 +216,7 @@ void AbstractParser::parseParameters(Function *function, const TypeContext &type
 }
 
 void AbstractParser::parseReturnType(Function *function, const TypeContext &typeContext) {
-    if (stream_.consumeTokenIf(E_RIGHTWARDS_ARROW, TokenType::Operator)) {
+    if (stream_.consumeTokenIf(TokenType::RightProductionOperator)) {
         function->setReturnType(parseType(typeContext));
     }
 }

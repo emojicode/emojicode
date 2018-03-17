@@ -37,6 +37,7 @@ enum class TokenType {
     EndInterrogativeArgumentList,
     GroupBegin,
     GroupEnd,
+    RightProductionOperator,
 
     BlockBegin,
     BlockEnd,

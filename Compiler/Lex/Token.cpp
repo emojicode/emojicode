@@ -55,6 +55,7 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::This: return "This";
         case TokenType::Unsafe: return "Unsafe";
         case TokenType::NoValue: return "NoValue";
+        case TokenType::RightProductionOperator: return "RightProductionOperator";
     }
 }
 
