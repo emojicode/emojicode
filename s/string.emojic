@@ -73,11 +73,23 @@
     ↩️ 🆕🔡🧠 new normal_length❗️
   🍉
 
-  👴 📗
-  👴   Finds the first occurrences of a string in this string. Search is done from
-  👴   left to right. Nothingness is returned if *search* cannot be found.
-  👴 📗
-  👴 ❗️ 🔍 search 🔡 ➡️ 🍬🔢 📻 🔤sStringFind🔤
+  📗
+    Finds the first occurrences of a string in this string. Search is
+    performed from left to right.
+
+    Returns the index of the first occurrence or no value if `search` does not
+    occur.
+  📗
+  ❗️ 🔍 search 🔡 ➡️ 🍬🔢 📻 🔤sStringFind🔤
+
+  📗
+    Finds the first occurrences of a string in this string after the
+    index *offset*. Search is performed from left to right.
+
+    Returns the index of the occurrence or no value if *search* does not
+    occur.
+  📗
+  ❗️ 🕵️‍♀️ search 🔡 offset 🔢 ➡️ 🍬🔢 📻 🔤sStringFindFromIndex🔤
 
   📗 Whether this strings begins with another string. 📗
   ❗️ 🎼 testString 🔡 ➡️ 👌 📻 🔤sStringBeginsWith🔤
@@ -85,25 +97,80 @@
   📗 Whether this strings ends with another string. 📗
   ❗️ ⛳️ testString 🔡 ➡️ 👌 📻 🔤sStringEndsWith🔤
 
-  👴 📗
-  👴   The 🔧 method returns a new string, on which whitespace has been removed
-  👴   from both ends of a string.
-  👴 📗
-  👴 ❗️ 🔧 ➡️ 🔡 📻 🔤sStringTrim🔤
+  📗
+    Finds the first occurrences of a symbol in this string after the
+    index *offset*. Search is performed from left to right.
 
-  👴 📗
-  👴   This string is split up into substring at each place *seperator* is found.
-  👴   *seperator* itself is removed from the string.
-  👴 📗
-  👴 ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡 📻 🔤sStringSplitString🔤
+    Returns the index of the occurrence or no value if *search* does not
+    occur.
+  📗
+  ❗️ 🕵️‍♂️ search 🔣 offset 🔢 ➡️ 🍬🔢 📻 🔤sStringFindSymbolFromIndex🔤
 
-  👴 📗
-  👴   This string is split up into substring at each place *seperator* is found.
-  👴   *seperator* itself is removed from the string.
+  📗
+    This string is split up into substring at each place *seperator* is found.
+    *seperator* itself is removed from the string.
+  📗
+  ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡 🍇
+    🍦 list 🆕🍨🐚🔡🐸❗️
 
-  👴   Prefer this method over `🔫` if the separator is just a single character.
-  👴 📗
-  👴 ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 📻 🔤sStringSplitSymbol🔤
+    🍮 lastIndex 0
+    🍮 continue 👍
+    🔁 continue 🍇
+      🍊 🍦 newIndex 🕵️‍♀️🐕 separator lastIndex❗️ 🍇
+        🐻 list 🔪🐕 lastIndex newIndex ➖ lastIndex❗️❗️
+        🍮 lastIndex newIndex ➕ 🐔separator❗️
+      🍉
+      🍓 🍇
+        🍮 continue 👎
+      🍉
+    🍉
+    🐻 list 🔪🐕 lastIndex  🤜🐔🐕❗️🤛 ➖ lastIndex❗️❗️
+
+    ↩️ list
+  🍉
+
+  📗
+    This string is split up into substring at each place *seperator* is found.
+    *seperator* itself is removed from the string.
+
+    Prefer this method over `🔫` if the separator is just a single character.
+  📗
+  ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 🍇
+    🍦 list 🆕🍨🐚🔡🐸❗️
+
+    🍮 lastIndex 0
+    🍮 continue 👍
+    🔁 continue 🍇
+      🍊 🍦 newIndex 🕵️‍♂️ 🐕 separator lastIndex❗️ 🍇
+        🐻 list 🔪🐕 lastIndex newIndex ➖ lastIndex❗️❗️
+        🍮 lastIndex newIndex ➕ 1
+      🍉
+      🍓 🍇
+        🍮 continue 👎
+      🍉
+    🍉
+    🐻 list 🔪🐕 lastIndex  🤜🐔🐕❗️🤛 ➖ lastIndex❗️❗️
+
+    ↩️ list
+  🍉
+
+  📗
+    The 🔧 method returns a new string, on which whitespace has been removed
+    from both ends of a string.
+  📗
+  ❗️ 🔧 ➡️ 🔡 🍇
+    🍮 front 0
+    🍮 end count ➖ 1
+
+    🔁 front ◀️ count 🤝 🐁🐽 codePoints 🐚🔣 front ✖️⚖️🔣❗️❗️ 🍇
+      🍮 front ➕ 1
+    🍉
+    🔁 end ▶️ front 🤝 🐁🐽 codePoints 🐚🔣 end ✖️⚖️🔣❗️❗️ 🍇
+      🍮 end ➖ 1
+    🍉
+
+    ↩️ 🔪🐕 front end ➖ front ➕ 1❗️
+  🍉
 
   📗
     This method returns the number of Unicode code points of this string. This

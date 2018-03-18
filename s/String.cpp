@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cctype>
+#include <algorithm>
 #include "utf8.h"
 
 using s::String;
@@ -76,6 +77,41 @@ extern "C" String* sStringToLowercase(String *string) {
     }
 
     return newString;
+}
+
+extern "C" runtime::SimpleOptional<runtime::Integer> sStringFind(String *string, String* search) {
+    auto end = string->characters + string->count;
+    auto pos = std::search(string->characters, end, search->characters, search->characters + search->count);
+    if (pos != end) {
+        return pos - string->characters;
+    }
+    return runtime::NoValue;
+}
+
+extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindFromIndex(String *string, String* search,
+                                                                          runtime::Integer offset) {
+    if (offset >= string->count) {
+        return runtime::NoValue;
+    }
+    auto end = string->characters + string->count;
+    auto pos = std::search(string->characters + offset, end, search->characters, search->characters + search->count);
+    if (pos != end) {
+        return pos - string->characters;
+    }
+    return runtime::NoValue;
+}
+
+extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindSymbolFromIndex(String *string, runtime::Symbol search,
+                                                                                runtime::Integer offset) {
+    if (offset >= string->count) {
+        return runtime::NoValue;
+    }
+    auto end = string->characters + string->count;
+    auto pos = std::find(string->characters + offset, end, search);
+    if (pos != end) {
+        return pos - string->characters;
+    }
+    return runtime::NoValue;
 }
 
 extern "C" String* sStringToUppercase(String *string) {
