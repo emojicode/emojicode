@@ -65,7 +65,7 @@ AccessLevel TypeBodyParser::readAccessLevel() {
 }
 
 void TypeBodyParser::parseProtocolConformance(const SourcePosition &p) {
-    Type type = parseType(TypeContext(type_));
+    Type type = parseType(TypeContext(owningType()));
 
     if (type.type() != TypeType::Protocol) {
         package_->compiler()->error(CompilerError(p, "The given type is not a protocol."));
