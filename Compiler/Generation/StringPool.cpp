@@ -8,6 +8,8 @@
 
 #include "CodeGenerator.hpp"
 #include "StringPool.hpp"
+#include "Package/Package.hpp"
+#include "Compiler.hpp"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/GlobalVariable.h>
 
@@ -24,8 +26,23 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
     auto var = new llvm::GlobalVariable(*codeGenerator_->module(), constant->getType(), true,
                                         llvm::GlobalValue::LinkageTypes::InternalLinkage, constant);
 
-    pool_.emplace(string, var);
-    return var;
+
+    auto compiler = codeGenerator_->package()->compiler();
+
+    auto stringType = Type(compiler->sString);
+    auto stringLlvm = llvm::dyn_cast<llvm::StructType>(llvm::dyn_cast<llvm::PointerType>(codeGenerator_->typeHelper().llvmTypeFor(stringType))->getElementType());
+
+    auto stringStruct = llvm::ConstantStruct::get(stringLlvm, {
+            compiler->sString->classMeta(),
+            var,
+            llvm::ConstantInt::get(llvm::Type::getInt64Ty(codeGenerator_->context()), string.size())
+    });
+
+    auto stringVar = new llvm::GlobalVariable(*codeGenerator_->module(), stringLlvm, true,
+                                              llvm::GlobalValue::LinkageTypes::InternalLinkage, stringStruct, "string");
+
+    pool_.emplace(string, stringVar);
+    return stringVar;
 }
 
 }  // namespace EmojicodeCompiler

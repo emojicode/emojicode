@@ -16,15 +16,7 @@
 namespace EmojicodeCompiler {
 
 Value* ASTStringLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto type = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(Type(fg->compiler()->sString)));
-    auto stringObj = fg->alloc(type);
-    fg->builder().CreateStore(fg->compiler()->sString->classMeta(), fg->getObjectMetaPtr(stringObj));
-    auto ptr = fg->builder().CreateBitCast(fg->generator()->stringPool().pool(value_),
-                                           llvm::Type::getInt8PtrTy(fg->generator()->context()));
-    fg->builder().CreateStore(ptr, fg->builder().CreateConstGEP2_32(type->getElementType(), stringObj, 0, 1));
-    fg->builder().CreateStore(fg->int64(value_.size()),
-                              fg->builder().CreateConstGEP2_32(type->getElementType(), stringObj, 0, 2));
-    return stringObj;
+    return fg->generator()->stringPool().pool(value_);
 }
 
 Value* ASTBooleanTrue::generate(FunctionCodeGenerator *fg) const {
