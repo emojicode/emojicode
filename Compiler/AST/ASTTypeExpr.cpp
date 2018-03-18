@@ -17,6 +17,9 @@ Type ASTInferType::analyse(FunctionAnalyser *analyser, const TypeExpectation &ex
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
     type_ = expectation.copyType().unoptionalized();
+    if (type_.type() == TypeType::Class) {
+        availability_ = TypeAvailability::StaticAndAvailable;
+    }
     return type_;
 }
 

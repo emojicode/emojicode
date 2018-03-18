@@ -36,7 +36,7 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
         return InitializationCallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
                 .generate(nullptr, typeExpr_->expressionType(), args_, name_);
     }
-    if (typeExpr_->availability() == TypeAvailability::StaticAndAvailabale) {
+    if (typeExpr_->availability() == TypeAvailability::StaticAndAvailable) {
         return initObject(fg, args_, name_, typeExpr_->expressionType());
     }
     // TODO: class table lookup

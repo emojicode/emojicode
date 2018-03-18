@@ -16,7 +16,7 @@ struct SourcePosition;
 enum class TypeAvailability {
     /** The type is known at compile type, can’t change and will be available at runtime. Instruction to retrieve the
      type at runtime were written to the file. */
-    StaticAndAvailabale,
+    StaticAndAvailable,
     /** The type is known at compile type, but a another compatible type might be provided at runtime instead.
      The type will be available at runtime. Instruction to retrieve the type at runtime were written to the file. */
     DynamicAndAvailable,
@@ -28,7 +28,7 @@ enum class TypeAvailability {
 void notStaticError(TypeAvailability t, const SourcePosition &p, const char *name);
 
 inline bool isStatic(TypeAvailability t) {
-    return t == TypeAvailability::StaticAndUnavailable || t == TypeAvailability::StaticAndAvailabale;
+    return t == TypeAvailability::StaticAndUnavailable || t == TypeAvailability::StaticAndAvailable;
 }
 
 }  // namespace EmojicodeCompiler

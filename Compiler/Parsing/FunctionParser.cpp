@@ -327,7 +327,7 @@ std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition 
         case TypeType::GenericVariable:
             throw CompilerError(p, "Generic Arguments are not yet available for reflection.");
         case TypeType::Class:
-            return std::make_shared<ASTStaticType>(ot, TypeAvailability::StaticAndAvailabale, p);
+            return std::make_shared<ASTStaticType>(ot, TypeAvailability::StaticAndAvailable, p);
         case TypeType::LocalGenericVariable:
             throw CompilerError(p, "Function Generic Arguments are not available for reflection.");
         default:
