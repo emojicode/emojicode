@@ -16,7 +16,7 @@
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
-#include "Types/ValueType.hpp"
+#include "Types/Extension.hpp"
 #include <algorithm>
 #include <cstdio>
 
@@ -142,8 +142,10 @@ void Prettyprinter::printTypeDef(const Type &type) {
         printEnumValues(enumeration);
     }
 
-    printProtocolConformances(typeDef, TypeContext(type));
-    printInstanceVariables(typeDef, TypeContext(type));
+    auto context = type.type() == TypeType::Extension ? TypeContext(dynamic_cast<Extension*>(typeDef)->extendedType()) :
+                   TypeContext(type);
+    printProtocolConformances(typeDef, context);
+    printInstanceVariables(typeDef, context);
     printMethodsAndInitializers(typeDef);
     decreaseIndent();
     refuseOffer() << "🍉\n\n";
