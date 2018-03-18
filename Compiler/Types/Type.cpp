@@ -478,7 +478,7 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             }
             return;
         case TypeType::LocalGenericVariable:
-            if (typeContext.function() != nullptr) {
+            if (typeContext.function() == type.localResolutionConstraint_) {
                 string.append(utf8(typeContext.function()->findGenericName(type.genericVariableIndex())));
             }
             else {
