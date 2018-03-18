@@ -33,6 +33,8 @@ private:
     Capture capture_;
 
     llvm::CallInst *storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const;
+
+    void applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation);
 };
 
 }  // namespace EmojicodeCompiler

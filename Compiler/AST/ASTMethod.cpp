@@ -80,6 +80,10 @@ Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const s
 }
 
 bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name) {
+    if (type.type() != TypeType::ValueType) {
+        return false;
+    }
+
     if (type.typeDefinition() == analyser->compiler()->sBoolean) {
         if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
             builtIn_ = BuiltInType::BooleanNegate;

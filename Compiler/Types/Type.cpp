@@ -64,7 +64,9 @@ ValueType* Type::valueType() const {
     return dynamic_cast<ValueType *>(typeDefinition_);
 }
 
-TypeDefinition* Type::typeDefinition() const  {
+TypeDefinition* Type::typeDefinition() const {
+    assert(type() == TypeType::Class || type() == TypeType::Protocol || type() == TypeType::ValueType
+           || type() == TypeType::Enum || type() == TypeType::Extension);
     return typeDefinition_;
 }
 
@@ -90,11 +92,11 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &ty
     Type t = *this;
 
     // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeType::GenericVariable && c->canBeUsedToResolve(t.typeDefinition()) &&
+    while (t.type() == TypeType::GenericVariable && c->canBeUsedToResolve(t.typeDefinition_) &&
            t.genericVariableIndex() < c->superGenericArguments().size()) {
         Type tn = c->superGenericArguments()[t.genericVariableIndex()];
         if (tn.type() == TypeType::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
-            && tn.typeDefinition() == t.typeDefinition()) {
+            && tn.typeDefinition_ == t.typeDefinition_) {
             break;
         }
         t = tn;
@@ -103,31 +105,28 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &ty
 }
 
 Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext) const {
-    if (typeContext.calleeType().type() == TypeType::NoReturn) {
-        return *this;
-    }
-    TypeDefinition *c = typeContext.calleeType().typeDefinition();
     Type t = *this;
-    if (type() == TypeType::NoReturn) {
-        return t;
-    }
     if (type() == TypeType::Optional) {
         t.genericArguments_[0] = genericArguments_[0].resolveOnSuperArgumentsAndConstraints(typeContext);
         return t;
     }
 
+    auto c = typeContext.calleeType().canHaveGenericArguments() ? typeContext.calleeType().typeDefinition() : nullptr;
     bool box = t.storageType() == StorageType::Box;
 
-    // Try to resolve on the generic arguments to the superclass.
-    while (t.type() == TypeType::GenericVariable && t.genericVariableIndex() < c->superGenericArguments().size()) {
-        t = c->superGenericArguments()[t.genericArgumentIndex_];
+    if (c != nullptr) {
+        // Try to resolve on the generic arguments to the superclass.
+        while (t.type() == TypeType::GenericVariable && t.genericVariableIndex() < c->superGenericArguments().size()) {
+            t = c->superGenericArguments()[t.genericArgumentIndex_];
+        }
     }
     while (t.type() == TypeType::LocalGenericVariable && typeContext.function() == t.localResolutionConstraint_) {
         t = typeContext.function()->constraintForIndex(t.genericArgumentIndex_);
     }
-    while (t.type() == TypeType::GenericVariable
-           && typeContext.calleeType().typeDefinition()->canBeUsedToResolve(t.typeDefinition())) {
-        t = typeContext.calleeType().typeDefinition()->constraintForIndex(t.genericArgumentIndex_);
+    if (c != nullptr) {
+        while (t.type() == TypeType::GenericVariable && c->canBeUsedToResolve(t.typeDefinition_)) {
+            t = c->constraintForIndex(t.genericArgumentIndex_);
+        }
     }
 
     if (box) {
@@ -138,9 +137,6 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
 
 Type Type::resolveOn(const TypeContext &typeContext) const {
     Type t = *this;
-    if (type() == TypeType::NoReturn) {
-        return t;
-    }
     if (type() == TypeType::Optional) {
         t.genericArguments_[0] = genericArguments()[0].resolveOn(typeContext);
         return t;
@@ -155,10 +151,10 @@ Type Type::resolveOn(const TypeContext &typeContext) const {
 
     if (typeContext.calleeType().canHaveGenericArguments()) {
         while (t.type() == TypeType::GenericVariable &&
-               typeContext.calleeType().typeDefinition()->canBeUsedToResolve(t.typeDefinition())) {
+               typeContext.calleeType().typeDefinition()->canBeUsedToResolve(t.typeDefinition_)) {
             Type tn = typeContext.calleeType().genericArguments_[t.genericVariableIndex()];
             if (tn.type() == TypeType::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
-                && tn.typeDefinition() == t.typeDefinition()) {
+                && tn.typeDefinition_ == t.typeDefinition_) {
                 break;
             }
             t = tn;
@@ -206,7 +202,7 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
     if ((this->type() == TypeType::GenericVariable && to.type() == TypeType::GenericVariable) ||
         (this->type() == TypeType::LocalGenericVariable && to.type() == TypeType::LocalGenericVariable)) {
         return (this->genericVariableIndex() == to.genericVariableIndex() &&
-                this->typeDefinition() == to.typeDefinition()) ||
+                this->typeDefinition_ == to.typeDefinition_) ||
         this->resolveOnSuperArgumentsAndConstraints(tc)
         .compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
     }
