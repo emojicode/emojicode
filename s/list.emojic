@@ -1,6 +1,6 @@
 🐋 🍨 🍇
-👴   🐊 🔂🐚Element
-👴   🐊 🐽🐚Element
+  🐊 🔂🐚Element
+  🐊 🐽🐚Element
 
   📗 Creates an empty list. 📗
   🆕 🐸 🍇
@@ -14,6 +14,16 @@
     🍮 count 0
     🍮 size capacity
     🍮 data 🆕🧠🆕 capacity✖️⚖️Element❗️
+  🍉
+
+  📗 Creates an containing the specified number of a single, repeated value. 📗
+  🆕 🦊 repeatedValue Element 🍼 count 🔢 🍇
+    🍮 size count
+    🍮 data 🆕🧠🆕 size✖️⚖️Element❗️
+
+    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+      🐷 data repeatedValue i✖️⚖️Element❗️
+    🍉
   🍉
 
   🔒❗️🧠 ➡️ 🧠 🍇
@@ -53,11 +63,14 @@
     ↩️ 🤷‍♀️
   🍉
 
-👴   📗
-👴     Sets `value` at `index`. If `index` is bigger than the capacity of the list,
-👴     the list is resized to a capacity of `index + 1`. Complexity: `O(1)`.
-👴   📗
-👴   ❗️ 🐷 index 🔢 value Element 📻 55
+  📗
+    Sets `value` at `index`. `index` must be less than [[🐔❗️]].
+  📗
+  ❗️ 🐷 index 🔢 value Element 🍇
+    🍊 index ◀️ count 🍇
+      🐷 data value index✖️⚖️Element❗️
+    🍉
+  🍉
 
  📗
     Removes the item at `index` and shifts all following items to the left in
@@ -118,13 +131,14 @@
     ↩️ value
   🍉
 
-👴   📗
-👴     Removes all elements from the list but keeps the list’s capacity.
+  📗
+    Removes all elements from the list but keeps the list’s capacity.
 
-👴     This can be much more efficient than using a new list. Complexity:
-👴     `O(count)`.
-👴   📗
-👴   ❗️ 🐗 📻 54
+    This can be much more efficient than using a new list. Complexity: `O(1)`.
+  📗
+  ❗️ 🐗 🍇
+    🍮 count 0
+  🍉
 
   📗
     Ensures that the list is large enoguh to store at least `capacity` elements.
@@ -150,51 +164,61 @@
 👴   📗
 👴   ❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 📻 53
 
-👴   📗
-👴     Shuffles the list in place.
-👴   📗
-👴   ❗️ 🐹 📻 51
+  📗
+    Shuffles the list in place using a Fisher–Yates shuffle.
+  📗
+  ❗️ 🐹 🍇
+    🍦 prng 🆕🎰🆕❗️
 
-👴   📗
-👴     Calls callback with each element in the list and appends the returned
-👴     value to the end of a new list.
-👴   📗
-👴   ❗️ 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
-👴     🍦 g 🆕🍨🐚A🐧  🐔 🐕❗️❗️
-👴     🔂 element 🐕 🍇
-👴       🐻 g callback⁉️ element❗️❗️
-👴     🍉
-👴     ↩️ g
-👴   🍉
+    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+      🍦 x 🔢 prng 0 count ➖ 1❗️
 
-👴   📗
-👴     Returns a new array with all elements that pass the test implemented by
-👴     `callback`.
-👴   📗
-👴   ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
-👴     🍦 g 🆕🍨🐚Element🐸❗️
-👴     🔂 element 🐕 🍇
-👴       🍊 callback⁉️ element❗️ 🍇
-👴         🐻 g element❗️
-👴       🍉
-👴     🍉
-👴     ↩️ g
-👴   🍉
+      🍦 temp 🐽 data i✖️⚖️Element❗️
+      🐷 data 🐽 data x✖️⚖️Element❗️ i✖️⚖️Element❗️
+      🐷 data temp x✖️⚖️Element❗️
+    🍉
+  🍉
 
-👴   📗
-👴     Tests whether all elements in the array pass the test implemented by
-👴     `callback`.
+  📗
+    Calls callback with each element in the list and appends the returned
+    value to the end of a new list.
+  📗
+  ❗️ 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
+    🍦 g 🆕🍨🐚A🐴 🐔 🐕❗️❗️
+    🔂 element 🐕 🍇
+      🐻 g callback⁉️ element❗️❗️
+    🍉
+    ↩️ g
+  🍉
 
-👴     The method immdiately returns 👎 if `callback` returned 👎 for one element.
-👴   📗
-👴   ❗️ 🐯 callback 🍇Element➡️👌🍉 ➡️ 👌 🍇
-👴     🔂 element 🐕 🍇
-👴       🍊 ❎ callback⁉️ element❗️ ❗️ 🍇
-👴         ↩️ 👎
-👴       🍉
-👴     🍉
-👴     ↩️ 👍
-👴   🍉
+  📗
+    Returns a new array with all elements that pass the test implemented by
+    `callback`.
+  📗
+  ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
+    🍦 g 🆕🍨🐚Element🐸❗️
+    🔂 element 🐕 🍇
+      🍊 callback⁉️ element❗️ 🍇
+        🐻 g element❗️
+      🍉
+    🍉
+    ↩️ g
+  🍉
+
+  📗
+    Tests whether all elements in the array pass the test implemented by
+    `callback`.
+
+    The method immdiately returns 👎 if `callback` returned 👎 for one element.
+  📗
+  ❗️ 🐯 callback 🍇Element➡️👌🍉 ➡️ 👌 🍇
+    🔂 element 🐕 🍇
+      🍊 ❎ callback⁉️ element❗️ ❗️ 🍇
+        ↩️ 👎
+      🍉
+    🍉
+    ↩️ 👍
+  🍉
 
 👴   📗 Tests whether this array and `other` are equal. 📗
 👴   🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
@@ -210,8 +234,8 @@
 👴     ↩️ 👍
 👴   🍉
 
-👴   📗 Returns an iterator to iterate over the elements of this list. 📗
-👴   ❗️ 🍡 ➡️ 🌳🐚Element 🍇
-👴     ↩️ 🆕⚫️🆕 🐕❗️
-👴   🍉
+  📗 Returns an iterator to iterate over the elements of this list. 📗
+  ❗️ 🍡 ➡️ 🌳🐚Element 🍇
+    ↩️ 🆕⚫️🆕 🐕❗️
+  🍉
 🍉
