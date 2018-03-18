@@ -68,7 +68,7 @@ compilation_tests = [
     # "valueTypeCopySelf",
     # "valueTypeBoxCopySelf",
     "includer",
-    # # "threads",
+    "threads",
 ]
 library_tests = [
     "primitives",
