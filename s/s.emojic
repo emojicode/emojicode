@@ -190,8 +190,6 @@
 🍉
 
 🐋 🔣 🍇
-  📗 Creates a 🔡 from this symbol. 📗
-  ❗️ 🔡 ➡️ 🔡 📻 🔤sSymbolToString🔤
   📗 Returns the Unicode code point of this symbol. 📗
   ❗️ 🔢 ➡️ 🔢 📻 🔤sSymbolToInt🔤
 🍉

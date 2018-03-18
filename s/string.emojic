@@ -1,6 +1,6 @@
 🐋 🔡 🍇
-👴   🐊 🔂🐚🔣
-👴   🐊 🐽🐚🔣
+  🐊 🔂🐚🔣
+  🐊 🐽🐚🔣
   🐊 😛🐚🔡
 
   📗 Creates a string by copying the memory from the given memory. 📗
@@ -17,20 +17,23 @@
 👴   📗 Prompts the user for input. (via the standard input/output) 📗
 👴   🆕 😯 prompt 🔡 📻 🔤sStringPrompt🔤
 
-👴   📗 Creates a string from the given list of symbols. 📗
-👴   🆕 🎙 symbolList 🍨🐚🔣 📻 🔤sStringFromSymbolArray🔤
+  📗 Creates a string from the provided list of symbols. 📗
+  🆕 🎙 symbolList 🍨🐚🔣 🍇
+    🍮 count 🐔symbolList❗️
+    🍮 codePoints 🆕🧠🆕 count ✖️⚖️🔣❗️
 
-👴   📗
-👴     Creates a string by joining all elements into a string sepearted
-👴     by *separator*.
-👴   📗
-👴   🆕 🍨 list 🍨🐚🔡 separator 🔡 📻 🔤sStringJoin🔤
+    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+      🐷 codePoints 🍺🐽symbolList i❗️ i ✖️⚖️🔣❗️
+    🍉
+  🍉
 
   📗 Puts this 🔡 to the standard output. 📗
   ❗️ 😀 📻 🔤sStringPrint🔤
 
   📗 Returns 👍 if this 🔡 is equal to b. 📗
-  🙌 b 🔡 ➡️ 👌📻 🔤sStringEqual🔤
+  🙌 b 🔡 ➡️ 👌 🍇
+    ↩️ ↔️🐕 b❗️ 🙌 0
+  🍉
 
   📗
     Compares this string to `b` and returns -1, 0, or 1 depending on whether
@@ -41,17 +44,34 @@
     >!N the sort will always be the same, but may not appear logical to human
     >!N beings.
   📗
-  ❗️ ↔️ b 🔡 ➡️ 🔢 📻 🔤sStringCompare🔤
+  ❗️ ↔️ b 🔡 ➡️ 🔢 🍇
+    🍊 🐔 b❗️ ◀️ count 🍇
+      ↩️ -1
+    🍉
+    🍊 🐔 b❗️ ▶️ count 🍇
+      ↩️ 1
+    🍉
 
-  👴 📗
-  👴   Returns the characters in a string beginning at the specified location
-  👴   through the specified number of characters.
+    ↩️ ↔️ codePoints 🧠b❗️ count✖️⚖️🔣❗️
+  🍉
 
-  👴   from: Location at which to begin extracting characters. If a negative number
-  👴   is given, it is treated as strLength + start where strLength = to the length
-  👴   of the string (for example, if start is -3 it is treated as strLength - 3.)
-  👴 📗
-  👴 ❗️ 🔪 from 🔢 length 🔢 ➡️ 🔡 📻 🔤sStringSubstring🔤
+  📗
+    Returns the characters in a string beginning at the specified location
+    through the specified number of characters.
+  📗
+  ❗️ 🔪 from 🔢 length 🔢 ➡️ 🔡 🍇
+    🍊 from ▶️️🙌 count 🍇
+      ↩️ 🔤🔤
+    🍉
+    🍮 normal_length length
+    🍊 from ➕ length ▶️️🙌 count 🍇
+      🍮 normal_length count ➖ from
+    🍉
+
+    🍦 new 🆕🧠🆕 normal_length✖️⚖️🔣❗️
+    🚜 new 0 codePoints from✖️⚖️🔣 normal_length✖️⚖️🔣❗️
+    ↩️ 🆕🔡🧠 new normal_length❗️
+  🍉
 
   👴 📗
   👴   Finds the first occurrences of a string in this string. Search is done from
@@ -98,6 +118,7 @@
     Returns the number of bytes needed to encode this string into proper UTF8.
   📗
   ❗️ 📐 ➡️ 🔢 📻 🔤sStringUtf8ByteCount🔤
+
 👴   📗
 👴     This methods tries to construct an integer from this string in the given
 👴     base. It returns the integer or Nothingness if the string does not match the
@@ -114,17 +135,28 @@
 👴   📗
 👴   ❗️ 💯 ➡️ 🍬💯 📻 🔤sStringToFloat🔤
 
-     📗 Creates a new string by appending *symbol*. 📗
-     ❗️ 📝 symbol 🔣 ➡️ 🔡 📻 🔤sStringAppendSymbol🔤
+  📗 Creates a new string by appending *symbol*. 📗
+  ❗️ 📝 symbol 🔣 ➡️ 🔡 📻 🔤sStringAppendSymbol🔤
 
-👴   📗 Gets a symbol by its index. 📗
-👴   ❗️ 🐽 index 🔢 ➡️ 🍬🔣 📻 🔤sStringToInt🔤
+  📗 Gets a symbol by its index. 📗
+  ❗️ 🐽 index 🔢 ➡️ 🍬🔣 🍇
+    🍊 index ▶️️🙌 count 🍇
+      ↩️ 🤷‍♂️
+    🍉
+    ↩️ 🐽 codePoints 🐚🔣 count ✖️⚖️🔣❗️
+  🍉
 
 👴   📗 Converts the string to data encoded as UTF8. 📗
 👴   ❗️ 📇 ➡️ 📇 📻 🔤sStringToData🔤
 
-👴   📗 Returns an array with the symbols from this string. 📗
-👴   ❗️ 🎶 ➡️ 🍨🐚🔣 📻 🔤sStringToList🔤
+  📗 Returns an array with the symbols from this string. 📗
+  ❗️ 🎶 ➡️ 🍨🐚🔣 🍇
+    🍦 list 🆕🍨🐚🔣🐴 count❗️
+    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+      🐻 list 🐽 codePoints🐚🔣  i✖️⚖️🔣❗️❗️
+    🍉
+    ↩️ list
+  🍉
 
 👴   📗
 👴     Tries to parse this string as JSON. If the string doesn’t represent valid
@@ -132,22 +164,31 @@
 👴   📗
 👴   ❗️ 📰 ➡️ ⚪️ 📻 🔤sStringParseJson🔤
 
-👴   📗
-👴     Returns a new string in which at least all letters contained in ASCII
-👴     were converted to uppercase.
-👴   📗
-👴   ❗️ 📫 ➡️ 🔡 📻 🔤sStringToLowercase🔤
+  📗
+    Returns a new string in which at least all letters contained in ASCII
+    were converted to uppercase.
+  📗
+  ❗️ 📫 ➡️ 🔡 📻 🔤sStringToUppercase🔤
 
-👴   📗
-👴     Returns a new string in which at least all letters contained in ASCII
-👴     were converted to lowercase.
-👴   📗
-👴   ❗️ 📪 ➡️ 🔡 📻 🔤sStringToUppercase🔤
+  📗
+    Returns a new string in which at least all letters contained in ASCII
+    were converted to lowercase.
+  📗
+  ❗️ 📪 ➡️ 🔡 📻 🔤sStringToLowercase🔤
 
-👴   📗 Returns an iterator to iterate over the symbols of this string. 📗
-👴   ❗️ 🍡 ➡️ 🌳🐚🔣 🍇
-👴     ↩️ 🆕🌳🐚🔣🆕 🐕❗️
-👴   🍉
+  📗 Returns an iterator to iterate over the symbols of this string. 📗
+  ❗️ 🍡 ➡️ 🌳🐚🔣 🍇
+    ↩️ 🆕🌳🐚🔣🆕 🐕❗️
+  🍉
+🍉
+
+🐋 🔣 🍇
+  📗 Creates a 🔡 from this symbol. 📗
+  ❗️ 🔡 ➡️ 🔡 🍇
+    🍦 data 🆕🧠🆕 ⚖️🔣❗️
+    🐷 data🐚🔣 🐕 0❗️
+    ↩️ 🆕🔡🧠 data 1❗️
+  🍉
 🍉
 
 🌍 🐇 🔠 🍇
@@ -178,7 +219,33 @@
     🍮 count ➕ stringSize
   🍉
 
+  ❗️🧠 ➡️ 🧠 🍇
+    ↩️ data
+  🍉
+
+  ❗️ 🐔 ➡️ 🔢 🍇
+    ↩️ count
+  🍉
+
   ❗️ 🔡 ➡️ 🔡 🍇
     ↩️ 🆕🔡🧠 data count❗️
+  🍉
+🍉
+
+🐋 🔡 🍇
+  📗
+    Creates a string by joining all elements into a string separated
+    by *separator*.
+  📗
+  🆕 🍨 list 🍨🐚🔡 separator 🔡 🍇
+    🍦 builder 🆕🔠🆕❗️
+    🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
+      🐻 builder 🍺🐽list i❗️ ❗️
+      🍊 i ➕ 1 ◀️ 🐔list❗️ 🍇
+        🐻 builder separator❗️
+      🍉
+    🍉
+    🍮 codePoints 🧠builder❗️
+    🍮 count 🐔builder❗️
   🍉
 🍉

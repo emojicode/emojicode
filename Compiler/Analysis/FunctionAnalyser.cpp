@@ -160,8 +160,8 @@ void FunctionAnalyser::analyseInitializationRequirements() {
 }
 
 Type FunctionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node, std::vector<CommonTypeFinder> *ctargs) {
-    auto returnType = ctargs != nullptr ? (*node)->analyse(this, TypeExpectation()) : expect(TypeExpectation(type),
-                                                                                             node);
+    auto returnType = ctargs != nullptr ? (*node)->analyse(this, TypeExpectation())
+                                        : expect(TypeExpectation(type), node);
     if (!returnType.compatibleTo(type, typeContext_, ctargs)) {
         throw CompilerError((*node)->position(), returnType.toString(typeContext_), " is not compatible to ",
                             type.toString(typeContext_), ".");

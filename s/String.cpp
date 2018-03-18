@@ -11,6 +11,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <cstring>
+#include <cctype>
 #include "utf8.h"
 
 using s::String;
@@ -40,24 +41,8 @@ String* String::fromCString(const char *cstring) {
     return string;
 }
 
-int String::compare(String *other) {
-    if (count != other->count) {
-        return count > other->count ? 1 : -1;
-    }
-
-    return std::memcmp(characters, other->characters, count * sizeof(Character));
-}
-
 extern "C" void sStringPrint(String *string) {
     puts(string->cString());
-}
-
-extern "C" runtime::Integer sStringCompare(String *string, String *b) {
-    return string->compare(b);
-}
-
-extern "C" char sStringEqual(String *string, String *b) {
-    return string->compare(b) == 0;
 }
 
 extern "C" char sStringBeginsWith(String *string, String *beginning) {
@@ -78,6 +63,32 @@ extern "C" char sStringEndsWith(String *string, String *ending) {
 
 extern "C" runtime::Integer sStringUtf8ByteCount(String *string) {
     return u8_codingsize(string->characters, string->count);
+}
+
+extern "C" String* sStringToLowercase(String *string) {
+    auto newString = String::allocateAndInitType();
+    newString->count = string->count;
+    newString->characters = runtime::allocate<String::Character>(string->count);
+
+    for (runtime::Integer i = 0; i < newString->count; i++) {
+        auto codePoint = string->characters[i];
+        newString->characters[i] = codePoint <= 'z' ? std::tolower(static_cast<unsigned char>(codePoint)) : codePoint;
+    }
+
+    return newString;
+}
+
+extern "C" String* sStringToUppercase(String *string) {
+    auto newString = String::allocateAndInitType();
+    newString->count = string->count;
+    newString->characters = runtime::allocate<String::Character>(string->count);
+
+    for (runtime::Integer i = 0; i < newString->count; i++) {
+        auto codePoint = string->characters[i];
+        newString->characters[i] = codePoint <= 'z' ? std::toupper(static_cast<unsigned char>(codePoint)) : codePoint;
+    }
+
+    return newString;
 }
 
 extern "C" String* sStringAppendSymbol(String *string, runtime::Symbol symbol) {
