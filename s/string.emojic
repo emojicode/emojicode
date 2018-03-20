@@ -213,8 +213,8 @@
     ↩️ 🐽 codePoints 🐚🔣 count ✖️⚖️🔣❗️
   🍉
 
-👴   📗 Converts the string to data encoded as UTF8. 📗
-👴   ❗️ 📇 ➡️ 📇 📻 🔤sStringToData🔤
+	📗 Converts the string to data encoded as UTF8. 📗
+	❗️ 📇 ➡️ 📇 📻 🔤sStringToData🔤
 
   📗 Returns an array with the symbols from this string. 📗
   ❗️ 🎶 ➡️ 🍨🐚🔣 🍇
@@ -277,7 +277,7 @@
 
   ❗️ 🐻 string 🔡 🍇
     🍦 stringSize 🐔string❗️
-    🍊 size ➕ stringSize ▶️ size 🍇
+    🍊 count ➕ stringSize ▶️ size 🍇
       🍮 size ➕ stringSize
       🏗 data size✖️⚖️🔣❗️
     🍉
@@ -308,7 +308,9 @@
     🍦 builder 🆕🔠🆕❗️
     🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
       🐻 builder 🍺🐽list i❗️ ❗️
+
       🍊 i ➕ 1 ◀️ 🐔list❗️ 🍇
+
         🐻 builder separator❗️
       🍉
     🍉

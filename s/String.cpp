@@ -8,6 +8,7 @@
 
 #include "../runtime/Runtime.h"
 #include "String.hpp"
+#include "Data.hpp"
 #include <cinttypes>
 #include <cstdio>
 #include <cstring>
@@ -137,4 +138,12 @@ extern "C" String* sStringAppendSymbol(String *string, runtime::Symbol symbol) {
     newString->count = string->count + 1;
     newString->characters = characters;
     return newString;
+}
+
+extern "C" s::Data* sStringToData(String *string) {
+    auto data = s::Data::allocateAndInitType();
+    data->count = u8_codingsize(string->characters, string->count);
+    data->data = runtime::allocate<runtime::Byte>(data->count);
+    u8_toutf8(reinterpret_cast<char *>(data->data), data->count, string->characters, string->count);
+    return data;
 }

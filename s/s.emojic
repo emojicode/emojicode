@@ -48,6 +48,7 @@
 📜 🔤integer.emojic🔤
 📜 🔤memory.emojic🔤
 📜 🔤real.emojic🔤
+📜 🔤byte.emojic🔤
 
 📗
   Symbol
@@ -89,7 +90,11 @@
 🍉
 
 📗 📇 is an abstract interface to binary data. 📗
-🌍 🐇 📇 🍇🍉
+🌍 🐇 📇 🍇
+  🍰 data 🧠
+  🍰 count 🔢
+🍉
+
 📗
   The 🍯 class represents a dictionary. [Read more in the
   language reference.](../../reference/the-s-package.html#-dictionaries)
@@ -206,55 +211,7 @@
 
 📜 🔤string.emojic🔤
 📜 🔤list.emojic🔤
-
-👴 🐋 📇 🍇
-👴   🐊 🐽🐚🔢
-👴   🐊 🔂🐚🔢
-👴   🐊 😛🐚📇
-
-👴   📗 Returns 👍 if this is equal to b. 📗
-👴   🙌 b 📇 ➡️ 👌 📻 1
-👴   📗 Returns the number of bytes represented by this instance. 📗
-👴   ❗️ 🐔 ➡️ 🔢 📻 2
-👴   📗
-👴     Returns an integer representing the value of the byte at the given index
-👴     `index`. A negative index is assumed to be relative to the end of the data.
-
-👴     This method treats the byte at the index as if it was an unsigned value, that is the front most
-👴     bit is also counted towards the value and does not indicate the sign. The value is therefore
-👴     always positive.
-
-👴     Nothingness is returned if the index is out of range.
-👴   📗
-👴   ❗️ 🐽 index 🔢 ➡️ 🍬🔢 📻 3
-👴   📗
-👴     If this object represents the bytes of a UTF8 encoded text this method
-👴     returns a string representing that text. Nothingness is returned if this
-👴     object does not represent a valid UTF8 sequence.
-👴   📗
-👴   ❗️ 🔡 ➡️ 🍬🔡 📻 4
-👴   📗
-👴     Returns a copy of the data within the given range. This method employes
-👴     various techniques to make this as efficient as possible.
-👴   📗
-👴   ❗️ 🔪 from 🔢 length 🔢 ➡️ 📇 📻 5
-👴   📗
-👴     Finds the first occurrences of *search* in the bytes represented by this
-👴     instance. Search is done from left to right. Nothingness is returned if
-👴     *search* cannot be found. 0 is returned if *search* is empty.
-👴   📗
-👴   ❗️ 🔍 search 📇 ➡️ 🍬🔢 📻 6
-👴   📗
-👴     Creates a new data object by with the bytes of this instance and *b*
-👴     concatenated.
-👴   📗
-👴   ❗️ 📝 b 📇 ➡️ 📇 📻 7
-
-👴   📗 Returns an iterator to iterate over the bytes of this data object. 📗
-👴   ❗️ 🍡 ➡️ 🌳🐚🔢 🍇
-👴     ↩️ 🆕🌳🐚🔢🆕 🐕❗️
-👴   🍉
-👴 🍉
+📜 🔤data.emojic🔤
 
 👴 🐋 🍯 🍇
 👴   📗 Creates an empty 🍯. 📗

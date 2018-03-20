@@ -106,6 +106,7 @@ public:
     ValueType *sInteger = nullptr;
     ValueType *sReal = nullptr;
     ValueType *sMemory = nullptr;
+    ValueType *sByte = nullptr;
 
     ~Compiler();
 

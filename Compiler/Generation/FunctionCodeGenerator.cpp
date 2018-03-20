@@ -208,6 +208,10 @@ std::pair<llvm::Value*, llvm::Value*>
     return std::make_pair(phi1, phi2);
 }
 
+llvm::Value* FunctionCodeGenerator::int8(int8_t value) {
+    return llvm::ConstantInt::get(llvm::Type::getInt8Ty(generator()->context()), value);
+}
+
 llvm::Value* FunctionCodeGenerator::int16(int16_t value) {
     return llvm::ConstantInt::get(llvm::Type::getInt16Ty(generator()->context()), value);
 }

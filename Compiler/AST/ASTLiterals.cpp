@@ -29,18 +29,23 @@ Type ASTBooleanFalse::analyse(FunctionAnalyser *analyser, const TypeExpectation 
 }
 
 Type ASTNumberLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sReal
-        && type_ == NumberType::Integer) {
-        type_ = NumberType::Double;
-        doubleValue_ = integerValue_;
+    if (type_ == NumberType::Integer) {
+        if (expectation == analyser->real()) {
+            type_ = NumberType::Double;
+            doubleValue_ = integerValue_;
+            return analyser->real();
+        }
+        if (expectation == analyser->byte()) {
+            if (integerValue_ > 255) {
+                analyser->compiler()->warn(position(), "Literal implicitly is a byte integer literal but value does ",
+                                           "not fit into byte type.");
+            }
+            type_ = NumberType::Byte;
+            return analyser->byte();
+        }
+        return analyser->integer();
     }
-
-    switch (type_) {
-        case NumberType::Integer:
-            return analyser->integer();
-        case NumberType::Double:
-            return analyser->doubleType();
-    }
+    return analyser->real();
 }
 
 Type ASTSymbolLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {

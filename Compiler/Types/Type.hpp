@@ -199,8 +199,17 @@ public:
     void setMutable(bool b) { mutable_ = b; }
 
     inline bool operator<(const Type &rhs) const {
-        return std::tie(typeContent_, typeDefinition_, rhs.genericArguments_)
-                < std::tie(rhs.typeContent_, rhs.typeDefinition_, rhs.genericArguments_);
+        return std::tie(typeContent_, typeDefinition_, rhs.genericArguments_, genericArgumentIndex_,
+                        localResolutionConstraint_) < std::tie(rhs.typeContent_, rhs.typeDefinition_,
+                                                               rhs.genericArguments_, rhs.genericArgumentIndex_,
+                                                               rhs.localResolutionConstraint_);
+    }
+
+    inline bool operator==(const Type &rhs) const {
+        return std::tie(typeContent_, typeDefinition_, rhs.genericArguments_, genericArgumentIndex_,
+                        localResolutionConstraint_) == std::tie(rhs.typeContent_, rhs.typeDefinition_,
+                                                                rhs.genericArguments_, rhs.genericArgumentIndex_,
+                                                                rhs.localResolutionConstraint_);
     }
 protected:
     Type(bool isReference, bool forceBox, bool isMutable)

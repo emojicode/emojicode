@@ -46,8 +46,9 @@ public:
 
     Type integer();
     Type boolean();
-    Type doubleType();
+    Type real();
     Type symbol();
+    Type byte();
 
     /// Parses an expression node, verifies it return type and boxes it according to the given expectation.
     /// Calls @c expect internally.

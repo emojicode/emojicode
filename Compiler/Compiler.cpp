@@ -173,6 +173,7 @@ void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
     sReal = getStandardValueType(std::u32string(1, E_HUNDRED_POINTS_SYMBOL), s, errorPosition);
     sSymbol = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition);
     sMemory = getStandardValueType(std::u32string(1, E_BRAIN), s, errorPosition);
+    sByte = getStandardValueType(std::u32string(1, 0x1F4A7), s, errorPosition);
 
     sString = getStandardClass(std::u32string(1, 0x1F521), s, errorPosition);
     sList = getStandardClass(std::u32string(1, 0x1F368), s, errorPosition);

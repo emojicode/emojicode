@@ -57,6 +57,7 @@ public:
     llvm::Value* getObjectMetaPtr(llvm::Value *object);
     llvm::Value* getMakeNoValue(llvm::Value *box);
 
+    llvm::Value* int8(int8_t value);
     llvm::Value* int16(int16_t value);
     llvm::Value* int32(int32_t value);
     llvm::Value* int64(int64_t value);

@@ -1,0 +1,93 @@
+🐋 📇 🍇
+  🐊 🐽🐚💧
+  🐊 🔂🐚💧
+  🐊 😛🐚📇
+
+  📗 Creates a string by copying the memory from the provided memory. 📗
+  🆕 🧠 memory 🧠 🍼 count 🔢 🍇
+    🍮 data 🆕🧠🆕 count❗️
+    🚜 data 0 memory 0 count❗️
+  🍉
+
+  ❗️🧠 ➡️ 🧠 🍇
+		↩️ data
+  🍉
+
+  📗 Returns 👍 if this is equal to b. 📗
+  🙌 b 📇 ➡️ 👌 🍇
+     🍊 ❎🐔 b❗️🙌 count❗️ 🍇
+       ↩️ 👎
+     🍉
+     🍊 🐔 b❗️ ▶️ count 🍇
+       ↩️ 👍
+     🍉
+
+     ↩️ ↔️ data 🧠b❗️ count❗️ 🙌 0
+   🍉
+
+  📗 Returns the number of bytes represented by this instance. 📗
+  ❗️ 🐔 ➡️ 🔢 🍇
+		↩️ count
+	🍉
+
+  📗
+    Returns the value of the byte at *index*.
+
+    No value is returned if the index is out of range.
+  📗
+  ❗️ 🐽 index 🔢 ➡️ 🍬💧 🍇
+		🍊 index ▶️🙌 count 🍇
+			↩️🤷‍♀️
+		🍉
+		↩️ 🐽 data🐚💧 index❗️
+	🍉
+
+  📗
+    If this object represents the bytes of a UTF8 encoded text this method
+    returns a string representing that text. Nothingness is returned if this
+    object does not represent a valid UTF8 sequence.
+  📗
+  ❗️ 🔡 ➡️ 🍬🔡 📻 🔤sDataAsString🔤
+
+  📗
+    Returns a copy of the data within the given range. This method employes
+    various techniques to make this as efficient as possible.
+  📗
+  ❗️ 🔪 from 🔢 length 🔢 ➡️ 📇 🍇
+    🍊 from ▶️️🙌 count 🍇
+    	↩️ 🆕📇🧠 🆕🧠🆕 0❗️ 0❗️
+    🍉
+    🍮 normal_length length
+    🍊 from ➕ length ▶️️🙌 count 🍇
+      🍮 normal_length count ➖ from
+    🍉
+
+    🍦 new 🆕🧠🆕 normal_length❗️
+    🚜 new 0 data from normal_length❗️
+    ↩️ 🆕📇🧠 new normal_length❗️
+  🍉
+
+  📗
+    Finds the first occurrences of *search* in the bytes represented by this
+    instance. Search is done from left to right. No value is returned if
+    *search* cannot be found. 0 is returned if *search* is empty.
+  📗
+  ❗️ 🔍 search 📇 offset 🔢 ➡️ 🍬🔢 📻 🔤sDataFindFromIndex🔤
+
+  📗
+    Creates a new data object by with the bytes of this instance and *b*
+    concatenated.
+  📗
+  ➕ b 📇 ➡️ 📇 🍇
+		🍦 new_count count ➕ 🐔b❗️
+    🍦 new 🆕🧠🆕 new_count ❗️
+    🚜 new 0 data 0 count❗️
+		🚜 new count 🧠b❗️0 🐔b❗️❗️
+    ↩️ 🆕📇🧠 new new_count❗️
+  🍉
+
+  📗 Returns an iterator to iterate over the bytes of this data object. 📗
+  ❗️ 🍡 ➡️ 🌳🐚💧 🍇
+    ↩️ 🆕🌳🐚💧🆕 🐕❗️
+  🍉
+🍉

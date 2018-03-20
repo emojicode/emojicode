@@ -21,8 +21,13 @@ class ASTMethodable : public ASTExpr {
 protected:
     explicit ASTMethodable(const SourcePosition &p) : ASTExpr(p), args_(p) {}
     ASTMethodable(const SourcePosition &p, ASTArguments args) : ASTExpr(p), args_(std::move(args)) {}
+
     Type analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
                            std::shared_ptr<ASTExpr> &callee);
+    /// Analyses this node as method call.
+    /// @param otype Result of analysing `callee` with TypeExpectation `TypeExpectation()`.
+    Type analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name, std::shared_ptr<ASTExpr> &callee,
+                           const Type &otype);
 
     enum class BuiltInType {
         None,

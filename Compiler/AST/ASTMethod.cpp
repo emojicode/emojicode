@@ -18,6 +18,12 @@ namespace EmojicodeCompiler {
 Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee) {
     Type otype = callee->analyse(analyser, TypeExpectation());
+    return analyseMethodCall(analyser, name, callee, otype);
+
+}
+
+Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+                                      std::shared_ptr<ASTExpr> &callee, const Type &otype) {
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     if (builtIn(analyser, type, name)) {
         analyser->comply(otype, TypeExpectation(false, false), &callee);

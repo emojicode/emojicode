@@ -27,7 +27,7 @@
 
 namespace EmojicodeCompiler {
 
-Type FunctionAnalyser::doubleType() {
+Type FunctionAnalyser::real() {
     return Type(compiler()->sReal);
 }
 
@@ -41,6 +41,10 @@ Type FunctionAnalyser::boolean() {
 
 Type FunctionAnalyser::symbol() {
     return Type(compiler()->sSymbol);
+}
+
+Type FunctionAnalyser::byte() {
+    return Type(compiler()->sByte);
 }
 
 Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp) {

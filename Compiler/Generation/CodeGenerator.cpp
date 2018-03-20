@@ -82,7 +82,7 @@ void CodeGenerator::generate(const std::string &outPath) {
     generateFunctions();
 
     llvm::verifyModule(*module(), &llvm::outs());
-    llvm::outs() << *module();
+    // llvm::outs() << *module();
     emit(outPath);
 }
 

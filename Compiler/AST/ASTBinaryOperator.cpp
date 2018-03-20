@@ -34,9 +34,8 @@ Type ASTBinaryOperator::analyse(FunctionAnalyser *analyser, const TypeExpectatio
         return pair.second.returnType;
     }
 
-    Type type = analyser->comply(otype, TypeExpectation(true, false), &left_);
     args_.addArguments(right_);
-    return analyseMethodCall(analyser, operatorName(operator_), left_);
+    return analyseMethodCall(analyser, operatorName(operator_), left_, otype);
 }
 
 Type ASTBinaryOperator::analyseIsNoValue(FunctionAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
@@ -57,7 +56,7 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
                     builtIn_ = BuiltInType::DoubleMultiply;
-                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
+                    return std::make_pair(true, BuiltIn(analyser->real()));
                 case OperatorType::LessOperator:
                     builtIn_ = BuiltInType::DoubleLess;
                     return std::make_pair(true, BuiltIn(analyser->boolean()));
@@ -72,16 +71,16 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                     return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::DivisionOperator:
                     builtIn_ = BuiltInType::DoubleDivide;
-                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
+                    return std::make_pair(true, BuiltIn(analyser->real()));
                 case OperatorType::PlusOperator:
                     builtIn_ = BuiltInType::DoubleAdd;
-                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
+                    return std::make_pair(true, BuiltIn(analyser->real()));
                 case OperatorType::MinusOperator:
                     builtIn_ = BuiltInType::DoubleSubstract;
-                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
+                    return std::make_pair(true, BuiltIn(analyser->real()));
                 case OperatorType::RemainderOperator:
                     builtIn_ = BuiltInType::DoubleRemainder;
-                    return std::make_pair(true, BuiltIn(analyser->doubleType()));
+                    return std::make_pair(true, BuiltIn(analyser->real()));
                 case OperatorType::EqualOperator:
                     builtIn_ = BuiltInType::DoubleEqual;
                     return std::make_pair(true, BuiltIn(analyser->boolean()));
@@ -89,20 +88,24 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                     break;
             }
         }
-        else if (type.valueType() == analyser->compiler()->sInteger) {
+        else if (type.valueType() == analyser->compiler()->sInteger ||
+                 type.valueType() == analyser->compiler()->sByte) {
+            auto returnType = type;
+            returnType.setReference(false);
+            returnType.unbox();
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
                     builtIn_ = BuiltInType::IntegerMultiply;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::BitwiseAndOperator:
                     builtIn_ = BuiltInType::IntegerAnd;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::BitwiseOrOperator:
                     builtIn_ = BuiltInType::IntegerOr;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::BitwiseXorOperator:
                     builtIn_ = BuiltInType::IntegerXor;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::LessOperator:
                     builtIn_ = BuiltInType::IntegerLess;
                     return std::make_pair(true, BuiltIn(analyser->boolean()));
@@ -117,22 +120,22 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                     return std::make_pair(true, BuiltIn(analyser->boolean()));
                 case OperatorType::ShiftLeftOperator:
                     builtIn_ = BuiltInType::IntegerLeftShift;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::ShiftRightOperator:
                     builtIn_ = BuiltInType::IntegerRightShift;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::DivisionOperator:
                     builtIn_ = BuiltInType::IntegerDivide;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::PlusOperator:
                     builtIn_ = BuiltInType::IntegerAdd;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::MinusOperator:
                     builtIn_ = BuiltInType::IntegerSubstract;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 case OperatorType::RemainderOperator:
                     builtIn_ = BuiltInType::IntegerRemainder;
-                    return std::make_pair(true, BuiltIn(analyser->integer()));
+                    return std::make_pair(true, BuiltIn(returnType));
                 default:
                     break;
             }

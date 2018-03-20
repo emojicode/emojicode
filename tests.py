@@ -75,7 +75,7 @@ library_tests = [
     "mathTest",
     "rangeTest",
     "stringTest",
-    # "dataTest",
+    "dataTest",
     "systemTest",
     "listTest",
     # "enumerator",  "dictionaryTest",

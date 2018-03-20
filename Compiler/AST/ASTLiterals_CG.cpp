@@ -29,6 +29,8 @@ Value* ASTBooleanFalse::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fg) const {
     switch (type_) {
+        case NumberType::Byte:
+            return fg->int8(integerValue_);
         case NumberType::Integer:
             return fg->int64(integerValue_);
         case NumberType::Double:

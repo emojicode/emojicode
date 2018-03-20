@@ -55,7 +55,7 @@ public:
     void toCode(Prettyprinter &pretty) const override;
 private:
     enum class NumberType {
-        Double, Integer
+        Double, Integer, Byte
     };
 
     std::u32string string_;

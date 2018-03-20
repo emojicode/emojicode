@@ -14,6 +14,7 @@
 #include "Mangler.hpp"
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "Types/TypeDefinition.hpp"
+#include "Types/Class.hpp"
 #include <llvm/IR/DerivedTypes.h>
 #include <AST/ASTClosure.hpp>
 
@@ -44,6 +45,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) :
     types_.emplace(Type(compiler->sReal), llvm::Type::getDoubleTy(context_));
     types_.emplace(Type(compiler->sBoolean), llvm::Type::getInt1Ty(context_));
     types_.emplace(Type(compiler->sMemory), llvm::Type::getInt8PtrTy(context_));
+    types_.emplace(Type(compiler->sByte), llvm::Type::getInt8Ty(context_));
 }
 
 llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType) {
@@ -62,7 +64,8 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     if (function->functionType() == FunctionType::Closure) {
         args.emplace_back(llvm::Type::getInt8PtrTy(context_));
     }
-    else if (hasThisArgument(function->functionType())) {
+    else if (hasThisArgument(function->functionType()) &&
+            !(function->owningType().type() == TypeType::Class && function->owningType().eclass()->foreign())) {
         args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
     }
     std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [this](auto &arg) {
