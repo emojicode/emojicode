@@ -77,9 +77,9 @@ std::u32string operatorName(OperatorType type) {
         case OperatorType::LessOperator:
             return std::u32string(1, E_LEFT_POINTING_TRIANGLE);
         case OperatorType::GreaterOperator:
-            return std::u32string(1, E_RIGHT_POINTING_TRIANGLE);
+            return { E_RIGHT_POINTING_TRIANGLE, E_HANDS_RAISED_IN_CELEBRATION };
         case OperatorType::LessOrEqualOperator:
-            return std::u32string(1, E_LEFTWARDS_ARROW);
+            return { E_LEFT_POINTING_TRIANGLE, E_HANDS_RAISED_IN_CELEBRATION };
         case OperatorType::GreaterOrEqualOperator:
             return std::u32string(1, E_RIGHTWARDS_ARROW);
         case OperatorType::BitwiseAndOperator:
