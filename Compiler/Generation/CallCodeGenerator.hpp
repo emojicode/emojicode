@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <llvm/IR/Instructions.h>
+#include <Functions/Function.hpp>
 
 namespace llvm {
 class Value;
@@ -30,15 +31,19 @@ public:
     CallCodeGenerator(FunctionCodeGenerator *fg, CallType callType) : fg_(fg), callType_(callType) {}
     llvm::Value* generate(llvm::Value *callee, const Type &calleeType, const ASTArguments &args,
                           const std::u32string &name);
+
+    CallType callType() const { return callType_; }
 protected:
     virtual Function *lookupFunction(const Type &type, const std::u32string &name, bool imperative);
     llvm::Value *createCall(const std::vector<llvm::Value *> &args, const Type &type, const std::u32string &name,
                             bool imperative, const std::vector<Type> &genericArguments);
+
     FunctionCodeGenerator* fg() const { return fg_; }
 private:
-    llvm::Value *createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args, const std::vector<Type> &genericArgs);
-    llvm::Value *createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args, const Type &calleeType,
-                                                   const std::vector<Type> &genericArgs);
+    llvm::Value *createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args,
+                                       const std::vector<Type> &genericArgs);
+    llvm::Value *createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
+                                               const Type &calleeType, const std::vector<Type> &genericArgs);
     llvm::Value *dispatchFromVirtualTable(Function *function, llvm::Value *virtualTable,
                                               const std::vector<llvm::Value *> &args,
                                               const std::vector<Type> &genericArguments);

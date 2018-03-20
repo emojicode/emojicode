@@ -65,6 +65,9 @@ llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
     if (callType_ == CallType::DynamicProtocolDispatch) {
         argTypes.front() = llvm::Type::getInt8PtrTy(fg()->generator()->context());
     }
+    else if (callType_ == CallType::DynamicDispatch) {
+        argTypes.front() = args.front()->getType();
+    }
 
     auto funcType = llvm::FunctionType::get(reification.functionType()->getReturnType(), argTypes, false);
     auto func = fg()->builder().CreateBitCast(dispatchedFunc, funcType->getPointerTo(), "dispatchFunc");
