@@ -15,6 +15,7 @@
 #include <type_traits>
 
 extern "C" int8_t* ejcAlloc(int64_t size);
+extern "C" [[noreturn]] void ejcPanic(const char *message);
 
 namespace runtime {
 

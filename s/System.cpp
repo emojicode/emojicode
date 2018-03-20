@@ -24,3 +24,6 @@ extern "C" runtime::SimpleOptional<s::String*> sSystemGetEnv(runtime::ClassType,
     return runtime::NoValue;
 }
 
+extern "C" [[noreturn]] void sPanic(runtime::ClassType, s::String *message) {
+    ejcPanic(message->cString());
+}

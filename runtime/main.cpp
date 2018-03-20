@@ -9,7 +9,9 @@
 #include <cinttypes>
 #include <cstdlib>
 #include <cstring>
+#include <iostream>
 #include "Runtime.h"
+#include "backward.hpp"
 
 int argc;
 char **argv;
@@ -39,9 +41,14 @@ extern "C" runtime::Integer ejcMemoryCompare(int8_t **self, int8_t *other, runti
     return std::memcmp(*self, other, bytes);
 }
 
-extern "C" void ejcErrNoValue(int64_t line, runtime::Integer character) {
-    printf("💣 Fatal Error: Unwrapped an optional that contained no value. (line %" PRId64 ", character %"
-           PRId64 ")\n", line, character);
+extern "C" [[noreturn]] void ejcPanic(const char *message) {
+    std::cout << "🤯 Program panicked: " << message << std::endl;
+
+    backward::StackTrace st;
+    st.load_here(32);
+    backward::Printer p;
+    p.print(st);
+
     abort();
 }
 

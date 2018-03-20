@@ -23,7 +23,7 @@
     🍮 codePoints 🆕🧠🆕 count ✖️⚖️🔣❗️
 
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-      🐷 codePoints 🍺🐽symbolList i❗️ i ✖️⚖️🔣❗️
+      🐷 codePoints 🐽symbolList i❗️ i ✖️⚖️🔣❗️
     🍉
   🍉
 
@@ -307,7 +307,7 @@
   🆕 🍨 list 🍨🐚🔡 separator 🔡 🍇
     🍦 builder 🆕🔠🆕❗️
     🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
-      🐻 builder 🍺🐽list i❗️ ❗️
+      🐻 builder 🐽list i❗️ ❗️
 
       🍊 i ➕ 1 ◀️ 🐔list❗️ 🍇
 

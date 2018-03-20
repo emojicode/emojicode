@@ -32,5 +32,13 @@
   📗
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
   📗
-  🐇❗️ 🕰 ➡️ 🔢📻 🔤sSystemUnixTimestamp🔤
+  🐇❗️ 🕰 ➡️ 🔢 📻 🔤sSystemUnixTimestamp🔤
+
+  📗
+    Panic. Aborts the program with the provided message. 
+
+    >!N Only use this function when the program hits upon an error so serious
+    >!N that recovery is impossible.
+  📗
+  🐇❗️ 🤯 message 🔡 📻 🔤sPanic🔤
 🍉

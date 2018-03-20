@@ -21,7 +21,7 @@ public:
     Declarator(llvm::LLVMContext &context, llvm::Module &module, LLVMTypeHelper &typeHelper);
 
     llvm::Function* runTimeNew() const { return runTimeNew_; }
-    llvm::Function* errNoValue() const { return errNoValue_; }
+    llvm::Function* panic() const { return panic_; }
     llvm::GlobalVariable* classValueTypeMeta() { return classValueTypeMeta_; }
 
     void declareImportedPackageSymbols(Package *package);
@@ -36,7 +36,7 @@ private:
     LLVMTypeHelper &typeHelper_;
 
     llvm::Function *runTimeNew_;
-    llvm::Function *errNoValue_;
+    llvm::Function *panic_;
     llvm::GlobalVariable *classValueTypeMeta_;
 
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);

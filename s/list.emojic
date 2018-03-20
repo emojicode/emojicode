@@ -53,23 +53,25 @@
   🍉
 
   📗
-    Gets the item at `index` in `O(1)`. If the index is invalid no value is
-    returned.
+    Gets the item at *index*` in `O(1)`. *index* must be greater than 0 and less
+    than [[🐔❗️]].
   📗
-  ❗️ 🐽 index 🔢 ➡️ 🍬Element 🍇
-    🍊 index ◀️ count 🍇
-      ↩️ 🐽 data index✖️⚖️Element❗️
+  ❗️ 🐽 index 🔢 ➡️ Element 🍇
+    🍊 index ▶️ count 👐 index ◀️ 0 🍇
+      🍩🤯💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
     🍉
-    ↩️ 🤷‍♀️
+    ↩️ 🐽 data index✖️⚖️Element❗️
   🍉
 
   📗
-    Sets `value` at `index`. `index` must be less than [[🐔❗️]].
+    Sets *value* at *index*. *index* must be greater than 0 and less
+    than [[🐔❗️]].
   📗
   ❗️ 🐷 index 🔢 value Element 🍇
-    🍊 index ◀️ count 🍇
-      🐷 data value index✖️⚖️Element❗️
+    🍊 index ▶️ count 👐 index ◀️ 0 🍇
+      🍩🤯💻 🔤Index out of bounds in 🍨🐷🔤 ❗️
     🍉
+    🐷 data value index✖️⚖️Element❗️
   🍉
 
  📗

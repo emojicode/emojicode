@@ -28,9 +28,7 @@ Declarator::Declarator(llvm::LLVMContext &context, llvm::Module &module, LLVMTyp
 void EmojicodeCompiler::Declarator::declareRunTime() {
     runTimeNew_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(context_),
                                          llvm::Type::getInt64Ty(context_));
-    errNoValue_ = declareRunTimeFunction("ejcErrNoValue", llvm::Type::getVoidTy(context_), std::vector<llvm::Type *> {
-            llvm::Type::getInt64Ty(context_), llvm::Type::getInt64Ty(context_)
-    });
+    panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(context_), llvm::Type::getInt8PtrTy(context_));
 
     classValueTypeMeta_ = new llvm::GlobalVariable(module_, typeHelper_.valueTypeMeta(), true,
                                                    llvm::GlobalValue::LinkageTypes::ExternalLinkage,

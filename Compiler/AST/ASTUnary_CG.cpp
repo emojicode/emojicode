@@ -21,9 +21,11 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     auto hasNoValue = isBox ? fg->getHasNoValueBox(optional) : fg->getHasNoValue(optional);
 
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
-        fg->builder().CreateCall(fg->generator()->declarator().errNoValue(), std::vector<llvm::Value*> {
-            fg->int64(position().line), fg->int64(position().character),
-        });
+        std::stringstream str;
+        str << "Unwrapped an optional that contained no value.";
+        str << " (" << position().file << ":" << position().line << ":" << position().character << ")";
+        auto string = fg->builder().CreateGlobalStringPtr(str.str());
+        fg->builder().CreateCall(fg->generator()->declarator().panic(), string);
         fg->builder().CreateUnreachable();
         return false;
     }, []() { return true; });
