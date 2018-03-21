@@ -10,7 +10,7 @@
   🍉
 
   ❗️🧠 ➡️ 🧠 🍇
-		↩️ data
+    ↩️ data
   🍉
 
   📗 Returns 👍 if this is equal to b. 📗
@@ -28,8 +28,8 @@
 
   📗 Returns the number of bytes represented by this instance. 📗
   ❗️ 🐔 ➡️ 🔢 🍇
-		↩️ count
-	🍉
+    ↩️ count
+  🍉
 
   📗
     Returns the value of the byte at *index*.
@@ -37,13 +37,13 @@
     No value is returned if the index is out of range.
   📗
   ❗️ 🐽 index 🔢 ➡️ 🍬💧 🍇
-		🍊 index ▶️🙌 count 🍇
-			↩️🤷‍♀️
-		🍉
-    ☣️ 🍇
-		  ↩️ 🐽 data🐚💧 index❗️
+    🍊 index ▶️🙌 count 🍇
+      ↩️🤷‍♀️
     🍉
-	🍉
+    ☣️ 🍇
+      ↩️ 🐽 data🐚💧 index❗️
+    🍉
+  🍉
 
   📗
     If this object represents the bytes of a UTF8 encoded text this method
@@ -59,7 +59,7 @@
   ❗️ 🔪 from 🔢 length 🔢 ➡️ 📇 🍇
     🍊 from ▶️️🙌 count 🍇
       ☣️ 🍇
-    	  ↩️ 🆕📇🧠 🆕🧠🆕 0❗️ 0❗️
+        ↩️ 🆕📇🧠 🆕🧠🆕 0❗️ 0❗️
       🍉
     🍉
     length ➡️ 🖍🆕normal_length
@@ -86,11 +86,11 @@
     concatenated.
   📗
   ➕ b 📇 ➡️ 📇 🍇
-		count ➕ 🐔b❗️ ➡️ new_count
+    count ➕ 🐔b❗️ ➡️ new_count
     ☣️ 🍇
       🆕🧠🆕 new_count ❗️ ➡️ new
       🚜 new 0 data 0 count❗️
-  		🚜 new count 🧠b❗️0 🐔b❗️❗️
+      🚜 new count 🧠b❗️0 🐔b❗️❗️
       ↩️ 🆕📇🧠 new new_count❗️
     🍉
   🍉
