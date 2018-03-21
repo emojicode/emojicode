@@ -55,7 +55,6 @@ void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTVariableDeclareAndAssign::analyse(FunctionAnalyser *analyser) {
-    setDeclares();
     Type t = analyser->expect(TypeExpectation(false, true), &expr_);
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, false, position());
     var.initialize();
@@ -71,7 +70,6 @@ void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
-    setDeclares();
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, true, position());
     var.initialize();

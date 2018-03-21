@@ -67,35 +67,37 @@ private:
 /// from this class. The act of initializing a variable may occur repeatedly per variable.
 class ASTVariableInit : public ASTStatement, public AccessesAnyVariable {
 protected:
-    ASTVariableInit(std::shared_ptr<ASTExpr> e, const SourcePosition &p, std::u32string name)
-            : ASTStatement(p), AccessesAnyVariable(std::move(name)), expr_(std::move(e)) {}
+    ASTVariableInit(std::shared_ptr<ASTExpr> e, const SourcePosition &p, std::u32string name, bool declare)
+            : ASTStatement(p), AccessesAnyVariable(std::move(name)), expr_(std::move(e)), declare_(declare) {}
     std::shared_ptr<ASTExpr> expr_;
 
     /// Generates code to retrieve the pointer to the variable’s address, to which a value can be stored.
     /// If setDeclares() was used to configure this node, stack memory will be allocated.
     Value *variablePointer(FunctionCodeGenerator *fg) const;
-    /// Configures this node to allocate stack memory for this variable before trying to initialize it.
-    void setDeclares() { declare_ = true; }
 
     virtual void generateAssignment(FunctionCodeGenerator *) const = 0;
 private:
     void generate(FunctionCodeGenerator *) const final;
-    bool declare_ = false;
+    const bool declare_;
 };
 
 class ASTVariableAssignment : public ASTVariableInit {
 public:
     ASTVariableAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,
-                          const SourcePosition &p) : ASTVariableInit(e, p, std::move(name)) {}
+                          const SourcePosition &p) : ASTVariableInit(e, p, std::move(name), false) {}
     void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const final;
     void toCode(Prettyprinter &pretty) const override;
+
+protected:
+    ASTVariableAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,
+                          const SourcePosition &p, bool declare) : ASTVariableInit(e, p, std::move(name), declare) {}
 };
 
 class ASTVariableDeclareAndAssign : public ASTVariableAssignment {
 public:
     ASTVariableDeclareAndAssign(std::u32string name, const std::shared_ptr<ASTExpr> &e,
-    const SourcePosition &p) : ASTVariableAssignment(std::move(name), e, p) {}
+                                const SourcePosition &p) : ASTVariableAssignment(std::move(name), e, p, true) {}
     void analyse(FunctionAnalyser *analyser) override;
     void toCode(Prettyprinter &pretty) const override;
 };
@@ -111,7 +113,7 @@ public:
 class ASTConstantVariable final : public ASTVariableInit {
 public:
     ASTConstantVariable(std::u32string name, const std::shared_ptr<ASTExpr> &e,
-                         const SourcePosition &p) : ASTVariableInit(e, p, std::move(name)) {}
+                         const SourcePosition &p) : ASTVariableInit(e, p, std::move(name), true) {}
 
     void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const override;
