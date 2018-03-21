@@ -21,7 +21,7 @@ class Initializer;
 class CompilerError;
 
 using TypeBodyAttributeParser = AttributeParser<Attribute::Deprecated, Attribute::Final, Attribute::Override,
-    Attribute::StaticOnType, Attribute::Mutating, Attribute::Required>;
+    Attribute::StaticOnType, Attribute::Unsafe, Attribute::Mutating, Attribute::Required>;
 
 /// Instances of subclasses of TypeBodyParser are used to parse the $type-body$ of $type-definition$s, which are
 /// represented by TypeDefinition. This class is abstract.

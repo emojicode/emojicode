@@ -74,6 +74,13 @@ void FunctionAnalyser::checkFunctionUse(Function *function, const SourcePosition
     }
 
     deprecatedWarning(function, p);
+    checkFunctionSafety(function, p);
+}
+
+void FunctionAnalyser::checkFunctionSafety(Function *function, const SourcePosition &p) const {
+    if (function->unsafe() && !inUnsafeBlock_) {
+        compiler()->error(CompilerError(p, "Use of unsafe function ", utf8(function->name()), " requires ☣️  block."));
+    }
 }
 
 void FunctionAnalyser::deprecatedWarning(Function *function, const SourcePosition &p) const {

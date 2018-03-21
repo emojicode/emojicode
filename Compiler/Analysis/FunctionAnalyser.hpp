@@ -30,11 +30,12 @@ class FunctionAnalyser {
 public:
     FunctionAnalyser(Function *function, SemanticAnalyser *analyser) :
             scoper_(std::make_unique<SemanticScoper>(SemanticScoper::scoperForFunction(function))),
-            typeContext_(function->typeContext()), function_(function), analyser_(analyser) {}
+            typeContext_(function->typeContext()), function_(function), analyser_(analyser),
+            inUnsafeBlock_(function->unsafe()) {}
 
     FunctionAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper, SemanticAnalyser *analyser) :
             scoper_(std::move(scoper)), typeContext_(function->typeContext()), function_(function),
-            analyser_(analyser) {}
+            analyser_(analyser), inUnsafeBlock_(function->unsafe()) {}
     void analyse();
 
     PathAnalyser& pathAnalyser() { return pathAnalyser_; }
@@ -49,6 +50,9 @@ public:
     Type real();
     Type symbol();
     Type byte();
+
+    void setInUnsafeBlock(bool v) { inUnsafeBlock_ = v; }
+    bool isInUnsafeBlock() const { return inUnsafeBlock_; }
 
     /// Parses an expression node, verifies it return type and boxes it according to the given expectation.
     /// Calls @c expect internally.
@@ -80,6 +84,8 @@ private:
     Function *function_;
     SemanticAnalyser *analyser_;
 
+    bool inUnsafeBlock_;
+
     /// Issues a warning at the given position if the function is deprecated.
     void deprecatedWarning(Function *function, const SourcePosition &p) const;
 
@@ -103,6 +109,8 @@ private:
     void boxToSimple(Type &exprType, std::shared_ptr<ASTExpr> *node) const;
 
     void boxToSimpleOptional(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
+
+    void checkFunctionSafety(Function *function, const SourcePosition &p) const;
 };
 
 }  // namespace EmojicodeCompiler

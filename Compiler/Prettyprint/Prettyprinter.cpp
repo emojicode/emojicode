@@ -243,6 +243,9 @@ void Prettyprinter::printFunctionAttributes(Function *function, bool noMutate) {
     if (function->overriding()) {
         stream_ << "✒️ ";
     }
+    if (function->unsafe()) {
+        stream_ << "☣️ ";
+    }
     if (function->owningType().type() == TypeType::ValueType && function->mutating() && !noMutate) {
         stream_ << "🖍 ";
     }

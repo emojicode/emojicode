@@ -23,7 +23,7 @@ class TokenStream;
 
 enum class Attribute : char32_t {
     Deprecated = E_WARNING_SIGN, Final = E_LOCK_WITH_INK_PEN, Override = E_BLACK_NIB, StaticOnType = E_RABBIT,
-    Mutating = E_CRAYON, Required = E_KEY, Export = E_EARTH_GLOBE_EUROPE_AFRICA, Foreign = E_RADIO,
+    Required = E_KEY, Export = E_EARTH_GLOBE_EUROPE_AFRICA, Foreign = E_RADIO, Unsafe = E_BIOHAZARD, Mutating = E_CRAYON
 };
 
 template <Attribute ...Attributes>
@@ -59,6 +59,8 @@ private:
         switch (attr) {
             case Attribute::Mutating:
                 return stream->consumeTokenIf(TokenType::Mutable);
+            case Attribute ::Unsafe:
+                return stream->consumeTokenIf(TokenType::Unsafe);
             default:
                 return stream->consumeTokenIf(static_cast<char32_t>(attr));
         }

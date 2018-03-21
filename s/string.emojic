@@ -6,8 +6,10 @@
   📗 Creates a string by copying the memory from the given memory. 📗
   🆕 🧠 memory 🧠 🍼 count 🔢 🍇
     count ✖️⚖️🔣 ➡️ size
-    🆕🧠🆕 size❗️ ➡️ 🖍codePoints
-    🚜 codePoints 0 memory 0 size❗️
+    ☣️ 🍇
+      🆕🧠🆕 size❗️ ➡️ 🖍codePoints
+      🚜 codePoints 0 memory 0 size❗️
+    🍉
   🍉
 
   ❗️🧠 ➡️ 🧠 🍇
@@ -20,10 +22,12 @@
   📗 Creates a string from the provided list of symbols. 📗
   🆕 🎙 symbolList 🍨🐚🔣 🍇
     🐔symbolList❗️ ➡️ 🖍count
-    🆕🧠🆕 count ✖️⚖️🔣❗️ ➡️ 🖍codePoints
+    ☣️ 🍇
+      🆕🧠🆕 count ✖️⚖️🔣❗️ ➡️ 🖍codePoints
 
-    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-      🐷 codePoints 🐽symbolList i❗️ i ✖️⚖️🔣❗️
+      🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+        🐷 codePoints 🐽symbolList i❗️ i ✖️⚖️🔣❗️
+      🍉
     🍉
   🍉
 
@@ -51,8 +55,10 @@
     🍊 🐔 b❗️ ▶️ count 🍇
       ↩️ 1
     🍉
-
-    ↩️ ↔️ codePoints 🧠b❗️ count✖️⚖️🔣❗️
+    
+    ☣️ 🍇
+      ↩️ ↔️ codePoints 🧠b❗️ count✖️⚖️🔣❗️
+    🍉
   🍉
 
   📗
@@ -67,10 +73,12 @@
     🍊 from ➕ length ▶️️🙌 count 🍇
       count ➖ from ➡️ 🖍normal_length
     🍉
-
-    🆕🧠🆕 normal_length✖️⚖️🔣❗️ ➡️ new
-    🚜 new 0 codePoints from✖️⚖️🔣 normal_length✖️⚖️🔣❗️
-    ↩️ 🆕🔡🧠 new normal_length❗️
+    
+    ☣️ 🍇
+      🆕🧠🆕 normal_length✖️⚖️🔣❗️ ➡️ new
+      🚜 new 0 codePoints from✖️⚖️🔣 normal_length✖️⚖️🔣❗️
+      ↩️ 🆕🔡🧠 new normal_length❗️
+    🍉
   🍉
 
   📗
@@ -162,11 +170,13 @@
     0 ➡️ 🖍🆕 front
     count ➖ 1 ➡️ 🖍🆕 end
 
-    🔁 front ◀️ count 🤝 🐁🐽 codePoints 🐚🔣 front ✖️⚖️🔣❗️❗️ 🍇
-      front ⬅️➕ 1
-    🍉
-    🔁 end ▶️ front 🤝 🐁🐽 codePoints 🐚🔣 end ✖️⚖️🔣❗️❗️ 🍇
-      end ⬅️➖ 1
+    ☣️ 🍇
+      🔁 front ◀️ count 🤝 🐁🐽 codePoints 🐚🔣 front ✖️⚖️🔣❗️❗️ 🍇
+        front ⬅️➕ 1
+      🍉
+      🔁 end ▶️ front 🤝 🐁🐽 codePoints 🐚🔣 end ✖️⚖️🔣❗️❗️ 🍇
+        end ⬅️➖ 1
+      🍉
     🍉
 
     ↩️ 🔪🐕 front end ➖ front ➕ 1❗️
@@ -210,7 +220,9 @@
     🍊 index ▶️️🙌 count 🍇
       ↩️ 🤷‍♂️
     🍉
-    ↩️ 🐽 codePoints 🐚🔣 count ✖️⚖️🔣❗️
+    ☣️ 🍇
+      ↩️ 🐽 codePoints 🐚🔣 count ✖️⚖️🔣❗️
+    🍉
   🍉
 
 	📗 Converts the string to data encoded as UTF8. 📗
@@ -219,8 +231,10 @@
   📗 Returns an array with the symbols from this string. 📗
   ❗️ 🎶 ➡️ 🍨🐚🔣 🍇
     🆕🍨🐚🔣🐴 count❗️ ➡️ list
-    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-      🐻 list 🐽 codePoints🐚🔣  i✖️⚖️🔣❗️❗️
+    ☣️ 🍇
+      🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+        🐻 list 🐽 codePoints🐚🔣  i✖️⚖️🔣❗️❗️
+      🍉
     🍉
     ↩️ list
   🍉
@@ -252,9 +266,11 @@
 🐋 🔣 🍇
   📗 Creates a 🔡 from this symbol. 📗
   ❗️ 🔡 ➡️ 🔡 🍇
-    🆕🧠🆕 ⚖️🔣❗️ ➡️ data
-    🐷 data🐚🔣 🐕 0❗️
-    ↩️ 🆕🔡🧠 data 1❗️
+    ☣️ 🍇
+      🆕🧠🆕 ⚖️🔣❗️ ➡️ data
+      🐷 data🐚🔣 🐕 0❗️
+      ↩️ 🆕🔡🧠 data 1❗️
+    🍉
   🍉
 🍉
 
@@ -266,24 +282,30 @@
   🆕 🍇
     0 ➡️ 🖍count
     10 ➡️ 🖍size
-    🆕🧠🆕 10✖️⚖️🔣❗️ ➡️ 🖍data
+    ☣️ 🍇
+      🆕🧠🆕 10✖️⚖️🔣❗️ ➡️ 🖍data
+    🍉
   🍉
 
   🆕 🐧 capacity 🔢 🍇
     0 ➡️ 🖍count
     capacity ➡️ 🖍size
-    🆕🧠🆕 capacity✖️⚖️🔣❗️ ➡️ 🖍data
+    ☣️ 🍇
+      🆕🧠🆕 capacity✖️⚖️🔣❗️ ➡️ 🖍data
+    🍉
   🍉
 
   ❗️ 🐻 string 🔡 🍇
     🐔string❗️ ➡️ stringSize
-    🍊 count ➕ stringSize ▶️ size 🍇
-      size ⬅️➕ stringSize
-      🏗 data size✖️⚖️🔣❗️
-    🍉
+    ☣️ 🍇
+      🍊 count ➕ stringSize ▶️ size 🍇
+        size ⬅️➕ stringSize
+        🏗 data size✖️⚖️🔣❗️
+      🍉
 
-    🚜 data count✖️⚖️🔣 🧠 string❗️ 0 stringSize✖️⚖️🔣❗️
-    count ⬅️➕ stringSize
+      🚜 data count✖️⚖️🔣 🧠 string❗️ 0 stringSize✖️⚖️🔣❗️
+      count ⬅️➕ stringSize
+    🍉
   🍉
 
   ❗️🧠 ➡️ 🧠 🍇
@@ -295,7 +317,9 @@
   🍉
 
   ❗️ 🔡 ➡️ 🔡 🍇
-    ↩️ 🆕🔡🧠 data count❗️
+    ☣️ 🍇
+      ↩️ 🆕🔡🧠 data count❗️
+    🍉
   🍉
 🍉
 
@@ -310,7 +334,6 @@
       🐻 builder 🐽list i❗️ ❗️
 
       🍊 i ➕ 1 ◀️ 🐔list❗️ 🍇
-
         🐻 builder separator❗️
       🍉
     🍉

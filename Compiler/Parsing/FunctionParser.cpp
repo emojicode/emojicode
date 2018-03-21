@@ -17,6 +17,7 @@
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTVariables.hpp"
+#include "AST/ASTUnsafeBlock.hpp"
 #include "Package/Package.hpp"
 #include "Compiler.hpp"
 #include "FunctionParser.hpp"
@@ -104,6 +105,8 @@ std::shared_ptr<ASTStatement> FunctionParser::handleStatementToken(const Token &
             auto block = parseBlock();
             return std::make_shared<ASTRepeatWhile>(cond, block, token.position());
         }
+        case TokenType::Unsafe:
+            return std::make_shared<ASTUnsafeBlock>(parseBlock(), token.position());
         case TokenType::ForIn: {
             auto variableToken = stream_.consumeToken(TokenType::Variable);
             auto iteratee = parseExpr(0);
@@ -311,7 +314,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
     auto function = std::make_unique<Function>(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::noReturn(),
                                                package_, token.position(), false, std::u32string(), false, false, true,
-                                               FunctionType::Closure);
+                                               false, FunctionType::Closure);
 
     parseParameters(function.get(), typeContext_);
     parseReturnType(function.get(), typeContext_);

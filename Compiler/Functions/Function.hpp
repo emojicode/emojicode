@@ -58,11 +58,11 @@ public:
     Function() = delete;
     Function(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
-             FunctionType type) : position_(std::move(p)), name_(std::move(name)), final_(final),
-                                  overriding_(overriding), deprecated_(deprecated), imperative_(imperative),
-                                  mutating_(mutating), access_(level), owningType_(std::move(owningType)),
-                                  package_(package), documentation_(std::move(documentationToken)),
-                                  functionType_(type) {}
+             bool unsafe, FunctionType type) :
+            position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding),
+            deprecated_(deprecated), imperative_(imperative), unsafe_(unsafe), mutating_(mutating), access_(level),
+            owningType_(std::move(owningType)), package_(package), documentation_(std::move(documentationToken)),
+            functionType_(type) {}
 
     std::u32string name() const { return name_; }
 
@@ -84,6 +84,8 @@ public:
     bool overriding() const { return overriding_; }
     /** Whether the method is deprecated. */
     bool deprecated() const { return deprecated_; }
+
+    bool unsafe() const { return unsafe_; }
 
     bool isImperative() const { return imperative_; }
     /// Whether the function mutates the callee. Only relevant for value type instance methods.
@@ -155,6 +157,7 @@ private:
     bool overriding_;
     bool deprecated_;
     bool imperative_;
+    bool unsafe_;
 
     const bool mutating_;
     bool external_ = false;

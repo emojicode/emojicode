@@ -6,23 +6,29 @@
   🆕 🐸 🍇
     0 ➡️ 🖍count
     10 ➡️ 🖍size
-    🆕🧠🆕 10✖️⚖️Element❗️ ➡️ 🖍data
+    ☣️ 🍇
+      🆕🧠🆕 10✖️⚖️Element❗️ ➡️ 🖍data
+    🍉
   🍉
 
   📗 Creates an empty list with the given initial capacity. 📗
   🆕 🐴 capacity 🔢 🍇
     0 ➡️ 🖍count
     capacity ➡️ 🖍size
-    🆕🧠🆕 capacity✖️⚖️Element❗️ ➡️ 🖍data
+    ☣️ 🍇
+      🆕🧠🆕 capacity✖️⚖️Element❗️ ➡️ 🖍data
+    🍉
   🍉
 
   📗 Creates an containing the specified number of a single, repeated value. 📗
   🆕 🦊 repeatedValue Element 🍼 count 🔢 🍇
     count ➡️ 🖍size
-    🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
+    ☣️ 🍇
+      🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
 
-    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-      🐷 data repeatedValue i✖️⚖️Element❗️
+      🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+        🐷 data repeatedValue i✖️⚖️Element❗️
+      🍉
     🍉
   🍉
 
@@ -33,7 +39,9 @@
   🔒❗️ ↕️ 🍇
     🍊 size 🙌 count 🍇
       size ⬅️✖️ 2
-      🏗 data size✖️⚖️Element❗️
+      ☣️ 🍇
+        🏗 data size✖️⚖️Element❗️
+      🍉
     🍉
   🍉
 
@@ -41,26 +49,32 @@
   🆕 🐮 list 🍨🐚Element 🍇
     🐔list❗️ ➡️ 🖍count
     🦍list❗️ ➡️ 🖍size
-    🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
-    🚜 data 0 🧠list❗️ 0 size✖️⚖️Element❗️
+    ☣️ 🍇
+      🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
+      🚜 data 0 🧠list❗️ 0 size✖️⚖️Element❗️
+    🍉
   🍉
 
   📗 Appends `item` to the end of the list in `O(1)`. 📗
   ❗️ 🐻 item Element 🍇
     ↕️🐕❗️
-    🐷 data item count✖️⚖️Element❗️
+    ☣️ 🍇
+      🐷 data item count✖️⚖️Element❗️
+    🍉
     count ⬅️➕ 1
   🍉
 
   📗
-    Gets the item at *index*` in `O(1)`. *index* must be greater than 0 and less
+    Gets the item at *index* in `O(1)`. *index* must be greater than 0 and less
     than [[🐔❗️]].
   📗
   ❗️ 🐽 index 🔢 ➡️ Element 🍇
     🍊 index ▶️ count 👐 index ◀️ 0 🍇
       🍩🤯💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
     🍉
-    ↩️ 🐽 data index✖️⚖️Element❗️
+    ☣️ 🍇
+      ↩️ 🐽 data index✖️⚖️Element❗️
+    🍉
   🍉
 
   📗
@@ -71,7 +85,9 @@
     🍊 index ▶️ count 👐 index ◀️ 0 🍇
       🍩🤯💻 🔤Index out of bounds in 🍨🐷🔤 ❗️
     🍉
-    🐷 data value index✖️⚖️Element❗️
+    ☣️ 🍇
+      🐷 data value index✖️⚖️Element❗️
+    🍉
   🍉
 
  📗
@@ -82,7 +98,9 @@
  📗
  ❗️ 🐨 index 🔢 ➡️ 👌 🍇
     🍊 index ◀️ count 🍇
-      🚜 data index✖️⚖️Element data 🤜index ➕ 1🤛✖️⚖️Element 🤜count ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
+      ☣️ 🍇
+        🚜 data index✖️⚖️Element data 🤜index ➕ 1🤛✖️⚖️Element 🤜count ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
+      🍉
       count ⬅️➖ 1
       ↩️ 👍
     🍉
@@ -98,8 +116,10 @@
  ❗️ 🐵 index 🔢 item Element ➡️ 👌 🍇
     ↕️🐕❗️
     🍊 index ◀️ count 🍇
-      🚜 data 🤜index ➕ 1🤛✖️⚖️Element data index✖️⚖️Element 🤜count ➖ index 🤛✖️⚖️Element❗️
-      🐷 data item index✖️⚖️Element❗️
+      ☣️ 🍇
+        🚜 data 🤜index ➕ 1🤛✖️⚖️Element data index✖️⚖️Element 🤜count ➖ index 🤛✖️⚖️Element❗️
+        🐷 data item index✖️⚖️Element❗️
+      🍉
       count ⬅️➕ 1
       ↩️ 👍
     🍉
@@ -120,7 +140,9 @@
     count ➡️ oldCount
     count ⬅️➕ 🐔list❗️
     🐴🐕 count❗️
-    🚜 data oldCount✖️⚖️Element 🧠list❗️ 0 🐔list❗️✖️⚖️Element❗️
+    ☣️ 🍇
+      🚜 data oldCount✖️⚖️Element 🧠list❗️ 0 🐔list❗️✖️⚖️Element❗️
+    🍉
   🍉
 
   📗
@@ -129,7 +151,9 @@
   📗
   ❗️ 🐼 ➡️ 🍬Element 🍇
     count ⬅️➖ 1
-    🐽 data count✖️⚖️Element❗️ ➡️ value
+    ☣️ 🍇
+      🐽 data count✖️⚖️Element❗️ ➡️ value
+    🍉
     ↩️ value
   🍉
 
@@ -153,7 +177,9 @@
   ❗️ 🐴 capacity 🔢 🍇
     🍊 capacity ▶️ size 🍇
       capacity ➡️ 🖍size
-      🏗 data size✖️⚖️Element❗️
+      ☣️ 🍇
+        🏗 data size✖️⚖️Element❗️
+      🍉
     🍉
   🍉
 
@@ -174,10 +200,12 @@
 
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
       🔢 prng 0 count ➖ 1❗️ ➡️ x
-
-      🐽 data i✖️⚖️Element❗️ ➡️ temp
-      🐷 data 🐽 data x✖️⚖️Element❗️ i✖️⚖️Element❗️
-      🐷 data temp x✖️⚖️Element❗️
+    
+      ☣️ 🍇
+        🐽 data i✖️⚖️Element❗️ ➡️ temp
+        🐷 data 🐽 data x✖️⚖️Element❗️ i✖️⚖️Element❗️
+        🐷 data temp x✖️⚖️Element❗️
+      🍉
     🍉
   🍉
 

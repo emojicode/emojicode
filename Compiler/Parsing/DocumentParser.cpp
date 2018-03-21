@@ -106,7 +106,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
 
     auto function = package_->add(std::make_unique<Function>(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public,
                                                              false, Type::noReturn(), package_, p, false,
-                                                             documentation.get(), false, false, true,
+                                                             documentation.get(), false, false, true, false,
                                                              FunctionType::Function));
     parseReturnType(function, TypeContext());
     if (function->returnType().type() != TypeType::NoReturn &&

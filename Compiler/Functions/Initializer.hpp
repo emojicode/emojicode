@@ -18,9 +18,9 @@ class Initializer final : public Function {
 public:
     Initializer(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package,
                 SourcePosition p, bool overriding, std::u32string documentationToken, bool deprecated, bool r,
-                Type errorType, FunctionType mode)
+                bool unsafe, Type errorType, FunctionType mode)
     : Function(std::move(name), level, final, std::move(owningType), package, std::move(p), overriding,
-               std::move(documentationToken), deprecated, true, true, mode),
+               std::move(documentationToken), deprecated, true, true, unsafe, mode),
     required_(r), errorType_(std::move(errorType)) {}
 
     /// Whether all subclassess are required to implement this initializer as well. Never true for non-class types.

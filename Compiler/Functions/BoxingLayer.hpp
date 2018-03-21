@@ -22,10 +22,10 @@ public:
     /// @parameter destinationFunction That function that should be called by the boxing layer. The "actual" method.
     BoxingLayer(Function *destinationFunction, const std::u32string &protocolName,
                 const std::vector<Parameter> &arguments, const Type &returnType, const SourcePosition &p)
-    : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
+            : Function(destinationFunction->protocolBoxingLayerName(protocolName), AccessLevel::Private, true,
                destinationFunction->owningType(), destinationFunction->package(), p, false, std::u32string(), false,
-               false, true, FunctionType::BoxingLayer), destinationReturnType_(destinationFunction->returnType()),
-        destinationFunction_(destinationFunction) {
+               false, true, false, FunctionType::BoxingLayer),
+              destinationReturnType_(destinationFunction->returnType()), destinationFunction_(destinationFunction) {
         this->setParameters(arguments);
         this->setReturnType(returnType);
 
@@ -39,7 +39,7 @@ public:
     BoxingLayer(Type thisCallable, Package *pkg, const std::vector<Parameter> &arguments, const Type &returnType,
                 const SourcePosition &p)
     : Function(std::u32string(), AccessLevel::Private, true, std::move(thisCallable), pkg, p, false,
-               std::u32string(), false, false, true, FunctionType::BoxingLayer),
+               std::u32string(), false, false, true, false, FunctionType::BoxingLayer),
       destinationArgumentTypes_(owningType().genericArguments().begin() + 1, owningType().genericArguments().end()),
       destinationReturnType_(owningType().genericArguments()[0]) {
         this->setParameters(arguments);

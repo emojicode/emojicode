@@ -136,13 +136,15 @@ void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
 void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
                                  const Documentation &documentation, AccessLevel access, bool imperative,
                                  const SourcePosition &p) {
-    attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).check(p, package_->compiler());
+    attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).allow(Attribute::Unsafe)
+            .check(p, package_->compiler());
 
     if (attributes.has(Attribute::StaticOnType)) {
         auto typeMethod = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
                                                      package_, p, attributes.has(Attribute::Override),
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
-                                                     true, imperative, type_.type() == TypeType::Class ?
+                                                     true, imperative, attributes.has(Attribute::Unsafe),
+                                                     type_.type() == TypeType::Class ?
                                                      FunctionType::ClassMethod : FunctionType::Function);
         parseFunction(typeMethod.get(), false);
         type_.typeDefinition()->addTypeMethod(std::move(typeMethod));
@@ -152,6 +154,7 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
         auto method = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
                                                  package_, p, attributes.has(Attribute::Override), documentation.get(),
                                                  attributes.has(Attribute::Deprecated), mutating, imperative,
+                                                 attributes.has(Attribute::Unsafe),
                                                  type_.type() == TypeType::Class ? FunctionType::ObjectMethod :
                                                  FunctionType::ValueTypeMethod);
         parseFunction(method.get(), false);
@@ -162,7 +165,7 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
 Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                               const Documentation &documentation, AccessLevel access,
                                               const SourcePosition &p) {
-    attributes.check(p, package_->compiler());
+    attributes.allow(Attribute::Unsafe).check(p, package_->compiler());
 
     Type errorType = Type::noReturn();
     if (stream_.nextTokenIs(TokenType::Error)) {
@@ -173,11 +176,11 @@ Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBo
         errorType = parseErrorEnumType(TypeContext(type_), token.position());
     }
 
-
     auto initializer = std::make_unique<Initializer>(name, access, attributes.has(Attribute::Final), owningType(),
                                                      package_, p, attributes.has(Attribute::Override),
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
-                                                     attributes.has(Attribute::Required), errorType,
+                                                     attributes.has(Attribute::Required),
+                                                     attributes.has(Attribute::Unsafe), errorType,
                                                      type_.type() == TypeType::Class ? FunctionType::ObjectInitializer :
                                                      FunctionType::ValueTypeInitializer);
     parseFunction(initializer.get(), true);

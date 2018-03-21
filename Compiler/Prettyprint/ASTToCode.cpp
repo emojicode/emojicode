@@ -18,6 +18,7 @@
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTVariables.hpp"
+#include "AST/ASTUnsafeBlock.hpp"
 #include "Prettyprinter.hpp"
 #include "Types/Type.hpp"
 #include <sstream>
@@ -65,6 +66,11 @@ void ASTRepeatWhile::toCode(Prettyprinter &pretty) const {
 void ASTForIn::toCode(Prettyprinter &pretty) const {
     pretty.indent() << "🔂 " << utf8(varName_) << " ";
     iteratee_->toCode(pretty);
+    block_.toCode(pretty);
+}
+
+void ASTUnsafeBlock::toCode(Prettyprinter &pretty) const {
+    pretty.indent() << "☣️ ";
     block_.toCode(pretty);
 }
 

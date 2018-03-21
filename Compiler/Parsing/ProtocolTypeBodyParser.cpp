@@ -16,7 +16,7 @@ void ProtocolTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAtt
                                          const SourcePosition &p) {
     auto method = std::make_unique<Function>(name, AccessLevel::Public, false, owningType(), package_,
                                              p, false, documentation.get(),
-                                             attributes.has(Attribute::Deprecated), false, imperative,
+                                             attributes.has(Attribute::Deprecated), false, imperative, false,
                                              FunctionType::ObjectMethod);
     parseParameters(method.get(), TypeContext(owningType()), false);
     parseReturnType(method.get(), TypeContext(owningType()));
