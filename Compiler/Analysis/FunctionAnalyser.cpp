@@ -146,8 +146,8 @@ void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
 
 void FunctionAnalyser::analyseInitializationRequirements() {
     if (isFullyInitializedCheckRequired(function_->functionType())) {
-        scoper_->instanceScope()->unintializedVariablesCheck(function_->position(), "Instance variable \"",
-                                                             "\" must be initialized.");
+        scoper_->instanceScope()->uninitializedVariablesCheck(function_->position(), "Instance variable \"",
+                                                              "\" must be initialized.");
     }
 
     if (isSuperconstructorRequired(function_->functionType())) {

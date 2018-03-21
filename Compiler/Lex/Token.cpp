@@ -45,9 +45,6 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::ElseIf: return "ElseIf";
         case TokenType::Else: return "Else";
         case TokenType::Super: return "Super";
-        case TokenType::FrozenDeclaration: return "FrozenDeclaration";
-        case TokenType::Declaration: return "Declaration";
-        case TokenType::Assignment: return "Assignment";
         case TokenType::ErrorHandler: return "ErrorHandler";
         case TokenType::BlockBegin: return "BlockBegin";
         case TokenType::BlockEnd: return "BlockEnd";
@@ -56,6 +53,8 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::Unsafe: return "Unsafe";
         case TokenType::NoValue: return "NoValue";
         case TokenType::RightProductionOperator: return "RightProductionOperator";
+        case TokenType::LeftProductionOperator: return "LeftProductionOperator";
+        case TokenType::Mutable: return "Mutable";
     }
 }
 

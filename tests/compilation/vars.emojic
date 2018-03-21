@@ -1,18 +1,10 @@
 🏁 🍇
-  🍮 a 🔤green🔤
-  🍮 b 🔤pink🔤
-  🍮 c 🔤yellow🔤
+  🔤green🔤 ➡️ 🖍🆕a
+  🔤pink🔤 ➡️ 🖍🆕b
+  🔤yellow🔤 ➡️ 🖍🆕c
 
-  🍦 d 🔤blue🔤
-  🍦 e 🔤white🔤
-
-  😀 a ❗️
-  😀 b ❗️
-  😀 c ❗️
-  😀 d ❗️
-  😀 e ❗️
-
-  🍮 a 🔤cyan🔤
+  🔤blue🔤 ➡️ d
+  🔤white🔤 ➡️ e
 
   😀 a ❗️
   😀 b ❗️
@@ -20,7 +12,7 @@
   😀 d ❗️
   😀 e ❗️
 
-  🍮 b 🔤magenta🔤
+  🔤cyan🔤 ➡️ 🖍a
 
   😀 a ❗️
   😀 b ❗️
@@ -28,7 +20,15 @@
   😀 d ❗️
   😀 e ❗️
 
-  🍮 c 🔤red🔤
+  🔤magenta🔤 ➡️ 🖍b
+
+  😀 a ❗️
+  😀 b ❗️
+  😀 c ❗️
+  😀 d ❗️
+  😀 e ❗️
+
+  🔤red🔤 ➡️ 🖍c
 
   😀 a ❗️
   😀 b ❗️

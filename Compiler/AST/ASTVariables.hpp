@@ -83,26 +83,34 @@ private:
     bool declare_ = false;
 };
 
-class ASTVariableAssignmentDecl : public ASTVariableInit {
+class ASTVariableAssignment : public ASTVariableInit {
 public:
-    ASTVariableAssignmentDecl(std::u32string name, const std::shared_ptr<ASTExpr> &e,
-                              const SourcePosition &p) : ASTVariableInit(e, p, std::move(name)) {}
+    ASTVariableAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,
+                          const SourcePosition &p) : ASTVariableInit(e, p, std::move(name)) {}
     void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const final;
     void toCode(Prettyprinter &pretty) const override;
 };
 
-/// Inserted by the compiler to initialize an instance variable as specified by a baby bottle initializer.
-class ASTInstanceVariableInitialization final : public ASTVariableAssignmentDecl {
+class ASTVariableDeclareAndAssign : public ASTVariableAssignment {
 public:
-    using ASTVariableAssignmentDecl::ASTVariableAssignmentDecl;
+    ASTVariableDeclareAndAssign(std::u32string name, const std::shared_ptr<ASTExpr> &e,
+    const SourcePosition &p) : ASTVariableAssignment(std::move(name), e, p) {}
+    void analyse(FunctionAnalyser *analyser) override;
+    void toCode(Prettyprinter &pretty) const override;
+};
+
+/// Inserted by the compiler to initialize an instance variable as specified by a baby bottle initializer.
+class ASTInstanceVariableInitialization final : public ASTVariableAssignment {
+public:
+    using ASTVariableAssignment::ASTVariableAssignment;
     void analyse(FunctionAnalyser *analyser) override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
-class ASTFrozenDeclaration final : public ASTVariableInit {
+class ASTConstantVariable final : public ASTVariableInit {
 public:
-    ASTFrozenDeclaration(std::u32string name, const std::shared_ptr<ASTExpr> &e,
+    ASTConstantVariable(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                          const SourcePosition &p) : ASTVariableInit(e, p, std::move(name)) {}
 
     void analyse(FunctionAnalyser *analyser) override;

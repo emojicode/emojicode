@@ -5,8 +5,8 @@
 
   📗 Creates a string by copying the memory from the given memory. 📗
   🆕 🧠 memory 🧠 🍼 count 🔢 🍇
-    🍦 size count ✖️⚖️🔣
-    🍮 codePoints 🆕🧠🆕 size❗️
+    count ✖️⚖️🔣 ➡️ size
+    🆕🧠🆕 size❗️ ➡️ 🖍codePoints
     🚜 codePoints 0 memory 0 size❗️
   🍉
 
@@ -19,8 +19,8 @@
 
   📗 Creates a string from the provided list of symbols. 📗
   🆕 🎙 symbolList 🍨🐚🔣 🍇
-    🍮 count 🐔symbolList❗️
-    🍮 codePoints 🆕🧠🆕 count ✖️⚖️🔣❗️
+    🐔symbolList❗️ ➡️ 🖍count
+    🆕🧠🆕 count ✖️⚖️🔣❗️ ➡️ 🖍codePoints
 
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
       🐷 codePoints 🐽symbolList i❗️ i ✖️⚖️🔣❗️
@@ -63,12 +63,12 @@
     🍊 from ▶️️🙌 count 🍇
       ↩️ 🔤🔤
     🍉
-    🍮 normal_length length
+    length ➡️ 🖍🆕normal_length
     🍊 from ➕ length ▶️️🙌 count 🍇
-      🍮 normal_length count ➖ from
+      count ➖ from ➡️ 🖍normal_length
     🍉
 
-    🍦 new 🆕🧠🆕 normal_length✖️⚖️🔣❗️
+    🆕🧠🆕 normal_length✖️⚖️🔣❗️ ➡️ new
     🚜 new 0 codePoints from✖️⚖️🔣 normal_length✖️⚖️🔣❗️
     ↩️ 🆕🔡🧠 new normal_length❗️
   🍉
@@ -111,17 +111,17 @@
     *seperator* itself is removed from the string.
   📗
   ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡 🍇
-    🍦 list 🆕🍨🐚🔡🐸❗️
+    🆕🍨🐚🔡🐸❗️ ➡️ list
 
-    🍮 lastIndex 0
-    🍮 continue 👍
+    0 ➡️ 🖍🆕lastIndex
+    👍 ➡️ 🖍🆕continue
     🔁 continue 🍇
-      🍊 🍦 newIndex 🕵️‍♀️🐕 separator lastIndex❗️ 🍇
+      🍊 🕵️‍♀️🐕 separator lastIndex❗️ ➡️ newIndex 🍇
         🐻 list 🔪🐕 lastIndex newIndex ➖ lastIndex❗️❗️
-        🍮 lastIndex newIndex ➕ 🐔separator❗️
+        newIndex ➕ 🐔separator❗️ ➡️ 🖍lastIndex
       🍉
       🍓 🍇
-        🍮 continue 👎
+        👎 ➡️ 🖍continue
       🍉
     🍉
     🐻 list 🔪🐕 lastIndex  🤜🐔🐕❗️🤛 ➖ lastIndex❗️❗️
@@ -136,17 +136,17 @@
     Prefer this method over `🔫` if the separator is just a single character.
   📗
   ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 🍇
-    🍦 list 🆕🍨🐚🔡🐸❗️
+    🆕🍨🐚🔡🐸❗️ ➡️ list
 
-    🍮 lastIndex 0
-    🍮 continue 👍
+    0 ➡️ 🖍🆕 lastIndex
+    👍 ➡️ 🖍🆕 continue
     🔁 continue 🍇
-      🍊 🍦 newIndex 🕵️‍♂️ 🐕 separator lastIndex❗️ 🍇
+      🍊 🕵️‍♂️ 🐕 separator lastIndex❗️➡️ newIndex  🍇
         🐻 list 🔪🐕 lastIndex newIndex ➖ lastIndex❗️❗️
-        🍮 lastIndex newIndex ➕ 1
+        newIndex ➕ 1 ➡️ 🖍lastIndex
       🍉
       🍓 🍇
-        🍮 continue 👎
+        👎 ➡️ 🖍continue
       🍉
     🍉
     🐻 list 🔪🐕 lastIndex  🤜🐔🐕❗️🤛 ➖ lastIndex❗️❗️
@@ -159,14 +159,14 @@
     from both ends of a string.
   📗
   ❗️ 🔧 ➡️ 🔡 🍇
-    🍮 front 0
-    🍮 end count ➖ 1
+    0 ➡️ 🖍🆕 front
+    count ➖ 1 ➡️ 🖍🆕 end
 
     🔁 front ◀️ count 🤝 🐁🐽 codePoints 🐚🔣 front ✖️⚖️🔣❗️❗️ 🍇
-      🍮 front ➕ 1
+      front ⬅️➕ 1
     🍉
     🔁 end ▶️ front 🤝 🐁🐽 codePoints 🐚🔣 end ✖️⚖️🔣❗️❗️ 🍇
-      🍮 end ➖ 1
+      end ⬅️➖ 1
     🍉
 
     ↩️ 🔪🐕 front end ➖ front ➕ 1❗️
@@ -218,7 +218,7 @@
 
   📗 Returns an array with the symbols from this string. 📗
   ❗️ 🎶 ➡️ 🍨🐚🔣 🍇
-    🍦 list 🆕🍨🐚🔣🐴 count❗️
+    🆕🍨🐚🔣🐴 count❗️ ➡️ list
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
       🐻 list 🐽 codePoints🐚🔣  i✖️⚖️🔣❗️❗️
     🍉
@@ -252,38 +252,38 @@
 🐋 🔣 🍇
   📗 Creates a 🔡 from this symbol. 📗
   ❗️ 🔡 ➡️ 🔡 🍇
-    🍦 data 🆕🧠🆕 ⚖️🔣❗️
+    🆕🧠🆕 ⚖️🔣❗️ ➡️ data
     🐷 data🐚🔣 🐕 0❗️
     ↩️ 🆕🔡🧠 data 1❗️
   🍉
 🍉
 
 🌍 🐇 🔠 🍇
-  🍰 data 🧠
-  🍰 count 🔢
-  🍰 size 🔢
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
+  🖍🆕 size 🔢
 
   🆕 🍇
-    🍮 count 0
-    🍮 size 10
-    🍮 data 🆕🧠🆕 10✖️⚖️🔣❗️
+    0 ➡️ 🖍count
+    10 ➡️ 🖍size
+    🆕🧠🆕 10✖️⚖️🔣❗️ ➡️ 🖍data
   🍉
 
   🆕 🐧 capacity 🔢 🍇
-    🍮 count 0
-    🍮 size capacity
-    🍮 data 🆕🧠🆕 capacity✖️⚖️🔣❗️
+    0 ➡️ 🖍count
+    capacity ➡️ 🖍size
+    🆕🧠🆕 capacity✖️⚖️🔣❗️ ➡️ 🖍data
   🍉
 
   ❗️ 🐻 string 🔡 🍇
-    🍦 stringSize 🐔string❗️
+    🐔string❗️ ➡️ stringSize
     🍊 count ➕ stringSize ▶️ size 🍇
-      🍮 size ➕ stringSize
+      size ⬅️➕ stringSize
       🏗 data size✖️⚖️🔣❗️
     🍉
 
     🚜 data count✖️⚖️🔣 🧠 string❗️ 0 stringSize✖️⚖️🔣❗️
-    🍮 count ➕ stringSize
+    count ⬅️➕ stringSize
   🍉
 
   ❗️🧠 ➡️ 🧠 🍇
@@ -305,7 +305,7 @@
     by *separator*.
   📗
   🆕 🍨 list 🍨🐚🔡 separator 🔡 🍇
-    🍦 builder 🆕🔠🆕❗️
+    🆕🔠🆕❗️ ➡️ builder
     🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
       🐻 builder 🐽list i❗️ ❗️
 
@@ -314,7 +314,7 @@
         🐻 builder separator❗️
       🍉
     🍉
-    🍮 codePoints 🧠builder❗️
-    🍮 count 🐔builder❗️
+    🧠builder❗️ ➡️ 🖍codePoints
+    🐔builder❗️ ➡️ 🖍count
   🍉
 🍉

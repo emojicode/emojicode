@@ -139,7 +139,7 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
         analyser->compiler()->error(CompilerError(position(), "Superinitializer might have already been called."));
     }
 
-    analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"", "\" must be "
+    analyser->scoper().instanceScope()->uninitializedVariablesCheck(position(), "Instance variable \"", "\" must be "
             "initialized before calling the superinitializer.");
 
     init_ = true;

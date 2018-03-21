@@ -18,8 +18,8 @@ void Variable::uninitalizedError(const SourcePosition &p) const {
 }
 
 void Variable::mutate(const SourcePosition &p) {
-    if (frozen()) {
-        throw CompilerError(p, "Cannot modify frozen variable \"", utf8(name()), "\".");
+    if (constant()) {
+        throw CompilerError(p, "Cannot modify constant variable \"", utf8(name()), "\".");
     }
     mutated_ = true;
 }

@@ -4,22 +4,22 @@
 
   📗 Creates an empty list. 📗
   🆕 🐸 🍇
-    🍮 count 0
-    🍮 size 10
-    🍮 data 🆕🧠🆕 10✖️⚖️Element❗️
+    0 ➡️ 🖍count
+    10 ➡️ 🖍size
+    🆕🧠🆕 10✖️⚖️Element❗️ ➡️ 🖍data
   🍉
 
   📗 Creates an empty list with the given initial capacity. 📗
   🆕 🐴 capacity 🔢 🍇
-    🍮 count 0
-    🍮 size capacity
-    🍮 data 🆕🧠🆕 capacity✖️⚖️Element❗️
+    0 ➡️ 🖍count
+    capacity ➡️ 🖍size
+    🆕🧠🆕 capacity✖️⚖️Element❗️ ➡️ 🖍data
   🍉
 
   📗 Creates an containing the specified number of a single, repeated value. 📗
   🆕 🦊 repeatedValue Element 🍼 count 🔢 🍇
-    🍮 size count
-    🍮 data 🆕🧠🆕 size✖️⚖️Element❗️
+    count ➡️ 🖍size
+    🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
 
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
       🐷 data repeatedValue i✖️⚖️Element❗️
@@ -32,16 +32,16 @@
 
   🔒❗️ ↕️ 🍇
     🍊 size 🙌 count 🍇
-      🍮 size ✖️ 2
+      size ⬅️✖️ 2
       🏗 data size✖️⚖️Element❗️
     🍉
   🍉
 
   📗 Creates a shallow copy of the given list. 📗
   🆕 🐮 list 🍨🐚Element 🍇
-    🍮 count 🐔list❗️
-    🍮 size 🦍list❗️
-    🍮 data 🆕🧠🆕 size✖️⚖️Element❗️
+    🐔list❗️ ➡️ 🖍count
+    🦍list❗️ ➡️ 🖍size
+    🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
     🚜 data 0 🧠list❗️ 0 size✖️⚖️Element❗️
   🍉
 
@@ -49,7 +49,7 @@
   ❗️ 🐻 item Element 🍇
     ↕️🐕❗️
     🐷 data item count✖️⚖️Element❗️
-    🍮 count ➕ 1
+    count ⬅️➕ 1
   🍉
 
   📗
@@ -83,7 +83,7 @@
  ❗️ 🐨 index 🔢 ➡️ 👌 🍇
     🍊 index ◀️ count 🍇
       🚜 data index✖️⚖️Element data 🤜index ➕ 1🤛✖️⚖️Element 🤜count ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
-      🍮 count ➖ 1
+      count ⬅️➖ 1
       ↩️ 👍
     🍉
     ↩️ 👎
@@ -100,7 +100,7 @@
     🍊 index ◀️ count 🍇
       🚜 data 🤜index ➕ 1🤛✖️⚖️Element data index✖️⚖️Element 🤜count ➖ index 🤛✖️⚖️Element❗️
       🐷 data item index✖️⚖️Element❗️
-      🍮 count ➕ 1
+      count ⬅️➕ 1
       ↩️ 👍
     🍉
     ↩️ 👎
@@ -117,8 +117,8 @@
 
   📗 Appends the content of `list` to this list. 📗
   ❗️ 🐥 list 🍨🐚Element 🍇
-    🍦oldCount count
-    🍮 count ➕ 🐔list❗️
+    count ➡️ oldCount
+    count ⬅️➕ 🐔list❗️
     🐴🐕 count❗️
     🚜 data oldCount✖️⚖️Element 🧠list❗️ 0 🐔list❗️✖️⚖️Element❗️
   🍉
@@ -128,8 +128,8 @@
     If the list is empty ✨ is returned.
   📗
   ❗️ 🐼 ➡️ 🍬Element 🍇
-    🍮 count ➖ 1
-    🍦 value 🐽 data count✖️⚖️Element❗️
+    count ⬅️➖ 1
+    🐽 data count✖️⚖️Element❗️ ➡️ value
     ↩️ value
   🍉
 
@@ -139,7 +139,7 @@
     This can be much more efficient than using a new list. Complexity: `O(1)`.
   📗
   ❗️ 🐗 🍇
-    🍮 count 0
+    0 ➡️ 🖍count
   🍉
 
   📗
@@ -152,7 +152,7 @@
   📗
   ❗️ 🐴 capacity 🔢 🍇
     🍊 capacity ▶️ size 🍇
-      🍮 size capacity
+      capacity ➡️ 🖍size
       🏗 data size✖️⚖️Element❗️
     🍉
   🍉
@@ -170,12 +170,12 @@
     Shuffles the list in place using a Fisher–Yates shuffle.
   📗
   ❗️ 🐹 🍇
-    🍦 prng 🆕🎰🆕❗️
+    🆕🎰🆕❗️ ➡️ prng
 
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-      🍦 x 🔢 prng 0 count ➖ 1❗️
+      🔢 prng 0 count ➖ 1❗️ ➡️ x
 
-      🍦 temp 🐽 data i✖️⚖️Element❗️
+      🐽 data i✖️⚖️Element❗️ ➡️ temp
       🐷 data 🐽 data x✖️⚖️Element❗️ i✖️⚖️Element❗️
       🐷 data temp x✖️⚖️Element❗️
     🍉
@@ -186,7 +186,7 @@
     value to the end of a new list.
   📗
   ❗️ 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
-    🍦 g 🆕🍨🐚A🐴 🐔 🐕❗️❗️
+    🆕🍨🐚A🐴 🐔 🐕❗️❗️ ➡️ g
     🔂 element 🐕 🍇
       🐻 g callback⁉️ element❗️❗️
     🍉
@@ -198,7 +198,7 @@
     `callback`.
   📗
   ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
-    🍦 g 🆕🍨🐚Element🐸❗️
+    🆕🍨🐚Element🐸❗️ ➡️ g
     🔂 element 🐕 🍇
       🍊 callback⁉️ element❗️ 🍇
         🐻 g element❗️

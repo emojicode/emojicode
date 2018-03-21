@@ -4,7 +4,7 @@
 
 🐇🦔 🚉 🍇
   ✒️ ❗️ 🏁 🍇
-    🍦 readFile 🚇🆕📄📜 🔤fileTest_testFile.txt🔤
+    🚇🆕📄📜 🔤fileTest_testFile.txt🔤 ➡️ readFile
 
     ⛔️🐕 😛 🍺 🔡 🚇 📓 readFile 5 🔤Lorem🔤 🔤Read test🔤
 
@@ -16,7 +16,7 @@
 
     🙅 readFile
 
-    🍦 file 🚇🆕📄📝 🔤fileTest_writeTest.txt🔤
+    🚇🆕📄📝 🔤fileTest_writeTest.txt🔤 ➡️ file
 
     ✏️  file 📇🔤Hello Theo.🔤
     💧 file
@@ -35,7 +35,7 @@
 🍉
 
 🏁 ➡️ 🔢 🍇
-  🍦 tester 🆕🦔🆕
+  🆕🦔🆕 ➡️ tester
   🏁 tester
   ↩️ 👔 tester
 🍉

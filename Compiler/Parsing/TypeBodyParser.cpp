@@ -203,12 +203,14 @@ void TypeBodyParser::parse() {
             case TokenType::Operator:
                 parseMethod(token.value(), attributes, documentation, accessLevel, true, token.position());
                 break;
-            case TokenType::Declaration:
-                attributes.check(token.position(), package_->compiler());
-                documentation.disallow();
-                parseInstanceVariable(token.position());
-                break;
             case TokenType::New: {
+                if (attributes.has(Attribute::Mutating)) {
+                    attributes.allow(Attribute::Mutating).check(token.position(), package_->compiler());
+                    documentation.disallow();
+                    parseInstanceVariable(token.position());
+                    break;
+                }
+
                 std::u32string name = std::u32string(1, E_NEW_SIGN);
                 if (stream_.nextTokenIs(TokenType::Identifier) && !stream_.nextTokenIs(E_RADIO)
                     && !stream_.nextTokenIs(E_BABY_BOTTLE)) {

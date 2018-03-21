@@ -251,8 +251,8 @@
   The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings)
 📗
 🌍 🐇 🔡 🍇
-  🍰 codePoints 🧠
-  🍰 count 🔢
+  🖍🆕 codePoints 🧠
+  🖍🆕 count 🔢
 🍉
 
 📗
@@ -260,15 +260,15 @@
   language reference.](../../reference/the-s-package.html#-lists)
 📗
 🌍 🐇 🍨🐚Element ⚪️ 🍇
-  🍰 data 🧠
-  🍰 count 🔢
-  🍰 size 🔢
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
+  🖍🆕 size 🔢
 🍉
 
 📗 📇 is an abstract interface to binary data. 📗
 🌍 🐇 📇 🍇
-  🍰 data 🧠
-  🍰 count 🔢
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
 🍉
 
 📗
@@ -330,8 +330,8 @@
   🐊 🍡🐚Element
   🐊 🔂🐚Element
 
-  🍰 iteratee 🐽🐚Element
-  🍰 index 🔢
+  🖍🆕 iteratee 🐽🐚Element
+  🖍🆕 index 🔢
 
   🆕🍼 iteratee 🐽🐚Element 
   ❗️ 🔽 ➡️ Element
@@ -348,9 +348,9 @@
   🐊 🔂🐚🔢
   🐊 🐽🐚🔢
 
-  🍰 start 🔢
-  🍰 stop 🔢
-  🍰 step 🔢
+  🖍🆕 start 🔢
+  🖍🆕 stop 🔢
+  🖍🆕 step 🔢
 
   📗
     Creates a range from start to stop.
@@ -381,8 +381,8 @@
   🐊 🍡🐚🍬Element
   🐊 🔂🐚🍬Element
 
-  🍰 iteratee 🍨🐚Element
-  🍰 index 🔢
+  🖍🆕 iteratee 🍨🐚Element
+  🖍🆕 index 🔢
 
   🆕🍼 iteratee 🍨🐚Element 
   ❗️ 🔽 ➡️ 🍬Element
@@ -553,9 +553,9 @@
 🍉
 
 🌍 🐇 🔠 🍇
-  🍰 data 🧠
-  🍰 count 🔢
-  🍰 size 🔢
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
+  🖍🆕 size 🔢
 
   🆕
   🆕 🐧 capacity 🔢 

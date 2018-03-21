@@ -57,25 +57,25 @@
 🍉
 
 🏁 🍇
-  🍦 stringList 🍨 🔤23456🔤 🔤12345643🔤 🍆
-  🍰 g 🍨🐚🔡
-  🍮 g stringList
+  🍨 🔤23456🔤 🔤12345643🔤 🍆 ➡️ stringList
+  🖍🆕 g 🍨🐚🔡
+  stringList ➡️ 🖍g
 
-  🍦 mobilePhoneList 🍨 🆕📱🆕❗️ 🆕📱🆕❗️ 🍆
-  🍰 l 🍨🐚📱
-  🍮 l mobilePhoneList
+  🍨 🆕📱🆕❗️ 🆕📱🆕❗️ 🍆 ➡️ mobilePhoneList
+  🖍🆕 l 🍨🐚📱
+  mobilePhoneList ➡️ 🖍l
 
-  🍦 phonableList 🍨 🆕📱🆕❗️ 🆕📱🆕❗️ 🆕☎️ 🆕❗️ 🍆
-  🍰 a 🍨🐚📞
-  🍮 a phonableList
+  🍨 🆕📱🆕❗️ 🆕📱🆕❗️ 🆕☎️ 🆕❗️ 🍆 ➡️ phonableList
+  🖍🆕 a 🍨🐚📞
+  phonableList ➡️ 🖍a
 
-  🍦 flashlightableList 🍨 🆕📱🆕❗️ 🆕🔦🆕❗️ 🍆
-  🍰 b 🍨🐚💡
-  🍮 b flashlightableList
+  🍨 🆕📱🆕❗️ 🆕🔦🆕❗️ 🍆 ➡️ flashlightableList
+  🖍🆕 b 🍨🐚💡
+  flashlightableList ➡️ 🖍b
 
-  🍦 flashlightAndPhonableableList 🍨 🆕📱🆕❗️ 🆕🚁🆕❗️ 🍆
-  🍰 q 🍨🐚🍱💡📞🍱
-  🍮 q flashlightAndPhonableableList
+  🍨 🆕📱🆕❗️ 🆕🚁🆕❗️ 🍆 ➡️ flashlightAndPhonableableList
+  🖍🆕 q 🍨🐚🍱💡📞🍱
+  flashlightAndPhonableableList ➡️ 🖍q
 
   😀 🔤everything seems fine🔤❗️
 🍉

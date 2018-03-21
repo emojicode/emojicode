@@ -32,7 +32,6 @@ protected:
     virtual void parseMainArguments(ASTArguments *arguments, const SourcePosition &position);
     virtual std::shared_ptr<ASTExpr> parseExprLeft(const Token &token, int precedence);
     virtual std::shared_ptr<ASTExpr> parseRight(std::shared_ptr<ASTExpr> left, int precendence);
-    virtual std::shared_ptr<ASTStatement> parseVariableAssignment(const Token &token);
     virtual std::shared_ptr<ASTExpr> parseClosure(const Token &token);
     std::shared_ptr<ASTExpr> parseExpr(int precedence) {
         return parseExprTokens(stream_.consumeToken(), precedence);
@@ -80,6 +79,10 @@ private:
     void recover();
 
     std::shared_ptr<ASTStatement> handleStatementToken(const Token &token);
+
+    std::shared_ptr<ASTStatement> parseExprStatement(const Token &token);
+
+    std::shared_ptr<ASTStatement> parseVariableDeclaration(const Token &token);
 };
 
 }  // namespace EmojicodeCompiler

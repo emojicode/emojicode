@@ -51,19 +51,6 @@ std::shared_ptr<ASTExpr> CompatibleFunctionParser::parseClosure(const Token &tok
     return node;
 }
 
-std::shared_ptr<ASTStatement> CompatibleFunctionParser::parseVariableAssignment(const Token &token) {
-    if (stream_.nextToken().type() == TokenType::Operator) {
-        auto token = stream_.consumeToken();
-        auto varName = stream_.consumeToken(TokenType::Variable);
-
-        auto varGet = std::make_shared<ASTGetVariable>(varName.value(), token.position());
-        auto mc = std::make_shared<ASTBinaryOperator>(operatorType(token.value()), varGet,
-                                                      parseExpr(0), token.position());
-        return std::make_shared<ASTVariableAssignmentDecl>(varName.value(), mc, token.position());
-    }
-    return FunctionParser::parseVariableAssignment(token);
-}
-
 void CompatibleFunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePosition &position) {
     if (!stream_.nextTokenIs(TokenType::BeginArgumentList)) {
         for (auto i = package_->compatibilityInfoProvider()->nextArgumentsCount(position); i > 0; i--) {

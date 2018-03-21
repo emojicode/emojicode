@@ -59,8 +59,8 @@ Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
         analyser->compiler()->error(CompilerError(position(), "Attempt to use 🐕 before superinitializer call."));
     }
     if (isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-        analyser->scoper().instanceScope()->unintializedVariablesCheck(position(), "Instance variable \"",
-                                                                       "\" must be initialized before using 🐕.");
+        analyser->scoper().instanceScope()->uninitializedVariablesCheck(position(), "Instance variable \"",
+                                                                        "\" must be initialized before using 🐕.");
     }
 
     if (!isSelfAllowed(analyser->function()->functionType())) {

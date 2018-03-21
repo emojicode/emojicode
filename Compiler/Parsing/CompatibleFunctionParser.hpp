@@ -21,7 +21,7 @@ public:
 private:
     std::shared_ptr<ASTExpr> parseExprLeft(const EmojicodeCompiler::Token &token, int precedence) override;
     std::shared_ptr<ASTExpr> parseRight(std::shared_ptr<ASTExpr> left, int precendence) override;
-    std::shared_ptr<ASTStatement> parseVariableAssignment(const Token &token) override;
+
     std::shared_ptr<ASTBinaryOperator> parseOperatorCompatibly(OperatorType type, const SourcePosition &position);
     std::shared_ptr<ASTExpr> parseClosure(const Token &token) override;
 

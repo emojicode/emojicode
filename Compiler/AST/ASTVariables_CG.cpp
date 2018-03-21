@@ -80,11 +80,11 @@ void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
     }
 }
 
-void ASTVariableAssignmentDecl::generateAssignment(FunctionCodeGenerator *fg) const {
+void ASTVariableAssignment::generateAssignment(FunctionCodeGenerator *fg) const {
     fg->builder().CreateStore(expr_->generate(fg), variablePointer(fg));
 }
 
-void ASTFrozenDeclaration::generateAssignment(FunctionCodeGenerator *fg) const {
+void ASTConstantVariable::generateAssignment(FunctionCodeGenerator *fg) const {
     fg->scoper().getVariable(id()) = LocalVariable(false, expr_->generate(fg));
 }
 

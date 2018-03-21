@@ -34,9 +34,6 @@ Lexer::Lexer(std::u32string sourceCode, std::string sourcePositionFile) :
     singleTokens_.emplace(E_TANGERINE, TokenType::If);
     singleTokens_.emplace(E_LEMON, TokenType::ElseIf);
     singleTokens_.emplace(E_STRAWBERRY, TokenType::Else);
-    singleTokens_.emplace(E_CUSTARD, TokenType::Assignment);
-    singleTokens_.emplace(E_SOFT_ICE_CREAM, TokenType::FrozenDeclaration);
-    singleTokens_.emplace(E_SHORTCAKE, TokenType::Declaration);
     singleTokens_.emplace(E_AVOCADO, TokenType::ErrorHandler);
     singleTokens_.emplace(E_GRAPES, TokenType::BlockBegin);
     singleTokens_.emplace(E_WATERMELON, TokenType::BlockEnd);
@@ -45,6 +42,8 @@ Lexer::Lexer(std::u32string sourceCode, std::string sourcePositionFile) :
     singleTokens_.emplace(E_BIOHAZARD, TokenType::Unsafe);
     singleTokens_.emplace(E_RIGHT_ARROW_CURVING_UP, TokenType::Super);
     singleTokens_.emplace(E_RIGHTWARDS_ARROW, TokenType::RightProductionOperator);
+    singleTokens_.emplace(E_LEFTWARDS_ARROW, TokenType::LeftProductionOperator);
+    singleTokens_.emplace(E_CRAYON, TokenType::Mutable);
 }
 
 void Lexer::loadOperatorSingleTokens() {

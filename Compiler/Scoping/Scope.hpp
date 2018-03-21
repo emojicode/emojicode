@@ -27,10 +27,10 @@ public:
 
     /// Sets a variable in this scope and returns it.
     /// @throws CompilerError if a variable with this name already exists.
-    Variable& declareVariable(const std::u32string &variable, const Type &type, bool frozen, const SourcePosition &p);
+    Variable& declareVariable(const std::u32string &variable, const Type &type, bool constant, const SourcePosition &p);
     /// Sets a variable with the given ID in this scope and returns it.
     /// @throws CompilerError if a variable with this name already exists.
-    Variable& declareVariableWithId(const std::u32string &variable, const Type &type, bool frozen, VariableID id,
+    Variable& declareVariableWithId(const std::u32string &variable, const Type &type, bool constant, VariableID id,
                                     const SourcePosition &p);
 
     /// Retrieves a variable form the scope. Use @c hasLocalVariable to determine whether the variable with this name
@@ -41,10 +41,10 @@ public:
 
     /// Throws an error if an uninitialized variable is found in this scope.
     /// The error message is created by concatenating errorMessageFront, the variable name, and errorMessageBack.
-    void unintializedVariablesCheck(const SourcePosition &p, const std::string &errorMessageFront,
-                                    const std::string &errorMessageBack);
+    void uninitializedVariablesCheck(const SourcePosition &p, const std::string &errorMessageFront,
+                                     const std::string &errorMessageBack);
 
-    /// Emits a warning for each non-frozen variable that has not been mutated.
+    /// Emits a warning for each mutable variable that has not been mutated.
     void recommendFrozenVariables(Compiler *app) const;
 
     const std::map<std::u32string, Variable>& map() const { return map_; }

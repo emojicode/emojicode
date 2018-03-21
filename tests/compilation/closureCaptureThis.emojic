@@ -1,12 +1,10 @@
 🐇 🕵 🍇
-  🍰 name 🔡
+  🖍🆕 name 🔡
 
-  🆕 🐑 @name 🔡 🍇
-    🍮 name @name
-  🍉
+  🆕 🐑 🍼 name 🔡 🍇🍉
 
   ❗️ 🏷 neuerName 🔡 🍇
-    🍮 name neuerName
+    neuerName ➡️ 🖍name
   🍉
 
   ❗️ 💳 ➡️ 🍇➡️🔡🍉 🍇
@@ -17,8 +15,8 @@
 🍉
 
 🏁 🍇
-  🍦 pi 🆕🕵🐑 🔤Arthur Lemming🔤❗️
-  🍦 nameGetter 💳 pi ❗️
+  🆕🕵🐑 🔤Arthur Lemming🔤❗️ ➡️ pi
+  💳 pi ❗️ ➡️ nameGetter
 
   😀 nameGetter ⁉️❗️❗️
 

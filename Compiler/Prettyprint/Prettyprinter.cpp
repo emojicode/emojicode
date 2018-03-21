@@ -213,7 +213,7 @@ void Prettyprinter::printProtocolConformances(TypeDefinition *typeDef, const Typ
 
 void Prettyprinter::printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext) {
     for (auto &ivar : typeDef->instanceVariables()) {
-        indent() << "🍰 " << utf8(ivar.name) << " ";
+        indent() << "🖍🆕 " << utf8(ivar.name) << " ";
         print(ivar.type, typeContext);
         stream_ << "\n";
     }

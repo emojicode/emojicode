@@ -23,8 +23,8 @@ using VariableID = size_t;
 class Variable {
     friend CapturingSemanticScoper;
 public:
-    Variable(Type type, VariableID id, bool frozen, std::u32string string, SourcePosition p)
-        : type_(std::move(type)), frozen_(frozen), string_(std::move(string)), id_(id), position_(std::move(p)) {}
+    Variable(Type type, VariableID id, bool constant, std::u32string string, SourcePosition p)
+        : type_(std::move(type)), constant_(constant), string_(std::move(string)), id_(id), position_(std::move(p)) {}
     /// The type of the variable.
     const Type type() const { return type_; }
 
@@ -38,15 +38,15 @@ public:
     /// @throws CompilerError
     void uninitalizedError(const SourcePosition &p) const;
 
-    /// Marks the variable as mutated or issues an error if the variable is frozen.
-    /// @throws CompilerError if the variable is frozen.
+    /// Marks the variable as mutated or issues an error if the variable is constant.
+    /// @throws CompilerError if the variable is constant.
     void mutate(const SourcePosition &p);
 
     /// Whether the variable was mutated since its definition.
     bool mutated() const { return mutated_; }
 
-    /// Whether this is a frozen variable.
-    bool frozen() const { return frozen_; }
+    /// Whether this is a constant variable.
+    bool constant() const { return constant_; }
 
     bool inherited() const { return inherited_; }
     void setInherited() { inherited_ = true; }
@@ -72,7 +72,7 @@ public:
     VariableID id() const { return id_; }
 private:
     Type type_;
-    bool frozen_;
+    bool constant_;
     bool mutated_ = false;
     bool inherited_ = false;
     std::u32string string_;

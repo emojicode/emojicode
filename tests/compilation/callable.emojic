@@ -1,27 +1,27 @@
 🏁 🍇
-  🍦 string 🔤Krass🔤
+  🔤Krass🔤 ➡️ string
 
-  🍦 append 🌶 📝 string
+  🌶 📝 string ➡️ append
 
   😀 🍭 append 🔟!
   😀 🍭 append 🔟?
 
-  🍦 greet 🍇 name 🔡 ➡️ 🔡
+  🍇 name 🔡 ➡️ 🔡 ➡️ greet
     😀 🍪🔤Wir grüßen den Ehrwürdigen 🔤 name🍪
 
-    🍮 out 🔤🔤
+    🔤🔤 ➡️ 🖍🆕out
 
     🔂 i️ ⏩ ➖ 🐔 name 1 -1 🍇
-      🍮 out 📝 out 🍺🐽 name i
+      📝 out 🍺🐽 name i ➡️ 🖍🆕out
     🍉
     ↩️ out
   🍉
 
   😀 🍭 greet 🔤Hans🔤
 
-  🍦 detektiv 🆕🕵🐑 🔤Karate Kid🔤
+  🆕🕵🐑 🔤Karate Kid🔤 ➡️ detektiv
 
-  🍦 derNameFunktion 💳 detektiv
+  💳 detektiv ➡️ derNameFunktion
   🏷 detektiv 🔤Kung Fu Panda🔤
 
   😀 🍭 derNameFunktion
@@ -31,26 +31,26 @@
   😀 🍭 walfriedGrüßer 12
   😀 🍭 walfriedGrüßer 14
 
-  🍦 captured 🌶🍩🎂⚽️
+  🌶🍩🎂⚽️ ➡️ captured
   😀 🍭 captured
 
-  🍦 capturedITS 🌶🔡23
+  🌶🔡23 ➡️ capturedITS
   😀 🍭 capturedITS 10
   😀 🍭 capturedITS 2
 
-  🍦 capturedPI 🌶🍩🥧🚀
+  🌶🍩🥧🚀 ➡️ capturedPI
   😀 🔡 🍭 capturedPI 4
 🍉
 
 🐇 🕵 🍇
-  🍰 name 🔡
+  🖍🆕 name 🔡
 
   🆕 🐑 @name 🔡 🍇
-    🍮 name @name
+    @name ➡️ 🖍🆕name
   🍉
 
   ❗️ 🏷 neuerName 🔡 🍇
-    🍮 name neuerName
+    neuerName ➡️ 🖍🆕name
   🍉
 
   ❗️ 💳 ➡️ 🍇➡️🔡🍉 🍇

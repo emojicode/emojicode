@@ -5,14 +5,14 @@
 🕊 🍔 🍇
   🐊 💷
 
-  🍰 name 🍬🔡
-  🍰 ingredients 🍨🐚🔡
+  🖍🆕 name 🍬🔡
+  🖍🆕 ingredients 🍨🐚🔡
 
   🆕 🍼 name 🍬🔡 🍼 ingredients 🍨🐚🔡 🍇
   🍉
 
   ❗️ 😀 🍇
-    🍊🍦 name name 🍇
+    🍊name  ➡️ name🍇
       😀 🍪 🔤Burger name: 🔤 name 🍪❗️
     🍉
     😀 🆕🔡🍨 ingredients 🔤, 🔤❗️❗️
@@ -26,16 +26,16 @@
 🕊 🍕 🍇
   🐊 💷
 
-  🍰 name 🍬🔡
-  🍰 ingredients 🍨🐚🔡
-  🍰 extraLarge 👌
-  🍰 extraHot 👌
+  🖍🆕 name 🍬🔡
+  🖍🆕 ingredients 🍨🐚🔡
+  🖍🆕 extraLarge 👌
+  🖍🆕 extraHot 👌
 
   🆕 🍼 name 🍬🔡 🍼 ingredients 🍨🐚🔡 🍼 extraHot 👌 🍼 extraLarge 👌 🍇
   🍉
 
   ❗️ 😀 🍇
-    🍊🍦 name name 🍇
+    🍊name  ➡️ name🍇
       😀 🍪 🔤Pizza  name: 🔤 name 🍪❗️
     🍉
     🍊 extraLarge 🍇
@@ -53,11 +53,11 @@
 🍉
 
 🏁 🍇
-  🍦 burger 🆕🍔🆕 🔤Barbecue burger🔤 🍨 🔤onions🔤 🔤bbq sauce🔤 🍆❗️
-  🍦 notes 💷 burger ❗️
+  🆕🍔🆕 🔤Barbecue burger🔤 🍨 🔤onions🔤 🔤bbq sauce🔤 🍆❗️ ➡️ burger
+  💷 burger ❗️ ➡️ notes
   😀 notes ❗️
 
-  🍦 pizza 🆕🍕🆕 🔤Romana🔤 🍨 🔤tomato🔤 🔤mozzarella🔤 🔤anchovies🔤 🍆 👍 👍❗️
-  🍦 notes2 💷 pizza ❗️
+  🆕🍕🆕 🔤Romana🔤 🍨 🔤tomato🔤 🔤mozzarella🔤 🔤anchovies🔤 🍆 👍 👍❗️ ➡️ pizza
+  💷 pizza ❗️ ➡️ notes2
   😀 notes2 ❗️
 🍉

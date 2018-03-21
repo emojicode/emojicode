@@ -2,9 +2,9 @@
 
 🐇🦔🚉  🍇
   ✒️ ❗️ 🏁 🍇
-    🍦 data1 📇🔤This is a string.🔤❗️
-    🍦 data2 📇🔤This is a string.🔤❗️
-    🍦 data3 📇🔤This is b string.🔤❗️
+    📇🔤This is a string.🔤❗️ ➡️ data1
+    📇🔤This is a string.🔤❗️ ➡️ data2
+    📇🔤This is b string.🔤❗️ ➡️ data3
 
     ⛔🐕 🔤This is a string.🔤 🙌  🍺🔡data1❗️🔤Data to string🔤❗️
     ⛔🐕 data1 🙌 data2🔤Equality test🔤❗️
@@ -32,7 +32,7 @@
 🍉
 
 🏁 ➡️ 🔢 🍇
-  🍦 tester 🆕🦔🆕❗️
+  🆕🦔🆕❗️ ➡️ tester
   🏁tester❗️
   ↩️ 👔tester❗️
 🍉

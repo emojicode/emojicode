@@ -2,7 +2,7 @@
 
 🐇🦔 🚉 🍇
   ✒️ ❗️ 🏁 🍇
-    🍦 dict 🆕🍯🐚🔡🐸
+    🆕🍯🐚🔡🐸 ➡️ dict
 
     🐷 dict 🔤Hannah🔤 🔤Elfriede🔤
     🐷 dict 🔤Josef🔤 🔤Jan🔤
@@ -42,7 +42,7 @@
 
     ⛔️🐕 😛 🍺 🐽 dict 🔤Freiherr🔤 🔤Berlauch🔤 🔤Freiherr = Berlauch🔤
 
-    🍦 literalDictionary 🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆
+    🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24 🔤Apfel🔤 111 🍆 ➡️ literalDictionary
 
     ⛔️🐕 😛 🍺 🐽 literalDictionary 🔤Grapefruit🔤 34 🔤Grapefruit = 34🔤
     ⛔️🐕 😛 🍺 🐽 literalDictionary 🔤Birne🔤 24 🔤Birne = 24🔤
@@ -78,7 +78,7 @@
 🍉
 
 🏁 ➡️ 🔢 🍇
-  🍦 tester 🆕🦔🆕
+  🆕🦔🆕 ➡️ tester
   🏁 tester
   ↩️ 👔 tester
 🍉

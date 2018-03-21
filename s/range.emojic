@@ -7,17 +7,17 @@
   🐊 🔂🐚🔢
   🐊 🐽️🐚🔢
 
-  🍰 start 🔢
-  🍰 stop 🔢
-  🍰 step 🔢
+  🖍🆕 start 🔢
+  🖍🆕 stop 🔢
+  🖍🆕 step 🔢
 
   📗
     Creates a range from start to stop.
   📗
   🆕 ⏩ 🍼 start 🔢 🍼 stop 🔢 🍇
-    🍮 step 1
+    1 ➡️ 🖍step
     🍊 stop ◀️ start 🍇
-      🍮 step -1
+      -1 ➡️ 🖍step
     🍉
   🍉
 
@@ -32,7 +32,7 @@
     Nothingness is returned.
   📗
   ❗️ 🐽 n 🔢 ➡️ 🍬🔢 🍇
-    🍦 v start ➕ n ✖️ step
+    start ➕ n ✖️ step ➡️ v
     🍊 step ◀️ 0 🍇
       🍊 stop ◀️ v 🤝 v ◀️🙌 start 🍇
         ↩️ v

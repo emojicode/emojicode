@@ -2,8 +2,8 @@
 
 🐇🦔 🚉 🍇
   ❗️ 😎 🍇
-    🍦 list 🍨🔤tree🔤 🔤three🔤 🔤bee🔤 🔤lee🔤 🔤me🔤🍆
-    🍦 testList 🆕🍨🐚🔡🐸
+    🍨🔤tree🔤 🔤three🔤 🔤bee🔤 🔤lee🔤 🔤me🔤🍆 ➡️ list
+    🆕🍨🐚🔡🐸 ➡️ testList
 
     🔂 name 🍡 list 🍇
       🐻 testList name
@@ -13,21 +13,21 @@
   🍉
 
   ❗️ 📇 🍇
-    🍦 data 📇 🔤Daft Punk🔤
-    🍦 testList 🆕🍨🐚🔢🐸
+    📇 🔤Daft Punk🔤 ➡️ data
+    🆕🍨🐚🔢🐸 ➡️ testList
 
     🔂 byte 🍡 data 🍇
       😀🔡 byte 16
       🐻 testList byte
     🍉
 
-    🍦 list 🍨0x44 0x61 0x66 0x74 0x20 0x50 0x75 0x6e 0x6b🍆
+    🍨0x44 0x61 0x66 0x74 0x20 0x50 0x75 0x6e 0x6b🍆 ➡️ list
     ⛔️🐕 😛 list testList 🔤Data Explicit Iterator🔤
   🍉
 
   ❗️ 🤗 🍇
-    🍦 list 🍨 🔤tree🔤 🔤three🔤 🔤bee🔤 🔤lee🔤 🔤me🔤 🍆
-    🍦 testList 🆕🍨🐚🔡🐸
+    🍨 🔤tree🔤 🔤three🔤 🔤bee🔤 🔤lee🔤 🔤me🔤 🍆 ➡️ list
+    🆕🍨🐚🔡🐸 ➡️ testList
 
     🔂 name 🆕🌱🐚🔡🆕 list 🍇
 			😀 🍺 name
@@ -38,11 +38,11 @@
   🍉
 
   ❗️ 🤠 🍇
-    🍦 list 🍨 🔤tree🔤 🔤three🔤 🔤bee🔤 🔤lee🔤 🔤me🔤 🍆
-    🍦 testList 🆕🍨🐚🔡🐸
+    🍨 🔤tree🔤 🔤three🔤 🔤bee🔤 🔤lee🔤 🔤me🔤 🍆 ➡️ list
+    🆕🍨🐚🔡🐸 ➡️ testList
 
-    🍰 iterable 🔂🐚🔡
-    🍮 iterable 🆕🌳🐚🔡🆕 list
+    🖍🆕 iterable 🔂🐚🔡
+    🆕🌳🐚🔡🆕 list ➡️ 🖍🆕iterable
     🔂 name iterable 🍇
       😀 name
       🐻 testList name
@@ -60,7 +60,7 @@
 🍉
 
 🏁 ➡️ 🔢 🍇
-  🍦 tester 🆕🦔🆕
+  🆕🦔🆕 ➡️ tester
   🏁 tester
   ↩️ 👔 tester
 🍉

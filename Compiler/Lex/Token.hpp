@@ -38,6 +38,7 @@ enum class TokenType {
     GroupBegin,
     GroupEnd,
     RightProductionOperator,
+    LeftProductionOperator,
 
     BlockBegin,
     BlockEnd,
@@ -48,15 +49,13 @@ enum class TokenType {
     If,
     ElseIf,
     Else,
-    FrozenDeclaration,
-    Declaration,
-    Assignment,
     ErrorHandler,
     New,
     This,
     Unsafe,
     NoValue,
     Super,
+    Mutable,
 };
 
 class Token {

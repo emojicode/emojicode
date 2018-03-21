@@ -38,29 +38,28 @@ void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
     id_ = var.id();
 }
 
-void ASTVariableAssignmentDecl::analyse(FunctionAnalyser *analyser) {
-    try {
-        auto rvar = analyser->scoper().getVariable(name(), position());
-        if (rvar.inInstanceScope && !analyser->function()->mutating() &&
-            !isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-            analyser->compiler()->error(CompilerError(position(),
-                                                      "Can’t mutate instance variable as method is not marked with 🖍."));
-        }
+void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
+    auto rvar = analyser->scoper().getVariable(name(), position());
 
-        setVariableAccess(rvar, analyser);
-        analyser->expectType(rvar.variable.type(), &expr_);
+    if (rvar.inInstanceScope && !analyser->function()->mutating() &&
+        !isFullyInitializedCheckRequired(analyser->function()->functionType())) {
+        analyser->compiler()->error(CompilerError(position(),
+                                                  "Can’t mutate instance variable as method is not marked with 🖍."));
+    }
 
-        rvar.variable.initialize();
-        rvar.variable.mutate(position());
-    }
-    catch (VariableNotFoundError &vne) {
-        // Not declared, declaring as local variable
-        setDeclares();
-        Type t = analyser->expect(TypeExpectation(false, true), &expr_);
-        auto &var = analyser->scoper().currentScope().declareVariable(name(), t, false, position());
-        var.initialize();
-        setVariableAccess(ResolvedVariable(var, false), analyser);
-    }
+    setVariableAccess(rvar, analyser);
+    analyser->expectType(rvar.variable.type(), &expr_);
+
+    rvar.variable.initialize();
+    rvar.variable.mutate(position());
+}
+
+void ASTVariableDeclareAndAssign::analyse(FunctionAnalyser *analyser) {
+    setDeclares();
+    Type t = analyser->expect(TypeExpectation(false, true), &expr_);
+    auto &var = analyser->scoper().currentScope().declareVariable(name(), t, false, position());
+    var.initialize();
+    setVariableAccess(ResolvedVariable(var, false), analyser);
 }
 
 void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
@@ -71,7 +70,7 @@ void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
     analyser->expectType(var.type(), &expr_);
 }
 
-void ASTFrozenDeclaration::analyse(FunctionAnalyser *analyser) {
+void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
     setDeclares();
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, true, position());

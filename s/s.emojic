@@ -63,7 +63,7 @@
 
   📗 Whether this symbol represents a whitespace. 📗
   ❗️🐁 ➡️ 👌 🍇
-    🍦 val 🔢🐕❗️
+    🔢🐕❗️ ➡️ val
     ↩️ 🤜0x9 ◀️🙌 val 🤝 val ◀️🙌 0xD🤛 👐 val 🙌 0x20 👐 val 🙌 0x85 👐
        val 🙌 0xA0 👐 val 🙌 0x1680 👐 val 🙌 0x2028 👐 val 🙌 0x2029 👐
        val 🙌 0x202F 👐 val 🙌 0x205F 👐 val 🙌 0x3000 👐 val 🙌 0xFE0F 👐
@@ -75,8 +75,8 @@
   The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings)
 📗
 🌍 🐇 🔡 🍇
-  🍰 codePoints 🧠
-  🍰 count 🔢
+  🖍🆕 codePoints 🧠
+  🖍🆕 count 🔢
 🍉
 
 📗
@@ -84,15 +84,15 @@
   language reference.](../../reference/the-s-package.html#-lists)
 📗
 🌍 🐇 🍨🐚Element ⚪️ 🍇
-  🍰 data 🧠
-  🍰 count 🔢
-  🍰 size 🔢
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
+  🖍🆕 size 🔢
 🍉
 
 📗 📇 is an abstract interface to binary data. 📗
 🌍 🐇 📇 🍇
-  🍰 data 🧠
-  🍰 count 🔢
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
 🍉
 
 📗
@@ -153,16 +153,16 @@
   🐊 🍡🐚Element
   🐊 🔂🐚Element
 
-  🍰 iteratee 🐽🐚Element
-  🍰 index 🔢
+  🖍🆕 iteratee 🐽🐚Element
+  🖍🆕 index 🔢
 
   🆕 🍼 iteratee 🐽🐚Element 🍇
-    🍮 index 0
+    0 ➡️ 🖍index
   🍉
 
   ❗️ 🔽 ➡️ Element 🍇
-    🍦 sy 🍺 🐽 iteratee  index❗️
-    🍮 index ➕ 1
+    🍺 🐽 iteratee index❗️ ➡️ sy
+    index ⬅️➕ 1
     ↩️ sy
   🍉
 

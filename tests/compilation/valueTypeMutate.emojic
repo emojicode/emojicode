@@ -1,5 +1,5 @@
 🕊 🌼 🍇
-  🍰 text 🔡
+  🖍🆕 text 🔡
 
   🆕 🍼 text 🔡 🍇🍉
 
@@ -8,22 +8,22 @@
   🍉
 
   🖍 ❗️ 😣 🍇
-    🍮 text 🔤Voyager🔤
+    🔤Voyager🔤 ➡️ 🖍text
   🍉
 
   🖍 ❗️ 😋 string 🔡 🍇
-    🍮 text string
+    string ➡️ 🖍text
   🍉
 🍉
 
 🏁 🍇
-  🍦 discovery 🆕🌼🆕  🔤Discovery🔤❗️
-  🍮 discoveryCopy discovery
+  🆕🌼🆕  🔤Discovery🔤❗️ ➡️ discovery
+  discovery ➡️ 🖍🆕discoveryCopy
   🌵 discoveryCopy ❗️
   😣 discoveryCopy ❗️
   🌵 discoveryCopy ❗️
   🌵 discovery ❗️
-  🍮 discoveryCopyCopy discoveryCopy
+  discoveryCopy ➡️ 🖍🆕discoveryCopyCopy
   🌵 discoveryCopyCopy ❗️
   😋 discoveryCopyCopy 🔤Enterprise🔤 ❗️
   🌵 discoveryCopyCopy ❗️

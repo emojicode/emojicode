@@ -36,17 +36,17 @@ void Scope::popInitializationLevel() {
     }
 }
 
-Variable& Scope::declareVariable(const std::u32string &variable, const Type &type, bool frozen,
+Variable& Scope::declareVariable(const std::u32string &variable, const Type &type, bool constant,
                                  const SourcePosition &p) {
-    return declareVariableWithId(variable, type, frozen, VariableID(maxVariableId_++), p);
+    return declareVariableWithId(variable, type, constant, VariableID(maxVariableId_++), p);
 }
 
-Variable& Scope::declareVariableWithId(const std::u32string &variable, const Type &type, bool frozen, VariableID id,
+Variable& Scope::declareVariableWithId(const std::u32string &variable, const Type &type, bool constant, VariableID id,
                                        const SourcePosition &p) {
     if (hasLocalVariable(variable)) {
         throw CompilerError(p, "Cannot redeclare variable.");
     }
-    Variable &v = map_.emplace(variable, Variable(type, id, frozen, variable, p)).first->second;
+    Variable &v = map_.emplace(variable, Variable(type, id, constant, variable, p)).first->second;
     return v;
 }
 
@@ -58,8 +58,8 @@ bool Scope::hasLocalVariable(const std::u32string &variable) const {
     return map_.count(variable) > 0;
 }
 
-void Scope::unintializedVariablesCheck(const SourcePosition &p, const std::string &errorMessageFront,
-                                           const std::string &errorMessageBack) {
+void Scope::uninitializedVariablesCheck(const SourcePosition &p, const std::string &errorMessageFront,
+                                        const std::string &errorMessageBack) {
     for (auto &it : map_) {
         Variable &cv = it.second;
         if (!cv.initialized() && cv.type().type() != TypeType::Optional && !cv.inherited()) {
@@ -71,9 +71,9 @@ void Scope::unintializedVariablesCheck(const SourcePosition &p, const std::strin
 void Scope::recommendFrozenVariables(Compiler *app) const {
     for (auto &it : map_) {
         const Variable &cv = it.second;
-        if (!cv.frozen() && !cv.mutated()) {
+        if (!cv.constant() && !cv.mutated()) {
             app->warn(cv.position(), "Variable \"", utf8(cv.name()),
-                      "\" was never mutated; consider making it a frozen 🍦 variable.");
+                      "\" was never mutated; consider making it a constant variable.");
         }
     }
 }

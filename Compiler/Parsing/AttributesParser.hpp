@@ -43,7 +43,7 @@ public:
 
     AttributeParser& parse(TokenStream *stream) {
         for (auto attr : order_) {
-            auto found = stream->consumeTokenIf(static_cast<char32_t>(attr));
+            auto found = test(stream, attr);
             found_.emplace(attr, FoundAttribute(found));
         }
         return *this;
@@ -54,6 +54,15 @@ private:
         bool found;
         bool allowed = false;
     };
+
+    bool test(TokenStream *stream, Attribute attr) const {
+        switch (attr) {
+            case Attribute::Mutating:
+                return stream->consumeTokenIf(TokenType::Mutable);
+            default:
+                return stream->consumeTokenIf(static_cast<char32_t>(attr));
+        }
+    }
 
     constexpr static const std::array<Attribute, sizeof...(Attributes)> order_ = { Attributes... };
     std::map<Attribute, FoundAttribute> found_;

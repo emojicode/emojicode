@@ -5,7 +5,7 @@
 
   📗 Creates a string by copying the memory from the provided memory. 📗
   🆕 🧠 memory 🧠 🍼 count 🔢 🍇
-    🍮 data 🆕🧠🆕 count❗️
+    🆕🧠🆕 count❗️➡️ 🖍data
     🚜 data 0 memory 0 count❗️
   🍉
 
@@ -57,12 +57,12 @@
     🍊 from ▶️️🙌 count 🍇
     	↩️ 🆕📇🧠 🆕🧠🆕 0❗️ 0❗️
     🍉
-    🍮 normal_length length
+    length ➡️ 🖍🆕normal_length
     🍊 from ➕ length ▶️️🙌 count 🍇
-      🍮 normal_length count ➖ from
+      count ➖ from ➡️ 🖍normal_length
     🍉
 
-    🍦 new 🆕🧠🆕 normal_length❗️
+    🆕🧠🆕 normal_length❗️ ➡️ new
     🚜 new 0 data from normal_length❗️
     ↩️ 🆕📇🧠 new normal_length❗️
   🍉
@@ -79,8 +79,8 @@
     concatenated.
   📗
   ➕ b 📇 ➡️ 📇 🍇
-		🍦 new_count count ➕ 🐔b❗️
-    🍦 new 🆕🧠🆕 new_count ❗️
+		count ➕ 🐔b❗️ ➡️ new_count
+    🆕🧠🆕 new_count ❗️ ➡️ new
     🚜 new 0 data 0 count❗️
 		🚜 new count 🧠b❗️0 🐔b❗️❗️
     ↩️ 🆕📇🧠 new new_count❗️
