@@ -183,14 +183,14 @@
     🍉
   🍉
 
-👴   📗
-👴     Sorts this array in place using the quick sort algorithm.
+💭   📗
+💭     Sorts this array in place using the quick sort algorithm.
 
-👴     `comparator` must return an integer less than, equal to, or greater than 0,
-👴     if the first argument is considered respectively less than, equal to, or
-👴     greater than the second.
-👴   📗
-👴   ❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 📻 53
+💭     `comparator` must return an integer less than, equal to, or greater than 0,
+💭     if the first argument is considered respectively less than, equal to, or
+💭     greater than the second.
+💭   📗
+💭   ❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 📻 53
 
   📗
     Shuffles the list in place using a Fisher–Yates shuffle.
@@ -250,19 +250,19 @@
     ↩️ 👍
   🍉
 
-👴   📗 Tests whether this array and `other` are equal. 📗
-👴   🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
-👴     🍊 ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
-👴       ↩️ 👎
-👴     🍉
+💭   📗 Tests whether this array and `other` are equal. 📗
+💭   🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
+💭     🍊 ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
+💭       ↩️ 👎
+💭     🍉
 
-👴     🔂 i 🆕⏩⏩  0 🐔🐕❗️ ❗️ 🍇
-👴       🍊 ❎ 🍺🐽 other i❗️ 🙌 🍺 🐽 🐕  i❗️ ❗️ 🍇
-👴         ↩️ 👎
-👴       🍉
-👴     🍉
-👴     ↩️ 👍
-👴   🍉
+💭     🔂 i 🆕⏩⏩  0 🐔🐕❗️ ❗️ 🍇
+💭       🍊 ❎ 🍺🐽 other i❗️ 🙌 🍺 🐽 🐕  i❗️ ❗️ 🍇
+💭         ↩️ 👎
+💭       🍉
+💭     🍉
+💭     ↩️ 👍
+💭   🍉
 
   📗 Returns an iterator to iterate over the elements of this list. 📗
   ❗️ 🍡 ➡️ 🌳🐚Element 🍇

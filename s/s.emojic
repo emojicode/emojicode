@@ -214,42 +214,42 @@
 📜 🔤list.emojic🔤
 📜 🔤data.emojic🔤
 
-👴 🐋 🍯 🍇
-👴   📗 Creates an empty 🍯. 📗
-👴   🆕 🐸 📻 86
-👴   📗
-👴     Returns the value assigned to *key*. If key is not in the 🍯 ✨ is
-👴     returned.
-👴   📗
-👴   ❗️ 🐽 key 🔡 ➡️ 🍬Element 📻 87
-👴   📗
-👴     Removes *key* and its assigned value from the 🍯. No action is performed if
-👴     *key* is not in the 🍯.
-👴   📗
-👴   ❗️ 🐨 key 🔡 📻 88
+💭 🐋 🍯 🍇
+💭   📗 Creates an empty 🍯. 📗
+💭   🆕 🐸 📻 86
+💭   📗
+💭     Returns the value assigned to *key*. If key is not in the 🍯 ✨ is
+💭     returned.
+💭   📗
+💭   ❗️ 🐽 key 🔡 ➡️ 🍬Element 📻 87
+💭   📗
+💭     Removes *key* and its assigned value from the 🍯. No action is performed if
+💭     *key* is not in the 🍯.
+💭   📗
+💭   ❗️ 🐨 key 🔡 📻 88
 
-👴   📗 Adds a key-value pair. 📗
-👴   ❗️ 🐷 key 🔡 object Element 📻 89
+💭   📗 Adds a key-value pair. 📗
+💭   ❗️ 🐷 key 🔡 object Element 📻 89
 
-👴   📗
-👴     Returns a list consisting of all keys in this 🍯.
+💭   📗
+💭     Returns a list consisting of all keys in this 🍯.
 
-👴     >!N Note that the keys in the returned list are arbitrarily ordered.
+💭     >!N Note that the keys in the returned list are arbitrarily ordered.
 
-👴   📗
-👴   ❗️ 🐙 ➡️ 🍨🐚🔡 📻 90
+💭   📗
+💭   ❗️ 🐙 ➡️ 🍨🐚🔡 📻 90
 
-👴   📗
-👴     Removes all key-value pairs in this 🍯 and returns the number of deleted
-👴     items.
-👴   📗
-👴   ❗️ 🐗 ➡️ 🔢 📻 91
+💭   📗
+💭     Removes all key-value pairs in this 🍯 and returns the number of deleted
+💭     items.
+💭   📗
+💭   ❗️ 🐗 ➡️ 🔢 📻 91
 
-👴   📗 Checks whether *key* is in this 🍯. 📗
-👴   ❗️ 🐣 key 🔡 ➡️ 👌📻 92
+💭   📗 Checks whether *key* is in this 🍯. 📗
+💭   ❗️ 🐣 key 🔡 ➡️ 👌📻 92
 
-👴   📗 Returns the number of items. 📗
-👴   ❗️ 🐔 ➡️ 🔢📻 93
-👴 🍉
+💭   📗 Returns the number of items. 📗
+💭   ❗️ 🐔 ➡️ 🔢📻 93
+💭 🍉
 
 📜 🔤thread.emojic🔤

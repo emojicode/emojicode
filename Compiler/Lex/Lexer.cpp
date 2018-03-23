@@ -138,10 +138,7 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
         case E_INPUT_SYMBOL_LATIN_LETTERS:
             token->type_ = TokenType::String;
             return true;
-        case E_OLDER_WOMAN:
-            token->type_ = TokenType::MultilineComment;
-            return true;
-        case E_OLDER_MAN:
+        case E_THOUGHT_BALLOON:
             token->type_ = TokenType::SinglelineComment;
             return true;
         case E_GREEN_TEXTBOOK:
@@ -155,6 +152,8 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
             token->type_ = TokenType::Operator;
             token->value_.push_back(codePoint());
             return true;
+        default:
+            break;
     }
 
     if (('0' <= codePoint() && codePoint() <= '9') || codePoint() == '-' || codePoint() == '+') {
@@ -178,15 +177,9 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
         case TokenType::Operator:
             return continueOperator(token);
         case TokenType::SinglelineComment:
-            if (isNewline()) {
-                return TokenState::Ended;
-            }
-            return TokenState::Continues;
+            return continueSingleLineToken(token, constState);
         case TokenType::MultilineComment:
-            if (codePoint() == E_OLDER_WOMAN) {
-                return TokenState::Ended;
-            }
-            return TokenState::Continues;
+            return continueMultilineComment(constState);
         case TokenType::DocumentationComment:
             if (codePoint() == E_GREEN_TEXTBOOK) {
                 return TokenState::Ended;
@@ -207,6 +200,35 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
         default:
             throw std::logic_error("Lexer: Token continued but not handled.");
     }
+}
+
+Lexer::TokenState Lexer::continueMultilineComment(Lexer::TokenConstructionState *constState) const {
+    if (!constState->commentDetermined_) {
+        if (codePoint() == E_THOUGHT_BALLOON) {
+            return TokenState::Ended;
+        }
+        constState->commentDetermined_ = true;
+    }
+    if (codePoint() == E_END_ARROW) {
+        constState->commentDetermined_ = false;
+    }
+    return TokenState::Continues;
+}
+
+Lexer::TokenState Lexer::continueSingleLineToken(Token *token, TokenConstructionState *constState) const {
+    if (!constState->commentDetermined_) {
+        if (codePoint() == E_SOON_ARROW) {
+            token->type_ = TokenType::MultilineComment;
+        }
+        else {
+            constState->commentDetermined_ = true;
+        }
+    }
+
+    if (isNewline()) {
+        return TokenState::Ended;
+    }
+    return TokenState::Continues;
 }
 
 Lexer::TokenState Lexer::continueDoubleToken(Token *token) const {

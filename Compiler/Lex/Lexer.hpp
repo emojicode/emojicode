@@ -51,6 +51,7 @@ private:
         bool isHex_ = false;
         bool escapeSequence_ = false;
         bool foundZWJ_ = false;
+        bool commentDetermined_ = false;
     };
 
     void loadOperatorSingleTokens();
@@ -120,6 +121,10 @@ private:
     TokenState continueDoubleToken(Token *token) const;
 
     TokenState continueOperator(Token *token) const;
+
+    TokenState continueSingleLineToken(Token *token, TokenConstructionState *constState) const;
+
+    TokenState continueMultilineComment(TokenConstructionState *constState) const;
 };
 
 }  // namespace EmojicodeCompiler
