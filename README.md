@@ -3,10 +3,6 @@
 Emojicode is an open source, high-level, multi-paradigm
 programming language consisting of emojis. It features Object-Orientation, Optionals, Generics and Closures.
 
-## 👩‍🔬💥💡 Major Changes Ahead 🔥⚠️🚱
-
-The Emojicode source is undergoing some major changes. Expect things to be broken in master. [Check out the 0.5 branch for stable code.][3]
-
 ## 🏁 Getting Started
 
 To learn more about the language and get started quickly visit Emojicode’s [documentation][4].
@@ -15,22 +11,20 @@ You can easily install Emojicode from our stable prebuilt binaries. [See Install
 
 We highly recommend to follow Emojicode’s Twitter account [@Real\_Emojicode][6] to stay up with the latest.
 
+
 ## 🔨 Building from source
 
-If you don’t want to use the prebuilt binaries or want to work on Emojicode, you
-can of course also build Emojicode from source.
+**The following instructions apply only to the code in the master branch,
+which is not stable. [Check out the 0.5 branch for stable code.][3]**
 
 ### Building locally
 
-Prerequisites (earlier versions might work but are not tested):
+Prerequisites (versions are recommendations):
 
-- clang and clang++ 3.9 or newer, or
-- gcc and g++ 7.2 or newer (previous GCC versions are unsuitable due to a bug)
-- CMake 3.5.1 or newer and (preferably) Ninja
-- Python 3.5.2 or newer (for tests and packaging)
-- Allegro 5 to compile the allegro package
-  - `sudo apt-get install liballegro5-dev` on Debian/Ubuntu
-  - `brew install allegro` on macOS
+- clang and clang++ 5.0.1 or gcc and g++ 7.2
+- CMake 3.5.1+ and (preferably) Ninja
+- LLVM 5.0.1
+- Python 3.5.2+ for testing
 
 Steps:
 
@@ -42,9 +36,6 @@ Steps:
    cd emojicode
    ```
 
-   If you want to build the latest stable version, check it out first. E.g.
-   `git checkout v0.5`.
-
 2. Create a `build` directory and run CMake in it:
 
    ```sh
@@ -52,10 +43,6 @@ Steps:
    cd build
    cmake .. -GNinja
    ```
-
-   You can specify the heap size in bytes, which defaults to 512MB, with
-   `-DheapSize` and the default package search path with
-   `-DdefaultPackagesDirectory`.
 
    You can of course also run CMake in another directory or use another build
    system than Ninja. Refer to the CMake documentation for more information.
