@@ -267,7 +267,7 @@ Lexer::TokenState Lexer::continueIntegerToken(Token *token, Lexer::TokenConstruc
         token->value_.push_back(codePoint());
         return TokenState::Continues;
     }
-    if (codePoint() == '_') {
+    if (codePoint() == ',') {
         return TokenState::Continues;
     }
     return TokenState::NextBegun;
