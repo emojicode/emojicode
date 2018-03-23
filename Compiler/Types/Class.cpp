@@ -89,20 +89,28 @@ void Class::checkInheritedRequiredInit(Initializer *initializer) {
     }
 }
 
+template <typename FT>
+FT* ifNotPrivate(FT *function) {
+    if (function == nullptr) {
+        return nullptr;
+    }
+    return function->accessLevel() == AccessLevel::Private ? nullptr : function;
+}
+
 Function* Class::findSuperFunction(Function *function) const {
     switch (function->functionType()) {
         case FunctionType::ObjectMethod:
         case FunctionType::BoxingLayer:
-            return superclass()->lookupMethod(function->name(), function->isImperative());
+            return ifNotPrivate(superclass()->lookupMethod(function->name(), function->isImperative()));
         case FunctionType::ClassMethod:
-            return superclass()->lookupTypeMethod(function->name(), function->isImperative());
+            return ifNotPrivate(superclass()->lookupTypeMethod(function->name(), function->isImperative()));
         default:
             throw std::logic_error("Function of unexpected type in class");
     }
 }
 
 Initializer* Class::findSuperInitializer(Initializer *function) const {
-    return superclass()->lookupInitializer(function->name());
+    return ifNotPrivate(superclass()->lookupInitializer(function->name()));
 }
 
 void Class::addInstanceVariable(const InstanceVariableDeclaration &declaration) {

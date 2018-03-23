@@ -87,9 +87,13 @@ bool SemanticAnalyser::enforcePromises(const Function *sub, const Function *supe
         package_->compiler()->error(CompilerError(sub->position(), superSource.toString(subContext),
                                                   "’s implementation of ", utf8(sub->name()), " was marked 🔏."));
     }
-    if (sub->accessLevel() != super->accessLevel()) {
-        package_->compiler()->error(CompilerError(sub->position(), "Access level of ", superSource.toString(subContext),
-                                                  "’s implementation of, ", utf8(sub->name()), ", does not match."));
+
+
+
+    if (sub->accessLevel() == AccessLevel::Private || (sub->accessLevel() == AccessLevel::Protected &&
+            super->accessLevel() == AccessLevel::Public)) {
+        package_->compiler()->error(CompilerError(sub->position(), "Overriding method must be as accessible or more ",
+                                                  "accessible than the overridden method."));
     }
 
     auto superReturnType = super->returnType().resolveOn(superContext);
