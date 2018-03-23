@@ -28,7 +28,7 @@ void HRFCompilerDelegate::error(Compiler *compiler, const std::string &message, 
 }
 
 void HRFCompilerDelegate::printMessage(const std::string &message) const {
-    std::cerr << rang::style::bold << message << std::__1::endl << rang::style::reset;
+    std::cerr << rang::style::bold << message << std::endl << rang::style::reset;
 }
 
 void HRFCompilerDelegate::printPosition(const SourcePosition &p) const {
