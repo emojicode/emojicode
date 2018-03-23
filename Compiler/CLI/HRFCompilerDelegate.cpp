@@ -7,19 +7,49 @@
 //
 
 #include "HRFCompilerDelegate.hpp"
+#include "Utils/rang.hpp"
 #include "Lex/SourcePosition.hpp"
-#include <iostream>
 
 namespace EmojicodeCompiler {
 
 namespace CLI {
 
-void HRFCompilerDelegate::error(const SourcePosition &p, const std::string &message) {
-    std::cerr << "🚨 line " << p.line << " column " << p.character << " " << p.file << ": " << message << std::endl;
+HRFCompilerDelegate::HRFCompilerDelegate(bool forceColor) {
+    if (forceColor) {
+        rang::setControlMode(rang::control::Force);
+    }
 }
 
-void HRFCompilerDelegate::warn(const SourcePosition &p, const std::string &message) {
-    std::cerr << "⚠️ line " << p.line << " column " << p.character << " " << p.file << ": " << message << std::endl;
+void HRFCompilerDelegate::error(Compiler *compiler, const std::string &message, const SourcePosition &p) {
+    printPosition(p);
+    std::cerr << rang::fg::red << "🚨 error: " << rang::style::reset;
+    printMessage(message);
+    printOffendingCode(compiler, p);
+}
+
+void HRFCompilerDelegate::printMessage(const std::string &message) const {
+    std::cerr << rang::style::bold << message << std::__1::endl << rang::style::reset;
+}
+
+void HRFCompilerDelegate::printPosition(const SourcePosition &p) const {
+    std::cerr << rang::style::bold << p.file << ":" << p.line << ":" << p.character << ": ";
+}
+
+void HRFCompilerDelegate::warn(Compiler *compiler, const std::string &message, const SourcePosition &p) {
+    printPosition(p);
+    std::cerr << rang::fg::yellow << "⚠️  warning: " << rang::style::reset;
+    printMessage(message);
+    printOffendingCode(compiler, p);
+}
+
+void HRFCompilerDelegate::printOffendingCode(Compiler *compiler, const SourcePosition &position) {
+    auto line = compiler->sourceManager().line(position);
+    if (line.empty()) {
+        return;
+    }
+    std::cerr << utf8(line);
+    auto r = position.character > 0 ? position.character - 1 : 0;
+    std::cerr << std::string(r, ' ') << "⬆️" << std::endl << std::endl;
 }
 
 }  // namespace CLI

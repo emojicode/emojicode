@@ -10,6 +10,7 @@
 #define Compiler_hpp
 
 #include "Utils/StringUtils.hpp"
+#include "Lex/SourceManager.hpp"
 #include <exception>
 #include <map>
 #include <memory>
@@ -27,6 +28,7 @@ class Class;
 class Protocol;
 class ValueType;
 class CompatibilityInfoProvider;
+class Compiler;
 
 /// CompilerDelegate is an interface class, which is used by Compiler to notify about certain events, like
 /// compiler errors.
@@ -37,11 +39,11 @@ public:
     /// A compiler error occured.
     /// @param p The location at which the error occurred.
     /// @param message A string message describing the error.
-    virtual void error(const SourcePosition &p, const std::string &message) = 0;
+    virtual void error(Compiler *compiler, const std::string &message, const SourcePosition &p) = 0;
     /// A compiler warning has been issued.
     /// @param p The location at which the warning was issued.
     /// @param message A string message describing the warning.
-    virtual void warn(const SourcePosition &p, const std::string &message) = 0;
+    virtual void warn(Compiler *compiler, const std::string &message, const SourcePosition &p) = 0;
     /// Called when the compilation stops, i.e. just before Compiler::compile returns.
     virtual void finish() = 0;
 };
@@ -72,6 +74,8 @@ public:
 
     RecordingPackage* mainPackage() const { return mainPackage_.get(); }
 
+    SourceManager& sourceManager() { return sourceManager_; }
+
     void loadMigrationFile(const std::string &file);
 
     /// Issues a compiler warning. The compilation is continued normally.
@@ -96,7 +100,6 @@ public:
 
     Class *sString = nullptr;
     Class *sList = nullptr;
-    Class *sError = nullptr;
     Class *sData = nullptr;
     Class *sDictionary = nullptr;
     Protocol *sEnumerator = nullptr;
@@ -135,6 +138,7 @@ private:
     const std::unique_ptr<CompilerDelegate> delegate_;
     std::unique_ptr<CompatibilityInfoProvider> compInfoProvider_;
     std::unique_ptr<RecordingPackage> mainPackage_;
+    SourceManager sourceManager_;
 };
 
 }  // namespace EmojicodeCompiler

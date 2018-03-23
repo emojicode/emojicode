@@ -31,13 +31,9 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
     }
 
     stream_.consumeToken(TokenType::BlockBegin);
-    try {
-        auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
-        function->setAst(ast);
-    }
-    catch (CompilerError &ce) {
-        package_->compiler()->error(ce);
-    }
+
+    auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
+    function->setAst(ast);
 }
 
 void TypeBodyParser::parseFunction(Function *function, bool inititalizer) {

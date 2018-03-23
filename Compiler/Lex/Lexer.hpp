@@ -10,6 +10,7 @@
 #define Lexer_hpp
 
 #include "Token.hpp"
+#include "SourceManager.hpp"
 #include <map>
 #include <string>
 
@@ -28,7 +29,7 @@ public:
     /// @param sourceCode The Emojicode source code that shall be analyzed.
     /// @param sourcePositionFile The name or path to the file that contained the source code. This string is used as
     ///                           SourcePosition::file value for the position of all tokens created by this Lexer.
-    Lexer(std::u32string sourceCode, std::string sourcePositionFile);
+    Lexer(SourceManager::File *source, std::string sourcePositionFile);
 
     /// @returns The next token.
     /// @throws CompilerError if an error occurs during tokenization.
@@ -89,7 +90,7 @@ private:
     void skipWhitespace();
 
     /// @returns The current code point to be examined.
-    char32_t codePoint() const { return string_[i_]; }
+    char32_t codePoint() const { return source_->file()[i_]; }
 
     /// Makes codePoint() provide the next character of the source code.
     /// @throws CompilerError if the end of the source code string was reached, i.e. hasMoreChars() returns false.
@@ -100,11 +101,11 @@ private:
     void nextCharOrEnd();
 
     /// @returns True iff not all characters of the source code string has been tokenized yet.
-    bool hasMoreChars() const { return i_ + 1 < string_.size(); }
+    bool hasMoreChars() const { return i_ + 1 < source_->file().size(); }
 
     SourcePosition sourcePosition_;
     bool continue_ = true;
-    const std::u32string string_;
+    SourceManager::File *source_;
     size_t i_ = 0;
     std::map<char32_t, TokenType> singleTokens_;
 

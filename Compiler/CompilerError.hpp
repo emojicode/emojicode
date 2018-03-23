@@ -17,9 +17,15 @@
 namespace EmojicodeCompiler {
 
 /// A CompilerError represents an error in an Emojicode source document.
-/// Although this class inherits from std::exception not all errors are thrown. If an error does not severly affect
-/// the rest of the nearby code and the compiler can safely continue the compilation the error is directly passed
+/// Although this class inherits from std::exception not all errors should be thrown. If an error does not fatally
+/// affect compilation and the compiler can safely continue the compilation the error should directly be passed
 /// to Compiler::error. If an error is thrown, the catching catch must pass the error to Compiler::error.
+///
+/// Errors are caught in the following locations:
+/// - FunctionParser catches errors on a per-statement-basis, tries to recover and continue after the end of
+///   the current block
+/// - SemanticAnalyser catches on a per-function-basis, skips to the next function
+/// - Compiler, if the Compiler catches an error the compilation is aborted immediately.
 class CompilerError: public std::exception {
 public:
     template<typename... Args>

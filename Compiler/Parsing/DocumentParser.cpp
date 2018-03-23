@@ -101,7 +101,8 @@ void DocumentParser::parsePackageImport(const SourcePosition &p) {
 
 void DocumentParser::parseStartFlag(const Documentation &documentation, const SourcePosition &p) {
     if (package_->hasStartFlagFunction()) {
-        throw CompilerError(p, "Duplicate 🏁.");
+        package_->compiler()->error(CompilerError(p, "Duplicate 🏁."));
+        return;
     }
 
     auto function = package_->add(std::make_unique<Function>(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public,
@@ -114,13 +115,9 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
         package_->compiler()->error(CompilerError(p, "🏁 must either have no return or return 🔢."));
     }
     stream_.consumeToken(TokenType::BlockBegin);
-    try {
-        auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
-        function->setAst(ast);
-    }
-    catch (CompilerError &ce) {
-        package_->compiler()->error(ce);
-    }
+
+    auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
+    function->setAst(ast);
     package_->setStartFlagFunction(function);
 }
 

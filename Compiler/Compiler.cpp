@@ -132,11 +132,11 @@ Package* Compiler::loadPackage(const std::string &name, const SourcePosition &p,
 
 void Compiler::error(const CompilerError &ce) {
     hasError_ = true;
-    delegate_->error(ce.position(), ce.message());
+    delegate_->error(this, ce.message(), ce.position());
 }
 
 void Compiler::warn(const SourcePosition &p, const std::string &warning) {
-    delegate_->warn(p, warning);
+    delegate_->warn(this, warning, p);
 }
 
 Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {

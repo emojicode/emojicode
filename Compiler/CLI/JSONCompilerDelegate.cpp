@@ -32,11 +32,11 @@ void JSONCompilerDelegate::printJson(const char *type, const SourcePosition &p, 
     std::cerr << "}" << std::endl;
 }
 
-void JSONCompilerDelegate::error(const SourcePosition &p, const std::string &message) {
+void JSONCompilerDelegate::error(Compiler *compiler, const std::string &message, const SourcePosition &p) {
     printJson("error", p, message);
 }
 
-void JSONCompilerDelegate::warn(const SourcePosition &p, const std::string &message) {
+void JSONCompilerDelegate::warn(Compiler *compiler, const std::string &message, const SourcePosition &p) {
     printJson("warning", p, message);
 }
 

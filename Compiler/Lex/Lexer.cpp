@@ -13,8 +13,8 @@
 
 namespace EmojicodeCompiler {
 
-Lexer::Lexer(std::u32string sourceCode, std::string sourcePositionFile) :
-        sourcePosition_(1, 0, std::move(sourcePositionFile)), string_(std::move(sourceCode)) {
+Lexer::Lexer(SourceManager::File *source, std::string sourcePositionFile) :
+        sourcePosition_(1, 0, std::move(sourcePositionFile)), source_(source) {
     skipWhitespace();
 
     loadOperatorSingleTokens();
@@ -74,6 +74,7 @@ bool Lexer::detectWhitespace() {
     if (isNewline()) {
         sourcePosition_.character = 0;
         sourcePosition_.line++;
+        source_->endLine(i_ + 1);
         return true;
     }
     return isWhitespace();

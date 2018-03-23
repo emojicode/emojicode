@@ -37,6 +37,7 @@ Options::Options(int argc, char *argv[]) {
     args::Flag object(parser, "object", "Produce object file, do not link", {'c'});
     args::Flag json(parser, "json", "Show compiler messages as JSON", {"json"});
     args::Flag format(parser, "format", "Format source code", {"format"});
+    args::Flag color(parser, "color", "Show compiler messages in color.", {"color"});
 
     try {
         parser.ParseCLI(argc, argv);
@@ -45,6 +46,7 @@ Options::Options(int argc, char *argv[]) {
         mainFile_ = file.Get();
         jsonOutput_ = json.Get();
         format_ = format.Get();
+        forceColor_ = color.Get();
 
         if (package) {
             mainPackageName_ = package.Get();
@@ -123,7 +125,7 @@ std::unique_ptr<CompilerDelegate> Options::compilerDelegate() const {
     if (jsonOutput_) {
         return std::make_unique<JSONCompilerDelegate>();
     }
-    return std::make_unique<HRFCompilerDelegate>();
+    return std::make_unique<HRFCompilerDelegate>(forceColor_);
 }
 
 std::string Options::linker() const {

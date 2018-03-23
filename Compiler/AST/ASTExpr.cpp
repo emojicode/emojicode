@@ -108,7 +108,7 @@ Type ASTTypeMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &e
 }
 
 Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (analyser->function()->functionType() == FunctionType::ObjectInitializer) {
+    if (isSuperconstructorRequired(analyser->function()->functionType())) {
         analyseSuperInit(analyser);
         return Type::noReturn();
     }
@@ -129,11 +129,8 @@ Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expect
 }
 
 void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
-    if (!isSuperconstructorRequired(analyser->function()->functionType())) {
-        throw CompilerError(position(), "🐐 can only be used inside initializers.");
-    }
     if (analyser->typeContext().calleeType().eclass()->superclass() == nullptr) {
-        throw CompilerError(position(), "🐐 can only be used if the class inherits from another.");
+        throw CompilerError(position(), "Class does not have a super class");
     }
     if (analyser->pathAnalyser().hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
         analyser->compiler()->error(CompilerError(position(), "Superinitializer might have already been called."));

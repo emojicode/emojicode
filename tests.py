@@ -125,7 +125,7 @@ def compilation_test(name):
 def reject_test(filename):
     completed = run([emojicodec, filename], stderr=PIPE)
     output = completed.stderr.decode('utf-8')
-    if completed.returncode != 1 or len(re.findall(r"(^|\n)🚨", output)) != 1:
+    if completed.returncode != 1 or len(re.findall(r"🚨 error:", output)) != 1:
         print(output)
         fail_test(filename)
 

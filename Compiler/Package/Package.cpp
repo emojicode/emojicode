@@ -10,6 +10,7 @@
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Lex/Lexer.hpp"
+#include "Lex/SourceManager.hpp"
 #include "Package.hpp"
 #include "Parsing/CompatibilityInfoProvider.hpp"
 #include "Parsing/DocumentParser.hpp"
@@ -18,12 +19,7 @@
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include <algorithm>
-#include <codecvt>
 #include <cstring>
-#include <fstream>
-#include <iostream>
-#include <iostream>
-#include <locale>
 #include <map>
 #include <sstream>
 #include <string>
@@ -80,15 +76,7 @@ TokenStream Package::lexFile(const std::string &path) {
     if (!endsWith(path, ".emojic") && !endsWith(path, ".emojii")) {
         throw CompilerError(SourcePosition(0, 0, path), "Emojicode files must be suffixed with .emojic: ", path);
     }
-
-    std::ifstream f(path, std::ios_base::binary | std::ios_base::in);
-    if (f.fail()) {
-        throw CompilerError(SourcePosition(0, 0, path), "Couldn't read input file ", path, ".");
-    }
-
-    auto string = std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
-    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-    return TokenStream(Lexer(conv.from_bytes(string), path));
+    return TokenStream(Lexer(compiler()->sourceManager().read(path), path));
 }
 
 void Package::includeDocument(const std::string &path, const std::string &relativePath) {

@@ -19,8 +19,8 @@ namespace CLI {
 /// An CompilerDelegate that prints errors and warnings to stderr as JSON.
 class JSONCompilerDelegate : public CompilerDelegate {
     void begin() override;
-    void error(const SourcePosition &p, const std::string &message) override;
-    void warn(const SourcePosition &p, const std::string &message) override;
+    void error(Compiler *compiler, const std::string &message, const SourcePosition &p) override;
+    void warn(Compiler *compiler, const std::string &message, const SourcePosition &p) override;
     void finish() override;
 private:
     CommaPrinter printer_;

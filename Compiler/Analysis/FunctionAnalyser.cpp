@@ -63,13 +63,13 @@ void FunctionAnalyser::checkFunctionUse(Function *function, const SourcePosition
     if (function->accessLevel() == AccessLevel::Private) {
         if (typeContext_.calleeType().type() != function->owningType().type()
             || function->owningType().typeDefinition() != typeContext_.calleeType().typeDefinition()) {
-            throw CompilerError(p, utf8(function->name()), " is 🔒.");
+            compiler()->error(CompilerError(p, utf8(function->name()), " is 🔒."));
         }
     }
     else if (function->accessLevel() == AccessLevel::Protected) {
         if (typeContext_.calleeType().type() != function->owningType().type()
             || !this->typeContext_.calleeType().eclass()->inheritsFrom(function->owningType().eclass())) {
-            throw CompilerError(p, utf8(function->name()), " is 🔐.");
+            compiler()->error(CompilerError(p, utf8(function->name()), " is 🔐."));
         }
     }
 
@@ -119,7 +119,7 @@ void FunctionAnalyser::analyse() {
 
             auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
             auto assign = std::make_shared<ASTInstanceVariableInitialization>(instanceVariable.name(),
-                                                                          getVar, initializer->position());
+                                                                              getVar, initializer->position());
             function()->ast()->preprendNode(assign);
         }
     }
@@ -143,7 +143,7 @@ void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
         if (function_->returnType().type() != TypeType::NoReturn) {
-            throw CompilerError(function_->position(), "An explicit return is missing.");
+            compiler()->error(CompilerError(function_->position(), "An explicit return is missing."));
         }
         else {
             root->appendNode(std::make_shared<ASTReturn>(nullptr, root->position()));
@@ -161,10 +161,10 @@ void FunctionAnalyser::analyseInitializationRequirements() {
         if (typeContext_.calleeType().eclass()->superclass() != nullptr &&
             !pathAnalyser_.hasCertainly(PathAnalyserIncident::CalledSuperInitializer)) {
             if (pathAnalyser_.hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
-                throw CompilerError(function_->position(), "Superinitializer is potentially not called.");
+                compiler()->error(CompilerError(function_->position(), "Superinitializer is potentially not called."));
             }
             else {
-                throw CompilerError(function_->position(), "Superinitializer is not called.");
+                compiler()->error(CompilerError(function_->position(), "Superinitializer is not called."));
             }
         }
     }
