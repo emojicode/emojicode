@@ -184,7 +184,7 @@ void Prettyprinter::printTypeDefName(const Type &type) {
         }
     }
     if (auto valueType = type.valueType()) {
-        if (valueType->isPrimitive()) {
+        if (valueType->isPrimitive() && type.type() != TypeType::Enum) {
             thisStream() << "⚪️ ";
         }
     }
