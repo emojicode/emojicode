@@ -119,6 +119,9 @@ private:
     Type calleeType_ = Type::noReturn();
     ASTArguments args_;
     bool init_ = false;
+    bool manageErrorProneness_ = false;
+
+    Value *generateSuperInit(FunctionCodeGenerator *fg) const;
 };
 
 class ASTTypeMethod final : public ASTExpr {

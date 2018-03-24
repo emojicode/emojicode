@@ -21,7 +21,7 @@ using PackageAttributeParser = AttributeParser<Attribute::Export, Attribute::Fin
 class DocumentParser : AbstractParser {
 public:
     DocumentParser(Package *pkg, TokenStream stream, bool interface)
-            : AbstractParser(pkg, stream_), stream_(std::move(stream)), interface_(interface) {}
+            : AbstractParser(pkg, stream_), interface_(interface), stream_(std::move(stream)) {}
     void parse();
 private:
     bool interface_;

@@ -30,7 +30,7 @@ Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
         capture_.captureSelf = true;
     }
-    return closure_->type();
+    return Type(closure_.get());
 }
 
 void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -46,6 +46,10 @@ void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const Ty
             case StorageType::SimpleOptional:
                 assert(closure_->returnType().storageType() == StorageType::Simple);
                 closure_->setReturnType(Type(MakeOptional, closure_->returnType()));
+                break;
+            case StorageType::SimpleError:
+                assert(closure_->returnType().storageType() == StorageType::Simple);
+                closure_->setReturnType(Type(MakeError, expReturn.errorEnum(), closure_->returnType()));
                 break;
             case StorageType::Simple:
                 // We cannot deal with this, can we?
@@ -69,6 +73,10 @@ void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const Ty
                 case StorageType::SimpleOptional:
                     assert(param.type.storageType() == StorageType::Simple);
                     shadowParams[i].type = Type(MakeOptional, param.type);
+                    break;
+                case StorageType::SimpleError:
+                    assert(param.type.storageType() == StorageType::Simple);
+                    shadowParams[i].type = Type(MakeError, expParam.errorEnum(), param.type);
                     break;
                 case StorageType::Simple:
                     // We cannot deal with this, can we?

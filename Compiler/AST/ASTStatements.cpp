@@ -57,7 +57,7 @@ void ASTRaise::analyse(FunctionAnalyser *analyser) {
 
     boxed_ = analyser->function()->returnType().storageType() == StorageType::Box;
 
-    analyser->expectType(analyser->function()->returnType().genericArguments()[0], &value_);
+    analyser->expectType(analyser->function()->returnType().errorEnum(), &value_);
 }
 
 }  // namespace EmojicodeCompiler

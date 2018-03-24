@@ -63,30 +63,39 @@ void ASTRepeatWhile::generate(FunctionCodeGenerator *fg) const {
 }
 
 void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
-    // TODO: implement
-//    value_->generate(fg);
-//    fg->scoper().pushScope();
-//    auto &var = fg->scoper().declareVariable(varId_, value_->expressionType());
-//    fg->copyToVariable(var.stackIndex, false, value_->expressionType());
-//    fg->pushVariableReference(var.stackIndex, false);
-//    fg->wr().writeInstruction(INS_IS_ERROR);
-//    fg->wr().writeInstruction(INS_JUMP_FORWARD_IF);
-//    auto valueBlockCount = fg->wr().writeInstructionsCountPlaceholderCoin();
-//    if (!valueIsBoxed_) {
-//        var.stackIndex.increment();
-//    }
-//    var.type = valueType_;
-//    valueBlock_.generate(fg);
-//    fg->wr().writeInstruction(INS_JUMP_FORWARD);
-//    auto errorBlockCount = fg->wr().writeInstructionsCountPlaceholderCoin();
-//    valueBlockCount.write();
-//    if (valueIsBoxed_) {
-//        var.stackIndex.increment();
-//    }
-//    var.type = value_->expressionType().genericArguments()[0];
-//    errorBlock_.generate(fg);
-//    errorBlockCount.write();
-//    fg->scoper().popScope(fg->wr().count());
+    auto *function = fg->builder().GetInsertBlock()->getParent();
+
+    auto afterBlock = llvm::BasicBlock::Create(fg->generator()->context(), "cont");
+    auto noError = llvm::BasicBlock::Create(fg->generator()->context(), "noError", function);
+    auto errorBlock = llvm::BasicBlock::Create(fg->generator()->context(), "error", function);
+
+    auto error = value_->generate(fg);
+    auto isError = valueIsBoxed_ ? fg->getHasNoValueBox(error) : fg->getIsError(error);
+
+    fg->builder().CreateCondBr(isError, errorBlock, noError);
+
+    fg->builder().SetInsertPoint(errorBlock);
+    llvm::Value *err;
+    if (valueIsBoxed_) {
+        auto alloca = fg->builder().CreateAlloca(fg->typeHelper().box());
+        fg->builder().CreateStore(error, alloca);
+        err = fg->getErrorEnumValueBoxPtr(alloca, value_->expressionType().errorEnum());
+    }
+    else {
+        err = fg->builder().CreateExtractValue(error, 0);
+    }
+    fg->scoper().getVariable(errorVar_) = LocalVariable(false, err);
+    errorBlock_.generate(fg);
+    fg->builder().CreateBr(afterBlock);
+
+    fg->builder().SetInsertPoint(noError);
+    auto value = valueIsBoxed_ ? error : fg->builder().CreateExtractValue(error, 1);
+    fg->scoper().getVariable(valueVar_) = LocalVariable(false, value);
+    valueBlock_.generate(fg);
+    fg->builder().CreateBr(afterBlock);
+
+    function->getBasicBlockList().push_back(afterBlock);
+    fg->builder().SetInsertPoint(afterBlock);
 }
 
 void ASTForIn::generate(FunctionCodeGenerator *fg) const {

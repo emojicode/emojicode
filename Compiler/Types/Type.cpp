@@ -48,6 +48,14 @@ Type::Type(Class *klass) : typeContent_(TypeType::Class), typeDefinition_(klass)
     }
 }
 
+Type::Type(Function *function) : typeContent_(TypeType::Callable) {
+    genericArguments_.reserve(function->parameters().size() + 1);
+    genericArguments_.emplace_back(function->returnType());
+    for (auto &argument : function->parameters()) {
+        genericArguments_.emplace_back(argument.type);
+    }
+}
+
 Class* Type::eclass() const {
     return dynamic_cast<Class *>(typeDefinition_);
 }
@@ -182,8 +190,7 @@ bool Type::identicalGenericArguments(Type to, const TypeContext &typeContext, st
 
 bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const {
     if (type() == TypeType::Error) {
-        return to.type() == TypeType::Error && genericArguments()[0].identicalTo(to.genericArguments()[0], tc, ctargs)
-                && genericArguments()[1].compatibleTo(to.genericArguments()[1], tc);
+        return identicalTo(to, tc, ctargs);
     }
     if (to.type() == TypeType::Something) {
         return true;
@@ -235,7 +242,7 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
         case TypeType::Someobject:
             return type() == TypeType::Class || type() == TypeType::Someobject;
         case TypeType::Error:
-            return compatibleTo(to.genericArguments()[1], tc);
+            return compatibleTo(to.errorType(), tc);
         case TypeType::MultiProtocol:
             return isCompatibleToMultiProtocol(to, tc, ctargs);
         case TypeType::Protocol:
@@ -315,10 +322,10 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::Protocol:
             case TypeType::ValueType:
                 return typeDefinition() == to.typeDefinition()
-                && identicalGenericArguments(to, tc, ctargs);
+                       && identicalGenericArguments(to, tc, ctargs);
             case TypeType::Callable:
                 return to.genericArguments_.size() == this->genericArguments_.size()
-                && identicalGenericArguments(to, tc, ctargs);
+                       && identicalGenericArguments(to, tc, ctargs);
             case TypeType::Optional:
             case TypeType::TypeAsValue:
                 return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, ctargs);
@@ -327,14 +334,14 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::GenericVariable:
             case TypeType::LocalGenericVariable:
                 return resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex() ==
-                to.resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex();
+                       to.resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex();
             case TypeType::Something:
             case TypeType::Someobject:
             case TypeType::NoReturn:
                 return true;
             case TypeType::Error:
-                return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, ctargs) &&
-                genericArguments_[1].identicalTo(to.genericArguments_[1], tc, ctargs);
+                return errorType().identicalTo(to.errorType(), tc, ctargs) &&
+                       errorEnum().identicalTo(to.errorEnum(), tc, ctargs);
             case TypeType::MultiProtocol:
                 return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
                                   [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
@@ -350,8 +357,11 @@ StorageType Type::storageType() const {
     if (forceBox_ || requiresBox()) {
         return StorageType::Box;
     }
-    if (type() == TypeType::Optional || type() == TypeType::Error) {
+    if (type() == TypeType::Optional) {
         return StorageType::SimpleOptional;
+    }
+    if (type() == TypeType::Error) {
+        return StorageType::SimpleError;
     }
     return StorageType::Simple;
 }
@@ -359,7 +369,7 @@ StorageType Type::storageType() const {
 bool Type::requiresBox() const {
     switch (type()) {
         case TypeType::Error:
-            return genericArguments()[1].storageType() == StorageType::Box;
+            return errorType().storageType() == StorageType::Box;
         case TypeType::Optional:
             return optionalType().storageType() == StorageType::Box;
         case TypeType::Something:
@@ -465,8 +475,8 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             return;
         case TypeType::Error:
             string.append("🚨");
-            typeName(type.genericArguments_[0], typeContext, string, package);
-            typeName(type.genericArguments_[1], typeContext, string, package);
+            typeName(type.errorEnum(), typeContext, string, package);
+            typeName(type.errorType(), typeContext, string, package);
             return;
         case TypeType::GenericVariable:
             if (typeContext.calleeType().canHaveGenericArguments()) {

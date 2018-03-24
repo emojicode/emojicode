@@ -156,14 +156,12 @@ Type AbstractParser::parseErrorEnumType(const TypeContext &typeContext, const So
 
 Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContext) {
     auto token = stream_.consumeToken(TokenType::Error);
-    Type errorType = parseErrorEnumType(typeContext, token.position());
+    Type errorEnum = parseErrorEnumType(typeContext, token.position());
     if (optional) {
         throw CompilerError(token.position(), "The error type itself cannot be an optional. "
                             "Maybe you meant to make the contained type an optional?");
     }
-    Type type = Type::error();
-    type.genericArguments_.emplace_back(errorType);
-    type.genericArguments_.emplace_back(parseType(typeContext));
+    Type type = Type(MakeError, errorEnum, parseType(typeContext));
     return type;
 }
 

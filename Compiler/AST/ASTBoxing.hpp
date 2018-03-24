@@ -17,6 +17,7 @@ namespace EmojicodeCompiler {
 class BoxingLayer;
 
 class ASTBoxing : public ASTExpr {
+
 public:
     ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p);
 protected:
@@ -44,6 +45,8 @@ protected:
     /// @param destination Pointer to the location at which the value type shall be initialized.
     void valueTypeInit(FunctionCodeGenerator *fg, Value *destination) const;
 
+    Value *getSimpleError(Value *value, FunctionCodeGenerator *fg) const;
+
 private:
     bool init_ = false;
 };
@@ -55,10 +58,25 @@ class ASTBoxToSimpleOptional final : public ASTBoxing {
     void toCode(Prettyprinter &pretty) const override {}
 };
 
+class ASTBoxToSimpleError final : public ASTBoxing {
+    using ASTBoxing::ASTBoxing;
+    Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
+    Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(Prettyprinter &pretty) const override {}
+
+};
+
 class ASTSimpleToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(Prettyprinter &pretty) const override {}
+};
+
+class ASTSimpleToSimpleError final : public ASTBoxing {
+    using ASTBoxing::ASTBoxing;
+    Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
+    Value *generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 };
 
@@ -76,6 +94,13 @@ private:
 };
 
 class ASTSimpleOptionalToBox final : public ASTToBox {
+    using ASTToBox::ASTToBox;
+    Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
+    Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(Prettyprinter &pretty) const override {}
+};
+
+class ASTSimpleErrorToBox final : public ASTToBox {
     using ASTToBox::ASTToBox;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;

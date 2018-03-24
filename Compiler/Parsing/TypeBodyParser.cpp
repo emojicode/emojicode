@@ -124,7 +124,7 @@ Initializer* ClassTypeBodyParser::parseInitializer(const std::u32string &name, T
 
 void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
     auto variableName = stream_.consumeToken(TokenType::Variable);
-    auto type = parseType(TypeContext(type_));
+    auto type = parseType(TypeContext(owningType()));
     auto instanceVar = InstanceVariableDeclaration(variableName.value(), type, variableName.position());
     type_.typeDefinition()->addInstanceVariable(instanceVar);
 }
@@ -140,7 +140,7 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
                                                      package_, p, attributes.has(Attribute::Override),
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
                                                      true, imperative, attributes.has(Attribute::Unsafe),
-                                                     type_.type() == TypeType::Class ?
+                                                     owningType().type() == TypeType::Class ?
                                                      FunctionType::ClassMethod : FunctionType::Function);
         parseFunction(typeMethod.get(), false);
         type_.typeDefinition()->addTypeMethod(std::move(typeMethod));
@@ -151,7 +151,7 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
                                                  package_, p, attributes.has(Attribute::Override), documentation.get(),
                                                  attributes.has(Attribute::Deprecated), mutating, imperative,
                                                  attributes.has(Attribute::Unsafe),
-                                                 type_.type() == TypeType::Class ? FunctionType::ObjectMethod :
+                                                 owningType().type() == TypeType::Class ? FunctionType::ObjectMethod :
                                                  FunctionType::ValueTypeMethod);
         parseFunction(method.get(), false);
         type_.typeDefinition()->addMethod(std::move(method));
@@ -165,11 +165,11 @@ Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBo
 
     Type errorType = Type::noReturn();
     if (stream_.nextTokenIs(TokenType::Error)) {
-        if (type_.type() != TypeType::Class) {
+        if (owningType().type() != TypeType::Class) {
             throw CompilerError(p, "Only classes can have error-prone initializers.");
         }
         auto token = stream_.consumeToken(TokenType::Error);
-        errorType = parseErrorEnumType(TypeContext(type_), token.position());
+        errorType = parseErrorEnumType(TypeContext(owningType()), token.position());
     }
 
     auto initializer = std::make_unique<Initializer>(name, access, attributes.has(Attribute::Final), owningType(),
@@ -177,7 +177,8 @@ Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBo
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
                                                      attributes.has(Attribute::Required),
                                                      attributes.has(Attribute::Unsafe), errorType,
-                                                     type_.type() == TypeType::Class ? FunctionType::ObjectInitializer :
+                                                     owningType().type() == TypeType::Class ?
+                                                     FunctionType::ObjectInitializer :
                                                      FunctionType::ValueTypeInitializer);
     parseFunction(initializer.get(), true);
     return type_.typeDefinition()->addInitializer(std::move(initializer));

@@ -39,6 +39,8 @@ public:
     void toCode(Prettyprinter &pretty) const override;
 private:
     bool error_ = false;
+
+    Value * generateErrorUnwrap(FunctionCodeGenerator *fg) const;
 };
 
 class ASTMetaTypeFromInstance final : public ASTUnary {

@@ -62,8 +62,7 @@ Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArgumen
     fg->builder().CreateStore(type.eclass()->classMeta(), fg->getObjectMetaPtr(obj));
 
     auto callGen = InitializationCallCodeGenerator(fg, CallType::StaticDispatch);
-    callGen.generate(obj, type, args, name);
-    return obj;
+    return callGen.generate(obj, type, args, name);
 }
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {

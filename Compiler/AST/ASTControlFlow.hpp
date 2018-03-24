@@ -81,6 +81,8 @@ private:
     ASTBlock valueBlock_;
     Type valueType_ = Type::noReturn();
     ASTBlock errorBlock_;
+    VariableID valueVar_;
+    VariableID errorVar_;
     std::u32string valueVarName_;
     std::u32string errorVarName_;
 };

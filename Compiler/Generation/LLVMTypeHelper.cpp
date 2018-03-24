@@ -96,15 +96,7 @@ llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
         return llvmTypeFor(reifiContext_->actualType(type.genericVariableIndex()));
     }
 
-    llvm::Type *llvmType = nullptr;
-
-    // Error is always a simple optional, so we have to catch it before switching below
-    if (type.type() == TypeType::Error) {
-        std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context_), llvmTypeFor(type.genericArguments()[1]) };
-        llvmType = llvm::StructType::get(context_, types);
-    }
-
-    llvmType = typeForOrdinaryType(type);
+    auto llvmType = typeForOrdinaryType(type);
     assert(llvmType != nullptr);
     return type.isReference() ? llvmType->getPointerTo() : llvmType;
 }
@@ -115,6 +107,10 @@ llvm::Type* LLVMTypeHelper::typeForOrdinaryType(Type type) {
             return box_;
         case StorageType::SimpleOptional: {
             std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context_), llvmTypeFor(type.optionalType()) };
+            return llvm::StructType::get(context_, types);
+        }
+        case StorageType::SimpleError: {
+            std::vector<llvm::Type *> types{ llvmTypeFor(type.errorEnum()), llvmTypeFor(type.errorType()) };
             return llvm::StructType::get(context_, types);
         }
         case StorageType::Simple:

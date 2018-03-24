@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <cassert>
 
 namespace EmojicodeCompiler {
 
@@ -59,6 +60,9 @@ enum class TypeType {
 struct MakeOptionalType {};
 constexpr MakeOptionalType MakeOptional {};
 
+struct MakeErrorType {};
+constexpr MakeErrorType MakeError {};
+
 struct MakeTypeAsValueType {};
 constexpr MakeTypeAsValueType MakeTypeAsValue {};
 
@@ -66,11 +70,11 @@ constexpr MakeTypeAsValueType MakeTypeAsValue {};
 /// or type method.
 class Type {
     friend AbstractParser;
-    friend Initializer;
-    friend Function;
 public:
     Type(MakeOptionalType makeOptional, Type type)
             : typeContent_(TypeType::Optional), genericArguments_({ std::move(type) }) {}
+    Type(MakeErrorType makeError, Type enumType, Type value)
+            : typeContent_(TypeType::Error), genericArguments_({ std::move(enumType), std::move(value) }) {}
     Type(MakeTypeAsValueType makeTypeAsValue, Type type)
             : typeContent_(TypeType::TypeAsValue), genericArguments_({ std::move(type) }) {}
 
@@ -79,6 +83,8 @@ public:
     explicit Type(Enum *enumeration);
     explicit Type(ValueType *valueType);
     explicit Type(Extension *extension);
+    /// Creates a TypeType::Callable type in corresponding to the parameters and return type of the provided function.
+    explicit Type(Function *function);
 
     /// Creates a generic variable to the generic argument @c r.
     Type(size_t r, TypeDefinition *resolutionConstraint, bool forceBox)
@@ -87,8 +93,8 @@ public:
 
     /// Creates a local generic variable (generic function) to the generic argument @c r.
     Type(size_t r, Function *function, bool forceBox)
-    : typeContent_(TypeType::LocalGenericVariable), genericArgumentIndex_(r),
-      localResolutionConstraint_(function), forceBox_(forceBox) {}
+            : typeContent_(TypeType::LocalGenericVariable), genericArgumentIndex_(r),
+              localResolutionConstraint_(function), forceBox_(forceBox) {}
 
     explicit Type(std::vector<Type> protocols)
         : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)) {
@@ -97,7 +103,6 @@ public:
 
     static Type something() { return Type(TypeType::Something); }
     static Type noReturn() { return Type(TypeType::NoReturn); }
-    static Type error() { return Type(TypeType::Error); }
     static Type someobject() { return Type(TypeType::Someobject); }
     static Type callableIncomplete() { return Type(TypeType::Callable); }
     
@@ -128,6 +133,7 @@ public:
 
     /// @returns The type this optional contains. If this type is force boxed, so will be the returned type.
     Type optionalType() const {
+        assert(type() == TypeType::Optional);
         auto t = genericArguments_[0];
         if (forceBox_) {
             t.forceBox_ = true;
@@ -137,7 +143,10 @@ public:
     /// @returns The type itself if type() does not return TypeType::Optional or optionalType() if it does.
     Type unoptionalized() const { return type() == TypeType::Optional ? optionalType() : *this; }
 
-    const Type& typeOfTypeValue() const { return genericArguments_[0]; }
+    const Type& typeOfTypeValue() const { assert(type() == TypeType::TypeAsValue); return genericArguments_[0]; }
+
+    const Type& errorType() const { assert(type() == TypeType::Error); return genericArguments_[1]; }
+    const Type& errorEnum() const { assert(type() == TypeType::Error); return genericArguments_[0]; }
 
     /// Returns true if this type is compatible to the given other type.
     bool compatibleTo(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;

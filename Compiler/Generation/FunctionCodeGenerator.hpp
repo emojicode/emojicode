@@ -34,6 +34,7 @@ public:
     llvm::IRBuilder<>& builder() { return builder_; }
     LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }
     virtual llvm::Value* thisValue() const { return &*function_->args().begin(); }
+    llvm::Type* llvmReturnType() const { return function_->getReturnType(); }
 
     /// @returns The number of bytes an instance of @c type takes up in memory.
     /// @see sizeOfReferencedType
@@ -56,6 +57,11 @@ public:
     llvm::Value* getValuePtr(llvm::Value *box, llvm::Type *llvmType);
     llvm::Value* getObjectMetaPtr(llvm::Value *object);
     llvm::Value* getMakeNoValue(llvm::Value *box);
+
+    llvm::Value* getErrorNoError() { return int64(-1); }
+    llvm::Value* getIsError(llvm::Value *simpleError);
+    llvm::Value* getSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type);
+    llvm::Value* getErrorEnumValueBoxPtr(llvm::Value *box, const Type &type);
 
     llvm::Value* int8(int8_t value);
     llvm::Value* int16(int16_t value);

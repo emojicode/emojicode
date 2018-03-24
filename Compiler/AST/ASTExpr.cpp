@@ -140,11 +140,23 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
             "initialized before calling the superinitializer.");
 
     init_ = true;
-    Class *eclass = analyser->typeContext().calleeType().eclass();
+    auto eclass = analyser->typeContext().calleeType().eclass();
     auto initializer = eclass->superclass()->getInitializer(name_, Type(eclass),
                                                             analyser->typeContext(), position());
     calleeType_ = Type(eclass->superclass());
     analyser->analyseFunctionCall(&args_, calleeType_, initializer);
+
+    if (initializer->errorProne()) {
+        auto thisInitializer = dynamic_cast<Initializer*>(analyser->function());
+        if (!thisInitializer->errorProne()) {
+            throw CompilerError(position(), "Cannot call an error-prone super initializer in a non ",
+                                "error-prone initializer.");
+        }
+        if (!initializer->errorType().identicalTo(thisInitializer->errorType(), analyser->typeContext(), nullptr)) {
+            throw CompilerError(position(), "Super initializer must have same error enum type.");
+        }
+        manageErrorProneness_ = true;
+    }
 
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
 }

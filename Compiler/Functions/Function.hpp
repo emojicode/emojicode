@@ -105,9 +105,6 @@ public:
     /** Returns the position at which this callable was defined. */
     const SourcePosition& position() const { return position_; }
 
-    /// The type of this function when used as value.
-    Type type() const;
-
     /** Type to which this function belongs.
      This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
     const Type& owningType() const { return owningType_; }

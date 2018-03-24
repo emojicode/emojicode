@@ -29,7 +29,7 @@ Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
     }
     if (t.type() == TypeType::Error) {
         error_ = true;
-        return t.genericArguments()[1];
+        return t.errorType();
     }
 
     throw CompilerError(position(), "🍺 can only be used with optionals or 🚨.");

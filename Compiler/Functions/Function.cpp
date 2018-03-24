@@ -21,14 +21,4 @@ llvm::FunctionType* FunctionReification::functionType() {
     return function->getFunctionType();
 }
 
-Type Function::type() const {
-    Type t = Type::callableIncomplete();
-    t.genericArguments_.reserve(parameters().size() + 1);
-    t.genericArguments_.push_back(returnType());
-    for (auto &argument : parameters()) {
-        t.genericArguments_.push_back(argument.type);
-    }
-    return t;
-}
-
 }  // namespace EmojicodeCompiler

@@ -134,8 +134,12 @@ void FunctionAnalyser::analyse() {
 }
 
 void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
-    if (function_->functionType() == FunctionType::ObjectInitializer) {
-        auto thisNode = std::make_shared<ASTThis>(root->position());
+    if (function_->functionType() == FunctionType::ObjectInitializer &&
+            !pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
+        auto initializer = dynamic_cast<Initializer *>(function_);
+        auto thisNode = std::dynamic_pointer_cast<ASTExpr>(std::make_shared<ASTThis>(root->position()));
+        comply(typeContext().calleeType(), TypeExpectation(initializer->constructedType(typeContext().calleeType())),
+               &thisNode);
         root->appendNode(std::make_shared<ASTReturn>(thisNode, root->position()));
     }
     else if (function_->functionType() == FunctionType::ValueTypeInitializer) {
@@ -263,46 +267,58 @@ Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation,
 Type FunctionAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     switch (expectation.simplifyType(exprType)) {
         case StorageType::SimpleOptional:
-            boxToSimpleOptional(exprType, expectation, node);
+            makeIntoSimpleOptional(exprType, node);
             break;
         case StorageType::Box:
-            boxToBox(exprType, expectation, node);
+            makeIntoBox(exprType, expectation, node);
             break;
         case StorageType::Simple:
-            boxToSimple(exprType, node);
+            makeIntoSimple(exprType, node);
+            break;
+        case StorageType::SimpleError:
+            makeIntoSimpleError(exprType, node, expectation);
             break;
     }
     return exprType;
 }
 
-void FunctionAnalyser::boxToSimpleOptional(Type &exprType, const TypeExpectation &expectation,
-                                           std::shared_ptr<ASTExpr> *node) const {
+void FunctionAnalyser::makeIntoSimpleOptional(Type &exprType, std::shared_ptr<ASTExpr> *node) const {
     switch (exprType.storageType()) {
         case StorageType::SimpleOptional:
+        case StorageType::SimpleError:
             break;
         case StorageType::Box:
-            exprType = Type(MakeOptional, exprType.unboxed());  // TODO: ERROR?!
-
+            exprType = Type(MakeOptional, exprType.unboxed());
             insertNode<ASTBoxToSimpleOptional>(node, exprType);
             break;
         case StorageType::Simple:
-            if (expectation.type() != TypeType::Error) {
-                exprType = Type(MakeOptional, exprType);
-            }
-            else {
-                Type prty = exprType;
-                exprType = expectation.copyType();
-                exprType.setGenericArgument(1, prty);
-            }
+            exprType = Type(MakeOptional, exprType);
             insertNode<ASTSimpleToSimpleOptional>(node, exprType);
             break;
     }
 }
 
-void FunctionAnalyser::boxToSimple(Type &exprType, std::shared_ptr<ASTExpr> *node) const {
+void FunctionAnalyser::makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp) {
+    switch (exprType.storageType()) {
+        case StorageType::SimpleError:
+        case StorageType::SimpleOptional:
+            break;
+        case StorageType::Simple:
+            exprType = Type(MakeError, exp.errorEnum(), exprType.unboxed());
+            insertNode<ASTSimpleToSimpleError>(node, exprType);
+            break;
+        case StorageType::Box:
+            exprType = Type(MakeError, exp.errorEnum(), exprType.unboxed());
+            insertNode<ASTBoxToSimpleError>(node, exprType);
+            break;
+    }
+}
+
+void FunctionAnalyser::makeIntoSimple(Type &exprType, std::shared_ptr<ASTExpr> *node) const {
     switch (exprType.storageType()) {
         case StorageType::Simple:
         case StorageType::SimpleOptional:
+        case StorageType::SimpleError:
             break;
         case StorageType::Box:
             exprType.unbox();
@@ -311,8 +327,8 @@ void FunctionAnalyser::boxToSimple(Type &exprType, std::shared_ptr<ASTExpr> *nod
     }
 }
 
-void FunctionAnalyser::boxToBox(Type &exprType, const TypeExpectation &expectation,
-                                std::shared_ptr<ASTExpr> *node) const {
+void FunctionAnalyser::makeIntoBox(Type &exprType, const TypeExpectation &expectation,
+                                   std::shared_ptr<ASTExpr> *node) const {
     switch (exprType.storageType()) {
         case StorageType::Box:
             break;
@@ -323,6 +339,10 @@ void FunctionAnalyser::boxToBox(Type &exprType, const TypeExpectation &expectati
         case StorageType::Simple:
             exprType.forceBox();
             insertNode<ASTSimpleToBox>(node, exprType, expectation.copyType());
+            break;
+        case StorageType::SimpleError:
+            exprType.forceBox();
+            insertNode<ASTSimpleErrorToBox>(node, exprType, expectation.copyType());
             break;
     }
 }

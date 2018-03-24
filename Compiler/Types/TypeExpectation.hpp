@@ -49,6 +49,9 @@ public:
             if (type.type() == TypeType::Optional) {
                 return StorageType::SimpleOptional;
             }
+            if (type.type() == TypeType::Error) {
+                return StorageType::SimpleError;
+            }
             return StorageType::Simple;
         }
         return storageType();

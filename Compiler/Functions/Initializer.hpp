@@ -25,7 +25,7 @@ public:
 
     /// Whether all subclassess are required to implement this initializer as well. Never true for non-class types.
     bool required() const { return required_; }
-    /// Whether this initalizer might return an error.
+    /// Whether this initializer might return an error.
     bool errorProne() const { return errorType_.type() != TypeType::NoReturn; }
     const Type& errorType() const { return errorType_; }
 
@@ -33,9 +33,7 @@ public:
     Type constructedType(Type type) {
         type.unbox();
         if (errorProne()) {
-            Type errorType = Type::error();
-            errorType.genericArguments_ = { errorType_, type };
-            return errorType;
+            return Type(MakeError, errorType_, type);
         }
         return type;
     }

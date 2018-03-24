@@ -130,6 +130,20 @@ Value* FunctionCodeGenerator::getMakeNoValue(Value *box) {
     return builder().CreateStore(metaType, getMetaTypePtr(box));
 }
 
+llvm::Value* FunctionCodeGenerator::getIsError(llvm::Value *simpleError) {
+    auto vf = builder().CreateExtractValue(simpleError, 0);
+    return builder().CreateICmpNE(vf, getErrorNoError());
+}
+
+llvm::Value* FunctionCodeGenerator::getSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type) {
+    auto undef = llvm::UndefValue::get(type);
+    return builder().CreateInsertValue(undef, errorEnumValue, 0);
+}
+
+llvm::Value* FunctionCodeGenerator::getErrorEnumValueBoxPtr(llvm::Value *box, const Type &type) {
+    return builder().CreateLoad(getValuePtr(box, type));
+}
+
 void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std::function<bool()> &then,
                                    const std::function<bool()> &otherwise) {
     auto function = builder().GetInsertBlock()->getParent();

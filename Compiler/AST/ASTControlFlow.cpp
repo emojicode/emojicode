@@ -62,23 +62,26 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
     analyser->scoper().pushScope();
 
     valueIsBoxed_ = type.storageType() == StorageType::Box;
-    valueType_ = type.genericArguments()[1];
+    valueType_ = type.errorType();
     if (valueIsBoxed_) {
         valueType_.forceBox();
     }
-    analyser->scoper().currentScope().declareVariable(valueVarName_, valueType_, true, position()).initialize();
+    auto &var = analyser->scoper().currentScope().declareVariable(valueVarName_, valueType_, true, position());
+    var.initialize();
+    valueVar_ = var.id();
     valueBlock_.analyse(analyser);
     analyser->scoper().popScope(analyser->compiler());
     analyser->pathAnalyser().endBranch();
 
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
-    analyser->scoper().currentScope().declareVariable(errorVarName_, type.genericArguments()[0], true,
-                                                      position()).initialize();
-
+    auto &errVar = analyser->scoper().currentScope().declareVariable(errorVarName_, type.errorEnum(), true, position());
+    errVar.initialize();
+    errorVar_ = errVar.id();
     errorBlock_.analyse(analyser);
     analyser->scoper().popScope(analyser->compiler());
     analyser->pathAnalyser().endBranch();
+
     analyser->pathAnalyser().endMutualExclusiveBranches();
     analyser->scoper().popScope(analyser->compiler());
 }

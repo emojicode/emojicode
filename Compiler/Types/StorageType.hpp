@@ -15,6 +15,7 @@ enum class StorageType {
     Simple,
     SimpleOptional,
     Box,
+    SimpleError,
 };
 
 }  // namespace EmojicodeCompiler
