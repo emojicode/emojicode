@@ -17,6 +17,7 @@ endif()
 
 add_subdirectory(runtime)
 add_subdirectory(s)
+add_subdirectory(files)
 add_subdirectory(Compiler)
 
 file(GLOB EMOJICODEMIG_SOURCES "Migrator/*")

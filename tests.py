@@ -79,7 +79,8 @@ library_tests = [
     "systemTest",
     "listTest",
     # "enumerator",  "dictionaryTest",
-    # "jsonTest", "fileTest"
+    # "jsonTest",
+    "fileTest"
 ]
 reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject",
                                       "*.emojic"))

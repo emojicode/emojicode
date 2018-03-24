@@ -25,6 +25,7 @@ using Boolean = int8_t;
 using Byte = uint8_t;
 using Real = double;
 using ClassType = void*;
+using Enum = int64_t;
 
 template <typename T>
 inline T* allocate(int64_t n = 1) {
@@ -74,6 +75,16 @@ public:
     SimpleOptional(Type content) : value_(1), content_(content) {}
 private:
     Boolean value_;
+    Type content_;
+};
+
+template <typename Type>
+class SimpleError {
+public:
+    explicit SimpleError(Enum errorEnumValue) : errorValue_(errorEnumValue) {}
+    SimpleError(Type content) : errorValue_(-1), content_(content) {}
+private:
+    Enum errorValue_;
     Type content_;
 };
 

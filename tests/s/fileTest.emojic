@@ -1,41 +1,41 @@
-📦 files 🔴
+📦 files 🏠
 
 📜 🔤testsHelper.emojic🔤
 
 🐇🦔 🚉 🍇
   ✒️ ❗️ 🏁 🍇
-    🚇🆕📄📜 🔤fileTest_testFile.txt🔤 ➡️ readFile
+    🍺🆕📄📜 🔤fileTest_testFile.txt🔤❗️ ➡️ readFile
 
-    ⛔️🐕 😛 🍺 🔡 🚇 📓 readFile 5 🔤Lorem🔤 🔤Read test🔤
+    ⛔️🐕 🍺🔡 🍺📓readFile 5❗️❗️ 🙌 🔤Lorem🔤 🔤Read test🔤❗️
 
-    🔛 readFile 12
+    🔛 readFile 12❗️
 
-    ⛔️🐕 😛 🍺 🔡 🚇 📓 readFile 5 🔤dolor🔤 🔤Read after seek🔤
+    ⛔️🐕 🍺🔡 🍺📓readFile 5❗️❗️ 🙌 🔤dolor🔤 🔤Read after seek🔤❗️
 
-    🍩🔫📑 🔤fileTest_writeTest.txt🔤
+    💭🍩🔫📑 🔤fileTest_writeTest.txt🔤❗️
 
-    🙅 readFile
+    🙅readFile❗️
 
-    🚇🆕📄📝 🔤fileTest_writeTest.txt🔤 ➡️ file
+    🍺🆕📄📝 🔤fileTest_writeTest.txt🔤❗️ ➡️ file
 
-    ✏️  file 📇🔤Hello Theo.🔤
-    💧 file
+    ✏️ file 📇🔤Hello Theo.🔤❗️❗️
+    💧 file❗️
 
-    ⛔️🐕 😛 🍺 🔡 🚇 🍩📇📄 🔤fileTest_writeTest.txt🔤 🔤Hello Theo.🔤 🔤Write succeeded🔤
+    ⛔️🐕 🍺🔡 🍺🍩📇📄 🔤fileTest_writeTest.txt🔤❗️❗️ 🙌 🔤Hello Theo.🔤 🔤Write succeeded🔤❗️
 
-    🔛 file 6
+    🔛 file 6❗️
 
-    ✏️ file 📇🔤Hubertus.🔤
-    💧 file
+    ✏️ file 📇🔤Hubertus.🔤❗️❗️
+    💧 file❗️
 
-    ⛔️🐕 😛 🍺 🔡 🚇 🍩📇📄 🔤fileTest_writeTest.txt🔤 🔤Hello Hubertus.🔤 🔤Seek and write succeeded🔤
+    ⛔️🐕 🍺🔡 🍺🍩📇📄 🔤fileTest_writeTest.txt🔤❗️❗️ 🙌 🔤Hello Hubertus.🔤 🔤Seek and write succeeded🔤❗️
 
-    🙅 file
+    🙅 file❗️
   🍉
 🍉
 
 🏁 ➡️ 🔢 🍇
-  🆕🦔🆕 ➡️ tester
-  🏁 tester
-  ↩️ 👔 tester
+  🆕🦔🆕❗️ ➡️ tester
+  🏁 tester❗️
+  ↩️ 👔 tester❗️
 🍉
