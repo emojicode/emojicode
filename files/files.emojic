@@ -29,64 +29,62 @@
   🔘 🚷
 🍉
 
-💭🔜
 📗
     The 📑 class has many class methods which allow you to work with the file
     system.
 
     See the 📄 class for reading and writing.
 📗
-🌍 🐇 📑 🍇
+🌍 🕊 📑 🍇
   📗
     This method creates a directory at the given path.
     If the directory already exists an error is returned.
   📗
-  🐇❗️ 📁 path 🔡 ➡️ 🍬🌧 📻 1
+  🐇❗️ 📁 path 🔡 ➡️ 🍬🌧 📻 🔤filesFsMakeDir🔤
   📗
     This method deletes the file at the given path.
     >!N This method may not be used to delete directories.
   📗
-  🐇❗️ 🔫 path 🔡 ➡️ 🍬🌧 📻 7
+  🐇❗️ 🔫 path 🔡 ➡️ 🍬🌧 📻 🔤filesFsDelete🔤
   📗
     This method deletes an *empty* directory at the given path.
     If you need to delete a whole directory hierarchy use 💣.
   📗
-  🐇❗️ 🔥 path 🔡 ➡️ 🍬🌧 📻 8
+  🐇❗️ 🔥 path 🔡 ➡️ 🍬🌧 📻 🔤filesFsDeleteDir🔤
   📗
     This method deletes an directory with its content. The method recursively
     descends the directory hierarchy and deletes every file or directory it
     finds. Once finished, it deletes the directory itself.
   📗
-  🐇❗️ 💣 path 🔡 ➡️ 🍬🌧 📻 9
+  🐇❗️ 💣 path 🔡 ➡️ 🍬🌧 📻 🔤filesFsRecursiveDeleteDir🔤
   📗 This method creates a symbolic link to another. 📗
-  🐇❗️ 🔗 originalFile 🔡 destination 🔡 ➡️ 🍬🌧 📻 2
+  🐇❗️ 🔗 originalFile 🔡 destination 🔡 ➡️ 🍬🌧 📻 🔤filesFsSymlink🔤
   📗 Determines whether a file exists at the given path. 📗
-  🐇❗️ 📃 path 🔡 ➡️ 👌 📻 3
+  🐇❗️ 📃 path 🔡 ➡️ 👌 📻 🔤filesFsExists🔤
   📗
     Determines whether a file exists and the given path and if it is readable.
   📗
-  🐇❗️ 📜 path 🔡 ➡️ 👌 📻 4
+  🐇❗️ 📜 path 🔡 ➡️ 👌 📻 🔤filesFsReadable🔤
   📗
     Determines whether a file exists and the given path and if it is writeable.
   📗
-  🐇❗️ 📝 path 🔡 ➡️ 👌 📻 5
+  🐇❗️ 📝 path 🔡 ➡️ 👌 📻 🔤filesFsWriteable🔤
   📗
     Determines whether a file exists and the given path and if it is executable.
   📗
-  🐇❗️ 👟 path 🔡 ➡️ 👌 📻 6
+  🐇❗️ 👟 path 🔡 ➡️ 👌 📻 🔤filesFsExecutable🔤
   📗
     Determines the size of a file at a given path. If the file cannot be found
     or any other error occurs the method returns -1.
   📗
-  🐇❗️ 📏 path 🔡 ➡️ 🚨🌧🔢 📻 10
+  🐇❗️ 📏 path 🔡 ➡️ 🚨🌧🔢 📻 🔤filesFsSize🔤
   📗
     Returns an absolute pathname derived from `path` that
     resolves to the same directory entry, whose resolution does not involve `.`,
     `..`, or symbolic links. On failure Nothingness is returned.
   📗
-  🐇❗️ ⛓ path 🔡 ➡️ 🚨🌧🔡 📻 11
+  🐇❗️ ⛓ path 🔡 ➡️ 🚨🌧🔡 📻 🔤filesFsAbsolute🔤
 🍉
-🔚💭
 
 📗
     The 📄 class allows you to read and write to files.
@@ -153,13 +151,13 @@
 
 💭🔜
   📗 Returns a 📄 object representing the **standard output**. 📗
-  🐇❗️ 📤 ➡️ 📄 📻 15
+  🐇❗️ 📤 ➡️ 📄 📻 🔤filesFileOut🔤
 
   📗 Returns a 📄 object representing the **standard input**. 📗
-  🐇❗️ 📥 ➡️ 📄 📻 14
+  🐇❗️ 📥 ➡️ 📄 📻 🔤filesFileIn🔤
 
   📗 Returns a 📄 object representing the **standard error**. 📗
-  🐇❗️ 📯 ➡️ 📄 📻 16
+  🐇❗️ 📯 ➡️ 📄 📻 🔤filesFileError🔤
 🔚💭
 
   📗 Causes any buffered unwritten data to be written to the file. 📗

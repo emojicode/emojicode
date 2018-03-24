@@ -78,10 +78,13 @@ private:
     Type content_;
 };
 
+struct MakeError_t {};
+constexpr MakeError_t MakeError {};
+
 template <typename Type>
 class SimpleError {
 public:
-    explicit SimpleError(Enum errorEnumValue) : errorValue_(errorEnumValue) {}
+    SimpleError(MakeError_t, Enum errorEnumValue) : errorValue_(errorEnumValue) {}
     SimpleError(Type content) : errorValue_(-1), content_(content) {}
 private:
     Enum errorValue_;

@@ -7,6 +7,7 @@
 #include "../runtime/Runtime.h"
 #include <fstream>
 #include <ios>
+#include <iostream>
 
 using s::String;
 using s::Data;
