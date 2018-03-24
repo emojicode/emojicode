@@ -62,7 +62,7 @@ private:
     bool report_ = false;
     bool forceColor_ = false;
 
-    void readEnvironment();
+    void readEnvironment(const std::vector<std::string> &searchPaths);
 
     /// If the file ends in ".emojimig", the migration file migrationFile_ will be set to it and prettyprint_ to true.
     /// The main file is then derived from by replacing ".emojimig" with ".emojic".

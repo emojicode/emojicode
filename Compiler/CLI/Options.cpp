@@ -24,8 +24,6 @@ namespace CLI {
 #endif
 
 Options::Options(int argc, char *argv[]) {
-    readEnvironment();
-
     args::ArgumentParser parser("Emojicode Compiler 0.6.");
     args::Positional<std::string> file(parser, "file", "The main file of the package to be compiled", std::string(),
                                        args::Options::Required);
@@ -38,9 +36,14 @@ Options::Options(int argc, char *argv[]) {
     args::Flag json(parser, "json", "Show compiler messages as JSON", {"json"});
     args::Flag format(parser, "format", "Format source code", {"format"});
     args::Flag color(parser, "color", "Show compiler messages in color.", {"color"});
+    args::ValueFlagList<std::string> searchPaths(parser, "search path",
+                                                 "Adds the path to the package search path (after './packages')",
+                                                 {'S'});
 
     try {
         parser.ParseCLI(argc, argv);
+
+        readEnvironment(searchPaths.Get());
 
         report_ = report.Get();
         mainFile_ = file.Get();
@@ -80,10 +83,12 @@ Options::Options(int argc, char *argv[]) {
     configureOutPath();
 }
 
-void Options::readEnvironment() {
+void Options::readEnvironment(const std::vector<std::string> &searchPaths) {
     llvm::SmallString<8> packages("packages");
     llvm::sys::fs::make_absolute(packages);
     packageSearchPaths_.emplace_back(packages.c_str());
+
+    packageSearchPaths_.insert(packageSearchPaths_.begin(), searchPaths.begin(), searchPaths.end());
 
     if (const char *ppath = getenv("EMOJICODE_PACKAGES_PATH")) {
         packageSearchPaths_.emplace_back(ppath);
