@@ -4,12 +4,12 @@
 
 #include "../s/String.hpp"
 #include "../runtime/Runtime.h"
-
 #include <unistd.h>
 #include <sys/stat.h>
 #include <climits>
 #include <ftw.h>
 #include <cerrno>
+#include <cstdlib>
 
 namespace files {
 
