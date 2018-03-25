@@ -13,6 +13,7 @@
 #include "LLVMTypeHelper.hpp"
 #include "ProtocolsTableGenerator.hpp"
 #include "StringPool.hpp"
+#include "OptimizationManager.hpp"
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Module.h>
@@ -31,7 +32,7 @@ class TypeDefinition;
 /// Manages the generation of IR for one package. Each package is compiled to one LLVM module.
 class CodeGenerator {
 public:
-    explicit CodeGenerator(Package *package);
+    explicit CodeGenerator(Package *package, bool optimize);
     llvm::LLVMContext& context() { return context_; }
     llvm::Module* module() const { return module_.get(); }
 
@@ -64,6 +65,8 @@ private:
     StringPool pool_ = StringPool(this);
     Declarator declarator_;
     ProtocolsTableGenerator protocolsTableGenerator_;
+    OptimizationManager optimizationManager_;
+
     llvm::TargetMachine *targetMachine_ = nullptr;
 
     void emit(const std::string &outPath);

@@ -70,7 +70,7 @@ public:
     /// Compile the application.
     /// @param parseOnly If this argument is true, the main package is only parsed and not semantically analysed.
     /// @returns True iff the application has been successfully parsed and — optionally — analysed.
-    bool compile(bool parseOnly);
+    bool compile(bool parseOnly, bool optimize);
 
     RecordingPackage* mainPackage() const { return mainPackage_.get(); }
 
@@ -114,7 +114,7 @@ public:
     ~Compiler();
 
 private:
-    void generateCode();
+    void generateCode(bool optimize);
     void analyse();
     void linkToExecutable();
     std::string objectFileName() const;

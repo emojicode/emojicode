@@ -105,7 +105,7 @@ def test_paths(name, kind):
 def library_test(name):
     source_path, binary_path = test_paths(name, 's')
 
-    run([emojicodec, source_path], check=True)
+    run([emojicodec, source_path, '-O'], check=True)
     completed = run([binary_path], stdout=PIPE)
     if completed.returncode != 0:
         fail_test(name)
@@ -114,7 +114,7 @@ def library_test(name):
 
 def compilation_test(name):
     source_path, binary_path = test_paths(name, 'compilation')
-    run([emojicodec, source_path], check=True)
+    run([emojicodec, source_path, '-O'], check=True)
     completed = run([binary_path], stdout=PIPE)
     exp_path = os.path.join(dist.source, "tests", "compilation", name + ".txt")
     output = completed.stdout.decode('utf-8')

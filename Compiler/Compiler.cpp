@@ -33,7 +33,7 @@ Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string in
 
 Compiler::~Compiler() = default;
 
-bool Compiler::compile(bool parseOnly) {
+bool Compiler::compile(bool parseOnly, bool optimize) {
     delegate_->begin();
 
     try {
@@ -49,7 +49,7 @@ bool Compiler::compile(bool parseOnly) {
         analyse();
 
         if (!hasError_) {
-            generateCode();
+            generateCode(optimize);
 
             if (linkToExec_) {
                 linkToExecutable();
@@ -68,8 +68,8 @@ void Compiler::analyse() {
     SemanticAnalyser(mainPackage_.get(), false).analyse(linkToExec_);
 }
 
-void Compiler::generateCode() {
-    CodeGenerator(mainPackage_.get()).generate(objectFileName());
+void Compiler::generateCode(bool optimize) {
+    CodeGenerator(mainPackage_.get(), optimize).generate(objectFileName());
 }
 
 std::string Compiler::objectFileName() const {

@@ -30,11 +30,13 @@
 
 namespace EmojicodeCompiler {
 
-CodeGenerator::CodeGenerator(Package *package) : package_(package),
-                                                 module_(std::make_unique<llvm::Module>(package->name(), context())),
-                                                 typeHelper_(context(), package->compiler()),
-                                                 declarator_(context_, *module_, typeHelper_),
-                                                 protocolsTableGenerator_(context_, *module_, typeHelper_) {}
+CodeGenerator::CodeGenerator(Package *package, bool optimize)
+        : package_(package),
+          module_(std::make_unique<llvm::Module>(package->name(), context())),
+          typeHelper_(context(), package->compiler()),
+          declarator_(context_, *module_, typeHelper_),
+          protocolsTableGenerator_(context_, *module_, typeHelper_),
+          optimizationManager_(module_.get(), optimize) {}
 
 llvm::Value *CodeGenerator::optionalValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 1);
@@ -149,6 +151,7 @@ void CodeGenerator::generateFunction(Function *function) {
             typeHelper_.setReificationContext(&context);
             FunctionCodeGenerator(function, reification.entity.function, this).generate();
             typeHelper_.setReificationContext(nullptr);
+            optimizationManager_.optimize(reification.entity.function);
         });
     }
 }

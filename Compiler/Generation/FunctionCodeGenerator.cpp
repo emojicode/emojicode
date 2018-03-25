@@ -27,9 +27,7 @@ void FunctionCodeGenerator::generate() {
 
     fn_->ast()->generate(this);
 
-    if (llvm::verifyFunction(*function_, &llvm::outs())) {
-
-    }
+    if (llvm::verifyFunction(*function_, &llvm::outs())) {}
 }
 
 Compiler* FunctionCodeGenerator::compiler() const {

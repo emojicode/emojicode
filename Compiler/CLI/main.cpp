@@ -29,7 +29,7 @@ bool start(const Options &options) {
         application.loadMigrationFile(options.migrationFile());
     }
 
-    bool success = application.compile(options.prettyprint());
+    bool success = application.compile(options.prettyprint(), options.optimize());
 
     if (options.prettyprint()) {
         Prettyprinter(application.mainPackage()).print();

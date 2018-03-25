@@ -36,6 +36,7 @@ public:
     std::unique_ptr<CompilerDelegate> compilerDelegate() const;
 
     bool shouldReport() const { return report_; }
+    bool optimize() const { return optimize_; }
     const std::string& outPath() const { return outPath_; }
     const std::string& mainFile() const { return mainFile_; }
     const std::string& interfaceFile() const { return interfaceFile_; }
@@ -61,6 +62,7 @@ private:
     bool linkToExec_ = true;
     bool report_ = false;
     bool forceColor_ = false;
+    bool optimize_ = false;
 
     void readEnvironment(const std::vector<std::string> &searchPaths);
 
