@@ -28,7 +28,12 @@ Declarator::Declarator(llvm::LLVMContext &context, llvm::Module &module, LLVMTyp
 void EmojicodeCompiler::Declarator::declareRunTime() {
     runTimeNew_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(context_),
                                          llvm::Type::getInt64Ty(context_));
+    runTimeNew_->addFnAttr(llvm::Attribute::NoUnwind);
+
     panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(context_), llvm::Type::getInt8PtrTy(context_));
+    panic_->addFnAttr(llvm::Attribute::NoUnwind);
+    panic_->addFnAttr(llvm::Attribute::NoReturn);
+    panic_->addFnAttr(llvm::Attribute::Cold);  // A program should panic rarely.
 
     classValueTypeMeta_ = new llvm::GlobalVariable(module_, typeHelper_.valueTypeMeta(), true,
                                                    llvm::GlobalValue::LinkageTypes::ExternalLinkage,
@@ -94,8 +99,14 @@ void Declarator::declareLlvmFunction(Function *function) {
         typeHelper_.setReificationContext(nullptr);
         auto name = function->externalName().empty() ? mangleFunction(function, reification.arguments)
                                                      : function->externalName();
+        auto linkage = function->accessLevel() == AccessLevel::Private ? llvm::Function::PrivateLinkage
+                                                                       : llvm::Function::ExternalLinkage;
+        reification.entity.function = llvm::Function::Create(ft, linkage, name, &module_);
+        reification.entity.function->addFnAttr(llvm::Attribute::NoUnwind);
 
-        reification.entity.function = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, &module_);
+        if (function->typeContext().calleeType().type() == TypeType::ValueType && !function->mutating()) {
+            reification.entity.function->addParamAttr(0, llvm::Attribute::ReadOnly);
+        }
     });
 }
 

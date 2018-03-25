@@ -19,7 +19,7 @@ class Compiler;
 /// Manages the semantic analysis of a package.
 class SemanticAnalyser {
 public:
-    explicit SemanticAnalyser(Package *package) : package_(package) {}
+    explicit SemanticAnalyser(Package *package, bool imported) : package_(package), imported_(imported) {}
 
     /// Analyses the package.
     /// @throws CompilerError if an unrecoverable error occurs, e.g. if the start flag function is not present but
@@ -49,6 +49,7 @@ private:
 
     Package *package_;
     std::queue<Function *> queue_;
+    bool imported_;
 
     bool checkArgumentPromise(const Function *sub, const Function *super, const TypeContext &subContext,
                                   const TypeContext &superContext) const;

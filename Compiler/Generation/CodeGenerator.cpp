@@ -44,11 +44,38 @@ llvm::Value *CodeGenerator::optionalNoValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 0);
 }
 
+uint64_t CodeGenerator::querySize(llvm::Type *type) const {
+    return module()->getDataLayout().getTypeAllocSize(type);
+}
+
 llvm::Constant *CodeGenerator::valueTypeMetaFor(const Type &type) {
     return declarator_.classValueTypeMeta();
 }
 
+void CodeGenerator::prepareModule() {
+    llvm::InitializeAllTargetInfos();
+    llvm::InitializeAllTargets();
+    llvm::InitializeAllTargetMCs();
+    llvm::InitializeAllAsmParsers();
+    llvm::InitializeAllAsmPrinters();
+
+    auto targetTriple = llvm::sys::getDefaultTargetTriple();
+    std::string error;
+    auto target = llvm::TargetRegistry::lookupTarget(targetTriple, error);
+
+    auto cpu = "generic";
+    auto features = "";
+
+    llvm::TargetOptions opt;
+    targetMachine_ = target->createTargetMachine(targetTriple, cpu, features, opt, llvm::Reloc::PIC_);
+
+    module()->setDataLayout(targetMachine_->createDataLayout());
+    module()->setTargetTriple(targetTriple);
+}
+
 void CodeGenerator::generate(const std::string &outPath) {
+    prepareModule();
+
     for (auto package : package_->dependencies()) {
         declarator_.declareImportedPackageSymbols(package);
     }
@@ -84,6 +111,19 @@ void CodeGenerator::generate(const std::string &outPath) {
     llvm::verifyModule(*module(), &llvm::outs());
     // llvm::outs() << *module();
     emit(outPath);
+}
+
+void CodeGenerator::emit(const std::string &outPath) {
+    llvm::legacy::PassManager pass;
+
+    auto fileType = llvm::TargetMachine::CGFT_ObjectFile;
+    std::error_code errorCode;
+    llvm::raw_fd_ostream dest(outPath, errorCode, llvm::sys::fs::F_None);
+    if (targetMachine_->addPassesToEmitFile(pass, dest, fileType)) {
+        puts("TargetMachine can't emit a file of this type");
+    }
+    pass.run(*module());
+    dest.flush();
 }
 
 void CodeGenerator::generateFunctions() {
@@ -136,6 +176,9 @@ void CodeGenerator::createClassInfo(Class *klass) {
     }
 
     klass->eachFunction([&functions](Function *function) {
+        if (function->accessLevel() == AccessLevel::Private) {
+            return;
+        }
         function->eachReification([&functions](auto &reification) {
             reification.entity.setVti(functions.size());
             functions.emplace_back(reification.entity.function);
@@ -144,7 +187,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
 
     auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context()), functions.size());
     auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
-                                                 llvm::GlobalValue::LinkageTypes::InternalLinkage,
+                                                 llvm::GlobalValue::LinkageTypes::PrivateLinkage,
                                                  llvm::ConstantArray::get(type, functions));
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
             llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable
@@ -155,57 +198,6 @@ void CodeGenerator::createClassInfo(Class *klass) {
 
     klass->virtualTable() = std::move(functions);
     klass->setClassMeta(meta);
-}
-
-void CodeGenerator::emit(const std::string &outPath) {
-    setUpPassManager();
-
-    llvm::InitializeAllTargetInfos();
-    llvm::InitializeAllTargets();
-    llvm::InitializeAllTargetMCs();
-    llvm::InitializeAllAsmParsers();
-    llvm::InitializeAllAsmPrinters();
-
-    auto targetTriple = llvm::sys::getDefaultTargetTriple();
-    std::string error;
-    auto target = llvm::TargetRegistry::lookupTarget(targetTriple, error);
-
-    auto cpu = "generic";
-    auto features = "";
-
-    llvm::TargetOptions opt;
-    auto targetMachine = target->createTargetMachine(targetTriple, cpu, features, opt, llvm::Reloc::PIC_);
-
-    module()->setDataLayout(targetMachine->createDataLayout());
-    module()->setTargetTriple(targetTriple);
-
-    llvm::legacy::PassManager pass;
-
-    auto fileType = llvm::TargetMachine::CGFT_ObjectFile;
-    std::error_code errorCode;
-    llvm::raw_fd_ostream dest(outPath, errorCode, llvm::sys::fs::F_None);
-    if (targetMachine->addPassesToEmitFile(pass, dest, fileType)) {
-        puts("TargetMachine can't emit a file of this type");
-    }
-    pass.run(*module());
-    dest.flush();
-}
-
-void CodeGenerator::setUpPassManager() {
-    passManager_ = std::make_unique<llvm::legacy::FunctionPassManager>(module());
-//
-//    // Provide basic AliasAnalysis support for GVN.
-//    TheFPM.add(createBasicAliasAnalysisPass());
-//    // Do simple "peephole" optimizations and bit-twiddling optzns.
-//    TheFPM.add(createInstructionCombiningPass());
-//    // Reassociate expressions.
-//    TheFPM.add(createReassociatePass());
-//    // Eliminate Common SubExpressions.
-//    TheFPM.add(createGVNPass());
-//    // Simplify the control flow graph (deleting unreachable blocks, etc).
-//    TheFPM.add(createCFGSimplificationPass());
-//
-//    TheFPM.doInitialization();
 }
 
 }  // namespace EmojicodeCompiler

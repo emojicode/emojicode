@@ -146,6 +146,10 @@ void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol) 
             continue;
         }
 
+        if (imported_) {
+            continue;
+        }
+
         methodImplementation->createUnspecificReification();
         if (enforcePromises(methodImplementation, method, protocol, TypeContext(type), TypeContext(protocol))) {
             method->appointHeir(methodImplementation);

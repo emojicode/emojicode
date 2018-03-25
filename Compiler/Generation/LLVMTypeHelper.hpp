@@ -43,6 +43,10 @@ public:
     /// @throws std::logic_error if no type can be established. This will normally not happen.
     llvm::FunctionType* functionTypeFor(Function *function);
 
+    /// @returns True if it is guaranteed that the provided type is represnted as a pointer at run-time that can always
+    /// be dereferenced.
+    bool isDereferenceable(const Type &type) const;
+
     llvm::Type* valueTypeMetaPtr() const;
     llvm::StructType* valueTypeMeta() const { return valueTypeMetaType_; }
     llvm::StructType* classMeta() const { return classMetaType_; }

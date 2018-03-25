@@ -40,12 +40,22 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     unsigned int i = 0;
     auto it = function->args().begin();
     if (hasThisArgument(fn_->functionType())) {
-        (it++)->setName("this");
+        auto &llvmArg = *(it++);
+        llvmArg.setName("this");
+        addParamAttrs(fn_->typeContext().calleeType(), llvmArg);
     }
     for (auto arg : fn_->parameters()) {
         auto &llvmArg = *(it++);
         scoper_.getVariable(i++) = LocalVariable(false, &llvmArg);
+        addParamAttrs(arg.type, llvmArg);
         llvmArg.setName(utf8(arg.name));
+    }
+}
+
+void FunctionCodeGenerator::addParamAttrs(const Type &argType, llvm::Argument &llvmArg) {
+    if (typeHelper().isDereferenceable(argType)) {
+        auto elementType = llvm::dyn_cast<llvm::PointerType>(llvmArg.getType())->getElementType();
+        llvmArg.addAttrs(llvm::AttrBuilder().addDereferenceableAttr(generator()->querySize(elementType)));
     }
 }
 

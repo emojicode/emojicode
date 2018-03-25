@@ -56,7 +56,7 @@ llvm::GlobalVariable *ProtocolsTableGenerator::createVirtualTable(const Type &ty
     }
 
     auto array = llvm::ConstantArray::get(arrayType, virtualTable);
-    auto arrayVar = new llvm::GlobalVariable(module_, arrayType, true, llvm::GlobalValue::LinkageTypes::InternalLinkage,
+    auto arrayVar = new llvm::GlobalVariable(module_, arrayType, true, llvm::GlobalValue::LinkageTypes::PrivateLinkage,
                                              array);
     auto load = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context_),
                                        dynamic_cast<Class *>(typeDef) != nullptr ? 1 : 0);

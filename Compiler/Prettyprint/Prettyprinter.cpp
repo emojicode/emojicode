@@ -274,6 +274,10 @@ void Prettyprinter::printClosure(Function *function) {
 }
 
 void Prettyprinter::print(const char *key, Function *function, bool body, bool noMutate) {
+    if (interface_ && function->accessLevel() == AccessLevel::Private) {
+        return;
+    }
+
     printDocumentation(function->documentation());
     typeContext_ = function->typeContext();
 

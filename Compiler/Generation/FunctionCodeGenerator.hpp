@@ -89,6 +89,8 @@ private:
 
     CodeGenerator *const generator_;
     llvm::IRBuilder<> builder_;
+
+    void addParamAttrs(const Type &argType, llvm::Argument &llvmArg);
 };
 
 }  // namespace EmojicodeCompiler

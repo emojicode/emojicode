@@ -90,6 +90,11 @@ llvm::Type* LLVMTypeHelper::valueTypeMetaPtr() const {
     return valueTypeMetaType_->getPointerTo();
 }
 
+bool LLVMTypeHelper::isDereferenceable(const Type &type) const {
+    return ((type.type() == TypeType::Class || type.type() == TypeType::Someobject) &&
+            type.storageType() != StorageType::Box) || type.isReference();
+}
+
 llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
     if (reifiContext_ != nullptr && type.type() == TypeType::LocalGenericVariable &&
             reifiContext_->providesActualTypeFor(type.genericVariableIndex())) {

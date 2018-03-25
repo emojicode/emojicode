@@ -65,7 +65,7 @@ bool Compiler::compile(bool parseOnly) {
 }
 
 void Compiler::analyse() {
-    SemanticAnalyser(mainPackage_.get()).analyse(linkToExec_);
+    SemanticAnalyser(mainPackage_.get(), false).analyse(linkToExec_);
 }
 
 void Compiler::generateCode() {
@@ -126,7 +126,7 @@ Package* Compiler::loadPackage(const std::string &name, const SourcePosition &p,
     auto rawPtr = package.get();
     packages_.emplace(name, std::move(package));
     rawPtr->parse();
-    SemanticAnalyser(rawPtr).analyse(false);
+    SemanticAnalyser(rawPtr, true).analyse(false);
     return rawPtr;
 }
 

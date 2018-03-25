@@ -33,7 +33,7 @@ class CodeGenerator {
 public:
     explicit CodeGenerator(Package *package);
     llvm::LLVMContext& context() { return context_; }
-    llvm::Module* module() { return module_.get(); }
+    llvm::Module* module() const { return module_.get(); }
 
     LLVMTypeHelper& typeHelper() { return typeHelper_; }
     StringPool& stringPool() { return pool_; }
@@ -46,6 +46,11 @@ public:
     /// @param outPath The path at which the object file will be placed.
     void generate(const std::string &outPath);
 
+    /// Queries the DataLayout of the module for the size of this type in bytes.
+    /// @note Use this method only when absolutely necessary. Prefer FunctionCodeGenerator::sizeOf in all function
+    /// code.
+    uint64_t querySize(llvm::Type *type) const;
+
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();
 
@@ -55,14 +60,12 @@ private:
     llvm::LLVMContext context_;
     std::unique_ptr<llvm::Module> module_;
 
-    std::unique_ptr<llvm::legacy::FunctionPassManager> passManager_;
-
     LLVMTypeHelper typeHelper_;
     StringPool pool_ = StringPool(this);
     Declarator declarator_;
     ProtocolsTableGenerator protocolsTableGenerator_;
+    llvm::TargetMachine *targetMachine_ = nullptr;
 
-    void setUpPassManager();
     void emit(const std::string &outPath);
     void generateFunctions();
 
@@ -70,6 +73,8 @@ private:
     void createClassInfo(Class *klass);
 
     void createProtocolFunctionTypes(Protocol *protocol);
+
+    void prepareModule();
 };
 
 }  // namespace EmojicodeCompiler

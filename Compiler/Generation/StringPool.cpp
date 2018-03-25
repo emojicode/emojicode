@@ -24,7 +24,7 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
     auto data = llvm::ArrayRef<uint32_t>(reinterpret_cast<const uint32_t *>(string.data()), string.size());
     auto constant = llvm::ConstantDataArray::get(codeGenerator_->context(), data);
     auto var = new llvm::GlobalVariable(*codeGenerator_->module(), constant->getType(), true,
-                                        llvm::GlobalValue::LinkageTypes::InternalLinkage, constant);
+                                        llvm::GlobalValue::LinkageTypes::PrivateLinkage, constant);
 
 
     auto compiler = codeGenerator_->package()->compiler();
@@ -39,7 +39,7 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
     });
 
     auto stringVar = new llvm::GlobalVariable(*codeGenerator_->module(), stringLlvm, true,
-                                              llvm::GlobalValue::LinkageTypes::InternalLinkage, stringStruct, "string");
+                                              llvm::GlobalValue::LinkageTypes::PrivateLinkage, stringStruct, "string");
 
     pool_.emplace(string, stringVar);
     return stringVar;
