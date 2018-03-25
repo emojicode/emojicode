@@ -27,6 +27,6 @@ private:
     const std::map<size_t, Type> &copyReificationRequest_;
 };
 
-};  // namespace EmojicodeCompiler
+}  // namespace EmojicodeCompiler
 
 #endif //EMOJICODE_REIFICATIONCONTEXT_HPP

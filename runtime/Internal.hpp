@@ -13,8 +13,8 @@ namespace Internal {
 extern int argc;
 extern char **argv;
 
-};
+}
 
-};
+}
 
 #endif //EMOJICODE_INTERNAL_HPP

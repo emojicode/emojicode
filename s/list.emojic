@@ -27,7 +27,7 @@
       🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
 
       🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-        🐷 data repeatedValue i✖️⚖️Element❗️
+        🐷 data🐚Element repeatedValue i✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -59,7 +59,7 @@
   ❗️ 🐻 item Element 🍇
     ↕️🐕❗️
     ☣️ 🍇
-      🐷 data item count✖️⚖️Element❗️
+      🐷 data🐚Element item count✖️⚖️Element❗️
     🍉
     count ⬅️➕ 1
   🍉
@@ -73,7 +73,7 @@
       🍩🤯💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
     🍉
     ☣️ 🍇
-      ↩️ 🐽 data index✖️⚖️Element❗️
+      ↩️ 🐽 data🐚Element index✖️⚖️Element❗️
     🍉
   🍉
 
@@ -86,7 +86,7 @@
       🍩🤯💻 🔤Index out of bounds in 🍨🐷🔤 ❗️
     🍉
     ☣️ 🍇
-      🐷 data value index✖️⚖️Element❗️
+      🐷 data🐚Element value index✖️⚖️Element❗️
     🍉
   🍉
 
@@ -118,7 +118,7 @@
     🍊 index ◀️ count 🍇
       ☣️ 🍇
         🚜 data 🤜index ➕ 1🤛✖️⚖️Element data index✖️⚖️Element 🤜count ➖ index 🤛✖️⚖️Element❗️
-        🐷 data item index✖️⚖️Element❗️
+        🐷 data🐚Element item index✖️⚖️Element❗️
       🍉
       count ⬅️➕ 1
       ↩️ 👍
@@ -152,7 +152,7 @@
   ❗️ 🐼 ➡️ 🍬Element 🍇
     count ⬅️➖ 1
     ☣️ 🍇
-      🐽 data count✖️⚖️Element❗️ ➡️ value
+      🐽 data🐚Element count✖️⚖️Element❗️ ➡️ value
     🍉
     ↩️ value
   🍉
@@ -202,9 +202,9 @@
       🔢 prng 0 count ➖ 1❗️ ➡️ x
     
       ☣️ 🍇
-        🐽 data i✖️⚖️Element❗️ ➡️ temp
-        🐷 data 🐽 data x✖️⚖️Element❗️ i✖️⚖️Element❗️
-        🐷 data temp x✖️⚖️Element❗️
+        🐽 data🐚Element i✖️⚖️Element❗️ ➡️ temp
+        🐷 data🐚Element 🐽 data🐚Element x✖️⚖️Element❗️ i✖️⚖️Element❗️
+        🐷 data🐚Element temp x✖️⚖️Element❗️
       🍉
     🍉
   🍉
