@@ -207,6 +207,18 @@ public:
     bool isMutable() const { return mutable_; }
     void setMutable(bool b) { mutable_ = b; }
 
+    /// Whether the value will be exactly of the type reprsented by this instance. If this instance represents a class
+    /// instance, the instance will be of exactly the type represented by this instance at runtime.
+    /// If this instance represents an instance of a final class, this method returns true regardless of whether
+    /// inexacted() was called or setExact() was called with false as argument.
+    bool isExact() const;
+    Type inexacted() const {
+        auto copy = *this;
+        copy.setExact(false);
+        return copy;
+    }
+    void setExact(bool b) { forceExact_ = b; }
+
     inline bool operator<(const Type &rhs) const {
         return std::tie(typeContent_, typeDefinition_, rhs.genericArguments_, genericArgumentIndex_,
                         localResolutionConstraint_) < std::tie(rhs.typeContent_, rhs.typeDefinition_,
@@ -237,6 +249,7 @@ private:
     bool mutable_ = true;
     /// Indicates that the value is boxed although the type would normally not require boxing. Used with generics
     bool forceBox_ = false;
+    bool forceExact_ = false;
 
     void typeName(Type type, const TypeContext &typeContext, std::string &string, bool package) const;
     bool identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const;

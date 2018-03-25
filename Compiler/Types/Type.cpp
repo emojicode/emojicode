@@ -78,6 +78,10 @@ TypeDefinition* Type::typeDefinition() const {
     return typeDefinition_;
 }
 
+bool Type::isExact() const {
+    return forceExact_ || (type() == TypeType::Class && eclass()->final());
+}
+
 bool Type::canHaveGenericArguments() const {
     return type() == TypeType::Class || type() == TypeType::Protocol || type() == TypeType::ValueType;
 }

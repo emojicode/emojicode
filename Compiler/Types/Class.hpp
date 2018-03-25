@@ -63,6 +63,14 @@ public:
     void addInstanceVariable(const InstanceVariableDeclaration &declaration) override;
 
     void inherit(SemanticAnalyser *analyser);
+
+    /// Makes hasSubclass() return true.
+    void setHasSubclass() { hasSubclass_ = true; }
+    /// @returns true if this class has a subclass.
+    /// @see setHasSubclass()
+    bool hasSubclass() const { return hasSubclass_; }
+
+    void setFinal() { final_ = true; }
 private:
     std::set<std::u32string> requiredInitializers_;
 
@@ -86,6 +94,7 @@ private:
     bool final_;
     bool foreign_;
     bool inheritsInitializers_ = false;
+    bool hasSubclass_ = false;
 
     llvm::GlobalVariable *classMeta_ = nullptr;
 

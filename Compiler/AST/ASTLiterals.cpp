@@ -17,7 +17,9 @@
 namespace EmojicodeCompiler {
 
 Type ASTStringLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type(analyser->compiler()->sString);
+    auto type = Type(analyser->compiler()->sString);
+    type.setExact(true);
+    return type;
 }
 
 Type ASTBooleanTrue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -91,6 +93,7 @@ Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpecta
     }
 
     type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
+    type_.setExact(true);
     return type_;
 }
 
@@ -104,6 +107,7 @@ Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &
     }
 
     type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
+    type_.setExact(true);
     return type_;
 }
 
@@ -115,6 +119,7 @@ Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpect
     for (auto &stringNode : values_) {
         analyser->expectType(stringType, &stringNode);
     }
+    type_.setExact(true);
     return stringType;
 }
 

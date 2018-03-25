@@ -214,6 +214,7 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
                                                  " can’t be used as superclass as it was marked with 🔏."));
         }
         eclass->setSuperType(type);
+        type.eclass()->setHasSubclass();
     }
 
     auto classType = Type(eclass);  // New Type due to generic arguments now available.

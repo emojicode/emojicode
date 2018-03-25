@@ -35,6 +35,7 @@ public:
         if (errorProne()) {
             return Type(MakeError, errorType_, type);
         }
+        type.setExact(true);
         return type;
     }
     void addArgumentToVariable(const std::u32string &string, const SourcePosition &p) {

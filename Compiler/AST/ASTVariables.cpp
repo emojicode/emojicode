@@ -55,7 +55,7 @@ void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTVariableDeclareAndAssign::analyse(FunctionAnalyser *analyser) {
-    Type t = analyser->expect(TypeExpectation(false, true), &expr_);
+    Type t = analyser->expect(TypeExpectation(false, true), &expr_).inexacted();
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, false, position());
     var.initialize();
     setVariableAccess(ResolvedVariable(var, false), analyser);

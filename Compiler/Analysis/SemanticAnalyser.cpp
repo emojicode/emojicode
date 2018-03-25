@@ -34,6 +34,10 @@ void SemanticAnalyser::analyse(bool executable) {
         eclass->inherit(this);
         finalizeProtocols(Type(eclass.get()));
         enqueueFunctionsOfTypeDefinition(eclass.get());
+
+        if (!eclass->hasSubclass() && !eclass->exported()) {
+            eclass->setFinal();
+        }
     }
     for (auto &function : package_->functions()) {
         enqueueFunction(function.get());

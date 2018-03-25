@@ -56,7 +56,7 @@ Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32
     auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), args_.isImperative(),
                                                    position());
 
-    if (type.type() == TypeType::Class && method->accessLevel() == AccessLevel::Private) {
+    if (type.type() == TypeType::Class && (method->accessLevel() == AccessLevel::Private || type.isExact())) {
         callType_ = CallType::StaticDispatch;
     }
 

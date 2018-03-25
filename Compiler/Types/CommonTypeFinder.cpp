@@ -76,7 +76,7 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *app) con
         }
         app->warn(p, "Common type was inferred to be ", commonType_.toString(TypeContext()), ".");
     }
-    return commonType_;
+    return commonType_.inexacted();
 }
 
 }  // namespace EmojicodeCompiler
