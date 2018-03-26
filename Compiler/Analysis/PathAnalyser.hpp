@@ -24,51 +24,66 @@ enum class PathAnalyserIncident {
 class PathAnalyser {
     struct Branch {
         explicit Branch(Branch *parent) : parent(parent) {}
+
         Branch *parent;
         std::vector<PathAnalyserIncident> certainIncidents;
         std::vector<PathAnalyserIncident> potentialIncidents;
         std::vector<Branch> branches;
     };
+
 public:
     void endMutualExclusiveBranches() {
         if (currentBranch_->branches.empty()) {
             return;
         }
-        
+
         copyPotentialIncidents();
+
         auto incs = currentBranch_->branches[0].certainIncidents;
         for (auto it = currentBranch_->branches.begin() + 1; it < currentBranch_->branches.end(); it++) {
             auto branch = *it;
+            auto incsCopy = incs;
             std::set_intersection(incs.begin(), incs.end(), branch.certainIncidents.begin(),
-                                  branch.certainIncidents.end(), std::inserter(incs, incs.begin()));
+                                  branch.certainIncidents.end(), std::back_inserter(incsCopy));
+            incs = incsCopy;
         }
         currentBranch_->certainIncidents.insert(currentBranch_->certainIncidents.begin(), incs.begin(), incs.end());
+
         currentBranch_->branches.clear();
     }
+
     void endUncertainBranches() {
         copyPotentialIncidents();
         currentBranch_->branches.clear();
     }
+
     void recordIncident(PathAnalyserIncident incident) {
         currentBranch_->certainIncidents.emplace_back(incident);
         currentBranch_->potentialIncidents.emplace_back(incident);
     }
+
     void beginBranch() {
         currentBranch_->branches.emplace_back(Branch(currentBranch_));
         currentBranch_ = &currentBranch_->branches.back();
     }
+
     void endBranch() {
         assert(currentBranch_->branches.empty());
-        currentBranch_ = currentBranch_->parent;
+        auto parent = currentBranch_->parent;
+        currentBranch_->parent = nullptr;
+        currentBranch_ = parent;
     }
-    bool hasCertainly(PathAnalyserIncident incident) {
+
+    bool hasCertainly(PathAnalyserIncident incident) const {
         return std::find(currentBranch_->certainIncidents.begin(), currentBranch_->certainIncidents.end(),
                          incident) != currentBranch_->certainIncidents.end();
     }
-    bool hasPotentially(PathAnalyserIncident incident) {
+
+    bool hasPotentially(PathAnalyserIncident incident) const {
         return std::find(currentBranch_->potentialIncidents.begin(), currentBranch_->potentialIncidents.end(),
                          incident) != currentBranch_->potentialIncidents.end();
     }
+
 private:
     void copyPotentialIncidents() {
         for (auto branch : currentBranch_->branches) {
@@ -77,6 +92,7 @@ private:
                                                       branch.potentialIncidents.end());
         }
     }
+
     Branch mainBranch_ = Branch(nullptr);
     Branch *currentBranch_ = &mainBranch_;
 };
