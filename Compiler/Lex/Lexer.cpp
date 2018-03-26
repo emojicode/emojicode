@@ -296,6 +296,7 @@ Lexer::TokenState Lexer::continueStringToken(Token *token, Lexer::TokenConstruct
         }
 
         constState->escapeSequence_ = false;
+        return TokenState::Continues;
     }
     else if (codePoint() == E_CROSS_MARK) {
         constState->escapeSequence_ = true;
