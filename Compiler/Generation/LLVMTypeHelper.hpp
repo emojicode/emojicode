@@ -22,9 +22,9 @@ namespace EmojicodeCompiler {
 
 class Function;
 struct VariableCapture;
-class Compiler;
 class ReificationContext;
 struct Capture;
+class CodeGenerator;
 
 /// This class is responsible for providing llvm::Type instances for Emojicode Type instances.
 ///
@@ -32,7 +32,7 @@ struct Capture;
 /// otherwise.
 class LLVMTypeHelper {
 public:
-    explicit LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler);
+    explicit LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGeneator);
 
     /// @returns An LLVM type corresponding to the provided Type.
     /// @throws std::logic_error if no type can be established. This will normally not happen.
@@ -46,6 +46,9 @@ public:
     /// @returns True if it is guaranteed that the provided type is represnted as a pointer at run-time that can always
     /// be dereferenced.
     bool isDereferenceable(const Type &type) const;
+
+    /// @returns True if this type cannot be directly stored in a box and memory must be allocated on the heap.
+    bool isRemote(const Type &type);
 
     llvm::Type* valueTypeMetaPtr() const;
     llvm::StructType* valueTypeMeta() const { return valueTypeMetaType_; }
@@ -66,6 +69,7 @@ private:
     llvm::Type* getSimpleType(const Type &type);
 
     llvm::LLVMContext &context_;
+    CodeGenerator *codeGenerator_;
 
     std::map<Type, llvm::Type*> types_;
     ReificationContext *reifiContext_ = nullptr;

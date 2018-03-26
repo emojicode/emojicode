@@ -24,7 +24,7 @@ class LLVMTypeHelper;
 
 class ProtocolsTableGenerator {
 public:
-    ProtocolsTableGenerator(llvm::LLVMContext &context, llvm::Module &module, const LLVMTypeHelper &typeHelper)
+    ProtocolsTableGenerator(llvm::LLVMContext &context, llvm::Module &module, LLVMTypeHelper &typeHelper)
             : context_(context), module_(module), typeHelper_(typeHelper) {}
     void createProtocolsTable(const Type &type);
     void declareImportedProtocolsTable(const Type &type);
@@ -32,7 +32,7 @@ public:
 private:
     llvm::LLVMContext &context_;
     llvm::Module &module_;
-    const LLVMTypeHelper &typeHelper_;
+    LLVMTypeHelper &typeHelper_;
 
     /// Creates a virtual table (dispatch table) for the given protocol.
     /// @param protocol The protocol for which the virtual table is created.

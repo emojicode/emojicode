@@ -34,7 +34,7 @@ namespace EmojicodeCompiler {
 CodeGenerator::CodeGenerator(Package *package, bool optimize)
         : package_(package),
           module_(std::make_unique<llvm::Module>(package->name(), context())),
-          typeHelper_(context(), package->compiler()),
+          typeHelper_(context(), this),
           declarator_(context_, *module_, typeHelper_),
           protocolsTableGenerator_(context_, *module_, typeHelper_),
           optimizationManager_(module_.get(), optimize) {}

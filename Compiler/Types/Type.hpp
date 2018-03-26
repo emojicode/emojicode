@@ -129,8 +129,6 @@ public:
     }
     void forceBox() { forceBox_ = true; }
 
-    bool remotelyStored() const { return false; }
-
     /// @returns The type this optional contains. If this type is force boxed, so will be the returned type.
     Type optionalType() const {
         assert(type() == TypeType::Optional);

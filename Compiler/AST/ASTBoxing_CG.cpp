@@ -47,8 +47,10 @@ Value* ASTBoxing::getAllocaTheBox(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTBoxing::getGetValueFromBox(Value *box, FunctionCodeGenerator *fg) const {
-    if (expr_->expressionType().remotelyStored()) {
-        // TODO: Implement
+    if (fg->typeHelper().isRemote(expr_->expressionType().unboxed())) {
+        auto ptrPtrType = fg->typeHelper().llvmTypeFor(expr_->expressionType())->getPointerTo()->getPointerTo();
+        auto ptrPtr = fg->getValuePtr(box, ptrPtrType);
+        return fg->builder().CreateLoad(fg->builder().CreateLoad(ptrPtr));
     }
     return fg->builder().CreateLoad(getBoxValuePtr(box, fg));
 }
@@ -137,10 +139,16 @@ Value* ASTBoxToSimpleError::generate(FunctionCodeGenerator *fg) const {
 
 void ASTToBox::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const {
     setBoxMeta(box, fg);
-    if (expr_->expressionType().remotelyStored()) {
-        // TODO: Implement
+    if (fg->typeHelper().isRemote(expr_->expressionType())) {
+        auto type = fg->typeHelper().llvmTypeFor(expr_->expressionType())->getPointerTo();
+        auto ptrPtr = fg->getValuePtr(box, type->getPointerTo());
+        auto alloc = fg->alloc(type);
+        fg->builder().CreateStore(value, alloc);
+        fg->builder().CreateStore(alloc, ptrPtr);
     }
-    fg->builder().CreateStore(value, getBoxValuePtr(box, fg));
+    else {
+        fg->builder().CreateStore(value, getBoxValuePtr(box, fg));
+    }
 }
 
 void ASTToBox::setBoxMeta(Value *box, FunctionCodeGenerator *fg) const {

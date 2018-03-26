@@ -11,7 +11,9 @@
 #include "Functions/Initializer.hpp"
 #include "Generation/ReificationContext.hpp"
 #include "LLVMTypeHelper.hpp"
+#include "Package/Package.hpp"
 #include "Mangler.hpp"
+#include "CodeGenerator.hpp"
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/Class.hpp"
@@ -20,7 +22,8 @@
 
 namespace EmojicodeCompiler {
 
-LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) : context_(context) {
+LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGenerator)
+        : context_(context), codeGenerator_(codeGenerator) {
     protocolsTable_ = llvm::StructType::create(std::vector<llvm::Type *> {
             llvm::Type::getInt1Ty(context_),
             llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
@@ -38,6 +41,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, Compiler *compiler) :
             llvm::Type::getInt8PtrTy(context_), llvm::Type::getInt8PtrTy(context_)
     }, "callable");
 
+    auto compiler = codeGenerator_->package()->compiler();
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
     types_.emplace(Type::someobject(), llvm::Type::getInt8PtrTy(context_));
     types_.emplace(Type(compiler->sInteger), llvm::Type::getInt64Ty(context_));
@@ -93,6 +97,10 @@ llvm::Type* LLVMTypeHelper::valueTypeMetaPtr() const {
 bool LLVMTypeHelper::isDereferenceable(const Type &type) const {
     return ((type.type() == TypeType::Class || type.type() == TypeType::Someobject) &&
             type.storageType() != StorageType::Box) || type.isReference();
+}
+
+bool LLVMTypeHelper::isRemote(const Type &type) {
+    return codeGenerator_->querySize(llvmTypeFor(type)) > 32;
 }
 
 llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {

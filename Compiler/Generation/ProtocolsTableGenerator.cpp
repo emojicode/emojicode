@@ -59,7 +59,7 @@ llvm::GlobalVariable *ProtocolsTableGenerator::createVirtualTable(const Type &ty
     auto arrayVar = new llvm::GlobalVariable(module_, arrayType, true, llvm::GlobalValue::LinkageTypes::PrivateLinkage,
                                              array);
     auto load = llvm::ConstantInt::get(llvm::Type::getInt1Ty(context_),
-                                       dynamic_cast<Class *>(typeDef) != nullptr ? 1 : 0);
+                                       (type.type() == TypeType::Class || typeHelper_.isRemote(type)) ? 1 : 0);
     auto conformance = llvm::ConstantStruct::get(typeHelper_.protocolConformance(), {load, arrayVar});
     return getConformanceVariable(type, protocol, conformance);
 }
