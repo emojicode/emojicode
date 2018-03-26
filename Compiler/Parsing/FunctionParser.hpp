@@ -83,6 +83,8 @@ private:
     std::shared_ptr<ASTStatement> parseExprStatement(const Token &token);
 
     std::shared_ptr<ASTStatement> parseVariableDeclaration(const Token &token);
+
+    std::shared_ptr<ASTStatement> parseReturn(const Token &token);
 };
 
 }  // namespace EmojicodeCompiler

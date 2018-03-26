@@ -116,11 +116,16 @@ std::shared_ptr<ASTStatement> FunctionParser::handleStatementToken(const Token &
         case TokenType::Error:
             return std::make_shared<ASTRaise>(parseExpr(0), token.position());
         case TokenType::Return:
-            return std::make_shared<ASTReturn>(parseExpr(0), token.position());
+            return parseReturn(token);
         default:
             // None of the TokenTypes that begin a statement were detected so this must be an expression
             return parseExprStatement(token);
     }
+}
+
+std::shared_ptr<ASTStatement> FunctionParser::parseReturn(const Token &token) {
+    auto value = stream_.consumeTokenIf(TokenType::Return) ? nullptr : parseExpr(0);
+    return std::make_shared<ASTReturn>(value, token.position());
 }
 
 std::shared_ptr<ASTStatement> FunctionParser::parseVariableDeclaration(const Token &token) {

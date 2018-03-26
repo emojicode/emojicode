@@ -38,8 +38,14 @@ void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {
 
 void ASTReturn::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
+
     if (analyser->function()->returnType().type() == TypeType::NoReturn) {
+        assert(value_ == nullptr);
         return;
+    }
+
+    if (value_ == nullptr) {
+        throw CompilerError(position(), "↩️↩️ can only be used in functions without a return value.");
     }
 
     if (isOnlyNothingnessReturnAllowed(analyser->function()->functionType())) {
