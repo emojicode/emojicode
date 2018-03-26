@@ -24,6 +24,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
+#include <llvm/IR/IRPrintingPasses.h>
 #include <algorithm>
 #include <limits>
 #include <vector>
@@ -75,7 +76,7 @@ void CodeGenerator::prepareModule() {
     module()->setTargetTriple(targetTriple);
 }
 
-void CodeGenerator::generate(const std::string &outPath) {
+void CodeGenerator::generate(const std::string &outPath, bool printIr) {
     prepareModule();
 
     for (auto package : package_->dependencies()) {
@@ -111,11 +112,10 @@ void CodeGenerator::generate(const std::string &outPath) {
     generateFunctions();
 
     llvm::verifyModule(*module(), &llvm::outs());
-    // llvm::outs() << *module();
-    emit(outPath);
+    emit(outPath, printIr);
 }
 
-void CodeGenerator::emit(const std::string &outPath) {
+void CodeGenerator::emit(const std::string &outPath, bool printIr) {
     llvm::legacy::PassManager pass;
 
     auto fileType = llvm::TargetMachine::CGFT_ObjectFile;
@@ -123,6 +123,9 @@ void CodeGenerator::emit(const std::string &outPath) {
     llvm::raw_fd_ostream dest(outPath, errorCode, llvm::sys::fs::F_None);
     if (targetMachine_->addPassesToEmitFile(pass, dest, fileType)) {
         puts("TargetMachine can't emit a file of this type");
+    }
+    if (printIr) {
+        pass.add(llvm::createPrintModulePass(llvm::outs()));
     }
     pass.run(*module());
     dest.flush();

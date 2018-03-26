@@ -45,7 +45,7 @@ public:
 
     /// Generates an object file for the package.
     /// @param outPath The path at which the object file will be placed.
-    void generate(const std::string &outPath);
+    void generate(const std::string &outPath, bool printIr);
 
     /// Queries the DataLayout of the module for the size of this type in bytes.
     /// @note Use this method only when absolutely necessary. Prefer FunctionCodeGenerator::sizeOf in all function
@@ -69,7 +69,7 @@ private:
 
     llvm::TargetMachine *targetMachine_ = nullptr;
 
-    void emit(const std::string &outPath);
+    void emit(const std::string &outPath, bool printIr);
     void generateFunctions();
 
     void generateFunction(Function *function);

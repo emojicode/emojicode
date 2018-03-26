@@ -35,8 +35,9 @@ Options::Options(int argc, char *argv[]) {
     args::Flag object(parser, "object", "Produce object file, do not link", {'c'});
     args::Flag json(parser, "json", "Show compiler messages as JSON", {"json"});
     args::Flag format(parser, "format", "Format source code", {"format"});
-    args::Flag color(parser, "color", "Show compiler messages in color", {"color"});
+    args::Flag color(parser, "color", "Always show compiler messages in color", {"color"});
     args::Flag optimize(parser, "optimize", "Compile with optimizations", {'O'});
+    args::Flag printIr(parser, "print-ir", "Print the IR to the standard output", {"print-ir"});
     args::ValueFlagList<std::string> searchPaths(parser, "search path",
                                                  "Adds the path to the package search path (after './packages')",
                                                  {'S'});
@@ -52,6 +53,7 @@ Options::Options(int argc, char *argv[]) {
         format_ = format.Get();
         forceColor_ = color.Get();
         optimize_ = optimize.Get();
+        printIr_ = printIr.Get();
 
         if (package) {
             mainPackageName_ = package.Get();

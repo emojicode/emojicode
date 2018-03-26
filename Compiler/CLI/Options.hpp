@@ -37,6 +37,7 @@ public:
 
     bool shouldReport() const { return report_; }
     bool optimize() const { return optimize_; }
+    bool printIr() const { return printIr_; }
     const std::string& outPath() const { return outPath_; }
     const std::string& mainFile() const { return mainFile_; }
     const std::string& interfaceFile() const { return interfaceFile_; }
@@ -63,6 +64,7 @@ private:
     bool report_ = false;
     bool forceColor_ = false;
     bool optimize_ = false;
+    bool printIr_ = false;
 
     void readEnvironment(const std::vector<std::string> &searchPaths);
 
