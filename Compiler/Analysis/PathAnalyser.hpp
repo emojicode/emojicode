@@ -38,16 +38,7 @@ public:
         }
 
         copyPotentialIncidents();
-
-        auto incs = currentBranch_->branches[0].certainIncidents;
-        for (auto it = currentBranch_->branches.begin() + 1; it < currentBranch_->branches.end(); it++) {
-            auto branch = *it;
-            auto incsCopy = incs;
-            std::set_intersection(incs.begin(), incs.end(), branch.certainIncidents.begin(),
-                                  branch.certainIncidents.end(), std::back_inserter(incsCopy));
-            incs = incsCopy;
-        }
-        currentBranch_->certainIncidents.insert(currentBranch_->certainIncidents.begin(), incs.begin(), incs.end());
+        copyCertainIncidents();
 
         currentBranch_->branches.clear();
     }
@@ -91,6 +82,18 @@ private:
                                                       branch.potentialIncidents.begin(),
                                                       branch.potentialIncidents.end());
         }
+    }
+
+    void copyCertainIncidents() {
+        auto incs = currentBranch_->branches[0].certainIncidents;
+        for (auto it = currentBranch_->branches.begin() + 1; it < currentBranch_->branches.end(); it++) {
+            auto branch = *it;
+            auto newIncidents = std::vector<PathAnalyserIncident>();
+            std::set_intersection(incs.begin(), incs.end(), branch.certainIncidents.begin(),
+                                  branch.certainIncidents.end(), std::back_inserter(newIncidents));
+            incs = newIncidents;
+        }
+        currentBranch_->certainIncidents.insert(currentBranch_->certainIncidents.begin(), incs.begin(), incs.end());
     }
 
     Branch mainBranch_ = Branch(nullptr);
