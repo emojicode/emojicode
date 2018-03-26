@@ -14,8 +14,9 @@
 namespace EmojicodeCompiler {
 
 void ASTBlock::generate(FunctionCodeGenerator *fg) const {
-    for (auto &stmt : stmts_) {
-        stmt->generate(fg);
+    auto stop = !returnedCertainly_ ? stmts_.size() : stop_;
+    for (size_t i = 0; i < stop; i++) {
+        stmts_[i]->generate(fg);
     }
 }
 

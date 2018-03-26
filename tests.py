@@ -26,6 +26,8 @@ compilation_tests = [
     # "classSuper",
     "classSubInstanceVar",
     "optionalParameter",
+    "returnInBlock",
+    "returnInIf",
     # "extension",
     # "piglatin",
     # "class",

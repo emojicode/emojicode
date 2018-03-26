@@ -56,7 +56,10 @@ void ASTRepeatWhile::generate(FunctionCodeGenerator *fg) const {
 
     fg->builder().SetInsertPoint(repeatBlock);
     block_.generate(fg);
-    fg->builder().CreateBr(whileCondBlock);
+
+    if (!block_.returnedCertainly()) {
+        fg->builder().CreateBr(whileCondBlock);
+    }
 
     function->getBasicBlockList().push_back(afterBlock);
     fg->builder().SetInsertPoint(afterBlock);
@@ -86,13 +89,17 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     }
     fg->scoper().getVariable(errorVar_) = LocalVariable(false, err);
     errorBlock_.generate(fg);
-    fg->builder().CreateBr(afterBlock);
+    if (!errorBlock_.returnedCertainly()) {
+        fg->builder().CreateBr(afterBlock);
+    }
 
     fg->builder().SetInsertPoint(noError);
     auto value = valueIsBoxed_ ? error : fg->builder().CreateExtractValue(error, 1);
     fg->scoper().getVariable(valueVar_) = LocalVariable(false, value);
     valueBlock_.generate(fg);
-    fg->builder().CreateBr(afterBlock);
+    if (!valueBlock_.returnedCertainly()) {
+        fg->builder().CreateBr(afterBlock);
+    }
 
     function->getBasicBlockList().push_back(afterBlock);
     fg->builder().SetInsertPoint(afterBlock);
@@ -125,7 +132,10 @@ void ASTForIn::generate(FunctionCodeGenerator *fg) const {
     auto element = callg.generate(iteratorPtr, iteratorType, ASTArguments(position()), std::u32string(1, 0x1F53D));
     fg->scoper().getVariable(elementVar_) = LocalVariable(false, element);
     block_.generate(fg);
-    fg->builder().CreateBr(whileCondBlock);
+
+    if (!block_.returnedCertainly()) {
+        fg->builder().CreateBr(whileCondBlock);
+    }
 
     function->getBasicBlockList().push_back(afterBlock);
     fg->builder().SetInsertPoint(afterBlock);

@@ -17,10 +17,19 @@
 namespace EmojicodeCompiler {
 
 void ASTBlock::analyse(FunctionAnalyser *analyser) {
-    for (auto &stmt : stmts_) {
-        stmt->analyse(analyser);
+    for (size_t i = 0; i < stmts_.size(); i++) {
+        if (!returnedCertainly_  && analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::Returned)) {
+            returnedCertainly_ = true;
+            stop_ = i;
+            analyser->compiler()->warn(stmts_[i]->position(), "Code will never be executed.");
+        }
+        stmts_[i]->analyse(analyser);
     }
-    returnedCertainly_ = analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::Returned);
+
+    if (!returnedCertainly_  && analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::Returned)) {
+        returnedCertainly_ = true;
+        stop_ = stmts_.size();
+    }
 }
 
 void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {

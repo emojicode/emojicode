@@ -35,6 +35,7 @@ public:
     explicit ASTBlock(const SourcePosition &p) : ASTStatement(p) {}
 
     void appendNode(const std::shared_ptr<ASTStatement> &node) {
+        assert(!returnedCertainly_);
         stmts_.emplace_back(node);
     }
 
@@ -53,6 +54,7 @@ public:
 private:
     std::vector<std::shared_ptr<ASTStatement>> stmts_;
     bool returnedCertainly_ = false;
+    size_t stop_ = 0;
 };
 
 class ASTExprStatement final : public ASTStatement {
