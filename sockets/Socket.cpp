@@ -11,6 +11,7 @@
 #include <cstring>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <csignal>
 
 using s::String;
 using s::Data;
@@ -131,7 +132,7 @@ extern "C" runtime::SimpleError<Server*> socketsServerNewPort(runtime::Integer p
 }
 
 extern "C" runtime::SimpleError<Socket *> socketsServerAccept(Server *server) {
-    signal(SIGPIPE, SIG_IGN);
+    std::signal(SIGPIPE, SIG_IGN);
 
     struct sockaddr_storage clientAddress{};
     unsigned int addressSize = sizeof(clientAddress);
