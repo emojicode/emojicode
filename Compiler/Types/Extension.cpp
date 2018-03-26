@@ -26,6 +26,9 @@ void Extension::extend() {
     for (auto &protocol : protocols_) {
         typeDef->addProtocol(protocol, position());
     }
+    for (auto &var : instanceVariables_) {
+        typeDef->addInstanceVariable(var);
+    }
 }
 
 }  // namespace EmojicodeCompiler

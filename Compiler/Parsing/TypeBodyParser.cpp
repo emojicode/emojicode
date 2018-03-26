@@ -146,7 +146,7 @@ void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributePa
         type_.typeDefinition()->addTypeMethod(std::move(typeMethod));
     }
     else {
-        auto mutating = owningType().type() == TypeType::ValueType ? attributes.has(Attribute::Mutating) : true;
+        auto mutating = owningType().type() != TypeType::ValueType || attributes.has(Attribute::Mutating);
         auto method = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
                                                  package_, p, attributes.has(Attribute::Override), documentation.get(),
                                                  attributes.has(Attribute::Deprecated), mutating, imperative,

@@ -153,18 +153,18 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
             }
         }
 
-        if (operator_ == OperatorType::IdentityOperator) {
-            if (!type.compatibleTo(Type::someobject(), analyser->typeContext())) {
-                throw CompilerError(position(), "The identity operator can only be used with objects.");
-            }
-            builtIn_ = BuiltInType::Equal;
-            return std::make_pair(true, BuiltIn(analyser->boolean()));
-        }
-
         if (operator_ == OperatorType::EqualOperator) {
             builtIn_ = BuiltInType::Equal;
             return std::make_pair(true, BuiltIn(analyser->boolean()));
         }
+    }
+
+    if (operator_ == OperatorType::IdentityOperator) {
+        if (!type.compatibleTo(Type::someobject(), analyser->typeContext())) {
+            throw CompilerError(position(), "The identity operator can only be used with objects.");
+        }
+        builtIn_ = BuiltInType::Equal;
+        return std::make_pair(true, BuiltIn(analyser->boolean()));
     }
 
     return std::make_pair(false, BuiltIn(Type::noReturn()));

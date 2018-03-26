@@ -91,6 +91,8 @@ public:
     /// Whether the function mutates the callee. Only relevant for value type instance methods.
     bool mutating() const { return mutating_; }
 
+    void setMutating(bool v) { mutating_ = v; }
+
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
 
@@ -156,7 +158,7 @@ private:
     bool imperative_;
     bool unsafe_;
 
-    const bool mutating_;
+    bool mutating_;
     bool external_ = false;
 
     std::string externalName_;

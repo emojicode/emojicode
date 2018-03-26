@@ -98,6 +98,16 @@ Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpecta
 }
 
 Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+    if (expectation.type() == TypeType::Class && expectation.eclass() == analyser->compiler()->sList) {
+        auto type = Type(0, analyser->compiler()->sList, true).resolveOn(TypeContext(expectation.copyType()));
+        for (auto &valueNode : values_) {
+            analyser->expectType(type, &valueNode);
+        }
+        type_ = expectation.copyType();
+        type_.setExact(true);
+        return type_;
+    }
+
     type_ = Type(analyser->compiler()->sList);
 
     CommonTypeFinder finder;

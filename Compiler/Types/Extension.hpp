@@ -22,7 +22,11 @@ public:
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 
     void addInstanceVariable(const InstanceVariableDeclaration &declaration) override {
-        throw CompilerError(position(), "An extension cannot add an instance variable.");
+        if (extendedType_.typeDefinition()->package() == package_) {
+            TypeDefinition::addInstanceVariable(declaration);
+            return;
+        }
+        throw CompilerError(declaration.position, "An extension cannot add an instance variable.");
     }
 
     void extend();

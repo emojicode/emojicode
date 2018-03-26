@@ -19,6 +19,7 @@ ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition
         : ASTExpr(p), closure_(std::move(closure)) {}
 
 Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+    closure_->setMutating(analyser->function()->mutating());
     closure_->setOwningType(analyser->function()->owningType());
 
     applyBoxingFromExpectation(analyser, expectation);

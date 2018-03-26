@@ -28,6 +28,7 @@ compilation_tests = [
     "optionalParameter",
     "returnInBlock",
     "returnInIf",
+    "identityOperator",
     # "extension",
     # "piglatin",
     # "class",
@@ -72,6 +73,7 @@ compilation_tests = [
     # "valueTypeBoxCopySelf",
     "includer",
     "threads",
+    "inferListLiteralFromExpec",
 ]
 library_tests = [
     "primitives",
