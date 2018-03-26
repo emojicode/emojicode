@@ -131,6 +131,8 @@ extern "C" runtime::SimpleError<Server*> socketsServerNewPort(runtime::Integer p
 }
 
 extern "C" runtime::SimpleError<Socket *> socketsServerAccept(Server *server) {
+    signal(SIGPIPE, SIG_IGN);
+
     struct sockaddr_storage clientAddress{};
     unsigned int addressSize = sizeof(clientAddress);
     int connectionAddress = accept(server->socket_, reinterpret_cast<struct sockaddr *>(&clientAddress), &addressSize);
