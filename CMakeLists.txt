@@ -19,6 +19,7 @@ add_subdirectory(runtime)
 add_subdirectory(s)
 add_subdirectory(files)
 add_subdirectory(Compiler)
+add_subdirectory(sockets)
 
 file(GLOB EMOJICODEMIG_SOURCES "Migrator/*")
 add_executable(emojicodemig ${EMOJICODEMIG_SOURCES})

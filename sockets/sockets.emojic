@@ -1,0 +1,129 @@
+📗
+  The sockets package allows you to open TCP sockets to servers or to create a TCP server socket
+  yourself.
+
+  The following is a very basic example of opening a TCP socket to make an HTTP request and print
+  the first 140 characters of the response.
+  ```
+  📦 sockets 🔴
+
+  🏁 🍇
+    🍦 socket 🚇 🔷📞🆕 🔤www.emojicode.org🔤 80
+    💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: www.emojicode.org❌r❌n❌r❌n🔤
+
+    🍦 data 🍺 👂 socket 140
+    😀 🍺 🔡 data
+  🍉
+  ```
+
+  At the time of writing this, the above code would return something similar to:
+  ```
+  HTTP/1.1 200 OK
+  Server: GitHub.com
+  Content-Type: text/html; charset=utf-8
+  Last-Modified: Thu, 13 Apr 2017 16:49:52 GMT
+  Access-Control-Al
+  ```
+
+  Here we’ve an example of a minimal echo-server that listens on port 8728. The server simply sends
+  back a copy of the data it received.
+  ```
+  📦 sockets 🔴
+
+  👴 Simple echo server listening on port 8728
+  🏁 🍇
+    🍦 server 🚇 🔷🏄🆕 8728
+
+    🔁 👍 🍇
+      🍦 clientSocket 🍺 🙋 server
+      🔁 👍 🍇
+        🍦 readData 👂 clientSocket 50
+        🍊🍦 data readData 🍇
+          👴 We’ve read 50 bytes and send them back
+          💬 clientSocket data
+        🍉
+      🍉
+    🍉
+  🍉
+  ```
+
+  Of course, the code above is minimal and incomplete. For example, it can handle only one
+  connection.
+📗
+🔮 0 1
+
+📗 Errors 📗
+🌍 🦃 ⛈ 🍇
+  📗 Indicates a generic error. 📗
+  🔘 🔴
+  📗 Permission denied 📗
+  🔘 🚧
+  📗 File exists 📗
+  🔘 🗿
+  📗 Not enough space. 📗
+  🔘 🐁
+  📗 Function not supported. 📗
+  🔘 🙅
+  📗 Mathematics argument out of domain of function. 📗
+  🔘 🚳
+  📗 Invalid argument. 📗
+  🔘 🚯
+  📗 Illegal byte sequence. 📗
+  🔘 🛃
+  📗 Result too large. 📗
+  🔘 🗻
+  📗 Operation not permitted. 📗
+  🔘 🚷
+🍉
+
+📗
+  🏄 represents a socket that listens for clients on a given port.
+📗
+🌍 📻 🐇 🏄 🍇🍉
+
+📗 📞 represents a socket for communication between client and server. 📗
+🌍 📻 🐇 📞 🍇
+  📗
+    Opens a socket to *address*. *address* can be a host name which will be
+    resolved.
+  📗
+  🆕🚨⛈ host 🔡 socket 🔢 📻 🔤socketsSocketNewHost🔤
+
+  📗
+    Sends the given data to the peer. Returns true if the data was successfully
+    sent or false on error.
+  📗
+  ❗️ 💬 message 📇 ➡️ 🍬⛈ 📻 🔤socketsSocketSend🔤
+
+  📗
+    Closes this socket.
+  📗
+  ❗️ 🙅 📻 🔤socketsSocketClose🔤
+
+  📗
+    Tries to read up to *bytes* bytes from the socket. Nothingness is returned
+    on error or if the socket was closed by the peer.
+  📗
+  ❗️ 👂 bytes 🔢 ➡️ 🚨⛈📇 📻 🔤socketsSocketRead🔤
+🍉
+
+🐋 🏄 🍇
+  📗
+    Creates a 🏄 instance that immediately starts listening on the given port.
+    This initializer returns Nothingness if the socket can’t be bound to the
+    given port.
+  📗
+  🆕🚨⛈ port 🔢 📻 🔤socketsServerNewPort🔤
+
+  📗
+    Waits until a client wants to connect to this socket and returns a socket
+    to communicate with it.
+  📗
+  ❗️ 🙋 ➡️ 🚨⛈📞 📻 🔤socketsServerAccept🔤
+
+  📗
+    Closes this socket.
+  📗
+  ❗️ 🙅 📻 🔤socketsServerClose🔤
+🍉
+
