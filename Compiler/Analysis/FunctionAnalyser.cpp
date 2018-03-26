@@ -134,7 +134,12 @@ void FunctionAnalyser::analyse() {
 }
 
 void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
-    if (function_->functionType() == FunctionType::ObjectInitializer &&
+    if (function_ == function_->package()->startFlagFunction() && function_->returnType() == Type::noReturn()) {
+        function_->setReturnType(integer());
+        auto value = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(0), std::u32string(), root->position());
+        root->appendNode(std::make_shared<ASTReturn>(value, root->position()));
+    }
+    else if (function_->functionType() == FunctionType::ObjectInitializer &&
             !pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
         auto initializer = dynamic_cast<Initializer *>(function_);
         auto thisNode = std::dynamic_pointer_cast<ASTExpr>(std::make_shared<ASTThis>(root->position()));
