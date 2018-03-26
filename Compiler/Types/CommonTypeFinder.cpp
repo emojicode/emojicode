@@ -16,7 +16,7 @@ namespace EmojicodeCompiler {
 
 void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext) {
     if (!firstTypeFound_) {
-        commonType_ = type;
+        setCommonType(type);
         firstTypeFound_ = true;
         if (type.canHaveProtocol()) {
             commonProtocols_ = type.typeDefinition()->protocols();
@@ -28,10 +28,15 @@ void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext)
     updateCommonProtocols(type, typeContext);
 }
 
+void CommonTypeFinder::setCommonType(const Type &type) {
+    commonType_ = type.inexacted();
+    commonType_.setReference(false);
+}
+
 void CommonTypeFinder::updateCommonType(const Type &type, const TypeContext &typeContext) {
     if (!type.compatibleTo(commonType_, typeContext)) {
         if (commonType_.compatibleTo(type, typeContext)) {
-            commonType_ = type;
+            setCommonType(type);
         }
         else if (type.type() == TypeType::Class && commonType_.type() == TypeType::Class) {
             commonType_ = Type::someobject();
@@ -76,7 +81,7 @@ Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *app) con
         }
         app->warn(p, "Common type was inferred to be ", commonType_.toString(TypeContext()), ".");
     }
-    return commonType_.inexacted();
+    return commonType_;
 }
 
 }  // namespace EmojicodeCompiler

@@ -29,6 +29,8 @@ private:
     bool firstTypeFound_ = false;
     Type commonType_ = Type::something();
     std::vector<Type> commonProtocols_;
+
+    void setCommonType(const Type &type);
 };
 
 }  // namespace EmojicodeCompiler
