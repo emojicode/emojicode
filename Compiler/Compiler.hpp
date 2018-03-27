@@ -11,7 +11,6 @@
 
 #include "Utils/StringUtils.hpp"
 #include "Lex/SourceManager.hpp"
-#include <exception>
 #include <map>
 #include <memory>
 #include <string>

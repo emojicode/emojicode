@@ -10,7 +10,9 @@
 #define JSONCompilerDelegate_hpp
 
 #include "Compiler.hpp"
-#include "JSONHelper.h"
+#define RAPIDJSON_HAS_STDSTRING 1
+#include "Utils/rapidjson/writer.h"
+#include "Utils/rapidjson/ostreamwrapper.h"
 
 namespace EmojicodeCompiler {
 
@@ -18,12 +20,16 @@ namespace CLI {
 
 /// An CompilerDelegate that prints errors and warnings to stderr as JSON.
 class JSONCompilerDelegate : public CompilerDelegate {
+public:
+    JSONCompilerDelegate();
+
     void begin() override;
     void error(Compiler *compiler, const std::string &message, const SourcePosition &p) override;
     void warn(Compiler *compiler, const std::string &message, const SourcePosition &p) override;
     void finish() override;
 private:
-    CommaPrinter printer_;
+    rapidjson::OStreamWrapper wrapper_;
+    rapidjson::Writer<rapidjson::OStreamWrapper> writer_;
     void printJson(const char *type, const SourcePosition &p, const std::string &message);
 };
 

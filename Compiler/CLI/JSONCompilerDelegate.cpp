@@ -14,22 +14,29 @@ namespace EmojicodeCompiler {
 
 namespace CLI {
 
+JSONCompilerDelegate::JSONCompilerDelegate() : wrapper_(std::cout), writer_(wrapper_) {}
+
 void JSONCompilerDelegate::begin() {
-    std::cerr << "[" << std::endl;
+    writer_.StartArray();
 }
 
 void JSONCompilerDelegate::finish() {
-    std::cerr << "]" << std::endl;
+    writer_.EndArray();
 }
 
 void JSONCompilerDelegate::printJson(const char *type, const SourcePosition &p, const std::string &message) {
-    printer_.print();
-    std::cerr << "{\"type\": \"" << type << "\", \"line\": " << p.line << ", \"character\": " << p.character;
-    std::cerr << ", \"file\":";
-    jsonString(p.file, std::cerr);
-    std::cerr << ", \"message\": ";
-    jsonString(message, std::cerr);
-    std::cerr << "}" << std::endl;
+    writer_.StartObject();
+    writer_.Key("type");
+    writer_.String(type);
+    writer_.Key("line");
+    writer_.Uint64(p.line);
+    writer_.Key("character");
+    writer_.Uint64(p.character);
+    writer_.Key("file");
+    writer_.String(p.file);
+    writer_.Key("message");
+    writer_.String(message);
+    writer_.EndObject();
 }
 
 void JSONCompilerDelegate::error(Compiler *compiler, const std::string &message, const SourcePosition &p) {

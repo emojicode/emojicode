@@ -36,7 +36,7 @@ bool start(const Options &options) {
     }
 
     if (options.shouldReport()) {
-        reportPackage(application.mainPackage());
+        PackageReporter(application.mainPackage()).report();
     }
     return success;
 }

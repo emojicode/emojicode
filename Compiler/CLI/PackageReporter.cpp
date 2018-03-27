@@ -9,249 +9,252 @@
 #include "PackageReporter.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
-#include "JSONHelper.h"
 #include "Package/Package.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
-#include "Types/Generic.hpp"
 #include "Types/Protocol.hpp"
-#include "Types/TypeContext.hpp"
-#include "Types/TypeDefinition.hpp"
-#include "Types/ValueType.hpp"
-#include "Utils/StringUtils.hpp"
-#include <cstring>
+#include "Parsing/OperatorHelper.hpp"
 #include <iostream>
-#include <list>
-#include <map>
-#include <vector>
 
 namespace EmojicodeCompiler {
 
 namespace CLI {
 
-enum class ReturnKind {
-    Return,
-    NoReturn,
-    ErrorProneInitializer
-};
+void PackageReporter::reportDocumentation(const std::u32string &documentation) {
+    if (!documentation.empty()) {
+        writer_.Key("documentation");
+        writer_.String(utf8(documentation));
+    }
+}
 
-void reportDocumentation(const std::u32string &documentation) {
-    if (documentation.empty()) {
+void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
+    writer_.StartObject();
+
+    switch (type.type()) {
+        case TypeType::Class:
+        case TypeType::ValueType:
+        case TypeType::Enum:
+        case TypeType::Protocol: {
+            writer_.Key("package");
+            writer_.String(type.typePackage());
+
+            writer_.Key("name");
+            writer_.String(utf8(type.typeDefinition()->name()));
+
+            reportGenericArguments(type, tc);
+            break;
+        }
+        case TypeType::Callable:
+            reportTypeTypeAndGenericArgs("Callable", type, tc);
+            break;
+        case TypeType::MultiProtocol:
+            reportTypeTypeAndGenericArgs("MultiProtocol", type, tc);
+            break;
+        case TypeType::Optional:
+            reportTypeTypeAndGenericArgs("Optional", type, tc);
+            break;
+        case TypeType::Error:
+            reportTypeTypeAndGenericArgs("Error", type, tc);
+            break;
+        case TypeType::TypeAsValue:
+            reportTypeTypeAndGenericArgs("TypeAsValue", type, tc);
+            break;
+        case TypeType::NoReturn:
+            writer_.Key("type");
+            writer_.String("NoReturn");
+            break;
+        case TypeType::Someobject:
+        case TypeType::Something:
+        case TypeType::GenericVariable:
+        case TypeType::LocalGenericVariable: {
+            auto typeName = type.toString(tc, false);
+
+            writer_.Key("type");
+            writer_.String("Literal");
+
+            writer_.Key("name");
+            writer_.String(typeName);
+            break;
+        }
+        case TypeType::StorageExpectation:
+        case TypeType::Extension:
+            throw std::domain_error("Generating report for type StorageExpectation/Extension");
+    }
+
+    writer_.EndObject();
+}
+
+void PackageReporter::reportGenericArguments(const Type &type, const TypeContext &context) {
+    writer_.Key("arguments");
+    writer_.StartArray();
+    for (auto &arg : type.genericArguments()) {
+        reportType(arg, context);
+    }
+    writer_.EndArray();
+}
+
+void PackageReporter::reportTypeTypeAndGenericArgs(const char *typeTypeString, const Type &type,
+                                                   const TypeContext &context) {
+    writer_.Key("type");
+    writer_.String(typeTypeString);
+    reportGenericArguments(type, context);
+}
+
+void PackageReporter::reportFunction(Function *function, const TypeContext &tc) {
+    if (function->accessLevel() == AccessLevel::Private) {
         return;
     }
 
-    printf("\"documentation\":");
-    jsonString(utf8(documentation), std::cout);
-    putc(',', stdout);
-}
+    writer_.StartObject();
+    writer_.Key("name");
+    writer_.String(utf8(function->name()));
 
-void reportType(const Type &type, const TypeContext &tc) {
-    auto returnTypeName = type.toString(tc);
-    printf("{\"package\":\"%s\",\"name\":\"%s\",\"optional\":%s}",
-           type.typePackage().c_str(), returnTypeName.c_str(), "false");
-}
-
-template <typename T, typename E>
-void reportGenericParameters(Generic<T, E> *generic, const TypeContext &tc) {
-    printf("\"genericArguments\":[");
-
-    CommaPrinter printer;
-    for (auto &param : generic->genericParameters()) {
-        printer.print();
-        printf("{\"name\":");
-        jsonString(utf8(param.name), std::cout);
-        printf(",\"constraint\":");
-        reportType(param.constraint, tc);
-        printf("}");
-    }
-
-    printf("],");
-}
-
-void reportFunction(Function *function, ReturnKind returnKind, const TypeContext &tc) {
-    printf("{\"name\":\"%s\",", utf8(function->name()).c_str());
+    writer_.Key("accessLevel");
     switch (function->accessLevel()) {
         case AccessLevel::Private:
-            printf("\"access\":\"🔒\",");
+            writer_.String("🔒");
             break;
         case AccessLevel::Protected:
-            printf("\"access\":\"🔐\",");
+            writer_.String("🔒");
             break;
         case AccessLevel::Public:
-            printf("\"access\":\"🔓\",");
+            writer_.String("🔓");
             break;
     }
 
-    if (returnKind == ReturnKind::Return) {
-        printf("\"returnType\":");
-        reportType(function->returnType(), tc);
-        putc(',', stdout);
+    writer_.Key("unsafe");
+    writer_.Bool(function->unsafe());
+    writer_.Key("mutating");
+    writer_.Bool(function->mutating());
+    writer_.Key("final");
+    writer_.Bool(function->final());
+
+    if (auto initializer = dynamic_cast<Initializer *>(function)) {
+        if (initializer->errorProne()) {
+            writer_.Key("errorType");
+            reportType(initializer->errorType(), tc);
+        }
     }
-    else if (returnKind == ReturnKind::ErrorProneInitializer) {
-        printf("\"errorType\":");
-        reportType(dynamic_cast<Initializer *>(function)->errorType(), tc);
-        putc(',', stdout);
+    else {
+        writer_.Key("returnType");
+        reportType(function->returnType(), tc);
+
+        writer_.Key("mood");
+        if (operatorType(function->name()) != OperatorType::Invalid) {
+            writer_.String("");
+        }
+        else {
+            writer_.String(function->isImperative() ? "❗️" : "❓");
+        }
     }
 
     reportGenericParameters(function, tc);
     reportDocumentation(function->documentation());
 
-    printf("\"arguments\":[");
-    CommaPrinter printer;
-    for (auto &argument : function->parameters()) {
-        printer.print();
-        printf("{\"type\":");
-        reportType(argument.type, tc);
-        printf(",\"name\":");
-        jsonString(utf8(argument.name), std::cout);
-        printf("}");
+    writer_.Key("parameters");
+    writer_.StartArray();
+    for (auto &param : function->parameters()) {
+        writer_.StartObject();
+        writer_.Key("type");
+        reportType(param.type, tc);
+        writer_.Key("name");
+        writer_.String(utf8(param.name));
+        writer_.EndObject();
     }
-    printf("]}");
+    writer_.EndArray();
+
+    writer_.EndObject();
 }
 
-template <typename T>
-class TypeDefinitionReporter {
-public:
-    explicit TypeDefinitionReporter(T *typeDef) : typeDef_(typeDef) {}
+void PackageReporter::reportExportedType(const Type &type) {
+    writer_.StartObject();
+    auto typeDef = type.typeDefinition();
 
-    void report() const {
-        reportBasics();
-        printf("}");
-    }
-protected:
-    T *typeDef_;
-
-    virtual void reportBasics() const {
-        printf("{\"name\": \"%s\",", utf8(typeDef_->name()).c_str());
-
-        printf("\"conformsTo\":[");
-        CommaPrinter printer;
-        for (auto &protocol : typeDef_->protocols()) {
-            printer.print();
-            reportType(protocol, TypeContext(Type(typeDef_)));
-        }
-        printf("],");
-
-        reportGenericParameters(typeDef_, TypeContext(Type(typeDef_)));
-        reportDocumentation(typeDef_->documentation());
-
-        printf("\"methods\":[");
-        printFunctions(typeDef_->methodList());
-        printf("],");
-
-        printf("\"initializers\":[");
-        CommaPrinter initializerPrinter;
-        for (auto initializer : typeDef_->initializerList()) {
-            initializerPrinter.print();
-            reportFunction(initializer, initializer->errorProne() ? ReturnKind::ErrorProneInitializer
-                           : ReturnKind::NoReturn, TypeContext(Type(typeDef_), initializer));
-        }
-        printf("],");
-
-        printf("\"typeMethods\":[");
-        printFunctions(typeDef_->typeMethodList());
-        printf("]");
+    writer_.Key("type");
+    switch (type.type()) {
+        case TypeType::Class:
+            writer_.String("Class");
+            break;
+        case TypeType::ValueType:
+            writer_.String("Value Type");
+            break;
+        case TypeType::Enum:
+            writer_.String("Enumeration");
+            break;
+        case TypeType::Protocol:
+            writer_.String("Protocol");
+            break;
+        default:
+            throw std::domain_error("Generating report for exported type which is not Class/Enum/ValueType/Protocol");
     }
 
-    void printFunctions(const std::vector<Function *> &functions) const {
-        CommaPrinter printer;
-        for (auto function : functions) {
-            printer.print();
-            reportFunction(function, ReturnKind::Return, TypeContext(Type(typeDef_), function));
-        }
+    writer_.Key("name");
+    writer_.String(utf8(typeDef->name()));
+
+    writer_.Key("conformances");
+    writer_.StartArray();
+    for (auto &protocol : typeDef->protocols()) {
+        reportType(protocol, TypeContext(type));
     }
-};
+    writer_.EndArray();
 
-class ClassReporter : public TypeDefinitionReporter<Class> {
-public:
-    explicit ClassReporter(Class *klass) : TypeDefinitionReporter(klass) {}
+    reportGenericParameters(typeDef, TypeContext(type));
+    reportDocumentation(typeDef->documentation());
 
-    void reportBasics() const override {
-        TypeDefinitionReporter::reportBasics();
-        if (typeDef_->superclass() != nullptr) {
-            printf(",\"superclass\":{\"package\":\"%s\",\"name\":\"%s\"}",
-                   typeDef_->superclass()->package()->name().c_str(), utf8(typeDef_->superclass()->name()).c_str());
+    writer_.Key("methods");
+    printFunctions(typeDef->methodList(), type);
+
+    writer_.Key("initializers");
+    printFunctions(typeDef->initializerList(), type);
+
+    writer_.Key("typeMethods");
+    printFunctions(typeDef->typeMethodList(), type);
+
+    if (type.type() == TypeType::Class) {
+        auto klass = type.eclass();
+        if (klass->superclass() != nullptr) {
+            writer_.Key("superclass");
+            reportType(klass->superType(), TypeContext(type));
         }
+
+        writer_.Key("final");
+        writer_.Bool(klass->final());
     }
-};
 
-class EnumReporter : public TypeDefinitionReporter<Enum> {
-public:
-    explicit EnumReporter(Enum *enumeration) : TypeDefinitionReporter(enumeration) {}
-
-    void reportBasics() const override {
-        TypeDefinitionReporter::reportBasics();
-        printf(",\"values\":[");
-        CommaPrinter printer;
-        for (auto it : typeDef_->values()) {
-            printer.print();
-            printf("{");
+    if (type.type() == TypeType::Enum) {
+        auto enumeration = type.eenum();
+        writer_.Key("enumerationValues");
+        writer_.StartArray();
+        for (auto it : enumeration->values()) {
+            writer_.StartObject();
             reportDocumentation(it.second.second);
-            printf("\"value\":\"%s\"}", utf8(it.first).c_str());
+            writer_.Key("value");
+            writer_.String(utf8(it.first));
+            writer_.EndObject();
         }
-        printf("]");
+        writer_.EndArray();
     }
-};
+    writer_.EndObject();
+}
 
-void reportPackage(Package *package) {
-    std::list<Enum *> enums;
-    std::list<Class *> classes;
-    std::list<Protocol *> protocols;
-    std::list<ValueType *> valueTypes;
+PackageReporter::PackageReporter(Package *package)
+        : wrapper_(std::cout), writer_(wrapper_), package_(package) {}
 
-    for (auto exported : package->exportedTypes()) {
-        switch (exported.type.type()) {
-            case TypeType::Class:
-                classes.push_back(exported.type.eclass());
-                break;
-            case TypeType::Enum:
-                enums.push_back(exported.type.eenum());
-                break;
-            case TypeType::Protocol:
-                protocols.push_back(exported.type.protocol());
-                break;
-            case TypeType::ValueType:
-                valueTypes.push_back(exported.type.valueType());
-                break;
-            default:
-                break;
-        }
+void PackageReporter::report() {
+    writer_.StartObject();
+
+    reportDocumentation(package_->documentation());
+
+    writer_.Key("types");
+    writer_.StartArray();
+    for (auto &exportedType : package_->exportedTypes()) {
+        reportExportedType(exportedType.type);
     }
+    writer_.EndArray();
 
-    printf("{");
-    reportDocumentation(package->documentation());
+    writer_.EndObject();
 
-    printf("\"valueTypes\":[");
-    CommaPrinter valueTypePrinter;
-    for (auto valueType : valueTypes) {
-        valueTypePrinter.print();
-        TypeDefinitionReporter<ValueType>(valueType).report();
-    }
-    printf("],");
-
-    CommaPrinter classPrinter;
-    printf("\"classes\":[");
-    for (auto klass : classes) {
-        classPrinter.print();
-        ClassReporter(klass).report();
-    }
-    printf("],");
-
-    printf("\"enums\": [");
-    CommaPrinter enumPrinter;
-    for (auto enumeration : enums) {
-        enumPrinter.print();
-        EnumReporter(enumeration).report();
-    }
-    printf("],");
-
-    printf("\"protocols\":[");
-    CommaPrinter protocolPrinter;
-    for (auto protocol : protocols) {
-        protocolPrinter.print();
-        TypeDefinitionReporter<Protocol>(protocol).report();
-    }
-    printf("]}");
+    std::cout << std::endl;
 }
 
 }  // namespace CLI
