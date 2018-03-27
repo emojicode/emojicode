@@ -113,7 +113,7 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
 
 bool EmojicodeCompiler::ASTForIn::typeIsEnumerable(FunctionAnalyser *analyser, Type *elementType, const Type &type) {
     if (type.type() == TypeType::Class) {
-        for (Class *a = type.eclass(); a != nullptr; a = a->superclass()) {
+        for (Class *a = type.klass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
                 if (protocol.protocol() == analyser->compiler()->sEnumerable) {
                     auto itemType = Type(0, analyser->compiler()->sEnumerable, true);

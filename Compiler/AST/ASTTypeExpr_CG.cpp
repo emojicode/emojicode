@@ -21,7 +21,7 @@ Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
     assert(availability() == TypeAvailability::StaticAndUnavailable ||
            availability() == TypeAvailability::StaticAndAvailable);
     if (type_.type() == TypeType::Class) {
-        return type_.eclass()->classMeta();
+        return type_.klass()->classMeta();
     }
     return fg->generator()->valueTypeMetaFor(type_);
 }

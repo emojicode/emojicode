@@ -70,7 +70,7 @@ void CommonTypeFinder::updateCommonProtocols(const Type &type, const TypeContext
 
 Type CommonTypeFinder::getCommonType(const SourcePosition &p, Compiler *app) const {
     if (!firstTypeFound_) {
-        app->warn(p, "Type is ambigious without more context.");
+        app->warn(p, "Type is ambiguous without more context.");
     }
     else if (commonType_.type() == TypeType::Something || commonType_.type() == TypeType::Someobject) {
         if (commonProtocols_.size() > 1) {

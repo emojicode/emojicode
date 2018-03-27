@@ -69,7 +69,7 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
         args.emplace_back(llvm::Type::getInt8PtrTy(context_));
     }
     else if (hasThisArgument(function->functionType()) &&
-            !(function->functionType() == FunctionType::ObjectInitializer && function->owningType().eclass()->foreign())) {
+            !(function->functionType() == FunctionType::ObjectInitializer && function->owningType().klass()->foreign())) {
         args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
     }
     std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [this](auto &arg) {

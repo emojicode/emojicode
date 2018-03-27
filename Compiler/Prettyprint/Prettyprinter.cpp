@@ -119,7 +119,7 @@ void Prettyprinter::printTypeDef(const Type &type) {
     if (typeDef->exported()) {
         stream_ << "🌍 ";
     }
-    if (auto klass = type.eclass()) {
+    if (auto klass = type.klass()) {
         if (klass->foreign()) {
             stream_ << "📻 ";
         }
@@ -138,7 +138,7 @@ void Prettyprinter::printTypeDef(const Type &type) {
         decreaseIndent();
         return;
     }
-    if (auto enumeration = type.eenum()) {
+    if (auto enumeration = type.enumeration()) {
         printEnumValues(enumeration);
     }
 
@@ -177,7 +177,7 @@ void Prettyprinter::printTypeDefName(const Type &type) {
     offerSpace();
     printGenericParameters(type.typeDefinition());
 
-    if (auto klass = type.eclass()) {
+    if (auto klass = type.klass()) {
         if (klass->superclass() != nullptr && type.type() != TypeType::Extension) {
             print(klass->superType(), TypeContext(type));
             stream_ << " ";

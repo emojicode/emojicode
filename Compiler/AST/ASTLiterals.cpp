@@ -57,7 +57,7 @@ Type ASTSymbolLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation
 Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (isSuperconstructorRequired(analyser->function()->functionType()) &&
         !analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
-        analyser->typeContext().calleeType().eclass()->superclass() != nullptr) {
+            analyser->typeContext().calleeType().klass()->superclass() != nullptr) {
         analyser->compiler()->error(CompilerError(position(), "Attempt to use 🐕 before superinitializer call."));
     }
     if (isFullyInitializedCheckRequired(analyser->function()->functionType())) {
@@ -98,7 +98,7 @@ Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpecta
 }
 
 Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeType::Class && expectation.eclass() == analyser->compiler()->sList) {
+    if (expectation.type() == TypeType::Class && expectation.klass() == analyser->compiler()->sList) {
         auto type = Type(0, analyser->compiler()->sList, true).resolveOn(TypeContext(expectation.copyType()));
         for (auto &valueNode : values_) {
             analyser->expectType(type, &valueNode);

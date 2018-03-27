@@ -145,7 +145,7 @@ Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosi
     if (type.type() != TypeType::Class) {
         throw CompilerError(errorPosition, "s package class ", utf8(name), " is missing.");
     }
-    return type.eclass();
+    return type.klass();
 }
 
 Protocol* getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {

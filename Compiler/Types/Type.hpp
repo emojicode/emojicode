@@ -69,7 +69,6 @@ constexpr MakeTypeAsValueType MakeTypeAsValue {};
 /// Represents the type of variable, an argument or the return value of a Function such as a method, an initializer,
 /// or type method.
 class Type {
-    friend AbstractParser;
 public:
     Type(MakeOptionalType makeOptional, Type type)
             : typeContent_(TypeType::Optional), genericArguments_({ std::move(type) }) {}
@@ -83,8 +82,19 @@ public:
     explicit Type(Enum *enumeration);
     explicit Type(ValueType *valueType);
     explicit Type(Extension *extension);
-    /// Creates a TypeType::Callable type in corresponding to the parameters and return type of the provided function.
+    /// Creates a TypeType::Callable type corresponding to the parameters and return type of the provided function.
     explicit Type(Function *function);
+    /// Creates a MultiProtocol type.
+    /// @param protocols Vector of protocols.
+    explicit Type(std::vector<Type> protocols)
+            : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)) {
+        sortMultiProtocolType();
+    }
+    /// Creates a callable type.
+    explicit Type(Type returnType, const std::vector<Type> &params)
+            : typeContent_(TypeType::Callable), genericArguments_({ std::move(returnType) }) {
+        genericArguments_.insert(genericArguments_.end(), params.begin(), params.end());
+    }
 
     /// Creates a generic variable to the generic argument @c r.
     Type(size_t r, TypeDefinition *resolutionConstraint, bool forceBox)
@@ -96,27 +106,19 @@ public:
             : typeContent_(TypeType::LocalGenericVariable), genericArgumentIndex_(r),
               localResolutionConstraint_(function), forceBox_(forceBox) {}
 
-    explicit Type(std::vector<Type> protocols)
-        : typeContent_(TypeType::MultiProtocol), genericArguments_(std::move(protocols)) {
-            sortMultiProtocolType();
-        }
-
     static Type something() { return Type(TypeType::Something); }
     static Type noReturn() { return Type(TypeType::NoReturn); }
     static Type someobject() { return Type(TypeType::Someobject); }
-    static Type callableIncomplete() { return Type(TypeType::Callable); }
-    
+
     /// @returns The type of this type, i.e. Protocol, Class instance etc.
     TypeType type() const { return typeContent_; }
 
-    Class* eclass() const;
+    Class* klass() const;
     Protocol* protocol() const;
-    Enum* eenum() const;
+    Enum* enumeration() const;
     ValueType* valueType() const;
     TypeDefinition* typeDefinition() const;
 
-    /// Returns the size of Emojicode Words this type instance will take in a scope or another type instance.
-    int size() const { return 0; }
     /// Returns the storage type that will be used, i.e. the boxing applied in memory.
     StorageType storageType() const;
     /// Unboxes this type.
@@ -160,9 +162,12 @@ public:
     const std::vector<Type>& genericArguments() const { return genericArguments_; }
     /// Allows to change a specific generic argument. @c index must be smaller than @c genericArguments().size()
     void setGenericArgument(size_t index, Type value) { genericArguments_[index] = std::move(value); }
+    /// Replaces the generic arguments of this type.
+    void setGenericArguments(std::vector<Type> &&args) { genericArguments_ = args; }
+
     /// True if this type could have generic arguments.
     bool canHaveGenericArguments() const;
-
+    /// True if this type could conform to a protocol.
     bool canHaveProtocol() const { return type() == TypeType::ValueType || type() == TypeType::Class
         || type() == TypeType::Enum; }
 
@@ -181,7 +186,7 @@ public:
      * This method is intended to be used to determine type compatibility while e.g. compiling generic classes.
      */
     Type resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext) const;
-    
+
     /// Returns the name of the package to which this type belongs.
     std::string typePackage() const;
     /// Returns a string representation of this type.

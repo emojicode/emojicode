@@ -211,7 +211,7 @@ void PackageReporter::reportExportedType(const Type &type) {
     printFunctions(typeDef->typeMethodList(), type);
 
     if (type.type() == TypeType::Class) {
-        auto klass = type.eclass();
+        auto klass = type.klass();
         if (klass->superclass() != nullptr) {
             writer_.Key("superclass");
             reportType(klass->superType(), TypeContext(type));
@@ -222,7 +222,7 @@ void PackageReporter::reportExportedType(const Type &type) {
     }
 
     if (type.type() == TypeType::Enum) {
-        auto enumeration = type.eenum();
+        auto enumeration = type.enumeration();
         writer_.Key("enumerationValues");
         writer_.StartArray();
         for (auto it : enumeration->values()) {

@@ -68,7 +68,7 @@ void FunctionAnalyser::checkFunctionUse(Function *function, const SourcePosition
     }
     else if (function->accessLevel() == AccessLevel::Protected) {
         if (typeContext_.calleeType().type() != function->owningType().type()
-            || !this->typeContext_.calleeType().eclass()->inheritsFrom(function->owningType().eclass())) {
+            || !this->typeContext_.calleeType().klass()->inheritsFrom(function->owningType().klass())) {
             compiler()->error(CompilerError(p, utf8(function->name()), " is 🔐."));
         }
     }
@@ -167,7 +167,7 @@ void FunctionAnalyser::analyseInitializationRequirements() {
     }
 
     if (isSuperconstructorRequired(function_->functionType())) {
-        if (typeContext_.calleeType().eclass()->superclass() != nullptr &&
+        if (typeContext_.calleeType().klass()->superclass() != nullptr &&
             !pathAnalyser_.hasCertainly(PathAnalyserIncident::CalledSuperInitializer)) {
             if (pathAnalyser_.hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
                 compiler()->error(CompilerError(function_->position(), "Superinitializer is potentially not called."));

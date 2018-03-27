@@ -15,7 +15,7 @@
 namespace EmojicodeCompiler {
 
 Value* ASTMetaTypeInstantiation::generate(FunctionCodeGenerator *fg) const {
-    return type_.eclass()->classMeta();
+    return type_.klass()->classMeta();
 }
 
 Value* ASTSizeOf::generate(FunctionCodeGenerator *fg) const {

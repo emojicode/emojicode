@@ -22,7 +22,7 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
             return generateClassInit(fg);
         case InitType::Enum:
             return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fg->generator()->context()),
-                                          typeExpr_->expressionType().eenum()->getValueFor(name_).second);
+                                          typeExpr_->expressionType().enumeration()->getValueFor(name_).second);
         case InitType::ValueType:
             return generateInitValueType(fg);
         case InitType::MemoryAllocation:
@@ -32,7 +32,7 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
-    if (typeExpr_->expressionType().eclass()->foreign()) {
+    if (typeExpr_->expressionType().klass()->foreign()) {
         return InitializationCallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
                 .generate(nullptr, typeExpr_->expressionType(), args_, name_);
     }
@@ -59,7 +59,7 @@ Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArgumen
 
     auto obj = fg->alloc(llvmType);
 
-    fg->builder().CreateStore(type.eclass()->classMeta(), fg->getObjectMetaPtr(obj));
+    fg->builder().CreateStore(type.klass()->classMeta(), fg->getObjectMetaPtr(obj));
 
     auto callGen = InitializationCallCodeGenerator(fg, CallType::StaticDispatch);
     return callGen.generate(obj, type, args, name);

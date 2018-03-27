@@ -93,7 +93,8 @@ Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext
 
 Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeContext) {
     auto bentoToken = stream_.consumeToken(TokenType::Identifier);
-    Type type = Type(TypeType::MultiProtocol);
+
+    std::vector<Type> protocols;
     while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
         auto protocolType = parseType(typeContext);
         if (protocolType.type() != TypeType::Protocol) {
@@ -101,34 +102,30 @@ Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeCo
                                                       "🍱 may only consist of non-optional protocol types."));
             continue;
         }
-        type.genericArguments_.push_back(protocolType);
+        protocols.push_back(protocolType);
     }
-    if (type.protocols().empty()) {
+    stream_.consumeToken(TokenType::Identifier);
+
+    if (protocols.empty()) {
         throw CompilerError(bentoToken.position(), "An empty 🍱 is invalid.");
     }
-    type.sortMultiProtocolType();
-    stream_.consumeToken(TokenType::Identifier);
-    if (optional) {
-        return Type(MakeOptional, type);
-    }
-    return type;
+
+    auto type = Type(std::move(protocols));
+    return optional ? Type(MakeOptional, type) : type;
 }
 
 Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeContext) {
-    Type t = Type::callableIncomplete();
-    t.genericArguments_.push_back(Type::noReturn());
-
+    std::vector<Type> params;
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd) &&
             stream_.nextTokenIsEverythingBut(TokenType::RightProductionOperator)) {
-        t.genericArguments_.push_back(parseType(typeContext));
+        params.emplace_back(parseType(typeContext));
     }
-
-    if (stream_.consumeTokenIf(TokenType::RightProductionOperator)) {
-        t.genericArguments_[0] = parseType(typeContext);
-    }
-
+    auto returnType = stream_.consumeTokenIf(TokenType::RightProductionOperator) ? parseType(typeContext)
+                                                                                 : Type::noReturn();
     stream_.consumeToken(TokenType::BlockEnd);
-    return optional ? Type(MakeOptional, t) : t;
+
+    auto type = Type(returnType, params);
+    return optional ? Type(MakeOptional, type) : type;
 }
 
 Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &typeContext) {
@@ -168,7 +165,7 @@ Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContex
 void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, const SourcePosition &p) {
     auto typeDef = type->typeDefinition();
     auto offset = typeDef->superGenericArguments().size();
-    type->genericArguments_ = typeDef->superGenericArguments();
+    auto args = typeDef->superGenericArguments();
 
     size_t count = 0;
     for (; stream_.nextTokenIs(E_SPIRAL_SHELL) && count < typeDef->genericParameters().size(); count++) {
@@ -180,13 +177,15 @@ void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext 
                                 " is not compatible to constraint ",
                                 typeDef->constraintForIndex(offset + count).toString(typeContext), ".");
         }
-        type->genericArguments_.emplace_back(argument);
+        args.emplace_back(argument);
     }
 
     if (count != typeDef->genericParameters().size()) {
         throw CompilerError(p, "Type ", type->toString(TypeContext()), " requires ",
                             typeDef->genericParameters().size(), " generic arguments, but ", count, " were given.");
     }
+
+    type->setGenericArguments(std::move(args));
 }
 
 void AbstractParser::parseParameters(Function *function, const TypeContext &typeContext, bool initializer) {

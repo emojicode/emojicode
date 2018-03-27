@@ -116,7 +116,7 @@ Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expect
         throw CompilerError(position(), "Not within an object-context.");
     }
 
-    Class *superclass = analyser->typeContext().calleeType().eclass()->superclass();
+    Class *superclass = analyser->typeContext().calleeType().klass()->superclass();
 
     if (superclass == nullptr) {
         throw CompilerError(position(), "Class has no superclass.");
@@ -129,7 +129,7 @@ Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expect
 }
 
 void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
-    if (analyser->typeContext().calleeType().eclass()->superclass() == nullptr) {
+    if (analyser->typeContext().calleeType().klass()->superclass() == nullptr) {
         throw CompilerError(position(), "Class does not have a super class");
     }
     if (analyser->pathAnalyser().hasPotentially(PathAnalyserIncident::CalledSuperInitializer)) {
@@ -140,7 +140,7 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
             "initialized before calling the superinitializer.");
 
     init_ = true;
-    auto eclass = analyser->typeContext().calleeType().eclass();
+    auto eclass = analyser->typeContext().calleeType().klass();
     auto initializer = eclass->superclass()->getInitializer(name_, Type(eclass),
                                                             analyser->typeContext(), position());
     calleeType_ = Type(eclass->superclass());

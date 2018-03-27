@@ -22,7 +22,7 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
         initType_ = InitType::Enum;
         notStaticError(typeExpr_->availability(), position(), "Enums");
 
-        auto v = type.eenum()->getValueFor(name_);
+        auto v = type.enumeration()->getValueFor(name_);
         if (!v.first) {
             throw CompilerError(position(), type.toString(analyser->typeContext()), " does not have a member named ",
                                 utf8(name_), ".");

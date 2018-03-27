@@ -34,7 +34,7 @@ public:
         if (superType().type() == TypeType::NoReturn) {
             return nullptr;
         }
-        return superType().eclass();
+        return superType().klass();
     }
 
     using TypeDefinition::superType;

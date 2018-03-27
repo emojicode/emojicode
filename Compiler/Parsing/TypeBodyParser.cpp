@@ -77,7 +77,7 @@ void TypeBodyParser::parseEnumValue(const SourcePosition &p, const Documentation
 
 void EnumTypeBodyParser::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
     auto token = stream_.consumeToken(TokenType::Identifier);
-    owningType().eenum()->addValueFor(token.value(), token.position(), documentation.get());
+    owningType().enumeration()->addValueFor(token.value(), token.position(), documentation.get());
 }
 
 void EnumTypeBodyParser::parseInstanceVariable(const SourcePosition &p) {

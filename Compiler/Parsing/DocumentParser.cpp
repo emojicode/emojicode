@@ -209,12 +209,12 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
         if (type.type() != TypeType::Class) {
             throw CompilerError(parsedTypeName.position, "The superclass must be a class.");
         }
-        if (type.eclass()->final()) {
+        if (type.klass()->final()) {
             package_->compiler()->error(CompilerError(parsedTypeName.position, type.toString(TypeContext(classType)),
                                                  " can’t be used as superclass as it was marked with 🔏."));
         }
         eclass->setSuperType(type);
-        type.eclass()->setHasSubclass();
+        type.klass()->setHasSubclass();
     }
 
     auto classType = Type(eclass);  // New Type due to generic arguments now available.

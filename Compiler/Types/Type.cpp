@@ -56,7 +56,7 @@ Type::Type(Function *function) : typeContent_(TypeType::Callable) {
     }
 }
 
-Class* Type::eclass() const {
+Class* Type::klass() const {
     return dynamic_cast<Class *>(typeDefinition_);
 }
 
@@ -64,7 +64,7 @@ Protocol* Type::protocol() const {
     return dynamic_cast<Protocol *>(typeDefinition_);
 }
 
-Enum* Type::eenum() const {
+Enum* Type::enumeration() const {
     return dynamic_cast<Enum *>(typeDefinition_);
 }
 
@@ -79,7 +79,7 @@ TypeDefinition* Type::typeDefinition() const {
 }
 
 bool Type::isExact() const {
-    return forceExact_ || (type() == TypeType::Class && eclass()->final());
+    return forceExact_ || (type() == TypeType::Class && klass()->final());
 }
 
 bool Type::canHaveGenericArguments() const {
@@ -236,13 +236,13 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
             }
             return this->compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
         case TypeType::Class:
-            return type() == TypeType::Class && eclass()->inheritsFrom(to.eclass()) &&
+            return type() == TypeType::Class && klass()->inheritsFrom(to.klass()) &&
                 identicalGenericArguments(to, tc, ctargs);
         case TypeType::ValueType:
             return type() == TypeType::ValueType && typeDefinition() == to.typeDefinition() &&
                 identicalGenericArguments(to, tc, ctargs);
         case TypeType::Enum:
-            return type() == TypeType::Enum && eenum() == to.eenum();
+            return type() == TypeType::Enum && enumeration() == to.enumeration();
         case TypeType::Someobject:
             return type() == TypeType::Class || type() == TypeType::Someobject;
         case TypeType::Error:
@@ -276,7 +276,7 @@ bool Type::isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, st
 
 bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const {
     if (type() == TypeType::Class) {
-        for (Class *a = this->eclass(); a != nullptr; a = a->superclass()) {
+        for (Class *a = this->klass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
                 if (protocol.resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
                     return true;
@@ -334,7 +334,7 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::TypeAsValue:
                 return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, ctargs);
             case TypeType::Enum:
-                return eenum() == to.eenum();
+                return enumeration() == to.enumeration();
             case TypeType::GenericVariable:
             case TypeType::LocalGenericVariable:
                 return resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex() ==
