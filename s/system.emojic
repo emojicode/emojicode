@@ -1,4 +1,6 @@
 📗
+  Interaction with the operating system.
+
   💻 provides several class methods that can be used to interact with the
   operating system. It cannot be instantiated.
 📗

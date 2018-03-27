@@ -48,7 +48,7 @@
   📗 Creates a shallow copy of the given list. 📗
   🆕 🐮 list 🍨🐚Element 🍇
     🐔list❗️ ➡️ 🖍count
-    🦍list❗️ ➡️ 🖍size
+    🐴list❓ ➡️ 🖍size
     ☣️ 🍇
       🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
       🚜 data 0 🧠list❗️ 0 size✖️⚖️Element❗️
@@ -66,7 +66,7 @@
 
   📗
     Gets the item at *index* in `O(1)`. *index* must be greater than 0 and less
-    than [[🐔❗️]].
+    than [[🐔❗️]] or the program will panic.
   📗
   ❗️ 🐽 index 🔢 ➡️ Element 🍇
     🍊 index ▶️ count 👐 index ◀️ 0 🍇
@@ -79,11 +79,11 @@
 
   📗
     Sets *value* at *index*. *index* must be greater than 0 and less
-    than [[🐔❗️]].
+    than [[🐔❗️]] or the program will panic.
   📗
   ❗️ 🐷 index 🔢 value Element 🍇
     🍊 index ▶️ count 👐 index ◀️ 0 🍇
-      🍩🤯💻 🔤Index out of bounds in 🍨🐷🔤 ❗️
+      🍩🤯💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
     🍉
     ☣️ 🍇
       🐷 data🐚Element value index✖️⚖️Element❗️
@@ -92,7 +92,7 @@
 
  📗
     Removes the item at `index` and shifts all following items to the left in
-    `O(count - index)`.
+    `O(n)`.
 
     Returns 👍 unless the index is out of range.
  📗
@@ -111,7 +111,7 @@
     Inserts the given values before the element with the given index.
 
     All items beginning from `index` are shifted to the right and `item` is
-    then inserted at `index`. Complexity: `O(count - index)`.
+    then inserted at `index`. Complexity: `O(n)`.
  📗
  ❗️ 🐵 index 🔢 item Element ➡️ 👌 🍇
     ↕️🐕❗️
@@ -131,11 +131,7 @@
     ↩️ count
   🍉
 
-  ❗️ 🦍 ➡️ 🔢 🍇
-    ↩️ size
-  🍉
-
-  📗 Appends the content of `list` to this list. 📗
+  📗 Appends the content of `list` to this list. Complexity: `O(n)`. 📗
   ❗️ 🐥 list 🍨🐚Element 🍇
     count ➡️ oldCount
     count ⬅️➕ 🐔list❗️
@@ -172,7 +168,7 @@
     You should use this method if you plan to heavily use 🐷 with large indices
     in order to avoid automatic, useless allocations.
 
-    Complexity: `O(1)`.
+    Complexity: `O(n)`.
   📗
   ❗️ 🐴 capacity 🔢 🍇
     🍊 capacity ▶️ size 🍇
@@ -181,6 +177,11 @@
         🏗 data size✖️⚖️Element❗️
       🍉
     🍉
+  🍉
+
+  📗 Returns the lists current capacity. 📗
+  ❓ 🐴 ➡️ 🔢 🍇
+    ↩️ size
   🍉
 
 💭   📗

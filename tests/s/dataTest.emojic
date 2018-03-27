@@ -10,9 +10,8 @@
     ⛔🐕 data1 🙌 data2🔤Equality test🔤❗️
     ⛔🐕 ❎data1 🙌 data3❗️🔤Equality test🔤❗️
     ⛔🐕 🐔data1❗️ 🙌 17 🔤Length 17🔤❗️
-    ⛔🐕  🍺🐽data1 0❗️ 🙌 0x54 🔤Byte value index 0🔤❗️
-    ⛔🐕  🍺🐽data1 5❗️ 🙌 0x69 🔤Byte value index 5🔤❗️
-    ⛔🐕 🐽data1 60❗️🙌🤷‍♀️ 🔤Byte value invalid index🔤❗️
+    ⛔🐕  🐽data1 0❗️ 🙌 0x54 🔤Byte value index 0🔤❗️
+    ⛔🐕  🐽data1 5❗️ 🙌 0x69 🔤Byte value index 5🔤❗️
    
     ⛔🐕  🍺🔍data1 📇🔤is a🔤❗️ 0❗️ 🙌 5 🔤Index of at 5🔤❗️
     ⛔🐕  🍺🔍data1 📇🔤This🔤❗️ 0❗️ 🙌 0 🔤Index of at 0🔤❗️

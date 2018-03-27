@@ -1,5 +1,5 @@
 📗
-  The s package is Emojicode’s standard library.
+  Emojicode’s standard library.
 📗
 🔮 1 0
 
@@ -12,19 +12,19 @@
     ↩️ 🐕 🙌 other
   🍉
 
-  📗 Logical and. Returns true if both, the receiver and other, are true. 📗
+  📗 Logical and. Returns true if both, this instance and *other*, are true. 📗
   🤝 other 👌 ➡️ 👌 🍇
     ↩️ 🐕 🤝 other
   🍉
 
-  📗 Logical or. Returns true if the receiver or other or both are true. 📗
+  📗 Logical or. Returns true if this instance or *other* or both are true. 📗
   👐 other 👌 ➡️ 👌 🍇
     ↩️ 🐕 👐 other
   🍉
 
   📗
-    Inverts the boolean. Returns true if the boolean is false, and false if the
-    boolean is true.
+    Inverts the boolean. Returns true if this boolean is false, and false if   
+    this boolean is true.
   📗
   ❗️ ❎ ➡️ 👌 🍇
     ↩️ ❎🐕❗️
@@ -32,8 +32,10 @@
 🍉
 
 📗
+  Protocol defining equality.
+
   A type conforming to this protocol provides a method 😛 to determine whether
-  one of its instance is equal to an instance of type T, where T is normally the
+  one of its instance is equal to an instance of type T. T is normally the
   type itself.
 📗
 🌍 🐊 😛🐚T⚪️ 🍇
@@ -72,7 +74,10 @@
 🍉
 
 📗
-  The 🔡 class represents a string. [Read more in the language reference.](../../reference/the-s-package.html#-strings)
+  Strings.
+
+  [Read more in the language
+  reference.](../../reference/the-s-package.html#-strings)
 📗
 🌍 🐇 🔡 🍇
   🖍🆕 codePoints 🧠
@@ -80,7 +85,9 @@
 🍉
 
 📗
-  The 🍨 class represents an ordered mutable collection. [Read more in the
+  List, an ordered mutable collection. 
+
+  [Read more in the
   language reference.](../../reference/the-s-package.html#-lists)
 📗
 🌍 🐇 🍨🐚Element ⚪️ 🍇
@@ -89,39 +96,44 @@
   🖍🆕 size 🔢
 🍉
 
-📗 📇 is an abstract interface to binary data. 📗
+📗 Binary data. 📗
 🌍 🐇 📇 🍇
   🖍🆕 data 🧠
   🖍🆕 count 🔢
 🍉
 
 📗
-  The 🍯 class represents a dictionary. [Read more in the
+  Dictionary, holding key value pairs.
+  
+  [Read more in the
   language reference.](../../reference/the-s-package.html#-dictionaries)
 📗
 🌍 🐇 🍯🐚Element ⚪️ 🍇🍉
 
 📗
-  🍡 can enumerate a collection and generates elements from the object it
-  enumerates.
+  Protocol defining an iterators interface.
+
+  Types conforming to 🍡 can iterate a collection.
 
   To get the items from an iterator call the 🔽 method on it, until 🔽❓ returns
   👎 which indicates that there are no more items.
 📗
 🌍 🐊 🍡🐚Element ⚪️ 🍇
   📗
-    Returns the next object. Expect undefined behavior if you call this method
-    when ❓ previously returned 👎.
+    Returns the next object. Call this method only if 🔽❓ previously 
+    returned 👍.
   📗
   ❗️ 🔽 ➡️ Element
   📗
-    Whether the enumerator has more elements to provide.
+    Whether the iterator has more elements to provide.
   📗
   ❓ 🔽 ➡️ 👌
 🍉
 
 📗
-  A type whose instances shall be enumerable using the 🔂 loop must
+  Protocol defining iterability.
+
+  Types whose instances shall be iterable using the 🔂 loop must
   implement this protocol.
 📗
 🌍 🐊 🔂🐚Element⚪️ 🍇
@@ -133,21 +145,27 @@
 🍉
 
 📗
-  A class whose elements can be accessed by 🐽. The number of elements must
-  be finite and returned by 🐔.
+  Protocol defining random-access.
+
+  Types representing a collection whose elements can be accessed by 🐽 randomly
+  should conform to this protocol. The number of elements must be finite and
+  returned by 🐔.
 📗
 🌍 🐊 🐽️🐚Element⚪️ 🍇
   📗
-    Gets the item at `index`. If the index is invalid Nothingness is returned.
+    Gets the item at *index*. If the index is invalid the behavior is up to
+    the conforming type.
   📗
-  ❗️ 🐽 index 🔢 ➡️ 🍬Element
-  📗 Returns the number of items in the list. 📗
+  ❗️ 🐽 index 🔢 ➡️ Element
+  📗 Returns the number of items in the collection. 📗
   ❗️ 🐔 ➡️ 🔢
 🍉
 
 📗
-  Iterator over a 🐽. This class is an iterator that can iterate over
-  every type that conforms to the 🐽 protocol.
+  Iterator over a 🐽. 
+
+  This class is an iterator that can iterate over every type that conforms to
+  the 🐽 protocol.
 📗
 🌍 🐇 🌳🐚Element⚪️ 🍇
   🐊 🍡🐚Element
@@ -161,7 +179,7 @@
   🍉
 
   ❗️ 🔽 ➡️ Element 🍇
-    🍺 🐽 iteratee index❗️ ➡️ sy
+    🐽 iteratee index❗️ ➡️ sy
     index ⬅️➕ 1
     ↩️ sy
   🍉
@@ -175,9 +193,9 @@
   🍉
 🍉
 
+📜 🔤system.emojic🔤
 📜 🔤range.emojic🔤
 📜 🔤list_iterator.emojic🔤
-📜 🔤system.emojic🔤
 
 🐋 🔢 🍇
   📗

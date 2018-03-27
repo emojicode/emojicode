@@ -1,12 +1,12 @@
 📗
-  Represents an execution thread of the program.
+  Execution thread of the program.
 📗
 🌍 📻 🐇 💈 🍇
   📗
-    Creates an new thread and calls the given callable `callable` on the newly
+    Creates an new thread and calls the provided callback on the newly
     created thread.
   📗
-  🆕 callable 🍇🍉 📻 🔤sThreadNew🔤
+  🆕 callback 🍇🍉 📻 🔤sThreadNew🔤
 
   📗
     Blocks the calling thread until this thread has finished work.
@@ -21,7 +21,8 @@
 🍉
 
 📗
-  🔐 represents a mutex. A mutex is a simple semaphore that can be used to
+  Mutex, simple semaphore for thread synchronisation. 
+  A mutex is a simple semaphore that can be used to
   coordinate access to shared data from multiple concurrent threads.
 📗
 🌍 📻 🐇 🔐 🍇

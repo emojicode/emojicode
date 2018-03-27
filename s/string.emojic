@@ -1,17 +1,16 @@
 🐋 🔡 🍇
-  🐊 🔂🐚🔣
-  🐊 🐽🐚🔣
+  🐊 🔂🐚🍬🔣
+  🐊 🐽🐚🍬🔣
   🐊 😛🐚🔡
 
-  📗 Creates a string by copying the memory from the given memory. 📗
-  🆕 🧠 memory 🧠 🍼 count 🔢 🍇
+  📗 Creates a string by copying the memory from the *memory*. 📗
+  ☣️ 🆕 🧠 memory 🧠 🍼 count 🔢 🍇
     count ✖️⚖️🔣 ➡️ size
-    ☣️ 🍇
-      🆕🧠🆕 size❗️ ➡️ 🖍codePoints
-      🚜 codePoints 0 memory 0 size❗️
-    🍉
+    🆕🧠🆕 size❗️ ➡️ 🖍codePoints
+    🚜 codePoints 0 memory 0 size❗️
   🍉
 
+  📗 Returns the memory area representing the value of this string. 📗
   ❗️🧠 ➡️ 🧠 🍇
     ↩️ codePoints
   🍉
@@ -34,13 +33,13 @@
   📗 Puts this 🔡 to the standard output. 📗
   ❗️ 😀 📻 🔤sStringPrint🔤
 
-  📗 Returns 👍 if this 🔡 is equal to b. 📗
+  📗 Returns 👍 if this string is equal to *b*. 📗
   🙌 b 🔡 ➡️ 👌 🍇
     ↩️ ↔️🐕 b❗️ 🙌 0
   🍉
 
   📗
-    Compares this string to `b` and returns -1, 0, or 1 depending on whether
+    Compares this string to *b* and returns -1, 0, or 1 depending on whether
     this string is less than, equal to, or greater than `b`.
 
     >!N Note that this method compares the strings byte per byte
@@ -82,10 +81,10 @@
   🍉
 
   📗
-    Finds the first occurrences of a string in this string. Search is
+    Finds the first occurrences of *search* in this string. Search is
     performed from left to right.
 
-    Returns the index of the first occurrence or no value if `search` does not
+    Returns the index of the first occurrence or no value if *search* does not
     occur.
   📗
   ❗️ 🔍 search 🔡 ➡️ 🍬🔢 📻 🔤sStringFind🔤
@@ -141,7 +140,7 @@
     This string is split up into substring at each place *seperator* is found.
     *seperator* itself is removed from the string.
 
-    Prefer this method over `🔫` if the separator is just a single character.
+    Prefer this method over 🔫❗️ if the separator is just a single character.
   📗
   ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 🍇
     🆕🍨🐚🔡🐸❗️ ➡️ list
@@ -258,8 +257,8 @@
   ❗️ 📪 ➡️ 🔡 📻 🔤sStringToLowercase🔤
 
   📗 Returns an iterator to iterate over the symbols of this string. 📗
-  ❗️ 🍡 ➡️ 🌳🐚🔣 🍇
-    ↩️ 🆕🌳🐚🔣🆕 🐕❗️
+  ❗️ 🍡 ➡️ 🌳🐚🍬🔣 🍇
+    ↩️ 🆕🌳🐚🍬🔣🆕 🐕❗️
   🍉
 🍉
 
@@ -274,19 +273,22 @@
   🍉
 🍉
 
+📗 Mutable sequence of characters (“string builder”). 📗
 🌍 🐇 🔠 🍇
   🖍🆕 data 🧠
   🖍🆕 count 🔢
   🖍🆕 size 🔢
 
+  📗 Creates an empty 🔠 with an initial capacity of 16. 📗
   🆕 🍇
     0 ➡️ 🖍count
-    10 ➡️ 🖍size
+    16 ➡️ 🖍size
     ☣️ 🍇
-      🆕🧠🆕 10✖️⚖️🔣❗️ ➡️ 🖍data
+      🆕🧠🆕 16✖️⚖️🔣❗️ ➡️ 🖍data
     🍉
   🍉
 
+  📗 Creates an empty 🔠 with the provided *capacity*. 📗
   🆕 🐧 capacity 🔢 🍇
     0 ➡️ 🖍count
     capacity ➡️ 🖍size
@@ -295,6 +297,7 @@
     🍉
   🍉
 
+  📗 Adds the symbols of *string* to this 🔠. 📗
   ❗️ 🐻 string 🔡 🍇
     🐔string❗️ ➡️ stringSize
     ☣️ 🍇
@@ -308,14 +311,17 @@
     🍉
   🍉
 
+  📗 Returns the memory area representing the data of this 🔠. 📗
   ❗️🧠 ➡️ 🧠 🍇
     ↩️ data
   🍉
 
+  📗 Returns the number of symbols. 📗
   ❗️ 🐔 ➡️ 🔢 🍇
     ↩️ count
   🍉
 
+  📗 Returns the value of this this 🔠 as a 🔡. 📗
   ❗️ 🔡 ➡️ 🔡 🍇
     ☣️ 🍇
       ↩️ 🆕🔡🧠 data count❗️

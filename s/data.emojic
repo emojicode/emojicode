@@ -13,7 +13,7 @@
     ↩️ data
   🍉
 
-  📗 Returns 👍 if this is equal to b. 📗
+  📗 Returns 👍 if this is equal to *b*. 📗
   🙌 b 📇 ➡️ 👌 🍇
     🍊 ❎🐔 b❗️🙌 count❗️ 🍇
       ↩️ 👎
@@ -32,13 +32,12 @@
   🍉
 
   📗
-    Returns the value of the byte at *index*.
-
-    No value is returned if the index is out of range.
+    Returns the value of the byte at *index*. *index* must be greater than 0
+    and less than [[🐔❗️]] or the program will panic.
   📗
-  ❗️ 🐽 index 🔢 ➡️ 🍬💧 🍇
-    🍊 index ▶️🙌 count 🍇
-      ↩️🤷‍♀️
+  ❗️ 🐽 index 🔢 ➡️ 💧 🍇
+    🍊 index ▶️🙌 count 👐 index ◀️ 0 🍇
+      🍩🤯💻 🔤Index out of bounds in 📇🐽❗️🔤 ❗️
     🍉
     ☣️ 🍇
       ↩️ 🐽 data🐚💧 index❗️
