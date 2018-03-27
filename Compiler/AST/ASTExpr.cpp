@@ -145,7 +145,12 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
                                                             analyser->typeContext(), position());
     calleeType_ = Type(eclass->superclass());
     analyser->analyseFunctionCall(&args_, calleeType_, initializer);
+    analyseSuperInitErrorProneness(analyser, initializer);
 
+    analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
+}
+
+void ASTSuper::analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, const Initializer *initializer) {
     if (initializer->errorProne()) {
         auto thisInitializer = dynamic_cast<Initializer*>(analyser->function());
         if (!thisInitializer->errorProne()) {
@@ -157,8 +162,6 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
         }
         manageErrorProneness_ = true;
     }
-
-    analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
 }
 
 Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {

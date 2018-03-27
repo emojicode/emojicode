@@ -92,7 +92,7 @@ Initializer* EnumTypeBodyParser::parseInitializer(const std::u32string &name, Ty
 
 void ClassTypeBodyParser::parse() {
     TypeBodyParser::parse();
-    for (auto init : requiredInitializers_) {
+    for (auto &init : requiredInitializers_) {
         package_->compiler()->error(CompilerError(owningType().typeDefinition()->position(), "Required initializer ",
                                              utf8(init), " was not implemented."));
     }

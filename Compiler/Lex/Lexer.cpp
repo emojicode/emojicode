@@ -275,39 +275,43 @@ Lexer::TokenState Lexer::continueIntegerToken(Token *token, Lexer::TokenConstruc
 
 Lexer::TokenState Lexer::continueStringToken(Token *token, Lexer::TokenConstructionState *constState) const {
     if (constState->escapeSequence_) {
-        switch (codePoint()) {
-            case E_INPUT_SYMBOL_LATIN_LETTERS:
-            case E_CROSS_MARK:
-                token->value_.push_back(codePoint());
-                break;
-            case 'n':
-                token->value_.push_back('\n');
-                break;
-            case 't':
-                token->value_.push_back('\t');
-                break;
-            case 'r':
-                token->value_.push_back('\r');
-                break;
-            default: {
-                throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌",
-                                    utf8(std::u32string(1, codePoint())), ".");
-            }
-        }
-
-        constState->escapeSequence_ = false;
+        handleEscapeSequence(token, constState);
         return TokenState::Continues;
     }
-    else if (codePoint() == E_CROSS_MARK) {
+    if (codePoint() == E_CROSS_MARK) {
         constState->escapeSequence_ = true;
         return TokenState::Continues;
     }
-    else if (codePoint() == E_INPUT_SYMBOL_LATIN_LETTERS) {
+    if (codePoint() == E_INPUT_SYMBOL_LATIN_LETTERS) {
         return TokenState::Ended;
     }
 
     token->value_.push_back(codePoint());
     return TokenState::Continues;
+}
+
+void Lexer::handleEscapeSequence(Token *token, Lexer::TokenConstructionState *constState) const {
+    switch (codePoint()) {
+        case E_INPUT_SYMBOL_LATIN_LETTERS:
+        case E_CROSS_MARK:
+            token->value_.push_back(codePoint());
+            break;
+        case 'n':
+            token->value_.push_back('\n');
+            break;
+        case 't':
+            token->value_.push_back('\t');
+            break;
+        case 'r':
+            token->value_.push_back('\r');
+            break;
+        default: {
+            throw CompilerError(sourcePosition_, "Unrecognized escape sequence ❌",
+                                utf8(std::u32string(1, codePoint())), ".");
+        }
+    }
+
+    constState->escapeSequence_ = false;
 }
 
 Lexer::TokenState Lexer::continueIdentifierToken(Token *token, Lexer::TokenConstructionState *constState) const {

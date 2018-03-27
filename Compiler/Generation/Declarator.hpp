@@ -35,9 +35,9 @@ private:
     llvm::Module &module_;
     LLVMTypeHelper &typeHelper_;
 
-    llvm::Function *runTimeNew_;
-    llvm::Function *panic_;
-    llvm::GlobalVariable *classValueTypeMeta_;
+    llvm::Function *runTimeNew_ = nullptr;
+    llvm::Function *panic_ = nullptr;
+    llvm::GlobalVariable *classValueTypeMeta_ = nullptr;
 
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
     void declareRunTime();

@@ -32,11 +32,11 @@ class CodeGenerator;
 /// otherwise.
 class LLVMTypeHelper {
 public:
-    explicit LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGeneator);
+    explicit LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGenerator);
 
     /// @returns An LLVM type corresponding to the provided Type.
     /// @throws std::logic_error if no type can be established. This will normally not happen.
-    llvm::Type* llvmTypeFor(Type type);
+    llvm::Type* llvmTypeFor(const Type &type);
     /// @returns The LLVM type representing boxes.
     llvm::Type* box() const;
     /// @returns An LLVM function type (a signature) matching the provided Function.
@@ -74,7 +74,7 @@ private:
     std::map<Type, llvm::Type*> types_;
     ReificationContext *reifiContext_ = nullptr;
 
-    llvm::Type *typeForOrdinaryType(Type type);
+    llvm::Type *typeForOrdinaryType(const Type &type);
 
     llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
     llvm::Type *getComposedType(const Type &type);

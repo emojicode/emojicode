@@ -125,6 +125,7 @@ private:
     TokenState continueSingleLineToken(Token *token, TokenConstructionState *constState) const;
 
     TokenState continueMultilineComment(TokenConstructionState *constState) const;
+    void handleEscapeSequence(Token *token, TokenConstructionState *constState) const;
 };
 
 }  // namespace EmojicodeCompiler

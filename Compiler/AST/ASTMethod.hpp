@@ -51,6 +51,7 @@ private:
 
     void checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
                        const Function *method) const;
+    void determineCallType(const FunctionAnalyser *analyser, const Type &type);
 };
 
 class ASTMethod final : public ASTMethodable {

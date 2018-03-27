@@ -1,4 +1,4 @@
-Checks: '*,-modernize-raw-string-literal,-clang-analyzer-*,-readability-named-parameter,-google-readability-todo,-llvm-header-guard,-misc-unused-parameters,-google-runtime-int,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-google-default-arguments,-google-runtime-references,-modernize-return-braced-init-list,-cppcoreguidelines-special-member-functions,-hicpp-special-member-functions'
+Checks: '*,-readability-named-parameter,-google-readability-todo,-llvm-header-guard,-misc-unused-parameters,-google-runtime-int,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-google-default-arguments,-google-runtime-references,-modernize-return-braced-init-list,-cppcoreguidelines-special-member-functions,-hicpp-special-member-functions'
 #Checks: '-*,modernize-pass-by-value,modernize-use-using,readability-braces-around-statement,google-explicit-constructor,llvm-include-order,llvm-namespace-comment' #performance-unnecessary-value-param
 HeaderFilterRegex: '.*'
 CheckOptions:

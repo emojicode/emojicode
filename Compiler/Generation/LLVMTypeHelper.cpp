@@ -103,7 +103,7 @@ bool LLVMTypeHelper::isRemote(const Type &type) {
     return codeGenerator_->querySize(llvmTypeFor(type)) > 32;
 }
 
-llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
+llvm::Type* LLVMTypeHelper::llvmTypeFor(const Type &type) {
     if (reifiContext_ != nullptr && type.type() == TypeType::LocalGenericVariable &&
             reifiContext_->providesActualTypeFor(type.genericVariableIndex())) {
         return llvmTypeFor(reifiContext_->actualType(type.genericVariableIndex()));
@@ -114,7 +114,7 @@ llvm::Type* LLVMTypeHelper::llvmTypeFor(Type type) {
     return type.isReference() ? llvmType->getPointerTo() : llvmType;
 }
 
-llvm::Type* LLVMTypeHelper::typeForOrdinaryType(Type type) {
+llvm::Type* LLVMTypeHelper::typeForOrdinaryType(const Type &type) {
     switch (type.storageType()) {
         case StorageType::Box:
             return box_;

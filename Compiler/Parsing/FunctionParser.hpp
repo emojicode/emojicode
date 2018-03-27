@@ -72,7 +72,7 @@ private:
 
     int peakOperatorPrecedence();
 
-    ASTBlock parseBlockToEnd(SourcePosition pos);
+    ASTBlock parseBlockToEnd(const SourcePosition &pos);
 
     /// Tries to recover from a syntax error by consuming all tokens up to a synchronization token. Must only be used
     /// at statement level.
@@ -85,6 +85,7 @@ private:
     std::shared_ptr<ASTStatement> parseVariableDeclaration(const Token &token);
 
     std::shared_ptr<ASTStatement> parseReturn(const Token &token);
+    std::shared_ptr<ASTStatement> parseAssignment(const std::shared_ptr<ASTExpr> &expr) const;
 };
 
 }  // namespace EmojicodeCompiler

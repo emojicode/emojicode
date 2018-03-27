@@ -122,6 +122,7 @@ private:
     bool manageErrorProneness_ = false;
 
     Value *generateSuperInit(FunctionCodeGenerator *fg) const;
+    void analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, const Initializer *initializer);
 };
 
 class ASTTypeMethod final : public ASTExpr {
