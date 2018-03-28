@@ -99,6 +99,10 @@ protected:
     std::unique_ptr<FunctionParser> factorFunctionParser(Package *pkg, TokenStream &stream, TypeContext context,
                                                          Function *function);
 
+    /// Validates whether the provided type can occur in a type as value declaration beginning with token.
+    /// Checks that type is a class, if the type of the token is TokenType::Class etc.
+    void validateTypeAsValueType(const Token &token, const Type &type, const TypeContext &typeContext);
+
 private:
     /// Parses a $multi-protocol$
     Type parseMultiProtocol(bool optional, const TypeContext &typeContext);
@@ -113,7 +117,7 @@ private:
     /// Parses a $type-main$
     Type parseTypeMain(bool optional, const TypeContext &typeContext);
 
-    Type parseMetatype(const TypeContext &typeContext);
+    Type parseTypeAsValueType(const TypeContext &typeContext);
 };
 
 }  // namespace EmojicodeCompiler

@@ -70,7 +70,7 @@
   📗
   ❗️ 🐽 index 🔢 ➡️ Element 🍇
     🍊 index ▶️ count 👐 index ◀️ 0 🍇
-      🍩🤯💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
+      🤯🐇💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
     🍉
     ☣️ 🍇
       ↩️ 🐽 data🐚Element index✖️⚖️Element❗️
@@ -83,7 +83,7 @@
   📗
   ❗️ 🐷 index 🔢 value Element 🍇
     🍊 index ▶️ count 👐 index ◀️ 0 🍇
-      🍩🤯💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
+      🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
     🍉
     ☣️ 🍇
       🐷 data🐚Element value index✖️⚖️Element❗️

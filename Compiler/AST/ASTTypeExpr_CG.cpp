@@ -18,8 +18,6 @@ Value* ASTTypeFromExpr::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
-    assert(availability() == TypeAvailability::StaticAndUnavailable ||
-           availability() == TypeAvailability::StaticAndAvailable);
     if (type_.type() == TypeType::Class) {
         return type_.klass()->classMeta();
     }

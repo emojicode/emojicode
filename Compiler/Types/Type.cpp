@@ -87,6 +87,7 @@ bool Type::canHaveGenericArguments() const {
 }
 
 void Type::sortMultiProtocolType() {
+    assert(type() == TypeType::MultiProtocol);
     std::sort(genericArguments_.begin(), genericArguments_.end(), [](const Type &a, const Type &b) {
         return a.protocol() < b.protocol();
     });
@@ -226,7 +227,7 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
 
     switch (to.type()) {
         case TypeType::TypeAsValue:
-            return type() == TypeType::TypeAsValue && typeOfTypeValue().compatibleTo(to.typeOfTypeValue(), tc, ctargs);
+            return isCompatibleToTypeAsValue(to, tc, ctargs);
         case TypeType::GenericVariable:
             return compatibleTo(to.resolveOnSuperArgumentsAndConstraints(tc), tc, ctargs);
         case TypeType::LocalGenericVariable:
@@ -259,6 +260,19 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
             break;
     }
     return false;
+}
+
+bool Type::isCompatibleToTypeAsValue(const Type &to, const TypeContext &tc,
+                                     std::vector<CommonTypeFinder> *ctargs) const {
+    if (type() != TypeType::TypeAsValue) {
+        return false;
+    }
+
+    if (typeOfTypeValue().type() == TypeType::Class && to.typeOfTypeValue().type() == TypeType::Class) {
+        return typeOfTypeValue().compatibleTo(to.typeOfTypeValue(), tc, ctargs);
+    }
+
+    return identicalTo(to, tc, ctargs);
 }
 
 bool Type::isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const {
@@ -439,8 +453,23 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             typeName(type.genericArguments_[0], typeContext, string, package);
             return;
         case TypeType::TypeAsValue:
-            string.append("🔳");
-            typeName(type.genericArguments_[0], typeContext, string, package);
+            switch (type.typeOfTypeValue().type()) {
+                case TypeType::Class:
+                    string.append("🐇");
+                    break;
+                case TypeType::ValueType:
+                    string.append("🕊");
+                    break;
+                case TypeType::Enum:
+                    string.append("🦃");
+                    break;
+                case TypeType::Protocol:
+                    string.append("🐊");
+                    break;
+                default:
+                    break;
+            }
+            typeName(type.typeOfTypeValue(), typeContext, string, package);
             return;
         case TypeType::Class:
         case TypeType::Protocol:

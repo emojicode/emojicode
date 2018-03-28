@@ -10,6 +10,8 @@
 #define ASTExpr_hpp
 
 #include "ASTNode.hpp"
+#include "Types/Type.hpp"
+#include "Scoping/Variable.hpp"
 #include <llvm/IR/Value.h>
 #include <utility>
 
@@ -37,9 +39,9 @@ private:
     Type expressionType_ = Type::noReturn();
 };
 
-class ASTMetaTypeInstantiation final : public ASTExpr {
+class ASTTypeAsValue final : public ASTExpr {
 public:
-    ASTMetaTypeInstantiation(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
+    ASTTypeAsValue(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
@@ -123,21 +125,6 @@ private:
 
     Value *generateSuperInit(FunctionCodeGenerator *fg) const;
     void analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, const Initializer *initializer);
-};
-
-class ASTTypeMethod final : public ASTExpr {
-public:
-    ASTTypeMethod(std::u32string name, std::shared_ptr<ASTTypeExpr> callee,
-                  ASTArguments args, const SourcePosition &p)
-    : ASTExpr(p), name_(std::move(name)), callee_(std::move(callee)), args_(std::move(args)) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
-private:
-    bool valueType_ = false;
-    std::u32string name_;
-    const std::shared_ptr<ASTTypeExpr> callee_;
-    ASTArguments args_;
 };
 
 class ASTConditionalAssignment final : public ASTExpr {

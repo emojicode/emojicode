@@ -52,6 +52,8 @@ private:
     std::shared_ptr<ASTExpr> parseCondition();
     std::shared_ptr<ASTExpr> parseGroup();
 
+    std::shared_ptr<ASTExpr> parseTypeAsValue(const Token &token);
+
     ASTArguments parseArguments(const SourcePosition &position);
     std::shared_ptr<ASTTypeExpr> parseTypeExpr(const SourcePosition &p);
 

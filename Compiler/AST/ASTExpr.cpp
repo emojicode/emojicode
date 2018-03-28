@@ -16,8 +16,7 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTMetaTypeInstantiation::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    analyser->validateMetability(type_, position());
+Type ASTTypeAsValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return Type(MakeTypeAsValue, type_);
 }
 
@@ -51,15 +50,14 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
             assert(originalType.storageType() == StorageType::Box);
         }
     }
-    else if (type.type() == TypeType::Protocol && isStatic(typeExpr_->availability())) {
+    else if (type.type() == TypeType::Protocol) {
         if (!type.genericArguments().empty()) {
             analyser->compiler()->error(CompilerError(position(), "Cannot cast to generic protocols."));
         }
         castType_ = CastType::ToProtocol;
         assert(originalType.storageType() == StorageType::Box);
     }
-    else if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum)
-             && isStatic(typeExpr_->availability())) {
+    else if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
         castType_ = CastType::ToValueType;
         assert(originalType.storageType() == StorageType::Box);
         type.forceBox();
@@ -85,26 +83,6 @@ Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExp
     varId_ = variable.id();
 
     return analyser->boolean();
-}
-
-Type ASTTypeMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = analyser->analyseTypeExpr(callee_, expectation);
-
-    Function *method;
-    if (type.type() == TypeType::Class) {
-        method = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), args_.isImperative(),
-                                                      position());
-    }
-    else if ((type.type() == TypeType::ValueType || type.type() == TypeType::Enum)
-             && isStatic(callee_->availability())) {
-        method = type.typeDefinition()->getTypeMethod(name_, type, analyser->typeContext(), args_.isImperative(),
-                                                      position());
-        valueType_ = true;
-    }
-    else {
-        throw CompilerError(position(), "You can’t call type methods on ", type.toString(analyser->typeContext()), ".");
-    }
-    return analyser->analyseFunctionCall(&args_, type, method);
 }
 
 Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {

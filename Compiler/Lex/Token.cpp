@@ -32,10 +32,8 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::Symbol: return "Symbol";
         case TokenType::Operator: return "Operator";
         case TokenType::EndArgumentList: return "EndOfArguments";
-        case TokenType::BeginArgumentList: return "BeginArgumentList";
-        case TokenType::EndInterrogativeArgumentList: return "EndInterrogativeArgumentList";
-        case TokenType::BeginInterrogativeArgumentList: return "BeginInterrogativeArgumentList";
         case TokenType::GroupEnd: return "GroupEnd";
+        case TokenType::EndInterrogativeArgumentList: return "EndInterrogativeArgumentList";
         case TokenType::GroupBegin: return "GroupBegin";
         case TokenType::Return: return "Return";
         case TokenType::RepeatWhile: return "RepeatWhile";
@@ -55,6 +53,10 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::RightProductionOperator: return "RightProductionOperator";
         case TokenType::LeftProductionOperator: return "LeftProductionOperator";
         case TokenType::Mutable: return "Mutable";
+        case TokenType::Class: return "Class";
+        case TokenType::Protocol: return "Protocol";
+        case TokenType::ValueType: return "ValueType";
+        case TokenType ::Enumeration: return "Enumeration";
     }
 }
 

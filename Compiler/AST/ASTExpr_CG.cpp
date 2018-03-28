@@ -14,8 +14,11 @@
 
 namespace EmojicodeCompiler {
 
-Value* ASTMetaTypeInstantiation::generate(FunctionCodeGenerator *fg) const {
-    return type_.klass()->classMeta();
+Value* ASTTypeAsValue::generate(FunctionCodeGenerator *fg) const {
+    if (type_.type() == TypeType::Class) {
+        return type_.klass()->classMeta();
+    }
+    return llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(Type(MakeTypeAsValue, type_)));
 }
 
 Value* ASTSizeOf::generate(FunctionCodeGenerator *fg) const {
@@ -89,12 +92,6 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
     auto flag = fg->builder().CreateExtractValue(optional, 0);
     auto constant = llvm::ConstantInt::get(llvm::Type::getInt1Ty(fg->generator()->context()), 1);
     return fg->builder().CreateICmpEQ(flag, constant);
-}
-
-Value* ASTTypeMethod::generate(FunctionCodeGenerator *fg) const {
-    auto ctype = valueType_ ? CallType::StaticContextfreeDispatch : CallType::DynamicDispatchMeta;
-    return TypeMethodCallCodeGenerator(fg, ctype).generate(callee_->generate(fg), callee_->expressionType(), args_,
-                                                           name_);
 }
 
 Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {

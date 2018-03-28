@@ -262,6 +262,7 @@ private:
     bool isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
     bool isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
     bool isCompatibleToCallable(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;
+    bool isCompatibleToTypeAsValue(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs) const;
 };
 
 }  // namespace EmojicodeCompiler

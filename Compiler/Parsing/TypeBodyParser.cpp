@@ -219,21 +219,20 @@ void TypeBodyParser::parse() {
                 parseInitializer(name, attributes, documentation, accessLevel, token.position());
                 break;
             }
+            case TokenType::Protocol:
+                attributes.check(token.position(), package_->compiler());
+                documentation.disallow();
+                parseProtocolConformance(token.position());
+                break;
             case TokenType::Identifier:
                 switch (token.value().front()) {
                     case E_RADIO_BUTTON:
                         attributes.check(token.position(), package_->compiler());
                         parseEnumValue(token.position(), documentation);
-                        break;
-                    case E_CROCODILE:
-                        attributes.check(token.position(), package_->compiler());
-                        documentation.disallow();
-                        parseProtocolConformance(token.position());
-                        break;
+                        continue;
                     default:
-                        break;
+                        break;  // and fallthrough to the error
                 }
-                break;
             default:
                 throw CompilerError(token.position(), "Unexpected token ", token.stringName());
         }

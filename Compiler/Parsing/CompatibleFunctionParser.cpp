@@ -52,13 +52,8 @@ std::shared_ptr<ASTExpr> CompatibleFunctionParser::parseClosure(const Token &tok
 }
 
 void CompatibleFunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePosition &position) {
-    if (!stream_.nextTokenIs(TokenType::BeginArgumentList)) {
-        for (auto i = package_->compatibilityInfoProvider()->nextArgumentsCount(position); i > 0; i--) {
-            arguments->addArguments(parseExpr(0));
-        }
-    }
-    else {
-        FunctionParser::parseMainArguments(arguments, position);
+    for (auto i = package_->compatibilityInfoProvider()->nextArgumentsCount(position); i > 0; i--) {
+        arguments->addArguments(parseExpr(0));
     }
 }
 

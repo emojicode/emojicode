@@ -34,6 +34,9 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 auto ptr = fg->builder().CreateBitCast(fg->builder().CreateGEP(v, offset), pointerType);
                 return fg->builder().CreateLoad(ptr);
             }
+            case BuiltInType::TypeMethod:
+                return TypeMethodCallCodeGenerator(fg, callType_).generate(callee_->generate(fg),
+                                                                           calleeType_, args_, name_);
             default:
                 break;
         }

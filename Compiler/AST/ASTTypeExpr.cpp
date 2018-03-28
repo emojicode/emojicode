@@ -17,9 +17,7 @@ Type ASTInferType::analyse(FunctionAnalyser *analyser, const TypeExpectation &ex
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
     type_ = expectation.copyType().unoptionalized();
-    if (type_.type() == TypeType::Class) {
-        availability_ = TypeAvailability::StaticAndAvailable;
-    }
+    type_.setExact(true);
     return type_;
 }
 
@@ -32,6 +30,7 @@ Type ASTTypeFromExpr::analyse(FunctionAnalyser *analyser, const TypeExpectation 
 }
 
 Type ASTStaticType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+    type_.setExact(true);
     return type_;
 }
 

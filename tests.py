@@ -29,6 +29,7 @@ compilation_tests = [
     "returnInBlock",
     "returnInIf",
     "identityOperator",
+    "typesAsValues",
     # "extension",
     # "piglatin",
     # "class",

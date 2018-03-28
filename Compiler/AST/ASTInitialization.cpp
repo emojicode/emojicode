@@ -20,7 +20,6 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
 
     if (type.type() == TypeType::Enum) {
         initType_ = InitType::Enum;
-        notStaticError(typeExpr_->availability(), position(), "Enums");
 
         auto v = type.enumeration()->getValueFor(name_);
         if (!v.first) {
@@ -34,7 +33,6 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
         initType_ = type.valueType() == analyser->compiler()->sMemory ? InitType::MemoryAllocation : InitType::ValueType;
 
         type.setMutable(expectation.isMutable());
-        notStaticError(typeExpr_->availability(), position(), "Value Types");
     }
 
     auto initializer = type.typeDefinition()->getInitializer(name_, type, analyser->typeContext(), position());

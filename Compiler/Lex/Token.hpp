@@ -31,9 +31,7 @@ enum class TokenType {
     Variable,
     Symbol,
     Operator,
-    BeginArgumentList,
     EndArgumentList,
-    BeginInterrogativeArgumentList,
     EndInterrogativeArgumentList,
     GroupBegin,
     GroupEnd,
@@ -56,6 +54,11 @@ enum class TokenType {
     NoValue,
     Super,
     Mutable,
+
+    Class,
+    Enumeration,
+    ValueType,
+    Protocol,
 };
 
 class Token {

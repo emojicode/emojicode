@@ -38,6 +38,7 @@ protected:
         IntegerRemainder, IntegerToDouble, IntegerNot,
         BooleanAnd, BooleanOr, BooleanNegate,
         Equal, Store, Load, IsNoValueLeft, IsNoValueRight,
+        TypeMethod,
     };
 
     BuiltInType builtIn_ = BuiltInType::None;
@@ -52,6 +53,8 @@ private:
     void checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
                        const Function *method) const;
     void determineCallType(const FunctionAnalyser *analyser, const Type &type);
+    Type analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name, Type type,
+                               std::shared_ptr<ASTExpr> &callee);
 };
 
 class ASTMethod final : public ASTMethodable {

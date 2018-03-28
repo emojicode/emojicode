@@ -83,6 +83,10 @@ std::string mangleFunction(Function *function, const std::map<size_t, Type> &gen
         if (isFullyInitializedCheckRequired(function->functionType())) {
             stream << ".init";
         }
+        if (function->functionType() == FunctionType::ClassMethod ||
+                function->functionType() == FunctionType::Function) {
+            stream << ".type";
+        }
         stream << ".";
     }
     else {

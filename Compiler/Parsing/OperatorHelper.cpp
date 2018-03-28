@@ -99,7 +99,7 @@ std::u32string operatorName(OperatorType type) {
         case OperatorType::IdentityOperator:
             return std::u32string(1, E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE);
         case OperatorType::CallOperator:
-            return std::u32string(1, E_WHITE_EXCLAMATION_MARK);
+            return std::u32string(1, E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK);
         case OperatorType::Invalid:
             throw std::invalid_argument("Invalid operator");
     }

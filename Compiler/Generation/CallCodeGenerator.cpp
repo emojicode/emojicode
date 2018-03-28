@@ -43,7 +43,7 @@ llvm::Value *CallCodeGenerator::createCall(const std::vector<Value *> &args, con
         case CallType::StaticDispatch:
             return fg_->builder().CreateCall(function->reificationFor(genericArguments).function, args);
         case CallType::DynamicDispatch:
-        case CallType::DynamicDispatchMeta:
+        case CallType::DynamicDispatchOnType:
             assert(type.type() == TypeType::Class);
             return createDynamicDispatch(function, args, genericArguments);
         case CallType::DynamicProtocolDispatch:
@@ -76,7 +76,7 @@ llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
 
 llvm::Value *CallCodeGenerator::createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args,
                                                       const std::vector<Type> &genericArgs) {
-    auto meta = callType_ == CallType::DynamicDispatchMeta ? args.front() : fg()->getMetaFromObject(args.front());
+    auto meta = callType_ == CallType::DynamicDispatchOnType ? args.front() : fg()->getMetaFromObject(args.front());
 
     std::vector<Value *> idx2{fg()->int32(0), fg()->int32(1)};  // classMeta.table
     auto table = fg()->builder().CreateLoad(fg()->builder().CreateGEP(meta, idx2), "table");

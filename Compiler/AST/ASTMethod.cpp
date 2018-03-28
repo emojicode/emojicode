@@ -35,6 +35,9 @@ Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32
     if (type.type() == TypeType::MultiProtocol) {
         return analyseMultiProtocolCall(analyser, name, type);
     }
+    if (type.type() == TypeType::TypeAsValue) {
+        return analyseTypeMethodCall(analyser, name, type, callee);
+    }
 
     determineCallType(analyser, type);
 
@@ -63,8 +66,7 @@ void ASTMethodable::determineCallType(const FunctionAnalyser *analyser, const Ty
         callType_ = CallType::DynamicDispatch;
     }
     else {
-        auto typeString = type.toString(analyser->typeContext());
-        throw CompilerError(position(), typeString, " does not provide methods.");
+        throw CompilerError(position(), type.toString(analyser->typeContext()), " does not provide methods.");
     }
 }
 
@@ -81,6 +83,26 @@ void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_
     }
 }
 
+Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name, Type type,
+                                          std::shared_ptr<ASTExpr> &callee) {
+    calleeType_ = type.typeOfTypeValue();
+
+    if (calleeType_.type() == TypeType::Class) {
+        callType_ = CallType::DynamicDispatchOnType;
+    }
+    else if (calleeType_.type() == TypeType::ValueType || calleeType_.type() == TypeType::Enum) {
+        callType_ = CallType::StaticContextfreeDispatch;
+    }
+    else {
+        throw CompilerError(position(), type.toString(analyser->typeContext()), " does not provide methods.");
+    }
+
+    builtIn_ = BuiltInType::TypeMethod;
+    auto method = calleeType_.typeDefinition()->getTypeMethod(name, type, analyser->typeContext(), args_.isImperative(),
+                                                              position());
+    return analyser->analyseFunctionCall(&args_, calleeType_, method);
+}
+
 Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name, const Type &type) {
     for (auto &protocol : type.protocols()) {
         Function *method;
@@ -91,7 +113,7 @@ Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const s
         }
     }
     throw CompilerError(position(), "No type in ", type.toString(analyser->typeContext()),
-                        " provides a method called ", utf8(name), ".");
+                        " provides a method ", utf8(name), ".");
 }
 
 bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name) {

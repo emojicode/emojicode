@@ -12,7 +12,7 @@
 namespace EmojicodeCompiler {
 
 enum class CallType {
-    None, DynamicDispatch, StaticDispatch, StaticContextfreeDispatch, DynamicProtocolDispatch, DynamicDispatchMeta
+    None, DynamicDispatch, StaticDispatch, StaticContextfreeDispatch, DynamicProtocolDispatch, DynamicDispatchOnType
 };
 
 }  // namespace EmojicodeCompiler

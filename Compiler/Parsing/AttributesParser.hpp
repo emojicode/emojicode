@@ -61,6 +61,8 @@ private:
                 return stream->consumeTokenIf(TokenType::Mutable);
             case Attribute ::Unsafe:
                 return stream->consumeTokenIf(TokenType::Unsafe);
+            case Attribute::StaticOnType:
+                return stream->consumeTokenIf(TokenType::Class);
             default:
                 return stream->consumeTokenIf(static_cast<char32_t>(attr));
         }

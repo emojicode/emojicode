@@ -145,12 +145,6 @@ void ASTSuper::toCode(Prettyprinter &pretty) const {
     args_.toCode(pretty);
 }
 
-void ASTTypeMethod::toCode(Prettyprinter &pretty) const {
-    pretty << "🍩" << utf8(name_);
-    callee_->toCode(pretty);
-    args_.toCode(pretty);
-}
-
 void ASTInitialization::toCode(Prettyprinter &pretty) const {
     pretty << "🆕";
     typeExpr_->toCode(pretty);
@@ -175,8 +169,8 @@ void ASTTypeFromExpr::toCode(Prettyprinter &pretty) const {
     expr_->toCode(pretty);
 }
 
-void ASTMetaTypeInstantiation::toCode(Prettyprinter &pretty) const {
-    pretty << "⬛️" << type_;
+void ASTTypeAsValue::toCode(Prettyprinter &pretty) const {
+    pretty << Type(MakeTypeAsValue, type_);
 }
 
 void ASTSizeOf::toCode(Prettyprinter &pretty) const {

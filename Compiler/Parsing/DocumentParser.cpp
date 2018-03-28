@@ -26,57 +26,66 @@ void DocumentParser::parse() {
     while (stream_.hasMoreTokens()) {
         auto documentation = Documentation().parse(&stream_);
         auto attributes = PackageAttributeParser().parse(&stream_);
-        auto theToken = stream_.consumeToken(TokenType::Identifier);
-        switch (theToken.value()[0]) {
-            case E_PACKAGE:
-                attributes.check(theToken.position(), package_->compiler());
-                documentation.disallow();
-                parsePackageImport(theToken.position());
-                continue;
-            case E_CROCODILE:
-                attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
-                parseProtocol(documentation.get(), theToken, attributes.has(Attribute::Export));
-                continue;
-            case E_TURKEY:
-                attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
-                parseEnum(documentation.get(), theToken, attributes.has(Attribute::Export));
-                continue;
-            case E_TRIANGLE_POINTED_DOWN: {
-                attributes.check(theToken.position(), package_->compiler());
-                TypeIdentifier alias = parseTypeIdentifier();
-                Type type = package_->getRawType(parseTypeIdentifier(), false);
-                package_->offerType(type, alias.name, alias.ns, false, theToken.position());
-                continue;
-            }
-            case E_CRYSTAL_BALL:
-                attributes.check(theToken.position(), package_->compiler());
-                parseVersion(documentation, theToken.position());
-                continue;
-            case E_WALE:
-                attributes.check(theToken.position(), package_->compiler());
-                documentation.disallow();
-                parseExtension(documentation, theToken.position());
-                continue;
-            case E_RABBIT:
+        auto theToken = stream_.consumeToken();
+
+        switch (theToken.type()) {
+            case TokenType::Class:
                 parseClass(documentation.get(), theToken, attributes.has(Attribute::Export),
                            attributes.has(Attribute::Final), attributes.has(Attribute::Foreign));
                 continue;
-            case E_DOVE_OF_PEACE:
+            case TokenType::Protocol:
+                attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
+                parseProtocol(documentation.get(), theToken, attributes.has(Attribute::Export));
+                continue;
+            case TokenType::Enumeration:
+                attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
+                parseEnum(documentation.get(), theToken, attributes.has(Attribute::Export));
+                continue;
+            case TokenType::ValueType:
                 attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
                 parseValueType(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
-            case E_SCROLL:
-                attributes.check(theToken.position(), package_->compiler());
-                documentation.disallow();
-                parseInclude(theToken.position());
-                continue;
-            case E_CHEQUERED_FLAG:
-                attributes.check(theToken.position(), package_->compiler());
-                parseStartFlag(documentation, theToken.position());
-                break;
+            case TokenType::Identifier:
+                switch (theToken.value()[0]) {
+                    case E_PACKAGE:
+                        attributes.check(theToken.position(), package_->compiler());
+                        documentation.disallow();
+                        parsePackageImport(theToken.position());
+                        continue;
+
+                    case E_TRIANGLE_POINTED_DOWN: {
+                        attributes.check(theToken.position(), package_->compiler());
+                        TypeIdentifier alias = parseTypeIdentifier();
+                        Type type = package_->getRawType(parseTypeIdentifier(), false);
+                        package_->offerType(type, alias.name, alias.ns, false, theToken.position());
+                        continue;
+                    }
+                    case E_CRYSTAL_BALL:
+                        attributes.check(theToken.position(), package_->compiler());
+                        parseVersion(documentation, theToken.position());
+                        continue;
+                    case E_WALE:
+                        attributes.check(theToken.position(), package_->compiler());
+                        documentation.disallow();
+                        parseExtension(documentation, theToken.position());
+                        continue;
+                    case E_SCROLL:
+                        attributes.check(theToken.position(), package_->compiler());
+                        documentation.disallow();
+                        parseInclude(theToken.position());
+                        continue;
+                    case E_CHEQUERED_FLAG:
+                        attributes.check(theToken.position(), package_->compiler());
+                        parseStartFlag(documentation, theToken.position());
+                        continue;
+                    default:
+                        break;  // and fallthrough to the error
+                }
             default:
                 throw CompilerError(theToken.position(), "Unexpected identifier ", utf8(theToken.value()));
         }
+
+
     }
 }
 

@@ -53,12 +53,6 @@ Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node,
     return type;
 }
 
-void FunctionAnalyser::validateMetability(const Type &originalType, const SourcePosition &p) const {
-    if (originalType.type() != TypeType::Class) {
-        throw CompilerError(p, "Type ", originalType.toString(typeContext_), " is not available as a value.");
-    }
-}
-
 void FunctionAnalyser::checkFunctionUse(Function *function, const SourcePosition &p) const {
     if (function->accessLevel() == AccessLevel::Private) {
         if (typeContext_.calleeType().type() != function->owningType().type()

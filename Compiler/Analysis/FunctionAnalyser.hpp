@@ -64,8 +64,6 @@ public:
     /// @note Only use this if there is a good reason why expect() cannot be used.
     Type comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
 
-    void validateMetability(const Type &originalType, const SourcePosition &p) const;
-
     /// Analyses @c node and sets the expression type of the node to the type that will be returned.
     /// @returns The type denoted by the $type-expression$ resolved by Type::resolveOnSuperArgumentsAndConstraints.
     Type analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp);

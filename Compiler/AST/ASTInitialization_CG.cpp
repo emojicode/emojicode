@@ -28,7 +28,6 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
         case InitType::MemoryAllocation:
             return generateMemoryAllocation(fg);
     }
-    throw std::logic_error("Unexpected init type");
 }
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
@@ -36,7 +35,7 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
         return InitializationCallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
                 .generate(nullptr, typeExpr_->expressionType(), args_, name_);
     }
-    if (typeExpr_->availability() == TypeAvailability::StaticAndAvailable) {
+    if (typeExpr_->expressionType().isExact()) {
         return initObject(fg, args_, name_, typeExpr_->expressionType());
     }
     // TODO: class table lookup

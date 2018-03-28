@@ -139,7 +139,7 @@ llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
         if (type.typeOfTypeValue().type() == TypeType::Class) {
             return classMetaType_->getPointerTo();
         }
-        return llvm::Type::getVoidTy(context_);
+        return llvm::StructType::get(context_);
     }
     if (type.type() == TypeType::Enum) {
         return llvm::Type::getInt64Ty(context_);

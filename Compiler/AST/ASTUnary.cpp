@@ -36,8 +36,8 @@ Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
 }
 
 Type ASTMetaTypeFromInstance::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+    // TODO: Write also static code
     Type originalType = analyser->expect(TypeExpectation(false, false, false), &value_);
-    analyser->validateMetability(originalType, position());
     return Type(MakeTypeAsValue, originalType);
 }
 

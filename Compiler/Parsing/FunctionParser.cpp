@@ -258,9 +258,20 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             auto arguments = parseArguments(token.position());
             return std::make_shared<ASTSuper>(initializerToken.value(), arguments, token.position());
         }
+        case TokenType::Class:
+        case TokenType::Enumeration:
+        case TokenType::ValueType:
+        case TokenType::Protocol:
+            return parseTypeAsValue(token);
         default:
             throw CompilerError(token.position(), "Unexpected token ", token.stringName(), ".");
     }
+}
+
+std::shared_ptr<ASTExpr> FunctionParser::parseTypeAsValue(const Token &token) {
+    Type t = parseType(typeContext_);
+    validateTypeAsValueType(token, t, typeContext_);
+    return std::make_shared<ASTTypeAsValue>(t, token.position());
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token) {
@@ -271,12 +282,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return parseUnaryPrefix<ASTMetaTypeFromInstance>(token);
         case E_BEER_MUG:
             return parseUnaryPrefix<ASTUnwrap>(token);
-        case E_METRO:
-            return parseUnaryPrefix<ASTUnwrap>(token);
-        case E_WHITE_SQUARE_BUTTON: {
-            Type t = parseType(typeContext_);
-            return std::make_shared<ASTMetaTypeInstantiation>(t, token.position());
-        }
         case E_SCALES: {
             Type t = parseType(typeContext_);
             return std::make_shared<ASTSizeOf>(t, token.position());
@@ -291,11 +296,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return parseListingLiteral<ASTListLiteral>(E_AUBERGINE, token);
         case E_HONEY_POT:
             return parseListingLiteral<ASTDictionaryLiteral>(E_AUBERGINE, token);
-        case E_DOUGHNUT: {
-            auto name = stream_.consumeToken(TokenType::Identifier).value();
-            auto callee = parseTypeExpr(token.position());
-            return std::make_shared<ASTTypeMethod>(name, callee, parseArguments(token.position()), token.position());
-        }
         default: {
             auto value = parseExpr(0);
             return std::make_shared<ASTMethod>(token.value(), value, parseArguments(token.position()),
@@ -343,13 +343,13 @@ std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition 
         case TypeType::GenericVariable:
             throw CompilerError(p, "Generic Arguments are not yet available for reflection.");
         case TypeType::Class:
-            return std::make_shared<ASTStaticType>(ot, TypeAvailability::StaticAndAvailable, p);
+            return std::make_shared<ASTStaticType>(ot, p);
         case TypeType::LocalGenericVariable:
             throw CompilerError(p, "Function Generic Arguments are not available for reflection.");
         default:
             break;
     }
-    return std::make_shared<ASTStaticType>(ot, TypeAvailability::StaticAndUnavailable, p);
+    return std::make_shared<ASTStaticType>(ot, p);
 }
 
 }  // namespace EmojicodeCompiler

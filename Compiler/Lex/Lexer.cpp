@@ -18,9 +18,7 @@ Lexer::Lexer(SourceManager::File *source, std::string sourcePositionFile) :
     skipWhitespace();
 
     loadOperatorSingleTokens();
-    singleTokens_.emplace(E_WHITE_EXCLAMATION_MARK, TokenType::BeginArgumentList);
     singleTokens_.emplace(E_RED_EXCLAMATION_MARK, TokenType::EndArgumentList);
-    singleTokens_.emplace(E_WHITE_QUESTION_MARK, TokenType::BeginInterrogativeArgumentList);
     singleTokens_.emplace(E_RED_QUESTION_MARK, TokenType::EndInterrogativeArgumentList);
     singleTokens_.emplace(E_RIGHT_FACING_FIST, TokenType::GroupBegin);
     singleTokens_.emplace(E_LEFT_FACING_FIST, TokenType::GroupEnd);
@@ -44,6 +42,11 @@ Lexer::Lexer(SourceManager::File *source, std::string sourcePositionFile) :
     singleTokens_.emplace(E_RIGHTWARDS_ARROW, TokenType::RightProductionOperator);
     singleTokens_.emplace(E_LEFTWARDS_ARROW, TokenType::LeftProductionOperator);
     singleTokens_.emplace(E_CRAYON, TokenType::Mutable);
+
+    singleTokens_.emplace(E_CROCODILE, TokenType::Protocol);
+    singleTokens_.emplace(E_DOVE_OF_PEACE, TokenType::ValueType);
+    singleTokens_.emplace(E_RABBIT, TokenType::Class);
+    singleTokens_.emplace(E_TURKEY, TokenType::Enumeration);
 }
 
 void Lexer::loadOperatorSingleTokens() {

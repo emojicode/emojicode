@@ -55,8 +55,9 @@ Type AbstractParser::parseType(const TypeContext &typeContext) {
     if (stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE)) {
         throw CompilerError(stream_.consumeToken().position(), "⚫️ not allowed here.");
     }
-    if (stream_.nextTokenIs(E_WHITE_SQUARE_BUTTON)) {
-        return parseMetatype(typeContext);
+    if (stream_.nextTokenIs(TokenType::Class) || stream_.nextTokenIs(TokenType::Enumeration) ||
+            stream_.nextTokenIs(TokenType::ValueType) || stream_.nextTokenIs(TokenType::Protocol)) {
+        return parseTypeAsValueType(typeContext);
     }
 
     bool optional = stream_.consumeTokenIf(E_CANDY);
@@ -73,9 +74,26 @@ Type AbstractParser::parseType(const TypeContext &typeContext) {
     return parseTypeMain(optional, typeContext);
 }
 
-Type AbstractParser::parseMetatype(const TypeContext &typeContext) {
+Type AbstractParser::parseTypeAsValueType(const TypeContext &typeContext) {
     auto token = stream_.consumeToken();
-    return Type(MakeTypeAsValue, parseType(typeContext));
+    auto type = parseType(typeContext);
+    validateTypeAsValueType(token, type, typeContext);
+    return Type(MakeTypeAsValue, type);
+}
+
+void AbstractParser::validateTypeAsValueType(const Token &token, const Type &type, const TypeContext &typeContext) {
+    if (token.type() == TokenType::Class && type.type() != TypeType::Class) {
+        throw CompilerError(token.position(), "Expected a class type but got ", type.toString(typeContext), ".");
+    }
+    if (token.type() == TokenType::Protocol && type.type() != TypeType::Protocol) {
+        throw CompilerError(token.position(), "Expected a protocol type but got ", type.toString(typeContext), ".");
+    }
+    if (token.type() == TokenType::ValueType && type.type() != TypeType::ValueType) {
+        throw CompilerError(token.position(), "Expected a value type but got ", type.toString(typeContext), ".");
+    }
+    if (token.type() == TokenType::Enumeration && type.type() != TypeType::Enum) {
+        throw CompilerError(token.position(), "Expected a class type but got ", type.toString(typeContext), ".");
+    }
 }
 
 Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext) {

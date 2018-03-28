@@ -10,10 +10,6 @@
 #define ASTNode_hpp
 
 #include "Lex/SourcePosition.hpp"
-#include "Scoping/Variable.hpp"
-#include "Types/Type.hpp"
-#include "Types/TypeAvailability.hpp"
-#include <memory>
 #include <utility>
 
 namespace EmojicodeCompiler {
