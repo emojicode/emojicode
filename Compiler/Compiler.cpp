@@ -83,9 +83,7 @@ void Compiler::linkToExecutable() {
 
     for (auto &package : packages_) {
         auto path = findBinaryPathPackage(package.second->path(), package.second->name());
-        if (llvm::sys::fs::exists(path)) {
-            cmd << " " << path;
-        }
+        cmd << " " << path;
     }
 
     auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition(0, 0, mainFile_)), "runtime");
