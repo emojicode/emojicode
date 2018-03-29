@@ -21,12 +21,16 @@
 namespace EmojicodeCompiler {
 
 Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string interfaceFile, std::string outPath,
-                   std::string linker, std::vector<std::string> pkgSearchPaths,
-                   std::unique_ptr<CompilerDelegate> delegate, bool linkToExec)
-: linkToExec_(linkToExec), mainFile_(std::move(mainFile)), interfaceFile_(std::move(interfaceFile)), outPath_(std::move(outPath)),
-  mainPackageName_(std::move(mainPackage)), packageSearchPaths_(std::move(pkgSearchPaths)), linker_(std::move(linker)),
-  delegate_(std::move(delegate)), mainPackage_(std::make_unique<RecordingPackage>(mainPackageName_, mainFile_, this)) {
-    if (linkToExec_) {
+                   std::string objectPath, std::string linker, std::string ar, std::vector<std::string> pkgSearchPaths,
+                   std::unique_ptr<CompilerDelegate> delegate, bool pack, bool standalone)
+        : pack_(pack), standalone_(standalone), mainFile_(std::move(mainFile)),
+          interfaceFile_(std::move(interfaceFile)),
+          outPath_(std::move(outPath)),
+          mainPackageName_(std::move(mainPackage)), packageSearchPaths_(std::move(pkgSearchPaths)),
+          linker_(std::move(linker)), ar_(std::move(ar)), objectPath_(std::move(objectPath)),
+          delegate_(std::move(delegate)),
+          mainPackage_(std::make_unique<RecordingPackage>(mainPackageName_, mainFile_, this)) {
+    if (standalone_) {
         mainPackage_->setPackageVersion(PackageVersion(1, 0));
     }
 }
@@ -51,9 +55,15 @@ bool Compiler::compile(bool parseOnly, bool optimize, bool printIr) {
         if (!hasError_) {
             generateCode(optimize, printIr);
 
-            if (linkToExec_) {
-                linkToExecutable();
+            if (pack_) {
+                if (standalone_) {
+                    linkToExecutable();
+                }
+                else {
+                    archive();
+                }
             }
+
         }
     }
     catch (CompilerError &ce) {
@@ -65,21 +75,17 @@ bool Compiler::compile(bool parseOnly, bool optimize, bool printIr) {
 }
 
 void Compiler::analyse() {
-    SemanticAnalyser(mainPackage_.get(), false).analyse(linkToExec_);
+    SemanticAnalyser(mainPackage_.get(), false).analyse(standalone_);
 }
 
 void Compiler::generateCode(bool optimize, bool printIr) {
-    CodeGenerator(mainPackage_.get(), optimize).generate(objectFileName(), printIr);
-}
-
-std::string Compiler::objectFileName() const {
-    return linkToExec_ ? outPath_ + ".o" : outPath_;
+    CodeGenerator(mainPackage_.get(), optimize).generate(objectPath_, printIr);
 }
 
 void Compiler::linkToExecutable() {
     std::stringstream cmd;
 
-    cmd << linker_ << " " << objectFileName();
+    cmd << linker_ << " " << objectPath_;
 
     for (auto &package : packages_) {
         auto path = findBinaryPathPackage(package.second->path(), package.second->name());
@@ -90,6 +96,15 @@ void Compiler::linkToExecutable() {
     cmd << " " << runtimeLib << " -lm -lpthread -o " << outPath_;
 
     system(cmd.str().c_str());
+}
+
+void Compiler::archive() {
+    std::string cmd = ar_;
+    cmd.append(" cr ");
+    cmd.append(outPath_);
+    cmd.append(" ");
+    cmd.append(objectPath_);
+    system(cmd.c_str());
 }
 
 std::string Compiler::searchPackage(const std::string &name, const SourcePosition &p) {
@@ -106,12 +121,12 @@ std::string Compiler::findBinaryPathPackage(const std::string &packagePath, cons
     return packagePath + "/lib" + packageName + ".a";
 }
 
-Package* Compiler::findPackage(const std::string &name) const {
+Package *Compiler::findPackage(const std::string &name) const {
     auto it = packages_.find(name);
     return it != packages_.end() ? it->second.get() : nullptr;
 }
 
-Package* Compiler::loadPackage(const std::string &name, const SourcePosition &p, Package *requestor) {
+Package *Compiler::loadPackage(const std::string &name, const SourcePosition &p, Package *requestor) {
     if (auto package = findPackage(name)) {
         if (!package->finishedLoading()) {
             throw CompilerError(p, "Circular dependency detected: ", requestor->name(), " and ", name,
@@ -137,7 +152,7 @@ void Compiler::warn(const SourcePosition &p, const std::string &warning) {
     delegate_->warn(this, warning, p);
 }
 
-Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+Class *getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::noReturn();
     _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::Class) {
@@ -146,7 +161,7 @@ Class* getStandardClass(const std::u32string &name, Package *_, const SourcePosi
     return type.klass();
 }
 
-Protocol* getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+Protocol *getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::noReturn();
     _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::Protocol) {
@@ -155,7 +170,7 @@ Protocol* getStandardProtocol(const std::u32string &name, Package *_, const Sour
     return type.protocol();
 }
 
-ValueType* getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+ValueType *getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::noReturn();
     _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
     if (type.type() != TypeType::ValueType) {
@@ -175,11 +190,13 @@ void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
 
     sString = getStandardClass(std::u32string(1, 0x1F521), s, errorPosition);
     sList = getStandardClass(std::u32string(1, 0x1F368), s, errorPosition);
-    sData = getStandardClass(std::u32string(1, 0x1F4C7), s, errorPosition);
+    getStandardClass(std::u32string(1, 0x1F4C7), s, errorPosition);
     sDictionary = getStandardClass(std::u32string(1, 0x1F36F), s, errorPosition);
 
     sEnumerator = getStandardProtocol(std::u32string(1, 0x1F361), s, errorPosition);
-    sEnumerable = getStandardProtocol(std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s, errorPosition);
+    sEnumerable = getStandardProtocol(
+            std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s,
+            errorPosition);
 }
 
 void Compiler::loadMigrationFile(const std::string &file) {

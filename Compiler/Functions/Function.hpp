@@ -48,6 +48,7 @@ public:
     llvm::FunctionType* functionType();
     void setFunctionType(llvm::FunctionType *type) { functionType_ = type; }
 private:
+    FunctionReification *testator = nullptr;
     llvm::FunctionType* functionType_ = nullptr;
     unsigned int vti_ = 0;
 };

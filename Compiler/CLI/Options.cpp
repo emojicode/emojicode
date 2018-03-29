@@ -57,10 +57,9 @@ Options::Options(int argc, char *argv[]) {
 
         if (package) {
             mainPackageName_ = package.Get();
-            linkToExec_ = false;
         }
         if (object) {
-            linkToExec_ = false;
+            pack_ = false;
         }
         if (out) {
             outPath_ = out.Get();
@@ -114,19 +113,28 @@ void Options::examineMainFile() {
 }
 
 void Options::configureOutPath() {
-    if (outPath_.empty()) {
-        outPath_ = mainFile_;
-        if (linkToExec()) {
+    std::string parentPath = llvm::sys::path::parent_path(mainFile_);
+
+    if (pack() && outPath_.empty()) {
+        if (standalone()) {
+            outPath_ = mainFile_;
             outPath_.resize(mainFile_.size() - 7);
         }
         else {
-            outPath_.replace(mainFile_.size() - 6, 6, "o");
+            if (!parentPath.empty()) {
+                outPath_ = parentPath;
+                outPath_.append("/");
+            }
+            outPath_.append("lib" + mainPackageName_ + ".a");
         }
     }
 
-    if (!linkToExec_ && interfaceFile_.empty()) {
-        std::string parentPath = llvm::sys::path::parent_path(mainFile_);
-        interfaceFile_ = parentPath + "/" + "interface.emojii";
+    if (!standalone() && interfaceFile_.empty()) {
+        if (!parentPath.empty()) {
+            interfaceFile_ = parentPath;
+            interfaceFile_.append("/");
+        }
+        interfaceFile_.append("interface.emojii");
     }
 }
 
@@ -142,6 +150,24 @@ std::string Options::linker() const {
         return var;
     }
     return "c++";
+}
+
+std::string Options::ar() const {
+    if (auto var = getenv("AR")) {
+        return var;
+    }
+    return "ar";
+}
+
+std::string Options::objectPath() const {
+    if (!pack() && !outPath_.empty()) {
+        return outPath_;
+    }
+    std::string parentPath = llvm::sys::path::parent_path(mainFile_);
+    if (!parentPath.empty()) {
+        parentPath.append("/");
+    }
+    return parentPath + std::string(llvm::sys::path::stem(mainFile_)) + ".o";
 }
 
 }  // namespace CLI

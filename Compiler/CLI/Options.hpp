@@ -38,6 +38,9 @@ public:
     bool shouldReport() const { return report_; }
     bool optimize() const { return optimize_; }
     bool printIr() const { return printIr_; }
+    bool pack() const { return pack_; }
+    bool standalone() const { return mainPackageName_ == "_"; }
+
     const std::string& outPath() const { return outPath_; }
     const std::string& mainFile() const { return mainFile_; }
     const std::string& interfaceFile() const { return interfaceFile_; }
@@ -45,12 +48,13 @@ public:
     const std::string& migrationFile() const { return migrationFile_; }
     const std::string& mainPackageName() const { return mainPackageName_; }
     std::string linker() const;
-
-    bool linkToExec() const { return linkToExec_; }
+    std::string ar() const;
 
     /// Whether the main purpose of the invocation of the compiler is to prettyprint a file.
     /// This method returns true if prettyprint was explicitely requested or if a file is being migrated.
     bool prettyprint() const { return format_; }
+
+    std::string objectPath() const;
 private:
     std::string outPath_;
     std::string mainFile_;
@@ -60,7 +64,7 @@ private:
     std::string mainPackageName_ = "_";
     bool format_ = false;
     bool jsonOutput_ = false;
-    bool linkToExec_ = true;
+    bool pack_ = true;
     bool report_ = false;
     bool forceColor_ = false;
     bool optimize_ = false;

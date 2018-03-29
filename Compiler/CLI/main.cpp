@@ -22,8 +22,8 @@ namespace CLI {
 /// @returns True if the requested operation was successful.
 bool start(const Options &options) {
     Compiler application(options.mainPackageName(), options.mainFile(), options.interfaceFile(), options.outPath(),
-                         options.linker(), options.packageSearchPaths(), options.compilerDelegate(),
-                         options.linkToExec());
+                         options.objectPath(), options.linker(), options.ar(), options.packageSearchPaths(),
+                         options.compilerDelegate(), options.pack(), options.standalone());
 
     if (!options.migrationFile().empty()) {
         application.loadMigrationFile(options.migrationFile());
