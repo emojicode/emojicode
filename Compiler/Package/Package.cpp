@@ -113,20 +113,6 @@ Type Package::getRawType(const TypeIdentifier &typeId, bool optional) const {
 }
 
 bool Package::lookupRawType(const TypeIdentifier &typeId, bool optional, Type *type) const {
-    if (typeId.ns == kDefaultNamespace && typeId.ns.size() == 1) {
-        switch (typeId.name.front()) {
-            case E_MEDIUM_WHITE_CIRCLE:
-                if (optional) {
-                    throw CompilerError(typeId.position, "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
-                }
-                *type = Type::something();
-                return true;
-            case E_LARGE_BLUE_CIRCLE:
-                *type = optional ? Type(MakeOptional, Type::someobject()) : Type::someobject();
-                return true;
-        }
-    }
-
     std::u32string key = typeId.ns + typeId.name;
     auto it = types_.find(key);
 

@@ -21,25 +21,22 @@
 namespace EmojicodeCompiler {
 
 TypeIdentifier AbstractParser::parseTypeIdentifier() {
-    if (stream_.nextTokenIs(TokenType::Variable)) {
-        throw CompilerError(stream_.consumeToken().position(), "Generic variables not allowed here.");
-    }
+    std::u32string namespase = stream_.consumeTokenIf(E_ORANGE_TRIANGLE) ? parseTypeEmoji().value() : kDefaultNamespace;
+    auto typeName = parseTypeEmoji();
+    return TypeIdentifier(typeName.value(), namespase, typeName.position());
+}
 
-    if (stream_.nextTokenIs(E_CANDY)) {
-        throw CompilerError(stream_.consumeToken().position(), "Unexpected 🍬.");
+Token AbstractParser::parseTypeEmoji() const {
+    if (stream_.nextTokenIs(E_CANDY) || stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE) ||
+        stream_.nextTokenIs(E_MEDIUM_WHITE_CIRCLE) || stream_.nextTokenIs(E_LARGE_BLUE_CIRCLE) ||
+        stream_.nextTokenIs(E_BENTO_BOX) || stream_.nextTokenIs(E_ORANGE_TRIANGLE)) {
+        auto token = stream_.consumeToken();
+        throw CompilerError(token.position(), "Unexpected identifier ", utf8(token.value()), " with special meaning.");
     }
-
-    std::u32string enamespace;
-
-    if (stream_.consumeTokenIf(E_ORANGE_TRIANGLE)) {
-        enamespace = stream_.consumeToken(TokenType::Identifier).value();
+    if (stream_.nextTokenIs(TokenType::ForIn)) {
+        return stream_.consumeToken();
     }
-    else {
-        enamespace = kDefaultNamespace;
-    }
-
-    auto typeName = stream_.consumeToken();
-    return TypeIdentifier(typeName.value(), enamespace, typeName.position());
+    return stream_.consumeToken(TokenType::Identifier);
 }
 
 std::unique_ptr<FunctionParser> AbstractParser::factorFunctionParser(Package *pkg, TokenStream &stream,
@@ -52,9 +49,6 @@ std::unique_ptr<FunctionParser> AbstractParser::factorFunctionParser(Package *pk
 }
 
 Type AbstractParser::parseType(const TypeContext &typeContext) {
-    if (stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE)) {
-        throw CompilerError(stream_.consumeToken().position(), "⚫️ not allowed here.");
-    }
     if (stream_.nextTokenIs(TokenType::Class) || stream_.nextTokenIs(TokenType::Enumeration) ||
             stream_.nextTokenIs(TokenType::ValueType) || stream_.nextTokenIs(TokenType::Protocol)) {
         return parseTypeAsValueType(typeContext);
@@ -62,6 +56,16 @@ Type AbstractParser::parseType(const TypeContext &typeContext) {
 
     bool optional = stream_.consumeTokenIf(E_CANDY);
 
+    if (stream_.nextTokenIs(E_MEDIUM_WHITE_CIRCLE)) {
+        auto token = stream_.consumeToken();
+        if (optional) {
+            throw CompilerError(token.position(), "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
+        }
+        return Type::something();
+    }
+    if (stream_.consumeTokenIf(E_LARGE_BLUE_CIRCLE)) {
+        return optional ? Type(MakeOptional, Type::someobject()) : Type::someobject();
+    }
     if (stream_.nextTokenIs(TokenType::Variable)) {
         return parseGenericVariable(optional, typeContext);
     }

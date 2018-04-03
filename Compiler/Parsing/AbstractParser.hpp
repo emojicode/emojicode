@@ -118,6 +118,7 @@ private:
     Type parseTypeMain(bool optional, const TypeContext &typeContext);
 
     Type parseTypeAsValueType(const TypeContext &typeContext);
+    Token parseTypeEmoji() const;
 };
 
 }  // namespace EmojicodeCompiler
