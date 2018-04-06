@@ -59,6 +59,7 @@ void CodeGenerator::prepareModule() {
     llvm::InitializeAllTargetInfos();
     llvm::InitializeAllTargets();
     llvm::InitializeAllTargetMCs();
+    llvm::InitializeAllAsmParsers();
     llvm::InitializeAllAsmPrinters();
 
     auto targetTriple = llvm::sys::getDefaultTargetTriple();

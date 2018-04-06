@@ -23,7 +23,7 @@ Prerequisites (versions are recommendations):
 
 - clang and clang++ 5.0.1 or gcc and g++ 7.2
 - CMake 3.5.1+ and (preferably) Ninja
-- LLVM 6
+- LLVM 5.0.1
 - Python 3.5.2+ for testing
 
 Steps:
