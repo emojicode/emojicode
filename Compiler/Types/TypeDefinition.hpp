@@ -140,7 +140,7 @@ protected:
     ~TypeDefinition();
 
 private:
-    Scope scope_ = Scope(0);
+    Scope scope_;
 
     std::map<std::u32string, std::unique_ptr<Function>> methods_;
     std::map<std::u32string, std::unique_ptr<Function>> typeMethods_;

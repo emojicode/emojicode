@@ -35,16 +35,12 @@ struct LocalVariable {
 ///
 /// CGScoper is only a thin layer over a vector. It simply and strictly works like a table and relies on that
 /// SemanticScoper correctly issues VariableIDs, which are the indices by which the vector is accessed. Variables can
-/// therefore be retrieved in constant time. No real scoping meachnics are provided by this class, all scoping
-/// mechanics are implemented in SemanticScoper, which issues ids so that rows of a CGScoper are reused once the
+/// therefore be retrieved in constant time. No real scoping mechanics are provided by this class, all scoping
+/// is implemented in SemanticScoper, which issues IDs so that rows of a CGScoper are reused once the
 /// corresponding variable dropped out of scope.
 class CGScoper {
 public:
     explicit CGScoper(size_t variables) : variables_(variables, LocalVariable()) {}
-
-    void resizeVariables(size_t to) {
-        variables_.resize(to, LocalVariable());
-    }
 
     /// Gets the variable with the given ID.
     /// @complexity O(1)

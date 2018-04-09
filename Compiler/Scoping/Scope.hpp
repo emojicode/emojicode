@@ -19,8 +19,8 @@ struct SourcePosition;
 
 class Scope {
 public:
-    explicit Scope(unsigned int variableId) : maxVariableId_(variableId) {}
-
+    Scope() = default;
+    explicit Scope(unsigned int id) : maxVariableId_(id) {}
     void setVariableInitialization(bool initd);
     void pushInitializationLevel();
     void popInitializationLevel();
@@ -63,7 +63,7 @@ public:
     }
 private:
     std::map<std::u32string, Variable> map_;
-    unsigned int maxVariableId_;
+    unsigned int maxVariableId_ = 0;
 };
 
 }  // namespace EmojicodeCompiler
