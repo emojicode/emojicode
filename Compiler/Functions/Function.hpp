@@ -48,7 +48,6 @@ public:
     llvm::FunctionType* functionType();
     void setFunctionType(llvm::FunctionType *type) { functionType_ = type; }
 private:
-    FunctionReification *testator = nullptr;
     llvm::FunctionType* functionType_ = nullptr;
     unsigned int vti_ = 0;
 };
@@ -67,7 +66,7 @@ public:
 
     std::u32string name() const { return name_; }
 
-    std::u32string protocolBoxingLayerName(const std::u32string &protocolName) {
+    std::u32string protocolBoxingLayerName(const std::u32string &protocolName) const {
         return protocolName + name()[0];
     }
 
@@ -119,9 +118,8 @@ public:
     /// This does not necessarily match the package of @c owningType.
     Package* package() const { return package_; }
 
-    /// Use this method to make a function a *heir* of this function, i.e. the heir function is guaranteed to have the
-    /// same VTI’s for its reifications as this one and to be reified for all requests this function was.
-    void appointHeir(Function *f) { tablePlaceHeirs_.push_back(f); }
+    Function* superBoxingLayer() const { return superBoxingLayer_; };
+    void setSuperBoxingLayer(Function *layer) { superBoxingLayer_ = layer; }
 
     TypeContext typeContext() {
         auto type = owningType();
@@ -151,7 +149,6 @@ private:
     std::shared_ptr<ASTBlock> ast_;
     SourcePosition position_;
     std::u32string name_;
-    std::vector<Function*> tablePlaceHeirs_;
 
     bool final_;
     bool overriding_;
@@ -161,6 +158,8 @@ private:
 
     bool mutating_;
     bool external_ = false;
+
+    Function *superBoxingLayer_ = nullptr;
 
     std::string externalName_;
     AccessLevel access_;

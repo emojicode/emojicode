@@ -10,7 +10,6 @@
 #include "AST/ASTStatements.hpp"
 #include "Declarator.hpp"
 #include "FunctionCodeGenerator.hpp"
-#include "Functions/BoxingLayer.hpp"
 #include "Package/Package.hpp"
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/DerivedTypes.h>

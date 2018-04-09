@@ -20,7 +20,6 @@
 namespace EmojicodeCompiler {
 
 class Function;
-class BoxingLayer;
 class TokenStream;
 
 #undef major

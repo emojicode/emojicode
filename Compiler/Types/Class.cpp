@@ -11,7 +11,6 @@
 #include "Class.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
-#include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "TypeContext.hpp"
 #include <algorithm>
@@ -58,7 +57,7 @@ void Class::inherit(SemanticAnalyser *analyser) {
 
     eachFunction([this, analyser](Function *function) {
         if (function->functionType() == FunctionType::ObjectInitializer) {
-            checkInheritedRequiredInit(dynamic_cast<Initializer *>(function));
+            checkInheritedRequiredInit(dynamic_cast<Initializer *>(function), analyser);
         }
         else {
             checkOverride(function, analyser);
@@ -73,8 +72,12 @@ void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
             analyser->compiler()->error(CompilerError(function->position(), utf8(function->name()),
                                                       " was declared ✒️ but does not override anything."));
         }
-        analyser->enforcePromises(function, superFunction, Type(superclass()), TypeContext(Type(this)), TypeContext());
-        superFunction->appointHeir(function);
+        auto layer = analyser->enforcePromises(function, superFunction, Type(superclass()),
+                                               TypeContext(Type(this)), TypeContext());
+        if (layer != nullptr) {
+            function->setSuperBoxingLayer(layer.get());
+            addMethod(std::move(layer));
+        }
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
         analyser->compiler()->error(CompilerError(function->position(), "If you want to override ",
@@ -82,35 +85,17 @@ void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
     }
 }
 
-void Class::checkInheritedRequiredInit(Initializer *initializer) {
-    auto superInit = findSuperInitializer(initializer);
-    if (initializer->required() && superInit != nullptr && superInit->required()) {
-        superInit->appointHeir(initializer);
+void Class::checkInheritedRequiredInit(Initializer *initializer, SemanticAnalyser *analyser) {
+    auto superInit = findSuperFunction(initializer);
+    if (superInit == nullptr) {
+        return;
     }
-}
-
-template <typename FT>
-FT* ifNotPrivate(FT *function) {
-    if (function == nullptr) {
-        return nullptr;
+    auto layer = analyser->enforcePromises(initializer, superInit, Type(superclass()),
+                                           TypeContext(Type(this)), TypeContext());
+    if (layer != nullptr) {
+        initializer->setSuperBoxingLayer(layer.get());
+        addMethod(std::move(layer));
     }
-    return function->accessLevel() == AccessLevel::Private ? nullptr : function;
-}
-
-Function* Class::findSuperFunction(Function *function) const {
-    switch (function->functionType()) {
-        case FunctionType::ObjectMethod:
-        case FunctionType::BoxingLayer:
-            return ifNotPrivate(superclass()->lookupMethod(function->name(), function->isImperative()));
-        case FunctionType::ClassMethod:
-            return ifNotPrivate(superclass()->lookupTypeMethod(function->name(), function->isImperative()));
-        default:
-            throw std::logic_error("Function of unexpected type in class");
-    }
-}
-
-Initializer* Class::findSuperInitializer(Initializer *function) const {
-    return ifNotPrivate(superclass()->lookupInitializer(function->name()));
 }
 
 void Class::addInstanceVariable(const InstanceVariableDeclaration &declaration) {

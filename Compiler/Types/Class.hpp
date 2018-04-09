@@ -9,6 +9,7 @@
 #ifndef Class_hpp
 #define Class_hpp
 
+#include "Functions/Initializer.hpp"
 #include "TypeDefinition.hpp"
 #include "Types/TypeContext.hpp"
 #include <set>
@@ -22,6 +23,14 @@ namespace EmojicodeCompiler {
 
 class Type;
 class SemanticAnalyser;
+
+template <typename FT>
+FT* ifNotPrivate(FT *function) {
+    if (function == nullptr) {
+        return nullptr;
+    }
+    return function->accessLevel() == AccessLevel::Private ? nullptr : function;
+}
 
 class Class : public TypeDefinition {
 public:
@@ -64,6 +73,22 @@ public:
 
     void inherit(SemanticAnalyser *analyser);
 
+    /// @pre superclass() != nullptr
+    template <typename FT>
+    FT* findSuperFunction(FT *function) const {
+        switch (function->functionType()) {
+            case FunctionType::ObjectMethod:
+            case FunctionType::BoxingLayer:
+                return ifNotPrivate(superclass()->lookupMethod(function->name(), function->isImperative()));
+            case FunctionType::ClassMethod:
+                return ifNotPrivate(superclass()->lookupTypeMethod(function->name(), function->isImperative()));
+            case FunctionType::ObjectInitializer:
+                return findSuperFunction(static_cast<Initializer *>(function));
+            default:
+                throw std::logic_error("Function of unexpected type in class");
+        }
+    }
+
     /// Makes hasSubclass() return true.
     void setHasSubclass() { hasSubclass_ = true; }
     /// @returns true if this class has a subclass.
@@ -71,13 +96,11 @@ public:
     bool hasSubclass() const { return hasSubclass_; }
 
     void setFinal() { final_ = true; }
+
+    void setVirtualFunctionCount(size_t n) { virtualFunctionCount_ = n; }
+    size_t virtualFunctionCount() { return virtualFunctionCount_; }
 private:
     std::set<std::u32string> requiredInitializers_;
-
-    /// @pre superclass() != nullptr
-    Function* findSuperFunction(Function *function) const;
-    /// @pre superclass() != nullptr
-    Initializer* findSuperInitializer(Initializer *function) const;
 
     /// Checks that @c function, if at all, is a valid override. If it is, function is assigned the super functions
     /// virtual table index.
@@ -87,9 +110,10 @@ private:
     /// Checks whether initializer is the implementation of a required initializer. If it is the method validates
     /// that the implementation is valid and assigns it the super initializers virtual table index.
     /// @pre superclass() != nullptr
-    void checkInheritedRequiredInit(Initializer *initializer);
+    void checkInheritedRequiredInit(Initializer *initializer, SemanticAnalyser *analyser);
 
     std::vector<llvm::Constant *> virtualTable_;
+    size_t virtualFunctionCount_ = 0;
 
     bool final_;
     bool foreign_;
@@ -100,6 +124,18 @@ private:
 
     void handleRequiredInitializer(Initializer *init) override;
 };
+
+inline Initializer* ifRequired(Initializer *init) {
+    if (init == nullptr) {
+        return nullptr;
+    }
+    return init->required() ? init : nullptr;
+}
+
+template <>
+inline Initializer* Class::findSuperFunction<Initializer>(Initializer *function) const {
+    return ifRequired(ifNotPrivate(superclass()->lookupInitializer(function->name())));
+}
 
 }  // namespace EmojicodeCompiler
 

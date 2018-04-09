@@ -3,7 +3,7 @@
 //
 
 #include "Declarator.hpp"
-#include "Functions/Function.hpp"
+#include "Functions/Initializer.hpp"
 #include "Generation/ReificationContext.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Mangler.hpp"
@@ -11,6 +11,7 @@
 #include "Package/Package.hpp"
 #include "Types/ValueType.hpp"
 #include "Types/Protocol.hpp"
+#include "VTCreator.hpp"
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/GlobalValue.h>
@@ -75,14 +76,12 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
         }
     }
     for (auto &klass : package->classes()) {
-        size_t vti = 0;
-        klass->eachFunction([this, &vti](auto *function) {
-            function->createUnspecificReification();
-            function->eachReification([&vti](auto &reification) {
-                reification.entity.setVti(vti++);
-            });
-            declareLlvmFunction(function);
-        });
+        if (klass->hasSubclass()) {
+            VTCreator(klass.get(), *this).build();
+        }
+        else {
+            VTCreator(klass.get(), *this).assign();
+        }
         ptg.declareImportedProtocolsTable(Type(klass.get()));
         declareImportedClassMeta(klass.get());
     }
@@ -91,7 +90,7 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
     }
 }
 
-void Declarator::declareLlvmFunction(Function *function) {
+void Declarator::declareLlvmFunction(Function *function) const {
     function->eachReification([this, function](auto &reification) {
         auto context = ReificationContext(*function, reification);
         typeHelper_.setReificationContext(&context);

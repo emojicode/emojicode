@@ -27,7 +27,7 @@ public:
     void declareImportedPackageSymbols(Package *package);
 
     /// Declares an LLVM function for each reification of the provided function.
-    void declareLlvmFunction(Function *function);
+    void declareLlvmFunction(Function *function) const;
 private:
     void declareImportedClassMeta(Class *klass);
 

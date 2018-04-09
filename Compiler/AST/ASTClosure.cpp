@@ -9,7 +9,6 @@
 #include "ASTClosure.hpp"
 #include "Analysis/BoxingLayerBuilder.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
-#include "Functions/BoxingLayer.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
 

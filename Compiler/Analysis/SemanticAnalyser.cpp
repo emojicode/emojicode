@@ -5,7 +5,6 @@
 #include "BoxingLayerBuilder.hpp"
 #include "Compiler.hpp"
 #include "FunctionAnalyser.hpp"
-#include "Functions/BoxingLayer.hpp"
 #include "SemanticAnalyser.hpp"
 #include "Types/Class.hpp"
 #include "Types/Extension.hpp"
@@ -85,21 +84,9 @@ void SemanticAnalyser::declareInstanceVariables(TypeDefinition *typeDef) {
     }
 }
 
-bool SemanticAnalyser::enforcePromises(const Function *sub, const Function *super, const Type &superSource,
-                                       const TypeContext &subContext, const TypeContext &superContext) {
-    if (super->final()) {
-        package_->compiler()->error(CompilerError(sub->position(), superSource.toString(subContext),
-                                                  "’s implementation of ", utf8(sub->name()), " was marked 🔏."));
-    }
-
-
-
-    if (sub->accessLevel() == AccessLevel::Private || (sub->accessLevel() == AccessLevel::Protected &&
-            super->accessLevel() == AccessLevel::Public)) {
-        package_->compiler()->error(CompilerError(sub->position(), "Overriding method must be as accessible or more ",
-                                                  "accessible than the overridden method."));
-    }
-
+bool SemanticAnalyser::checkReturnPromise(const Function *sub, const TypeContext &subContext,
+                                          const Function *super, const TypeContext &superContext,
+                                          const Type &superSource) const {
     auto superReturnType = super->returnType().resolveOn(superContext);
     if (!sub->returnType().resolveOn(subContext).compatibleTo(superReturnType, subContext)) {
         auto supername = superReturnType.toString(subContext);
@@ -109,17 +96,38 @@ bool SemanticAnalyser::enforcePromises(const Function *sub, const Function *supe
                                                   " is not compatible to the return type defined in ",
                                                   superSource.toString(subContext)));
     }
-    if (sub->returnType().resolveOn(subContext).storageType() != superReturnType.storageType()) {
-        return false;  // BoxingLayer required for the return type
+    return sub->returnType().resolveOn(subContext).storageType() == superReturnType.storageType();
+}
+
+std::unique_ptr<Function> SemanticAnalyser::enforcePromises(const Function *sub, const Function *super,
+                                                            const Type &superSource,
+                                                            const TypeContext &subContext,
+                                                            const TypeContext &superContext) {
+    if (super->final()) {
+        package_->compiler()->error(CompilerError(sub->position(), superSource.toString(subContext),
+                                                  "’s implementation of ", utf8(sub->name()), " was marked 🔏."));
+    }
+    if (sub->accessLevel() == AccessLevel::Private || (sub->accessLevel() == AccessLevel::Protected &&
+            super->accessLevel() == AccessLevel::Public)) {
+        package_->compiler()->error(CompilerError(sub->position(), "Overriding method must be as accessible or more ",
+                                                  "accessible than the overridden method."));
     }
 
-    return checkArgumentPromise(sub, super, subContext, superContext);
+    bool isReturnOk = checkReturnPromise(sub, subContext, super, superContext, superSource);
+    bool isParamsOk = checkArgumentPromise(sub, super, subContext, superContext) ;
+    if (!isParamsOk || !isReturnOk) {
+        auto function = buildBoxingLayer(superContext, super, sub);
+        enqueueFunction(function.get());
+        return function;
+    }
+    return nullptr;
 }
 
 bool SemanticAnalyser::checkArgumentPromise(const Function *sub, const Function *super, const TypeContext &subContext,
                                             const TypeContext &superContext) const {
     if (super->parameters().size() != sub->parameters().size()) {
         package_->compiler()->error(CompilerError(sub->position(), "Parameter count does not match."));
+        return true;
     }
 
     bool compatible = true;
@@ -155,29 +163,11 @@ void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol) 
         }
 
         methodImplementation->createUnspecificReification();
-        if (enforcePromises(methodImplementation, method, protocol, TypeContext(type), TypeContext(protocol))) {
-            method->appointHeir(methodImplementation);
-        }
-        else {
-            buildBoxingLayer(type, protocol, method, methodImplementation);
+        auto layer = enforcePromises(methodImplementation, method, protocol, TypeContext(type), TypeContext(protocol));
+        if (layer != nullptr) {
+            type.typeDefinition()->addMethod(std::move(layer));
         }
     }
-}
-
-void SemanticAnalyser::buildBoxingLayer(const Type &type, const Type &protocol, Function *method,
-                                        Function *methodImplementation) {
-    auto arguments = std::vector<Parameter>();
-    arguments.reserve(method->parameters().size());
-    for (auto &arg : method->parameters()) {
-        arguments.emplace_back(arg.name, arg.type.resolveOn(TypeContext(protocol)));
-    }
-    auto bl = std::make_unique<BoxingLayer>(methodImplementation, protocol.protocol()->name(), arguments,
-                                            method->returnType().resolveOn(TypeContext(protocol)),
-                                            methodImplementation->position());
-    buildBoxingLayerAst(bl.get());
-    enqueueFunction(bl.get());
-    type.typeDefinition()->addMethod(move(bl));
-    method->appointHeir(bl.get());
 }
 
 void SemanticAnalyser::finalizeProtocols(const Type &type) {

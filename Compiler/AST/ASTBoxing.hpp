@@ -14,8 +14,6 @@
 
 namespace EmojicodeCompiler {
 
-class BoxingLayer;
-
 class ASTBoxing : public ASTExpr {
 
 public:
@@ -131,13 +129,13 @@ class ASTDereference final : public ASTBoxing {
 class ASTCallableBox final : public ASTBoxing {
 public:
     ASTCallableBox(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p,
-                   BoxingLayer *boxingLayer) : ASTBoxing(std::move(expr), exprType, p), boxingLayer_(boxingLayer) {}
+                   Function *boxingLayer) : ASTBoxing(std::move(expr), exprType, p), boxingLayer_(boxingLayer) {}
 
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override {}
 private:
-    BoxingLayer *boxingLayer_;
+    Function *boxingLayer_;
 };
 
 class ASTStoreTemporarily final : public ASTBoxing {

@@ -32,11 +32,10 @@ public:
 
     Compiler* compiler() const;
 
-    /// Checks that no promises were broken and applies boxing if necessary.
-    /// @returns false iff a value for protocol was given and the arguments or the return type are storage incompatible.
-    /// This indicates that a BoxingLayer must be created.
-    bool enforcePromises(const Function *sub, const Function *super, const Type &superSource,
-                         const TypeContext &subContext, const TypeContext &superContext);
+    /// Checks that no promises were broken and builds a boxing layer to keep promises if necessary.
+    /// @returns A function that can serve as boxing layer, if necessary, or nullptr.
+    std::unique_ptr<Function> enforcePromises(const Function *sub, const Function *super, const Type &superSource,
+                                              const TypeContext &subContext, const TypeContext &superContext);
 
     void declareInstanceVariables(TypeDefinition *typeDef);
 private:
@@ -44,8 +43,6 @@ private:
     void enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef);
     void finalizeProtocols(const Type &type);
     void finalizeProtocol(const Type &type, const Type &protocol);
-    void buildBoxingLayer(const Type &type, const Type &protocol, Function *method,
-                          Function *methodImplementation);
 
     Package *package_;
     std::queue<Function *> queue_;
@@ -53,6 +50,8 @@ private:
 
     bool checkArgumentPromise(const Function *sub, const Function *super, const TypeContext &subContext,
                                   const TypeContext &superContext) const;
+    bool checkReturnPromise(const Function *sub, const TypeContext &subContext, const Function *super,
+                            const TypeContext &superContext, const Type &superSource) const;
 };
 
 }  // namespace EmojicodeCompiler

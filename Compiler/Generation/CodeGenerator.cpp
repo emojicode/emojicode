@@ -17,6 +17,7 @@
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
+#include "VTCreator.hpp"
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/TargetRegistry.h>
@@ -96,11 +97,7 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr) {
         protocolsTableGenerator_.createProtocolsTable(Type(valueType.get()));
     }
     for (auto &klass : package_->classes()) {
-        klass->eachFunction([this](auto *function) {
-            function->createUnspecificReification();
-            declarator_.declareLlvmFunction(function);
-        });
-
+        VTCreator(klass.get(), declarator_).build();
         protocolsTableGenerator_.createProtocolsTable(Type(klass.get()));
         createClassInfo(klass.get());
     }
@@ -174,35 +171,16 @@ void CodeGenerator::createProtocolFunctionTypes(Protocol *protocol) {
 }
 
 void CodeGenerator::createClassInfo(Class *klass) {
-    std::vector<llvm::Constant *> functions;
-
-    if (auto superclass = klass->superclass()) {
-        functions.resize(superclass->virtualTable().size());
-        std::copy(superclass->virtualTable().begin(), superclass->virtualTable().end(), functions.begin());
-    }
-
-    klass->eachFunction([&functions](Function *function) {
-        if (function->accessLevel() == AccessLevel::Private) {
-            return;
-        }
-        function->eachReification([&functions](auto &reification) {
-            reification.entity.setVti(functions.size());
-            functions.emplace_back(reification.entity.function);
-        });
-    });
-
-    auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context()), functions.size());
+    auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context()), klass->virtualTable().size());
     auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
                                                  llvm::GlobalValue::LinkageTypes::PrivateLinkage,
-                                                 llvm::ConstantArray::get(type, functions));
+                                                 llvm::ConstantArray::get(type, klass->virtualTable()));
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
             llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable
     });
     auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleClassMetaName(klass));
-
-    klass->virtualTable() = std::move(functions);
     klass->setClassMeta(meta);
 }
 

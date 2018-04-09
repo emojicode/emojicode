@@ -14,7 +14,6 @@
 #include "BoxingLayerBuilder.hpp"
 #include "Compiler.hpp"
 #include "FunctionAnalyser.hpp"
-#include "Functions/BoxingLayer.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
@@ -362,19 +361,10 @@ bool FunctionAnalyser::callableBoxingRequired(const TypeExpectation &expectation
 
 Type FunctionAnalyser::callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     if (callableBoxingRequired(expectation, exprType)) {
-        auto arguments = std::vector<Parameter>();
-        arguments.reserve(expectation.genericArguments().size() - 1);
-        for (auto argumentType = expectation.genericArguments().begin() + 1;
-             argumentType != expectation.genericArguments().end(); argumentType++) {
-            arguments.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
-                                   *argumentType);
-        }
-        auto boxingLayer = std::make_unique<BoxingLayer>(exprType, function_->package(), arguments,
-                                                         expectation.genericArguments()[0], function_->position());
-        buildBoxingLayerAst(boxingLayer.get());
-        insertNode<ASTCallableBox>(node, exprType, boxingLayer.get());
-        analyser_->enqueueFunction(boxingLayer.get());
-        function_->package()->add(std::move(boxingLayer));
+        auto layer = buildBoxingLayer(expectation, exprType, function()->package(), (*node)->position());
+        insertNode<ASTCallableBox>(node, exprType, layer.get());
+        analyser_->enqueueFunction(layer.get());
+        function()->package()->add(std::move(layer));
     }
     return exprType;
 }

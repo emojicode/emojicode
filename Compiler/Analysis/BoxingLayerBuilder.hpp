@@ -9,14 +9,23 @@
 #ifndef BoxingLayerBuilder_hpp
 #define BoxingLayerBuilder_hpp
 
+#include <memory>
+
 namespace EmojicodeCompiler {
 
-class BoxingLayer;
+class Function;
+struct SourcePosition;
+class Type;
+class TypeExpectation;
+class TypeContext;
+class Package;
 
-/// Creates and AST representing the actions of the boxing layer and assigns it to the layer.
-/// @attention The layer must be semantically analysed and transformed!
-void buildBoxingLayerAst(BoxingLayer *layer);
+std::unique_ptr<Function> buildBoxingLayer(const TypeContext &declarator, const Function *method,
+                                           const Function *methodImplementation);
+std::unique_ptr<Function> buildBoxingLayer(const TypeExpectation &expectation, const Type &destCallable,
+                                           Package *pkg, const SourcePosition &p);
 
 } // namespace EmojicodeCompiler
 
 #endif /* BoxingLayerBuilder_hpp */
+

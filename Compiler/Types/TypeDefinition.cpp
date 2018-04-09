@@ -9,7 +9,6 @@
 #include "TypeDefinition.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
-#include "Functions/BoxingLayer.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Types/Protocol.hpp"
