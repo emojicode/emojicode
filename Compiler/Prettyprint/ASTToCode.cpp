@@ -200,11 +200,6 @@ void ASTIsError::toCode(Prettyprinter &pretty) const {
     value_->toCode(pretty);
 }
 
-void ASTMetaTypeFromInstance::toCode(Prettyprinter &pretty) const {
-    pretty << "⬜️";
-    value_->toCode(pretty);
-}
-
 void ASTUnwrap::toCode(Prettyprinter &pretty) const {
     pretty << (error_ ? " 🚇" : " 🍺");
     value_->toCode(pretty);

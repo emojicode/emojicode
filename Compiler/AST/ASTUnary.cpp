@@ -35,10 +35,4 @@ Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
     throw CompilerError(position(), "🍺 can only be used with optionals or 🚨.");
 }
 
-Type ASTMetaTypeFromInstance::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    // TODO: Write also static code
-    Type originalType = analyser->expect(TypeExpectation(false, false, false), &value_);
-    return Type(MakeTypeAsValue, originalType);
-}
-
 }  // namespace EmojicodeCompiler

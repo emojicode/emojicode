@@ -278,8 +278,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
     switch (token.value()[0]) {
         case E_TRAFFIC_LIGHT:
             return parseUnaryPrefix<ASTIsError>(token);
-        case E_WHITE_LARGE_SQUARE:
-            return parseUnaryPrefix<ASTMetaTypeFromInstance>(token);
         case E_BEER_MUG:
             return parseUnaryPrefix<ASTUnwrap>(token);
         case E_SCALES: {

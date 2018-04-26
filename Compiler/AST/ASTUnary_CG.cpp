@@ -60,9 +60,5 @@ Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
     }
     return fg->builder().CreateExtractValue(error, 1);
 }
-
-Value* ASTMetaTypeFromInstance::generate(FunctionCodeGenerator *fg) const {
-    return fg->getMetaFromObject(value_->generate(fg));
-}
-
+    
 }  // namespace EmojicodeCompiler

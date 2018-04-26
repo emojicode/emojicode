@@ -43,14 +43,6 @@ private:
     Value * generateErrorUnwrap(FunctionCodeGenerator *fg) const;
 };
 
-class ASTMetaTypeFromInstance final : public ASTUnary {
-    using ASTUnary::ASTUnary;
-public:
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
-};
-
 }  // namespace EmojicodeCompiler
 
 #endif /* ASTUnary_hpp */
