@@ -1,13 +1,13 @@
 //
-//  BoxingLayerBuilder.hpp
+//  ThunkBuilder.hpp
 //  Emojicode
 //
 //  Created by Theo Weidmann on 14/08/2017.
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#ifndef BoxingLayerBuilder_hpp
-#define BoxingLayerBuilder_hpp
+#ifndef ThunkBuilder_hpp
+#define ThunkBuilder_hpp
 
 #include <memory>
 
@@ -19,13 +19,16 @@ class Type;
 class TypeExpectation;
 class TypeContext;
 class Package;
+class Initializer;
+class Class;
 
-std::unique_ptr<Function> buildBoxingLayer(const TypeContext &declarator, const Function *method,
+std::unique_ptr<Function> buildBoxingThunk(const TypeContext &declarator, const Function *method,
                                            const Function *methodImplementation);
-std::unique_ptr<Function> buildBoxingLayer(const TypeExpectation &expectation, const Type &destCallable,
+std::unique_ptr<Function> buildBoxingThunk(const TypeExpectation &expectation, const Type &destCallable,
                                            Package *pkg, const SourcePosition &p);
+std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer *init);
 
 } // namespace EmojicodeCompiler
 
-#endif /* BoxingLayerBuilder_hpp */
+#endif /* ThunkBuilder_hpp */
 

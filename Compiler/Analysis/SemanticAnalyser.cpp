@@ -2,7 +2,7 @@
 // Created by Theo Weidmann on 26.02.18.
 //
 
-#include "BoxingLayerBuilder.hpp"
+#include "ThunkBuilder.hpp"
 #include "Compiler.hpp"
 #include "FunctionAnalyser.hpp"
 #include "SemanticAnalyser.hpp"
@@ -11,7 +11,6 @@
 #include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/ValueType.hpp"
-#include <experimental/optional>
 #include <iostream>
 
 namespace EmojicodeCompiler {
@@ -29,13 +28,21 @@ void SemanticAnalyser::analyse(bool executable) {
         declareInstanceVariables(vt.get());
         enqueueFunctionsOfTypeDefinition(vt.get());
     }
-    for (auto &eclass : package_->classes()) {
-        eclass->inherit(this);
-        finalizeProtocols(Type(eclass.get()));
-        enqueueFunctionsOfTypeDefinition(eclass.get());
+    for (auto &klass : package_->classes()) {
+        for (auto init : klass->initializerList()) {
+            if (!init->required()) {
+                continue;
+            }
+            klass->addTypeMethod(buildRequiredInitThunk(klass.get(), init));
+        }
+        
+        klass->inherit(this);
+        finalizeProtocols(Type(klass.get()));
 
-        if (!eclass->hasSubclass() && !eclass->exported()) {
-            eclass->setFinal();
+        enqueueFunctionsOfTypeDefinition(klass.get());
+
+        if (!klass->hasSubclass() && !klass->exported()) {
+            klass->setFinal();
         }
     }
     for (auto &function : package_->functions()) {
@@ -116,7 +123,7 @@ std::unique_ptr<Function> SemanticAnalyser::enforcePromises(const Function *sub,
     bool isReturnOk = checkReturnPromise(sub, subContext, super, superContext, superSource);
     bool isParamsOk = checkArgumentPromise(sub, super, subContext, superContext) ;
     if (!isParamsOk || !isReturnOk) {
-        auto function = buildBoxingLayer(superContext, super, sub);
+        auto function = buildBoxingThunk(superContext, super, sub);
         enqueueFunction(function.get());
         return function;
     }
@@ -141,7 +148,7 @@ bool SemanticAnalyser::checkArgumentPromise(const Function *sub, const Function 
                                                       supertype, "."));
         }
         if (sub->parameters()[i].type.resolveOn(subContext).storageType() != superArgumentType.storageType()) {
-            compatible = false;  // BoxingLayer required for parameter i
+            compatible = false;  // Boxing Thunk required for parameter i
         }
     }
     return compatible;

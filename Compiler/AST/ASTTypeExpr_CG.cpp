@@ -23,9 +23,5 @@ Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
     }
     return fg->generator()->valueTypeMetaFor(type_);
 }
-    
-Value* ASTThisType::generate(FunctionCodeGenerator *fg) const {
-    return fg->thisValue();
-}
 
 }  // namespace EmojicodeCompiler

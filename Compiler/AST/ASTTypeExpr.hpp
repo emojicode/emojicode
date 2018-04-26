@@ -27,13 +27,13 @@ public:
     ASTTypeExpr(const SourcePosition &p) : ASTExpr(p) {}
 };
 
-class ASTTypeFromExpr final : public ASTTypeExpr {
+class ASTTypeFromExpr : public ASTTypeExpr {
 public:
     ASTTypeFromExpr(std::shared_ptr<ASTExpr> value, const SourcePosition &p)
             : ASTTypeExpr(p), expr_(std::move(value)) {}
 
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value *generate(FunctionCodeGenerator *fg) const override;
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) final;
+    Value *generate(FunctionCodeGenerator *fg) const final;
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> expr_;
@@ -59,12 +59,9 @@ public:
     void toCode(Prettyprinter &pretty) const override;
 };
 
-class ASTThisType final : public ASTTypeExpr {
+class ASTThisType final : public ASTTypeFromExpr {
 public:
-    explicit ASTThisType(const SourcePosition &p) : ASTTypeExpr(p) {}
-
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value *generate(FunctionCodeGenerator *fg) const override;
+    explicit ASTThisType(const SourcePosition &p);
     void toCode(Prettyprinter &pretty) const override;
 };
 

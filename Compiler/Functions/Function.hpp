@@ -66,7 +66,7 @@ public:
 
     std::u32string name() const { return name_; }
 
-    std::u32string protocolBoxingLayerName(const std::u32string &protocolName) const {
+    std::u32string protocolBoxingThunk(const std::u32string &protocolName) const {
         return protocolName + name()[0];
     }
 
@@ -118,8 +118,11 @@ public:
     /// This does not necessarily match the package of @c owningType.
     Package* package() const { return package_; }
 
-    Function* superBoxingLayer() const { return superBoxingLayer_; };
-    void setSuperBoxingLayer(Function *layer) { superBoxingLayer_ = layer; }
+    /// @see setVirtualTableThunk()
+    Function* virtualTableThunk() const { return virtualTableThunk_; };
+    /// The provided thunk function is placed at the designated virtual table index instead of the this function.
+    /// This function is assigned another virtual table index.
+    void setVirtualTableThunk(Function *layer) { virtualTableThunk_ = layer; }
 
     TypeContext typeContext() {
         auto type = owningType();
@@ -159,7 +162,7 @@ private:
     bool mutating_;
     bool external_ = false;
 
-    Function *superBoxingLayer_ = nullptr;
+    Function *virtualTableThunk_ = nullptr;
 
     std::string externalName_;
     AccessLevel access_;

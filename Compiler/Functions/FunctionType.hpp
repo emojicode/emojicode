@@ -21,9 +21,6 @@ enum class FunctionType {
     ClassMethod,
     /** A plain function without a context. (🏁) */
     Function,
-    /// A function which soley exists to unbox (generic) arguments passed to a protocol which the actual method does
-    /// expect in another storage type. The function is then of type BoxingLayer.
-    BoxingLayer,
     /// A closure
     Closure,
 };

@@ -9,23 +9,29 @@
 namespace EmojicodeCompiler {
 
 void VTCreator::assign(Function *function) {
-    if (function->superBoxingLayer() != nullptr) {
-        auto vti = klass_->findSuperFunction(function)->unspecificReification().vti();
-        auto layer = function->superBoxingLayer();
-        layer->createUnspecificReification();
-        layer->unspecificReification().setVti(vti);
-        declarator_.declareLlvmFunction(layer);
-        functions_[vti] = function->superBoxingLayer()->unspecificReification().function;
+    decltype(vti_) designatedVti;
+    if (auto sf = hasSuperClass_ ? klass_->findSuperFunction(function) : nullptr) {
+        designatedVti = sf->unspecificReification().vti();
     }
-    else if (auto sf = hasSuperClass_ ? klass_->findSuperFunction(function) : nullptr) {
-        auto vti = sf->unspecificReification().vti();
-        function->unspecificReification().setVti(vti);
-        functions_[vti] = function->unspecificReification().function;
-        return;
+    else {
+        functions_.emplace_back(nullptr);
+        designatedVti = vti_++;
     }
 
-    function->unspecificReification().setVti(vti_++);
-    functions_.emplace_back(function->unspecificReification().function);
+    if (function->virtualTableThunk() != nullptr) {
+        auto layer = function->virtualTableThunk();
+        layer->createUnspecificReification();
+        declarator_.declareLlvmFunction(layer);
+        functions_[designatedVti] = layer->unspecificReification().function;
+
+        functions_.emplace_back(function->unspecificReification().function);
+        function->unspecificReification().setVti(designatedVti);
+        vti_++;
+    }
+    else {
+        function->unspecificReification().setVti(designatedVti);
+        functions_[designatedVti] = function->unspecificReification().function;
+    }
 }
 
 void VTCreator::build() {
@@ -40,10 +46,14 @@ void VTCreator::build() {
 }
 
 void VTCreator::assign() {
-    klass_->eachFunction([this](auto *function) {
+    for (auto init : klass_->initializerList()) {
+        init->createUnspecificReification();
+        declarator_.declareLlvmFunction(init);
+    }
+    klass_->eachFunctionWithoutInitializers([this](auto *function) {
         function->createUnspecificReification();
         if (function->unspecificReification().function == nullptr) {
-            // If this is a super boxing layer it was already declared
+            // If this is a super boxing layer it was already declared (see assign(Function*))
             declarator_.declareLlvmFunction(function);
         }
 
@@ -51,16 +61,7 @@ void VTCreator::assign() {
             return;
         }
 
-        if (function->functionType() == FunctionType::ObjectInitializer) {
-            auto initializer = dynamic_cast<Initializer *>(function);
-            if (!initializer->required()) {
-                return;
-            }
-            assign(initializer);
-        }
-        else {
-            assign(function);
-        }
+        assign(function);
     });
     klass_->setVirtualFunctionCount(vti_);
 }

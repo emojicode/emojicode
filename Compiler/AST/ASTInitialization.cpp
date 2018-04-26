@@ -19,14 +19,7 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
     if (type.type() == TypeType::Enum) {
-        initType_ = InitType::Enum;
-
-        auto v = type.enumeration()->getValueFor(name_);
-        if (!v.first) {
-            throw CompilerError(position(), type.toString(analyser->typeContext()), " does not have a member named ",
-                                utf8(name_), ".");
-        }
-        return type;
+        return analyseEnumInit(analyser, type);
     }
 
     if (type.type() == TypeType::ValueType) {
@@ -36,8 +29,23 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
     }
 
     auto initializer = type.typeDefinition()->getInitializer(name_, type, analyser->typeContext(), position());
+    if (!type.isExact() && !initializer->required()) {
+        throw CompilerError(position(), "Type is not exact; can only use required initializer.");
+    }
+
     analyser->analyseFunctionCall(&args_, type, initializer);
     return initializer->constructedType(type);
+}
+
+Type ASTInitialization::analyseEnumInit(FunctionAnalyser *analyser, Type &type) {
+    initType_ = InitType::Enum;
+
+    auto v = type.enumeration()->getValueFor(name_);
+    if (!v.first) {
+        throw CompilerError(position(), type.toString(analyser->typeContext()), " does not have a member named ",
+                            utf8(name_), ".");
+    }
+    return type;
 }
 
 }  // namespace EmojicodeCompiler

@@ -30,7 +30,7 @@ public:
     const Type& errorType() const { return errorType_; }
 
     /// Returns the actual type constructed with this initializer for the given initialized type @c type
-    Type constructedType(Type type) {
+    Type constructedType(Type type) const {
         type.unbox();
         if (errorProne()) {
             return Type(MakeError, errorType_, type);

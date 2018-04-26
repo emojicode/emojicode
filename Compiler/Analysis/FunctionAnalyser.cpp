@@ -11,7 +11,7 @@
 #include "AST/ASTInitialization.hpp"
 #include "AST/ASTLiterals.hpp"
 #include "AST/ASTVariables.hpp"
-#include "BoxingLayerBuilder.hpp"
+#include "ThunkBuilder.hpp"
 #include "Compiler.hpp"
 #include "FunctionAnalyser.hpp"
 #include "Functions/Function.hpp"
@@ -361,7 +361,7 @@ bool FunctionAnalyser::callableBoxingRequired(const TypeExpectation &expectation
 
 Type FunctionAnalyser::callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     if (callableBoxingRequired(expectation, exprType)) {
-        auto layer = buildBoxingLayer(expectation, exprType, function()->package(), (*node)->position());
+        auto layer = buildBoxingThunk(expectation, exprType, function()->package(), (*node)->position());
         insertNode<ASTCallableBox>(node, exprType, layer.get());
         analyser_->enqueueFunction(layer.get());
         function()->package()->add(std::move(layer));

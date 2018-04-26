@@ -55,13 +55,8 @@ void Class::inherit(SemanticAnalyser *analyser) {
         protocols_.emplace_back(protocol);
     }
 
-    eachFunction([this, analyser](Function *function) {
-        if (function->functionType() == FunctionType::ObjectInitializer) {
-            checkInheritedRequiredInit(dynamic_cast<Initializer *>(function), analyser);
-        }
-        else {
-            checkOverride(function, analyser);
-        }
+    eachFunctionWithoutInitializers([this, analyser](Function *function) {
+        checkOverride(function, analyser);
     });
 }
 
@@ -69,32 +64,19 @@ void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
     auto superFunction = findSuperFunction(function);
     if (function->overriding()) {
         if (superFunction == nullptr || superFunction->accessLevel() == AccessLevel::Private) {
-            analyser->compiler()->error(CompilerError(function->position(), utf8(function->name()),
-                                                      " was declared ✒️ but does not override anything."));
+            throw CompilerError(function->position(), utf8(function->name()),
+                                " was declared ✒️ but does not override anything.");
         }
         auto layer = analyser->enforcePromises(function, superFunction, Type(superclass()),
                                                TypeContext(Type(this)), TypeContext());
         if (layer != nullptr) {
-            function->setSuperBoxingLayer(layer.get());
+            function->setVirtualTableThunk(layer.get());
             addMethod(std::move(layer));
         }
     }
     else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
         analyser->compiler()->error(CompilerError(function->position(), "If you want to override ",
                                                   utf8(function->name()), " add ✒️."));
-    }
-}
-
-void Class::checkInheritedRequiredInit(Initializer *initializer, SemanticAnalyser *analyser) {
-    auto superInit = findSuperFunction(initializer);
-    if (superInit == nullptr) {
-        return;
-    }
-    auto layer = analyser->enforcePromises(initializer, superInit, Type(superclass()),
-                                           TypeContext(Type(this)), TypeContext());
-    if (layer != nullptr) {
-        initializer->setSuperBoxingLayer(layer.get());
-        addMethod(std::move(layer));
     }
 }
 

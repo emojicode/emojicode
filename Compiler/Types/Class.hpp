@@ -78,7 +78,6 @@ public:
     FT* findSuperFunction(FT *function) const {
         switch (function->functionType()) {
             case FunctionType::ObjectMethod:
-            case FunctionType::BoxingLayer:
                 return ifNotPrivate(superclass()->lookupMethod(function->name(), function->isImperative()));
             case FunctionType::ClassMethod:
                 return ifNotPrivate(superclass()->lookupTypeMethod(function->name(), function->isImperative()));
@@ -102,15 +101,10 @@ public:
 private:
     std::set<std::u32string> requiredInitializers_;
 
-    /// Checks that @c function, if at all, is a valid override. If it is, function is assigned the super functions
-    /// virtual table index.
+    /// Checks that @c function, if at all, is a valid override.
     /// @pre superclass() != nullptr
     /// @throws CompilerError if the override is improper, e.g. implicit
     void checkOverride(Function *function, SemanticAnalyser *analyser);
-    /// Checks whether initializer is the implementation of a required initializer. If it is the method validates
-    /// that the implementation is valid and assigns it the super initializers virtual table index.
-    /// @pre superclass() != nullptr
-    void checkInheritedRequiredInit(Initializer *initializer, SemanticAnalyser *analyser);
 
     std::vector<llvm::Constant *> virtualTable_;
     size_t virtualFunctionCount_ = 0;

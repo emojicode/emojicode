@@ -44,7 +44,7 @@ llvm::GlobalVariable *ProtocolsTableGenerator::createVirtualTable(const Type &ty
 
     for (auto protocolMethod : protocol.protocol()->methodList()) {
         for (auto reification : protocolMethod->reificationMap()) {
-            auto implFunction = typeDef->lookupMethod(protocolMethod->protocolBoxingLayerName(protocol.protocol()->name()),
+            auto implFunction = typeDef->lookupMethod(protocolMethod->protocolBoxingThunk(protocol.protocol()->name()),
                                                       protocolMethod->isImperative());
             if (implFunction == nullptr) {
                 implFunction = typeDef->lookupMethod(protocolMethod->name(), protocolMethod->isImperative());

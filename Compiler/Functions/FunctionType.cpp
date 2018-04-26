@@ -19,7 +19,7 @@ bool isFullyInitializedCheckRequired(FunctionType type) {
 }
 
 bool isSelfAllowed(FunctionType type) {
-    return type != FunctionType::Function && type != FunctionType::ClassMethod;
+    return type != FunctionType::Function;
 }
 
 bool hasInstanceScope(FunctionType type) {

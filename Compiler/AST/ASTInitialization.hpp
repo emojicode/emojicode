@@ -14,6 +14,8 @@
 
 namespace EmojicodeCompiler {
 
+enum class CallType;
+
 class ASTInitialization final : public ASTExpr {
 public:
     enum class InitType {
@@ -38,7 +40,7 @@ public:
     InitType initType() { return initType_; }
 
     static Value *initObject(FunctionCodeGenerator *fg, const ASTArguments &args, const std::u32string &name,
-                                 const Type &type);
+                             const Type &type);
 private:
     InitType initType_ = InitType::Class;
     std::u32string name_;
@@ -49,6 +51,8 @@ private:
     Value* generateClassInit(FunctionCodeGenerator *fg) const;
     Value* generateMemoryAllocation(FunctionCodeGenerator *fg) const;
     Value* generateInitValueType(FunctionCodeGenerator *fg) const;
+
+    Type analyseEnumInit(FunctionAnalyser *analyser, Type &type);
 };
 
 }  // namespace EmojicodeCompiler

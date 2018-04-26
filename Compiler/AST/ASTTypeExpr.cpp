@@ -7,6 +7,7 @@
 //
 
 #include "ASTTypeExpr.hpp"
+#include "ASTLiterals.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Types/TypeExpectation.hpp"
 
@@ -34,8 +35,6 @@ Type ASTStaticType::analyse(FunctionAnalyser *analyser, const TypeExpectation &e
     return type_;
 }
 
-Type ASTThisType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    return analyser->typeContext().calleeType();
-}
+ASTThisType::ASTThisType(const SourcePosition &p) : ASTTypeFromExpr(std::make_shared<ASTThis>(p), p) {}
 
 }  // namespace EmojicodeCompiler

@@ -35,11 +35,13 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
         return InitializationCallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
                 .generate(nullptr, typeExpr_->expressionType(), args_, name_);
     }
+
     if (typeExpr_->expressionType().isExact()) {
         return initObject(fg, args_, name_, typeExpr_->expressionType());
     }
-    // TODO: class table lookup
-    throw std::logic_error("Unimplemented");
+
+    return TypeMethodCallCodeGenerator(fg, CallType::DynamicDispatchOnType)
+            .generate(typeExpr_->generate(fg), typeExpr_->expressionType(), args_, std::u32string({ E_KEY }) + name_);
 }
 
 Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const {
@@ -53,15 +55,11 @@ Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const
 }
 
 Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArguments &args, const std::u32string &name,
-                                      const Type &type) {
+                                     const Type &type) {
     auto llvmType = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(type));
-
     auto obj = fg->alloc(llvmType);
-
     fg->builder().CreateStore(type.klass()->classMeta(), fg->getObjectMetaPtr(obj));
-
-    auto callGen = InitializationCallCodeGenerator(fg, CallType::StaticDispatch);
-    return callGen.generate(obj, type, args, name);
+    return InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(obj, type, args, name);
 }
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {
