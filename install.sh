@@ -2,7 +2,7 @@
 
 n=$(tput sgr0)
 cyan=$(tput setaf 6)
-magenta=$(tput setaf 5)
+bold=$(tput bold)
 r=$(tput setaf 1)
 
 binaries=${1:-"/usr/local/bin"}
@@ -15,9 +15,12 @@ if [[ "$magicsudod" == "magicsudod" ]]; then
   echo "I’ve super user privileges now and will try to perform the installation."
 else
   echo "👨‍💻  Hi, I’m the Emojicode Installer!"
+  echo
 
-  echo "I’ll copy the ${cyan}Emojicode Compiler${n} and ${magenta}Real-Time Engine${n} to ${binaries}.${n}"
-  echo "Then I’ll copy the packages to ${packages}.${n}"
+  echo "${bold}I’ll copy the ${cyan}Emojicode Compiler${n}${bold} to ${binaries}.${n}"
+  echo "${bold}Then I’ll copy the default packages to ${packages}.${n}"
+  echo "If you prefer different locations you can rerun me and provide me with other locations like so:"
+  echo -e "\t ${0} [binary location] [packages location]\n"
 fi
 
 function offerSudo {
@@ -66,14 +69,13 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     set -e
     echo "Copying builds${n}"
 
-    cp emojicode "$binaries/emojicode"
     cp emojicodec "$binaries/emojicodec"
 
-    chmod 755 "$binaries/emojicode" "$binaries/emojicodec"
+    chmod 755 "$binaries/emojicodec"
 
     echo "Copying packages${n}"
 
-    rsync -rl --copy-dirlinks packages/ "$packages"
+    rsync -rl packages/ "$packages"
     chmod -R 755 "$packages"
   )
   if [ $? = 0 ]
