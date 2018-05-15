@@ -75,6 +75,7 @@ compilation_tests = [
     "includer",
     "threads",
     "inferListLiteralFromExpec",
+    "sequenceTypeNames",
 ]
 library_tests = [
     "primitives",
@@ -137,6 +138,19 @@ def reject_test(filename):
         fail_test(filename)
 
 
+def available_compilation_tests():
+    paths = glob.glob(os.path.join(dist.source, "tests", "compilation",
+                                   "*.emojic"))
+
+    map_it = map(lambda f: os.path.splitext(os.path.basename(f))[0], paths)
+    tests = list(map_it)
+    tests.remove('included')
+    return tests
+
+
+avl_compilation_tests = available_compilation_tests()
+
+
 def prettyprint_test(name):
     source_path = test_paths(name, 'compilation')[0]
     run([emojicodec, '-f', source_path], check=True)
@@ -148,6 +162,7 @@ def prettyprint_test(name):
 
 
 for test in compilation_tests:
+    avl_compilation_tests.remove(test)
     compilation_test(test)
 # for test in compilation_tests:
 #     prettyprint_test(test)
@@ -161,6 +176,9 @@ os.chdir(os.path.join(dist.source, "tests", "s"))
 os.environ["TEST_ENV_1"] = "The day starts like the rest I've seen"
 for test in library_tests:
     library_test(test)
+
+for file in avl_compilation_tests:
+    print("☢️  {0} is not in compilation test list.".format(file))
 
 if len(failed_tests) == 0:
     print("✅ ✅  All tests passed.")
