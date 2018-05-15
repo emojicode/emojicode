@@ -76,6 +76,7 @@ compilation_tests = [
     "threads",
     "inferListLiteralFromExpec",
     "sequenceTypeNames",
+    "typeValues",
 ]
 library_tests = [
     "primitives",

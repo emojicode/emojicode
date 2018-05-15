@@ -23,7 +23,7 @@ Type ASTInferType::analyse(FunctionAnalyser *analyser, const TypeExpectation &ex
 }
 
 Type ASTTypeFromExpr::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto value = expr_->analyse(analyser, expectation);
+    auto value = analyser->expect(expectation, &expr_);
     if (value.type() != TypeType::TypeAsValue) {
         throw CompilerError(position(), "Expected type value.");
     }

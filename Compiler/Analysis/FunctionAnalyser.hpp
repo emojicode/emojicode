@@ -66,7 +66,7 @@ public:
 
     /// Analyses @c node and sets the expression type of the node to the type that will be returned.
     /// @returns The type denoted by the $type-expression$ resolved by Type::resolveOnSuperArgumentsAndConstraints.
-    Type analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp);
+    Type analyseTypeExpr(const std::shared_ptr<ASTExpr> &node, const TypeExpectation &exp);
 
     /// Checks that the function can be accessed or issues an error. Checks that the function is not deprecated
     /// and issues a warning otherwise.

@@ -79,7 +79,7 @@ private:
 
 class ASTCast final : public ASTExpr {
 public:
-    ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTTypeExpr> type,
+    ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTExpr> type,
             const SourcePosition &p) : ASTExpr(p), value_(std::move(value)), typeExpr_(std::move(type)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
@@ -90,7 +90,7 @@ private:
     };
     CastType castType_;
     std::shared_ptr<ASTExpr> value_;
-    std::shared_ptr<ASTTypeExpr> typeExpr_;
+    std::shared_ptr<ASTExpr> typeExpr_;
     Value* downcast(FunctionCodeGenerator *fg) const;
     Value* castToClass(FunctionCodeGenerator *fg, Value *box) const;
     Value* castToValueType(FunctionCodeGenerator *fg, Value *box) const;

@@ -143,7 +143,14 @@ public:
     /// @returns The type itself if type() does not return TypeType::Optional or optionalType() if it does.
     Type unoptionalized() const { return type() == TypeType::Optional ? optionalType() : *this; }
 
-    const Type& typeOfTypeValue() const { assert(type() == TypeType::TypeAsValue); return genericArguments_[0]; }
+    Type typeOfTypeValue() const {
+        assert(type() == TypeType::TypeAsValue);
+        auto t = genericArguments_[0];
+        if (forceBox_) {
+            t.forceBox_ = true;
+        }
+        return t;
+    }
 
     const Type& errorType() const { assert(type() == TypeType::Error); return genericArguments_[1]; }
     const Type& errorEnum() const { assert(type() == TypeType::Error); return genericArguments_[0]; }

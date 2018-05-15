@@ -46,7 +46,7 @@ Type FunctionAnalyser::byte() {
     return Type(compiler()->sByte);
 }
 
-Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTTypeExpr> &node, const TypeExpectation &exp) {
+Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTExpr> &node, const TypeExpectation &exp) {
     auto type = node->analyse(this, exp).resolveOnSuperArgumentsAndConstraints(typeContext_);
     node->setExpressionType(type);
     return type;
