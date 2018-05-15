@@ -124,7 +124,13 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
         return t;
     }
 
-    auto c = typeContext.calleeType().canHaveGenericArguments() ? typeContext.calleeType().typeDefinition() : nullptr;
+    TypeDefinition *c = nullptr;
+    if (typeContext.calleeType().canHaveGenericArguments()) {
+        c = typeContext.calleeType().typeDefinition();
+    }
+    else if (typeContext.calleeType().type() == TypeType::TypeAsValue) {
+        c = typeContext.calleeType().typeOfTypeValue().typeDefinition();
+    }
     bool box = t.storageType() == StorageType::Box;
 
     if (c != nullptr) {

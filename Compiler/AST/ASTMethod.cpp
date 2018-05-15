@@ -26,10 +26,10 @@ Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32
                                       std::shared_ptr<ASTExpr> &callee, const Type &otype) {
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     if (builtIn(analyser, type, name)) {
-        analyser->comply(otype, TypeExpectation(false, false), &callee);
+        analyser->comply(type, TypeExpectation(false, false), &callee);
     }
     else {
-        calleeType_ = analyser->comply(otype, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
+        calleeType_ = analyser->comply(type, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     }
 
     if (type.type() == TypeType::MultiProtocol) {

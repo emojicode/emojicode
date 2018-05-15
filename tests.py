@@ -56,6 +56,7 @@ compilation_tests = [
     "genericsValueType",
     "genericProtocol",
     "genericProtocolValueType",
+    "genericTypeMethod",
     "variableInitAndScoping",
     # "valueTypeRemoteAdditional",
     "closureBasic",
