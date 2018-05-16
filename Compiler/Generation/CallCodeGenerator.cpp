@@ -33,15 +33,20 @@ Function *CallCodeGenerator::lookupFunction(const Type &type, const std::u32stri
     return type.typeDefinition()->lookupMethod(name, imperative);
 }
 
-llvm::Value *CallCodeGenerator::createCall(const std::vector<Value *> &args, const Type &type,
+llvm::Value *CallCodeGenerator::createCall(std::vector<Value *> &args, const Type &type,
                                            const std::u32string &name, bool imperative,
                                            const std::vector<Type> &genericArguments) {
     auto function = lookupFunction(type, name, imperative);
     assert(function != nullptr);
     switch (callType_) {
         case CallType::StaticContextfreeDispatch:
-        case CallType::StaticDispatch:
-            return fg_->builder().CreateCall(function->reificationFor(genericArguments).function, args);
+        case CallType::StaticDispatch: {
+            auto llvmFn = function->reificationFor(genericArguments).function;
+            if (!args.empty() && args.front()->getType() != llvmFn->args().begin()->getType()) {
+                args.front() = fg()->builder().CreateBitCast(args.front(), llvmFn->args().begin()->getType());
+            }
+            return fg_->builder().CreateCall(llvmFn, args);
+        }
         case CallType::DynamicDispatch:
         case CallType::DynamicDispatchOnType:
             assert(type.type() == TypeType::Class);

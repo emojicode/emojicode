@@ -35,7 +35,7 @@ public:
     CallType callType() const { return callType_; }
 protected:
     virtual Function *lookupFunction(const Type &type, const std::u32string &name, bool imperative);
-    llvm::Value *createCall(const std::vector<llvm::Value *> &args, const Type &type, const std::u32string &name,
+    llvm::Value *createCall(std::vector<llvm::Value *> &args, const Type &type, const std::u32string &name,
                             bool imperative, const std::vector<Type> &genericArguments);
 
     FunctionCodeGenerator* fg() const { return fg_; }
