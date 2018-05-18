@@ -108,7 +108,6 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr) {
 
     generateFunctions();
 
-    llvm::verifyModule(*module(), &llvm::outs());
     emit(outPath, printIr);
 }
 

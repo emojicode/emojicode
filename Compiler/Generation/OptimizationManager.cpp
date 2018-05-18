@@ -31,7 +31,6 @@ void OptimizationManager::optimize(llvm::Function *function) {
     if (optimize_) {
         functionPassManager_->run(*function);
     }
-    // llvm::outs() << *function;
 }
 
 }  // namespace EmojicodeCompiler
