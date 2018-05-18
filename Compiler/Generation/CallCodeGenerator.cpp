@@ -42,10 +42,15 @@ llvm::Value *CallCodeGenerator::createCall(std::vector<Value *> &args, const Typ
         case CallType::StaticContextfreeDispatch:
         case CallType::StaticDispatch: {
             auto llvmFn = function->reificationFor(genericArguments).function;
+            llvm::Type *castTo = nullptr;
             if (!args.empty() && args.front()->getType() != llvmFn->args().begin()->getType()) {
+                if (function->functionType() == FunctionType::ObjectInitializer) {
+                    castTo = args.front()->getType();
+                }
                 args.front() = fg()->builder().CreateBitCast(args.front(), llvmFn->args().begin()->getType());
             }
-            return fg_->builder().CreateCall(llvmFn, args);
+            auto ret = fg_->builder().CreateCall(llvmFn, args);
+            return castTo == nullptr ? ret : fg_->builder().CreateBitCast(ret, castTo);
         }
         case CallType::DynamicDispatch:
         case CallType::DynamicDispatchOnType:
