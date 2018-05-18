@@ -252,9 +252,11 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             auto arguments = parseArguments(token.position());
             return std::make_shared<ASTSuper>(initializerToken.value(), arguments, token.position());
         }
-        case TokenType::Call:
-            return std::make_shared<ASTCallableCall>(parseExpr(kPrefixPrecedence), parseArguments(token.position()),
+        case TokenType::Call: {
+            auto expr = parseExpr(kPrefixPrecedence);
+            return std::make_shared<ASTCallableCall>(expr, parseArguments(token.position()),
                                                      token.position());
+        }
         case TokenType::Class:
         case TokenType::Enumeration:
         case TokenType::ValueType:
