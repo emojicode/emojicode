@@ -33,7 +33,6 @@ enum class OperatorType {
     LogicalOrOperator,
     EqualOperator,
     IdentityOperator,
-    CallOperator,
 };
 
 /// @returns The precedence of the given operator. Operators with higher values are evaluated first.

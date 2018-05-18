@@ -56,7 +56,8 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::Class: return "Class";
         case TokenType::Protocol: return "Protocol";
         case TokenType::ValueType: return "ValueType";
-        case TokenType ::Enumeration: return "Enumeration";
+        case TokenType::Enumeration: return "Enumeration";
+        case TokenType::Call: return "Call";
     }
 }
 

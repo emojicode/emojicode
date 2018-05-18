@@ -209,14 +209,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseRight(std::shared_ptr<ASTExpr> lef
     int peakedPre;
     while (precendence < (peakedPre = peakOperatorPrecedence())) {
         auto token = stream_.consumeToken();
-        OperatorType type = operatorType(token.value());
-        if (type == OperatorType::CallOperator) {
-            left = std::make_shared<ASTCallableCall>(left, parseArguments(token.position()), token.position());
-        }
-        else {
-            auto right = parseExpr(peakedPre);
-            left = std::make_shared<ASTBinaryOperator>(type, left, right, token.position());
-        }
+        auto right = parseExpr(peakedPre);
+        left = std::make_shared<ASTBinaryOperator>(operatorType(token.value()), left, right, token.position());
     }
     return left;
 }
@@ -258,6 +252,9 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             auto arguments = parseArguments(token.position());
             return std::make_shared<ASTSuper>(initializerToken.value(), arguments, token.position());
         }
+        case TokenType::Call:
+            return std::make_shared<ASTCallableCall>(parseExpr(kPrefixPrecedence), parseArguments(token.position()),
+                                                     token.position());
         case TokenType::Class:
         case TokenType::Enumeration:
         case TokenType::ValueType:

@@ -54,8 +54,6 @@ OperatorType operatorType(const std::u32string &value) {
             return OperatorType::EqualOperator;
         case E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE:
             return OperatorType::IdentityOperator;
-        case E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK:
-            return OperatorType::CallOperator;
     }
     return OperatorType::Invalid;
 }
@@ -98,8 +96,6 @@ std::u32string operatorName(OperatorType type) {
             return std::u32string(1, E_HANDS_RAISED_IN_CELEBRATION);
         case OperatorType::IdentityOperator:
             return std::u32string(1, E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE);
-        case OperatorType::CallOperator:
-            return std::u32string(1, E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK);
         case OperatorType::Invalid:
             throw std::invalid_argument("Invalid operator");
     }
@@ -107,8 +103,6 @@ std::u32string operatorName(OperatorType type) {
 
 int operatorPrecedence(OperatorType type) {
     switch (type) {
-        case OperatorType::CallOperator:
-            return 12;
         case OperatorType::MultiplicationOperator:
         case OperatorType::DivisionOperator:
         case OperatorType::RemainderOperator:

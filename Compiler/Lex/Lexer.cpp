@@ -64,7 +64,7 @@ void Lexer::loadOperatorSingleTokens() {
     singleTokens_.emplace(E_PUT_LITTER_IN_ITS_SPACE, TokenType::Operator);
     singleTokens_.emplace(E_HANDS_RAISED_IN_CELEBRATION, TokenType::Operator);
     singleTokens_.emplace(E_FACE_WITH_STUCK_OUT_TONGUE_AND_WINKING_EYE, TokenType::Operator);
-    singleTokens_.emplace(E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK, TokenType::Operator);
+    singleTokens_.emplace(E_RED_EXCLAMATION_MARK_AND_QUESTION_MARK, TokenType::Call);
 }
 
 void Lexer::skipWhitespace() {
