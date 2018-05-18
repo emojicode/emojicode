@@ -12,6 +12,10 @@
 
 namespace EmojicodeCompiler {
 
+Value* ASTUpcast::generate(FunctionCodeGenerator *fg) const {
+    return fg->builder().CreateBitCast(expr_->generate(fg), fg->typeHelper().llvmTypeFor(toType_));
+}
+
 ASTBoxing::ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType,
                      const SourcePosition &p) : ASTExpr(p), expr_(std::move(expr)) {
     setExpressionType(exprType);
@@ -29,7 +33,7 @@ Value* ASTBoxing::getSimpleOptional(Value *value, FunctionCodeGenerator *fg) con
     return fg->getSimpleOptionalWithValue(value, expressionType());
 }
 
-llvm::Value * ASTBoxing::getSimpleError(llvm::Value *value, EmojicodeCompiler::FunctionCodeGenerator *fg) const {
+Value* ASTBoxing::getSimpleError(llvm::Value *value, EmojicodeCompiler::FunctionCodeGenerator *fg) const {
     auto undef = llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(expressionType()));
     auto error = fg->builder().CreateInsertValue(undef, fg->getErrorNoError(), 0);
     return fg->builder().CreateInsertValue(error, value, 1);

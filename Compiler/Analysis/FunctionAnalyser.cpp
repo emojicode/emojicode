@@ -242,6 +242,11 @@ Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation,
         return exprType;
     }
 
+    if (exprType.type() == TypeType::Class && expectation.type() == TypeType::Class &&
+        expectation.klass() != exprType.klass()) {
+        insertNode<ASTUpcast>(node, exprType, expectation);
+    }
+
     exprType = callableBox(std::move(exprType), expectation, node);
 
     if (exprType.isReference() && !expectation.isReference()) {

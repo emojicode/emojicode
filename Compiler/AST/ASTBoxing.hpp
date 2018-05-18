@@ -15,7 +15,6 @@
 namespace EmojicodeCompiler {
 
 class ASTBoxing : public ASTExpr {
-
 public:
     ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p);
 protected:
@@ -47,6 +46,18 @@ protected:
 
 private:
     bool init_ = false;
+};
+
+class ASTUpcast final : public ASTBoxing {
+public:
+    ASTUpcast(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p, const Type &toType) :
+        ASTBoxing(expr, exprType, p), toType_(toType) {}
+
+    Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
+    Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(Prettyprinter &pretty) const override {}
+private:
+    Type toType_;
 };
 
 class ASTBoxToSimpleOptional final : public ASTBoxing {
