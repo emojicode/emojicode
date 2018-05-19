@@ -83,7 +83,11 @@ void FunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePos
 std::shared_ptr<ASTStatement> FunctionParser::parseStatement() {
     const Token token = stream_.consumeToken();
     try {
-        return handleStatementToken(token);
+        auto stmt = handleStatementToken(token);
+        if (stream_.skipsBlankLine()) {
+            stmt->setParagraph();
+        }
+        return stmt;
     }
     catch (CompilerError &e) {
         package_->compiler()->error(e);

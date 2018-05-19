@@ -58,6 +58,8 @@ const char* Token::stringNameForType(TokenType type) {
         case TokenType::ValueType: return "ValueType";
         case TokenType::Enumeration: return "Enumeration";
         case TokenType::Call: return "Call";
+        case TokenType::BlankLine: return "BlankLine";
+        case TokenType::LineBreak: return "Line Break";
     }
 }
 

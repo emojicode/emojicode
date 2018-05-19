@@ -50,6 +50,9 @@ void ASTBlock::innerToCode(Prettyprinter &pretty) const {
     for (auto &stmt : stmts_) {
         stmt->toCode(pretty);
         pretty << "\n";
+        if (stmt->paragraph()) {
+            pretty << "\n";
+        }
     }
     pretty.decreaseIndent();
 }

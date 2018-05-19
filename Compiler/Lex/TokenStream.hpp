@@ -17,7 +17,7 @@ namespace EmojicodeCompiler {
 class Lexer;
 
 /// TokenStream provides a convenient interface to Lexer. It allows a lookahead of one token.
-/// TokenStream skips comments.
+/// TokenStream skips comments and line breaks and provides handling for blank lines.
 class TokenStream {
 public:
     explicit TokenStream(Lexer lexer) : lexer_(std::move(lexer)), nextToken_(lexer_.lex()) {}
@@ -85,22 +85,31 @@ public:
      the given character. */
     bool consumeTokenIf(TokenType type);
 
+    /// Whether a blank line is between the last consumed token and nextToken().
+    bool skipsBlankLine() const { return skippedBlankLine_; }
+
 private:
     Token advanceLexer() {
+        skippedBlankLine_ = false;
         auto temp = std::move(nextToken_);
         do {
             if (lexer_.continues()) {
                 nextToken_ = lexer_.lex();
+                if (nextToken_.type() == TokenType::BlankLine) {
+                    skippedBlankLine_ = true;
+                }
             }
             else {
                 moreTokens_ = false;
                 break;
             }
-        } while (nextToken_.type() == TokenType::SinglelineComment || nextToken_.type() == TokenType::MultilineComment);
+        } while (nextToken_.type() == TokenType::SinglelineComment || nextToken_.type() == TokenType::MultilineComment
+                 || nextToken_.type() == TokenType::LineBreak || nextToken_.type() == TokenType::BlankLine);
         return temp;
     }
 
     bool moreTokens_ = true;
+    bool skippedBlankLine_ = false;
     Lexer lexer_;
     Token nextToken_;
 };

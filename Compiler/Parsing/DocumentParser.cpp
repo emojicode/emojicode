@@ -82,7 +82,7 @@ void DocumentParser::parse() {
                         break;  // and fallthrough to the error
                 }
             default:
-                throw CompilerError(theToken.position(), "Unexpected identifier ", utf8(theToken.value()));
+                throw CompilerError(theToken.position(), "Unexpected token ", theToken.stringName());
         }
 
 

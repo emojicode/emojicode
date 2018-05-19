@@ -22,6 +22,8 @@ enum class TokenType {
     String,
     MultilineComment,
     SinglelineComment,
+    LineBreak,
+    BlankLine,
     DocumentationComment,
     Integer,
     Double,

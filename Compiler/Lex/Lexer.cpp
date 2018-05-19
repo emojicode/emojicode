@@ -78,7 +78,7 @@ bool Lexer::detectWhitespace() {
         sourcePosition_.character = 0;
         sourcePosition_.line++;
         source_->endLine(i_ + 1);
-        return true;
+        return false;
     }
     return isWhitespace();
 }
@@ -159,7 +159,11 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
             break;
     }
 
-    if (('0' <= codePoint() && codePoint() <= '9') || codePoint() == '-' || codePoint() == '+') {
+    if (isNewline()) {
+        token->type_ = TokenType::LineBreak;
+        return hasMoreChars();
+    }
+    else if (('0' <= codePoint() && codePoint() <= '9') || codePoint() == '-' || codePoint() == '+') {
         token->type_ = TokenType::Integer;
         constState->isHex_ = false;
     }
@@ -200,6 +204,12 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
         case TokenType::Symbol:
             token->value_.push_back(codePoint());
             return TokenState::Ended;
+        case TokenType::LineBreak:
+            if (isNewline()) {
+                token->type_ = TokenType::BlankLine;
+                return TokenState::Ended;
+            }
+            return isWhitespace() ? hasMoreChars() ? TokenState::Continues : TokenState::Ended : TokenState::NextBegun;
         default:
             throw std::logic_error("Lexer: Token continued but not handled.");
     }
