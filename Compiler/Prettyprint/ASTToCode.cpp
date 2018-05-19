@@ -26,16 +26,13 @@
 namespace EmojicodeCompiler {
 
 void ASTArguments::toCode(Prettyprinter &pretty) const {
-    if (arguments_.empty()) {
-        pretty << "❗️";
-        return;
+    if (!arguments_.empty()) {
+        pretty << " ";
+        for (auto &arg : arguments_) {
+            arg->toCode(pretty);
+        }
     }
-
-    pretty << " ";
-    for (auto &arg : arguments_) {
-        arg->toCode(pretty);
-    }
-    pretty.refuseOffer() << "❗️";
+    pretty.refuseOffer() << (imperative_ ? "❗️" : "❓️");
 }
 
 void ASTBlock::toCode(Prettyprinter &pretty) const {
@@ -185,8 +182,8 @@ void ASTSizeOf::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTCallableCall::toCode(Prettyprinter &pretty) const {
-    callable_->toCode(pretty);
     pretty << "⁉️";
+    callable_->toCode(pretty);
     args_.toCode(pretty);
 }
 
