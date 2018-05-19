@@ -31,7 +31,7 @@ void ASTArguments::toCode(Prettyprinter &pretty) const {
         return;
     }
 
-    pretty << "❕";
+    pretty << " ";
     for (auto &arg : arguments_) {
         arg->toCode(pretty);
     }
@@ -134,6 +134,13 @@ void ASTConstantVariable::toCode(Prettyprinter &pretty) const {
 void ASTConditionalAssignment::toCode(Prettyprinter &pretty) const {
     expr_->toCode(pretty);
     pretty << " ➡️ " << utf8(varName_);
+}
+
+void ASTOperatorAssignment::toCode(Prettyprinter &pretty) const {
+    pretty.indent();
+    auto binaryOperator = dynamic_cast<ASTBinaryOperator *>(expr_.get());
+    pretty << utf8(name()) << " ⬅️" << utf8(operatorName(binaryOperator->operatorType())) << " ";
+    binaryOperator->right()->toCode(pretty);
 }
 
 void ASTGetVariable::toCode(Prettyprinter &pretty) const {

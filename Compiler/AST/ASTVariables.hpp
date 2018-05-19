@@ -120,6 +120,15 @@ public:
     void toCode(Prettyprinter &pretty) const override;
 };
 
+enum class OperatorType;
+
+class ASTOperatorAssignment final : public ASTVariableAssignment {
+public:
+    ASTOperatorAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e, const SourcePosition &p,
+                          OperatorType opType);
+    void toCode(Prettyprinter &pretty) const override;
+};
+
 }  // namespace EmojicodeCompiler
 
 #endif /* ASTVariables_hpp */

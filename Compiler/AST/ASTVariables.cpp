@@ -12,6 +12,7 @@
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
+#include "ASTBinaryOperator.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -75,5 +76,11 @@ void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
     var.initialize();
     setVariableAccess(ResolvedVariable(var, false), analyser);
 }
+
+ASTOperatorAssignment::ASTOperatorAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,
+                                             const SourcePosition &p, OperatorType opType) :
+ASTVariableAssignment(name,
+                      std::make_shared<ASTBinaryOperator>(opType, std::make_shared<ASTGetVariable>(name, p), e, p),
+                      p) {}
 
 }  // namespace EmojicodeCompiler

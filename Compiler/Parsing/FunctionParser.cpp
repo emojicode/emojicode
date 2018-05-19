@@ -140,9 +140,7 @@ std::shared_ptr<ASTStatement> FunctionParser::parseExprStatement(const Token &to
     if (token.type() == TokenType::Variable && stream_.nextTokenIs(TokenType::LeftProductionOperator)) {
         stream_.consumeToken();
         auto opType = operatorType(stream_.consumeToken(TokenType::Operator).value());
-        auto get = std::make_shared<ASTGetVariable>(token.value(), token.position());
-        auto opExpr = std::make_shared<ASTBinaryOperator>(opType, get, parseExpr(0), token.position());
-        return std::make_shared<ASTVariableAssignment>(token.value(), opExpr, token.position());
+        return std::make_shared<ASTOperatorAssignment>(token.value(), parseExpr(0), token.position(), opType);
     }
 
     auto expr = parseExprTokens(token, 0);

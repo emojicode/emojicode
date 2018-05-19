@@ -18,7 +18,12 @@ namespace EmojicodeCompiler {
 class ASTBinaryOperator : public ASTMethodable {
 public:
     ASTBinaryOperator(OperatorType op, std::shared_ptr<ASTExpr> left, std::shared_ptr<ASTExpr> right,
-                      const SourcePosition &p) : ASTMethodable(p), operator_(op), left_(std::move(left)), right_(std::move(right)) {}
+                      const SourcePosition &p) : ASTMethodable(p), operator_(op), left_(std::move(left)),
+                                                 right_(std::move(right)) {}
+
+    OperatorType operatorType() const { return operator_; }
+    const std::shared_ptr<ASTExpr>& right() const { return right_; }
+
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
