@@ -169,7 +169,7 @@ void ASTStaticType::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTTypeFromExpr::toCode(Prettyprinter &pretty) const {
-    pretty << "🔳";
+    pretty << "⬛️";
     expr_->toCode(pretty);
 }
 
@@ -232,8 +232,11 @@ void ASTRaise::toCode(Prettyprinter &pretty) const {
 }
 
 void ASTReturn::toCode(Prettyprinter &pretty) const {
-    pretty.indent() << "↩️ ";
-    if (value_ != nullptr) {
+    if (value_ == nullptr) {
+        pretty.indent() << "↩️↩️";
+    }
+    else {
+        pretty.indent() << "↩️ ";
         value_->toCode(pretty);
     }
 }

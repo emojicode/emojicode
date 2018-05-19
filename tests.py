@@ -155,7 +155,7 @@ avl_compilation_tests = available_compilation_tests()
 
 def prettyprint_test(name):
     source_path = test_paths(name, 'compilation')[0]
-    run([emojicodec, '-f', source_path], check=True)
+    run([emojicodec, '--format', source_path], check=True)
     try:
         compilation_test(name)
     except CalledProcessError:
@@ -166,11 +166,11 @@ def prettyprint_test(name):
 for test in compilation_tests:
     avl_compilation_tests.remove(test)
     compilation_test(test)
-# for test in compilation_tests:
-#     prettyprint_test(test)
+for test in compilation_tests:
+    prettyprint_test(test)
 
-# included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
-# os.rename(included + '_original', included)
+included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
+os.rename(included + '_original', included)
 
 for test in reject_tests:
     reject_test(test)

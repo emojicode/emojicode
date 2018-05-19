@@ -75,11 +75,11 @@ std::u32string operatorName(OperatorType type) {
         case OperatorType::LessOperator:
             return std::u32string(1, E_LEFT_POINTING_TRIANGLE);
         case OperatorType::GreaterOperator:
-            return { E_RIGHT_POINTING_TRIANGLE, E_HANDS_RAISED_IN_CELEBRATION };
+            return std::u32string(1, E_RIGHT_POINTING_TRIANGLE);
         case OperatorType::LessOrEqualOperator:
             return { E_LEFT_POINTING_TRIANGLE, E_HANDS_RAISED_IN_CELEBRATION };
         case OperatorType::GreaterOrEqualOperator:
-            return std::u32string(1, E_RIGHTWARDS_ARROW);
+            return { E_RIGHT_POINTING_TRIANGLE, E_HANDS_RAISED_IN_CELEBRATION };
         case OperatorType::BitwiseAndOperator:
             return std::u32string(1, E_HEAVY_LARGE_CIRCLE);
         case OperatorType::BitwiseOrOperator:

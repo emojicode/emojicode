@@ -522,6 +522,11 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
                 auto str = typeContext.calleeType().typeDefinition()->findGenericName(type.genericVariableIndex());
                 string.append(utf8(str));
             }
+            else if (typeContext.calleeType().type() == TypeType::TypeAsValue) {
+                auto callee = typeContext.calleeType().typeOfTypeValue();
+                auto str = callee.typeDefinition()->findGenericName(type.genericVariableIndex());
+                string.append(utf8(str));
+            }
             else {
                 string.append("T" + std::to_string(type.genericVariableIndex()) + "?");
             }
