@@ -14,13 +14,19 @@
 
 namespace EmojicodeCompiler {
 
+class SourceFile;
+
 /// SourcePosition denotes a location in a source code file.
 struct SourcePosition {
-    SourcePosition(size_t line, size_t character, std::string file) : line(line), character(character),
-                                                                      file(std::move(file)) {}
+    SourcePosition(size_t line, size_t character, SourceFile *file) : line(line), character(character), file(file) {}
+
     size_t line;
     size_t character;
-    std::string file;
+    SourceFile *file;
+
+    /// @returns The line into which this SourcePosition points or an empty string if the line cannot be
+    /// returned for whatever reason.
+    std::u32string wholeLine() const;
 };
 
 }  // namespace EmojicodeCompiler

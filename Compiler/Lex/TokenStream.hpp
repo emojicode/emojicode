@@ -92,19 +92,27 @@ private:
     Token advanceLexer() {
         skippedBlankLine_ = false;
         auto temp = std::move(nextToken_);
-        do {
+        while (true) {
             if (lexer_.continues()) {
                 nextToken_ = lexer_.lex();
                 if (nextToken_.type() == TokenType::BlankLine) {
                     skippedBlankLine_ = true;
+                    continue;
+                }
+                else if (nextToken_.type() == TokenType::SinglelineComment ||
+                         nextToken_.type() == TokenType::MultilineComment) {
+                    nextToken_.position().file->addComment(std::move(nextToken_));
+                    continue;
+                }
+                else if (nextToken_.type() == TokenType::LineBreak) {
+                    continue;
                 }
             }
             else {
                 moreTokens_ = false;
-                break;
             }
-        } while (nextToken_.type() == TokenType::SinglelineComment || nextToken_.type() == TokenType::MultilineComment
-                 || nextToken_.type() == TokenType::LineBreak || nextToken_.type() == TokenType::BlankLine);
+            break;
+        }
         return temp;
     }
 

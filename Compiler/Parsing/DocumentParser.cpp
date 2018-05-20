@@ -132,7 +132,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
 
 void DocumentParser::parseInclude(const SourcePosition &p) {
     auto pathString = stream_.consumeToken(TokenType::String);
-    auto relativePath = std::string(pathString.position().file);
+    auto relativePath = std::string(pathString.position().file->path());
     auto originalPathString = utf8(pathString.value());
     auto fileString = originalPathString;
 

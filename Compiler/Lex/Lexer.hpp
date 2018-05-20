@@ -27,9 +27,7 @@ namespace EmojicodeCompiler {
 class Lexer {
 public:
     /// @param sourceCode The Emojicode source code that shall be analyzed.
-    /// @param sourcePositionFile The name or path to the file that contained the source code. This string is used as
-    ///                           SourcePosition::file value for the position of all tokens created by this Lexer.
-    Lexer(SourceManager::File *source, std::string sourcePositionFile);
+    Lexer(SourceFile *source);
 
     /// @returns The next token.
     /// @throws CompilerError if an error occurs during tokenization.
@@ -106,7 +104,7 @@ private:
 
     SourcePosition sourcePosition_;
     bool continue_ = true;
-    SourceManager::File *source_;
+    SourceFile *source_;
     size_t i_ = 0;
     std::map<char32_t, TokenType> singleTokens_;
 
@@ -124,7 +122,7 @@ private:
 
     TokenState continueSingleLineToken(Token *token, TokenConstructionState *constState) const;
 
-    TokenState continueMultilineComment(TokenConstructionState *constState) const;
+    TokenState continueMultilineComment(Token *token, TokenConstructionState *constState) const;
     void handleEscapeSequence(Token *token, TokenConstructionState *constState) const;
 };
 

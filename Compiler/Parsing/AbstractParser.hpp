@@ -47,7 +47,7 @@ public:
 private:
     std::u32string documentation_;
     bool found_ = false;
-    SourcePosition position_ = SourcePosition(0, 0, "");
+    SourcePosition position_ = SourcePosition(0, 0, nullptr);
 };
 
 struct TypeIdentifier {

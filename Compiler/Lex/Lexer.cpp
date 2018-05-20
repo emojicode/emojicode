@@ -1,4 +1,4 @@
-//
+    //
 //  Lexer.c
 //  Emojicode
 //
@@ -13,8 +13,7 @@
 
 namespace EmojicodeCompiler {
 
-Lexer::Lexer(SourceManager::File *source, std::string sourcePositionFile) :
-        sourcePosition_(1, 0, std::move(sourcePositionFile)), source_(source) {
+Lexer::Lexer(SourceFile *source) : sourcePosition_(1, 0, source), source_(source) {
     skipWhitespace();
 
     loadOperatorSingleTokens();
@@ -186,7 +185,7 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
         case TokenType::SinglelineComment:
             return continueSingleLineToken(token, constState);
         case TokenType::MultilineComment:
-            return continueMultilineComment(constState);
+            return continueMultilineComment(token, constState);
         case TokenType::DocumentationComment:
             if (codePoint() == E_GREEN_TEXTBOOK) {
                 return TokenState::Ended;
@@ -215,9 +214,10 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
     }
 }
 
-Lexer::TokenState Lexer::continueMultilineComment(Lexer::TokenConstructionState *constState) const {
+Lexer::TokenState Lexer::continueMultilineComment(Token *token, TokenConstructionState *constState) const {
     if (!constState->commentDetermined_) {
         if (codePoint() == E_THOUGHT_BALLOON) {
+            token->value_.pop_back();
             return TokenState::Ended;
         }
         constState->commentDetermined_ = true;
@@ -225,6 +225,7 @@ Lexer::TokenState Lexer::continueMultilineComment(Lexer::TokenConstructionState 
     if (codePoint() == E_END_ARROW) {
         constState->commentDetermined_ = false;
     }
+    token->value_.push_back(codePoint());
     return TokenState::Continues;
 }
 
@@ -232,6 +233,7 @@ Lexer::TokenState Lexer::continueSingleLineToken(Token *token, TokenConstruction
     if (!constState->commentDetermined_) {
         if (codePoint() == E_SOON_ARROW) {
             token->type_ = TokenType::MultilineComment;
+            return TokenState::Continues;
         }
         else {
             constState->commentDetermined_ = true;
@@ -241,6 +243,7 @@ Lexer::TokenState Lexer::continueSingleLineToken(Token *token, TokenConstruction
     if (isNewline()) {
         return TokenState::Ended;
     }
+    token->value_.push_back(codePoint());
     return TokenState::Continues;
 }
 

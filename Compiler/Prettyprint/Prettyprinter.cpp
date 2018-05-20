@@ -17,8 +17,10 @@
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
 #include "Types/Extension.hpp"
+#include "Lex/SourceManager.hpp"
 #include <algorithm>
 #include <cstdio>
+#include <iostream>
 
 namespace EmojicodeCompiler {
 
@@ -42,6 +44,7 @@ void Prettyprinter::print() {
                 printReturnType(package_->startFlagFunction());
                 stream_ << " ";
             }
+            lastCommentQuery_ = package_->startFlagFunction()->position();
             package_->startFlagFunction()->ast()->toCode(*this);
         }
     }
@@ -314,6 +317,7 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
     printArguments(function);
     printReturnType(function);
     if (body && !interface_) {
+        lastCommentQuery_ = function->position();
         function->ast()->toCode(*this);
         offerNewLine();
     }
@@ -336,6 +340,29 @@ void Prettyprinter::printNamespaceAccessor(const Type &type) {
     if (!ns.empty()) {
         stream_ << "🔶" << utf8(ns);
     }
+}
+
+void Prettyprinter::printComments(const SourcePosition &p) {
+    if (p.file == nullptr) {
+        return;
+    }
+    p.file->findComments(lastCommentQuery_, p, [this, &p](const Token &comment) {
+        if (whitespaceOffer_ == '\n') {
+            if (comment.position().line >= p.line) {
+                stream_ << whitespaceOffer_;
+                whitespaceOffer_ = 0;
+                indent();
+            }
+            else {
+                stream_ << "  ";
+            }
+        }
+
+        stream_ << (comment.type() == TokenType::MultilineComment ? "💭🔜" : "💭") << utf8(comment.value());
+        if (comment.type() == TokenType::MultilineComment) stream_ << "🔚💭";
+        else offerNewLine();
+    });
+    lastCommentQuery_ = p;
 }
 
 }  // namespace EmojicodeCompiler

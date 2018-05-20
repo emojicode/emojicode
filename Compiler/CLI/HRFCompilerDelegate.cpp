@@ -32,7 +32,10 @@ void HRFCompilerDelegate::printMessage(const std::string &message) const {
 }
 
 void HRFCompilerDelegate::printPosition(const SourcePosition &p) const {
-    std::cerr << rang::style::bold << p.file << ":" << p.line << ":" << p.character << ": ";
+    std::cerr << rang::style::bold;
+    if (p.file != nullptr) {
+        std::cerr << p.file->path() << ":" << p.line << ":" << p.character << ": ";
+    }
 }
 
 void HRFCompilerDelegate::warn(Compiler *compiler, const std::string &message, const SourcePosition &p) {
@@ -43,7 +46,7 @@ void HRFCompilerDelegate::warn(Compiler *compiler, const std::string &message, c
 }
 
 void HRFCompilerDelegate::printOffendingCode(Compiler *compiler, const SourcePosition &position) {
-    auto line = compiler->sourceManager().line(position);
+    auto line = position.wholeLine();
     if (line.empty()) {
         return;
     }

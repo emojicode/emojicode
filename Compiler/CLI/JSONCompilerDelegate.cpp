@@ -33,7 +33,7 @@ void JSONCompilerDelegate::printJson(const char *type, const SourcePosition &p, 
     writer_.Key("character");
     writer_.Uint64(p.character);
     writer_.Key("file");
-    writer_.String(p.file);
+    writer_.String(p.file == nullptr ? "" : p.file->path());
     writer_.Key("message");
     writer_.String(message);
     writer_.EndObject();

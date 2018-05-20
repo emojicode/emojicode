@@ -9,35 +9,44 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include "Token.hpp"
 
 namespace EmojicodeCompiler {
 
 struct SourcePosition;
 
+class SourceFile {
+public:
+    explicit SourceFile(std::u32string file, std::string path) : content_(std::move(file)), path_(path) {}
+    const std::u32string& file() const { return content_; }
+    const std::string& path() const { return path_; }
+
+    void endLine(size_t end) { lines_.emplace_back(end); }
+    const std::vector<size_t>& lines() const { return lines_; }
+
+    void addComment(Token &&token) {
+        comments_.emplace(std::make_pair(token.position().line, token.position().character), token);
+    }
+
+    void findComments(const SourcePosition &a, const SourcePosition &b,
+                      std::function<void (const Token &)> comment) const;
+private:
+    const std::u32string content_;
+    const std::string path_;
+    std::vector<size_t> lines_ = {0};
+    std::map<std::pair<size_t, size_t>, Token> comments_;
+};
+
 /// The SourceManager is responsible for reading source files. It caches their content and can provide lines from
 /// source files.
 class SourceManager {
 public:
-    class File {
-    public:
-        explicit File(std::u32string file) : file_(std::move(file)) {}
-        const std::u32string& file() const { return file_; }
-
-        void endLine(size_t end) { lines_.emplace_back(end); }
-        const std::vector<size_t>& lines() const { return lines_; }
-    private:
-        const std::u32string file_;
-        std::vector<size_t> lines_ = {0};
-    };
-
     /// Reads the file at the provided path.
     /// @param file Path to the source file.
-    File* read(std::string file);
-    /// @returns The line into which the provided SourcePosition points or an empty string if the line cannot be
-    /// returned for whatever reason.
-    std::u32string line(const SourcePosition &pos);
+    SourceFile* read(std::string file);
+
 private:
-    std::map<std::string, std::unique_ptr<File>> cache_;
+    std::map<std::string, std::unique_ptr<SourceFile>> cache_;
 };
 
 }  // namespace EmojicodeCompiler

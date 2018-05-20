@@ -9,6 +9,7 @@
 #include "CompatibilityInfoProvider.hpp"
 #include "CompilerError.hpp"
 #include "Functions/Function.hpp"
+#include "Lex/SourceManager.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -41,7 +42,7 @@ CompatibilityInfoProvider::CompatibilityInfoProvider(const std::string &path) {
 }
 
 void CompatibilityInfoProvider::selectFunction(Function *function) {
-    selection_.selectedFunction_ = &files_[function->position().file][function->position().line];
+    selection_.selectedFunction_ = &files_[function->position().file->path()][function->position().line];
     selection_.index_ = 0;
 }
 

@@ -92,7 +92,7 @@ void Compiler::linkToExecutable() {
         cmd << " " << path;
     }
 
-    auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition(0, 0, mainFile_)), "runtime");
+    auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition(0, 0, nullptr)), "runtime");
     cmd << " " << runtimeLib << " -lm -lpthread -o " << outPath_;
 
     system(cmd.str().c_str());

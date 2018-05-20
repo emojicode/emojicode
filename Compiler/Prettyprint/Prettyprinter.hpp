@@ -55,6 +55,8 @@ public:
 
     void printClosure(Function *function);
 
+    void printComments(const SourcePosition &p);
+
     /// Appends the requested amount of indentation characters to the stream and returns it.
     Prettyprinter& indent() { return *this << std::string(indentation_ * 2, ' '); }
 
@@ -79,6 +81,7 @@ private:
     unsigned int indentation_ = 0;
     bool interface_ = false;
     size_t interfaceFileIndex = 1;
+    SourcePosition lastCommentQuery_ = SourcePosition(0, 0, nullptr);
 
     void printRecordings(const std::vector<std::unique_ptr<RecordingPackage::Recording>> &recordings);
     void print(const char *key, Function *function, bool body, bool noMutate);
