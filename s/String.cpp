@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cctype>
+#include <cmath>
 #include <algorithm>
 #include "utf8.h"
 
@@ -146,4 +147,108 @@ extern "C" s::Data* sStringToData(String *string) {
     data->data = runtime::allocate<runtime::Byte>(data->count);
     u8_toutf8(reinterpret_cast<char *>(data->data), data->count, string->characters, string->count);
     return data;
+}
+
+runtime::SimpleOptional<runtime::Integer> sStringToIntLength(const String::Character *characters,
+                                                             runtime::Integer length, runtime::Integer base) {
+    if (length == 0) {
+        return runtime::NoValue;
+    }
+    runtime::Integer x = 0;
+    for (decltype(length) i = 0; i < length; i++) {
+        if (i == 0 && (characters[i] == '-' || characters[i] == '+')) {
+            if (length < 2) {
+                return runtime::NoValue;
+            }
+            continue;
+        }
+
+        auto b = base;
+        if ('0' <= characters[i] && characters[i] <= '9') {
+            b = characters[i] - '0';
+        }
+        else if ('A' <= characters[i] && characters[i] <= 'Z') {
+            b = characters[i] - 'A' + 10;
+        }
+        else if ('a' <= characters[i] && characters[i] <= 'z') {
+            b = characters[i] - 'a' + 10;
+        }
+
+        if (b >= base) {
+            return runtime::NoValue;
+        }
+
+        x *= base;
+        x += b;
+    }
+
+    if (characters[0] == '-') {
+        x *= -1;
+    }
+    return x;
+}
+
+extern "C" runtime::SimpleOptional<runtime::Integer> sStringToInt(String *string, runtime::Integer base) {
+    return sStringToIntLength(string->characters, string->count, base);
+}
+
+extern "C" runtime::SimpleOptional<runtime::Real> sStringToReal(String *string) {
+    if (string->count == 0) {
+        return runtime::NoValue;
+    }
+
+    runtime::Real d = 0.0;
+    bool sign = true;
+    bool foundSeparator = false;
+    bool foundDigit = false;
+    size_t decimalPlace = 0;
+    decltype(string->count) i = 0;
+
+    if (string->characters[0] == '-') {
+        sign = false;
+        i++;
+    }
+    else if (string->characters[0] == '+') {
+        i++;
+    }
+
+    for (; i < string->count; i++) {
+        if (string->characters[i] == '.') {
+            if (foundSeparator) {
+                return runtime::NoValue;
+            }
+            foundSeparator = true;
+            continue;
+        }
+        if (string->characters[i] == 'e' || string->characters[i] == 'E') {
+            auto exponent = sStringToIntLength(string->characters + i + 1, string->count - i - 1, 10);
+            if (exponent == runtime::NoValue) {
+                return runtime::NoValue;
+            }
+            d *= std::pow(10, *exponent);
+            break;
+        }
+        if ('0' <= string->characters[i] && string->characters[i] <= '9') {
+            d *= 10;
+            d += string->characters[i] - '0';
+            if (foundSeparator) {
+                decimalPlace++;
+            }
+            foundDigit = true;
+        }
+        else {
+            return runtime::NoValue;
+        }
+    }
+
+    if (!foundDigit) {
+        return runtime::NoValue;
+    }
+
+    d /= std::pow(10, decimalPlace);
+
+    if (!sign) {
+        d *= -1;
+    }
+    return d;
 }

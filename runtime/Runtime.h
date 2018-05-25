@@ -73,6 +73,18 @@ class SimpleOptional {
 public:
     SimpleOptional(NoValue_t) : value_(0) {}
     SimpleOptional(Type content) : value_(1), content_(content) {}
+
+    bool operator==(NoValue_t) const {
+        return !value_;
+    }
+
+    Type& operator*() {
+        return content_;
+    }
+
+    const Type& operator*() const {
+        return content_;
+    }
 private:
     Boolean value_;
     Type content_;
