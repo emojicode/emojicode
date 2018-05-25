@@ -35,7 +35,28 @@ void ProtocolsTableGenerator::declareImportedProtocolsTable(const Type &type) {
     type.typeDefinition()->setProtocolTables(std::move(tables));
 }
 
-llvm::GlobalVariable *ProtocolsTableGenerator::createVirtualTable(const Type &type, const Type &protocol) {
+llvm::GlobalVariable* ProtocolsTableGenerator::multiprotocol(const Type &multiprotocol, const Type &conformer) {
+    auto pair = std::make_pair(multiprotocol, conformer.typeDefinition());
+    auto it = multiprotocolTables_.find(pair);
+    if (it != multiprotocolTables_.end()) {
+        return it->second;
+    }
+
+    std::vector<llvm::Constant *> virtualTable;
+    for (auto protocol : multiprotocol.protocols()) {
+        virtualTable.emplace_back(conformer.typeDefinition()->protocolTableFor(protocol));
+    }
+
+    auto arrayType = llvm::ArrayType::get(typeHelper_.protocolConformance()->getPointerTo(),
+                                          multiprotocol.protocols().size());
+    auto array = llvm::ConstantArray::get(arrayType, virtualTable);
+    auto var = new llvm::GlobalVariable(module_, arrayType, true, llvm::GlobalValue::LinkageTypes::PrivateLinkage,
+                                        array, mangleMultiprotocolConformance(multiprotocol, conformer));
+    multiprotocolTables_.emplace(pair, var);
+    return var;
+}
+
+llvm::GlobalVariable* ProtocolsTableGenerator::createVirtualTable(const Type &type, const Type &protocol) {
     auto typeDef = type.typeDefinition();
     auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context_), protocol.protocol()->methodList().size());
 
@@ -64,7 +85,7 @@ llvm::GlobalVariable *ProtocolsTableGenerator::createVirtualTable(const Type &ty
     return getConformanceVariable(type, protocol, conformance);
 }
 
-llvm::GlobalVariable *ProtocolsTableGenerator::getConformanceVariable(const Type &type, const Type &protocol,
+llvm::GlobalVariable* ProtocolsTableGenerator::getConformanceVariable(const Type &type, const Type &protocol,
                                                                       llvm::Constant *conformance) const {
     return new llvm::GlobalVariable(module_, typeHelper_.protocolConformance(), true,
                                     llvm::GlobalValue::ExternalLinkage, conformance,

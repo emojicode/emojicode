@@ -155,10 +155,20 @@ void ASTToBox::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerato
 }
 
 void ASTToBox::setBoxMeta(Value *box, FunctionCodeGenerator *fg) const {
-    if (toType().type() == TypeType::Protocol) {
-        auto ptr = fg->builder().CreateBitCast(fg->getMetaTypePtr(box),
-                                               fg->typeHelper().protocolConformance()->getPointerTo()->getPointerTo());
-        fg->builder().CreateStore(expr_->expressionType().typeDefinition()->protocolTableFor(toType()), ptr);
+    if (toType().type() == TypeType::Protocol || toType().type() == TypeType::MultiProtocol) {
+        llvm::Value *table;
+        llvm::Type *type;
+        if (toType().type() == TypeType::MultiProtocol) {
+            type = fg->typeHelper().multiprotocolConformance(toType());
+            table = fg->generator()->protocolsTG().multiprotocol(toType(), expr_->expressionType());
+
+        }
+        else {
+            type = fg->typeHelper().protocolConformance();
+            table = expr_->expressionType().typeDefinition()->protocolTableFor(toType());
+        }
+        auto ptr = fg->builder().CreateBitCast(fg->getMetaTypePtr(box), type->getPointerTo()->getPointerTo());
+        fg->builder().CreateStore(table, ptr);
         return;
     }
     auto metaType = fg->generator()->valueTypeMetaFor(expr_->expressionType().unoptionalized());

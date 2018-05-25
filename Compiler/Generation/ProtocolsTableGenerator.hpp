@@ -7,7 +7,8 @@
 
 #include <cstddef>
 #include <vector>
-#include <Types/Type.hpp>
+#include <map>
+#include "Types/Type.hpp"
 
 namespace llvm {
 class Constant;
@@ -28,16 +29,18 @@ public:
             : context_(context), module_(module), typeHelper_(typeHelper) {}
     void createProtocolsTable(const Type &type);
     void declareImportedProtocolsTable(const Type &type);
+    llvm::GlobalVariable* multiprotocol(const Type &multiprotocol, const Type &conformer);
 
 private:
     llvm::LLVMContext &context_;
     llvm::Module &module_;
     LLVMTypeHelper &typeHelper_;
+    std::map<std::pair<Type, TypeDefinition*>, llvm::GlobalVariable*> multiprotocolTables_;
 
     /// Creates a virtual table (dispatch table) for the given protocol.
     /// @param protocol The protocol for which the virtual table is created.
     /// @param type The type definition from which methods will be dispatched.
-    llvm::GlobalVariable* createVirtualTable(const Type &type, const EmojicodeCompiler::Type &protocol);
+    llvm::GlobalVariable* createVirtualTable(const Type &type, const Type &protocol);
 
     llvm::GlobalVariable *getConformanceVariable(const Type &type, const Type &protocol, llvm::Constant *conformance) const;
 };

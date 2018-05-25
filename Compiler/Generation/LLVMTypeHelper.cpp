@@ -63,6 +63,10 @@ llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llv
     return llvm::StructType::get(context_, types);
 }
 
+llvm::ArrayType* LLVMTypeHelper::multiprotocolConformance(const Type &type) {
+    return llvm::ArrayType::get(protocolConformance()->getPointerTo(), type.protocols().size());
+}
+
 llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     std::vector<llvm::Type *> args;
     if (function->functionType() == FunctionType::Closure) {

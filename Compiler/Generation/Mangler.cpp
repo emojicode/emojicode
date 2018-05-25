@@ -115,4 +115,14 @@ std::string mangleProtocolConformance(const Type &type, const Type &protocol) {
     return stream.str();
 }
 
+std::string mangleMultiprotocolConformance(const Type &multi, const Type &conformer) {
+    std::stringstream stream;
+    mangleTypeName(stream, conformer);
+    stream << "_multi";
+    for (auto protocol : multi.protocols()) {
+        mangleTypeName(stream, protocol);
+    }
+    return stream.str();
+}
+
 }  // namespace EmojicodeCompiler

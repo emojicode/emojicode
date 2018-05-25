@@ -25,6 +25,7 @@ std::string mangleTypeName(const Type &type);
 std::string mangleClassMetaName(Class *klass);
 std::string mangleValueTypeMetaName(const Type &type);
 std::string mangleProtocolConformance(const Type &type, const Type &protocol);
+std::string mangleMultiprotocolConformance(const Type &multi, const Type &conformer);
 
 }  // namespace EmojicodeCompiler
 

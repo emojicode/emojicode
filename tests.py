@@ -48,7 +48,7 @@ compilation_tests = [
     "protocolEnum",
     "protocolGenericLayerClass",
     "protocolGenericLayerValueType",
-    # "protocolMulti",
+    "protocolMulti",
     # "assignmentByCallProtocol",
     "commonType",
     # "typeAlias",

@@ -104,11 +104,12 @@ Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std:
 }
 
 Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name, const Type &type) {
-    for (auto &protocol : type.protocols()) {
+    for (; multiprotocolN_ < type.protocols().size(); multiprotocolN_++) {
         Function *method;
+        auto &protocol = type.protocols()[multiprotocolN_];
         if ((method = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
+            builtIn_ = BuiltInType::Multiprotocol;
             callType_ = CallType::DynamicProtocolDispatch;
-            calleeType_ = protocol;
             return analyser->analyseFunctionCall(&args_, protocol, method);
         }
     }

@@ -16,6 +16,7 @@
 namespace llvm {
 class Type;
 class StructType;
+class ArrayType;
 }  // namespace llvm
 
 namespace EmojicodeCompiler {
@@ -56,6 +57,7 @@ public:
     llvm::StructType* protocolConformance() const { return protocolsTable_; }
 
     llvm::StructType *llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
+    llvm::ArrayType *multiprotocolConformance(const Type &type);
 
     void setReificationContext(ReificationContext *context) { reifiContext_ = context; };
 

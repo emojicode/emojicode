@@ -38,13 +38,14 @@ protected:
         IntegerRemainder, IntegerToDouble, IntegerNot,
         BooleanAnd, BooleanOr, BooleanNegate,
         Equal, Store, Load, IsNoValueLeft, IsNoValueRight,
-        TypeMethod,
+        TypeMethod, Multiprotocol,
     };
 
     BuiltInType builtIn_ = BuiltInType::None;
     ASTArguments args_;
     CallType callType_ = CallType::None;
     Type calleeType_ = Type::noReturn();
+    size_t multiprotocolN_ = 0;
 private:
     bool builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name);
 

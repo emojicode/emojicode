@@ -17,31 +17,16 @@
 
 namespace EmojicodeCompiler {
 
-llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &calleeType, const ASTArguments &args,
+llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, const ASTArguments &astArgs,
                                          const std::u32string &name) {
-    std::vector<Value *> argsVector;
-    if (callType_ != CallType::StaticContextfreeDispatch) {
-        argsVector.emplace_back(callee);
-    }
-    for (auto &arg : args.parameters()) {
-        argsVector.emplace_back(arg->generate(fg_));
-    }
-    return createCall(argsVector, calleeType, name, args.isImperative(), args.genericArguments());
-}
+    auto args = createArgsVector(callee, astArgs);
 
-Function *CallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {
-    return type.typeDefinition()->lookupMethod(name, imperative);
-}
-
-llvm::Value *CallCodeGenerator::createCall(std::vector<Value *> &args, const Type &type,
-                                           const std::u32string &name, bool imperative,
-                                           const std::vector<Type> &genericArguments) {
-    auto function = lookupFunction(type, name, imperative);
+    auto function = lookupFunction(type, name, astArgs.isImperative());
     assert(function != nullptr);
     switch (callType_) {
         case CallType::StaticContextfreeDispatch:
         case CallType::StaticDispatch: {
-            auto llvmFn = function->reificationFor(genericArguments).function;
+            auto llvmFn = function->reificationFor(astArgs.genericArguments()).function;
             llvm::Type *castTo = nullptr;
             if (!args.empty() && args.front()->getType() != llvmFn->args().begin()->getType()) {
                 if (function->functionType() == FunctionType::ObjectInitializer) {
@@ -55,13 +40,50 @@ llvm::Value *CallCodeGenerator::createCall(std::vector<Value *> &args, const Typ
         case CallType::DynamicDispatch:
         case CallType::DynamicDispatchOnType:
             assert(type.type() == TypeType::Class);
-            return createDynamicDispatch(function, args, genericArguments);
-        case CallType::DynamicProtocolDispatch:
+            return createDynamicDispatch(function, args, astArgs.genericArguments());
+        case CallType::DynamicProtocolDispatch: {
             assert(type.type() == TypeType::Protocol);
-            return createDynamicProtocolDispatch(function, args, type, genericArguments);
+            auto conformanceType = fg()->typeHelper().protocolConformance();
+            auto conformancePtr = fg()->builder().CreateBitCast(fg()->getMetaTypePtr(args.front()),
+                                                                conformanceType->getPointerTo()->getPointerTo());
+            return createDynamicProtocolDispatch(function, args, astArgs.genericArguments(), conformancePtr);
+        }
         case CallType::None:
             throw std::domain_error("CallType::None is not a valid call type");
     }
+}
+
+std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, const ASTArguments &args) const {
+    std::vector<Value *> argsVector;
+    if (callType_ != CallType::StaticContextfreeDispatch) {
+        argsVector.emplace_back(callee);
+    }
+    for (auto &arg : args.parameters()) {
+        argsVector.emplace_back(arg->generate(fg_));
+    }
+    return argsVector;
+}
+
+Function *CallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {
+    return type.typeDefinition()->lookupMethod(name, imperative);
+}
+
+llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const Type &calleeType,
+                                                      const ASTArguments &args,
+                                                      const std::u32string &name, size_t multiprotocolN) {
+    assert(calleeType.type() == TypeType::MultiProtocol);
+
+    auto function = lookupFunction(calleeType.protocols()[multiprotocolN], name, args.isImperative());
+    assert(function != nullptr);
+    auto argsv = createArgsVector(callee, args);
+
+    auto mpt = fg()->typeHelper().multiprotocolConformance(calleeType);
+    auto mp = fg()->builder().CreateBitCast(fg()->getMetaTypePtr(argsv.front()),
+                                            mpt->getPointerTo()->getPointerTo());
+    auto mpl = fg()->builder().CreateLoad(mp);
+    mpl->getType()->print(llvm::outs());
+    auto conformancePtr = fg()->builder().CreateConstGEP2_32(mpt, mpl, 0, multiprotocolN);
+    return createDynamicProtocolDispatch(function, std::move(argsv), args.genericArguments(), conformancePtr);
 }
 
 llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llvm::Value *virtualTable,
@@ -94,17 +116,14 @@ llvm::Value *CallCodeGenerator::createDynamicDispatch(Function *function, const 
 }
 
 llvm::Value *CallCodeGenerator::createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
-                                                              const Type &calleeType,
-                                                              const std::vector<Type> &genericArgs) {
-    auto conformanceType = fg()->typeHelper().protocolConformance();
-    auto conformancePtr = fg()->builder().CreateBitCast(fg()->getMetaTypePtr(args.front()),
-                                                        conformanceType->getPointerTo()->getPointerTo());
+                                                              const std::vector<Type> &genericArgs,
+                                                              llvm::Value *conformancePtr) {
     auto conformance = fg()->builder().CreateLoad(conformancePtr, "protocolConformance");
 
     args.front() = getProtocolCallee(args, conformance);
 
-    auto table = fg()->builder().CreateLoad(fg()->builder().CreateConstGEP2_32(conformanceType, conformance, 0, 1),
-                                            "table");
+    auto table = fg()->builder().CreateLoad(fg()->builder().CreateConstGEP2_32(conformance->getType()->getPointerElementType(),
+                                                                               conformance, 0, 1), "table");
     return dispatchFromVirtualTable(function, table, args, genericArgs);
 }
 

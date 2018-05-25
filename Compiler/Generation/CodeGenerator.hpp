@@ -39,6 +39,7 @@ public:
     LLVMTypeHelper& typeHelper() { return typeHelper_; }
     StringPool& stringPool() { return pool_; }
     Declarator& declarator() { return declarator_; }
+    ProtocolsTableGenerator& protocolsTG() { return protocolsTableGenerator_; }
 
     /// Returns the package for which this code generator was created.
     Package* package() const { return package_; }

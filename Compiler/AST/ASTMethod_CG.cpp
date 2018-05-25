@@ -37,6 +37,9 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             case BuiltInType::TypeMethod:
                 return TypeMethodCallCodeGenerator(fg, callType_).generate(callee_->generate(fg),
                                                                            calleeType_, args_, name_);
+            case BuiltInType::Multiprotocol:
+                return MultiprotocolCallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_, args_,
+                                                                              name_, multiprotocolN_);
             default:
                 break;
         }
