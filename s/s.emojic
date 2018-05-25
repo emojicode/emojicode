@@ -23,7 +23,7 @@
   🍉
 
   📗
-    Inverts the boolean. Returns true if this boolean is false, and false if   
+    Inverts the boolean. Returns true if this boolean is false, and false if
     this boolean is true.
   📗
   ❗️ ❎ ➡️ 👌 🍇
@@ -85,7 +85,7 @@
 🍉
 
 📗
-  List, an ordered mutable collection. 
+  List, an ordered mutable collection.
 
   [Read more in the
   language reference.](../../reference/the-s-package.html#-lists)
@@ -104,7 +104,7 @@
 
 📗
   Dictionary, holding key value pairs.
-  
+
   [Read more in the
   language reference.](../../reference/the-s-package.html#-dictionaries)
 📗
@@ -120,7 +120,7 @@
 📗
 🌍 🐊 🍡🐚Element ⚪️ 🍇
   📗
-    Returns the next object. Call this method only if 🔽❓ previously 
+    Returns the next object. Call this method only if 🔽❓ previously
     returned 👍.
   📗
   ❗️ 🔽 ➡️ Element
@@ -162,7 +162,7 @@
 🍉
 
 📗
-  Iterator over a 🐽. 
+  Iterator over a 🐽.
 
   This class is an iterator that can iterate over every type that conforms to
   the 🐽 protocol.
@@ -211,6 +211,18 @@
   ❗️ 💯 ➡️ 💯 🍇
     ↩️ 💯 🐕❗️
   🍉
+
+  📗
+    Converts this integer to a symbol. The value of this integer must be a valid
+    Unicode code point.
+  📗
+  ❗️ 🔣 ➡️ 🔣 📻 🔤sIntToSymbol🔤
+
+  📗
+    Converts this integer to a byte. The value of this integer must be in
+    [-127, 127].
+  📗
+  ❗️ 💧 ➡️ 💧 📻 🔤sIntToByte🔤
 🍉
 
 🐋 💯 🍇

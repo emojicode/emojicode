@@ -41,3 +41,11 @@ extern "C" s::String* sIntToString(runtime::Integer *nptr, runtime::Integer base
     }
     return string;
 }
+
+extern "C" runtime::Symbol sIntToSymbol(runtime::Integer *integer) {
+    return static_cast<runtime::Symbol>(*integer);
+}
+
+extern "C" runtime::Byte sIntToByte(runtime::Integer *integer) {
+    return static_cast<runtime::Byte>(*integer);
+}

@@ -22,7 +22,7 @@ namespace runtime {
 using Integer = int64_t;
 using Symbol = uint32_t;
 using Boolean = int8_t;
-using Byte = uint8_t;
+using Byte = int8_t;
 using Real = double;
 using ClassType = void*;
 using Enum = int64_t;

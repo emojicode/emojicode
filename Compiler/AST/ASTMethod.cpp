@@ -138,6 +138,12 @@ bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const 
             return true;
         }
     }
+    else if (type.typeDefinition() == analyser->compiler()->sByte) {
+        if (name.front() == E_NO_ENTRY_SIGN) {
+            builtIn_ = BuiltInType::IntegerNot;
+            return true;
+        }
+    }
     else if (type.typeDefinition() == analyser->compiler()->sMemory) {
         if (name.front() == 0x1F43D) {
             builtIn_ = BuiltInType::Load;
