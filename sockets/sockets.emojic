@@ -63,7 +63,7 @@
   📗 Not enough space. 📗
   🔘 🐁
   📗 Function not supported. 📗
-  🔘 🙅
+  🔘 ⛔️
   📗 Mathematics argument out of domain of function. 📗
   🔘 🚳
   📗 Invalid argument. 📗
@@ -98,7 +98,7 @@
   📗
     Closes this socket.
   📗
-  ❗️ 🙅 📻 🔤socketsSocketClose🔤
+  ❗️ 🚪 📻 🔤socketsSocketClose🔤
 
   📗
     Tries to read up to *bytes* bytes from the socket. Nothingness is returned
@@ -124,6 +124,6 @@
   📗
     Closes this socket.
   📗
-  ❗️ 🙅 📻 🔤socketsServerClose🔤
+  ❗️ 🚪 📻 🔤socketsServerClose🔤
 🍉
 

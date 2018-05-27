@@ -37,7 +37,7 @@
   🍉
 
   🔒❗️ ↕️ 🍇
-    🍊 size 🙌 count 🍇
+    ↪️ size 🙌 count 🍇
       size ⬅️✖️ 2
       ☣️ 🍇
         🏗 data size✖️⚖️Element❗️
@@ -69,7 +69,7 @@
     than [[🐔❗️]] or the program will panic.
   📗
   ❗️ 🐽 index 🔢 ➡️ Element 🍇
-    🍊 index ▶️ count 👐 index ◀️ 0 🍇
+    ↪️ index ▶️ count 👐 index ◀️ 0 🍇
       🤯🐇💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
     🍉
     ☣️ 🍇
@@ -82,7 +82,7 @@
     than [[🐔❗️]] or the program will panic.
   📗
   ❗️ 🐷 index 🔢 value Element 🍇
-    🍊 index ▶️ count 👐 index ◀️ 0 🍇
+    ↪️ index ▶️ count 👐 index ◀️ 0 🍇
       🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
     🍉
     ☣️ 🍇
@@ -97,7 +97,7 @@
     Returns 👍 unless the index is out of range.
  📗
  ❗️ 🐨 index 🔢 ➡️ 👌 🍇
-    🍊 index ◀️ count 🍇
+    ↪️ index ◀️ count 🍇
       ☣️ 🍇
         🚜 data index✖️⚖️Element data 🤜index ➕ 1🤛✖️⚖️Element 🤜count ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
       🍉
@@ -115,7 +115,7 @@
  📗
  ❗️ 🐵 index 🔢 item Element ➡️ 👌 🍇
     ↕️🐕❗️
-    🍊 index ◀️ count 🍇
+    ↪️ index ◀️ count 🍇
       ☣️ 🍇
         🚜 data 🤜index ➕ 1🤛✖️⚖️Element data index✖️⚖️Element 🤜count ➖ index 🤛✖️⚖️Element❗️
         🐷 data🐚Element item index✖️⚖️Element❗️
@@ -171,7 +171,7 @@
     Complexity: `O(n)`.
   📗
   ❗️ 🐴 capacity 🔢 🍇
-    🍊 capacity ▶️ size 🍇
+    ↪️ capacity ▶️ size 🍇
       capacity ➡️ 🖍size
       ☣️ 🍇
         🏗 data size✖️⚖️Element❗️
@@ -201,7 +201,7 @@
 
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
       🔢 prng 0 count ➖ 1❗️ ➡️ x
-    
+
       ☣️ 🍇
         🐽 data🐚Element i✖️⚖️Element❗️ ➡️ temp
         🐷 data🐚Element 🐽 data🐚Element x✖️⚖️Element❗️ i✖️⚖️Element❗️
@@ -229,7 +229,7 @@
   ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
     🆕🍨🐚Element🐸❗️ ➡️ g
     🔂 element 🐕 🍇
-      🍊 ⁉️ callback element❗️ 🍇
+      ↪️ ⁉️ callback element❗️ 🍇
         🐻 g element❗️
       🍉
     🍉
@@ -244,7 +244,7 @@
   📗
   ❗️ 🐯 callback 🍇Element➡️👌🍉 ➡️ 👌 🍇
     🔂 element 🐕 🍇
-      🍊 ❎ ⁉️callback element❗️ ❗️ 🍇
+      ↪️ ❎ ⁉️callback element❗️ ❗️ 🍇
         ↩️ 👎
       🍉
     🍉
@@ -253,12 +253,12 @@
 
 💭   📗 Tests whether this array and `other` are equal. 📗
 💭   🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
-💭     🍊 ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
+💭     ↪️ ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
 💭       ↩️ 👎
 💭     🍉
 
 💭     🔂 i 🆕⏩⏩  0 🐔🐕❗️ ❗️ 🍇
-💭       🍊 ❎ 🍺🐽 other i❗️ 🙌 🍺 🐽 🐕  i❗️ ❗️ 🍇
+💭       ↪️ ❎ 🍺🐽 other i❗️ 🙌 🍺 🐽 🐕  i❗️ ❗️ 🍇
 💭         ↩️ 👎
 💭       🍉
 💭     🍉

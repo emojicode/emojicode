@@ -81,18 +81,18 @@ void ASTUnsafeBlock::toCode(Prettyprinter &pretty) const {
 
 void ASTIf::toCode(Prettyprinter &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "🍊 ";
+    pretty.indent() << "↪️ ";
     conditions_.front()->toCode(pretty);
     pretty << " ";
     blocks_.front().toCode(pretty);
     for (size_t i = 1; i < conditions_.size(); i++) {
-        pretty.indent() << "🍋 ";
+        pretty.indent() << "🙅↪️ ";
         conditions_[i]->toCode(pretty);
         pretty << " ";
         blocks_[i].toCode(pretty);
     }
     if (hasElse()) {
-        pretty.indent() << "🍓 ";
+        pretty.indent() << "🙅 ";
         blocks_.back().toCode(pretty);
     }
 }

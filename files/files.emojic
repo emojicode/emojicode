@@ -16,7 +16,7 @@
   📗 Not enough space. 📗
   🔘 🐁
   📗 Function not supported. 📗
-  🔘 🙅
+  🔘 ⛔️
   📗 Mathematics argument out of domain of function. 📗
   🔘 🚳
   📗 Invalid argument. 📗
@@ -164,5 +164,5 @@
   ❗️ 💧 📻 🔤filesFileFlush🔤
 
   📗 Closes the file. Reading or writing thereafter is undefined behavior. 📗
-  ❗️ 🙅 📻 🔤filesFileClose🔤
+  ❗️ 🚪 📻 🔤filesFileClose🔤
 🍉

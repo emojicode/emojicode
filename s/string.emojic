@@ -55,10 +55,10 @@
     >!N beings.
   📗
   ❗️ ↔️ b 🔡 ➡️ 🔢 🍇
-    🍊 🐔 b❗️ ◀️ count 🍇
+    ↪️ 🐔 b❗️ ◀️ count 🍇
       ↩️ -1
     🍉
-    🍊 🐔 b❗️ ▶️ count 🍇
+    ↪️ 🐔 b❗️ ▶️ count 🍇
       ↩️ 1
     🍉
 
@@ -72,11 +72,11 @@
     through the specified number of characters.
   📗
   ❗️ 🔪 from 🔢 length 🔢 ➡️ 🔡 🍇
-    🍊 from ▶️️🙌 count 🍇
+    ↪️ from ▶️️🙌 count 🍇
       ↩️ 🔤🔤
     🍉
     length ➡️ 🖍🆕normal_length
-    🍊 from ➕ length ▶️️🙌 count 🍇
+    ↪️ from ➕ length ▶️️🙌 count 🍇
       count ➖ from ➡️ 🖍normal_length
     🍉
 
@@ -130,11 +130,11 @@
     0 ➡️ 🖍🆕lastIndex
     👍 ➡️ 🖍🆕continue
     🔁 continue 🍇
-      🍊 🕵️‍♀️🐕 separator lastIndex❗️ ➡️ newIndex 🍇
+      ↪️ 🕵️‍♀️🐕 separator lastIndex❗️ ➡️ newIndex 🍇
         🐻 list 🔪🐕 lastIndex newIndex ➖ lastIndex❗️❗️
         newIndex ➕ 🐔separator❗️ ➡️ 🖍lastIndex
       🍉
-      🍓 🍇
+      🙅 🍇
         👎 ➡️ 🖍continue
       🍉
     🍉
@@ -155,11 +155,11 @@
     0 ➡️ 🖍🆕 lastIndex
     👍 ➡️ 🖍🆕 continue
     🔁 continue 🍇
-      🍊 🕵️‍♂️ 🐕 separator lastIndex❗️➡️ newIndex  🍇
+      ↪️ 🕵️‍♂️ 🐕 separator lastIndex❗️➡️ newIndex  🍇
         🐻 list 🔪🐕 lastIndex newIndex ➖ lastIndex❗️❗️
         newIndex ➕ 1 ➡️ 🖍lastIndex
       🍉
-      🍓 🍇
+      🙅 🍇
         👎 ➡️ 🖍continue
       🍉
     🍉
@@ -223,7 +223,7 @@
 
   📗 Gets a symbol by its index. 📗
   ❗️ 🐽 index 🔢 ➡️ 🍬🔣 🍇
-    🍊 index ▶️️🙌 count 🍇
+    ↪️ index ▶️️🙌 count 🍇
       ↩️ 🤷‍♂️
     🍉
     ☣️ 🍇
@@ -308,7 +308,7 @@
   ❗️ 🐻 string 🔡 🍇
     🐔string❗️ ➡️ stringSize
     ☣️ 🍇
-      🍊 count ➕ stringSize ▶️ size 🍇
+      ↪️ count ➕ stringSize ▶️ size 🍇
         size ⬅️➕ stringSize
         🏗 data size✖️⚖️🔣❗️
       🍉
@@ -346,7 +346,7 @@
     🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
       🐻 builder 🐽list i❗️ ❗️
 
-      🍊 i ➕ 1 ◀️ 🐔list❗️ 🍇
+      ↪️ i ➕ 1 ◀️ 🐔list❗️ 🍇
         🐻 builder separator❗️
       🍉
     🍉

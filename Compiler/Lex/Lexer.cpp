@@ -28,9 +28,7 @@ Lexer::Lexer(SourceFile *source) : sourcePosition_(1, 0, source), source_(source
     singleTokens_.emplace(E_THUMBS_UP_SIGN, TokenType::BooleanTrue);
     singleTokens_.emplace(E_THUMBS_DOWN_SIGN, TokenType::BooleanFalse);
     singleTokens_.emplace(E_POLICE_CARS_LIGHT, TokenType::Error);
-    singleTokens_.emplace(E_TANGERINE, TokenType::If);
-    singleTokens_.emplace(E_LEMON, TokenType::ElseIf);
-    singleTokens_.emplace(E_STRAWBERRY, TokenType::Else);
+    singleTokens_.emplace(E_LEFT_ARROW_CURVING_RIGHT, TokenType::If);
     singleTokens_.emplace(E_AVOCADO, TokenType::ErrorHandler);
     singleTokens_.emplace(E_GRAPES, TokenType::BlockBegin);
     singleTokens_.emplace(E_WATERMELON, TokenType::BlockEnd);
@@ -352,6 +350,13 @@ Lexer::TokenState Lexer::continueIdentifierToken(Token *token, Lexer::TokenConst
     }
     if (token->value_.front() == E_PERSON_SHRUGGING) {
         token->type_ = TokenType::NoValue;
+    }
+    if (token->value().front() == E_NO_GESTURE) {
+        if (codePoint() == E_LEFT_ARROW_CURVING_RIGHT) {
+            token->type_ = TokenType::ElseIf;
+            return TokenState::Ended;
+        }
+        token->type_ = TokenType::Else;
     }
     return TokenState::NextBegun;
 }

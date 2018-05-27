@@ -15,10 +15,10 @@
 
   📗 Returns 👍 if this is equal to *b*. 📗
   🙌 b 📇 ➡️ 👌 🍇
-    🍊 ❎🐔 b❗️🙌 count❗️ 🍇
+    ↪️ ❎🐔 b❗️🙌 count❗️ 🍇
       ↩️ 👎
     🍉
-    🍊 🐔 b❗️ ▶️ count 🍇
+    ↪️ 🐔 b❗️ ▶️ count 🍇
       ↩️ 👍
     🍉
     ☣️ 🍇
@@ -36,7 +36,7 @@
     and less than [[🐔❗️]] or the program will panic.
   📗
   ❗️ 🐽 index 🔢 ➡️ 💧 🍇
-    🍊 index ▶️🙌 count 👐 index ◀️ 0 🍇
+    ↪️ index ▶️🙌 count 👐 index ◀️ 0 🍇
       🤯🐇💻 🔤Index out of bounds in 📇🐽❗️🔤 ❗️
     🍉
     ☣️ 🍇
@@ -56,13 +56,13 @@
     various techniques to make this as efficient as possible.
   📗
   ❗️ 🔪 from 🔢 length 🔢 ➡️ 📇 🍇
-    🍊 from ▶️️🙌 count 🍇
+    ↪️ from ▶️️🙌 count 🍇
       ☣️ 🍇
         ↩️ 🆕📇🧠 🆕🧠🆕 0❗️ 0❗️
       🍉
     🍉
     length ➡️ 🖍🆕normal_length
-    🍊 from ➕ length ▶️️🙌 count 🍇
+    ↪️ from ➕ length ▶️️🙌 count 🍇
       count ➖ from ➡️ 🖍normal_length
     🍉
 
