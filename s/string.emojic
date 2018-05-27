@@ -15,8 +15,12 @@
     ↩️ codePoints
   🍉
 
-💭   📗 Prompts the user for input. (via the standard input/output) 📗
-💭   🆕 😯 prompt 🔡 📻 🔤sStringPrompt🔤
+  📗
+    Waits for the user to input a text and confirm it with enter.
+    No new line character is included as part of the string.
+    (Via the standard input/output)
+  📗
+  🆕 👂🏼 📻 🔤sStringReadLine🔤
 
   📗 Creates a string from the provided list of symbols. 📗
   🆕 🎙 symbolList 🍨🐚🔣 🍇
@@ -32,6 +36,9 @@
 
   📗 Puts this 🔡 to the standard output. 📗
   ❗️ 😀 📻 🔤sStringPrint🔤
+
+  📗 Puts this 🔡 to the standard output without adding a new line. 📗
+  ❗️ 👄 📻 🔤sStringPrintNoLn🔤
 
   📗 Returns 👍 if this string is equal to *b*. 📗
   🙌 b 🔡 ➡️ 👌 🍇

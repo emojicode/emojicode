@@ -112,7 +112,7 @@ extern "C" runtime::SimpleError<String*> filesFsAbsolute(String *inPath) {
     if (x == nullptr) {
         return runtime::SimpleError<String*>(runtime::MakeError, errorEnumFromErrno());
     }
-    return String::fromCString(x);
+    return String::allocateAndInitType(x);
 }
 
 }  // namespace files

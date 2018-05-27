@@ -48,8 +48,9 @@ using is_complete = decltype(is_complete_impl(std::declval<T*>()));
 template <typename Subclass>
 class Object {
 public:
-    static Subclass* allocateAndInitType() {
-        auto obj = new(allocate<Subclass>()) Subclass;
+    template <typename ...Args>
+    static Subclass* allocateAndInitType(Args ...args) {
+        auto obj = new(allocate<Subclass>()) Subclass(args...);
         static_assert(util::is_complete<Meta<Subclass>>::value,
                       "Provide the meta type for this class with SET_META_FOR.");
         obj->meta_ = Meta<Subclass>::value;

@@ -19,7 +19,7 @@ extern "C" runtime::Integer sSystemUnixTimestamp(runtime::ClassType) {
 extern "C" runtime::SimpleOptional<s::String*> sSystemGetEnv(runtime::ClassType, s::String *name) {
     auto var = std::getenv(name->cString());
     if (var != nullptr) {
-        return s::String::fromCString(var);
+        return s::String::allocateAndInitType(var);
     }
     return runtime::NoValue;
 }

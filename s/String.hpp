@@ -18,13 +18,14 @@ class String : public runtime::Object<String>  {
 public:
     using Character = runtime::Symbol;
 
+    String(const char *string);
+    String() = default;
+
     Character *characters;
     runtime::Integer count;
 
     const char* cString();
     int compare(String *other);
-
-    static String* fromCString(const char *string);
 };
 
 }  // namespace s

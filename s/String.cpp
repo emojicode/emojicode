@@ -10,7 +10,7 @@
 #include "String.hpp"
 #include "Data.hpp"
 #include <cinttypes>
-#include <cstdio>
+#include <iostream>
 #include <cstring>
 #include <cctype>
 #include <cmath>
@@ -28,24 +28,28 @@ const char* String::cString() {
     return utf8str;
 }
 
-String* String::fromCString(const char *cstring) {
-    auto len = u8_strlen(cstring);
+String::String(const char *cstring) {
+    count = u8_strlen(cstring);
 
-    auto *string = String::allocateAndInitType();
-    string->count = len;
-
-    if (len == 0) {
-        return string;
+    if (count > 0) {
+        characters = runtime::allocate<String::Character>(count);
+        u8_toucs(characters, count, cstring, strlen(cstring));
     }
-
-    string->characters = runtime::allocate<String::Character>(string->count);
-    u8_toucs(string->characters, string->count, cstring, strlen(cstring));
-
-    return string;
 }
 
 extern "C" void sStringPrint(String *string) {
-    puts(string->cString());
+    std::cout << string->cString() << std::endl;
+}
+
+extern "C" void sStringPrintNoLn(String *print) {
+    std::cout << print->cString();
+}
+
+extern "C" String* sStringReadLine(String *string) {
+    std::string str;
+    std::getline(std::cin, str);
+    *string = str.c_str();
+    return string;
 }
 
 extern "C" char sStringBeginsWith(String *string, String *beginning) {
