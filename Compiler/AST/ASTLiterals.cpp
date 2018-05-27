@@ -123,7 +123,7 @@ Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &
 
 Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = analyser->function()->package()->getRawType(TypeIdentifier(std::u32string(1, 0x1F520), kDefaultNamespace,
-                                                                       position()), false);
+                                                                       position()));
 
     auto stringType = Type(analyser->compiler()->sString);
     for (auto &stringNode : values_) {

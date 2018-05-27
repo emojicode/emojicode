@@ -140,9 +140,9 @@ public:
     /// stores it into @c type.
     /// @note This method returns a “raw” type, i.e. a type without generic arguments.
     /// @returns Whether the type could be found or not. @c type is untouched if @c false was returned.
-    bool lookupRawType(const TypeIdentifier &typeId, bool optional, Type *type) const;
+    bool lookupRawType(const TypeIdentifier &typeId, Type *type) const;
     /// Like lookupRawType() but throws a CompilerError if the type cannot be found.
-    Type getRawType(const TypeIdentifier &typeId, bool optional) const;
+    Type getRawType(const TypeIdentifier &typeId) const;
 
     /// @complexity O(n)
     std::u32string findNamespace(const Type &type);

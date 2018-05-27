@@ -56,7 +56,7 @@ void DocumentParser::parse() {
                     case E_TRIANGLE_POINTED_DOWN: {
                         attributes.check(theToken.position(), package_->compiler());
                         TypeIdentifier alias = parseTypeIdentifier();
-                        Type type = package_->getRawType(parseTypeIdentifier(), false);
+                        Type type = package_->getRawType(parseTypeIdentifier());
                         package_->offerType(type, alias.name, alias.ns, false, theToken.position());
                         continue;
                     }
@@ -93,7 +93,7 @@ TypeIdentifier DocumentParser::parseAndValidateNewTypeName() {
     auto parsedTypeName = parseTypeIdentifier();
 
     Type type = Type::noReturn();
-    if (package_->lookupRawType(parsedTypeName, false, &type)) {
+    if (package_->lookupRawType(parsedTypeName, &type)) {
         auto str = type.toString(TypeContext());
         throw CompilerError(parsedTypeName.position, "Type ", str, " is already defined.");
     }
@@ -162,7 +162,7 @@ void DocumentParser::parseVersion(const Documentation &documentation, const Sour
 }
 
 void DocumentParser::parseExtension(const Documentation &documentation, const SourcePosition &p) {
-    Type type = package_->getRawType(parseTypeIdentifier(), false);
+    Type type = package_->getRawType(parseTypeIdentifier());
 
     auto extension = package_->add(std::make_unique<Extension>(type, package_, p, documentation.get()));
     Type extendedType = Type(extension);

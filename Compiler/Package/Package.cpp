@@ -62,7 +62,7 @@ void Package::importPackage(const std::string &name, const std::u32string &ns, c
 
     for (auto exported : import->exportedTypes_) {
         Type type = Type::noReturn();
-        if (lookupRawType(TypeIdentifier(exported.name, ns, p), false, &type)) {
+        if (lookupRawType(TypeIdentifier(exported.name, ns, p), &type)) {
             throw CompilerError(p, "Package ", name , " could not be loaded into namespace ", utf8(ns),
                                 " of package ", name_, ": ", utf8(exported.name),
                                 " collides with a type of the same name in the same namespace.");
@@ -103,25 +103,21 @@ void Package::parse(const std::string &mainFilePath) {
     finishedLoading_ = true;
 }
 
-Type Package::getRawType(const TypeIdentifier &typeId, bool optional) const {
+Type Package::getRawType(const TypeIdentifier &typeId) const {
     auto type = Type::noReturn();
-    if (!lookupRawType(typeId, optional, &type)) {
+    if (!lookupRawType(typeId, &type)) {
         throw CompilerError(typeId.position, "Could not find a type named ", utf8(typeId.name), " in namespace ",
                             utf8(typeId.ns), ".");
     }
     return type;
 }
 
-bool Package::lookupRawType(const TypeIdentifier &typeId, bool optional, Type *type) const {
+bool Package::lookupRawType(const TypeIdentifier &typeId, Type *type) const {
     std::u32string key = typeId.ns + typeId.name;
     auto it = types_.find(key);
 
     if (it != types_.end()) {
-        auto xtype = it->second;
-        if (optional) {
-            xtype = Type(MakeOptional, xtype);
-        }
-        *type = xtype;
+        *type = it->second;
         return true;
     }
     return false;

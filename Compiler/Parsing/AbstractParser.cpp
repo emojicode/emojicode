@@ -106,11 +106,11 @@ Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext
     }
 
     auto parsedTypeIdentifier = parseTypeIdentifier();
-    auto type = package_->getRawType(parsedTypeIdentifier, optional);
+    auto type = package_->getRawType(parsedTypeIdentifier);
     if (type.canHaveGenericArguments()) {
         parseGenericArgumentsForType(&type, typeContext, parsedTypeIdentifier.position);
     }
-    return type;
+    return optional ? Type(MakeOptional, type) : type;
 }
 
 Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeContext) {

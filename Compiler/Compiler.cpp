@@ -154,7 +154,7 @@ void Compiler::warn(const SourcePosition &p, const std::string &warning) {
 
 Class *getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::noReturn();
-    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), &type);
     if (type.type() != TypeType::Class) {
         throw CompilerError(errorPosition, "s package class ", utf8(name), " is missing.");
     }
@@ -163,7 +163,7 @@ Class *getStandardClass(const std::u32string &name, Package *_, const SourcePosi
 
 Protocol *getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::noReturn();
-    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), &type);
     if (type.type() != TypeType::Protocol) {
         throw CompilerError(errorPosition, "s package protocol ", utf8(name), " is missing.");
     }
@@ -172,7 +172,7 @@ Protocol *getStandardProtocol(const std::u32string &name, Package *_, const Sour
 
 ValueType *getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::noReturn();
-    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), false, &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), &type);
     if (type.type() != TypeType::ValueType) {
         throw CompilerError(errorPosition, "s package value type ", utf8(name), " is missing.");
     }
