@@ -171,6 +171,9 @@ llvm::Type *LLVMTypeHelper::getComposedType(const Type &type) {
 }
 
 llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
+    auto llvmType = llvm::StructType::create(context_, mangleTypeName(type));
+    types_.emplace(type, llvmType);
+
     std::vector<llvm::Type *> types;
 
     if (type.type() == TypeType::Class) {
@@ -181,8 +184,7 @@ llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
         types.emplace_back(llvmTypeFor(ivar.type));
     }
 
-    auto llvmType = llvm::StructType::create(context_, types, mangleTypeName(type));
-    types_.emplace(type, llvmType);
+    llvmType->setBody(types);  // for self referencing types
     return llvmType;
 }
 
