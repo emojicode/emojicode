@@ -7,6 +7,7 @@
 //
 
 #include "ASTUnary.hpp"
+#include "Lex/SourceManager.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -29,7 +30,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
         std::stringstream str;
         str << "Unwrapped an optional that contained no value.";
-        str << " (" << position().file << ":" << position().line << ":" << position().character << ")";
+        str << " (" << position().file->path() << ":" << position().line << ":" << position().character << ")";
         auto string = fg->builder().CreateGlobalStringPtr(str.str());
         fg->builder().CreateCall(fg->generator()->declarator().panic(), string);
         fg->builder().CreateUnreachable();
@@ -49,7 +50,7 @@ Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
         std::stringstream str;
         str << "Unwrapped an error that contained an error.";
-        str << " (" << position().file << ":" << position().line << ":" << position().character << ")";
+        str << " (" << position().file->path() << ":" << position().line << ":" << position().character << ")";
         auto string = fg->builder().CreateGlobalStringPtr(str.str());
         fg->builder().CreateCall(fg->generator()->declarator().panic(), string);
         fg->builder().CreateUnreachable();
