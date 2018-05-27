@@ -53,11 +53,10 @@ public:
         auto obj = new(allocate<Subclass>()) Subclass(args...);
         static_assert(util::is_complete<Meta<Subclass>>::value,
                       "Provide the meta type for this class with SET_META_FOR.");
-        obj->meta_ = Meta<Subclass>::value;
         return obj;
     }
 protected:
-    Object() = default;
+    Object() : meta_(Meta<Subclass>::value) {}
 private:
     void *meta_;
 };
