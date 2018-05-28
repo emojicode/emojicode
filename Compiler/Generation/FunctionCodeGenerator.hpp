@@ -70,6 +70,8 @@ public:
 
     llvm::Value* alloc(llvm::PointerType *type);
 
+    llvm::Value* createEntryAlloca(llvm::Type *type, const llvm::Twine &name = "");
+
     void createIfElse(llvm::Value* cond, const std::function<void()> &then, const std::function<void()> &otherwise);
     void createIfElseBranchCond(llvm::Value* cond, const std::function<bool()> &then,
                                 const std::function<bool()> &otherwise);

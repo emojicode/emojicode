@@ -30,7 +30,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
     auto &localVariable = fg->scoper().getVariable(id());
     if (!localVariable.isMutable) {
         if (reference_) {
-            auto alloca = fg->builder().CreateAlloca(localVariable.value->getType());
+            auto alloca = fg->createEntryAlloca(localVariable.value->getType());
             fg->builder().CreateStore(localVariable.value, alloca);
             localVariable = LocalVariable(true, alloca);
             return localVariable.value;
@@ -57,8 +57,7 @@ void ASTVariableInit::generate(FunctionCodeGenerator *fg) const {
 
 llvm::Value* ASTVariableInit::variablePointer(EmojicodeCompiler::FunctionCodeGenerator *fg) const {
     if (declare_) {
-        auto varPtr = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), nullptr,
-                                            utf8(name()));
+        auto varPtr = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), utf8(name()));
         fg->scoper().getVariable(id()) = LocalVariable(true, varPtr);
         return varPtr;
     }
@@ -71,7 +70,7 @@ llvm::Value* ASTVariableInit::variablePointer(EmojicodeCompiler::FunctionCodeGen
 }
 
 void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
-    auto alloca = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(type_), nullptr, utf8(varName_));
+    auto alloca = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_), utf8(varName_));
     fg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
     if (type_.type() == TypeType::Optional) {

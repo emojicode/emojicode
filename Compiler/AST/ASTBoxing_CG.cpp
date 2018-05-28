@@ -44,7 +44,7 @@ Value* ASTBoxing::getSimpleOptionalWithoutValue(FunctionCodeGenerator *fg) const
 }
 
 Value* ASTBoxing::getAllocaTheBox(FunctionCodeGenerator *fg) const {
-    auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
+    auto box = fg->createEntryAlloca(fg->typeHelper().box());
     fg->builder().CreateStore(expr_->generate(fg), box);
     return box;
 }
@@ -84,7 +84,7 @@ Value* ASTSimpleToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fg) const {
-    auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
+    auto box = fg->createEntryAlloca(fg->typeHelper().box());
     if (isValueTypeInit()) {
         setBoxMeta(box, fg);
         valueTypeInit(fg, fg->getValuePtr(box, expr_->expressionType()));
@@ -97,7 +97,7 @@ Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fg) const {
     auto value = expr_->generate(fg);
-    auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
+    auto box = fg->createEntryAlloca(fg->typeHelper().box());
 
     auto hasNoValue = fg->getHasNoValue(value);
 
@@ -111,7 +111,7 @@ Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTSimpleErrorToBox::generate(FunctionCodeGenerator *fg) const {
     auto value = expr_->generate(fg);
-    auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
+    auto box = fg->createEntryAlloca(fg->typeHelper().box());
 
     auto hasNoValue = fg->getIsError(value);
 
@@ -188,7 +188,7 @@ Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTStoreTemporarily::generate(FunctionCodeGenerator *fg) const {
-    auto store = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), nullptr, "temp");
+    auto store = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), "temp");
     if (isValueTypeInit()) {
         valueTypeInit(fg, store);
     }

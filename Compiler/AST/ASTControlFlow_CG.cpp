@@ -80,7 +80,7 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     fg->builder().SetInsertPoint(errorBlock);
     llvm::Value *err;
     if (valueIsBoxed_) {
-        auto alloca = fg->builder().CreateAlloca(fg->typeHelper().box());
+        auto alloca = fg->createEntryAlloca(fg->typeHelper().box());
         fg->builder().CreateStore(error, alloca);
         err = fg->getErrorEnumValueBoxPtr(alloca, value_->expressionType().errorEnum());
     }
@@ -109,7 +109,7 @@ void ASTForIn::generate(FunctionCodeGenerator *fg) const {
     auto callg = CallCodeGenerator(fg, CallType::DynamicProtocolDispatch);
     auto iterator = callg.generate(iteratee_->generate(fg), iteratee_->expressionType(), ASTArguments(position()),
                                    std::u32string(1, E_DANGO));
-    auto iteratorPtr = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(iteratee_->expressionType()));
+    auto iteratorPtr = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(iteratee_->expressionType()));
     fg->builder().CreateStore(iterator, iteratorPtr);
 
     auto *function = fg->builder().GetInsertBlock()->getParent();

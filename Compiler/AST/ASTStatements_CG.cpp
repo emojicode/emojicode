@@ -31,7 +31,7 @@ void ASTReturn::generate(FunctionCodeGenerator *fg) const {
 
 void ASTRaise::generate(FunctionCodeGenerator *fg) const {
     if (boxed_) {
-        auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
+        auto box = fg->createEntryAlloca(fg->typeHelper().box());
         fg->getMakeNoValue(box);
         auto ptr = fg->getValuePtr(box, value_->expressionType());
         fg->builder().CreateStore(value_->generate(fg), ptr);

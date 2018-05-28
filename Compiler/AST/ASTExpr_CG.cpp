@@ -30,7 +30,7 @@ Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
         return downcast(fg);
     }
 
-    auto box = fg->builder().CreateAlloca(fg->typeHelper().box());
+    auto box = fg->createEntryAlloca(fg->typeHelper().box());
     fg->builder().CreateStore(value_->generate(fg), box);
     Value *is = nullptr;
     switch (castType_) {

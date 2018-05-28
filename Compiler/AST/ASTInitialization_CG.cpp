@@ -47,7 +47,7 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
 Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const {
     auto destination = vtDestination_;
     if (vtDestination_ == nullptr) {
-        destination = fg->builder().CreateAlloca(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
+        destination = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
     }
     InitializationCallCodeGenerator(fg, CallType::StaticDispatch)
             .generate(destination, typeExpr_->expressionType(), args_, name_);
