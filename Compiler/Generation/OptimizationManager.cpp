@@ -9,7 +9,9 @@
 namespace EmojicodeCompiler {
 
 OptimizationManager::OptimizationManager(llvm::Module *module, bool optimize)
-        : optimize_(optimize), functionPassManager_(llvm::make_unique<llvm::legacy::FunctionPassManager>(module)) {
+        : optimize_(optimize), functionPassManager_(llvm::make_unique<llvm::legacy::FunctionPassManager>(module)) {}
+
+void OptimizationManager::initialize() {
     if (optimize_) {
         functionPassManager_->add(llvm::createPromoteMemoryToRegisterPass());
         functionPassManager_->add(llvm::createInstructionCombiningPass());
@@ -22,7 +24,6 @@ OptimizationManager::OptimizationManager(llvm::Module *module, bool optimize)
 
         functionPassManager_->add(llvm::createConstantPropagationPass());
         functionPassManager_->add(llvm::createDeadCodeEliminationPass());
-
         functionPassManager_->doInitialization();
     }
 }

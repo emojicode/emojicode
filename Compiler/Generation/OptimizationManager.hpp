@@ -18,7 +18,7 @@ class OptimizationManager {
 public:
     explicit OptimizationManager(llvm::Module *module, bool optimize);
     void optimize(llvm::Function *function);
-
+    void initialize();
 private:
     bool optimize_;
     std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager_;

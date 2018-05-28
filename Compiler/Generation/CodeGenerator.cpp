@@ -79,6 +79,7 @@ void CodeGenerator::prepareModule() {
 
 void CodeGenerator::generate(const std::string &outPath, bool printIr) {
     prepareModule();
+    optimizationManager_.initialize();
 
     for (auto package : package_->dependencies()) {
         declarator_.declareImportedPackageSymbols(package);
