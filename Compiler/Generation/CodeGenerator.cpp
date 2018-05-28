@@ -109,6 +109,7 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr) {
 
     generateFunctions();
 
+    optimizationManager_.optimize(module());
     emit(outPath, printIr);
 }
 

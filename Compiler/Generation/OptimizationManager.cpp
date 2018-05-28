@@ -5,25 +5,27 @@
 #include "OptimizationManager.hpp"
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Scalar/GVN.h>
+#include <llvm/Transforms/IPO.h>
+#include <llvm/Transforms/IPO/PassManagerBuilder.h>
 
 namespace EmojicodeCompiler {
 
 OptimizationManager::OptimizationManager(llvm::Module *module, bool optimize)
-        : optimize_(optimize), functionPassManager_(llvm::make_unique<llvm::legacy::FunctionPassManager>(module)) {}
+        : optimize_(optimize), functionPassManager_(std::make_unique<llvm::legacy::FunctionPassManager>(module)),
+            passManager_(std::make_unique<llvm::legacy::PassManager>()) {}
 
 void OptimizationManager::initialize() {
     if (optimize_) {
-        functionPassManager_->add(llvm::createPromoteMemoryToRegisterPass());
-        functionPassManager_->add(llvm::createInstructionCombiningPass());
-        functionPassManager_->add(llvm::createReassociatePass());
-        functionPassManager_->add(llvm::createGVNPass());
-        functionPassManager_->add(llvm::createCFGSimplificationPass());
-        functionPassManager_->add(llvm::createLICMPass());
-        functionPassManager_->add(llvm::createIndVarSimplifyPass());
-        functionPassManager_->add(llvm::createPartiallyInlineLibCallsPass());
+        llvm::PassManagerBuilder builder;
+        builder.OptLevel = 3;
+        builder.SizeLevel = 0;
+        builder.Inliner = llvm::createFunctionInliningPass();
 
-        functionPassManager_->add(llvm::createConstantPropagationPass());
-        functionPassManager_->add(llvm::createDeadCodeEliminationPass());
+        builder.populateFunctionPassManager(*functionPassManager_);
+        builder.populateModulePassManager(*passManager_);
+
+        functionPassManager_->add(llvm::createInductiveRangeCheckEliminationPass());
+        functionPassManager_->add(llvm::createLICMPass());
         functionPassManager_->doInitialization();
     }
 }
@@ -31,6 +33,12 @@ void OptimizationManager::initialize() {
 void OptimizationManager::optimize(llvm::Function *function) {
     if (optimize_) {
         functionPassManager_->run(*function);
+    }
+}
+
+void OptimizationManager::optimize(llvm::Module *module) {
+    if (optimize_) {
+        passManager_->run(*module);
     }
 }
 

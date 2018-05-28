@@ -18,10 +18,12 @@ class OptimizationManager {
 public:
     explicit OptimizationManager(llvm::Module *module, bool optimize);
     void optimize(llvm::Function *function);
+    void optimize(llvm::Module *module);
     void initialize();
 private:
     bool optimize_;
     std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager_;
+    std::unique_ptr<llvm::legacy::PassManager> passManager_;
 };
 
 }  // namespace EmojicodeCompiler
