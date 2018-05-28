@@ -293,7 +293,7 @@ void FunctionAnalyser::makeIntoSimpleOptional(Type &exprType, std::shared_ptr<AS
         case StorageType::SimpleError:
             break;
         case StorageType::Box:
-            exprType = Type(MakeOptional, exprType.unboxed());
+            exprType = Type(MakeOptional, exprType.unboxed().unoptionalized());
             insertNode<ASTBoxToSimpleOptional>(node, exprType);
             break;
         case StorageType::Simple:

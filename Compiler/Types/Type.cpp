@@ -382,10 +382,10 @@ StorageType Type::storageType() const {
         return StorageType::Box;
     }
     if (type() == TypeType::Optional) {
-        return StorageType::SimpleOptional;
+        return optionalType().storageType() == StorageType::Box ? StorageType::Box : StorageType::SimpleOptional;
     }
     if (type() == TypeType::Error) {
-        return StorageType::SimpleError;
+        return errorType().storageType() == StorageType::Box ? StorageType::Box : StorageType::SimpleError;
     }
     return StorageType::Simple;
 }
@@ -393,9 +393,9 @@ StorageType Type::storageType() const {
 bool Type::requiresBox() const {
     switch (type()) {
         case TypeType::Error:
-            return errorType().storageType() == StorageType::Box;
+            return errorType().requiresBox();
         case TypeType::Optional:
-            return optionalType().storageType() == StorageType::Box;
+            return optionalType().requiresBox();
         case TypeType::Something:
         case TypeType::Protocol:
         case TypeType::MultiProtocol:

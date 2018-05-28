@@ -71,7 +71,9 @@ constexpr MakeTypeAsValueType MakeTypeAsValue {};
 class Type {
 public:
     Type(MakeOptionalType makeOptional, Type type)
-            : typeContent_(TypeType::Optional), genericArguments_({ std::move(type) }) {}
+            : typeContent_(TypeType::Optional), genericArguments_({ std::move(type) }) {
+                assert(genericArguments().front().type() != TypeType::Optional);
+            }
     Type(MakeErrorType makeError, Type enumType, Type value)
             : typeContent_(TypeType::Error), genericArguments_({ std::move(enumType), std::move(value) }) {}
     Type(MakeTypeAsValueType makeTypeAsValue, Type type)
@@ -121,9 +123,15 @@ public:
 
     /// Returns the storage type that will be used, i.e. the boxing applied in memory.
     StorageType storageType() const;
-    /// Unboxes this type.
+    /// Unboxes this type. If this is an optional whose value is boxed, tries to unbox the value.
     /// @throws std::logic_error if unboxing is not possible according to @c requiresBox()
-    void unbox() { forceBox_ = false; if (requiresBox()) { throw std::logic_error("Cannot unbox!"); } }
+    void unbox() {
+        forceBox_ = false;
+        if (TypeType::Optional == type()) {
+            genericArguments_[0].forceBox_ = false;
+        }
+        if (requiresBox()) { throw std::logic_error("Cannot unbox!"); }
+    }
     Type unboxed() const {
         auto copy = *this;
         copy.unbox();
@@ -179,7 +187,7 @@ public:
         || type() == TypeType::Enum; }
 
     /// Returns the protocol types of a MultiProtocol
-    const std::vector<Type>& protocols() const { return genericArguments_; }
+    const std::vector<Type>& protocols() const { assert(type() == TypeType::MultiProtocol); return genericArguments_; }
 
     /// Tries to resolve this type to a non-generic-variable type by using the generic arguments provided in the
     /// TypeContext. This method also tries to resolve generic arguments to non-generic-variable types recursively.
