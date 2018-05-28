@@ -31,7 +31,7 @@ void mangleIdentifier(std::stringstream &stream, const std::u32string &string) {
 }
 
 void mangleTypeName(std::stringstream &stream, const Type &type) {
-    stream << type.typePackage() << "_";
+    stream << type.typePackage() << ".";
     switch (type.type()) {
         case TypeType::ValueType:
             stream << "vt_";
