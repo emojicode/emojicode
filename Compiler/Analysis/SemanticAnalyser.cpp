@@ -123,9 +123,7 @@ std::unique_ptr<Function> SemanticAnalyser::enforcePromises(const Function *sub,
     bool isReturnOk = checkReturnPromise(sub, subContext, super, superContext, superSource);
     bool isParamsOk = checkArgumentPromise(sub, super, subContext, superContext) ;
     if (!isParamsOk || !isReturnOk) {
-        auto function = buildBoxingThunk(superContext, super, sub);
-        enqueueFunction(function.get());
-        return function;
+        return buildBoxingThunk(superContext, super, sub);
     }
     return nullptr;
 }
