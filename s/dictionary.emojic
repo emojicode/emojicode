@@ -2,8 +2,9 @@
   🖍🆕 next 🍬🐝🐚Key🐚Element
   🖍🆕 key Key
   🖍🆕 element Element
+  🖍🆕 hash 🔢
 
-  🆕 🍼key Key 🍼element Element 🍇
+  🆕 🍼key Key 🍼element Element 🍼 hash 🔢 🍇
     🤷‍♀️➡️🖍next
   🍉
 
@@ -17,6 +18,11 @@
 
   ❗️ 🔑 ➡️ Key 🍇
     ↩️ key
+  🍉
+
+
+  ❗️ ⚗️ ➡️ 🔢 🍇
+    ↩️ hash
   🍉
 
   ❗️ ⏭ ➡️ 🍬🐝🐚Key🐚Element 🍇
@@ -98,18 +104,23 @@
     🍉
   🍉
 
-  🔒❗ 🔢 key 🔡 ➡️ 🔢 🍇
-    ↩️ ⚗️key❗🚮capacity
+  ❓ 🔑 entry 🐝🐚🔡🐚Element key 🔡 hash 🔢 ➡️ 👌 🍇
+    ↪️ hash 🙌 ⚗️entry❗️ 🍇
+      ↩️ key 🙌 🔑entry❗
+    🍉
+    ↩️ 👎
   🍉
 
   ❗ 🔍 key 🔡 ➡️ 🍬🐝🐚🔡🐚Element 🍇
-    🔢🐕 key❗️ ➡️ index
+    ⚗️key❗➡️ hash
+    hash🚮capacity️ ➡️ index
+
     ☣️ 🍇
       🐽 data🐚🍬🐝🐚🔡🐚Element index✖️⚖️🍬🐝🐚🔡🐚Element❗ ➡️ 🖍🆕entry?
     🍉
 
     🔁 entry? ➡️ entry 🍇
-      ↪️ 🔑entry❗️️ 🙌 key 🍇
+      ↪️ 🔑🐕 entry key hash❓️ 🍇
         ↩️️ entry
       🍉
       ⏭entry❗ ➡️ 🖍entry?
@@ -134,7 +145,9 @@
     *key* is not in the 🍯.
   📗
   ❗️ 🐨 key 🔡 🍇
-    🔢🐕 key❗️ ➡️ index
+    ⚗️key❗➡️ hash
+    hash🚮capacity️ ➡️ index
+
     ☣️ 🍇
       🐽 data🐚🍬🐝🐚🔡🐚Element index✖️⚖️🍬🐝🐚🔡🐚Element❗ ➡️ 🖍🆕entry?
     🍉
@@ -149,7 +162,7 @@
       🍉
       entry ➡️ 🖍🆕prev
       🔁 entry? ➡️ entry 🍇
-        ↪️ 🔑entry❗️️ 🙌 key 🍇
+        ↪️ 🔑🐕 entry key hash❓️️ 🍇
           🥌 prev ⏭entry❗️️❗️
           count ⬅️➖ 1
           ↩️️↩️️
@@ -170,8 +183,9 @@
     count ⬅️➕ 1
     🦕🐕❗
 
-    🔢🐕 key❗️ ➡️ index
-    🆕🐝🐚🔡🐚Element🆕 key value❗️ ➡️ entry
+    ⚗️key❗➡️ hash
+    hash🚮capacity️ ➡️ index
+    🆕🐝🐚🔡🐚Element🆕 key value hash❗️ ➡️ entry
 
     ☣️ 🍇
       🐽 data🐚🍬🐝🐚🔡🐚Element index✖️⚖️🍬🐝🐚🔡🐚Element❗ ➡️ entry?
