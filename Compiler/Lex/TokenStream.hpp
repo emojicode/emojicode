@@ -20,7 +20,7 @@ class Lexer;
 /// TokenStream skips comments and line breaks and provides handling for blank lines.
 class TokenStream {
 public:
-    explicit TokenStream(Lexer lexer) : lexer_(std::move(lexer)), nextToken_(lexer_.lex()) {}
+    explicit TokenStream(Lexer lexer) : lexer_(std::move(lexer)) { advanceLexer(); }
     TokenStream(const TokenStream&) = delete;
     TokenStream(TokenStream&&) = default;
     TokenStream& operator=(const TokenStream&) = delete;
@@ -119,7 +119,7 @@ private:
     bool moreTokens_ = true;
     bool skippedBlankLine_ = false;
     Lexer lexer_;
-    Token nextToken_;
+    Token nextToken_ = Token(SourcePosition(0, 0, nullptr));
 };
 
 }  // namespace EmojicodeCompiler
