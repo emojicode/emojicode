@@ -155,7 +155,9 @@ void Prettyprinter::printTypeDef(const Type &type) {
 }
 
 void Prettyprinter::printTypeDefName(const Type &type) {
-    switch (type.type()) {
+    auto typeDef = type.typeDefinition();
+
+    switch (type.unboxedType()) {
         case TypeType::Class:
             thisStream() << "🐇 ";
             break;
@@ -176,9 +178,9 @@ void Prettyprinter::printTypeDefName(const Type &type) {
     }
 
     printNamespaceAccessor(type);
-    stream_ << utf8(type.typeDefinition()->name());
+    stream_ << utf8(typeDef->name());
     offerSpace();
-    printGenericParameters(type.typeDefinition());
+    printGenericParameters(typeDef);
 
     if (auto klass = type.klass()) {
         if (klass->superclass() != nullptr && type.type() != TypeType::Extension) {

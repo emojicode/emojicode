@@ -62,6 +62,7 @@ private:
 class ASTArguments final : public ASTNode {
 public:
     explicit ASTArguments(const SourcePosition &p) : ASTNode(p) {}
+    ASTArguments(const SourcePosition &p, bool imperative) : ASTNode(p), imperative_(imperative) {}
     void addGenericArgument(const Type &type) { genericArguments_.emplace_back(type); }
     const std::vector<Type>& genericArguments() const { return genericArguments_; }
     std::vector<Type>& genericArguments() { return genericArguments_; }

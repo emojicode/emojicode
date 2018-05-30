@@ -31,9 +31,18 @@ void TypeDefinition::setSuperType(const Type &type) {
     for (size_t i = superType_.typeDefinition()->superGenericArguments().size(); i < superType_.genericArguments().size(); i++) {
         if (type.genericArguments()[i].type() == TypeType::GenericVariable) {
             auto newIndex = superType_.genericArguments()[i].genericVariableIndex() + superType_.genericArguments().size();
-            superType_.setGenericArgument(i, Type(newIndex, this, true));
+            superType_.setGenericArgument(i, Type(newIndex, this));
+        }
+        else if (type.genericArguments()[i].type() == TypeType::Box &&
+                 type.genericArguments()[i].unboxedType() == TypeType::GenericVariable) {
+            auto newIndex = superType_.genericArguments()[i].unboxed().genericVariableIndex() + superType_.genericArguments().size();
+            superType_.setGenericArgument(i, Type(newIndex, this).boxedFor(superType_.genericArguments()[i].boxedFor()));
         }
     }
+}
+
+std::vector<Type> TypeDefinition::superGenericArguments() const {
+    return superType_.type() != TypeType::NoReturn ? superType_.genericArguments() : std::vector<Type>();
 }
 
 Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) const {

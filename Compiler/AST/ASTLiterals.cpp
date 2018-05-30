@@ -73,7 +73,7 @@ Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
 }
 
 Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() != TypeType::Optional && expectation.type() != TypeType::Something) {
+    if (expectation.unboxedType() != TypeType::Optional && expectation.unboxedType() != TypeType::Something) {
         throw CompilerError(position(), "🤷‍ can only be used when an optional is expected.");
     }
     type_ = expectation.copyType();
@@ -89,17 +89,23 @@ Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpecta
         if (++it == values_.end()) {
             throw CompilerError(position(), "A value must be provided for every key.");
         }
-        finder.addType(analyser->expect(TypeExpectation(false, true, false), &*it), analyser->typeContext());
+        finder.addType(analyser->expect(TypeExpectation(), &(*it)), analyser->typeContext());
     }
 
     type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
     type_.setExact(true);
+
+    auto elementType = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(type_));
+    for (auto it = values_.begin() + 1; it - 1 != values_.end(); it += 2) {
+        analyser->comply((*it)->expressionType(), TypeExpectation(elementType), &(*it));
+    }
+
     return type_;
 }
 
 Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() == TypeType::Class && expectation.klass() == analyser->compiler()->sList) {
-        auto type = Type(0, analyser->compiler()->sList, true).resolveOn(TypeContext(expectation.copyType()));
+        auto type = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(expectation.copyType()));
         for (auto &valueNode : values_) {
             analyser->expectType(type, &valueNode);
         }
@@ -112,12 +118,18 @@ Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &
 
     CommonTypeFinder finder;
     for (auto &valueNode : values_) {
-        Type type = analyser->expect(TypeExpectation(false, true, false), &valueNode);
+        Type type = analyser->expect(TypeExpectation(), &valueNode);
         finder.addType(type, analyser->typeContext());
     }
 
     type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
     type_.setExact(true);
+
+    auto elementType = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(type_));
+    for (auto &valueNode : values_) {
+        analyser->comply(valueNode->expressionType(), TypeExpectation(elementType), &valueNode);
+    }
+
     return type_;
 }
 

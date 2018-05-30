@@ -293,11 +293,11 @@ void FunctionAnalyser::makeIntoSimpleOptional(Type &exprType, std::shared_ptr<AS
         case StorageType::SimpleError:
             break;
         case StorageType::Box:
-            exprType = Type(MakeOptional, exprType.unboxed().unoptionalized());
+            exprType = exprType.unboxed().optionalized();
             insertNode<ASTBoxToSimpleOptional>(node, exprType);
             break;
         case StorageType::Simple:
-            exprType = Type(MakeOptional, exprType);
+            exprType = exprType.optionalized();
             insertNode<ASTSimpleToSimpleOptional>(node, exprType);
             break;
     }
@@ -309,11 +309,11 @@ void FunctionAnalyser::makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTEx
         case StorageType::SimpleOptional:
             break;
         case StorageType::Simple:
-            exprType = Type(MakeError, exp.errorEnum(), exprType.unboxed());
+            exprType = exprType.unboxed().errored(exp.errorEnum());
             insertNode<ASTSimpleToSimpleError>(node, exprType);
             break;
         case StorageType::Box:
-            exprType = Type(MakeError, exp.errorEnum(), exprType.unboxed());
+            exprType = exprType.unboxed().errored(exp.errorEnum());
             insertNode<ASTBoxToSimpleError>(node, exprType);
             break;
     }
@@ -326,7 +326,8 @@ void FunctionAnalyser::makeIntoSimple(Type &exprType, std::shared_ptr<ASTExpr> *
         case StorageType::SimpleError:
             break;
         case StorageType::Box:
-            exprType.unbox();
+            exprType = exprType.unboxed();
+            assert(exprType.type() != TypeType::Protocol);
             insertNode<ASTBoxToSimple>(node, exprType);
             break;
     }
@@ -338,16 +339,16 @@ void FunctionAnalyser::makeIntoBox(Type &exprType, const TypeExpectation &expect
         case StorageType::Box:
             break;
         case StorageType::SimpleOptional:
-            exprType.forceBox();
-            insertNode<ASTSimpleOptionalToBox>(node, exprType, expectation.copyType());
+            exprType = exprType.boxedFor(expectation.boxFor());
+            insertNode<ASTSimpleOptionalToBox>(node, exprType);
             break;
         case StorageType::Simple:
-            exprType.forceBox();
-            insertNode<ASTSimpleToBox>(node, exprType, expectation.copyType());
+            exprType = exprType.boxedFor(expectation.boxFor());
+            insertNode<ASTSimpleToBox>(node, exprType);
             break;
         case StorageType::SimpleError:
-            exprType.forceBox();
-            insertNode<ASTSimpleErrorToBox>(node, exprType, expectation.copyType());
+            exprType = exprType.boxedFor(expectation.boxFor());
+            insertNode<ASTSimpleErrorToBox>(node, exprType);
             break;
     }
 }

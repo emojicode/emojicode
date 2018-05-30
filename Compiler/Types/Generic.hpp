@@ -42,18 +42,22 @@ public:
      * Tries to fetch the type reference type for the given generic variable name and stores it into @c type.
      * @returns Whether the variable could be found or not. @c type is untouched if @c false was returned.
      */
-    bool fetchVariable(const std::u32string &name, bool optional, Type *destType) {
+    bool fetchVariable(const std::u32string &name, Type *destType) {
         auto it = parameterVariables_.find(name);
         if (it != parameterVariables_.end()) {
-            Type type = Type(it->second, static_cast<T *>(this),
-                             !genericParameters_[it->second - offset_].rejectsBoxing);
-            if (optional) {
-                type = Type(MakeOptional, type);
-            }
-            *destType = type;
+            *destType = typeForVariable(it->second);
             return true;
         }
         return false;
+    }
+
+    Type typeForVariable(size_t n) {
+        assert(offset_ <= n && n < offset_ + genericParameters_.size());
+        Type type = Type(n, static_cast<T *>(this));
+        if (!genericParameters_[n - offset_].rejectsBoxing) {
+            type = type.boxedFor(constraintForIndex(n));
+        }
+        return type;
     }
 
     /// Adds a new generic argument to the end of the list.

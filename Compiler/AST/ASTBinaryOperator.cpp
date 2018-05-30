@@ -29,7 +29,7 @@ Type ASTBinaryOperator::analyse(FunctionAnalyser *analyser, const TypeExpectatio
 
     auto pair = builtInPrimitiveOperator(analyser, otype);
     if (pair.first) {
-        Type type = analyser->comply(otype, TypeExpectation(false, false, false), &left_);
+        Type type = analyser->comply(otype, TypeExpectation(false, false), &left_);
         analyser->expectType(type, &right_);
         return pair.second.returnType;
     }
@@ -41,7 +41,7 @@ Type ASTBinaryOperator::analyse(FunctionAnalyser *analyser, const TypeExpectatio
 Type ASTBinaryOperator::analyseIsNoValue(FunctionAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
                                          BuiltInType builtInType) {
     Type type = analyser->expect(TypeExpectation(false, false), &expr);
-    if (type.type() != TypeType::Optional && type.type() != TypeType::Something) {
+    if (type.unboxedType() != TypeType::Optional && type.unboxedType() != TypeType::Something) {
         throw CompilerError(position(), "Only optionals and ⚪️ can be compared to 🤷‍♀️.");
     }
     builtIn_ = builtInType;
@@ -90,9 +90,8 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
         }
         else if (type.valueType() == analyser->compiler()->sInteger ||
                  type.valueType() == analyser->compiler()->sByte) {
-            auto returnType = type;
+            auto returnType = type.unboxed();
             returnType.setReference(false);
-            returnType.unbox();
             switch (operator_) {
                 case OperatorType::MultiplicationOperator:
                     builtIn_ = BuiltInType::IntegerMultiply;

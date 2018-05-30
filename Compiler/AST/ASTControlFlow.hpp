@@ -39,7 +39,8 @@ public:
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
-private:
+
+protected:
     std::shared_ptr<ASTExpr> condition_;
     ASTBlock block_;
 };
@@ -54,14 +55,10 @@ public:
     void generate(FunctionCodeGenerator *) const override;
     void toCode(Prettyprinter &pretty) const override;
 
-    bool typeIsEnumerable(FunctionAnalyser *analyser, Type *elementType, const Type &type);
-
 private:
     std::shared_ptr<ASTExpr> iteratee_;
     ASTBlock block_;
-    VariableID elementVar_;
     std::u32string varName_;
-    Type elementType_ = Type::noReturn();
 };
 
 class ASTErrorHandler final : public ASTStatement {

@@ -132,7 +132,7 @@ public:
         if (functionType() == FunctionType::ClassMethod) {
             type = Type(MakeTypeAsValue, type);
         }
-        return TypeContext(type, this);
+        return TypeContext(type.applyMinimalBoxing(), this);
     }
 
     FunctionType functionType() const { return functionType_; }

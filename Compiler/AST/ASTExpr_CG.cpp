@@ -59,9 +59,9 @@ Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
     auto toType = typeExpr_->expressionType();
     return fg->createIfElsePhi(fg->builder().CreateICmpEQ(meta, typeExpr_->generate(fg)), [toType, fg, value]() {
         auto casted = fg->builder().CreateBitCast(value, fg->typeHelper().llvmTypeFor(toType));
-        return fg->getSimpleOptionalWithValue(casted, Type(MakeOptional, toType));
+        return fg->getSimpleOptionalWithValue(casted, toType.optionalized());
     }, [fg, toType]() {
-        return fg->getSimpleOptionalWithoutValue(Type(MakeOptional, toType));
+        return fg->getSimpleOptionalWithoutValue(toType.optionalized());
     });
 }
 

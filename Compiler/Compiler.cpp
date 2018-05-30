@@ -164,7 +164,7 @@ Class *getStandardClass(const std::u32string &name, Package *_, const SourcePosi
 Protocol *getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
     Type type = Type::noReturn();
     _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), &type);
-    if (type.type() != TypeType::Protocol) {
+    if (type.unboxedType() != TypeType::Protocol) {
         throw CompilerError(errorPosition, "s package protocol ", utf8(name), " is missing.");
     }
     return type.protocol();

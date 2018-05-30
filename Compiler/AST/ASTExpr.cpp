@@ -60,14 +60,13 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
     else if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
         castType_ = CastType::ToValueType;
         assert(originalType.storageType() == StorageType::Box);
-        type.forceBox();
     }
     else {
         auto typeString = type.toString(analyser->typeContext());
         throw CompilerError(position(), "You cannot cast to ", typeString, ".");
     }
 
-    return Type(MakeOptional, type);
+    return type.optionalized();
 }
 
 Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -143,7 +142,7 @@ void ASTSuper::analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, 
 }
 
 Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    Type type = analyser->expect(TypeExpectation(false, false, false), &callable_);
+    Type type = analyser->expect(TypeExpectation(false, false), &callable_);
     if (type.type() != TypeType::Callable) {
         throw CompilerError(position(), "Given value is not callable.");
     }

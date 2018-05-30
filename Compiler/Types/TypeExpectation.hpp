@@ -29,13 +29,19 @@ public:
     explicit TypeExpectation(const Type &type) : Type(type), expectationMode_(ExpectationMode::Convert) {}
     /// Creates a type expectation with the given parameters that expects the value to be simplified as far as possible
     TypeExpectation(bool isReference, bool isMutable)
-        : Type(isReference, false, isMutable), expectationMode_(ExpectationMode::Simplify) {}
-    TypeExpectation(bool isReference, bool forceBox, bool isMutable)
-        : Type(isReference, forceBox, isMutable), expectationMode_(ExpectationMode::Convert) {}
+        : Type(isReference, isMutable), expectationMode_(ExpectationMode::Simplify) {}
     /// Creates a type expectation with mode "no action".
-    TypeExpectation() : Type(false, false, false) {}
+    TypeExpectation() : Type(false, false) {}
 
     Type copyType() const { return *this; }
+
+    /// Returns the type to which compatibility must be established by boxing.
+    Type boxFor() const {
+        if (type() == TypeType::Box) {
+            return boxedFor();
+        }
+        return copyType();
+    }
 
     /// Returns the storage type to which the value of the given type should be unboxed, if the destination expects
     /// the most unboxed value as indicated by a storage type of @c StorageType::SimpleIfPossible.
@@ -43,13 +49,13 @@ public:
     /// not be unboxed.
     StorageType simplifyType(const Type& type) const {
         if (expectationMode_ == ExpectationMode::Simplify) {
-            if (type.requiresBox()) {
+            if (requiresBox(type.unboxed())) {
                 return StorageType::Box;
             }
-            if (type.type() == TypeType::Optional) {
+            if (type.unboxedType() == TypeType::Optional) {
                 return StorageType::SimpleOptional;
             }
-            if (type.type() == TypeType::Error) {
+            if (type.unboxedType() == TypeType::Error) {
                 return StorageType::SimpleError;
             }
             return StorageType::Simple;
@@ -60,6 +66,8 @@ public:
     bool shouldPerformBoxing() const { return expectationMode_ != ExpectationMode::NoAction; }
 private:
     ExpectationMode expectationMode_ = ExpectationMode::NoAction;
+
+    bool requiresBox(const Type &type) const;
 };
 
 }  // namespace EmojicodeCompiler

@@ -7,3 +7,25 @@
 //
 
 #include "TypeExpectation.hpp"
+
+namespace EmojicodeCompiler {
+
+bool TypeExpectation::requiresBox(const Type &type) const {
+    switch (type.type()) {
+        case TypeType::Error:
+            return requiresBox(type.errorType().unboxed());
+        case TypeType::Optional:
+            return requiresBox(type.optionalType().unboxed());
+        case TypeType::Something:
+        case TypeType::Protocol:
+        case TypeType::MultiProtocol:
+            return true;
+        case TypeType::GenericVariable:
+        case TypeType::LocalGenericVariable:
+            return true;  // TODO: this doesn't seem right
+        default:
+            return false;
+    }
+}
+
+}  // namespace EmojicodeCompiler

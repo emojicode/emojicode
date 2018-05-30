@@ -105,17 +105,17 @@ protected:
 
 private:
     /// Parses a $multi-protocol$
-    Type parseMultiProtocol(bool optional, const TypeContext &typeContext);
+    Type parseMultiProtocol(const TypeContext &typeContext);
 
     /// Parses a $callable-type$. The first token has already been consumed.
-    Type parseCallableType(bool optional, const TypeContext &typeContext);
+    Type parseCallableType(const TypeContext &typeContext);
 
-    Type parseGenericVariable(bool optional, const TypeContext &typeContext);
+    Type parseGenericVariable(const TypeContext &typeContext);
 
     Type parseErrorType(bool optional, const TypeContext &typeContext);
 
     /// Parses a $type-main$
-    Type parseTypeMain(bool optional, const TypeContext &typeContext);
+    Type parseTypeMain(const TypeContext &typeContext);
 
     Type parseTypeAsValueType(const TypeContext &typeContext);
     Token parseTypeEmoji() const;

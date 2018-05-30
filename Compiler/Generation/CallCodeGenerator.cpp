@@ -42,7 +42,7 @@ llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, 
             assert(type.type() == TypeType::Class);
             return createDynamicDispatch(function, args, astArgs.genericArguments());
         case CallType::DynamicProtocolDispatch: {
-            assert(type.type() == TypeType::Protocol);
+            assert(type.type() == TypeType::Box && type.boxedFor().type() == TypeType::Protocol);
             auto conformanceType = fg()->typeHelper().protocolConformance();
             auto conformancePtr = fg()->builder().CreateBitCast(fg()->getMetaTypePtr(args.front()),
                                                                 conformanceType->getPointerTo()->getPointerTo());
@@ -71,7 +71,7 @@ Function *CallCodeGenerator::lookupFunction(const Type &type, const std::u32stri
 llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const Type &calleeType,
                                                       const ASTArguments &args,
                                                       const std::u32string &name, size_t multiprotocolN) {
-    assert(calleeType.type() == TypeType::MultiProtocol);
+    assert(calleeType.type() == TypeType::Box && calleeType.boxedFor().type() == TypeType::MultiProtocol);
 
     auto function = lookupFunction(calleeType.protocols()[multiprotocolN], name, args.isImperative());
     assert(function != nullptr);
@@ -81,7 +81,7 @@ llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const
     auto mp = fg()->builder().CreateBitCast(fg()->getMetaTypePtr(argsv.front()),
                                             mpt->getPointerTo()->getPointerTo());
     auto mpl = fg()->builder().CreateLoad(mp);
-    mpl->getType()->print(llvm::outs());
+    
     auto conformancePtr = fg()->builder().CreateConstGEP2_32(mpt, mpl, 0, multiprotocolN);
     return createDynamicProtocolDispatch(function, std::move(argsv), args.genericArguments(), conformancePtr);
 }

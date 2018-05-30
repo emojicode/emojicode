@@ -12,6 +12,8 @@
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Types/Protocol.hpp"
+#include "ASTMethod.hpp"
+#include "ASTVariables.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -52,7 +54,7 @@ void ASTRepeatWhile::analyse(FunctionAnalyser *analyser) {
 void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
     Type type = analyser->expect(TypeExpectation(false, false), &value_);
 
-    if (type.type() != TypeType::Error) {
+    if (type.unboxedType() != TypeType::Error) {
         throw CompilerError(position(), "🥑 can only be used with 🚨.");
     }
 
@@ -63,9 +65,6 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 
     valueIsBoxed_ = type.storageType() == StorageType::Box;
     valueType_ = type.errorType();
-    if (valueIsBoxed_) {
-        valueType_.forceBox();
-    }
     auto &var = analyser->scoper().currentScope().declareVariable(valueVarName_, valueType_, true, position());
     var.initialize();
     valueVar_ = var.id();
@@ -89,55 +88,23 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 void ASTForIn::analyse(FunctionAnalyser *analyser) {
     analyser->scoper().pushScope();
 
-    auto iterateeType = Type(analyser->compiler()->sEnumerable);
-    iterateeType.setReference();
-    Type iteratee = analyser->expectType(iterateeType, &iteratee_);
+    ASTBlock newBlock(position());
 
-    elementType_ = Type::noReturn();
-    if (!typeIsEnumerable(analyser, &elementType_, iteratee)) {
-        auto iterateeString = iteratee.toString(analyser->typeContext());
-        throw CompilerError(position(), iterateeString, " does not conform to s🔂.");
-    }
+    auto getIterator = std::make_shared<ASTMethod>(std::u32string(1, E_DANGO), std::move(iteratee_),
+                                                   ASTArguments(position()), position());
+    newBlock.appendNode(std::make_shared<ASTConstantVariable>(U"iterator", getIterator, position()));
+    auto getNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
+                                               std::make_shared<ASTGetVariable>(U"iterator", position()),
+                                               ASTArguments(position()), position());
+    block_.preprendNode(std::make_shared<ASTConstantVariable>(varName_, getNext, position()));
 
-    iteratee_->setExpressionType(Type(analyser->compiler()->sEnumerable));
-
-    analyser->pathAnalyser().beginBranch();
-    auto &elVar = analyser->scoper().currentScope().declareVariable(varName_, elementType_, true, position());
-    elVar.initialize();
-    elementVar_ = elVar.id();
+    auto hasNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
+                                               std::make_shared<ASTGetVariable>(U"iterator", position()),
+                                               ASTArguments(position(), false), position());
+    newBlock.appendNode(std::make_shared<ASTRepeatWhile>(hasNext, std::move(block_), position()));
+    block_ = newBlock;
     block_.analyse(analyser);
     analyser->scoper().popScope(analyser->compiler());
-    analyser->pathAnalyser().endBranch();
-    analyser->pathAnalyser().endUncertainBranches();
 }
-
-bool EmojicodeCompiler::ASTForIn::typeIsEnumerable(FunctionAnalyser *analyser, Type *elementType, const Type &type) {
-    if (type.type() == TypeType::Class) {
-        for (Class *a = type.klass(); a != nullptr; a = a->superclass()) {
-            for (auto &protocol : a->protocols()) {
-                if (protocol.protocol() == analyser->compiler()->sEnumerable) {
-                    auto itemType = Type(0, analyser->compiler()->sEnumerable, true);
-                    *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
-                    return true;
-                }
-            }
-        }
-    }
-    else if (type.canHaveProtocol()) {
-        for (auto &protocol : type.typeDefinition()->protocols()) {
-            if (protocol.protocol() == analyser->compiler()->sEnumerable) {
-                auto itemType = Type(0, analyser->compiler()->sEnumerable, true);
-                *elementType = itemType.resolveOn(TypeContext(protocol.resolveOn(TypeContext(type))));
-                return true;
-            }
-        }
-    }
-    else if (type.type() == TypeType::Protocol && type.protocol() == analyser->compiler()->sEnumerable) {
-        *elementType = Type(0, type.protocol(), true).resolveOn(TypeContext(type));
-        return true;
-    }
-    return false;
-}
-
 
 }  // namespace EmojicodeCompiler

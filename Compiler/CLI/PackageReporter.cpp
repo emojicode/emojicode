@@ -31,6 +31,8 @@ void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
     writer_.StartObject();
 
     switch (type.type()) {
+        case TypeType::Box:
+            reportType(type.unboxed(), tc);
         case TypeType::Class:
         case TypeType::ValueType:
         case TypeType::Enum:

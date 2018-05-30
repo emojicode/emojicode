@@ -45,19 +45,17 @@ void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const Ty
         switch (expReturn.storageType()) {
             case StorageType::SimpleOptional:
                 assert(closure_->returnType().storageType() == StorageType::Simple);
-                closure_->setReturnType(Type(MakeOptional, closure_->returnType()));
+                closure_->setReturnType(closure_->returnType().optionalized());
                 break;
             case StorageType::SimpleError:
                 assert(closure_->returnType().storageType() == StorageType::Simple);
-                closure_->setReturnType(Type(MakeError, expReturn.errorEnum(), closure_->returnType()));
+                closure_->setReturnType(closure_->returnType().errored(expReturn.errorEnum()));
                 break;
             case StorageType::Simple:
                 // We cannot deal with this, can we?
                 break;
             case StorageType::Box: {
-                Type g = closure_->returnType();
-                g.forceBox();
-                closure_->setReturnType(g);
+                closure_->setReturnType(closure_->returnType().boxedFor(expReturn));
                 break;
             }
         }
@@ -72,17 +70,17 @@ void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const Ty
             switch (expParam.storageType()) {
                 case StorageType::SimpleOptional:
                     assert(param.type.storageType() == StorageType::Simple);
-                    shadowParams[i].type = Type(MakeOptional, param.type);
+                    shadowParams[i].type = param.type.optionalized();
                     break;
                 case StorageType::SimpleError:
                     assert(param.type.storageType() == StorageType::Simple);
-                    shadowParams[i].type = Type(MakeError, expParam.errorEnum(), param.type);
+                    shadowParams[i].type = param.type.errored(expParam.errorEnum());
                     break;
                 case StorageType::Simple:
                     // We cannot deal with this, can we?
                     break;
                 case StorageType::Box:
-                    shadowParams[i].type.forceBox();
+                    shadowParams[i].type = shadowParams[i].type.boxedFor(expParam);
                     break;
             }
         }

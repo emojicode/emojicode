@@ -15,7 +15,7 @@ namespace EmojicodeCompiler {
 
 Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false), &value_);
-    if (type.type() != TypeType::Error) {
+    if (type.unboxedType() != TypeType::Error) {
         throw CompilerError(position(), "🚥 can only be used with 🚨.");
     }
     return analyser->boolean();
@@ -24,10 +24,10 @@ Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
 Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &value_);
 
-    if (t.type() == TypeType::Optional) {
+    if (t.unboxedType() == TypeType::Optional) {
         return t.optionalType();
     }
-    if (t.type() == TypeType::Error) {
+    if (t.unboxedType() == TypeType::Error) {
         error_ = true;
         return t.errorType();
     }

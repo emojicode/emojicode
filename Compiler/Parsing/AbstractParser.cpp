@@ -61,21 +61,12 @@ Type AbstractParser::parseType(const TypeContext &typeContext) {
         if (optional) {
             throw CompilerError(token.position(), "🍬⚪️ is identical to ⚪️. Do not specify 🍬.");
         }
-        return Type::something();
-    }
-    if (stream_.consumeTokenIf(E_LARGE_BLUE_CIRCLE)) {
-        return optional ? Type(MakeOptional, Type::someobject()) : Type::someobject();
-    }
-    if (stream_.nextTokenIs(TokenType::Variable)) {
-        return parseGenericVariable(optional, typeContext);
-    }
-    if (stream_.nextTokenIs(E_BENTO_BOX)) {
-        return parseMultiProtocol(optional, typeContext);
+        return Type::something().applyMinimalBoxing();
     }
     if (stream_.nextTokenIs(TokenType::Error)) {
         return parseErrorType(optional, typeContext);
     }
-    return parseTypeMain(optional, typeContext);
+    return parseTypeMain(typeContext).optionalized(optional).applyMinimalBoxing();
 }
 
 Type AbstractParser::parseTypeAsValueType(const TypeContext &typeContext) {
@@ -100,9 +91,18 @@ void AbstractParser::validateTypeAsValueType(const Token &token, const Type &typ
     }
 }
 
-Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext) {
+Type AbstractParser::parseTypeMain(const TypeContext &typeContext) {
     if (stream_.consumeTokenIf(TokenType::BlockBegin)) {
-        return parseCallableType(optional, typeContext);
+        return parseCallableType(typeContext);
+    }
+    if (stream_.nextTokenIs(TokenType::Variable)) {
+        return parseGenericVariable(typeContext);
+    }
+    if (stream_.nextTokenIs(E_BENTO_BOX)) {
+        return parseMultiProtocol(typeContext);
+    }
+    if (stream_.consumeTokenIf(E_LARGE_BLUE_CIRCLE)) {
+        return Type::someobject();
     }
 
     auto parsedTypeIdentifier = parseTypeIdentifier();
@@ -110,33 +110,31 @@ Type AbstractParser::parseTypeMain(bool optional, const TypeContext &typeContext
     if (type.canHaveGenericArguments()) {
         parseGenericArgumentsForType(&type, typeContext, parsedTypeIdentifier.position);
     }
-    return optional ? Type(MakeOptional, type) : type;
+    return type;
 }
 
-Type AbstractParser::parseMultiProtocol(bool optional, const TypeContext &typeContext) {
+Type AbstractParser::parseMultiProtocol(const TypeContext &typeContext) {
     auto bentoToken = stream_.consumeToken(TokenType::Identifier);
 
     std::vector<Type> protocols;
     while (stream_.nextTokenIsEverythingBut(E_BENTO_BOX)) {
-        auto protocolType = parseType(typeContext);
+        auto protocolType = parseType(typeContext).unboxed();
         if (protocolType.type() != TypeType::Protocol) {
             package_->compiler()->error(CompilerError(bentoToken.position(),
                                                       "🍱 may only consist of non-optional protocol types."));
             continue;
         }
-        protocols.push_back(protocolType);
+        protocols.push_back(protocolType.unboxed());
     }
     stream_.consumeToken(TokenType::Identifier);
 
     if (protocols.empty()) {
         throw CompilerError(bentoToken.position(), "An empty 🍱 is invalid.");
     }
-
-    auto type = Type(std::move(protocols));
-    return optional ? Type(MakeOptional, type) : type;
+    return Type(std::move(protocols));
 }
 
-Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeContext) {
+Type AbstractParser::parseCallableType(const TypeContext &typeContext) {
     std::vector<Type> params;
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd) &&
             stream_.nextTokenIsEverythingBut(TokenType::RightProductionOperator)) {
@@ -145,20 +143,19 @@ Type AbstractParser::parseCallableType(bool optional, const TypeContext &typeCon
     auto returnType = stream_.consumeTokenIf(TokenType::RightProductionOperator) ? parseType(typeContext)
                                                                                  : Type::noReturn();
     stream_.consumeToken(TokenType::BlockEnd);
-
-    auto type = Type(returnType, params);
-    return optional ? Type(MakeOptional, type) : type;
+    return Type(returnType, params);
 }
 
-Type AbstractParser::parseGenericVariable(bool optional, const TypeContext &typeContext) {
+Type AbstractParser::parseGenericVariable(const TypeContext &typeContext) {
     auto varToken = stream_.consumeToken(TokenType::Variable);
 
     Type type = Type::noReturn();
-    if (typeContext.function() != nullptr && typeContext.function()->fetchVariable(varToken.value(), optional, &type)) {
+    if (typeContext.function() != nullptr && typeContext.function()->fetchVariable(varToken.value(), &type)) {
         return type;
     }
-    if (typeContext.calleeType().canHaveGenericArguments() &&
-        typeContext.calleeType().typeDefinition()->fetchVariable(varToken.value(), optional, &type)) {
+
+    auto callee = typeContext.calleeType().unboxed();
+    if (callee.canHaveGenericArguments() && callee.typeDefinition()->fetchVariable(varToken.value(), &type)) {
         return type;
     }
 
@@ -180,8 +177,7 @@ Type AbstractParser::parseErrorType(bool optional, const TypeContext &typeContex
         throw CompilerError(token.position(), "The error type itself cannot be an optional. "
                             "Maybe you meant to make the contained type an optional?");
     }
-    Type type = Type(MakeError, errorEnum, parseType(typeContext));
-    return type;
+    return parseType(typeContext).errored(errorEnum);
 }
 
 void AbstractParser::parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, const SourcePosition &p) {

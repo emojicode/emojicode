@@ -90,16 +90,10 @@ class ASTSimpleToSimpleError final : public ASTBoxing {
 };
 
 class ASTToBox : public ASTBoxing {
-public:
-    ASTToBox(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p, Type toType)
-            : ASTBoxing(expr, exprType, p), toType_(std::move(toType)) {}
+    using ASTBoxing::ASTBoxing;
 protected:
-    const Type& toType() const { return toType_; }
-
     void getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const;
     void setBoxMeta(Value *box, FunctionCodeGenerator *fg) const;
-private:
-    Type toType_;
 };
 
 class ASTSimpleOptionalToBox final : public ASTToBox {

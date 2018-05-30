@@ -66,7 +66,7 @@ void ASTRaise::analyse(FunctionAnalyser *analyser) {
         return;
     }
 
-    if (analyser->function()->returnType().type() != TypeType::Error) {
+    if (analyser->function()->returnType().unboxedType() != TypeType::Error) {
         throw CompilerError(position(), "Function is not declared to return a 🚨.");
     }
 

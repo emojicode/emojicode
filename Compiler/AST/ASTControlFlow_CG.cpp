@@ -106,39 +106,7 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
 }
 
 void ASTForIn::generate(FunctionCodeGenerator *fg) const {
-    auto callg = CallCodeGenerator(fg, CallType::DynamicProtocolDispatch);
-    auto iterator = callg.generate(iteratee_->generate(fg), iteratee_->expressionType(), ASTArguments(position()),
-                                   std::u32string(1, E_DANGO));
-    auto iteratorPtr = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(iteratee_->expressionType()));
-    fg->builder().CreateStore(iterator, iteratorPtr);
-
-    auto *function = fg->builder().GetInsertBlock()->getParent();
-
-    auto afterBlock = llvm::BasicBlock::Create(fg->generator()->context(), "afterRepeatWhile");
-    auto whileCondBlock = llvm::BasicBlock::Create(fg->generator()->context(), "whileCond", function);
-    auto repeatBlock = llvm::BasicBlock::Create(fg->generator()->context(), "repeat", function);
-
-    fg->builder().CreateBr(whileCondBlock);
-
-    auto iteratorType = Type(fg->compiler()->sEnumerator);
-
-    fg->builder().SetInsertPoint(whileCondBlock);
-    auto args = ASTArguments(position());
-    args.setImperative(false);
-    auto cont = callg.generate(iteratorPtr, iteratorType, args, std::u32string(1, 0x1F53D));
-    fg->builder().CreateCondBr(cont, repeatBlock, afterBlock);
-
-    fg->builder().SetInsertPoint(repeatBlock);
-    auto element = callg.generate(iteratorPtr, iteratorType, ASTArguments(position()), std::u32string(1, 0x1F53D));
-    fg->scoper().getVariable(elementVar_) = LocalVariable(false, element);
     block_.generate(fg);
-
-    if (!block_.returnedCertainly()) {
-        fg->builder().CreateBr(whileCondBlock);
-    }
-
-    function->getBasicBlockList().push_back(afterBlock);
-    fg->builder().SetInsertPoint(afterBlock);
 }
 
 }  // namespace EmojicodeCompiler

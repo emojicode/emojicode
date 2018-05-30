@@ -49,12 +49,14 @@ protected:
 private:
     bool builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name);
 
-    Type analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name, const Type &type);
+    Type analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name);
 
     void checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
                        const Function *method) const;
-    void determineCallType(const FunctionAnalyser *analyser, const Type &type);
-    Type analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name, Type type,
+    void determineCallType(const FunctionAnalyser *analyser);
+    void determineCalleeType(FunctionAnalyser *analyser, const std::u32string &name,
+                             std::shared_ptr<ASTExpr> &callee, const Type &otype);
+    Type analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
                                std::shared_ptr<ASTExpr> &callee);
 };
 

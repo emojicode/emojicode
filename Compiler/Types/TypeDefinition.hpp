@@ -56,7 +56,7 @@ public:
     /// The generic arguments of the super type.
     /// @returns The generic arguments of the Type passed to setSuperType().
     /// If no super type was provided an empty vector is returned.
-    const std::vector<Type>& superGenericArguments() const { return superType_.genericArguments(); }
+    std::vector<Type> superGenericArguments() const;
 
     /// Determines whether the resolution constraint of TypeType::GenericVariable allows it to be resolved on an Type
     /// instance representing an instance of this TypeDefinition.

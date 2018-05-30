@@ -19,7 +19,7 @@ void ProtocolsTableGenerator::createProtocolsTable(const Type &type) {
     std::map<Type, llvm::Constant *> tables;
 
     for (auto &protocol : type.typeDefinition()->protocols()) {
-        tables.emplace(protocol, createVirtualTable(type, protocol));
+        tables.emplace(protocol.unboxed(), createVirtualTable(type, protocol));
     }
 
     type.typeDefinition()->setProtocolTables(std::move(tables));
@@ -29,14 +29,14 @@ void ProtocolsTableGenerator::declareImportedProtocolsTable(const Type &type) {
     std::map<Type, llvm::Constant *> tables;
 
     for (auto &protocol : type.typeDefinition()->protocols()) {
-        tables.emplace(protocol, getConformanceVariable(type, protocol, nullptr));
+        tables.emplace(protocol.unboxed(), getConformanceVariable(type, protocol, nullptr));
     }
 
     type.typeDefinition()->setProtocolTables(std::move(tables));
 }
 
 llvm::GlobalVariable* ProtocolsTableGenerator::multiprotocol(const Type &multiprotocol, const Type &conformer) {
-    auto pair = std::make_pair(multiprotocol, conformer.typeDefinition());
+    auto pair = std::make_pair(multiprotocol.unboxed(), conformer.typeDefinition());
     auto it = multiprotocolTables_.find(pair);
     if (it != multiprotocolTables_.end()) {
         return it->second;
@@ -44,7 +44,7 @@ llvm::GlobalVariable* ProtocolsTableGenerator::multiprotocol(const Type &multipr
 
     std::vector<llvm::Constant *> virtualTable;
     for (auto protocol : multiprotocol.protocols()) {
-        virtualTable.emplace_back(conformer.typeDefinition()->protocolTableFor(protocol));
+        virtualTable.emplace_back(conformer.typeDefinition()->protocolTableFor(protocol.unboxed()));
     }
 
     auto arrayType = llvm::ArrayType::get(typeHelper_.protocolConformance()->getPointerTo(),

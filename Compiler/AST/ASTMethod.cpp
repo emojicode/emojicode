@@ -24,49 +24,54 @@ Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32
 
 Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee, const Type &otype) {
+    determineCalleeType(analyser, name, callee, otype);
+
+    if (calleeType_.unboxedType() == TypeType::MultiProtocol) {
+        return analyseMultiProtocolCall(analyser, name);
+    }
+    if (calleeType_.type() == TypeType::TypeAsValue) {
+        return analyseTypeMethodCall(analyser, name, callee);
+    }
+
+    determineCallType(analyser);
+
+    auto method = calleeType_.typeDefinition()->getMethod(name, calleeType_, analyser->typeContext(),
+                                                          args_.isImperative(), position());
+
+    if (calleeType_.type() == TypeType::Class && (method->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
+        callType_ = CallType::StaticDispatch;
+    }
+
+    checkMutation(analyser, callee, otype, method);
+    return analyser->analyseFunctionCall(&args_, calleeType_, method);
+}
+
+void ASTMethodable::determineCalleeType(FunctionAnalyser *analyser, const std::u32string &name,
+                                        std::shared_ptr<ASTExpr> &callee, const Type &otype) {
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     if (builtIn(analyser, type, name)) {
-        analyser->comply(type, TypeExpectation(false, false), &callee);
+        calleeType_ = analyser->comply(type, TypeExpectation(false, false), &callee);
     }
     else {
         calleeType_ = analyser->comply(type, TypeExpectation(true, false), &callee).resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     }
-
-    if (type.type() == TypeType::MultiProtocol) {
-        return analyseMultiProtocolCall(analyser, name, type);
-    }
-    if (type.type() == TypeType::TypeAsValue) {
-        return analyseTypeMethodCall(analyser, name, type, callee);
-    }
-
-    determineCallType(analyser, type);
-
-    auto method = type.typeDefinition()->getMethod(name, type, analyser->typeContext(), args_.isImperative(),
-                                                   position());
-
-    if (type.type() == TypeType::Class && (method->accessLevel() == AccessLevel::Private || type.isExact())) {
-        callType_ = CallType::StaticDispatch;
-    }
-
-    checkMutation(analyser, callee, type, method);
-    return analyser->analyseFunctionCall(&args_, type, method);
 }
 
-void ASTMethodable::determineCallType(const FunctionAnalyser *analyser, const Type &type) {
-    if (type.type() == TypeType::ValueType) {
+void ASTMethodable::determineCallType(const FunctionAnalyser *analyser) {
+    if (calleeType_.type() == TypeType::ValueType) {
         callType_ = CallType::StaticDispatch;
     }
-    else if (type.type() == TypeType::Protocol) {
+    else if (calleeType_.unboxedType() == TypeType::Protocol) {
         callType_ = CallType::DynamicProtocolDispatch;
     }
-    else if (type.type() == TypeType::Enum) {
+    else if (calleeType_.type() == TypeType::Enum) {
         callType_ = CallType::StaticDispatch;
     }
-    else if (type.type() == TypeType::Class) {
+    else if (calleeType_.type() == TypeType::Class) {
         callType_ = CallType::DynamicDispatch;
     }
     else {
-        throw CompilerError(position(), type.toString(analyser->typeContext()), " does not provide methods.");
+        throw CompilerError(position(), calleeType_.toString(analyser->typeContext()), " does not provide methods.");
     }
 }
 
@@ -83,9 +88,9 @@ void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_
     }
 }
 
-Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name, Type type,
+Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
                                           std::shared_ptr<ASTExpr> &callee) {
-    calleeType_ = type.typeOfTypeValue();
+    calleeType_ = calleeType_.typeOfTypeValue();
 
     if (calleeType_.type() == TypeType::Class) {
         callType_ = CallType::DynamicDispatchOnType;
@@ -94,26 +99,26 @@ Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std:
         callType_ = CallType::StaticContextfreeDispatch;
     }
     else {
-        throw CompilerError(position(), type.toString(analyser->typeContext()), " does not provide methods.");
+        throw CompilerError(position(), calleeType_.toString(analyser->typeContext()), " does not provide methods.");
     }
 
     builtIn_ = BuiltInType::TypeMethod;
-    auto method = calleeType_.typeDefinition()->getTypeMethod(name, type, analyser->typeContext(), args_.isImperative(),
-                                                              position());
+    auto method = calleeType_.typeDefinition()->getTypeMethod(name, calleeType_, analyser->typeContext(),
+                                                              args_.isImperative(), position());
     return analyser->analyseFunctionCall(&args_, calleeType_, method);
 }
 
-Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name, const Type &type) {
-    for (; multiprotocolN_ < type.protocols().size(); multiprotocolN_++) {
+Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name) {
+    for (; multiprotocolN_ < calleeType_.protocols().size(); multiprotocolN_++) {
         Function *method;
-        auto &protocol = type.protocols()[multiprotocolN_];
+        auto &protocol = calleeType_.protocols()[multiprotocolN_];
         if ((method = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
             builtIn_ = BuiltInType::Multiprotocol;
             callType_ = CallType::DynamicProtocolDispatch;
             return analyser->analyseFunctionCall(&args_, protocol, method);
         }
     }
-    throw CompilerError(position(), "No type in ", type.toString(analyser->typeContext()),
+    throw CompilerError(position(), "No type in ", calleeType_.toString(analyser->typeContext()),
                         " provides a method ", utf8(name), ".");
 }
 

@@ -31,9 +31,9 @@ public:
 
     /// Returns the actual type constructed with this initializer for the given initialized type @c type
     Type constructedType(Type type) const {
-        type.unbox();
+        type = type.unboxed();
         if (errorProne()) {
-            return Type(MakeError, errorType_, type);
+            return type.errored(errorType_);
         }
         return type;
     }
