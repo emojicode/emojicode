@@ -6,9 +6,9 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
-#include <cmath>
 
 extern "C" double sRealAbsolute(double *real) {
     return std::abs(*real);

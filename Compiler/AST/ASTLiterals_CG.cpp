@@ -66,7 +66,7 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
     auto list = ASTInitialization::initObject(fg, ASTArguments(position()), std::u32string(1, 0x1F438), type_);
-    for (auto value : values_) {
+    for (auto &value : values_) {
         auto args = ASTArguments(position());
         args.addArguments(value);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, std::u32string(1, 0x1F43B));

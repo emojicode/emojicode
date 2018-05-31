@@ -119,7 +119,7 @@ std::string mangleMultiprotocolConformance(const Type &multi, const Type &confor
     std::stringstream stream;
     mangleTypeName(stream, conformer);
     stream << "_multi";
-    for (auto protocol : multi.protocols()) {
+    for (auto &protocol : multi.protocols()) {
         mangleTypeName(stream, protocol);
     }
     return stream.str();

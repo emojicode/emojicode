@@ -18,6 +18,7 @@
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include "VTCreator.hpp"
+#include <llvm/IR/IRPrintingPasses.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/TargetRegistry.h>
@@ -25,7 +26,6 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
-#include <llvm/IR/IRPrintingPasses.h>
 #include <algorithm>
 #include <limits>
 #include <vector>

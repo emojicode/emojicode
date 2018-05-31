@@ -30,7 +30,7 @@ public:
     }
 
     void findComments(const SourcePosition &a, const SourcePosition &b,
-                      std::function<void (const Token &)> comment) const;
+                      const std::function<void (const Token &)> &comment) const;
 private:
     const std::u32string content_;
     const std::string path_;

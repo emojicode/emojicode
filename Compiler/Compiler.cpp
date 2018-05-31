@@ -7,13 +7,13 @@
 //
 
 #include "CompilerError.hpp"
-#include "Compiler.hpp"
-#include "Package/RecordingPackage.hpp"
-#include "Generation/CodeGenerator.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
+#include "Compiler.hpp"
+#include "Generation/CodeGenerator.hpp"
+#include "Package/RecordingPackage.hpp"
 #include "Parsing/AbstractParser.hpp"
-#include "Prettyprint/Prettyprinter.hpp"
 #include "Parsing/CompatibilityInfoProvider.hpp"
+#include "Prettyprint/Prettyprinter.hpp"
 #include <llvm/Support/FileSystem.h>
 
 #include <utility>
@@ -109,7 +109,8 @@ void Compiler::archive() {
 
 std::string Compiler::searchPackage(const std::string &name, const SourcePosition &p) {
     for (auto &path : packageSearchPaths_) {
-        auto full = path + "/" + name;
+        auto full = path + "/";
+        full += name;
         if (llvm::sys::fs::is_directory(full)) {
             return full;
         }

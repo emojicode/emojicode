@@ -3,10 +3,10 @@
 //
 
 #include "OptimizationManager.hpp"
-#include <llvm/Transforms/Scalar.h>
-#include <llvm/Transforms/Scalar/GVN.h>
 #include <llvm/Transforms/IPO.h>
 #include <llvm/Transforms/IPO/PassManagerBuilder.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/Scalar/GVN.h>
 
 namespace EmojicodeCompiler {
 

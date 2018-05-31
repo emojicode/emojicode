@@ -10,14 +10,14 @@
 #include "AST/ASTStatements.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
+#include "Lex/SourceManager.hpp"
 #include "Package/Package.hpp"
 #include "Parsing/OperatorHelper.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
+#include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
-#include "Types/Extension.hpp"
-#include "Lex/SourceManager.hpp"
 #include <algorithm>
 #include <cstdio>
 #include <iostream>

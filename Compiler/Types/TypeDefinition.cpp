@@ -20,7 +20,7 @@ namespace EmojicodeCompiler {
 
 TypeDefinition::TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation,
                                bool exported)
-    : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(std::move(pos)),
+    : name_(std::move(name)), package_(p), documentation_(std::move(documentation)), position_(pos),
       exported_(exported) {}
 
 TypeDefinition::~TypeDefinition() = default;

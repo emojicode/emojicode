@@ -5,10 +5,10 @@
 #include "CompilerError.hpp"
 #include "SourceManager.hpp"
 #include "SourcePosition.hpp"
+#include <algorithm>
+#include <codecvt>
 #include <fstream>
 #include <locale>
-#include <codecvt>
-#include <algorithm>
 
 namespace EmojicodeCompiler {
 
@@ -28,7 +28,7 @@ SourceFile* SourceManager::read(std::string file) {
 }
 
 void SourceFile::findComments(const SourcePosition &a, const SourcePosition &b,
-                              std::function<void (const Token &)> comment) const {
+                              const std::function<void (const Token &)> &comment) const {
     auto end = comments_.upper_bound(std::make_pair(b.line, b.character));
     auto it = comments_.lower_bound(std::make_pair(a.line, a.character));
     if (it != comments_.end()) {

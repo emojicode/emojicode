@@ -6,12 +6,12 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "Runtime.h"
+#include "backward.hpp"
 #include <cinttypes>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include "Runtime.h"
-#include "backward.hpp"
 
 int argc;
 char **argv;

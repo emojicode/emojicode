@@ -3,15 +3,15 @@
 //
 
 #include "../runtime/Runtime.h"
-#include "../s/String.hpp"
 #include "../s/Data.hpp"
+#include "../s/String.hpp"
 #include <arpa/inet.h>
 #include <cerrno>
-#include <netdb.h>
+#include <csignal>
 #include <cstring>
+#include <netdb.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <csignal>
 
 using s::String;
 using s::Data;

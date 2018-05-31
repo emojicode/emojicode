@@ -7,9 +7,9 @@
 //
 
 #include "CodeGenerator.hpp"
-#include "StringPool.hpp"
-#include "Package/Package.hpp"
 #include "Compiler.hpp"
+#include "Package/Package.hpp"
+#include "StringPool.hpp"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/GlobalVariable.h>
 

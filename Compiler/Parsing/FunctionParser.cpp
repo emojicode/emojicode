@@ -16,11 +16,11 @@
 #include "AST/ASTNode.hpp"
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTUnary.hpp"
-#include "AST/ASTVariables.hpp"
 #include "AST/ASTUnsafeBlock.hpp"
-#include "Package/Package.hpp"
+#include "AST/ASTVariables.hpp"
 #include "Compiler.hpp"
 #include "FunctionParser.hpp"
+#include "Package/Package.hpp"
 
 namespace EmojicodeCompiler {
 

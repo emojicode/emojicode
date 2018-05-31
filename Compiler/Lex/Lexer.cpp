@@ -160,7 +160,8 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
         token->type_ = TokenType::LineBreak;
         return hasMoreChars();
     }
-    else if (('0' <= codePoint() && codePoint() <= '9') || codePoint() == '-' || codePoint() == '+') {
+
+    if (('0' <= codePoint() && codePoint() <= '9') || codePoint() == '-' || codePoint() == '+') {
         token->type_ = TokenType::Integer;
         constState->isHex_ = false;
     }
@@ -233,9 +234,7 @@ Lexer::TokenState Lexer::continueSingleLineToken(Token *token, TokenConstruction
             token->type_ = TokenType::MultilineComment;
             return TokenState::Continues;
         }
-        else {
-            constState->commentDetermined_ = true;
-        }
+        constState->commentDetermined_ = true;
     }
 
     if (isNewline()) {

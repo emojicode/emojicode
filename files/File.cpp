@@ -3,8 +3,8 @@
 //
 
 #include "../s/String.hpp"
-#include "../s/Data.hpp"
 #include "../runtime/Runtime.h"
+#include "../s/Data.hpp"
 #include <fstream>
 #include <ios>
 #include <iostream>

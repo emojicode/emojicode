@@ -6,10 +6,10 @@
 #include "Functions/Function.hpp"
 #include "Generation/Mangler.hpp"
 #include "LLVMTypeHelper.hpp"
+#include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeDefinition.hpp"
-#include "Types/Class.hpp"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Module.h>
 
@@ -43,7 +43,7 @@ llvm::GlobalVariable* ProtocolsTableGenerator::multiprotocol(const Type &multipr
     }
 
     std::vector<llvm::Constant *> virtualTable;
-    for (auto protocol : multiprotocol.protocols()) {
+    for (auto &protocol : multiprotocol.protocols()) {
         virtualTable.emplace_back(conformer.typeDefinition()->protocolTableFor(protocol.unboxed()));
     }
 

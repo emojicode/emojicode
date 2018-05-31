@@ -66,4 +66,4 @@ void VTCreator::assign() {
     klass_->setVirtualFunctionCount(vti_);
 }
 
-}
+}  // namespace EmojicodeCompiler

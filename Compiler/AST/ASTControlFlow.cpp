@@ -9,11 +9,11 @@
 #include "Types/Class.hpp"
 #include "AST/ASTNode.hpp"
 #include "ASTControlFlow.hpp"
+#include "ASTMethod.hpp"
+#include "ASTVariables.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Types/Protocol.hpp"
-#include "ASTMethod.hpp"
-#include "ASTVariables.hpp"
 
 namespace EmojicodeCompiler {
 

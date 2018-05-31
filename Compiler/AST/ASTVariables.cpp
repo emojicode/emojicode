@@ -7,12 +7,12 @@
 //
 
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "ASTBinaryOperator.hpp"
 #include "ASTInitialization.hpp"
 #include "ASTVariables.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
-#include "ASTBinaryOperator.hpp"
 
 namespace EmojicodeCompiler {
 

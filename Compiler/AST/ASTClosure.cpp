@@ -7,8 +7,8 @@
 //
 
 #include "ASTClosure.hpp"
-#include "Analysis/ThunkBuilder.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
+#include "Analysis/ThunkBuilder.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
 

@@ -7,10 +7,10 @@
 #include "Generation/ReificationContext.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Mangler.hpp"
-#include "ProtocolsTableGenerator.hpp"
 #include "Package/Package.hpp"
-#include "Types/ValueType.hpp"
+#include "ProtocolsTableGenerator.hpp"
 #include "Types/Protocol.hpp"
+#include "Types/ValueType.hpp"
 #include "VTCreator.hpp"
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>

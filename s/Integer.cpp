@@ -6,10 +6,10 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "../runtime/Runtime.h"
+#include "String.hpp"
 #include <cstdint>
 #include <cstdlib>
-#include "String.hpp"
-#include "../runtime/Runtime.h"
 
 using s::String;
 

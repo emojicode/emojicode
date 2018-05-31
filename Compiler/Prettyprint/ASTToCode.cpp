@@ -17,8 +17,8 @@
 #include "AST/ASTStatements.hpp"
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTUnary.hpp"
-#include "AST/ASTVariables.hpp"
 #include "AST/ASTUnsafeBlock.hpp"
+#include "AST/ASTVariables.hpp"
 #include "Prettyprinter.hpp"
 #include "Types/Type.hpp"
 #include <sstream>

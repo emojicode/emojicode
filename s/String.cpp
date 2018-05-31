@@ -7,15 +7,15 @@
 //
 
 #include "../runtime/Runtime.h"
-#include "String.hpp"
 #include "Data.hpp"
-#include <cinttypes>
-#include <iostream>
-#include <cstring>
-#include <cctype>
-#include <cmath>
-#include <algorithm>
+#include "String.hpp"
 #include "utf8.h"
+#include <algorithm>
+#include <cctype>
+#include <cinttypes>
+#include <cmath>
+#include <cstring>
+#include <iostream>
 
 using s::String;
 

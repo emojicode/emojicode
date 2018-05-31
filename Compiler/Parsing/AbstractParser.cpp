@@ -8,13 +8,13 @@
 
 #include "AbstractParser.hpp"
 #include "CompatibilityInfoProvider.hpp"
+#include "Compiler.hpp"
 #include "Emojis.h"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
 #include "Parsing/CompatibleFunctionParser.hpp"
 #include "Types/Protocol.hpp"
-#include "Compiler.hpp"
 #include <map>
 #include <vector>
 

@@ -7,15 +7,15 @@
 //
 
 #include "ThunkBuilder.hpp"
-#include "Types/Protocol.hpp"
-#include "Types/Class.hpp"
-#include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTInitialization.hpp"
 #include "AST/ASTLiterals.hpp"
 #include "AST/ASTMethod.hpp"
 #include "AST/ASTStatements.hpp"
+#include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTVariables.hpp"
 #include "Functions/Initializer.hpp"
+#include "Types/Class.hpp"
+#include "Types/Protocol.hpp"
 #include <memory>
 
 namespace EmojicodeCompiler {
@@ -46,7 +46,8 @@ void buildBoxingThunkAst(Function *layer, const Function *destinationFunction) {
 }
 
 std::unique_ptr<Function> makeBoxingThunk(std::u32string name, const Type &owner, Package *package, SourcePosition p,
-                                          std::vector<Parameter> &&params, Type returnType, FunctionType functionType) {
+                                          std::vector<Parameter> &&params, const Type &returnType,
+                                          FunctionType functionType) {
     auto function = std::make_unique<Function>(name, AccessLevel::Private, true, owner, package, p, false,
                                                std::u32string(), false, false, true, false, functionType);
     function->setParameters(std::move(params));
