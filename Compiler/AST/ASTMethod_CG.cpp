@@ -34,18 +34,15 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 auto ptr = fg->builder().CreateBitCast(fg->builder().CreateGEP(v, offset), pointerType);
                 return fg->builder().CreateLoad(ptr);
             }
-            case BuiltInType::TypeMethod:
-                return TypeMethodCallCodeGenerator(fg, callType_).generate(callee_->generate(fg),
-                                                                           calleeType_, args_, name_);
             case BuiltInType::Multiprotocol:
                 return MultiprotocolCallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_, args_,
-                                                                              name_, multiprotocolN_);
+                                                                              method_, multiprotocolN_);
             default:
                 break;
         }
     }
 
-    return CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_, args_, name_);
+    return CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_, args_, method_);
 }
     
 }  // namespace EmojicodeCompiler

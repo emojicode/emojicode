@@ -54,35 +54,42 @@ Value* ASTNoValue::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto dict = ASTInitialization::initObject(fg, ASTArguments(position()), std::u32string(1, 0x1F438), type_);
+    auto init = type_.typeDefinition()->lookupInitializer({ 0x1F438 });
+    auto dict = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_);
     for (auto it = values_.begin(); it != values_.end(); it++) {
         auto args = ASTArguments(position());
         args.addArguments(*it);
         args.addArguments(*(++it));
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, std::u32string(1, 0x1F437));
+        auto method = type_.typeDefinition()->lookupMethod({ 0x1F437 }, true);
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method);
     }
     return dict;
 }
 
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto list = ASTInitialization::initObject(fg, ASTArguments(position()), std::u32string(1, 0x1F438), type_);
+    auto init = type_.typeDefinition()->lookupInitializer({ 0x1F438 });
+    auto list = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_);
     for (auto &value : values_) {
         auto args = ASTArguments(position());
         args.addArguments(value);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, std::u32string(1, 0x1F43B));
+        auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, true);
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method);
     }
     return list;
 }
 
 Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto strbuilder = ASTInitialization::initObject(fg, ASTArguments(position()), std::u32string(1, 0x1F195), type_);
+    auto init = type_.typeDefinition()->lookupInitializer({ 0x1F195 });
+    auto strbuilder = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_);
     for (auto &stringNode : values_) {
         auto args = ASTArguments(position());
         args.addArguments(stringNode);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, args, std::u32string(1, 0x1F43B));
+        auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, true);
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, args, method);
     }
+    auto method = type_.typeDefinition()->lookupMethod({ 0x1F521 }, true);
     return CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, ASTArguments(position()),
-                                                                    std::u32string(1, 0x1F521));
+                                                                    method);
 }
 
 }  // namespace EmojicodeCompiler

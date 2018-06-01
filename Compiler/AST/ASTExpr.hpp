@@ -119,12 +119,12 @@ public:
 private:
     void analyseSuperInit(FunctionAnalyser *analyser);
     std::u32string name_;
+    Function *function_ = nullptr;
     Type calleeType_ = Type::noReturn();
     ASTArguments args_;
     bool init_ = false;
     bool manageErrorProneness_ = false;
 
-    Value *generateSuperInit(FunctionCodeGenerator *fg) const;
     void analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, const Initializer *initializer);
 };
 

@@ -37,8 +37,7 @@ protected:
         IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
         IntegerRemainder, IntegerToDouble, IntegerNot,
         BooleanAnd, BooleanOr, BooleanNegate,
-        Equal, Store, Load, IsNoValueLeft, IsNoValueRight,
-        TypeMethod, Multiprotocol,
+        Equal, Store, Load, IsNoValueLeft, IsNoValueRight, Multiprotocol,
     };
 
     BuiltInType builtIn_ = BuiltInType::None;
@@ -46,13 +45,13 @@ protected:
     CallType callType_ = CallType::None;
     Type calleeType_ = Type::noReturn();
     size_t multiprotocolN_ = 0;
+    Function *method_ = nullptr;
 private:
     bool builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name);
 
     Type analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name);
 
-    void checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
-                       const Function *method) const;
+    void checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type) const;
     void determineCallType(const FunctionAnalyser *analyser);
     void determineCalleeType(FunctionAnalyser *analyser, const std::u32string &name,
                              std::shared_ptr<ASTExpr> &callee, const Type &otype);

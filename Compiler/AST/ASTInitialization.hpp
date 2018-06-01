@@ -39,13 +39,14 @@ public:
     /// Returns the type of type which is initialized.
     InitType initType() { return initType_; }
 
-    static Value *initObject(FunctionCodeGenerator *fg, const ASTArguments &args, const std::u32string &name,
+    static Value *initObject(FunctionCodeGenerator *fg, const ASTArguments &args, Function *function,
                              const Type &type);
 private:
     InitType initType_ = InitType::Class;
     std::u32string name_;
     std::shared_ptr<ASTExpr> typeExpr_;
     llvm::Value *vtDestination_ = nullptr;
+    Function *initializer_ = nullptr;
     ASTArguments args_;
 
     Value* generateClassInit(FunctionCodeGenerator *fg) const;

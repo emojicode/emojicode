@@ -95,26 +95,18 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {
-    if (init_) {
-        return generateSuperInit(fg);
-    }
-
     auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(calleeType_));
-    return CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, name_);
-}
+    auto ret = CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, function_);
 
-Value *ASTSuper::generateSuperInit(FunctionCodeGenerator *fg) const {
-    auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(calleeType_));
-    auto r = InitializationCallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_,
-                                                                                    args_, name_);
     if (manageErrorProneness_) {
-        fg->createIfElseBranchCond(fg->getIsError(r), [fg, r]() {
-            auto enumValue = fg->builder().CreateExtractValue(r, 0);
+        fg->createIfElseBranchCond(fg->getIsError(ret), [fg, ret]() {
+            auto enumValue = fg->builder().CreateExtractValue(ret, 0);
             fg->builder().CreateRet(fg->getSimpleErrorWithError(enumValue, fg->llvmReturnType()));
             return false;
         }, []() { return true; });
     }
-    return nullptr;
+
+    return init_ ? nullptr : ret;
 }
 
 Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {

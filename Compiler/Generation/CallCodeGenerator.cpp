@@ -18,10 +18,9 @@
 namespace EmojicodeCompiler {
 
 llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, const ASTArguments &astArgs,
-                                         const std::u32string &name) {
+                                         Function *function) {
     auto args = createArgsVector(callee, astArgs);
 
-    auto function = lookupFunction(type, name, astArgs.isImperative());
     assert(function != nullptr);
     switch (callType_) {
         case CallType::StaticContextfreeDispatch:
@@ -64,17 +63,12 @@ std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, co
     return argsVector;
 }
 
-Function *CallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {
-    return type.typeDefinition()->lookupMethod(name, imperative);
-}
-
 llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const Type &calleeType,
-                                                      const ASTArguments &args,
-                                                      const std::u32string &name, size_t multiprotocolN) {
+                                                      const ASTArguments &args, Function* function,
+                                                      size_t multiprotocolN) {
     assert(calleeType.type() == TypeType::Box && calleeType.boxedFor().type() == TypeType::MultiProtocol);
-
-    auto function = lookupFunction(calleeType.protocols()[multiprotocolN], name, args.isImperative());
     assert(function != nullptr);
+
     auto argsv = createArgsVector(callee, args);
 
     auto mpt = fg()->typeHelper().multiprotocolConformance(calleeType);
@@ -99,6 +93,9 @@ llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
     }
     else if (callType_ == CallType::DynamicDispatch) {
         argTypes.front() = args.front()->getType();
+    }
+    else if (callType_ == CallType::DynamicDispatchOnType) {
+        assert(argTypes.front() == args.front()->getType());
     }
 
     auto funcType = llvm::FunctionType::get(reification.functionType()->getReturnType(), argTypes, false);
@@ -137,15 +134,6 @@ llvm::Value *CallCodeGenerator::getProtocolCallee(std::vector<Value *> &args, ll
     }, [this, &args]() {
         return fg()->getValuePtr(args.front(), llvm::Type::getInt8PtrTy(fg()->generator()->context()));
     });
-}
-
-Function *TypeMethodCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {
-    return type.typeDefinition()->lookupTypeMethod(name, imperative);
-}
-
-Function *
-InitializationCallCodeGenerator::lookupFunction(const Type &type, const std::u32string &name, bool imperative) {
-    return type.typeDefinition()->lookupInitializer(name);
 }
 
 }  // namespace EmojicodeCompiler

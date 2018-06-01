@@ -28,13 +28,19 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
         type.setMutable(expectation.isMutable());
     }
 
-    auto initializer = type.typeDefinition()->getInitializer(name_, type, analyser->typeContext(), position());
-    if (!type.isExact() && !initializer->required()) {
-        throw CompilerError(position(), "Type is not exact; can only use required initializer.");
+    auto init = type.typeDefinition()->getInitializer(name_, type, analyser->typeContext(), position());
+    if (!type.isExact()) {
+        if (!init->required()) {
+            throw CompilerError(position(), "Type is not exact; can only use required initializer.");
+        }
+        initializer_ = type.typeDefinition()->lookupTypeMethod(std::u32string({ E_KEY }) + name_, true);
+    }
+    else {
+        initializer_ = init;
     }
 
-    analyser->analyseFunctionCall(&args_, type, initializer);
-    return initializer->constructedType(type);
+    analyser->analyseFunctionCall(&args_, type, init);
+    return init->constructedType(type);
 }
 
 Type ASTInitialization::analyseEnumInit(FunctionAnalyser *analyser, Type &type) {

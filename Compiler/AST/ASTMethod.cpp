@@ -35,15 +35,15 @@ Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32
 
     determineCallType(analyser);
 
-    auto method = calleeType_.typeDefinition()->getMethod(name, calleeType_, analyser->typeContext(),
-                                                          args_.isImperative(), position());
+    method_ = calleeType_.typeDefinition()->getMethod(name, calleeType_, analyser->typeContext(),
+                                                      args_.isImperative(), position());
 
-    if (calleeType_.type() == TypeType::Class && (method->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
+    if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
         callType_ = CallType::StaticDispatch;
     }
 
-    checkMutation(analyser, callee, otype, method);
-    return analyser->analyseFunctionCall(&args_, calleeType_, method);
+    checkMutation(analyser, callee, otype);
+    return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 
 void ASTMethodable::determineCalleeType(FunctionAnalyser *analyser, const std::u32string &name,
@@ -75,11 +75,11 @@ void ASTMethodable::determineCallType(const FunctionAnalyser *analyser) {
     }
 }
 
-void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type,
-                                  const Function *method) const {
-    if (type.type() == TypeType::ValueType && method->mutating()) {
+void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee,
+                                  const Type &type) const {
+    if (type.type() == TypeType::ValueType && method_->mutating()) {
         if (!type.isMutable()) {
-            analyser->compiler()->error(CompilerError(position(), utf8(method->name()),
+            analyser->compiler()->error(CompilerError(position(), utf8(method_->name()),
                                                       " was marked 🖍 but callee is not mutable."));
         }
         else if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee)) {
@@ -102,20 +102,18 @@ Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std:
         throw CompilerError(position(), calleeType_.toString(analyser->typeContext()), " does not provide methods.");
     }
 
-    builtIn_ = BuiltInType::TypeMethod;
-    auto method = calleeType_.typeDefinition()->getTypeMethod(name, calleeType_, analyser->typeContext(),
+    method_ = calleeType_.typeDefinition()->getTypeMethod(name, calleeType_, analyser->typeContext(),
                                                               args_.isImperative(), position());
-    return analyser->analyseFunctionCall(&args_, calleeType_, method);
+    return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 
 Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name) {
     for (; multiprotocolN_ < calleeType_.protocols().size(); multiprotocolN_++) {
-        Function *method;
         auto &protocol = calleeType_.protocols()[multiprotocolN_];
-        if ((method = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
+        if ((method_ = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
             builtIn_ = BuiltInType::Multiprotocol;
             callType_ = CallType::DynamicProtocolDispatch;
-            return analyser->analyseFunctionCall(&args_, protocol, method);
+            return analyser->analyseFunctionCall(&args_, protocol, method_);
         }
     }
     throw CompilerError(position(), "No type in ", calleeType_.toString(analyser->typeContext()),

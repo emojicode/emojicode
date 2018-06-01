@@ -99,10 +99,10 @@ Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expect
         throw CompilerError(position(), "Class has no superclass.");
     }
 
-    Function *method = superclass->getMethod(name_, Type(superclass), analyser->typeContext(),
+    function_ = superclass->getMethod(name_, Type(superclass), analyser->typeContext(),
                                              args_.isImperative(), position());
     calleeType_ = Type(superclass);
-    return analyser->analyseFunctionCall(&args_, calleeType_, method);
+    return analyser->analyseFunctionCall(&args_, calleeType_, function_);
 }
 
 void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
@@ -123,7 +123,7 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
     calleeType_ = Type(eclass->superclass());
     analyser->analyseFunctionCall(&args_, calleeType_, initializer);
     analyseSuperInitErrorProneness(analyser, initializer);
-
+    function_ = initializer;
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
 }
 
