@@ -182,19 +182,17 @@ ValueType *getStandardValueType(const std::u32string &name, Package *_, const So
 
 void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
     // Order of the following calls is important as they will cause Box IDs to be assigned
-    sBoolean = getStandardValueType(std::u32string(1, E_OK_HAND_SIGN), s, errorPosition);
-    sInteger = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_NUMBERS), s, errorPosition);
+    sBoolean = getStandardValueType(U"👌", s, errorPosition);
+    sInteger = getStandardValueType(U"🔢", s, errorPosition);
     sReal = getStandardValueType(std::u32string(1, E_HUNDRED_POINTS_SYMBOL), s, errorPosition);
-    sSymbol = getStandardValueType(std::u32string(1, E_INPUT_SYMBOL_FOR_SYMBOLS), s, errorPosition);
-    sMemory = getStandardValueType(std::u32string(1, E_BRAIN), s, errorPosition);
-    sByte = getStandardValueType(std::u32string(1, 0x1F4A7), s, errorPosition);
+    sSymbol = getStandardValueType(U"🔣", s, errorPosition);
+    sMemory = getStandardValueType(U"🧠", s, errorPosition);
+    sByte = getStandardValueType(U"💧", s, errorPosition);
 
-    sString = getStandardClass(std::u32string(1, 0x1F521), s, errorPosition);
-    sList = getStandardClass(std::u32string(1, 0x1F368), s, errorPosition);
-    getStandardClass(std::u32string(1, 0x1F4C7), s, errorPosition);
-    sDictionary = getStandardClass(std::u32string(1, 0x1F36F), s, errorPosition);
+    sString = getStandardClass(U"🔡", s, errorPosition);
+    sList = getStandardClass(U"🍨", s, errorPosition);
+    sDictionary = getStandardClass(U"🍯", s, errorPosition);
 
-    sEnumerator = getStandardProtocol(std::u32string(1, 0x1F361), s, errorPosition);
     sEnumerable = getStandardProtocol(
             std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s,
             errorPosition);

@@ -113,7 +113,6 @@ public:
     Class *sString = nullptr;
     Class *sList = nullptr;
     Class *sDictionary = nullptr;
-    Protocol *sEnumerator = nullptr;
     Protocol *sEnumerable = nullptr;
     ValueType *sBoolean = nullptr;
     ValueType *sSymbol = nullptr;
