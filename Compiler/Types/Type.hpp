@@ -233,9 +233,14 @@ public:
     /// Returns the name of the package to which this type belongs.
     std::string typePackage() const;
     /// Returns a string representation of this type.
-    /// @param typeContext The type context to be used when resolving generic argument names. Can be Nothingeness if the
-    /// type is not in a context.
-    std::string toString(const TypeContext &typeContext, bool package = true) const;
+    /// @param typeContext The type context to be used when resolving generic argument names. TypeContext() can be
+    ///                    provided if the actual Type Context is not known.
+    /// @param package If this argument is not nullptr types will be printed with namespace accessors as required for
+    ///                code in the provided package. If nullptr, the names of the packages to which types belong are
+    ///                printed instead.
+    std::string toString(const TypeContext &typeContext, Package *package = nullptr) const;
+
+    std::string namespaceAccessor(Package *package) const;
 
     /// Returns true if this represents a reference to (a) value(s) of the type represented by this instance.
     /// Values to which references point are normally located on the stack.
@@ -314,7 +319,7 @@ private:
     bool mutable_ = true;
     bool forceExact_ = false;
 
-    void typeName(Type type, const TypeContext &typeContext, std::string &string, bool package) const;
+    void typeName(Type type, const TypeContext &typeContext, std::string &string, Package *package) const;
     bool identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const;
     Type resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const;
     void sortMultiProtocolType();

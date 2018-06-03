@@ -177,8 +177,7 @@ void Prettyprinter::printTypeDefName(const Type &type) {
             break;
     }
 
-    printNamespaceAccessor(type);
-    stream_ << utf8(typeDef->name());
+    stream_ << type.namespaceAccessor(package_) << utf8(typeDef->name());
     offerSpace();
     printGenericParameters(typeDef);
 
@@ -333,15 +332,7 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
 }
 
 void Prettyprinter::print(const Type &type, const TypeContext &typeContext) {
-    printNamespaceAccessor(type);
-    stream_ << type.toString(typeContext, false);
-}
-
-void Prettyprinter::printNamespaceAccessor(const Type &type) {
-    auto ns = package_->findNamespace(type);
-    if (!ns.empty()) {
-        stream_ << "🔶" << utf8(ns);
-    }
+    stream_ << type.toString(typeContext, package_);
 }
 
 void Prettyprinter::printComments(const SourcePosition &p) {

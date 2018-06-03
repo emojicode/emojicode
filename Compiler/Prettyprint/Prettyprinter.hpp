@@ -86,7 +86,6 @@ private:
     void printRecordings(const std::vector<std::unique_ptr<RecordingPackage::Recording>> &recordings);
     void print(const char *key, Function *function, bool body, bool noMutate);
     void print(RecordingPackage::Recording *recording);
-    void printNamespaceAccessor(const Type &type);
     void printEnumValues(Enum *enumeration);
     void printProtocolConformances(TypeDefinition *typeDef, const TypeContext &typeContext);
     void printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext);

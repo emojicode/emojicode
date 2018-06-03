@@ -69,7 +69,7 @@ void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
         case TypeType::Something:
         case TypeType::GenericVariable:
         case TypeType::LocalGenericVariable: {
-            auto typeName = type.toString(tc, false);
+            auto typeName = type.toString(tc);
 
             writer_.Key("type");
             writer_.String("Literal");

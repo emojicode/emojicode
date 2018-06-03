@@ -550,8 +550,11 @@ std::string Type::typePackage() const {
     }
 }
 
-void Type::typeName(Type type, const TypeContext &typeContext, std::string &string, bool package) const {
-    if (package) {
+void Type::typeName(Type type, const TypeContext &typeContext, std::string &string, Package *package) const {
+    if (package != nullptr) {
+        string.append(type.namespaceAccessor(package));
+    }
+    else {
         string.append(type.typePackage());
     }
 
@@ -657,10 +660,18 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
     }
 }
 
-std::string Type::toString(const TypeContext &typeContext, bool package) const {
+std::string Type::toString(const TypeContext &typeContext, Package *package) const {
     std::string string;
     typeName(*this, typeContext, string, package);
     return string;
+}
+
+std::string Type::namespaceAccessor(Package *package) const {
+    auto ns = package->findNamespace(*this);
+    if (!ns.empty()) {
+        return "🔶" + utf8(ns);
+    }
+    return "";
 }
 
 }  // namespace EmojicodeCompiler
