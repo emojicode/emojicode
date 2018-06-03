@@ -108,7 +108,7 @@ void ASTErrorHandler::toCode(Prettyprinter &pretty) const {
     value_->toCode(pretty);
     pretty << " ";
     valueBlock_.toCode(pretty);
-    pretty.indent() << "🍓 " << utf8(errorVarName_) << " ";
+    pretty.indent() << "🙅‍♀️ " << utf8(errorVarName_) << " ";
     errorBlock_.toCode(pretty);
 }
 
