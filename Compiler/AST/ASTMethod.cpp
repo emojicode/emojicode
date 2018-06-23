@@ -93,11 +93,11 @@ Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std:
                                           std::shared_ptr<ASTExpr> &callee) {
     calleeType_ = calleeType_.typeOfTypeValue();
 
-    if (calleeType_.type() == TypeType::Class) {
-        callType_ = CallType::DynamicDispatchOnType;
-    }
-    else if (calleeType_.type() == TypeType::ValueType || calleeType_.type() == TypeType::Enum) {
+    if (calleeType_.type() == TypeType::ValueType || calleeType_.type() == TypeType::Enum) {
         callType_ = CallType::StaticContextfreeDispatch;
+    }
+    else if (calleeType_.type() == TypeType::Class) {
+        callType_ = CallType::DynamicDispatchOnType;
     }
     else {
         throw CompilerError(position(), calleeType_.toString(analyser->typeContext()), " does not provide methods.");
@@ -105,6 +105,11 @@ Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std:
 
     method_ = calleeType_.typeDefinition()->getTypeMethod(name, calleeType_, analyser->typeContext(),
                                                               args_.isImperative(), position());
+
+    if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
+        callType_ = CallType::StaticDispatch;
+    }
+
     return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 

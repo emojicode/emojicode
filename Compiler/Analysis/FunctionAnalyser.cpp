@@ -53,15 +53,18 @@ Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTExpr> &node, con
 }
 
 void FunctionAnalyser::checkFunctionUse(Function *function, const SourcePosition &p) const {
+    auto callee = typeContext_.calleeType();
+    if (callee.type() == TypeType::TypeAsValue) {
+        callee = callee.typeOfTypeValue();
+    }
     if (function->accessLevel() == AccessLevel::Private) {
-        if (typeContext_.calleeType().type() != function->owner()->type().type()
-            || function->owner() != typeContext_.calleeType().typeDefinition()) {
+        if (callee.type() != function->owner()->type().type() || function->owner() != callee.typeDefinition()) {
             compiler()->error(CompilerError(p, utf8(function->name()), " is 🔒."));
         }
     }
     else if (function->accessLevel() == AccessLevel::Protected) {
-        if (typeContext_.calleeType().type() != function->owner()->type().type()
-            || !this->typeContext_.calleeType().klass()->inheritsFrom(dynamic_cast<Class *>(function->owner()))) {
+        if (callee.type() != function->owner()->type().type()
+            || !callee.klass()->inheritsFrom(dynamic_cast<Class *>(function->owner()))) {
             compiler()->error(CompilerError(p, utf8(function->name()), " is 🔐."));
         }
     }

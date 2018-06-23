@@ -32,6 +32,7 @@ compilation_tests = [
     "identityOperator",
     "typesAsValues",
     "class",
+    "privateClassMethod",
     # "extension",
     # "piglatin",
     "assignmentByCallInstanceVariable",
