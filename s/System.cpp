@@ -27,3 +27,14 @@ extern "C" runtime::SimpleOptional<s::String*> sSystemGetEnv(runtime::ClassType,
 extern "C" [[noreturn]] void sPanic(runtime::ClassType, s::String *message) {
     ejcPanic(message->cString());
 }
+
+extern "C" runtime::SimpleOptional<s::String*> sSystemArg(runtime::ClassType, runtime::Integer i) {
+    if (i >= runtime::internal::argc) {
+        return runtime::NoValue;
+    }
+    return s::String::allocateAndInitType(runtime::internal::argv[i]);
+}
+
+extern "C" void sSystemSystem(runtime::ClassType, s::String *string) {
+    std::system(string->cString());
+}

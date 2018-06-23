@@ -5,11 +5,19 @@
   operating system. It cannot be instantiated.
 📗
 🌍 🐇 💻 🍇
-  💭 📗
-  💭   Returns a list of the arguments passed to the programm. Calling this method
-  💭   is rather expensive.
-  💭 📗
-  💭 🐇❗️ 🎞 ➡️ 🍨🐚🔡🍆 📻 🔤sSystemArgs🔤
+  📗
+    Returns a list of the arguments passed to the programm. Calling this method
+    is rather expensive.
+  📗
+  🐇❗️ 🎞 ➡️ 🍨🐚🔡🍆 🍇
+    🆕🍨🐚🔡🍆🐸❗️ ➡️ list
+    0 ➡️🖍🆕i
+    🔁 🧔🐕i❗️ ➡️ next 🍇
+      🐻 list next❗️
+      i ⬅️➕ 1
+    🍉
+    ↩️ list
+  🍉
 
   📗
     Gets an environment variable by its name. If the variable cannot be found
@@ -23,13 +31,10 @@
   📗
   🐇❗️ 🚪 status 🔢 📻 🔤sSystemExit🔤
 
-  💭 📗
-  💭   Returns the standard output of running `command` in a subshell.
-  💭 📗
-  💭 🐇❗️ 🕴 command 🔡 ➡️ 🍬🔡 📻 🔤sSystemSystem🔤
-
-  💭 📗 Returns the current working directory. 📗
-  💭 🐇❗️ 🌍 ➡️ 🔡 📻 🔤sSystemCwd🔤
+  📗
+    Returns the standard output of running `command` in a subshell.
+  📗
+  🐇❗️ 🕴 command 🔡 📻 🔤sSystemSystem🔤
 
   📗
     Returns the current time in seconds since the Epoch in Greenwich Mean Time.
@@ -43,4 +48,6 @@
     >!N that recovery is impossible.
   📗
   🐇❗️ 🤯 message 🔡 📻 🔤sPanic🔤
+
+  🐇🔒 ❗️ 🧔 i 🔢 ➡️ 🍬🔡 📻 🔤sSystemArg🔤
 🍉

@@ -5,10 +5,10 @@
 #ifndef EMOJICODE_INTERNAL_HPP
 #define EMOJICODE_INTERNAL_HPP
 
-namespace Runtime {
+namespace runtime {
 
-/// This namespace contains variables that should not be considered part of the public official API
-namespace Internal {
+/// This namespace contains variables that should not be considered part of the public API
+namespace internal {
 
 extern int argc;
 extern char **argv;

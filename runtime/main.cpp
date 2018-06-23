@@ -7,14 +7,15 @@
 //
 
 #include "Runtime.h"
+#include "Internal.hpp"
 #include "backward.hpp"
 #include <cinttypes>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 
-int argc;
-char **argv;
+int runtime::internal::argc;
+char **runtime::internal::argv;
 
 extern "C" runtime::Integer fn_1f3c1();
 
@@ -53,8 +54,8 @@ extern "C" [[noreturn]] void ejcPanic(const char *message) {
 }
 
 int main(int largc, char **largv) {
-    argc = largc;
-    argv = largv;
+    runtime::internal::argc = largc;
+    runtime::internal::argv = largv;
 
     auto code = fn_1f3c1();
     return static_cast<int>(code);

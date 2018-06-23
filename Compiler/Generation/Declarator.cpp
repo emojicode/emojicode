@@ -98,7 +98,8 @@ void Declarator::declareLlvmFunction(Function *function) const {
         typeHelper_.setReificationContext(nullptr);
         auto name = function->externalName().empty() ? mangleFunction(function, reification.arguments)
                                                      : function->externalName();
-        auto linkage = function->accessLevel() == AccessLevel::Private ? llvm::Function::PrivateLinkage
+        auto linkage = function->accessLevel() == AccessLevel::Private && !function->isExternal()
+                                                                       ? llvm::Function::PrivateLinkage
                                                                        : llvm::Function::ExternalLinkage;
         reification.entity.function = llvm::Function::Create(ft, linkage, name, &module_);
         reification.entity.function->addFnAttr(llvm::Attribute::NoUnwind);
