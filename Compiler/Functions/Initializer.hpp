@@ -16,24 +16,25 @@ namespace EmojicodeCompiler {
 
 class Initializer final : public Function {
 public:
-    Initializer(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package,
+    Initializer(std::u32string name, AccessLevel level, bool final, TypeDefinition *typeDef, Package *package,
                 SourcePosition p, bool overriding, std::u32string documentationToken, bool deprecated, bool r,
-                bool unsafe, Type errorType, FunctionType mode)
-    : Function(std::move(name), level, final, std::move(owningType), package, std::move(p), overriding,
-               std::move(documentationToken), deprecated, true, true, unsafe, mode),
-    required_(r), errorType_(std::move(errorType)) {}
+                bool unsafe, FunctionType mode)
+    : Function(std::move(name), level, final, typeDef, package, std::move(p), overriding,
+               std::move(documentationToken), deprecated, true, true, unsafe, mode), required_(r) {}
 
     /// Whether all subclassess are required to implement this initializer as well. Never true for non-class types.
     bool required() const { return required_; }
     /// Whether this initializer might return an error.
-    bool errorProne() const { return errorType_.type() != TypeType::NoReturn; }
-    const Type& errorType() const { return errorType_; }
+    bool errorProne() const { return errorType_ != nullptr; }
+    ASTType* errorType() const { return errorType_.get(); }
+
+    void setErrorType(std::unique_ptr<ASTType> type) { errorType_ = std::move(type); }
 
     /// Returns the actual type constructed with this initializer for the given initialized type @c type
     Type constructedType(Type type) const {
         type = type.unboxed();
         if (errorProne()) {
-            return type.errored(errorType_);
+            return type.errored(errorType_->type());
         }
         return type;
     }
@@ -47,7 +48,7 @@ public:
     const std::vector<std::u32string>& argumentsToVariables() const { return argumentsToVariables_; }
 private:
     bool required_;
-    Type errorType_ = Type::noReturn();
+    std::unique_ptr<ASTType> errorType_ = nullptr;
     std::vector<std::u32string> argumentsToVariables_;
 };
 

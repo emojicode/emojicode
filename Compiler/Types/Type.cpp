@@ -41,24 +41,31 @@ Type::Type(Extension *extension)
 
 Type::Type(ValueType *valueType)
 : typeContent_(TypeType::ValueType), typeDefinition_(valueType), mutable_(false) {
+    if (valueType->genericParameters().empty() || !valueType->genericParameters().front().constraint->wasAnalysed()) {
+        return;
+    }
     for (size_t i = 0; i < valueType->genericParameters().size(); i++) {
         genericArguments_.emplace_back(valueType->typeForVariable(i));
     }
 }
 
 Type::Type(Class *klass) : typeContent_(TypeType::Class), typeDefinition_(klass) {
+    if ((klass->superType() != nullptr && !klass->superType()->wasAnalysed()) ||
+        klass->genericParameters().empty() || !klass->genericParameters().front().constraint->wasAnalysed()) {
+        return;
+    }
     genericArguments_ = klass->superGenericArguments();
     for (size_t i = klass->superGenericArguments().size();
-         i < klass->superGenericArguments().size() + klass->genericParameters().size(); i++) {
+         i < klass->superGenericArguments().size() + klass->genericParameters().size(); i++) { 
         genericArguments_.emplace_back(klass->typeForVariable(i));
     }
 }
 
 Type::Type(Function *function) : typeContent_(TypeType::Callable) {
     genericArguments_.reserve(function->parameters().size() + 1);
-    genericArguments_.emplace_back(function->returnType());
+    genericArguments_.emplace_back(function->returnType()->type());
     for (auto &argument : function->parameters()) {
-        genericArguments_.emplace_back(argument.type);
+        genericArguments_.emplace_back(argument.type->type());
     }
 }
 
@@ -408,7 +415,7 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::ve
     if (type() == TypeType::Class) {
         for (Class *a = this->klass(); a != nullptr; a = a->superclass()) {
             for (auto &protocol : a->protocols()) {
-                if (protocol.resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
+                if (protocol->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
                     return true;
                 }
             }
@@ -417,7 +424,7 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::ve
     }
     if (type() == TypeType::ValueType || type() == TypeType::Enum) {
         for (auto &protocol : typeDefinition()->protocols()) {
-            if (protocol.resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
+            if (protocol->type().resolveOn(TypeContext(*this)).compatibleTo(to.resolveOn(ct), ct, ctargs)) {
                 return true;
             }
         }

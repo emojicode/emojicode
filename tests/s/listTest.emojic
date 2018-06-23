@@ -2,7 +2,7 @@
 
 🐇🦔🚉  🍇
   ✒️ ❗️ 🏁 🍇
-    🆕🍨🐚🔡🐸❗️ ➡️ emptyList
+    🆕🍨🐚🔡🍆🐸❗️ ➡️ emptyList
     ⛔🐕 🐔emptyList❗️ 🙌 0 🔤Correct Length 0🔤❗️
     🐻emptyList 🔤Hallo🔤❗️
     🐻emptyList 🔤Josef🔤❗️
@@ -32,7 +32,7 @@
     ⛔🐕 🐽emptyList 2❗️ 🙌 🔤Grüß dich🔤🔤Index 2 Value Correct🔤❗️
     ⛔🐕 🐽emptyList 3❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
 
-    🆕🍨🐚🔡🐮emptyList❗️ ➡️ copiedList
+    🆕🍨🐚🔡🍆🐮emptyList❗️ ➡️ copiedList
     🐵emptyList 3 🔤Peter🔤❗️
     ⛔🐕 🐽emptyList 3❗️ 🙌 🔤Peter🔤🔤Index 3 Value Correct🔤❗️
     ⛔🐕 🐽emptyList 4❗️ 🙌 🔤Sarah🔤🔤Index 3 Value Correct🔤❗️
@@ -95,7 +95,7 @@
     💭 🍉❗️
     💭 ⛔🐕 🍨 -7  -6  -5  -4  10  11  12  🍆 🙌 g4🔤Array Sort🔤❗️
 
-    🆕🍨🐚🔢🦊 17 6❗️ ➡️ getList
+    🆕🍨🐚🔢🍆🦊 17 6❗️ ➡️ getList
     🐷getList 5 99❗️
     🐷getList 3 77❗️
 

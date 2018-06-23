@@ -32,8 +32,9 @@ Type ASTGetVariable::analyse(FunctionAnalyser *analyser, const TypeExpectation &
 }
 
 void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
-    auto &var = analyser->scoper().currentScope().declareVariable(varName_, type_, false, position());
-    if (type_.type() == TypeType::Optional) {
+    auto &type = type_->analyseType(analyser->typeContext());
+    auto &var = analyser->scoper().currentScope().declareVariable(varName_, type, false, position());
+    if (type.type() == TypeType::Optional) {
         var.initialize();
     }
     id_ = var.id();

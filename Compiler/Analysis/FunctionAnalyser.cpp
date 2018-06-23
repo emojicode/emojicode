@@ -54,14 +54,14 @@ Type FunctionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTExpr> &node, con
 
 void FunctionAnalyser::checkFunctionUse(Function *function, const SourcePosition &p) const {
     if (function->accessLevel() == AccessLevel::Private) {
-        if (typeContext_.calleeType().type() != function->owningType().type()
-            || function->owningType().typeDefinition() != typeContext_.calleeType().typeDefinition()) {
+        if (typeContext_.calleeType().type() != function->owner()->type().type()
+            || function->owner() != typeContext_.calleeType().typeDefinition()) {
             compiler()->error(CompilerError(p, utf8(function->name()), " is 🔒."));
         }
     }
     else if (function->accessLevel() == AccessLevel::Protected) {
-        if (typeContext_.calleeType().type() != function->owningType().type()
-            || !this->typeContext_.calleeType().klass()->inheritsFrom(function->owningType().klass())) {
+        if (typeContext_.calleeType().type() != function->owner()->type().type()
+            || !this->typeContext_.calleeType().klass()->inheritsFrom(dynamic_cast<Class *>(function->owner()))) {
             compiler()->error(CompilerError(p, utf8(function->name()), " is 🔐."));
         }
     }
@@ -127,8 +127,8 @@ void FunctionAnalyser::analyse() {
 }
 
 void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
-    if (function_ == function_->package()->startFlagFunction() && function_->returnType() == Type::noReturn()) {
-        function_->setReturnType(integer());
+    if (function_ == function_->package()->startFlagFunction() && function_->returnType()->type() == Type::noReturn()) {
+        function_->setReturnType(std::make_unique<ASTLiteralType>(integer()));
         auto value = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(0), std::u32string(), root->position());
         root->appendNode(std::make_shared<ASTReturn>(value, root->position()));
     }
@@ -144,7 +144,7 @@ void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
         root->appendNode(std::make_shared<ASTReturn>(nullptr, root->position()));
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
-        if (function_->returnType().type() != TypeType::NoReturn) {
+        if (function_->returnType()->type().type() != TypeType::NoReturn) {
             compiler()->error(CompilerError(function_->position(), "An explicit return is missing."));
         }
         else {
@@ -192,21 +192,18 @@ Type FunctionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
 
     ensureGenericArguments(node, type, function);
 
-    TypeContext typeContext = TypeContext(type, function, &node->genericArguments());
-    for (size_t i = 0; i < node->genericArguments().size(); i++) {
-        if (!node->genericArguments()[i].compatibleTo(function->constraintForIndex(i), typeContext)) {
-            throw CompilerError(node->position(), "Generic argument ", i + 1, " of type ",
-                                node->genericArguments()[i].toString(typeContext), " is not compatible to constraint ",
-                                function->constraintForIndex(i).toString(typeContext), ".");
-        }
-    }
+    auto genericArgs = transformTypeAstVector(node->genericArguments(), typeContext());
+
+    TypeContext typeContext = TypeContext(type, function, &genericArgs);
+    function->checkGenericArguments(typeContext, genericArgs, node->position());
 
     for (size_t i = 0; i < function->parameters().size(); i++) {
-        expectType(function->parameters()[i].type.resolveOn(typeContext), &node->parameters()[i]);
+        expectType(function->parameters()[i].type->type().resolveOn(typeContext), &node->parameters()[i]);
     }
-    function->requestReification(node->genericArguments());
+    function->requestReification(genericArgs);
     checkFunctionUse(function, node->position());
-    return function->returnType().resolveOn(typeContext);
+    node->setGenericArgumentTypes(genericArgs);
+    return function->returnType()->type().resolveOn(typeContext);
 }
 
 void FunctionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &type, Function *function) {
@@ -214,15 +211,13 @@ void FunctionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &ty
         std::vector<CommonTypeFinder> genericArgsFinders(function->genericParameters().size(), CommonTypeFinder());
         TypeContext typeContext = TypeContext(type, function, nullptr);
         size_t i = 0;
-        for (auto arg : function->parameters()) {
-            expectType(arg.type.resolveOn(typeContext), &node->parameters()[i++], &genericArgsFinders);
+        for (auto &arg : function->parameters()) {
+            expectType(arg.type->type().resolveOn(typeContext), &node->parameters()[i++], &genericArgsFinders);
         }
         for (auto &finder : genericArgsFinders) {
-            node->genericArguments().emplace_back(finder.getCommonType(node->position(), compiler()));
+            auto commonType = finder.getCommonType(node->position(), compiler());
+            node->genericArguments().emplace_back(std::make_unique<ASTLiteralType>(commonType));
         }
-    }
-    else if (node->genericArguments().size() != function->genericParameters().size()) {
-        throw CompilerError(node->position(), "Too few generic arguments provided.");
     }
 }
 

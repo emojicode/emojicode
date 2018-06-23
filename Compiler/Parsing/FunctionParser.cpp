@@ -63,11 +63,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseCondition() {
 
 ASTArguments FunctionParser::parseArguments(const SourcePosition &position) {
     auto args = ASTArguments(position);
-
-    while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
-        args.addGenericArgument(parseType(typeContext_));
-    }
-
+    parseGenericArguments(&args);
     parseMainArguments(&args, position);
     return args;
 }
@@ -136,8 +132,7 @@ std::shared_ptr<ASTStatement> FunctionParser::parseVariableDeclaration(const Tok
     stream_.consumeToken(TokenType::New);
     auto varName = stream_.consumeToken(TokenType::Variable);
 
-    Type type = parseType(typeContext_);
-    return std::make_shared<ASTVariableDeclaration>(type, varName.value(), token.position());
+    return std::make_shared<ASTVariableDeclaration>(parseType(), varName.value(), token.position());
 }
 
 std::shared_ptr<ASTStatement> FunctionParser::parseExprStatement(const Token &token) {
@@ -270,9 +265,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseTypeAsValue(const Token &token) {
-    Type t = parseType(typeContext_);
-    validateTypeAsValueType(token, t, typeContext_);
-    return std::make_shared<ASTTypeAsValue>(t, token.position());
+    return std::make_shared<ASTTypeAsValue>(parseType(), token.type(), token.position());
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token) {
@@ -281,10 +274,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return parseUnaryPrefix<ASTIsError>(token);
         case E_BEER_MUG:
             return parseUnaryPrefix<ASTUnwrap>(token);
-        case E_SCALES: {
-            Type t = parseType(typeContext_);
-            return std::make_shared<ASTSizeOf>(t, token.position());
-        }
+        case E_SCALES:
+            return std::make_shared<ASTSizeOf>(parseType(), token.position());
         case E_BLACK_SQUARE_BUTTON: {
             auto expr = parseExpr(kPrefixPrecedence);
             return std::make_shared<ASTCast>(expr, parseTypeExpr(token.position()), token.position());
@@ -316,12 +307,12 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
-    auto function = std::make_unique<Function>(std::u32string(1, E_GRAPES), AccessLevel::Public, true, Type::noReturn(),
+    auto function = std::make_unique<Function>(std::u32string(1, E_GRAPES), AccessLevel::Public, true, nullptr,
                                                package_, token.position(), false, std::u32string(), false, false, true,
                                                false, FunctionType::Closure);
 
-    parseParameters(function.get(), typeContext_);
-    parseReturnType(function.get(), typeContext_);
+    parseParameters(function.get(), false);
+    parseReturnType(function.get());
 
     function->setAst(factorFunctionParser(package_, stream_, typeContext_, function.get())->parse());
     return std::make_shared<ASTClosure>(std::move(function), token.position());
@@ -337,18 +328,7 @@ std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition 
     if (stream_.consumeTokenIf(TokenType::This)) {
         return std::make_shared<ASTThisType>(p);
     }
-    Type ot = parseType(typeContext_);
-    switch (ot.type()) {
-        case TypeType::GenericVariable:
-            throw CompilerError(p, "Generic Arguments are not yet available for reflection.");
-        case TypeType::Class:
-            return std::make_shared<ASTStaticType>(ot, p);
-        case TypeType::LocalGenericVariable:
-            throw CompilerError(p, "Function Generic Arguments are not available for reflection.");
-        default:
-            break;
-    }
-    return std::make_shared<ASTStaticType>(ot, p);
+    return std::make_shared<ASTStaticType>(parseType(), p);
 }
 
 }  // namespace EmojicodeCompiler

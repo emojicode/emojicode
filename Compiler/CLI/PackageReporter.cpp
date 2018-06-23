@@ -134,12 +134,12 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
     if (auto initializer = dynamic_cast<Initializer *>(function)) {
         if (initializer->errorProne()) {
             writer_.Key("errorType");
-            reportType(initializer->errorType(), tc);
+            reportType(initializer->errorType()->type(), tc);
         }
     }
     else {
         writer_.Key("returnType");
-        reportType(function->returnType(), tc);
+        reportType(function->returnType()->type(), tc);
 
         writer_.Key("mood");
         if (operatorType(function->name()) != OperatorType::Invalid) {
@@ -158,7 +158,7 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
     for (auto &param : function->parameters()) {
         writer_.StartObject();
         writer_.Key("type");
-        reportType(param.type, tc);
+        reportType(param.type->type(), tc);
         writer_.Key("name");
         writer_.String(utf8(param.name));
         writer_.EndObject();
@@ -196,7 +196,7 @@ void PackageReporter::reportExportedType(const Type &type) {
     writer_.Key("conformances");
     writer_.StartArray();
     for (auto &protocol : typeDef->protocols()) {
-        reportType(protocol, TypeContext(type));
+        reportType(protocol->type(), TypeContext(type));
     }
     writer_.EndArray();
 
@@ -216,7 +216,7 @@ void PackageReporter::reportExportedType(const Type &type) {
         auto klass = type.klass();
         if (klass->superclass() != nullptr) {
             writer_.Key("superclass");
-            reportType(klass->superType(), TypeContext(type));
+            reportType(klass->superType()->type(), TypeContext(type));
         }
 
         writer_.Key("final");

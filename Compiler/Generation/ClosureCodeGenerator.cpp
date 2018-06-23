@@ -16,7 +16,7 @@ void ClosureCodeGenerator::declareArguments(llvm::Function *llvmFunction) {
     unsigned int i = 0;
     auto it = llvmFunction->args().begin();
     (it++)->setName("captures");
-    for (auto arg : function()->parameters()) {
+    for (auto &arg : function()->parameters()) {
         auto &llvmArg = *(it++);
         scoper().getVariable(i++) = LocalVariable(false, &llvmArg);
         llvmArg.setName(utf8(arg.name));

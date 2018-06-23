@@ -11,6 +11,7 @@
 
 #include "CompilerError.hpp"
 #include "Type.hpp"
+#include "AST/ASTType.hpp"
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -23,10 +24,10 @@ namespace EmojicodeCompiler {
 struct SourcePosition;
 
 struct GenericParameter {
-    GenericParameter(std::u32string name, Type constraint, bool rejectsBoxing)
+    GenericParameter(std::u32string name, std::unique_ptr<ASTType> constraint, bool rejectsBoxing)
             : name(std::move(name)), constraint(std::move(constraint)), rejectsBoxing(rejectsBoxing) {}
     std::u32string name;
-    Type constraint;
+    std::unique_ptr<ASTType> constraint;
     bool rejectsBoxing;
 };
 
@@ -66,14 +67,29 @@ public:
     /// @param rejectsBoxing If this argument is true, no boxing will be performed when treating a compatible value as
     ///                      an instance of the type of this generic parameter. The storage type will always be
     ///                      StorageType::Simple or StorageType::SimpleOptional.
-    void addGenericParameter(const std::u32string &variableName, const Type &constraint, bool rejectsBoxing,
-                             const SourcePosition &p) {
-        genericParameters_.emplace_back(variableName, constraint, rejectsBoxing);
+    void addGenericParameter(const std::u32string &variableName, std::unique_ptr<ASTType> constraint,
+                             bool rejectsBoxing, const SourcePosition &p) {
+        genericParameters_.emplace_back(variableName, std::move(constraint), rejectsBoxing);
 
         if (parameterVariables_.find(variableName) != parameterVariables_.end()) {
             throw CompilerError(p, "A generic argument variable with the same name is already in use.");
         }
         parameterVariables_.emplace(variableName, parameterVariables_.size());
+    }
+
+    void checkGenericArguments(const TypeContext &typeContext, const std::vector<Type> &args, const SourcePosition &p) {
+        if (args.size() - offset_ != genericParameters().size()) {
+            throw CompilerError(p, "Expected ", genericParameters().size(), " generic arguments, but ",
+                                args.size(), " are provided.");
+        }
+
+        for (size_t i = offset_; i < args.size(); i++) {
+            if (!args[i].compatibleTo(constraintForIndex(i), typeContext)) {
+                throw CompilerError(p, "Generic argument ", i + 1, " of type ",
+                                    args[i].toString(typeContext), " is not compatible to constraint ",
+                                    constraintForIndex(offset_ + i).toString(typeContext), ".");
+            }
+        }
     }
 
     void requestReification(const std::vector<Type> &arguments) {
@@ -120,13 +136,19 @@ public:
     /// @pre The index must be greater than the offset passed to offsetIndicesBy() (e.g. the number of super generic
     /// arguments for a TypeDefinition) if applicable.
     const Type& constraintForIndex(size_t index) const {
-        return genericParameters_[index - offset_].constraint;
+        return genericParameters_[index - offset_].constraint->type();
     }
     /// Returns the name of the generic parameter at the index.
     /// @pre The index must be greater than the offset passed to offsetIndicesBy() (e.g. the number of super generic
     /// arguments for a TypeDefinition) if applicable.
     const std::u32string& findGenericName(size_t index) const {
         return genericParameters_[index - offset_].name;
+    }
+
+    void analyseConstraints(const TypeContext &typeContext) {
+        for (auto &param : genericParameters_) {
+            param.constraint->analyseType(typeContext);
+        }
     }
 
     /// @returns A vector with pairs of std::u32string and Type. These represent the generic parameter name and the

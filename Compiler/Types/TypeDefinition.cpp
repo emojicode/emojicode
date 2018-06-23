@@ -25,26 +25,6 @@ TypeDefinition::TypeDefinition(std::u32string name, Package *p, SourcePosition p
 
 TypeDefinition::~TypeDefinition() = default;
 
-void TypeDefinition::setSuperType(const Type &type) {
-    offsetIndicesBy(type.genericArguments().size());
-    superType_ = type;
-    for (size_t i = superType_.typeDefinition()->superGenericArguments().size(); i < superType_.genericArguments().size(); i++) {
-        if (type.genericArguments()[i].type() == TypeType::GenericVariable) {
-            auto newIndex = superType_.genericArguments()[i].genericVariableIndex() + superType_.genericArguments().size();
-            superType_.setGenericArgument(i, Type(newIndex, this));
-        }
-        else if (type.genericArguments()[i].type() == TypeType::Box &&
-                 type.genericArguments()[i].unboxedType() == TypeType::GenericVariable) {
-            auto newIndex = superType_.genericArguments()[i].unboxed().genericVariableIndex() + superType_.genericArguments().size();
-            superType_.setGenericArgument(i, Type(newIndex, this).boxedFor(superType_.genericArguments()[i].boxedFor()));
-        }
-    }
-}
-
-std::vector<Type> TypeDefinition::superGenericArguments() const {
-    return superType_.type() != TypeType::NoReturn ? superType_.genericArguments() : std::vector<Type>();
-}
-
 Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) const {
     auto pos = initializers_.find(name);
     if (pos != initializers_.end()) {
@@ -95,16 +75,6 @@ Function * TypeDefinition::getTypeMethod(const std::u32string &name, const Type 
         throw CompilerError(p, type.toString(typeContext), " has no type method ", utf8(name), ".");
     }
     return method;
-}
-
-void TypeDefinition::addProtocol(const Type &type, const SourcePosition &p) {
-    for (auto &protocol : protocols_) {
-        if (protocol.identicalTo(type, TypeContext(), nullptr)) {
-            auto name = type.toString(TypeContext());
-            throw CompilerError(p, "Conformance to protocol ", name, " was already declared.");
-        }
-    }
-    protocols_.push_back(type);
 }
 
 Function* TypeDefinition::addTypeMethod(std::unique_ptr<Function> &&method) {

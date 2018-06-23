@@ -8,6 +8,7 @@
 
 #include "ASTClosure.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 #include "Analysis/ThunkBuilder.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
@@ -19,7 +20,9 @@ ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition
 
 Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     closure_->setMutating(analyser->function()->mutating());
-    closure_->setOwningType(analyser->function()->owningType());
+    closure_->setOwner(analyser->function()->owner());
+
+    analyser->semanticAnalyser()->analyseFunctionDeclaration(closure_.get());
 
     applyBoxingFromExpectation(analyser, expectation);
 
@@ -40,52 +43,51 @@ void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const Ty
     }
 
     auto expReturn = expectation.genericArguments().front();
-    if (closure_->returnType().compatibleTo(expReturn, analyser->typeContext()) &&
-            closure_->returnType().storageType() != expReturn.storageType()) {
+    auto returnType = closure_->returnType()->type();
+    if (returnType.compatibleTo(expReturn, analyser->typeContext()) &&
+            returnType.storageType() != expReturn.storageType()) {
         switch (expReturn.storageType()) {
             case StorageType::SimpleOptional:
-                assert(closure_->returnType().storageType() == StorageType::Simple);
-                closure_->setReturnType(closure_->returnType().optionalized());
+                assert(returnType.storageType() == StorageType::Simple);
+                closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.optionalized()));
                 break;
             case StorageType::SimpleError:
-                assert(closure_->returnType().storageType() == StorageType::Simple);
-                closure_->setReturnType(closure_->returnType().errored(expReturn.errorEnum()));
+                assert(returnType.storageType() == StorageType::Simple);
+                closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.errored(expReturn.errorEnum())));
                 break;
             case StorageType::Simple:
                 // We cannot deal with this, can we?
                 break;
             case StorageType::Box: {
-                closure_->setReturnType(closure_->returnType().boxedFor(expReturn));
+                closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.boxedFor(expReturn)));
                 break;
             }
         }
     }
 
-    auto shadowParams = closure_->parameters();
     for (size_t i = 0; i < closure_->parameters().size(); i++) {
-        auto param = closure_->parameters()[i];
+        auto &param = closure_->parameters()[i];
         auto expParam = expectation.genericArguments()[i + 1];
-        if (param.type.compatibleTo(expParam, analyser->typeContext()) &&
-                param.type.storageType() != expParam.storageType()) {
+        if (param.type->type().compatibleTo(expParam, analyser->typeContext()) &&
+                param.type->type().storageType() != expParam.storageType()) {
             switch (expParam.storageType()) {
                 case StorageType::SimpleOptional:
-                    assert(param.type.storageType() == StorageType::Simple);
-                    shadowParams[i].type = param.type.optionalized();
+                    assert(param.type->type().storageType() == StorageType::Simple);
+                    closure_->setParameterType(i, std::make_unique<ASTLiteralType>(param.type->type().optionalized()));
                     break;
                 case StorageType::SimpleError:
-                    assert(param.type.storageType() == StorageType::Simple);
-                    shadowParams[i].type = param.type.errored(expParam.errorEnum());
+                    assert(param.type->type().storageType() == StorageType::Simple);
+                    closure_->setParameterType(i, std::make_unique<ASTLiteralType>(param.type->type().errored(expParam.errorEnum())));
                     break;
                 case StorageType::Simple:
                     // We cannot deal with this, can we?
                     break;
                 case StorageType::Box:
-                    shadowParams[i].type = shadowParams[i].type.boxedFor(expParam);
+                    closure_->setParameterType(i, std::make_unique<ASTLiteralType>(param.type->type().boxedFor(expParam)));
                     break;
             }
         }
     }
-    closure_->setParameters(shadowParams);
 }
 
 }  // namespace EmojicodeCompiler

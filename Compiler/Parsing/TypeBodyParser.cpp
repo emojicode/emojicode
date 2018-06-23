@@ -12,10 +12,14 @@
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
 #include "Types/Enum.hpp"
+#include "Types/Class.hpp"
+#include "Types/Protocol.hpp"
+#include <type_traits>
 
 namespace EmojicodeCompiler {
 
-void TypeBodyParser::parseFunctionBody(Function *function) {
+template <typename TypeDef>
+void TypeBodyParser<TypeDef>::parseFunctionBody(Function *function) {
     if (stream_.consumeTokenIf(E_RADIO)) {
         auto token = stream_.consumeToken(TokenType::String);
         if (token.value().empty()) {
@@ -36,17 +40,18 @@ void TypeBodyParser::parseFunctionBody(Function *function) {
     function->setAst(ast);
 }
 
-void TypeBodyParser::parseFunction(Function *function, bool inititalizer) {
-    auto context = TypeContext(owningType(), function);
-    parseGenericParameters(function, context);
-    parseParameters(function, context, inititalizer);
+template <typename TypeDef>
+void TypeBodyParser<TypeDef>::parseFunction(Function *function, bool inititalizer) {
+    parseGenericParameters(function);
+    parseParameters(function, inititalizer);
     if (!inititalizer) {
-        parseReturnType(function, context);
+        parseReturnType(function);
     }
     parseFunctionBody(function);
 }
 
-AccessLevel TypeBodyParser::readAccessLevel() {
+template <typename TypeDef>
+AccessLevel TypeBodyParser<TypeDef>::readAccessLevel() {
     auto access = AccessLevel::Public;
     if (stream_.consumeTokenIf(E_CLOSED_LOCK_WITH_KEY)) {
         access = AccessLevel::Protected;
@@ -60,131 +65,96 @@ AccessLevel TypeBodyParser::readAccessLevel() {
     return access;
 }
 
-void TypeBodyParser::parseProtocolConformance(const SourcePosition &p) {
-    Type type = parseType(TypeContext(owningType()));
-
-    if (type.unboxedType() != TypeType::Protocol) {
-        package_->compiler()->error(CompilerError(p, "The given type is not a protocol."));
-        return;
-    }
-
-    type_.typeDefinition()->addProtocol(type, p);
+template <typename TypeDef>
+void TypeBodyParser<TypeDef>::parseProtocolConformance(const SourcePosition &p) {
+    typeDef_->addProtocol(parseType());
 }
 
-void TypeBodyParser::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
+template <typename TypeDef>
+void TypeBodyParser<TypeDef>::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
     throw CompilerError(p, "Enum values can only be declared in enums.");
 }
 
-void EnumTypeBodyParser::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
-    auto token = stream_.consumeToken(TokenType::Identifier);
-    owningType().enumeration()->addValueFor(token.value(), token.position(), documentation.get());
-}
-
-void EnumTypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
-    throw CompilerError(p, "Enums cannot have instance variable.");
-}
-
-Initializer* EnumTypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                                  const Documentation &documentation, AccessLevel access,
-                                                  const SourcePosition &p) {
-    throw CompilerError(p, "Enums cannot have custom initializers.");
-}
-
-void ClassTypeBodyParser::parse() {
-    TypeBodyParser::parse();
-    for (auto &init : requiredInitializers_) {
-        package_->compiler()->error(CompilerError(owningType().typeDefinition()->position(), "Required initializer ",
-                                             utf8(init), " was not implemented."));
-    }
-}
-
-void ClassTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                      const Documentation &documentation, AccessLevel access, bool imperative,
-                                      const SourcePosition &p) {
-    TypeBodyParser::parseMethod(name, attributes.allow(Attribute::Final).allow(Attribute::Override), documentation,
-                                access, imperative, p);
-}
-
-void ValueTypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                      const Documentation &documentation, AccessLevel access, bool imperative,
-                                      const SourcePosition &p) {
-    if (!attributes.has(Attribute::StaticOnType)) {
-        attributes.allow(Attribute::Mutating);
-    }
-    TypeBodyParser::parseMethod(name, attributes, documentation, access, imperative, p);
-}
-
-Initializer* ClassTypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                                   const Documentation &documentation, AccessLevel access,
-                                                   const SourcePosition &p) {
-    auto init = TypeBodyParser::parseInitializer(name, attributes.allow(Attribute::Required), documentation, access, p);
-    requiredInitializers_.erase(init->name());
-    return init;
-}
-
-void TypeBodyParser::parseInstanceVariable(const SourcePosition &p) {
+template <typename TypeDef>
+void TypeBodyParser<TypeDef>::parseInstanceVariable(const SourcePosition &p) {
     auto variableName = stream_.consumeToken(TokenType::Variable);
-    auto type = parseType(TypeContext(owningType()));
-    auto instanceVar = InstanceVariableDeclaration(variableName.value(), type, variableName.position());
-    type_.typeDefinition()->addInstanceVariable(instanceVar);
+    auto instanceVar = InstanceVariableDeclaration(variableName.value(), parseType(), variableName.position());
+    typeDef_->addInstanceVariable(instanceVar);
 }
 
-void TypeBodyParser::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+template <typename TypeDef>
+void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
                                  const Documentation &documentation, AccessLevel access, bool imperative,
                                  const SourcePosition &p) {
     attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).allow(Attribute::Unsafe)
             .check(p, package_->compiler());
 
     if (attributes.has(Attribute::StaticOnType)) {
-        auto typeMethod = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
+        auto typeMethod = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), typeDef_,
                                                      package_, p, attributes.has(Attribute::Override),
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
                                                      true, imperative, attributes.has(Attribute::Unsafe),
-                                                     owningType().type() == TypeType::Class ?
+                                                     std::is_same<TypeDef, Class>::value ?
                                                      FunctionType::ClassMethod : FunctionType::Function);
         parseFunction(typeMethod.get(), false);
-        type_.typeDefinition()->addTypeMethod(std::move(typeMethod));
+        typeDef_->addTypeMethod(std::move(typeMethod));
     }
     else {
-        auto mutating = owningType().type() != TypeType::ValueType || attributes.has(Attribute::Mutating);
-        auto method = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), owningType(),
+        auto mutating = !std::is_same<TypeDef, ValueType>::value || attributes.has(Attribute::Mutating);
+        auto method = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), typeDef_,
                                                  package_, p, attributes.has(Attribute::Override), documentation.get(),
                                                  attributes.has(Attribute::Deprecated), mutating, imperative,
                                                  attributes.has(Attribute::Unsafe),
-                                                 owningType().type() == TypeType::Class ? FunctionType::ObjectMethod :
+                                                 std::is_same<TypeDef, Class>::value ? FunctionType::ObjectMethod :
                                                  FunctionType::ValueTypeMethod);
         parseFunction(method.get(), false);
-        type_.typeDefinition()->addMethod(std::move(method));
+        typeDef_->addMethod(std::move(method));
     }
 }
 
-Initializer* TypeBodyParser::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+template <typename TypeDef>
+void TypeBodyParser<TypeDef>::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                          const Documentation &documentation, AccessLevel access, bool imperative,
+                                          const SourcePosition &p) {
+    doParseMethod(name, std::move(attributes), documentation, access, imperative, p);
+}
+
+template <typename TypeDef>
+Initializer* TypeBodyParser<TypeDef>::doParseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                               const Documentation &documentation, AccessLevel access,
                                               const SourcePosition &p) {
     attributes.allow(Attribute::Unsafe).check(p, package_->compiler());
 
-    Type errorType = Type::noReturn();
-    if (stream_.nextTokenIs(TokenType::Error)) {
-        if (owningType().type() != TypeType::Class) {
-            throw CompilerError(p, "Only classes can have error-prone initializers.");
-        }
-        auto token = stream_.consumeToken(TokenType::Error);
-        errorType = parseErrorEnumType(TypeContext(owningType()), token.position());
-    }
-
-    auto initializer = std::make_unique<Initializer>(name, access, attributes.has(Attribute::Final), owningType(),
+    auto initializer = std::make_unique<Initializer>(name, access, attributes.has(Attribute::Final), typeDef_,
                                                      package_, p, attributes.has(Attribute::Override),
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
                                                      attributes.has(Attribute::Required),
-                                                     attributes.has(Attribute::Unsafe), errorType,
-                                                     owningType().type() == TypeType::Class ?
+                                                     attributes.has(Attribute::Unsafe),
+                                                     std::is_same<TypeDef, Class>::value ?
                                                      FunctionType::ObjectInitializer :
                                                      FunctionType::ValueTypeInitializer);
+
+    if (stream_.nextTokenIs(TokenType::Error)) {
+        auto token = stream_.consumeToken(TokenType::Error);
+        if (!std::is_same<TypeDef, Class>::value) {
+            throw CompilerError(token.position(), "Only classes can have error-prone initializers.");
+        }
+        initializer->setErrorType(parseType());
+    }
+
     parseFunction(initializer.get(), true);
-    return type_.typeDefinition()->addInitializer(std::move(initializer));
+    return typeDef_->addInitializer(std::move(initializer));
 }
 
-void TypeBodyParser::parse() {
+template <typename TypeDef>
+Initializer* TypeBodyParser<TypeDef>::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                                       const Documentation &documentation, AccessLevel access,
+                                                       const SourcePosition &p) {
+    return doParseInitializer(name, std::move(attributes), documentation, access, p);
+}
+
+template <typename TypeDef>
+void TypeBodyParser<TypeDef>::parse() {
     stream_.consumeToken(TokenType::BlockBegin);
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
         auto documentation = Documentation().parse(&stream_);
@@ -240,6 +210,83 @@ void TypeBodyParser::parse() {
     stream_.consumeToken(TokenType::BlockEnd);
 }
 
-TypeBodyParser::~TypeBodyParser() = default;
+template<>
+void TypeBodyParser<Enum>::parseEnumValue(const SourcePosition &p, const Documentation &documentation) {
+    auto token = stream_.consumeToken(TokenType::Identifier);
+    typeDef_->addValueFor(token.value(), token.position(), documentation.get());
+}
+
+template<>
+void TypeBodyParser<Enum>::parseInstanceVariable(const SourcePosition &p) {
+    throw CompilerError(p, "Enums cannot have instance variable.");
+}
+
+template<>
+Initializer* TypeBodyParser<Enum>::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                                    const Documentation &documentation, AccessLevel access,
+                                                    const SourcePosition &p) {
+    throw CompilerError(p, "Enums cannot have custom initializers.");
+}
+
+template<>
+void TypeBodyParser<Class>::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                        const Documentation &documentation, AccessLevel access, bool imperative,
+                                        const SourcePosition &p) {
+    doParseMethod(name, attributes.allow(Attribute::Final).allow(Attribute::Override), documentation,
+                  access, imperative, p);
+}
+
+template<>
+void TypeBodyParser<ValueType>::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                            const Documentation &documentation, AccessLevel access, bool imperative,
+                                            const SourcePosition &p) {
+    if (!attributes.has(Attribute::StaticOnType)) {
+        attributes.allow(Attribute::Mutating);
+    }
+    doParseMethod(name, attributes, documentation, access, imperative, p);
+}
+
+template<>
+Initializer* TypeBodyParser<Class>::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                                     const Documentation &documentation, AccessLevel access,
+                                                     const SourcePosition &p) {
+    return doParseInitializer(name, attributes.allow(Attribute::Required), documentation, access, p);
+}
+
+template<>
+void TypeBodyParser<Protocol>::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                           const Documentation &documentation, AccessLevel access, bool imperative,
+                                           const SourcePosition &p) {
+    auto method = std::make_unique<Function>(name, AccessLevel::Public, false, typeDef_, package_,
+                                             p, false, documentation.get(),
+                                             attributes.has(Attribute::Deprecated), false, imperative, false,
+                                             FunctionType::ObjectMethod);
+    parseParameters(method.get(), false);
+    parseReturnType(method.get());
+
+    typeDef_->addMethod(std::move(method));
+}
+
+template<>
+Initializer* TypeBodyParser<Protocol>::parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
+                                                        const Documentation &documentation, AccessLevel access,
+                                                        const SourcePosition &p) {
+    throw CompilerError(p, "Only method declarations are allowed inside a protocol.");
+}
+
+template<>
+void TypeBodyParser<Protocol>::parseInstanceVariable(const SourcePosition &p) {
+    throw CompilerError(p, "Only method declarations are allowed inside a protocol.");
+}
+
+template<>
+void TypeBodyParser<Protocol>::parseProtocolConformance(const SourcePosition &p) {
+    throw CompilerError(p, "Only method declarations are allowed inside a protocol.");
+}
+
+template class TypeBodyParser<Enum>;
+template class TypeBodyParser<ValueType>;
+template class TypeBodyParser<Protocol>;
+template class TypeBodyParser<Class>;
 
 }  // namespace EmojicodeCompiler

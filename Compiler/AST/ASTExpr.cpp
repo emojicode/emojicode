@@ -17,10 +17,13 @@
 namespace EmojicodeCompiler {
 
 Type ASTTypeAsValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    return Type(MakeTypeAsValue, type_);
+    auto &type = type_->analyseType(analyser->typeContext());
+    ASTTypeValueType::checkTypeValue(tokenType_, type, analyser->typeContext(), position());
+    return Type(MakeTypeAsValue, type);
 }
 
 Type ASTSizeOf::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+    type_->analyseType(analyser->typeContext());
     return analyser->integer();
 }
 
@@ -134,7 +137,8 @@ void ASTSuper::analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, 
             throw CompilerError(position(), "Cannot call an error-prone super initializer in a non ",
                                 "error-prone initializer.");
         }
-        if (!initializer->errorType().identicalTo(thisInitializer->errorType(), analyser->typeContext(), nullptr)) {
+        if (!initializer->errorType()->type().identicalTo(thisInitializer->errorType()->type(), analyser->typeContext(),
+                                                          nullptr)) {
             throw CompilerError(position(), "Super initializer must have same error enum type.");
         }
         manageErrorProneness_ = true;

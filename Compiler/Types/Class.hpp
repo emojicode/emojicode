@@ -37,16 +37,24 @@ public:
     Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool exported,
           bool final, bool foreign);
 
+    Type type() override { return Type(this); }
+
     /// The class's superclass.
     /// @returns TypeDefinition::superType().eclass(). Guaranteed to be @c nullptr if the class has no superclass.
     Class* superclass() const {
-        if (superType().type() == TypeType::NoReturn) {
+        if (superType() == nullptr) {
             return nullptr;
         }
-        return superType().klass();
+        return superType()->type().klass();
     }
 
-    using TypeDefinition::superType;
+    std::vector<Type> superGenericArguments() const override;
+
+    /// Sets the super type to the given Type.
+    /// All generic arguments are offset by the number of generic arguments this type has.
+    void setSuperType(std::unique_ptr<ASTType> type) { superType_ = std::move(type); }
+
+    ASTType* superType() const { return superType_.get(); }
 
     /// @returns True iff this class inherits from @c from
     bool inheritsFrom(Class *from) const;
@@ -56,8 +64,6 @@ public:
     bool inheritsInitializers() const { return inheritsInitializers_; }
 
     bool foreign() const { return foreign_; }
-    /** Returns a list of all required intializers. */
-    const std::set<std::u32string>& requiredInitializers() const { return requiredInitializers_; }
 
     void setClassMeta(llvm::GlobalVariable *classInfo) { classMeta_ = classInfo; }
     llvm::GlobalVariable* classMeta() { return classMeta_; }
@@ -72,6 +78,7 @@ public:
     void addInstanceVariable(const InstanceVariableDeclaration &declaration) override;
 
     void inherit(SemanticAnalyser *analyser);
+    void analyseSuperType();
 
     /// @pre superclass() != nullptr
     template <typename FT>
@@ -98,8 +105,11 @@ public:
 
     void setVirtualFunctionCount(size_t n) { virtualFunctionCount_ = n; }
     size_t virtualFunctionCount() { return virtualFunctionCount_; }
+
 private:
     std::set<std::u32string> requiredInitializers_;
+
+    std::unique_ptr<ASTType> superType_ = nullptr;
 
     /// Checks that @c function, if at all, is a valid override.
     /// @pre superclass() != nullptr

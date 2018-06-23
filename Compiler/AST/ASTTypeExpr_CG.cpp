@@ -18,10 +18,10 @@ Value* ASTTypeFromExpr::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
-    if (type_.type() == TypeType::Class) {
-        return type_.klass()->classMeta();
+    if (type_->type().type() == TypeType::Class) {
+        return type_->type().klass()->classMeta();
     }
-    return fg->generator()->valueTypeMetaFor(type_);
+    return fg->generator()->valueTypeMetaFor(type_->type());
 }
 
 }  // namespace EmojicodeCompiler

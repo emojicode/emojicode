@@ -35,6 +35,23 @@ public:
     void printInterface(const std::string &out);
     void print();
 
+    template <typename T>
+    Prettyprinter& operator<<(const std::unique_ptr<T> &node) {
+        node->toCode(*this);
+        return *this;
+    }
+
+    template <typename T>
+    Prettyprinter& operator<<(const std::shared_ptr<T> &node) {
+        node->toCode(*this);
+        return *this;
+    }
+
+    Prettyprinter& operator<<(ASTType *node) {
+        node->toCode(*this);
+        return *this;
+    }
+
     /// Appends the whitespace offer to the stream if any is available. Then appends rhs and returns this instance.
     template<typename T>
     Prettyprinter& operator<<(const T &rhs) {
@@ -91,14 +108,18 @@ private:
     void printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext);
     template<typename T, typename E>
     void printGenericParameters(Generic<T, E> *generic) {
+        if (generic->genericParameters().empty()) {
+            return;
+        }
+        refuseOffer() << "🐚";
         for (auto &param : generic->genericParameters()) {
-            refuseOffer() << "🐚";
             if (param.rejectsBoxing) {
                 thisStream() << "☣️";
             }
             thisStream() << utf8(param.name) << " " << param.constraint;
             offerSpace();
         }
+        thisStream() << "🍆";
     }
     void printMethodsAndInitializers(TypeDefinition *typeDef);
     void printTypeDefName(const Type &type);

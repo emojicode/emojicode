@@ -15,14 +15,14 @@
 namespace EmojicodeCompiler {
 
 Value* ASTTypeAsValue::generate(FunctionCodeGenerator *fg) const {
-    if (type_.type() == TypeType::Class) {
-        return type_.klass()->classMeta();
+    if (type_->type().type() == TypeType::Class) {
+        return type_->type().klass()->classMeta();
     }
-    return llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(Type(MakeTypeAsValue, type_)));
+    return llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(Type(MakeTypeAsValue, type_->type())));
 }
 
 Value* ASTSizeOf::generate(FunctionCodeGenerator *fg) const {
-    return fg->sizeOf(fg->typeHelper().llvmTypeFor(type_));
+    return fg->sizeOf(fg->typeHelper().llvmTypeFor(type_->type()));
 }
 
 Value* ASTCast::generate(FunctionCodeGenerator *fg) const {

@@ -14,6 +14,7 @@
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Types/Protocol.hpp"
+#include "Emojis.h"
 
 namespace EmojicodeCompiler {
 

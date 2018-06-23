@@ -73,11 +73,11 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
         args.emplace_back(llvm::Type::getInt8PtrTy(context_));
     }
     else if (hasThisArgument(function->functionType()) &&
-            !(function->functionType() == FunctionType::ObjectInitializer && function->owningType().klass()->foreign())) {
+            !(function->functionType() == FunctionType::ObjectInitializer && dynamic_cast<Class *>(function->owner())->foreign())) {
         args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
     }
     std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [this](auto &arg) {
-        return llvmTypeFor(arg.type);
+        return llvmTypeFor(arg.type->type());
     });
     llvm::Type *returnType;
     if (function->functionType() == FunctionType::ObjectInitializer) {
@@ -85,7 +85,7 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
         returnType = llvmTypeFor(init->constructedType(init->typeContext().calleeType()));
     }
     else {
-        returnType = llvmTypeFor(function->returnType());
+        returnType = llvmTypeFor(function->returnType()->type());
     }
     return llvm::FunctionType::get(returnType, args, false);
 }
@@ -181,7 +181,7 @@ llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
     }
 
     for (auto &ivar : type.typeDefinition()->instanceVariables()) {
-        types.emplace_back(llvmTypeFor(ivar.type));
+        types.emplace_back(llvmTypeFor(ivar.type->type()));
     }
 
     llvmType->setBody(types);  // for self referencing types

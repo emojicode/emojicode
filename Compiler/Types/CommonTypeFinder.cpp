@@ -19,7 +19,8 @@ void CommonTypeFinder::addType(const Type &type, const TypeContext &typeContext)
         setCommonType(type);
         firstTypeFound_ = true;
         if (type.canHaveProtocol()) {
-            commonProtocols_ = type.typeDefinition()->protocols();
+            std::transform(type.typeDefinition()->protocols().begin(), type.typeDefinition()->protocols().end(),
+                           std::back_inserter(commonProtocols_), [](auto &type) { return type->type(); });
         }
         return;
     }
@@ -57,11 +58,11 @@ void CommonTypeFinder::updateCommonProtocols(const Type &type, const TypeContext
         auto &protocols = type.typeDefinition()->protocols();
         std::vector<Type> newCommonProtocols;
         for (auto &protocol : protocols) {
-            auto b = std::any_of(commonProtocols_.begin(), commonProtocols_.end(), [&protocol, &typeContext](const Type &p) {
-                return protocol.identicalTo(p, typeContext, nullptr);
+            auto b = std::any_of(commonProtocols_.begin(), commonProtocols_.end(), [&protocol, &typeContext](auto &p) {
+                return protocol->type().identicalTo(p, typeContext, nullptr);
             });
             if (b) {
-                newCommonProtocols.push_back(protocol);
+                newCommonProtocols.emplace_back(protocol->type());
             }
         }
         commonProtocols_ = newCommonProtocols;

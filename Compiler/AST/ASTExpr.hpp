@@ -9,6 +9,7 @@
 #ifndef ASTExpr_hpp
 #define ASTExpr_hpp
 
+#include "ASTType.hpp"
 #include "ASTNode.hpp"
 #include "Types/Type.hpp"
 #include "Scoping/Variable.hpp"
@@ -22,7 +23,6 @@ class ASTTypeExpr;
 class FunctionAnalyser;
 class TypeExpectation;
 class FunctionCodeGenerator;
-class Prettyprinter;
 
 class ASTExpr : public ASTNode {
 public:
@@ -34,48 +34,55 @@ public:
 
     virtual Value* generate(FunctionCodeGenerator *fg) const = 0;
     virtual Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) = 0;
-    virtual void toCode(Prettyprinter &pretty) const = 0;
 private:
     Type expressionType_ = Type::noReturn();
 };
 
 class ASTTypeAsValue final : public ASTExpr {
 public:
-    ASTTypeAsValue(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
+    ASTTypeAsValue(std::unique_ptr<ASTType> type, TokenType tokenType, const SourcePosition &p)
+        : ASTExpr(p), type_(std::move(type)), tokenType_(tokenType) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
-    Type type_;
+    std::unique_ptr<ASTType> type_;
+    TokenType tokenType_;
 };
 
 class ASTSizeOf final : public ASTExpr {
 public:
-    ASTSizeOf(Type type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
+    ASTSizeOf(std::unique_ptr<ASTType> type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 private:
-    Type type_;
+    std::unique_ptr<ASTType> type_;
 };
 
 class ASTArguments final : public ASTNode {
 public:
     explicit ASTArguments(const SourcePosition &p) : ASTNode(p) {}
+
     ASTArguments(const SourcePosition &p, bool imperative) : ASTNode(p), imperative_(imperative) {}
-    void addGenericArgument(const Type &type) { genericArguments_.emplace_back(type); }
-    const std::vector<Type>& genericArguments() const { return genericArguments_; }
-    std::vector<Type>& genericArguments() { return genericArguments_; }
+    void addGenericArgument(std::unique_ptr<ASTType> type) { genericArguments_.emplace_back(std::move(type)); }
+    const std::vector<std::shared_ptr<ASTType>>& genericArguments() const { return genericArguments_; }
+    std::vector<std::shared_ptr<ASTType>>& genericArguments() { return genericArguments_; }
     void addArguments(const std::shared_ptr<ASTExpr> &arg) { arguments_.emplace_back(arg); }
     std::vector<std::shared_ptr<ASTExpr>>& parameters() { return arguments_; }
     const std::vector<std::shared_ptr<ASTExpr>>& parameters() const { return arguments_; }
     void toCode(Prettyprinter &pretty) const;
     bool isImperative() const { return imperative_; }
     void setImperative(bool imperative) { imperative_ = imperative; }
+
+    const std::vector<Type>& genericArgumentTypes() const { return genericArgumentsTypes_; }
+    void setGenericArgumentTypes(std::vector<Type> types) { genericArgumentsTypes_ = std::move(types); }
+
 private:
     bool imperative_ = true;
-    std::vector<Type> genericArguments_;
+    std::vector<std::shared_ptr<ASTType>> genericArguments_;
     std::vector<std::shared_ptr<ASTExpr>> arguments_;
+    std::vector<Type> genericArgumentsTypes_;
 };
 
 class ASTCast final : public ASTExpr {

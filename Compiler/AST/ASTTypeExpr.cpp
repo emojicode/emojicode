@@ -17,9 +17,9 @@ Type ASTInferType::analyse(FunctionAnalyser *analyser, const TypeExpectation &ex
     if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::NoReturn) {
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
-    type_ = expectation.copyType().unoptionalized();
-    type_.setExact(true);
-    return type_;
+    type_ = std::make_unique<ASTLiteralType>(expectation.copyType().unoptionalized());
+    type_->type().setExact(true);
+    return type_->type();
 }
 
 Type ASTTypeFromExpr::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -31,8 +31,11 @@ Type ASTTypeFromExpr::analyse(FunctionAnalyser *analyser, const TypeExpectation 
 }
 
 Type ASTStaticType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_.setExact(true);
-    return type_;
+    type_->analyseType(analyser->typeContext()).setExact(true);
+    if (type_->type().type() == TypeType::GenericVariable || type_->type().type() == TypeType::LocalGenericVariable) {
+        throw CompilerError(position(), "Generic Arguments are not available dynamically.");
+    }
+    return type_->type();
 }
 
 ASTThisType::ASTThisType(const SourcePosition &p) : ASTTypeFromExpr(std::make_shared<ASTThis>(p), p) {}

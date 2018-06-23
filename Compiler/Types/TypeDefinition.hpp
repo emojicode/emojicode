@@ -27,10 +27,10 @@ namespace EmojicodeCompiler {
 
 struct InstanceVariableDeclaration {
     InstanceVariableDeclaration() = delete;
-    InstanceVariableDeclaration(std::u32string name, Type type, SourcePosition pos)
+    InstanceVariableDeclaration(std::u32string name, std::unique_ptr<ASTType> type, SourcePosition pos)
     : name(std::move(name)), type(std::move(type)), position(std::move(pos)) {}
     std::u32string name;
-    Type type;
+    std::shared_ptr<ASTType> type;
     SourcePosition position;
 };
 
@@ -41,6 +41,8 @@ class TypeDefinition : public Generic<TypeDefinition, int> {
 public:
     TypeDefinition(const TypeDefinition&) = delete;
 
+    virtual Type type() = 0;
+
     /// Returns a documentation token documenting this type definition.
     const std::u32string& documentation() const { return documentation_; }
     /// Returns the name of the type definition.
@@ -50,13 +52,10 @@ public:
     /// The position at which this type was initially defined.
     const SourcePosition& position() const { return position_; }
 
-    /// Sets the super type to the given Type.
-    /// All generic arguments are offset by the number of generic arguments this type has.
-    void setSuperType(const Type &type);
     /// The generic arguments of the super type.
     /// @returns The generic arguments of the Type passed to setSuperType().
     /// If no super type was provided an empty vector is returned.
-    std::vector<Type> superGenericArguments() const;
+    virtual std::vector<Type> superGenericArguments() const { return std::vector<Type>(); }
 
     /// Determines whether the resolution constraint of TypeType::GenericVariable allows it to be resolved on an Type
     /// instance representing an instance of this TypeDefinition.
@@ -96,9 +95,9 @@ public:
     const std::vector<Function *>& typeMethodList() const { return typeMethodList_; }
 
     /** Declares that this class agrees to the given protocol. */
-    void addProtocol(const Type &type, const SourcePosition &p);
+    void addProtocol(std::shared_ptr<ASTType> type) { protocols_.emplace_back(std::move(type)); }
     /** Returns a list of all protocols to which this class conforms. */
-    const std::vector<Type>& protocols() const { return protocols_; };
+    const std::vector<std::shared_ptr<ASTType>>& protocols() const { return protocols_; };
 
     /// Calls the given function with every Function that is defined for this TypeDefinition, i.e. all methods,
     /// type methods and initializers.
@@ -107,8 +106,7 @@ public:
     /// type methods and initializers.
     void eachFunctionWithoutInitializers(const std::function<void(Function *)>& cb) const;
 
-    /** Returns an object scope for an instance of the defined type.
-     @warning @c prepareForCG() must be called before a call to this method. */
+    /// @retunrs A reference to the instance scope for SemanticAnalysis.
     Scope& instanceScope() { return scope_; }
 
     /// Whether the type was exported in the package it was defined.
@@ -121,9 +119,8 @@ public:
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation, bool exported);
 
-    std::vector<Type> protocols_;
+    std::vector<std::shared_ptr<ASTType>> protocols_;
 
-    const Type& superType() const { return superType_; }
     std::vector<InstanceVariableDeclaration>& instanceVariablesMut() { return instanceVariables_; }
 
     /// Called if a required initializer is passed to addInitializer().
@@ -156,7 +153,6 @@ private:
     SourcePosition position_;
     bool exported_;
 
-    Type superType_ = Type::noReturn();
     std::map<Type, llvm::Constant*> protocolTables_;
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;

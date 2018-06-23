@@ -78,8 +78,8 @@ std::string mangleValueTypeMetaName(const Type &type) {
 
 std::string mangleFunction(Function *function, const std::map<size_t, Type> &genericArgs) {
     std::stringstream stream;
-    if (function->owningType().type() != TypeType::NoReturn) {
-        mangleTypeName(stream, function->owningType());
+    if (function->owner() != nullptr) {
+        mangleTypeName(stream, function->owner()->type());
         if (isFullyInitializedCheckRequired(function->functionType())) {
             stream << ".init";
         }

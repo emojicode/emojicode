@@ -124,9 +124,7 @@ bool Package::lookupRawType(const TypeIdentifier &typeId, Type *type) const {
 }
 
 void Package::exportType(Type t, std::u32string name, const SourcePosition &p) {
-    if (finishedLoading()) {
-        throw std::logic_error("The package did already finish loading. No more types can be exported.");
-    }
+    assert(!finishedLoading());
     if (std::any_of(exportedTypes_.begin(), exportedTypes_.end(), [&name](auto &type) { return type.name == name; })) {
         throw CompilerError(p, "A type named ", utf8(name), " was already exported.");
     }
@@ -161,6 +159,17 @@ std::u32string Package::findNamespace(const Type &type) {
         }
     }
     return std::u32string();
+}
+
+void Package::recreateClassTypes() {
+    for (auto &pair : types_) {
+        if (pair.second.type() == TypeType::Class) {
+            pair.second = Type(pair.second.klass());
+        }
+        else if (pair.second.type() == TypeType::ValueType) {
+            pair.second = Type(pair.second.valueType());
+        }
+    }
 }
 
 }  // namespace EmojicodeCompiler

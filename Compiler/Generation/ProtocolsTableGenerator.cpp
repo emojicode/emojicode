@@ -19,7 +19,7 @@ void ProtocolsTableGenerator::createProtocolsTable(const Type &type) {
     std::map<Type, llvm::Constant *> tables;
 
     for (auto &protocol : type.typeDefinition()->protocols()) {
-        tables.emplace(protocol.unboxed(), createVirtualTable(type, protocol));
+        tables.emplace(protocol->type().unboxed(), createVirtualTable(type, protocol->type()));
     }
 
     type.typeDefinition()->setProtocolTables(std::move(tables));
@@ -29,7 +29,7 @@ void ProtocolsTableGenerator::declareImportedProtocolsTable(const Type &type) {
     std::map<Type, llvm::Constant *> tables;
 
     for (auto &protocol : type.typeDefinition()->protocols()) {
-        tables.emplace(protocol.unboxed(), getConformanceVariable(type, protocol, nullptr));
+        tables.emplace(protocol->type().unboxed(), getConformanceVariable(type, protocol->type(), nullptr));
     }
 
     type.typeDefinition()->setProtocolTables(std::move(tables));

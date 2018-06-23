@@ -23,9 +23,29 @@ void SemanticAnalyser::analyse(bool executable) {
     for (auto &extension : package_->extensions()) {
         extension->extend();
     }
+
     for (auto &vt : package_->valueTypes()) {
         finalizeProtocols(Type(vt.get()));
-        declareInstanceVariables(vt.get());
+        vt->analyseConstraints(TypeContext(Type(vt.get())));
+    }
+    for (auto &klass : package_->classes()) {
+        klass->analyseSuperType();
+        finalizeProtocols(Type(klass.get()));
+        klass->analyseConstraints(TypeContext(Type(klass.get())));
+    }
+
+    package_->recreateClassTypes();
+
+    // Now all types are ready to be used with compatibleTo
+
+    for (auto &protocol : package_->protocols()) {
+        protocol->eachFunction([this](Function *function) {
+            analyseFunctionDeclaration(function);
+        });
+    }
+    for (auto &vt : package_->valueTypes()) {
+        checkProtocolConformance(Type(vt.get()));
+        declareInstanceVariables(Type(vt.get()));
         enqueueFunctionsOfTypeDefinition(vt.get());
     }
     for (auto &klass : package_->classes()) {
@@ -37,7 +57,7 @@ void SemanticAnalyser::analyse(bool executable) {
         }
         
         klass->inherit(this);
-        finalizeProtocols(Type(klass.get()));
+        checkProtocolConformance(Type(klass.get()));
 
         enqueueFunctionsOfTypeDefinition(klass.get());
 
@@ -50,9 +70,20 @@ void SemanticAnalyser::analyse(bool executable) {
     }
 
     analyseQueue();
+    checkStartFlagFunction(executable);
+}
 
-    if (executable && !package_->hasStartFlagFunction()) {
-        compiler()->error(CompilerError(package_->position(), "No 🏁 block was found."));
+void SemanticAnalyser::checkStartFlagFunction(bool executable) {
+    if (executable) {
+        if (!package_->hasStartFlagFunction()) {
+            compiler()->error(CompilerError(package_->position(), "No 🏁 block was found."));
+        }
+        auto returnType = package_->startFlagFunction()->returnType()->type();
+        if (returnType.type() != TypeType::NoReturn &&
+            !returnType.compatibleTo(Type(package_->compiler()->sInteger), TypeContext())) {
+            package_->compiler()->error(CompilerError(package_->startFlagFunction()->position(),
+                                                      "🏁 must either have no return or return 🔢."));
+        }
     }
 }
 
@@ -75,14 +106,41 @@ void SemanticAnalyser::enqueueFunctionsOfTypeDefinition(TypeDefinition *typeDef)
 }
 
 void SemanticAnalyser::enqueueFunction(Function *function) {
+    analyseFunctionDeclaration(function);
     if (!function->isExternal()) {
         queue_.emplace(function);
     }
 }
 
-void SemanticAnalyser::declareInstanceVariables(TypeDefinition *typeDef) {
+void SemanticAnalyser::analyseFunctionDeclaration(Function *function) {
+    if (function->returnType() == nullptr) {
+        function->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
+    }
+    else if (function->returnType()->wasAnalysed()) {
+        return;
+    }
+
+    auto context = function->typeContext();
+
+    function->analyseConstraints(context);
+    for (auto &param : function->parameters()) {
+        param.type->analyseType(context);
+    }
+
+    if (auto initializer = dynamic_cast<Initializer*>(function)) {
+        if (initializer->errorProne() && initializer->errorType()->analyseType(context).type() != TypeType::Enum) {
+            throw CompilerError(initializer->errorType()->position(), "Error type must be a non-optional 🦃.");
+        }
+        return;
+    }
+    function->returnType()->analyseType(context);
+}
+
+void SemanticAnalyser::declareInstanceVariables(const Type &type) {
+    TypeDefinition *typeDef = type.typeDefinition();
     for (auto &var : typeDef->instanceVariables()) {
-        typeDef->instanceScope().declareVariable(var.name, var.type, false, var.position);
+        typeDef->instanceScope().declareVariable(var.name, var.type->analyseType(TypeContext(type)), false,
+                                                 var.position);
     }
 
     if (!typeDef->instanceVariables().empty() && typeDef->initializerList().empty()) {
@@ -94,22 +152,25 @@ void SemanticAnalyser::declareInstanceVariables(TypeDefinition *typeDef) {
 bool SemanticAnalyser::checkReturnPromise(const Function *sub, const TypeContext &subContext,
                                           const Function *super, const TypeContext &superContext,
                                           const Type &superSource) const {
-    auto superReturnType = super->returnType().resolveOn(superContext);
-    if (!sub->returnType().resolveOn(subContext).compatibleTo(superReturnType, subContext)) {
+    auto superReturnType = super->returnType()->type().resolveOn(superContext);
+    if (!sub->returnType()->type().resolveOn(subContext).compatibleTo(superReturnType, subContext)) {
         auto supername = superReturnType.toString(subContext);
-        auto thisname = sub->returnType().toString(subContext);
+        auto thisname = sub->returnType()->type().toString(subContext);
         package_->compiler()->error(CompilerError(sub->position(), "Return type ",
-                                                  sub->returnType().toString(subContext), " of ", utf8(sub->name()),
+                                                  sub->returnType()->type().toString(subContext), " of ",
+                                                  utf8(sub->name()),
                                                   " is not compatible to the return type defined in ",
                                                   superSource.toString(subContext)));
     }
-    return sub->returnType().resolveOn(subContext).storageType() == superReturnType.storageType();
+    return sub->returnType()->type().resolveOn(subContext).storageType() == superReturnType.storageType();
 }
 
-std::unique_ptr<Function> SemanticAnalyser::enforcePromises(const Function *sub, const Function *super,
+std::unique_ptr<Function> SemanticAnalyser::enforcePromises(Function *sub, Function *super,
                                                             const Type &superSource,
                                                             const TypeContext &subContext,
                                                             const TypeContext &superContext) {
+    analyseFunctionDeclaration(sub);
+    analyseFunctionDeclaration(super);
     if (super->final()) {
         package_->compiler()->error(CompilerError(sub->position(), superSource.toString(subContext),
                                                   "’s implementation of ", utf8(sub->name()), " was marked 🔏."));
@@ -137,28 +198,28 @@ bool SemanticAnalyser::checkArgumentPromise(const Function *sub, const Function 
 
     bool compatible = true;
     for (size_t i = 0; i < super->parameters().size(); i++) { // More general arguments are OK
-        auto superArgumentType = super->parameters()[i].type.resolveOn(superContext);
-        if (!superArgumentType.compatibleTo(sub->parameters()[i].type.resolveOn(subContext), subContext)) {
+        auto superArgumentType = super->parameters()[i].type->type().resolveOn(superContext);
+        if (!superArgumentType.compatibleTo(sub->parameters()[i].type->type().resolveOn(subContext), subContext)) {
             auto supertype = superArgumentType.toString(subContext);
-            auto thisname = sub->parameters()[i].type.toString(subContext);
+            auto thisname = sub->parameters()[i].type->type().toString(subContext);
             package_->compiler()->error(CompilerError(sub->position(), "Type ", thisname, " of argument ", i + 1,
                                                       " is not compatible with its ", thisname, " argument type ",
                                                       supertype, "."));
         }
-        if (sub->parameters()[i].type.resolveOn(subContext).storageType() != superArgumentType.storageType()) {
+        if (sub->parameters()[i].type->type().resolveOn(subContext).storageType() != superArgumentType.storageType()) {
             compatible = false;  // Boxing Thunk required for parameter i
         }
     }
     return compatible;
 }
 
-void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol) {
+void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol, const SourcePosition &p) {
     for (auto method : protocol.protocol()->methodList()) {
         auto methodImplementation = type.typeDefinition()->lookupMethod(method->name(), method->isImperative());
         if (methodImplementation == nullptr) {
             package_->compiler()->error(
-                    CompilerError(type.typeDefinition()->position(), type.toString(TypeContext()),
-                                  " does not conform to protocol ", protocol.toString(TypeContext()), ": Method ",
+                    CompilerError(p, type.toString(TypeContext()), " does not conform to protocol ",
+                                  protocol.toString(TypeContext()), ": Method ",
                                   utf8(method->name()), " not provided."));
             continue;
         }
@@ -175,9 +236,27 @@ void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol) 
     }
 }
 
+void SemanticAnalyser::checkProtocolConformance(const Type &type) {
+    for (auto &protocol : type.typeDefinition()->protocols()) {
+        finalizeProtocol(type, protocol->type(), protocol->position());
+    }
+}
+
 void SemanticAnalyser::finalizeProtocols(const Type &type) {
-    for (const Type &protocol : type.typeDefinition()->protocols()) {
-        finalizeProtocol(type, protocol);
+    std::set<Type> protocols;
+
+    for (auto &protocol : type.typeDefinition()->protocols()) {
+        auto &protocolType = protocol->analyseType(TypeContext(type));
+        if (protocolType.unboxedType() != TypeType::Protocol) {
+            package_->compiler()->error(CompilerError(protocol->position(), "Type is not a protocol."));
+            continue;
+        }
+        if (protocols.find(protocolType.unboxed()) != protocols.end()) {
+            package_->compiler()->error(CompilerError(protocol->position(),
+                                                      "Conformance to protocol was already declared."));
+            continue;
+        }
+        protocols.emplace(protocolType.unboxed());
     }
 }
 

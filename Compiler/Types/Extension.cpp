@@ -24,7 +24,7 @@ void Extension::extend() {
         typeDef->addTypeMethod(std::move(method.second));
     }
     for (auto &protocol : protocols_) {
-        typeDef->addProtocol(protocol, position());
+        typeDef->addProtocol(protocol);
     }
     for (auto &var : instanceVariables_) {
         typeDef->addInstanceVariable(var);

@@ -70,10 +70,10 @@ llvm::Value* ASTVariableInit::variablePointer(EmojicodeCompiler::FunctionCodeGen
 }
 
 void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
-    auto alloca = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_), utf8(varName_));
+    auto alloca = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_->type()), utf8(varName_));
     fg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
-    if (type_.type() == TypeType::Optional) {
+    if (type_->type().type() == TypeType::Optional) {
         std::vector<Value *> idx { fg->int32(0), fg->int32(0) };
         fg->builder().CreateStore(fg->generator()->optionalNoValue(), fg->builder().CreateGEP(alloca, idx));
     }

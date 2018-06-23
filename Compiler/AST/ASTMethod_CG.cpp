@@ -23,15 +23,15 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             case BuiltInType::BooleanNegate:
                 return fg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fg->generator()->context()), v);
             case BuiltInType::Store: {
-                auto pointerType = fg->typeHelper().llvmTypeFor(args_.genericArguments().front())->getPointerTo();
+                auto ptrType = fg->typeHelper().llvmTypeFor(args_.genericArguments().front()->type())->getPointerTo();
                 auto offset = args_.parameters()[1]->generate(fg);
-                auto ptr = fg->builder().CreateBitCast(fg->builder().CreateGEP(v, offset), pointerType);
+                auto ptr = fg->builder().CreateBitCast(fg->builder().CreateGEP(v, offset), ptrType);
                 return fg->builder().CreateStore(args_.parameters().front()->generate(fg), ptr);
             }
             case BuiltInType::Load: {
-                auto pointerType = fg->typeHelper().llvmTypeFor(args_.genericArguments().front())->getPointerTo();
+                auto ptrType = fg->typeHelper().llvmTypeFor(args_.genericArguments().front()->type())->getPointerTo();
                 auto offset = args_.parameters().front()->generate(fg);
-                auto ptr = fg->builder().CreateBitCast(fg->builder().CreateGEP(v, offset), pointerType);
+                auto ptr = fg->builder().CreateBitCast(fg->builder().CreateGEP(v, offset), ptrType);
                 return fg->builder().CreateLoad(ptr);
             }
             case BuiltInType::Multiprotocol:
@@ -44,5 +44,5 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
 
     return CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_, args_, method_);
 }
-    
+
 }  // namespace EmojicodeCompiler

@@ -1,7 +1,7 @@
 🐋 🔡 🍇
-  🐊 🔂🐚🍬🔣
-  🐊 🐽🐚🍬🔣
-  🐊 😛🐚🔡
+  🐊 🔂🐚🍬🔣🍆
+  🐊 🐽🐚🍬🔣🍆
+  🐊 😛🐚🔡🍆
 
   📗 Creates a string by copying the memory from the *memory*. 📗
   ☣️ 🆕 🧠 memory 🧠 🍼 count 🔢 🍇
@@ -23,7 +23,7 @@
   🆕 👂🏼 📻 🔤sStringReadLine🔤
 
   📗 Creates a string from the provided list of symbols. 📗
-  🆕 🎙 symbolList 🍨🐚🔣 🍇
+  🆕 🎙 symbolList 🍨🐚🔣🍆 🍇
     🐔symbolList❗️ ➡️ 🖍count
     ☣️ 🍇
       🆕🧠🆕 count ✖️⚖️🔣❗️ ➡️ 🖍codePoints
@@ -127,8 +127,8 @@
     This string is split up into substring at each place *seperator* is found.
     *seperator* itself is removed from the string.
   📗
-  ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡 🍇
-    🆕🍨🐚🔡🐸❗️ ➡️ list
+  ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡🍆 🍇
+    🆕🍨🐚🔡🍆🐸❗️ ➡️ list
 
     0 ➡️ 🖍🆕lastIndex
     👍 ➡️ 🖍🆕continue
@@ -152,8 +152,8 @@
 
     Prefer this method over 🔫❗️ if the separator is just a single character.
   📗
-  ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡 🍇
-    🆕🍨🐚🔡🐸❗️ ➡️ list
+  ❗️ 💣 separator 🔣 ➡️ 🍨🐚🔡🍆 🍇
+    🆕🍨🐚🔡🍆🐸❗️ ➡️ list
 
     0 ➡️ 🖍🆕 lastIndex
     👍 ➡️ 🖍🆕 continue
@@ -180,10 +180,10 @@
     count ➖ 1 ➡️ 🖍🆕 end
 
     ☣️ 🍇
-      🔁 front ◀️ count 🤝 🐁🐽 codePoints 🐚🔣 front ✖️⚖️🔣❗️❗️ 🍇
+      🔁 front ◀️ count 🤝 🐁🐽 codePoints 🐚🔣🍆 front ✖️⚖️🔣❗️❗️ 🍇
         front ⬅️➕ 1
       🍉
-      🔁 end ▶️ front 🤝 🐁🐽 codePoints 🐚🔣 end ✖️⚖️🔣❗️❗️ 🍇
+      🔁 end ▶️ front 🤝 🐁🐽 codePoints 🐚🔣🍆 end ✖️⚖️🔣❗️❗️ 🍇
         end ⬅️➖ 1
       🍉
     🍉
@@ -230,7 +230,7 @@
       ↩️ 🤷‍♂️
     🍉
     ☣️ 🍇
-      ↩️ 🐽 codePoints 🐚🔣 count ✖️⚖️🔣❗️
+      ↩️ 🐽 codePoints 🐚🔣🍆 count ✖️⚖️🔣❗️
     🍉
   🍉
 
@@ -245,11 +245,11 @@
   ❗️ ⚗️ ➡️ 🔢 📻 🔤sStringHash🔤
 
   📗 Returns an array with the symbols from this string. 📗
-  ❗️ 🎶 ➡️ 🍨🐚🔣 🍇
-    🆕🍨🐚🔣🐴 count❗️ ➡️ list
+  ❗️ 🎶 ➡️ 🍨🐚🔣🍆 🍇
+    🆕🍨🐚🔣🍆🐴 count❗️ ➡️ list
     ☣️ 🍇
       🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-        🐻 list 🐽 codePoints🐚🔣  i✖️⚖️🔣❗️❗️
+        🐻 list 🐽 codePoints🐚🔣🍆 i✖️⚖️🔣❗️❗️
       🍉
     🍉
     ↩️ list
@@ -274,8 +274,8 @@
   ❗️ 📪 ➡️ 🔡 📻 🔤sStringToLowercase🔤
 
   📗 Returns an iterator to iterate over the symbols of this string. 📗
-  ❗️ 🍡 ➡️ 🌳🐚🍬🔣 🍇
-    ↩️ 🆕🌳🐚🍬🔣🆕 🐕❗️
+  ❗️ 🍡 ➡️ 🌳🐚🍬🔣🍆 🍇
+    ↩️ 🆕🌳🐚🍬🔣🍆🆕 🐕❗️
   🍉
 🍉
 
@@ -284,7 +284,7 @@
   ❗️ 🔡 ➡️ 🔡 🍇
     ☣️ 🍇
       🆕🧠🆕 ⚖️🔣❗️ ➡️ data
-      🐷 data🐚🔣 🐕 0❗️
+      🐷 data🐚🔣🍆 🐕 0❗️
       ↩️ 🆕🔡🧠 data 1❗️
     🍉
   🍉
@@ -351,7 +351,7 @@
     Creates a string by joining all elements into a string separated
     by *separator*.
   📗
-  🆕 🍨 list 🍨🐚🔡 separator 🔡 🍇
+  🆕 🍨 list 🍨🐚🔡🍆 separator 🔡 🍇
     🆕🔠🆕❗️ ➡️ builder
     🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
       🐻 builder 🐽list i❗️ ❗️

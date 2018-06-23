@@ -10,15 +10,16 @@
 #define ASTVariables_hpp
 
 #include "ASTStatements.hpp"
-#include <sstream>
 #include <utility>
 
 namespace EmojicodeCompiler {
 
+struct ResolvedVariable;
+
 /// Represents the declaration of a variable.
 class ASTVariableDeclaration final : public ASTStatement {
 public:
-    ASTVariableDeclaration(Type type, std::u32string name, const SourcePosition &p)
+    ASTVariableDeclaration(std::unique_ptr<ASTType> type, std::u32string name, const SourcePosition &p)
             : ASTStatement(p), varName_(std::move(name)), type_(std::move(type)) {}
 
     void analyse(FunctionAnalyser *analyser) override;
@@ -26,7 +27,7 @@ public:
     void toCode(Prettyprinter &pretty) const override;
 private:
     std::u32string varName_;
-    Type type_;
+    std::unique_ptr<ASTType> type_;
     VariableID id_;
 };
 

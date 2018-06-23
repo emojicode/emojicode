@@ -25,7 +25,6 @@ class ASTStatement : public ASTNode {
 public:
     virtual void generate(FunctionCodeGenerator *) const = 0;
     virtual void analyse(FunctionAnalyser *) = 0;
-    virtual void toCode(Prettyprinter &pretty) const = 0;
     void setParagraph() { paragraph_ = true; }
     bool paragraph() const { return paragraph_; }
 protected:

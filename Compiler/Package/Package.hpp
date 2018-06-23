@@ -126,6 +126,8 @@ public:
     virtual void offerType(Type t, const std::u32string &name, const std::u32string &ns, bool exportFromPkg,
                            const SourcePosition &p);
 
+    void recreateClassTypes();
+
     /// @returns All classes registered with this package.
     const std::vector<std::unique_ptr<Class>>& classes() const { return classes_; };
     const std::vector<std::unique_ptr<Function>>& functions() const { return functions_; }

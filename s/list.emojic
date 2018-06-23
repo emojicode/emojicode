@@ -1,6 +1,6 @@
 🐋 🍨 🍇
-  🐊 🔂🐚Element
-  🐊 🐽🐚Element
+  🐊 🔂🐚Element🍆
+  🐊 🐽🐚Element🍆
 
   📗 Creates an empty list. 📗
   🆕 🐸 🍇
@@ -27,7 +27,7 @@
       🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
 
       🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-        🐷 data🐚Element repeatedValue i✖️⚖️Element❗️
+        🐷 data🐚Element🍆 repeatedValue i✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -46,7 +46,7 @@
   🍉
 
   📗 Creates a shallow copy of the given list. 📗
-  🆕 🐮 list 🍨🐚Element 🍇
+  🆕 🐮 list 🍨🐚Element🍆 🍇
     🐔list❗️ ➡️ 🖍count
     🐴list❓ ➡️ 🖍size
     ☣️ 🍇
@@ -59,7 +59,7 @@
   ❗️ 🐻 item Element 🍇
     ↕️🐕❗️
     ☣️ 🍇
-      🐷 data🐚Element item count✖️⚖️Element❗️
+      🐷 data🐚Element🍆 item count✖️⚖️Element❗️
     🍉
     count ⬅️➕ 1
   🍉
@@ -73,7 +73,7 @@
       🤯🐇💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
     🍉
     ☣️ 🍇
-      ↩️ 🐽 data🐚Element index✖️⚖️Element❗️
+      ↩️ 🐽 data🐚Element🍆 index✖️⚖️Element❗️
     🍉
   🍉
 
@@ -86,7 +86,7 @@
       🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
     🍉
     ☣️ 🍇
-      🐷 data🐚Element value index✖️⚖️Element❗️
+      🐷 data🐚Element🍆 value index✖️⚖️Element❗️
     🍉
   🍉
 
@@ -118,7 +118,7 @@
     ↪️ index ◀️ count 🍇
       ☣️ 🍇
         🚜 data 🤜index ➕ 1🤛✖️⚖️Element data index✖️⚖️Element 🤜count ➖ index 🤛✖️⚖️Element❗️
-        🐷 data🐚Element item index✖️⚖️Element❗️
+        🐷 data🐚Element🍆 item index✖️⚖️Element❗️
       🍉
       count ⬅️➕ 1
       ↩️ 👍
@@ -132,7 +132,7 @@
   🍉
 
   📗 Appends the content of `list` to this list. Complexity: `O(n)`. 📗
-  ❗️ 🐥 list 🍨🐚Element 🍇
+  ❗️ 🐥 list 🍨🐚Element🍆 🍇
     count ➡️ oldCount
     count ⬅️➕ 🐔list❗️
     🐴🐕 count❗️
@@ -148,7 +148,7 @@
   ❗️ 🐼 ➡️ 🍬Element 🍇
     count ⬅️➖ 1
     ☣️ 🍇
-      🐽 data🐚Element count✖️⚖️Element❗️ ➡️ value
+      🐽 data🐚Element🍆 count✖️⚖️Element❗️ ➡️ value
     🍉
     ↩️ value
   🍉
@@ -203,9 +203,9 @@
       🔢 prng 0 count ➖ 1❗️ ➡️ x
 
       ☣️ 🍇
-        🐽 data🐚Element i✖️⚖️Element❗️ ➡️ temp
-        🐷 data🐚Element 🐽 data🐚Element x✖️⚖️Element❗️ i✖️⚖️Element❗️
-        🐷 data🐚Element temp x✖️⚖️Element❗️
+        🐽 data🐚Element🍆 i✖️⚖️Element❗️ ➡️ temp
+        🐷 data🐚Element🍆 🐽 data🐚Element🍆 x✖️⚖️Element❗️ i✖️⚖️Element❗️
+        🐷 data🐚Element🍆 temp x✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -214,8 +214,8 @@
     Calls callback with each element in the list and appends the returned
     value to the end of a new list.
   📗
-  ❗️ 🐰 🐚A⚪️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A 🍇
-    🆕🍨🐚A🐴 🐔 🐕❗️❗️ ➡️ g
+  ❗️ 🐰 🐚A⚪🍆️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A🍆 🍇
+    🆕🍨🐚A🍆🐴 🐔 🐕❗️❗️ ➡️ g
     🔂 element 🐕 🍇
       🐻 g ⁉️callback element❗️❗️
     🍉
@@ -226,8 +226,8 @@
     Returns a new array with all elements that pass the test implemented by
     `callback`.
   📗
-  ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element 🍇
-    🆕🍨🐚Element🐸❗️ ➡️ g
+  ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element🍆 🍇
+    🆕🍨🐚Element🍆🐸❗️ ➡️ g
     🔂 element 🐕 🍇
       ↪️ ⁉️ callback element❗️ 🍇
         🐻 g element❗️
@@ -252,7 +252,7 @@
   🍉
 
 💭   📗 Tests whether this array and `other` are equal. 📗
-💭   🙌 🐚A😛🐚Element other 🍨🐚A ➡️ 👌 🍇
+💭   🙌 🐚A😛🍆Element other 🍨🐚A ➡️ 👌 🍇
 💭     ↪️ ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
 💭       ↩️ 👎
 💭     🍉
@@ -266,7 +266,7 @@
 💭   🍉
 
   📗 Returns an iterator to iterate over the elements of this list. 📗
-  ❗️ 🍡 ➡️ 🌳🐚Element 🍇
+  ❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
     ↩️ 🆕⚫️🆕 🐕❗️
   🍉
 🍉

@@ -48,7 +48,7 @@ private:
             writer_.Key("name");
             writer_.String(utf8(param.name));
             writer_.Key("constraint");
-            reportType(param.constraint, tc);
+            reportType(param.constraint->type(), tc);
             writer_.EndObject();
         }
         writer_.EndArray();

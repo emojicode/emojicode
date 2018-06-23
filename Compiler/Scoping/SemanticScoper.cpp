@@ -17,12 +17,11 @@ namespace EmojicodeCompiler {
 Scope& SemanticScoper::pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p) {
     Scope &methodScope = pushScope();
     for (auto &variable : arguments) {
-        auto &var = methodScope.declareVariable(variable.name, variable.type, true, p);
+        auto &var = methodScope.declareVariable(variable.name, variable.type->type(), true, p);
         var.initializeAbsolutely();
     }
     return methodScope;
 }
-
 
 void SemanticScoper::popScope(Compiler *app) {
     currentScope().recommendFrozenVariables(app);
@@ -41,7 +40,7 @@ void SemanticScoper::popScope(Compiler *app) {
 
 SemanticScoper SemanticScoper::scoperForFunction(Function *function)  {
     if (hasInstanceScope(function->functionType())) {
-        return SemanticScoper(&function->owningType().typeDefinition()->instanceScope());
+        return SemanticScoper(&function->owner()->instanceScope());
     }
     return SemanticScoper();
 }

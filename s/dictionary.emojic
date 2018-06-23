@@ -1,5 +1,5 @@
-🐇 🐝🐚Key ⚪️🐚Element ⚪️ 🍇
-  🖍🆕 next 🍬🐝🐚Key🐚Element
+🐇 🐝🐚Key ⚪️ Element ⚪🍆️ 🍇
+  🖍🆕 next 🍬🐝🐚Key Element🍆
   🖍🆕 key Key
   🖍🆕 element Element
   🖍🆕 hash 🔢
@@ -25,15 +25,15 @@
     ↩️ hash
   🍉
 
-  ❗️ ⏭ ➡️ 🍬🐝🐚Key🐚Element 🍇
+  ❗️ ⏭ ➡️ 🍬🐝🐚Key Element🍆 🍇
     ↩️ next
   🍉
 
-  ❗️ 🥌 newEntry 🍬🐝🐚Key🐚Element 🍇
+  ❗️ 🥌 newEntry 🍬🐝🐚Key Element🍆 🍇
     newEntry➡️🖍next
   🍉
 
-  ❗️ 🐻 newEntry 🐝🐚Key🐚Element 🍇
+  ❗️ 🐻 newEntry 🐝🐚Key Element🍆 🍇
     🐕 ➡️ 🖍🆕prev
     next ➡️ 🖍🆕entry?
     🔁 entry? ➡️ entry 🍇
@@ -50,7 +50,7 @@
   [Read more in the
   language reference.](../../reference/the-s-package.html#-dictionaries)
 📗
-🌍 🐇 🍯🐚Element ⚪️ 🍇
+🌍 🐇 🍯🐚Element ⚪🍆️ 🍇
   🖍🆕 data 🧠
   🖍🆕 count 🔢
   🖍🆕 capacity 🔢
@@ -98,25 +98,25 @@
     7 ➡️ 🖍capacity
     0 ➡️ 🖍count
     ☣️ 🍇
-      capacity✖️⚖️🍬🐝🐚🔡🐚Element ➡️ length
+      capacity✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ length
       🆕🧠🆕 length❗️ ➡️ 🖍data
       ✍️ data 0 0 length❗
     🍉
   🍉
 
-  ❓ 🔑 entry 🐝🐚🔡🐚Element key 🔡 hash 🔢 ➡️ 👌 🍇
+  ❓ 🔑 entry 🐝🐚🔡Element🍆 key 🔡 hash 🔢 ➡️ 👌 🍇
     ↪️ hash 🙌 ⚗️entry❗️ 🍇
       ↩️ key 🙌 🔑entry❗
     🍉
     ↩️ 👎
   🍉
 
-  ❗ 🔍 key 🔡 ➡️ 🍬🐝🐚🔡🐚Element 🍇
+  ❗ 🔍 key 🔡 ➡️ 🍬🐝🐚🔡Element🍆 🍇
     ⚗️key❗➡️ hash
     hash🚮capacity️ ➡️ index
 
     ☣️ 🍇
-      🐽 data🐚🍬🐝🐚🔡🐚Element index✖️⚖️🍬🐝🐚🔡🐚Element❗ ➡️ 🖍🆕entry?
+      🐽 data🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
     🍉
 
     🔁 entry? ➡️ entry 🍇
@@ -149,13 +149,13 @@
     hash🚮capacity️ ➡️ index
 
     ☣️ 🍇
-      🐽 data🐚🍬🐝🐚🔡🐚Element index✖️⚖️🍬🐝🐚🔡🐚Element❗ ➡️ 🖍🆕entry?
+      🐽 data🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
     🍉
 
     ↪️ entry? ➡️ entry 🍇
       ↪️ 🔑entry❗️️ 🙌 key 🍇
         ☣️ 🍇
-          🐷 data🐚🍬🐝🐚🔡🐚Element ⏭entry❗️️ index✖️⚖️🍬🐝🐚🔡🐚Element❗
+          🐷 data🐚🍬🐝🐚🔡Element🍆🍆 ⏭entry❗️️ index✖️⚖️🍬🐝🐚🔡Element🍆❗
         🍉
         count ⬅️➖ 1
         ↩️️↩️️
@@ -185,10 +185,10 @@
 
     ⚗️key❗➡️ hash
     hash🚮capacity️ ➡️ index
-    🆕🐝🐚🔡🐚Element🆕 key value hash❗️ ➡️ entry
+    🆕🐝🐚🔡Element🍆🆕 key value hash❗️ ➡️ entry
 
     ☣️ 🍇
-      🐽 data🐚🍬🐝🐚🔡🐚Element index✖️⚖️🍬🐝🐚🔡🐚Element❗ ➡️ entry?
+      🐽 data🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ entry?
     🍉
 
     ↪️ entry? ➡️ anEntry 🍇
@@ -197,7 +197,7 @@
     🍉
 
     ☣️ 🍇
-      🐷 data🐚🍬🐝🐚🔡🐚Element entry index✖️⚖️🍬🐝🐚🔡🐚Element❗
+      🐷 data🐚🍬🐝🐚🔡Element🍆🍆 entry index✖️⚖️🍬🐝🐚🔡Element🍆❗
     🍉
   🍉
 
@@ -207,17 +207,17 @@
       capacity ➡️ oldCapacity
 
       0 ➡️ 🖍count
-      🛷🐇🍯🐚Element capacity❗️ ➡️ 🖍capacity
+      🛷🐇🍯🐚Element🍆 capacity❗️ ➡️ 🖍capacity
 
       ☣️ 🍇
-        capacity✖️⚖️🍬🐝🐚🔡🐚Element ➡️ length
+        capacity✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ length
         🆕🧠🆕 length❗️ ➡️ 🖍data
         ✍️ data 0 0 length❗
       🍉
 
       🔂 i 🆕⏩⏩ 0 oldCapacity❗️ 🍇
         ☣️ 🍇
-          🐽 oldData 🐚🍬🐝🐚🔡🐚Element i✖️⚖️🍬🐝🐚🔡🐚Element❗ ➡️ 🖍🆕entry?
+          🐽 oldData 🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
         🍉
         🔁 entry? ➡️ entry 🍇
           🐷🐕 🔑entry❗🐽entry❗❗
@@ -233,11 +233,11 @@
     >!N Note that the keys in the returned list are arbitrarily ordered.
 
   📗
-  ❗️ 🐙 ➡️ 🍨🐚🔡 🍇
-    🆕🍨🐚🔡🐴count❗➡️ list
+  ❗️ 🐙 ➡️ 🍨🐚🔡🍆 🍇
+    🆕🍨🐚🔡🍆🐴count❗➡️ list
     🔂 i 🆕⏩⏩ 0 capacity❗️ 🍇
       ☣️ 🍇
-        🐽 data🐚🍬🐝🐚🔡🐚Element i✖️⚖️🍬🐝🐚🔡🐚Element❗ ➡️ 🖍🆕entry?
+        🐽 data🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
       🍉
       🔁 entry? ➡️ entry 🍇
         🐻 list 🔑entry❗❗
@@ -255,7 +255,7 @@
     count ➡️ oldCount
     0 ➡️ 🖍count
     ☣️ 🍇
-      ✍️ data 0 0 capacity✖️⚖️🍬🐝🐚🔡🐚Element❗
+      ✍️ data 0 0 capacity✖️⚖️🍬🐝🐚🔡Element🍆❗
     🍉
     ↩️ oldCount
   🍉

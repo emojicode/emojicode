@@ -198,7 +198,7 @@ public:
             genericArguments_[0].setGenericArguments(std::move(args));
         }
         else {
-            assert(canHaveGenericArguments() || TypeType::Callable == type());
+            assert(args.empty() || canHaveGenericArguments() || TypeType::Callable == type());
             genericArguments_ = args;
         }
     }

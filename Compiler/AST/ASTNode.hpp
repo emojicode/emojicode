@@ -14,15 +14,18 @@
 
 namespace EmojicodeCompiler {
 
-struct ResolvedVariable;
 class FunctionAnalyser;
+class Prettyprinter;
 
+/// ASTNode is the parent class of all nodes in the abstract syntax tree.
 class ASTNode {
 public:
     explicit ASTNode(SourcePosition p) : sourcePosition_(std::move(p)) {}
 
-    /// The source position that caused this node to be created
+    /// The source position that caused this node to be created.
     const SourcePosition& position() const { return sourcePosition_; }
+    /// Appends code that leads to the creation of a node like this to the provided Prettyprinter.
+    virtual void toCode(Prettyprinter &pretty) const = 0;
 private:
     SourcePosition sourcePosition_;
 };

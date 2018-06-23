@@ -9,11 +9,9 @@
 #ifndef Function_hpp
 #define Function_hpp
 
-#include "Emojis.h"
 #include "FunctionType.hpp"
 #include "Types/Generic.hpp"
-#include "Types/Type.hpp"
-#include "Types/TypeContext.hpp"
+#include "AST/ASTType.hpp"
 #include <memory>
 #include <utility>
 #include <vector>
@@ -32,12 +30,12 @@ enum class AccessLevel {
 };
 
 struct Parameter {
-    Parameter(std::u32string n, Type t) : name(std::move(n)), type(std::move(t)) {}
+    Parameter(std::u32string n, std::unique_ptr<ASTType> t) : name(std::move(n)), type(std::move(t)) {}
 
     /// The name of the variable
     std::u32string name;
     /// The type
-    Type type;
+    std::shared_ptr<ASTType> type;
 };
 
 class FunctionReification {
@@ -56,12 +54,13 @@ private:
 class Function : public Generic<Function, FunctionReification> {
 public:
     Function() = delete;
-    Function(std::u32string name, AccessLevel level, bool final, Type owningType, Package *package, SourcePosition p,
+    Function(std::u32string name, AccessLevel level, bool final, TypeDefinition *owner, Package *package,
+             SourcePosition p,
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
              bool unsafe, FunctionType type) :
             position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding),
             deprecated_(deprecated), imperative_(imperative), unsafe_(unsafe), mutating_(mutating), access_(level),
-            owningType_(std::move(owningType)), package_(package), documentation_(std::move(documentationToken)),
+            owner_(owner), package_(package), documentation_(std::move(documentationToken)),
             functionType_(type) {}
 
     std::u32string name() const { return name_; }
@@ -100,17 +99,19 @@ public:
 
     void setParameters(std::vector<Parameter> parameters) { parameters_ = std::move(parameters); }
 
-    const Type& returnType() const { return returnType_; }
+    void setParameterType(size_t index, std::unique_ptr<ASTType> type) { parameters_[index].type = std::move(type); }
 
-    void setReturnType(const Type &returnType) { returnType_ = returnType; }
+    ASTType* returnType() const { return returnType_.get(); }
 
-    /** Returns the position at which this callable was defined. */
+    void setReturnType(std::unique_ptr<ASTType> type) { returnType_ = std::move(type); }
+
+    /// Returns the position at which this function was defined.
     const SourcePosition& position() const { return position_; }
 
-    /** Type to which this function belongs.
-     This can be Nothingness if the function doesn’t belong to any type (e.g. 🏁). */
-    const Type& owningType() const { return owningType_; }
-    void setOwningType(const Type &type) { owningType_ = type; }
+    /// The type definition in which this function was defined.
+    /// @returns nullptr if the function does not belong to a type (is not a method or initializer).
+    TypeDefinition* owner() const { return owner_; }
+    void setOwner(TypeDefinition *typeDef) { owner_ = typeDef; }
 
     const std::u32string& documentation() const { return documentation_; }
 
@@ -124,16 +125,7 @@ public:
     /// This function is assigned another virtual table index.
     void setVirtualTableThunk(Function *layer) { virtualTableThunk_ = layer; }
 
-    TypeContext typeContext() {
-        auto type = owningType();
-        if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
-            type.setReference();
-        }
-        if (functionType() == FunctionType::ClassMethod) {
-            type = Type(MakeTypeAsValue, type);
-        }
-        return TypeContext(type.applyMinimalBoxing(), this);
-    }
+    TypeContext typeContext();
 
     FunctionType functionType() const { return functionType_; }
 
@@ -147,7 +139,7 @@ public:
 
 private:
     std::vector<Parameter> parameters_;
-    Type returnType_ = Type::noReturn();
+    std::unique_ptr<ASTType> returnType_;
 
     std::shared_ptr<ASTBlock> ast_;
     SourcePosition position_;
@@ -166,7 +158,7 @@ private:
 
     std::string externalName_;
     AccessLevel access_;
-    Type owningType_;
+    TypeDefinition *owner_;
     Package *package_;
     std::u32string documentation_;
     FunctionType functionType_;

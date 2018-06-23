@@ -199,7 +199,7 @@ void ASTTypeFromExpr::toCode(Prettyprinter &pretty) const {
 
 void ASTTypeAsValue::toCode(Prettyprinter &pretty) const {
     pretty.printComments(position());
-    pretty << Type(MakeTypeAsValue, type_);
+    pretty << ASTTypeValueType::toString(tokenType_) << type_;
 }
 
 void ASTSizeOf::toCode(Prettyprinter &pretty) const {
@@ -343,6 +343,63 @@ void ASTBinaryOperator::toCode(Prettyprinter &pretty) const {
     printBinaryOperand(precedence, left_, pretty);
     pretty << " " << utf8(operatorName(operator_)) << " ";
     printBinaryOperand(precedence, right_, pretty);
+}
+
+void ASTType::toCode(Prettyprinter &pretty) const {
+    if (optional_) {
+        pretty << "🍬";
+    }
+    toCodeType(pretty);
+}
+
+void ASTTypeId::toCodeType(Prettyprinter &pretty) const {
+    if (!namespace_.empty()) {
+        pretty << "🔶" << utf8(namespace_);
+    }
+    pretty << utf8(name_);
+    if (!genericArgs_.empty()) {
+        pretty << "🐚";
+        for (auto &arg : genericArgs_) {
+            pretty << arg;
+        }
+        pretty.refuseOffer() << "🍆";
+    }
+}
+
+void ASTErrorType::toCodeType(Prettyprinter &pretty) const {
+    pretty << "🚨" << enum_ << content_;
+}
+
+void ASTCallableType::toCodeType(Prettyprinter &pretty) const {
+    pretty << "🍇";
+    for (auto &type : params_) {
+        pretty << type;
+    }
+    if (return_ != nullptr) {
+        pretty << "➡️" << return_;
+    }
+    pretty << "🍉";
+}
+
+void ASTMultiProtocol::toCodeType(Prettyprinter &pretty) const {
+    pretty << "🍱";
+    for (auto &type : protocols_) {
+        pretty << type;
+    }
+    pretty << "🍱";
+}
+
+void ASTGenericVariable::toCodeType(Prettyprinter &pretty) const {
+    pretty << utf8(name_);
+    pretty.offerSpace();
+}
+
+void ASTTypeValueType::toCodeType(Prettyprinter &pretty) const {
+    pretty << toString(tokenType_) << type_;
+}
+
+void ASTLiteralType::toCode(Prettyprinter &pretty) const {
+    pretty << type();
 }
 
 } // namespace EmojicodeCompiler

@@ -19,9 +19,8 @@
 namespace EmojicodeCompiler {
 
 class Function;
-
+class ASTType;
 class Package;
-
 class FunctionParser;
 
 class Documentation {
@@ -70,55 +69,60 @@ protected:
     TypeIdentifier parseTypeIdentifier();
 
     /// Reads a $type$ and fetches it
-    Type parseType(const TypeContext &typeContext);
+    std::unique_ptr<ASTType> parseType();
 
     /// Parses $generic-parameters$
     template<typename T, typename E>
-    void parseGenericParameters(Generic<T, E> *generic, const TypeContext &typeContext) {
-        while (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
-            bool rejectBoxing = stream_.consumeTokenIf(TokenType::Unsafe);
-            auto variable = stream_.consumeToken(TokenType::Variable);
-            auto constraint = parseType(typeContext);
-            generic->addGenericParameter(variable.value(), constraint, rejectBoxing, variable.position());
+    void parseGenericParameters(Generic <T, E> *generic) {
+        if (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
+            while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                bool rejectBoxing = stream_.consumeTokenIf(TokenType::Unsafe);
+                auto variable = stream_.consumeToken(TokenType::Variable);
+                generic->addGenericParameter(variable.value(), parseType(), rejectBoxing, variable.position());
+            }
+            stream_.consumeToken();
+        }
+    }
+
+    template <typename T>
+    void parseGenericArguments(T *t) {
+        if (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
+            while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
+                t->addGenericArgument(parseType());
+            }
+            stream_.consumeToken();
         }
     }
 
     /// Parses $parameters$ for a function if there are any specified.
     /// @param initializer If this is true, the method parses $init-parameters$ instead.
-    void parseParameters(Function *function, const TypeContext &typeContext, bool initializer = false);
+    void parseParameters(Function *function, bool initializer);
 
     /// Parses a $return-type$ for a function one is specified.
-    void parseReturnType(Function *function, const TypeContext &typeContext);
-
-    /// Parses $generic-arguments$ for a type.
-    void parseGenericArgumentsForType(Type *type, const TypeContext &typeContext, const SourcePosition &p);
-
-    /// Parses and validates the error type
-    Type parseErrorEnumType(const TypeContext &typeContext, const SourcePosition &p);
+    void parseReturnType(Function *function);
 
     std::unique_ptr<FunctionParser> factorFunctionParser(Package *pkg, TokenStream &stream, TypeContext context,
                                                          Function *function);
 
-    /// Validates whether the provided type can occur in a type as value declaration beginning with token.
-    /// Checks that type is a class, if the type of the token is TokenType::Class etc.
-    void validateTypeAsValueType(const Token &token, const Type &type, const TypeContext &typeContext);
-
 private:
     /// Parses a $multi-protocol$
-    Type parseMultiProtocol(const TypeContext &typeContext);
+    std::unique_ptr<ASTType> parseMultiProtocol();
 
     /// Parses a $callable-type$. The first token has already been consumed.
-    Type parseCallableType(const TypeContext &typeContext);
+    std::unique_ptr<ASTType> parseCallableType();
 
-    Type parseGenericVariable(const TypeContext &typeContext);
+    std::unique_ptr<ASTType> parseGenericVariable();
 
-    Type parseErrorType(bool optional, const TypeContext &typeContext);
+    std::unique_ptr<ASTType> parseErrorType(bool optional);
 
     /// Parses a $type-main$
-    Type parseTypeMain(const TypeContext &typeContext);
+    std::unique_ptr<ASTType> parseTypeMain();
 
-    Type parseTypeAsValueType(const TypeContext &typeContext);
+    std::unique_ptr<ASTType> parseTypeAsValueType();
+
     Token parseTypeEmoji() const;
+
+    std::unique_ptr<ASTType> paresTypeId();
 };
 
 }  // namespace EmojicodeCompiler

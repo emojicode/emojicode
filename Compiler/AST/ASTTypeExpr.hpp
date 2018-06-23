@@ -41,19 +41,19 @@ private:
 
 class ASTStaticType : public ASTTypeExpr {
 public:
-    ASTStaticType(Type type, const SourcePosition &p)
+    ASTStaticType(std::unique_ptr<ASTType> type, const SourcePosition &p)
             : ASTTypeExpr(p), type_(std::move(type)) {}
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value *generate(FunctionCodeGenerator *fg) const override;
     void toCode(Prettyprinter &pretty) const override;
 protected:
-    Type type_;
+    std::unique_ptr<ASTType> type_;
 };
 
 class ASTInferType final : public ASTStaticType {
 public:
-    explicit ASTInferType(const SourcePosition &p) : ASTStaticType(Type::noReturn(), p) {}
+    explicit ASTInferType(const SourcePosition &p) : ASTStaticType(nullptr, p) {}
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(Prettyprinter &pretty) const override;

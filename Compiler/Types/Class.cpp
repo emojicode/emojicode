@@ -7,6 +7,7 @@
 //
 
 #include "Utils/StringUtils.hpp"
+#include "Package/Package.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
 #include "Class.hpp"
 #include "Compiler.hpp"
@@ -24,9 +25,60 @@ Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32
     instanceScope() = Scope(1);  // reassign a scoper with one offset for the pointer to the class meta
 }
 
+std::vector<Type> Class::superGenericArguments() const {
+    if (superType_ != nullptr && superType_->wasAnalysed()) {
+        return superType_->type().genericArguments();
+    }
+    return std::vector<Type>();
+}
+
+void Class::analyseSuperType() {
+    if (superType() == nullptr) {
+        return;
+    }
+
+    auto classType = Type(this);
+    auto &type = superType()->analyseType(TypeContext(classType));
+
+    if (type.type() != TypeType::Class) {
+        throw CompilerError(superType()->position(), "The superclass must be a class.");
+    }
+
+    if (type.klass()->superType() != nullptr && !type.klass()->superType()->wasAnalysed()) {
+        type.klass()->analyseSuperType();
+    }
+
+    if (type.klass()->final()) {
+        package()->compiler()->error(CompilerError(superType()->position(), type.toString(TypeContext(classType)),
+                                                  " can’t be used as superclass as it was marked with 🔏."));
+    }
+    type.klass()->setHasSubclass();
+
+    std::vector<std::u32string> missing;
+    std::set_difference(type.klass()->requiredInitializers_.begin(), type.klass()->requiredInitializers_.end(),
+                        requiredInitializers_.begin(), requiredInitializers_.end(), std::back_inserter(missing));
+    for (auto &name : missing) {
+        package()->compiler()->error(CompilerError(position(), "Required initializer ",
+                                                   utf8(name), " was not implemented."));
+    }
+
+    offsetIndicesBy(type.genericArguments().size());
+    for (size_t i = type.typeDefinition()->superGenericArguments().size(); i < type.genericArguments().size(); i++) {
+        if (type.genericArguments()[i].type() == TypeType::GenericVariable) {
+            auto newIndex = type.genericArguments()[i].genericVariableIndex() + type.genericArguments().size();
+            type.setGenericArgument(i, Type(newIndex, this));
+        }
+        else if (type.genericArguments()[i].type() == TypeType::Box &&
+                 type.genericArguments()[i].unboxedType() == TypeType::GenericVariable) {
+            auto newIndex = type.genericArguments()[i].unboxed().genericVariableIndex() + type.genericArguments().size();
+            type.setGenericArgument(i, Type(newIndex, this).boxedFor(type.genericArguments()[i].boxedFor()));
+        }
+    }
+}
+
 void Class::inherit(SemanticAnalyser *analyser) {
-    if (superclass() == nullptr) {
-        analyser->declareInstanceVariables(this);
+    if (superType() == nullptr) {
+        analyser->declareInstanceVariables(Type(this));
         return;
     }
 
@@ -37,7 +89,7 @@ void Class::inherit(SemanticAnalyser *analyser) {
     instanceScope() = superclass()->instanceScope();
     instanceScope().markInherited();
 
-    analyser->declareInstanceVariables(this);
+    analyser->declareInstanceVariables(Type(this));
 
     Type classType = Type(this);
     instanceVariablesMut().insert(instanceVariables().begin(), superclass()->instanceVariables().begin(),
@@ -45,12 +97,12 @@ void Class::inherit(SemanticAnalyser *analyser) {
 
     protocols_.reserve(superclass()->protocols().size());
     for (auto &protocol : superclass()->protocols()) {
-        auto find = std::find_if(protocols_.begin(), protocols_.end(), [&classType, &protocol](const Type &a) {
-            return a.identicalTo(protocol, TypeContext(classType), nullptr);
+        auto find = std::find_if(protocols_.begin(), protocols_.end(), [&classType, &protocol](auto &a) {
+            return a->type().identicalTo(protocol->type(), TypeContext(classType), nullptr);
         });
         if (find != protocols_.end()) {
             analyser->compiler()->error(CompilerError(position(), "Superclass already declared conformance to ",
-                                                      protocol.toString(TypeContext(classType)), "."));
+                                                      protocol->type().toString(TypeContext(classType)), "."));
         }
         protocols_.emplace_back(protocol);
     }

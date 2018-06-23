@@ -12,6 +12,7 @@
 #include "Functions/Initializer.hpp"
 #include "Types/Enum.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "Emojis.h"
 
 namespace EmojicodeCompiler {
 

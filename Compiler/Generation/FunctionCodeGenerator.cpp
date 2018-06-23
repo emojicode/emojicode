@@ -41,10 +41,10 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
         llvmArg.setName("this");
         addParamAttrs(fn_->typeContext().calleeType(), llvmArg);
     }
-    for (auto arg : fn_->parameters()) {
+    for (auto &arg : fn_->parameters()) {
         auto &llvmArg = *(it++);
         scoper_.getVariable(i++) = LocalVariable(false, &llvmArg);
-        addParamAttrs(arg.type, llvmArg);
+        addParamAttrs(arg.type->type(), llvmArg);
         llvmArg.setName(utf8(arg.name));
     }
 }

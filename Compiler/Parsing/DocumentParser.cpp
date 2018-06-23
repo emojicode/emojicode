@@ -10,9 +10,6 @@
 #include "FunctionParser.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
-#include "Package/Package.hpp"
-#include "ProtocolTypeBodyParser.hpp"
-#include "TypeBodyParser.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
@@ -115,14 +112,10 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
     }
 
     auto function = package_->add(std::make_unique<Function>(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public,
-                                                             false, Type::noReturn(), package_, p, false,
+                                                             false, nullptr, package_, p, false,
                                                              documentation.get(), false, false, true, false,
                                                              FunctionType::Function));
-    parseReturnType(function, TypeContext());
-    if (function->returnType().type() != TypeType::NoReturn &&
-        !function->returnType().compatibleTo(Type(package_->compiler()->sInteger), TypeContext())) {
-        package_->compiler()->error(CompilerError(p, "🏁 must either have no return or return 🔢."));
-    }
+    parseReturnType(function);
     stream_.consumeToken(TokenType::BlockBegin);
 
     auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
@@ -165,14 +158,13 @@ void DocumentParser::parseExtension(const Documentation &documentation, const So
     Type type = package_->getRawType(parseTypeIdentifier());
 
     auto extension = package_->add(std::make_unique<Extension>(type, package_, p, documentation.get()));
-    Type extendedType = Type(extension);
 
     switch (type.type()) {
         case TypeType::Class:
-            ClassTypeBodyParser(extendedType, package_, stream_, interface_, std::set<std::u32string>()).parse();
+            TypeBodyParser<Class>(extension->extendedType().klass(), package_, stream_, interface_).parse();
             break;
         case TypeType::ValueType:
-            ValueTypeBodyParser(extendedType, package_, stream_, interface_).parse();
+            TypeBodyParser<ValueType>(extension->extendedType().valueType(), package_, stream_, interface_).parse();
             break;
         default:
             throw CompilerError(p, "Only classes and value types are extendable.");
@@ -184,11 +176,9 @@ void DocumentParser::parseProtocol(const std::u32string &documentation, const To
     auto protocol = package_->add(std::make_unique<Protocol>(parsedTypeName.name, package_,
                                                              theToken.position(), documentation, exported));
 
-    parseGenericParameters(protocol, TypeContext(Type(protocol)));
+    parseGenericParameters(protocol);
 
-    auto protocolType = Type(protocol);
-    package_->offerType(protocolType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    ProtocolTypeBodyParser(protocolType, package_, stream_, interface_).parse();
+    offerAndParseBody(protocol, parsedTypeName, theToken.position());
 }
 
 void DocumentParser::parseEnum(const std::u32string &documentation, const Token &theToken, bool exported) {
@@ -197,9 +187,7 @@ void DocumentParser::parseEnum(const std::u32string &documentation, const Token 
     Enum *enumeration = enumUniq.get();
     package_->add(std::move(enumUniq));
 
-    auto type = Type(enumeration);
-    package_->offerType(type, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    EnumTypeBodyParser(type, package_, stream_, interface_).parse();
+    offerAndParseBody(enumeration, parsedTypeName, theToken.position());
 }
 
 void DocumentParser::parseClass(const std::u32string &documentation, const Token &theToken, bool exported, bool final,
@@ -209,28 +197,13 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
     auto eclass = package_->add(std::make_unique<Class>(parsedTypeName.name, package_, theToken.position(),
                                                         documentation, exported, final, foreign));
 
-    parseGenericParameters(eclass, TypeContext(Type(eclass)));
+    parseGenericParameters(eclass);
 
     if (!stream_.nextTokenIs(TokenType::BlockBegin)) {
-        auto classType = Type(eclass);  // New Type due to generic arguments now (partly) available.
-
-        Type type = parseType(TypeContext(classType));
-        if (type.type() != TypeType::Class) {
-            throw CompilerError(parsedTypeName.position, "The superclass must be a class.");
-        }
-        if (type.klass()->final()) {
-            package_->compiler()->error(CompilerError(parsedTypeName.position, type.toString(TypeContext(classType)),
-                                                 " can’t be used as superclass as it was marked with 🔏."));
-        }
-        eclass->setSuperType(type);
-        type.klass()->setHasSubclass();
+        eclass->setSuperType(parseType());
     }
 
-    auto classType = Type(eclass);  // New Type due to generic arguments now available.
-    package_->offerType(classType, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-
-    auto requiredInits = eclass->superclass() != nullptr ? eclass->superclass()->requiredInitializers() : std::set<std::u32string>();
-    ClassTypeBodyParser(classType, package_, stream_, interface_, requiredInits).parse();
+    offerAndParseBody(eclass, parsedTypeName, theToken.position());
 }
 
 void DocumentParser::parseValueType(const std::u32string &documentation, const Token &theToken, bool exported) {
@@ -243,11 +216,8 @@ void DocumentParser::parseValueType(const std::u32string &documentation, const T
         valueType->makePrimitive();
     }
 
-    parseGenericParameters(valueType, TypeContext(Type(valueType)));
-
-    auto valueTypeContent = Type(valueType);
-    package_->offerType(valueTypeContent, parsedTypeName.name, parsedTypeName.ns, exported, theToken.position());
-    ValueTypeBodyParser(valueTypeContent, package_, stream_, interface_).parse();
+    parseGenericParameters(valueType);
+    offerAndParseBody(valueType, parsedTypeName, theToken.position());
 }
 
 }  // namespace EmojicodeCompiler

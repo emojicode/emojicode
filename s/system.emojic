@@ -9,7 +9,7 @@
   💭   Returns a list of the arguments passed to the programm. Calling this method
   💭   is rather expensive.
   💭 📗
-  💭 🐇❗️ 🎞 ➡️ 🍨🐚🔡 📻 🔤sSystemArgs🔤
+  💭 🐇❗️ 🎞 ➡️ 🍨🐚🔡🍆 📻 🔤sSystemArgs🔤
 
   📗
     Gets an environment variable by its name. If the variable cannot be found
@@ -37,7 +37,7 @@
   🐇❗️ 🕰 ➡️ 🔢 📻 🔤sSystemUnixTimestamp🔤
 
   📗
-    Panic. Aborts the program with the provided message. 
+    Panic. Aborts the program with the provided message.
 
     >!N Only use this function when the program hits upon an error so serious
     >!N that recovery is impossible.

@@ -18,6 +18,7 @@
 #include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
+#include "Emojis.h"
 #include <algorithm>
 #include <cstdio>
 #include <iostream>
@@ -33,14 +34,14 @@ void Prettyprinter::printRecordings(const std::vector<std::unique_ptr<RecordingP
 void Prettyprinter::print() {
     auto first = true;
     for (auto &file : package_->files()) {
-        stream_ = std::fstream(filePath(file.path_), std::ios_base::out);
+        stream_ = std::fstream(filePath(file.path_), std::ios_base::out); // .basic_ios::rdbuf(std::cout.rdbuf()); 
 
         printRecordings(file.recordings_);
 
         if (first) {
             first = false;
             stream_ << "🏁 ";
-            if (package_->startFlagFunction()->returnType().type() != TypeType::NoReturn) {
+            if (package_->startFlagFunction()->returnType() != nullptr) {
                 printReturnType(package_->startFlagFunction());
                 stream_ << " ";
             }
@@ -103,9 +104,10 @@ void Prettyprinter::printArguments(Function *function) {
 }
 
 void Prettyprinter::printReturnType(Function *function) {
-    if (function->returnType().type() != TypeType::NoReturn) {
-        *this << "➡️ " << function->returnType();
+    if (function->returnType() == nullptr) {
+        return;
     }
+    *this << "➡️ " << function->returnType();
 }
 
 void Prettyprinter::printDocumentation(const std::u32string &doc) {
@@ -182,9 +184,8 @@ void Prettyprinter::printTypeDefName(const Type &type) {
     printGenericParameters(typeDef);
 
     if (auto klass = type.klass()) {
-        if (klass->superclass() != nullptr && type.type() != TypeType::Extension) {
-            print(klass->superType(), TypeContext(type));
-            stream_ << " ";
+        if (klass->superType() != nullptr && type.type() != TypeType::Extension) {
+            thisStream() << klass->superType() << " ";
         }
     }
     if (auto valueType = type.valueType()) {
@@ -208,18 +209,14 @@ void Prettyprinter::printMethodsAndInitializers(TypeDefinition *typeDef) {
 
 void Prettyprinter::printProtocolConformances(TypeDefinition *typeDef, const TypeContext &typeContext) {
     for (auto &protocol : typeDef->protocols()) {
-        indent() << "🐊 ";
-        print(protocol, typeContext);
-        stream_ << "\n";
+        indent() << "🐊 " << protocol << "\n";
     }
     offerNewLineUnlessEmpty(typeDef->protocols());
 }
 
 void Prettyprinter::printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext) {
     for (auto &ivar : typeDef->instanceVariables()) {
-        indent() << "🖍🆕 " << utf8(ivar.name) << " ";
-        print(ivar.type, typeContext);
-        stream_ << "\n";
+        indent() << "🖍🆕 " << utf8(ivar.name) << " " << ivar.type << "\n";
     }
     offerNewLineUnlessEmpty(typeDef->instanceVariables());
 }
@@ -250,7 +247,7 @@ void Prettyprinter::printFunctionAttributes(Function *function, bool noMutate) {
     if (function->unsafe()) {
         stream_ << "☣️ ";
     }
-    if (function->owningType().type() == TypeType::ValueType && function->mutating() && !noMutate) {
+    if (function->owner()->type().type() == TypeType::ValueType && function->mutating() && !noMutate) {
         stream_ << "🖍 ";
     }
 }
@@ -298,12 +295,10 @@ void Prettyprinter::print(const char *key, Function *function, bool body, bool n
     if (auto initializer = dynamic_cast<Initializer *>(function)) {
         stream_ << key;
         if (initializer->name().front() != E_NEW_SIGN) {
-            stream_ << " " << utf8(function->name()) << " ";
+            thisStream() << " " << utf8(function->name()) << " ";
         }
         if (initializer->errorProne()) {
-            stream_ << "🚨";
-            print(initializer->errorType(), typeContext_);
-            stream_ << " ";
+            thisStream() << "🚨" << initializer->errorType() << " ";
         }
     }
     else {

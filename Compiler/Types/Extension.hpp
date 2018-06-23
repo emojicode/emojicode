@@ -19,6 +19,8 @@ public:
     : TypeDefinition(extendedType.typeDefinition()->name(), pkg, std::move(p), documentation, false),
     extendedType_(std::move(extendedType)) {}
 
+    Type type() override { return Type(this); }
+
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 
     void addInstanceVariable(const InstanceVariableDeclaration &declaration) override {

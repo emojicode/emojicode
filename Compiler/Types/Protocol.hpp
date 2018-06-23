@@ -19,6 +19,8 @@ class Protocol : public TypeDefinition {
 public:
     Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string, bool exported);
 
+    Type type() override { return Type(this); }
+
     bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
     }

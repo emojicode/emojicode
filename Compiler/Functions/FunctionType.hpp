@@ -11,6 +11,8 @@
 
 namespace EmojicodeCompiler {
 
+class Function;
+
 enum class FunctionType {
     ObjectMethod,
     ObjectInitializer,

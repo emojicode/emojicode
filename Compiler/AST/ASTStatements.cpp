@@ -39,7 +39,7 @@ void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {
 void ASTReturn::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
 
-    if (analyser->function()->returnType().type() == TypeType::NoReturn) {
+    if (analyser->function()->returnType()->type().type() == TypeType::NoReturn) {
         assert(value_ == nullptr);
         return;
     }
@@ -52,7 +52,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
         throw CompilerError(position(), "↩️ cannot be used inside an initializer.");
     }
 
-    analyser->expectType(analyser->function()->returnType(), &value_);
+    analyser->expectType(analyser->function()->returnType()->type(), &value_);
 }
 
 void ASTRaise::analyse(FunctionAnalyser *analyser) {
@@ -62,17 +62,17 @@ void ASTRaise::analyse(FunctionAnalyser *analyser) {
         if (!initializer->errorProne()) {
             throw CompilerError(position(), "Initializer is not declared error-prone.");
         }
-        analyser->expectType(initializer->errorType(), &value_);
+        analyser->expectType(initializer->errorType()->type(), &value_);
         return;
     }
 
-    if (analyser->function()->returnType().unboxedType() != TypeType::Error) {
+    if (analyser->function()->returnType()->type().unboxedType() != TypeType::Error) {
         throw CompilerError(position(), "Function is not declared to return a 🚨.");
     }
 
-    boxed_ = analyser->function()->returnType().storageType() == StorageType::Box;
+    boxed_ = analyser->function()->returnType()->type().storageType() == StorageType::Box;
 
-    analyser->expectType(analyser->function()->returnType().errorEnum(), &value_);
+    analyser->expectType(analyser->function()->returnType()->type().errorEnum(), &value_);
 }
 
 }  // namespace EmojicodeCompiler

@@ -25,7 +25,7 @@ llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, 
     switch (callType_) {
         case CallType::StaticContextfreeDispatch:
         case CallType::StaticDispatch: {
-            auto llvmFn = function->reificationFor(astArgs.genericArguments()).function;
+            auto llvmFn = function->reificationFor(astArgs.genericArgumentTypes()).function;
             llvm::Type *castTo = nullptr;
             if (!args.empty() && args.front()->getType() != llvmFn->args().begin()->getType()) {
                 if (function->functionType() == FunctionType::ObjectInitializer) {
@@ -39,13 +39,13 @@ llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, 
         case CallType::DynamicDispatch:
         case CallType::DynamicDispatchOnType:
             assert(type.type() == TypeType::Class);
-            return createDynamicDispatch(function, args, astArgs.genericArguments());
+            return createDynamicDispatch(function, args, astArgs.genericArgumentTypes());
         case CallType::DynamicProtocolDispatch: {
             assert(type.type() == TypeType::Box && type.boxedFor().type() == TypeType::Protocol);
             auto conformanceType = fg()->typeHelper().protocolConformance();
             auto conformancePtr = fg()->builder().CreateBitCast(fg()->getMetaTypePtr(args.front()),
                                                                 conformanceType->getPointerTo()->getPointerTo());
-            return createDynamicProtocolDispatch(function, args, astArgs.genericArguments(), conformancePtr);
+            return createDynamicProtocolDispatch(function, args, astArgs.genericArgumentTypes(), conformancePtr);
         }
         case CallType::None:
             throw std::domain_error("CallType::None is not a valid call type");
@@ -77,7 +77,7 @@ llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const
     auto mpl = fg()->builder().CreateLoad(mp);
     
     auto conformancePtr = fg()->builder().CreateConstGEP2_32(mpt, mpl, 0, multiprotocolN);
-    return createDynamicProtocolDispatch(function, std::move(argsv), args.genericArguments(), conformancePtr);
+    return createDynamicProtocolDispatch(function, std::move(argsv), args.genericArgumentTypes(), conformancePtr);
 }
 
 llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llvm::Value *virtualTable,

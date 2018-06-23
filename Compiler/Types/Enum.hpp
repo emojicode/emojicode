@@ -23,6 +23,8 @@ public:
             makePrimitive();
     }
 
+    Type type() override { return Type(this); }
+
     std::pair<bool, long> getValueFor(const std::u32string &c) const;
     void addValueFor(const std::u32string &c, const SourcePosition &position, std::u32string documentation);
 
