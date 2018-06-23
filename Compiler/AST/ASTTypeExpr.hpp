@@ -34,7 +34,7 @@ public:
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) final;
     Value *generate(FunctionCodeGenerator *fg) const final;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> expr_;
 };
@@ -46,7 +46,7 @@ public:
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value *generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 protected:
     std::unique_ptr<ASTType> type_;
 };
@@ -56,13 +56,13 @@ public:
     explicit ASTInferType(const SourcePosition &p) : ASTStaticType(nullptr, p) {}
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 };
 
 class ASTThisType final : public ASTTypeFromExpr {
 public:
     explicit ASTThisType(const SourcePosition &p);
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 };
 
 }  // namespace EmojicodeCompiler

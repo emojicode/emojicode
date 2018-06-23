@@ -28,7 +28,7 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     /// @pre setDestination() must have been used to set a destination if initType() == InitType::ValueType
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 
     /// Sets the destination for a value type inititalization.
     ///

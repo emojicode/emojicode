@@ -27,7 +27,7 @@ public:
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const final;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     std::unique_ptr<Function> closure_;
     Capture capture_;

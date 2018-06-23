@@ -10,7 +10,7 @@
 #include "Options.hpp"
 #include "Package/RecordingPackage.hpp"
 #include "PackageReporter.hpp"
-#include "Prettyprint/Prettyprinter.hpp"
+#include "Prettyprint/PrettyPrinter.hpp"
 #include <exception>
 #include <iostream>
 
@@ -32,7 +32,7 @@ bool start(const Options &options) {
     bool success = application.compile(options.prettyprint(), options.optimize(), options.printIr());
 
     if (options.prettyprint()) {
-        Prettyprinter(application.mainPackage()).print();
+        PrettyPrinter(application.mainPackage()).print();
     }
 
     if (options.shouldReport()) {

@@ -24,7 +24,7 @@ public:
     void setOptional(bool optional) { optional_ = optional; type_ = type_.optionalized(optional); }
     bool wasAnalysed() const { return package_ == nullptr; }
 
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 
     virtual ~ASTType() = default;
 protected:
@@ -32,7 +32,7 @@ protected:
     ASTType(Type type) : ASTNode(SourcePosition(0, 0, nullptr)), type_(type.applyMinimalBoxing()), package_(nullptr) {}
     virtual Type getType(const TypeContext &typeContext) const = 0;
     Package* package() const { return package_; }
-    virtual void toCodeType(Prettyprinter &pretty) const = 0;
+    virtual void toCodeType(PrettyStream &pretty) const = 0;
 private:
     Type type_ = Type::noReturn();
     bool optional_ = false;
@@ -57,7 +57,7 @@ public:
 
     void addGenericArgument(std::unique_ptr<ASTType> type) { genericArgs_.emplace_back(std::move(type)); }
 
-    void toCodeType(Prettyprinter &pretty) const override;
+    void toCodeType(PrettyStream &pretty) const override;
     Type getType(const TypeContext &typeContext) const override;
 private:
     std::u32string name_;
@@ -72,7 +72,7 @@ public:
                     SourcePosition p, Package *package)
             : ASTType(std::move(p), package), return_(std::move(returnType)), params_(std::move(params)) {}
 
-    void toCodeType(Prettyprinter &pretty) const override;
+    void toCodeType(PrettyStream &pretty) const override;
     Type getType(const TypeContext &typeContext) const override;
 private:
     std::unique_ptr<ASTType> return_;
@@ -83,10 +83,10 @@ class ASTLiteralType : public ASTType {
 public:
     explicit ASTLiteralType(Type type) : ASTType(std::move(type)) {}
 
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
     Type getType(const TypeContext &typeContext) const override { return Type::noReturn(); }
 protected:
-    void toCodeType(Prettyprinter &pretty) const override {}
+    void toCodeType(PrettyStream &pretty) const override {}
 };
 
 class ASTMultiProtocol : public ASTType {
@@ -94,7 +94,7 @@ public:
     ASTMultiProtocol(std::vector<std::unique_ptr<ASTType>> protocols, SourcePosition p, Package *package)
             : ASTType(std::move(p), package), protocols_(std::move(protocols)) {}
 
-    void toCodeType(Prettyprinter &pretty) const override;
+    void toCodeType(PrettyStream &pretty) const override;
     Type getType(const TypeContext &typeContext) const override;
 private:
     std::vector<std::unique_ptr<ASTType>> protocols_;
@@ -105,7 +105,7 @@ public:
     ASTTypeValueType(std::unique_ptr<ASTType> type, TokenType tokenType, SourcePosition p, Package *package)
             : ASTType(std::move(p), package), type_(std::move(type)), tokenType_(tokenType) {}
 
-    void toCodeType(Prettyprinter &pretty) const override;
+    void toCodeType(PrettyStream &pretty) const override;
     Type getType(const TypeContext &typeContext) const override;
 
     static void checkTypeValue(TokenType tokenType, const Type &type, const TypeContext &typeContext,
@@ -121,7 +121,7 @@ public:
     ASTGenericVariable(std::u32string name, SourcePosition p, Package *package)
             : ASTType(p, package), name_(std::move(name)) {}
 
-    void toCodeType(Prettyprinter &pretty) const override;
+    void toCodeType(PrettyStream &pretty) const override;
     Type getType(const TypeContext &typeContext) const override;
 private:
     std::u32string name_;
@@ -133,7 +133,7 @@ public:
                  Package *package)
             : ASTType(std::move(p), package), enum_(std::move(enumeration)), content_(std::move(type)) {}
 
-    void toCodeType(Prettyprinter &pretty) const override;
+    void toCodeType(PrettyStream &pretty) const override;
     Type getType(const TypeContext &typeContext) const override;
 private:
     std::unique_ptr<ASTType> enum_;

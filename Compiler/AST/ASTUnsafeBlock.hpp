@@ -15,7 +15,7 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *fg) const override { block_.generate(fg); }
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     ASTBlock block_;
 };

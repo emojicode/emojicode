@@ -13,7 +13,7 @@
 #include "Package/RecordingPackage.hpp"
 #include "Parsing/AbstractParser.hpp"
 #include "Parsing/CompatibilityInfoProvider.hpp"
-#include "Prettyprint/Prettyprinter.hpp"
+#include "Prettyprint/PrettyPrinter.hpp"
 #include <llvm/Support/FileSystem.h>
 
 #include <utility>
@@ -43,7 +43,7 @@ bool Compiler::compile(bool parseOnly, bool optimize, bool printIr) {
         }
 
         if (!interfaceFile_.empty()) {
-            Prettyprinter(mainPackage_.get()).printInterface(interfaceFile_);
+            PrettyPrinter(mainPackage_.get()).printInterface(interfaceFile_);
         }
 
         analyse();

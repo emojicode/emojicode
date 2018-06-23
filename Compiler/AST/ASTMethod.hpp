@@ -64,7 +64,7 @@ public:
     ASTMethod(std::u32string name, std::shared_ptr<ASTExpr> callee, const ASTArguments &args, const SourcePosition &p)
     : ASTMethodable(p, args), name_(std::move(name)), callee_(std::move(callee)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 private:
     std::u32string name_;

@@ -44,7 +44,7 @@ public:
         : ASTExpr(p), type_(std::move(type)), tokenType_(tokenType) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     std::unique_ptr<ASTType> type_;
     TokenType tokenType_;
@@ -55,7 +55,7 @@ public:
     ASTSizeOf(std::unique_ptr<ASTType> type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     std::unique_ptr<ASTType> type_;
 };
@@ -71,7 +71,7 @@ public:
     void addArguments(const std::shared_ptr<ASTExpr> &arg) { arguments_.emplace_back(arg); }
     std::vector<std::shared_ptr<ASTExpr>>& parameters() { return arguments_; }
     const std::vector<std::shared_ptr<ASTExpr>>& parameters() const { return arguments_; }
-    void toCode(Prettyprinter &pretty) const;
+    void toCode(PrettyStream &pretty) const;
     bool isImperative() const { return imperative_; }
     void setImperative(bool imperative) { imperative_ = imperative; }
 
@@ -91,7 +91,7 @@ public:
             const SourcePosition &p) : ASTExpr(p), value_(std::move(value)), typeExpr_(std::move(type)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     enum class CastType {
         ClassDowncast, ToClass, ToProtocol, ToValueType,
@@ -110,7 +110,7 @@ public:
                     const SourcePosition &p) : ASTExpr(p), callable_(std::move(value)), args_(std::move(args)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> callable_;
     ASTArguments args_;
@@ -122,7 +122,7 @@ public:
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     void analyseSuperInit(FunctionAnalyser *analyser);
     std::u32string name_;
@@ -141,7 +141,7 @@ public:
                              const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     std::u32string varName_;
     std::shared_ptr<ASTExpr> expr_;

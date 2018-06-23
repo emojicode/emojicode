@@ -24,7 +24,7 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     std::u32string varName_;
     std::unique_ptr<ASTType> type_;
@@ -59,7 +59,7 @@ public:
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     bool reference_ = false;
 };
@@ -88,7 +88,7 @@ public:
                           const SourcePosition &p) : ASTVariableInit(e, p, std::move(name), false) {}
     void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const final;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 
 protected:
     ASTVariableAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,
@@ -100,7 +100,7 @@ public:
     ASTVariableDeclareAndAssign(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                                 const SourcePosition &p) : ASTVariableAssignment(std::move(name), e, p, true) {}
     void analyse(FunctionAnalyser *analyser) override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 };
 
 /// Inserted by the compiler to initialize an instance variable as specified by a baby bottle initializer.
@@ -108,7 +108,7 @@ class ASTInstanceVariableInitialization final : public ASTVariableAssignment {
 public:
     using ASTVariableAssignment::ASTVariableAssignment;
     void analyse(FunctionAnalyser *analyser) override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTConstantVariable final : public ASTVariableInit {
@@ -118,7 +118,7 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 };
 
 enum class OperatorType;
@@ -127,7 +127,7 @@ class ASTOperatorAssignment final : public ASTVariableAssignment {
 public:
     ASTOperatorAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e, const SourcePosition &p,
                           OperatorType opType);
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 };
 
 }  // namespace EmojicodeCompiler

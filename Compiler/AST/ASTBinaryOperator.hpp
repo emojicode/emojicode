@@ -26,7 +26,7 @@ public:
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     
     struct BuiltIn {
@@ -35,7 +35,7 @@ private:
     };
 
     std::pair<bool, BuiltIn> builtInPrimitiveOperator(FunctionAnalyser *analyser, const Type &type);
-    void printBinaryOperand(int precedence, const std::shared_ptr<ASTExpr> &expr, Prettyprinter &pretty) const;
+    void printBinaryOperand(int precedence, const std::shared_ptr<ASTExpr> &expr, PrettyStream &pretty) const;
     Type analyseIsNoValue(FunctionAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
                               BuiltInType builtInType);
 

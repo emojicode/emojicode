@@ -28,7 +28,7 @@ class ASTIsError final : public ASTUnary {
 public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 };
 
 class ASTUnwrap final : public ASTUnary {
@@ -36,7 +36,7 @@ class ASTUnwrap final : public ASTUnary {
 public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     bool error_ = false;
 

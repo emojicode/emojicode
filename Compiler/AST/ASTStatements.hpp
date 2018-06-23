@@ -47,9 +47,9 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
     /// Prints the code that goes between the block delimiters.
-    void innerToCode(Prettyprinter &pretty) const;
+    void innerToCode(PrettyStream &pretty) const;
     bool returnedCertainly() const { return returnedCertainly_; }
 
     const std::vector<std::unique_ptr<ASTStatement>>& nodes() const { return stmts_; }
@@ -66,7 +66,7 @@ public:
     void generate(FunctionCodeGenerator *fg) const override {
         expr_->generate(fg);
     }
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 
     ASTExprStatement(std::shared_ptr<ASTExpr> expr, const SourcePosition &p) : ASTStatement(p), expr_(std::move(expr)) {}
 private:
@@ -79,7 +79,7 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 protected:
     std::shared_ptr<ASTExpr> value_;
 };
@@ -90,7 +90,7 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     bool boxed_ = false;
 };

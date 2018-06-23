@@ -23,7 +23,7 @@ public:
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 
     bool hasElse() const { return conditions_.size() < blocks_.size(); }
 private:
@@ -38,7 +38,7 @@ public:
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 
 protected:
     std::shared_ptr<ASTExpr> condition_;
@@ -53,7 +53,7 @@ public:
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 
 private:
     std::shared_ptr<ASTExpr> iteratee_;
@@ -71,7 +71,7 @@ public:
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
-    void toCode(Prettyprinter &pretty) const override;
+    void toCode(PrettyStream &pretty) const override;
 private:
     std::shared_ptr<ASTExpr> value_;
     bool valueIsBoxed_ = false;

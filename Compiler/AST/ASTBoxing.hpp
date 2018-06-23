@@ -55,7 +55,7 @@ public:
 
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 private:
     Type toType_;
 };
@@ -64,14 +64,14 @@ class ASTBoxToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTBoxToSimpleError final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 
 };
 
@@ -79,14 +79,14 @@ class ASTSimpleToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTSimpleToSimpleError final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value *generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTToBox : public ASTBoxing {
@@ -100,35 +100,35 @@ class ASTSimpleOptionalToBox final : public ASTToBox {
     using ASTToBox::ASTToBox;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTSimpleErrorToBox final : public ASTToBox {
     using ASTToBox::ASTToBox;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTSimpleToBox final : public ASTToBox {
     using ASTToBox::ASTToBox;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTBoxToSimple final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTDereference final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 class ASTCallableBox final : public ASTBoxing {
@@ -138,7 +138,7 @@ public:
 
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 private:
     Function *boxingLayer_;
 };
@@ -147,7 +147,7 @@ class ASTStoreTemporarily final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(Prettyprinter &pretty) const override {}
+    void toCode(PrettyStream &pretty) const override {}
 };
 
 } // namespace EmojicodeCompiler
