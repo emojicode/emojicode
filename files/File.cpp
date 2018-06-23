@@ -8,11 +8,22 @@
 #include <fstream>
 #include <ios>
 #include <iostream>
+#include <cerrno>
 
 using s::String;
 using s::Data;
 
 namespace files {
+
+runtime::Enum errorEnumFromErrno();
+
+template <typename T, typename F>
+runtime::SimpleError<T> returnErrorIfFailed(const T &value, const F &file) {
+    if (file.fail()) {
+        return { runtime::MakeError, errorEnumFromErrno() };
+    }
+    return value;
+}
 
 class File : public runtime::Object<File> {
 public:
@@ -22,13 +33,13 @@ public:
 extern "C" runtime::SimpleError<File*> filesFileNewWriting(String *path) {
     auto file = File::allocateAndInitType();
     file->file_ = std::fstream(path->cString(), std::ios_base::out);
-    return file;
+    return returnErrorIfFailed(file, file->file_);
 }
 
 extern "C" runtime::SimpleError<File*> filesFileNewReading(String *path) {
     auto file = File::allocateAndInitType();
     file->file_ = std::fstream(path->cString(), std::ios_base::in);
-    return file;
+    return returnErrorIfFailed(file, file->file_);
 }
 
 extern "C" void filesFileWrite(File *file, Data *data) {
@@ -50,7 +61,7 @@ extern "C" runtime::SimpleError<Data*> filesFileReadBytes(File *file, runtime::I
     auto data = Data::allocateAndInitType();
     data->data = bytes;
     data->count = file->file_.gcount();
-    return data;
+    return returnErrorIfFailed(data, file->file_);
 }
 
 extern "C" void filesFileSeekToEnd(File *file) {
@@ -72,12 +83,13 @@ extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassType, Str
     auto data = Data::allocateAndInitType();
     data->data = bytes;
     data->count = size;
-    return data;
+    return returnErrorIfFailed(data, file);
 }
 
 extern "C" runtime::SimpleOptional<runtime::Enum> filesFileWriteToFile(runtime::ClassType, String *path, Data *data) {
     auto file = std::ofstream(path->cString(), std::ios_base::out);
     file.write(reinterpret_cast<char *>(data->data), data->count);
+    if (file.fail()) return errorEnumFromErrno();
     return runtime::NoValue;
 }
 
