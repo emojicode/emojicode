@@ -19,7 +19,7 @@ class ASTIf final : public ASTStatement {
 public:
     using ASTStatement::ASTStatement;
     void addCondition(const std::shared_ptr<ASTExpr> &ptr) { conditions_.emplace_back(ptr); }
-    void addBlock(const ASTBlock &ptr) { blocks_.emplace_back(ptr); }
+    void addBlock(ASTBlock ptr) { blocks_.emplace_back(std::move(ptr)); }
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;

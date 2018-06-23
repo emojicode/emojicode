@@ -11,9 +11,19 @@
 #include "Types/TypeContext.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeContext.hpp"
+#include "AST/ASTStatements.hpp"
 #include <llvm/IR/Function.h>
 
 namespace EmojicodeCompiler {
+
+Function::Function(std::u32string name, AccessLevel level, bool final, TypeDefinition *owner, Package *package,
+         SourcePosition p,
+         bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
+         bool unsafe, FunctionType type) :
+position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding),
+deprecated_(deprecated), imperative_(imperative), unsafe_(unsafe), mutating_(mutating), access_(level),
+owner_(owner), package_(package), documentation_(std::move(documentationToken)),
+functionType_(type) {}
 
 llvm::FunctionType* FunctionReification::functionType() {
     if (functionType_ != nullptr) {
@@ -32,6 +42,12 @@ TypeContext Function::typeContext() {
         type = Type(MakeTypeAsValue, type);
     }
     return TypeContext(type.applyMinimalBoxing(), this);
+}
+
+Function::~Function() = default;
+
+void Function::setAst(std::unique_ptr<ASTBlock> ast) {
+    ast_ = std::move(ast);
 }
 
 }  // namespace EmojicodeCompiler

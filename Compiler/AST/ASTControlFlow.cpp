@@ -93,17 +93,17 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
 
     auto getIterator = std::make_shared<ASTMethod>(std::u32string(1, E_DANGO), std::move(iteratee_),
                                                    ASTArguments(position()), position());
-    newBlock.appendNode(std::make_shared<ASTConstantVariable>(U"iterator", getIterator, position()));
+    newBlock.appendNode(std::make_unique<ASTConstantVariable>(U"iterator", getIterator, position()));
     auto getNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
                                                std::make_shared<ASTGetVariable>(U"iterator", position()),
                                                ASTArguments(position()), position());
-    block_.preprendNode(std::make_shared<ASTConstantVariable>(varName_, getNext, position()));
+    block_.preprendNode(std::make_unique<ASTConstantVariable>(varName_, getNext, position()));
 
     auto hasNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
                                                std::make_shared<ASTGetVariable>(U"iterator", position()),
                                                ASTArguments(position(), false), position());
-    newBlock.appendNode(std::make_shared<ASTRepeatWhile>(hasNext, std::move(block_), position()));
-    block_ = newBlock;
+    newBlock.appendNode(std::make_unique<ASTRepeatWhile>(hasNext, std::move(block_), position()));
+    block_ = std::move(newBlock);
     block_.analyse(analyser);
     analyser->scoper().popScope(analyser->compiler());
 }

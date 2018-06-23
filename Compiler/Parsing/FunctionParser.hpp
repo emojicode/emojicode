@@ -27,7 +27,7 @@ class FunctionParser : protected AbstractParser {
 public:
     FunctionParser(Package *pkg, TokenStream &stream, TypeContext context)
             : AbstractParser(pkg, stream), typeContext_(std::move(context)) {}
-    std::shared_ptr<ASTBlock> parse();
+    std::unique_ptr<ASTBlock> parse();
 protected:
     virtual void parseMainArguments(ASTArguments *arguments, const SourcePosition &position);
     virtual std::shared_ptr<ASTExpr> parseExprLeft(const Token &token, int precedence);
@@ -39,11 +39,11 @@ protected:
 private:
     TypeContext typeContext_;
 
-    std::shared_ptr<ASTStatement> parseStatement();
+    std::unique_ptr<ASTStatement> parseStatement();
     ASTBlock parseBlock();
 
-    std::shared_ptr<ASTStatement> parseIf(const SourcePosition &position);
-    std::shared_ptr<ASTStatement> parseErrorHandler(const SourcePosition &position);
+    std::unique_ptr<ASTStatement> parseIf(const SourcePosition &position);
+    std::unique_ptr<ASTStatement> parseErrorHandler(const SourcePosition &position);
 
     std::shared_ptr<ASTExpr> parseExprTokens(const Token &token, int precendence);
     std::shared_ptr<ASTExpr> parseExprIdentifier(const Token &token);
@@ -80,14 +80,14 @@ private:
     /// at statement level.
     void recover();
 
-    std::shared_ptr<ASTStatement> handleStatementToken(const Token &token);
+    std::unique_ptr<ASTStatement> handleStatementToken(const Token &token);
 
-    std::shared_ptr<ASTStatement> parseExprStatement(const Token &token);
+    std::unique_ptr<ASTStatement> parseExprStatement(const Token &token);
 
-    std::shared_ptr<ASTStatement> parseVariableDeclaration(const Token &token);
+    std::unique_ptr<ASTStatement> parseVariableDeclaration(const Token &token);
 
-    std::shared_ptr<ASTStatement> parseReturn(const Token &token);
-    std::shared_ptr<ASTStatement> parseAssignment(const std::shared_ptr<ASTExpr> &expr) const;
+    std::unique_ptr<ASTStatement> parseReturn(const Token &token);
+    std::unique_ptr<ASTStatement> parseAssignment(const std::shared_ptr<ASTExpr> &expr) const;
 };
 
 }  // namespace EmojicodeCompiler

@@ -37,7 +37,7 @@ void TypeBodyParser<TypeDef>::parseFunctionBody(Function *function) {
     stream_.consumeToken(TokenType::BlockBegin);
 
     auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
-    function->setAst(ast);
+    function->setAst(std::move(ast));
 }
 
 template <typename TypeDef>

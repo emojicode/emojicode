@@ -36,14 +36,14 @@ void buildBoxingThunkAst(Function *layer, const Function *destinationFunction) {
         call = std::make_shared<ASTMethod>(destinationFunction->name(), std::make_shared<ASTThis>(p), args, p);
     }
 
-    std::shared_ptr<ASTBlock> block = std::make_shared<ASTBlock>(p);
+    auto block = std::make_unique<ASTBlock>(p);
     if (layer->returnType()->type().type() == TypeType::NoReturn) {
-        block->appendNode(std::make_shared<ASTExprStatement>(call, p));
+        block->appendNode(std::make_unique<ASTExprStatement>(call, p));
     }
     else {
-        block->appendNode(std::make_shared<ASTReturn>(call, p));
+        block->appendNode(std::make_unique<ASTReturn>(call, p));
     }
-    layer->setAst(block);
+    layer->setAst(std::move(block));
 }
 
 std::unique_ptr<Function> makeBoxingThunk(std::u32string name, TypeDefinition *owner, Package *package,
@@ -109,9 +109,9 @@ std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer
     auto type = std::make_shared<ASTStaticType>(std::make_unique<ASTLiteralType>(init->owner()->type()),
                                                 init->position());
     auto initCall = std::make_shared<ASTInitialization>(init->name(), type, args, init->position());
-    std::shared_ptr<ASTBlock> block = std::make_shared<ASTBlock>(init->position());
-    block->appendNode(std::make_shared<ASTReturn>(initCall, init->position()));
-    function->setAst(block);
+    auto block = std::make_unique<ASTBlock>(init->position());
+    block->appendNode(std::make_unique<ASTReturn>(initCall, init->position()));
+    function->setAst(std::move(block));
     return function;
 }
 

@@ -57,11 +57,7 @@ public:
     Function(std::u32string name, AccessLevel level, bool final, TypeDefinition *owner, Package *package,
              SourcePosition p,
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
-             bool unsafe, FunctionType type) :
-            position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding),
-            deprecated_(deprecated), imperative_(imperative), unsafe_(unsafe), mutating_(mutating), access_(level),
-            owner_(owner), package_(package), documentation_(std::move(documentationToken)),
-            functionType_(type) {}
+             bool unsafe, FunctionType type);
 
     std::u32string name() const { return name_; }
 
@@ -129,19 +125,19 @@ public:
 
     FunctionType functionType() const { return functionType_; }
 
-    void setAst(const std::shared_ptr<ASTBlock> &ast) { ast_ = ast; }
-    const std::shared_ptr<ASTBlock>& ast() const { return ast_; }
+    void setAst(std::unique_ptr<ASTBlock> ast);
+    ASTBlock* ast() const { return ast_.get(); }
 
     size_t variableCount() const { return variableCount_; }
     void setVariableCount(size_t variableCount) { variableCount_ = variableCount; }
 
-    virtual ~Function() = default;
+    virtual ~Function();
 
 private:
     std::vector<Parameter> parameters_;
     std::unique_ptr<ASTType> returnType_;
 
-    std::shared_ptr<ASTBlock> ast_;
+    std::unique_ptr<ASTBlock> ast_;
     SourcePosition position_;
     std::u32string name_;
 

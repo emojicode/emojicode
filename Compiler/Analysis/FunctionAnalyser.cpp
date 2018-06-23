@@ -111,9 +111,9 @@ void FunctionAnalyser::analyse() {
             instanceVariable.initialize();
 
             auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
-            auto assign = std::make_shared<ASTInstanceVariableInitialization>(instanceVariable.name(),
+            auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
                                                                               getVar, initializer->position());
-            function()->ast()->preprendNode(assign);
+            function()->ast()->preprendNode(std::move(assign));
         }
     }
 
@@ -126,11 +126,11 @@ void FunctionAnalyser::analyse() {
     function_->setVariableCount(scoper_->variableIdCount());
 }
 
-void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
+void FunctionAnalyser::analyseReturn(ASTBlock *root) {
     if (function_ == function_->package()->startFlagFunction() && function_->returnType()->type() == Type::noReturn()) {
         function_->setReturnType(std::make_unique<ASTLiteralType>(integer()));
         auto value = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(0), std::u32string(), root->position());
-        root->appendNode(std::make_shared<ASTReturn>(value, root->position()));
+        root->appendNode(std::make_unique<ASTReturn>(value, root->position()));
     }
     else if (function_->functionType() == FunctionType::ObjectInitializer &&
             !pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
@@ -138,17 +138,17 @@ void FunctionAnalyser::analyseReturn(const std::shared_ptr<ASTBlock> &root) {
         auto thisNode = std::dynamic_pointer_cast<ASTExpr>(std::make_shared<ASTThis>(root->position()));
         comply(typeContext().calleeType(), TypeExpectation(initializer->constructedType(typeContext().calleeType())),
                &thisNode);
-        root->appendNode(std::make_shared<ASTReturn>(thisNode, root->position()));
+        root->appendNode(std::make_unique<ASTReturn>(thisNode, root->position()));
     }
     else if (function_->functionType() == FunctionType::ValueTypeInitializer) {
-        root->appendNode(std::make_shared<ASTReturn>(nullptr, root->position()));
+        root->appendNode(std::make_unique<ASTReturn>(nullptr, root->position()));
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
         if (function_->returnType()->type().type() != TypeType::NoReturn) {
             compiler()->error(CompilerError(function_->position(), "An explicit return is missing."));
         }
         else {
-            root->appendNode(std::make_shared<ASTReturn>(nullptr, root->position()));
+            root->appendNode(std::make_unique<ASTReturn>(nullptr, root->position()));
         }
     }
 }

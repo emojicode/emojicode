@@ -87,7 +87,7 @@ private:
     /// Issues a warning at the given position if the function is deprecated.
     void deprecatedWarning(Function *function, const SourcePosition &p) const;
 
-    void analyseReturn(const std::shared_ptr<ASTBlock> &);
+    void analyseReturn(ASTBlock *root);
     void analyseInitializationRequirements();
 
     /// Ensures that node has the required number of generic arguments for a call to function.

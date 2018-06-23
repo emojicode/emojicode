@@ -36,13 +36,13 @@ class ASTBlock final : public ASTStatement {
 public:
     explicit ASTBlock(const SourcePosition &p) : ASTStatement(p) {}
 
-    void appendNode(const std::shared_ptr<ASTStatement> &node) {
+    void appendNode(std::unique_ptr<ASTStatement> node) {
         assert(!returnedCertainly_);
-        stmts_.emplace_back(node);
+        stmts_.emplace_back(std::move(node));
     }
 
-    void preprendNode(const std::shared_ptr<ASTStatement> &node) {
-        stmts_.emplace(stmts_.begin(), node);
+    void preprendNode(std::unique_ptr<ASTStatement> node) {
+        stmts_.emplace(stmts_.begin(), std::move(node));
     }
 
     void analyse(FunctionAnalyser *analyser) override;
@@ -52,9 +52,9 @@ public:
     void innerToCode(Prettyprinter &pretty) const;
     bool returnedCertainly() const { return returnedCertainly_; }
 
-    const std::vector<std::shared_ptr<ASTStatement>>& nodes() const { return stmts_; }
+    const std::vector<std::unique_ptr<ASTStatement>>& nodes() const { return stmts_; }
 private:
-    std::vector<std::shared_ptr<ASTStatement>> stmts_;
+    std::vector<std::unique_ptr<ASTStatement>> stmts_;
     bool returnedCertainly_ = false;
     size_t stop_ = 0;
 };
