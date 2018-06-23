@@ -25,6 +25,7 @@ enum class TokenType {
     LineBreak,
     BlankLine,
     DocumentationComment,
+    PackageDocumentationComment,
     Integer,
     Double,
     BooleanTrue,

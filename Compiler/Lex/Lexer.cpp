@@ -144,6 +144,9 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
         case E_GREEN_TEXTBOOK:
             token->type_ = TokenType::DocumentationComment;
             return true;
+        case E_BLUE_TEXTBOOK:
+            token->type_ = TokenType::PackageDocumentationComment;
+            return true;
         case E_KEYCAP_10:
             token->type_ = TokenType::Symbol;
             return true;
@@ -187,6 +190,12 @@ Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *con
             return continueMultilineComment(token, constState);
         case TokenType::DocumentationComment:
             if (codePoint() == E_GREEN_TEXTBOOK) {
+                return TokenState::Ended;
+            }
+            token->value_.push_back(codePoint());
+            return TokenState::Continues;
+        case TokenType::PackageDocumentationComment:
+            if (codePoint() == E_BLUE_TEXTBOOK) {
                 return TokenState::Ended;
             }
             token->value_.push_back(codePoint());

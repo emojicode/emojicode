@@ -29,11 +29,7 @@ Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string in
           mainPackageName_(std::move(mainPackage)), packageSearchPaths_(std::move(pkgSearchPaths)),
           linker_(std::move(linker)), ar_(std::move(ar)), objectPath_(std::move(objectPath)),
           delegate_(std::move(delegate)),
-          mainPackage_(std::make_unique<RecordingPackage>(mainPackageName_, mainFile_, this)) {
-    if (standalone_) {
-        mainPackage_->setPackageVersion(PackageVersion(1, 0));
-    }
-}
+          mainPackage_(std::make_unique<RecordingPackage>(mainPackageName_, mainFile_, this)) {}
 
 Compiler::~Compiler() = default;
 

@@ -1,4 +1,4 @@
-📗
+📘
   The sockets package allows you to open TCP sockets to servers or to create a TCP server socket
   yourself.
 
@@ -49,8 +49,7 @@
 
   Of course, the code above is minimal and incomplete. For example, it can handle only one
   connection.
-📗
-🔮 0 1
+📘
 
 📗 Errors 📗
 🌍 🦃 ⛈ 🍇

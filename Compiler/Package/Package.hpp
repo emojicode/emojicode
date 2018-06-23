@@ -82,11 +82,6 @@ public:
     /// @returns The path to the directory of this package.
     const std::string& path() const { return path_; }
 
-    PackageVersion version() const { return version_; }
-    /** Whether this package has declared a valid package version. */
-    bool validVersion() const { return version().minor > 0 || version().major > 0; }
-    void setPackageVersion(PackageVersion v) { version_ = v; }
-
     /// If the compatibility mode is on the, the parsers will try to parse Emojicode 0.5 syntax.
     /// If this is true, a MigArgs object is provided.
     /// @returns Whether the compatiblity mode is on.

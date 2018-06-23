@@ -42,6 +42,11 @@ void DocumentParser::parse() {
                 attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
                 parseValueType(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
+            case TokenType::PackageDocumentationComment:
+                attributes.check(theToken.position(), package_->compiler());
+                documentation.disallow();
+                package_->setDocumentation(theToken.value());
+                continue;
             case TokenType::Identifier:
                 switch (theToken.value()[0]) {
                     case E_PACKAGE:
@@ -49,7 +54,6 @@ void DocumentParser::parse() {
                         documentation.disallow();
                         parsePackageImport(theToken.position());
                         continue;
-
                     case E_TRIANGLE_POINTED_DOWN: {
                         attributes.check(theToken.position(), package_->compiler());
                         TypeIdentifier alias = parseTypeIdentifier();
@@ -57,10 +61,6 @@ void DocumentParser::parse() {
                         package_->offerType(type, alias.name, alias.ns, false, theToken.position());
                         continue;
                     }
-                    case E_CRYSTAL_BALL:
-                        attributes.check(theToken.position(), package_->compiler());
-                        parseVersion(documentation, theToken.position());
-                        continue;
                     case E_WALE:
                         attributes.check(theToken.position(), package_->compiler());
                         documentation.disallow();
@@ -135,23 +135,6 @@ void DocumentParser::parseInclude(const SourcePosition &p) {
     }
 
     package_->includeDocument(fileString, originalPathString);
-}
-
-void DocumentParser::parseVersion(const Documentation &documentation, const SourcePosition &p) {
-    auto major = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
-    auto minor = std::stoi(utf8(stream_.consumeToken(TokenType::Integer).value()));
-
-    if (package_->validVersion()) {
-        package_->compiler()->error(CompilerError(p, "Package version already declared."));
-        return;
-    }
-
-    package_->setPackageVersion(PackageVersion(major, minor));
-    if (!package_->validVersion()) {
-        throw CompilerError(p, "The provided package version is not valid.");
-    }
-
-    package_->setDocumentation(documentation.get());
 }
 
 void DocumentParser::parseExtension(const Documentation &documentation, const SourcePosition &p) {

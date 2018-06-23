@@ -94,9 +94,6 @@ void Package::parse(const std::string &mainFilePath) {
     
     includeDocument(mainFilePath, "");
 
-    if (!validVersion()) {
-        compiler_->warn(position(), "Package ", name(), " does not provide a valid version.");
-    }
     if (name() == "s") {
         compiler()->assignSTypes(this, position());
     }

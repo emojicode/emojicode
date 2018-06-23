@@ -48,8 +48,6 @@ private:
     void parseExtension(const Documentation &documentation, const SourcePosition &p);
     /// Called if an $include$ has been detected. The first token has already been parsed.
     void parseInclude(const SourcePosition &p);
-    /// Called if a $version$ has been detected. The first token has already been parsed.
-    void parseVersion(const Documentation &documentation, const SourcePosition &p);
     /// Called if a $start-flag$ has been detected. The first token has already been parsed.
     void parseStartFlag(const Documentation &documentation, const SourcePosition &p);
 

@@ -55,8 +55,9 @@ void Prettyprinter::printInterface(const std::string &out) {
     interface_ = true;
     stream_ = std::fstream(out, std::ios_base::out);
 
-    printDocumentation(package_->documentation());
-    stream_ << "🔮 " << package_->version().major << " " << package_->version().minor << "\n";
+    if (!package_->documentation().empty()) {
+        indent() << "📘" << utf8(package_->documentation()) << "📘\n";
+    }
     offerNewLine();
 
     printRecordings(package_->files().front().recordings_);
