@@ -104,13 +104,13 @@ Type Package::getRawType(const TypeIdentifier &typeId) const {
     auto type = Type::noReturn();
     if (!lookupRawType(typeId, &type)) {
         throw CompilerError(typeId.position, "Could not find a type named ", utf8(typeId.name), " in namespace ",
-                            utf8(typeId.ns), ".");
+                            utf8(typeId.getNamespace()), ".");
     }
     return type;
 }
 
 bool Package::lookupRawType(const TypeIdentifier &typeId, Type *type) const {
-    std::u32string key = typeId.ns + typeId.name;
+    std::u32string key = typeId.getNamespace() + typeId.name;
     auto it = types_.find(key);
 
     if (it != types_.end()) {

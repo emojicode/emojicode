@@ -22,7 +22,7 @@
 namespace EmojicodeCompiler {
 
 TypeIdentifier AbstractParser::parseTypeIdentifier() {
-    std::u32string namespase = stream_.consumeTokenIf(E_ORANGE_TRIANGLE) ? parseTypeEmoji().value() : kDefaultNamespace;
+    std::u32string namespase = stream_.consumeTokenIf(E_ORANGE_TRIANGLE) ? parseTypeEmoji().value() : U"";
     auto typeName = parseTypeEmoji();
     return TypeIdentifier(typeName.value(), namespase, typeName.position());
 }

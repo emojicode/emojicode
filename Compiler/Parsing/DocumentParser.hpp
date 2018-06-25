@@ -53,7 +53,7 @@ private:
 
     template <typename TypeDef>
     void offerAndParseBody(TypeDef *typeDef, const TypeIdentifier &id, const SourcePosition &p) {
-        package_->offerType(Type(typeDef), id.name, id.ns, typeDef->exported(), p);
+        package_->offerType(Type(typeDef), id.name, id.getNamespace(), typeDef->exported(), p);
         TypeBodyParser<TypeDef>(typeDef, package_, stream_, interface_).parse();
     }
 };

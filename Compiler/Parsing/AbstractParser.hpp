@@ -56,6 +56,8 @@ struct TypeIdentifier {
     std::u32string name;
     std::u32string ns;
     SourcePosition position;
+
+    const std::u32string& getNamespace() const { return ns.empty() ? kDefaultNamespace : ns; }
 };
 
 class AbstractParser {
