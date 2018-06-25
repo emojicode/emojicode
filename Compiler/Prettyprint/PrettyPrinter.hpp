@@ -14,14 +14,18 @@
 
 namespace EmojicodeCompiler {
 
+/// Prettyprinter class generates Emojicode source code or interface code for an RecordingPackage.
 class PrettyPrinter {
+    friend PrettyStream;
 public:
     explicit PrettyPrinter(RecordingPackage *package) : prettyStream_(this), package_(package) {}
-    void printInterface(const std::string &out);
-    void print();
 
-    void printClosure(Function *function);
-    RecordingPackage* package() const { return package_; }
+    /// Writes an interface file to the provided path.
+    /// @param out The path at which the file will be created. If the file exists it is overwritten.
+    void printInterface(const std::string &out);
+    /// Regenerates the code for the package. All packge files are regenerated in place, the original files are renamed
+    /// to preserve them as backup.
+    void print();
 
 private:
     PrettyStream prettyStream_;
@@ -29,6 +33,8 @@ private:
     RecordingPackage *package_;
     bool interface_ = false;
     size_t interfaceFileIndex = 1;
+
+    void printClosure(Function *function);
 
     void printRecordings(const std::vector<std::unique_ptr<RecordingPackage::Recording>> &recordings);
     void print(const char *key, Function *function, bool body, bool noMutate);

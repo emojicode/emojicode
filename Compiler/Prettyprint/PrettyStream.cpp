@@ -30,7 +30,7 @@ void PrettyStream::printComments(const SourcePosition &p) {
             }
         }
 
-        thisStream() << (comment.type() == TokenType::MultilineComment ? "💭🔜" : "💭") << comment.value();
+        *this << (comment.type() == TokenType::MultilineComment ? "💭🔜" : "💭") << comment.value();
         if (comment.type() == TokenType::MultilineComment) stream_ << "🔚💭";
         else offerNewLine();
     });
@@ -45,18 +45,32 @@ void PrettyStream::printClosure(Function *function) {
     prettyPrinter_->printClosure(function);
 }
 
-PrettyStream& PrettyStream::operator<<(ASTType *node) {
+PrettyStream& PrettyStream::operator<<(ASTNode *node) {
     node->toCode(*this);
     return *this;
 }
 
+PrettyStream& PrettyStream::operator<<(const ASTNode &node) {
+    node.toCode(*this);
+    return *this;
+}
+
 PrettyStream& PrettyStream::operator<<(const std::u32string &str) {
-    stream_ << utf8(str);
+    *this << utf8(str);
     return *this;
 }
 
 PrettyStream& PrettyStream::operator<<(const Type &type) {
-    stream_ << type.toString(typeContext_, prettyPrinter_->package());
+    *this << type.toString(typeContext_, prettyPrinter_->package_);
+    return *this;
+}
+
+PrettyStream& PrettyStream::operator<<(const std::string &rhs) {
+    if (whitespaceOffer_ != 0) {
+        stream_ << whitespaceOffer_;
+        whitespaceOffer_ = 0;
+    }
+    stream_ << rhs;
     return *this;
 }
 

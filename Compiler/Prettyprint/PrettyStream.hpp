@@ -17,16 +17,14 @@
 
 namespace EmojicodeCompiler {
 
-class ASTType;
+class ASTNode;
 class PrettyPrinter;
 
-/// Prettyprinter class produces Emojicode source code from an RecordingPackage.
+/// PrettyStream manages the stream to which code is appended. PrettyStream can be appended to with <<.
 ///
-/// Prettyprinter can be appended to  with <<. Prettyprinter then appends data as necessary to the underlying stream.
-///
-/// Prettyprinter features a concept of "whitespace offers". By a call to offerSpace() or offerNewLine() at whitespace
-/// is offered. The whitespace is then appended before the next object passed to << if refuseOffer() isn’t called
-/// before.
+/// PrettyStream features a concept of "whitespace offers". By a call to offerSpace() or offerNewLine() whitespace
+/// is offered. The whitespace is then appended before the next object passed to << unless refuseOffer() is called
+/// previously.
 class PrettyStream {
 public:
     PrettyStream(PrettyPrinter *prettyPrinter) : prettyPrinter_(prettyPrinter) {}
@@ -45,22 +43,11 @@ public:
         return *this;
     }
 
-    PrettyStream& operator<<(ASTType *node);
+    PrettyStream& operator<<(const std::string &rhs);
     PrettyStream& operator<<(const std::u32string &str);
+    PrettyStream& operator<<(ASTNode *node);
+    PrettyStream& operator<<(const ASTNode &node);
     PrettyStream& operator<<(const Type &type);
-
-    /// Appends the whitespace offer to the stream if any is available. Then appends rhs and returns this instance.
-    template<typename T>
-    PrettyStream& operator<<(const T &rhs) {
-        if (whitespaceOffer_ != 0) {
-            stream_ << whitespaceOffer_;
-            whitespaceOffer_ = 0;
-        }
-        stream_ << rhs;
-        return *this;
-    }
-
-    PrettyStream& thisStream() { return *this; }
 
     void printClosure(Function *function);
 
@@ -85,6 +72,7 @@ public:
     /// Calls offerSpace() unless collection returns true for empty()
     template<typename T>
     void offerNewLineUnlessEmpty(const T &collection) { if (!collection.empty()) { offerNewLine(); } }
+    
 private:
     std::fstream stream_;
 

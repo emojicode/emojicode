@@ -29,7 +29,7 @@ void ASTArguments::toCode(PrettyStream &pretty) const {
     if (!arguments_.empty()) {
         pretty << " ";
         for (auto &arg : arguments_) {
-            arg->toCode(pretty);
+            pretty << arg;
         }
     }
     pretty.refuseOffer() << (imperative_ ? "❗️" : "❓️");
@@ -50,7 +50,7 @@ void ASTBlock::toCode(PrettyStream &pretty) const {
 void ASTBlock::innerToCode(PrettyStream &pretty) const {
     pretty.increaseIndent();
     for (auto &stmt : stmts_) {
-        stmt->toCode(pretty);
+        pretty << stmt;
         pretty.offerNewLine();
         if (stmt->paragraph()) {
             pretty << "\n";
@@ -61,39 +61,27 @@ void ASTBlock::innerToCode(PrettyStream &pretty) const {
 
 void ASTRepeatWhile::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "🔁 ";
-    condition_->toCode(pretty);
-    block_.toCode(pretty);
+    pretty.indent() << "🔁 " << condition_ << " " << block_;
 }
 
 void ASTForIn::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "🔂 " << utf8(varName_) << " ";
-    iteratee_->toCode(pretty);
-    block_.toCode(pretty);
+    pretty.indent() << "🔂 " << varName_ << " " << iteratee_ << " " << block_;
 }
 
 void ASTUnsafeBlock::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "☣️ ";
-    block_.toCode(pretty);
+    pretty.indent() << "☣️ " << block_;
 }
 
 void ASTIf::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "↪️ ";
-    conditions_.front()->toCode(pretty);
-    pretty << " ";
-    blocks_.front().toCode(pretty);
+    pretty.indent() << "↪️ " << conditions_.front() << " " << blocks_.front();
     for (size_t i = 1; i < conditions_.size(); i++) {
-        pretty.indent() << "🙅↪️ ";
-        conditions_[i]->toCode(pretty);
-        pretty << " ";
-        blocks_[i].toCode(pretty);
+        pretty.indent() << "🙅↪️ " << conditions_[i] << " " << blocks_[i];
     }
     if (hasElse()) {
-        pretty.indent() << "🙅 ";
-        blocks_.back().toCode(pretty);
+        pretty.indent() << "🙅 " << blocks_.back();
     }
 }
 
@@ -104,76 +92,60 @@ void ASTClosure::toCode(PrettyStream &pretty) const {
 
 void ASTErrorHandler::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "🥑 " << utf8(valueVarName_) << " ";
-    value_->toCode(pretty);
-    pretty << " ";
-    valueBlock_.toCode(pretty);
-    pretty.indent() << "🙅‍♀️ " << utf8(errorVarName_) << " ";
-    errorBlock_.toCode(pretty);
+    pretty.indent() << "🥑 " << valueVarName_ << " " << value_ << " " << valueBlock_;
+    pretty.indent() << "🙅‍♀️ " << errorVarName_ << " " << errorBlock_;
 }
 
 void ASTExprStatement::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent();
-    expr_->toCode(pretty);
+    pretty.indent() << expr_;
 }
 
 void ASTVariableDeclaration::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "🖍🆕 " << utf8(varName_) << " " << type_;
+    pretty.indent() << "🖍🆕 " << varName_ << " " << type_;
 }
 
 void ASTVariableAssignment::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent();
-    expr_->toCode(pretty);
-    pretty << "➡️ 🖍" << utf8(name());
+    pretty.indent() << expr_ << "➡️ 🖍" << name();
 }
 
 void ASTVariableDeclareAndAssign::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent();
-    expr_->toCode(pretty);
-    pretty << "➡️ 🖍🆕 " << utf8(name());
+    pretty.indent() << expr_ << "➡️ 🖍🆕 " << name();
 }
 
 void ASTConstantVariable::toCode(PrettyStream &pretty) const {
-    pretty.indent();
-    expr_->toCode(pretty);
+    pretty.indent() << expr_;
     pretty.printComments(position());
-    pretty << " ➡️ " << utf8(name());
+    pretty << " ➡️ " << name();
 }
 
 void ASTConditionalAssignment::toCode(PrettyStream &pretty) const {
-    expr_->toCode(pretty);
-    pretty << " ➡️ " << utf8(varName_);
+    pretty << expr_ << " ➡️ " << varName_;
 }
 
 void ASTOperatorAssignment::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty.indent();
     auto binaryOperator = dynamic_cast<ASTBinaryOperator *>(expr_.get());
-    pretty << utf8(name()) << " ⬅️" << utf8(operatorName(binaryOperator->operatorType())) << " ";
-    binaryOperator->right()->toCode(pretty);
+    pretty << name() << " ⬅️" << operatorName(binaryOperator->operatorType()) << " " << binaryOperator->right();
 }
 
 void ASTGetVariable::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << utf8(name());
+    pretty << name();
 }
 
 void ASTSuper::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "⤴️" << utf8(name_);
-    args_.toCode(pretty);
+    pretty << "⤴️" << name_ << args_;
 }
 
 void ASTInitialization::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🆕";
-    typeExpr_->toCode(pretty);
-    pretty << utf8(name_);
-    args_.toCode(pretty);
+    pretty << "🆕" << typeExpr_ << name_ << args_;
 }
 
 void ASTThisType::toCode(PrettyStream &pretty) const {
@@ -193,8 +165,7 @@ void ASTStaticType::toCode(PrettyStream &pretty) const {
 
 void ASTTypeFromExpr::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "⬛️";
-    expr_->toCode(pretty);
+    pretty << "⬛️" << expr_;
 }
 
 void ASTTypeAsValue::toCode(PrettyStream &pretty) const {
@@ -209,9 +180,7 @@ void ASTSizeOf::toCode(PrettyStream &pretty) const {
 
 void ASTCallableCall::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "⁉️";
-    callable_->toCode(pretty);
-    args_.toCode(pretty);
+    pretty << "⁉️" << callable_ << args_;
 }
 
 void ASTBooleanTrue::toCode(PrettyStream &pretty) const {
@@ -231,25 +200,23 @@ void ASTThis::toCode(PrettyStream &pretty) const {
 
 void ASTIsError::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🚥";
-    value_->toCode(pretty);
+    pretty << "🚥" << value_;
 }
 
 void ASTUnwrap::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << " 🍺";
-    value_->toCode(pretty);
+    pretty << " 🍺" << value_;
 }
 
 void ASTNumberLiteral::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << utf8(string_);
+    pretty << string_;
     pretty.offerSpace();
 }
 
 void ASTSymbolLiteral::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🔟" << utf8(std::u32string(1, value_));
+    pretty << "🔟" << std::u32string(1, value_);
 }
 
 void ASTNoValue::toCode(PrettyStream &pretty) const {
@@ -259,13 +226,12 @@ void ASTNoValue::toCode(PrettyStream &pretty) const {
 
 void ASTStringLiteral::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🔤" << utf8(value_) << "🔤";
+    pretty << "🔤" << value_ << "🔤";
 }
 
 void ASTRaise::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.indent() << "🚨";
-    value_->toCode(pretty);
+    pretty.indent() << "🚨" << value_;
 }
 
 void ASTReturn::toCode(PrettyStream &pretty) const {
@@ -274,31 +240,25 @@ void ASTReturn::toCode(PrettyStream &pretty) const {
         pretty.indent() << "↩️↩️";
     }
     else {
-        pretty.indent() << "↩️ ";
-        value_->toCode(pretty);
+        pretty.indent() << "↩️ " << value_;
     }
 }
 
 void ASTCast::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🔲";
-    value_->toCode(pretty);
-    typeExpr_->toCode(pretty);
+    pretty << "🔲" << value_ << typeExpr_;
 }
 
 void ASTMethod::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << utf8(name_);
-    callee_->toCode(pretty);
-    args_.toCode(pretty);
+    pretty << name_ << callee_ << args_;
 }
 
 void ASTConcatenateLiteral::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << "🍪 ";
     for (auto &val : values_) {
-        val->toCode(pretty);
-        pretty << " ";
+        pretty << val << " ";
     }
     pretty << "🍪";
 }
@@ -307,8 +267,7 @@ void ASTListLiteral::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << "🍨 ";
     for (auto &val : values_) {
-        val->toCode(pretty);
-        pretty << " ";
+        pretty << val << " ";
     }
     pretty << "🍆";
 }
@@ -317,8 +276,7 @@ void ASTDictionaryLiteral::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << "🍯 ";
     for (auto &val : values_) {
-        val->toCode(pretty);
-        pretty << " ";
+        pretty << val << " ";
     }
     pretty << "🍆";
 }
@@ -328,20 +286,18 @@ void ASTBinaryOperator::printBinaryOperand(int precedence, const std::shared_ptr
     pretty.printComments(position());
     if (auto oper = dynamic_cast<ASTBinaryOperator *>(expr.get())) {
         if (operatorPrecedence(oper->operator_) < precedence) {
-            pretty << "🤜";
-            expr->toCode(pretty);
-            pretty << "🤛";
+            pretty << "🤜" << expr << "🤛";
             return;
         }
     }
-    expr->toCode(pretty);
+    pretty << expr;
 }
 
 void ASTBinaryOperator::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     auto precedence = operatorPrecedence(operator_);
     printBinaryOperand(precedence, left_, pretty);
-    pretty << " " << utf8(operatorName(operator_)) << " ";
+    pretty << " " << operatorName(operator_) << " ";
     printBinaryOperand(precedence, right_, pretty);
 }
 
@@ -354,9 +310,9 @@ void ASTType::toCode(PrettyStream &pretty) const {
 
 void ASTTypeId::toCodeType(PrettyStream &pretty) const {
     if (!namespace_.empty()) {
-        pretty << "🔶" << utf8(namespace_);
+        pretty << "🔶" << namespace_;
     }
-    pretty << utf8(name_);
+    pretty << name_;
     if (!genericArgs_.empty()) {
         pretty << "🐚";
         for (auto &arg : genericArgs_) {
@@ -390,7 +346,7 @@ void ASTMultiProtocol::toCodeType(PrettyStream &pretty) const {
 }
 
 void ASTGenericVariable::toCodeType(PrettyStream &pretty) const {
-    pretty << utf8(name_);
+    pretty << name_;
     pretty.offerSpace();
 }
 
