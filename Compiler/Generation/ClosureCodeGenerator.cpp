@@ -32,9 +32,9 @@ void ClosureCodeGenerator::loadCapturedVariables(Value *value) {
     if (capture_.captureSelf) {
         thisValue_ = builder().CreateLoad(builder().CreateConstGEP2_32(capture_.type, captures, 0, index++));
     }
-    for (; index < capture_.captures.size(); index++) {
-        auto *value = builder().CreateLoad(builder().CreateConstGEP2_32(capture_.type, captures, 0, index));
-        scoper().getVariable(capture_.captures[index].captureId) = LocalVariable(false, value);
+    for (auto &capture : capture_.captures) {
+        auto *value = builder().CreateLoad(builder().CreateConstGEP2_32(capture_.type, captures, 0, index++));
+        scoper().getVariable(capture.captureId) = LocalVariable(false, value);
     }
 }
 

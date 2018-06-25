@@ -19,6 +19,12 @@
       a ➡️ 🖍name
     🍉
   🍉
+
+  ❗️ 🛍 title 🔡 ➡️ 🍇🔡🍉 🍇
+    ↩️ 🍇 a 🔡
+      🍪 title 🔤 🔤 a 🍪 ➡️ 🖍name
+    🍉
+  🍉
 🍉
 
 🏁 🍇
@@ -44,4 +50,14 @@
   ⁉️nameSetter 🔤Hercule Poirot🔤 ❗️
 
   😀 ⁉️nameGetter❗️❗️
+
+  🛍pi 🔤Dr🔤❗️ ➡️ nameSetterDr
+
+  ⁉️nameSetterDr 🔤Jessica Jones🔤 ❗️
+
+  😀 ⁉️nameGetter️❗️❗️
+
+  ⁉️nameSetterDr 🔤Hercule Poirot🔤 ❗️
+
+  😀 ⁉️nameGetter❗️❗
 🍉

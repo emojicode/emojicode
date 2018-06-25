@@ -3,3 +3,5 @@ Sherlock Holmes
 Thomas Magnum
 Jessica Jones
 Hercule Poirot
+Dr Jessica Jones
+Dr Hercule Poirot
