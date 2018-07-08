@@ -124,12 +124,16 @@ public:
     TypeContext typeContext();
 
     FunctionType functionType() const { return functionType_; }
+    void setFunctionType(FunctionType functionType) { functionType_ = functionType; }
 
     void setAst(std::unique_ptr<ASTBlock> ast);
     ASTBlock* ast() const { return ast_.get(); }
 
     size_t variableCount() const { return variableCount_; }
     void setVariableCount(size_t variableCount) { variableCount_ = variableCount; }
+
+    void setClosure() { closure_ = true; }
+    bool isClosure() const { return closure_; }
 
     virtual ~Function();
 
@@ -149,6 +153,7 @@ private:
 
     bool mutating_;
     bool external_ = false;
+    bool closure_ = false;
 
     Function *virtualTableThunk_ = nullptr;
 

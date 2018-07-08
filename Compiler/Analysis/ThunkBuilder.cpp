@@ -86,7 +86,8 @@ std::unique_ptr<Function> buildBoxingThunk(const TypeExpectation &expectation, c
     }
 
     auto function = makeBoxingThunk(std::u32string(), nullptr, pkg, p, std::move(params),
-                                    expectation.genericArguments().front(), FunctionType::Closure);
+                                    expectation.genericArguments().front(), FunctionType::Function);
+    function->setClosure();
     buildBoxingThunkAst(function.get(), nullptr);
     return function;
 }

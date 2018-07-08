@@ -309,7 +309,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
     auto function = std::make_unique<Function>(std::u32string(1, E_GRAPES), AccessLevel::Public, true, nullptr,
                                                package_, token.position(), false, std::u32string(), false, false, true,
-                                               false, FunctionType::Closure);
+                                               false, FunctionType::Function);
 
     parseParameters(function.get(), false);
     parseReturnType(function.get());

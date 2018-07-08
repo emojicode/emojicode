@@ -69,7 +69,7 @@ llvm::ArrayType* LLVMTypeHelper::multiprotocolConformance(const Type &type) {
 
 llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     std::vector<llvm::Type *> args;
-    if (function->functionType() == FunctionType::Closure) {
+    if (function->isClosure()) {
         args.emplace_back(llvm::Type::getInt8PtrTy(context_));
     }
     else if (hasThisArgument(function->functionType()) &&

@@ -21,6 +21,8 @@ ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition
 Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     closure_->setMutating(analyser->function()->mutating());
     closure_->setOwner(analyser->function()->owner());
+    closure_->setFunctionType(analyser->function()->functionType());
+    closure_->setClosure();
 
     analyser->semanticAnalyser()->analyseFunctionDeclaration(closure_.get());
 
