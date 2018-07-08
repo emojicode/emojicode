@@ -9,6 +9,8 @@
 #ifndef SemanticScopeStats_hpp
 #define SemanticScopeStats_hpp
 
+#include <cstddef>
+
 namespace EmojicodeCompiler {
 
 struct SemanticScopeStats {
