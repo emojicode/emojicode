@@ -169,4 +169,8 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
     return std::make_pair(false, BuiltIn(Type::noReturn()));
 }
 
+void ASTBinaryOperator::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    // TODO: Implement
+}
+
 }  // namespace EmojicodeCompiler

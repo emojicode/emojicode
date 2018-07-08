@@ -25,6 +25,7 @@ namespace EmojicodeCompiler {
 class ASTTypeExpr : public ASTExpr {
 public:
     ASTTypeExpr(const SourcePosition &p) : ASTExpr(p) {}
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
 };
 
 class ASTTypeFromExpr : public ASTTypeExpr {
@@ -62,6 +63,7 @@ public:
 class ASTThisType final : public ASTTypeFromExpr {
 public:
     explicit ASTThisType(const SourcePosition &p);
+
     void toCode(PrettyStream &pretty) const override;
 };
 

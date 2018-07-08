@@ -10,13 +10,18 @@
 #define ASTBoxing_hpp
 
 #include "ASTExpr.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "MemoryFlowAnalysis/MFHeapAllocates.hpp"
 #include <utility>
 
 namespace EmojicodeCompiler {
 
 class ASTBoxing : public ASTExpr {
 public:
-    ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p);
+    ASTBoxing(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType);
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {
+        expr_->analyseMemoryFlow(analyser, type);
+    }
 protected:
     std::shared_ptr<ASTExpr> expr_;
     /// Gets a pointer to the value area of box and bit-casts it to the type matching the ASTExpr::expressionType()
@@ -50,8 +55,8 @@ private:
 
 class ASTUpcast final : public ASTBoxing {
 public:
-    ASTUpcast(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p, const Type &toType) :
-        ASTBoxing(expr, exprType, p), toType_(toType) {}
+    ASTUpcast(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType, const Type &toType) :
+        ASTBoxing(expr, p, exprType), toType_(toType) {}
 
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;
@@ -89,11 +94,16 @@ class ASTSimpleToSimpleError final : public ASTBoxing {
     void toCode(PrettyStream &pretty) const override {}
 };
 
-class ASTToBox : public ASTBoxing {
+class ASTToBox : public ASTBoxing, public MFHeapAutoAllocates {
     using ASTBoxing::ASTBoxing;
 protected:
     void getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const;
     void setBoxMeta(Value *box, FunctionCodeGenerator *fg) const;
+
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {
+        analyseAllocation(type);
+        ASTBoxing::analyseMemoryFlow(analyser, type);
+    }
 };
 
 class ASTSimpleOptionalToBox final : public ASTToBox {
@@ -133,8 +143,8 @@ class ASTDereference final : public ASTBoxing {
 
 class ASTCallableBox final : public ASTBoxing {
 public:
-    ASTCallableBox(std::shared_ptr<ASTExpr> expr, const Type &exprType, const SourcePosition &p,
-                   Function *boxingLayer) : ASTBoxing(std::move(expr), exprType, p), boxingLayer_(boxingLayer) {}
+    ASTCallableBox(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType,
+                   Function *boxingLayer) : ASTBoxing(std::move(expr), p, exprType), boxingLayer_(boxingLayer) {}
 
     Type analyse(FunctionAnalyser *, const TypeExpectation &) override { return expressionType(); }
     Value* generate(FunctionCodeGenerator *fg) const override;

@@ -23,6 +23,9 @@ class ASTTypeExpr;
 class FunctionAnalyser;
 class TypeExpectation;
 class FunctionCodeGenerator;
+class Prettyprinter;
+class MFFunctionAnalyser;
+enum class MFType;
 
 class ASTExpr : public ASTNode {
 public:
@@ -34,9 +37,18 @@ public:
 
     virtual Value* generate(FunctionCodeGenerator *fg) const = 0;
     virtual Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) = 0;
+    virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) = 0;
+
 private:
     Type expressionType_ = Type::noReturn();
 };
+
+template<typename T, typename ...Args>
+std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, Args... args) {
+    auto pos = (*node)->position();
+    *node = std::make_shared<T>(std::move(*node), pos, args...);
+    return std::static_pointer_cast<T>(*node);
+}
 
 class ASTTypeAsValue final : public ASTExpr {
 public:
@@ -44,7 +56,10 @@ public:
         : ASTExpr(p), type_(std::move(type)), tokenType_(tokenType) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {}
+
 private:
     std::unique_ptr<ASTType> type_;
     TokenType tokenType_;
@@ -55,7 +70,10 @@ public:
     ASTSizeOf(std::unique_ptr<ASTType> type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {}
+
 private:
     std::unique_ptr<ASTType> type_;
 };
@@ -91,7 +109,10 @@ public:
             const SourcePosition &p) : ASTExpr(p), value_(std::move(value)), typeExpr_(std::move(type)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+
 private:
     enum class CastType {
         ClassDowncast, ToClass, ToProtocol, ToValueType,
@@ -110,7 +131,10 @@ public:
                     const SourcePosition &p) : ASTExpr(p), callable_(std::move(value)), args_(std::move(args)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+
 private:
     std::shared_ptr<ASTExpr> callable_;
     ASTArguments args_;
@@ -122,7 +146,10 @@ public:
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+
 private:
     void analyseSuperInit(FunctionAnalyser *analyser);
     std::u32string name_;
@@ -141,7 +168,10 @@ public:
                              const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+
 private:
     std::u32string varName_;
     std::shared_ptr<ASTExpr> expr_;

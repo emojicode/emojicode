@@ -27,6 +27,8 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override;
+    
 private:
     
     struct BuiltIn {

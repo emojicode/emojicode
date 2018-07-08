@@ -17,6 +17,7 @@
 #include <llvm/Support/FileSystem.h>
 
 #include <utility>
+#include "MemoryFlowAnalysis/MFAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -42,13 +43,13 @@ bool Compiler::compile(bool parseOnly, bool optimize, bool printIr) {
             return !hasError_;
         }
 
-        if (!interfaceFile_.empty()) {
-            PrettyPrinter(mainPackage_.get()).printInterface(interfaceFile_);
-        }
-
         analyse();
 
         if (!hasError_) {
+            if (!interfaceFile_.empty()) {
+                PrettyPrinter(mainPackage_.get()).printInterface(interfaceFile_);
+            }
+
             generateCode(optimize, printIr);
 
             if (pack_) {
@@ -72,6 +73,9 @@ bool Compiler::compile(bool parseOnly, bool optimize, bool printIr) {
 
 void Compiler::analyse() {
     SemanticAnalyser(mainPackage_.get(), false).analyse(standalone_);
+    if (!hasError_) {
+        MFAnalyser(mainPackage_.get()).analyse();
+    }
 }
 
 void Compiler::generateCode(bool optimize, bool printIr) {

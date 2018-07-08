@@ -10,10 +10,10 @@
 #define ASTStatements_hpp
 
 #include <utility>
-
+#include "Scoping/SemanticScopeStats.hpp"
 #include "ASTExpr.hpp"
 #include "ASTNode.hpp"
-#include "Scoping/CGScoper.hpp"
+#include "Scoping/IDScoper.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
@@ -25,6 +25,8 @@ class ASTStatement : public ASTNode {
 public:
     virtual void generate(FunctionCodeGenerator *) const = 0;
     virtual void analyse(FunctionAnalyser *) = 0;
+    virtual void analyseMemoryFlow(MFFunctionAnalyser *) = 0;
+
     void setParagraph() { paragraph_ = true; }
     bool paragraph() const { return paragraph_; }
 protected:
@@ -47,16 +49,25 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
+
     /// Prints the code that goes between the block delimiters.
     void innerToCode(PrettyStream &pretty) const;
     bool returnedCertainly() const { return returnedCertainly_; }
+
+    const SemanticScopeStats& scopeStats() { return scopeStats_; }
+    void setScopeStats(SemanticScopeStats stats) { scopeStats_ = stats; }
+
+    void popScope(FunctionAnalyser *analyser);
 
     const std::vector<std::unique_ptr<ASTStatement>>& nodes() const { return stmts_; }
 private:
     std::vector<std::unique_ptr<ASTStatement>> stmts_;
     bool returnedCertainly_ = false;
     size_t stop_ = 0;
+    SemanticScopeStats scopeStats_;
 };
 
 class ASTExprStatement final : public ASTStatement {
@@ -66,7 +77,9 @@ public:
     void generate(FunctionCodeGenerator *fg) const override {
         expr_->generate(fg);
     }
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
 
     ASTExprStatement(std::shared_ptr<ASTExpr> expr, const SourcePosition &p) : ASTStatement(p), expr_(std::move(expr)) {}
 private:
@@ -79,7 +92,10 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
+
 protected:
     std::shared_ptr<ASTExpr> value_;
 };

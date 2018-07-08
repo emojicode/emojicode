@@ -12,6 +12,7 @@
 #include "FunctionType.hpp"
 #include "Types/Generic.hpp"
 #include "AST/ASTType.hpp"
+#include "MemoryFlowAnalysis/MFType.hpp"
 #include <memory>
 #include <utility>
 #include <vector>
@@ -30,12 +31,15 @@ enum class AccessLevel {
 };
 
 struct Parameter {
-    Parameter(std::u32string n, std::unique_ptr<ASTType> t) : name(std::move(n)), type(std::move(t)) {}
+    Parameter(std::u32string n, std::unique_ptr<ASTType> t, MFType mft)
+        : name(std::move(n)), type(std::move(t)), memoryFlowType(mft) {}
 
     /// The name of the variable
     std::u32string name;
     /// The type
     std::shared_ptr<ASTType> type;
+
+    MFType memoryFlowType = MFType::Borrowing;
 };
 
 class FunctionReification {
@@ -96,6 +100,7 @@ public:
     void setParameters(std::vector<Parameter> parameters) { parameters_ = std::move(parameters); }
 
     void setParameterType(size_t index, std::unique_ptr<ASTType> type) { parameters_[index].type = std::move(type); }
+    void setParameterMFType(size_t index, MFType type) { parameters_[index].memoryFlowType = type; }
 
     ASTType* returnType() const { return returnType_.get(); }
 
@@ -135,6 +140,9 @@ public:
     void setClosure() { closure_ = true; }
     bool isClosure() const { return closure_; }
 
+    MFType memoryFlowTypeForThis() const { return memoryFlowTypeThis_; }
+    void setMemoryFlowTypeForThis(MFType type) { memoryFlowTypeThis_ = type; }
+
     virtual ~Function();
 
 private:
@@ -164,6 +172,7 @@ private:
     std::u32string documentation_;
     FunctionType functionType_;
     size_t variableCount_ = 0;
+    MFType memoryFlowTypeThis_ = MFType::Unknown;
 };
 
 }  // namespace EmojicodeCompiler

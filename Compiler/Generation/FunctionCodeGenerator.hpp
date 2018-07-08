@@ -11,7 +11,7 @@
 
 #include "CodeGenerator.hpp"
 #include "Functions/Function.hpp"
-#include "Scoping/CGScoper.hpp"
+#include "Scoping/IDScoper.hpp"
 #include <llvm/IR/IRBuilder.h>
 #include <functional>
 

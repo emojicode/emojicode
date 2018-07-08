@@ -10,6 +10,7 @@
 #define CallableScoper_hpp
 
 #include "Functions/Function.hpp"
+#include "SemanticScopeStats.hpp"
 #include "Scope.hpp"
 #include <list>
 #include <vector>
@@ -24,7 +25,7 @@ struct ResolvedVariable {
 
 struct FunctionObjectVariableInformation;
 
-/** Manages the scoping of a callable. */
+/// Scoper used during Semantic Analysis. Assigns ID's to variables that are used with IDScoper later.
 class SemanticScoper {
 public:
     SemanticScoper() = default;
@@ -47,7 +48,8 @@ public:
     virtual Scope& pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p);
 
     /// Pops the current scope and calls @c recommendFrozenVariables on it.
-    void popScope(Compiler *app);
+    /// @returns The number of variables that were in this scope.
+    SemanticScopeStats popScope(Compiler *app);
 
     /// Returns the instance scope or @c nullptr
     Scope* instanceScope() const { return instanceScope_; }

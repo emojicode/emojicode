@@ -19,6 +19,7 @@ namespace EmojicodeCompiler {
 Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
     switch (initType_) {
         case InitType::Class:
+        case InitType::ClassStack:
             return generateClassInit(fg);
         case InitType::Enum:
             return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fg->generator()->context()),
@@ -37,7 +38,7 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     }
 
     if (typeExpr_->expressionType().isExact()) {
-        return initObject(fg, args_, initializer_, typeExpr_->expressionType());
+        return initObject(fg, args_, initializer_, typeExpr_->expressionType(), initType_ == InitType::ClassStack);
     }
 
     return CallCodeGenerator(fg, CallType::DynamicDispatchOnType)
@@ -55,9 +56,9 @@ Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const
 }
 
 Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArguments &args, Function *function,
-                                     const Type &type) {
+                                     const Type &type, bool stackInit) {
     auto llvmType = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(type));
-    auto obj = fg->alloc(llvmType);
+    auto obj = stackInit ? fg->createEntryAlloca(llvmType->getElementType()) : fg->alloc(llvmType);
     fg->builder().CreateStore(type.klass()->classMeta(), fg->getObjectMetaPtr(obj));
     return CallCodeGenerator(fg, CallType::StaticDispatch).generate(obj, type, args, function);
 }

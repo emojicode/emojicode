@@ -87,7 +87,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
                                  const Documentation &documentation, AccessLevel access, bool imperative,
                                  const SourcePosition &p) {
     attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).allow(Attribute::Unsafe)
-            .check(p, package_->compiler());
+            .allow(Attribute::Escaping).check(p, package_->compiler());
 
     if (attributes.has(Attribute::StaticOnType)) {
         auto typeMethod = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), typeDef_,

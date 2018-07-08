@@ -23,7 +23,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     auto closureGenerator = ClosureCodeGenerator(capture, closure_.get(), fg->generator());
     closureGenerator.generate();
 
-    llvm::CallInst *alloc = storeCapturedVariables(fg, capture);
+    auto alloc = storeCapturedVariables(fg, capture);
 
     auto *structType = llvm::dyn_cast<llvm::StructType>(fg->generator()->typeHelper().llvmTypeFor(expressionType()));
 
@@ -32,9 +32,8 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     return fg->builder().CreateInsertValue(callable, alloc, 1);
 }
 
-llvm::CallInst *ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const {
-    auto alloc = fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(), fg->sizeOf(capture.type));
-    auto captures = fg->builder().CreateBitCast(alloc, capture.type->getPointerTo());
+llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const {
+    auto captures = allocate(fg, capture.type);
 
     auto i = 0;
     if (capture.captureSelf) {
@@ -52,7 +51,7 @@ llvm::CallInst *ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, co
 
         fg->builder().CreateStore(value, fg->builder().CreateConstGEP2_32(capture.type, captures, 0, i++));
     }
-    return alloc;
+    return fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->generator()->context()));
 }
 
 }  // namespace EmojicodeCompiler

@@ -61,7 +61,8 @@ std::unique_ptr<Function> buildBoxingThunk(const TypeContext &declarator, const 
     auto params = std::vector<Parameter>();
     params.reserve(method->parameters().size());
     for (auto &arg : method->parameters()) {
-        params.emplace_back(arg.name, std::make_unique<ASTLiteralType>(arg.type->type().resolveOn(declarator)));
+        params.emplace_back(arg.name, std::make_unique<ASTLiteralType>(arg.type->type().resolveOn(declarator)),
+                            MFType::Borrowing);
     }
 
     auto name = declarator.calleeType().type() == TypeType::NoReturn ? std::u32string({ 'S' }) + methodImplementation->name()
@@ -78,11 +79,11 @@ std::unique_ptr<Function> buildBoxingThunk(const TypeExpectation &expectation, c
                                            Package *pkg, const SourcePosition &p) {
     auto params = std::vector<Parameter>();
     params.reserve(expectation.genericArguments().size());
-    params.emplace_back(U"closure", std::make_unique<ASTLiteralType>(destCallable));
+    params.emplace_back(U"closure", std::make_unique<ASTLiteralType>(destCallable), MFType::Escaping);
     for (auto argumentType = expectation.genericArguments().begin() + 1;
-        argumentType != expectation.genericArguments().end(); argumentType++) {
+         argumentType != expectation.genericArguments().end(); argumentType++) {
         params.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
-                            std::make_unique<ASTLiteralType>(*argumentType));
+                            std::make_unique<ASTLiteralType>(*argumentType), MFType::Borrowing);
     }
 
     auto function = makeBoxingThunk(std::u32string(), nullptr, pkg, p, std::move(params),

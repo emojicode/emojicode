@@ -101,6 +101,8 @@ enum Emojis {
     E_THOUGHT_BALLOON = 0x1F4AD,
     E_END_ARROW = 0x1F51A,
     E_SOON_ARROW = 0x1F51C,
+    E_LEFT_LUGGAGE = 0x1F6C5,
+    E_BAGGAGE_CLAIM = 0x1F6C4,
 };
 
 }  // namespace EmojicodeCompiler

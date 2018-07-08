@@ -16,8 +16,8 @@ Value* ASTUpcast::generate(FunctionCodeGenerator *fg) const {
     return fg->builder().CreateBitCast(expr_->generate(fg), fg->typeHelper().llvmTypeFor(toType_));
 }
 
-ASTBoxing::ASTBoxing(std::shared_ptr<ASTExpr> expr, const Type &exprType,
-                     const SourcePosition &p) : ASTExpr(p), expr_(std::move(expr)) {
+ASTBoxing::ASTBoxing(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType)
+    : ASTExpr(p), expr_(std::move(expr)) {
     setExpressionType(exprType);
     if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_)) {
         init_ = init->initType() == ASTInitialization::InitType::ValueType;
@@ -143,9 +143,9 @@ Value* ASTBoxToSimpleError::generate(FunctionCodeGenerator *fg) const {
 void ASTToBox::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const {
     setBoxMeta(box, fg);
     if (fg->typeHelper().isRemote(expr_->expressionType())) {
-        auto type = fg->typeHelper().llvmTypeFor(expr_->expressionType())->getPointerTo();
-        auto ptrPtr = fg->getValuePtr(box, type->getPointerTo());
-        auto alloc = fg->alloc(type);
+        auto type = fg->typeHelper().llvmTypeFor(expr_->expressionType());
+        auto ptrPtr = fg->getValuePtr(box, type->getPointerTo()->getPointerTo());
+        auto alloc = allocate(fg, type);
         fg->builder().CreateStore(value, alloc);
         fg->builder().CreateStore(alloc, ptrPtr);
     }

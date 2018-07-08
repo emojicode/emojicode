@@ -15,6 +15,7 @@
 #include "Compiler.hpp"
 #include "Types/Protocol.hpp"
 #include "Emojis.h"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -24,7 +25,7 @@ void ASTIf::analyse(FunctionAnalyser *analyser) {
         analyser->scoper().pushScope();
         analyser->expectType(analyser->boolean(), &conditions_[i]);
         blocks_[i].analyse(analyser);
-        analyser->scoper().popScope(analyser->compiler());
+        blocks_[i].popScope(analyser);
         analyser->pathAnalyser().endBranch();
     }
 
@@ -32,7 +33,7 @@ void ASTIf::analyse(FunctionAnalyser *analyser) {
         analyser->pathAnalyser().beginBranch();
         analyser->scoper().pushScope();
         blocks_.back().analyse(analyser);
-        analyser->scoper().popScope(analyser->compiler());
+        blocks_.back().popScope(analyser);
         analyser->pathAnalyser().endBranch();
 
         analyser->pathAnalyser().endMutualExclusiveBranches();
@@ -42,14 +43,31 @@ void ASTIf::analyse(FunctionAnalyser *analyser) {
     }
 }
 
+void ASTIf::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    for (size_t i = 0; i < conditions_.size(); i++) {
+        conditions_[i]->analyseMemoryFlow(analyser, MFType::Borrowing);
+        blocks_[i].analyseMemoryFlow(analyser);
+        analyser->popScope(blocks_[i].scopeStats());
+    }
+    if (hasElse()) {
+        blocks_.back().analyseMemoryFlow(analyser);
+    }
+}
+
 void ASTRepeatWhile::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
     analyser->expectType(analyser->boolean(), &condition_);
     block_.analyse(analyser);
-    analyser->scoper().popScope(analyser->compiler());
+    block_.popScope(analyser);
     analyser->pathAnalyser().endBranch();
     analyser->pathAnalyser().endUncertainBranches();
+}
+
+void ASTRepeatWhile::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    condition_->analyseMemoryFlow(analyser, MFType::Borrowing);
+    block_.analyseMemoryFlow(analyser);
+    analyser->popScope(block_.scopeStats());
 }
 
 void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
@@ -58,8 +76,6 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
     if (type.unboxedType() != TypeType::Error) {
         throw CompilerError(position(), "🥑 can only be used with 🚨.");
     }
-
-    analyser->scoper().pushScope();
 
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
@@ -70,7 +86,7 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
     var.initialize();
     valueVar_ = var.id();
     valueBlock_.analyse(analyser);
-    analyser->scoper().popScope(analyser->compiler());
+    valueBlock_.popScope(analyser);
     analyser->pathAnalyser().endBranch();
 
     analyser->pathAnalyser().beginBranch();
@@ -79,11 +95,18 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
     errVar.initialize();
     errorVar_ = errVar.id();
     errorBlock_.analyse(analyser);
-    analyser->scoper().popScope(analyser->compiler());
+    errorBlock_.popScope(analyser);
     analyser->pathAnalyser().endBranch();
 
     analyser->pathAnalyser().endMutualExclusiveBranches();
-    analyser->scoper().popScope(analyser->compiler());
+}
+
+void ASTErrorHandler::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    value_->analyseMemoryFlow(analyser, MFType::Borrowing);
+    errorBlock_.analyseMemoryFlow(analyser);
+    analyser->popScope(errorBlock_.scopeStats());
+    valueBlock_.analyseMemoryFlow(analyser);
+    analyser->popScope(valueBlock_.scopeStats());
 }
 
 void ASTForIn::analyse(FunctionAnalyser *analyser) {
@@ -105,7 +128,12 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
     newBlock.appendNode(std::make_unique<ASTRepeatWhile>(hasNext, std::move(block_), position()));
     block_ = std::move(newBlock);
     block_.analyse(analyser);
-    analyser->scoper().popScope(analyser->compiler());
+    block_.popScope(analyser);
+}
+
+void ASTForIn::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    block_.analyseMemoryFlow(analyser);
+    analyser->popScope(block_.scopeStats());
 }
 
 }  // namespace EmojicodeCompiler

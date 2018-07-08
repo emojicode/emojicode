@@ -21,6 +21,10 @@ Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     return analyser->boolean();
 }
 
+void ASTIsError::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    
+}
+
 Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &value_);
 
@@ -33,6 +37,10 @@ Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
     }
 
     throw CompilerError(position(), "🍺 can only be used with optionals or 🚨.");
+}
+
+void ASTUnwrap::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+
 }
 
 }  // namespace EmojicodeCompiler

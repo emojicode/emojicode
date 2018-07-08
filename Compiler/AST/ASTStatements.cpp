@@ -13,6 +13,7 @@
 #include "Functions/Initializer.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
 #include "Types/Class.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -32,8 +33,22 @@ void ASTBlock::analyse(FunctionAnalyser *analyser) {
     }
 }
 
+void ASTBlock::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    for (auto &stmt : stmts_) {
+        stmt->analyseMemoryFlow(analyser);
+    }
+}
+
+void ASTBlock::popScope(FunctionAnalyser *analyser) {
+    scopeStats_ = analyser->scoper().popScope(analyser->compiler());
+}
+
 void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {
     expr_->setExpressionType(expr_->analyse(analyser, TypeExpectation()));
+}
+
+void ASTExprStatement::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    expr_->analyseMemoryFlow(analyser, MFType::Borrowing);
 }
 
 void ASTReturn::analyse(FunctionAnalyser *analyser) {
@@ -73,6 +88,12 @@ void ASTRaise::analyse(FunctionAnalyser *analyser) {
     boxed_ = analyser->function()->returnType()->type().storageType() == StorageType::Box;
 
     analyser->expectType(analyser->function()->returnType()->type().errorEnum(), &value_);
+}
+
+void ASTReturn::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    if (value_ != nullptr) {
+        analyser->recordReturn(&value_);
+    }
 }
 
 }  // namespace EmojicodeCompiler

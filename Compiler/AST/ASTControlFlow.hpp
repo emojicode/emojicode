@@ -23,7 +23,9 @@ public:
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
 
     bool hasElse() const { return conditions_.size() < blocks_.size(); }
 private:
@@ -38,7 +40,9 @@ public:
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
 
 protected:
     std::shared_ptr<ASTExpr> condition_;
@@ -53,7 +57,9 @@ public:
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
 
 private:
     std::shared_ptr<ASTExpr> iteratee_;
@@ -71,7 +77,10 @@ public:
 
     void analyse(FunctionAnalyser *) override;
     void generate(FunctionCodeGenerator *) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
+    
 private:
     std::shared_ptr<ASTExpr> value_;
     bool valueIsBoxed_ = false;

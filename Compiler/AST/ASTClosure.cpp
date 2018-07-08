@@ -12,6 +12,7 @@
 #include "Analysis/ThunkBuilder.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -36,6 +37,13 @@ Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
         capture_.captureSelf = true;
     }
     return Type(closure_.get());
+}
+
+void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    analyseAllocation(type);
+    for (auto &capture : capture_.captures) {
+        analyser->recordVariableGet(capture.sourceId, type);
+    }
 }
 
 void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation) {

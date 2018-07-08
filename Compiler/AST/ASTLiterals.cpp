@@ -13,6 +13,7 @@
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -72,6 +73,10 @@ Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
     return analyser->typeContext().calleeType();
 }
 
+void ASTThis::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    analyser->recordThis(type);
+}
+
 Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.unboxedType() != TypeType::Optional && expectation.unboxedType() != TypeType::Something) {
         throw CompilerError(position(), "🤷‍ can only be used when an optional is expected.");
@@ -101,6 +106,12 @@ Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpecta
     }
 
     return type_;
+}
+
+void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    for (auto &valueNode : values_) {
+        analyser->take(&valueNode);
+    }
 }
 
 Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -133,6 +144,12 @@ Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &
     return type_;
 }
 
+void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    for (auto &valueNode : values_) {
+        analyser->take(&valueNode);
+    }
+}
+
 Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = analyser->function()->package()->getRawType(TypeIdentifier(std::u32string(1, 0x1F520), kDefaultNamespace,
                                                                        position()));
@@ -143,6 +160,12 @@ Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpect
     }
     type_.setExact(true);
     return stringType;
+}
+
+void ASTConcatenateLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    for (auto &valueNode : values_) {
+        valueNode->analyseMemoryFlow(analyser, MFType::Borrowing);
+    }
 }
 
 }  // namespace EmojicodeCompiler

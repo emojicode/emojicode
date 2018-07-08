@@ -142,10 +142,10 @@ std::unique_ptr<ASTType> AbstractParser::parseErrorType(bool optional) {
 }
 
 void AbstractParser::parseParameters(Function *function, bool initializer) {
-    bool argumentToVariable;
     std::vector<Parameter> params;
 
-    while ((argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE)) || stream_.nextTokenIs(TokenType::Variable)) {
+    while (true) {
+        bool argumentToVariable = stream_.nextTokenIs(E_BABY_BOTTLE);
         if (argumentToVariable) {
             auto token = stream_.consumeToken(TokenType::Identifier);
             if (!initializer) {
@@ -153,8 +153,13 @@ void AbstractParser::parseParameters(Function *function, bool initializer) {
             }
         }
 
+        bool escaping = stream_.consumeTokenIf(E_LEFT_LUGGAGE);
+        if (!argumentToVariable && !stream_.nextTokenIs(TokenType::Variable)) {
+            break;
+        }
+
         auto variableToken = stream_.consumeToken(TokenType::Variable);
-        params.emplace_back(variableToken.value(), parseType());
+        params.emplace_back(variableToken.value(), parseType(), escaping ? MFType::Escaping : MFType::Borrowing);
 
         if (argumentToVariable) {
             dynamic_cast<Initializer *>(function)->addArgumentToVariable(variableToken.value(), variableToken.position());

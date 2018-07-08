@@ -91,11 +91,17 @@ void PrettyPrinter::printArguments(Function *function) {
                 it++;
                 prettyStream_ << "🍼 ";
             }
+            if (arg.memoryFlowType == MFType::Escaping) {
+                prettyStream_ << "🛅 ";
+            }
             prettyStream_ << arg.name << " " << arg.type << " ";
         }
         return;
     }
     for (auto &arg : function->parameters()) {
+        if (arg.memoryFlowType == MFType::Escaping) {
+            prettyStream_ << "🛅 ";
+        }
         prettyStream_ << arg.name << " " << arg.type << " ";
     }
 }
@@ -110,10 +116,11 @@ void PrettyPrinter::printClosure(Function *function) {
 }
 
 void PrettyPrinter::printReturnType(Function *function) {
-    if (function->returnType() == nullptr) {
+    auto type = function->returnType();
+    if (type == nullptr || (type->wasAnalysed() && type->type().type() == TypeType::NoReturn)) {
         return;
     }
-    prettyStream_ << "➡️ " << function->returnType();
+    prettyStream_ << "➡️ " << type;
 }
 
 void PrettyPrinter::printDocumentation(const std::u32string &doc) {
@@ -254,6 +261,9 @@ void PrettyPrinter::printFunctionAttributes(Function *function, bool noMutate) {
     }
     if (function->owner()->type().type() == TypeType::ValueType && function->mutating() && !noMutate) {
         prettyStream_ << "🖍 ";
+    }
+    if (function->memoryFlowTypeForThis() == MFType::Escaping) {
+        prettyStream_ << "🛅 ";
     }
 }
 

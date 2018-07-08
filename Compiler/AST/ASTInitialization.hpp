@@ -10,16 +10,17 @@
 #define ASTInitialization_hpp
 
 #include "ASTExpr.hpp"
+#include "MemoryFlowAnalysis/MFHeapAllocates.hpp"
 #include <utility>
 
 namespace EmojicodeCompiler {
 
 enum class CallType;
 
-class ASTInitialization final : public ASTExpr {
+class ASTInitialization final : public ASTExpr, public MFHeapAllocates {
 public:
     enum class InitType {
-        Enum, ValueType, Class, MemoryAllocation
+        Enum, ValueType, Class, ClassStack, MemoryAllocation
     };
 
     ASTInitialization(std::u32string name, std::shared_ptr<ASTExpr> type,
@@ -28,7 +29,9 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     /// @pre setDestination() must have been used to set a destination if initType() == InitType::ValueType
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override;
 
     /// Sets the destination for a value type inititalization.
     ///
@@ -39,8 +42,11 @@ public:
     /// Returns the type of type which is initialized.
     InitType initType() { return initType_; }
 
+    void allocateOnStack() override;
+
     static Value *initObject(FunctionCodeGenerator *fg, const ASTArguments &args, Function *function,
-                             const Type &type);
+                             const Type &type, bool stackInit = false);
+
 private:
     InitType initType_ = InitType::Class;
     std::u32string name_;

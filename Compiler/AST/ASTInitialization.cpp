@@ -13,6 +13,7 @@
 #include "Types/Enum.hpp"
 #include "Types/TypeExpectation.hpp"
 #include "Emojis.h"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -53,6 +54,22 @@ Type ASTInitialization::analyseEnumInit(FunctionAnalyser *analyser, Type &type) 
                             utf8(name_), ".");
     }
     return type;
+}
+
+void ASTInitialization::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    if (initType_ == InitType::Enum) {
+        return;
+    }
+    if (type == MFType::Borrowing && initType_ == InitType::Class) {
+        initType_ = InitType::ClassStack;
+    }
+    analyser->analyseFunctionCall(&args_, typeExpr_.get(), initializer_);
+}
+
+void ASTInitialization::allocateOnStack() {
+    if (initType() == InitType::Class) {
+        initType_ = InitType::ClassStack;
+    }
 }
 
 }  // namespace EmojicodeCompiler

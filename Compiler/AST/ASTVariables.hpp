@@ -24,7 +24,9 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *) override {}
 private:
     std::u32string varName_;
     std::unique_ptr<ASTType> type_;
@@ -35,11 +37,11 @@ class AccessesAnyVariable {
 public:
     /// @returns The name of the variable to be accessed.
     const std::u32string& name() const { return name_; }
+    VariableID id() const { return id_; }
+    bool inInstanceScope() const { return inInstanceScope_; }
 protected:
     explicit AccessesAnyVariable(std::u32string name) : name_(std::move(name)) {}
     void setVariableAccess(const ResolvedVariable &var, FunctionAnalyser *analyser);
-    bool inInstanceScope() const { return inInstanceScope_; }
-    VariableID id() const { return id_; }
 
     /// Generates code to retrieve a pointer to the instance variable, whose ID is stored in this instance.
     Value* instanceVariablePointer(FunctionCodeGenerator *fg) const;
@@ -59,7 +61,10 @@ public:
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override;
+
 private:
     bool reference_ = false;
 };
@@ -88,7 +93,9 @@ public:
                           const SourcePosition &p) : ASTVariableInit(e, p, std::move(name), false) {}
     void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const final;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
 
 protected:
     ASTVariableAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,
@@ -100,7 +107,9 @@ public:
     ASTVariableDeclareAndAssign(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                                 const SourcePosition &p) : ASTVariableAssignment(std::move(name), e, p, true) {}
     void analyse(FunctionAnalyser *analyser) override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
 };
 
 /// Inserted by the compiler to initialize an instance variable as specified by a baby bottle initializer.
@@ -118,7 +127,9 @@ public:
 
     void analyse(FunctionAnalyser *analyser) override;
     void generateAssignment(FunctionCodeGenerator *) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *) override;
 };
 
 enum class OperatorType;

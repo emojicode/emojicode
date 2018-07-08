@@ -13,6 +13,7 @@
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Emojis.h"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -168,6 +169,10 @@ bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const 
 
 Type ASTMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyseMethodCall(analyser, name_, callee_);
+}
+
+void ASTMethod::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    analyser->analyseFunctionCall(&args_, callee_.get(), method_);
 }
 
 }  // namespace EmojicodeCompiler

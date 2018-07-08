@@ -21,7 +21,10 @@ public:
     ASTStringLiteral(std::u32string value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {}
+
 private:
     std::u32string value_;
     unsigned int varId_;
@@ -32,7 +35,9 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     explicit ASTBooleanFalse(const SourcePosition &p) : ASTExpr(p) {}
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
 };
 
 class ASTBooleanTrue final : public ASTExpr {
@@ -40,7 +45,9 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     explicit ASTBooleanTrue(const SourcePosition &p) : ASTExpr(p) {}
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
 };
 
 class ASTNumberLiteral final : public ASTExpr {
@@ -52,7 +59,10 @@ public:
 
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
+
 private:
     enum class NumberType {
         Double, Integer, Byte
@@ -69,7 +79,10 @@ public:
     ASTSymbolLiteral(char32_t value, const SourcePosition &p) : ASTExpr(p), value_(value) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
+
 private:
     char32_t value_;
 };
@@ -80,7 +93,10 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     Type type_ = Type::noReturn();
@@ -92,7 +108,10 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     Type type_ = Type::noReturn();
@@ -104,7 +123,10 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     void addValue(const std::shared_ptr<ASTExpr> &value) { values_.emplace_back(value); }
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
     Type type_ = Type::noReturn();
@@ -115,7 +137,9 @@ class ASTThis : public ASTExpr {
 public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
 };
 
 class ASTNoValue : public ASTExpr {
@@ -123,7 +147,10 @@ public:
     explicit ASTNoValue(const SourcePosition &p) : ASTExpr(p) {}
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
+    
 private:
     Type type_ = Type::noReturn();
 };

@@ -104,6 +104,20 @@ void Declarator::declareLlvmFunction(Function *function) const {
         reification.entity.function = llvm::Function::Create(ft, linkage, name, &module_);
         reification.entity.function->addFnAttr(llvm::Attribute::NoUnwind);
 
+        size_t i = 0;
+        if (hasThisArgument(function->functionType())) {
+            if (function->memoryFlowTypeForThis() == MFType::Borrowing) {
+                reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
+            }
+            i++;
+        }
+        for (auto &param : function->parameters()) {
+            if (param.memoryFlowType == MFType::Borrowing && param.type->type().type() == TypeType::Class) {
+                reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
+            }
+            i++;
+        }
+
         if (function->typeContext().calleeType().type() == TypeType::ValueType && !function->mutating()) {
             reification.entity.function->addParamAttr(0, llvm::Attribute::ReadOnly);
         }

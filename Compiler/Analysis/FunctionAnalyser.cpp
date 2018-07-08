@@ -125,7 +125,7 @@ void FunctionAnalyser::analyse() {
     analyseReturn(function()->ast());
     analyseInitializationRequirements();
 
-    scoper_->popScope(compiler());
+    function_->ast()->setScopeStats(scoper_->popScope(compiler()));
     function_->setVariableCount(scoper_->variableIdCount());
 }
 
@@ -222,13 +222,6 @@ void FunctionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &ty
             node->genericArguments().emplace_back(std::make_unique<ASTLiteralType>(commonType));
         }
     }
-}
-
-template<typename T, typename ...Args>
-std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, const Type &type, Args... args) {
-    auto pos = (*node)->position();
-    *node = std::make_shared<T>(std::move(*node), type, pos, args...);
-    return std::static_pointer_cast<T>(*node);
 }
 
 Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {

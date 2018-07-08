@@ -13,6 +13,7 @@
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -72,6 +73,10 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
     return type.optionalized();
 }
 
+void ASTCast::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    // TODO: Implement
+}
+
 Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     if (t.type() != TypeType::Optional) {
@@ -85,6 +90,10 @@ Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExp
     varId_ = variable.id();
 
     return analyser->boolean();
+}
+
+void ASTConditionalAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    // TODO: Implement
 }
 
 Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -130,6 +139,11 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
 }
 
+void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    analyser->recordThis(function_->memoryFlowTypeForThis());
+    analyser->analyseFunctionCall(&args_, nullptr, function_);
+}
+
 void ASTSuper::analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, const Initializer *initializer) {
     if (initializer->errorProne()) {
         auto thisInitializer = dynamic_cast<Initializer*>(analyser->function());
@@ -154,6 +168,13 @@ Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation 
         analyser->expectType(type.genericArguments()[i], &args_.parameters()[i - 1]);
     }
     return type.genericArguments()[0];
+}
+
+void ASTCallableCall::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    callable_->analyseMemoryFlow(analyser, MFType::Borrowing);
+    for (auto &arg : args_.parameters()) {
+        analyser->take(&arg);
+    }
 }
 
 }  // namespace EmojicodeCompiler

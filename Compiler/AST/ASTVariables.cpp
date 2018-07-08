@@ -13,6 +13,7 @@
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -29,6 +30,12 @@ Type ASTGetVariable::analyse(FunctionAnalyser *analyser, const TypeExpectation &
     setVariableAccess(var, analyser);
     var.variable.uninitalizedError(position());
     return var.variable.type();
+}
+
+void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+    if (!inInstanceScope()) {
+        analyser->recordVariableGet(id(), type);
+    }
 }
 
 void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
@@ -56,11 +63,22 @@ void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
     rvar.variable.mutate(position());
 }
 
+void ASTVariableAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    analyser->take(&expr_);
+    if (!inInstanceScope()) {
+        analyser->recordVariableSet(id(), expr_.get(), false);
+    }
+}
+
 void ASTVariableDeclareAndAssign::analyse(FunctionAnalyser *analyser) {
     Type t = analyser->expect(TypeExpectation(false, true), &expr_).inexacted();
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, false, position());
     var.initialize();
     setVariableAccess(ResolvedVariable(var, false), analyser);
+}
+
+void ASTVariableDeclareAndAssign::analyseMemoryFlow(EmojicodeCompiler::MFFunctionAnalyser *analyser) {
+    analyser->recordVariableSet(id(), expr_.get(), true);
 }
 
 void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
@@ -76,6 +94,11 @@ void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, true, position());
     var.initialize();
     setVariableAccess(ResolvedVariable(var, false), analyser);
+}
+
+void ASTConstantVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    expr_->analyseMemoryFlow(analyser, MFType::Escaping);
+    analyser->recordVariableSet(id(), expr_.get(), false);
 }
 
 ASTOperatorAssignment::ASTOperatorAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,
