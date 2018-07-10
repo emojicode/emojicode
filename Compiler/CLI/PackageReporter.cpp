@@ -28,11 +28,13 @@ void PackageReporter::reportDocumentation(const std::u32string &documentation) {
 }
 
 void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
+    if (type.type() == TypeType::Box) {
+        reportType(type.unboxed(), tc);
+        return;
+    }
     writer_.StartObject();
 
     switch (type.type()) {
-        case TypeType::Box:
-            reportType(type.unboxed(), tc);
         case TypeType::Class:
         case TypeType::ValueType:
         case TypeType::Enum:
@@ -43,23 +45,23 @@ void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
             writer_.Key("name");
             writer_.String(utf8(type.typeDefinition()->name()));
 
-            reportGenericArguments(type, tc);
+            reportGenericArguments(type, tc, type.genericArguments());
             break;
         }
         case TypeType::Callable:
-            reportTypeTypeAndGenericArgs("Callable", type, tc);
+            reportTypeTypeAndGenericArgs("Callable", type, tc, type.genericArguments());
             break;
         case TypeType::MultiProtocol:
-            reportTypeTypeAndGenericArgs("MultiProtocol", type, tc);
+            reportTypeTypeAndGenericArgs("MultiProtocol", type, tc, type.protocols());
             break;
         case TypeType::Optional:
-            reportTypeTypeAndGenericArgs("Optional", type, tc);
+            reportTypeTypeAndGenericArgs("Optional", type, tc, { type.optionalType() });
             break;
         case TypeType::Error:
-            reportTypeTypeAndGenericArgs("Error", type, tc);
+            reportTypeTypeAndGenericArgs("Error", type, tc, { type.errorEnum(), type.errorType() });
             break;
         case TypeType::TypeAsValue:
-            reportTypeTypeAndGenericArgs("TypeAsValue", type, tc);
+            reportTypeTypeAndGenericArgs("TypeAsValue", type, tc, { type.typeOfTypeValue() });
             break;
         case TypeType::NoReturn:
             writer_.Key("type");
@@ -80,26 +82,28 @@ void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
         }
         case TypeType::StorageExpectation:
         case TypeType::Extension:
+        case TypeType::Box:
             throw std::domain_error("Generating report for type StorageExpectation/Extension");
     }
 
     writer_.EndObject();
 }
 
-void PackageReporter::reportGenericArguments(const Type &type, const TypeContext &context) {
+void PackageReporter::reportGenericArguments(const Type &type, const TypeContext &context,
+                                             const std::vector<Type> &args) {
     writer_.Key("arguments");
     writer_.StartArray();
-    for (auto &arg : type.genericArguments()) {
+    for (auto &arg : args) {
         reportType(arg, context);
     }
     writer_.EndArray();
 }
 
 void PackageReporter::reportTypeTypeAndGenericArgs(const char *typeTypeString, const Type &type,
-                                                   const TypeContext &context) {
+                                                   const TypeContext &context, const std::vector<Type> &args) {
     writer_.Key("type");
     writer_.String(typeTypeString);
-    reportGenericArguments(type, context);
+    reportGenericArguments(type, context, args);
 }
 
 void PackageReporter::reportFunction(Function *function, const TypeContext &tc) {

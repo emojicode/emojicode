@@ -167,7 +167,8 @@ bool Type::canHaveGenericArguments() const {
     if (type() == TypeType::Box) {
         return genericArguments_[0].canHaveGenericArguments();
     }
-    return type() == TypeType::Class || type() == TypeType::Protocol || type() == TypeType::ValueType;
+    return type() == TypeType::Class || type() == TypeType::Protocol || type() == TypeType::ValueType
+            || type() == TypeType::Enum;
 }
 
 bool Type::canHaveProtocol() const {

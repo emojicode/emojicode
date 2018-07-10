@@ -65,9 +65,10 @@ private:
         writer_.EndArray();
     }
 
-    void reportGenericArguments(const Type &type, const TypeContext &context);
+    void reportGenericArguments(const Type &type, const TypeContext &context, const std::vector<Type> &args);
 
-    void reportTypeTypeAndGenericArgs(const char *typeTypeString, const Type &type, const TypeContext &context);
+    void reportTypeTypeAndGenericArgs(const char *typeTypeString, const Type &type, const TypeContext &context,
+                                      const std::vector<Type> &args);
 };
 
 }  // namespace CLI
