@@ -125,6 +125,10 @@ void SemanticAnalyser::analyseFunctionDeclaration(Function *function) {
     function->analyseConstraints(context);
     for (auto &param : function->parameters()) {
         param.type->analyseType(context);
+        if (!function->externalName().empty() && param.type->type().type() == TypeType::ValueType &&
+            !param.type->type().valueType()->isPrimitive()) {
+            param.type->type().setReference();
+        }
     }
 
     if (auto initializer = dynamic_cast<Initializer*>(function)) {
