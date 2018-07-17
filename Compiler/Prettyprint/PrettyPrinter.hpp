@@ -65,6 +65,7 @@ private:
     void printFunctionAccessLevel(Function *function);
     void printTypeDef(const Type &type);
     void printDocumentation(const std::u32string &doc);
+    void printLinkHints();
     std::string filePath(const std::string &path);
 };
 

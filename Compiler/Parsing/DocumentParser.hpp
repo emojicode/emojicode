@@ -51,6 +51,8 @@ private:
     /// Called if a $start-flag$ has been detected. The first token has already been parsed.
     void parseStartFlag(const Documentation &documentation, const SourcePosition &p);
 
+    void parseLinkHints(const SourcePosition &p);
+
     template <typename TypeDef>
     void offerAndParseBody(TypeDef *typeDef, const TypeIdentifier &id, const SourcePosition &p) {
         package_->offerType(Type(typeDef), id.name, id.getNamespace(), typeDef->exported(), p);

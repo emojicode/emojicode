@@ -144,6 +144,9 @@ public:
     /// @complexity O(n)
     std::u32string findNamespace(const Type &type);
 
+    void setLinkHints(std::vector<std::string> hints) { linkHints_ = std::move(hints); }
+    const std::vector<std::string>& linkHints() { return linkHints_; }
+
     ~Package();
 private:
     /// Verifies that no type with name @c name has already been exported and adds the type to ::exportedTypes_
@@ -167,6 +170,7 @@ private:
     std::vector<std::unique_ptr<Protocol>> protocols_;
     std::vector<std::unique_ptr<Extension>> extensions_;
     std::set<Package *> importedPackages_;
+    std::vector<std::string> linkHints_;
 
     std::u32string documentation_;
     Compiler *compiler_;

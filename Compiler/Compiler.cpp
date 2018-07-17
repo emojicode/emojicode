@@ -90,10 +90,13 @@ void Compiler::linkToExecutable() {
     for (auto &package : packages_) {
         auto path = findBinaryPathPackage(package.second->path(), package.second->name());
         cmd << " " << path;
+        for (auto &hint : package.second->linkHints()) {
+            cmd << " -l" << hint;
+        }
     }
 
     auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition(0, 0, nullptr)), "runtime");
-    cmd << " " << runtimeLib << " -lm -lpthread -o " << outPath_;
+    cmd << " " << runtimeLib << " -o " << outPath_;
 
     system(cmd.str().c_str());
 }

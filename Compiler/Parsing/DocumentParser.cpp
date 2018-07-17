@@ -75,14 +75,16 @@ void DocumentParser::parse() {
                         attributes.check(theToken.position(), package_->compiler());
                         parseStartFlag(documentation, theToken.position());
                         continue;
+                    case E_LINK_SYMBOL:
+                        attributes.check(theToken.position(), package_->compiler());
+                        parseLinkHints(theToken.position());
+                        continue;
                     default:
                         break;  // and fallthrough to the error
                 }
             default:
                 throw CompilerError(theToken.position(), "Unexpected token ", theToken.stringName());
         }
-
-
     }
 }
 
@@ -135,6 +137,18 @@ void DocumentParser::parseInclude(const SourcePosition &p) {
     }
 
     package_->includeDocument(fileString, originalPathString);
+}
+
+void DocumentParser::parseLinkHints(const SourcePosition &p) {
+    if (!package_->linkHints().empty()) {
+        package_->compiler()->error(CompilerError(p, "Link hints were already provided."));
+    }
+    std::vector<std::string> hints;
+    do {
+        hints.emplace_back(utf8(stream_.consumeToken(TokenType::String).value()));
+    } while (stream_.nextTokenIsEverythingBut(E_LINK_SYMBOL));
+    stream_.consumeToken();
+    package_->setLinkHints(std::move(hints));
 }
 
 void DocumentParser::parseExtension(const Documentation &documentation, const SourcePosition &p) {

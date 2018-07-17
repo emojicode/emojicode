@@ -57,6 +57,17 @@ void PrettyPrinter::printInterface(const std::string &out) {
     prettyStream_.offerNewLine();
 
     printRecordings(package_->files().front().recordings_);
+    printLinkHints();
+}
+
+void PrettyPrinter::printLinkHints() {
+    if (!package_->linkHints().empty()) {
+        prettyStream_.indent() << "🔗 ";
+        for (auto &hint : package_->linkHints()) {
+            prettyStream_ << "🔤" << hint << "🔤 ";
+        }
+        prettyStream_ << "🔗\n";
+    }
 }
 
 void PrettyPrinter::print(RecordingPackage::Recording *recording) {
