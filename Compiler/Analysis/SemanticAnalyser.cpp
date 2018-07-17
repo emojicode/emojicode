@@ -74,16 +74,19 @@ void SemanticAnalyser::analyse(bool executable) {
 }
 
 void SemanticAnalyser::checkStartFlagFunction(bool executable) {
-    if (executable) {
-        if (!package_->hasStartFlagFunction()) {
-            compiler()->error(CompilerError(package_->position(), "No 🏁 block was found."));
-        }
+    if (package_->hasStartFlagFunction()) {
         auto returnType = package_->startFlagFunction()->returnType()->type();
         if (returnType.type() != TypeType::NoReturn &&
             !returnType.compatibleTo(Type(package_->compiler()->sInteger), TypeContext())) {
             package_->compiler()->error(CompilerError(package_->startFlagFunction()->position(),
                                                       "🏁 must either have no return or return 🔢."));
         }
+        if (!executable) {
+            package_->startFlagFunction()->makeExternal();  // Prevent function from being included in object file
+        }
+    }
+    else if (executable) {
+        compiler()->error(CompilerError(package_->position(), "No 🏁 block was found."));
     }
 }
 
