@@ -19,23 +19,13 @@
 namespace EmojicodeCompiler {
 
 class CompilerError;
-
 class RecordingPackage;
-
 class Package;
-
 class Function;
-
 struct SourcePosition;
-
 class Class;
-
 class Protocol;
-
 class ValueType;
-
-class CompatibilityInfoProvider;
-
 class Compiler;
 
 /// CompilerDelegate is an interface class, which is used by Compiler to notify about certain events, like
@@ -86,8 +76,6 @@ public:
     RecordingPackage *mainPackage() const { return mainPackage_.get(); }
 
     SourceManager &sourceManager() { return sourceManager_; }
-
-    void loadMigrationFile(const std::string &file);
 
     /// Issues a compiler warning. The compilation is continued normally.
     /// @param args All arguments will be concatenated.
@@ -148,7 +136,6 @@ private:
     const std::string ar_;
     const std::string objectPath_;
     const std::unique_ptr<CompilerDelegate> delegate_;
-    std::unique_ptr<CompatibilityInfoProvider> compInfoProvider_;
     std::unique_ptr<RecordingPackage> mainPackage_;
     SourceManager sourceManager_;
     void archive();

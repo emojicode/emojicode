@@ -12,7 +12,6 @@
 #include "Lex/Lexer.hpp"
 #include "Lex/SourceManager.hpp"
 #include "Package.hpp"
-#include "Parsing/CompatibilityInfoProvider.hpp"
 #include "Parsing/DocumentParser.hpp"
 #include "Types/Class.hpp"
 #include "Types/Extension.hpp"

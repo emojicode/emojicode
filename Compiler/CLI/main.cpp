@@ -25,10 +25,6 @@ bool start(const Options &options) {
                          options.objectPath(), options.linker(), options.ar(), options.packageSearchPaths(),
                          options.compilerDelegate(), options.pack(), options.standalone());
 
-    if (!options.migrationFile().empty()) {
-        application.loadMigrationFile(options.migrationFile());
-    }
-
     bool success = application.compile(options.prettyprint(), options.optimize(), options.printIr());
 
     if (options.prettyprint()) {

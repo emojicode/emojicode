@@ -42,7 +42,6 @@ struct ExportedType {
 
 struct TypeIdentifier;
 class Compiler;
-class CompatibilityInfoProvider;
 
 /// Package is the class used to load, parse and analyse packages.
 class Package {
@@ -81,13 +80,6 @@ public:
 
     /// @returns The path to the directory of this package.
     const std::string& path() const { return path_; }
-
-    /// If the compatibility mode is on the, the parsers will try to parse Emojicode 0.5 syntax.
-    /// If this is true, a MigArgs object is provided.
-    /// @returns Whether the compatiblity mode is on.
-    bool compatibilityMode() const { return compatibilityInfoProvider_ != nullptr; }
-    CompatibilityInfoProvider* compatibilityInfoProvider() { return compatibilityInfoProvider_; }
-    void setCompatiblityInfoProvider(CompatibilityInfoProvider *cac) { compatibilityInfoProvider_ = cac; }
 
     const std::u32string& documentation() const { return documentation_; }
     void setDocumentation(const std::u32string &doc) { documentation_ = doc; }
@@ -159,8 +151,6 @@ private:
     PackageVersion version_ = PackageVersion(0, 0);
     bool finishedLoading_ = false;
     Function *startFlag_ = nullptr;
-
-    CompatibilityInfoProvider *compatibilityInfoProvider_ = nullptr;
 
     std::map<std::u32string, Type> types_;
     std::vector<ExportedType> exportedTypes_;

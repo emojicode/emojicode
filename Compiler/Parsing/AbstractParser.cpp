@@ -8,13 +8,11 @@
 
 #include "AbstractParser.hpp"
 #include "AST/ASTType.hpp"
-#include "CompatibilityInfoProvider.hpp"
 #include "Compiler.hpp"
 #include "Emojis.h"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
-#include "Parsing/CompatibleFunctionParser.hpp"
 #include "Types/Protocol.hpp"
 #include <map>
 #include <vector>
@@ -38,15 +36,6 @@ Token AbstractParser::parseTypeEmoji() const {
         return stream_.consumeToken();
     }
     return stream_.consumeToken(TokenType::Identifier);
-}
-
-std::unique_ptr<FunctionParser> AbstractParser::factorFunctionParser(Package *pkg, TokenStream &stream,
-                                                                     TypeContext context, Function *function) {
-    if (package_->compatibilityMode()) {
-        package_->compatibilityInfoProvider()->selectFunction(function);
-        return std::make_unique<CompatibleFunctionParser>(pkg, stream, context);
-    }
-    return std::make_unique<FunctionParser>(pkg, stream, context);
 }
 
 std::unique_ptr<ASTType> AbstractParser::parseType() {

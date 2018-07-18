@@ -12,7 +12,6 @@
 #include "Generation/CodeGenerator.hpp"
 #include "Package/RecordingPackage.hpp"
 #include "Parsing/AbstractParser.hpp"
-#include "Parsing/CompatibilityInfoProvider.hpp"
 #include "Prettyprint/PrettyPrinter.hpp"
 #include <llvm/Support/FileSystem.h>
 
@@ -199,11 +198,6 @@ void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
     sEnumerable = getStandardProtocol(
             std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s,
             errorPosition);
-}
-
-void Compiler::loadMigrationFile(const std::string &file) {
-    mainPackage_->setCompatiblityInfoProvider(compInfoProvider_.get());
-    compInfoProvider_ = std::make_unique<CompatibilityInfoProvider>(file);
 }
 
 } // namespace EmojicodeCompiler

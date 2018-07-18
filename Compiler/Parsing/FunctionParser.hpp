@@ -28,19 +28,19 @@ public:
     FunctionParser(Package *pkg, TokenStream &stream, TypeContext context)
             : AbstractParser(pkg, stream), typeContext_(std::move(context)) {}
     std::unique_ptr<ASTBlock> parse();
-protected:
-    virtual void parseMainArguments(ASTArguments *arguments, const SourcePosition &position);
-    virtual std::shared_ptr<ASTExpr> parseExprLeft(const Token &token, int precedence);
-    virtual std::shared_ptr<ASTExpr> parseRight(std::shared_ptr<ASTExpr> left, int precendence);
-    virtual std::shared_ptr<ASTExpr> parseClosure(const Token &token);
-    std::shared_ptr<ASTExpr> parseExpr(int precedence) {
-        return parseExprTokens(stream_.consumeToken(), precedence);
-    }
 private:
     TypeContext typeContext_;
 
     std::unique_ptr<ASTStatement> parseStatement();
     ASTBlock parseBlock();
+
+    void parseMainArguments(ASTArguments *arguments, const SourcePosition &position);
+    std::shared_ptr<ASTExpr> parseExprLeft(const Token &token, int precedence);
+    std::shared_ptr<ASTExpr> parseRight(std::shared_ptr<ASTExpr> left, int precendence);
+    std::shared_ptr<ASTExpr> parseClosure(const Token &token);
+    std::shared_ptr<ASTExpr> parseExpr(int precedence) {
+        return parseExprTokens(stream_.consumeToken(), precedence);
+    }
 
     std::unique_ptr<ASTStatement> parseIf(const SourcePosition &position);
     std::unique_ptr<ASTStatement> parseErrorHandler(const SourcePosition &position);

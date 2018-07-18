@@ -120,8 +120,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
     parseReturnType(function);
     stream_.consumeToken(TokenType::BlockBegin);
 
-    auto ast = factorFunctionParser(package_, stream_, function->typeContext(), function)->parse();
-    function->setAst(std::move(ast));
+    function->setAst(FunctionParser(package_, stream_, function->typeContext()).parse());
     package_->setStartFlagFunction(function);
 }
 

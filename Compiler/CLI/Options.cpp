@@ -82,7 +82,6 @@ Options::Options(int argc, char *argv[]) {
         throw CompilationCancellation();
     }
 
-    examineMainFile();
     configureOutPath();
 }
 
@@ -102,14 +101,6 @@ void Options::readEnvironment(const std::vector<std::string> &searchPaths) {
 
 void Options::printCliMessage(const std::string &message) {
     std::cout << "👉  " << message << std::endl;
-}
-
-void Options::examineMainFile() {
-    if (endsWith(mainFile_, ".emojimig")) {
-        migrationFile_ = mainFile_;
-        format_ = true;
-        mainFile_.replace(mainFile_.size() - 8, 8, "emojic");
-    }
 }
 
 void Options::configureOutPath() {

@@ -45,7 +45,6 @@ public:
     const std::string& mainFile() const { return mainFile_; }
     const std::string& interfaceFile() const { return interfaceFile_; }
     const std::vector<std::string>& packageSearchPaths() const { return packageSearchPaths_; }
-    const std::string& migrationFile() const { return migrationFile_; }
     const std::string& mainPackageName() const { return mainPackageName_; }
     std::string linker() const;
     std::string ar() const;
@@ -60,7 +59,6 @@ private:
     std::string mainFile_;
     std::string interfaceFile_;
     std::vector<std::string> packageSearchPaths_;
-    std::string migrationFile_;
     std::string mainPackageName_ = "_";
     bool format_ = false;
     bool jsonOutput_ = false;
@@ -72,9 +70,6 @@ private:
 
     void readEnvironment(const std::vector<std::string> &searchPaths);
 
-    /// If the file ends in ".emojimig", the migration file migrationFile_ will be set to it and prettyprint_ to true.
-    /// The main file is then derived from by replacing ".emojimig" with ".emojic".
-    void examineMainFile();
     void configureOutPath();
 };
 

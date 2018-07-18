@@ -103,9 +103,6 @@ protected:
     /// Parses a $return-type$ for a function one is specified.
     void parseReturnType(Function *function);
 
-    std::unique_ptr<FunctionParser> factorFunctionParser(Package *pkg, TokenStream &stream, TypeContext context,
-                                                         Function *function);
-
 private:
     /// Parses a $multi-protocol$
     std::unique_ptr<ASTType> parseMultiProtocol();
