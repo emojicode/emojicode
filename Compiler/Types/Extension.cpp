@@ -13,6 +13,10 @@
 namespace EmojicodeCompiler {
 
 void Extension::extend() {
+    if (extendedType_.typeDefinition()->package() != package_) {
+        throw CompilerError(position(), "Types from other package cannot be extended at this time.");
+    }
+
     auto typeDef = extendedType_.typeDefinition();
     for (auto &method : methods_) {
         typeDef->addMethod(std::move(method.second));
