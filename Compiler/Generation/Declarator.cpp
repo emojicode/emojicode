@@ -39,6 +39,10 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     classValueTypeMeta_ = new llvm::GlobalVariable(module_, typeHelper_.valueTypeMeta(), true,
                                                    llvm::GlobalValue::LinkageTypes::ExternalLinkage,
                                                    nullptr, "ejcRunTimeClassValueTypeMeta");
+
+    inheritsFrom_ = declareRunTimeFunction("ejcInheritsFrom", llvm::Type::getInt1Ty(context_),{
+        typeHelper_.classMeta()->getPointerTo(), typeHelper_.classMeta()->getPointerTo()
+    });
 }
 
 llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type *returnType,

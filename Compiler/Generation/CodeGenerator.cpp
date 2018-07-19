@@ -26,6 +26,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
+#include <llvm/Transforms/IPO.h>
 #include <algorithm>
 #include <limits>
 #include <vector>
@@ -123,6 +124,7 @@ void CodeGenerator::emit(const std::string &outPath, bool printIr) {
         puts("TargetMachine can't emit a file of this type");
     }
     if (printIr) {
+        pass.add(llvm::createStripDeadPrototypesPass());
         pass.add(llvm::createPrintModulePass(llvm::outs()));
     }
     pass.run(*module());
@@ -176,9 +178,14 @@ void CodeGenerator::createClassInfo(Class *klass) {
     auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
                                                  llvm::GlobalValue::LinkageTypes::PrivateLinkage,
                                                  llvm::ConstantArray::get(type, klass->virtualTable()));
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), std::vector<llvm::Constant *> {
-            llvm::ConstantInt::get(llvm::Type::getInt64Ty(context()), 0), virtualTable
-    });
+    llvm::Constant *superclass;
+    if (klass->superclass() != nullptr) {
+        superclass = klass->superclass()->classMeta();
+    }
+    else {
+        superclass = llvm::ConstantPointerNull::get(typeHelper_.classMeta()->getPointerTo());
+    }
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), { superclass, virtualTable });
     auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleClassMetaName(klass));

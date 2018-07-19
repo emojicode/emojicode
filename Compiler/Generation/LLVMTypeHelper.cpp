@@ -28,9 +28,8 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
             llvm::Type::getInt1Ty(context_),
             llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
     }, "protocolConformance");
-    classMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-            llvm::Type::getInt64Ty(context_), llvm::Type::getInt8PtrTy(context_)->getPointerTo()
-    }, "classMeta");
+    classMetaType_ = llvm::StructType::create(context_, "classMeta");
+    classMetaType_->setBody({ classMetaType_->getPointerTo(), llvm::Type::getInt8PtrTy(context_)->getPointerTo() });
     valueTypeMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
             protocolsTable_
     }, "valueTypeMeta");
@@ -43,7 +42,8 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
 
     auto compiler = codeGenerator_->package()->compiler();
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
-    types_.emplace(Type::someobject(), llvm::Type::getInt8PtrTy(context_));
+    types_.emplace(Type::someobject(),
+                   llvm::StructType::create({ classMetaType_->getPointerTo() }, "someobject")->getPointerTo());
     types_.emplace(Type(compiler->sInteger), llvm::Type::getInt64Ty(context_));
     types_.emplace(Type(compiler->sSymbol), llvm::Type::getInt32Ty(context_));
     types_.emplace(Type(compiler->sReal), llvm::Type::getDoubleTy(context_));

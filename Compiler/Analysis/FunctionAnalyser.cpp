@@ -233,8 +233,9 @@ Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation,
         return exprType;
     }
 
-    if (exprType.type() == TypeType::Class && expectation.type() == TypeType::Class &&
-        expectation.klass() != exprType.klass()) {
+    if ((exprType.type() == TypeType::Class && expectation.type() == TypeType::Class &&
+         expectation.klass() != exprType.klass()) || (exprType.type() == TypeType::Class &&
+                                                      expectation.type() == TypeType::Someobject)) {
         insertNode<ASTUpcast>(node, exprType, expectation);
     }
 

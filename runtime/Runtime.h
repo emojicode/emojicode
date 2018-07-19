@@ -61,9 +61,14 @@ private:
     void *meta_;
 };
 
+struct ClassInfo {
+    ClassInfo *superclass;
+    void *dispatchTable;
+};
+
 #define OBJECT_META_NAME(package, emojitypename) package ## _class_meta_ ## emojitypename
-#define SET_META_FOR(type, package, emojitypename) extern "C" char OBJECT_META_NAME(package, emojitypename)[]; \
-template<> struct runtime::Meta<type> { constexpr static void *const value = &OBJECT_META_NAME(package, emojitypename); };
+#define SET_META_FOR(type, package, emojitypename) extern "C" runtime::ClassInfo OBJECT_META_NAME(package, emojitypename); \
+template<> struct runtime::Meta<type> { constexpr static runtime::ClassInfo *const value = &OBJECT_META_NAME(package, emojitypename); };
 
 struct NoValue_t {};
 constexpr NoValue_t NoValue {};

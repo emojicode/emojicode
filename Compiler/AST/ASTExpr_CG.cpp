@@ -11,6 +11,7 @@
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/Class.hpp"
+#include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {
 
@@ -44,7 +45,7 @@ Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
             // TODO: implement
             throw std::logic_error("Unimplemented");
         case CastType::ClassDowncast:
-            break;
+            throw std::logic_error("unreachable");
     }
 
     fg->createIfElse(is, []() {}, [fg, box]() {
@@ -57,7 +58,9 @@ Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
     auto value = value_->generate(fg);
     auto meta = fg->getMetaFromObject(value);
     auto toType = typeExpr_->expressionType();
-    return fg->createIfElsePhi(fg->builder().CreateICmpEQ(meta, typeExpr_->generate(fg)), [toType, fg, value]() {
+    auto inheritsFrom = fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
+                                                 { meta, typeExpr_->generate(fg) });
+    return fg->createIfElsePhi(inheritsFrom, [toType, fg, value]() {
         auto casted = fg->builder().CreateBitCast(value, fg->typeHelper().llvmTypeFor(toType));
         return fg->getSimpleOptionalWithValue(casted, toType.optionalized());
     }, [fg, toType]() {

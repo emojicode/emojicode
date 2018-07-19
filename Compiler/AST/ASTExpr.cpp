@@ -37,12 +37,14 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
     }
     else if (!type.compatibleTo(originalType, analyser->typeContext())) {
         auto typeString = type.toString(analyser->typeContext());
-        analyser->compiler()->error(CompilerError(position(), "Cast to unrelated type ", typeString," will always fail."));
+        analyser->compiler()->error(CompilerError(position(), "Cast to unrelated type ", typeString,
+                                                  " will always fail."));
     }
 
     if (type.type() == TypeType::Class) {
         if (!type.genericArguments().empty()) {
-            analyser->compiler()->error(CompilerError(position(), "Class casts with generic arguments are not available."));
+            analyser->compiler()->error(CompilerError(position(),
+                                                      "Class casts with generic arguments are not available."));
         }
 
         if (originalType.type() == TypeType::Someobject || originalType.type() == TypeType::Class) {

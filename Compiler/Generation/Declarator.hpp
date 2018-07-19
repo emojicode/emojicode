@@ -22,6 +22,7 @@ public:
 
     llvm::Function* runTimeNew() const { return runTimeNew_; }
     llvm::Function* panic() const { return panic_; }
+    llvm::Function* inheritsFrom() const { return inheritsFrom_; }
     llvm::GlobalVariable* classValueTypeMeta() { return classValueTypeMeta_; }
 
     void declareImportedPackageSymbols(Package *package);
@@ -37,6 +38,7 @@ private:
 
     llvm::Function *runTimeNew_ = nullptr;
     llvm::Function *panic_ = nullptr;
+    llvm::Function *inheritsFrom_ = nullptr;
     llvm::GlobalVariable *classValueTypeMeta_ = nullptr;
 
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);

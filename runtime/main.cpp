@@ -25,6 +25,15 @@ extern "C" int8_t* ejcAlloc(runtime::Integer size) {
     return static_cast<int8_t*>(malloc(size));
 }
 
+extern "C" bool ejcInheritsFrom(runtime::ClassInfo *classInfo, runtime::ClassInfo *from) {
+    for (auto classInfoNew = classInfo; classInfoNew != nullptr; classInfoNew = classInfoNew->superclass) {
+        if (classInfoNew == from) {
+            return true;
+        }
+    }
+    return false;
+}
+
 extern "C" void ejcMemoryRealloc(int8_t **pointerPtr, runtime::Integer newSize) {
     *pointerPtr = static_cast<int8_t*>(realloc(*pointerPtr, newSize));
 }
