@@ -56,7 +56,10 @@ public:
     llvm::Value* optionalValue();
     llvm::Value* optionalNoValue();
 
-    llvm::Constant * valueTypeMetaFor(const Type &type);
+    /// Determines a box info value that is used to identify values of the provided type in a box.
+    /// @returns An LLVM value representing the box info that must be stored in the box info field.
+    llvm::Constant* boxInfoFor(const Type &type);
+    
 private:
     Package *const package_;
     llvm::LLVMContext context_;

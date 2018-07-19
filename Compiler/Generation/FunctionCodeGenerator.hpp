@@ -43,20 +43,27 @@ public:
     ///          Behaves like `sizeOf(ptrType->getElementType())`, although this method does not call sizeOf().
     /// @see sizeOf
     llvm::Value* sizeOfReferencedType(llvm::PointerType *ptrType);
-    llvm::Value* getMetaFromObject(llvm::Value *object);
-    /// Gets a pointer to the meta type field of box.
+    /// Gets a pointer to the box info field of box.
     /// @param box A pointer to a box.
-    llvm::Value* getMetaTypePtr(llvm::Value *box);
+    llvm::Value* getBoxInfoPtr(llvm::Value *box);
+    llvm::Value* getValuePtr(llvm::Value *box, const Type &type);
+    llvm::Value* getValuePtr(llvm::Value *box, llvm::Type *llvmType);
+    llvm::Value* getMakeNoValue(llvm::Value *box);
+
     llvm::Value* getHasNoValue(llvm::Value *simpleOptional);
     llvm::Value* getHasNoValueBox(llvm::Value *box);
     llvm::Value* getHasNoValueBoxPtr(llvm::Value *box);
     llvm::Value* getSimpleOptionalWithoutValue(const Type &type);
     llvm::Value* getBoxOptionalWithoutValue();
     llvm::Value* getSimpleOptionalWithValue(llvm::Value *value, const Type &type);
-    llvm::Value* getValuePtr(llvm::Value *box, const Type &type);
-    llvm::Value* getValuePtr(llvm::Value *box, llvm::Type *llvmType);
-    llvm::Value* getObjectMetaPtr(llvm::Value *object);
-    llvm::Value* getMakeNoValue(llvm::Value *box);
+
+    /// Gets a pointer to the pointer to the class info of an object.
+    /// @see getClassInfoFromObject
+    llvm::Value* getClassInfoPtrFromObject(llvm::Value *object);
+    /// Gets a pointer to the class info of an object.
+    /// @param object Pointer to the object from which the class info shall be obtained.
+    /// @returns A llvm::Value* representing a pointer to a class info.
+    llvm::Value* getClassInfoFromObject(llvm::Value *object);
 
     llvm::Value* getErrorNoError() { return int64(-1); }
     llvm::Value* getIsError(llvm::Value *simpleError);

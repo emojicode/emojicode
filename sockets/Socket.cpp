@@ -149,5 +149,5 @@ extern "C" runtime::SimpleError<Socket *> socketsServerAccept(Server *server) {
 
 }  // namespace sockets
 
-SET_META_FOR(sockets::Socket, sockets, 1f4de)
-SET_META_FOR(sockets::Server, sockets, 1f3c4)
+SET_INFO_FOR(sockets::Socket, sockets, 1f4de)
+SET_INFO_FOR(sockets::Server, sockets, 1f3c4)

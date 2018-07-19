@@ -24,7 +24,6 @@ using Symbol = uint32_t;
 using Boolean = int8_t;
 using Byte = int8_t;
 using Real = double;
-using ClassType = void*;
 using Enum = int64_t;
 
 template <typename T>
@@ -33,7 +32,7 @@ inline T* allocate(int64_t n = 1) {
 }
 
 template <typename Subclass>
-struct Meta;
+struct ClassInfoFor;
 
 namespace util {
 
@@ -50,15 +49,14 @@ class Object {
 public:
     template <typename ...Args>
     static Subclass* allocateAndInitType(Args ...args) {
-        auto obj = new(allocate<Subclass>()) Subclass(args...);
-        static_assert(util::is_complete<Meta<Subclass>>::value,
-                      "Provide the meta type for this class with SET_META_FOR.");
-        return obj;
+        static_assert(util::is_complete<ClassInfoFor<Subclass>>::value,
+                      "Provide class info for this class with SET_INFO_FOR.");
+        return new(allocate<Subclass>()) Subclass(args...);
     }
 protected:
-    Object() : meta_(Meta<Subclass>::value) {}
+    Object() : classInfo_(ClassInfoFor<Subclass>::value) {}
 private:
-    void *meta_;
+    void *classInfo_;
 };
 
 struct ClassInfo {
@@ -66,9 +64,9 @@ struct ClassInfo {
     void *dispatchTable;
 };
 
-#define OBJECT_META_NAME(package, emojitypename) package ## _class_meta_ ## emojitypename
-#define SET_META_FOR(type, package, emojitypename) extern "C" runtime::ClassInfo OBJECT_META_NAME(package, emojitypename); \
-template<> struct runtime::Meta<type> { constexpr static runtime::ClassInfo *const value = &OBJECT_META_NAME(package, emojitypename); };
+#define CLASS_INFO_NAME(package, emojitypename) package ## _class_info_ ## emojitypename
+#define SET_INFO_FOR(type, package, emojitypename) extern "C" runtime::ClassInfo CLASS_INFO_NAME(package, emojitypename); \
+template<> struct runtime::ClassInfoFor<type> { constexpr static runtime::ClassInfo *const value = &CLASS_INFO_NAME(package, emojitypename); };
 
 struct NoValue_t {};
 constexpr NoValue_t NoValue {};

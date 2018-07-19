@@ -50,7 +50,7 @@ Value* ASTBoxing::getAllocaTheBox(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTBoxing::getGetValueFromBox(Value *box, FunctionCodeGenerator *fg) const {
-    if (fg->typeHelper().isRemote(expr_->expressionType().unboxed())) {
+    if (fg->typeHelper().isRemote(expr_->expressionType().unboxed().unoptionalized())) {
         auto ptrPtrType = fg->typeHelper().llvmTypeFor(expr_->expressionType())->getPointerTo()->getPointerTo();
         auto ptrPtr = fg->getValuePtr(box, ptrPtrType);
         return fg->builder().CreateLoad(fg->builder().CreateLoad(ptrPtr));
@@ -86,7 +86,7 @@ Value* ASTSimpleToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
 Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fg) const {
     auto box = fg->createEntryAlloca(fg->typeHelper().box());
     if (isValueTypeInit()) {
-        setBoxMeta(box, fg);
+        setBoxInfo(box, fg);
         valueTypeInit(fg, fg->getValuePtr(box, expr_->expressionType()));
     }
     else {
@@ -141,7 +141,7 @@ Value* ASTBoxToSimpleError::generate(FunctionCodeGenerator *fg) const {
 }
 
 void ASTToBox::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const {
-    setBoxMeta(box, fg);
+    setBoxInfo(box, fg);
     if (fg->typeHelper().isRemote(expr_->expressionType())) {
         auto type = fg->typeHelper().llvmTypeFor(expr_->expressionType());
         auto ptrPtr = fg->getValuePtr(box, type->getPointerTo()->getPointerTo());
@@ -154,7 +154,7 @@ void ASTToBox::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerato
     }
 }
 
-void ASTToBox::setBoxMeta(Value *box, FunctionCodeGenerator *fg) const {
+void ASTToBox::setBoxInfo(Value *box, FunctionCodeGenerator *fg) const {
     auto boxedFor = expressionType().boxedFor();
     if (boxedFor.type() == TypeType::Protocol || boxedFor.type() == TypeType::MultiProtocol) {
         llvm::Value *table;
@@ -167,12 +167,12 @@ void ASTToBox::setBoxMeta(Value *box, FunctionCodeGenerator *fg) const {
             type = fg->typeHelper().protocolConformance();
             table = expr_->expressionType().typeDefinition()->protocolTableFor(boxedFor);
         }
-        auto ptr = fg->builder().CreateBitCast(fg->getMetaTypePtr(box), type->getPointerTo()->getPointerTo());
+        auto ptr = fg->builder().CreateBitCast(fg->getBoxInfoPtr(box), type->getPointerTo()->getPointerTo());
         fg->builder().CreateStore(table, ptr);
         return;
     }
-    auto metaType = fg->generator()->valueTypeMetaFor(expr_->expressionType().unoptionalized());
-    fg->builder().CreateStore(metaType, fg->getMetaTypePtr(box));
+    auto boxInfo = fg->generator()->boxInfoFor(expr_->expressionType().unoptionalized());
+    fg->builder().CreateStore(boxInfo, fg->getBoxInfoPtr(box));
 }
 
 Value* ASTDereference::generate(FunctionCodeGenerator *fg) const {

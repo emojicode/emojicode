@@ -49,30 +49,26 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
 
         if (originalType.type() == TypeType::Someobject || originalType.type() == TypeType::Class) {
             castType_ = CastType::ClassDowncast;
-            assert(originalType.storageType() == StorageType::Simple);
+            return type.optionalized();
         }
-        else {
-            castType_ = CastType::ToClass;
-            assert(originalType.storageType() == StorageType::Box);
-        }
+
+        castType_ = CastType::ToClass;
     }
     else if (type.type() == TypeType::Protocol) {
         if (!type.genericArguments().empty()) {
             analyser->compiler()->error(CompilerError(position(), "Cannot cast to generic protocols."));
         }
         castType_ = CastType::ToProtocol;
-        assert(originalType.storageType() == StorageType::Box);
     }
     else if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
         castType_ = CastType::ToValueType;
-        assert(originalType.storageType() == StorageType::Box);
     }
     else {
         auto typeString = type.toString(analyser->typeContext());
         throw CompilerError(position(), "You cannot cast to ", typeString, ".");
     }
 
-    return type.optionalized();
+    return type.optionalized().boxedFor(originalType.boxedFor());
 }
 
 void ASTCast::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {

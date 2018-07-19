@@ -36,13 +36,11 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     panic_->addFnAttr(llvm::Attribute::NoReturn);
     panic_->addFnAttr(llvm::Attribute::Cold);  // A program should panic rarely.
 
-    classValueTypeMeta_ = new llvm::GlobalVariable(module_, typeHelper_.valueTypeMeta(), true,
-                                                   llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-                                                   nullptr, "ejcRunTimeClassValueTypeMeta");
-
     inheritsFrom_ = declareRunTimeFunction("ejcInheritsFrom", llvm::Type::getInt1Ty(context_),{
-        typeHelper_.classMeta()->getPointerTo(), typeHelper_.classMeta()->getPointerTo()
+        typeHelper_.classInfo()->getPointerTo(), typeHelper_.classInfo()->getPointerTo()
     });
+
+    boxInfoClassObjects_ = declareBoxInfo("box_info_objects");
 }
 
 llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type *returnType,
@@ -51,11 +49,11 @@ llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type 
     return llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, &module_);
 }
 
-void Declarator::declareImportedClassMeta(Class *klass) {
-    auto meta = new llvm::GlobalVariable(module_, typeHelper_.classMeta(), true,
+void Declarator::declareImportedClassInfo(Class *klass) {
+    auto info = new llvm::GlobalVariable(module_, typeHelper_.classInfo(), true,
                                          llvm::GlobalValue::ExternalLinkage, nullptr,
-                                         mangleClassMetaName(klass));
-    klass->setClassMeta(meta);
+                                         mangleClassInfoName(klass));
+    klass->setClassInfo(info);
 }
 
 void Declarator::declareImportedPackageSymbols(Package *package) {
@@ -87,7 +85,7 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
             VTCreator(klass.get(), *this).assign();
         }
         ptg.declareImportedProtocolsTable(Type(klass.get()));
-        declareImportedClassMeta(klass.get());
+        declareImportedClassInfo(klass.get());
     }
     for (auto &function : package->functions()) {
         declareLlvmFunction(function.get());
@@ -126,6 +124,12 @@ void Declarator::declareLlvmFunction(Function *function) const {
             reification.entity.function->addParamAttr(0, llvm::Attribute::ReadOnly);
         }
     });
+}
+
+llvm::GlobalVariable* Declarator::declareBoxInfo(const std::string &name) {
+    return new llvm::GlobalVariable(module_, typeHelper_.boxInfo(), true,
+                                    llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage,
+                                    llvm::Constant::getNullValue(typeHelper_.boxInfo()), name);
 }
 
 }  // namespace EmojicodeCompiler

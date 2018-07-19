@@ -51,9 +51,11 @@ public:
     /// @returns True if this type cannot be directly stored in a box and memory must be allocated on the heap.
     bool isRemote(const Type &type);
 
-    llvm::Type* valueTypeMetaPtr() const;
-    llvm::StructType* valueTypeMeta() const { return valueTypeMetaType_; }
-    llvm::StructType* classMeta() const { return classMetaType_; }
+    /// A pointer to a value of this type is stored in the first field of a box to identify its content.
+    llvm::StructType* boxInfo() const { return boxInfoType_; }
+    /// The class info stores the dispatch table as well as a pointer to the class info of the super class if this class
+    /// has a superclass.
+    llvm::StructType* classInfo() const { return classInfoType_; }
     llvm::StructType* protocolConformance() const { return protocolsTable_; }
 
     llvm::StructType *llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
@@ -62,8 +64,8 @@ public:
     void setReificationContext(ReificationContext *context) { reifiContext_ = context; };
 
 private:
-    llvm::StructType *classMetaType_;
-    llvm::StructType *valueTypeMetaType_;
+    llvm::StructType *classInfoType_;
+    llvm::StructType *boxInfoType_;
     llvm::StructType *box_;
     llvm::StructType *protocolsTable_;
     llvm::StructType *callable_;

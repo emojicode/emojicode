@@ -53,8 +53,16 @@ uint64_t CodeGenerator::querySize(llvm::Type *type) const {
     return module()->getDataLayout().getTypeAllocSize(type);
 }
 
-llvm::Constant *CodeGenerator::valueTypeMetaFor(const Type &type) {
-    return declarator_.classValueTypeMeta();
+llvm::Constant *CodeGenerator::boxInfoFor(const Type &type) {
+    if (type.type() == TypeType::Class || type.type() == TypeType::TypeAsValue) {  // TODO: better
+        return declarator_.boxInfoForObjects();
+    }
+    assert(type.type() == TypeType::ValueType || type.type() == TypeType::Enum);
+    auto valueType = type.valueType();
+    if (valueType->boxInfo() == nullptr) {
+        valueType->setBoxInfo(declarator_.declareBoxInfo(mangleBoxInfoName(type)));
+    }
+    return valueType->boxInfo();
 }
 
 void CodeGenerator::prepareModule() {
@@ -180,16 +188,16 @@ void CodeGenerator::createClassInfo(Class *klass) {
                                                  llvm::ConstantArray::get(type, klass->virtualTable()));
     llvm::Constant *superclass;
     if (klass->superclass() != nullptr) {
-        superclass = klass->superclass()->classMeta();
+        superclass = klass->superclass()->classInfo();
     }
     else {
-        superclass = llvm::ConstantPointerNull::get(typeHelper_.classMeta()->getPointerTo());
+        superclass = llvm::ConstantPointerNull::get(typeHelper_.classInfo()->getPointerTo());
     }
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.classMeta(), { superclass, virtualTable });
-    auto meta = new llvm::GlobalVariable(*module(), typeHelper_.classMeta(), true,
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), { superclass, virtualTable });
+    auto info = new llvm::GlobalVariable(*module(), typeHelper_.classInfo(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
-                                         mangleClassMetaName(klass));
-    klass->setClassMeta(meta);
+                                         mangleClassInfoName(klass));
+    klass->setClassInfo(info);
 }
 
 }  // namespace EmojicodeCompiler

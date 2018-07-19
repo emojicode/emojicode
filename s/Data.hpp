@@ -17,6 +17,6 @@ public:
 
 }  // namespace s
 
-SET_META_FOR(s::Data, s, 1f4c7)
+SET_INFO_FOR(s::Data, s, 1f4c7)
 
 #endif //EMOJICODE_DATA_HPP

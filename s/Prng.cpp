@@ -26,4 +26,4 @@ extern "C" runtime::Real sPrngGetReal(PRNG *prng) {
 
 }  // namespace s
 
-SET_META_FOR(s::PRNG, s, 1f3b0)
+SET_INFO_FOR(s::PRNG, s, 1f3b0)

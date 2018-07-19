@@ -72,7 +72,7 @@ extern "C" void filesFileSeekTo(File *file, runtime::Integer pos) {
     file->file_.seekp(pos, std::ios_base::beg);
 }
 
-extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassType, String *path) {
+extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassInfo*, String *path) {
     auto file = std::ifstream(path->cString(), std::ios_base::ate);
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
@@ -86,7 +86,7 @@ extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassType, Str
     return returnErrorIfFailed(data, file);
 }
 
-extern "C" runtime::SimpleOptional<runtime::Enum> filesFileWriteToFile(runtime::ClassType, String *path, Data *data) {
+extern "C" runtime::SimpleOptional<runtime::Enum> filesFileWriteToFile(runtime::ClassInfo*, String *path, Data *data) {
     auto file = std::ofstream(path->cString(), std::ios_base::out);
     file.write(reinterpret_cast<char *>(data->data), data->count);
     if (file.fail()) return errorEnumFromErrno();
@@ -95,4 +95,4 @@ extern "C" runtime::SimpleOptional<runtime::Enum> filesFileWriteToFile(runtime::
 
 }  // namespace files
 
-SET_META_FOR(files::File, files, 1f4c4)
+SET_INFO_FOR(files::File, files, 1f4c4)

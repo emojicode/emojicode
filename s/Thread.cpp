@@ -30,7 +30,7 @@ extern "C" void sThreadJoin(Thread *thread) {
     thread->thread.join();
 }
 
-extern "C" void sThreadDelay(runtime::ClassType *, runtime::Integer mcs) {
+extern "C" void sThreadDelay(runtime::ClassInfo *, runtime::Integer mcs) {
     std::this_thread::sleep_for(std::chrono::microseconds(mcs));
 }
 
@@ -52,5 +52,5 @@ extern "C" void sMutexUnlock(Mutex *mutex) {
 
 }  // namespace s
 
-SET_META_FOR(s::Thread, s, 1f488)
-SET_META_FOR(s::Mutex, s, 1f510)
+SET_INFO_FOR(s::Thread, s, 1f488)
+SET_INFO_FOR(s::Mutex, s, 1f510)

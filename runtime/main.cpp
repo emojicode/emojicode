@@ -19,8 +19,6 @@ char **runtime::internal::argv;
 
 extern "C" runtime::Integer fn_1f3c1();
 
-extern "C" int ejcRunTimeClassValueTypeMeta = 0;
-
 extern "C" int8_t* ejcAlloc(runtime::Integer size) {
     return static_cast<int8_t*>(malloc(size));
 }

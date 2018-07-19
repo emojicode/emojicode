@@ -45,6 +45,8 @@ void mangleTypeName(std::stringstream &stream, const Type &type) {
         case TypeType::Protocol:
             stream << "protocol_";
             break;
+        case TypeType::TypeAsValue:
+            stream << "tyval_";
         default:
             stream << "ty_";
             break;
@@ -59,16 +61,16 @@ void mangleGenericArguments(std::stringstream &stream, const std::map<size_t, Ty
     }
 }
 
-std::string mangleClassMetaName(Class *klass) {
+std::string mangleClassInfoName(Class *klass) {
     std::stringstream stream;
-    stream << klass->package()->name() << "_class_meta_";
+    stream << klass->package()->name() << "_class_info_";
     mangleIdentifier(stream, klass->name());
     return stream.str();
 }
 
-std::string mangleValueTypeMetaName(const Type &type) {
+std::string mangleBoxInfoName(const Type &type) {
     std::stringstream stream;
-    stream << type.typePackage() << "_value_meta_";
+    stream << type.typePackage() << "_box_info_vt_";
     mangleIdentifier(stream, type.typeDefinition()->name());
     for (auto &arg : type.genericArguments()) {
         mangleTypeName(stream, arg);

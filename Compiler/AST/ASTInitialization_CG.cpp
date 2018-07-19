@@ -59,7 +59,7 @@ Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArgumen
                                      const Type &type, bool stackInit) {
     auto llvmType = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(type));
     auto obj = stackInit ? fg->createEntryAlloca(llvmType->getElementType()) : fg->alloc(llvmType);
-    fg->builder().CreateStore(type.klass()->classMeta(), fg->getObjectMetaPtr(obj));
+    fg->builder().CreateStore(type.klass()->classInfo(), fg->getClassInfoPtrFromObject(obj));
     return CallCodeGenerator(fg, CallType::StaticDispatch).generate(obj, type, args, function);
 }
 

@@ -40,7 +40,7 @@ compilation_tests = [
     "valueTypeMutate",
     "compareNoValue",
     "downcastClass",
-    # "castAny",
+    "castAny",
     # "castGenericValueType",
     "protocolClass",
     "protocolSubclass",

@@ -66,21 +66,24 @@ llvm::Value* FunctionCodeGenerator::sizeOf(llvm::Type *type) {
     return sizeOfReferencedType(type->getPointerTo());
 }
 
-llvm::Value* FunctionCodeGenerator::getMetaFromObject(llvm::Value *object) {
-    std::vector<Value *> idx{
+Value* FunctionCodeGenerator::getBoxInfoPtr(Value *box) {
+    return builder().CreateConstGEP2_32(typeHelper().box(), box, 0, 0);
+}
+
+llvm::Value* FunctionCodeGenerator::getClassInfoPtrFromObject(Value *object) {
+    return builder().CreateGEP(object, {
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),  // object
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),  // classMeta
-    };
-    return builder().CreateLoad(builder().CreateGEP(object, idx), "meta");
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0)   // classInfo*
+    });  // classInfo**
+}
+
+llvm::Value* FunctionCodeGenerator::getClassInfoFromObject(llvm::Value *object) {
+    return builder().CreateLoad(getClassInfoPtrFromObject(object), "info");
 }
 
 llvm::Value* FunctionCodeGenerator::getHasNoValueBoxPtr(llvm::Value *box) {
-    auto null = llvm::Constant::getNullValue(typeHelper().valueTypeMetaPtr());
-    return builder().CreateICmpEQ(builder().CreateLoad(getMetaTypePtr(box)), null);
-}
-
-Value* FunctionCodeGenerator::getMetaTypePtr(Value *box) {
-    return builder().CreateConstGEP2_32(typeHelper().box(), box, 0, 0);
+    auto null = llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo());
+    return builder().CreateICmpEQ(builder().CreateLoad(getBoxInfoPtr(box)), null);
 }
 
 llvm::Value* FunctionCodeGenerator::getHasNoValueBox(llvm::Value *box) {
@@ -101,7 +104,7 @@ Value* FunctionCodeGenerator::getSimpleOptionalWithoutValue(const Type &type) {
 
 Value* FunctionCodeGenerator::getBoxOptionalWithoutValue() {
     auto undef = llvm::UndefValue::get(typeHelper().box());
-    return builder().CreateInsertValue(undef, llvm::Constant::getNullValue(typeHelper().valueTypeMetaPtr()), 0);
+    return builder().CreateInsertValue(undef, llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo()), 0);
 }
 
 Value* FunctionCodeGenerator::getSimpleOptionalWithValue(llvm::Value *value, const Type &type) {
@@ -124,17 +127,9 @@ Value* FunctionCodeGenerator::getValuePtr(Value *box, llvm::Type *llvmType) {
     return builder().CreateBitCast(builder().CreateGEP(box, idx2), llvmType);
 }
 
-Value* FunctionCodeGenerator::getObjectMetaPtr(Value *object) {
-    auto metaIdx = std::vector<llvm::Value *> {
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0)
-    };
-    return builder().CreateGEP(object, metaIdx);
-}
-
 Value* FunctionCodeGenerator::getMakeNoValue(Value *box) {
-    auto metaType = llvm::Constant::getNullValue(typeHelper().valueTypeMetaPtr());
-    return builder().CreateStore(metaType, getMetaTypePtr(box));
+    auto boxInfoNull = llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo());
+    return builder().CreateStore(boxInfoNull, getBoxInfoPtr(box));
 }
 
 llvm::Value* FunctionCodeGenerator::getIsError(llvm::Value *simpleError) {

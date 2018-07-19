@@ -30,6 +30,6 @@ public:
 
 }  // namespace s
 
-SET_META_FOR(s::String, s, 1f521)
+SET_INFO_FOR(s::String, s, 1f521)
 
 #endif /* String_hpp */

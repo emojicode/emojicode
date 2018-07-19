@@ -28,13 +28,13 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
             llvm::Type::getInt1Ty(context_),
             llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
     }, "protocolConformance");
-    classMetaType_ = llvm::StructType::create(context_, "classMeta");
-    classMetaType_->setBody({ classMetaType_->getPointerTo(), llvm::Type::getInt8PtrTy(context_)->getPointerTo() });
-    valueTypeMetaType_ = llvm::StructType::create(std::vector<llvm::Type *> {
+    classInfoType_ = llvm::StructType::create(context_, "classInfo");
+    classInfoType_->setBody({ classInfoType_->getPointerTo(), llvm::Type::getInt8PtrTy(context_)->getPointerTo() });
+    boxInfoType_ = llvm::StructType::create(std::vector<llvm::Type *> {
             protocolsTable_
-    }, "valueTypeMeta");
+    }, "boxInfo");
     box_ = llvm::StructType::create(std::vector<llvm::Type *> {
-            valueTypeMetaType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
+            boxInfoType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
     }, "box");
     callable_ = llvm::StructType::create(std::vector<llvm::Type *> {
             llvm::Type::getInt8PtrTy(context_), llvm::Type::getInt8PtrTy(context_)
@@ -43,7 +43,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
     auto compiler = codeGenerator_->package()->compiler();
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
     types_.emplace(Type::someobject(),
-                   llvm::StructType::create({ classMetaType_->getPointerTo() }, "someobject")->getPointerTo());
+                   llvm::StructType::create({ classInfoType_->getPointerTo() }, "someobject")->getPointerTo());
     types_.emplace(Type(compiler->sInteger), llvm::Type::getInt64Ty(context_));
     types_.emplace(Type(compiler->sSymbol), llvm::Type::getInt32Ty(context_));
     types_.emplace(Type(compiler->sReal), llvm::Type::getDoubleTy(context_));
@@ -94,10 +94,6 @@ llvm::Type* LLVMTypeHelper::box() const {
     return box_;
 }
 
-llvm::Type* LLVMTypeHelper::valueTypeMetaPtr() const {
-    return valueTypeMetaType_->getPointerTo();
-}
-
 bool LLVMTypeHelper::isDereferenceable(const Type &type) const {
     return ((type.type() == TypeType::Class || type.type() == TypeType::Someobject) &&
             type.storageType() != StorageType::Box) || type.isReference();
@@ -141,7 +137,7 @@ llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
     }
     if (type.type() == TypeType::TypeAsValue) {
         if (type.typeOfTypeValue().type() == TypeType::Class) {
-            return classMetaType_->getPointerTo();
+            return classInfoType_->getPointerTo();
         }
         return llvm::StructType::get(context_);
     }
@@ -177,7 +173,7 @@ llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
     std::vector<llvm::Type *> types;
 
     if (type.type() == TypeType::Class) {
-        types.emplace_back(classMetaType_->getPointerTo());
+        types.emplace_back(classInfoType_->getPointerTo());
     }
 
     for (auto &ivar : type.typeDefinition()->instanceVariables()) {

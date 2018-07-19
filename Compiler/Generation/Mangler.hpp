@@ -22,8 +22,8 @@ class TypeDefinition;
 
 std::string mangleFunction(Function *function, const std::map<size_t, Type> &genericArgs);
 std::string mangleTypeName(const Type &type);
-std::string mangleClassMetaName(Class *klass);
-std::string mangleValueTypeMetaName(const Type &type);
+std::string mangleClassInfoName(Class *klass);
+std::string mangleBoxInfoName(const Type &type);
 std::string mangleProtocolConformance(const Type &type, const Type &protocol);
 std::string mangleMultiprotocolConformance(const Type &multi, const Type &conformer);
 

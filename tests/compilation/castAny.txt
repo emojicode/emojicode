@@ -6,5 +6,3 @@ Christopher
 I like milk
 Croissant
 You ordered a 2kg pita filled with 2 tomatoes and 200g of chicken.
-generic message
-You ordered a 2kg pita filled with 2 tomatoes and 200g of chicken.

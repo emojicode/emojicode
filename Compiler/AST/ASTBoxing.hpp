@@ -98,7 +98,7 @@ class ASTToBox : public ASTBoxing, public MFHeapAutoAllocates {
     using ASTBoxing::ASTBoxing;
 protected:
     void getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const;
-    void setBoxMeta(Value *box, FunctionCodeGenerator *fg) const;
+    void setBoxInfo(Value *box, FunctionCodeGenerator *fg) const;
 
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {
         analyseAllocation(type);

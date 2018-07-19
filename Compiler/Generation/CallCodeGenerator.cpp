@@ -43,7 +43,7 @@ llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, 
         case CallType::DynamicProtocolDispatch: {
             assert(type.type() == TypeType::Box && type.boxedFor().type() == TypeType::Protocol);
             auto conformanceType = fg()->typeHelper().protocolConformance();
-            auto conformancePtr = fg()->builder().CreateBitCast(fg()->getMetaTypePtr(args.front()),
+            auto conformancePtr = fg()->builder().CreateBitCast(fg()->getBoxInfoPtr(args.front()),
                                                                 conformanceType->getPointerTo()->getPointerTo());
             return createDynamicProtocolDispatch(function, args, astArgs.genericArgumentTypes(), conformancePtr);
         }
@@ -72,7 +72,7 @@ llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const
     auto argsv = createArgsVector(callee, args);
 
     auto mpt = fg()->typeHelper().multiprotocolConformance(calleeType);
-    auto mp = fg()->builder().CreateBitCast(fg()->getMetaTypePtr(argsv.front()),
+    auto mp = fg()->builder().CreateBitCast(fg()->getBoxInfoPtr(argsv.front()),
                                             mpt->getPointerTo()->getPointerTo());
     auto mpl = fg()->builder().CreateLoad(mp);
     
@@ -105,10 +105,10 @@ llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
 
 llvm::Value *CallCodeGenerator::createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args,
                                                       const std::vector<Type> &genericArgs) {
-    auto meta = callType_ == CallType::DynamicDispatchOnType ? args.front() : fg()->getMetaFromObject(args.front());
+    auto info = callType_ == CallType::DynamicDispatchOnType ? args.front() : fg()->getClassInfoFromObject(args.front());
 
-    std::vector<Value *> idx2{fg()->int32(0), fg()->int32(1)};  // classMeta.table
-    auto table = fg()->builder().CreateLoad(fg()->builder().CreateGEP(meta, idx2), "table");
+    std::vector<Value *> idx2{fg()->int32(0), fg()->int32(1)};  // classInfo.table
+    auto table = fg()->builder().CreateLoad(fg()->builder().CreateGEP(info, idx2), "table");
     return dispatchFromVirtualTable(function, table, args, genericArgs);
 }
 

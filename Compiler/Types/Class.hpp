@@ -65,8 +65,10 @@ public:
 
     bool foreign() const { return foreign_; }
 
-    void setClassMeta(llvm::GlobalVariable *classInfo) { classMeta_ = classInfo; }
-    llvm::GlobalVariable* classMeta() { return classMeta_; }
+    /// @returns The variable containing the class info or nullptr if none has been set yet.
+    /// @see LLVMTypeHelper::classInfo
+    llvm::GlobalVariable* classInfo() { return classInfo_; }
+    void setClassInfo(llvm::GlobalVariable *classInfo) { classInfo_ = classInfo; }
 
     std::vector<llvm::Constant *>& virtualTable() { return virtualTable_; }
 
@@ -124,7 +126,7 @@ private:
     bool inheritsInitializers_ = false;
     bool hasSubclass_ = false;
 
-    llvm::GlobalVariable *classMeta_ = nullptr;
+    llvm::GlobalVariable *classInfo_ = nullptr;
 
     void handleRequiredInitializer(Initializer *init) override;
 };

@@ -33,7 +33,7 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
     auto stringLlvm = llvm::dyn_cast<llvm::StructType>(llvm::dyn_cast<llvm::PointerType>(codeGenerator_->typeHelper().llvmTypeFor(stringType))->getElementType());
 
     auto stringStruct = llvm::ConstantStruct::get(stringLlvm, {
-            compiler->sString->classMeta(),
+            compiler->sString->classInfo(),
             var,
             llvm::ConstantInt::get(llvm::Type::getInt64Ty(codeGenerator_->context()), string.size())
     });

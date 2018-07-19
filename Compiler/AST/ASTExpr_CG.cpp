@@ -17,7 +17,7 @@ namespace EmojicodeCompiler {
 
 Value* ASTTypeAsValue::generate(FunctionCodeGenerator *fg) const {
     if (type_->type().type() == TypeType::Class) {
-        return type_->type().klass()->classMeta();
+        return type_->type().klass()->classInfo();
     }
     return llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(Type(MakeTypeAsValue, type_->type())));
 }
@@ -56,10 +56,10 @@ Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
     auto value = value_->generate(fg);
-    auto meta = fg->getMetaFromObject(value);
+    auto info = fg->getClassInfoFromObject(value);
     auto toType = typeExpr_->expressionType();
     auto inheritsFrom = fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
-                                                 { meta, typeExpr_->generate(fg) });
+                                                 { info, typeExpr_->generate(fg) });
     return fg->createIfElsePhi(inheritsFrom, [toType, fg, value]() {
         auto casted = fg->builder().CreateBitCast(value, fg->typeHelper().llvmTypeFor(toType));
         return fg->getSimpleOptionalWithValue(casted, toType.optionalized());
@@ -69,21 +69,22 @@ Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTCast::castToValueType(FunctionCodeGenerator *fg, Value *box) const {
-    auto meta = fg->getMetaTypePtr(box);
-    return fg->builder().CreateICmpEQ(fg->builder().CreateLoad(meta), typeExpr_->generate(fg));
+    return fg->builder().CreateICmpEQ(fg->builder().CreateLoad(fg->getBoxInfoPtr(box)), typeExpr_->generate(fg));
 }
 
 Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box) const {
-    auto meta = fg->getMetaTypePtr(box);
+    auto info = fg->getBoxInfoPtr(box);
     auto toType = typeExpr_->expressionType();
-    auto expMeta = fg->generator()->valueTypeMetaFor(toType);
-    auto ptr = fg->builder().CreateLoad(fg->getValuePtr(box, typeExpr_->expressionType()));
-    auto obj = fg->builder().CreateBitCast(ptr, fg->typeHelper().llvmTypeFor(toType));
-    auto klassPtr = fg->getObjectMetaPtr(obj);
+    auto expBoxInfo = fg->generator()->boxInfoFor(toType);
 
-    auto isClass = fg->builder().CreateICmpEQ(fg->builder().CreateLoad(meta), expMeta);
-    auto isCorrectClass = fg->builder().CreateICmpEQ(typeExpr_->generate(fg), fg->builder().CreateLoad(klassPtr));
-    return fg->builder().CreateMul(isClass, isCorrectClass);
+    return fg->createIfElsePhi(fg->builder().CreateICmpEQ(fg->builder().CreateLoad(info), expBoxInfo), [&]() {
+        auto boxValue = fg->builder().CreateLoad(fg->getValuePtr(box, typeExpr_->expressionType()));
+        auto obj = fg->builder().CreateBitCast(boxValue, fg->typeHelper().llvmTypeFor(toType));
+        return fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
+                                        { fg->getClassInfoFromObject(obj), typeExpr_->generate(fg) });
+    }, [fg] {
+        return llvm::ConstantInt::getFalse(fg->generator()->context());
+    });
 }
 
 Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
