@@ -75,6 +75,8 @@ public:
     llvm::Value* int32(int32_t value);
     llvm::Value* int64(int64_t value);
 
+    llvm::Value* boxInfoFor(const Type &type);
+
     llvm::Value* alloc(llvm::PointerType *type);
 
     llvm::Value* createEntryAlloca(llvm::Type *type, const llvm::Twine &name = "");

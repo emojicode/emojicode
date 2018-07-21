@@ -13,12 +13,12 @@
 
 namespace EmojicodeCompiler {
 
-class LLVMTypeHelper;
+class CodeGenerator;
 
 /// The declarator is responsible for declaring functions etc. in a given LLVM module.
 class Declarator {
 public:
-    Declarator(llvm::LLVMContext &context, llvm::Module &module, LLVMTypeHelper &typeHelper);
+    Declarator(CodeGenerator *generator);
 
     /// The allocator function that is called to allocate all heap memory.
     llvm::Function* runTimeNew() const { return runTimeNew_; }
@@ -27,26 +27,27 @@ public:
     /// The function that is called to determine if one class inherits from another.
     llvm::Function* inheritsFrom() const { return inheritsFrom_; }
 
+    llvm::Function* findProtocolConformance() const { return findProtocolConformance_; }
+
     /// Declares all symbols that are provided by an imported package.
     /// @param package The package whose symbols shall be declared.
     void declareImportedPackageSymbols(Package *package);
     /// Declares an LLVM function for each reification of the provided function.
     void declareLlvmFunction(Function *function) const;
 
-    llvm::GlobalVariable* declareBoxInfo(const std::string &name);
+    llvm::GlobalVariable* declareBoxInfo(const std::string &name, std::vector<llvm::Constant *> boxInfos);
 
     llvm::GlobalVariable* boxInfoForObjects() { return boxInfoClassObjects_; }
 
 private:
     void declareImportedClassInfo(Class *klass);
 
-    llvm::LLVMContext &context_;
-    llvm::Module &module_;
-    LLVMTypeHelper &typeHelper_;
+    CodeGenerator *generator_;
 
     llvm::Function *runTimeNew_ = nullptr;
     llvm::Function *panic_ = nullptr;
     llvm::Function *inheritsFrom_ = nullptr;
+    llvm::Function *findProtocolConformance_ = nullptr;
 
     llvm::GlobalVariable *boxInfoClassObjects_;
 

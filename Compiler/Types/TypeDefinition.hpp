@@ -21,6 +21,7 @@
 
 namespace llvm {
 class Constant;
+class GlobalVariable;
 }  // namespace llvm
 
 namespace EmojicodeCompiler {
@@ -116,6 +117,10 @@ public:
 
     void setProtocolTables(std::map<Type, llvm::Constant*> &&tables) { protocolTables_ = std::move(tables); }
     llvm::Constant* protocolTableFor(const Type &type) { return protocolTables_.find(type)->second; }
+
+    void setBoxInfo(llvm::GlobalVariable *boxInfo) { boxInfo_ = boxInfo; }
+    llvm::GlobalVariable* boxInfo() { return boxInfo_; }
+
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation, bool exported);
 
@@ -152,6 +157,7 @@ private:
     std::u32string documentation_;
     SourcePosition position_;
     bool exported_;
+    llvm::GlobalVariable *boxInfo_ = nullptr;
 
     std::map<Type, llvm::Constant*> protocolTables_;
 

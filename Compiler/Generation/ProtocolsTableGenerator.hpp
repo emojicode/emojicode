@@ -21,20 +21,30 @@ namespace EmojicodeCompiler {
 
 class TypeDefinition;
 class Protocol;
-class LLVMTypeHelper;
+class CodeGenerator;
+
+class BoxInfoGenerator {
+public:
+    BoxInfoGenerator(const Type &type, CodeGenerator *generator);
+
+    void add(const Type &protocol, llvm::GlobalVariable *conformance);
+    void finish();
+
+private:
+    CodeGenerator *const generator_;
+    const Type &type_;
+    std::vector<llvm::Constant *> boxInfos_;
+};
 
 class ProtocolsTableGenerator {
 public:
-    ProtocolsTableGenerator(llvm::LLVMContext &context, llvm::Module &module, LLVMTypeHelper &typeHelper)
-            : context_(context), module_(module), typeHelper_(typeHelper) {}
+    ProtocolsTableGenerator(CodeGenerator *generator) : generator_(generator) {}
     void createProtocolsTable(const Type &type);
     void declareImportedProtocolsTable(const Type &type);
     llvm::GlobalVariable* multiprotocol(const Type &multiprotocol, const Type &conformer);
 
 private:
-    llvm::LLVMContext &context_;
-    llvm::Module &module_;
-    LLVMTypeHelper &typeHelper_;
+    CodeGenerator *generator_;
     std::map<std::pair<Type, TypeDefinition*>, llvm::GlobalVariable*> multiprotocolTables_;
 
     /// Creates a virtual table (dispatch table) for the given protocol.

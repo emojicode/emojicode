@@ -13,10 +13,6 @@
 #include <utility>
 #include <vector>
 
-namespace llvm {
-class GlobalVariable;
-}  // namespace llvm
-
 namespace EmojicodeCompiler {
 
 class ValueType : public TypeDefinition {
@@ -40,11 +36,8 @@ public:
     void makePrimitive() { primitive_ = true; }
     bool isPrimitive() { return primitive_; }
 
-    void setBoxInfo(llvm::GlobalVariable *boxInfo) { boxInfo_ = boxInfo; }
-    llvm::GlobalVariable* boxInfo() { return boxInfo_; }
 private:
     bool primitive_ = false;
-    llvm::GlobalVariable *boxInfo_ = nullptr;
 };
 
 }  // namespace EmojicodeCompiler

@@ -36,9 +36,7 @@ namespace EmojicodeCompiler {
 CodeGenerator::CodeGenerator(Package *package, bool optimize)
         : package_(package),
           module_(std::make_unique<llvm::Module>(package->name(), context())),
-          typeHelper_(context(), this),
-          declarator_(context_, *module_, typeHelper_),
-          protocolsTableGenerator_(context_, *module_, typeHelper_),
+          typeHelper_(context(), this), declarator_(this), protocolsTableGenerator_(this),
           optimizationManager_(module_.get(), optimize) {}
 
 llvm::Value *CodeGenerator::optionalValue() {
@@ -58,11 +56,23 @@ llvm::Constant *CodeGenerator::boxInfoFor(const Type &type) {
         return declarator_.boxInfoForObjects();
     }
     assert(type.type() == TypeType::ValueType || type.type() == TypeType::Enum);
-    auto valueType = type.valueType();
-    if (valueType->boxInfo() == nullptr) {
-        valueType->setBoxInfo(declarator_.declareBoxInfo(mangleBoxInfoName(type)));
+    return type.valueType()->boxInfo();
+}
+
+llvm::Constant *CodeGenerator::protocolIdentifierFor(const Type &type) {
+    auto unboxedType = type.unboxed();
+    auto it = protocolIds_.find(unboxedType);
+    if (it != protocolIds_.end()) {
+        return it->second;
     }
-    return valueType->boxInfo();
+
+    auto id = new llvm::GlobalVariable(*module_, llvm::Type::getInt1Ty(context_), true,
+                                       llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage,
+                                       llvm::Constant::getNullValue(llvm::Type::getInt1Ty(context_)),
+                                       mangleProtocolIdentifier(unboxedType));
+
+    protocolIds_.emplace(unboxedType, id);
+    return id;
 }
 
 void CodeGenerator::prepareModule() {
@@ -193,7 +203,8 @@ void CodeGenerator::createClassInfo(Class *klass) {
     else {
         superclass = llvm::ConstantPointerNull::get(typeHelper_.classInfo()->getPointerTo());
     }
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), { superclass, virtualTable });
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(),
+                                                 { superclass, virtualTable, klass->boxInfo() });
     auto info = new llvm::GlobalVariable(*module(), typeHelper_.classInfo(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleClassInfoName(klass));

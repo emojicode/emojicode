@@ -21,7 +21,10 @@ Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
     if (type_->type().type() == TypeType::Class) {
         return type_->type().klass()->classInfo();
     }
-    return fg->generator()->boxInfoFor(type_->type());
+    if (type_->type().unboxedType() == TypeType::Protocol) {
+        return fg->generator()->protocolIdentifierFor(type_->type());
+    }
+    return fg->boxInfoFor(type_->type());
 }
 
 }  // namespace EmojicodeCompiler

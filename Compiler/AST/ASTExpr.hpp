@@ -123,6 +123,7 @@ private:
     Value* downcast(FunctionCodeGenerator *fg) const;
     Value* castToClass(FunctionCodeGenerator *fg, Value *box) const;
     Value* castToValueType(FunctionCodeGenerator *fg, Value *box) const;
+    Value* castToProtocol(FunctionCodeGenerator *fg, Value *box) const;
 };
 
 class ASTCallableCall final : public ASTExpr {

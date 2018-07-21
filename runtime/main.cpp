@@ -32,6 +32,20 @@ extern "C" bool ejcInheritsFrom(runtime::ClassInfo *classInfo, runtime::ClassInf
     return false;
 }
 
+struct BoxInfo {
+    void *protocolId;
+    void *protocolConformance;
+};
+
+extern "C" void* ejcFindProtocolConformance(BoxInfo *info, void *protocolId) {
+    for (auto infoNew = info; infoNew->protocolId != nullptr; infoNew++) {
+        if (infoNew->protocolId == protocolId) {
+            return infoNew->protocolConformance;
+        }
+    }
+    return nullptr;
+}
+
 extern "C" void ejcMemoryRealloc(int8_t **pointerPtr, runtime::Integer newSize) {
     *pointerPtr = static_cast<int8_t*>(realloc(*pointerPtr, newSize));
 }

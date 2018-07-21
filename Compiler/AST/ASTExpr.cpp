@@ -54,11 +54,13 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
 
         castType_ = CastType::ToClass;
     }
-    else if (type.type() == TypeType::Protocol) {
+    else if (type.unboxedType() == TypeType::Protocol) {
         if (!type.genericArguments().empty()) {
             analyser->compiler()->error(CompilerError(position(), "Cannot cast to generic protocols."));
         }
         castType_ = CastType::ToProtocol;
+        assert(type.storageType() == StorageType::Box);
+        return type.unboxed().boxedFor(type).optionalized();
     }
     else if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
         castType_ = CastType::ToValueType;
@@ -77,7 +79,7 @@ void ASTCast::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
 
 Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
-    if (t.type() != TypeType::Optional) {
+    if (t.unboxedType() != TypeType::Optional) {
         throw CompilerError(position(), "Condition assignment can only be used with optionals.");
     }
 

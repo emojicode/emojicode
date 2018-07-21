@@ -30,7 +30,8 @@ void mangleIdentifier(std::stringstream &stream, const std::u32string &string) {
     }
 }
 
-void mangleTypeName(std::stringstream &stream, const Type &type) {
+void mangleTypeName(std::stringstream &stream, const Type &typeb) {
+    auto type = typeb.unboxed();
     stream << type.typePackage() << ".";
     switch (type.type()) {
         case TypeType::ValueType:
@@ -70,11 +71,8 @@ std::string mangleClassInfoName(Class *klass) {
 
 std::string mangleBoxInfoName(const Type &type) {
     std::stringstream stream;
-    stream << type.typePackage() << "_box_info_vt_";
+    stream << type.typePackage() << ".box_info_vt_";
     mangleIdentifier(stream, type.typeDefinition()->name());
-    for (auto &arg : type.genericArguments()) {
-        mangleTypeName(stream, arg);
-    }
     return stream.str();
 }
 
@@ -114,6 +112,13 @@ std::string mangleProtocolConformance(const Type &type, const Type &protocol) {
     mangleTypeName(stream, type);
     stream << "_conformance_";
     mangleTypeName(stream, protocol);
+    return stream.str();
+}
+
+std::string mangleProtocolIdentifier(const Type &type) {
+    std::stringstream stream;
+    mangleTypeName(stream, type);
+    stream << "_identifier";
     return stream.str();
 }
 

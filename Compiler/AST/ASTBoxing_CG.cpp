@@ -171,7 +171,7 @@ void ASTToBox::setBoxInfo(Value *box, FunctionCodeGenerator *fg) const {
         fg->builder().CreateStore(table, ptr);
         return;
     }
-    auto boxInfo = fg->generator()->boxInfoFor(expr_->expressionType().unoptionalized());
+    auto boxInfo = fg->boxInfoFor(expr_->expressionType().unoptionalized());
     fg->builder().CreateStore(boxInfo, fg->getBoxInfoPtr(box));
 }
 

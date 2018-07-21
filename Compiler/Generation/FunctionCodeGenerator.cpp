@@ -250,4 +250,8 @@ llvm::Value* FunctionCodeGenerator::createEntryAlloca(llvm::Type *type, const ll
     return builder.CreateAlloca(type, nullptr, name);
 }
 
+llvm::Value* FunctionCodeGenerator::boxInfoFor(const Type &type) {
+    return builder().CreateBitCast(generator()->boxInfoFor(type), typeHelper().boxInfo()->getPointerTo());
+}
+
 }  // namespace EmojicodeCompiler

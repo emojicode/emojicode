@@ -17,6 +17,7 @@ namespace llvm {
 class Type;
 class StructType;
 class ArrayType;
+class PointerType;
 }  // namespace llvm
 
 namespace EmojicodeCompiler {
@@ -57,6 +58,7 @@ public:
     /// has a superclass.
     llvm::StructType* classInfo() const { return classInfoType_; }
     llvm::StructType* protocolConformance() const { return protocolsTable_; }
+    llvm::PointerType* someobject() const { return someobjectPtr_; }
 
     llvm::StructType *llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
     llvm::ArrayType *multiprotocolConformance(const Type &type);
@@ -69,6 +71,7 @@ private:
     llvm::StructType *box_;
     llvm::StructType *protocolsTable_;
     llvm::StructType *callable_;
+    llvm::PointerType *someobjectPtr_;
 
     llvm::Type* getSimpleType(const Type &type);
 

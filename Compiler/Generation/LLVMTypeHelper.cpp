@@ -28,22 +28,24 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
             llvm::Type::getInt1Ty(context_),
             llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
     }, "protocolConformance");
-    classInfoType_ = llvm::StructType::create(context_, "classInfo");
-    classInfoType_->setBody({ classInfoType_->getPointerTo(), llvm::Type::getInt8PtrTy(context_)->getPointerTo() });
     boxInfoType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-            protocolsTable_
+        llvm::Type::getInt1PtrTy(context_), protocolsTable_->getPointerTo()
     }, "boxInfo");
+    classInfoType_ = llvm::StructType::create(context_, "classInfo");
+    classInfoType_->setBody({
+        classInfoType_->getPointerTo(), llvm::Type::getInt8PtrTy(context_)->getPointerTo(), boxInfoType_->getPointerTo()
+    });
     box_ = llvm::StructType::create(std::vector<llvm::Type *> {
             boxInfoType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
     }, "box");
     callable_ = llvm::StructType::create(std::vector<llvm::Type *> {
             llvm::Type::getInt8PtrTy(context_), llvm::Type::getInt8PtrTy(context_)
     }, "callable");
+    someobjectPtr_ = llvm::StructType::create({ classInfoType_->getPointerTo() }, "someobject")->getPointerTo();
 
     auto compiler = codeGenerator_->package()->compiler();
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
-    types_.emplace(Type::someobject(),
-                   llvm::StructType::create({ classInfoType_->getPointerTo() }, "someobject")->getPointerTo());
+    types_.emplace(Type::someobject(), someobjectPtr_);
     types_.emplace(Type(compiler->sInteger), llvm::Type::getInt64Ty(context_));
     types_.emplace(Type(compiler->sSymbol), llvm::Type::getInt32Ty(context_));
     types_.emplace(Type(compiler->sReal), llvm::Type::getDoubleTy(context_));

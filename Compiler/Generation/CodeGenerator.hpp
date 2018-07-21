@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace EmojicodeCompiler {
 
@@ -59,6 +60,8 @@ public:
     /// Determines a box info value that is used to identify values of the provided type in a box.
     /// @returns An LLVM value representing the box info that must be stored in the box info field.
     llvm::Constant* boxInfoFor(const Type &type);
+
+    llvm::Constant* protocolIdentifierFor(const Type &type);
     
 private:
     Package *const package_;
@@ -82,6 +85,8 @@ private:
     void createProtocolFunctionTypes(Protocol *protocol);
 
     void prepareModule();
+
+    std::map<Type, llvm::Constant*> protocolIds_;
 };
 
 }  // namespace EmojicodeCompiler

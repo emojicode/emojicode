@@ -9,6 +9,7 @@
 #include "Mangler.hpp"
 #include "Package/Package.hpp"
 #include "ProtocolsTableGenerator.hpp"
+#include "CodeGenerator.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include "VTCreator.hpp"
@@ -17,47 +18,50 @@
 #include <llvm/IR/GlobalValue.h>
 #include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/Type.h>
-#include <llvm/Support/raw_ostream.h>
+#include <llvm/IR/Constants.h>
 
 namespace EmojicodeCompiler {
 
-Declarator::Declarator(llvm::LLVMContext &context, llvm::Module &module, LLVMTypeHelper &typeHelper)
-        : context_(context), module_(module), typeHelper_(typeHelper) {
+Declarator::Declarator(CodeGenerator *generator) : generator_(generator) {
     declareRunTime();
 }
 
 void EmojicodeCompiler::Declarator::declareRunTime() {
-    runTimeNew_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(context_),
-                                         llvm::Type::getInt64Ty(context_));
+    runTimeNew_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(generator_->context()),
+                                         llvm::Type::getInt64Ty(generator_->context()));
     runTimeNew_->addFnAttr(llvm::Attribute::NoUnwind);
 
-    panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(context_), llvm::Type::getInt8PtrTy(context_));
+    panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(generator_->context()), llvm::Type::getInt8PtrTy(generator_->context()));
     panic_->addFnAttr(llvm::Attribute::NoUnwind);
     panic_->addFnAttr(llvm::Attribute::NoReturn);
     panic_->addFnAttr(llvm::Attribute::Cold);  // A program should panic rarely.
 
-    inheritsFrom_ = declareRunTimeFunction("ejcInheritsFrom", llvm::Type::getInt1Ty(context_),{
-        typeHelper_.classInfo()->getPointerTo(), typeHelper_.classInfo()->getPointerTo()
+    inheritsFrom_ = declareRunTimeFunction("ejcInheritsFrom", llvm::Type::getInt1Ty(generator_->context()), {
+        generator_->typeHelper().classInfo()->getPointerTo(), generator_->typeHelper().classInfo()->getPointerTo()
+    });
+    findProtocolConformance_ = declareRunTimeFunction("ejcFindProtocolConformance",
+                                                      generator_->typeHelper().protocolConformance()->getPointerTo(), {
+        generator_->typeHelper().boxInfo()->getPointerTo(), llvm::Type::getInt1PtrTy(generator_->context())
     });
 
-    boxInfoClassObjects_ = declareBoxInfo("box_info_objects");
+    boxInfoClassObjects_ = declareBoxInfo("box_info_objects", {});
 }
 
 llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type *returnType,
                                                                       llvm::ArrayRef<llvm::Type *> args) {
     auto ft = llvm::FunctionType::get(returnType, args, false);
-    return llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, &module_);
+    return llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, generator_->module());
 }
 
 void Declarator::declareImportedClassInfo(Class *klass) {
-    auto info = new llvm::GlobalVariable(module_, typeHelper_.classInfo(), true,
+    auto info = new llvm::GlobalVariable(*generator_->module(), generator_->typeHelper().classInfo(), true,
                                          llvm::GlobalValue::ExternalLinkage, nullptr,
                                          mangleClassInfoName(klass));
     klass->setClassInfo(info);
 }
 
 void Declarator::declareImportedPackageSymbols(Package *package) {
-    auto ptg = ProtocolsTableGenerator(context_, module_, typeHelper_);
+    auto ptg = ProtocolsTableGenerator(generator_);
     for (auto &valueType : package->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
@@ -70,10 +74,10 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
             function->createUnspecificReification();
             function->eachReification([this, function, &tableIndex](auto &reification) {
                 auto context = ReificationContext(*function, reification);
-                typeHelper_.setReificationContext(&context);
-                reification.entity.setFunctionType(typeHelper_.functionTypeFor(function));
+                generator_->typeHelper().setReificationContext(&context);
+                reification.entity.setFunctionType(generator_->typeHelper().functionTypeFor(function));
                 reification.entity.setVti(tableIndex++);
-                typeHelper_.setReificationContext(nullptr);
+                generator_->typeHelper().setReificationContext(nullptr);
             });
         }
     }
@@ -95,15 +99,15 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
 void Declarator::declareLlvmFunction(Function *function) const {
     function->eachReification([this, function](auto &reification) {
         auto context = ReificationContext(*function, reification);
-        typeHelper_.setReificationContext(&context);
-        auto ft = typeHelper_.functionTypeFor(function);
-        typeHelper_.setReificationContext(nullptr);
+        generator_->typeHelper().setReificationContext(&context);
+        auto ft = generator_->typeHelper().functionTypeFor(function);
+        generator_->typeHelper().setReificationContext(nullptr);
         auto name = function->externalName().empty() ? mangleFunction(function, reification.arguments)
                                                      : function->externalName();
         auto linkage = function->accessLevel() == AccessLevel::Private && !function->isExternal()
                                                                        ? llvm::Function::PrivateLinkage
                                                                        : llvm::Function::ExternalLinkage;
-        reification.entity.function = llvm::Function::Create(ft, linkage, name, &module_);
+        reification.entity.function = llvm::Function::Create(ft, linkage, name, generator_->module());
         reification.entity.function->addFnAttr(llvm::Attribute::NoUnwind);
 
         size_t i = 0;
@@ -126,10 +130,12 @@ void Declarator::declareLlvmFunction(Function *function) const {
     });
 }
 
-llvm::GlobalVariable* Declarator::declareBoxInfo(const std::string &name) {
-    return new llvm::GlobalVariable(module_, typeHelper_.boxInfo(), true,
+llvm::GlobalVariable* Declarator::declareBoxInfo(const std::string &name, std::vector<llvm::Constant *> boxInfos) {
+    boxInfos.emplace_back(llvm::Constant::getNullValue(generator_->typeHelper().boxInfo()));
+    auto arrayType = llvm::ArrayType::get(generator_->typeHelper().boxInfo(), boxInfos.size());
+    return new llvm::GlobalVariable(*generator_->module(), arrayType, true,
                                     llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage,
-                                    llvm::Constant::getNullValue(typeHelper_.boxInfo()), name);
+                                    llvm::ConstantArray::get(arrayType, boxInfos), name);
 }
 
 }  // namespace EmojicodeCompiler
