@@ -19,7 +19,7 @@ public:
 };
 
 extern "C" Thread* sThreadNew(runtime::Callable<void> callable) {
-    auto thread = Thread::allocateAndInitType();
+    auto thread = Thread::init();
     thread->thread = std::thread([callable]() {
         callable();
     });
@@ -35,7 +35,7 @@ extern "C" void sThreadDelay(runtime::ClassInfo *, runtime::Integer mcs) {
 }
 
 extern "C" Mutex* sMutexNew() {
-    return Mutex::allocateAndInitType();
+    return Mutex::init();
 }
 
 extern "C" void sMutexLock(Mutex *mutex) {

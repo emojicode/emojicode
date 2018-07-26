@@ -13,7 +13,7 @@ public:
 };
 
 extern "C" PRNG* sPrngNew() {
-    return PRNG::allocateAndInitType();
+    return PRNG::init();
 }
 
 extern "C" runtime::Integer sPrngGetInteger(PRNG *prng, runtime::Integer from, runtime::Integer to) {

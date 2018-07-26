@@ -3,8 +3,8 @@
 //
 
 #include "../runtime/Runtime.h"
-#include "Data.hpp"
-#include "String.hpp"
+#include "Data.h"
+#include "String.h"
 #include "utf8.h"
 #include <algorithm>
 
@@ -29,7 +29,7 @@ extern "C" runtime::SimpleOptional<String *> sDataAsString(Data *data) {
         return runtime::NoValue;
     }
 
-    auto *string = String::allocateAndInitType();
+    auto *string = String::init();
     string->count = u8_strlen_l(chars, data->count);
 
     if (data->count == 0) {

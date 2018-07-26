@@ -48,7 +48,7 @@ template <typename Subclass>
 class Object {
 public:
     template <typename ...Args>
-    static Subclass* allocateAndInitType(Args ...args) {
+    static Subclass* init(Args ...args) {
         static_assert(util::is_complete<ClassInfoFor<Subclass>>::value,
                       "Provide class info for this class with SET_INFO_FOR.");
         return new(allocate<Subclass>()) Subclass(args...);

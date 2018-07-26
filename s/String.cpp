@@ -7,8 +7,8 @@
 //
 
 #include "../runtime/Runtime.h"
-#include "Data.hpp"
-#include "String.hpp"
+#include "Data.h"
+#include "String.h"
 #include "utf8.h"
 #include <algorithm>
 #include <cctype>
@@ -73,7 +73,7 @@ extern "C" runtime::Integer sStringUtf8ByteCount(String *string) {
 }
 
 extern "C" String* sStringToLowercase(String *string) {
-    auto newString = String::allocateAndInitType();
+    auto newString = String::init();
     newString->count = string->count;
     newString->characters = runtime::allocate<String::Character>(string->count);
 
@@ -121,7 +121,7 @@ extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindSymbolFromIndex(
 }
 
 extern "C" String* sStringToUppercase(String *string) {
-    auto newString = String::allocateAndInitType();
+    auto newString = String::init();
     newString->count = string->count;
     newString->characters = runtime::allocate<String::Character>(string->count);
 
@@ -139,14 +139,14 @@ extern "C" String* sStringAppendSymbol(String *string, runtime::Symbol symbol) {
     std::memcpy(characters, string->characters, string->count * sizeof(String::Character));
     characters[string->count] = symbol;
 
-    auto newString = String::allocateAndInitType();
+    auto newString = String::init();
     newString->count = string->count + 1;
     newString->characters = characters;
     return newString;
 }
 
 extern "C" s::Data* sStringToData(String *string) {
-    auto data = s::Data::allocateAndInitType();
+    auto data = s::Data::init();
     data->count = u8_codingsize(string->characters, string->count);
     data->data = runtime::allocate<runtime::Byte>(data->count);
     u8_toutf8(reinterpret_cast<char *>(data->data), data->count, string->characters, string->count);

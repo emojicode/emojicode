@@ -4,7 +4,7 @@
 
 #include "../runtime/Runtime.h"
 #include "../runtime/Internal.hpp"
-#include "String.hpp"
+#include "String.h"
 #include <cstdlib>
 #include <ctime>
 
@@ -19,7 +19,7 @@ extern "C" runtime::Integer sSystemUnixTimestamp(runtime::ClassInfo*) {
 extern "C" runtime::SimpleOptional<s::String*> sSystemGetEnv(runtime::ClassInfo*, s::String *name) {
     auto var = std::getenv(name->cString());
     if (var != nullptr) {
-        return s::String::allocateAndInitType(var);
+        return s::String::init(var);
     }
     return runtime::NoValue;
 }
@@ -32,7 +32,7 @@ extern "C" runtime::SimpleOptional<s::String*> sSystemArg(runtime::ClassInfo*, r
     if (i >= runtime::internal::argc) {
         return runtime::NoValue;
     }
-    return s::String::allocateAndInitType(runtime::internal::argv[i]);
+    return s::String::init(runtime::internal::argv[i]);
 }
 
 extern "C" void sSystemSystem(runtime::ClassInfo*, s::String *string) {

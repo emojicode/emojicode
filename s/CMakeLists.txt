@@ -1,4 +1,4 @@
-file(GLOB S_SOURCES "*.cpp" "*.c")
+file(GLOB S_SOURCES "*.cpp" "*.c" "*.hpp" "*.h")
 
 get_filename_component(MAIN_FILE s.emojic ABSOLUTE)
 file(GLOB EMOJIC_DEPEND "*.emojic")

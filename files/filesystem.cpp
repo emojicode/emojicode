@@ -2,7 +2,7 @@
 // Created by Theo Weidmann on 24.03.18.
 //
 
-#include "../s/String.hpp"
+#include "../s/String.h"
 #include "../runtime/Runtime.h"
 #include <cerrno>
 #include <climits>
@@ -112,7 +112,7 @@ extern "C" runtime::SimpleError<String*> filesFsAbsolute(String *inPath) {
     if (x == nullptr) {
         return runtime::SimpleError<String*>(runtime::MakeError, errorEnumFromErrno());
     }
-    return String::allocateAndInitType(x);
+    return String::init(x);
 }
 
 }  // namespace files

@@ -7,7 +7,7 @@
 //
 
 #include "../runtime/Runtime.h"
-#include "String.hpp"
+#include "String.h"
 #include <cstdint>
 #include <cstdlib>
 
@@ -27,7 +27,7 @@ extern "C" s::String* sIntToString(runtime::Integer *nptr, runtime::Integer base
         d++;
     }
 
-    auto string = String::allocateAndInitType();
+    auto string = String::init();
     string->count = d;
     string->characters = runtime::allocate<String::Character>(d);
 

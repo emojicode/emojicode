@@ -2,9 +2,9 @@
 // Created by Theo Weidmann on 24.03.18.
 //
 
-#include "../s/String.hpp"
+#include "../s/String.h"
 #include "../runtime/Runtime.h"
-#include "../s/Data.hpp"
+#include "../s/Data.h"
 #include <fstream>
 #include <ios>
 #include <iostream>
@@ -31,13 +31,13 @@ public:
 };
 
 extern "C" runtime::SimpleError<File*> filesFileNewWriting(String *path) {
-    auto file = File::allocateAndInitType();
+    auto file = File::init();
     file->file_ = std::fstream(path->cString(), std::ios_base::out);
     return returnErrorIfFailed(file, file->file_);
 }
 
 extern "C" runtime::SimpleError<File*> filesFileNewReading(String *path) {
-    auto file = File::allocateAndInitType();
+    auto file = File::init();
     file->file_ = std::fstream(path->cString(), std::ios_base::in);
     return returnErrorIfFailed(file, file->file_);
 }
@@ -58,7 +58,7 @@ extern "C" runtime::SimpleError<Data*> filesFileReadBytes(File *file, runtime::I
     auto bytes = runtime::allocate<runtime::Byte>(count);
     file->file_.read(reinterpret_cast<char *>(bytes), count);
 
-    auto data = Data::allocateAndInitType();
+    auto data = Data::init();
     data->data = bytes;
     data->count = file->file_.gcount();
     return returnErrorIfFailed(data, file->file_);
@@ -80,7 +80,7 @@ extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassInfo*, St
     auto bytes = runtime::allocate<runtime::Byte>(size);
     file.read(reinterpret_cast<char *>(bytes), size);
 
-    auto data = Data::allocateAndInitType();
+    auto data = Data::init();
     data->data = bytes;
     data->count = size;
     return returnErrorIfFailed(data, file);

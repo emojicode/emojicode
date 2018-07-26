@@ -3,8 +3,8 @@
 //
 
 #include "../runtime/Runtime.h"
-#include "../s/Data.hpp"
-#include "../s/String.hpp"
+#include "../s/Data.h"
+#include "../s/String.h"
 #include <arpa/inet.h>
 #include <cerrno>
 #include <csignal>
@@ -77,7 +77,7 @@ extern "C" runtime::SimpleError<Socket*> socketsSocketNewHost(String *host, runt
         return runtime::SimpleError<Socket*>(runtime::MakeError, errorEnumFromErrno());
     }
 
-    auto socket = Socket::allocateAndInitType();
+    auto socket = Socket::init();
     socket->socket_ = socketDescriptor;
     return socket;
 }
@@ -98,7 +98,7 @@ extern "C" runtime::SimpleError<Data*> socketsSocketRead(Socket *socket, runtime
         return runtime::SimpleError<Data *>(runtime::MakeError, errorEnumFromErrno());;
     }
 
-    auto data = Data::allocateAndInitType();
+    auto data = Data::init();
     data->count = read;
     data->data = bytes;
     return data;
@@ -126,7 +126,7 @@ extern "C" runtime::SimpleError<Server*> socketsServerNewPort(runtime::Integer p
         return runtime::SimpleError<Server *>(runtime::MakeError, errorEnumFromErrno());
     }
 
-    auto server = Server::allocateAndInitType();
+    auto server = Server::init();
     server->socket_ = listenerDescriptor;
     return server;
 }
@@ -142,7 +142,7 @@ extern "C" runtime::SimpleError<Socket *> socketsServerAccept(Server *server) {
         return runtime::SimpleError<Socket *>(runtime::MakeError, errorEnumFromErrno());
     }
 
-    auto socket = Socket::allocateAndInitType();
+    auto socket = Socket::init();
     socket->socket_ = connectionAddress;
     return socket;
 }

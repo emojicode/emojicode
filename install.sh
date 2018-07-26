@@ -7,6 +7,7 @@ r=$(tput setaf 1)
 
 binaries=${1:-"/usr/local/bin"}
 packages=${2:-"/usr/local/EmojicodePackages"}
+include=${3:-"/usr/local/include/emojicode"}
 
 self=$0
 magicsudod=$3
@@ -19,8 +20,9 @@ else
 
   echo "${bold}I’ll copy the ${cyan}Emojicode Compiler${n}${bold} to ${binaries}.${n}"
   echo "${bold}Then I’ll copy the default packages to ${packages}.${n}"
+  echo "${bold}Finally, I’ll copy the Emojicode API headers to ${include}.${n}"
   echo "If you prefer different locations you can rerun me and provide me with other locations like so:"
-  echo -e "\t ${0} [binary location] [packages location]\n"
+  echo -e "\t ${0} [binary location] [packages location] [include location]\n"
 fi
 
 function offerSudo {
@@ -76,6 +78,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Copying packages${n}"
 
     rsync -rl packages/ "$packages"
+    rsync -rl include/ "$include"
     chmod -R 755 "$packages"
   )
   if [ $? = 0 ]
