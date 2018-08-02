@@ -10,7 +10,7 @@ packages=${2:-"/usr/local/EmojicodePackages"}
 include=${3:-"/usr/local/include/emojicode"}
 
 self=$0
-magicsudod=$3
+magicsudod=$4
 
 if [[ "$magicsudod" == "magicsudod" ]]; then
   echo "I’ve super user privileges now and will try to perform the installation."
@@ -36,7 +36,7 @@ function offerSudo {
   read -p "If you wish me to do so type y. ➡️  " -n 1 -r
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo ""
-    sudo "$self" "$binaries" "$packages" magicsudod
+    sudo "$self" "$binaries" "$packages" "$include" magicsudod
     exit $?
   fi
   exit 1
