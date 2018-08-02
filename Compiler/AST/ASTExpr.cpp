@@ -74,7 +74,7 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
 }
 
 void ASTCast::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    // TODO: Implement
+    analyser->take(&value_);
 }
 
 Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -93,7 +93,7 @@ Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExp
 }
 
 void ASTConditionalAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    // TODO: Implement
+    analyser->take(&expr_);
 }
 
 Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {

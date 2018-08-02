@@ -9,6 +9,7 @@
 #include "ASTBinaryOperator.hpp"
 #include "ASTLiterals.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Types/TypeExpectation.hpp"
 #include "Types/ValueType.hpp"
@@ -170,7 +171,13 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
 }
 
 void ASTBinaryOperator::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    // TODO: Implement
+    if (builtIn_ != BuiltInType::None) {
+        left_->analyseMemoryFlow(analyser, MFType::Borrowing);
+        right_->analyseMemoryFlow(analyser, MFType::Borrowing);
+    }
+    else {
+        analyser->analyseFunctionCall(&args_, left_.get(), method_);
+    }
 }
 
 }  // namespace EmojicodeCompiler
