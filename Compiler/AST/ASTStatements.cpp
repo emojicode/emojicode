@@ -55,7 +55,9 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
 
     if (analyser->function()->returnType()->type().type() == TypeType::NoReturn) {
-        assert(value_ == nullptr);
+        if (value_ != nullptr) {
+            throw CompilerError(position(), "No return type declared. Use ↩️↩️.");
+        }
         return;
     }
 
