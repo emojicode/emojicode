@@ -134,7 +134,7 @@ void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
 
 void Class::addInstanceVariable(const InstanceVariableDeclaration &declaration) {
     if (foreign()) {
-        throw CompilerError(position(), "Instance variable is not allowed in foreign class.");
+        throw CompilerError(position(), "Instance variables are not allowed in foreign class.");
     }
     TypeDefinition::addInstanceVariable(declaration);
 }

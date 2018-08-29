@@ -94,6 +94,11 @@ void FunctionAnalyser::deprecatedWarning(Function *function, const SourcePositio
 void FunctionAnalyser::analyse() {
     Scope &methodScope = scoper_->pushArgumentsScope(function_->parameters(), function_->position());
 
+    if (function_->functionType() == FunctionType::ObjectInitializer &&
+        dynamic_cast<Class *>(function_->owner())->foreign()) {
+        compiler()->error(CompilerError(function_->position(), "Foreign classes cannot have native initializers."));
+    }
+
     if (hasInstanceScope(function_->functionType())) {
         scoper_->instanceScope()->setVariableInitialization(!isFullyInitializedCheckRequired(function_->functionType()));
     }
