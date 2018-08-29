@@ -184,14 +184,64 @@
     ↩️ size
   🍉
 
-💭   📗
-💭     Sorts this array in place using the quick sort algorithm.
+  📗
+    Sorts this array in place using the quick sort algorithm.
 
-💭     `comparator` must return an integer less than, equal to, or greater than 0,
-💭     if the first argument is considered respectively less than, equal to, or
-💭     greater than the second.
-💭   📗
-💭   ❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 📻 53
+    `comparator` must return an integer less than, equal to, or greater than 0,
+    if the first argument is considered respectively less than, equal to, or
+    greater than the second.
+  📗
+  ❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 🍇
+    🥃🐕 0 🐔🐕❗️ ➖ 1 comparator❗️
+  🍉
+
+  🔒❗️✂️ first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 ➡️ 🔢 🍇
+    ☣️ 🍇
+      🐽 data🐚Element🍆 first✖️⚖️Element❗️  ➡️ pivot
+    🍉
+
+    first ➖ 1 ➡️🖍🆕i
+    last ➕ 1 ➡️🖍🆕j
+
+    🔁 👍 🍇
+      i ⬅️➕ 1
+      ☣️ 🍇
+        🔁 ⁉️comparator 🐽 data🐚Element🍆 i✖️⚖️Element❗️ pivot❗️ ◀️ 0 🍇
+          i ⬅️➕ 1
+        🍉
+      🍉
+
+      j ⬅️➖ 1
+      ☣️ 🍇
+        🔁 ⁉️comparator 🐽 data🐚Element🍆 j✖️⚖️Element❗️ pivot❗️ ▶️ 0 🍇
+          j ⬅️➖ 1
+        🍉
+      🍉
+
+      ↪️ i ▶️🙌 j 🍇
+        ↩️ j
+      🍉
+
+      ☣️ 🍇
+        ♻️🐕 i j❗️
+      🍉
+    🍉
+    ↩️ 0
+  🍉
+
+  🔒❗️🥃 first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 🍇
+    ↪️ first ◀️ last 🍇
+      ✂️🐕 first last comparator❗️ ➡️ p
+      🥃🐕 first p comparator❗️
+      🥃🐕 p ➕ 1 last comparator❗️
+    🍉
+  🍉
+
+  ☣️🔒❗♻️ a 🔢 b 🔢 🍇
+    🐽 data🐚Element🍆 a✖️⚖️Element❗️ ➡️ temp
+    🐷 data🐚Element🍆 🐽 data🐚Element🍆 b✖️⚖️Element❗️ a✖️⚖️Element❗️
+    🐷 data🐚Element🍆 temp b✖️⚖️Element❗️
+  🍉
 
   📗
     Shuffles the list in place using a Fisher–Yates shuffle.
@@ -203,9 +253,7 @@
       🔢 prng 0 count ➖ 1❗️ ➡️ x
 
       ☣️ 🍇
-        🐽 data🐚Element🍆 i✖️⚖️Element❗️ ➡️ temp
-        🐷 data🐚Element🍆 🐽 data🐚Element🍆 x✖️⚖️Element❗️ i✖️⚖️Element❗️
-        🐷 data🐚Element🍆 temp x✖️⚖️Element❗️
+        ♻️🐕 i x❗️
       🍉
     🍉
   🍉
@@ -251,19 +299,20 @@
     ↩️ 👍
   🍉
 
-💭   📗 Tests whether this array and `other` are equal. 📗
-💭   🙌 🐚A😛🍆Element other 🍨🐚A ➡️ 👌 🍇
-💭     ↪️ ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
-💭       ↩️ 👎
-💭     🍉
+  📗 Tests whether this array and `other` are equal. 📗
+  🙌 🐚A😛🐚Element🍆🍆 other 🍨🐚A🍆 ➡️ 👌 🍇
+    ↪️ ❎ 🐔 🐕❗️ 🙌 🐔 other❗️ ❗️ 🍇
+      ↩️ 👎
+    🍉
 
-💭     🔂 i 🆕⏩⏩  0 🐔🐕❗️ ❗️ 🍇
-💭       ↪️ ❎ 🍺🐽 other i❗️ 🙌 🍺 🐽 🐕  i❗️ ❗️ 🍇
-💭         ↩️ 👎
-💭       🍉
-💭     🍉
-💭     ↩️ 👍
-💭   🍉
+    💭🔜
+    🔂 i 🆕⏩⏩  0 🐔🐕❗️ ❗️ 🍇
+      ↪️ ❎ 🐽 other i❗️ 🙌 🐽 🐕  i❗️ ❗️ 🍇
+        ↩️ 👎
+      🍉
+    🍉🔚💭
+    ↩️ 👍
+  🍉
 
   📗 Returns an iterator to iterate over the elements of this list. 📗
   ❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
