@@ -24,13 +24,13 @@ namespace EmojicodeCompiler {
 
 LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGenerator)
         : context_(context), codeGenerator_(codeGenerator) {
-    protocolsTable_ = llvm::StructType::create(std::vector<llvm::Type *> {
+    boxInfoType_ = llvm::StructType::create(context_, "boxInfo");
+    protocolsTable_ = llvm::StructType::create({
             llvm::Type::getInt1Ty(context_),
             llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
+            boxInfoType_->getPointerTo()
     }, "protocolConformance");
-    boxInfoType_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        llvm::Type::getInt1PtrTy(context_), protocolsTable_->getPointerTo()
-    }, "boxInfo");
+    boxInfoType_->setBody({ llvm::Type::getInt1PtrTy(context_), protocolsTable_->getPointerTo() });
     classInfoType_ = llvm::StructType::create(context_, "classInfo");
     classInfoType_->setBody({
         classInfoType_->getPointerTo(), llvm::Type::getInt8PtrTy(context_)->getPointerTo(), boxInfoType_->getPointerTo()

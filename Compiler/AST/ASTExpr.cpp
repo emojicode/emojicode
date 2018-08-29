@@ -31,11 +31,12 @@ Type ASTSizeOf::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
 Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
-    Type originalType = value_->analyse(analyser, expectation);
+    Type originalType = analyser->expect(TypeExpectation(), &value_);
     if (originalType.compatibleTo(type, analyser->typeContext())) {
         analyser->compiler()->error(CompilerError(position(), "Unnecessary cast."));
     }
-    else if (!type.compatibleTo(originalType, analyser->typeContext())) {
+    else if (!type.compatibleTo(originalType, analyser->typeContext())
+             && !(originalType.unboxedType() == TypeType::Protocol && type.unboxedType() == TypeType::Protocol)) {
         auto typeString = type.toString(analyser->typeContext());
         analyser->compiler()->error(CompilerError(position(), "Cast to unrelated type ", typeString,
                                                   " will always fail."));

@@ -29,11 +29,13 @@ public:
 
     void add(const Type &protocol, llvm::GlobalVariable *conformance);
     void finish();
+    llvm::GlobalVariable* boxInfo() { return boxInfo_; }
 
 private:
     CodeGenerator *const generator_;
     const Type &type_;
     std::vector<llvm::Constant *> boxInfos_;
+    llvm::GlobalVariable* boxInfo_;
 };
 
 class ProtocolsTableGenerator {
@@ -50,7 +52,7 @@ private:
     /// Creates a virtual table (dispatch table) for the given protocol.
     /// @param protocol The protocol for which the virtual table is created.
     /// @param type The type definition from which methods will be dispatched.
-    llvm::GlobalVariable* createVirtualTable(const Type &type, const Type &protocol);
+    llvm::GlobalVariable* createVirtualTable(const Type &type, const Type &protocol, llvm::Constant *boxInfo);
 
     llvm::GlobalVariable *getConformanceVariable(const Type &type, const Type &protocol, llvm::Constant *conformance) const;
 };

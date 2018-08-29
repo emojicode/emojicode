@@ -35,7 +35,8 @@ public:
     /// Declares an LLVM function for each reification of the provided function.
     void declareLlvmFunction(Function *function) const;
 
-    llvm::GlobalVariable* declareBoxInfo(const std::string &name, std::vector<llvm::Constant *> boxInfos);
+    llvm::GlobalVariable* declareBoxInfo(const std::string &name, size_t size);
+    llvm::GlobalVariable* initBoxInfo(llvm::GlobalVariable* info, std::vector<llvm::Constant *> boxInfos);
 
     llvm::GlobalVariable* boxInfoForObjects() { return boxInfoClassObjects_; }
 

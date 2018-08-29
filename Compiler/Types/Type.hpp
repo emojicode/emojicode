@@ -304,6 +304,7 @@ private:
 //            assert(genericArguments_[1].type() == TypeType::Protocol ||
 //                   genericArguments_[1].type() == TypeType::Something);
             assert(genericArguments_.front().type() != TypeType::Box);
+            assert(genericArguments_[1].type() != TypeType::Box);
         }
 
     TypeType typeContent_;

@@ -8,3 +8,7 @@ Croissant
 You ordered a 2kg pita filled with 2 tomatoes and 200g of chicken.
 generic message
 You ordered a 2kg pita filled with 2 tomatoes and 200g of chicken.
+Joe
+You ordered a 8kg pita filled with 2 tomatoes and 400g of chicken.
+Another messgae from Joe
+Weight 8

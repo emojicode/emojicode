@@ -44,7 +44,7 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
         generator_->typeHelper().boxInfo()->getPointerTo(), llvm::Type::getInt1PtrTy(generator_->context())
     });
 
-    boxInfoClassObjects_ = declareBoxInfo("box_info_objects", {});
+    boxInfoClassObjects_ = initBoxInfo(declareBoxInfo("box_info_objects", 0), {});
 }
 
 llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type *returnType,
@@ -130,12 +130,17 @@ void Declarator::declareLlvmFunction(Function *function) const {
     });
 }
 
-llvm::GlobalVariable* Declarator::declareBoxInfo(const std::string &name, std::vector<llvm::Constant *> boxInfos) {
+llvm::GlobalVariable* Declarator::declareBoxInfo(const std::string &name, size_t size) {
+    auto arrayType = llvm::ArrayType::get(generator_->typeHelper().boxInfo(), size + 1);
+    return new llvm::GlobalVariable(*generator_->module(), arrayType, true,
+                                    llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage, nullptr, name);
+}
+
+llvm::GlobalVariable* Declarator::initBoxInfo(llvm::GlobalVariable* info, std::vector<llvm::Constant *> boxInfos) {
     boxInfos.emplace_back(llvm::Constant::getNullValue(generator_->typeHelper().boxInfo()));
     auto arrayType = llvm::ArrayType::get(generator_->typeHelper().boxInfo(), boxInfos.size());
-    return new llvm::GlobalVariable(*generator_->module(), arrayType, true,
-                                    llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage,
-                                    llvm::ConstantArray::get(arrayType, boxInfos), name);
+    info->setInitializer(llvm::ConstantArray::get(arrayType, boxInfos));
+    return info;
 }
 
 }  // namespace EmojicodeCompiler

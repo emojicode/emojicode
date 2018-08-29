@@ -124,6 +124,9 @@ private:
     Value* castToClass(FunctionCodeGenerator *fg, Value *box) const;
     Value* castToValueType(FunctionCodeGenerator *fg, Value *box) const;
     Value* castToProtocol(FunctionCodeGenerator *fg, Value *box) const;
+    /// Returns the box info representing the type of information in the box. This includes fetching the box info
+    /// from the protocol conformance if the box is a protocol box.
+    Value* boxInfo(FunctionCodeGenerator *fg, Value *box) const;
 };
 
 class ASTCallableCall final : public ASTExpr {
