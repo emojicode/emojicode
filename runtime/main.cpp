@@ -55,7 +55,7 @@ extern "C" void ejcMemoryMove(int8_t **self, runtime::Integer destOffset, int8_t
     memmove(*self + destOffset, src + srcOffset, bytes);
 }
 
-extern "C" void ejcMemorySet(int8_t **self, runtime::Integer value, runtime::Integer offset, runtime::Integer bytes) {
+extern "C" void ejcMemorySet(int8_t **self, runtime::Byte value, runtime::Integer offset, runtime::Integer bytes) {
     memset(*self + offset, value, bytes);
 }
 

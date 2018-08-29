@@ -1,12 +1,79 @@
 📗
-  Represents a region in memory
+  Represents a region in memory.
+
+  Working with 🧠 requires great care as this interface allows you to directly
+  manipulate memory.
+
+  It’s important to understand that instances of 🧠 are basically memory
+  addresses. Always think of a 🧠 instance as pointing to a memory
+  region. Because 🧠 instance always are addresses it is recommmended that you
+  make no more copies than absolutely necessary to avoid unwanted side effects.
+
+  It is not possible to directly manipulate or access memory addresses as this
+  would interfer with the automatic memory management Emojicode provides.
 📗
 🌍 🕊 🧠 ⚪️ 🍇
+  📗 Creates an instance by allocating *size* bytes. 📗
   ☣️️ 🆕 size 🔢 🍇🍉
+
+  📗
+    Writes *value* starting *offset* bytes past the address represented by this
+    instance.
+
+    >!H If the memory area represented is smaller than `⚖️T ➕ offset` bytes,
+    >!H undefined behavior is caused!
+  📗
   ☣️️ ❗️ 🐷🐚☣️️T⚪️🍆 🛅 value T offset 🔢 📻 🔤ejcBuiltIn🔤
+
+  📗
+    Reads a value of type T starting *bytes* bytes past the address
+    represented by this instance.
+
+    >!H If the memory area represented is smaller than `⚖️T ➕ offset` bytes,
+    >!H undefined behavior is caused!
+  📗
   ☣️️ ❗️ 🐽🐚☣️️T⚪️🍆 offset 🔢 ➡️ T 📻 🔤ejcBuiltIn🔤
+
+  📗
+    Resizes this memory area.
+
+    >!N Do not call this method if you have copies of this 🧠, i.e. if you have
+    >!N multiple pointers to this area. Calling this method updates the
+    >!N represented address and can invalidate all other 🧠 that pointed to this
+    >!N address. Only ever call this method if there is only one 🧠 representing
+    >!N the memory area.
+  📗
   ☣️️ ❗️ 🏗 newSize 🔢 📻 🔤ejcMemoryRealloc🔤
+
+  📗
+    Copies *bytes* bytes from *source* starting from *sourceOffset* to this
+    instane, writing the copied bytes *destinationOffset* bytes past the
+    beginning of this memory area.
+
+    *source* may be the same as the instance on which the method is called
+    and the memory area which is copied may overlap the destination area.
+
+    >!H If the memory area represented is smaller than
+    >!H `bytes ➕ destinationOffset` bytes or *source* is smaller than
+    >!H `bytes ➕ sourceOffset` bytes, undefined behavior is caused!
+  📗
   ☣️️ ❗️ 🚜 destinationOffset 🔢 source 🧠 sourceOffset 🔢 bytes 🔢 📻 🔤ejcMemoryMove🔤
-  ☣️️ ❗️ ✍️ byteValue 🔢 offset 🔢 bytes 🔢 📻 🔤ejcMemorySet🔤
+
+  📗
+    Sets the first *bytes* bytes starting from *offset* bytes past the address
+    represented by this instance to *byteValue*.
+
+    >!H If the memory area represented is smaller than `bytes ➕ offset` bytes,
+    >!H undefined behavior is caused!
+  📗
+  ☣️️ ❗️ ✍️ byteValue 💧 offset 🔢 bytes 🔢 📻 🔤ejcMemorySet🔤
+
+  📗
+    Compares the first *bytes* of two memory areas.
+
+    >!H If either the memory area represented by this instance or the one
+    >!H represented by *other* or both are smaller than *bytes*, undefined
+    >!H behavior is caused!
+  📗
   ☣️️ ❗️ ↔️ other 🧠 bytes 🔢 ➡️ 🔢 📻 🔤ejcMemoryCompare🔤
 🍉
