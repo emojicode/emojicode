@@ -3,14 +3,10 @@
   🐊 🔂🐚💧🍆
   🐊 😛🐚📇🍆
 
-  📗 Creates a string by copying the memory from the provided memory. 📗
+  📗 Creates a 📇 instance by copying the memory from the provided memory. 📗
   ☣️ 🆕 🧠 memory 🧠 🍼 count 🔢 🍇
     🆕🧠🆕 count❗️➡️ 🖍data
     🚜 data 0 memory 0 count❗️
-  🍉
-
-  ❗️🧠 ➡️ 🧠 🍇
-    ↩️ data
   🍉
 
   📗 Returns 👍 if this is equal to *b*. 📗
@@ -46,7 +42,7 @@
 
   📗
     If this object represents the bytes of a UTF8 encoded text this method
-    returns a string representing that text. Nothingness is returned if this
+    returns a string representing that text. No value is returned if this
     object does not represent a valid UTF8 sequence.
   📗
   ❗️ 🔡 ➡️ 🍬🔡 📻 🔤sDataAsString🔤
