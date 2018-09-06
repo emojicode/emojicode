@@ -19,9 +19,7 @@ class Enum : public ValueType {
 public:
     Enum(std::u32string name, Package *package, SourcePosition position,
          const std::u32string &documentation, bool exported)
-        : ValueType(std::move(name), package, std::move(position), documentation, exported) {
-            makePrimitive();
-    }
+        : ValueType(std::move(name), package, std::move(position), documentation, exported, true) {}
 
     Type type() override { return Type(this); }
 

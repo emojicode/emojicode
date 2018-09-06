@@ -16,7 +16,7 @@
   It is not possible to directly manipulate or access memory addresses as this
   would interfer with the automatic memory management Emojicode provides.
 📗
-🌍 🕊 🧠 ⚪️ 🍇
+🌍 📻 🕊 🧠 🍇
   📗 Creates an instance by allocating *size* bytes. 📗
   ☣️️ 🆕 size 🔢 🍇🍉
 

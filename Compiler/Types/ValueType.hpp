@@ -18,7 +18,8 @@ namespace EmojicodeCompiler {
 
 class ValueType : public TypeDefinition {
 public:
-    ValueType(std::u32string name, Package *p, SourcePosition pos, const std::u32string &documentation, bool exported);
+    ValueType(std::u32string name, Package *p, SourcePosition pos, const std::u32string &documentation, bool exported,
+              bool primitive);
 
     Type type() override { return Type(this); }
 
@@ -33,7 +34,6 @@ public:
         TypeDefinition::addInstanceVariable(declaration);
     }
 
-    void makePrimitive() { primitive_ = true; }
     bool isPrimitive() const { return primitive_; }
 
     /// Whether this Value Type has a deinitializer and a copy retainer that must be called to deinitialize 
@@ -48,7 +48,7 @@ public:
 
 private:
     enum class Managed { Unknown, Yes, No };
-    bool primitive_ = false;
+    bool primitive_;
     Managed managed_ = Managed::Unknown;
     std::unique_ptr<Function> copyRetain_;
     llvm::GlobalVariable *boxInfo_ = nullptr;

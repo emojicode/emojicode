@@ -41,7 +41,7 @@ private:
     /// Called if a $protocol$ has been detected. The first token has already been parsed.
     void parseProtocol(const std::u32string &documentation, const Token &theToken, bool exported);
     /// Called if a $value-type$ has been detected. The first token has already been parsed.
-    void parseValueType(const std::u32string &documentation, const Token &theToken, bool exported);
+    void parseValueType(const std::u32string &documentation, const Token &theToken, bool exported, bool primitive);
     /// Called if a $package-import$ has been detected. The first token has already been parsed.
     void parsePackageImport(const SourcePosition &p);
     /// Called if an $extension$ has been detected. The first token has already been parsed.

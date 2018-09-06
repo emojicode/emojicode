@@ -153,6 +153,11 @@ void PrettyPrinter::printTypeDef(const Type &type) {
             prettyStream_ << "📻 ";
         }
     }
+    if (auto valueType = type.valueType()) {
+        if (valueType->isPrimitive() && type.type() != TypeType::Enum) {
+            prettyStream_ << "📻 ";
+        }
+    }
 
     printTypeDefName(type);
 
@@ -220,11 +225,6 @@ void PrettyPrinter::printTypeDefName(const Type &type) {
     if (auto klass = type.klass()) {
         if (klass->superType() != nullptr && type.type() != TypeType::Extension) {
             prettyStream_ << klass->superType() << " ";
-        }
-    }
-    if (auto valueType = type.valueType()) {
-        if (valueType->isPrimitive() && type.type() != TypeType::Enum) {
-            prettyStream_ << "⚪️ ";
         }
     }
 }

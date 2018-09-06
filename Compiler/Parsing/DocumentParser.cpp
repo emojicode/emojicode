@@ -39,8 +39,10 @@ void DocumentParser::parse() {
                 parseEnum(documentation.get(), theToken, attributes.has(Attribute::Export));
                 continue;
             case TokenType::ValueType:
-                attributes.allow(Attribute::Export).check(theToken.position(), package_->compiler());
-                parseValueType(documentation.get(), theToken, attributes.has(Attribute::Export));
+                attributes.allow(Attribute::Export).allow(Attribute::Foreign)
+                    .check(theToken.position(), package_->compiler());
+                parseValueType(documentation.get(), theToken, attributes.has(Attribute::Export),
+                               attributes.has(Attribute::Foreign));
                 continue;
             case TokenType::PackageDocumentationComment:
                 attributes.check(theToken.position(), package_->compiler());
@@ -202,16 +204,12 @@ void DocumentParser::parseClass(const std::u32string &documentation, const Token
     offerAndParseBody(eclass, parsedTypeName, theToken.position());
 }
 
-void DocumentParser::parseValueType(const std::u32string &documentation, const Token &theToken, bool exported) {
+void DocumentParser::parseValueType(const std::u32string &documentation, const Token &theToken, bool exported,
+                                    bool primitive) {
     auto parsedTypeName = parseAndValidateNewTypeName();
 
-    auto valueType = package_->add(std::make_unique<ValueType>(parsedTypeName.name, package_,
-                                                               theToken.position(), documentation, exported));
-
-    if (stream_.consumeTokenIf(E_WHITE_CIRCLE)) {
-        valueType->makePrimitive();
-    }
-
+    auto valueType = package_->add(std::make_unique<ValueType>(parsedTypeName.name, package_, theToken.position(),
+                                                               documentation, exported, primitive));
     parseGenericParameters(valueType);
     offerAndParseBody(valueType, parsedTypeName, theToken.position());
 }
