@@ -61,6 +61,8 @@ public:
 
     /// The number of variable ids that were assigned.
     size_t variableIdCount() const { return maxVariableId_; }
+
+    virtual ~SemanticScoper() = default;
 protected:
     int maxInitializationLevel() const { return maxInitializationLevel_; }
 private:

@@ -20,7 +20,7 @@ Function::Function(std::u32string name, AccessLevel level, bool final, TypeDefin
          SourcePosition p,
          bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
          bool unsafe, FunctionType type) :
-position_(std::move(p)), name_(std::move(name)), final_(final), overriding_(overriding),
+position_(p), name_(std::move(name)), final_(final), overriding_(overriding),
 deprecated_(deprecated), imperative_(imperative), unsafe_(unsafe), mutating_(mutating), access_(level),
 owner_(owner), package_(package), documentation_(std::move(documentationToken)),
 functionType_(type) {}

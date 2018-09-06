@@ -145,7 +145,7 @@ protected:
         }
     }
 
-    ~TypeDefinition();
+    virtual ~TypeDefinition();
 
 private:
     Scope scope_;

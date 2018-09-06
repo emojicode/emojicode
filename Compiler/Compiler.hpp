@@ -44,6 +44,8 @@ public:
     virtual void warn(Compiler *compiler, const std::string &message, const SourcePosition &p) = 0;
     /// Called when the compilation stops, i.e. just before Compiler::compile returns.
     virtual void finish() = 0;
+
+    virtual ~CompilerDelegate() = default;
 };
 
 /// The Compiler class is the main interface to the compiler.

@@ -26,6 +26,8 @@ public:
     const SourcePosition& position() const { return sourcePosition_; }
     /// Appends code that leads to the creation of a node like this to the provided Prettyprinter.
     virtual void toCode(PrettyStream &pretty) const = 0;
+
+    virtual ~ASTNode() = default;
 private:
     SourcePosition sourcePosition_;
 };

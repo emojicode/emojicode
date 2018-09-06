@@ -62,7 +62,7 @@ private:
     llvm::Function *inheritsFrom_ = nullptr;
     llvm::Function *findProtocolConformance_ = nullptr;
 
-    llvm::GlobalVariable *boxInfoClassObjects_;
+    llvm::GlobalVariable *boxInfoClassObjects_ = nullptr;
 
     llvm::Function *retain_ = nullptr;
     llvm::Function *release_ = nullptr;
