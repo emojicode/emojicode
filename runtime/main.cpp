@@ -8,7 +8,6 @@
 
 #include "Runtime.h"
 #include "Internal.hpp"
-#include "backward.hpp"
 #include <cinttypes>
 #include <cstdlib>
 #include <cstring>
@@ -105,12 +104,6 @@ extern "C" runtime::Integer ejcMemoryCompare(int8_t **self, int8_t *other, runti
 
 extern "C" [[noreturn]] void ejcPanic(const char *message) {
     std::cout << "🤯 Program panicked: " << message << std::endl;
-
-    backward::StackTrace st;
-    st.load_here(32);
-    backward::Printer p;
-    p.print(st);
-
     abort();
 }
 
