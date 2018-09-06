@@ -104,12 +104,13 @@ llvm::Value* ASTVariableInit::variablePointer(EmojicodeCompiler::FunctionCodeGen
 }
 
 void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
-    auto alloca = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_->type()), utf8(varName_));
+    auto type = fg->typeHelper().llvmTypeFor(type_->type());
+    auto alloca = fg->createEntryAlloca(type, utf8(varName_));
     fg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
     if (type_->type().type() == TypeType::Optional) {
-        std::vector<Value *> idx { fg->int32(0), fg->int32(0) };
-        fg->builder().CreateStore(fg->generator()->optionalNoValue(), fg->builder().CreateGEP(alloca, idx));
+        fg->builder().CreateStore(fg->generator()->optionalNoValue(),
+                                  fg->builder().CreateConstInBoundsGEP2_32(type, alloca, 0, 0));
     }
 }
 

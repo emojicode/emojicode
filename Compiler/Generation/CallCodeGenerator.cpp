@@ -85,7 +85,7 @@ llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
                                                          const std::vector<Type> &genericArguments) {
     auto reification = function->reificationFor(genericArguments);
     auto id = fg()->int32(reification.vti());
-    auto dispatchedFunc = fg()->builder().CreateLoad(fg()->builder().CreateGEP(virtualTable, id));
+    auto dispatchedFunc = fg()->builder().CreateLoad(fg()->builder().CreateInBoundsGEP(virtualTable, id));
 
     std::vector<llvm::Type *> argTypes = reification.functionType()->params();
     if (callType_ == CallType::DynamicProtocolDispatch) {
@@ -106,9 +106,8 @@ llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
 llvm::Value *CallCodeGenerator::createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args,
                                                       const std::vector<Type> &genericArgs) {
     auto info = callType_ == CallType::DynamicDispatchOnType ? args.front() : fg()->buildGetClassInfoFromObject(args.front());
-
-    std::vector<Value *> idx2{fg()->int32(0), fg()->int32(1)};  // classInfo.table
-    auto table = fg()->builder().CreateLoad(fg()->builder().CreateGEP(info, idx2), "table");
+    auto tablePtr = fg()->builder().CreateConstInBoundsGEP2_32(fg_->typeHelper().classInfo(), info, 0, 1);
+    auto table = fg()->builder().CreateLoad(tablePtr, "table");
     return dispatchFromVirtualTable(function, table, args, genericArgs);
 }
 

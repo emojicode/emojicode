@@ -141,11 +141,7 @@ Value* FunctionCodeGenerator::buildGetBoxValuePtr(Value *box, const Type &type) 
 }
 
 Value* FunctionCodeGenerator::buildGetBoxValuePtr(Value *box, llvm::Type *llvmType) {
-    std::vector<Value *> idx2{
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1),
-    };
-    return builder().CreateBitCast(builder().CreateGEP(box, idx2), llvmType);
+    return builder().CreateBitCast(builder().CreateConstInBoundsGEP2_32(typeHelper().box(), box, 0, 1), llvmType);
 }
 
 Value* FunctionCodeGenerator::buildMakeNoValue(Value *box) {
