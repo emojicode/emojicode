@@ -11,6 +11,7 @@
 
 #include "MFType.hpp"
 #include "Scoping/IDScoper.hpp"
+#include "Types/Type.hpp"
 #include <memory>
 #include <utility>
 #include <vector>
@@ -19,15 +20,18 @@ namespace EmojicodeCompiler {
 
 class ASTExpr;
 class ASTArguments;
+class ASTBlock;
 class Function;
 class MFHeapAllocates;
 struct SemanticScopeStats;
 
 struct MFLocalVariable {
     bool isParam = false;
+    bool isReturned = false;
     size_t param;
-    MFType type = MFType::Borrowing;
-    std::vector<MFHeapAllocates*> inits;
+    MFType mfType = MFType::Borrowing;
+    Type type = Type::noReturn();
+    std::vector<MFHeapAllocates *> inits;
 };
 
 /// This class is responsible for managing the semantic analysis of a function.
@@ -35,23 +39,27 @@ class MFFunctionAnalyser {
 public:
     MFFunctionAnalyser(Function *function);
 
+    /// Analyses the function for which this MFFunctionAnalyser was created. This method must only be called once.
     void analyse();
-    void take(std::shared_ptr<ASTExpr> *expr);
+
+    /// Retains the object to which the expression evaluates if it is an object.
+    /// Analyses the expression as escaping.
+    void retain(std::shared_ptr<ASTExpr> *expr);
+    /// Records that the context value is used as value of the provided type.
     void recordThis(MFType type);
     void recordVariableGet(size_t id, MFType type);
-    void recordVariableSet(size_t id, ASTExpr *expr, bool init);
+    void recordVariableSet(size_t id, ASTExpr *expr, bool init, Type type);
     void recordReturn(std::shared_ptr<ASTExpr> *expr);
     void analyseFunctionCall(ASTArguments *node, ASTExpr *callee, Function *function);
-    void popScope(const SemanticScopeStats &stats);
+    void popScope(ASTBlock *block);
 
+    /// Returns the function that is being analysed.
     const Function* function() const { return function_; }
 
 private:
     IDScoper<MFLocalVariable> scope_;
     Function *function_;
     bool thisEscapes_ = false;
-
-    void update(MFLocalVariable &variable);
 };
 
 }  // namespace EmojicodeCompiler

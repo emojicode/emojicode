@@ -12,13 +12,13 @@
 #include "TypeDefinition.hpp"
 #include <utility>
 #include <vector>
+#include <memory>
 
 namespace EmojicodeCompiler {
 
 class ValueType : public TypeDefinition {
 public:
-    ValueType(std::u32string name, Package *p, SourcePosition pos, const std::u32string &documentation, bool exported)
-        : TypeDefinition(std::move(name), p, std::move(pos), documentation, exported) {}
+    ValueType(std::u32string name, Package *p, SourcePosition pos, const std::u32string &documentation, bool exported);
 
     Type type() override { return Type(this); }
 
@@ -34,10 +34,24 @@ public:
     }
 
     void makePrimitive() { primitive_ = true; }
-    bool isPrimitive() { return primitive_; }
+    bool isPrimitive() const { return primitive_; }
+
+    /// Whether this Value Type has a deinitializer and a copy retainer that must be called to deinitialize 
+    bool isManaged();
+
+    Function* copyRetain();
+
+    void setBoxInfo(llvm::GlobalVariable *boxInfo) { boxInfo_ = boxInfo; }
+    llvm::GlobalVariable* boxInfo() { return boxInfo_; }
+
+    virtual ~ValueType();
 
 private:
+    enum class Managed { Unknown, Yes, No };
     bool primitive_ = false;
+    Managed managed_ = Managed::Unknown;
+    std::unique_ptr<Function> copyRetain_;
+    llvm::GlobalVariable *boxInfo_ = nullptr;
 };
 
 }  // namespace EmojicodeCompiler

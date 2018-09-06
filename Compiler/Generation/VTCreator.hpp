@@ -15,7 +15,7 @@ class VTCreator {
 public:
     VTCreator(Class *klass, const Declarator &declarator)
             : declarator_(declarator), klass_(klass), hasSuperClass_(klass->superclass() != nullptr),
-              vti_(hasSuperClass_ ? klass->superclass()->virtualFunctionCount() : 0) {}
+              vti_(hasSuperClass_ ? klass->superclass()->virtualFunctionCount() : 1) {}
 
     void assign();
     void build();

@@ -198,6 +198,10 @@ void TypeBodyParser<TypeDef>::parse() {
                         attributes.check(token.position(), package_->compiler());
                         parseEnumValue(token.position(), documentation);
                         continue;
+                    case E_RECYCLING_SYMBOL:
+                        attributes.check(token.position(), package_->compiler());
+                        parseDeinitializer(token.position());
+                        continue;
                     default:
                         break;  // and fallthrough to the error
                 }
@@ -280,6 +284,21 @@ void TypeBodyParser<Protocol>::parseInstanceVariable(const SourcePosition &p) {
 template<>
 void TypeBodyParser<Protocol>::parseProtocolConformance(const SourcePosition &p) {
     throw CompilerError(p, "Only method declarations are allowed inside a protocol.");
+}
+
+template<typename TypeDef>
+void TypeBodyParser<TypeDef>::parseDeinitializer(const SourcePosition &p) {
+    throw CompilerError(p, "Only classes can specify a deinitializer.");
+}
+
+template<>
+void TypeBodyParser<Class>::parseDeinitializer(const SourcePosition &p) {
+    if (typeDef_->deinitializer()->ast() != nullptr) {
+        package_->compiler()->error(CompilerError(p, "Deinitializer was already specified."));
+    }
+    auto parser = FunctionParser(package_, stream_, typeDef_->deinitializer()->typeContext());
+    stream_.consumeToken(TokenType::BlockBegin);
+    typeDef_->deinitializer()->setAst(parser.parse());
 }
 
 template class TypeBodyParser<Enum>;

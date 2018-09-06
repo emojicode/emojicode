@@ -104,6 +104,7 @@ enum Emojis {
     E_LEFT_LUGGAGE = 0x1F6C5,
     E_BAGGAGE_CLAIM = 0x1F6C4,
     E_LINK_SYMBOL = 0x1F517,
+    E_RECYCLING_SYMBOL = 0x267B,
 };
 
 }  // namespace EmojicodeCompiler

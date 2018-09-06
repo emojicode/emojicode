@@ -59,6 +59,8 @@ public:
     llvm::StructType* classInfo() const { return classInfoType_; }
     llvm::StructType* protocolConformance() const { return protocolsTable_; }
     llvm::PointerType* someobject() const { return someobjectPtr_; }
+    llvm::FunctionType* boxRetainRelease() const { return boxRetainRelease_; }
+    llvm::StructType* protocolConformanceEntry() const { return protocolConformanceEntry_; }
 
     llvm::StructType *llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
     llvm::ArrayType *multiprotocolConformance(const Type &type);
@@ -72,6 +74,8 @@ private:
     llvm::StructType *protocolsTable_;
     llvm::StructType *callable_;
     llvm::PointerType *someobjectPtr_;
+    llvm::FunctionType *boxRetainRelease_;
+    llvm::StructType *protocolConformanceEntry_;
 
     llvm::Type* getSimpleType(const Type &type);
 

@@ -82,7 +82,8 @@ Value* ASTBinaryOperator::generate(FunctionCodeGenerator *fg) const {
         }
     }
 
-    return CallCodeGenerator(fg, callType_).generate(left_->generate(fg), calleeType_, args_, method_);
+    return handleResult(fg, CallCodeGenerator(fg, callType_).generate(left_->generate(fg), calleeType_,
+                                                                      args_, method_));
 }
 
 }  // namespace EmojicodeCompiler

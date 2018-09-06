@@ -37,7 +37,7 @@ protected:
         IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
         IntegerRemainder, IntegerToDouble, IntegerNot,
         BooleanAnd, BooleanOr, BooleanNegate,
-        Equal, Store, Load, IsNoValueLeft, IsNoValueRight, Multiprotocol,
+        Equal, Store, Load, Release, IsNoValueLeft, IsNoValueRight, Multiprotocol,
     };
 
     BuiltInType builtIn_ = BuiltInType::None;
@@ -71,6 +71,9 @@ public:
 private:
     std::u32string name_;
     std::shared_ptr<ASTExpr> callee_;
+
+    llvm::Value* buildMemoryAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset,
+                                    const Type &type) const;
 };
 
 }  // namespace EmojicodeCompiler

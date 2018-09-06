@@ -29,10 +29,9 @@ Declarator::Declarator(CodeGenerator *generator) : generator_(generator) {
 void EmojicodeCompiler::Declarator::declareRunTime() {
     runTimeNew_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(generator_->context()),
                                          llvm::Type::getInt64Ty(generator_->context()));
-    runTimeNew_->addFnAttr(llvm::Attribute::NoUnwind);
 
-    panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(generator_->context()), llvm::Type::getInt8PtrTy(generator_->context()));
-    panic_->addFnAttr(llvm::Attribute::NoUnwind);
+    panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(generator_->context()),
+                                    llvm::Type::getInt8PtrTy(generator_->context()));
     panic_->addFnAttr(llvm::Attribute::NoReturn);
     panic_->addFnAttr(llvm::Attribute::Cold);  // A program should panic rarely.
 
@@ -41,16 +40,26 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     });
     findProtocolConformance_ = declareRunTimeFunction("ejcFindProtocolConformance",
                                                       generator_->typeHelper().protocolConformance()->getPointerTo(), {
-        generator_->typeHelper().boxInfo()->getPointerTo(), llvm::Type::getInt1PtrTy(generator_->context())
+        generator_->typeHelper().protocolConformanceEntry()->getPointerTo(), llvm::Type::getInt1PtrTy(generator_->context())
     });
 
-    boxInfoClassObjects_ = initBoxInfo(declareBoxInfo("box_info_objects", 0), {});
+    boxInfoClassObjects_ = declareBoxInfo("class.boxInfo");
+
+    retain_ = declareRunTimeFunction("ejcRetain", llvm::Type::getVoidTy(generator_->context()),
+                                     llvm::Type::getInt8PtrTy(generator_->context()));
+    release_ = declareRunTimeFunction("ejcRelease", llvm::Type::getVoidTy(generator_->context()),
+                                      llvm::Type::getInt8PtrTy(generator_->context()));
+    releaseMemory_ = declareRunTimeFunction("ejcReleaseMemory", llvm::Type::getVoidTy(generator_->context()),
+                                            llvm::Type::getInt8PtrTy(generator_->context()));
 }
 
 llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type *returnType,
                                                                       llvm::ArrayRef<llvm::Type *> args) {
-    auto ft = llvm::FunctionType::get(returnType, args, false);
-    return llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, generator_->module());
+    auto fn = llvm::Function::Create(llvm::FunctionType::get(returnType, args, false), llvm::Function::ExternalLinkage,
+                                     name, generator_->module());
+    fn->addFnAttr(llvm::Attribute::NoUnwind);
+    fn->addFnAttr(llvm::Attribute::NoRecurse);
+    return fn;
 }
 
 void Declarator::declareImportedClassInfo(Class *klass) {
@@ -66,7 +75,13 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
         valueType->eachFunction([this](auto *function) {
             declareLlvmFunction(function);
         });
-        ptg.declareImportedProtocolsTable(Type(valueType.get()));
+        if (valueType->isManaged()) {
+            valueType->deinitializer()->createUnspecificReification();
+            declareLlvmFunction(valueType->deinitializer());
+            valueType->copyRetain()->createUnspecificReification();
+            declareLlvmFunction(valueType->copyRetain());
+        }
+        ptg.declareImported(Type(valueType.get()));
     }
     for (auto &protocol : package->protocols()) {
         size_t tableIndex = 0;
@@ -88,7 +103,7 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
         else {
             VTCreator(klass.get(), *this).assign();
         }
-        ptg.declareImportedProtocolsTable(Type(klass.get()));
+        ptg.declareImported(Type(klass.get()));
         declareImportedClassInfo(klass.get());
     }
     for (auto &function : package->functions()) {
@@ -130,17 +145,9 @@ void Declarator::declareLlvmFunction(Function *function) const {
     });
 }
 
-llvm::GlobalVariable* Declarator::declareBoxInfo(const std::string &name, size_t size) {
-    auto arrayType = llvm::ArrayType::get(generator_->typeHelper().boxInfo(), size + 1);
-    return new llvm::GlobalVariable(*generator_->module(), arrayType, true,
-                                    llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage, nullptr, name);
-}
-
-llvm::GlobalVariable* Declarator::initBoxInfo(llvm::GlobalVariable* info, std::vector<llvm::Constant *> boxInfos) {
-    boxInfos.emplace_back(llvm::Constant::getNullValue(generator_->typeHelper().boxInfo()));
-    auto arrayType = llvm::ArrayType::get(generator_->typeHelper().boxInfo(), boxInfos.size());
-    info->setInitializer(llvm::ConstantArray::get(arrayType, boxInfos));
-    return info;
+llvm::GlobalVariable* Declarator::declareBoxInfo(const std::string &name) {
+    return new llvm::GlobalVariable(*generator_->module(), generator_->typeHelper().boxInfo(), true,
+                                    llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr, name);
 }
 
 }  // namespace EmojicodeCompiler

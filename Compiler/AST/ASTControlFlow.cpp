@@ -47,7 +47,7 @@ void ASTIf::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     for (size_t i = 0; i < conditions_.size(); i++) {
         conditions_[i]->analyseMemoryFlow(analyser, MFType::Borrowing);
         blocks_[i].analyseMemoryFlow(analyser);
-        analyser->popScope(blocks_[i].scopeStats());
+        analyser->popScope(&blocks_[i]);
     }
     if (hasElse()) {
         blocks_.back().analyseMemoryFlow(analyser);
@@ -67,7 +67,7 @@ void ASTRepeatWhile::analyse(FunctionAnalyser *analyser) {
 void ASTRepeatWhile::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     condition_->analyseMemoryFlow(analyser, MFType::Borrowing);
     block_.analyseMemoryFlow(analyser);
-    analyser->popScope(block_.scopeStats());
+    analyser->popScope(&block_);
 }
 
 void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
@@ -104,9 +104,9 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 void ASTErrorHandler::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     value_->analyseMemoryFlow(analyser, MFType::Borrowing);
     errorBlock_.analyseMemoryFlow(analyser);
-    analyser->popScope(errorBlock_.scopeStats());
+    analyser->popScope(&errorBlock_);
     valueBlock_.analyseMemoryFlow(analyser);
-    analyser->popScope(valueBlock_.scopeStats());
+    analyser->popScope(&valueBlock_);
 }
 
 void ASTForIn::analyse(FunctionAnalyser *analyser) {
@@ -133,7 +133,7 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
 
 void ASTForIn::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     block_.analyseMemoryFlow(analyser);
-    analyser->popScope(block_.scopeStats());
+    analyser->popScope(&block_);
 }
 
 }  // namespace EmojicodeCompiler

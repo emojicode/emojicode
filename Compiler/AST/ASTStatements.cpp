@@ -39,6 +39,22 @@ void ASTBlock::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     }
 }
 
+bool ASTBlock::stopsAtReturn() const {
+    if (returnedCertainly()) return dynamic_cast<ASTReturn*>(stmts_[stop_ - 1].get()) != nullptr;
+    return dynamic_cast<ASTReturn*>(stmts_.back().get()) != nullptr;
+}
+
+void ASTBlock::appendNodeBeforeReturn(std::unique_ptr<ASTStatement> node) {
+    assert(!returnedCertainly() || stopsAtReturn());
+    if (stop_ == stmts_.size()) {
+        stop_++;
+    }
+    if (!stmts_.empty() && (dynamic_cast<ASTReturn*>(stmts_.back().get()) != nullptr)) {
+        std::swap(stmts_.back(), node);
+    }
+    stmts_.emplace_back(std::move(node));
+}
+
 void ASTBlock::popScope(FunctionAnalyser *analyser) {
     scopeStats_ = analyser->scoper().popScope(analyser->compiler());
 }

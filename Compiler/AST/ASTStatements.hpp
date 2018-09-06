@@ -38,10 +38,12 @@ class ASTBlock final : public ASTStatement {
 public:
     explicit ASTBlock(const SourcePosition &p) : ASTStatement(p) {}
 
-    void appendNode(std::unique_ptr<ASTStatement> node) {
-        assert(!returnedCertainly_);
-        stmts_.emplace_back(std::move(node));
-    }
+    void appendNode(std::unique_ptr<ASTStatement> node) { stmts_.emplace_back(std::move(node)); }
+    /// Inserts a statement before the return statement in this block.
+    /// @pre Calling this method is only valid if the last statement that is compiled is a return statement.
+    ///      stopsAtReturn() returns true in this case.
+    /// @see stopsAtReturn()
+    void appendNodeBeforeReturn(std::unique_ptr<ASTStatement> node);
 
     void preprendNode(std::unique_ptr<ASTStatement> node) {
         stmts_.emplace(stmts_.begin(), std::move(node));
@@ -62,7 +64,11 @@ public:
 
     void popScope(FunctionAnalyser *analyser);
 
-    const std::vector<std::unique_ptr<ASTStatement>>& nodes() const { return stmts_; }
+    /// Determines whether the last statement of the block that is compiled (i.e. that is not dead code) is a return
+    /// or raise statement.
+    /// @note This method can only be called before Memory Flow Analysis.
+    bool stopsAtReturn() const;
+    
 private:
     std::vector<std::unique_ptr<ASTStatement>> stmts_;
     bool returnedCertainly_ = false;

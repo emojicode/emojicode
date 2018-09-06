@@ -2,6 +2,7 @@
 // Created by Theo Weidmann on 26.02.18.
 //
 
+#include "DeinitializerBuilder.hpp"
 #include "ThunkBuilder.hpp"
 #include "Compiler.hpp"
 #include "FunctionAnalyser.hpp"
@@ -46,6 +47,10 @@ void SemanticAnalyser::analyse(bool executable) {
     for (auto &vt : package_->valueTypes()) {
         checkProtocolConformance(Type(vt.get()));
         declareInstanceVariables(Type(vt.get()));
+        buildDeinitializer(vt.get());
+        buildCopyRetain(vt.get());
+        enqueueFunction(vt->deinitializer());
+        enqueueFunction(vt->copyRetain());
         enqueueFunctionsOfTypeDefinition(vt.get());
     }
     for (auto &klass : package_->classes()) {
@@ -58,6 +63,9 @@ void SemanticAnalyser::analyse(bool executable) {
         
         klass->inherit(this);
         checkProtocolConformance(Type(klass.get()));
+
+        buildDeinitializer(klass.get());
+        enqueueFunction(klass->deinitializer());
 
         enqueueFunctionsOfTypeDefinition(klass.get());
 

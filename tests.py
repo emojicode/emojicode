@@ -81,6 +81,9 @@ compilation_tests = [
     "inferListLiteralFromExpec",
     "sequenceTypeNames",
     "typeValues",
+    "rcOrder",
+    "rcOrderVt",
+    "rcTempOrder"
 ]
 library_tests = [
     "primitives",

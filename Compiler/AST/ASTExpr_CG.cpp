@@ -11,9 +11,24 @@
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/Class.hpp"
+#include "Types/ValueType.hpp"
 #include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {
+
+llvm::Value* ASTExpr::handleResult(FunctionCodeGenerator *fg, llvm::Value *result, bool valueTypeIsReferenced, bool local) const {
+    if (isTemporary_ && expressionType().isManaged()) {
+        if (!valueTypeIsReferenced && !expressionType().isReference() && fg->isManagedByReference(expressionType())) {
+            auto temp = fg->createEntryAlloca(result->getType());
+            fg->builder().CreateStore(result, temp);
+            fg->addTemporaryObject(temp, expressionType(), false);
+        }
+        else {
+            fg->addTemporaryObject(result, expressionType(), local);
+        }
+    }
+    return result;
+}
 
 Value* ASTTypeAsValue::generate(FunctionCodeGenerator *fg) const {
     if (type_->type().type() == TypeType::Class) {
@@ -97,17 +112,18 @@ Value* ASTCast::castToProtocol(FunctionCodeGenerator *fg, Value *box) const {
     auto objBoxInfo = fg->builder().CreateBitCast(fg->generator()->declarator().boxInfoForObjects(),
                                                   fg->typeHelper().boxInfo()->getPointerTo());
     auto boxInfoValue = boxInfo(fg, box);
-    auto info = fg->createIfElsePhi(fg->builder().CreateICmpEQ(boxInfoValue, objBoxInfo), [&]() {
+    auto conformanceEntries = fg->createIfElsePhi(fg->builder().CreateICmpEQ(boxInfoValue, objBoxInfo), [&]() {
         auto obj = fg->builder().CreateLoad(fg->getValuePtr(box, fg->typeHelper().someobject()->getPointerTo()));
         auto classInfo = fg->getClassInfoFromObject(obj);
         return fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(fg->typeHelper().classInfo(),
                                                                                  classInfo, 0, 2));
     }, [&] {
-        return boxInfoValue;
+        auto conformanceEntriesPtr = fg->builder().CreateConstInBoundsGEP2_32(fg->typeHelper().boxInfo(), boxInfoValue, 0, 0);
+        return fg->builder().CreateLoad(conformanceEntriesPtr);
     });
 
     auto conformance = fg->builder().CreateCall(fg->generator()->declarator().findProtocolConformance(),
-                                                { info, typeExpr_->generate(fg) });
+                                                { conformanceEntries, typeExpr_->generate(fg) });
     auto confPtrTy = fg->typeHelper().protocolConformance()->getPointerTo();
     auto confNullptr = llvm::ConstantPointerNull::get(confPtrTy);
 
@@ -131,8 +147,7 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
 
     auto value = fg->builder().CreateExtractValue(optional, 1, "condValue");
     fg->scoper().getVariable(varId_) = LocalVariable(false, value);
-    auto vf = fg->builder().CreateExtractValue(optional, 0);
-    return fg->builder().CreateICmpNE(vf, fg->generator()->optionalNoValue());
+    return fg->buildOptionalHasValue(optional);
 }
 
 Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {
@@ -167,7 +182,7 @@ Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {
     for (auto &arg : args_.parameters()) {
         args.emplace_back(arg->generate(fg));
     }
-    return fg->builder().CreateCall(functionType, function, args);
+    return handleResult(fg, fg->builder().CreateCall(functionType, function, args));
 }
 
 }  // namespace EmojicodeCompiler

@@ -20,7 +20,45 @@ char **runtime::internal::argv;
 extern "C" runtime::Integer fn_1f3c1();
 
 extern "C" int8_t* ejcAlloc(runtime::Integer size) {
-    return static_cast<int8_t*>(malloc(size));
+    auto ptr = malloc(size);
+    *static_cast<runtime::internal::ControlBlock**>(ptr) = new runtime::internal::ControlBlock;
+//    std::cout << "Allocated " << ptr << std::endl;
+    return static_cast<int8_t*>(ptr);
+}
+
+extern "C" void ejcRetain(runtime::Object<void> *object) {
+    runtime::internal::ControlBlock *controlBlock = object->controlBlock();
+//    std::cout << "Retaining " << object << std::endl;
+    if (controlBlock == nullptr) return;
+    controlBlock->strongCount++;
+}
+
+extern "C" void ejcRelease(runtime::Object<void> *object) {
+    runtime::internal::ControlBlock *controlBlock = object->controlBlock();
+    if (controlBlock == nullptr) return;
+
+//    std::cout << "Releasing " << object << std::endl;
+
+    controlBlock->strongCount--;
+//        std::cout << controlBlock->strongCount << std::endl;
+    if (controlBlock->strongCount != 0) return;
+
+//    std::cout << "Deleting " << object << std::endl;
+    object->classInfo()->dispatch<void>(0, object);
+    free(object);
+}
+
+extern "C" void ejcReleaseMemory(runtime::Object<void> *object) {
+    runtime::internal::ControlBlock *controlBlock = object->controlBlock();
+    if (controlBlock == nullptr) return;
+//    std::cout << "Releasing " << object << std::endl;
+
+    controlBlock->strongCount--;
+//    std::cout << controlBlock->strongCount << std::endl;
+    if (controlBlock->strongCount != 0) return;
+
+//    std::cout << "Deleting " << object << std::endl;
+    free(object);
 }
 
 extern "C" bool ejcInheritsFrom(runtime::ClassInfo *classInfo, runtime::ClassInfo *from) {
@@ -32,12 +70,12 @@ extern "C" bool ejcInheritsFrom(runtime::ClassInfo *classInfo, runtime::ClassInf
     return false;
 }
 
-struct BoxInfo {
+struct ProtocolConformanceEntry {
     void *protocolId;
     void *protocolConformance;
 };
 
-extern "C" void* ejcFindProtocolConformance(BoxInfo *info, void *protocolId) {
+extern "C" void* ejcFindProtocolConformance(ProtocolConformanceEntry *info, void *protocolId) {
     for (auto infoNew = info; infoNew->protocolId != nullptr; infoNew++) {
         if (infoNew->protocolId == protocolId) {
             return infoNew->protocolConformance;
@@ -47,20 +85,22 @@ extern "C" void* ejcFindProtocolConformance(BoxInfo *info, void *protocolId) {
 }
 
 extern "C" void ejcMemoryRealloc(int8_t **pointerPtr, runtime::Integer newSize) {
-    *pointerPtr = static_cast<int8_t*>(realloc(*pointerPtr, newSize));
+    *pointerPtr = static_cast<int8_t*>(realloc(*pointerPtr, newSize + sizeof(runtime::internal::ControlBlock*)));
 }
 
 extern "C" void ejcMemoryMove(int8_t **self, runtime::Integer destOffset, int8_t *src, runtime::Integer srcOffset,
                               runtime::Integer bytes) {
-    memmove(*self + destOffset, src + srcOffset, bytes);
+    memmove(*self + destOffset + sizeof(runtime::internal::ControlBlock*),
+            src + srcOffset + sizeof(runtime::internal::ControlBlock*), bytes);
 }
 
 extern "C" void ejcMemorySet(int8_t **self, runtime::Byte value, runtime::Integer offset, runtime::Integer bytes) {
-    memset(*self + offset, value, bytes);
+    memset(*self + offset + sizeof(runtime::internal::ControlBlock*), value, bytes);
 }
 
 extern "C" runtime::Integer ejcMemoryCompare(int8_t **self, int8_t *other, runtime::Integer bytes) {
-    return std::memcmp(*self, other, bytes);
+    return std::memcmp(*self + sizeof(runtime::internal::ControlBlock*),
+                       other + sizeof(runtime::internal::ControlBlock*), bytes);
 }
 
 extern "C" [[noreturn]] void ejcPanic(const char *message) {

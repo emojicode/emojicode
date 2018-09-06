@@ -87,15 +87,15 @@ extern "C" void socketsSocketClose(Socket *socket) {
 }
 
 extern "C" runtime::SimpleOptional<runtime::Enum> socketsSocketSend(Socket *socket, Data *data) {
-    return returnOptional(send(socket->socket_, data->data, data->count, 0) != -1);
+    return returnOptional(send(socket->socket_, data->data.get(), data->count, 0) != -1);
 }
 
 extern "C" runtime::SimpleError<Data*> socketsSocketRead(Socket *socket, runtime::Integer count) {
     auto bytes = runtime::allocate<runtime::Byte>(count);
 
-    auto read = recv(socket->socket_, bytes, count, 0);
+    auto read = recv(socket->socket_, bytes.get(), count, 0);
     if (read == -1) {
-        return runtime::SimpleError<Data *>(runtime::MakeError, errorEnumFromErrno());;
+        return runtime::SimpleError<Data *>(runtime::MakeError, errorEnumFromErrno());
     }
 
     auto data = Data::init();

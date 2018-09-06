@@ -75,7 +75,7 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
 }
 
 void ASTCast::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    analyser->take(&value_);
+    value_->analyseMemoryFlow(analyser, MFType::Escaping);
 }
 
 Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -94,7 +94,7 @@ Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExp
 }
 
 void ASTConditionalAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    analyser->take(&expr_);
+    analyser->retain(&expr_);
 }
 
 Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -174,7 +174,7 @@ Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation 
 void ASTCallableCall::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
     callable_->analyseMemoryFlow(analyser, MFType::Borrowing);
     for (auto &arg : args_.parameters()) {
-        analyser->take(&arg);
+        analyser->retain(&arg);
     }
 }
 

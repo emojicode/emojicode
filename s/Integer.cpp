@@ -32,7 +32,7 @@ extern "C" s::String* sIntToString(runtime::Integer *nptr, runtime::Integer base
     string->count = d;
     string->characters = runtime::allocate<String::Character>(d);
 
-    auto *characters = string->characters + d;
+    auto *characters = string->characters.get() + d;
     do {
         *--characters =  "0123456789abcdefghijklmnopqrstuvxyz"[a % base % 35];
     } while ((a /= base) > 0);
@@ -65,7 +65,7 @@ extern "C" s::String* sRealToString(runtime::Real *real, runtime::Integer precis
     string->count = d;
     string->characters = runtime::allocate<String::Character>(d);
 
-    auto *characters = string->characters + d;
+    auto *characters = string->characters.get() + d;
 
     auto f = static_cast<long long>(std::abs(std::pow(10, precision) * fractional));
     for (decltype(precision) i = 0; i < precision; i++) {

@@ -25,6 +25,16 @@ TypeDefinition::TypeDefinition(std::u32string name, Package *p, SourcePosition p
 
 TypeDefinition::~TypeDefinition() = default;
 
+Function* TypeDefinition::deinitializer() {
+    if (deinitializer_ == nullptr) {
+        deinitializer_ = std::make_unique<Function>(U"deinit", AccessLevel::Public, false, this, package(),
+                                                    this->position(), false, U"", false, false, true, false,
+                                                    FunctionType::Deinitializer);
+        deinitializer_->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
+    }
+    return deinitializer_.get();
+}
+
 Initializer* TypeDefinition::lookupInitializer(const std::u32string &name) const {
     auto pos = initializers_.find(name);
     if (pos != initializers_.end()) {

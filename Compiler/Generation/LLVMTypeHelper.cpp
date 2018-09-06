@@ -25,23 +25,35 @@ namespace EmojicodeCompiler {
 LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGenerator)
         : context_(context), codeGenerator_(codeGenerator) {
     boxInfoType_ = llvm::StructType::create(context_, "boxInfo");
+    box_ = llvm::StructType::create(std::vector<llvm::Type *> {
+        boxInfoType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
+    }, "box");
+    boxRetainRelease_ = llvm::FunctionType::get(llvm::Type::getVoidTy(context_), box()->getPointerTo(), false);
     protocolsTable_ = llvm::StructType::create({
             llvm::Type::getInt1Ty(context_),
             llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
-            boxInfoType_->getPointerTo()
+            boxInfoType_->getPointerTo(),
+            boxRetainRelease_->getPointerTo(), boxRetainRelease_->getPointerTo()
     }, "protocolConformance");
-    boxInfoType_->setBody({ llvm::Type::getInt1PtrTy(context_), protocolsTable_->getPointerTo() });
+    protocolConformanceEntry_ = llvm::StructType::create({
+        llvm::Type::getInt1PtrTy(context_), protocolsTable_->getPointerTo() }, "protocolConformanceEntry");
+    boxInfoType_->setBody({
+        protocolConformanceEntry_->getPointerTo(),
+        boxRetainRelease_->getPointerTo(),
+        boxRetainRelease_->getPointerTo()
+    });
     classInfoType_ = llvm::StructType::create(context_, "classInfo");
     classInfoType_->setBody({
-        classInfoType_->getPointerTo(), llvm::Type::getInt8PtrTy(context_)->getPointerTo(), boxInfoType_->getPointerTo()
+        classInfoType_->getPointerTo(), llvm::Type::getInt8PtrTy(context_)->getPointerTo(),
+        protocolConformanceEntry_->getPointerTo()
     });
-    box_ = llvm::StructType::create(std::vector<llvm::Type *> {
-            boxInfoType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
-    }, "box");
     callable_ = llvm::StructType::create(std::vector<llvm::Type *> {
             llvm::Type::getInt8PtrTy(context_), llvm::Type::getInt8PtrTy(context_)
     }, "callable");
-    someobjectPtr_ = llvm::StructType::create({ classInfoType_->getPointerTo() }, "someobject")->getPointerTo();
+    someobjectPtr_ = llvm::StructType::create({
+        llvm::Type::getInt8PtrTy(context_),
+        classInfoType_->getPointerTo()
+    }, "someobject")->getPointerTo();
 
     auto compiler = codeGenerator_->package()->compiler();
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
@@ -55,8 +67,8 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
 }
 
 llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType) {
-    std::vector<llvm::Type *> types;
-    if (capture.captureSelf) {
+    std::vector<llvm::Type *> types { llvm::Type::getInt8PtrTy(context_) };
+    if (capture.capturesSelf()) {
         types.emplace_back(thisType);
     }
     std::transform(capture.captures.begin(), capture.captures.end(), std::back_inserter(types), [this](auto &capture) {
@@ -175,6 +187,7 @@ llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
     std::vector<llvm::Type *> types;
 
     if (type.type() == TypeType::Class) {
+        types.emplace_back(llvm::Type::getInt8PtrTy(context_));
         types.emplace_back(classInfoType_->getPointerTo());
     }
 

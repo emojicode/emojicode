@@ -8,14 +8,40 @@
 
 #include "ASTVariables.hpp"
 #include "ASTInitialization.hpp"
+#include "ASTMemory.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "Types/ValueType.hpp"
 
 namespace EmojicodeCompiler {
 
 Value* AccessesAnyVariable::instanceVariablePointer(FunctionCodeGenerator *fg) const {
     assert(inInstanceScope());
-    std::vector<Value *> idxList{ fg->int32(0), fg->int32(id()) };
-    return fg->builder().CreateGEP(fg->thisValue(), idxList);
+    auto type = llvm::cast<llvm::PointerType>(fg->thisValue()->getType())->getElementType();
+    return fg->builder().CreateConstInBoundsGEP2_32(type, fg->thisValue(), 0, id());
+}
+
+Value* AccessesAnyVariable::managementValue(FunctionCodeGenerator *fg) const {
+    if (inInstanceScope()) {
+        llvm::Value *objectPointer;
+        objectPointer = instanceVariablePointer(fg);
+        if (!fg->isManagedByReference(variableType_)) {
+            objectPointer = fg->builder().CreateLoad(objectPointer);
+        }
+        return objectPointer;
+    }
+
+    auto &var = fg->scoper().getVariable(id());
+    if (fg->isManagedByReference(variableType_)) {
+        if (var.isMutable) return var.value;
+        auto alloc = fg->createEntryAlloca(var.value->getType());
+        fg->builder().CreateStore(var.value, alloc);
+        return alloc;
+    }
+    return var.isMutable ? fg->builder().CreateLoad(var.value) : var.value;
+}
+
+void AccessesAnyVariable::release(FunctionCodeGenerator *fg) const {
+    fg->release(managementValue(fg), variableType_, false);
 }
 
 Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
@@ -24,7 +50,13 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
         if (reference_) {
             return ptr;
         }
-        return fg->builder().CreateLoad(ptr);
+        auto val = fg->builder().CreateLoad(ptr);
+        if (expressionType().isManaged()) {
+            auto retainValue = fg->isManagedByReference(expressionType()) ? ptr : val;
+            fg->retain(retainValue, expressionType());
+            handleResult(fg, retainValue, true);
+        }
+        return val;
     }
 
     auto &localVariable = fg->scoper().getVariable(id());
@@ -66,7 +98,9 @@ llvm::Value* ASTVariableInit::variablePointer(EmojicodeCompiler::FunctionCodeGen
         return instanceVariablePointer(fg);
     }
 
-    return fg->scoper().getVariable(id()).value;
+    auto &var = fg->scoper().getVariable(id());
+    assert(var.isMutable);
+    return var.value;
 }
 
 void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
@@ -80,7 +114,15 @@ void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
 }
 
 void ASTVariableAssignment::generateAssignment(FunctionCodeGenerator *fg) const {
-    fg->builder().CreateStore(expr_->generate(fg), variablePointer(fg));
+    if (wasInitialized_ && variableType().isManaged()) {
+        release(fg);
+    }
+    auto val = expr_->generate(fg);
+    auto variablePtr = variablePointer(fg);
+    fg->builder().CreateStore(val, variablePtr);
+    if (variableType().isManaged()) {
+        fg->retain(fg->isManagedByReference(expr_->expressionType()) ? variablePtr : val, expr_->expressionType());
+    }
 }
 
 void ASTConstantVariable::generateAssignment(FunctionCodeGenerator *fg) const {

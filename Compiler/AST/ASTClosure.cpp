@@ -34,7 +34,7 @@ Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     closureAnaly.analyse();
     capture_.captures = dynamic_cast<CapturingSemanticScoper &>(closureAnaly.scoper()).captures();
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
-        capture_.captureSelf = true;
+        capture_.self = analyser->typeContext().calleeType();
     }
     return Type(closure_.get());
 }
@@ -44,6 +44,7 @@ void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
     for (auto &capture : capture_.captures) {
         analyser->recordVariableGet(capture.sourceId, type);
     }
+    MFFunctionAnalyser(closure_.get()).analyse();
 }
 
 void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation) {

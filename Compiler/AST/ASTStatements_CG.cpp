@@ -17,12 +17,15 @@ void ASTBlock::generate(FunctionCodeGenerator *fg) const {
     auto stop = !returnedCertainly_ ? stmts_.size() : stop_;
     for (size_t i = 0; i < stop; i++) {
         stmts_[i]->generate(fg);
+        fg->releaseTemporaryObjects();
     }
 }
 
 void ASTReturn::generate(FunctionCodeGenerator *fg) const {
     if (value_) {
-        fg->builder().CreateRet(value_->generate(fg));
+        auto val = value_->generate(fg);
+        fg->releaseTemporaryObjects();
+        fg->builder().CreateRet(val);
     }
     else {
         fg->builder().CreateRetVoid();
@@ -35,10 +38,14 @@ void ASTRaise::generate(FunctionCodeGenerator *fg) const {
         fg->getMakeNoValue(box);
         auto ptr = fg->getValuePtr(box, value_->expressionType());
         fg->builder().CreateStore(value_->generate(fg), ptr);
-        fg->builder().CreateRet(fg->builder().CreateLoad(box));
+        auto val = fg->builder().CreateLoad(box);
+        fg->releaseTemporaryObjects();
+        fg->builder().CreateRet(val);
     }
     else {
-        fg->builder().CreateRet(fg->getSimpleErrorWithError(value_->generate(fg), fg->llvmReturnType()));
+        auto val = fg->getSimpleErrorWithError(value_->generate(fg), fg->llvmReturnType());
+        fg->releaseTemporaryObjects();
+        fg->builder().CreateRet(val);
     }
 }
 

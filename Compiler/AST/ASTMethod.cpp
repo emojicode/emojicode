@@ -163,6 +163,10 @@ bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const 
             builtIn_ = BuiltInType::Store;
             return true;
         }
+        if (name.front() == E_RECYCLING_SYMBOL) {
+            builtIn_ = BuiltInType::Release;
+            return true;
+        }
     }
     return false;
 }

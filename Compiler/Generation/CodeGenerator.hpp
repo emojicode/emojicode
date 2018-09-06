@@ -33,21 +33,25 @@ class TypeDefinition;
 /// Manages the generation of IR for one package. Each package is compiled to one LLVM module.
 class CodeGenerator {
 public:
-    explicit CodeGenerator(Package *package, bool optimize);
-    llvm::LLVMContext& context() { return context_; }
+    /// @param package The package for which to generate code.
+    /// @param optimize Whether optimizations should be run.
+    CodeGenerator(Package *package, bool optimize);
+
+    /// Generates an object file for the package.
+    /// @param outPath The path at which the object file will be placed.
+    void generate(const std::string &outPath, bool printIr);
+
+    /// The LLVM module that represents the package.
     llvm::Module* module() const { return module_.get(); }
 
     LLVMTypeHelper& typeHelper() { return typeHelper_; }
     StringPool& stringPool() { return pool_; }
     Declarator& declarator() { return declarator_; }
     ProtocolsTableGenerator& protocolsTG() { return protocolsTableGenerator_; }
+    llvm::LLVMContext& context() { return context_; }
 
     /// Returns the package for which this code generator was created.
     Package* package() const { return package_; }
-
-    /// Generates an object file for the package.
-    /// @param outPath The path at which the object file will be placed.
-    void generate(const std::string &outPath, bool printIr);
 
     /// Queries the DataLayout of the module for the size of this type in bytes.
     /// @note Use this method only when absolutely necessary. Prefer FunctionCodeGenerator::sizeOf in all function
@@ -62,7 +66,7 @@ public:
     llvm::Constant* boxInfoFor(const Type &type);
 
     llvm::Constant* protocolIdentifierFor(const Type &type);
-    
+
 private:
     Package *const package_;
     llvm::LLVMContext context_;
@@ -75,6 +79,12 @@ private:
     OptimizationManager optimizationManager_;
 
     llvm::TargetMachine *targetMachine_ = nullptr;
+
+    llvm::Function *objectRetain_ = nullptr;
+    llvm::Function *objectRelease_ = nullptr;
+
+    void buildBoxRetainRelease(const Type &type);
+    void buildObjectBoxRetainRelease();
 
     void emit(const std::string &outPath, bool printIr);
     void generateFunctions();

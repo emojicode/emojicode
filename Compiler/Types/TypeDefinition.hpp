@@ -21,6 +21,7 @@
 
 namespace llvm {
 class Constant;
+class Function;
 class GlobalVariable;
 }  // namespace llvm
 
@@ -113,13 +114,18 @@ public:
     /// Whether the type was exported in the package it was defined.
     bool exported() const { return exported_; }
 
+    Function* deinitializer();
+
+    const std::pair<llvm::Function*, llvm::Function*>& boxRetainRelease() const { return boxRetainRelease_; }
+    void setBoxRetainRelease(llvm::Function *retain, llvm::Function *release) {
+        boxRetainRelease_ = std::make_pair(retain, release);
+    }
+
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 
     void setProtocolTables(std::map<Type, llvm::Constant*> &&tables) { protocolTables_ = std::move(tables); }
     llvm::Constant* protocolTableFor(const Type &type) { return protocolTables_.find(type)->second; }
-
-    void setBoxInfo(llvm::GlobalVariable *boxInfo) { boxInfo_ = boxInfo; }
-    llvm::GlobalVariable* boxInfo() { return boxInfo_; }
+    const std::map<Type, llvm::Constant*>& protocolTables() { return protocolTables_; }
 
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation, bool exported);
@@ -152,12 +158,15 @@ private:
     std::vector<Initializer *> initializerList_;
     std::vector<Function *> typeMethodList_;
 
+    std::unique_ptr<Function> deinitializer_;
+
+    std::pair<llvm::Function*, llvm::Function*> boxRetainRelease_;
+
     std::u32string name_;
     Package *package_;
     std::u32string documentation_;
     SourcePosition position_;
     bool exported_;
-    llvm::GlobalVariable *boxInfo_ = nullptr;
 
     std::map<Type, llvm::Constant*> protocolTables_;
 

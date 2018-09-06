@@ -27,6 +27,7 @@ SemanticScopeStats SemanticScoper::popScope(Compiler *app) {
     currentScope().recommendFrozenVariables(app);
 
     auto count = scopes_.front().map().size();
+    auto maxVariableId = scopes_.front().maxVariableId();
 
     updateMaxVariableIdForPopping();
     scopes_.pop_front();
@@ -38,7 +39,7 @@ SemanticScopeStats SemanticScoper::popScope(Compiler *app) {
     if (instanceScope() != nullptr) {
         instanceScope()->popInitializationLevel();
     }
-    return { scopes_.empty() ? 0 : scopes_.front().maxVariableId(), count };
+    return { scopes_.empty() ? 0 : scopes_.front().maxVariableId(), count, maxVariableId };
 }
 
 SemanticScoper SemanticScoper::scoperForFunction(Function *function)  {

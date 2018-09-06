@@ -248,7 +248,12 @@ public:
     void setReference(bool v = true) { isReference_ = v; }
     /// Returns true if it makes sense to pass this value with the given storage type per reference to avoid copying.
     bool isReferencable() const;
-
+    Type referenced() const {
+        auto copy = *this;
+        copy.setReference(true);
+        return copy;
+    }
+    
     bool isMutable() const { return mutable_; }
     void setMutable(bool b) { mutable_ = b; }
 
@@ -279,6 +284,10 @@ public:
     }
 
     inline bool operator!=(const Type &rhs) const { return !(*this == rhs); }
+
+    /// Returns true iff a value of the given type requires memory management.
+    bool isManaged() const;
+
 protected:
     Type(bool isReference, bool isMutable)
         : typeContent_(TypeType::StorageExpectation), isReference_(isReference), mutable_(isMutable) {}

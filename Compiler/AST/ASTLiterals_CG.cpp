@@ -63,7 +63,7 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
         auto method = type_.typeDefinition()->lookupMethod({ 0x1F437 }, true);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method);
     }
-    return dict;
+    return handleResult(fg, dict);
 }
 
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
@@ -75,7 +75,7 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
         auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, true);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method);
     }
-    return list;
+    return handleResult(fg, list);
 }
 
 Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
@@ -88,8 +88,8 @@ Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, args, method);
     }
     auto method = type_.typeDefinition()->lookupMethod({ 0x1F521 }, true);
-    return CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, ASTArguments(position()),
-                                                                    method);
+    return handleResult(fg, CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_,
+                                                                                     ASTArguments(position()), method));
 }
 
 }  // namespace EmojicodeCompiler

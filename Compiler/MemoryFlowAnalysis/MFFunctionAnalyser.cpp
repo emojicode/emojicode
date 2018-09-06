@@ -10,6 +10,7 @@
 #include "AST/ASTVariables.hpp"
 #include "AST/ASTStatements.hpp"
 #include "AST/ASTLiterals.hpp"
+#include "AST/ASTMemory.hpp"
 #include "Functions/Function.hpp"
 #include "MFFunctionAnalyser.hpp"
 #include "MFHeapAllocates.hpp"
@@ -34,7 +35,7 @@ void MFFunctionAnalyser::analyse() {
 
     function_->ast()->analyseMemoryFlow(this);
     function_->setMemoryFlowTypeForThis(thisEscapes_ ? MFType::Escaping : MFType::Borrowing);
-    popScope(function_->ast()->scopeStats());
+    popScope(function_->ast());
 }
 
 void MFFunctionAnalyser::analyseFunctionCall(ASTArguments *node, ASTExpr *callee, Function *function) {
@@ -49,46 +50,53 @@ void MFFunctionAnalyser::analyseFunctionCall(ASTArguments *node, ASTExpr *callee
     }
 }
 
-void MFFunctionAnalyser::popScope(const SemanticScopeStats &stats) {
-    for (size_t i = 0; i < stats.variables; i++) {
-        auto &var = scope_.getVariable(i + stats.from);
+void MFFunctionAnalyser::popScope(ASTBlock *block) {
+    bool release = block->stopsAtReturn();
+    auto bound = block->returnedCertainly() ? block->scopeStats().allVariablesCount : block->scopeStats().variables;
+    auto from = block->returnedCertainly() ? 0 : block->scopeStats().from;
+    for (size_t i = 0; i < bound; i++) {
+        VariableID variableId = i + from;
+        auto &var = scope_.getVariable(variableId);
         if (var.isParam) {
-            function_->setParameterMFType(var.param, var.type);
+            function_->setParameterMFType(var.param, var.mfType);
         }
-        else {
-            update(var);
+        else if (release && !var.isReturned && var.type.isManaged()) {
+            block->appendNodeBeforeReturn(std::make_unique<ASTRelease>(false, variableId, var.type,
+                                                                       block->position()));
         }
-    }
-}
 
-void MFFunctionAnalyser::update(MFLocalVariable &variable) {
-    assert(!variable.isParam);
-    if (variable.type != MFType::Borrowing) return;
-    for (auto init : variable.inits) {
-        init->allocateOnStack();
+        if (var.mfType == MFType::Borrowing) {
+            for (auto init : var.inits) {
+                init->allocateOnStack();
+            }
+        }
     }
 }
 
 void MFFunctionAnalyser::recordVariableGet(size_t id, MFType type) {
     if (type == MFType::Escaping) {
-        scope_.getVariable(id).type = type;
+        scope_.getVariable(id).mfType = type;
     }
 }
 
-void MFFunctionAnalyser::take(std::shared_ptr<ASTExpr> *expr) {
+void MFFunctionAnalyser::retain(std::shared_ptr<ASTExpr> *expr) {
     (*expr)->analyseMemoryFlow(this, MFType::Escaping);
+    (*expr)->unsetIsTemporary();
 }
 
 void MFFunctionAnalyser::recordReturn(std::shared_ptr<ASTExpr> *expr) {
+    (*expr)->unsetIsTemporary();
     if (auto getVar = dynamic_cast<ASTGetVariable *>(expr->get())) {
-        if (!getVar->inInstanceScope() && scope_.getVariable(getVar->id()).isParam) {
-            return;
+        if (!getVar->inInstanceScope()) {
+            auto &var = scope_.getVariable(getVar->id());
+            if (var.isParam) return;
+            var.isReturned = true;
         }
     }
     if (auto getVar = dynamic_cast<ASTThis *>(expr->get())) {
         return;
     }
-    take(expr);
+    (*expr)->analyseMemoryFlow(this, MFType::Escaping);
 }
 
 void MFFunctionAnalyser::recordThis(MFType type) {
@@ -97,8 +105,9 @@ void MFFunctionAnalyser::recordThis(MFType type) {
     }
 }
 
-void MFFunctionAnalyser::recordVariableSet(size_t id, ASTExpr *expr, bool init) {
+void MFFunctionAnalyser::recordVariableSet(size_t id, ASTExpr *expr, bool init, Type type) {
     auto &var = scope_.getVariable(id);
+    var.type = std::move(type);
     if (auto heapAllocates = dynamic_cast<MFHeapAllocates *>(expr)) {
         var.inits.emplace_back(heapAllocates);
     }

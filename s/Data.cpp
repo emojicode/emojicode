@@ -15,16 +15,16 @@ extern "C" runtime::SimpleOptional<runtime::Integer> sDataFindFromIndex(Data *da
     if (offset >= data->count) {
         return runtime::NoValue;
     }
-    auto end = data->data + data->count;
-    auto pos = std::search(data->data + offset, end, search->data, search->data + search->count);
+    auto end = data->data.get() + data->count;
+    auto pos = std::search(data->data.get() + offset, end, search->data.get(), search->data.get() + search->count);
     if (pos != end) {
-        return pos - data->data;
+        return pos - data->data.get();
     }
     return runtime::NoValue;
 }
 
 extern "C" runtime::SimpleOptional<String *> sDataAsString(Data *data) {
-    auto chars = reinterpret_cast<char *>(data->data);
+    auto chars = reinterpret_cast<char *>(data->data.get());
     if (!u8_isvalid(chars, data->count)) {
         return runtime::NoValue;
     }
@@ -37,7 +37,7 @@ extern "C" runtime::SimpleOptional<String *> sDataAsString(Data *data) {
     }
 
     string->characters = runtime::allocate<String::Character>(string->count);
-    u8_toucs(string->characters, string->count, chars, data->count);
+    u8_toucs(string->characters.get(), string->count, chars, data->count);
 
     return string;
 }

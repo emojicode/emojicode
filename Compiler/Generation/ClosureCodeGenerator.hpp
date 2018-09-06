@@ -21,7 +21,7 @@ public:
     : FunctionCodeGenerator(f, f->unspecificReification().function, generator), capture_(capture) {}
 
     llvm::Value* thisValue() const override {
-        assert(capture_.captureSelf);
+        assert(capture_.capturesSelf());
         return thisValue_;
     }
 private:

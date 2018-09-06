@@ -69,21 +69,22 @@ std::string mangleClassInfoName(Class *klass) {
     return stream.str();
 }
 
-std::string mangleBoxInfoName(const Type &type) {
-    std::stringstream stream;
-    stream << type.typePackage() << ".box_info_vt_";
-    mangleIdentifier(stream, type.typeDefinition()->name());
-    return stream.str();
-}
-
 std::string mangleFunction(Function *function, const std::map<size_t, Type> &genericArgs) {
     std::stringstream stream;
     if (function->owner() != nullptr) {
         mangleTypeName(stream, function->owner()->type());
+        if (function->functionType() == FunctionType::Deinitializer) {
+            stream << ".deinit";
+            return stream.str();
+        }
+        if (function->functionType() == FunctionType::CopyRetainer) {
+            stream << ".copy";
+            return stream.str();
+        }
         if (isFullyInitializedCheckRequired(function->functionType())) {
             stream << ".init";
         }
-        if (function->functionType() == FunctionType::ClassMethod ||
+        else if (function->functionType() == FunctionType::ClassMethod ||
                 function->functionType() == FunctionType::Function) {
             stream << ".type";
         }
@@ -101,6 +102,18 @@ std::string mangleFunction(Function *function, const std::map<size_t, Type> &gen
     return stream.str();
 }
 
+std::string mangleBoxRetain(const Type &type) {
+    return mangleTypeName(type) + ".boxRetain";
+}
+
+std::string mangleBoxRelease(const Type &type) {
+    return mangleTypeName(type) + ".boxRelease";
+}
+
+std::string mangleBoxInfoName(const Type &type) {
+    return mangleTypeName(type) + ".boxInfo";
+}
+
 std::string mangleTypeName(const Type &type) {
     std::stringstream stream;
     mangleTypeName(stream, type);
@@ -110,7 +123,7 @@ std::string mangleTypeName(const Type &type) {
 std::string mangleProtocolConformance(const Type &type, const Type &protocol) {
     std::stringstream stream;
     mangleTypeName(stream, type);
-    stream << "_conformance_";
+    stream << ".conformances.";
     mangleTypeName(stream, protocol);
     return stream.str();
 }

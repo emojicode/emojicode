@@ -176,6 +176,16 @@ void PrettyPrinter::printTypeDef(const Type &type) {
     printProtocolConformances(typeDef, context);
     printInstanceVariables(typeDef, context);
     printMethodsAndInitializers(typeDef);
+
+    if (!interface_) {
+        if (auto klass = type.klass()) {
+            auto block = klass->deinitializer()->ast();
+            if (block != nullptr) {
+                prettyStream_.indent() << "♻️" << block;
+            }
+        }
+    }
+
     prettyStream_.decreaseIndent();
     prettyStream_.refuseOffer() << "🍉\n\n";
 }

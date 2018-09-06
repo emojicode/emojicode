@@ -11,7 +11,7 @@ namespace s {
 
 class Data : public runtime::Object<Data>  {
 public:
-    runtime::Byte *data;
+    runtime::MemoryPointer<runtime::Byte> data;
     runtime::Integer count;
 };
 

@@ -18,8 +18,11 @@ namespace EmojicodeCompiler {
 
 struct Capture {
     std::vector<VariableCapture> captures;
-    bool captureSelf = false;
+    /// The type of the captured type context. If this is TypeType::NoReturn, the type context is not captured.
+    Type self = Type::noReturn();
     llvm::Type *type = nullptr;
+
+    bool capturesSelf() const { return self.type() != TypeType::NoReturn; }
 };
 
 class ASTClosure : public ASTExpr, public MFHeapAutoAllocates {

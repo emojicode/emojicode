@@ -110,7 +110,7 @@ Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpecta
 
 void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
     for (auto &valueNode : values_) {
-        analyser->take(&valueNode);
+        analyser->retain(&valueNode);
     }
 }
 
@@ -146,7 +146,7 @@ Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &
 
 void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
     for (auto &valueNode : values_) {
-        analyser->take(&valueNode);
+        analyser->retain(&valueNode);
     }
 }
 

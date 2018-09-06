@@ -83,18 +83,6 @@
   🖍🆕 count 🔢
 🍉
 
-📗
-  List, an ordered mutable collection.
-
-  [Read more in the
-  language reference.](../../reference/the-s-package.html#-lists)
-📗
-🌍 🐇 🍨🐚Element ⚪🍆️ 🍇
-  🖍🆕 data 🧠
-  🖍🆕 count 🔢
-  🖍🆕 size 🔢
-🍉
-
 📗 Binary data. 📗
 🌍 🐇 📇 🍇
   🖍🆕 data 🧠

@@ -50,6 +50,17 @@ void VTCreator::assign() {
         init->createUnspecificReification();
         declarator_.declareLlvmFunction(init);
     }
+
+    klass_->deinitializer()->createUnspecificReification();
+    declarator_.declareLlvmFunction(klass_->deinitializer());
+    klass_->deinitializer()->unspecificReification().setVti(0);
+    if (functions_.empty()) {
+        functions_.emplace_back(klass_->deinitializer()->unspecificReification().function);
+    }
+    else {
+        functions_[0] = klass_->deinitializer()->unspecificReification().function;
+    }
+
     klass_->eachFunctionWithoutInitializers([this](auto *function) {
         function->createUnspecificReification();
         if (function->unspecificReification().function == nullptr) {

@@ -43,7 +43,7 @@ extern "C" runtime::SimpleError<File*> filesFileNewReading(String *path) {
 }
 
 extern "C" void filesFileWrite(File *file, Data *data) {
-    file->file_.write(reinterpret_cast<char *>(data->data), data->count);
+    file->file_.write(reinterpret_cast<char *>(data->data.get()), data->count);
 }
 
 extern "C" void filesFileClose(File *file) {
@@ -56,7 +56,7 @@ extern "C" void filesFileFlush(File *file) {
 
 extern "C" runtime::SimpleError<Data*> filesFileReadBytes(File *file, runtime::Integer count) {
     auto bytes = runtime::allocate<runtime::Byte>(count);
-    file->file_.read(reinterpret_cast<char *>(bytes), count);
+    file->file_.read(reinterpret_cast<char *>(bytes.get()), count);
 
     auto data = Data::init();
     data->data = bytes;
@@ -78,7 +78,7 @@ extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassInfo*, St
     file.seekg(0, std::ios::beg);
 
     auto bytes = runtime::allocate<runtime::Byte>(size);
-    file.read(reinterpret_cast<char *>(bytes), size);
+    file.read(reinterpret_cast<char *>(bytes.get()), size);
 
     auto data = Data::init();
     data->data = bytes;
@@ -88,7 +88,7 @@ extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassInfo*, St
 
 extern "C" runtime::SimpleOptional<runtime::Enum> filesFileWriteToFile(runtime::ClassInfo*, String *path, Data *data) {
     auto file = std::ofstream(path->cString(), std::ios_base::out);
-    file.write(reinterpret_cast<char *>(data->data), data->count);
+    file.write(reinterpret_cast<char *>(data->data.get()), data->count);
     if (file.fail()) return errorEnumFromErrno();
     return runtime::NoValue;
 }

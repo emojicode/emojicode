@@ -20,6 +20,7 @@ namespace EmojicodeCompiler {
 void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, FunctionAnalyser *analyser) {
     id_ = var.variable.id();
     inInstanceScope_ = var.inInstanceScope;
+    variableType_ = var.variable.type();
     if (inInstanceScope_) {
         analyser->pathAnalyser().recordIncident(PathAnalyserIncident::UsedSelf);
     }
@@ -59,14 +60,16 @@ void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
     setVariableAccess(rvar, analyser);
     analyser->expectType(rvar.variable.type(), &expr_);
 
+    wasInitialized_ = rvar.variable.isInitialized();
+
     rvar.variable.initialize();
     rvar.variable.mutate(position());
 }
 
 void ASTVariableAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    analyser->take(&expr_);
+    analyser->retain(&expr_);
     if (!inInstanceScope()) {
-        analyser->recordVariableSet(id(), expr_.get(), false);
+        analyser->recordVariableSet(id(), expr_.get(), false, variableType());
     }
 }
 
@@ -78,7 +81,8 @@ void ASTVariableDeclareAndAssign::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTVariableDeclareAndAssign::analyseMemoryFlow(EmojicodeCompiler::MFFunctionAnalyser *analyser) {
-    analyser->recordVariableSet(id(), expr_.get(), true);
+    analyser->retain(&expr_);
+    analyser->recordVariableSet(id(), expr_.get(), true, variableType());
 }
 
 void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
@@ -97,8 +101,8 @@ void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTConstantVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    expr_->analyseMemoryFlow(analyser, MFType::Escaping);
-    analyser->recordVariableSet(id(), expr_.get(), false);
+    analyser->retain(&expr_);
+    analyser->recordVariableSet(id(), expr_.get(), false, expr_->expressionType());
 }
 
 ASTOperatorAssignment::ASTOperatorAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,

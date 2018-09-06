@@ -23,6 +23,8 @@ enum class FunctionType {
     ClassMethod,
     /** A plain function without a context. (🏁) */
     Function,
+    Deinitializer,
+    CopyRetainer,
 };
 
 bool isSuperconstructorRequired(FunctionType);

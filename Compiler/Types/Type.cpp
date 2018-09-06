@@ -558,6 +558,12 @@ std::string Type::typePackage() const {
     }
 }
 
+bool Type::isManaged() const {
+    return type() == TypeType::Class || type() == TypeType::Someobject || type() == TypeType::Box ||
+        (type() == TypeType::ValueType && valueType()->isManaged()) ||
+        (type() == TypeType::Optional && optionalType().isManaged());
+}
+
 void Type::typeName(Type type, const TypeContext &typeContext, std::string &string, Package *package) const {
     if (package != nullptr) {
         string.append(type.namespaceAccessor(package));

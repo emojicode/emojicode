@@ -27,6 +27,7 @@ class Prettyprinter;
 class MFFunctionAnalyser;
 enum class MFType;
 
+/// The superclass of all syntax tree nodes representing an expression.
 class ASTExpr : public ASTNode {
 public:
     explicit ASTExpr(const SourcePosition &p) : ASTNode(p) {}
@@ -35,11 +36,26 @@ public:
     const Type& expressionType() const { return expressionType_; }
     void setExpressionType(const Type &type) { expressionType_ = type; }
 
+    /// Subclasses must override this method to generate IR.
+    /// If the expression potentially evaluates to an managed value, handleResult() must be called.
     virtual Value* generate(FunctionCodeGenerator *fg) const = 0;
     virtual Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) = 0;
     virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) = 0;
 
+    /// Informs this expression that if it creates a temporary object the object must not be released after the
+    /// statement is executed. This method is called by MFFunctionAnalyser.
+    void unsetIsTemporary() { isTemporary_ = false; unsetIsTemporaryPost(); }
+
+protected:
+    /// Whether the object to which this expression evaluates should be released.
+    llvm::Value* handleResult(FunctionCodeGenerator *fg, llvm::Value *result,
+                              bool valueTypeIsReferenced = false, bool local = false) const;
+
+    /// This method is called at the end of unsetIsTemporary(). It can be overridden to perform additional tasks.
+    virtual void unsetIsTemporaryPost() {}
+
 private:
+    bool isTemporary_ = true;
     Type expressionType_ = Type::noReturn();
 };
 

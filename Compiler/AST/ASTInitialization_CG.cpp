@@ -32,17 +32,20 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
+    llvm::Value *obj;
     if (typeExpr_->expressionType().klass()->foreign()) {
-        return CallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
-        .generate(nullptr, typeExpr_->expressionType(), args_, initializer_);
+        obj = CallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
+                                .generate(nullptr, typeExpr_->expressionType(), args_, initializer_);
     }
-
-    if (typeExpr_->expressionType().isExact()) {
-        return initObject(fg, args_, initializer_, typeExpr_->expressionType(), initType_ == InitType::ClassStack);
+    else if (typeExpr_->expressionType().isExact()) {
+        obj = initObject(fg, args_, initializer_, typeExpr_->expressionType(), initType_ == InitType::ClassStack);
     }
-
-    return CallCodeGenerator(fg, CallType::DynamicDispatchOnType)
+    else {
+        obj = CallCodeGenerator(fg, CallType::DynamicDispatchOnType)
             .generate(typeExpr_->generate(fg), typeExpr_->expressionType(), args_, initializer_);
+    }
+    handleResult(fg, obj, false, initType_ == InitType::ClassStack);
+    return obj;
 }
 
 Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const {
@@ -52,6 +55,7 @@ Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const
     }
     CallCodeGenerator(fg, CallType::StaticDispatch)
             .generate(destination, typeExpr_->expressionType(), args_, initializer_);
+    handleResult(fg, destination, true);
     return vtDestination_ == nullptr ? fg->builder().CreateLoad(destination) : nullptr;
 }
 
@@ -59,13 +63,19 @@ Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArgumen
                                      const Type &type, bool stackInit) {
     auto llvmType = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(type));
     auto obj = stackInit ? fg->createEntryAlloca(llvmType->getElementType()) : fg->alloc(llvmType);
+    if (stackInit) {
+        auto controlBlockField = fg->builder().CreateConstInBoundsGEP2_32(llvmType->getElementType(), obj, 0, 0);
+        fg->builder().CreateStore(llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(fg->generator()->context())),
+                                  controlBlockField);
+    }
     fg->builder().CreateStore(type.klass()->classInfo(), fg->getClassInfoPtrFromObject(obj));
     return CallCodeGenerator(fg, CallType::StaticDispatch).generate(obj, type, args, function);
 }
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {
-    return fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(),
-                                    args_.parameters()[0]->generate(fg), "alloc");
+    auto size = fg->builder().CreateAdd(args_.parameters()[0]->generate(fg),
+                                        fg->sizeOf(llvm::Type::getInt8PtrTy(fg->generator()->context())));
+    return fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(), size, "alloc");
 }
 
 }  // namespace EmojicodeCompiler

@@ -23,7 +23,7 @@ Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
 }
 
 void ASTIsError::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    analyser->take(&value_);
+    value_->analyseMemoryFlow(analyser, MFType::Borrowing);
 }
 
 Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -41,7 +41,7 @@ Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
 }
 
 void ASTUnwrap::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    analyser->take(&value_);
+    value_->analyseMemoryFlow(analyser, MFType::Escaping);
 }
 
 }  // namespace EmojicodeCompiler

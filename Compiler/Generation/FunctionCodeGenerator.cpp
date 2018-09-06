@@ -11,6 +11,8 @@
 #include "Declarator.hpp"
 #include "FunctionCodeGenerator.hpp"
 #include "Package/Package.hpp"
+#include "Generation/CallCodeGenerator.hpp"
+#include "Compiler.hpp"
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
@@ -19,14 +21,18 @@
 namespace EmojicodeCompiler {
 
 void FunctionCodeGenerator::generate() {
-    auto basicBlock = llvm::BasicBlock::Create(generator()->context(), "entry", function_);
-    builder_.SetInsertPoint(basicBlock);
+    createEntry();
 
     declareArguments(function_);
 
     fn_->ast()->generate(this);
 
     if (llvm::verifyFunction(*function_, &llvm::outs())) {}
+}
+
+void FunctionCodeGenerator::createEntry() {
+    auto basicBlock = llvm::BasicBlock::Create(generator()->context(), "entry", function_);
+    builder_.SetInsertPoint(basicBlock);
 }
 
 Compiler* FunctionCodeGenerator::compiler() const {
@@ -67,14 +73,12 @@ llvm::Value* FunctionCodeGenerator::sizeOf(llvm::Type *type) {
 }
 
 Value* FunctionCodeGenerator::getBoxInfoPtr(Value *box) {
-    return builder().CreateConstGEP2_32(typeHelper().box(), box, 0, 0);
+    return builder().CreateConstInBoundsGEP2_32(typeHelper().box(), box, 0, 0);
 }
 
 llvm::Value* FunctionCodeGenerator::getClassInfoPtrFromObject(Value *object) {
-    return builder().CreateGEP(object, {
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),  // object
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0)   // classInfo*
-    });  // classInfo**
+    return builder().CreateConstInBoundsGEP2_32(llvm::cast<llvm::PointerType>(object->getType())->getElementType(),
+                                                object, 0, 1); // classInfo*
 }
 
 llvm::Value* FunctionCodeGenerator::getClassInfoFromObject(llvm::Value *object) {
@@ -94,6 +98,22 @@ llvm::Value* FunctionCodeGenerator::getHasNoValueBox(llvm::Value *box) {
 Value* FunctionCodeGenerator::getHasNoValue(llvm::Value *simpleOptional) {
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
     return builder().CreateICmpEQ(vf, generator()->optionalNoValue());
+}
+
+Value* FunctionCodeGenerator::buildOptionalHasValue(llvm::Value *simpleOptional) {
+    auto vf = builder().CreateExtractValue(simpleOptional, 0);
+    return builder().CreateICmpNE(vf, generator()->optionalNoValue());
+}
+
+Value* FunctionCodeGenerator::buildOptionalHasValuePtr(llvm::Value *simpleOptional) {
+    auto type = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
+    auto vf = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(type, simpleOptional, 0, 0));
+    return builder().CreateICmpNE(vf, generator()->optionalNoValue());
+}
+
+Value* FunctionCodeGenerator::buildGetOptionalValuePtr(llvm::Value *simpleOptional) {
+    auto type = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
+    return builder().CreateConstInBoundsGEP2_32(type, simpleOptional, 0, 1);
 }
 
 Value* FunctionCodeGenerator::getSimpleOptionalWithoutValue(const Type &type) {
@@ -165,6 +185,18 @@ void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std:
         builder().CreateBr(mergeBlock);
     }
     builder().SetInsertPoint(mergeBlock);
+}
+
+void FunctionCodeGenerator::createIf(llvm::Value *cond, const std::function<void()> &then) {
+    auto function = builder().GetInsertBlock()->getParent();
+    auto thenBlock = llvm::BasicBlock::Create(generator()->context(), "then", function);
+    auto cont = llvm::BasicBlock::Create(generator()->context(), "cont", function);
+
+    builder().CreateCondBr(cond, thenBlock, cont);
+    builder().SetInsertPoint(thenBlock);
+    then();
+    builder().CreateBr(cont);
+    builder().SetInsertPoint(cont);
 }
 
 void FunctionCodeGenerator::createIfElse(llvm::Value *cond, const std::function<void()> &then,
@@ -251,7 +283,109 @@ llvm::Value* FunctionCodeGenerator::createEntryAlloca(llvm::Type *type, const ll
 }
 
 llvm::Value* FunctionCodeGenerator::boxInfoFor(const Type &type) {
-    return builder().CreateBitCast(generator()->boxInfoFor(type), typeHelper().boxInfo()->getPointerTo());
+    return generator()->boxInfoFor(type);
+}
+
+void FunctionCodeGenerator::releaseTemporaryObjects() {
+    while (!temporaryObjects_.empty()) {
+        release(temporaryObjects_.front().value, temporaryObjects_.front().type, temporaryObjects_.front().local);
+        temporaryObjects_.pop();
+    }
+}
+
+void FunctionCodeGenerator::release(llvm::Value *value, const Type &type, bool local) {
+    if (local) {
+        builder().CreateCall(type.klass()->deinitializer()->unspecificReification().function, value);
+    }
+    else if (type.type() == TypeType::Class) {
+        auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
+        builder().CreateCall(generator()->declarator().release(), opc);
+    }
+    else if (type.type() == TypeType::ValueType && type.valueType() == generator_->package()->compiler()->sMemory) {
+        builder().CreateCall(generator()->declarator().releaseMemory(), value);
+    }
+    else if (type.type() == TypeType::ValueType) {
+        builder().CreateCall(type.valueType()->deinitializer()->unspecificReification().function, value);
+    }
+    else if (type.type() == TypeType::Optional) {
+        if (isManagedByReference(type)) {
+            createIf(buildOptionalHasValuePtr(value), [&] {
+                release(buildGetOptionalValuePtr(value), type.optionalType(), false);
+            });
+        }
+        else {
+            createIf(buildOptionalHasValue(value), [&] {
+                release(builder().CreateExtractValue(value, 1), type.optionalType(), false);
+            });
+        }
+    }
+    else if (type.type() == TypeType::Box) {
+        auto boxInfo = builder().CreateLoad(getBoxInfoPtr(value));
+        if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something
+             || type.unboxed().type() == TypeType::Error) {
+            auto null = llvm::ConstantPointerNull::get(typeHelper().boxInfo()->getPointerTo());
+            createIf(builder().CreateICmpNE(boxInfo, null), [&] {
+                manageBox(false, boxInfo, value, type);
+            });
+        }
+        else {
+            manageBox(false, boxInfo, value, type);
+        }
+    }
+}
+
+void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
+    if (type.type() == TypeType::Class ||
+        (type.type() == TypeType::ValueType && type.valueType() == generator_->package()->compiler()->sMemory)) {
+        auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
+        builder().CreateCall(generator()->declarator().retain(), { opc });
+    }
+    else if (type.type() == TypeType::ValueType) {
+        builder().CreateCall(type.valueType()->copyRetain()->unspecificReification().function, value);
+    }
+    else if (type.type() == TypeType::Optional) {
+        if (isManagedByReference(type)) {
+            createIf(buildOptionalHasValuePtr(value), [&] {
+                retain(buildGetOptionalValuePtr(value), type.optionalType());
+            });
+        }
+        else {
+            createIf(buildOptionalHasValue(value), [&] {
+                retain(builder().CreateExtractValue(value, 1), type.optionalType());
+            });
+        }
+    }
+    else if (type.type() == TypeType::Box) {
+        auto boxInfo = builder().CreateLoad(getBoxInfoPtr(value));
+        if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something
+             || type.unboxed().type() == TypeType::Error) {
+            auto null = llvm::ConstantPointerNull::get(typeHelper().boxInfo()->getPointerTo());
+            createIf(builder().CreateICmpNE(boxInfo, null), [&] {
+                manageBox(true, boxInfo, value, type);
+            });
+        }
+        else {
+            manageBox(true, boxInfo, value, type);
+        }
+    }
+}
+
+void FunctionCodeGenerator::manageBox(bool retain, llvm::Value *boxInfo, llvm::Value *value, const Type &type) {
+    if (type.boxedFor().type() == TypeType::Protocol) {
+        auto conf = builder().CreateBitCast(boxInfo, typeHelper().protocolConformance()->getPointerTo());
+        auto rfptrptr = builder().CreateConstInBoundsGEP2_32(typeHelper().protocolConformance(), conf, 0,
+                                                             retain ? 3 : 4);
+        builder().CreateCall(builder().CreateLoad(rfptrptr), value);
+    }
+    else {
+        auto rfptrptr = builder().CreateConstInBoundsGEP2_32(typeHelper().boxInfo(), boxInfo, 0, retain ? 1 : 2);
+        builder().CreateCall(builder().CreateLoad(rfptrptr), value);
+    }
+}
+
+bool FunctionCodeGenerator::isManagedByReference(const Type &type) const {
+    return (type.type() == TypeType::ValueType && !type.valueType()->isPrimitive()) || type.type() == TypeType::Box
+        || (type.type() == TypeType::Optional && isManagedByReference(type.optionalType()));
 }
 
 }  // namespace EmojicodeCompiler

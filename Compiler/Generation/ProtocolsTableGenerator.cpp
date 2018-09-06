@@ -17,49 +17,48 @@
 
 namespace EmojicodeCompiler {
 
-BoxInfoGenerator::BoxInfoGenerator(const Type &type, CodeGenerator *generator) : generator_(generator), type_(type) {
-    boxInfos_.reserve(type.typeDefinition()->protocols().size());
-    boxInfo_ = generator_->declarator().declareBoxInfo(mangleBoxInfoName(type_),
-                                                       type.typeDefinition()->protocols().size());
-}
-
-void BoxInfoGenerator::add(const Type &protocol, llvm::GlobalVariable *conformance) {
-    boxInfos_.emplace_back(llvm::ConstantStruct::get(generator_->typeHelper().boxInfo(), {
-        generator_->protocolIdentifierFor(protocol), conformance
-    }));
-}
-
-void BoxInfoGenerator::finish() {
-    generator_->declarator().initBoxInfo(boxInfo_, std::move(boxInfos_));
-    type_.unboxed().typeDefinition()->setBoxInfo(boxInfo_);
-}
-
-void ProtocolsTableGenerator::createProtocolsTable(const Type &type) {
-    std::map<Type, llvm::Constant *> tables;
-    BoxInfoGenerator big(type, generator_);
-    auto boxInfo = type.type() == TypeType::Class ? generator_->declarator().boxInfoForObjects() : big.boxInfo();
-
-    for (auto &protocol : type.typeDefinition()->protocols()) {
-        auto conformance = createVirtualTable(type, protocol->type(), boxInfo);
-        tables.emplace(protocol->type().unboxed(), conformance);
-        big.add(protocol->type(), conformance);
+llvm::Constant* ProtocolsTableGenerator::createProtocolTable(TypeDefinition *typeDef) {
+    std::vector<llvm::Constant *> entries;
+    entries.reserve(typeDef->protocolTables().size());
+    for (auto &entry : typeDef->protocolTables()) {
+        entries.emplace_back(llvm::ConstantStruct::get(generator_->typeHelper().protocolConformanceEntry(), {
+            generator_->protocolIdentifierFor(entry.first), entry.second
+        }));
     }
 
-    big.finish();
+    entries.emplace_back(llvm::Constant::getNullValue(generator_->typeHelper().protocolConformanceEntry()));
+    auto arrayType = llvm::ArrayType::get(generator_->typeHelper().protocolConformanceEntry(), entries.size());
+    auto array = new llvm::GlobalVariable(*generator_->module(), arrayType, true,
+                                          llvm::GlobalValue::LinkageTypes::PrivateLinkage,
+                                          llvm::ConstantArray::get(arrayType, entries));
+    return llvm::ConstantExpr::getInBoundsGetElementPtr(arrayType, array, llvm::ArrayRef<llvm::Constant *>{
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator_->context()), 0),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator_->context()), 0)
+    });
+}
+
+void ProtocolsTableGenerator::generate(const Type &type) {
+    std::map<Type, llvm::Constant *> tables;
+    auto boxInfo = generator_->boxInfoFor(type);
+
+    for (auto &protocol : type.typeDefinition()->protocols()) {
+        auto conformance = createDispatchTable(type, protocol->type(), boxInfo);
+        tables.emplace(protocol->type().unboxed(), conformance);
+    }
+
     type.typeDefinition()->setProtocolTables(std::move(tables));
 }
 
-void ProtocolsTableGenerator::declareImportedProtocolsTable(const Type &type) {
+void ProtocolsTableGenerator::declareImported(const Type &type) {
     std::map<Type, llvm::Constant *> tables;
-    BoxInfoGenerator big(type, generator_);
-
-    for (auto &protocol : type.typeDefinition()->protocols()) {
-        auto conformance = getConformanceVariable(type, protocol->type(), nullptr);
-        tables.emplace(protocol->type().unboxed(), conformance);
-        big.add(protocol->type(), conformance);
+    if (type.type() != TypeType::Class) {
+        type.unboxed().valueType()->setBoxInfo(generator_->declarator().declareBoxInfo(mangleBoxInfoName(type)));
     }
 
-    big.finish();
+    for (auto &protocol : type.typeDefinition()->protocols()) {
+        tables.emplace(protocol->type().unboxed(), getConformanceVariable(type, protocol->type(), nullptr));
+    }
+
     type.typeDefinition()->setProtocolTables(std::move(tables));
 }
 
@@ -85,7 +84,7 @@ llvm::GlobalVariable* ProtocolsTableGenerator::multiprotocol(const Type &multipr
     return var;
 }
 
-llvm::GlobalVariable* ProtocolsTableGenerator::createVirtualTable(const Type &type, const Type &protocol,
+llvm::GlobalVariable* ProtocolsTableGenerator::createDispatchTable(const Type &type, const Type &protocol,
                                                                   llvm::Constant *boxInfo) {
     auto typeDef = type.typeDefinition();
     auto arrayType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(generator_->context()),
@@ -114,7 +113,7 @@ llvm::GlobalVariable* ProtocolsTableGenerator::createVirtualTable(const Type &ty
                                        (type.type() == TypeType::Class ||
                                         generator_->typeHelper().isRemote(type)) ? 1 : 0);
     auto conformance = llvm::ConstantStruct::get(generator_->typeHelper().protocolConformance(),
-                                                 {load, arrayVar, llvm::ConstantExpr::getBitCast(boxInfo, generator_->typeHelper().boxInfo()->getPointerTo()) });
+                                                 {load, arrayVar, llvm::ConstantExpr::getBitCast(boxInfo, generator_->typeHelper().boxInfo()->getPointerTo()), typeDef->boxRetainRelease().first, typeDef->boxRetainRelease().second });
     return getConformanceVariable(type, protocol, conformance);
 }
 

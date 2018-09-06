@@ -21,7 +21,9 @@ void ASTIf::generate(FunctionCodeGenerator *fg) const {
         auto thenBlock = llvm::BasicBlock::Create(fg->generator()->context(), "then", function);
         auto elseBlock = llvm::BasicBlock::Create(fg->generator()->context(), "else", function);
 
-        fg->builder().CreateCondBr(conditions_[i]->generate(fg), thenBlock, elseBlock);
+        auto cond = conditions_[i]->generate(fg);
+        fg->releaseTemporaryObjects();
+        fg->builder().CreateCondBr(cond, thenBlock, elseBlock);
         fg->builder().SetInsertPoint(thenBlock);
         blocks_[i].generate(fg);
 
@@ -52,7 +54,9 @@ void ASTRepeatWhile::generate(FunctionCodeGenerator *fg) const {
     fg->builder().CreateBr(whileCondBlock);
 
     fg->builder().SetInsertPoint(whileCondBlock);
-    fg->builder().CreateCondBr(condition_->generate(fg), repeatBlock, afterBlock);
+    auto cond = condition_->generate(fg);
+    fg->releaseTemporaryObjects();
+    fg->builder().CreateCondBr(cond, repeatBlock, afterBlock);
 
     fg->builder().SetInsertPoint(repeatBlock);
     block_.generate(fg);

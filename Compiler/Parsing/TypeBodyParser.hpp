@@ -48,6 +48,8 @@ protected:
                                   const Documentation &documentation, AccessLevel access,
                                   const SourcePosition &p);
 
+    void parseDeinitializer(const SourcePosition &p);
+
     void doParseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
                        const Documentation &documentation, AccessLevel access, bool imperative,
                        const SourcePosition &p);

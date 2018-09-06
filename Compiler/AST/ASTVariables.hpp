@@ -41,14 +41,24 @@ public:
     bool inInstanceScope() const { return inInstanceScope_; }
 protected:
     explicit AccessesAnyVariable(std::u32string name) : name_(std::move(name)) {}
+    AccessesAnyVariable(bool inInstanceScope, VariableID id, Type type)
+        : inInstanceScope_(inInstanceScope), id_(id), variableType_(std::move(type)) {}
     void setVariableAccess(const ResolvedVariable &var, FunctionAnalyser *analyser);
 
     /// Generates code to retrieve a pointer to the instance variable, whose ID is stored in this instance.
     Value* instanceVariablePointer(FunctionCodeGenerator *fg) const;
+
+    const Type& variableType() const { return variableType_; }
+
+    /// Releases the object pointed to by this variable.
+    void release(FunctionCodeGenerator *fg) const;
+
+    Value* managementValue(FunctionCodeGenerator *fg) const;
 private:
     bool inInstanceScope_ = false;
     VariableID id_;
     std::u32string name_;
+    Type variableType_ = Type::noReturn();
 };
 
 /// Represents the retrieval of the contents of a variable or the address of the content of the variable.
@@ -100,6 +110,9 @@ public:
 protected:
     ASTVariableAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,
                           const SourcePosition &p, bool declare) : ASTVariableInit(e, p, std::move(name), declare) {}
+
+private:
+    bool wasInitialized_ = false;
 };
 
 class ASTVariableDeclareAndAssign : public ASTVariableAssignment {

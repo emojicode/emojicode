@@ -14,6 +14,12 @@
 #include <new>
 #include <type_traits>
 
+namespace runtime {
+namespace internal {
+struct ControlBlock;
+}
+}
+
 extern "C" int8_t* ejcAlloc(int64_t size);
 extern "C" [[noreturn]] void ejcPanic(const char *message);
 
@@ -25,11 +31,6 @@ using Boolean = int8_t;
 using Byte = int8_t;
 using Real = double;
 using Enum = int64_t;
-
-template <typename T>
-inline T* allocate(int64_t n = 1) {
-    return reinterpret_cast<T*>(ejcAlloc(sizeof(T) * n));
-}
 
 template <typename Subclass>
 struct ClassInfoFor;
@@ -44,6 +45,39 @@ using is_complete = decltype(is_complete_impl(std::declval<T*>()));
 
 }  // namespace util
 
+struct ClassInfo {
+    ClassInfo *superclass;
+    void **dispatchTable;
+
+    template <typename Return, typename ObjectType, typename ...Args>
+    Return dispatch(size_t virtualTableIndex, ObjectType *object, Args... args) const {
+        return reinterpret_cast<Return(*)(ObjectType*, Args...)>(dispatchTable[virtualTableIndex])(object, args...);
+    }
+};
+
+template <typename T>
+class MemoryPointer {
+    template <typename TA>
+    friend inline MemoryPointer<TA> allocate(int64_t n);
+public:
+    MemoryPointer() {}
+    T* get() const {
+        return reinterpret_cast<T*>(pointer_ + sizeof(runtime::internal::ControlBlock *));
+    }
+
+    T& operator[](size_t index) const {
+        return get()[index];
+    }
+private:
+    explicit MemoryPointer(int8_t *pointer) : pointer_(pointer) {}
+    int8_t* pointer_ = nullptr;
+};
+
+template <typename T>
+inline MemoryPointer<T> allocate(int64_t n = 1) {
+    return MemoryPointer<T>(ejcAlloc(sizeof(T) * n + sizeof(runtime::internal::ControlBlock *)));
+}
+
 template <typename Subclass>
 class Object {
 public:
@@ -51,22 +85,21 @@ public:
     static Subclass* init(Args ...args) {
         static_assert(util::is_complete<ClassInfoFor<Subclass>>::value,
                       "Provide class info for this class with SET_INFO_FOR.");
-        return new(allocate<Subclass>()) Subclass(args...);
+        return new(ejcAlloc(sizeof(Subclass))) Subclass(args...);
     }
+
+    runtime::internal::ControlBlock* controlBlock() const { return block_; }
+    const ClassInfo* classInfo() const { return classInfo_; }
 protected:
     Object() : classInfo_(ClassInfoFor<Subclass>::value) {}
 private:
-    void *classInfo_;
-};
-
-struct ClassInfo {
-    ClassInfo *superclass;
-    void *dispatchTable;
+    runtime::internal::ControlBlock *block_;
+    const ClassInfo *classInfo_;
 };
 
 #define CLASS_INFO_NAME(package, emojitypename) package ## _class_info_ ## emojitypename
-#define SET_INFO_FOR(type, package, emojitypename) extern "C" runtime::ClassInfo CLASS_INFO_NAME(package, emojitypename); \
-template<> struct runtime::ClassInfoFor<type> { constexpr static runtime::ClassInfo *const value = &CLASS_INFO_NAME(package, emojitypename); };
+#define SET_INFO_FOR(type, package, emojitypename) extern "C" const runtime::ClassInfo CLASS_INFO_NAME(package, emojitypename); \
+template<> struct runtime::ClassInfoFor<type> { constexpr static const runtime::ClassInfo *const value = &CLASS_INFO_NAME(package, emojitypename); };
 
 struct NoValue_t {};
 constexpr NoValue_t NoValue {};

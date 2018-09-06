@@ -87,6 +87,7 @@ public:
     FT* findSuperFunction(FT *function) const {
         switch (function->functionType()) {
             case FunctionType::ObjectMethod:
+            case FunctionType::Deinitializer:
                 return ifNotPrivate(superclass()->lookupMethod(function->name(), function->isImperative()));
             case FunctionType::ClassMethod:
                 return ifNotPrivate(superclass()->lookupTypeMethod(function->name(), function->isImperative()));

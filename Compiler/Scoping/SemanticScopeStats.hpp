@@ -16,6 +16,7 @@ namespace EmojicodeCompiler {
 struct SemanticScopeStats {
     size_t from;
     size_t variables;
+    size_t allVariablesCount;
 };
 
 }  // namespace EmojicodeCompiler

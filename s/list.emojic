@@ -1,4 +1,14 @@
-🐋 🍨 🍇
+📗
+  List, an ordered mutable collection.
+
+  [Read more in the
+  language reference.](../../reference/the-s-package.html#-lists)
+📗
+🌍 🐇 🍨🐚Element ⚪🍆️ 🍇
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
+  🖍🆕 size 🔢
+
   🐊 🔂🐚Element🍆
   🐊 🐽🐚Element🍆
 
@@ -86,6 +96,7 @@
       🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
     🍉
     ☣️ 🍇
+      ♻️ data🐚Element🍆 index✖️⚖️Element❗️
       🐷 data🐚Element🍆 value index✖️⚖️Element❗️
     🍉
   🍉
@@ -99,6 +110,7 @@
  ❗️ 🐨 index 🔢 ➡️ 👌 🍇
     ↪️ index ◀️ count 🍇
       ☣️ 🍇
+        ♻️ data🐚Element🍆 index✖️⚖️Element❗️
         🚜 data index✖️⚖️Element data 🤜index ➕ 1🤛✖️⚖️Element 🤜count ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
       🍉
       count ⬅️➖ 1
@@ -149,6 +161,7 @@
     count ⬅️➖ 1
     ☣️ 🍇
       🐽 data🐚Element🍆 count✖️⚖️Element❗️ ➡️ value
+      ♻️ data🐚Element🍆 count✖️⚖️Element❗️
     🍉
     ↩️ value
   🍉
@@ -159,7 +172,23 @@
     This can be much more efficient than using a new list. Complexity: `O(1)`.
   📗
   ❗️ 🐗 🍇
+    ☣️ 🍇
+      ♻️ 🐕❗️
+    🍉
     0 ➡️ 🖍count
+  🍉
+
+  📗 Releases everything inside the list. 📗
+  ☣️🔒❗️♻️ 🍇
+    🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+      ♻️ data🐚Element🍆 i✖️⚖️Element❗️
+    🍉
+  🍉
+
+  ♻️ 🍇
+    ☣️ 🍇
+      ♻️ 🐕❗️
+    🍉
   🍉
 
   📗
@@ -223,7 +252,7 @@
       🍉
 
       ☣️ 🍇
-        ♻️🐕 i j❗️
+        🔄🐕 i j❗️
       🍉
     🍉
     ↩️ 0
@@ -237,7 +266,7 @@
     🍉
   🍉
 
-  ☣️🔒❗♻️ a 🔢 b 🔢 🍇
+  ☣️🔒❗🔄 a 🔢 b 🔢 🍇
     🐽 data🐚Element🍆 a✖️⚖️Element❗️ ➡️ temp
     🐷 data🐚Element🍆 🐽 data🐚Element🍆 b✖️⚖️Element❗️ a✖️⚖️Element❗️
     🐷 data🐚Element🍆 temp b✖️⚖️Element❗️
@@ -253,7 +282,7 @@
       🔢 prng 0 count ➖ 1❗️ ➡️ x
 
       ☣️ 🍇
-        ♻️🐕 i x❗️
+        🔄🐕 i x❗️
       🍉
     🍉
   🍉

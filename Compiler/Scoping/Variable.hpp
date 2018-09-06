@@ -52,21 +52,21 @@ public:
     void setInherited() { inherited_ = true; }
 
     void initialize() {
-        if (!initialized()) {
+        if (!isInitialized()) {
             initialized_ = 1;
         }
     }
     void initializeAbsolutely() {
-        if (!initialized()) {
+        if (!isInitialized()) {
             initialized_ = 1;
         }
     }
     void uninitialize() { initialized_ = 0; }
-    void popInitializationLevel() { if (initialized()) { initialized_--; } }
-    void pushInitializationLevel() { if (initialized()) { initialized_++; } }
+    void popInitializationLevel() { if (isInitialized()) { initialized_--; } }
+    void pushInitializationLevel() { if (isInitialized()) { initialized_++; } }
 
     /// Whether the variable is initialized.
-    bool initialized() const { return initialized_ > 0; }
+    bool isInitialized() const { return initialized_ > 0; }
     int initializationLevel() const { return initialized_; }
 
     VariableID id() const { return id_; }

@@ -20,12 +20,12 @@
 using s::String;
 
 const char* String::cString() {
-    size_t ds = u8_codingsize(characters, count);
-    auto *utf8str = runtime::allocate<char>(ds + 1);
+    size_t ds = u8_codingsize(characters.get(), count);
+    auto utf8str = runtime::allocate<char>(ds + 1);
     // Convert
-    size_t written = u8_toutf8(utf8str, ds, characters, count);
+    size_t written = u8_toutf8(utf8str.get(), ds, characters.get(), count);
     utf8str[written] = 0;
-    return utf8str;
+    return utf8str.get();  // TODO: Memory leak
 }
 
 String::String(const char *cstring) {
@@ -33,7 +33,7 @@ String::String(const char *cstring) {
 
     if (count > 0) {
         characters = runtime::allocate<String::Character>(count);
-        u8_toucs(characters, count, cstring, strlen(cstring));
+        u8_toucs(characters.get(), count, cstring, strlen(cstring));
     }
 }
 
@@ -56,7 +56,7 @@ extern "C" char sStringBeginsWith(String *string, String *beginning) {
     if (string->count < beginning->count) {
         return false;
     }
-    return std::memcmp(string->characters, beginning->characters,
+    return std::memcmp(string->characters.get(), beginning->characters.get(),
                        beginning->count * sizeof(String::Character)) == 0;
 }
 
@@ -64,12 +64,12 @@ extern "C" char sStringEndsWith(String *string, String *ending) {
     if (string->count < ending->count) {
         return false;
     }
-    return std::memcmp(string->characters + (string->count - ending->count), ending->characters,
+    return std::memcmp(string->characters.get() + (string->count - ending->count), ending->characters.get(),
                        ending->count * sizeof(String::Character)) == 0;
 }
 
 extern "C" runtime::Integer sStringUtf8ByteCount(String *string) {
-    return u8_codingsize(string->characters, string->count);
+    return u8_codingsize(string->characters.get(), string->count);
 }
 
 extern "C" String* sStringToLowercase(String *string) {
@@ -86,10 +86,10 @@ extern "C" String* sStringToLowercase(String *string) {
 }
 
 extern "C" runtime::SimpleOptional<runtime::Integer> sStringFind(String *string, String* search) {
-    auto end = string->characters + string->count;
-    auto pos = std::search(string->characters, end, search->characters, search->characters + search->count);
+    auto end = string->characters.get() + string->count;
+    auto pos = std::search(string->characters.get(), end, search->characters.get(), search->characters.get() + search->count);
     if (pos != end) {
-        return pos - string->characters;
+        return pos - string->characters.get();
     }
     return runtime::NoValue;
 }
@@ -99,10 +99,11 @@ extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindFromIndex(String
     if (offset >= string->count) {
         return runtime::NoValue;
     }
-    auto end = string->characters + string->count;
-    auto pos = std::search(string->characters + offset, end, search->characters, search->characters + search->count);
+    auto end = string->characters.get() + string->count;
+    auto pos = std::search(string->characters.get() + offset, end, search->characters.get(),
+                           search->characters.get() + search->count);
     if (pos != end) {
-        return pos - string->characters;
+        return pos - string->characters.get();
     }
     return runtime::NoValue;
 }
@@ -112,10 +113,10 @@ extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindSymbolFromIndex(
     if (offset >= string->count) {
         return runtime::NoValue;
     }
-    auto end = string->characters + string->count;
-    auto pos = std::find(string->characters + offset, end, search);
+    auto end = string->characters.get() + string->count;
+    auto pos = std::find(string->characters.get() + offset, end, search);
     if (pos != end) {
-        return pos - string->characters;
+        return pos - string->characters.get();
     }
     return runtime::NoValue;
 }
@@ -136,7 +137,7 @@ extern "C" String* sStringToUppercase(String *string) {
 extern "C" String* sStringAppendSymbol(String *string, runtime::Symbol symbol) {
     auto characters = runtime::allocate<String::Character>(string->count + 1);
 
-    std::memcpy(characters, string->characters, string->count * sizeof(String::Character));
+    std::memcpy(characters.get(), string->characters.get(), string->count * sizeof(String::Character));
     characters[string->count] = symbol;
 
     auto newString = String::init();
@@ -147,9 +148,9 @@ extern "C" String* sStringAppendSymbol(String *string, runtime::Symbol symbol) {
 
 extern "C" s::Data* sStringToData(String *string) {
     auto data = s::Data::init();
-    data->count = u8_codingsize(string->characters, string->count);
+    data->count = u8_codingsize(string->characters.get(), string->count);
     data->data = runtime::allocate<runtime::Byte>(data->count);
-    u8_toutf8(reinterpret_cast<char *>(data->data), data->count, string->characters, string->count);
+    u8_toutf8(reinterpret_cast<char *>(data->data.get()), data->count, string->characters.get(), string->count);
     return data;
 }
 
@@ -193,7 +194,7 @@ runtime::SimpleOptional<runtime::Integer> sStringToIntLength(const String::Chara
 }
 
 extern "C" runtime::SimpleOptional<runtime::Integer> sStringToInt(String *string, runtime::Integer base) {
-    return sStringToIntLength(string->characters, string->count, base);
+    return sStringToIntLength(string->characters.get(), string->count, base);
 }
 
 extern "C" runtime::SimpleOptional<runtime::Real> sStringToReal(String *string) {
@@ -225,7 +226,7 @@ extern "C" runtime::SimpleOptional<runtime::Real> sStringToReal(String *string) 
             continue;
         }
         if (string->characters[i] == 'e' || string->characters[i] == 'E') {
-            auto exponent = sStringToIntLength(string->characters + i + 1, string->count - i - 1, 10);
+            auto exponent = sStringToIntLength(string->characters.get() + i + 1, string->count - i - 1, 10);
             if (exponent == runtime::NoValue) {
                 return runtime::NoValue;
             }
@@ -264,7 +265,7 @@ extern "C" runtime::Integer sStringHash(String *string) {
 
     unsigned int h = 29190 ^ len;
 
-    const unsigned char * data = reinterpret_cast<const unsigned char *>(string->characters);
+    const unsigned char * data = reinterpret_cast<const unsigned char *>(string->characters.get());
 
     while(len >= 4) {
         unsigned int k;

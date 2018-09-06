@@ -21,7 +21,7 @@ public:
     String(const char *string);
     String() = default;
 
-    Character *characters;
+    runtime::MemoryPointer<Character> characters;
     runtime::Integer count;
 
     const char* cString();
