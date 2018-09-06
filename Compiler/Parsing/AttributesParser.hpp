@@ -33,11 +33,11 @@ public:
     AttributeParser& allow(Attribute attr) { found_.find(attr)->second.allowed = true; return *this; }
     bool has(Attribute attr) const { return found_.find(attr)->second.found; }
 
-    void check(const SourcePosition &p, Compiler *app) const {
+    void check(const SourcePosition &p, Compiler *compiler) const {
         for (auto &pair : found_) {
             if (!pair.second.allowed && pair.second.found) {
                 auto name = utf8(std::u32string(1, static_cast<char32_t>(pair.first)));
-                app->error(CompilerError(p, "Attribute ", name, " not applicable."));
+                compiler->error(CompilerError(p, "Attribute ", name, " not applicable."));
             }
         }
     }

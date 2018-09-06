@@ -22,17 +22,6 @@ namespace EmojicodeCompiler {
 class Function;
 class TokenStream;
 
-#undef major
-#undef minor
-
-struct PackageVersion {
-    PackageVersion(int major, int minor) : major(major), minor(minor) {}
-    /** The major version */
-    int major;
-    /** The minor version */
-    int minor;
-};
-
 struct ExportedType {
     ExportedType(Type t, std::u32string n) : type(std::move(t)), name(std::move(n)) {}
 
@@ -148,7 +137,6 @@ private:
 
     const std::string name_;
     const std::string path_;
-    PackageVersion version_ = PackageVersion(0, 0);
     bool finishedLoading_ = false;
     Function *startFlag_ = nullptr;
 

@@ -10,9 +10,7 @@
 #define ASTTypeExpr_hpp
 
 #include <utility>
-
 #include "ASTExpr.hpp"
-#include "ASTNode.hpp"
 
 namespace EmojicodeCompiler {
 

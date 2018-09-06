@@ -29,8 +29,8 @@ Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
 
     applyBoxingFromExpectation(analyser, expectation);
 
-    auto closureAnaly = FunctionAnalyser(closure_.get(), std::make_unique<CapturingSemanticScoper>(analyser->scoper()),
-                                         analyser->semanticAnalyser());
+    FunctionAnalyser closureAnaly(closure_.get(), std::make_unique<CapturingSemanticScoper>(analyser->scoper()),
+                                  analyser->semanticAnalyser());
     closureAnaly.analyse();
     capture_.captures = dynamic_cast<CapturingSemanticScoper &>(closureAnaly.scoper()).captures();
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {

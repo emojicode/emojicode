@@ -16,6 +16,8 @@
 #include "Types/Protocol.hpp"
 #include "Emojis.h"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Scoping/SemanticScoper.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 

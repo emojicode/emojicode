@@ -18,6 +18,7 @@ class Type;
 class StructType;
 class ArrayType;
 class PointerType;
+class FunctionType;
 }  // namespace llvm
 
 namespace EmojicodeCompiler {

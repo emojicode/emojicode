@@ -6,7 +6,6 @@
 #define EMOJICODE_PROTOCOLSTABLEGENERATOR_HPP
 
 #include <cstddef>
-#include <vector>
 #include <map>
 #include "Types/Type.hpp"
 
@@ -52,7 +51,8 @@ private:
     /// @param boxInfo The pointer to the box info for @c type that is stored in the protocol dispatch table.
     llvm::GlobalVariable* createDispatchTable(const Type &type, const Type &protocol, llvm::Constant *boxInfo);
 
-    llvm::GlobalVariable* getConformanceVariable(const Type &type, const Type &protocol, llvm::Constant *conformance) const;
+    llvm::GlobalVariable* getConformanceVariable(const Type &type, const Type &protocol,
+                                                 llvm::Constant *conformance) const;
 };
 
 }  // namespace EmojicodeCompiler

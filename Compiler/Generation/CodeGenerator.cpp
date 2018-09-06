@@ -14,6 +14,10 @@
 #include "Mangler.hpp"
 #include "Package/Package.hpp"
 #include "ReificationContext.hpp"
+#include "ProtocolsTableGenerator.hpp"
+#include "OptimizationManager.hpp"
+#include "Declarator.hpp"
+#include "StringPool.hpp"
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
@@ -36,8 +40,13 @@ namespace EmojicodeCompiler {
 CodeGenerator::CodeGenerator(Package *package, bool optimize)
         : package_(package),
           module_(std::make_unique<llvm::Module>(package->name(), context())),
-          typeHelper_(context(), this), declarator_(this), protocolsTableGenerator_(this),
-          optimizationManager_(module_.get(), optimize) {}
+          typeHelper_(context(), this),
+          pool_(std::make_unique<StringPool>(this)),
+          declarator_(std::make_unique<Declarator>(this)),
+          protocolsTableGenerator_(std::make_unique<ProtocolsTableGenerator>(this)),
+          optimizationManager_(std::make_unique<OptimizationManager>(module_.get(), optimize)) {}
+
+CodeGenerator::~CodeGenerator() = default;
 
 llvm::Value *CodeGenerator::optionalValue() {
     return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 1);
@@ -53,7 +62,7 @@ uint64_t CodeGenerator::querySize(llvm::Type *type) const {
 
 llvm::Constant *CodeGenerator::boxInfoFor(const Type &type) {
     if (type.type() == TypeType::Class) {
-        return declarator_.boxInfoForObjects();
+        return declarator_->boxInfoForObjects();
     }
     if (type.type() == TypeType::TypeAsValue) {
         return package_->compiler()->sInteger->boxInfo();
@@ -101,10 +110,10 @@ void CodeGenerator::prepareModule() {
 
 void CodeGenerator::generate(const std::string &outPath, bool printIr) {
     prepareModule();
-    optimizationManager_.initialize();
+    optimizationManager_->initialize();
 
     for (auto package : package_->dependencies()) {
-        declarator_.declareImportedPackageSymbols(package);
+        declarator_->declareImportedPackageSymbols(package);
     }
 
     buildObjectBoxRetainRelease();
@@ -117,37 +126,37 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr) {
             if (!function->requiresCopyReification()) {
                 function->createUnspecificReification();
             }
-            declarator_.declareLlvmFunction(function);
+            declarator_->declareLlvmFunction(function);
         });
         if (valueType->isManaged()) {
             valueType->deinitializer()->createUnspecificReification();
-            declarator_.declareLlvmFunction(valueType->deinitializer());
+            declarator_->declareLlvmFunction(valueType->deinitializer());
             valueType->copyRetain()->createUnspecificReification();
-            declarator_.declareLlvmFunction(valueType->copyRetain());
+            declarator_->declareLlvmFunction(valueType->copyRetain());
         }
 
         valueType->setBoxInfo(declarator().declareBoxInfo(mangleBoxInfoName(Type(valueType.get()))));
         buildBoxRetainRelease(Type(valueType.get()));
-        protocolsTableGenerator_.generate(Type(valueType.get()));
+        protocolsTableGenerator_->generate(Type(valueType.get()));
         valueType->boxInfo()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
-            protocolsTableGenerator_.createProtocolTable(valueType.get()),
+            protocolsTableGenerator_->createProtocolTable(valueType.get()),
             valueType->boxRetainRelease().first, valueType->boxRetainRelease().second
         }));
     }
     for (auto &klass : package_->classes()) {
-        VTCreator(klass.get(), declarator_).build();
+        VTCreator(klass.get(), *declarator_).build();
         klass->setBoxRetainRelease(objectRetain_, objectRelease_);
-        protocolsTableGenerator_.generate(Type(klass.get()));
+        protocolsTableGenerator_->generate(Type(klass.get()));
         createClassInfo(klass.get());
     }
     for (auto &function : package_->functions()) {
         function->createUnspecificReification();
-        declarator_.declareLlvmFunction(function.get());
+        declarator_->declareLlvmFunction(function.get());
     }
 
     generateFunctions();
 
-    optimizationManager_.optimize(module());
+    optimizationManager_->optimize(module());
     emit(outPath, printIr);
 }
 
@@ -197,7 +206,7 @@ void CodeGenerator::generateFunction(Function *function) {
             typeHelper_.setReificationContext(&context);
             FunctionCodeGenerator(function, reification.entity.function, this).generate();
             typeHelper_.setReificationContext(nullptr);
-            optimizationManager_.optimize(reification.entity.function);
+            optimizationManager_->optimize(reification.entity.function);
         });
     }
 }
@@ -229,7 +238,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
         superclass = llvm::ConstantPointerNull::get(typeHelper_.classInfo()->getPointerTo());
     }
 
-    auto protocolTable = protocolsTableGenerator_.createProtocolTable(klass);
+    auto protocolTable = protocolsTableGenerator_->createProtocolTable(klass);
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), { superclass, virtualTable, protocolTable });
     auto info = new llvm::GlobalVariable(*module(), typeHelper_.classInfo(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,

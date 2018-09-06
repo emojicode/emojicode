@@ -14,6 +14,7 @@
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Scoping/SemanticScoper.hpp"
 
 namespace EmojicodeCompiler {
 

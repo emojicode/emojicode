@@ -9,7 +9,6 @@
 #ifndef TypeExpectation_hpp
 #define TypeExpectation_hpp
 
-#include "Scoping/Variable.hpp"
 #include "Type.hpp"
 
 namespace EmojicodeCompiler {

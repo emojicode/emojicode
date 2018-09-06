@@ -5,6 +5,7 @@
 #include "ProtocolsTableGenerator.hpp"
 #include "Functions/Function.hpp"
 #include "Generation/Mangler.hpp"
+#include "Generation/Declarator.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"

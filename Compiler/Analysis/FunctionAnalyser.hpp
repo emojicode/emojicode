@@ -10,11 +10,8 @@
 #define FunctionAnalyser_hpp
 
 #include "AST/ASTExpr.hpp"
-#include "AST/ASTTypeExpr.hpp"
 #include "Package/Package.hpp"
 #include "PathAnalyser.hpp"
-#include "Scoping/SemanticScoper.hpp"
-#include "Types/Type.hpp"
 #include "Types/TypeContext.hpp"
 #include <memory>
 #include <utility>
@@ -22,20 +19,18 @@
 namespace EmojicodeCompiler {
 
 class ASTArguments;
+class ASTBlock;
 class TypeExpectation;
 class SemanticAnalyser;
+class SemanticScoper;
 
 /// This class is responsible for managing the semantic analysis of a function.
 class FunctionAnalyser {
 public:
-    FunctionAnalyser(Function *function, SemanticAnalyser *analyser) :
-            scoper_(std::make_unique<SemanticScoper>(SemanticScoper::scoperForFunction(function))),
-            typeContext_(function->typeContext()), function_(function), analyser_(analyser),
-            inUnsafeBlock_(function->unsafe()) {}
+    FunctionAnalyser(Function *function, SemanticAnalyser *analyser);
 
-    FunctionAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper, SemanticAnalyser *analyser) :
-            scoper_(std::move(scoper)), typeContext_(function->typeContext()), function_(function),
-            analyser_(analyser), inUnsafeBlock_(function->unsafe()) {}
+    FunctionAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper, SemanticAnalyser *analyser);
+
     void analyse();
 
     PathAnalyser& pathAnalyser() { return pathAnalyser_; }
@@ -43,7 +38,7 @@ public:
     SemanticScoper& scoper() { return *scoper_; }
     const TypeContext& typeContext() const { return typeContext_; }
     Function* function() const { return function_; }
-    Compiler* compiler() const { return function_->package()->compiler(); }
+    Compiler* compiler() const;
 
     Type integer();
     Type boolean();
@@ -73,6 +68,9 @@ public:
     void checkFunctionUse(Function *function, const SourcePosition &p) const;
 
     Type analyseFunctionCall(ASTArguments *node, const Type &type, Function *function);
+
+    ~FunctionAnalyser();
+
 private:
     PathAnalyser pathAnalyser_;
     /// The scoper responsible for scoping the function being compiled.

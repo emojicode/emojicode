@@ -11,6 +11,7 @@
 #include "ASTTypeExpr.hpp"
 #include "Functions/CallType.h"
 #include "Generation/CallCodeGenerator.hpp"
+#include "Generation/Declarator.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 

@@ -10,9 +10,7 @@
 #define ASTUnary_hpp
 
 #include <utility>
-
 #include "ASTExpr.hpp"
-#include "Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -44,7 +42,7 @@ public:
 private:
     bool error_ = false;
 
-    Value * generateErrorUnwrap(FunctionCodeGenerator *fg) const;
+    Value* generateErrorUnwrap(FunctionCodeGenerator *fg) const;
 };
 
 }  // namespace EmojicodeCompiler

@@ -10,7 +10,6 @@
 #define ASTNode_hpp
 
 #include "Lex/SourcePosition.hpp"
-#include <utility>
 
 namespace EmojicodeCompiler {
 
@@ -20,7 +19,7 @@ class PrettyStream;
 /// ASTNode is the parent class of all nodes in the abstract syntax tree.
 class ASTNode {
 public:
-    explicit ASTNode(SourcePosition p) : sourcePosition_(std::move(p)) {}
+    explicit ASTNode(SourcePosition p) : sourcePosition_(p) {}
 
     /// The source position that caused this node to be created.
     const SourcePosition& position() const { return sourcePosition_; }

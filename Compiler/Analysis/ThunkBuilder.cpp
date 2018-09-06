@@ -17,6 +17,7 @@
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Emojis.h"
+#include "Types/TypeExpectation.hpp"
 #include <memory>
 
 namespace EmojicodeCompiler {

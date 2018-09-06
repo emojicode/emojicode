@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 #include <llvm/IR/Instructions.h>
-#include <Functions/Function.hpp>
 
 namespace llvm {
 class Value;

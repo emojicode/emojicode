@@ -12,9 +12,7 @@
 #include <utility>
 #include "Scoping/SemanticScopeStats.hpp"
 #include "ASTExpr.hpp"
-#include "ASTNode.hpp"
 #include "Scoping/IDScoper.hpp"
-#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 

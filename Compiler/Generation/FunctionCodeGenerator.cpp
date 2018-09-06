@@ -8,6 +8,7 @@
 
 #include "Types/Enum.hpp"
 #include "Types/Class.hpp"
+#include "Functions/Function.hpp"
 #include "AST/ASTStatements.hpp"
 #include "Declarator.hpp"
 #include "FunctionCodeGenerator.hpp"
@@ -20,6 +21,10 @@
 #include <llvm/IR/Verifier.h>
 
 namespace EmojicodeCompiler {
+
+FunctionCodeGenerator::FunctionCodeGenerator(Function *function, llvm::Function *llvmFunc, CodeGenerator *generator)
+    : fn_(function), function_(llvmFunc), scoper_(function->variableCount()),
+      generator_(generator), builder_(generator->context()) {}
 
 void FunctionCodeGenerator::generate() {
     createEntry();

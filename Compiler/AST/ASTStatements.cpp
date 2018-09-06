@@ -14,6 +14,8 @@
 #include "Scoping/VariableNotFoundError.hpp"
 #include "Types/Class.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Scoping/SemanticScoper.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 

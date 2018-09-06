@@ -11,6 +11,8 @@
 #include "Compiler.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "Generation/Declarator.hpp"
+#include "Generation/StringPool.hpp"
 #include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {

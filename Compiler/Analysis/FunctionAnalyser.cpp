@@ -15,6 +15,7 @@
 #include "FunctionAnalyser.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
+#include "Scoping/SemanticScoper.hpp"
 #include "Scoping/VariableNotFoundError.hpp"
 #include "SemanticAnalyser.hpp"
 #include "ThunkBuilder.hpp"
@@ -23,8 +24,25 @@
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
+
+FunctionAnalyser::FunctionAnalyser(Function *function, SemanticAnalyser *analyser) :
+    scoper_(std::make_unique<SemanticScoper>(SemanticScoper::scoperForFunction(function))),
+    typeContext_(function->typeContext()), function_(function), analyser_(analyser),
+    inUnsafeBlock_(function->unsafe()) {}
+
+FunctionAnalyser::FunctionAnalyser(Function *function, std::unique_ptr<SemanticScoper> scoper,
+                                   SemanticAnalyser *analyser) :
+    scoper_(std::move(scoper)), typeContext_(function->typeContext()), function_(function),
+    analyser_(analyser), inUnsafeBlock_(function->unsafe()) {}
+
+FunctionAnalyser::~FunctionAnalyser() = default;
+
+Compiler* FunctionAnalyser::compiler() const {
+    return function_->package()->compiler();
+}
 
 Type FunctionAnalyser::real() {
     return Type(compiler()->sReal);

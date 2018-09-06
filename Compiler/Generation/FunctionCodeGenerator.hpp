@@ -10,7 +10,6 @@
 #define FunctionCodeGenerator_hpp
 
 #include "CodeGenerator.hpp"
-#include "Functions/Function.hpp"
 #include "Scoping/IDScoper.hpp"
 #include <llvm/IR/IRBuilder.h>
 #include <functional>
@@ -19,6 +18,7 @@
 namespace EmojicodeCompiler {
 
 class Compiler;
+class Function;
 
 /// A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function.
 ///
@@ -30,9 +30,7 @@ class Compiler;
 class FunctionCodeGenerator {
 public:
     /// Constructs a FunctionCodeGenerator.
-    FunctionCodeGenerator(Function *function, llvm::Function *llvmFunc, CodeGenerator *generator)
-        : fn_(function), function_(llvmFunc), scoper_(function->variableCount()),
-          generator_(generator), builder_(generator->context()) {}
+    FunctionCodeGenerator(Function *function, llvm::Function *llvmFunc, CodeGenerator *generator);
 
     /// Constructs a FunctionCodeGenerator for generating a function that does not have corresponding Function.
     /// @see createEntry()

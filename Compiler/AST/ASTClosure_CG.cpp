@@ -8,6 +8,7 @@
 
 #include "ASTClosure.hpp"
 #include "Generation/ClosureCodeGenerator.hpp"
+#include "Generation/Declarator.hpp"
 #include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {

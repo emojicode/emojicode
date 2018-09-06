@@ -11,7 +11,6 @@
 
 #include "FunctionType.hpp"
 #include "Types/Generic.hpp"
-#include "AST/ASTType.hpp"
 #include "MemoryFlowAnalysis/MFType.hpp"
 #include <memory>
 #include <utility>
@@ -25,6 +24,7 @@ class FunctionType;
 namespace EmojicodeCompiler {
 
 class ASTBlock;
+class ASTType;
 
 enum class AccessLevel {
     Public, Private, Protected

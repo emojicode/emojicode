@@ -10,6 +10,7 @@
 #include "ASTInitialization.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "Generation/ProtocolsTableGenerator.hpp"
 
 namespace EmojicodeCompiler {
 

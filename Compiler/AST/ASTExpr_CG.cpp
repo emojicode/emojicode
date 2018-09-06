@@ -10,6 +10,7 @@
 #include "ASTTypeExpr.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "Generation/Declarator.hpp"
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
 #include <llvm/Support/raw_ostream.h>

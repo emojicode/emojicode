@@ -9,17 +9,12 @@
 #ifndef CodeGenerator_hpp
 #define CodeGenerator_hpp
 
-#include "Declarator.hpp"
 #include "LLVMTypeHelper.hpp"
-#include "ProtocolsTableGenerator.hpp"
-#include "StringPool.hpp"
-#include "OptimizationManager.hpp"
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Module.h>
 #include <memory>
 #include <string>
-#include <vector>
 #include <map>
 
 namespace EmojicodeCompiler {
@@ -29,6 +24,10 @@ class Package;
 class Class;
 class Function;
 class TypeDefinition;
+class ProtocolsTableGenerator;
+class StringPool;
+class Declarator;
+class OptimizationManager;
 
 /// Manages the generation of IR for one package. Each package is compiled to one LLVM module.
 class CodeGenerator {
@@ -45,9 +44,9 @@ public:
     llvm::Module* module() const { return module_.get(); }
 
     LLVMTypeHelper& typeHelper() { return typeHelper_; }
-    StringPool& stringPool() { return pool_; }
-    Declarator& declarator() { return declarator_; }
-    ProtocolsTableGenerator& protocolsTG() { return protocolsTableGenerator_; }
+    StringPool& stringPool() { return *pool_; }
+    Declarator& declarator() { return *declarator_; }
+    ProtocolsTableGenerator& protocolsTG() { return *protocolsTableGenerator_; }
     llvm::LLVMContext& context() { return context_; }
 
     /// Returns the package for which this code generator was created.
@@ -67,16 +66,18 @@ public:
 
     llvm::Constant* protocolIdentifierFor(const Type &type);
 
+    ~CodeGenerator();
+
 private:
     Package *const package_;
     llvm::LLVMContext context_;
     std::unique_ptr<llvm::Module> module_;
 
     LLVMTypeHelper typeHelper_;
-    StringPool pool_ = StringPool(this);
-    Declarator declarator_;
-    ProtocolsTableGenerator protocolsTableGenerator_;
-    OptimizationManager optimizationManager_;
+    std::unique_ptr<StringPool> pool_;
+    std::unique_ptr<Declarator> declarator_;
+    std::unique_ptr<ProtocolsTableGenerator> protocolsTableGenerator_;
+    std::unique_ptr<OptimizationManager> optimizationManager_;
 
     llvm::TargetMachine *targetMachine_ = nullptr;
 
