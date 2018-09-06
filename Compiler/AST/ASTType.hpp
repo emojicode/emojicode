@@ -29,7 +29,7 @@ public:
     virtual ~ASTType() = default;
 protected:
     ASTType(SourcePosition p, Package *package) : ASTNode(std::move(p)), package_(package) {}
-    ASTType(Type type) : ASTNode(SourcePosition(0, 0, nullptr)), type_(type.applyMinimalBoxing()), package_(nullptr) {}
+    ASTType(Type type) : ASTNode(SourcePosition()), type_(type.applyMinimalBoxing()), package_(nullptr) {}
     virtual Type getType(const TypeContext &typeContext) const = 0;
     Package* package() const { return package_; }
     virtual void toCodeType(PrettyStream &pretty) const = 0;

@@ -7,6 +7,7 @@
 //
 
 #include "Types/Enum.hpp"
+#include "Types/Class.hpp"
 #include "AST/ASTStatements.hpp"
 #include "Declarator.hpp"
 #include "FunctionCodeGenerator.hpp"

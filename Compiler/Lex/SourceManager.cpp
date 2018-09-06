@@ -15,7 +15,7 @@ namespace EmojicodeCompiler {
 SourceFile* SourceManager::read(std::string file) {
     std::ifstream f(file, std::ios_base::binary | std::ios_base::in);
     if (f.fail()) {
-        throw CompilerError(SourcePosition(0, 0, nullptr), "Couldn't read input file ", file, ".");
+        throw CompilerError(SourcePosition(), "Couldn't read input file ", file, ".");
     }
 
     auto string = std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());

@@ -25,7 +25,7 @@
 namespace EmojicodeCompiler {
 
 std::unique_ptr<ASTBlock> FunctionParser::parse() {
-    return std::make_unique<ASTBlock>(parseBlockToEnd(SourcePosition(0, 0, nullptr)));
+    return std::make_unique<ASTBlock>(parseBlockToEnd(SourcePosition()));
 }
 
 ASTBlock FunctionParser::parseBlock() {
@@ -34,7 +34,7 @@ ASTBlock FunctionParser::parseBlock() {
 }
 
 ASTBlock FunctionParser::parseBlockToEnd(const SourcePosition &pos) {
-    auto block = ASTBlock(SourcePosition(0, 0, nullptr));
+    auto block = ASTBlock(pos);
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
         block.appendNode(parseStatement());
     }

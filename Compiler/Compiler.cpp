@@ -94,7 +94,7 @@ void Compiler::linkToExecutable() {
         }
     }
 
-    auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition(0, 0, nullptr)), "runtime");
+    auto runtimeLib = findBinaryPathPackage(searchPackage("runtime", SourcePosition()), "runtime");
     cmd << " " << runtimeLib << " -o " << outPath_;
 
     system(cmd.str().c_str());

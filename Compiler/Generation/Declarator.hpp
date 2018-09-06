@@ -5,7 +5,6 @@
 #ifndef EMOJICODE_DECLARATOR_HPP
 #define EMOJICODE_DECLARATOR_HPP
 
-#include "Types/Class.hpp"
 #include <llvm/IR/Function.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/LegacyPassManager.h>
@@ -14,6 +13,9 @@
 namespace EmojicodeCompiler {
 
 class CodeGenerator;
+class Class;
+class Function;
+class Package;
 
 /// The declarator is responsible for declaring functions etc. in an LLVM module.
 class Declarator {

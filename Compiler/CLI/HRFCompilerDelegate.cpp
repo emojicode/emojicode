@@ -33,7 +33,7 @@ void HRFCompilerDelegate::printMessage(const std::string &message) const {
 
 void HRFCompilerDelegate::printPosition(const SourcePosition &p) const {
     std::cerr << rang::style::bold;
-    if (p.file != nullptr) {
+    if (!p.isUnknown()) {
         std::cerr << p.file->path() << ":" << p.line << ":" << p.character << ": ";
     }
 }

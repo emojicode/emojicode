@@ -80,7 +80,7 @@ private:
     TypeContext typeContext_;
     char whitespaceOffer_ = 0;
     unsigned int indentation_ = 0;
-    SourcePosition lastCommentQuery_ = SourcePosition(0, 0, nullptr);
+    SourcePosition lastCommentQuery_ = SourcePosition();
 };
 
 }  // namespace EmojicodeCompiler

@@ -119,7 +119,7 @@ private:
     bool moreTokens_ = true;
     bool skippedBlankLine_ = false;
     Lexer lexer_;
-    Token nextToken_ = Token(SourcePosition(0, 0, nullptr));
+    Token nextToken_ = Token(SourcePosition());
 };
 
 }  // namespace EmojicodeCompiler

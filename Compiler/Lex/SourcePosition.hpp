@@ -18,10 +18,18 @@ class SourceFile;
 
 /// SourcePosition denotes a location in a source code file.
 struct SourcePosition {
-    SourcePosition(size_t line, size_t character, SourceFile *file) : line(line), character(character), file(file) {}
+    /// Constructs a source position that indicates that the position is unknown.
+    explicit SourcePosition() : line(0), character(0), file(nullptr) {}
+    /// Constructs a source position from the provided information.
+    SourcePosition(unsigned int line, unsigned int character, SourceFile *file)
+        : line(line), character(character), file(file) {}
 
-    size_t line;
-    size_t character;
+    /// Returns true iff the position is not known.
+    bool isUnknown() const { return file == nullptr; }
+
+    unsigned int line;
+    unsigned int character;
+    /// The file into which the this position points. nullptr if the position is unknown.
     SourceFile *file;
 
     /// @returns The line into which this SourcePosition points or an empty string if the line cannot be

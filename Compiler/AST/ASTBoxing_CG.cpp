@@ -8,6 +8,7 @@
 
 #include "ASTBoxing.hpp"
 #include "ASTInitialization.hpp"
+#include "Types/TypeDefinition.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 
 namespace EmojicodeCompiler {

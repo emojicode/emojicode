@@ -9,6 +9,7 @@
 #include "CodeGenerator.hpp"
 #include "Compiler.hpp"
 #include "Package/Package.hpp"
+#include "Types/Class.hpp"
 #include "StringPool.hpp"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/GlobalVariable.h>
