@@ -22,11 +22,14 @@
 
 namespace EmojicodeCompiler {
 
+/// The number of bytes a box provides for storing value type data.
+const unsigned kBoxSize = 32;
+
 LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGenerator)
         : context_(context), codeGenerator_(codeGenerator) {
     boxInfoType_ = llvm::StructType::create(context_, "boxInfo");
     box_ = llvm::StructType::create(std::vector<llvm::Type *> {
-        boxInfoType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), 32),
+        boxInfoType_->getPointerTo(), llvm::ArrayType::get(llvm::Type::getInt8Ty(context_), kBoxSize),
     }, "box");
     boxRetainRelease_ = llvm::FunctionType::get(llvm::Type::getVoidTy(context_), box()->getPointerTo(), false);
     protocolsTable_ = llvm::StructType::create({
@@ -114,7 +117,7 @@ bool LLVMTypeHelper::isDereferenceable(const Type &type) const {
 }
 
 bool LLVMTypeHelper::isRemote(const Type &type) {
-    return codeGenerator_->querySize(llvmTypeFor(type)) > 32;
+    return codeGenerator_->querySize(llvmTypeFor(type)) > kBoxSize;
 }
 
 llvm::Type* LLVMTypeHelper::llvmTypeFor(const Type &type) {
