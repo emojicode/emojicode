@@ -45,7 +45,7 @@ public:
     /// @see stopsAtReturn()
     void appendNodeBeforeReturn(std::unique_ptr<ASTStatement> node);
 
-    void preprendNode(std::unique_ptr<ASTStatement> node) {
+    void prependNode(std::unique_ptr<ASTStatement> node) {
         stmts_.emplace(stmts_.begin(), std::move(node));
     }
 

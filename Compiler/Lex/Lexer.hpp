@@ -23,7 +23,7 @@ namespace EmojicodeCompiler {
 ///
 /// Lexer is normally not directly accessed but used through TokenStream, which provides a more convenient interface.
 ///
-/// Lexer also returns tokens representing comments.
+/// Lexer also returns tokens representing comments and line breaks.
 class Lexer {
 public:
     /// @param sourceCode The Emojicode source code that shall be analyzed.

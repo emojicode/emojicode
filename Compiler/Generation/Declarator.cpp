@@ -27,7 +27,7 @@ Declarator::Declarator(CodeGenerator *generator) : generator_(generator) {
 }
 
 void EmojicodeCompiler::Declarator::declareRunTime() {
-    runTimeNew_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(generator_->context()),
+    alloc_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(generator_->context()),
                                          llvm::Type::getInt64Ty(generator_->context()));
 
     panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(generator_->context()),
@@ -97,12 +97,7 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
         }
     }
     for (auto &klass : package->classes()) {
-        if (klass->hasSubclass()) {
-            VTCreator(klass.get(), *this).build();
-        }
-        else {
-            VTCreator(klass.get(), *this).assign();
-        }
+        VTCreator(klass.get(), *this).build();
         ptg.declareImported(Type(klass.get()));
         declareImportedClassInfo(klass.get());
     }

@@ -26,21 +26,21 @@ ASTBoxing::ASTBoxing(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, con
 
 Value* ASTBoxing::getBoxValuePtr(Value *box, FunctionCodeGenerator *fg) const {
     Type type = expr_->expressionType().unboxed().unoptionalized();
-    return fg->getValuePtr(box, type);
+    return fg->buildGetBoxValuePtr(box, type);
 }
 
 Value* ASTBoxing::getSimpleOptional(Value *value, FunctionCodeGenerator *fg) const {
-    return fg->getSimpleOptionalWithValue(value, expressionType());
+    return fg->buildSimpleOptionalWithValue(value, expressionType());
 }
 
 Value* ASTBoxing::getSimpleError(llvm::Value *value, EmojicodeCompiler::FunctionCodeGenerator *fg) const {
     auto undef = llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(expressionType()));
-    auto error = fg->builder().CreateInsertValue(undef, fg->getErrorNoError(), 0);
+    auto error = fg->builder().CreateInsertValue(undef, fg->buildGetErrorNoError(), 0);
     return fg->builder().CreateInsertValue(error, value, 1);
 }
 
 Value* ASTBoxing::getSimpleOptionalWithoutValue(FunctionCodeGenerator *fg) const {
-    return fg->getSimpleOptionalWithoutValue(expressionType());
+    return fg->buildSimpleOptionalWithoutValue(expressionType());
 }
 
 Value* ASTBoxing::getAllocaTheBox(FunctionCodeGenerator *fg) const {
@@ -52,7 +52,7 @@ Value* ASTBoxing::getAllocaTheBox(FunctionCodeGenerator *fg) const {
 Value* ASTBoxing::getGetValueFromBox(Value *box, FunctionCodeGenerator *fg) const {
     if (fg->typeHelper().isRemote(expr_->expressionType().unboxed().unoptionalized())) {
         auto ptrPtrType = fg->typeHelper().llvmTypeFor(expr_->expressionType())->getPointerTo()->getPointerTo();
-        auto ptrPtr = fg->getValuePtr(box, ptrPtrType);
+        auto ptrPtr = fg->buildGetBoxValuePtr(box, ptrPtrType);
         return fg->builder().CreateLoad(fg->builder().CreateLoad(ptrPtr));
     }
     return fg->builder().CreateLoad(getBoxValuePtr(box, fg));
@@ -71,7 +71,7 @@ Value* ASTBoxToSimple::generate(FunctionCodeGenerator *fg) const {
 Value* ASTBoxToSimpleOptional::generate(FunctionCodeGenerator *fg) const {
     auto box = getAllocaTheBox(fg);
 
-    auto hasNoValue = fg->getHasNoValueBoxPtr(box);
+    auto hasNoValue = fg->buildHasNoValueBoxPtr(box);
     return fg->createIfElsePhi(hasNoValue, [this, fg]() {
         return getSimpleOptionalWithoutValue(fg);
     }, [this, box, fg]() {
@@ -87,7 +87,7 @@ Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fg) const {
     auto box = fg->createEntryAlloca(fg->typeHelper().box());
     if (isValueTypeInit()) {
         setBoxInfo(box, fg);
-        valueTypeInit(fg, fg->getValuePtr(box, expr_->expressionType()));
+        valueTypeInit(fg, fg->buildGetBoxValuePtr(box, expr_->expressionType()));
     }
     else {
         getPutValueIntoBox(box, expr_->generate(fg), fg);
@@ -99,10 +99,10 @@ Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fg) const {
     auto value = expr_->generate(fg);
     auto box = fg->createEntryAlloca(fg->typeHelper().box());
 
-    auto hasNoValue = fg->getHasNoValue(value);
+    auto hasNoValue = fg->buildHasNoValue(value);
 
     fg->createIfElse(hasNoValue, [fg, box]() {
-        fg->getMakeNoValue(box);
+        fg->buildMakeNoValue(box);
     }, [this, value, fg, box]() {
         getPutValueIntoBox(box, fg->builder().CreateExtractValue(value, 1), fg);
     });
@@ -113,11 +113,11 @@ Value* ASTSimpleErrorToBox::generate(FunctionCodeGenerator *fg) const {
     auto value = expr_->generate(fg);
     auto box = fg->createEntryAlloca(fg->typeHelper().box());
 
-    auto hasNoValue = fg->getIsError(value);
+    auto hasNoValue = fg->buildGetIsError(value);
 
     fg->createIfElse(hasNoValue, [this, fg, box, value]() {
-        fg->getMakeNoValue(box);
-        auto ptr = fg->getValuePtr(box, expressionType().errorEnum());
+        fg->buildMakeNoValue(box);
+        auto ptr = fg->buildGetBoxValuePtr(box, expressionType().errorEnum());
         fg->builder().CreateStore(fg->builder().CreateExtractValue(value, 0), ptr);
     }, [this, value, fg, box]() {
         getPutValueIntoBox(box, fg->builder().CreateExtractValue(value, 1), fg);
@@ -131,10 +131,10 @@ Value* ASTSimpleToSimpleError::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTBoxToSimpleError::generate(FunctionCodeGenerator *fg) const {
     auto box = getAllocaTheBox(fg);
-    auto hasNoValue = fg->getHasNoValueBoxPtr(box);
+    auto hasNoValue = fg->buildHasNoValueBoxPtr(box);
     return fg->createIfElsePhi(hasNoValue, [this, box, fg]() {
-        auto errorEnumValue = fg->getErrorEnumValueBoxPtr(box, expressionType().errorEnum());
-        return fg->getSimpleErrorWithError(errorEnumValue, fg->typeHelper().llvmTypeFor(expressionType()));
+        auto errorEnumValue = fg->buildErrorEnumValueBoxPtr(box, expressionType().errorEnum());
+        return fg->buildSimpleErrorWithError(errorEnumValue, fg->typeHelper().llvmTypeFor(expressionType()));
     }, [this, box, fg]() {
         return getSimpleError(getGetValueFromBox(box, fg), fg);
     });
@@ -144,7 +144,7 @@ void ASTToBox::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerato
     setBoxInfo(box, fg);
     if (fg->typeHelper().isRemote(expr_->expressionType())) {
         auto type = fg->typeHelper().llvmTypeFor(expr_->expressionType());
-        auto ptrPtr = fg->getValuePtr(box, type->getPointerTo()->getPointerTo());
+        auto ptrPtr = fg->buildGetBoxValuePtr(box, type->getPointerTo()->getPointerTo());
         auto alloc = allocate(fg, type);
         fg->builder().CreateStore(value, alloc);
         fg->builder().CreateStore(alloc, ptrPtr);
@@ -167,12 +167,12 @@ void ASTToBox::setBoxInfo(Value *box, FunctionCodeGenerator *fg) const {
             type = fg->typeHelper().protocolConformance();
             table = expr_->expressionType().typeDefinition()->protocolTableFor(boxedFor);
         }
-        auto ptr = fg->builder().CreateBitCast(fg->getBoxInfoPtr(box), type->getPointerTo()->getPointerTo());
+        auto ptr = fg->builder().CreateBitCast(fg->buildGetBoxInfoPtr(box), type->getPointerTo()->getPointerTo());
         fg->builder().CreateStore(table, ptr);
         return;
     }
     auto boxInfo = fg->boxInfoFor(expr_->expressionType().unoptionalized());
-    fg->builder().CreateStore(boxInfo, fg->getBoxInfoPtr(box));
+    fg->builder().CreateStore(boxInfo, fg->buildGetBoxInfoPtr(box));
 }
 
 Value* ASTDereference::generate(FunctionCodeGenerator *fg) const {

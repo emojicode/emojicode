@@ -11,15 +11,19 @@ namespace EmojicodeCompiler {
 
 class Declarator;
 
+/// VTCreator is responsible for creating the virtual table for a class.
 class VTCreator {
 public:
+    /// @param klass The class for which the virtual table should be created.
     VTCreator(Class *klass, const Declarator &declarator)
             : declarator_(declarator), klass_(klass), hasSuperClass_(klass->superclass() != nullptr),
               vti_(hasSuperClass_ ? klass->superclass()->virtualFunctionCount() : 1) {}
 
-    void assign();
+    /// Assings VTI’s to the methods of the class and assigns the generated table to Class::virtualTable.
     void build();
+
 private:
+    void assign();
     const Declarator &declarator_;
     Class *klass_;
     bool hasSuperClass_;

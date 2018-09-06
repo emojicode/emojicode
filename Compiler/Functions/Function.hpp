@@ -54,7 +54,8 @@ private:
     unsigned int vti_ = 0;
 };
 
-/** Functions are callables that belong to a class or value type as either method, type method or initializer. */
+/// Function represents any Function (i.e. type method, method, initializer, start flag function, deinitializer)
+/// defined in code or automatically synthesized (e.g. deinitializer) by the compiler.
 class Function : public Generic<Function, FunctionReification> {
 public:
     Function() = delete;
@@ -63,19 +64,43 @@ public:
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
              bool unsafe, FunctionType type);
 
+    /// The name of the function.
     std::u32string name() const { return name_; }
 
     std::u32string protocolBoxingThunk(const std::u32string &protocolName) const {
         return protocolName + name()[0];
     }
 
+    /// True iff the function’s implementation is not provided.
+    /// This can either mean that the function was imported from another package or that it does not have an
+    /// implementation in Emojicode but is defined elsewhere (e.g. C++) and just linked against.
+    /// @see externalName
     bool isExternal() const { return external_; }
+    /// If this method returns a non-empty string it is the named that shall be used for the function when generating
+    /// code.
     const std::string& externalName() const { return externalName_; }
     void makeExternal() { external_ = true; }
+    /// Makes the function external and sets name as its external name.
+    /// Pratically, this means that the function does not have a body and is justed linked against the specified
+    /// name.
     void setExternalName(const std::string &name) {
         external_ = true;
         externalName_ = name;
     }
+
+    /// The package in which the function was defined.
+    /// This is not necessarily the package of owner().
+    Package* package() const { return package_; }
+
+    /// Returns the position at which this function was defined.
+    const SourcePosition& position() const { return position_; }
+
+    /// The type definition in which this function was defined.
+    /// @returns nullptr if the function does not belong to a type (is not a method or initializer).
+    TypeDefinition* owner() const { return owner_; }
+    void setOwner(TypeDefinition *typeDef) { owner_ = typeDef; }
+
+    const std::u32string& documentation() const { return documentation_; }
 
     /** Whether the method was marked as final and can’t be overridden. */
     bool final() const { return final_; }
@@ -105,20 +130,6 @@ public:
     ASTType* returnType() const { return returnType_.get(); }
 
     void setReturnType(std::unique_ptr<ASTType> type) { returnType_ = std::move(type); }
-
-    /// Returns the position at which this function was defined.
-    const SourcePosition& position() const { return position_; }
-
-    /// The type definition in which this function was defined.
-    /// @returns nullptr if the function does not belong to a type (is not a method or initializer).
-    TypeDefinition* owner() const { return owner_; }
-    void setOwner(TypeDefinition *typeDef) { owner_ = typeDef; }
-
-    const std::u32string& documentation() const { return documentation_; }
-
-    /// The package in which the function was defined.
-    /// This does not necessarily match the package of @c owningType.
-    Package* package() const { return package_; }
 
     /// @see setVirtualTableThunk()
     Function* virtualTableThunk() const { return virtualTableThunk_; };

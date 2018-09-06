@@ -252,29 +252,29 @@ void CodeGenerator::buildBoxRetainRelease(const Type &type) {
 
     if (type.isManaged()) {
         if (!releaseFg.isManagedByReference(type)) {
-            auto objPtr = releaseFg.getValuePtr(release->args().begin(), type);
+            auto objPtr = releaseFg.buildGetBoxValuePtr(release->args().begin(), type);
             releaseFg.release(releaseFg.builder().CreateLoad(objPtr), type, false);
 
-            auto objPtrRetain = retainFg.getValuePtr(retain->args().begin(), type);
+            auto objPtrRetain = retainFg.buildGetBoxValuePtr(retain->args().begin(), type);
             retainFg.retain(retainFg.builder().CreateLoad(objPtrRetain), type);
         }
         else if (typeHelper().isRemote(type)) {
-            auto objPtr = releaseFg.getValuePtr(release->args().begin(), type.referenced());
+            auto objPtr = releaseFg.buildGetBoxValuePtr(release->args().begin(), type.referenced());
             auto remotePtr = releaseFg.builder().CreateLoad(objPtr);
             releaseFg.release(remotePtr, type, false);
             releaseFg.release(releaseFg.builder().CreateBitCast(remotePtr, llvm::Type::getInt8PtrTy(context_)),
                               Type(package()->compiler()->sMemory), false);
 
-            auto objPtrRetain = retainFg.getValuePtr(retain->args().begin(), type.referenced());
+            auto objPtrRetain = retainFg.buildGetBoxValuePtr(retain->args().begin(), type.referenced());
             auto remotePtrRetain = retainFg.builder().CreateLoad(objPtrRetain);
             retainFg.retain(remotePtrRetain, type);
             retainFg.retain(remotePtrRetain, Type(package()->compiler()->sMemory));
         }
         else {
-            auto objPtr = releaseFg.getValuePtr(release->args().begin(), type);
+            auto objPtr = releaseFg.buildGetBoxValuePtr(release->args().begin(), type);
             releaseFg.release(objPtr, type, false);
 
-            auto objPtrRetain = retainFg.getValuePtr(retain->args().begin(), type);
+            auto objPtrRetain = retainFg.buildGetBoxValuePtr(retain->args().begin(), type);
             retainFg.retain(objPtrRetain, type);
         }
     }

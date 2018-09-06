@@ -77,7 +77,7 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     auto errorBlock = llvm::BasicBlock::Create(fg->generator()->context(), "error", function);
 
     auto error = value_->generate(fg);
-    auto isError = valueIsBoxed_ ? fg->getHasNoValueBox(error) : fg->getIsError(error);
+    auto isError = valueIsBoxed_ ? fg->buildHasNoValueBox(error) : fg->buildGetIsError(error);
 
     fg->builder().CreateCondBr(isError, errorBlock, noError);
 
@@ -86,7 +86,7 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     if (valueIsBoxed_) {
         auto alloca = fg->createEntryAlloca(fg->typeHelper().box());
         fg->builder().CreateStore(error, alloca);
-        err = fg->getErrorEnumValueBoxPtr(alloca, value_->expressionType().errorEnum());
+        err = fg->buildErrorEnumValueBoxPtr(alloca, value_->expressionType().errorEnum());
     }
     else {
         err = fg->builder().CreateExtractValue(error, 0);

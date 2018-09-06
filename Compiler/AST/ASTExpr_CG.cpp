@@ -63,32 +63,32 @@ Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
     }
 
     fg->createIfElse(is, []() {}, [fg, box]() {
-        fg->getMakeNoValue(box);
+        fg->buildMakeNoValue(box);
     });
     return fg->builder().CreateLoad(box);
 }
 
 Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
     auto value = value_->generate(fg);
-    auto info = fg->getClassInfoFromObject(value);
+    auto info = fg->buildGetClassInfoFromObject(value);
     auto toType = typeExpr_->expressionType();
     auto inheritsFrom = fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
                                                  { info, typeExpr_->generate(fg) });
     return fg->createIfElsePhi(inheritsFrom, [toType, fg, value]() {
         auto casted = fg->builder().CreateBitCast(value, fg->typeHelper().llvmTypeFor(toType));
-        return fg->getSimpleOptionalWithValue(casted, toType.optionalized());
+        return fg->buildSimpleOptionalWithValue(casted, toType.optionalized());
     }, [fg, toType]() {
-        return fg->getSimpleOptionalWithoutValue(toType.optionalized());
+        return fg->buildSimpleOptionalWithoutValue(toType.optionalized());
     });
 }
 
 Value* ASTCast::boxInfo(FunctionCodeGenerator *fg, Value *box) const {
     if (value_->expressionType().boxedFor().type() == TypeType::Protocol) {
-        auto protocolConPtr = fg->builder().CreateBitCast(fg->builder().CreateLoad(fg->getBoxInfoPtr(box)),
+        auto protocolConPtr = fg->builder().CreateBitCast(fg->builder().CreateLoad(fg->buildGetBoxInfoPtr(box)),
                                                           fg->typeHelper().protocolConformance()->getPointerTo());
         return fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(fg->typeHelper().protocolConformance(), protocolConPtr, 0, 2));
     }
-    return fg->builder().CreateLoad(fg->getBoxInfoPtr(box));
+    return fg->builder().CreateLoad(fg->buildGetBoxInfoPtr(box));
 }
 
 Value* ASTCast::castToValueType(FunctionCodeGenerator *fg, Value *box) const {
@@ -100,9 +100,9 @@ Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box) const {
     auto isExpBoxInfo = fg->builder().CreateICmpEQ(boxInfo(fg, box), fg->boxInfoFor(toType));
 
     return fg->createIfElsePhi(isExpBoxInfo, [&] {
-        auto obj = fg->builder().CreateLoad(fg->getValuePtr(box, typeExpr_->expressionType()));
+        auto obj = fg->builder().CreateLoad(fg->buildGetBoxValuePtr(box, typeExpr_->expressionType()));
         return fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
-                                        { fg->getClassInfoFromObject(obj), typeExpr_->generate(fg) });
+                                        { fg->buildGetClassInfoFromObject(obj), typeExpr_->generate(fg) });
     }, [fg] {
         return llvm::ConstantInt::getFalse(fg->generator()->context());
     });
@@ -113,8 +113,8 @@ Value* ASTCast::castToProtocol(FunctionCodeGenerator *fg, Value *box) const {
                                                   fg->typeHelper().boxInfo()->getPointerTo());
     auto boxInfoValue = boxInfo(fg, box);
     auto conformanceEntries = fg->createIfElsePhi(fg->builder().CreateICmpEQ(boxInfoValue, objBoxInfo), [&]() {
-        auto obj = fg->builder().CreateLoad(fg->getValuePtr(box, fg->typeHelper().someobject()->getPointerTo()));
-        auto classInfo = fg->getClassInfoFromObject(obj);
+        auto obj = fg->builder().CreateLoad(fg->buildGetBoxValuePtr(box, fg->typeHelper().someobject()->getPointerTo()));
+        auto classInfo = fg->buildGetClassInfoFromObject(obj);
         return fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(fg->typeHelper().classInfo(),
                                                                                  classInfo, 0, 2));
     }, [&] {
@@ -128,10 +128,10 @@ Value* ASTCast::castToProtocol(FunctionCodeGenerator *fg, Value *box) const {
     auto confNullptr = llvm::ConstantPointerNull::get(confPtrTy);
 
     fg->createIfElse(fg->builder().CreateICmpNE(conformance, confNullptr), [&] {
-        auto infoPtr = fg->getBoxInfoPtr(box);
+        auto infoPtr = fg->buildGetBoxInfoPtr(box);
         fg->builder().CreateStore(conformance, fg->builder().CreateBitCast(infoPtr, confPtrTy->getPointerTo()));
     }, [&] {
-        fg->getMakeNoValue(box);
+        fg->buildMakeNoValue(box);
     });
     return fg->builder().CreateLoad(box);
 }
@@ -155,9 +155,9 @@ Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {
     auto ret = CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, function_);
 
     if (manageErrorProneness_) {
-        fg->createIfElseBranchCond(fg->getIsError(ret), [fg, ret]() {
+        fg->createIfElseBranchCond(fg->buildGetIsError(ret), [fg, ret]() {
             auto enumValue = fg->builder().CreateExtractValue(ret, 0);
-            fg->builder().CreateRet(fg->getSimpleErrorWithError(enumValue, fg->llvmReturnType()));
+            fg->builder().CreateRet(fg->buildSimpleErrorWithError(enumValue, fg->llvmReturnType()));
             return false;
         }, []() { return true; });
     }

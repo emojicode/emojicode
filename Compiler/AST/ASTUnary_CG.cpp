@@ -14,9 +14,9 @@ namespace EmojicodeCompiler {
 
 Value* ASTIsError::generate(FunctionCodeGenerator *fg) const {
     if (value_->expressionType().storageType() == StorageType::Box) {
-        return fg->getHasNoValueBox(value_->generate(fg));
+        return fg->buildHasNoValueBox(value_->generate(fg));
     }
-    return fg->getIsError(value_->generate(fg));
+    return fg->buildGetIsError(value_->generate(fg));
 }
 
 Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
@@ -26,7 +26,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
 
     auto optional = value_->generate(fg);
     auto isBox = value_->expressionType().storageType() == StorageType::Box;
-    auto hasNoValue = isBox ? fg->getHasNoValueBox(optional) : fg->getHasNoValue(optional);
+    auto hasNoValue = isBox ? fg->buildHasNoValueBox(optional) : fg->buildHasNoValue(optional);
 
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
         std::stringstream str;
@@ -46,7 +46,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
 Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
     auto error = value_->generate(fg);
     auto isBox = value_->expressionType().storageType() == StorageType::Box;
-    auto hasNoValue = isBox ? fg->getHasNoValueBox(error) : fg->getIsError(error);
+    auto hasNoValue = isBox ? fg->buildHasNoValueBox(error) : fg->buildGetIsError(error);
 
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
         std::stringstream str;

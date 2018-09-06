@@ -72,30 +72,30 @@ llvm::Value* FunctionCodeGenerator::sizeOf(llvm::Type *type) {
     return sizeOfReferencedType(type->getPointerTo());
 }
 
-Value* FunctionCodeGenerator::getBoxInfoPtr(Value *box) {
+Value* FunctionCodeGenerator::buildGetBoxInfoPtr(Value *box) {
     return builder().CreateConstInBoundsGEP2_32(typeHelper().box(), box, 0, 0);
 }
 
-llvm::Value* FunctionCodeGenerator::getClassInfoPtrFromObject(Value *object) {
+llvm::Value* FunctionCodeGenerator::buildGetClassInfoPtrFromObject(Value *object) {
     return builder().CreateConstInBoundsGEP2_32(llvm::cast<llvm::PointerType>(object->getType())->getElementType(),
                                                 object, 0, 1); // classInfo*
 }
 
-llvm::Value* FunctionCodeGenerator::getClassInfoFromObject(llvm::Value *object) {
-    return builder().CreateLoad(getClassInfoPtrFromObject(object), "info");
+llvm::Value* FunctionCodeGenerator::buildGetClassInfoFromObject(llvm::Value *object) {
+    return builder().CreateLoad(buildGetClassInfoPtrFromObject(object), "info");
 }
 
-llvm::Value* FunctionCodeGenerator::getHasNoValueBoxPtr(llvm::Value *box) {
+llvm::Value* FunctionCodeGenerator::buildHasNoValueBoxPtr(llvm::Value *box) {
     auto null = llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo());
-    return builder().CreateICmpEQ(builder().CreateLoad(getBoxInfoPtr(box)), null);
+    return builder().CreateICmpEQ(builder().CreateLoad(buildGetBoxInfoPtr(box)), null);
 }
 
-llvm::Value* FunctionCodeGenerator::getHasNoValueBox(llvm::Value *box) {
+llvm::Value* FunctionCodeGenerator::buildHasNoValueBox(llvm::Value *box) {
     auto vf = builder().CreateExtractValue(box, 0);
     return builder().CreateICmpEQ(vf, llvm::Constant::getNullValue(vf->getType()));
 }
 
-Value* FunctionCodeGenerator::getHasNoValue(llvm::Value *simpleOptional) {
+Value* FunctionCodeGenerator::buildHasNoValue(llvm::Value *simpleOptional) {
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
     return builder().CreateICmpEQ(vf, generator()->optionalNoValue());
 }
@@ -116,30 +116,30 @@ Value* FunctionCodeGenerator::buildGetOptionalValuePtr(llvm::Value *simpleOption
     return builder().CreateConstInBoundsGEP2_32(type, simpleOptional, 0, 1);
 }
 
-Value* FunctionCodeGenerator::getSimpleOptionalWithoutValue(const Type &type) {
+Value* FunctionCodeGenerator::buildSimpleOptionalWithoutValue(const Type &type) {
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
     return builder().CreateInsertValue(undef, generator()->optionalNoValue(), 0);
 }
 
-Value* FunctionCodeGenerator::getBoxOptionalWithoutValue() {
+Value* FunctionCodeGenerator::buildBoxOptionalWithoutValue() {
     auto undef = llvm::UndefValue::get(typeHelper().box());
     return builder().CreateInsertValue(undef, llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo()), 0);
 }
 
-Value* FunctionCodeGenerator::getSimpleOptionalWithValue(llvm::Value *value, const Type &type) {
+Value* FunctionCodeGenerator::buildSimpleOptionalWithValue(llvm::Value *value, const Type &type) {
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
     auto simpleOptional = builder().CreateInsertValue(undef, value, 1);
     return builder().CreateInsertValue(simpleOptional, generator()->optionalValue(), 0);
 }
 
-Value* FunctionCodeGenerator::getValuePtr(Value *box, const Type &type) {
+Value* FunctionCodeGenerator::buildGetBoxValuePtr(Value *box, const Type &type) {
     auto llvmType = typeHelper().llvmTypeFor(type)->getPointerTo();
-    return getValuePtr(box, llvmType);
+    return buildGetBoxValuePtr(box, llvmType);
 }
 
-Value* FunctionCodeGenerator::getValuePtr(Value *box, llvm::Type *llvmType) {
+Value* FunctionCodeGenerator::buildGetBoxValuePtr(Value *box, llvm::Type *llvmType) {
     std::vector<Value *> idx2{
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 0),
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1),
@@ -147,23 +147,23 @@ Value* FunctionCodeGenerator::getValuePtr(Value *box, llvm::Type *llvmType) {
     return builder().CreateBitCast(builder().CreateGEP(box, idx2), llvmType);
 }
 
-Value* FunctionCodeGenerator::getMakeNoValue(Value *box) {
+Value* FunctionCodeGenerator::buildMakeNoValue(Value *box) {
     auto boxInfoNull = llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo());
-    return builder().CreateStore(boxInfoNull, getBoxInfoPtr(box));
+    return builder().CreateStore(boxInfoNull, buildGetBoxInfoPtr(box));
 }
 
-llvm::Value* FunctionCodeGenerator::getIsError(llvm::Value *simpleError) {
+llvm::Value* FunctionCodeGenerator::buildGetIsError(llvm::Value *simpleError) {
     auto vf = builder().CreateExtractValue(simpleError, 0);
-    return builder().CreateICmpNE(vf, getErrorNoError());
+    return builder().CreateICmpNE(vf, buildGetErrorNoError());
 }
 
-llvm::Value* FunctionCodeGenerator::getSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type) {
+llvm::Value* FunctionCodeGenerator::buildSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type) {
     auto undef = llvm::UndefValue::get(type);
     return builder().CreateInsertValue(undef, errorEnumValue, 0);
 }
 
-llvm::Value* FunctionCodeGenerator::getErrorEnumValueBoxPtr(llvm::Value *box, const Type &type) {
-    return builder().CreateLoad(getValuePtr(box, type));
+llvm::Value* FunctionCodeGenerator::buildErrorEnumValueBoxPtr(llvm::Value *box, const Type &type) {
+    return builder().CreateLoad(buildGetBoxValuePtr(box, type));
 }
 
 void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std::function<bool()> &then,
@@ -273,7 +273,7 @@ llvm::Value* FunctionCodeGenerator::int64(int64_t value) {
 }
 
 llvm::Value* FunctionCodeGenerator::alloc(llvm::PointerType *type) {
-    auto alloc = builder().CreateCall(generator()->declarator().runTimeNew(), sizeOfReferencedType(type), "alloc");
+    auto alloc = builder().CreateCall(generator()->declarator().alloc(), sizeOfReferencedType(type), "alloc");
     return builder().CreateBitCast(alloc, type);
 }
 
@@ -320,7 +320,7 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type, bool l
         }
     }
     else if (type.type() == TypeType::Box) {
-        auto boxInfo = builder().CreateLoad(getBoxInfoPtr(value));
+        auto boxInfo = builder().CreateLoad(buildGetBoxInfoPtr(value));
         if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something
              || type.unboxed().type() == TypeType::Error) {
             auto null = llvm::ConstantPointerNull::get(typeHelper().boxInfo()->getPointerTo());
@@ -356,7 +356,7 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
         }
     }
     else if (type.type() == TypeType::Box) {
-        auto boxInfo = builder().CreateLoad(getBoxInfoPtr(value));
+        auto boxInfo = builder().CreateLoad(buildGetBoxInfoPtr(value));
         if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something
              || type.unboxed().type() == TypeType::Error) {
             auto null = llvm::ConstantPointerNull::get(typeHelper().boxInfo()->getPointerTo());

@@ -61,35 +61,44 @@ public:
     ///          Behaves like `sizeOf(ptrType->getElementType())`, although this method does not call sizeOf().
     /// @see sizeOf
     llvm::Value* sizeOfReferencedType(llvm::PointerType *ptrType);
-    /// Gets a pointer to the box info field of box.
-    /// @param box A pointer to a box.
-    llvm::Value* getBoxInfoPtr(llvm::Value *box);
-    llvm::Value* getValuePtr(llvm::Value *box, const Type &type);
-    llvm::Value* getValuePtr(llvm::Value *box, llvm::Type *llvmType);
-    llvm::Value* getMakeNoValue(llvm::Value *box);
+
+    /// Gets a pointer to the box info field of a box.
+    /// @param box Pointer to a box.
+    llvm::Value* buildGetBoxInfoPtr(llvm::Value *box);
+    /// @see buildGetBoxValuePtr
+    /// @param type The type is converted to a type with LLVMTypeHelper. The value pointer is then casted to
+    ///             a pointer of this type.
+    llvm::Value* buildGetBoxValuePtr(llvm::Value *box, const Type &type);
+    /// Gets a pointer to the value field of a box as `llvmType`.
+    /// @param box Pointer to a box.
+    /// @param llvmType The type to which the pointer to the field is cast. Must be a pointer type.
+    llvm::Value* buildGetBoxValuePtr(llvm::Value *box, llvm::Type *llvmType);
+    /// Makes the box contain no value.
+    /// @param box Pointer to a box.
+    llvm::Value* buildMakeNoValue(llvm::Value *box);
 
     llvm::Value* buildOptionalHasValue(llvm::Value *simpleOptional);
     llvm::Value* buildOptionalHasValuePtr(llvm::Value *simpleOptional);
     llvm::Value* buildGetOptionalValuePtr(llvm::Value *simpleOptional);
-    llvm::Value* getHasNoValue(llvm::Value *simpleOptional);
-    llvm::Value* getHasNoValueBox(llvm::Value *box);
-    llvm::Value* getHasNoValueBoxPtr(llvm::Value *box);
-    llvm::Value* getSimpleOptionalWithoutValue(const Type &type);
-    llvm::Value* getBoxOptionalWithoutValue();
-    llvm::Value* getSimpleOptionalWithValue(llvm::Value *value, const Type &type);
+    llvm::Value* buildHasNoValue(llvm::Value *simpleOptional);
+    llvm::Value* buildHasNoValueBox(llvm::Value *box);
+    llvm::Value* buildHasNoValueBoxPtr(llvm::Value *box);
+    llvm::Value* buildSimpleOptionalWithoutValue(const Type &type);
+    llvm::Value* buildBoxOptionalWithoutValue();
+    llvm::Value* buildSimpleOptionalWithValue(llvm::Value *value, const Type &type);
 
     /// Gets a pointer to the pointer to the class info of an object.
     /// @see getClassInfoFromObject
-    llvm::Value* getClassInfoPtrFromObject(llvm::Value *object);
+    llvm::Value* buildGetClassInfoPtrFromObject(llvm::Value *object);
     /// Gets a pointer to the class info of an object.
     /// @param object Pointer to the object from which the class info shall be obtained.
     /// @returns A llvm::Value* representing a pointer to a class info.
-    llvm::Value* getClassInfoFromObject(llvm::Value *object);
+    llvm::Value* buildGetClassInfoFromObject(llvm::Value *object);
 
-    llvm::Value* getErrorNoError() { return int64(-1); }
-    llvm::Value* getIsError(llvm::Value *simpleError);
-    llvm::Value* getSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type);
-    llvm::Value* getErrorEnumValueBoxPtr(llvm::Value *box, const Type &type);
+    llvm::Value* buildGetErrorNoError() { return int64(-1); }
+    llvm::Value* buildGetIsError(llvm::Value *simpleError);
+    llvm::Value* buildSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type);
+    llvm::Value* buildErrorEnumValueBoxPtr(llvm::Value *box, const Type &type);
 
     llvm::Value* int8(int8_t value);
     llvm::Value* int16(int16_t value);
@@ -122,9 +131,16 @@ public:
     std::pair<llvm::Value*, llvm::Value*> createIfElsePhi(llvm::Value* cond, const PairIfElseCallback &then,
                                                           const PairIfElseCallback &otherwise);
 
+    /// Registers a temporary value that must be released at the end of the statement.
+    /// @param value The value that must be destroyed.
+    /// @param type The type of the value.
+    /// @param local Whether the value is a stack allocated object.
     void addTemporaryObject(llvm::Value *value, const Type &type, bool local) {
         temporaryObjects_.emplace(value, type, local);
     }
+    /// Releases all temporary values that were previously registered with addTemporaryObject() in the order
+    /// they were added.
+    /// @see addTemporaryObject
     void releaseTemporaryObjects();
 
 protected:

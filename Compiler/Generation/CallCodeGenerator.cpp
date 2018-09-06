@@ -43,7 +43,7 @@ llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, 
         case CallType::DynamicProtocolDispatch: {
             assert(type.type() == TypeType::Box && type.boxedFor().type() == TypeType::Protocol);
             auto conformanceType = fg()->typeHelper().protocolConformance();
-            auto conformancePtr = fg()->builder().CreateBitCast(fg()->getBoxInfoPtr(args.front()),
+            auto conformancePtr = fg()->builder().CreateBitCast(fg()->buildGetBoxInfoPtr(args.front()),
                                                                 conformanceType->getPointerTo()->getPointerTo());
             return createDynamicProtocolDispatch(function, args, astArgs.genericArgumentTypes(), conformancePtr);
         }
@@ -72,7 +72,7 @@ llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const
     auto argsv = createArgsVector(callee, args);
 
     auto mpt = fg()->typeHelper().multiprotocolConformance(calleeType);
-    auto mp = fg()->builder().CreateBitCast(fg()->getBoxInfoPtr(argsv.front()),
+    auto mp = fg()->builder().CreateBitCast(fg()->buildGetBoxInfoPtr(argsv.front()),
                                             mpt->getPointerTo()->getPointerTo());
     auto mpl = fg()->builder().CreateLoad(mp);
     
@@ -105,7 +105,7 @@ llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
 
 llvm::Value *CallCodeGenerator::createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args,
                                                       const std::vector<Type> &genericArgs) {
-    auto info = callType_ == CallType::DynamicDispatchOnType ? args.front() : fg()->getClassInfoFromObject(args.front());
+    auto info = callType_ == CallType::DynamicDispatchOnType ? args.front() : fg()->buildGetClassInfoFromObject(args.front());
 
     std::vector<Value *> idx2{fg()->int32(0), fg()->int32(1)};  // classInfo.table
     auto table = fg()->builder().CreateLoad(fg()->builder().CreateGEP(info, idx2), "table");
@@ -129,10 +129,10 @@ llvm::Value *CallCodeGenerator::getProtocolCallee(std::vector<Value *> &args, ll
                                                             conformance, 0, 0);
     return fg()->createIfElsePhi(fg()->builder().CreateLoad(shouldLoadPtr, "shouldLoad"), [this, &args]() {
         auto type = llvm::Type::getInt8PtrTy(fg()->generator()->context())->getPointerTo();
-        auto value = fg()->getValuePtr(args.front(), type);
+        auto value = fg()->buildGetBoxValuePtr(args.front(), type);
         return fg()->builder().CreateLoad(value);
     }, [this, &args]() {
-        return fg()->getValuePtr(args.front(), llvm::Type::getInt8PtrTy(fg()->generator()->context()));
+        return fg()->buildGetBoxValuePtr(args.front(), llvm::Type::getInt8PtrTy(fg()->generator()->context()));
     });
 }
 

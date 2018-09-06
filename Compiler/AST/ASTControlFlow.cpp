@@ -120,7 +120,7 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
     auto getNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
                                                std::make_shared<ASTGetVariable>(U"iterator", position()),
                                                ASTArguments(position()), position());
-    block_.preprendNode(std::make_unique<ASTConstantVariable>(varName_, getNext, position()));
+    block_.prependNode(std::make_unique<ASTConstantVariable>(varName_, getNext, position()));
 
     auto hasNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
                                                std::make_shared<ASTGetVariable>(U"iterator", position()),

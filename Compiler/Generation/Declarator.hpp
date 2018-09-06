@@ -15,23 +15,27 @@ namespace EmojicodeCompiler {
 
 class CodeGenerator;
 
-/// The declarator is responsible for declaring functions etc. in a given LLVM module.
+/// The declarator is responsible for declaring functions etc. in an LLVM module.
 class Declarator {
 public:
     Declarator(CodeGenerator *generator);
 
-    /// The allocator function that is called to allocate all heap memory.
-    llvm::Function* runTimeNew() const { return runTimeNew_; }
-    /// The panic method, which is called if the program panics due to e.g. unwrapping an empty optional.
+    /// The allocator function that is called to allocate all heap memory. (ejcAlloc)
+    llvm::Function* alloc() const { return alloc_; }
+    /// The panic method, which is called if the program panics due to e.g. unwrapping an empty optional. (ejcPanic)
     llvm::Function* panic() const { return panic_; }
-
-    /// The function that is called to determine if one class inherits from another.
+    /// The function that is called to determine if one class inherits from another. (ejcInheritsFrom)
     llvm::Function* inheritsFrom() const { return inheritsFrom_; }
-
+    /// The function called to retain any value allocated with ::alloc. (ejcRetain)
     llvm::Function* retain() const { return retain_; }
+    /// The function that must be used to release objects allocated with ::alloc.
+    /// @note Use releaseMemory() to release memory areas that do not represent class instances!
     llvm::Function* release() const { return release_; }
+    /// The function that is to be used to release memory area allocated with ::alloc that do not represent objects.
+    /// (ejcReleaseMemory)
+    /// @see release
     llvm::Function* releaseMemory() const { return releaseMemory_; }
-
+    /// Used to find a protocol conformance in an array of ProtocolConformanceEntries. (ejcFindProtocolConformance)
     llvm::Function* findProtocolConformance() const { return findProtocolConformance_; }
 
     /// Declares all symbols that are provided by an imported package.
@@ -50,7 +54,7 @@ private:
 
     CodeGenerator *generator_;
 
-    llvm::Function *runTimeNew_ = nullptr;
+    llvm::Function *alloc_ = nullptr;
     llvm::Function *panic_ = nullptr;
 
     llvm::Function *inheritsFrom_ = nullptr;

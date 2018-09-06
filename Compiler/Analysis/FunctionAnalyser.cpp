@@ -121,7 +121,7 @@ void FunctionAnalyser::analyse() {
             auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
             auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
                                                                               getVar, initializer->position());
-            function()->ast()->preprendNode(std::move(assign));
+            function()->ast()->prependNode(std::move(assign));
         }
     }
 

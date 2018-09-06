@@ -35,15 +35,15 @@ void ASTReturn::generate(FunctionCodeGenerator *fg) const {
 void ASTRaise::generate(FunctionCodeGenerator *fg) const {
     if (boxed_) {
         auto box = fg->createEntryAlloca(fg->typeHelper().box());
-        fg->getMakeNoValue(box);
-        auto ptr = fg->getValuePtr(box, value_->expressionType());
+        fg->buildMakeNoValue(box);
+        auto ptr = fg->buildGetBoxValuePtr(box, value_->expressionType());
         fg->builder().CreateStore(value_->generate(fg), ptr);
         auto val = fg->builder().CreateLoad(box);
         fg->releaseTemporaryObjects();
         fg->builder().CreateRet(val);
     }
     else {
-        auto val = fg->getSimpleErrorWithError(value_->generate(fg), fg->llvmReturnType());
+        auto val = fg->buildSimpleErrorWithError(value_->generate(fg), fg->llvmReturnType());
         fg->releaseTemporaryObjects();
         fg->builder().CreateRet(val);
     }

@@ -68,14 +68,14 @@ Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArgumen
         fg->builder().CreateStore(llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(fg->generator()->context())),
                                   controlBlockField);
     }
-    fg->builder().CreateStore(type.klass()->classInfo(), fg->getClassInfoPtrFromObject(obj));
+    fg->builder().CreateStore(type.klass()->classInfo(), fg->buildGetClassInfoPtrFromObject(obj));
     return CallCodeGenerator(fg, CallType::StaticDispatch).generate(obj, type, args, function);
 }
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {
     auto size = fg->builder().CreateAdd(args_.parameters()[0]->generate(fg),
                                         fg->sizeOf(llvm::Type::getInt8PtrTy(fg->generator()->context())));
-    return fg->builder().CreateCall(fg->generator()->declarator().runTimeNew(), size, "alloc");
+    return fg->builder().CreateCall(fg->generator()->declarator().alloc(), size, "alloc");
 }
 
 }  // namespace EmojicodeCompiler
