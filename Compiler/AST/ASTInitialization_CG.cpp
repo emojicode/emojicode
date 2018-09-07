@@ -34,12 +34,14 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     llvm::Value *obj;
-    if (typeExpr_->expressionType().klass()->foreign()) {
-        obj = CallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
-                                .generate(nullptr, typeExpr_->expressionType(), args_, initializer_);
-    }
-    else if (typeExpr_->expressionType().isExact()) {
-        obj = initObject(fg, args_, initializer_, typeExpr_->expressionType(), initType_ == InitType::ClassStack);
+    if (typeExpr_->expressionType().isExact()) {
+        if (typeExpr_->expressionType().klass()->foreign()) {
+            obj = CallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
+                .generate(nullptr, typeExpr_->expressionType(), args_, initializer_);
+        }
+        else {
+            obj = initObject(fg, args_, initializer_, typeExpr_->expressionType(), initType_ == InitType::ClassStack);
+        }
     }
     else {
         obj = CallCodeGenerator(fg, CallType::DynamicDispatchOnType)
