@@ -49,6 +49,18 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 }
                 return nullptr;
             }
+            case BuiltInType::MemoryMove: {
+                fg->builder().CreateMemMove(buildAddOffsetAddress(fg, v, args_.parameters()[0]->generate(fg)),
+                                            buildAddOffsetAddress(fg, args_.parameters()[1]->generate(fg),
+                                                                  args_.parameters()[2]->generate(fg)),
+                                            args_.parameters()[3]->generate(fg), 0);
+                return nullptr;
+            }
+            case BuiltInType::MemorySet: {
+                fg->builder().CreateMemSet(buildAddOffsetAddress(fg, v, args_.parameters()[1]->generate(fg)),
+                                           args_.parameters()[0]->generate(fg), args_.parameters()[2]->generate(fg), 0);
+                return nullptr;
+            }
             case BuiltInType::Multiprotocol:
                 return MultiprotocolCallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_, args_,
                                                                               method_, multiprotocolN_);
@@ -61,11 +73,15 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                                                                       args_, method_));
 }
 
+Value* ASTMethod::buildAddOffsetAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset) const {
+    auto addOffset = fg->builder().CreateAdd(offset, fg->sizeOf(llvm::Type::getInt8PtrTy(fg->generator()->context())));
+    return fg->builder().CreateGEP(memory, addOffset);
+}
+
 Value* ASTMethod::buildMemoryAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset,
                                      const Type &type) const {
     auto ptrType = fg->typeHelper().llvmTypeFor(type)->getPointerTo();
-    auto adOffset = fg->builder().CreateAdd(offset, fg->sizeOf(llvm::Type::getInt8PtrTy(fg->generator()->context())));
-    return fg->builder().CreateBitCast(fg->builder().CreateGEP(memory, adOffset), ptrType);
+    return fg->builder().CreateBitCast(buildAddOffsetAddress(fg, memory, offset), ptrType);
 }
 
 }  // namespace EmojicodeCompiler

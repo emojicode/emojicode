@@ -37,7 +37,7 @@ protected:
         IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
         IntegerRemainder, IntegerToDouble, IntegerNot,
         BooleanAnd, BooleanOr, BooleanNegate,
-        Equal, Store, Load, Release, IsNoValueLeft, IsNoValueRight, Multiprotocol,
+        Equal, Store, Load, Release, MemoryMove, MemorySet, IsNoValueLeft, IsNoValueRight, Multiprotocol,
     };
 
     BuiltInType builtIn_ = BuiltInType::None;
@@ -74,6 +74,7 @@ private:
 
     llvm::Value* buildMemoryAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset,
                                     const Type &type) const;
+    llvm::Value* buildAddOffsetAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset) const;
 };
 
 }  // namespace EmojicodeCompiler

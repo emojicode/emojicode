@@ -170,6 +170,14 @@ bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const 
             builtIn_ = BuiltInType::Release;
             return true;
         }
+        if (name.front() == 0x1F69C) {
+            builtIn_ = BuiltInType::MemoryMove;
+            return true;
+        }
+        if (name.front() == 0x270D) {
+            builtIn_ = BuiltInType::MemorySet;
+            return true;
+        }
     }
     return false;
 }

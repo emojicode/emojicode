@@ -81,7 +81,7 @@
     >!N Do not copy managed values using this method! Copy each value
     >!N individually with 🐽 and 🐷!
   📗
-  ☣️️ ❗️ 🚜 destinationOffset 🔢 source 🧠 sourceOffset 🔢 bytes 🔢 📻 🔤ejcMemoryMove🔤
+  ☣️️ ❗️ 🚜 destinationOffset 🔢 source 🧠 sourceOffset 🔢 bytes 🔢 📻 🔤ejcBuiltIn🔤
 
   📗
     Sets the first *bytes* bytes starting from *offset* bytes past the address
@@ -90,7 +90,7 @@
     >!H If the memory area represented is smaller than `bytes ➕ offset` bytes,
     >!H undefined behavior is caused!
   📗
-  ☣️️ ❗️ ✍️ byteValue 💧 offset 🔢 bytes 🔢 📻 🔤ejcMemorySet🔤
+  ☣️️ ❗️ ✍️ byteValue 💧 offset 🔢 bytes 🔢 📻 🔤ejcBuiltIn🔤
 
   📗
     Compares the first *bytes* of two memory areas.

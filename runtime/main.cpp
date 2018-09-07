@@ -87,16 +87,6 @@ extern "C" void ejcMemoryRealloc(int8_t **pointerPtr, runtime::Integer newSize) 
     *pointerPtr = static_cast<int8_t*>(realloc(*pointerPtr, newSize + sizeof(runtime::internal::ControlBlock*)));
 }
 
-extern "C" void ejcMemoryMove(int8_t **self, runtime::Integer destOffset, int8_t *src, runtime::Integer srcOffset,
-                              runtime::Integer bytes) {
-    memmove(*self + destOffset + sizeof(runtime::internal::ControlBlock*),
-            src + srcOffset + sizeof(runtime::internal::ControlBlock*), bytes);
-}
-
-extern "C" void ejcMemorySet(int8_t **self, runtime::Byte value, runtime::Integer offset, runtime::Integer bytes) {
-    memset(*self + offset + sizeof(runtime::internal::ControlBlock*), value, bytes);
-}
-
 extern "C" runtime::Integer ejcMemoryCompare(int8_t **self, int8_t *other, runtime::Integer bytes) {
     return std::memcmp(*self + sizeof(runtime::internal::ControlBlock*),
                        other + sizeof(runtime::internal::ControlBlock*), bytes);
