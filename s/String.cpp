@@ -19,13 +19,11 @@
 
 using s::String;
 
-const char* String::cString() {
+std::string String::stdString() {
     size_t ds = u8_codingsize(characters.get(), count);
-    auto utf8str = runtime::allocate<char>(ds + 1);
-    // Convert
-    size_t written = u8_toutf8(utf8str.get(), ds, characters.get(), count);
-    utf8str[written] = 0;
-    return utf8str.get();  // TODO: Memory leak
+    std::string utf8str(ds, 0);
+    u8_toutf8(&utf8str[0], ds, characters.get(), count);
+    return utf8str;
 }
 
 String::String(const char *cstring) {
@@ -38,11 +36,11 @@ String::String(const char *cstring) {
 }
 
 extern "C" void sStringPrint(String *string) {
-    std::cout << string->cString() << std::endl;
+    std::cout << string->stdString().c_str() << std::endl;
 }
 
 extern "C" void sStringPrintNoLn(String *print) {
-    std::cout << print->cString();
+    std::cout << print->stdString().c_str();
 }
 
 extern "C" String* sStringReadLine(String *string) {

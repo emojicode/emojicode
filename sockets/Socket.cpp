@@ -61,7 +61,7 @@ runtime::SimpleOptional<runtime::Enum> returnOptional(bool success) {
 }
 
 extern "C" runtime::SimpleError<Socket*> socketsSocketNewHost(String *host, runtime::Integer port) {
-    struct hostent *server = gethostbyname(host->cString());
+    struct hostent *server = gethostbyname(host->stdString().c_str());
     if (server == nullptr) {
         return runtime::SimpleError<Socket*>(runtime::MakeError, errorEnumFromErrno());
     }

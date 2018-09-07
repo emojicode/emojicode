@@ -48,19 +48,19 @@ runtime::SimpleOptional<runtime::Enum> returnOptional(bool success) {
 }
 
 extern "C" runtime::SimpleOptional<runtime::Enum> filesFsMakeDir(String *path) {
-    return returnOptional(mkdir(path->cString(), 0755) == 0);
+    return returnOptional(mkdir(path->stdString().c_str(), 0755) == 0);
 }
 
 extern "C" runtime::SimpleOptional<runtime::Enum> filesFsDelete(String *path) {
-    return returnOptional(remove(path->cString()) == 0);
+    return returnOptional(remove(path->stdString().c_str()) == 0);
 }
 
 extern "C" runtime::SimpleOptional<runtime::Enum> filesFsDeleteDir(String *path) {
-    return returnOptional(rmdir(path->cString()) == 0);
+    return returnOptional(rmdir(path->stdString().c_str()) == 0);
 }
 
 extern "C" runtime::SimpleOptional<runtime::Enum> filesFsSymlink(String *org, String *destination) {
-    return returnOptional(symlink(org->cString(), destination->cString()) == 0);
+    return returnOptional(symlink(org->stdString().c_str(), destination->stdString().c_str()) == 0);
 }
 
 int filesRecursiveRmdirHelper(const char *fpath, const struct stat * /*sb*/, int typeflag, struct FTW * /*ftwbuf*/){
@@ -78,28 +78,28 @@ int filesRecursiveRmdirHelper(const char *fpath, const struct stat * /*sb*/, int
 }
 
 extern "C" runtime::SimpleOptional<runtime::Enum> filesFsRecursiveDeleteDir(String *path) {
-    return returnOptional(nftw(path->cString(), filesRecursiveRmdirHelper, 64, FTW_DEPTH | FTW_PHYS) == 0);
+    return returnOptional(nftw(path->stdString().c_str(), filesRecursiveRmdirHelper, 64, FTW_DEPTH | FTW_PHYS) == 0);
 }
 
 extern "C" runtime::Boolean filesFsExists(String *path) {
-    return access(path->cString(), F_OK) == 0;
+    return access(path->stdString().c_str(), F_OK) == 0;
 }
 
 extern "C" runtime::Boolean filesFsReadable(String *path) {
-    return access(path->cString(), R_OK) == 0;
+    return access(path->stdString().c_str(), R_OK) == 0;
 }
 
 extern "C" runtime::Boolean filesFsExecutable(String *path) {
-    return access(path->cString(), X_OK) == 0;
+    return access(path->stdString().c_str(), X_OK) == 0;
 }
 
 extern "C" runtime::Boolean filesFsWriteable(String *path) {
-    return access(path->cString(), W_OK) == 0;
+    return access(path->stdString().c_str(), W_OK) == 0;
 }
 
 extern "C" runtime::SimpleError<runtime::Integer> filesFsSize(String *path) {
     struct stat st{};
-    int state = stat(path->cString(), &st);
+    int state = stat(path->stdString().c_str(), &st);
     if (state != 0) {
         return runtime::SimpleError<runtime::Integer>(runtime::MakeError, errorEnumFromErrno());
     }
@@ -108,7 +108,7 @@ extern "C" runtime::SimpleError<runtime::Integer> filesFsSize(String *path) {
 
 extern "C" runtime::SimpleError<String*> filesFsAbsolute(String *inPath) {
     char path[PATH_MAX];
-    char *x = realpath(inPath->cString(), path);
+    char *x = realpath(inPath->stdString().c_str(), path);
     if (x == nullptr) {
         return runtime::SimpleError<String*>(runtime::MakeError, errorEnumFromErrno());
     }

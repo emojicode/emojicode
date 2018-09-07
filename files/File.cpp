@@ -32,13 +32,13 @@ public:
 
 extern "C" runtime::SimpleError<File*> filesFileNewWriting(String *path) {
     auto file = File::init();
-    file->file_ = std::fstream(path->cString(), std::ios_base::out);
+    file->file_ = std::fstream(path->stdString().c_str(), std::ios_base::out);
     return returnErrorIfFailed(file, file->file_);
 }
 
 extern "C" runtime::SimpleError<File*> filesFileNewReading(String *path) {
     auto file = File::init();
-    file->file_ = std::fstream(path->cString(), std::ios_base::in);
+    file->file_ = std::fstream(path->stdString().c_str(), std::ios_base::in);
     return returnErrorIfFailed(file, file->file_);
 }
 
@@ -73,7 +73,7 @@ extern "C" void filesFileSeekTo(File *file, runtime::Integer pos) {
 }
 
 extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassInfo*, String *path) {
-    auto file = std::ifstream(path->cString(), std::ios_base::ate);
+    auto file = std::ifstream(path->stdString().c_str(), std::ios_base::ate);
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
 
@@ -87,7 +87,7 @@ extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassInfo*, St
 }
 
 extern "C" runtime::SimpleOptional<runtime::Enum> filesFileWriteToFile(runtime::ClassInfo*, String *path, Data *data) {
-    auto file = std::ofstream(path->cString(), std::ios_base::out);
+    auto file = std::ofstream(path->stdString().c_str(), std::ios_base::out);
     file.write(reinterpret_cast<char *>(data->data.get()), data->count);
     if (file.fail()) return errorEnumFromErrno();
     return runtime::NoValue;

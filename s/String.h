@@ -10,6 +10,7 @@
 #define String_hpp
 
 #include <cstdint>
+#include <string>
 #include "../runtime/Runtime.h"
 
 namespace s {
@@ -24,7 +25,7 @@ public:
     runtime::MemoryPointer<Character> characters;
     runtime::Integer count;
 
-    const char* cString();
+    std::string stdString();
     int compare(String *other);
 };
 

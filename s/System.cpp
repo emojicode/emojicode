@@ -17,7 +17,7 @@ extern "C" runtime::Integer sSystemUnixTimestamp(runtime::ClassInfo*) {
 }
 
 extern "C" runtime::SimpleOptional<s::String*> sSystemGetEnv(runtime::ClassInfo*, s::String *name) {
-    auto var = std::getenv(name->cString());
+    auto var = std::getenv(name->stdString().c_str());
     if (var != nullptr) {
         return s::String::init(var);
     }
@@ -25,7 +25,7 @@ extern "C" runtime::SimpleOptional<s::String*> sSystemGetEnv(runtime::ClassInfo*
 }
 
 extern "C" [[noreturn]] void sPanic(runtime::ClassInfo*, s::String *message) {
-    ejcPanic(message->cString());
+    ejcPanic(message->stdString().c_str());
 }
 
 extern "C" runtime::SimpleOptional<s::String*> sSystemArg(runtime::ClassInfo*, runtime::Integer i) {
@@ -36,5 +36,5 @@ extern "C" runtime::SimpleOptional<s::String*> sSystemArg(runtime::ClassInfo*, r
 }
 
 extern "C" void sSystemSystem(runtime::ClassInfo*, s::String *string) {
-    std::system(string->cString());
+    std::system(string->stdString().c_str());
 }
