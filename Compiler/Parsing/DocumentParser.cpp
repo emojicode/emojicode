@@ -56,13 +56,6 @@ void DocumentParser::parse() {
                         documentation.disallow();
                         parsePackageImport(theToken.position());
                         continue;
-                    case E_TRIANGLE_POINTED_DOWN: {
-                        attributes.check(theToken.position(), package_->compiler());
-                        TypeIdentifier alias = parseTypeIdentifier();
-                        Type type = package_->getRawType(parseTypeIdentifier());
-                        package_->offerType(type, alias.name, alias.ns, false, theToken.position());
-                        continue;
-                    }
                     case E_WALE:
                         attributes.check(theToken.position(), package_->compiler());
                         documentation.disallow();
