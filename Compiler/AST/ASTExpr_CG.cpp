@@ -180,7 +180,7 @@ Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {
     auto function = fg->builder().CreateBitCast(fg->builder().CreateExtractValue(callable, 0),
                                                 functionType->getPointerTo());
     std::vector<llvm::Value *> args{ fg->builder().CreateExtractValue(callable, 1) };
-    for (auto &arg : args_.parameters()) {
+    for (auto &arg : args_.args()) {
         args.emplace_back(arg->generate(fg));
     }
     return handleResult(fg, fg->builder().CreateCall(functionType, function, args));

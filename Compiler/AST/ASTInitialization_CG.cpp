@@ -74,7 +74,7 @@ Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArgumen
 }
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {
-    auto size = fg->builder().CreateAdd(args_.parameters()[0]->generate(fg),
+    auto size = fg->builder().CreateAdd(args_.args()[0]->generate(fg),
                                         fg->sizeOf(llvm::Type::getInt8PtrTy(fg->generator()->context())));
     return fg->builder().CreateCall(fg->generator()->declarator().alloc(), size, "alloc");
 }

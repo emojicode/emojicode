@@ -103,8 +103,8 @@ public:
     const std::vector<std::shared_ptr<ASTType>>& genericArguments() const { return genericArguments_; }
     std::vector<std::shared_ptr<ASTType>>& genericArguments() { return genericArguments_; }
     void addArguments(const std::shared_ptr<ASTExpr> &arg) { arguments_.emplace_back(arg); }
-    std::vector<std::shared_ptr<ASTExpr>>& parameters() { return arguments_; }
-    const std::vector<std::shared_ptr<ASTExpr>>& parameters() const { return arguments_; }
+    std::vector<std::shared_ptr<ASTExpr>>& args() { return arguments_; }
+    const std::vector<std::shared_ptr<ASTExpr>>& args() const { return arguments_; }
     void toCode(PrettyStream &pretty) const;
     bool isImperative() const { return imperative_; }
     void setImperative(bool imperative) { imperative_ = imperative; }

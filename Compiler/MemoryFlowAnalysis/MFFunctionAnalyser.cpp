@@ -45,8 +45,8 @@ void MFFunctionAnalyser::analyseFunctionCall(ASTArguments *node, ASTExpr *callee
     if (callee != nullptr) {
         callee->analyseMemoryFlow(this, function->memoryFlowTypeForThis());
     }
-    for (size_t i = 0; i < node->parameters().size(); i++) {
-        node->parameters()[i]->analyseMemoryFlow(this, function->parameters()[i].memoryFlowType);
+    for (size_t i = 0; i < node->args().size(); i++) {
+        node->args()[i]->analyseMemoryFlow(this, function->parameters()[i].memoryFlowType);
     }
 }
 

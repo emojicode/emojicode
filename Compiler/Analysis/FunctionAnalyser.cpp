@@ -211,9 +211,9 @@ Type FunctionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *no
 }
 
 Type FunctionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
-    if (node->parameters().size() != function->parameters().size()) {
+    if (node->args().size() != function->parameters().size()) {
         throw CompilerError(node->position(), utf8(function->name()), " expects ", function->parameters().size(),
-                            " arguments but ", node->parameters().size(), " were supplied.");
+                            " arguments but ", node->args().size(), " were supplied.");
     }
 
     ensureGenericArguments(node, type, function);
@@ -224,7 +224,7 @@ Type FunctionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type,
     function->checkGenericArguments(typeContext, genericArgs, node->position());
 
     for (size_t i = 0; i < function->parameters().size(); i++) {
-        expectType(function->parameters()[i].type->type().resolveOn(typeContext), &node->parameters()[i]);
+        expectType(function->parameters()[i].type->type().resolveOn(typeContext), &node->args()[i]);
     }
     function->requestReification(genericArgs);
     checkFunctionUse(function, node->position());
@@ -238,7 +238,7 @@ void FunctionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &ty
         TypeContext typeContext = TypeContext(type, function, nullptr);
         size_t i = 0;
         for (auto &arg : function->parameters()) {
-            expectType(arg.type->type().resolveOn(typeContext), &node->parameters()[i++], &genericArgsFinders);
+            expectType(arg.type->type().resolveOn(typeContext), &node->args()[i++], &genericArgsFinders);
         }
         for (auto &finder : genericArgsFinders) {
             auto commonType = finder.getCommonType(node->position(), compiler());

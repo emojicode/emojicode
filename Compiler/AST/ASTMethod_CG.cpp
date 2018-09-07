@@ -24,8 +24,8 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 return fg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fg->generator()->context()), v);
             case BuiltInType::Store: {
                 auto type = args_.genericArguments().front()->type();
-                auto ptr = buildMemoryAddress(fg, v, args_.parameters()[1]->generate(fg), type);
-                auto val = args_.parameters().front()->generate(fg);
+                auto ptr = buildMemoryAddress(fg, v, args_.args()[1]->generate(fg), type);
+                auto val = args_.args().front()->generate(fg);
                 fg->builder().CreateStore(val, ptr);
                 if (type.isManaged()) {
                     fg->retain(fg->isManagedByReference(type) ? ptr : val, type);
@@ -34,7 +34,7 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             }
             case BuiltInType::Load: {
                 auto type = args_.genericArguments().front()->type();
-                auto ptr = buildMemoryAddress(fg, v, args_.parameters().front()->generate(fg), type);
+                auto ptr = buildMemoryAddress(fg, v, args_.args().front()->generate(fg), type);
                 auto val = fg->builder().CreateLoad(ptr);
                 if (type.isManaged()) {
                     fg->retain(fg->isManagedByReference(type) ? ptr : val, type);
@@ -44,21 +44,21 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             case BuiltInType::Release: {
                 auto type = args_.genericArguments().front()->type();
                 if (type.isManaged()) {
-                    auto ptr = buildMemoryAddress(fg, v, args_.parameters().front()->generate(fg), type);
+                    auto ptr = buildMemoryAddress(fg, v, args_.args().front()->generate(fg), type);
                     fg->release(fg->isManagedByReference(type) ? ptr : fg->builder().CreateLoad(ptr), type, false);
                 }
                 return nullptr;
             }
             case BuiltInType::MemoryMove: {
-                fg->builder().CreateMemMove(buildAddOffsetAddress(fg, v, args_.parameters()[0]->generate(fg)),
-                                            buildAddOffsetAddress(fg, args_.parameters()[1]->generate(fg),
-                                                                  args_.parameters()[2]->generate(fg)),
-                                            args_.parameters()[3]->generate(fg), 0);
+                fg->builder().CreateMemMove(buildAddOffsetAddress(fg, v, args_.args()[0]->generate(fg)),
+                                            buildAddOffsetAddress(fg, args_.args()[1]->generate(fg),
+                                                                  args_.args()[2]->generate(fg)),
+                                            args_.args()[3]->generate(fg), 0);
                 return nullptr;
             }
             case BuiltInType::MemorySet: {
-                fg->builder().CreateMemSet(buildAddOffsetAddress(fg, v, args_.parameters()[1]->generate(fg)),
-                                           args_.parameters()[0]->generate(fg), args_.parameters()[2]->generate(fg), 0);
+                fg->builder().CreateMemSet(buildAddOffsetAddress(fg, v, args_.args()[1]->generate(fg)),
+                                           args_.args()[0]->generate(fg), args_.args()[2]->generate(fg), 0);
                 return nullptr;
             }
             case BuiltInType::Multiprotocol:

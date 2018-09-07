@@ -57,7 +57,7 @@ std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, co
     if (callType_ != CallType::StaticContextfreeDispatch) {
         argsVector.emplace_back(callee);
     }
-    for (auto &arg : args.parameters()) {
+    for (auto &arg : args.args()) {
         argsVector.emplace_back(arg->generate(fg_));
     }
     return argsVector;

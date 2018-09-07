@@ -167,14 +167,14 @@ Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation 
         throw CompilerError(position(), "Given value is not callable.");
     }
     for (size_t i = 1; i < type.genericArguments().size(); i++) {
-        analyser->expectType(type.genericArguments()[i], &args_.parameters()[i - 1]);
+        analyser->expectType(type.genericArguments()[i], &args_.args()[i - 1]);
     }
     return type.genericArguments()[0];
 }
 
 void ASTCallableCall::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
     callable_->analyseMemoryFlow(analyser, MFType::Borrowing);
-    for (auto &arg : args_.parameters()) {
+    for (auto &arg : args_.args()) {
         analyser->retain(&arg);
     }
 }
