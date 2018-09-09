@@ -238,7 +238,12 @@ void CodeGenerator::createClassInfo(Class *klass) {
     }
 
     auto protocolTable = protocolsTableGenerator_->createProtocolTable(klass);
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), { superclass, virtualTable, protocolTable });
+    auto gep = llvm::ConstantExpr::getInBoundsGetElementPtr(virtualTable->getType()->getElementType(), virtualTable,
+                                                 llvm::ArrayRef<llvm::Constant *>{
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(context()), 0),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(context()), 0)
+    });
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), { superclass, gep, protocolTable });
     auto info = new llvm::GlobalVariable(*module(), typeHelper_.classInfo(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleClassInfoName(klass));
