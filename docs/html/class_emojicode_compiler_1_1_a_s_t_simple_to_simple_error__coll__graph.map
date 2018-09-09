@@ -1,0 +1,5 @@
+<map id="EmojicodeCompiler::ASTSimpleToSimpleError" name="EmojicodeCompiler::ASTSimpleToSimpleError">
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_boxing.html" title="EmojicodeCompiler::\lASTBoxing" alt="" coords="19,179,164,217"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="The superclass of all syntax tree nodes representing an expression. " alt="" coords="19,92,164,131"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="ASTNode is the parent class of all nodes in the abstract syntax tree. " alt="" coords="19,5,164,44"/>
+</map>

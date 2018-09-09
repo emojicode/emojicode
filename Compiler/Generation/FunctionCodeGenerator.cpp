@@ -6,7 +6,7 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Types/Enum.hpp"
+#include "Types/ValueType.hpp"
 #include "Types/Class.hpp"
 #include "Functions/Function.hpp"
 #include "AST/ASTStatements.hpp"
@@ -279,6 +279,18 @@ llvm::Value* FunctionCodeGenerator::alloc(llvm::PointerType *type) {
     return builder().CreateBitCast(alloc, type);
 }
 
+llvm::Value* FunctionCodeGenerator::stackAlloc(llvm::PointerType *type) {
+    auto structType = llvm::StructType::get(llvm::Type::getInt64Ty(generator()->context()), type->getElementType());
+    auto ptr = createEntryAlloca(structType);
+
+    builder().CreateStore(int64(1), builder().CreateConstInBoundsGEP2_32(structType, ptr, 0, 0));
+    auto object = builder().CreateConstInBoundsGEP2_32(structType, ptr, 0, 1);
+    auto controlBlockField = builder().CreateConstInBoundsGEP2_32(type->getElementType(), object, 0, 0);
+    builder().CreateStore(llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(generator()->context())),
+                          controlBlockField);
+    return object;
+}
+
 llvm::Value* FunctionCodeGenerator::createEntryAlloca(llvm::Type *type, const llvm::Twine &name) {
     llvm::IRBuilder<> builder(&function_->getEntryBlock(), function_->getEntryBlock().begin());
     return builder.CreateAlloca(type, nullptr, name);
@@ -290,16 +302,13 @@ llvm::Value* FunctionCodeGenerator::boxInfoFor(const Type &type) {
 
 void FunctionCodeGenerator::releaseTemporaryObjects() {
     while (!temporaryObjects_.empty()) {
-        release(temporaryObjects_.front().value, temporaryObjects_.front().type, temporaryObjects_.front().local);
+        release(temporaryObjects_.front().value, temporaryObjects_.front().type);
         temporaryObjects_.pop();
     }
 }
 
-void FunctionCodeGenerator::release(llvm::Value *value, const Type &type, bool local) {
-    if (local) {
-        builder().CreateCall(type.klass()->deinitializer()->unspecificReification().function, value);
-    }
-    else if (type.type() == TypeType::Class) {
+void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
+    if (type.type() == TypeType::Class) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
         builder().CreateCall(generator()->declarator().release(), opc);
     }
@@ -312,12 +321,12 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type, bool l
     else if (type.type() == TypeType::Optional) {
         if (isManagedByReference(type)) {
             createIf(buildOptionalHasValuePtr(value), [&] {
-                release(buildGetOptionalValuePtr(value), type.optionalType(), false);
+                release(buildGetOptionalValuePtr(value), type.optionalType());
             });
         }
         else {
             createIf(buildOptionalHasValue(value), [&] {
-                release(builder().CreateExtractValue(value, 1), type.optionalType(), false);
+                release(builder().CreateExtractValue(value, 1), type.optionalType());
             });
         }
     }
@@ -377,11 +386,11 @@ void FunctionCodeGenerator::manageBox(bool retain, llvm::Value *boxInfo, llvm::V
         auto conf = builder().CreateBitCast(boxInfo, typeHelper().protocolConformance()->getPointerTo());
         auto rfptrptr = builder().CreateConstInBoundsGEP2_32(typeHelper().protocolConformance(), conf, 0,
                                                              retain ? 3 : 4);
-        builder().CreateCall(builder().CreateLoad(rfptrptr), value);
+        builder().CreateCall(builder().CreateLoad(rfptrptr, retain ? "retain" : "release"), value);
     }
     else {
         auto rfptrptr = builder().CreateConstInBoundsGEP2_32(typeHelper().boxInfo(), boxInfo, 0, retain ? 1 : 2);
-        builder().CreateCall(builder().CreateLoad(rfptrptr), value);
+        builder().CreateCall(builder().CreateLoad(rfptrptr, retain ? "retain" : "release"), value);
     }
 }
 

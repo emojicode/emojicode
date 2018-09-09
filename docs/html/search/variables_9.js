@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['major',['major',['../struct_emojicode_compiler_1_1_package_version.html#a54e7e149dd8c23c6746cc911e84a5bf1',1,'EmojicodeCompiler::PackageVersion::major()'],['../struct_emojicode_1_1_package_version.html#a17c5b425aa26ddc80c01ce53c62aed0a',1,'Emojicode::PackageVersion::major()']]],
-  ['mark',['mark',['../struct_emojicode_1_1_class.html#a5716bc61e670deacf3fd0452618665bd',1,'Emojicode::Class']]],
-  ['minor',['minor',['../struct_emojicode_compiler_1_1_package_version.html#ae8a2b811af037183ccc5a060fcc2c47b',1,'EmojicodeCompiler::PackageVersion::minor()'],['../struct_emojicode_1_1_package_version.html#a24a32fdf66bd14a3afcae304a5126ad5',1,'Emojicode::PackageVersion::minor()']]]
+  ['kboxsize',['kBoxSize',['../namespace_emojicode_compiler.html#a52f69cd543efcd2fb887dc93e1c4d1aa',1,'EmojicodeCompiler']]],
+  ['kdefaultnamespace',['kDefaultNamespace',['../namespace_emojicode_compiler.html#a3f5ea1e7758a1e536d5278e8abefad7f',1,'EmojicodeCompiler']]],
+  ['kneedfree',['kNeedFree',['../class_memory_pool_allocator.html#ab4c7c5c631e451689bc9da392a65194f',1,'MemoryPoolAllocator']]]
 ];

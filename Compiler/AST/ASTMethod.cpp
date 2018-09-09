@@ -186,7 +186,7 @@ Type ASTMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
     return analyseMethodCall(analyser, name_, callee_);
 }
 
-void ASTMethod::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTMethod::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyser->analyseFunctionCall(&args_, callee_.get(), method_);
 }
 

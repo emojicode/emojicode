@@ -41,7 +41,7 @@ Value* AccessesAnyVariable::managementValue(FunctionCodeGenerator *fg) const {
 }
 
 void AccessesAnyVariable::release(FunctionCodeGenerator *fg) const {
-    fg->release(managementValue(fg), variableType_, false);
+    fg->release(managementValue(fg), variableType_);
 }
 
 Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
@@ -60,16 +60,22 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
     }
 
     auto &localVariable = fg->scoper().getVariable(id());
-    if (!localVariable.isMutable) {
-        if (reference_) {
+    if (reference_) {
+        if (!localVariable.isMutable) {
             auto alloca = fg->createEntryAlloca(localVariable.value->getType());
             fg->builder().CreateStore(localVariable.value, alloca);
             localVariable = LocalVariable(true, alloca);
-            return localVariable.value;
         }
         return localVariable.value;
     }
-    if (reference_) {
+
+    if (!isTemporary() && expressionType().isManaged()) {
+        auto retainValue = managementValue(fg);
+        fg->retain(retainValue, expressionType());
+        handleResult(fg, retainValue);
+    }
+
+    if (!localVariable.isMutable) {
         return localVariable.value;
     }
     return fg->builder().CreateLoad(localVariable.value);
@@ -121,9 +127,6 @@ void ASTVariableAssignment::generateAssignment(FunctionCodeGenerator *fg) const 
     auto val = expr_->generate(fg);
     auto variablePtr = variablePointer(fg);
     fg->builder().CreateStore(val, variablePtr);
-    if (variableType().isManaged()) {
-        fg->retain(fg->isManagedByReference(expr_->expressionType()) ? variablePtr : val, expr_->expressionType());
-    }
 }
 
 void ASTConstantVariable::generateAssignment(FunctionCodeGenerator *fg) const {

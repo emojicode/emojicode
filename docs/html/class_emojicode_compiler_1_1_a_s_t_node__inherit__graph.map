@@ -1,50 +1,50 @@
 <map id="EmojicodeCompiler::ASTNode" name="EmojicodeCompiler::ASTNode">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_arguments.html" title="EmojicodeCompiler::\lASTArguments" alt="" coords="198,788,342,827"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="198,851,342,889"/>
-<area shape="rect" id="node40" href="$class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="198,1821,342,1860"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_boolean_false.html" title="EmojicodeCompiler::\lASTBooleanFalse" alt="" coords="410,99,554,137"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_boolean_true.html" title="EmojicodeCompiler::\lASTBooleanTrue" alt="" coords="410,161,554,200"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_boxing.html" title="EmojicodeCompiler::\lASTBoxing" alt="" coords="410,224,554,263"/>
-<area shape="rect" id="node15" href="$class_emojicode_compiler_1_1_a_s_t_callable_call.html" title="EmojicodeCompiler::\lASTCallableCall" alt="" coords="410,287,554,325"/>
-<area shape="rect" id="node16" href="$class_emojicode_compiler_1_1_a_s_t_cast.html" title="EmojicodeCompiler::\lASTCast" alt="" coords="410,349,554,388"/>
-<area shape="rect" id="node17" href="$class_emojicode_compiler_1_1_a_s_t_closure.html" title="EmojicodeCompiler::\lASTClosure" alt="" coords="410,412,554,451"/>
-<area shape="rect" id="node18" href="$class_emojicode_compiler_1_1_a_s_t_concatenate_literal.html" title="EmojicodeCompiler::\lASTConcatenateLiteral" alt="" coords="402,475,561,513"/>
-<area shape="rect" id="node19" href="$class_emojicode_compiler_1_1_a_s_t_conditional_assignment.html" title="EmojicodeCompiler::\lASTConditionalAssignment" alt="" coords="390,537,574,576"/>
-<area shape="rect" id="node20" href="$class_emojicode_compiler_1_1_a_s_t_dictionary_literal.html" title="EmojicodeCompiler::\lASTDictionaryLiteral" alt="" coords="410,600,554,639"/>
-<area shape="rect" id="node21" href="$class_emojicode_compiler_1_1_a_s_t_get_variable.html" title="Represents the retrieval of the contents of a variable or the address of the content of the variable..." alt="" coords="410,663,554,701"/>
-<area shape="rect" id="node22" href="$class_emojicode_compiler_1_1_a_s_t_initialization.html" title="EmojicodeCompiler::\lASTInitialization" alt="" coords="410,725,554,764"/>
-<area shape="rect" id="node23" href="$class_emojicode_compiler_1_1_a_s_t_list_literal.html" title="EmojicodeCompiler::\lASTListLiteral" alt="" coords="410,788,554,827"/>
-<area shape="rect" id="node24" href="$class_emojicode_compiler_1_1_a_s_t_meta_type_instantiation.html" title="EmojicodeCompiler::\lASTMetaTypeInstantiation" alt="" coords="393,851,571,889"/>
-<area shape="rect" id="node25" href="$class_emojicode_compiler_1_1_a_s_t_methodable.html" title="EmojicodeCompiler::\lASTMethodable" alt="" coords="410,913,554,952"/>
-<area shape="rect" id="node28" href="$class_emojicode_compiler_1_1_a_s_t_no_value.html" title="EmojicodeCompiler::\lASTNoValue" alt="" coords="410,976,554,1015"/>
-<area shape="rect" id="node29" href="$class_emojicode_compiler_1_1_a_s_t_number_literal.html" title="EmojicodeCompiler::\lASTNumberLiteral" alt="" coords="410,1039,554,1077"/>
-<area shape="rect" id="node30" href="$class_emojicode_compiler_1_1_a_s_t_size_of.html" title="EmojicodeCompiler::\lASTSizeOf" alt="" coords="410,1101,554,1140"/>
-<area shape="rect" id="node31" href="$class_emojicode_compiler_1_1_a_s_t_string_literal.html" title="EmojicodeCompiler::\lASTStringLiteral" alt="" coords="410,1164,554,1203"/>
-<area shape="rect" id="node32" href="$class_emojicode_compiler_1_1_a_s_t_super.html" title="EmojicodeCompiler::\lASTSuper" alt="" coords="410,1227,554,1265"/>
-<area shape="rect" id="node33" href="$class_emojicode_compiler_1_1_a_s_t_symbol_literal.html" title="EmojicodeCompiler::\lASTSymbolLiteral" alt="" coords="410,1289,554,1328"/>
-<area shape="rect" id="node34" href="$class_emojicode_compiler_1_1_a_s_t_this.html" title="EmojicodeCompiler::\lASTThis" alt="" coords="410,1352,554,1391"/>
-<area shape="rect" id="node35" href="$class_emojicode_compiler_1_1_a_s_t_type_expr.html" title="EmojicodeCompiler::\lASTTypeExpr" alt="" coords="410,1415,554,1453"/>
-<area shape="rect" id="node38" href="$class_emojicode_compiler_1_1_a_s_t_type_method.html" title="EmojicodeCompiler::\lASTTypeMethod" alt="" coords="410,1477,554,1516"/>
-<area shape="rect" id="node39" href="$class_emojicode_compiler_1_1_a_s_t_unary.html" title="EmojicodeCompiler::\lASTUnary" alt="" coords="410,1540,554,1579"/>
-<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_a_s_t_box_to_simple.html" title="EmojicodeCompiler::\lASTBoxToSimple" alt="" coords="646,5,790,44"/>
-<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_a_s_t_box_to_simple_optional.html" title="EmojicodeCompiler::\lASTBoxToSimpleOptional" alt="" coords="631,68,805,107"/>
-<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_a_s_t_callable_box.html" title="EmojicodeCompiler::\lASTCallableBox" alt="" coords="646,131,790,169"/>
-<area shape="rect" id="node10" href="$class_emojicode_compiler_1_1_a_s_t_dereference.html" title="EmojicodeCompiler::\lASTDereference" alt="" coords="646,193,790,232"/>
-<area shape="rect" id="node11" href="$class_emojicode_compiler_1_1_a_s_t_simple_optional_to_box.html" title="EmojicodeCompiler::\lASTSimpleOptionalToBox" alt="" coords="631,256,805,295"/>
-<area shape="rect" id="node12" href="$class_emojicode_compiler_1_1_a_s_t_simple_to_box.html" title="EmojicodeCompiler::\lASTSimpleToBox" alt="" coords="646,319,790,357"/>
-<area shape="rect" id="node13" href="$class_emojicode_compiler_1_1_a_s_t_simple_to_simple_optional.html" title="EmojicodeCompiler::\lASTSimpleToSimpleOptional" alt="" coords="622,381,814,420"/>
-<area shape="rect" id="node14" href="$class_emojicode_compiler_1_1_a_s_t_store_temporarily.html" title="EmojicodeCompiler::\lASTStoreTemporarily" alt="" coords="644,444,792,483"/>
-<area shape="rect" id="node26" href="$class_emojicode_compiler_1_1_a_s_t_binary_operator.html" title="EmojicodeCompiler::\lASTBinaryOperator" alt="" coords="646,881,790,920"/>
-<area shape="rect" id="node27" href="$class_emojicode_compiler_1_1_a_s_t_method.html" title="EmojicodeCompiler::\lASTMethod" alt="" coords="646,944,790,983"/>
-<area shape="rect" id="node36" href="$class_emojicode_compiler_1_1_a_s_t_static_type.html" title="EmojicodeCompiler::\lASTStaticType" alt="" coords="646,1383,790,1421"/>
-<area shape="rect" id="node37" href="$class_emojicode_compiler_1_1_a_s_t_this_type.html" title="EmojicodeCompiler::\lASTThisType" alt="" coords="646,1445,790,1484"/>
-<area shape="rect" id="node41" href="$class_emojicode_compiler_1_1_a_s_t_block.html" title="EmojicodeCompiler::\lASTBlock" alt="" coords="410,1603,554,1641"/>
-<area shape="rect" id="node42" href="$class_emojicode_compiler_1_1_a_s_t_error_handler.html" title="EmojicodeCompiler::\lASTErrorHandler" alt="" coords="410,1665,554,1704"/>
-<area shape="rect" id="node43" href="$class_emojicode_compiler_1_1_a_s_t_expr_statement.html" title="EmojicodeCompiler::\lASTExprStatement" alt="" coords="410,1728,554,1767"/>
-<area shape="rect" id="node44" href="$class_emojicode_compiler_1_1_a_s_t_for_in.html" title="EmojicodeCompiler::\lASTForIn" alt="" coords="410,1791,554,1829"/>
-<area shape="rect" id="node45" href="$class_emojicode_compiler_1_1_a_s_t_if.html" title="EmojicodeCompiler::\lASTIf" alt="" coords="410,1853,554,1892"/>
-<area shape="rect" id="node46" href="$class_emojicode_compiler_1_1_a_s_t_repeat_while.html" title="EmojicodeCompiler::\lASTRepeatWhile" alt="" coords="410,1916,554,1955"/>
-<area shape="rect" id="node47" href="$class_emojicode_compiler_1_1_a_s_t_return.html" title="EmojicodeCompiler::\lASTReturn" alt="" coords="410,1979,554,2017"/>
-<area shape="rect" id="node48" href="$class_emojicode_compiler_1_1_a_s_t_variable_declaration.html" title="Represents the declaration of a variable. " alt="" coords="401,2041,563,2080"/>
-<area shape="rect" id="node49" href="$class_emojicode_compiler_1_1_a_s_t_variable_init.html" title="EmojicodeCompiler::\lASTVariableInit" alt="" coords="410,2104,554,2143"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_arguments.html" title="EmojicodeCompiler::\lASTArguments" alt="" coords="198,695,342,733"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="The superclass of all syntax tree nodes representing an expression. " alt="" coords="198,757,342,796"/>
+<area shape="rect" id="node28" href="$class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="198,1792,342,1831"/>
+<area shape="rect" id="node42" href="$class_emojicode_compiler_1_1_a_s_t_type.html" title="Abstract parent class of all abstract syntax tree nodes representing a $type$. " alt="" coords="198,2417,342,2456"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_boolean_false.html" title="EmojicodeCompiler::\lASTBooleanFalse" alt="" coords="410,5,554,44"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_boolean_true.html" title="EmojicodeCompiler::\lASTBooleanTrue" alt="" coords="410,68,554,107"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_boxing.html" title="EmojicodeCompiler::\lASTBoxing" alt="" coords="410,131,554,169"/>
+<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_a_s_t_callable_call.html" title="EmojicodeCompiler::\lASTCallableCall" alt="" coords="410,193,554,232"/>
+<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_a_s_t_cast.html" title="EmojicodeCompiler::\lASTCast" alt="" coords="410,256,554,295"/>
+<area shape="rect" id="node10" href="$class_emojicode_compiler_1_1_a_s_t_closure.html" title="EmojicodeCompiler::\lASTClosure" alt="" coords="410,319,554,357"/>
+<area shape="rect" id="node11" href="$class_emojicode_compiler_1_1_a_s_t_concatenate_literal.html" title="EmojicodeCompiler::\lASTConcatenateLiteral" alt="" coords="402,381,561,420"/>
+<area shape="rect" id="node12" href="$class_emojicode_compiler_1_1_a_s_t_conditional_assignment.html" title="EmojicodeCompiler::\lASTConditionalAssignment" alt="" coords="390,444,574,483"/>
+<area shape="rect" id="node13" href="$class_emojicode_compiler_1_1_a_s_t_dictionary_literal.html" title="EmojicodeCompiler::\lASTDictionaryLiteral" alt="" coords="410,507,554,545"/>
+<area shape="rect" id="node14" href="$class_emojicode_compiler_1_1_a_s_t_get_variable.html" title="Represents the retrieval of the contents of a variable or the address of the content of the variable..." alt="" coords="410,569,554,608"/>
+<area shape="rect" id="node15" href="$class_emojicode_compiler_1_1_a_s_t_initialization.html" title="EmojicodeCompiler::\lASTInitialization" alt="" coords="410,632,554,671"/>
+<area shape="rect" id="node16" href="$class_emojicode_compiler_1_1_a_s_t_list_literal.html" title="EmojicodeCompiler::\lASTListLiteral" alt="" coords="410,695,554,733"/>
+<area shape="rect" id="node17" href="$class_emojicode_compiler_1_1_a_s_t_methodable.html" title="EmojicodeCompiler::\lASTMethodable" alt="" coords="410,757,554,796"/>
+<area shape="rect" id="node18" href="$class_emojicode_compiler_1_1_a_s_t_no_value.html" title="EmojicodeCompiler::\lASTNoValue" alt="" coords="410,820,554,859"/>
+<area shape="rect" id="node19" href="$class_emojicode_compiler_1_1_a_s_t_number_literal.html" title="EmojicodeCompiler::\lASTNumberLiteral" alt="" coords="410,883,554,921"/>
+<area shape="rect" id="node20" href="$class_emojicode_compiler_1_1_a_s_t_size_of.html" title="EmojicodeCompiler::\lASTSizeOf" alt="" coords="410,945,554,984"/>
+<area shape="rect" id="node21" href="$class_emojicode_compiler_1_1_a_s_t_string_literal.html" title="EmojicodeCompiler::\lASTStringLiteral" alt="" coords="410,1008,554,1047"/>
+<area shape="rect" id="node22" href="$class_emojicode_compiler_1_1_a_s_t_super.html" title="EmojicodeCompiler::\lASTSuper" alt="" coords="410,1071,554,1109"/>
+<area shape="rect" id="node23" href="$class_emojicode_compiler_1_1_a_s_t_symbol_literal.html" title="EmojicodeCompiler::\lASTSymbolLiteral" alt="" coords="410,1133,554,1172"/>
+<area shape="rect" id="node24" href="$class_emojicode_compiler_1_1_a_s_t_this.html" title="EmojicodeCompiler::\lASTThis" alt="" coords="410,1196,554,1235"/>
+<area shape="rect" id="node25" href="$class_emojicode_compiler_1_1_a_s_t_type_as_value.html" title="EmojicodeCompiler::\lASTTypeAsValue" alt="" coords="410,1259,554,1297"/>
+<area shape="rect" id="node26" href="$class_emojicode_compiler_1_1_a_s_t_type_expr.html" title="EmojicodeCompiler::\lASTTypeExpr" alt="" coords="410,1321,554,1360"/>
+<area shape="rect" id="node27" href="$class_emojicode_compiler_1_1_a_s_t_unary.html" title="EmojicodeCompiler::\lASTUnary" alt="" coords="410,1384,554,1423"/>
+<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_a_s_t_box_to_simple.html" title="EmojicodeCompiler::\lASTBoxToSimple" alt="" coords="622,131,766,169"/>
+<area shape="rect" id="node29" href="$class_emojicode_compiler_1_1_a_s_t_block.html" title="EmojicodeCompiler::\lASTBlock" alt="" coords="410,1447,554,1485"/>
+<area shape="rect" id="node30" href="$class_emojicode_compiler_1_1_a_s_t_error_handler.html" title="EmojicodeCompiler::\lASTErrorHandler" alt="" coords="410,1509,554,1548"/>
+<area shape="rect" id="node31" href="$class_emojicode_compiler_1_1_a_s_t_expr_statement.html" title="EmojicodeCompiler::\lASTExprStatement" alt="" coords="410,1572,554,1611"/>
+<area shape="rect" id="node32" href="$class_emojicode_compiler_1_1_a_s_t_for_in.html" title="EmojicodeCompiler::\lASTForIn" alt="" coords="410,1635,554,1673"/>
+<area shape="rect" id="node33" href="$class_emojicode_compiler_1_1_a_s_t_if.html" title="EmojicodeCompiler::\lASTIf" alt="" coords="410,1697,554,1736"/>
+<area shape="rect" id="node34" href="$class_emojicode_compiler_1_1_a_s_t_release.html" title="EmojicodeCompiler::\lASTRelease" alt="" coords="410,1760,554,1799"/>
+<area shape="rect" id="node35" href="$class_emojicode_compiler_1_1_a_s_t_repeat_while.html" title="EmojicodeCompiler::\lASTRepeatWhile" alt="" coords="410,1823,554,1861"/>
+<area shape="rect" id="node36" href="$class_emojicode_compiler_1_1_a_s_t_retain.html" title="EmojicodeCompiler::\lASTRetain" alt="" coords="410,1885,554,1924"/>
+<area shape="rect" id="node37" href="$class_emojicode_compiler_1_1_a_s_t_return.html" title="EmojicodeCompiler::\lASTReturn" alt="" coords="410,1948,554,1987"/>
+<area shape="rect" id="node38" href="$class_emojicode_compiler_1_1_a_s_t_super_deinitializer.html" title="EmojicodeCompiler::\lASTSuperDeinitializer" alt="" coords="406,2011,558,2049"/>
+<area shape="rect" id="node39" href="$class_emojicode_compiler_1_1_a_s_t_unsafe_block.html" title="EmojicodeCompiler::\lASTUnsafeBlock" alt="" coords="410,2073,554,2112"/>
+<area shape="rect" id="node40" href="$class_emojicode_compiler_1_1_a_s_t_variable_declaration.html" title="Represents the declaration of a variable. " alt="" coords="401,2136,563,2175"/>
+<area shape="rect" id="node41" href="$class_emojicode_compiler_1_1_a_s_t_variable_init.html" title="EmojicodeCompiler::\lASTVariableInit" alt="" coords="410,2199,554,2237"/>
+<area shape="rect" id="node43" href="$class_emojicode_compiler_1_1_a_s_t_callable_type.html" title="Represents $callable&#45;type$. " alt="" coords="410,2261,554,2300"/>
+<area shape="rect" id="node44" href="$class_emojicode_compiler_1_1_a_s_t_error_type.html" title="EmojicodeCompiler::\lASTErrorType" alt="" coords="410,2324,554,2363"/>
+<area shape="rect" id="node45" href="$class_emojicode_compiler_1_1_a_s_t_generic_variable.html" title="EmojicodeCompiler::\lASTGenericVariable" alt="" coords="410,2387,554,2425"/>
+<area shape="rect" id="node46" href="$class_emojicode_compiler_1_1_a_s_t_literal_type.html" title="EmojicodeCompiler::\lASTLiteralType" alt="" coords="410,2449,554,2488"/>
+<area shape="rect" id="node47" href="$class_emojicode_compiler_1_1_a_s_t_multi_protocol.html" title="EmojicodeCompiler::\lASTMultiProtocol" alt="" coords="410,2512,554,2551"/>
+<area shape="rect" id="node48" href="$class_emojicode_compiler_1_1_a_s_t_type_id.html" title="Represents $type&#45;identifier$. " alt="" coords="410,2575,554,2613"/>
+<area shape="rect" id="node49" href="$class_emojicode_compiler_1_1_a_s_t_type_value_type.html" title="EmojicodeCompiler::\lASTTypeValueType" alt="" coords="410,2637,554,2676"/>
 </map>

@@ -170,10 +170,10 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
     return std::make_pair(false, BuiltIn(Type::noReturn()));
 }
 
-void ASTBinaryOperator::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTBinaryOperator::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     if (builtIn_ != BuiltInType::None) {
-        left_->analyseMemoryFlow(analyser, MFType::Borrowing);
-        right_->analyseMemoryFlow(analyser, MFType::Borrowing);
+        left_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
+        right_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
     }
     else {
         analyser->analyseFunctionCall(&args_, left_.get(), method_);

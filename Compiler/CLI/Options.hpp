@@ -17,6 +17,7 @@
 
 namespace EmojicodeCompiler {
 
+/// This namespace contains all types and functions that define the command-line interface of the Emojicode Compiler.
 namespace CLI {
 
 /// Thrown by Options if the cancellation should not begin.

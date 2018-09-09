@@ -11,12 +11,14 @@
 
 #include <cstdint>
 #include <cstdio>
-#include <new>
+#include <cstdlib>
 #include <type_traits>
+#include <new>
 
 namespace runtime {
 namespace internal {
 struct ControlBlock;
+ControlBlock* newControlBlock();
 }
 }
 
@@ -85,15 +87,15 @@ public:
     static Subclass* init(Args ...args) {
         static_assert(util::is_complete<ClassInfoFor<Subclass>>::value,
                       "Provide class info for this class with SET_INFO_FOR.");
-        return new(ejcAlloc(sizeof(Subclass))) Subclass(args...);
+        return new(malloc(sizeof(Subclass))) Subclass(args...);
     }
 
-    runtime::internal::ControlBlock* controlBlock() const { return block_; }
+    internal::ControlBlock* controlBlock() const { return block_; }
     const ClassInfo* classInfo() const { return classInfo_; }
 protected:
-    Object() : classInfo_(ClassInfoFor<Subclass>::value) {}
+    Object() : block_(internal::newControlBlock()), classInfo_(ClassInfoFor<Subclass>::value) {}
 private:
-    runtime::internal::ControlBlock *block_;
+    internal::ControlBlock *block_;
     const ClassInfo *classInfo_;
 };
 

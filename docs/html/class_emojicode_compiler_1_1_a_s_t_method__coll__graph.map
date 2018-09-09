@@ -1,11 +1,9 @@
 <map id="EmojicodeCompiler::ASTMethod" name="EmojicodeCompiler::ASTMethod">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_methodable.html" title="EmojicodeCompiler::\lASTMethodable" alt="" coords="895,68,1039,107"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="613,5,757,44"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="244,16,388,55"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_arguments.html" title="EmojicodeCompiler::\lASTArguments" alt="" coords="613,68,757,107"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="599,131,772,156"/>
-<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_type_definition.html" title="EmojicodeCompiler::\lTypeDefinition" alt="" coords="244,81,388,120"/>
-<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; TypeDefinition,\l int \&gt;" alt="" coords="16,72,184,124"/>
-<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="244,151,388,189"/>
-<area shape="rect" id="node10" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function, Function\lReification \&gt;" alt="" coords="5,148,195,200"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_methodable.html" title="EmojicodeCompiler::\lASTMethodable" alt="" coords="561,124,706,163"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="The superclass of all syntax tree nodes representing an expression. " alt="" coords="258,5,403,44"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="ASTNode is the parent class of all nodes in the abstract syntax tree. " alt="" coords="28,33,172,72"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_arguments.html" title="EmojicodeCompiler::\lASTArguments" alt="" coords="258,68,403,107"/>
+<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_function.html" title="EmojicodeCompiler::\lFunction" alt="" coords="258,180,403,219"/>
+<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_generic.html" title="EmojicodeCompiler::\lGeneric\&lt; Function, Function\lReification \&gt;" alt="" coords="5,173,195,225"/>
+<area shape="rect" id="node9" href="$class_emojicode_compiler_1_1_type.html" title="EmojicodeCompiler::Type" alt="" coords="244,243,417,268"/>
 </map>

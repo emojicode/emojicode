@@ -1,0 +1,5 @@
+<map id="EmojicodeCompiler::ASTRelease" name="EmojicodeCompiler::ASTRelease">
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_statement.html" title="EmojicodeCompiler::\lASTStatement" alt="" coords="5,92,150,131"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="ASTNode is the parent class of all nodes in the abstract syntax tree. " alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_accesses_any_variable.html" title="EmojicodeCompiler::\lAccessesAnyVariable" alt="" coords="174,92,323,131"/>
+</map>

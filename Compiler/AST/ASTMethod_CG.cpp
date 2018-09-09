@@ -45,7 +45,7 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 auto type = args_.genericArguments().front()->type();
                 if (type.isManaged()) {
                     auto ptr = buildMemoryAddress(fg, v, args_.args().front()->generate(fg), type);
-                    fg->release(fg->isManagedByReference(type) ? ptr : fg->builder().CreateLoad(ptr), type, false);
+                    fg->release(fg->isManagedByReference(type) ? ptr : fg->builder().CreateLoad(ptr), type);
                 }
                 return nullptr;
             }

@@ -51,6 +51,10 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
                                       llvm::Type::getInt8PtrTy(generator_->context()));
     releaseMemory_ = declareRunTimeFunction("ejcReleaseMemory", llvm::Type::getVoidTy(generator_->context()),
                                             llvm::Type::getInt8PtrTy(generator_->context()));
+
+    ignoreBlock_ = new llvm::GlobalVariable(*generator_->module(), llvm::Type::getInt8Ty(generator_->context()), true,
+                                            llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
+                                            "ejcIgnoreBlock");
 }
 
 llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type *returnType,
@@ -122,13 +126,13 @@ void Declarator::declareLlvmFunction(Function *function) const {
 
         size_t i = 0;
         if (hasThisArgument(function->functionType())) {
-            if (function->memoryFlowTypeForThis() == MFType::Borrowing) {
+            if (function->memoryFlowTypeForThis() == MFFlowCategory::Borrowing) {
                 reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
             }
             i++;
         }
         for (auto &param : function->parameters()) {
-            if (param.memoryFlowType == MFType::Borrowing && param.type->type().type() == TypeType::Class) {
+            if (param.memoryFlowType == MFFlowCategory::Borrowing && param.type->type().type() == TypeType::Class) {
                 reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
             }
             i++;

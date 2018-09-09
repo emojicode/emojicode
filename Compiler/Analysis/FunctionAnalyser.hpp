@@ -9,12 +9,9 @@
 #ifndef FunctionAnalyser_hpp
 #define FunctionAnalyser_hpp
 
-#include "AST/ASTExpr.hpp"
-#include "Package/Package.hpp"
 #include "PathAnalyser.hpp"
 #include "Types/TypeContext.hpp"
 #include <memory>
-#include <utility>
 
 namespace EmojicodeCompiler {
 
@@ -23,6 +20,9 @@ class ASTBlock;
 class TypeExpectation;
 class SemanticAnalyser;
 class SemanticScoper;
+class Package;
+class Compiler;
+class ASTExpr;
 
 /// This class is responsible for managing the semantic analysis of a function.
 class FunctionAnalyser {
@@ -63,10 +63,6 @@ public:
     /// @returns The type denoted by the $type-expression$ resolved by Type::resolveOnSuperArgumentsAndConstraints.
     Type analyseTypeExpr(const std::shared_ptr<ASTExpr> &node, const TypeExpectation &exp);
 
-    /// Checks that the function can be accessed or issues an error. Checks that the function is not deprecated
-    /// and issues a warning otherwise.
-    void checkFunctionUse(Function *function, const SourcePosition &p) const;
-
     Type analyseFunctionCall(ASTArguments *node, const Type &type, Function *function);
 
     ~FunctionAnalyser();
@@ -91,6 +87,10 @@ private:
     /// Ensures that node has the required number of generic arguments for a call to function.
     /// If none are provided but function expects generic arguments, this method tries to infer them.
     void ensureGenericArguments(ASTArguments *node, const Type &type, Function *function);
+
+    /// Checks that the function can be accessed or issues an error. Checks that the function is not deprecated
+    /// and issues a warning otherwise.
+    void checkFunctionUse(Function *function, const SourcePosition &p) const;
 
     /// Returns true if exprType and expectation are callables and there is a mismatch between the argument or return
     /// StorageTypes.

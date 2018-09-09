@@ -40,6 +40,8 @@ public:
     /// Used to find a protocol conformance in an array of ProtocolConformanceEntries. (ejcFindProtocolConformance)
     llvm::Function* findProtocolConformance() const { return findProtocolConformance_; }
 
+    llvm::GlobalVariable* ignoreBlockPtr() const { return ignoreBlock_; }
+
     /// Declares all symbols that are provided by an imported package.
     /// @param package The package whose symbols shall be declared.
     void declareImportedPackageSymbols(Package *package);
@@ -63,6 +65,7 @@ private:
     llvm::Function *findProtocolConformance_ = nullptr;
 
     llvm::GlobalVariable *boxInfoClassObjects_ = nullptr;
+    llvm::GlobalVariable *ignoreBlock_ = nullptr;
 
     llvm::Function *retain_ = nullptr;
     llvm::Function *release_ = nullptr;

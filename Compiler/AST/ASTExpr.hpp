@@ -25,7 +25,7 @@ class TypeExpectation;
 class FunctionCodeGenerator;
 class Prettyprinter;
 class MFFunctionAnalyser;
-enum class MFType;
+enum class MFFlowCategory;
 
 /// The superclass of all syntax tree nodes representing an expression.
 class ASTExpr : public ASTNode {
@@ -40,7 +40,7 @@ public:
     /// If the expression potentially evaluates to an managed value, handleResult() must be called.
     virtual Value* generate(FunctionCodeGenerator *fg) const = 0;
     virtual Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) = 0;
-    virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) = 0;
+    virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) = 0;
 
     /// Informs this expression that if it creates a temporary object the object must not be released after the
     /// statement is executed. This method is called by MFFunctionAnalyser.
@@ -49,10 +49,14 @@ public:
 protected:
     /// Whether the object to which this expression evaluates should be released.
     llvm::Value* handleResult(FunctionCodeGenerator *fg, llvm::Value *result,
-                              bool valueTypeIsReferenced = false, bool local = false) const;
+                              bool valueTypeIsReferenced = false) const;
 
     /// This method is called at the end of unsetIsTemporary(). It can be overridden to perform additional tasks.
     virtual void unsetIsTemporaryPost() {}
+
+    /// If the value created by evaluating the expression is a temporary value.
+    /// @see MFFunctionAnalyser for a detailed explanation.
+    bool isTemporary() const { return isTemporary_; }
 
 private:
     bool isTemporary_ = true;
@@ -74,7 +78,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
 
 private:
     std::unique_ptr<ASTType> type_;
@@ -88,7 +92,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
 
 private:
     std::unique_ptr<ASTType> type_;
@@ -127,7 +131,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
 private:
     enum class CastType {
@@ -153,7 +157,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
 private:
     std::shared_ptr<ASTExpr> callable_;
@@ -168,7 +172,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
 private:
     void analyseSuperInit(FunctionAnalyser *analyser);
@@ -190,7 +194,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
 private:
     std::u32string varName_;

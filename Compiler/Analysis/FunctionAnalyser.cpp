@@ -6,9 +6,7 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "AST/ASTNode.hpp"
 #include "AST/ASTBoxing.hpp"
-#include "AST/ASTInitialization.hpp"
 #include "AST/ASTLiterals.hpp"
 #include "AST/ASTVariables.hpp"
 #include "Compiler.hpp"
@@ -16,13 +14,11 @@
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Scoping/SemanticScoper.hpp"
-#include "Scoping/VariableNotFoundError.hpp"
 #include "SemanticAnalyser.hpp"
 #include "ThunkBuilder.hpp"
+#include "Package/Package.hpp"
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
-#include "Types/Enum.hpp"
-#include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
 
@@ -164,7 +160,9 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
         auto thisNode = std::dynamic_pointer_cast<ASTExpr>(std::make_shared<ASTThis>(root->position()));
         comply(typeContext().calleeType(), TypeExpectation(initializer->constructedType(typeContext().calleeType())),
                &thisNode);
-        root->appendNode(std::make_unique<ASTReturn>(thisNode, root->position()));
+        auto ret = std::make_unique<ASTReturn>(thisNode, root->position());
+        ret->setIsInitReturn();
+        root->appendNode(std::move(ret));
     }
     else if (function_->functionType() == FunctionType::ValueTypeInitializer) {
         root->appendNode(std::make_unique<ASTReturn>(nullptr, root->position()));

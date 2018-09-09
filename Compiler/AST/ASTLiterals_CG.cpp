@@ -45,6 +45,9 @@ Value* ASTSymbolLiteral::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTThis::generate(FunctionCodeGenerator *fg) const {
+    if (!isTemporary()) {
+        fg->retain(fg->thisValue(), expressionType());
+    }
     return fg->thisValue();
 }
 
@@ -82,7 +85,7 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
     auto init = type_.typeDefinition()->lookupInitializer({ 0x1F195 });
-    auto strbuilder = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_);
+    auto strbuilder = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_, true);
     for (auto &stringNode : values_) {
         auto args = ASTArguments(position());
         args.addArguments(stringNode);
@@ -90,8 +93,10 @@ Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, args, method);
     }
     auto method = type_.typeDefinition()->lookupMethod({ 0x1F521 }, true);
-    return handleResult(fg, CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_,
-                                                                                     ASTArguments(position()), method));
+    auto str = CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_,
+                                                                        ASTArguments(position()), method);
+    fg->release(strbuilder, type_);
+    return handleResult(fg, str);
 }
 
 }  // namespace EmojicodeCompiler

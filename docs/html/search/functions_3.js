@@ -1,9 +1,13 @@
 var searchData=
 [
-  ['declarellvmfunction',['declareLlvmFunction',['../class_emojicode_compiler_1_1_declarator.html#a6c6cf052166eb926d889c387bb403179',1,'EmojicodeCompiler::Declarator']]],
-  ['declarevariable',['declareVariable',['../class_emojicode_compiler_1_1_scope.html#aeb8c975cc792706d59c7e38774f9053d',1,'EmojicodeCompiler::Scope']]],
-  ['declarevariablewithid',['declareVariableWithId',['../class_emojicode_compiler_1_1_scope.html#a5816593ee713e4b264963242f64e21b5',1,'EmojicodeCompiler::Scope']]],
+  ['declareboxinfo',['declareBoxInfo',['../class_emojicode_compiler_1_1_declarator.html#a1b526e8fb2db898ee211124f8a357485',1,'EmojicodeCompiler::Declarator']]],
+  ['declareimported',['declareImported',['../class_emojicode_compiler_1_1_protocols_table_generator.html#aad7dcb53fa416e99e4bf2c96546fb318',1,'EmojicodeCompiler::ProtocolsTableGenerator']]],
+  ['declareimportedpackagesymbols',['declareImportedPackageSymbols',['../class_emojicode_compiler_1_1_declarator.html#a0ca0696ba02b3d09d408aed3abdab884',1,'EmojicodeCompiler::Declarator']]],
+  ['declarellvmfunction',['declareLlvmFunction',['../class_emojicode_compiler_1_1_declarator.html#a710a96b9b8e4bc9f03bcaa128baa7cc5',1,'EmojicodeCompiler::Declarator']]],
+  ['declarevariable',['declareVariable',['../class_emojicode_compiler_1_1_scope.html#a106ef4a897cefc6c80c6797d45d8ccc7',1,'EmojicodeCompiler::Scope']]],
+  ['declarevariablewithid',['declareVariableWithId',['../class_emojicode_compiler_1_1_scope.html#a01f2a2e7f876aa79803133462cfe8c86',1,'EmojicodeCompiler::Scope']]],
   ['deprecated',['deprecated',['../class_emojicode_compiler_1_1_function.html#ade7fe764fbabea00531e998ddd469eea',1,'EmojicodeCompiler::Function']]],
-  ['destinationfunction',['destinationFunction',['../class_emojicode_compiler_1_1_boxing_layer.html#aff41a6b051bf02daa7282b0454d3b1a2',1,'EmojicodeCompiler::BoxingLayer']]],
-  ['documentation',['documentation',['../class_emojicode_compiler_1_1_type_definition.html#ad4a80e47f9257d22ce52ad6db5e51bc2',1,'EmojicodeCompiler::TypeDefinition']]]
+  ['description',['Description',['../classargs_1_1_command.html#a01d237dc3c13323c143073dd2a1a2cb4',1,'args::Command::Description() const'],['../classargs_1_1_command.html#a4ee8820d1d6d17b10a01a5cbccce1df8',1,'args::Command::Description(const std::string &amp;description_)']]],
+  ['documentation',['documentation',['../class_emojicode_compiler_1_1_type_definition.html#ad4a80e47f9257d22ce52ad6db5e51bc2',1,'EmojicodeCompiler::TypeDefinition']]],
+  ['double',['Double',['../class_writer.html#a22a43e8a7193105deec6b808736f7a1a',1,'Writer']]]
 ];

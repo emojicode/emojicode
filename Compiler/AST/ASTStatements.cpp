@@ -66,7 +66,7 @@ void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {
 }
 
 void ASTExprStatement::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    expr_->analyseMemoryFlow(analyser, MFType::Borrowing);
+    expr_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
 }
 
 void ASTReturn::analyse(FunctionAnalyser *analyser) {
@@ -111,8 +111,8 @@ void ASTRaise::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTReturn::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    if (value_ != nullptr) {
-        analyser->recordReturn(&value_);
+    if (value_ != nullptr && !initReturn_) {
+        analyser->recordReturn(value_.get());
     }
 }
 

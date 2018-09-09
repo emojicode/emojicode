@@ -47,7 +47,7 @@ void ASTIf::analyse(FunctionAnalyser *analyser) {
 
 void ASTIf::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     for (size_t i = 0; i < conditions_.size(); i++) {
-        conditions_[i]->analyseMemoryFlow(analyser, MFType::Borrowing);
+        conditions_[i]->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
         blocks_[i].analyseMemoryFlow(analyser);
         analyser->popScope(&blocks_[i]);
     }
@@ -67,7 +67,7 @@ void ASTRepeatWhile::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTRepeatWhile::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    condition_->analyseMemoryFlow(analyser, MFType::Borrowing);
+    condition_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
     block_.analyseMemoryFlow(analyser);
     analyser->popScope(&block_);
 }
@@ -104,7 +104,7 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTErrorHandler::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    value_->analyseMemoryFlow(analyser, MFType::Borrowing);
+    value_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);  // TODO: Wrong!
     errorBlock_.analyseMemoryFlow(analyser);
     analyser->popScope(&errorBlock_);
     valueBlock_.analyseMemoryFlow(analyser);

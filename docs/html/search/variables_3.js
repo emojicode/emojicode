@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['type',['type',['../struct_emojicode_compiler_1_1_argument.html#a89c03f42d46a740b0b4eecc600fa7f4f',1,'EmojicodeCompiler::Argument']]]
+  ['defaultstring',['defaultString',['../structargs_1_1_help_params.html#acbda51396a545149cebf67170d14882e',1,'args::HelpParams']]],
+  ['descriptionindent',['descriptionindent',['../structargs_1_1_help_params.html#a51f2528949d3bcfaf9055d5790ea16f2',1,'args::HelpParams']]]
 ];

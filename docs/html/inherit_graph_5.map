@@ -1,3 +1,12 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$struct_emojicode_compiler_1_1_capture.html" title="EmojicodeCompiler::\lCapture" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node2" href="$classargs_1_1_error.html" title="args::Error" alt="" coords="155,129,239,155"/>
+<area shape="rect" id="node3" href="$classargs_1_1_completion.html" title="args::Completion" alt="" coords="299,5,421,31"/>
+<area shape="rect" id="node4" href="$classargs_1_1_help.html" title="args::Help" alt="" coords="319,55,401,80"/>
+<area shape="rect" id="node5" href="$classargs_1_1_parse_error.html" title="args::ParseError" alt="" coords="300,104,419,129"/>
+<area shape="rect" id="node8" href="$classargs_1_1_subparser_error.html" title="args::SubparserError" alt="" coords="287,153,433,179"/>
+<area shape="rect" id="node9" href="$classargs_1_1_usage_error.html" title="args::UsageError" alt="" coords="298,203,421,228"/>
+<area shape="rect" id="node10" href="$classargs_1_1_validation_error.html" title="args::ValidationError" alt="" coords="289,252,431,277"/>
+<area shape="rect" id="node6" href="$classargs_1_1_extra_error.html" title="args::ExtraError" alt="" coords="492,80,608,105"/>
+<area shape="rect" id="node7" href="$classargs_1_1_map_error.html" title="args::MapError" alt="" coords="495,129,605,155"/>
+<area shape="rect" id="node11" href="$classargs_1_1_required_error.html" title="args::RequiredError" alt="" coords="481,252,619,277"/>
 </map>

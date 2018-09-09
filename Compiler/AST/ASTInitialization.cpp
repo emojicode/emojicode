@@ -56,11 +56,11 @@ Type ASTInitialization::analyseEnumInit(FunctionAnalyser *analyser, Type &type) 
     return type;
 }
 
-void ASTInitialization::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTInitialization::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     if (initType_ == InitType::Enum) {
         return;
     }
-    if (type == MFType::Borrowing && initType_ == InitType::Class) {
+    if (type == MFFlowCategory::Borrowing && initType_ == InitType::Class) {
         initType_ = InitType::ClassStack;
     }
     analyser->analyseFunctionCall(&args_, typeExpr_.get(), initializer_);

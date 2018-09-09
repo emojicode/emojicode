@@ -75,8 +75,8 @@ Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
     return type.optionalized().boxedFor(originalType.boxedFor());
 }
 
-void ASTCast::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    value_->analyseMemoryFlow(analyser, MFType::Escaping);
+void ASTCast::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+    value_->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
 }
 
 Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -94,8 +94,9 @@ Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExp
     return analyser->boolean();
 }
 
-void ASTConditionalAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    analyser->retain(&expr_);
+void ASTConditionalAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+    analyser->recordVariableSet(varId_, expr_.get(), expr_->expressionType().optionalType());
+    analyser->take(expr_.get());
 }
 
 Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
@@ -141,7 +142,7 @@ void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
 }
 
-void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyser->recordThis(function_->memoryFlowTypeForThis());
     analyser->analyseFunctionCall(&args_, nullptr, function_);
 }
@@ -172,10 +173,11 @@ Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation 
     return type.genericArguments()[0];
 }
 
-void ASTCallableCall::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
-    callable_->analyseMemoryFlow(analyser, MFType::Borrowing);
+void ASTCallableCall::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+    callable_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
     for (auto &arg : args_.args()) {
-        analyser->retain(&arg);
+        analyser->take(arg.get());
+        arg->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);  // We cannot at all say what the callable will do.
     }
 }
 

@@ -1,3 +1,4 @@
 <map id="EmojicodeCompiler::TypeIdentifier" name="EmojicodeCompiler::TypeIdentifier">
-<area shape="rect" id="node2" href="$struct_emojicode_compiler_1_1_source_position.html" title="EmojicodeCompiler::\lSourcePosition" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node2" href="$struct_emojicode_compiler_1_1_source_position.html" title="SourcePosition denotes a location in a source code file. " alt="" coords="5,105,150,144"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_source_file.html" title="EmojicodeCompiler::\lSourceFile" alt="" coords="5,5,150,44"/>
 </map>

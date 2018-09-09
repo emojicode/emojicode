@@ -33,7 +33,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const final;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 
 private:
     std::unique_ptr<Function> closure_;

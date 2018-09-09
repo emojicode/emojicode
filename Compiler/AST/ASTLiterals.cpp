@@ -13,6 +13,7 @@
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "Package/Package.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
 
@@ -74,7 +75,7 @@ Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expecta
     return analyser->typeContext().calleeType();
 }
 
-void ASTThis::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTThis::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyser->recordThis(type);
 }
 
@@ -109,9 +110,9 @@ Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpecta
     return type_;
 }
 
-void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     for (auto &valueNode : values_) {
-        analyser->retain(&valueNode);
+        valueNode->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
     }
 }
 
@@ -145,9 +146,9 @@ Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &
     return type_;
 }
 
-void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     for (auto &valueNode : values_) {
-        analyser->retain(&valueNode);
+        valueNode->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
     }
 }
 
@@ -163,9 +164,9 @@ Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpect
     return stringType;
 }
 
-void ASTConcatenateLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTConcatenateLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     for (auto &valueNode : values_) {
-        valueNode->analyseMemoryFlow(analyser, MFType::Borrowing);
+        valueNode->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
     }
 }
 

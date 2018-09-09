@@ -1,11 +1,25 @@
 var searchData=
 [
-  ['warn',['warn',['../class_emojicode_compiler_1_1_application_delegate.html#a8109538f8ab0d6fb7bbff615e5a043c5',1,'EmojicodeCompiler::ApplicationDelegate::warn()'],['../class_emojicode_compiler_1_1_application.html#ab3ef41f5f6f1096ae5c783b8a982a4e3',1,'EmojicodeCompiler::Application::warn(const SourcePosition &amp;p, Args... args)'],['../class_emojicode_compiler_1_1_application.html#afad6c78f8f1eedf2e49e4aa4ff7b1fe0',1,'EmojicodeCompiler::Application::warn(const SourcePosition &amp;p, const std::string &amp;warning)']]],
-  ['writedoublecoin',['writeDoubleCoin',['../class_emojicode_compiler_1_1_function_writer.html#a9472a3ad982334e86bbfaf1162515661',1,'EmojicodeCompiler::FunctionWriter']]],
-  ['writeemojicodechar',['writeEmojicodeChar',['../class_emojicode_compiler_1_1_writer.html#a1912410ddbd5b09c0582ed20fb93e9c6',1,'EmojicodeCompiler::Writer']]],
-  ['writeinstruction',['writeInstruction',['../class_emojicode_compiler_1_1_writer.html#aac45a65e8f0ed6a97b492734a8de98ed',1,'EmojicodeCompiler::Writer']]],
-  ['writeplaceholder',['writePlaceholder',['../class_emojicode_compiler_1_1_writer.html#ab81970bc52022ef447e8d1ddffbd3302',1,'EmojicodeCompiler::Writer']]],
-  ['writer',['Writer',['../class_emojicode_compiler_1_1_writer.html',1,'EmojicodeCompiler']]],
-  ['writerplaceholder',['WriterPlaceholder',['../class_emojicode_compiler_1_1_writer_placeholder.html',1,'EmojicodeCompiler']]],
-  ['writeuint16',['writeUInt16',['../class_emojicode_compiler_1_1_writer.html#aacf9076d6a607aac5d5863aa96c052ee',1,'EmojicodeCompiler::Writer']]]
+  ['validate',['Validate',['../struct_transcoder.html#a8a64aa837f7962894a99f63232472543',1,'Transcoder']]],
+  ['validationerror',['ValidationError',['../classargs_1_1_validation_error.html',1,'args']]],
+  ['validators',['Validators',['../structargs_1_1_group_1_1_validators.html',1,'args::Group']]],
+  ['value',['value',['../struct_emojicode_compiler_1_1_local_variable.html#a7cfbe6de463eac9cc79d3925f37bbf81',1,'EmojicodeCompiler::LocalVariable::value()'],['../struct_generic_member.html#aad3cfa4f9e8b9018068c8bc865723083',1,'GenericMember::value()'],['../class_emojicode_compiler_1_1_token.html#a858ff6e171ce0c9deb6729227795e7ed',1,'EmojicodeCompiler::Token::value()'],['../document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481',1,'Value():&#160;document.h']]],
+  ['valueclose',['valueClose',['../structargs_1_1_help_params.html#a646a89fdbdcf769e1fc4b44421a7dc79',1,'args::HelpParams']]],
+  ['valuecount',['valueCount',['../struct_writer_1_1_level.html#a4a09e5fda49d0d57b2adc041203f244f',1,'Writer::Level']]],
+  ['valueflag',['ValueFlag',['../classargs_1_1_value_flag.html',1,'args']]],
+  ['valueflagbase',['ValueFlagBase',['../classargs_1_1_value_flag_base.html',1,'args']]],
+  ['valueflaglist',['ValueFlagList',['../classargs_1_1_value_flag_list.html',1,'args']]],
+  ['valueiterator',['ValueIterator',['../class_generic_value.html#aee30721a49688ba0f865f5d581eb6be9',1,'GenericValue']]],
+  ['valueopen',['valueOpen',['../structargs_1_1_help_params.html#a40ec851422baecc5439bac2758db1030',1,'args::HelpParams']]],
+  ['valuereader',['ValueReader',['../structargs_1_1_value_reader.html',1,'args']]],
+  ['valuetype',['ValueType',['../class_emojicode_compiler_1_1_value_type.html',1,'EmojicodeCompiler::ValueType'],['../class_generic_value.html#a43a39bb4fca9b9d3de3da6ac353d25ce',1,'GenericValue::ValueType()'],['../class_generic_document.html#a8936205dc215dda029060d7e835e0549',1,'GenericDocument::ValueType()'],['../class_emojicode_compiler_1_1_type.html#aff16309bca8a19fab4624ec5fc3ad80c',1,'EmojicodeCompiler::Type::valueType()']]],
+  ['valuetypeinit',['valueTypeInit',['../class_emojicode_compiler_1_1_a_s_t_boxing.html#a62ade9e11f4c5b5ed570e02f28ad4660',1,'EmojicodeCompiler::ASTBoxing']]],
+  ['valuetypemethod',['ValueTypeMethod',['../namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761a04d2682be550d7767c9135c1d629e1f4',1,'EmojicodeCompiler']]],
+  ['variable',['Variable',['../class_emojicode_compiler_1_1_variable.html',1,'EmojicodeCompiler']]],
+  ['variablecapture',['VariableCapture',['../struct_emojicode_compiler_1_1_variable_capture.html',1,'EmojicodeCompiler']]],
+  ['variableidcount',['variableIdCount',['../class_emojicode_compiler_1_1_semantic_scoper.html#a89fd6825867740955dc42fbc5197a923',1,'EmojicodeCompiler::SemanticScoper']]],
+  ['variablenotfounderror',['VariableNotFoundError',['../class_emojicode_compiler_1_1_variable_not_found_error.html',1,'EmojicodeCompiler']]],
+  ['variablepointer',['variablePointer',['../class_emojicode_compiler_1_1_a_s_t_variable_init.html#a290d0da58280e5d04b8eb57624021d94',1,'EmojicodeCompiler::ASTVariableInit']]],
+  ['virtualtablethunk',['virtualTableThunk',['../class_emojicode_compiler_1_1_function.html#aeb2bc5e441024e4f6e0ece8d867c0d17',1,'EmojicodeCompiler::Function']]],
+  ['vtcreator',['VTCreator',['../class_emojicode_compiler_1_1_v_t_creator.html',1,'EmojicodeCompiler::VTCreator'],['../class_emojicode_compiler_1_1_v_t_creator.html#a9eda218d06f591ec7916b3f46d33210c',1,'EmojicodeCompiler::VTCreator::VTCreator()']]]
 ];

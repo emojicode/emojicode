@@ -1,4 +1,6 @@
 <map id="EmojicodeCompiler::ASTClosure" name="EmojicodeCompiler::ASTClosure">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="EmojicodeCompiler::\lASTExpr" alt="" coords="5,92,150,131"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="The superclass of all syntax tree nodes representing an expression. " alt="" coords="5,92,150,131"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="ASTNode is the parent class of all nodes in the abstract syntax tree. " alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_m_f_heap_auto_allocates.html" title="EmojicodeCompiler::\lMFHeapAutoAllocates" alt="" coords="174,92,328,131"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_m_f_heap_allocates.html" title="EmojicodeCompiler::\lMFHeapAllocates" alt="" coords="179,5,323,44"/>
 </map>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['newlocation',['newLocation',['../struct_emojicode_1_1_object.html#a521b830dcea88bf2070fc4c77ca54f96',1,'Emojicode::Object']]],
-  ['next',['next',['../struct_emojicode_1_1_emojicode_dictionary_node.html#a8d7cc3854357ec2965c2077fa49abe77',1,'Emojicode::EmojicodeDictionaryNode']]],
-  ['nextthreshold',['nextThreshold',['../struct_emojicode_1_1_emojicode_dictionary.html#abe59a0d5440a2ebf83253d5d7b71d010',1,'Emojicode::EmojicodeDictionary']]]
+  ['length',['length',['../struct_generic_string_ref.html#a4a96d618744ad73f766a1551b1d517fe',1,'GenericStringRef::length()'],['../struct_generic_pointer_1_1_token.html#a67383574032a3289d34002bb2d95df6d',1,'GenericPointer::Token::length()']]],
+  ['longprefix',['longPrefix',['../structargs_1_1_help_params.html#a65562e96ae0b37cf9aa35c0e5edcec3c',1,'args::HelpParams']]],
+  ['longseparator',['longSeparator',['../structargs_1_1_help_params.html#a2beb4a512d8df8075ade0633f4b4ef29',1,'args::HelpParams']]]
 ];

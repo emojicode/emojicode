@@ -100,8 +100,12 @@ public:
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
 
+    /// Informs the expression that it is used to return the initialized object from an object initializer.
+    void setIsInitReturn() { initReturn_ = true; }
+
 protected:
     std::shared_ptr<ASTExpr> value_;
+    bool initReturn_ = false;
 };
 
 class ASTRaise final : public ASTReturn {

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['major',['major',['../struct_emojicode_compiler_1_1_package_version.html#a54e7e149dd8c23c6746cc911e84a5bf1',1,'EmojicodeCompiler::PackageVersion']]],
-  ['minor',['minor',['../struct_emojicode_compiler_1_1_package_version.html#ae8a2b811af037183ccc5a060fcc2c47b',1,'EmojicodeCompiler::PackageVersion']]]
+  ['captureid',['captureId',['../struct_emojicode_compiler_1_1_variable_capture.html#a545da3e1ce36d0b4aaedb073bb4b088e',1,'EmojicodeCompiler::VariableCapture']]],
+  ['choicestring',['choiceString',['../structargs_1_1_help_params.html#afa09e83834bc001df11b686b528776e9',1,'args::HelpParams']]]
 ];

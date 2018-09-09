@@ -105,8 +105,19 @@ public:
 
     llvm::Value* boxInfoFor(const Type &type);
 
+    /// Allocates heap memory using the runtime library’s ejcAlloc.
+    ///
+    /// Allocates enough bytes to hold the element type of the pointer type `type`.
+    /// @note ejcAlloc expects the first element of the allocated area to be a pointer to the control
+    /// block.
     llvm::Value* alloc(llvm::PointerType *type);
-    void release(llvm::Value *value, const Type &type, bool temporary);
+    /// Allocates stack memory as replacement for a heap memory allocation as performed by alloc().
+    ///
+    /// In order to ensure compatibility with the runtime library’s retain and release functions, additional bytes
+    /// are allocated in front of the object.
+    llvm::Value* stackAlloc(llvm::PointerType *type);
+
+    void release(llvm::Value *value, const Type &type);
     void retain(llvm::Value *value, const Type &type);
     bool isManagedByReference(const Type &type) const;
 
@@ -132,9 +143,8 @@ public:
     /// Registers a temporary value that must be released at the end of the statement.
     /// @param value The value that must be destroyed.
     /// @param type The type of the value.
-    /// @param local Whether the value is a stack allocated object.
-    void addTemporaryObject(llvm::Value *value, const Type &type, bool local) {
-        temporaryObjects_.emplace(value, type, local);
+    void addTemporaryObject(llvm::Value *value, const Type &type) {
+        temporaryObjects_.emplace(value, type);
     }
     /// Releases all temporary values that were previously registered with addTemporaryObject() in the order
     /// they were added.
@@ -147,10 +157,9 @@ protected:
 
 private:
     struct Temporary {
-        Temporary(llvm::Value *value, Type type, bool local) : value(value), type(type), local(local) {}
+        Temporary(llvm::Value *value, Type type) : value(value), type(type) {}
         llvm::Value *value;
         Type type;
-        bool local;
     };
 
     Function *const fn_;

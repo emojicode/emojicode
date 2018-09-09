@@ -1,0 +1,13 @@
+<map id="GenericDocument&lt; Encoding, Allocator, StackAllocator &gt;" name="GenericDocument&lt; Encoding, Allocator, StackAllocator &gt;">
+<area shape="rect" id="node2" href="$class_generic_value.html" title="Represents a JSON value. Use Value for UTF8 encoding and default allocator. " alt="" coords="13,68,185,107"/>
+<area shape="rect" id="node5" href="$struct_generic_value_1_1_array_data.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::ArrayData" alt="" coords="314,68,486,107"/>
+<area shape="rect" id="node3" href="$union_generic_value_1_1_data.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::Data" alt="" coords="565,256,737,295"/>
+<area shape="rect" id="node4" href="$struct_generic_value_1_1_string.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::String" alt="" coords="314,193,486,232"/>
+<area shape="rect" id="node6" href="$struct_generic_value_1_1_object_data.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::ObjectData" alt="" coords="314,256,486,295"/>
+<area shape="rect" id="node7" href="$struct_generic_member.html" title="Name&#45;value pair in a JSON object value. " alt="" coords="5,256,193,295"/>
+<area shape="rect" id="node8" href="$union_generic_value_1_1_number.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::Number" alt="" coords="314,319,486,357"/>
+<area shape="rect" id="node9" href="$struct_generic_value_1_1_number_1_1_u.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::Number::U" alt="" coords="13,319,185,357"/>
+<area shape="rect" id="node10" href="$struct_generic_value_1_1_number_1_1_i.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::Number::I" alt="" coords="13,381,185,420"/>
+<area shape="rect" id="node11" href="$struct_generic_value_1_1_short_string.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::ShortString" alt="" coords="314,381,486,420"/>
+<area shape="rect" id="node12" href="$struct_generic_value_1_1_flag.html" title="GenericValue\&lt; Encoding,\l Allocator \&gt;::Flag" alt="" coords="314,444,486,483"/>
+</map>

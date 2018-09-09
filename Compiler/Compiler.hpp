@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+/// The main namespace of the Emojicode Compiler. It contains everything releated to compilation.
 namespace EmojicodeCompiler {
 
 class CompilerError;

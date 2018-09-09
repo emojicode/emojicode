@@ -15,9 +15,9 @@ namespace EmojicodeCompiler {
 void MFAnalyser::analyse() {
     for (auto &protocol : package_->protocols()) {
         protocol->eachFunction([](Function *function) {
-            function->setMemoryFlowTypeForThis(MFType::Escaping);
+            function->setMemoryFlowTypeForThis(MFFlowCategory::Escaping);
             for (size_t i = 0; i < function->parameters().size(); i++) {
-                function->setParameterMFType(i, MFType::Escaping);
+                function->setParameterMFType(i, MFFlowCategory::Escaping);
             }
         });
     }

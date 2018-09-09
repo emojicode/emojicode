@@ -13,8 +13,14 @@
 #include <cstring>
 #include <iostream>
 
+runtime::internal::ControlBlock ejcIgnoreBlock;
+
 int runtime::internal::argc;
 char **runtime::internal::argv;
+
+runtime::internal::ControlBlock* runtime::internal::newControlBlock() {
+    return new runtime::internal::ControlBlock;
+}
 
 extern "C" runtime::Integer fn_1f3c1();
 
@@ -27,14 +33,26 @@ extern "C" int8_t* ejcAlloc(runtime::Integer size) {
 
 extern "C" void ejcRetain(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
+    if (controlBlock == nullptr) {
+        auto ptr = reinterpret_cast<int64_t *>(reinterpret_cast<uint8_t *>(object) - 8);
+        (*ptr)++;
+        return;
+    }
+    if (controlBlock == &ejcIgnoreBlock) return;
 //    std::cout << "Retaining " << object << std::endl;
-    if (controlBlock == nullptr) return;
     controlBlock->strongCount++;
 }
 
 extern "C" void ejcRelease(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
-    if (controlBlock == nullptr) return;
+    if (controlBlock == nullptr) {
+        auto &ptr = *reinterpret_cast<int64_t *>(reinterpret_cast<uint8_t *>(object) - 8);
+        ptr--;
+        if (ptr != 0) return;
+        object->classInfo()->dispatch<void>(0, object);
+        return;
+    }
+    if (controlBlock == &ejcIgnoreBlock) return;
 
 //    std::cout << "Releasing " << object << std::endl;
 
@@ -44,12 +62,13 @@ extern "C" void ejcRelease(runtime::Object<void> *object) {
 
 //    std::cout << "Deleting " << object << std::endl;
     object->classInfo()->dispatch<void>(0, object);
+    delete controlBlock;
     free(object);
 }
 
 extern "C" void ejcReleaseMemory(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
-    if (controlBlock == nullptr) return;
+    if (controlBlock == &ejcIgnoreBlock) return;
 //    std::cout << "Releasing " << object << std::endl;
 
     controlBlock->strongCount--;
@@ -57,6 +76,7 @@ extern "C" void ejcReleaseMemory(runtime::Object<void> *object) {
     if (controlBlock->strongCount != 0) return;
 
 //    std::cout << "Deleting " << object << std::endl;
+    delete controlBlock;
     free(object);
 }
 

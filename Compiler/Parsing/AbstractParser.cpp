@@ -148,7 +148,7 @@ void AbstractParser::parseParameters(Function *function, bool initializer) {
         }
 
         auto variableToken = stream_.consumeToken(TokenType::Variable);
-        params.emplace_back(variableToken.value(), parseType(), escaping ? MFType::Escaping : MFType::Borrowing);
+        params.emplace_back(variableToken.value(), parseType(), escaping ? MFFlowCategory::Escaping : MFFlowCategory::Borrowing);
 
         if (argumentToVariable) {
             dynamic_cast<Initializer *>(function)->addArgumentToVariable(variableToken.value(), variableToken.position());

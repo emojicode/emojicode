@@ -5,6 +5,7 @@
 #include "DeinitializerBuilder.hpp"
 #include "ThunkBuilder.hpp"
 #include "Compiler.hpp"
+#include "Package/Package.hpp"
 #include "FunctionAnalyser.hpp"
 #include "SemanticAnalyser.hpp"
 #include "Types/Class.hpp"

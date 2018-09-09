@@ -28,7 +28,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 };
 
 class ASTUnwrap final : public ASTUnary {
@@ -38,7 +38,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 private:
     bool error_ = false;
 

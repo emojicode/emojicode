@@ -19,12 +19,12 @@ namespace EmojicodeCompiler {
 class ASTBoxing : public ASTExpr {
 public:
     ASTBoxing(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType);
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {
         expr_->analyseMemoryFlow(analyser, type);
     }
     Type analyse(FunctionAnalyser *, const TypeExpectation &) final { return expressionType(); }
 protected:
-    void unsetIsTemporaryPost() override { expr_->unsetIsTemporary(); }
+    void unsetIsTemporaryPost() final { expr_->unsetIsTemporary(); }
 
     std::shared_ptr<ASTExpr> expr_;
     /// Gets a pointer to the value area of box and bit-casts it to the type matching the ASTExpr::expressionType()
@@ -97,7 +97,7 @@ protected:
     void getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const;
     void setBoxInfo(Value *box, FunctionCodeGenerator *fg) const;
 
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {
         analyseAllocation(type);
         ASTBoxing::analyseMemoryFlow(analyser, type);
     }

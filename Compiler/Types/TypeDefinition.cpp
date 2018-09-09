@@ -7,13 +7,10 @@
 //
 
 #include "TypeDefinition.hpp"
-#include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
-#include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
-#include "Types/TypeContext.hpp"
 #include <algorithm>
 
 namespace EmojicodeCompiler {

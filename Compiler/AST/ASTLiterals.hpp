@@ -23,7 +23,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
 
 private:
     std::u32string value_;
@@ -37,7 +37,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override {}
 };
 
 class ASTBooleanTrue final : public ASTExpr {
@@ -47,7 +47,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override {}
 };
 
 class ASTNumberLiteral final : public ASTExpr {
@@ -61,7 +61,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override {}
 
 private:
     enum class NumberType {
@@ -81,7 +81,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override {}
 
 private:
     char32_t value_;
@@ -95,7 +95,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
@@ -110,7 +110,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
@@ -125,7 +125,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
 private:
     std::vector<std::shared_ptr<ASTExpr>> values_;
@@ -139,7 +139,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 };
 
 class ASTNoValue : public ASTExpr {
@@ -149,7 +149,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFType) override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override {}
     
 private:
     Type type_ = Type::noReturn();

@@ -11,15 +11,11 @@
 namespace EmojicodeCompiler {
 
 llvm::Value* MFHeapAutoAllocates::allocate(FunctionCodeGenerator *fg, llvm::Type *type) const {
-    if (stack_) {
-        return fg->createEntryAlloca(type);
-    }
-
-    return fg->alloc(type->getPointerTo());
+   return stack_ ? fg->stackAlloc(type->getPointerTo()) : fg->alloc(type->getPointerTo());
 }
 
-void MFHeapAutoAllocates::analyseAllocation(MFType type) {
-    if (type == MFType::Borrowing) {
+void MFHeapAutoAllocates::analyseAllocation(MFFlowCategory type) {
+    if (type == MFFlowCategory::Borrowing) {
         allocateOnStack();
     }
 }

@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$struct_emojicode_compiler_1_1_instance_variable_declaration.html" title="EmojicodeCompiler::\lInstanceVariableDeclaration" alt="" coords="5,5,192,44"/>
+<area shape="rect" id="node1" href="$class_emojicode_compiler_1_1_compiler_delegate.html" title="EmojicodeCompiler::\lCompilerDelegate" alt="" coords="5,37,150,76"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_c_l_i_1_1_h_r_f_compiler_delegate.html" title="An CompilerDelegate that prints errors and warnings to stderr in a **h**uman **r**eadable **f**ormat..." alt="" coords="202,5,385,44"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_c_l_i_1_1_j_s_o_n_compiler_delegate.html" title="An CompilerDelegate that prints errors and warnings to stderr as JSON. " alt="" coords="198,68,389,107"/>
 </map>

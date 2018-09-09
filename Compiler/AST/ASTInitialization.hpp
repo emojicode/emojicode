@@ -31,7 +31,7 @@ public:
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 
     /// Sets the destination for a value type inititalization.
     ///

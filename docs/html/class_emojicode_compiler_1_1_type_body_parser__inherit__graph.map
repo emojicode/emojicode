@@ -1,7 +1,3 @@
-<map id="EmojicodeCompiler::TypeBodyParser" name="EmojicodeCompiler::TypeBodyParser">
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_class_type_body_parser.html" title="EmojicodeCompiler::\lClassTypeBodyParser" alt="" coords="398,5,551,44"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_enum_type_body_parser.html" title="EmojicodeCompiler::\lEnumTypeBodyParser" alt="" coords="397,68,552,107"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_protocol_type_body_parser.html" title="EmojicodeCompiler::\lProtocolTypeBodyParser" alt="" coords="390,131,559,169"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_value_type_body_parser.html" title="EmojicodeCompiler::\lValueTypeBodyParser" alt="" coords="398,193,551,232"/>
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="5,100,150,139"/>
+<map id="EmojicodeCompiler::TypeBodyParser&lt; TypeDef &gt;" name="EmojicodeCompiler::TypeBodyParser&lt; TypeDef &gt;">
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_abstract_parser.html" title="EmojicodeCompiler::\lAbstractParser" alt="" coords="29,5,174,44"/>
 </map>

@@ -66,7 +66,7 @@ public:
     Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(PrettyStream &pretty) const override;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 
 private:
     std::u32string name_;

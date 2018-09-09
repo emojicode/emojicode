@@ -1,3 +1,3 @@
 <map id="EmojicodeCompiler::ASTArguments" name="EmojicodeCompiler::ASTArguments">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="EmojicodeCompiler::\lASTNode" alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="ASTNode is the parent class of all nodes in the abstract syntax tree. " alt="" coords="5,5,150,44"/>
 </map>

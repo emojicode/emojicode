@@ -35,7 +35,7 @@ Type ASTGetVariable::analyse(FunctionAnalyser *analyser, const TypeExpectation &
     return var.variable.type();
 }
 
-void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     if (!inInstanceScope()) {
         analyser->recordVariableGet(id(), type);
     }
@@ -69,9 +69,12 @@ void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTVariableAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    analyser->retain(&expr_);
+    analyser->take(expr_.get());
     if (!inInstanceScope()) {
-        analyser->recordVariableSet(id(), expr_.get(), false, variableType());
+        analyser->recordVariableSet(id(), expr_.get(), variableType());
+    }
+    else {
+        expr_->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
     }
 }
 
@@ -83,8 +86,8 @@ void ASTVariableDeclareAndAssign::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTVariableDeclareAndAssign::analyseMemoryFlow(EmojicodeCompiler::MFFunctionAnalyser *analyser) {
-    analyser->retain(&expr_);
-    analyser->recordVariableSet(id(), expr_.get(), true, variableType());
+    analyser->take(expr_.get());
+    analyser->recordVariableSet(id(), expr_.get(), variableType());
 }
 
 void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
@@ -103,8 +106,8 @@ void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTConstantVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    analyser->retain(&expr_);
-    analyser->recordVariableSet(id(), expr_.get(), false, expr_->expressionType());
+    analyser->take(expr_.get());
+    analyser->recordVariableSet(id(), expr_.get(), expr_->expressionType());
 }
 
 ASTOperatorAssignment::ASTOperatorAssignment(std::u32string name, const std::shared_ptr<ASTExpr> &e,

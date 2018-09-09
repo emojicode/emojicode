@@ -82,7 +82,8 @@ compilation_tests = [
     "typeValues",
     "rcOrder",
     "rcOrderVt",
-    "rcTempOrder"
+    "rcTempOrder",
+    "rcInstanceVariable",
 ]
 library_tests = [
     "primitives",

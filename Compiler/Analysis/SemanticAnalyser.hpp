@@ -5,7 +5,6 @@
 #ifndef EMOJICODE_SEMANTICANALYSER_HPP
 #define EMOJICODE_SEMANTICANALYSER_HPP
 
-#include "Types/Generic.hpp"
 #include <queue>
 
 namespace EmojicodeCompiler {

@@ -39,7 +39,7 @@ Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     return Type(closure_.get());
 }
 
-void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFType type) {
+void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyseAllocation(type);
     for (auto &capture : capture_.captures) {
         analyser->recordVariableGet(capture.sourceId, type);
