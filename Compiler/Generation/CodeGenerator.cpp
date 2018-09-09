@@ -170,7 +170,7 @@ void CodeGenerator::emit(const std::string &outPath, bool printIr) {
     }
     pass.add(llvm::createVerifierPass(false));
     if (printIr) {
-        pass.add(llvm::createStripDeadPrototypesPass());
+//        pass.add(llvm::createStripDeadPrototypesPass());
         pass.add(llvm::createPrintModulePass(llvm::outs()));
     }
     pass.run(*module());

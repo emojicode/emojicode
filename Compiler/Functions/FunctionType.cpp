@@ -7,6 +7,8 @@
 //
 
 #include "FunctionType.hpp"
+#include "Function.hpp"
+#include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -31,8 +33,10 @@ bool isOnlyNothingnessReturnAllowed(FunctionType type) {
     return type == FunctionType::ObjectInitializer || type == FunctionType::ValueTypeInitializer;
 }
 
-bool hasThisArgument(FunctionType type) {
-    return isSelfAllowed(type) || type == FunctionType::ClassMethod;
+bool hasThisArgument(Function *function) {
+    return (isSelfAllowed(function->functionType()) || function->functionType() == FunctionType::ClassMethod) &&
+            !(function->functionType() == FunctionType::ObjectInitializer &&
+              dynamic_cast<Class *>(function->owner())->foreign());
 }
 
 } // namespace EmojicodeCompiler

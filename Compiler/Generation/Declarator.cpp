@@ -125,7 +125,7 @@ void Declarator::declareLlvmFunction(Function *function) const {
         reification.entity.function->addFnAttr(llvm::Attribute::NoUnwind);
 
         size_t i = 0;
-        if (hasThisArgument(function->functionType())) {
+        if (hasThisArgument(function)) {
             if (function->memoryFlowTypeForThis() == MFFlowCategory::Borrowing) {
                 reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
             }

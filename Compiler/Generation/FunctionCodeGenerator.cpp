@@ -48,7 +48,7 @@ Compiler* FunctionCodeGenerator::compiler() const {
 void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     unsigned int i = 0;
     auto it = function->args().begin();
-    if (hasThisArgument(fn_->functionType())) {
+    if (hasThisArgument(fn_)) {
         auto &llvmArg = *(it++);
         llvmArg.setName("this");
         addParamAttrs(fn_->typeContext().calleeType(), llvmArg);
