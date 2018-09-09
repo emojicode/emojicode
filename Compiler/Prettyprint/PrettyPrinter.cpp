@@ -237,7 +237,7 @@ void PrettyPrinter::printMethodsAndInitializers(TypeDefinition *typeDef) {
         print(method->isImperative() ? "❗️" : "❓️", method, true, false);
     }
     for (auto typeMethod : typeDef->typeMethodList()) {
-        print(typeMethod->isImperative() ? "🐇❗️" : "🐇❓", typeMethod, true, true);
+        print(typeMethod->isImperative() ? "❗️" : "❓", typeMethod, true, true);
     }
 }
 
@@ -277,11 +277,21 @@ void PrettyPrinter::printFunctionAttributes(Function *function, bool noMutate) {
     if (function->overriding()) {
         prettyStream_ << "✒️ ";
     }
+    if (function->functionType() == FunctionType::ClassMethod ||
+        (function->functionType() == FunctionType::Function &&
+         dynamic_cast<ValueType*>(function->owner()) != nullptr)) {
+        prettyStream_ << "🐇 ";
+    }
     if (function->unsafe()) {
         prettyStream_ << "☣️ ";
     }
     if (function->owner()->type().type() == TypeType::ValueType && function->mutating() && !noMutate) {
         prettyStream_ << "🖍 ";
+    }
+    if (auto initializer = dynamic_cast<Initializer *>(function)) {
+        if (initializer->required()) {
+            prettyStream_ << "🔑 ";
+        }
     }
     if (function->memoryFlowTypeForThis() == MFFlowCategory::Escaping) {
         prettyStream_ << "🛅 ";
@@ -312,12 +322,6 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
         prettyStream_.indent();
         printFunctionAttributes(function, noMutate);
         printFunctionAccessLevel(function);
-
-        if (auto initializer = dynamic_cast<Initializer *>(function)) {
-            if (initializer->required()) {
-                prettyStream_ << "🔑 ";
-            }
-        }
 
         if (auto initializer = dynamic_cast<Initializer *>(function)) {
             prettyStream_ << key;
