@@ -254,11 +254,7 @@ Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation,
         return exprType;
     }
 
-    if ((exprType.type() == TypeType::Class && expectation.type() == TypeType::Class &&
-         expectation.klass() != exprType.klass()) || (exprType.type() == TypeType::Class &&
-                                                      expectation.type() == TypeType::Someobject)) {
-        insertNode<ASTUpcast>(node, exprType, expectation);
-    }
+    upcast(exprType, expectation, node);
 
     exprType = callableBox(std::move(exprType), expectation, node);
 
@@ -280,6 +276,15 @@ Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation,
         }
     }
     return exprType;
+}
+
+void FunctionAnalyser::upcast(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+    if ((exprType.type() == TypeType::Class && expectation.type() == TypeType::Class &&
+         expectation.klass() != exprType.klass()) || (exprType.unoptionalized().type() == TypeType::Class &&
+                                                      expectation.unoptionalized().type() == TypeType::Someobject)) {
+        insertNode<ASTUpcast>(node, exprType, expectation.unoptionalized());
+        exprType = expectation.unoptionalized();
+    }
 }
 
 Type FunctionAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {

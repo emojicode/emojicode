@@ -109,6 +109,8 @@ private:
     void checkFunctionSafety(Function *function, const SourcePosition &p) const;
 
     void makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp);
+
+    void upcast(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
 };
 
 }  // namespace EmojicodeCompiler
