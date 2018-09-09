@@ -52,9 +52,10 @@ Value* ASTBoxing::getAllocaTheBox(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTBoxing::getGetValueFromBox(Value *box, FunctionCodeGenerator *fg) const {
-    if (fg->typeHelper().isRemote(expr_->expressionType().unboxed().unoptionalized())) {
-        auto ptrPtrType = fg->typeHelper().llvmTypeFor(expr_->expressionType())->getPointerTo()->getPointerTo();
-        auto ptrPtr = fg->buildGetBoxValuePtr(box, ptrPtrType);
+    auto containedType = expr_->expressionType().unboxed().unoptionalized();
+    if (fg->typeHelper().isRemote(containedType)) {
+        auto type = fg->typeHelper().llvmTypeFor(containedType);
+        auto ptrPtr = fg->buildGetBoxValuePtr(box, type->getPointerTo()->getPointerTo());
         return fg->builder().CreateLoad(fg->builder().CreateLoad(ptrPtr));
     }
     return fg->builder().CreateLoad(getBoxValuePtr(box, fg));
@@ -89,7 +90,7 @@ Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fg) const {
     auto box = fg->createEntryAlloca(fg->typeHelper().box());
     if (isValueTypeInit()) {
         setBoxInfo(box, fg);
-        valueTypeInit(fg, fg->buildGetBoxValuePtr(box, expr_->expressionType()));
+        valueTypeInit(fg, buildStoreAddress(box, fg));
     }
     else {
         getPutValueIntoBox(box, expr_->generate(fg), fg);
@@ -142,18 +143,28 @@ Value* ASTBoxToSimpleError::generate(FunctionCodeGenerator *fg) const {
     });
 }
 
+Value* ASTToBox::buildStoreAddress(Value *box, FunctionCodeGenerator *fg) const {
+    auto containedType = expr_->expressionType().unboxed().unoptionalized();
+    if (fg->typeHelper().isRemote(containedType)) {
+        auto containedTypeLlvm = fg->typeHelper().llvmTypeFor(containedType);
+        auto mngType = fg->typeHelper().managable(containedTypeLlvm);
+        auto ctPtrPtr = containedTypeLlvm->getPointerTo()->getPointerTo();
+        auto boxPtr1 = fg->buildGetBoxValuePtr(box, ctPtrPtr);
+        auto boxPtr2 = fg->buildGetBoxValuePtrAfter(box, mngType->getPointerTo(), mngType->getPointerTo());
+        auto alloc = allocate(fg, mngType);
+        auto valuePtr = fg->managableGetValuePtr(alloc);
+        // The first element in the value area is a direct pointer to the struct.
+        fg->builder().CreateStore(valuePtr, boxPtr1);
+        // The second is a pointer to the allocated object for management.
+        fg->builder().CreateStore(alloc, boxPtr2);
+        return valuePtr;
+    }
+    return getBoxValuePtr(box, fg);
+}
+
 void ASTToBox::getPutValueIntoBox(Value *box, Value *value, FunctionCodeGenerator *fg) const {
     setBoxInfo(box, fg);
-    if (fg->typeHelper().isRemote(expr_->expressionType())) {
-        auto type = fg->typeHelper().llvmTypeFor(expr_->expressionType());
-        auto ptrPtr = fg->buildGetBoxValuePtr(box, type->getPointerTo()->getPointerTo());
-        auto alloc = allocate(fg, type);
-        fg->builder().CreateStore(value, alloc);
-        fg->builder().CreateStore(alloc, ptrPtr);
-    }
-    else {
-        fg->builder().CreateStore(value, getBoxValuePtr(box, fg));
-    }
+    fg->builder().CreateStore(value, buildStoreAddress(box, fg));
 }
 
 void ASTToBox::setBoxInfo(Value *box, FunctionCodeGenerator *fg) const {

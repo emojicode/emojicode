@@ -149,6 +149,14 @@ Value* FunctionCodeGenerator::buildGetBoxValuePtr(Value *box, llvm::Type *llvmTy
     return builder().CreateBitCast(builder().CreateConstInBoundsGEP2_32(typeHelper().box(), box, 0, 1), llvmType);
 }
 
+llvm::Value* FunctionCodeGenerator::buildGetBoxValuePtrAfter(llvm::Value *box, llvm::Type *llvmType,
+                                                             llvm::Type *after) {
+    auto val = builder().CreateConstInBoundsGEP2_32(typeHelper().box(), box, 0, 1);
+    auto strType = llvm::StructType::get(after, llvmType);
+    auto strPtr = builder().CreateBitCast(val, strType->getPointerTo());
+    return builder().CreateConstInBoundsGEP2_32(strType, strPtr, 0, 1);
+}
+
 Value* FunctionCodeGenerator::buildMakeNoValue(Value *box) {
     auto boxInfoNull = llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo());
     return builder().CreateStore(boxInfoNull, buildGetBoxInfoPtr(box));
@@ -289,6 +297,11 @@ llvm::Value* FunctionCodeGenerator::stackAlloc(llvm::PointerType *type) {
     builder().CreateStore(llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(generator()->context())),
                           controlBlockField);
     return object;
+}
+
+llvm::Value* FunctionCodeGenerator::managableGetValuePtr(llvm::Value *managablePtr) {
+    auto elementType = llvm::dyn_cast<llvm::PointerType>(managablePtr->getType())->getElementType();
+    return builder().CreateConstInBoundsGEP2_32(elementType, managablePtr, 0, 1);
 }
 
 llvm::Value* FunctionCodeGenerator::createEntryAlloca(llvm::Type *type, const llvm::Twine &name) {

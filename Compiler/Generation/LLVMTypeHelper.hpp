@@ -63,8 +63,15 @@ public:
     llvm::FunctionType* boxRetainRelease() const { return boxRetainRelease_; }
     llvm::StructType* protocolConformanceEntry() const { return protocolConformanceEntry_; }
 
-    llvm::StructType *llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
-    llvm::ArrayType *multiprotocolConformance(const Type &type);
+    llvm::StructType* llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
+    llvm::ArrayType* multiprotocolConformance(const Type &type);
+
+    /// Wraps the provided type into an anonymous struct where the first element is a control block pointer and the
+    /// second the type.
+    ///
+    /// This can be used to allocate objects with FunctionCodeGenerator::alloc and the like if they do not normally
+    /// have a control block pointer.
+    llvm::StructType* managable(llvm::Type *type) const;
 
     void setReificationContext(ReificationContext *context) { reifiContext_ = context; };
 

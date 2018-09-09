@@ -201,4 +201,8 @@ llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
     return llvmType;
 }
 
+llvm::StructType* LLVMTypeHelper::managable(llvm::Type *type) const {
+    return llvm::StructType::get(context_, { llvm::Type::getInt8PtrTy(context_), type });
+}
+
 }  // namespace EmojicodeCompiler

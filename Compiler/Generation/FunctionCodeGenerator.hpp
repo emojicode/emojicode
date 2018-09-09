@@ -71,6 +71,10 @@ public:
     /// @param box Pointer to a box.
     /// @param llvmType The type to which the pointer to the field is cast. Must be a pointer type.
     llvm::Value* buildGetBoxValuePtr(llvm::Value *box, llvm::Type *llvmType);
+    /// Gets a pointer to the value field of a box as `llvmType`.
+    /// @param box Pointer to a box.
+    /// @param llvmType The type to which the pointer to the field is cast. Must be a pointer type.
+    llvm::Value* buildGetBoxValuePtrAfter(llvm::Value *box, llvm::Type *llvmType, llvm::Type *after);
     /// Makes the box contain no value.
     /// @param box Pointer to a box.
     llvm::Value* buildMakeNoValue(llvm::Value *box);
@@ -108,14 +112,20 @@ public:
     /// Allocates heap memory using the runtime library’s ejcAlloc.
     ///
     /// Allocates enough bytes to hold the element type of the pointer type `type`.
-    /// @note ejcAlloc expects the first element of the allocated area to be a pointer to the control
+    ///
+    /// @note ejcAlloc expects the first element of the allocated type to be a pointer to the control
     /// block.
     llvm::Value* alloc(llvm::PointerType *type);
     /// Allocates stack memory as replacement for a heap memory allocation as performed by alloc().
     ///
     /// In order to ensure compatibility with the runtime library’s retain and release functions, additional bytes
     /// are allocated in front of the object.
+    ///
+    /// @note Like ejcAlloc, this function expects the first element of the allocated type to be a pointer to the
+    /// control block.
     llvm::Value* stackAlloc(llvm::PointerType *type);
+
+    llvm::Value* managableGetValuePtr(llvm::Value *managablePtr);
 
     void release(llvm::Value *value, const Type &type);
     void retain(llvm::Value *value, const Type &type);

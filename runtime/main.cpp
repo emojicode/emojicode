@@ -43,12 +43,16 @@ extern "C" void ejcRetain(runtime::Object<void> *object) {
     controlBlock->strongCount++;
 }
 
+void releaseLocal(runtime::Object<void> *object) {
+    auto &ptr = *reinterpret_cast<int64_t *>(reinterpret_cast<uint8_t *>(object) - 8);
+    ptr--;
+    if (ptr != 0) return;
+}
+
 extern "C" void ejcRelease(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
     if (controlBlock == nullptr) {
-        auto &ptr = *reinterpret_cast<int64_t *>(reinterpret_cast<uint8_t *>(object) - 8);
-        ptr--;
-        if (ptr != 0) return;
+        releaseLocal(object);
         object->classInfo()->dispatch<void>(0, object);
         return;
     }
@@ -68,6 +72,10 @@ extern "C" void ejcRelease(runtime::Object<void> *object) {
 
 extern "C" void ejcReleaseMemory(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
+    if (controlBlock == nullptr) {
+        releaseLocal(object);
+        return;
+    }
     if (controlBlock == &ejcIgnoreBlock) return;
 //    std::cout << "Releasing " << object << std::endl;
 

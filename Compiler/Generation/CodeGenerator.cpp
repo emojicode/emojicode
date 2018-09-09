@@ -170,7 +170,7 @@ void CodeGenerator::emit(const std::string &outPath, bool printIr) {
     }
     pass.add(llvm::createVerifierPass(false));
     if (printIr) {
-//        pass.add(llvm::createStripDeadPrototypesPass());
+        pass.add(llvm::createStripDeadPrototypesPass());
         pass.add(llvm::createPrintModulePass(llvm::outs()));
     }
     pass.run(*module());
@@ -272,15 +272,20 @@ void CodeGenerator::buildBoxRetainRelease(const Type &type) {
             retainFg.retain(retainFg.builder().CreateLoad(objPtrRetain), type);
         }
         else if (typeHelper().isRemote(type)) {
-            auto objPtr = releaseFg.buildGetBoxValuePtr(release->args().begin(), type.referenced());
+            auto containedType = typeHelper().llvmTypeFor(type);
+            auto mngType = typeHelper().managable(containedType);
+
+            auto objPtr = releaseFg.buildGetBoxValuePtrAfter(release->args().begin(), mngType->getPointerTo(),
+                                                             containedType->getPointerTo());
             auto remotePtr = releaseFg.builder().CreateLoad(objPtr);
-            releaseFg.release(remotePtr, type);
+            releaseFg.release(releaseFg.managableGetValuePtr(remotePtr), type);
             releaseFg.release(releaseFg.builder().CreateBitCast(remotePtr, llvm::Type::getInt8PtrTy(context_)),
                               Type(package()->compiler()->sMemory));
 
-            auto objPtrRetain = retainFg.buildGetBoxValuePtr(retain->args().begin(), type.referenced());
+            auto objPtrRetain = retainFg.buildGetBoxValuePtrAfter(retain->args().begin(), mngType->getPointerTo(),
+                                                                  containedType->getPointerTo());
             auto remotePtrRetain = retainFg.builder().CreateLoad(objPtrRetain);
-            retainFg.retain(remotePtrRetain, type);
+            retainFg.retain(retainFg.managableGetValuePtr(remotePtrRetain), type);
             retainFg.retain(remotePtrRetain, Type(package()->compiler()->sMemory));
         }
         else {
