@@ -5,43 +5,44 @@
   The following is a very basic example of opening a TCP socket to make an HTTP request and print
   the first 140 characters of the response.
   ```
-  📦 sockets 🔴
+  📦 sockets 🏠
 
   🏁 🍇
-    🍦 socket 🚇 🔷📞🆕 🔤www.emojicode.org🔤 80
-    💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: www.emojicode.org❌r❌n❌r❌n🔤
+    🍺 🆕📞🆕 🔤example.com🔤 80❗️ ➡️ socket
+    💬 socket 📇 🔤GET / HTTP/1.1❌r❌nHost: example.com❌r❌n❌r❌n🔤❗️❗️
 
-    🍦 data 🍺 👂 socket 140
-    😀 🍺 🔡 data
+    🍺 👂 socket 140❗️ ➡️ data
+    😀 🍺 🔡 data❗️❗️
   🍉
   ```
 
   At the time of writing this, the above code would return something similar to:
   ```
   HTTP/1.1 200 OK
-  Server: GitHub.com
-  Content-Type: text/html; charset=utf-8
-  Last-Modified: Thu, 13 Apr 2017 16:49:52 GMT
-  Access-Control-Al
+  Cache-Control: max-age=604800
+  Content-Type: text/html; charset=UTF-8
+  Date: Mon, 10 Sep 2018 08:36:28 GMT
+  Etag: "15410256
   ```
 
   Here we’ve an example of a minimal echo-server that listens on port 8728. The server simply sends
   back a copy of the data it received.
   ```
-  📦 sockets 🔴
+  📦 sockets 🏠
 
-  👴 Simple echo server listening on port 8728
+  💭 Simple echo server listening on port 8728
   🏁 🍇
-    🍦 server 🚇 🔷🏄🆕 8728
+    🍺🆕🏄🆕 8728❗️ ➡️ server
 
     🔁 👍 🍇
-      🍦 clientSocket 🍺 🙋 server
+      🍺 🙋 server❗️ ➡️ clientSocket
+
       🔁 👍 🍇
-        🍦 readData 👂 clientSocket 50
-        🍊🍦 data readData 🍇
-          👴 We’ve read 50 bytes and send them back
-          💬 clientSocket data
+        🥑 data 👂 clientSocket 50❗️ 🍇
+          💭 We’ve read 50 bytes and send them back
+          💬 clientSocket data❗️
         🍉
+        🙅‍♀️ error 🍇🍉
       🍉
     🍉
   🍉
@@ -100,7 +101,7 @@
   ❗️ 🚪 📻 🔤socketsSocketClose🔤
 
   📗
-    Tries to read up to *bytes* bytes from the socket. Nothingness is returned
+    Tries to read up to *bytes* bytes from the socket. An error is returned
     on error or if the socket was closed by the peer.
   📗
   ❗️ 👂 bytes 🔢 ➡️ 🚨⛈📇 📻 🔤socketsSocketRead🔤
@@ -109,8 +110,7 @@
 🐋 🏄 🍇
   📗
     Creates a 🏄 instance that immediately starts listening on the given port.
-    This initializer returns Nothingness if the socket can’t be bound to the
-    given port.
+    This initializer returns an error if an error occurs.
   📗
   🆕🚨⛈ port 🔢 📻 🔤socketsServerNewPort🔤
 
