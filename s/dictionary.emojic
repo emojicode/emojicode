@@ -155,7 +155,9 @@
     ↪️ entry? ➡️ entry 🍇
       ↪️ 🔑entry❗️️ 🙌 key 🍇
         ☣️ 🍇
-          🐷 data🐚🍬🐝🐚🔡Element🍆🍆 ⏭entry❗️️ index✖️⚖️🍬🐝🐚🔡Element🍆❗
+          index✖️⚖️🍬🐝🐚🔡Element🍆  ➡️ offset
+          ♻️ data🐚🍬🐝🐚🔡Element🍆🍆 offset❗
+          🐷 data🐚🍬🐝🐚🔡Element🍆🍆 ⏭entry❗️️ offset❗
         🍉
         count ⬅️➖ 1
         ↩️️↩️️
@@ -197,7 +199,9 @@
     🍉
 
     ☣️ 🍇
-      🐷 data🐚🍬🐝🐚🔡Element🍆🍆 entry index✖️⚖️🍬🐝🐚🔡Element🍆❗
+      index✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ offset
+      ♻️ data🐚🍬🐝🐚🔡Element🍆🍆 offset❗
+      🐷 data🐚🍬🐝🐚🔡Element🍆🍆 entry offset❗
     🍉
   🍉
 
@@ -216,12 +220,16 @@
       🍉
 
       🔂 i 🆕⏩⏩ 0 oldCapacity❗️ 🍇
+        i✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ offset
         ☣️ 🍇
-          🐽 oldData 🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
+          🐽 oldData 🐚🍬🐝🐚🔡Element🍆🍆 offset❗ ➡️ 🖍🆕entry?
         🍉
         🔁 entry? ➡️ entry 🍇
           🐷🐕 🔑entry❗🐽entry❗❗
           ⏭entry❗ ➡️ 🖍entry?
+        🍉
+        ☣️ 🍇
+          ♻️ oldData🐚🍬🐝🐚🔡Element🍆🍆 offset❗
         🍉
       🍉
     🍉
@@ -252,12 +260,28 @@
     items.
   📗
   ❗️ 🐗 ➡️ 🔢 🍇
+    ☣️ 🍇
+      ♻️ 🐕❗️
+    🍉
     count ➡️ oldCount
     0 ➡️ 🖍count
     ☣️ 🍇
       ✍️ data 0 0 capacity✖️⚖️🍬🐝🐚🔡Element🍆❗
     🍉
     ↩️ oldCount
+  🍉
+
+  📗 Releases everything inside the list. 📗
+  ☣️🔒❗️♻️ 🍇
+    🔂 i 🆕⏩⏩ 0 capacity❗️ 🍇
+      ♻️ data🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗
+    🍉
+  🍉
+
+  ♻️ 🍇
+    ☣️ 🍇
+      ♻️ 🐕❗️
+    🍉
   🍉
 
   📗 Checks whether *key* is in this 🍯. 📗

@@ -59,7 +59,7 @@ compilation_tests = [
     "genericTypeMethod",
     "genericLocalAsArgToGeneric",
     "variableInitAndScoping",
-    # "valueTypeRemoteAdditional",
+    "valueTypeRemoteAdditional",
     "closureBasic",
     "closureCapture",
     "closureCaptureThis",
