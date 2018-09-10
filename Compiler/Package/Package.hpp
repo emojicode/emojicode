@@ -128,7 +128,8 @@ public:
     void setLinkHints(std::vector<std::string> hints) { linkHints_ = std::move(hints); }
     const std::vector<std::string>& linkHints() { return linkHints_; }
 
-    ~Package();
+    virtual ~Package();
+    
 private:
     /// Verifies that no type with name @c name has already been exported and adds the type to ::exportedTypes_
     void exportType(Type t, std::u32string name, const SourcePosition &p);
