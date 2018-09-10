@@ -302,7 +302,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseGroup() {
 
 std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePosition &position) {
     auto type = parseTypeExpr(position);
-    auto name = stream_.consumeToken().value();  // TODO: TokenType::Identifier
+    auto name = stream_.nextTokenIs(TokenType::New) ? stream_.consumeToken().value() :
+                                                      stream_.consumeToken(TokenType::Identifier).value();
     return std::make_shared<ASTInitialization>(name, type, parseArguments(position), position);
 }
 
