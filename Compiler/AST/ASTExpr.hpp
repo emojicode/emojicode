@@ -64,9 +64,9 @@ private:
 };
 
 template<typename T, typename ...Args>
-std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, Args... args) {
+std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, Args&&... args) {
     auto pos = (*node)->position();
-    *node = std::make_shared<T>(std::move(*node), pos, args...);
+    *node = std::make_shared<T>(std::move(*node), pos, std::forward<Args>(args)...);
     return std::static_pointer_cast<T>(*node);
 }
 
