@@ -84,10 +84,10 @@ template <typename Subclass>
 class Object {
 public:
     template <typename ...Args>
-    static Subclass* init(Args ...args) {
+    static Subclass* init(Args&& ...args) {
         static_assert(util::is_complete<ClassInfoFor<Subclass>>::value,
                       "Provide class info for this class with SET_INFO_FOR.");
-        return new(malloc(sizeof(Subclass))) Subclass(args...);
+        return new(malloc(sizeof(Subclass))) Subclass(std::forward<Args>(args)...);
     }
 
     internal::ControlBlock* controlBlock() const { return block_; }
