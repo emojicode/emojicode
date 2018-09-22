@@ -175,7 +175,7 @@ bool Lexer::beginToken(Token *token, TokenConstructionState *constState) const {
         token->type_ = TokenType::Variable;
     }
     token->value_.push_back(codePoint());
-    return true;
+    return hasMoreChars();
 }
 
 Lexer::TokenState Lexer::continueToken(Token *token, TokenConstructionState *constState) const {
