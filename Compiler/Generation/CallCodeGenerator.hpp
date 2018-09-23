@@ -25,6 +25,12 @@ class Type;
 class Function;
 class ASTArguments;
 
+/// This class is responsible for generating IR to dispatch a method, initializer, type method or protocol method.
+///
+/// It does all the heavy lifting concerning dispatch, dispatch tables etc.
+///
+/// It is also capable of generating code to find a protocol conformance if the callee of a dynamic protocol dispatch is
+/// not boxed for the protocol in question.
 class CallCodeGenerator {
 public:
     CallCodeGenerator(FunctionCodeGenerator *fg, CallType callType) : fg_(fg), callType_(callType) {}
@@ -36,7 +42,8 @@ protected:
     FunctionCodeGenerator* fg() const { return fg_; }
     llvm::Value *createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
                                                const std::vector<Type> &genericArgs,
-                                               llvm::Value *conformancePtr);
+                                               llvm::Value *conformance);
+    llvm::Value* buildFindProtocolConformance(const std::vector<llvm::Value *> &args, const Type &protocol);
 private:
     llvm::Value *createDynamicDispatch(Function *function, const std::vector<llvm::Value *> &args,
                                        const std::vector<Type> &genericArgs);
@@ -46,7 +53,7 @@ private:
     FunctionCodeGenerator *fg_;
     CallType callType_;
 
-    llvm::Value *getProtocolCallee(std::vector<llvm::Value *> &args, llvm::LoadInst *conformance) const;
+    llvm::Value *getProtocolCallee(std::vector<llvm::Value *> &args, llvm::Value *conformance) const;
 };
 
 class MultiprotocolCallCodeGenerator : protected CallCodeGenerator {

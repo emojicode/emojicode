@@ -110,21 +110,8 @@ Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box) const {
 }
 
 Value* ASTCast::castToProtocol(FunctionCodeGenerator *fg, Value *box) const {
-    auto objBoxInfo = fg->builder().CreateBitCast(fg->generator()->declarator().boxInfoForObjects(),
-                                                  fg->typeHelper().boxInfo()->getPointerTo());
-    auto boxInfoValue = boxInfo(fg, box);
-    auto conformanceEntries = fg->createIfElsePhi(fg->builder().CreateICmpEQ(boxInfoValue, objBoxInfo), [&]() {
-        auto obj = fg->builder().CreateLoad(fg->buildGetBoxValuePtr(box, fg->typeHelper().someobject()->getPointerTo()));
-        auto classInfo = fg->buildGetClassInfoFromObject(obj);
-        return fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(fg->typeHelper().classInfo(),
-                                                                                 classInfo, 0, 2));
-    }, [&] {
-        auto conformanceEntriesPtr = fg->builder().CreateConstInBoundsGEP2_32(fg->typeHelper().boxInfo(), boxInfoValue, 0, 0);
-        return fg->builder().CreateLoad(conformanceEntriesPtr);
-    });
+    auto conformance = fg->buildFindProtocolConformance(box, boxInfo(fg, box), typeExpr_->generate(fg));
 
-    auto conformance = fg->builder().CreateCall(fg->generator()->declarator().findProtocolConformance(),
-                                                { conformanceEntries, typeExpr_->generate(fg) });
     auto confPtrTy = fg->typeHelper().protocolConformance()->getPointerTo();
     auto confNullptr = llvm::ConstantPointerNull::get(confPtrTy);
 

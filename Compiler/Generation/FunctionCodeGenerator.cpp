@@ -412,4 +412,21 @@ bool FunctionCodeGenerator::isManagedByReference(const Type &type) const {
         || (type.type() == TypeType::Optional && isManagedByReference(type.optionalType()));
 }
 
+llvm::Value* FunctionCodeGenerator::buildFindProtocolConformance(llvm::Value *box, llvm::Value *boxInfo,
+                                                                 llvm::Value *protocolIdentifier) {
+    auto objBoxInfo = builder().CreateBitCast(generator()->declarator().boxInfoForObjects(),
+                                              typeHelper().boxInfo()->getPointerTo());
+    auto conformanceEntries = createIfElsePhi(builder().CreateICmpEQ(boxInfo, objBoxInfo), [&]() {
+        auto obj = builder().CreateLoad(buildGetBoxValuePtr(box, typeHelper().someobject()->getPointerTo()));
+        auto classInfo = buildGetClassInfoFromObject(obj);
+        return builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(typeHelper().classInfo(), classInfo, 0, 2));
+    }, [&] {
+        auto conformanceEntriesPtr = builder().CreateConstInBoundsGEP2_32(typeHelper().boxInfo(), boxInfo, 0, 0);
+        return builder().CreateLoad(conformanceEntriesPtr);
+    });
+
+    return builder().CreateCall(generator()->declarator().findProtocolConformance(),
+                                { conformanceEntries, protocolIdentifier });
+}
+
 }  // namespace EmojicodeCompiler

@@ -102,6 +102,8 @@ public:
     llvm::Value* buildSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type);
     llvm::Value* buildErrorEnumValueBoxPtr(llvm::Value *box, const Type &type);
 
+    llvm::Value* buildFindProtocolConformance(llvm::Value *box, llvm::Value *boxInfo, llvm::Value *protocolIdentifier);
+
     llvm::Value* int8(int8_t value);
     llvm::Value* int16(int16_t value);
     llvm::Value* int32(int32_t value);
