@@ -101,4 +101,10 @@ void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const Ty
     }
 }
 
+void ASTCallableBox::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+    analyseAllocation(type);
+    expr_->analyseMemoryFlow(analyser, type);
+    MFFunctionAnalyser(thunk_.get()).analyse();
+}
+
 }  // namespace EmojicodeCompiler

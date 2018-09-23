@@ -10,6 +10,7 @@
 #define ASTClosure_hpp
 
 #include "ASTExpr.hpp"
+#include "ASTBoxing.hpp"
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "MemoryFlowAnalysis/MFHeapAllocates.hpp"
 #include <llvm/IR/Instructions.h>
@@ -42,6 +43,32 @@ private:
     llvm::Value* storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const;
 
     void applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation);
+};
+
+class ASTCallableBox final : public ASTBoxing, public MFHeapAutoAllocates {
+public:
+    ASTCallableBox(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType,
+                   std::unique_ptr<Function> thunk)
+    : ASTBoxing(std::move(expr), p, exprType), thunk_(std::move(thunk)) {}
+
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
+
+    llvm::Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(PrettyStream &pretty) const override {}
+    
+private:
+    std::unique_ptr<Function> thunk_;
+};
+
+class ASTCallableThunkDestination : public ASTExpr {
+public:
+    ASTCallableThunkDestination(const SourcePosition &p, const Type &destinationType)
+        : ASTExpr(p) { setExpressionType(destinationType); }
+
+    Type analyse(FunctionAnalyser *, const TypeExpectation &) final { return expressionType(); }
+    void toCode(PrettyStream &pretty) const override {}
+    llvm::Value* generate(FunctionCodeGenerator *fg) const override;
+    virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
 };
 
 }  // namespace EmojicodeCompiler

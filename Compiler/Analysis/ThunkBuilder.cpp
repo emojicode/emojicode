@@ -13,6 +13,7 @@
 #include "AST/ASTStatements.hpp"
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTVariables.hpp"
+#include "AST/ASTClosure.hpp"
 #include "Functions/Initializer.hpp"
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
@@ -22,29 +23,30 @@
 
 namespace EmojicodeCompiler {
 
-void buildBoxingThunkAst(Function *layer, const Function *destinationFunction) {
-    auto p = layer->position();
+void buildBoxingThunkAst(Function *thunk, const Function *destinationFunction, const Type &destCallable) {
+    auto p = thunk->position();
     auto args = ASTArguments(p);
-    for (auto &param : layer->parameters()) {
+    for (auto &param : thunk->parameters()) {
         args.addArguments(std::make_shared<ASTGetVariable>(param.name, p));
     }
 
     std::shared_ptr<ASTExpr> call;
     if (destinationFunction == nullptr) {
-        call = std::make_shared<ASTCallableCall>(std::make_shared<ASTThis>(p), args, p);
+        call = std::make_shared<ASTCallableCall>(std::make_shared<ASTCallableThunkDestination>(p, destCallable),
+                                                 args, p);
     }
     else {
         call = std::make_shared<ASTMethod>(destinationFunction->name(), std::make_shared<ASTThis>(p), args, p);
     }
 
     auto block = std::make_unique<ASTBlock>(p);
-    if (layer->returnType()->type().type() == TypeType::NoReturn) {
+    if (thunk->returnType()->type().type() == TypeType::NoReturn) {
         block->appendNode(std::make_unique<ASTExprStatement>(call, p));
     }
     else {
         block->appendNode(std::make_unique<ASTReturn>(call, p));
     }
-    layer->setAst(std::move(block));
+    thunk->setAst(std::move(block));
 }
 
 std::unique_ptr<Function> makeBoxingThunk(std::u32string name, TypeDefinition *owner, Package *package,
@@ -72,15 +74,14 @@ std::unique_ptr<Function> buildBoxingThunk(const TypeContext &declarator, const 
                                     methodImplementation->position(), std::move(params),
                                     method->returnType()->type().resolveOn(declarator),
                                     methodImplementation->functionType());
-    buildBoxingThunkAst(function.get(), methodImplementation);
+    buildBoxingThunkAst(function.get(), methodImplementation, Type::noReturn());
     return function;
 }
 
-std::unique_ptr<Function> buildBoxingThunk(const TypeExpectation &expectation, const Type &destCallable,
+std::unique_ptr<Function> buildCallableThunk(const TypeExpectation &expectation, const Type &destCallable,
                                            Package *pkg, const SourcePosition &p) {
     auto params = std::vector<Parameter>();
-    params.reserve(expectation.genericArguments().size());
-    params.emplace_back(U"closure", std::make_unique<ASTLiteralType>(destCallable), MFFlowCategory::Escaping);
+    params.reserve(expectation.genericArguments().size() - 1);
     for (auto argumentType = expectation.genericArguments().begin() + 1;
          argumentType != expectation.genericArguments().end(); argumentType++) {
         params.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
@@ -90,7 +91,7 @@ std::unique_ptr<Function> buildBoxingThunk(const TypeExpectation &expectation, c
     auto function = makeBoxingThunk(std::u32string(), nullptr, pkg, p, std::move(params),
                                     expectation.genericArguments().front(), FunctionType::Function);
     function->setClosure();
-    buildBoxingThunkAst(function.get(), nullptr);
+    buildBoxingThunkAst(function.get(), nullptr, destCallable);
     return function;
 }
 

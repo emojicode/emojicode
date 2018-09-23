@@ -26,6 +26,11 @@ void ClosureCodeGenerator::declareArguments(llvm::Function *llvmFunction) {
 }
 
 void ClosureCodeGenerator::loadCapturedVariables(Value *value) {
+    if (thunk_) {
+        thisValue_ = builder().CreateLoad(builder().CreateBitCast(value, typeHelper().callable()->getPointerTo()));
+        return;
+    }
+
     Value *captures = builder().CreateBitCast(value, capture_.type->getPointerTo());
 
     size_t index = 1;

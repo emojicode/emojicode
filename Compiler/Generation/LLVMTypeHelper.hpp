@@ -66,6 +66,8 @@ public:
     llvm::StructType* llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
     llvm::ArrayType* multiprotocolConformance(const Type &type);
 
+    llvm::StructType* callable() const { return callable_; }
+
     /// Wraps the provided type into an anonymous struct where the first element is a control block pointer and the
     /// second the type.
     ///

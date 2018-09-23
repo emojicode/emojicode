@@ -192,14 +192,6 @@ Value* ASTDereference::generate(FunctionCodeGenerator *fg) const {
     return fg->builder().CreateLoad(expr_->generate(fg));
 }
 
-Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
-    // TODO: implement
-//    expr_->generate(fg);
-//    fg->wr().writeInstruction(INS_CLOSURE_BOX);
-//    fg->wr().writeInstruction(boxingLayer_->vtiForUse());
-    throw std::logic_error("Unimplemented");
-}
-
 Value* ASTStoreTemporarily::generate(FunctionCodeGenerator *fg) const {
     auto store = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), "temp");
     if (isValueTypeInit()) {

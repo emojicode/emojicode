@@ -134,17 +134,6 @@ class ASTDereference final : public ASTBoxing {
     void toCode(PrettyStream &pretty) const override {}
 };
 
-class ASTCallableBox final : public ASTBoxing {
-public:
-    ASTCallableBox(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType,
-                   Function *boxingLayer) : ASTBoxing(std::move(expr), p, exprType), boxingLayer_(boxingLayer) {}
-
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(PrettyStream &pretty) const override {}
-private:
-    Function *boxingLayer_;
-};
-
 class ASTStoreTemporarily final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Value* generate(FunctionCodeGenerator *fg) const override;

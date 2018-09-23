@@ -25,10 +25,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     closureGenerator.generate();
 
     auto alloc = storeCapturedVariables(fg, capture);
-
-    auto *structType = llvm::dyn_cast<llvm::StructType>(fg->generator()->typeHelper().llvmTypeFor(expressionType()));
-
-    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(structType),
+    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()),
                                                     closure_->unspecificReification().function, 0);
     return fg->builder().CreateInsertValue(callable, alloc, 1);
 }
@@ -66,6 +63,27 @@ llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const
         fg->builder().CreateStore(value, fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++));
     }
     return fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->generator()->context()));
+}
+
+llvm::Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
+    thunk_->createUnspecificReification();
+    fg->generator()->declarator().declareLlvmFunction(thunk_.get());
+
+    auto closureGenerator = ClosureCodeGenerator(thunk_.get(), fg->generator());
+    closureGenerator.generate();
+
+    auto captures = allocate(fg, fg->typeHelper().callable());
+    fg->builder().CreateStore(expr_->generate(fg), captures);
+
+    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()),
+                                                    thunk_->unspecificReification().function, 0);
+
+    auto cp = fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->generator()->context()));
+    return fg->builder().CreateInsertValue(callable, cp, 1);
+}
+
+llvm::Value* ASTCallableThunkDestination::generate(FunctionCodeGenerator *fg) const {
+    return fg->thisValue();
 }
 
 }  // namespace EmojicodeCompiler

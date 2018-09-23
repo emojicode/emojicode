@@ -24,7 +24,7 @@ class Class;
 
 std::unique_ptr<Function> buildBoxingThunk(const TypeContext &declarator, const Function *method,
                                            const Function *methodImplementation);
-std::unique_ptr<Function> buildBoxingThunk(const TypeExpectation &expectation, const Type &destCallable,
+std::unique_ptr<Function> buildCallableThunk(const TypeExpectation &expectation, const Type &destCallable,
                                            Package *pkg, const SourcePosition &p);
 std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer *init);
 

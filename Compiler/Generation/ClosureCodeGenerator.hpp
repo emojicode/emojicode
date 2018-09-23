@@ -15,19 +15,29 @@
 
 namespace EmojicodeCompiler {
 
+/// ClosureCodeGenerator is responsible for creating the IR for a closure.
+/// In addition to the functionality inherited from FunctionCodeGenerator it manages the loading of captured variable
+/// and of the captured context (this) if available.
 class ClosureCodeGenerator : public FunctionCodeGenerator {
 public:
+    /// Constructor for a normal closure.
     ClosureCodeGenerator(const Capture &capture, Function *f, CodeGenerator *generator)
-    : FunctionCodeGenerator(f, f->unspecificReification().function, generator), capture_(capture) {}
+        : FunctionCodeGenerator(f, f->unspecificReification().function, generator), capture_(capture) {}
+
+    /// Constructor for a callable thunk.
+    ClosureCodeGenerator(Function *f, CodeGenerator *generator)
+        : FunctionCodeGenerator(f, f->unspecificReification().function, generator), thunk_(true) {}
 
     llvm::Value* thisValue() const override {
-        assert(capture_.capturesSelf());
+        assert(capture_.capturesSelf() || thunk_);
         return thisValue_;
     }
+    
 private:
     void declareArguments(llvm::Function *llvmFunction) override;
-    const Capture &capture_;
+    Capture capture_;
     llvm::Value *thisValue_ = nullptr;
+    bool thunk_ = false;
 
     void loadCapturedVariables(Value *value);
 };
