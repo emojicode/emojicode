@@ -38,18 +38,18 @@
     ⛔🐕  🍺🐽literalDictionary 🔤Birne🔤❗️ 🙌 24 🔤Birne = 24🔤❗️
     ⛔🐕  🍺🐽literalDictionary 🔤Apfel🔤❗️ 🙌 111 🔤Apfel = 111🔤❗️
     🍯 🔤Grapefruit🔤 34  🔤Birne🔤 24  🔤Apfel🔤 111  🍆 ➡️ keysDictionary
-💭🔜
+
     🍨 🔤Grapefruit🔤 🔤Birne🔤 🔤Apfel🔤 🍆 ➡️ keys
     🦁keys 🍇a 🔡 b 🔡 ➡️ 🔢
       ↩️ ↔a b❗️
-🍉
-❗️
-    🐙keysDictionary❗️ ➡️ dictKeys
-    🦁dictKeys 🍇a 🔡 b 🔡 ➡️ 🔢
+    🍉
+    ❗️
+      🐙keysDictionary❗️ ➡️ dictKeys
+      🦁dictKeys 🍇a 🔡 b 🔡 ➡️ 🔢
       ↩️ ↔a b❗️
-🍉
-❗️
-    ⛔🐕 keys 🙌 dictKeys🔤🍯 🐙 should be equal to its keys🔤❗️🔚💭
+    🍉
+    ❗️
+    ⛔🐕 keys 🙌 dictKeys🔤🍯 🐙 should be equal to its keys🔤❗
 
     🍯 🔤Grapefruit🔤 34 🔤Birne🔤 24  🔤Apfel🔤 111 🍆 ➡️ clearDictionary
     ⛔🐕 🐗clearDictionary❗️ 🙌 3 🔤Cleared Amount = 3🔤❗️
