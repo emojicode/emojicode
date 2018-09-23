@@ -1,10 +1,10 @@
 FROM ubuntu:18.04
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y wget
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y wget gnupg
 
 RUN echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
 RUN echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
-RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add -
+RUN wget -O https://apt.llvm.org/llvm-snapshot.gpg.key|apt-key add
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y ninja-build python3 cmake
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y libllvm6.0 llvm-6.0 llvm-6.0-dev llvm-6.0-runtime libfuzzer-6.0-dev
