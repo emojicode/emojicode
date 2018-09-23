@@ -1,9 +1,9 @@
-clang_test:
+clang:
   build:
     image: emojicode
     dockerfile: docker/clang
   cached: true
-gcc_test:
+gcc:
   build:
     image: emojicodegcc
     dockerfile: docker/gcc
