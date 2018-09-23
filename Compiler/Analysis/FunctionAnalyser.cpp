@@ -120,6 +120,15 @@ void FunctionAnalyser::analyse() {
 
     if (isFullyInitializedCheckRequired(function_->functionType())) {
         auto initializer = dynamic_cast<Initializer *>(function_);
+        for (auto &var : initializer->owner()->instanceVariables()) {
+            if (var.type->type().type() == TypeType::Optional) {
+                auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var.name);
+                auto noValue = std::make_shared<ASTNoValue>(initializer->position());
+                auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
+                                                                                  noValue, initializer->position());
+                function()->ast()->appendNode(std::move(assign));
+            }
+        }
         for (auto &var : initializer->argumentsToVariables()) {
             if (!scoper_->instanceScope()->hasLocalVariable(var)) {
                 throw CompilerError(initializer->position(), "🍼 was applied to \"", utf8(var),
@@ -136,7 +145,7 @@ void FunctionAnalyser::analyse() {
             auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
             auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
                                                                               getVar, initializer->position());
-            function()->ast()->prependNode(std::move(assign));
+            function()->ast()->appendNode(std::move(assign));
         }
     }
 
