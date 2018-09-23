@@ -21,9 +21,9 @@ which is not stable. [Check out the 0.5 branch for stable code.][3]**
 
 Prerequisites (versions are recommendations):
 
-- clang and clang++ 5.0.1 or gcc and g++ 7.2
+- clang and clang++ 6.0.1 or gcc and g++ 7.2
 - CMake 3.5.1+ and (preferably) Ninja
-- LLVM 5.0.1
+- LLVM 6.0.1
 - Python 3.5.2+ for testing
 
 Steps:

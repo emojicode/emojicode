@@ -17,6 +17,10 @@
 #include <string>
 #include <map>
 
+namespace llvm {
+class TargetMachine;
+}  // namespace llvm
+
 namespace EmojicodeCompiler {
 
 class Compiler;
