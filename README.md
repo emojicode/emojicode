@@ -5,17 +5,11 @@ programming language consisting of emojis. It features Object-Orientation, Optio
 
 ## 🏁 Getting Started
 
-To learn more about the language and get started quickly visit Emojicode’s [documentation][4].
-
-You can easily install Emojicode from our stable prebuilt binaries. [See Installing Emojicode][5] for instructions.
+**To learn more about the language and how to install Emojicode visit https://www.emojicode.org/.**
 
 We highly recommend to follow Emojicode’s Twitter account [@Real\_Emojicode][6] to stay up with the latest.
 
-
 ## 🔨 Building from source
-
-**The following instructions apply only to the code in the master branch,
-which is not stable. [Check out the 0.5 branch for stable code.][3]**
 
 ### Building locally
 
@@ -75,42 +69,6 @@ Steps:
    To create a distribution archive you must call the dist script yourself
    (e.g. `python3 ../dist.py .. archive`).
 
-### Building in Docker container
-
-This repository comes with two Dockerfiles `DockerfileClang` and
-`DockerfileGCC`, which are used by our continuous integration service. However,
-you can also use them to build Emojicode.
-
-Prerequisites:
-- Docker
-
-Steps:
-
-1. Clone Emojicode (or download the source code and extract it) and navigate
-  into it:
-
-   ```sh
-   git clone https://github.com/emojicode/emojicode
-   cd emojicode
-   ```
-2. Build and create a container
-
-   ```sh
-   docker build -f DockerfileClang -t emojicode_clang .
-   docker create --name emojicontainer -ti emojicode_clang bash
-   ```
-
-3. Start and enter the container:
-
-   ```sh
-   docker start -ai emojicontainer
-   ```
-
-4. You can now build Emojicode:
-
-   ```sh
-   mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests
-   ```
 
 ## 📃 License
 
@@ -125,8 +83,6 @@ If you don’t want to read the whole license, here’s a summary without legal 
 [1]:	https://app.codeship.com/projects/209932
 [2]:	https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [3]:	https://github.com/emojicode/emojicode/tree/emojicode-0.5
-[4]:	http://www.emojicode.org/docs
-[5]:	http://www.emojicode.org/docs/guides/install.html
 [6]:	https://twitter.com/Real_Emojicode
 [7]:	https://github.com/emojicode/emojicode/blob/master/0.6.md#help-improving-emojicodes-syntax-
 [8]:	LICENSE
