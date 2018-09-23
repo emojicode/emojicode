@@ -93,10 +93,11 @@ public:
     }
 
     void requestReification(const std::vector<Type> &arguments) {
-        if (reifications_.find(arguments) != reifications_.end()) {
+        auto key = buildKey(arguments);
+        if (reifications_.find(key) != reifications_.end()) {
             return;
         }
-        auto &reification = reifications_[arguments] = Reification();
+        auto &reification = reifications_[key] = Reification();
         for (size_t i = 0; i < genericParameters_.size(); i++) {
             if (genericParameters_[i].rejectsBoxing) {
                 reification.arguments.emplace(i + offset_, arguments[i]);
@@ -105,14 +106,15 @@ public:
     }
 
     Entity& reificationFor(const std::vector<Type> &arguments) {
-        auto ref = reifications_.find(arguments);
+        auto ref = reifications_.find(buildKey(arguments));
         assert(ref != reifications_.end());
         return ref->second.entity;
     }
+
     /// @returns Any reification of this instance.
     /// @note This method is intended to be used when there is only ever one possible reification of an instance.
     Entity& unspecificReification() {
-        assert(!reifications_.empty());
+        assert(reifications_.size() == 1);
         return reifications_.begin()->second.entity;
     }
 
@@ -180,6 +182,16 @@ private:
     std::map<std::vector<Type>, Reification> reifications_;
 
     size_t offset_ = 0;
+
+    std::vector<Type> buildKey(const std::vector<Type> &arguments) {
+        std::vector<Type> key;
+        for (size_t i = 0; i < genericParameters_.size(); i++) {
+            if (genericParameters_[i].rejectsBoxing) {
+                key.emplace_back(arguments[i]);
+            }
+        }
+        return key;
+    }
 };
 
 } // namespace EmojicodeCompiler

@@ -266,6 +266,11 @@ void TypeBodyParser<Protocol>::parseMethod(const std::u32string &name, TypeBodyA
     parseParameters(method.get(), false);
     parseReturnType(method.get());
 
+    method->setMemoryFlowTypeForThis(MFFlowCategory::Escaping);
+    for (size_t i = 0; i < method->parameters().size(); i++) {
+        method->setParameterMFType(i, MFFlowCategory::Escaping);
+    }
+
     typeDef_->addMethod(std::move(method));
 }
 

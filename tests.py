@@ -94,7 +94,7 @@ library_tests = [
     "dataTest",
     "systemTest",
     "listTest",
-    # "enumerator",
+    "enumerator",
     "dictionaryTest",
     # "jsonTest",
     "fileTest"
