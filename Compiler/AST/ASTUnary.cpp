@@ -41,6 +41,7 @@ Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
 }
 
 void ASTUnwrap::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+    analyser->take(value_.get());
     value_->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
 }
 

@@ -24,7 +24,7 @@ Value* ASTIsError::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     if (error_) {
-        return generateErrorUnwrap(fg);
+        return handleResult(fg, generateErrorUnwrap(fg));
     }
 
     auto optional = value_->generate(fg);
@@ -43,7 +43,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     if (isBox) {
         return optional;
     }
-    return fg->builder().CreateExtractValue(optional, 1);
+    return handleResult(fg, fg->builder().CreateExtractValue(optional, 1));
 }
 
 Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
