@@ -28,15 +28,19 @@ public:
     llvm::Function* panic() const { return panic_; }
     /// The function that is called to determine if one class inherits from another. (ejcInheritsFrom)
     llvm::Function* inheritsFrom() const { return inheritsFrom_; }
-    /// The function called to retain any value allocated with ::alloc. (ejcRetain)
+    /// The function called to retain any value. (ejcRetain)
     llvm::Function* retain() const { return retain_; }
-    /// The function that must be used to release objects allocated with ::alloc.
+    /// The function that must be used to release objects.
     /// @note Use releaseMemory() to release memory areas that do not represent class instances!
     llvm::Function* release() const { return release_; }
-    /// The function that is to be used to release memory area allocated with ::alloc that do not represent objects.
+    /// The function that is to be used to release memory area that do not represent objects.
     /// (ejcReleaseMemory)
     /// @see release
     llvm::Function* releaseMemory() const { return releaseMemory_; }
+    /// The function that is to be used to release closure captures.
+    /// (ejcReleaseCapture)
+    /// @see release
+    llvm::Function* releaseCapture() const { return releaseCapture_; }
     /// Used to find a protocol conformance in an array of ProtocolConformanceEntries. (ejcFindProtocolConformance)
     llvm::Function* findProtocolConformance() const { return findProtocolConformance_; }
 
@@ -70,6 +74,7 @@ private:
     llvm::Function *retain_ = nullptr;
     llvm::Function *release_ = nullptr;
     llvm::Function *releaseMemory_ = nullptr;
+    llvm::Function *releaseCapture_ = nullptr;
 
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
     void declareRunTime();

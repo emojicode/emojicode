@@ -356,6 +356,9 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
             manageBox(false, boxInfo, value, type);
         }
     }
+    else if (type.type() == TypeType::Callable) {
+        builder().CreateCall(generator()->declarator().releaseCapture(), builder().CreateExtractValue(value, 1));
+    }
 }
 
 void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
@@ -363,6 +366,9 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
         (type.type() == TypeType::ValueType && type.valueType() == generator_->package()->compiler()->sMemory)) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
         builder().CreateCall(generator()->declarator().retain(), { opc });
+    }
+    else if (type.type() == TypeType::Callable) {
+        builder().CreateCall(generator()->declarator().retain(), builder().CreateExtractValue(value, 1));
     }
     else if (type.type() == TypeType::ValueType) {
         builder().CreateCall(type.valueType()->copyRetain()->unspecificReification().function, value);
@@ -410,6 +416,10 @@ void FunctionCodeGenerator::manageBox(bool retain, llvm::Value *boxInfo, llvm::V
 bool FunctionCodeGenerator::isManagedByReference(const Type &type) const {
     return (type.type() == TypeType::ValueType && !type.valueType()->isPrimitive()) || type.type() == TypeType::Box
         || (type.type() == TypeType::Optional && isManagedByReference(type.optionalType()));
+}
+
+void FunctionCodeGenerator::releaseByReference(llvm::Value *ptr, const Type &type) {
+    release(isManagedByReference(type) ? ptr : builder().CreateLoad(ptr), type);
 }
 
 llvm::Value* FunctionCodeGenerator::buildFindProtocolConformance(llvm::Value *box, llvm::Value *boxInfo,

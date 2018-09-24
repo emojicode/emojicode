@@ -30,10 +30,38 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     return fg->builder().CreateInsertValue(callable, alloc, 1);
 }
 
+llvm::Value* ASTClosure::createDeinit(CodeGenerator *cg, const Capture &capture) const {
+    auto deinit = llvm::Function::Create(cg->typeHelper().captureDeinit(),
+                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, "captureDeinit",
+                                         cg->module());
+
+    auto fg = FunctionCodeGenerator(deinit, cg);
+    fg.createEntry();
+
+    auto captures = fg.builder().CreateBitCast(deinit->args().begin(), capture.type->getPointerTo());
+
+    auto i = 2;
+    if (capture.capturesSelf()) {
+        auto ep = fg.builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++);
+        fg.releaseByReference(ep, capture.self);
+    }
+    for (auto &capturedVar : capture.captures) {
+        auto ptr = fg.builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++);
+        if (capturedVar.type.isManaged()) {
+            fg.releaseByReference(ptr, capturedVar.type);
+        }
+    }
+    fg.builder().CreateRetVoid();
+    return deinit;
+}
+
 llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const {
     auto captures = allocate(fg, capture.type);
 
-    auto i = 1;
+    auto ep = fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, 1);
+    fg->builder().CreateStore(createDeinit(fg->generator(), capture), ep);
+
+    auto i = 2;
     if (capture.capturesSelf()) {
         fg->retain(fg->thisValue(), capture_.self);
         auto ep = fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++);

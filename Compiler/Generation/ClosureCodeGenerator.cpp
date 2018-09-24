@@ -33,7 +33,7 @@ void ClosureCodeGenerator::loadCapturedVariables(Value *value) {
 
     Value *captures = builder().CreateBitCast(value, capture_.type->getPointerTo());
 
-    size_t index = 1;
+    size_t index = 2;
     if (capture_.capturesSelf()) {
         thisValue_ = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(capture_.type, captures, 0, index++));
     }

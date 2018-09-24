@@ -43,7 +43,7 @@ extern "C" void ejcRetain(runtime::Object<void> *object) {
     controlBlock->strongCount++;
 }
 
-void releaseLocal(runtime::Object<void> *object) {
+void releaseLocal(void *object) {
     auto &ptr = *reinterpret_cast<int64_t *>(reinterpret_cast<uint8_t *>(object) - 8);
     ptr--;
     if (ptr != 0) return;
@@ -68,6 +68,32 @@ extern "C" void ejcRelease(runtime::Object<void> *object) {
     object->classInfo()->dispatch<void>(0, object);
     delete controlBlock;
     free(object);
+}
+
+struct Capture {
+    runtime::internal::ControlBlock *controlBlock;
+    void (*deinit)(Capture*);
+};
+
+extern "C" void ejcReleaseCapture(Capture *capture) {
+    runtime::internal::ControlBlock *controlBlock = capture->controlBlock;
+    if (controlBlock == nullptr) {
+        releaseLocal(capture);
+        capture->deinit(capture);
+        return;
+    }
+    if (controlBlock == &ejcIgnoreBlock) return;
+
+    //    std::cout << "Releasing " << object << std::endl;
+
+    controlBlock->strongCount--;
+    //        std::cout << controlBlock->strongCount << std::endl;
+    if (controlBlock->strongCount != 0) return;
+
+    //    std::cout << "Deleting " << object << std::endl;
+    capture->deinit(capture);
+    delete controlBlock;
+    free(capture);
 }
 
 extern "C" void ejcReleaseMemory(runtime::Object<void> *object) {

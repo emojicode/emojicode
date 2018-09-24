@@ -57,6 +57,8 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
         llvm::Type::getInt8PtrTy(context_),
         classInfoType_->getPointerTo()
     }, "someobject")->getPointerTo();
+    captureDeinit_ = llvm::FunctionType::get(llvm::Type::getVoidTy(context_),
+                                             llvm::Type::getInt8PtrTy(context_), false);
 
     auto compiler = codeGenerator_->package()->compiler();
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
@@ -70,7 +72,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
 }
 
 llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType) {
-    std::vector<llvm::Type *> types { llvm::Type::getInt8PtrTy(context_) };
+    std::vector<llvm::Type *> types { llvm::Type::getInt8PtrTy(context_), captureDeinit_->getPointerTo() };
     if (capture.capturesSelf()) {
         types.emplace_back(thisType);
     }

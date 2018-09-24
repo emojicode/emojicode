@@ -17,6 +17,8 @@
 
 namespace EmojicodeCompiler {
 
+class CodeGenerator;
+
 struct Capture {
     std::vector<VariableCapture> captures;
     /// The type of the captured type context. If this is TypeType::NoReturn, the type context is not captured.
@@ -43,6 +45,7 @@ private:
     llvm::Value* storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const;
 
     void applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation);
+    llvm::Value* createDeinit(CodeGenerator *cg, const Capture &capture) const;
 };
 
 class ASTCallableBox final : public ASTBoxing, public MFHeapAutoAllocates {
@@ -55,7 +58,7 @@ public:
 
     llvm::Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override {}
-    
+
 private:
     std::unique_ptr<Function> thunk_;
 };

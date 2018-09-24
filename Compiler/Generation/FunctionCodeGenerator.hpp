@@ -130,6 +130,10 @@ public:
     llvm::Value* managableGetValuePtr(llvm::Value *managablePtr);
 
     void release(llvm::Value *value, const Type &type);
+    /// Like release() but the value to be released is always provided as a pointer. If isManagedByReference() returns
+    /// fales for `type`, the value is loaded before it is passed to release().
+    /// @param ptr Pointer to the value to be released.
+    void releaseByReference(llvm::Value *ptr, const Type &type);
     void retain(llvm::Value *value, const Type &type);
     bool isManagedByReference(const Type &type) const;
 

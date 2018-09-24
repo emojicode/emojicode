@@ -51,6 +51,8 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
                                       llvm::Type::getInt8PtrTy(generator_->context()));
     releaseMemory_ = declareRunTimeFunction("ejcReleaseMemory", llvm::Type::getVoidTy(generator_->context()),
                                             llvm::Type::getInt8PtrTy(generator_->context()));
+    releaseCapture_ = declareRunTimeFunction("ejcReleaseCapture", llvm::Type::getVoidTy(generator_->context()),
+                                            llvm::Type::getInt8PtrTy(generator_->context()));
 
     ignoreBlock_ = new llvm::GlobalVariable(*generator_->module(), llvm::Type::getInt8Ty(generator_->context()), true,
                                             llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
