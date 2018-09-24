@@ -123,4 +123,10 @@
     Returns the natural (base ℇ) logarithm of this 💯.
   📗
   ❗️ 🏄 ➡️ 💯 📻 🔤sRealLn🔤
+
+  📗
+    Creates a 🔡 representation of this 💯 and the given precision – the number
+    of digits after the decimal separator “.”.
+  📗
+  ❗️ 🔡 precision 🔢 ➡️ 🔡 📻 🔤sRealToString🔤
 🍉

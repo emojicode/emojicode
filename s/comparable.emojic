@@ -1,0 +1,11 @@
+📗
+  Protocol defining equality.
+
+  A type conforming to this protocol provides a method 😛 to determine whether
+  one of its instance is equal to an instance of type T. T is normally the
+  type itself.
+📗
+🌍 🐊 😛🐚T⚪🍆️ 🍇
+  📗 Whether this value and *other* are equal. 📗
+  🙌 other T ➡️ 👌
+🍉

@@ -1,0 +1,48 @@
+📗
+  Protocol defining random-access.
+
+  Types representing a collection whose elements can be accessed by 🐽 randomly
+  should conform to this protocol. The number of elements must be finite and
+  returned by 🐔.
+📗
+🌍 🐊 🐽️🐚Element⚪️🍆 🍇
+  📗
+    Gets the item at *index*. If the index is invalid the behavior is up to
+    the conforming type.
+  📗
+  ❗️ 🐽 index 🔢 ➡️ Element
+  📗 Returns the number of items in the collection. 📗
+  ❗️ 🐔 ➡️ 🔢
+🍉
+
+📗
+  Iterator over a 🐽.
+
+  This class is an iterator that can iterate over every type that conforms to
+  the 🐽 protocol.
+📗
+🌍 🐇 🌳🐚Element⚪🍆️ 🍇
+  🐊 🍡🐚Element🍆
+  🐊 🔂🐚Element🍆
+
+  🖍🆕 iteratee 🐽🐚Element🍆
+  🖍🆕 index 🔢
+
+  🆕 🍼 iteratee 🐽🐚Element🍆 🍇
+    0 ➡️ 🖍index
+  🍉
+
+  ❗️ 🔽 ➡️ Element 🍇
+    🐽 iteratee index❗️ ➡️ sy
+    index ⬅️➕ 1
+    ↩️ sy
+  🍉
+
+  ❓ 🔽 ➡️ 👌 🍇
+    ↩️ index ◀️ 🐔 iteratee❗️
+  🍉
+
+  ❗️ 🍡 ➡️ 🍡🐚Element🍆 🍇
+    ↩️ 🐕
+  🍉
+🍉

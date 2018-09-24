@@ -69,6 +69,32 @@
   👉 n 🔢 ➡️ 🔢 🍇
     ↩️ 🐕 👉 n
   🍉
+
   📗 Returns the absolute value of this 🔢. 📗
   ❗️ 🏧 ➡️ 🔢 📻 🔤sIntAbsolute🔤
+  📗
+    Creates a string representation of this integer. *base* must be greater than
+    or equal to 2 and less than or equal to 35.
+
+    The digits used to represent the integer are
+    `0123456789abcdefghijklmnopqrstuvxyz`.
+  📗
+  ❗️ 🔡 base 🔢 ➡️ 🔡 📻 🔤sIntToString🔤
+
+  📗 Returns the double representation of this integer. 📗
+  ❗️ 💯 ➡️ 💯 🍇
+    ↩️ 💯 🐕❗️
+  🍉
+
+  📗
+    Converts this integer to a symbol. The value of this integer must be a valid
+    Unicode code point.
+  📗
+  ❗️ 🔣 ➡️ 🔣 📻 🔤sIntToSymbol🔤
+
+  📗
+    Converts this integer to a byte. The value of this integer must be in
+    [-127, 127].
+  📗
+  ❗️ 💧 ➡️ 💧 📻 🔤sIntToByte🔤
 🍉

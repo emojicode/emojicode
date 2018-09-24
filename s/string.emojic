@@ -1,4 +1,13 @@
-🐋 🔡 🍇
+📗
+  Strings.
+
+  [Read more in the language
+  reference.](../../reference/the-s-package.html#-strings)
+📗
+🌍 🐇 🔡 🍇
+  🖍🆕 codePoints 🧠
+  🖍🆕 count 🔢
+
   🐊 🔂🐚🍬🔣🍆
   🐊 🐽🐚🍬🔣🍆
   🐊 😛🐚🔡🍆
@@ -254,12 +263,6 @@
     🍉
     ↩️ list
   🍉
-
-💭   📗
-💭     Tries to parse this string as JSON. If the string doesn’t represent valid
-💭     JSON Nothigness is returned. The depth is limited to 256 levels.
-💭   📗
-💭   ❗️ 📰 ➡️ ⚪️ 📻 🔤sStringParseJson🔤
 
   📗
     Returns a new string in which at least all letters contained in ASCII

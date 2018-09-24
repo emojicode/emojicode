@@ -1,0 +1,33 @@
+📗
+  Protocol defining an iterators interface.
+
+  Types conforming to 🍡 can iterate a collection.
+
+  To get the items from an iterator call the 🔽 method on it, until 🔽❓ returns
+  👎 which indicates that there are no more items.
+📗
+🌍 🐊 🍡🐚Element ⚪🍆️ 🍇
+  📗
+    Returns the next object. Call this method only if 🔽❓ previously
+    returned 👍.
+  📗
+  ❗️ 🔽 ➡️ Element
+  📗
+    Whether the iterator has more elements to provide.
+  📗
+  ❓ 🔽 ➡️ 👌
+🍉
+
+📗
+  Protocol defining iterability.
+
+  Types whose instances shall be iterable using the 🔂 loop must
+  implement this protocol.
+📗
+🌍 🐊 🔂🐚Element⚪🍆️ 🍇
+  📗
+    This method must return an instance of a class that conforms to
+    [[🍡]] which will be used to enumerate this instance.
+  📗
+  ❗️ 🍡 ➡️ 🍡🐚Element🍆
+🍉

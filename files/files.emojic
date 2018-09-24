@@ -80,7 +80,7 @@
   📗
     Returns an absolute pathname derived from `path` that
     resolves to the same directory entry, whose resolution does not involve `.`,
-    `..`, or symbolic links. On failure Nothingness is returned.
+    `..`, or symbolic links. On failure an error is returned.
   📗
   🐇❗️ ⛓ path 🔡 ➡️ 🚨🌧🔡 📻 🔤filesFsAbsolute🔤
 🍉
@@ -101,20 +101,12 @@
     Opens the file at the given path for writing. The file pointer is set to the
     beginning of the file and the file is truncated to zero length or created.
 
-    This initializer returns nothingness if the file can not be opened for some
-    reason. In many cases this occurs when you don’t have the permission to
-    create or open the file.
-
     You cannot read from a file opened with this initializer.
   📗
   🆕📝 🚨🌧 message 🔡 📻 🔤filesFileNewWriting🔤
   📗
     Opens the file at the given path for reading. The file pointer is set to the
     beginning of the file.
-
-    This initializer returns nothingness if the file can not be opened for some
-    reason. In many cases this occurs when you don’t have the permission to open
-    the file or when it does not exist.
 
     You cannot write to a file opened with this initializer.
   📗
@@ -143,7 +135,7 @@
 
   📗
     This class method tries to read the file at given path `path` and returns
-    a 📇 object representing its content on success. On failure Nothingness
+    a 📇 object representing its content on success. On failure an error
     is returned.
   📗
   🐇❗️ 📇 path 🔡 ➡️ 🚨🌧📇 📻 🔤filesFileReadFile🔤
@@ -164,4 +156,8 @@
 
   📗 Closes the file. Reading or writing thereafter is undefined behavior. 📗
   ❗️ 🚪 📻 🔤filesFileClose🔤
+
+  ♻️ 🍇
+    🚪🐕❗️
+  🍉
 🍉

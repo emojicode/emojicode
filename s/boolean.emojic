@@ -1,0 +1,29 @@
+📗
+  Boolean
+📗
+🌍 📻 🕊 👌 🍇
+  🐊 😛🐚👌🍆
+
+  📗 Whether this value and *other* are considered equal. 📗
+  🙌 other 👌 ➡️ 👌 🍇
+    ↩️ 🐕 🙌 other
+  🍉
+
+  📗 Logical and. Returns true if both, this instance and *other*, are true. 📗
+  🤝 other 👌 ➡️ 👌 🍇
+    ↩️ 🐕 🤝 other
+  🍉
+
+  📗 Logical or. Returns true if this instance or *other* or both are true. 📗
+  👐 other 👌 ➡️ 👌 🍇
+    ↩️ 🐕 👐 other
+  🍉
+
+  📗
+    Inverts the boolean. Returns true if this boolean is false, and false if
+    this boolean is true.
+  📗
+  ❗️ ❎ ➡️ 👌 🍇
+    ↩️ ❎🐕❗️
+  🍉
+🍉

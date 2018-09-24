@@ -48,7 +48,7 @@
   🍉
   ```
 
-  Of course, the code above is minimal and incomplete. For example, it can handle only one
+  Of course, the code above is minimal. For example, it can handle only one
   connection.
 📘
 
@@ -79,7 +79,28 @@
 📗
   🏄 represents a socket that listens for clients on a given port.
 📗
-🌍 📻 🐇 🏄 🍇🍉
+🌍 📻 🐇 🏄 🍇
+  📗
+    Creates a 🏄 instance that immediately starts listening on the given port.
+    This initializer returns an error if an error occurs.
+  📗
+  🆕🚨⛈ port 🔢 📻 🔤socketsServerNewPort🔤
+
+  📗
+    Waits until a client wants to connect to this socket and returns a socket
+    to communicate with it.
+  📗
+  ❗️ 🙋 ➡️ 🚨⛈📞 📻 🔤socketsServerAccept🔤
+
+  📗
+    Closes this socket.
+  📗
+  ❗️ 🚪 📻 🔤socketsServerClose🔤
+
+  ♻️ 🍇
+    🚪🐕❗️
+  🍉
+🍉
 
 📗 📞 represents a socket for communication between client and server. 📗
 🌍 📻 🐇 📞 🍇
@@ -105,24 +126,8 @@
     on error or if the socket was closed by the peer.
   📗
   ❗️ 👂 bytes 🔢 ➡️ 🚨⛈📇 📻 🔤socketsSocketRead🔤
+
+  ♻️ 🍇
+    🚪🐕❗️
+  🍉
 🍉
-
-🐋 🏄 🍇
-  📗
-    Creates a 🏄 instance that immediately starts listening on the given port.
-    This initializer returns an error if an error occurs.
-  📗
-  🆕🚨⛈ port 🔢 📻 🔤socketsServerNewPort🔤
-
-  📗
-    Waits until a client wants to connect to this socket and returns a socket
-    to communicate with it.
-  📗
-  ❗️ 🙋 ➡️ 🚨⛈📞 📻 🔤socketsServerAccept🔤
-
-  📗
-    Closes this socket.
-  📗
-  ❗️ 🚪 📻 🔤socketsServerClose🔤
-🍉
-

@@ -1,229 +1,27 @@
 📘
   Emojicode’s standard library.
+
+  See [The s package](https://www.emojicode.org/docs/reference/the-s-package.html)
+  for an introduction.
 📘
 
-📗
-  Boolean
-📗
-🌍 📻 🕊 👌 🍇
-  📗 Whether this value and *other* are considered equal. 📗
-  🙌 other 👌 ➡️ 👌 🍇
-    ↩️ 🐕 🙌 other
-  🍉
-
-  📗 Logical and. Returns true if both, this instance and *other*, are true. 📗
-  🤝 other 👌 ➡️ 👌 🍇
-    ↩️ 🐕 🤝 other
-  🍉
-
-  📗 Logical or. Returns true if this instance or *other* or both are true. 📗
-  👐 other 👌 ➡️ 👌 🍇
-    ↩️ 🐕 👐 other
-  🍉
-
-  📗
-    Inverts the boolean. Returns true if this boolean is false, and false if
-    this boolean is true.
-  📗
-  ❗️ ❎ ➡️ 👌 🍇
-    ↩️ ❎🐕❗️
-  🍉
-🍉
-
-📗
-  Protocol defining equality.
-
-  A type conforming to this protocol provides a method 😛 to determine whether
-  one of its instance is equal to an instance of type T. T is normally the
-  type itself.
-📗
-🌍 🐊 😛🐚T⚪🍆️ 🍇
-  📗 Whether this value and *other* are equal. 📗
-  🙌 other T ➡️ 👌
-🍉
-
-🐋 👌 🍇
-  🐊 😛🐚👌🍆
-🍉
-
+📜 🔤boolean.emojic🔤
 📜 🔤integer.emojic🔤
 📜 🔤memory.emojic🔤
 📜 🔤real.emojic🔤
 📜 🔤byte.emojic🔤
-
-📗
-  Symbol
-📗
-🌍 📻 🕊 🔣 🍇
-  🐊 😛🐚🔣🍆
-
-  📗 Whether this value and *other* are considered equal. 📗
-  🙌 other 🔣 ➡️ 👌 🍇
-    ↩️ 🐕 🙌 other
-  🍉
-
-  📗 Whether this symbol represents a whitespace. 📗
-  ❗️🐁 ➡️ 👌 🍇
-    🔢🐕❗️ ➡️ val
-    ↩️ 🤜0x9 ◀️🙌 val 🤝 val ◀️🙌 0xD🤛 👐 val 🙌 0x20 👐 val 🙌 0x85 👐
-       val 🙌 0xA0 👐 val 🙌 0x1680 👐 val 🙌 0x2028 👐 val 🙌 0x2029 👐
-       val 🙌 0x202F 👐 val 🙌 0x205F 👐 val 🙌 0x3000 👐 val 🙌 0xFE0F 👐
-       🤜0x2000 ◀️🙌 val 🤝 val ◀️🙌 0x200A🤛
-  🍉
-🍉
-
-📗
-  Strings.
-
-  [Read more in the language
-  reference.](../../reference/the-s-package.html#-strings)
-📗
-🌍 🐇 🔡 🍇
-  🖍🆕 codePoints 🧠
-  🖍🆕 count 🔢
-🍉
-
-📗 Binary data. 📗
-🌍 🐇 📇 🍇
-  🖍🆕 data 🧠
-  🖍🆕 count 🔢
-🍉
-
-📗
-  Protocol defining an iterators interface.
-
-  Types conforming to 🍡 can iterate a collection.
-
-  To get the items from an iterator call the 🔽 method on it, until 🔽❓ returns
-  👎 which indicates that there are no more items.
-📗
-🌍 🐊 🍡🐚Element ⚪🍆️ 🍇
-  📗
-    Returns the next object. Call this method only if 🔽❓ previously
-    returned 👍.
-  📗
-  ❗️ 🔽 ➡️ Element
-  📗
-    Whether the iterator has more elements to provide.
-  📗
-  ❓ 🔽 ➡️ 👌
-🍉
-
-📗
-  Protocol defining iterability.
-
-  Types whose instances shall be iterable using the 🔂 loop must
-  implement this protocol.
-📗
-🌍 🐊 🔂🐚Element⚪🍆️ 🍇
-  📗
-    This method must return an instance of a class that conforms to
-    [[🍡]] which will be used to enumerate this instance.
-  📗
-  ❗️ 🍡 ➡️ 🍡🐚Element🍆
-🍉
-
-📗
-  Protocol defining random-access.
-
-  Types representing a collection whose elements can be accessed by 🐽 randomly
-  should conform to this protocol. The number of elements must be finite and
-  returned by 🐔.
-📗
-🌍 🐊 🐽️🐚Element⚪️🍆 🍇
-  📗
-    Gets the item at *index*. If the index is invalid the behavior is up to
-    the conforming type.
-  📗
-  ❗️ 🐽 index 🔢 ➡️ Element
-  📗 Returns the number of items in the collection. 📗
-  ❗️ 🐔 ➡️ 🔢
-🍉
-
-📗
-  Iterator over a 🐽.
-
-  This class is an iterator that can iterate over every type that conforms to
-  the 🐽 protocol.
-📗
-🌍 🐇 🌳🐚Element⚪🍆️ 🍇
-  🐊 🍡🐚Element🍆
-  🐊 🔂🐚Element🍆
-
-  🖍🆕 iteratee 🐽🐚Element🍆
-  🖍🆕 index 🔢
-
-  🆕 🍼 iteratee 🐽🐚Element🍆 🍇
-    0 ➡️ 🖍index
-  🍉
-
-  ❗️ 🔽 ➡️ Element 🍇
-    🐽 iteratee index❗️ ➡️ sy
-    index ⬅️➕ 1
-    ↩️ sy
-  🍉
-
-  ❓ 🔽 ➡️ 👌 🍇
-    ↩️ index ◀️ 🐔 iteratee❗️
-  🍉
-
-  ❗️ 🍡 ➡️ 🍡🐚Element🍆 🍇
-    ↩️ 🐕
-  🍉
-🍉
-
+📜 🔤symbol.emojic🔤
+📜 🔤iterator.emojic🔤
+📜 🔤comparable.emojic🔤
+📜 🔤random_access.emojic🔤
 📜 🔤system.emojic🔤
 📜 🔤range.emojic🔤
 📜 🔤list_iterator.emojic🔤
-
-🐋 🔢 🍇
-  📗
-    Creates a string representation of this integer. *base* must be greater than
-    or equal to 2 and less than or equal to 35.
-
-    The digits used to represent the integer are
-    `0123456789abcdefghijklmnopqrstuvxyz`.
-  📗
-  ❗️ 🔡 base 🔢 ➡️ 🔡 📻 🔤sIntToString🔤
-
-  📗 Returns the double representation of this integer. 📗
-  ❗️ 💯 ➡️ 💯 🍇
-    ↩️ 💯 🐕❗️
-  🍉
-
-  📗
-    Converts this integer to a symbol. The value of this integer must be a valid
-    Unicode code point.
-  📗
-  ❗️ 🔣 ➡️ 🔣 📻 🔤sIntToSymbol🔤
-
-  📗
-    Converts this integer to a byte. The value of this integer must be in
-    [-127, 127].
-  📗
-  ❗️ 💧 ➡️ 💧 📻 🔤sIntToByte🔤
-🍉
-
-🐋 💯 🍇
-  📗
-    Creates a 🔡 representation of this 💯 and the given precision – the number
-    of digits after the decimal separator “.”.
-  📗
-  ❗️ 🔡 precision 🔢 ➡️ 🔡 📻 🔤sRealToString🔤
-🍉
-
-🐋 🔣 🍇
-  📗 Returns the Unicode code point of this symbol. 📗
-  ❗️ 🔢 ➡️ 🔢 📻 🔤sSymbolToInt🔤
-🍉
-
 📜 🔤prng.emojic🔤
-
 📜 🔤string.emojic🔤
 📜 🔤list.emojic🔤
 📜 🔤data.emojic🔤
 📜 🔤dictionary.emojic🔤
-
 📜 🔤thread.emojic🔤
 
 🔗 🔤m🔤 🔤pthread🔤 🔗
