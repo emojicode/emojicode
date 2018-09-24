@@ -13,6 +13,7 @@
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Compiler.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -34,6 +35,13 @@ Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     closureAnaly.analyse();
     capture_.captures = dynamic_cast<CapturingSemanticScoper &>(closureAnaly.scoper()).captures();
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
+        if (analyser->typeContext().calleeType().type() == TypeType::ValueType ||
+            analyser->typeContext().calleeType().type() == TypeType::Enum) {
+            analyser->compiler()->error(CompilerError(position(),
+                                                      "Cannot capture Value Type context in closure. Create an "
+                                                      "explicit variable to copy a value."));
+        }
+
         capture_.self = analyser->typeContext().calleeType();
     }
     return Type(closure_.get());
