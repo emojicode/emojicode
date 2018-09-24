@@ -104,11 +104,12 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTErrorHandler::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    value_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);  // TODO: Wrong!
-    errorBlock_.analyseMemoryFlow(analyser);
-    analyser->popScope(&errorBlock_);
+    analyser->recordVariableSet(valueVar_, value_.get(), valueType_);
     valueBlock_.analyseMemoryFlow(analyser);
     analyser->popScope(&valueBlock_);
+    analyser->recordVariableSet(errorVar_, nullptr, value_->expressionType().errorEnum());
+    errorBlock_.analyseMemoryFlow(analyser);
+    analyser->popScope(&errorBlock_);
 }
 
 void ASTForIn::analyse(FunctionAnalyser *analyser) {

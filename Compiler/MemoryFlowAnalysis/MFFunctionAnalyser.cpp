@@ -118,9 +118,11 @@ void MFFunctionAnalyser::recordThis(MFFlowCategory category) {
 void MFFunctionAnalyser::recordVariableSet(size_t id, ASTExpr *expr, Type type) {
     auto &var = scope_.getVariable(id);
     var.type = std::move(type);
-    expr->analyseMemoryFlow(this, MFFlowCategory::Escaping);
-    if (auto heapAllocates = dynamic_cast<MFHeapAllocates *>(expr)) {
-        var.inits.emplace_back(heapAllocates);
+    if (expr != nullptr) {
+        expr->analyseMemoryFlow(this, MFFlowCategory::Escaping);
+        if (auto heapAllocates = dynamic_cast<MFHeapAllocates *>(expr)) {
+            var.inits.emplace_back(heapAllocates);
+        }
     }
 }
 

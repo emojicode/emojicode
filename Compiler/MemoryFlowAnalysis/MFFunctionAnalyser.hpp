@@ -73,6 +73,8 @@ public:
     /// If the compiler can prove that the variable value is never used in an Escaping manner it will inform the
     /// expression that it can allocate on the heap if it inherits from MFHeapAllocates.
     /// Analyses expr as Escaping.
+    /// @param expr The expression which is stored into the variable.
+    ///             This value can be `nullptr` in special circumstances.
     /// @param type The type of the variable.
     void recordVariableSet(size_t id, ASTExpr *expr, Type type);
 
