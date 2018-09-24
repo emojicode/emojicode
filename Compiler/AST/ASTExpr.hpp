@@ -12,6 +12,7 @@
 #include "ASTType.hpp"
 #include "ASTNode.hpp"
 #include "Types/Type.hpp"
+#include "ErrorSelfDestructing.hpp"
 #include "Scoping/Variable.hpp"
 #include <llvm/IR/Value.h>
 #include <utility>
@@ -164,7 +165,7 @@ private:
     ASTArguments args_;
 };
 
-class ASTSuper final : public ASTExpr {
+class ASTSuper final : public ASTExpr, private ErrorSelfDestructing {
 public:
     ASTSuper(std::u32string name, ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
@@ -183,7 +184,7 @@ private:
     bool init_ = false;
     bool manageErrorProneness_ = false;
 
-    void analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, const Initializer *initializer);
+    void analyseSuperInitErrorProneness(FunctionAnalyser *analyser, const Initializer *initializer);
 };
 
 class ASTConditionalAssignment final : public ASTExpr {

@@ -167,6 +167,11 @@ llvm::Value* FunctionCodeGenerator::buildGetIsError(llvm::Value *simpleError) {
     return builder().CreateICmpNE(vf, buildGetErrorNoError());
 }
 
+llvm::Value* FunctionCodeGenerator::buildGetIsNotError(llvm::Value *simpleError) {
+    auto vf = builder().CreateExtractValue(simpleError, 0);
+    return builder().CreateICmpEQ(vf, buildGetErrorNoError());
+}
+
 llvm::Value* FunctionCodeGenerator::buildSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type) {
     auto undef = llvm::UndefValue::get(type);
     return builder().CreateInsertValue(undef, errorEnumValue, 0);
@@ -174,6 +179,17 @@ llvm::Value* FunctionCodeGenerator::buildSimpleErrorWithError(llvm::Value *error
 
 llvm::Value* FunctionCodeGenerator::buildErrorEnumValueBoxPtr(llvm::Value *box, const Type &type) {
     return builder().CreateLoad(buildGetBoxValuePtr(box, type));
+}
+
+Value* FunctionCodeGenerator::buildErrorIsNotErrorPtr(llvm::Value *simpleErrorPtr) {
+    auto type = llvm::cast<llvm::PointerType>(simpleErrorPtr->getType())->getElementType();
+    auto vf = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(type, simpleErrorPtr, 0, 0));
+    return builder().CreateICmpEQ(vf, buildGetErrorNoError());
+}
+
+Value* FunctionCodeGenerator::buildGetErrorValuePtr(llvm::Value *simpleErrorPtr) {
+    auto type = llvm::cast<llvm::PointerType>(simpleErrorPtr->getType())->getElementType();
+    return builder().CreateConstInBoundsGEP2_32(type, simpleErrorPtr, 0, 1);
 }
 
 void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std::function<bool()> &then,
@@ -343,6 +359,18 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
             });
         }
     }
+    else if (type.type() == TypeType::Error) {
+        if (isManagedByReference(type)) {
+            createIf(buildErrorIsNotErrorPtr(value), [&] {
+                release(buildGetErrorValuePtr(value), type.errorType());
+            });
+        }
+        else {
+            createIf(buildGetIsNotError(value), [&] {
+                release(builder().CreateExtractValue(value, 1), type.errorType());
+            });
+        }
+    }
     else if (type.type() == TypeType::Box) {
         auto boxInfo = builder().CreateLoad(buildGetBoxInfoPtr(value));
         if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something
@@ -382,6 +410,18 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
         else {
             createIf(buildOptionalHasValue(value), [&] {
                 retain(builder().CreateExtractValue(value, 1), type.optionalType());
+            });
+        }
+    }
+    else if (type.type() == TypeType::Error) {
+        if (isManagedByReference(type)) {
+            createIf(buildErrorIsNotErrorPtr(value), [&] {
+                retain(buildGetErrorValuePtr(value), type.errorType());
+            });
+        }
+        else {
+            createIf(builder().CreateNeg(buildGetIsError(value)), [&] {
+                retain(builder().CreateExtractValue(value, 1), type.errorType());
             });
         }
     }
@@ -437,6 +477,11 @@ llvm::Value* FunctionCodeGenerator::buildFindProtocolConformance(llvm::Value *bo
 
     return builder().CreateCall(generator()->declarator().findProtocolConformance(),
                                 { conformanceEntries, protocolIdentifier });
+}
+
+llvm::Value* FunctionCodeGenerator::instanceVariablePointer(size_t id) {
+    auto type = llvm::cast<llvm::PointerType>(thisValue()->getType())->getElementType();
+    return builder().CreateConstInBoundsGEP2_32(type, thisValue(), 0, id);
 }
 
 }  // namespace EmojicodeCompiler

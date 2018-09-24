@@ -5,6 +5,8 @@ import dist
 import sys
 import re
 
+quick = len(sys.argv) > 2 and sys.argv[2] == 'quick'
+
 compilation_tests = [
     "hello",
     "print",
@@ -70,10 +72,6 @@ compilation_tests = [
     "errorUnwrap",
     "errorAvocado",
     "errorInitializer",
-    "stressTest1",
-    "stressTest2",
-    "stressTest3",
-    "stressTest4",
     "valueTypeCopySelf",
     "valueTypeBoxCopySelf",
     "includer",
@@ -86,6 +84,15 @@ compilation_tests = [
     "rcTempOrder",
     "rcInstanceVariable",
 ]
+
+if not quick:
+    compilation_tests.extend([
+      "stressTest1",
+      "stressTest2",
+      "stressTest3",
+      "stressTest4"
+    ])
+
 library_tests = [
     "primitives",
     "mathTest",
@@ -174,11 +181,13 @@ def prettyprint_test(name):
 for test in compilation_tests:
     avl_compilation_tests.remove(test)
     compilation_test(test)
-for test in compilation_tests:
-    prettyprint_test(test)
 
-included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
-os.rename(included + '_original', included)
+if not quick:
+    for test in compilation_tests:
+        prettyprint_test(test)
+
+    included = os.path.join(dist.source, "tests", "compilation", "included.emojic")
+    os.rename(included + '_original', included)
 
 for test in reject_tests:
     reject_test(test)

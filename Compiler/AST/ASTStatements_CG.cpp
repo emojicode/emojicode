@@ -10,6 +10,8 @@
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Scoping/IDScoper.hpp"
+#include "Generation/Declarator.hpp"
+#include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -45,6 +47,7 @@ void ASTRaise::generate(FunctionCodeGenerator *fg) const {
     else {
         auto val = fg->buildSimpleErrorWithError(value_->generate(fg), fg->llvmReturnType());
         fg->releaseTemporaryObjects();
+        buildDestruct(fg);
         fg->builder().CreateRet(val);
     }
 }

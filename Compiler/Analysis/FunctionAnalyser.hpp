@@ -23,6 +23,7 @@ class SemanticScoper;
 class Package;
 class Compiler;
 class ASTExpr;
+struct SourcePosition;
 
 /// This class is responsible for managing the semantic analysis of a function.
 class FunctionAnalyser {

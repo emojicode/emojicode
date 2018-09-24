@@ -22,7 +22,7 @@ void buildDeinitializer(TypeDefinition *typeDef) {
 
     for (auto &decl : typeDef->instanceVariables()) {
         auto &var = typeDef->instanceScope().getLocalVariable(decl.name);
-        if (var.type().isManaged()) {
+        if (!var.inherited() && var.type().isManaged()) {
             deinit->ast()->appendNode(std::make_unique<ASTRelease>(true, var.id(), var.type(), deinit->position()));
         }
     }

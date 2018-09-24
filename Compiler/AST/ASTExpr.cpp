@@ -147,7 +147,7 @@ void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory ty
     analyser->analyseFunctionCall(&args_, nullptr, function_);
 }
 
-void ASTSuper::analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, const Initializer *initializer) {
+void ASTSuper::analyseSuperInitErrorProneness(FunctionAnalyser *analyser, const Initializer *initializer) {
     if (initializer->errorProne()) {
         auto thisInitializer = dynamic_cast<Initializer*>(analyser->function());
         if (!thisInitializer->errorProne()) {
@@ -159,6 +159,7 @@ void ASTSuper::analyseSuperInitErrorProneness(const FunctionAnalyser *analyser, 
             throw CompilerError(position(), "Super initializer must have same error enum type.");
         }
         manageErrorProneness_ = true;
+        analyseInstanceVariables(analyser);
     }
 }
 

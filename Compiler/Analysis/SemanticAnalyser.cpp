@@ -13,7 +13,6 @@
 #include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/ValueType.hpp"
-#include <iostream>
 
 namespace EmojicodeCompiler {
 

@@ -16,8 +16,7 @@ namespace EmojicodeCompiler {
 
 Value* AccessesAnyVariable::instanceVariablePointer(FunctionCodeGenerator *fg) const {
     assert(inInstanceScope());
-    auto type = llvm::cast<llvm::PointerType>(fg->thisValue()->getType())->getElementType();
-    return fg->builder().CreateConstInBoundsGEP2_32(type, fg->thisValue(), 0, id());
+    return fg->instanceVariablePointer(id());
 }
 
 Value* AccessesAnyVariable::managementValue(FunctionCodeGenerator *fg) const {

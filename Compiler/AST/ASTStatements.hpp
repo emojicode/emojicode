@@ -13,6 +13,7 @@
 #include "Scoping/SemanticScopeStats.hpp"
 #include "ASTExpr.hpp"
 #include "Scoping/IDScoper.hpp"
+#include "ErrorSelfDestructing.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -108,13 +109,14 @@ protected:
     bool initReturn_ = false;
 };
 
-class ASTRaise final : public ASTReturn {
+class ASTRaise final : public ASTReturn, private ErrorSelfDestructing {
 public:
     using ASTReturn::ASTReturn;
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(PrettyStream &pretty) const override;
+
 private:
     bool boxed_ = false;
 };

@@ -562,7 +562,8 @@ bool Type::isManaged() const {
     return type() == TypeType::Class || type() == TypeType::Someobject || type() == TypeType::Box ||
         type() == TypeType::Callable ||
         (type() == TypeType::ValueType && valueType()->isManaged()) ||
-        (type() == TypeType::Optional && optionalType().isManaged());
+        (type() == TypeType::Optional && optionalType().isManaged()) ||
+        (type() == TypeType::Error && errorType().isManaged());
 }
 
 void Type::typeName(Type type, const TypeContext &typeContext, std::string &string, Package *package) const {

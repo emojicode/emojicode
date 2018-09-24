@@ -52,6 +52,8 @@ public:
     virtual llvm::Value* thisValue() const { return &*function_->args().begin(); }
     llvm::Type* llvmReturnType() const { return function_->getReturnType(); }
 
+    llvm::Value* instanceVariablePointer(size_t id);
+
     /// @returns The number of bytes an instance of @c type takes up in memory.
     /// @see sizeOfReferencedType
     llvm::Value* sizeOf(llvm::Type *type);
@@ -99,6 +101,9 @@ public:
 
     llvm::Value* buildGetErrorNoError() { return int64(-1); }
     llvm::Value* buildGetIsError(llvm::Value *simpleError);
+    llvm::Value* buildGetIsNotError(llvm::Value *simpleError);
+    llvm::Value* buildErrorIsNotErrorPtr(llvm::Value *simpleErrorPtr);
+    llvm::Value* buildGetErrorValuePtr(llvm::Value *simpleErrorPtr);
     llvm::Value* buildSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type);
     llvm::Value* buildErrorEnumValueBoxPtr(llvm::Value *box, const Type &type);
 

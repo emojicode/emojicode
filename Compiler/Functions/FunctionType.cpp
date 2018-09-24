@@ -25,8 +25,9 @@ bool isSelfAllowed(FunctionType type) {
 }
 
 bool hasInstanceScope(FunctionType type) {
-    return (type == FunctionType::ObjectMethod || type == FunctionType::ObjectInitializer ||
-            type == FunctionType::ValueTypeInitializer || type == FunctionType::ValueTypeMethod);
+    return type == FunctionType::ObjectMethod || type == FunctionType::ObjectInitializer ||
+           type == FunctionType::ValueTypeInitializer || type == FunctionType::ValueTypeMethod ||
+           type == FunctionType::Deinitializer;
 }
 
 bool isOnlyNothingnessReturnAllowed(FunctionType type) {

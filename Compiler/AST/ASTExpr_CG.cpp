@@ -143,11 +143,12 @@ Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {
     auto ret = CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, function_);
 
     if (manageErrorProneness_) {
-        fg->createIfElseBranchCond(fg->buildGetIsError(ret), [fg, ret]() {
+        fg->createIfElseBranchCond(fg->buildGetIsError(ret), [&]() {
             auto enumValue = fg->builder().CreateExtractValue(ret, 0);
+            buildDestruct(fg);
             fg->builder().CreateRet(fg->buildSimpleErrorWithError(enumValue, fg->llvmReturnType()));
             return false;
-        }, []() { return true; });
+        }, [] { return true; });
     }
 
     return init_ ? nullptr : ret;

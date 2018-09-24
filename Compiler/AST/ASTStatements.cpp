@@ -98,6 +98,7 @@ void ASTRaise::analyse(FunctionAnalyser *analyser) {
             throw CompilerError(position(), "Initializer is not declared error-prone.");
         }
         analyser->expectType(initializer->errorType()->type(), &value_);
+        analyseInstanceVariables(analyser);
         return;
     }
 
