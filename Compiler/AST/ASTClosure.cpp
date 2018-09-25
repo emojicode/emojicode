@@ -52,6 +52,9 @@ void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory 
     for (auto &capture : capture_.captures) {
         analyser->recordVariableGet(capture.sourceId, type);
     }
+    if (capture_.capturesSelf()) {
+        analyser->recordThis(MFFlowCategory::Escaping);
+    }
     MFFunctionAnalyser(closure_.get()).analyse();
 }
 

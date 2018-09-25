@@ -43,17 +43,18 @@ extern "C" void ejcRetain(runtime::Object<void> *object) {
     controlBlock->strongCount++;
 }
 
-void releaseLocal(void *object) {
+bool releaseLocal(void *object) {
     auto &ptr = *reinterpret_cast<int64_t *>(reinterpret_cast<uint8_t *>(object) - 8);
     ptr--;
-    if (ptr != 0) return;
+    return ptr == 0;
 }
 
 extern "C" void ejcRelease(runtime::Object<void> *object) {
     runtime::internal::ControlBlock *controlBlock = object->controlBlock();
     if (controlBlock == nullptr) {
-        releaseLocal(object);
-        object->classInfo()->dispatch<void>(0, object);
+        if (releaseLocal(object)) {
+            object->classInfo()->dispatch<void>(0, object);
+        }
         return;
     }
     if (controlBlock == &ejcIgnoreBlock) return;
@@ -78,8 +79,9 @@ struct Capture {
 extern "C" void ejcReleaseCapture(Capture *capture) {
     runtime::internal::ControlBlock *controlBlock = capture->controlBlock;
     if (controlBlock == nullptr) {
-        releaseLocal(capture);
-        capture->deinit(capture);
+        if (releaseLocal(capture)) {
+            capture->deinit(capture);
+        }
         return;
     }
     if (controlBlock == &ejcIgnoreBlock) return;
