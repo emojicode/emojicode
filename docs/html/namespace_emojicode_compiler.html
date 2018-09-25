@@ -112,6 +112,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_callable_call.html">ASTCallableCall</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_callable_thunk_destination.html">ASTCallableThunkDestination</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_callable_type.html">ASTCallableType</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents $callable-type$.  <a href="class_emojicode_compiler_1_1_a_s_t_callable_type.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -232,6 +234,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_type_value_type.html">ASTTypeValueType</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_unary.html">ASTUnary</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expressions that operate on the value produced by another expression inherit from this class.  <a href="class_emojicode_compiler_1_1_a_s_t_unary.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_unary_m_f_forwarding.html">ASTUnaryMFForwarding</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_a_s_t_unsafe_block.html">ASTUnsafeBlock</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -279,6 +284,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_document_parser.html">DocumentParser</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_enum.html">Enum</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_error_self_destructing.html">ErrorSelfDestructing</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_emojicode_compiler_1_1_exported_type.html">ExportedType</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -716,25 +723,25 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>buildDeinitializer</b
 <tr class="memitem:a6fbed58c90a86a0c894912e14f29f915"><td class="memItemLeft" align="right" valign="top"><a id="a6fbed58c90a86a0c894912e14f29f915"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>buildCopyRetain</b> (<a class="el" href="class_emojicode_compiler_1_1_value_type.html">ValueType</a> *typeDef)</td></tr>
 <tr class="separator:a6fbed58c90a86a0c894912e14f29f915"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7840c3279cf57ba1ca7c77ff87968848"><td class="memItemLeft" align="right" valign="top"><a id="a7840c3279cf57ba1ca7c77ff87968848"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>buildBoxingThunkAst</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *layer, const <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *destinationFunction)</td></tr>
-<tr class="separator:a7840c3279cf57ba1ca7c77ff87968848"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1ec846fee90842273b02309d5aa4413"><td class="memItemLeft" align="right" valign="top"><a id="aa1ec846fee90842273b02309d5aa4413"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>buildBoxingThunkAst</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *thunk, const <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *destinationFunction, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;destCallable)</td></tr>
+<tr class="separator:aa1ec846fee90842273b02309d5aa4413"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a105141b206df5e8483dee96ca893c13b"><td class="memItemLeft" align="right" valign="top"><a id="a105141b206df5e8483dee96ca893c13b"></a>
 std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>makeBoxingThunk</b> (std::u32string name, <a class="el" href="class_emojicode_compiler_1_1_type_definition.html">TypeDefinition</a> *owner, <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *package, <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> p, std::vector&lt; <a class="el" href="struct_emojicode_compiler_1_1_parameter.html">Parameter</a> &gt; &amp;&amp;params, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;returnType, <a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761">FunctionType</a> functionType)</td></tr>
 <tr class="separator:a105141b206df5e8483dee96ca893c13b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51875507211499526179f40b34e94ece"><td class="memItemLeft" align="right" valign="top"><a id="a51875507211499526179f40b34e94ece"></a>
 std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>buildBoxingThunk</b> (const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> &amp;declarator, const <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *method, const <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *methodImplementation)</td></tr>
 <tr class="separator:a51875507211499526179f40b34e94ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7474affe66b613424a1f7725ede8ba2"><td class="memItemLeft" align="right" valign="top"><a id="ab7474affe66b613424a1f7725ede8ba2"></a>
-std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>buildBoxingThunk</b> (const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;destCallable, <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *pkg, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
-<tr class="separator:ab7474affe66b613424a1f7725ede8ba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6cf21ef16134166ed0c6d77b6b76fd5"><td class="memItemLeft" align="right" valign="top"><a id="ac6cf21ef16134166ed0c6d77b6b76fd5"></a>
+std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>buildCallableThunk</b> (const <a class="el" href="class_emojicode_compiler_1_1_type_expectation.html">TypeExpectation</a> &amp;expectation, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;destCallable, <a class="el" href="class_emojicode_compiler_1_1_package.html">Package</a> *pkg, const <a class="el" href="struct_emojicode_compiler_1_1_source_position.html">SourcePosition</a> &amp;p)</td></tr>
+<tr class="separator:ac6cf21ef16134166ed0c6d77b6b76fd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6219756bc41a9117a3b849dc7208c1b5"><td class="memItemLeft" align="right" valign="top"><a id="a6219756bc41a9117a3b849dc7208c1b5"></a>
 std::unique_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>buildRequiredInitThunk</b> (<a class="el" href="class_emojicode_compiler_1_1_class.html">Class</a> *klass, const <a class="el" href="class_emojicode_compiler_1_1_initializer.html">Initializer</a> *init)</td></tr>
 <tr class="separator:a6219756bc41a9117a3b849dc7208c1b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77edec9fa666dc6c3012c07fa9717908"><td class="memTemplParams" colspan="2"><a id="a77edec9fa666dc6c3012c07fa9717908"></a>
+<tr class="memitem:ac699dfff91ba049d9f5078f16a2cb302"><td class="memTemplParams" colspan="2"><a id="ac699dfff91ba049d9f5078f16a2cb302"></a>
 template&lt;typename T , typename ... Args&gt; </td></tr>
-<tr class="memitem:a77edec9fa666dc6c3012c07fa9717908"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>insertNode</b> (std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; *node, Args... args)</td></tr>
-<tr class="separator:a77edec9fa666dc6c3012c07fa9717908"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac699dfff91ba049d9f5078f16a2cb302"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>insertNode</b> (std::shared_ptr&lt; <a class="el" href="class_emojicode_compiler_1_1_a_s_t_expr.html">ASTExpr</a> &gt; *node, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:ac699dfff91ba049d9f5078f16a2cb302"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad07f411596e96dca828235ab3d9c1183"><td class="memTemplParams" colspan="2"><a id="ad07f411596e96dca828235ab3d9c1183"></a>
 template&lt;typename Ptr &gt; </td></tr>
 <tr class="memitem:ad07f411596e96dca828235ab3d9c1183"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>transformTypeAstVector</b> (const std::vector&lt; Ptr &gt; &amp;vector, const <a class="el" href="class_emojicode_compiler_1_1_type_context.html">TypeContext</a> &amp;typeContext)</td></tr>
@@ -763,9 +770,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasInstanceScope</b> 
 <tr class="memitem:a49bab352fbeebbd3a5649f1ce9ebe564"><td class="memItemLeft" align="right" valign="top"><a id="a49bab352fbeebbd3a5649f1ce9ebe564"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isOnlyNothingnessReturnAllowed</b> (<a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761">FunctionType</a> type)</td></tr>
 <tr class="separator:a49bab352fbeebbd3a5649f1ce9ebe564"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a114383137ecc9b7ca63e56207426fcce"><td class="memItemLeft" align="right" valign="top"><a id="a114383137ecc9b7ca63e56207426fcce"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasThisArgument</b> (<a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761">FunctionType</a> type)</td></tr>
-<tr class="separator:a114383137ecc9b7ca63e56207426fcce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f6b62956d3ea197f80ac9349486fd37"><td class="memItemLeft" align="right" valign="top"><a id="a9f6b62956d3ea197f80ac9349486fd37"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasThisArgument</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function)</td></tr>
+<tr class="separator:a9f6b62956d3ea197f80ac9349486fd37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9db41f645d544cd370da375759b1f0a"><td class="memItemLeft" align="right" valign="top"><a id="ac9db41f645d544cd370da375759b1f0a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>mangleIdentifier</b> (std::stringstream &amp;stream, const std::u32string &amp;string)</td></tr>
 <tr class="separator:ac9db41f645d544cd370da375759b1f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>

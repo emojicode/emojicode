@@ -107,6 +107,9 @@ llvm::PointerType *&#160;</td><td class="memItemRight" valign="bottom"><b>someob
 <tr class="memitem:a3744b7eddcc72f7d2538296b87e14e55"><td class="memItemLeft" align="right" valign="top"><a id="a3744b7eddcc72f7d2538296b87e14e55"></a>
 llvm::FunctionType *&#160;</td><td class="memItemRight" valign="bottom"><b>boxRetainRelease</b> () const</td></tr>
 <tr class="separator:a3744b7eddcc72f7d2538296b87e14e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96261808fe3a8d7b9d7152d23553ec41"><td class="memItemLeft" align="right" valign="top"><a id="a96261808fe3a8d7b9d7152d23553ec41"></a>
+llvm::FunctionType *&#160;</td><td class="memItemRight" valign="bottom"><b>captureDeinit</b> () const</td></tr>
+<tr class="separator:a96261808fe3a8d7b9d7152d23553ec41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a512a42ba9e77bbd23b100443cd26ce37"><td class="memItemLeft" align="right" valign="top"><a id="a512a42ba9e77bbd23b100443cd26ce37"></a>
 llvm::StructType *&#160;</td><td class="memItemRight" valign="bottom"><b>protocolConformanceEntry</b> () const</td></tr>
 <tr class="separator:a512a42ba9e77bbd23b100443cd26ce37"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,6 +119,11 @@ llvm::StructType *&#160;</td><td class="memItemRight" valign="bottom"><b>llvmTyp
 <tr class="memitem:adcc5b02457bd97a688f77bd2a403590f"><td class="memItemLeft" align="right" valign="top"><a id="adcc5b02457bd97a688f77bd2a403590f"></a>
 llvm::ArrayType *&#160;</td><td class="memItemRight" valign="bottom"><b>multiprotocolConformance</b> (const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;type)</td></tr>
 <tr class="separator:adcc5b02457bd97a688f77bd2a403590f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a101a0f69943393ed4321dbc9d09a7d70"><td class="memItemLeft" align="right" valign="top"><a id="a101a0f69943393ed4321dbc9d09a7d70"></a>
+llvm::StructType *&#160;</td><td class="memItemRight" valign="bottom"><b>callable</b> () const</td></tr>
+<tr class="separator:a101a0f69943393ed4321dbc9d09a7d70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eeb14666034004bfdd24161a23d3797"><td class="memItemLeft" align="right" valign="top">llvm::StructType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_l_l_v_m_type_helper.html#a8eeb14666034004bfdd24161a23d3797">managable</a> (<a class="el" href="rapidjson_8h.html#a1d1cfd8ffb84e947f82999c682b666a7">llvm::Type</a> *type) const</td></tr>
+<tr class="separator:a8eeb14666034004bfdd24161a23d3797"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc834702f3591350c40da09ec8855242"><td class="memItemLeft" align="right" valign="top"><a id="afc834702f3591350c40da09ec8855242"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setReificationContext</b> (<a class="el" href="class_emojicode_compiler_1_1_reification_context.html">ReificationContext</a> *context)</td></tr>
 <tr class="separator:afc834702f3591350c40da09ec8855242"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -253,6 +261,26 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setReificationContext
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a8eeb14666034004bfdd24161a23d3797"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8eeb14666034004bfdd24161a23d3797">&#9670;&nbsp;</a></span>managable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">llvm::StructType * EmojicodeCompiler::LLVMTypeHelper::managable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="rapidjson_8h.html#a1d1cfd8ffb84e947f82999c682b666a7">llvm::Type</a> *&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Wraps the provided type into an anonymous struct where the first element is a control block pointer and the second the type.</p>
+<p>This can be used to allocate objects with <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html#a0bfb895d760758786b0c6167f13a6c17">FunctionCodeGenerator::alloc</a> and the like if they do not normally have a control block pointer. </p>
 
 </div>
 </div>

@@ -16,19 +16,19 @@
 namespace EmojicodeCompiler {
 
 Value* ASTIsError::generate(FunctionCodeGenerator *fg) const {
-    if (value_->expressionType().storageType() == StorageType::Box) {
-        return fg->buildHasNoValueBox(value_->generate(fg));
+    if (expr_->expressionType().storageType() == StorageType::Box) {
+        return fg->buildHasNoValueBox(expr_->generate(fg));
     }
-    return fg->buildGetIsError(value_->generate(fg));
+    return fg->buildGetIsError(expr_->generate(fg));
 }
 
 Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     if (error_) {
-        return handleResult(fg, generateErrorUnwrap(fg));
+        return generateErrorUnwrap(fg);
     }
 
-    auto optional = value_->generate(fg);
-    auto isBox = value_->expressionType().storageType() == StorageType::Box;
+    auto optional = expr_->generate(fg);
+    auto isBox = expr_->expressionType().storageType() == StorageType::Box;
     auto hasNoValue = isBox ? fg->buildHasNoValueBox(optional) : fg->buildHasNoValue(optional);
 
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
@@ -43,12 +43,12 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     if (isBox) {
         return optional;
     }
-    return handleResult(fg, fg->builder().CreateExtractValue(optional, 1));
+    return fg->builder().CreateExtractValue(optional, 1);
 }
 
 Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
-    auto error = value_->generate(fg);
-    auto isBox = value_->expressionType().storageType() == StorageType::Box;
+    auto error = expr_->generate(fg);
+    auto isBox = expr_->expressionType().storageType() == StorageType::Box;
     auto hasNoValue = isBox ? fg->buildHasNoValueBox(error) : fg->buildGetIsError(error);
 
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {

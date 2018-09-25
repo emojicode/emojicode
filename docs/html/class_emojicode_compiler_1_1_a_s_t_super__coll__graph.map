@@ -1,4 +1,5 @@
 <map id="EmojicodeCompiler::ASTSuper" name="EmojicodeCompiler::ASTSuper">
 <area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="The superclass of all syntax tree nodes representing an expression. " alt="" coords="5,92,150,131"/>
 <area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="ASTNode is the parent class of all nodes in the abstract syntax tree. " alt="" coords="5,5,150,44"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_error_self_destructing.html" title="EmojicodeCompiler::\lErrorSelfDestructing" alt="" coords="173,92,318,131"/>
 </map>

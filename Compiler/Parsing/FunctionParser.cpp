@@ -18,6 +18,7 @@
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTUnsafeBlock.hpp"
 #include "AST/ASTVariables.hpp"
+#include "AST/ASTCast.hpp"
 #include "Compiler.hpp"
 #include "FunctionParser.hpp"
 #include "Package/Package.hpp"

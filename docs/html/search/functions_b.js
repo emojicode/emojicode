@@ -1,6 +1,7 @@
 var searchData=
 [
   ['malloc',['Malloc',['../class_memory_pool_allocator.html#a02f6832910453446cb77bf919ba49e99',1,'MemoryPoolAllocator']]],
+  ['managable',['managable',['../class_emojicode_compiler_1_1_l_l_v_m_type_helper.html#a8eeb14666034004bfdd24161a23d3797',1,'EmojicodeCompiler::LLVMTypeHelper']]],
   ['match',['Match',['../classargs_1_1_matcher.html#ac0109d749d161b039d879e2c6b4b708c',1,'args::Matcher::Match(const char flag) const'],['../classargs_1_1_matcher.html#aa61c6a4d756752ec692c0b703035608a',1,'args::Matcher::Match(const std::string &amp;flag) const'],['../classargs_1_1_matcher.html#ad657c9f5cca2892863c71bb980ea94e2',1,'args::Matcher::Match(const EitherFlag &amp;flag) const'],['../classargs_1_1_group.html#a31872f412d5b32e0afaf962cd2ce5e40',1,'args::Group::Match()'],['../classargs_1_1_command.html#ace018e92977b0e6ec5472cae0166523c',1,'args::Command::Match()']]],
   ['matched',['Matched',['../classargs_1_1_group.html#a7794d31edae97254be440b8768db9af0',1,'args::Group::Matched()'],['../classargs_1_1_command.html#aebb9c512301e7f0c49689ed92568ef6e',1,'args::Command::Matched()']]],
   ['matchedchildren',['MatchedChildren',['../classargs_1_1_group.html#a63697db6c1a28632775f852afface1ce',1,'args::Group']]],

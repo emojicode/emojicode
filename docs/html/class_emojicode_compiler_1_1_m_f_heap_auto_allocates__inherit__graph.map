@@ -1,8 +1,9 @@
 <map id="EmojicodeCompiler::MFHeapAutoAllocates" name="EmojicodeCompiler::MFHeapAutoAllocates">
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_closure.html" title="EmojicodeCompiler::\lASTClosure" alt="" coords="400,5,544,44"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_to_box.html" title="EmojicodeCompiler::\lASTToBox" alt="" coords="400,68,544,107"/>
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_m_f_heap_allocates.html" title="EmojicodeCompiler::\lMFHeapAllocates" alt="" coords="5,37,150,76"/>
-<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_simple_error_to_box.html" title="EmojicodeCompiler::\lASTSimpleErrorToBox" alt="" coords="602,5,757,44"/>
-<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_simple_optional_to_box.html" title="EmojicodeCompiler::\lASTSimpleOptionalToBox" alt="" coords="592,68,767,107"/>
-<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_a_s_t_simple_to_box.html" title="EmojicodeCompiler::\lASTSimpleToBox" alt="" coords="607,131,752,169"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_callable_box.html" title="EmojicodeCompiler::\lASTCallableBox" alt="" coords="400,5,544,44"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_closure.html" title="EmojicodeCompiler::\lASTClosure" alt="" coords="400,68,544,107"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_to_box.html" title="EmojicodeCompiler::\lASTToBox" alt="" coords="400,131,544,169"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_m_f_heap_allocates.html" title="EmojicodeCompiler::\lMFHeapAllocates" alt="" coords="5,68,150,107"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_simple_error_to_box.html" title="EmojicodeCompiler::\lASTSimpleErrorToBox" alt="" coords="602,68,757,107"/>
+<area shape="rect" id="node7" href="$class_emojicode_compiler_1_1_a_s_t_simple_optional_to_box.html" title="EmojicodeCompiler::\lASTSimpleOptionalToBox" alt="" coords="592,131,767,169"/>
+<area shape="rect" id="node8" href="$class_emojicode_compiler_1_1_a_s_t_simple_to_box.html" title="EmojicodeCompiler::\lASTSimpleToBox" alt="" coords="607,193,752,232"/>
 </map>

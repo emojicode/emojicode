@@ -14,8 +14,10 @@ var searchData=
   ['boxinfo',['boxInfo',['../class_emojicode_compiler_1_1_l_l_v_m_type_helper.html#a2c47c39bd8008b78432b68e9f33c8b44',1,'EmojicodeCompiler::LLVMTypeHelper']]],
   ['boxinfofor',['boxInfoFor',['../class_emojicode_compiler_1_1_code_generator.html#a0eeae098ba241c3e0fb943fc858e0e98',1,'EmojicodeCompiler::CodeGenerator']]],
   ['build',['build',['../class_emojicode_compiler_1_1_v_t_creator.html#a98ec6c1638e0fefa6723d519aeecc2d1',1,'EmojicodeCompiler::VTCreator']]],
+  ['builddestruct',['buildDestruct',['../class_emojicode_compiler_1_1_error_self_destructing.html#ad96320405c04b81710dc0ecfcb9b640f',1,'EmojicodeCompiler::ErrorSelfDestructing']]],
   ['buildgetboxinfoptr',['buildGetBoxInfoPtr',['../class_emojicode_compiler_1_1_function_code_generator.html#a7ee14fe17ce8c4d0e2b74b3f7f9ae81a',1,'EmojicodeCompiler::FunctionCodeGenerator']]],
   ['buildgetboxvalueptr',['buildGetBoxValuePtr',['../class_emojicode_compiler_1_1_function_code_generator.html#a9531b76888727b52740bcf35467f06f2',1,'EmojicodeCompiler::FunctionCodeGenerator::buildGetBoxValuePtr(llvm::Value *box, const Type &amp;type)'],['../class_emojicode_compiler_1_1_function_code_generator.html#a051cd8fd5c8d97cbba8b4b1bad54dc85',1,'EmojicodeCompiler::FunctionCodeGenerator::buildGetBoxValuePtr(llvm::Value *box, llvm::Type *llvmType)']]],
+  ['buildgetboxvalueptrafter',['buildGetBoxValuePtrAfter',['../class_emojicode_compiler_1_1_function_code_generator.html#a3a6d7c51a0be48f7a12da5d3ee301ba2',1,'EmojicodeCompiler::FunctionCodeGenerator']]],
   ['buildgetclassinfofromobject',['buildGetClassInfoFromObject',['../class_emojicode_compiler_1_1_function_code_generator.html#a3cfc9b9f5a125be69fab0d0250173491',1,'EmojicodeCompiler::FunctionCodeGenerator']]],
   ['buildgetclassinfoptrfromobject',['buildGetClassInfoPtrFromObject',['../class_emojicode_compiler_1_1_function_code_generator.html#ab01656fdd0ca6234a8af5b6954300f68',1,'EmojicodeCompiler::FunctionCodeGenerator']]],
   ['buildmakenovalue',['buildMakeNoValue',['../class_emojicode_compiler_1_1_function_code_generator.html#a03ef5097ab43199b90223e138260dd24',1,'EmojicodeCompiler::FunctionCodeGenerator']]]

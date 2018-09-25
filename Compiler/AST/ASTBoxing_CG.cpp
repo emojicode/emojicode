@@ -19,7 +19,7 @@ Value* ASTUpcast::generate(FunctionCodeGenerator *fg) const {
 }
 
 ASTBoxing::ASTBoxing(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, const Type &exprType)
-    : ASTExpr(p), expr_(std::move(expr)) {
+    : ASTUnaryMFForwarding(std::move(expr), p) {
     setExpressionType(exprType);
     if (auto init = std::dynamic_pointer_cast<ASTInitialization>(expr_)) {
         init_ = init->initType() == ASTInitialization::InitType::ValueType;

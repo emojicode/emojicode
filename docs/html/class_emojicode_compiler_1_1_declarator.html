@@ -99,12 +99,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a47f1ba658ac05f2dc89eb33a8f44aa64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52ed85fec32138b049df5c6a2c1d016c"><td class="memItemLeft" align="right" valign="top"><a id="a52ed85fec32138b049df5c6a2c1d016c"></a>
 <a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761a86408593c34af77fdd90df932f8b5261">llvm::Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_declarator.html#a52ed85fec32138b049df5c6a2c1d016c">retain</a> () const</td></tr>
-<tr class="memdesc:a52ed85fec32138b049df5c6a2c1d016c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function called to retain any value allocated with ::alloc. (ejcRetain) <br /></td></tr>
+<tr class="memdesc:a52ed85fec32138b049df5c6a2c1d016c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The function called to retain any value. (ejcRetain) <br /></td></tr>
 <tr class="separator:a52ed85fec32138b049df5c6a2c1d016c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3cfa2645aefc4e52fdf9ef8de750459"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761a86408593c34af77fdd90df932f8b5261">llvm::Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_declarator.html#ad3cfa2645aefc4e52fdf9ef8de750459">release</a> () const</td></tr>
 <tr class="separator:ad3cfa2645aefc4e52fdf9ef8de750459"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a661b0430163a37532d6c042fda6b2440"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761a86408593c34af77fdd90df932f8b5261">llvm::Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_declarator.html#a661b0430163a37532d6c042fda6b2440">releaseMemory</a> () const</td></tr>
 <tr class="separator:a661b0430163a37532d6c042fda6b2440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bda98269fdc80b6a89b1dae7dd6e0f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761a86408593c34af77fdd90df932f8b5261">llvm::Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_declarator.html#a9bda98269fdc80b6a89b1dae7dd6e0f3">releaseCapture</a> () const</td></tr>
+<tr class="separator:a9bda98269fdc80b6a89b1dae7dd6e0f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7508be6397ea5c538bae9a4de89c974"><td class="memItemLeft" align="right" valign="top"><a id="ae7508be6397ea5c538bae9a4de89c974"></a>
 <a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761a86408593c34af77fdd90df932f8b5261">llvm::Function</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_emojicode_compiler_1_1_declarator.html#ae7508be6397ea5c538bae9a4de89c974">findProtocolConformance</a> () const</td></tr>
 <tr class="memdesc:ae7508be6397ea5c538bae9a4de89c974"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to find a protocol conformance in an array of ProtocolConformanceEntries. (ejcFindProtocolConformance) <br /></td></tr>
@@ -175,7 +177,33 @@ llvm::GlobalVariable *&#160;</td><td class="memItemRight" valign="bottom"><b>box
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The function that must be used to release objects allocated with ::alloc. </p><dl class="section note"><dt>Note</dt><dd>Use <a class="el" href="class_emojicode_compiler_1_1_declarator.html#a661b0430163a37532d6c042fda6b2440">releaseMemory()</a> to release memory areas that do not represent class instances! </dd></dl>
+<p>The function that must be used to release objects. </p><dl class="section note"><dt>Note</dt><dd>Use <a class="el" href="class_emojicode_compiler_1_1_declarator.html#a661b0430163a37532d6c042fda6b2440">releaseMemory()</a> to release memory areas that do not represent class instances! </dd></dl>
+
+</div>
+</div>
+<a id="a9bda98269fdc80b6a89b1dae7dd6e0f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bda98269fdc80b6a89b1dae7dd6e0f3">&#9670;&nbsp;</a></span>releaseCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespace_emojicode_compiler.html#af97b0ac5517813b9eea7b67208d2c761a86408593c34af77fdd90df932f8b5261">llvm::Function</a>* EmojicodeCompiler::Declarator::releaseCapture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The function that is to be used to release closure captures. (ejcReleaseCapture) </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_declarator.html#ad3cfa2645aefc4e52fdf9ef8de750459">release</a> </dd></dl>
 
 </div>
 </div>
@@ -201,7 +229,7 @@ llvm::GlobalVariable *&#160;</td><td class="memItemRight" valign="bottom"><b>box
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The function that is to be used to release memory area allocated with ::alloc that do not represent objects. (ejcReleaseMemory) </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_declarator.html#ad3cfa2645aefc4e52fdf9ef8de750459">release</a> </dd></dl>
+<p>The function that is to be used to release memory area that do not represent objects. (ejcReleaseMemory) </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_emojicode_compiler_1_1_declarator.html#ad3cfa2645aefc4e52fdf9ef8de750459">release</a> </dd></dl>
 
 </div>
 </div>

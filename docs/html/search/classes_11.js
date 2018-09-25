@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['token',['Token',['../class_emojicode_compiler_1_1_token.html',1,'EmojicodeCompiler::Token'],['../struct_generic_pointer_1_1_token.html',1,'GenericPointer&lt; ValueType, Allocator &gt;::Token']]],
+  ['token',['Token',['../struct_generic_pointer_1_1_token.html',1,'GenericPointer&lt; ValueType, Allocator &gt;::Token'],['../class_emojicode_compiler_1_1_token.html',1,'EmojicodeCompiler::Token']]],
   ['tokenhelper',['TokenHelper',['../structinternal_1_1_token_helper.html',1,'internal']]],
   ['tokenhelper_3c_20stack_2c_20char_20_3e',['TokenHelper&lt; Stack, char &gt;',['../structinternal_1_1_token_helper_3_01_stack_00_01char_01_4.html',1,'internal']]],
   ['tokenstream',['TokenStream',['../class_emojicode_compiler_1_1_token_stream.html',1,'EmojicodeCompiler']]],

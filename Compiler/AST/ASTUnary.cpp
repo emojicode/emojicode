@@ -15,7 +15,7 @@
 namespace EmojicodeCompiler {
 
 Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    Type type = analyser->expect(TypeExpectation(false, false), &value_);
+    Type type = analyser->expect(TypeExpectation(false, false), &expr_);
     if (type.unboxedType() != TypeType::Error) {
         throw CompilerError(position(), "🚥 can only be used with 🚨.");
     }
@@ -23,11 +23,11 @@ Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
 }
 
 void ASTIsError::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
-    value_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
+    expr_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
 }
 
 Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    Type t = analyser->expect(TypeExpectation(false, false), &value_);
+    Type t = analyser->expect(TypeExpectation(false, false), &expr_);
 
     if (t.unboxedType() == TypeType::Optional) {
         return t.optionalType();
@@ -38,11 +38,6 @@ Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expec
     }
 
     throw CompilerError(position(), "🍺 can only be used with optionals or 🚨.");
-}
-
-void ASTUnwrap::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
-    analyser->take(value_.get());
-    value_->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
 }
 
 }  // namespace EmojicodeCompiler

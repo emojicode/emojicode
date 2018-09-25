@@ -1,5 +1,7 @@
 <map id="EmojicodeCompiler::ASTBoxToSimpleError" name="EmojicodeCompiler::ASTBoxToSimpleError">
-<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_boxing.html" title="EmojicodeCompiler::\lASTBoxing" alt="" coords="11,179,155,217"/>
-<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="The superclass of all syntax tree nodes representing an expression. " alt="" coords="11,92,155,131"/>
-<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="ASTNode is the parent class of all nodes in the abstract syntax tree. " alt="" coords="11,5,155,44"/>
+<area shape="rect" id="node2" href="$class_emojicode_compiler_1_1_a_s_t_boxing.html" title="EmojicodeCompiler::\lASTBoxing" alt="" coords="18,352,162,391"/>
+<area shape="rect" id="node3" href="$class_emojicode_compiler_1_1_a_s_t_unary_m_f_forwarding.html" title="EmojicodeCompiler::\lASTUnaryMFForwarding" alt="" coords="5,265,174,304"/>
+<area shape="rect" id="node4" href="$class_emojicode_compiler_1_1_a_s_t_unary.html" title="Expressions that operate on the value produced by another expression inherit from this class..." alt="" coords="18,179,162,217"/>
+<area shape="rect" id="node5" href="$class_emojicode_compiler_1_1_a_s_t_expr.html" title="The superclass of all syntax tree nodes representing an expression. " alt="" coords="18,92,162,131"/>
+<area shape="rect" id="node6" href="$class_emojicode_compiler_1_1_a_s_t_node.html" title="ASTNode is the parent class of all nodes in the abstract syntax tree. " alt="" coords="18,5,162,44"/>
 </map>

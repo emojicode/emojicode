@@ -2,6 +2,7 @@ var searchData=
 [
   ['maketypeasvaluetype',['MakeTypeAsValueType',['../struct_emojicode_compiler_1_1_make_type_as_value_type.html',1,'EmojicodeCompiler']]],
   ['malloc',['Malloc',['../class_memory_pool_allocator.html#a02f6832910453446cb77bf919ba49e99',1,'MemoryPoolAllocator']]],
+  ['managable',['managable',['../class_emojicode_compiler_1_1_l_l_v_m_type_helper.html#a8eeb14666034004bfdd24161a23d3797',1,'EmojicodeCompiler::LLVMTypeHelper']]],
   ['maperror',['MapError',['../classargs_1_1_map_error.html',1,'args']]],
   ['mapflag',['MapFlag',['../classargs_1_1_map_flag.html',1,'args']]],
   ['mapflaglist',['MapFlagList',['../classargs_1_1_map_flag_list.html',1,'args']]],

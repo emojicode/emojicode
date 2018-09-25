@@ -7,6 +7,7 @@ var searchData=
   ['encoding',['Encoding',['../classrapidjson_1_1_encoding.html',1,'rapidjson']]],
   ['enum',['Enum',['../class_emojicode_compiler_1_1_enum.html',1,'EmojicodeCompiler']]],
   ['error',['Error',['../classargs_1_1_error.html',1,'args']]],
+  ['errorselfdestructing',['ErrorSelfDestructing',['../class_emojicode_compiler_1_1_error_self_destructing.html',1,'EmojicodeCompiler']]],
   ['exportedtype',['ExportedType',['../struct_emojicode_compiler_1_1_exported_type.html',1,'EmojicodeCompiler']]],
   ['extension',['Extension',['../class_emojicode_compiler_1_1_extension.html',1,'EmojicodeCompiler']]],
   ['extraerror',['ExtraError',['../classargs_1_1_extra_error.html',1,'args']]]

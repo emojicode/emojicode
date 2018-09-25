@@ -75,6 +75,8 @@ $(function() {
 <div class="title">EmojicodeCompiler::CallCodeGenerator Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_call_code_generator_8hpp_source.html">CallCodeGenerator.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for EmojicodeCompiler::CallCodeGenerator:</div>
 <div class="dyncontent">
@@ -101,11 +103,18 @@ std::vector&lt; <a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e
 <tr class="memitem:a0829da9fb718f1c4ed0f0ece60bad5a7"><td class="memItemLeft" align="right" valign="top"><a id="a0829da9fb718f1c4ed0f0ece60bad5a7"></a>
 <a class="el" href="class_emojicode_compiler_1_1_function_code_generator.html">FunctionCodeGenerator</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>fg</b> () const</td></tr>
 <tr class="separator:a0829da9fb718f1c4ed0f0ece60bad5a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45e620c13f55b8b596918dd1df407271"><td class="memItemLeft" align="right" valign="top"><a id="a45e620c13f55b8b596918dd1df407271"></a>
-<a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481">llvm::Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>createDynamicProtocolDispatch</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, std::vector&lt; <a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481">llvm::Value</a> *&gt; args, const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &gt; &amp;genericArgs, <a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481">llvm::Value</a> *conformancePtr)</td></tr>
-<tr class="separator:a45e620c13f55b8b596918dd1df407271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18d13b9ad9491fa5ef84bf86324e4118"><td class="memItemLeft" align="right" valign="top"><a id="a18d13b9ad9491fa5ef84bf86324e4118"></a>
+<a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481">llvm::Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>createDynamicProtocolDispatch</b> (<a class="el" href="class_emojicode_compiler_1_1_function.html">Function</a> *function, std::vector&lt; <a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481">llvm::Value</a> *&gt; args, const std::vector&lt; <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &gt; &amp;genericArgs, <a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481">llvm::Value</a> *conformance)</td></tr>
+<tr class="separator:a18d13b9ad9491fa5ef84bf86324e4118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a820c7eec71c8145f2b8b453fece87aff"><td class="memItemLeft" align="right" valign="top"><a id="a820c7eec71c8145f2b8b453fece87aff"></a>
+<a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481">llvm::Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>buildFindProtocolConformance</b> (const std::vector&lt; <a class="el" href="document_8h.html#a071cf97155ba72ac9a1fc4ad7e63d481">llvm::Value</a> *&gt; &amp;args, const <a class="el" href="class_emojicode_compiler_1_1_type.html">Type</a> &amp;protocol)</td></tr>
+<tr class="separator:a820c7eec71c8145f2b8b453fece87aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This class is responsible for generating IR to dispatch a method, initializer, type method or protocol method.</p>
+<p>It does all the heavy lifting concerning dispatch, dispatch tables etc.</p>
+<p>It is also capable of generating code to find a protocol conformance if the callee of a dynamic protocol dispatch is not boxed for the protocol in question. </p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/<a class="el" href="_call_code_generator_8hpp_source.html">CallCodeGenerator.hpp</a></li>
 <li>/Users/theo/Documents/emojicode/emojicode/Compiler/Generation/CallCodeGenerator.cpp</li>
 </ul>

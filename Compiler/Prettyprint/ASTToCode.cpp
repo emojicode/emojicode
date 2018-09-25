@@ -19,6 +19,7 @@
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTUnsafeBlock.hpp"
 #include "AST/ASTVariables.hpp"
+#include "AST/ASTCast.hpp"
 #include "PrettyStream.hpp"
 #include "Types/Type.hpp"
 #include <sstream>
@@ -200,12 +201,12 @@ void ASTThis::toCode(PrettyStream &pretty) const {
 
 void ASTIsError::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🚥" << value_;
+    pretty << "🚥" << expr_;
 }
 
 void ASTUnwrap::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << " 🍺" << value_;
+    pretty << " 🍺" << expr_;
 }
 
 void ASTNumberLiteral::toCode(PrettyStream &pretty) const {
@@ -246,7 +247,7 @@ void ASTReturn::toCode(PrettyStream &pretty) const {
 
 void ASTCast::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🔲" << value_ << typeExpr_;
+    pretty << "🔲" << expr_ << typeExpr_;
 }
 
 void ASTMethod::toCode(PrettyStream &pretty) const {

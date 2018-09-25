@@ -71,6 +71,34 @@ std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, Args&&... args) {
     return std::static_pointer_cast<T>(*node);
 }
 
+/// Expressions that operate on the value produced by another expression inherit from this class.
+class ASTUnary : public ASTExpr {
+public:
+    ASTUnary(std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTExpr(p), expr_(std::move(value)) {}
+
+protected:
+    std::shared_ptr<ASTExpr> expr_;
+};
+
+/// Unary expressions that do not themselves affect the flow category or value category of ::expr_ should inherit from
+/// this class.
+///
+/// When analysing the flow category, this class simply analyses ::expr_ with the same category. If the value of an
+/// expression defined by subclass of this class is taken, ::expr_ is taken.
+///
+/// @note Expressions inherting from this class must not pass their result to ::handleResult. This is because if the
+/// resulting value of this expression is temporary, it will be releaed by ::expr_ as this expression has not taken the
+/// value then.
+/// @see MFFunctionAnalyser
+class ASTUnaryMFForwarding : public ASTUnary {
+public:
+    using ASTUnary::ASTUnary;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
+
+protected:
+    void unsetIsTemporaryPost() final { expr_->unsetIsTemporary(); }
+};
+
 class ASTTypeAsValue final : public ASTExpr {
 public:
     ASTTypeAsValue(std::unique_ptr<ASTType> type, TokenType tokenType, const SourcePosition &p)
@@ -122,32 +150,6 @@ private:
     std::vector<std::shared_ptr<ASTType>> genericArguments_;
     std::vector<std::shared_ptr<ASTExpr>> arguments_;
     std::vector<Type> genericArgumentsTypes_;
-};
-
-class ASTCast final : public ASTExpr {
-public:
-    ASTCast(std::shared_ptr<ASTExpr> value, std::shared_ptr<ASTExpr> type,
-            const SourcePosition &p) : ASTExpr(p), value_(std::move(value)), typeExpr_(std::move(type)) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-
-    void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
-
-private:
-    enum class CastType {
-        ClassDowncast, ToClass, ToProtocol, ToValueType,
-    };
-    CastType castType_;
-    std::shared_ptr<ASTExpr> value_;
-    std::shared_ptr<ASTExpr> typeExpr_;
-    Value* downcast(FunctionCodeGenerator *fg) const;
-    Value* castToClass(FunctionCodeGenerator *fg, Value *box) const;
-    Value* castToValueType(FunctionCodeGenerator *fg, Value *box) const;
-    Value* castToProtocol(FunctionCodeGenerator *fg, Value *box) const;
-    /// Returns the box info representing the type of information in the box. This includes fetching the box info
-    /// from the protocol conformance if the box is a protocol box.
-    Value* boxInfo(FunctionCodeGenerator *fg, Value *box) const;
 };
 
 class ASTCallableCall final : public ASTExpr {

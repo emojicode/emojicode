@@ -18,6 +18,10 @@
 
 namespace EmojicodeCompiler {
 
+void ASTUnaryMFForwarding::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+    expr_->analyseMemoryFlow(analyser, type);
+}
+
 Type ASTTypeAsValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     auto &type = type_->analyseType(analyser->typeContext());
     ASTTypeValueType::checkTypeValue(tokenType_, type, analyser->typeContext(), position());
@@ -27,56 +31,6 @@ Type ASTTypeAsValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &
 Type ASTSizeOf::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     type_->analyseType(analyser->typeContext());
     return analyser->integer();
-}
-
-Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
-
-    Type originalType = analyser->expect(TypeExpectation(), &value_);
-    if (originalType.compatibleTo(type, analyser->typeContext())) {
-        analyser->compiler()->error(CompilerError(position(), "Unnecessary cast."));
-    }
-    else if (!type.compatibleTo(originalType, analyser->typeContext())
-             && !(originalType.unboxedType() == TypeType::Protocol && type.unboxedType() == TypeType::Protocol)) {
-        auto typeString = type.toString(analyser->typeContext());
-        analyser->compiler()->error(CompilerError(position(), "Cast to unrelated type ", typeString,
-                                                  " will always fail."));
-    }
-
-    if (type.type() == TypeType::Class) {
-        if (!type.genericArguments().empty()) {
-            analyser->compiler()->error(CompilerError(position(),
-                                                      "Class casts with generic arguments are not available."));
-        }
-
-        if (originalType.type() == TypeType::Someobject || originalType.type() == TypeType::Class) {
-            castType_ = CastType::ClassDowncast;
-            return type.optionalized();
-        }
-
-        castType_ = CastType::ToClass;
-    }
-    else if (type.unboxedType() == TypeType::Protocol) {
-        if (!type.genericArguments().empty()) {
-            analyser->compiler()->error(CompilerError(position(), "Cannot cast to generic protocols."));
-        }
-        castType_ = CastType::ToProtocol;
-        assert(type.storageType() == StorageType::Box);
-        return type.unboxed().boxedFor(type).optionalized();
-    }
-    else if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
-        castType_ = CastType::ToValueType;
-    }
-    else {
-        auto typeString = type.toString(analyser->typeContext());
-        throw CompilerError(position(), "You cannot cast to ", typeString, ".");
-    }
-
-    return type.optionalized().boxedFor(originalType.boxedFor());
-}
-
-void ASTCast::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
-    value_->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);
 }
 
 Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {

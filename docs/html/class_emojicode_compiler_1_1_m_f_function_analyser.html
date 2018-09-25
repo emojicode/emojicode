@@ -227,6 +227,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div><div class="memdoc">
 <p>Records an expression whose resulting value was assigned to a variable. If the compiler can prove that the variable value is never used in an Escaping manner it will inform the expression that it can allocate on the heap if it inherits from <a class="el" href="class_emojicode_compiler_1_1_m_f_heap_allocates.html">MFHeapAllocates</a>. Analyses expr as Escaping. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">expr</td><td>The expression which is stored into the variable. This value can be <code>nullptr</code> in special circumstances. </td></tr>
     <tr><td class="paramname">type</td><td>The type of the variable. </td></tr>
   </table>
   </dd>

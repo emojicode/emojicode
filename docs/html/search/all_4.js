@@ -21,6 +21,7 @@ var searchData=
   ['error_2eh',['error.h',['../error_8h.html',1,'']]],
   ['errorenum',['errorEnum',['../class_emojicode_compiler_1_1_type.html#a621cec8820bbe6e06e3a1fca4c818009',1,'EmojicodeCompiler::Type']]],
   ['errorprone',['errorProne',['../class_emojicode_compiler_1_1_initializer.html#aa5e5e1ecd514e793705088e23ec99104',1,'EmojicodeCompiler::Initializer']]],
+  ['errorselfdestructing',['ErrorSelfDestructing',['../class_emojicode_compiler_1_1_error_self_destructing.html',1,'EmojicodeCompiler']]],
   ['errortype',['errorType',['../class_emojicode_compiler_1_1_type.html#a8d80e30e988b262fd8b1b05fec7826e7',1,'EmojicodeCompiler::Type']]],
   ['expect',['expect',['../class_emojicode_compiler_1_1_function_analyser.html#a120128565ce220ceb1820b2755cc6dd8',1,'EmojicodeCompiler::FunctionAnalyser']]],
   ['expectationmode',['ExpectationMode',['../namespace_emojicode_compiler.html#ad0025667925d16758808aee106e5486e',1,'EmojicodeCompiler']]],

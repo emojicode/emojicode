@@ -13,6 +13,8 @@ var searchData=
   ['recordvariableset',['recordVariableSet',['../class_emojicode_compiler_1_1_m_f_function_analyser.html#a72d89da23f74baf7dd415e51de7ded3f',1,'EmojicodeCompiler::MFFunctionAnalyser']]],
   ['refuseoffer',['refuseOffer',['../class_emojicode_compiler_1_1_pretty_stream.html#a04c11df4347469336aa9634b2dec6bbb',1,'EmojicodeCompiler::PrettyStream']]],
   ['release',['release',['../class_emojicode_compiler_1_1_accesses_any_variable.html#abf406155e5b21853253c0c14a1401f89',1,'EmojicodeCompiler::AccessesAnyVariable::release()'],['../class_emojicode_compiler_1_1_declarator.html#ad3cfa2645aefc4e52fdf9ef8de750459',1,'EmojicodeCompiler::Declarator::release()']]],
+  ['releasebyreference',['releaseByReference',['../class_emojicode_compiler_1_1_function_code_generator.html#a96fedcd44b9098a7c94f20e3f156db89',1,'EmojicodeCompiler::FunctionCodeGenerator']]],
+  ['releasecapture',['releaseCapture',['../class_emojicode_compiler_1_1_declarator.html#a9bda98269fdc80b6a89b1dae7dd6e0f3',1,'EmojicodeCompiler::Declarator']]],
   ['releasememory',['releaseMemory',['../class_emojicode_compiler_1_1_declarator.html#a661b0430163a37532d6c042fda6b2440',1,'EmojicodeCompiler::Declarator']]],
   ['releasetemporaryobjects',['releaseTemporaryObjects',['../class_emojicode_compiler_1_1_function_code_generator.html#a181b815d00a9afc2d5661be7b82c75b1',1,'EmojicodeCompiler::FunctionCodeGenerator']]],
   ['requirecommand',['RequireCommand',['../classargs_1_1_command.html#afbbca5178a6c712f9ad0777b7bef08bd',1,'args::Command']]],
