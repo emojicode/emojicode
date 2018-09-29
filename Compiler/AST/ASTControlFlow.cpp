@@ -104,6 +104,7 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTErrorHandler::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
+    analyser->take(value_.get());
     analyser->recordVariableSet(valueVar_, value_.get(), valueType_);
     valueBlock_.analyseMemoryFlow(analyser);
     analyser->popScope(&valueBlock_);

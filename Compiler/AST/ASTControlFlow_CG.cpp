@@ -77,6 +77,7 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     auto errorBlock = llvm::BasicBlock::Create(fg->generator()->context(), "error", function);
 
     auto error = value_->generate(fg);
+    fg->releaseTemporaryObjects();
     auto isError = valueIsBoxed_ ? fg->buildHasNoValueBox(error) : fg->buildGetIsError(error);
 
     fg->builder().CreateCondBr(isError, errorBlock, noError);

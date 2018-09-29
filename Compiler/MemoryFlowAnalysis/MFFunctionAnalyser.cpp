@@ -63,6 +63,7 @@ void MFFunctionAnalyser::popScope(ASTBlock *block) {
                 init->allocateOnStack();
             }
         }
+        var.inits.clear();
     }
 }
 
