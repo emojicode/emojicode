@@ -86,7 +86,8 @@ void Compiler::linkToExecutable() {
 
     cmd << linker_ << " " << objectPath_;
 
-    for (auto &package : packages_) {
+    for (auto it = packages_.rbegin(); it != packages_.rend(); it++) {
+        auto &package = *it;
         auto path = findBinaryPathPackage(package.second->path(), package.second->name());
         cmd << " " << path;
         for (auto &hint : package.second->linkHints()) {
