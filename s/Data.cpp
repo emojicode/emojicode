@@ -32,13 +32,8 @@ extern "C" runtime::SimpleOptional<String *> sDataAsString(Data *data) {
     auto *string = String::init();
     string->count = u8_strlen_l(chars, data->count);
 
-    if (data->count == 0) {
-        return string;
-    }
-
     string->characters = runtime::allocate<String::Character>(string->count);
     u8_toucs(string->characters.get(), string->count, chars, data->count);
-
     return string;
 }
 
