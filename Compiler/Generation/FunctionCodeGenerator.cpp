@@ -420,7 +420,7 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
             });
         }
         else {
-            createIf(builder().CreateNeg(buildGetIsError(value)), [&] {
+            createIf(buildGetIsNotError(value), [&] {
                 retain(builder().CreateExtractValue(value, 1), type.errorType());
             });
         }
