@@ -96,14 +96,16 @@ void MFFunctionAnalyser::take(ASTExpr *expr) {
 }
 
 void MFFunctionAnalyser::recordReturn(ASTExpr *expr) {
-    take(expr);
     if (auto getVar = dynamic_cast<ASTGetVariable *>(expr)) {
         if (!getVar->inInstanceScope()) {
             auto &var = scope_.getVariable(getVar->id());
             if (var.isParam) return;
             var.isReturned = true;
+            expr->analyseMemoryFlow(this, MFFlowCategory::Escaping);
+            return;
         }
     }
+    take(expr);
     if (auto getVar = dynamic_cast<ASTThis *>(expr)) {
         return;
     }
