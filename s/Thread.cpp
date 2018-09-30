@@ -34,6 +34,10 @@ extern "C" void sThreadJoin(Thread *thread) {
     thread->thread.join();
 }
 
+extern "C" void sThreadDestruct(Thread *thread) {
+    thread->~Thread();
+}
+
 extern "C" void sThreadDelay(runtime::ClassInfo *, runtime::Integer mcs) {
     std::this_thread::sleep_for(std::chrono::microseconds(mcs));
 }
@@ -52,6 +56,10 @@ extern "C" void sMutexTryLock(Mutex *mutex) {
 
 extern "C" void sMutexUnlock(Mutex *mutex) {
     mutex->mutex.unlock();
+}
+
+extern "C" void sMutexDestruct(Mutex *mutex) {
+    mutex->~Mutex();
 }
 
 }  // namespace s

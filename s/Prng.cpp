@@ -24,6 +24,10 @@ extern "C" runtime::Real sPrngGetReal(PRNG *prng) {
     return std::uniform_real_distribution<runtime::Real>()(prng->prng);
 }
 
+extern "C" void sPrngDestruct(PRNG *prng) {
+    prng->~PRNG();
+}
+
 }  // namespace s
 
 SET_INFO_FOR(s::PRNG, s, 1f3b0)
