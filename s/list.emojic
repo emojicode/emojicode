@@ -57,12 +57,12 @@
 
   📗 Creates a shallow copy of the given list. 📗
   🆕 🐮 list 🍨🐚Element🍆 🍇
-    🐔list❗️ ➡️ 🖍count
+    0 ➡️ 🖍count
     🐴list❓ ➡️ 🖍size
     ☣️ 🍇
       🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
-      🚜 data 0 🧠list❗️ 0 size✖️⚖️Element❗️
     🍉
+    🐥🐕list❗️
   🍉
 
   📗 Appends `item` to the end of the list in `O(1)`. 📗
@@ -149,7 +149,9 @@
     count ⬅️➕ 🐔list❗️
     🐴🐕 count❗️
     ☣️ 🍇
-      🚜 data oldCount✖️⚖️Element 🧠list❗️ 0 🐔list❗️✖️⚖️Element❗️
+      🔂 i 🆕⏩⏩ 0 🐔list❗️❗️ 🍇
+        🐷 data🐚Element🍆 🐽 🧠list❗️🐚Element🍆 i✖️⚖️Element❗️ 🤜i ➕ oldCount🤛✖️⚖️Element❗️
+      🍉
     🍉
   🍉
 
