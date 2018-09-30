@@ -19,6 +19,7 @@ namespace runtime {
 namespace internal {
 struct ControlBlock;
 ControlBlock* newControlBlock();
+struct Capture;
 }
 }
 
@@ -92,6 +93,9 @@ public:
 
     internal::ControlBlock* controlBlock() const { return block_; }
     const ClassInfo* classInfo() const { return classInfo_; }
+
+    void retain();
+    void release();
 protected:
     Object() : block_(internal::newControlBlock()), classInfo_(ClassInfoFor<Subclass>::value) {}
 private:
@@ -145,13 +149,41 @@ template <typename Return, typename ...Args>
 class Callable {
 public:
     Return operator ()(Args... args) const {
-        return function_(catpures_, args...);
+        return function_(capture_, args...);
     }
+
+    void retain() const;
+    void release() const;
 private:
     Return (*function_)(void*, Args...);
-    void *catpures_;
+    runtime::internal::Capture *capture_;
 };
 
+extern "C" void ejcRetain(runtime::Object<void> *object);
+extern "C" void ejcRelease(runtime::Object<void> *object);
+extern "C" void ejcReleaseCapture(runtime::internal::Capture *capture);
+extern "C" void ejcReleaseMemory(runtime::Object<void> *object);
+
+template <typename Return, typename ...Args>
+void Callable<Return, Args...>::retain() const {
+    ejcRetain(reinterpret_cast<runtime::Object<void> *>(capture_));
 }
+
+template <typename Return, typename ...Args>
+void Callable<Return, Args...>::release() const {
+    ejcReleaseCapture(capture_);
+}
+
+template <typename Subclass>
+void Object<Subclass>::retain() {
+    ejcRetain(reinterpret_cast<runtime::Object<void> *>(this));
+}
+
+template <typename Subclass>
+void Object<Subclass>::release() {
+    ejcRelease(reinterpret_cast<runtime::Object<void> *>(this));
+}
+
+}  // namespace runtime
 
 #endif /* Runtime_h */

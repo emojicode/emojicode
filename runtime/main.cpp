@@ -27,7 +27,6 @@ extern "C" runtime::Integer fn_1f3c1();
 extern "C" int8_t* ejcAlloc(runtime::Integer size) {
     auto ptr = malloc(size);
     *static_cast<runtime::internal::ControlBlock**>(ptr) = new runtime::internal::ControlBlock;
-//    std::cout << "Allocated " << ptr << std::endl;
     return static_cast<int8_t*>(ptr);
 }
 
@@ -39,7 +38,6 @@ extern "C" void ejcRetain(runtime::Object<void> *object) {
         return;
     }
     if (controlBlock == &ejcIgnoreBlock) return;
-//    std::cout << "Retaining " << object << std::endl;
     controlBlock->strongCount++;
 }
 
@@ -59,24 +57,15 @@ extern "C" void ejcRelease(runtime::Object<void> *object) {
     }
     if (controlBlock == &ejcIgnoreBlock) return;
 
-//    std::cout << "Releasing " << object << std::endl;
-
     controlBlock->strongCount--;
-//        std::cout << controlBlock->strongCount << std::endl;
     if (controlBlock->strongCount != 0) return;
 
-//    std::cout << "Deleting " << object << std::endl;
     object->classInfo()->dispatch<void>(0, object);
     delete controlBlock;
     free(object);
 }
 
-struct Capture {
-    runtime::internal::ControlBlock *controlBlock;
-    void (*deinit)(Capture*);
-};
-
-extern "C" void ejcReleaseCapture(Capture *capture) {
+extern "C" void ejcReleaseCapture(runtime::internal::Capture *capture) {
     runtime::internal::ControlBlock *controlBlock = capture->controlBlock;
     if (controlBlock == nullptr) {
         if (releaseLocal(capture)) {
@@ -86,13 +75,9 @@ extern "C" void ejcReleaseCapture(Capture *capture) {
     }
     if (controlBlock == &ejcIgnoreBlock) return;
 
-    //    std::cout << "Releasing " << object << std::endl;
-
     controlBlock->strongCount--;
-    //        std::cout << controlBlock->strongCount << std::endl;
     if (controlBlock->strongCount != 0) return;
 
-    //    std::cout << "Deleting " << object << std::endl;
     capture->deinit(capture);
     delete controlBlock;
     free(capture);
@@ -105,13 +90,10 @@ extern "C" void ejcReleaseMemory(runtime::Object<void> *object) {
         return;
     }
     if (controlBlock == &ejcIgnoreBlock) return;
-//    std::cout << "Releasing " << object << std::endl;
 
     controlBlock->strongCount--;
-//    std::cout << controlBlock->strongCount << std::endl;
     if (controlBlock->strongCount != 0) return;
 
-//    std::cout << "Deleting " << object << std::endl;
     delete controlBlock;
     free(object);
 }

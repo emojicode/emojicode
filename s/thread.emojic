@@ -6,7 +6,7 @@
     Creates an new thread and calls the provided callback on the newly
     created thread.
   📗
-  🆕 callback 🍇🍉 📻 🔤sThreadNew🔤
+  🛅 🆕 🛅 callback 🍇🍉 📻 🔤sThreadNew🔤
 
   📗
     Blocks the calling thread until this thread has finished work.
@@ -21,7 +21,7 @@
 🍉
 
 📗
-  Mutex, simple semaphore for thread synchronisation. 
+  Mutex, simple semaphore for thread synchronisation.
   A mutex is a simple semaphore that can be used to
   coordinate access to shared data from multiple concurrent threads.
 📗

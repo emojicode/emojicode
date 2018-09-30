@@ -20,6 +20,11 @@ struct ControlBlock {
     std::atomic_int weakCount{0};
 };
 
+struct Capture {
+    ControlBlock *controlBlock;
+    void (*deinit)(Capture*);
+};
+
 }
 
 }

@@ -20,8 +20,12 @@ public:
 
 extern "C" Thread* sThreadNew(runtime::Callable<void> callable) {
     auto thread = Thread::init();
-    thread->thread = std::thread([callable]() {
+    callable.retain();
+    thread->retain();
+    thread->thread = std::thread([thread, callable]() {
         callable();
+        callable.release();
+        thread->release();
     });
     return thread;
 }

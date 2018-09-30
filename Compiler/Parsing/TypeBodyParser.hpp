@@ -63,7 +63,7 @@ private:
     bool interface_;
     AccessLevel readAccessLevel();
     void parseFunctionBody(Function *function);
-    void parseFunction(Function *function, bool inititalizer);
+    void parseFunction(Function *function, bool inititalizer, bool escaping);
 };
 
 }  // namespace EmojicodeCompiler

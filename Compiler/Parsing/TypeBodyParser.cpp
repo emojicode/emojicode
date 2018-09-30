@@ -39,11 +39,14 @@ void TypeBodyParser<TypeDef>::parseFunctionBody(Function *function) {
 }
 
 template <typename TypeDef>
-void TypeBodyParser<TypeDef>::parseFunction(Function *function, bool inititalizer) {
+void TypeBodyParser<TypeDef>::parseFunction(Function *function, bool inititalizer, bool escaping) {
     parseGenericParameters(function);
     parseParameters(function, inititalizer);
     if (!inititalizer) {
         parseReturnType(function);
+    }
+    if (escaping) {
+        function->setMemoryFlowTypeForThis(MFFlowCategory::Escaping);
     }
     parseFunctionBody(function);
 }
@@ -94,7 +97,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
                                                      true, imperative, attributes.has(Attribute::Unsafe),
                                                      std::is_same<TypeDef, Class>::value ?
                                                      FunctionType::ClassMethod : FunctionType::Function);
-        parseFunction(typeMethod.get(), false);
+        parseFunction(typeMethod.get(), false, attributes.has(Attribute::Escaping));
         typeDef_->addTypeMethod(std::move(typeMethod));
     }
     else {
@@ -105,7 +108,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
                                                  attributes.has(Attribute::Unsafe),
                                                  std::is_same<TypeDef, Class>::value ? FunctionType::ObjectMethod :
                                                  FunctionType::ValueTypeMethod);
-        parseFunction(method.get(), false);
+        parseFunction(method.get(), false, attributes.has(Attribute::Escaping));
         typeDef_->addMethod(std::move(method));
     }
 }
@@ -121,7 +124,7 @@ template <typename TypeDef>
 Initializer* TypeBodyParser<TypeDef>::doParseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                               const Documentation &documentation, AccessLevel access,
                                               const SourcePosition &p) {
-    attributes.allow(Attribute::Unsafe).check(p, package_->compiler());
+    attributes.allow(Attribute::Unsafe).allow(Attribute::Escaping).check(p, package_->compiler());
 
     auto initializer = std::make_unique<Initializer>(name, access, attributes.has(Attribute::Final), typeDef_,
                                                      package_, p, attributes.has(Attribute::Override),
@@ -140,7 +143,7 @@ Initializer* TypeBodyParser<TypeDef>::doParseInitializer(const std::u32string &n
         initializer->setErrorType(parseType());
     }
 
-    parseFunction(initializer.get(), true);
+    parseFunction(initializer.get(), true, attributes.has(Attribute::Escaping));
     return typeDef_->addInitializer(std::move(initializer));
 }
 
@@ -181,7 +184,7 @@ void TypeBodyParser<TypeDef>::parse() {
 
                 std::u32string name = std::u32string(1, E_NEW_SIGN);
                 if (stream_.nextTokenIs(TokenType::Identifier) && !stream_.nextTokenIs(E_RADIO)
-                    && !stream_.nextTokenIs(E_BABY_BOTTLE)) {
+                    && !stream_.nextTokenIs(E_BABY_BOTTLE) && !stream_.nextTokenIs(E_LEFT_LUGGAGE)) {
                     name = stream_.consumeToken(TokenType::Identifier).value();
                 }
                 parseInitializer(name, attributes, documentation, accessLevel, token.position());
