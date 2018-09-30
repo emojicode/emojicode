@@ -84,6 +84,8 @@ inline MemoryPointer<T> allocate(int64_t n = 1) {
 template <typename Subclass>
 class Object {
 public:
+    Object& operator=(const Object&) = delete;
+
     template <typename ...Args>
     static Subclass* init(Args&& ...args) {
         static_assert(util::is_complete<ClassInfoFor<Subclass>>::value,

@@ -27,6 +27,10 @@ std::string String::stdString() {
 }
 
 String::String(const char *cstring) {
+    store(cstring);
+}
+
+void String::store(const char *cstring) {
     count = u8_strlen(cstring);
 
     if (count > 0) {
@@ -46,7 +50,7 @@ extern "C" void sStringPrintNoLn(String *print) {
 extern "C" String* sStringReadLine(String *string) {
     std::string str;
     std::getline(std::cin, str);
-    *string = str.c_str();
+    string->store(str.c_str());
     return string;
 }
 

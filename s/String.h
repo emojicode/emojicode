@@ -20,7 +20,13 @@ public:
     using Character = runtime::Symbol;
 
     String(const char *string);
+    /// Creates a string without a value.
+    /// @warning A string object created with this constructor is not ready for use!
     String() = default;
+
+    /// This method can be used to make a newly constructed string represent the value of the provided string.
+    /// @warning Do not use this method to modify an existing string, i.e. one that has a value already.
+    void store(const char *cstring);
 
     runtime::MemoryPointer<Character> characters;
     runtime::Integer count;
