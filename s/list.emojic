@@ -171,7 +171,7 @@
   📗
     Removes all elements from the list but keeps the list’s capacity.
 
-    This can be much more efficient than using a new list. Complexity: `O(1)`.
+    This can be much more efficient than using a new list. Complexity: `O(n)`.
   📗
   ❗️ 🐗 🍇
     ☣️ 🍇
@@ -194,7 +194,7 @@
   🍉
 
   📗
-    Ensures that the list is large enoguh to store at least `capacity` elements.
+    Ensures that the list is large enough to store at least `capacity` elements.
 
     You should use this method if you plan to heavily use 🐷 with large indices
     in order to avoid automatic, useless allocations.
