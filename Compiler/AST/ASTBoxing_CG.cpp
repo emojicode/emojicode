@@ -26,6 +26,25 @@ ASTBoxing::ASTBoxing(std::shared_ptr<ASTExpr> expr, const SourcePosition &p, con
     }
 }
 
+Value* ASTRebox::generate(FunctionCodeGenerator *fg) const {
+    if (expressionType().boxedFor().type() == TypeType::Something) {
+        auto box = expr_->generate(fg);
+        auto pct = fg->typeHelper().protocolConformance();
+        auto pc = fg->builder().CreateBitCast(fg->builder().CreateExtractValue(box, 0), pct->getPointerTo());
+        auto bi = fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(pct, pc, 0, 2));
+        return fg->builder().CreateInsertValue(box, bi, 0);
+    }
+
+    auto box = getAllocaTheBox(fg);
+    auto protocolId = fg->generator()->protocolIdentifierFor(expressionType().boxedFor());
+    auto conformance = fg->buildFindProtocolConformance(box, fg->builder().CreateLoad(fg->buildGetBoxInfoPtr(box)),
+                                                        protocolId);
+    auto confPtrTy = fg->typeHelper().protocolConformance()->getPointerTo();
+    auto infoPtr = fg->buildGetBoxInfoPtr(box);
+    fg->builder().CreateStore(conformance, fg->builder().CreateBitCast(infoPtr, confPtrTy->getPointerTo()));
+    return fg->builder().CreateLoad(box);
+}
+
 Value* ASTBoxing::getBoxValuePtr(Value *box, FunctionCodeGenerator *fg) const {
     Type type = expr_->expressionType().unboxed().unoptionalized();
     return fg->buildGetBoxValuePtr(box, type);

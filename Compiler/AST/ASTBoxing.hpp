@@ -62,6 +62,12 @@ private:
     Type toType_;
 };
 
+class ASTRebox final : public ASTBoxing {
+    using ASTBoxing::ASTBoxing;
+    Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(PrettyStream &pretty) const override {}
+};
+
 class ASTBoxToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Value* generate(FunctionCodeGenerator *fg) const override;

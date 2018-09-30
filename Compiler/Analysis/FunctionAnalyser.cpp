@@ -365,6 +365,11 @@ void FunctionAnalyser::makeIntoBox(Type &exprType, const TypeExpectation &expect
                                    std::shared_ptr<ASTExpr> *node) const {
     switch (exprType.storageType()) {
         case StorageType::Box:
+            if (expectation.type() == TypeType::Box &&
+                !exprType.boxedFor().identicalTo(expectation.boxedFor(), typeContext(), nullptr)) {
+                exprType = exprType.unboxed().boxedFor(expectation.boxedFor());
+                insertNode<ASTRebox>(node, exprType);
+            }
             break;
         case StorageType::SimpleOptional:
             exprType = exprType.boxedFor(expectation.boxFor());
