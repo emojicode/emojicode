@@ -21,7 +21,13 @@
     🍉
   🍉
 
-  📗 Creates an empty list with the given initial capacity. 📗
+  📗
+    Creates an empty list with the given initial capacity.
+
+    Note that this initializer does not place any values in the list. This
+    initializer can be used for better performance if the number of values that
+    will be added is known in advance.
+  📗
   🆕 🐴 capacity 🔢 🍇
     0 ➡️ 🖍count
     capacity ➡️ 🖍size
@@ -75,8 +81,8 @@
   🍉
 
   📗
-    Gets the item at *index* in `O(1)`. *index* must be greater than 0 and less
-    than [[🐔❗️]] or the program will panic.
+    Gets the item at *index* in `O(1)`. *index* must be greater than or equal
+    to 0 and less than [[🐔❗️]] or the program will panic.
   📗
   ❗️ 🐽 index 🔢 ➡️ Element 🍇
     ↪️ index ▶️🙌 count 👐 index ◀️ 0 🍇
@@ -88,8 +94,8 @@
   🍉
 
   📗
-    Sets *value* at *index*. *index* must be greater than 0 and less
-    than [[🐔❗️]] or the program will panic.
+    Sets *value* at *index*. *index* must be greater than or equal
+    to 0 and less than [[🐔❗️]] or the program will panic.
   📗
   ❗️ 🐷 index 🔢 value Element 🍇
     ↪️ index ▶️🙌 count 👐 index ◀️ 0 🍇
