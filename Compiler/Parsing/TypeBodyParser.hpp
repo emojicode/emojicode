@@ -11,12 +11,10 @@
 
 #include "AbstractParser.hpp"
 #include "AttributesParser.hpp"
-#include "Functions/Function.hpp"
-#include "Types/Extension.hpp"
-#include <set>
 
 namespace EmojicodeCompiler {
 
+enum class AccessLevel;
 class Initializer;
 class CompilerError;
 
@@ -32,6 +30,7 @@ public:
         : AbstractParser(pkg, stream), typeDef_(typeDef), interface_(interface) {}
 
     void parse();
+
 protected:
     /// Called if an $protocol-conformance$ has been detected. The first token has already been parsed.
     void parseProtocolConformance(const SourcePosition &p);

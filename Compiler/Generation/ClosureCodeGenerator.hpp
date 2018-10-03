@@ -11,7 +11,6 @@
 
 #include "AST/ASTClosure.hpp"
 #include "FunctionCodeGenerator.hpp"
-#include "Scoping/CapturingSemanticScoper.hpp"
 
 namespace EmojicodeCompiler {
 

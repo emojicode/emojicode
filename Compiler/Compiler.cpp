@@ -156,49 +156,48 @@ void Compiler::warn(const SourcePosition &p, const std::string &warning) {
     delegate_->warn(this, warning, p);
 }
 
-Class *getStandardClass(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+Class *getStandardClass(const std::u32string &name, Package *_) {
     Type type = Type::noReturn();
-    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, SourcePosition()), &type);
     if (type.type() != TypeType::Class) {
-        throw CompilerError(errorPosition, "s package class ", utf8(name), " is missing.");
+        throw CompilerError(SourcePosition(), "s package class ", utf8(name), " is missing.");
     }
     return type.klass();
 }
 
-Protocol *getStandardProtocol(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+Protocol *getStandardProtocol(const std::u32string &name, Package *_) {
     Type type = Type::noReturn();
-    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace,  SourcePosition()), &type);
     if (type.unboxedType() != TypeType::Protocol) {
-        throw CompilerError(errorPosition, "s package protocol ", utf8(name), " is missing.");
+        throw CompilerError(SourcePosition(), "s package protocol ", utf8(name), " is missing.");
     }
     return type.protocol();
 }
 
-ValueType *getStandardValueType(const std::u32string &name, Package *_, const SourcePosition &errorPosition) {
+ValueType *getStandardValueType(const std::u32string &name, Package *_) {
     Type type = Type::noReturn();
-    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace, errorPosition), &type);
+    _->lookupRawType(TypeIdentifier(name, kDefaultNamespace,  SourcePosition()), &type);
     if (type.type() != TypeType::ValueType) {
-        throw CompilerError(errorPosition, "s package value type ", utf8(name), " is missing.");
+        throw CompilerError( SourcePosition(), "s package value type ", utf8(name), " is missing.");
     }
     return type.valueType();
 }
 
-void Compiler::assignSTypes(Package *s, const SourcePosition &errorPosition) {
+void Compiler::assignSTypes(Package *s) {
     // Order of the following calls is important as they will cause Box IDs to be assigned
-    sBoolean = getStandardValueType(U"👌", s, errorPosition);
-    sInteger = getStandardValueType(U"🔢", s, errorPosition);
-    sReal = getStandardValueType(std::u32string(1, E_HUNDRED_POINTS_SYMBOL), s, errorPosition);
-    sSymbol = getStandardValueType(U"🔣", s, errorPosition);
-    sMemory = getStandardValueType(U"🧠", s, errorPosition);
-    sByte = getStandardValueType(U"💧", s, errorPosition);
+    sBoolean = getStandardValueType(U"👌", s);
+    sInteger = getStandardValueType(U"🔢", s);
+    sReal = getStandardValueType(std::u32string(1, E_HUNDRED_POINTS_SYMBOL), s);
+    sSymbol = getStandardValueType(U"🔣", s);
+    sMemory = getStandardValueType(U"🧠", s);
+    sByte = getStandardValueType(U"💧", s);
 
-    sString = getStandardClass(U"🔡", s, errorPosition);
-    sList = getStandardClass(U"🍨", s, errorPosition);
-    sDictionary = getStandardClass(U"🍯", s, errorPosition);
+    sString = getStandardClass(U"🔡", s);
+    sList = getStandardClass(U"🍨", s);
+    sDictionary = getStandardClass(U"🍯", s);
 
     sEnumerable = getStandardProtocol(
-            std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s,
-            errorPosition);
+            std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s);
 }
 
 } // namespace EmojicodeCompiler

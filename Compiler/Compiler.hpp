@@ -99,7 +99,7 @@ public:
     /// @see findPackage()
     Package *loadPackage(const std::string &name, const SourcePosition &p, Package *requestor);
 
-    void assignSTypes(Package *s, const SourcePosition &errorPosition);
+    void assignSTypes(Package *s);
 
     Class *sString = nullptr;
     Class *sList = nullptr;

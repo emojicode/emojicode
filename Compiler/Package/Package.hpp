@@ -9,7 +9,6 @@
 #ifndef Package_hpp
 #define Package_hpp
 
-#include "Lex/SourcePosition.hpp"
 #include "Types/Type.hpp"
 #include <map>
 #include <set>
@@ -30,6 +29,7 @@ struct ExportedType {
 };
 
 struct TypeIdentifier;
+struct SourcePosition;
 class Compiler;
 
 /// Package is the class used to load, parse and analyse packages.
@@ -61,8 +61,7 @@ public:
 
     /// @returns The name of this package.
     const std::string& name() const { return name_; }
-    /// @returns A SourcePosition that can be used to relate to this package.
-    SourcePosition position() const { return SourcePosition(); }
+
     /// @returns True iff compile() was called on this package and returned.
     /// If this method returns false and another method tries to load this package, this indicates a circular depedency.
     bool finishedLoading() const { return finishedLoading_; }

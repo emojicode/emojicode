@@ -88,13 +88,13 @@ void Package::parse() {
 
 void Package::parse(const std::string &mainFilePath) {
     if (name_ != "s") {
-        importPackage("s", kDefaultNamespace, position());
+        importPackage("s", kDefaultNamespace, SourcePosition());
     }
     
     includeDocument(mainFilePath, "");
 
     if (name() == "s") {
-        compiler()->assignSTypes(this, position());
+        compiler()->assignSTypes(this);
     }
     finishedLoading_ = true;
 }

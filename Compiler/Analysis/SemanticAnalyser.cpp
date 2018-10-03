@@ -94,7 +94,7 @@ void SemanticAnalyser::checkStartFlagFunction(bool executable) {
         }
     }
     else if (executable) {
-        compiler()->error(CompilerError(package_->position(), "No 🏁 block was found."));
+        compiler()->error(CompilerError(SourcePosition(), "No 🏁 block was found."));
     }
 }
 
