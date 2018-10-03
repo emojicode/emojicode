@@ -122,6 +122,10 @@ Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation 
     if (type.type() != TypeType::Callable) {
         throw CompilerError(position(), "Given value is not callable.");
     }
+    if (args_.args().size() != type.genericArguments().size() - 1) {
+        throw CompilerError(position(), "Callable expects ", type.genericArguments().size() - 1,
+                            " arguments but ", args_.args().size(), " were supplied.");
+    }
     for (size_t i = 1; i < type.genericArguments().size(); i++) {
         analyser->expectType(type.genericArguments()[i], &args_.args()[i - 1]);
     }
