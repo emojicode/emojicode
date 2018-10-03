@@ -109,7 +109,9 @@ void Options::configureOutPath() {
     if (pack() && outPath_.empty()) {
         if (standalone()) {
             outPath_ = mainFile_;
-            outPath_.resize(mainFile_.size() - 7);
+            if (mainFile_.size() > 7) {
+                outPath_.resize(mainFile_.size() - 7);
+            }
         }
         else {
             if (!parentPath.empty()) {
