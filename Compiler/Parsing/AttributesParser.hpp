@@ -12,6 +12,7 @@
 #include "Compiler.hpp"
 #include "Emojis.h"
 #include "Lex/TokenStream.hpp"
+#include "CompilerError.hpp"
 #include <array>
 #include <map>
 #include <string>

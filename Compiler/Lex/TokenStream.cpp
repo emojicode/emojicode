@@ -7,11 +7,30 @@
 //
 
 #include "TokenStream.hpp"
+#include "CompilerError.hpp"
 
 namespace EmojicodeCompiler {
 
-bool TokenStream::consumeTokenIf(char32_t c, TokenType type) {
-    if (nextTokenIs(c, type)) {
+Token TokenStream::consumeToken() {
+    if (!hasMoreTokens()) {
+        throw CompilerError(lexer_.position(), "Unexpected end of program.");
+    }
+    return advanceLexer();
+}
+
+Token TokenStream::consumeToken(TokenType type) {
+    if (!hasMoreTokens()) {
+        throw CompilerError(lexer_.position(), "Unexpected end of program.");
+    }
+    if (nextToken().type() != type) {
+        throw CompilerError(nextToken().position(), "Expected ", Token::stringNameForType(type),
+                            " but instead found ", nextToken().stringName(), "(", utf8(nextToken().value()), ").");
+    }
+    return advanceLexer();
+}
+
+bool TokenStream::consumeTokenIf(char32_t c) {
+    if (nextTokenIs(c)) {
         advanceLexer();
         return true;
     }
@@ -24,6 +43,33 @@ bool TokenStream::consumeTokenIf(TokenType type) {
         return true;
     }
     return false;
+}
+
+Token TokenStream::advanceLexer() {
+    skippedBlankLine_ = false;
+    auto temp = std::move(nextToken_);
+    while (true) {
+        if (lexer_.continues()) {
+            nextToken_ = lexer_.lex();
+            if (nextToken_.type() == TokenType::BlankLine) {
+                skippedBlankLine_ = true;
+                continue;
+            }
+            else if (nextToken_.type() == TokenType::SinglelineComment ||
+                     nextToken_.type() == TokenType::MultilineComment) {
+                nextToken_.position().file->addComment(std::move(nextToken_));
+                continue;
+            }
+            else if (nextToken_.type() == TokenType::LineBreak) {
+                continue;
+            }
+        }
+        else {
+            moreTokens_ = false;
+        }
+        break;
+    }
+    return temp;
 }
 
 }  // namespace EmojicodeCompiler
