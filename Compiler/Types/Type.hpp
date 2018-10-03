@@ -331,7 +331,6 @@ private:
 
     void typeName(Type type, const TypeContext &typeContext, std::string &string, Package *package) const;
     bool identicalGenericArguments(Type to, const TypeContext &typeContext, std::vector<CommonTypeFinder> *ctargs) const;
-    Type resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const;
     void sortMultiProtocolType();
 
     bool isCompatibleToMultiProtocol(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const;

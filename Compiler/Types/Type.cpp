@@ -209,23 +209,6 @@ Function* Type::localResolutionConstraint() const {
     return localResolutionConstraint_;
 }
 
-Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &typeContext) const {
-    TypeDefinition *c = typeContext.calleeType().typeDefinition();
-    Type t = *this;
-
-    // Try to resolve on the generic arguments to the superclass.
-    while (t.unboxedType() == TypeType::GenericVariable && c->canResolve(t.resolutionConstraint()) &&
-           t.genericVariableIndex() < c->superGenericArguments().size()) {
-        Type tn = c->superGenericArguments()[t.genericVariableIndex()];
-        if (tn.type() == TypeType::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
-            && tn.resolutionConstraint() == t.resolutionConstraint()) {
-            break;
-        }
-        t = tn;
-    }
-    return t;
-}
-
 Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext) const {
     Type t = *this;
     if (type() == TypeType::Optional) {
@@ -470,8 +453,7 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::Class:
             case TypeType::Protocol:
             case TypeType::ValueType:
-                return typeDefinition() == to.typeDefinition()
-                       && identicalGenericArguments(to, tc, ctargs);
+                return typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, tc, ctargs);
             case TypeType::Callable:
                 return to.genericArguments_.size() == this->genericArguments_.size()
                        && identicalGenericArguments(to, tc, ctargs);
@@ -482,8 +464,7 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
                 return enumeration() == to.enumeration();
             case TypeType::GenericVariable:
             case TypeType::LocalGenericVariable:
-                return resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex() ==
-                       to.resolveReferenceToBaseReferenceOnSuperArguments(tc).genericVariableIndex();
+                return genericVariableIndex() == to.genericVariableIndex();
             case TypeType::Something:
             case TypeType::Someobject:
             case TypeType::NoReturn:
