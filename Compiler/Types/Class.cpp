@@ -139,7 +139,7 @@ void Class::addInstanceVariable(const InstanceVariableDeclaration &declaration) 
     TypeDefinition::addInstanceVariable(declaration);
 }
 
-bool Class::canBeUsedToResolve(TypeDefinition *resolutionConstraint) const {
+bool Class::canResolve(TypeDefinition *resolutionConstraint) const {
     if (auto cl = dynamic_cast<Class *>(resolutionConstraint)) {
         return inheritsFrom(cl);
     }

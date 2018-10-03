@@ -76,7 +76,7 @@ public:
     Initializer* lookupInitializer(const std::u32string &name) const override;
     Function *lookupTypeMethod(const std::u32string &name, bool imperative) const override;
 
-    bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override;
+    bool canResolve(TypeDefinition *resolutionConstraint) const override;
     void addInstanceVariable(const InstanceVariableDeclaration &declaration) override;
 
     void inherit(SemanticAnalyser *analyser);

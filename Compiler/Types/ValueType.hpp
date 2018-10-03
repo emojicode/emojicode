@@ -22,7 +22,7 @@ public:
 
     Type type() override { return Type(this); }
 
-    bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override {
+    bool canResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
     }
 

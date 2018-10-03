@@ -214,7 +214,7 @@ Type Type::resolveReferenceToBaseReferenceOnSuperArguments(const TypeContext &ty
     Type t = *this;
 
     // Try to resolve on the generic arguments to the superclass.
-    while (t.unboxedType() == TypeType::GenericVariable && c->canBeUsedToResolve(t.resolutionConstraint()) &&
+    while (t.unboxedType() == TypeType::GenericVariable && c->canResolve(t.resolutionConstraint()) &&
            t.genericVariableIndex() < c->superGenericArguments().size()) {
         Type tn = c->superGenericArguments()[t.genericVariableIndex()];
         if (tn.type() == TypeType::GenericVariable && tn.genericVariableIndex() == t.genericVariableIndex()
@@ -257,7 +257,7 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
         t = typeContext.function()->constraintForIndex(t.genericVariableIndex());
     }
     if (c != nullptr) {
-        while (t.unboxedType() == TypeType::GenericVariable && c->canBeUsedToResolve(t.resolutionConstraint())) {
+        while (t.unboxedType() == TypeType::GenericVariable && c->canResolve(t.resolutionConstraint())) {
             t = c->constraintForIndex(t.genericVariableIndex());
         }
     }
@@ -282,7 +282,7 @@ Type Type::resolveOn(const TypeContext &typeContext) const {
 
     if (typeContext.calleeType().canHaveGenericArguments()) {
         while (t.unboxedType() == TypeType::GenericVariable  &&
-               typeContext.calleeType().typeDefinition()->canBeUsedToResolve(t.resolutionConstraint())) {
+               typeContext.calleeType().typeDefinition()->canResolve(t.resolutionConstraint())) {
             Type tn = typeContext.calleeType().genericArguments()[t.genericVariableIndex()];
             if (tn.unboxedType() == TypeType::GenericVariable
                 && tn.genericVariableIndex() == t.genericVariableIndex()

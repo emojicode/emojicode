@@ -21,7 +21,7 @@ public:
 
     Type type() override { return Type(this); }
 
-    bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const override { return false; }
+    bool canResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 
     void extend();
 

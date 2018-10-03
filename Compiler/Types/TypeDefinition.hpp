@@ -62,7 +62,7 @@ public:
     /// Determines whether the resolution constraint of TypeType::GenericVariable allows it to be resolved on an Type
     /// instance representing an instance of this TypeDefinition.
     /// @see Type::resolveOn
-    virtual bool canBeUsedToResolve(TypeDefinition *resolutionConstraint) const = 0;
+    virtual bool canResolve(TypeDefinition *resolutionConstraint) const = 0;
 
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError

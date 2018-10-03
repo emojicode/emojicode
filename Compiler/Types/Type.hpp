@@ -220,7 +220,7 @@ public:
     /// Tries to resolve this type to a non-generic-variable type by using the generic arguments provided in the
     /// TypeContext. This method also tries to resolve generic arguments to non-generic-variable types recursively.
     /// This method can resolve @c Self, @c References and @c LocalReferences. @c GenericVariable will only be resolved
-    /// if the TypeContext’s @c calleeType implementation of @c canBeUsedToResolve returns true for the resolution
+    /// if the TypeContext’s @c calleeType implementation of @c canResolve returns true for the resolution
     /// constraint, thus only if the generic variable is inteded to be resolved on the given type.
     Type resolveOn(const TypeContext &typeContext) const;
     /**
