@@ -21,7 +21,7 @@ namespace EmojicodeCompiler {
 MFFunctionAnalyser::MFFunctionAnalyser(Function *function) : scope_(function->variableCount()), function_(function) {}
 
 void MFFunctionAnalyser::analyse() {
-    if (function_->isExternal() || function_->memoryFlowTypeForThis() != MFFlowCategory::Unknown) {
+    if (!function_->memoryFlowTypeForThis().isUnknown()) {
         return;
     }
 

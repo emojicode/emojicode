@@ -45,10 +45,13 @@ void TypeBodyParser<TypeDef>::parseFunction(Function *function, bool inititalize
     if (!inititalizer) {
         parseReturnType(function);
     }
+    parseFunctionBody(function);
     if (escaping) {
         function->setMemoryFlowTypeForThis(MFFlowCategory::Escaping);
     }
-    parseFunctionBody(function);
+    else if (function->isExternal()) {
+        function->setMemoryFlowTypeForThis(MFFlowCategory::Borrowing);
+    }
 }
 
 template <typename TypeDef>
