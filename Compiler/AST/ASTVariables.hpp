@@ -77,6 +77,9 @@ public:
 
 private:
     bool reference_ = false;
+    /// Set to true if the value created by the expression is returned. If it is returned, the value of the variable
+    /// must not be retained.
+    bool returned_ = false;
 };
 
 /// Every AST node that potentially initializes a variable, i.e. initializes a value type to its address, inherits

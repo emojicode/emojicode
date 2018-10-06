@@ -78,10 +78,6 @@ public:
     /// @param type The type of the variable.
     void recordVariableSet(size_t id, ASTExpr *expr, Type type);
 
-    /// Informs the analyser that the expression will be returned from the function.
-    /// expr will be marked as Escaping and as a Taken Value.
-    void recordReturn(ASTExpr *expr);
-
     /// Analyses a function call.
     /// Analyses the callee and arguments with the appropriate flow category. If the specified function was not
     /// memory flow analysed, analyses the function first.

@@ -33,6 +33,8 @@ void buildDeinitializer(TypeDefinition *typeDef) {
                                                                               deinit->position()));
         }
     }
+
+    deinit->setMemoryFlowTypeForThis(MFFlowCategory::Borrowing);
 }
 
 void buildCopyRetain(ValueType *typeDef) {
@@ -47,6 +49,8 @@ void buildCopyRetain(ValueType *typeDef) {
                                                                       copyRetain->position()));
         }
     }
+
+    copyRetain->setMemoryFlowTypeForThis(MFFlowCategory::Borrowing);
 }
 
 }

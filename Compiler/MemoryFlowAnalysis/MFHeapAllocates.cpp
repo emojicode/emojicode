@@ -15,7 +15,7 @@ llvm::Value* MFHeapAutoAllocates::allocate(FunctionCodeGenerator *fg, llvm::Type
 }
 
 void MFHeapAutoAllocates::analyseAllocation(MFFlowCategory type) {
-    if (type == MFFlowCategory::Borrowing) {
+    if (!type.isEscaping()) {
         allocateOnStack();
     }
 }

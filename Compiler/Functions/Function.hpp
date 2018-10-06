@@ -183,7 +183,7 @@ private:
     std::u32string documentation_;
     FunctionType functionType_;
     size_t variableCount_ = 0;
-    MFFlowCategory memoryFlowTypeThis_ = MFFlowCategory::Unknown;
+    MFFlowCategory memoryFlowTypeThis_;
 };
 
 }  // namespace EmojicodeCompiler

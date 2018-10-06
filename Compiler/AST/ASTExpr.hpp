@@ -13,6 +13,7 @@
 #include "ASTNode.hpp"
 #include "Types/Type.hpp"
 #include "ErrorSelfDestructing.hpp"
+#include "MemoryFlowAnalysis/MFFlowCategory.hpp"
 #include "Scoping/Variable.hpp"
 #include <llvm/IR/Value.h>
 #include <utility>
@@ -26,7 +27,6 @@ class TypeExpectation;
 class FunctionCodeGenerator;
 class Prettyprinter;
 class MFFunctionAnalyser;
-enum class MFFlowCategory;
 
 /// The superclass of all syntax tree nodes representing an expression.
 class ASTExpr : public ASTNode {

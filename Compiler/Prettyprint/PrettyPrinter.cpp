@@ -102,7 +102,7 @@ void PrettyPrinter::printArguments(Function *function) {
                 it++;
                 prettyStream_ << "🍼 ";
             }
-            if (arg.memoryFlowType == MFFlowCategory::Escaping) {
+            if (arg.memoryFlowType.isEscaping()) {
                 prettyStream_ << "🛅 ";
             }
             prettyStream_ << arg.name << " " << arg.type << " ";
@@ -110,7 +110,7 @@ void PrettyPrinter::printArguments(Function *function) {
         return;
     }
     for (auto &arg : function->parameters()) {
-        if (arg.memoryFlowType == MFFlowCategory::Escaping) {
+        if (arg.memoryFlowType.isEscaping()) {
             prettyStream_ << "🛅 ";
         }
         prettyStream_ << arg.name << " " << arg.type << " ";
@@ -293,7 +293,7 @@ void PrettyPrinter::printFunctionAttributes(Function *function, bool noMutate) {
             prettyStream_ << "🔑 ";
         }
     }
-    if (function->memoryFlowTypeForThis() == MFFlowCategory::Escaping) {
+    if (!function->memoryFlowTypeForThis().isUnknown() && function->memoryFlowTypeForThis().isEscaping()) {
         prettyStream_ << "🛅 ";
     }
 }

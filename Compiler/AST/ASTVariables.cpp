@@ -36,6 +36,9 @@ Type ASTGetVariable::analyse(FunctionAnalyser *analyser, const TypeExpectation &
 }
 
 void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+    if (type.isReturn()) {
+        returned_ = true;
+    }
     if (!inInstanceScope()) {
         analyser->recordVariableGet(id(), type);
     }

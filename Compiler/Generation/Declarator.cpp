@@ -128,13 +128,13 @@ void Declarator::declareLlvmFunction(Function *function) const {
 
         size_t i = 0;
         if (hasThisArgument(function)) {
-            if (function->memoryFlowTypeForThis() == MFFlowCategory::Borrowing) {
+            if (!function->memoryFlowTypeForThis().isEscaping()) {
                 reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
             }
             i++;
         }
         for (auto &param : function->parameters()) {
-            if (param.memoryFlowType == MFFlowCategory::Borrowing && param.type->type().type() == TypeType::Class) {
+            if (!param.memoryFlowType.isEscaping() && param.type->type().type() == TypeType::Class) {
                 reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
             }
             i++;

@@ -68,7 +68,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
         return localVariable.value;
     }
 
-    if (!isTemporary() && expressionType().isManaged()) {
+    if (!returned_ && !isTemporary() && expressionType().isManaged()) {
         auto retainValue = managementValue(fg);
         fg->retain(retainValue, expressionType());
         handleResult(fg, retainValue);

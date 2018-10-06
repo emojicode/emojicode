@@ -18,6 +18,10 @@
 
 namespace EmojicodeCompiler {
 
+const MFFlowCategory MFFlowCategory::Borrowing = MFFlowCategory::Category::Borrowing;
+const MFFlowCategory MFFlowCategory::Escaping = MFFlowCategory::Category::Escaping;
+const MFFlowCategory MFFlowCategory::Return = MFFlowCategory::Category::Return;
+
 MFFunctionAnalyser::MFFunctionAnalyser(Function *function) : scope_(function->variableCount()), function_(function) {}
 
 void MFFunctionAnalyser::analyse() {
@@ -39,7 +43,7 @@ void MFFunctionAnalyser::analyse() {
 }
 
 void MFFunctionAnalyser::analyseFunctionCall(ASTArguments *node, ASTExpr *callee, Function *function) {
-    if (function->memoryFlowTypeForThis() == MFFlowCategory::Unknown) {
+    if (function->memoryFlowTypeForThis().isUnknown()) {
         MFFunctionAnalyser(function).analyse();
     }
     if (callee != nullptr) {
@@ -58,7 +62,7 @@ void MFFunctionAnalyser::popScope(ASTBlock *block) {
         if (var.isParam) {
             function_->setParameterMFType(var.param, var.flowCategory);
         }
-        else if (var.flowCategory == MFFlowCategory::Borrowing) {
+        else if (!var.flowCategory.isEscaping()) {
             for (auto init : var.inits) {
                 init->allocateOnStack();
             }
@@ -86,7 +90,11 @@ void MFFunctionAnalyser::releaseVariables(ASTBlock *block) {
 }
 
 void MFFunctionAnalyser::recordVariableGet(size_t id, MFFlowCategory category) {
-    if (category == MFFlowCategory::Escaping) {
+    if (category.isReturn()) {
+        auto &var = scope_.getVariable(id);
+        if (!var.isParam) var.isReturned = true;
+    }
+    if (category.isEscaping()) {
         scope_.getVariable(id).flowCategory = category;
     }
 }
@@ -95,25 +103,8 @@ void MFFunctionAnalyser::take(ASTExpr *expr) {
     expr->unsetIsTemporary();
 }
 
-void MFFunctionAnalyser::recordReturn(ASTExpr *expr) {
-    if (auto getVar = dynamic_cast<ASTGetVariable *>(expr)) {
-        if (!getVar->inInstanceScope()) {
-            auto &var = scope_.getVariable(getVar->id());
-            if (var.isParam) return;
-            var.isReturned = true;
-            expr->analyseMemoryFlow(this, MFFlowCategory::Escaping);
-            return;
-        }
-    }
-    take(expr);
-    if (auto getVar = dynamic_cast<ASTThis *>(expr)) {
-        return;
-    }
-    expr->analyseMemoryFlow(this, MFFlowCategory::Escaping);
-}
-
 void MFFunctionAnalyser::recordThis(MFFlowCategory category) {
-    if (category == MFFlowCategory::Escaping) {
+    if (category.isEscaping() && !category.isReturn()) {
         thisEscapes_ = true;
     }
 }

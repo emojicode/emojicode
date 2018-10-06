@@ -60,7 +60,7 @@ void ASTInitialization::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCa
     if (initType_ == InitType::Enum) {
         return;
     }
-    if (type == MFFlowCategory::Borrowing && initType_ == InitType::Class) {
+    if (!type.isEscaping() && initType_ == InitType::Class) {
         initType_ = InitType::ClassStack;
     }
     analyser->analyseFunctionCall(&args_, typeExpr_.get(), initializer_);
