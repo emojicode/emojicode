@@ -92,7 +92,8 @@ void MFFunctionAnalyser::releaseVariables(ASTBlock *block) {
 void MFFunctionAnalyser::recordVariableGet(size_t id, MFFlowCategory category) {
     if (category.isReturn()) {
         auto &var = scope_.getVariable(id);
-        if (!var.isParam) var.isReturned = true;
+        if (var.isParam) return;
+        var.isReturned = true;
     }
     if (category.isEscaping()) {
         scope_.getVariable(id).flowCategory = category;
