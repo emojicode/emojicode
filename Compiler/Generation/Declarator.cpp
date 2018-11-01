@@ -128,7 +128,12 @@ void Declarator::declareLlvmFunction(Function *function) const {
 
         size_t i = 0;
         if (hasThisArgument(function)) {
-            if (!function->memoryFlowTypeForThis().isEscaping()) {
+            if (function->functionType() == FunctionType::ObjectInitializer) {
+                if (!dynamic_cast<Initializer*>(function)->errorProne()) {
+                    reification.entity.function->addParamAttr(i, llvm::Attribute::Returned);
+                }
+            }
+            else if (!function->memoryFlowTypeForThis().isEscaping()) {
                 reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
             }
             i++;
