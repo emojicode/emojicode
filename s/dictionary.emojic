@@ -104,6 +104,17 @@
     🍉
   🍉
 
+  📗 Creates an empty 🍯 with a capacity of at least *minCapacity*. 📗
+  🆕 🐴 minCapacity 🔢 🍇
+    🛷🐇🍯🐚Element🍆 minCapacity❗️ ➡️ 🖍capacity
+    0 ➡️ 🖍count
+    ☣️ 🍇
+      capacity✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ length
+      🆕🧠🆕 length❗️ ➡️ 🖍data
+      ✍️ data 0 0 length❗
+    🍉
+  🍉
+
   🔒❓ 🔑 entry 🐝🐚🔡Element🍆 key 🔡 hash 🔢 ➡️ 👌 🍇
     ↪️ hash 🙌 ⚗️entry❗️ 🍇
       ↩️ key 🙌 🔑entry❗

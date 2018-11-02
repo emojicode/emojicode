@@ -59,8 +59,9 @@ Value* ASTNoValue::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto init = type_.typeDefinition()->lookupInitializer({ 0x1F438 });
-    auto dict = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_);
+    auto init = type_.typeDefinition()->lookupInitializer(U"🐴");
+    auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size() / 2), U"", position());
+    auto dict = ASTInitialization::initObject(fg, ASTArguments(position(), { capacity }), init, type_);
     for (auto it = values_.begin(); it != values_.end(); it++) {
         auto args = ASTArguments(position());
         args.addArguments(*it);
@@ -72,8 +73,9 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto init = type_.typeDefinition()->lookupInitializer({ 0x1F438 });
-    auto list = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_);
+    auto init = type_.typeDefinition()->lookupInitializer(U"🐴");
+    auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size()), U"", position());
+    auto list = ASTInitialization::initObject(fg, ASTArguments(position(), { capacity }), init, type_);
     for (auto &value : values_) {
         auto args = ASTArguments(position(), { value });
         auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, true);
