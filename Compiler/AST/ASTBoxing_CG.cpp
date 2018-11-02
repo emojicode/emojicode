@@ -126,7 +126,7 @@ Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fg) const {
     fg->createIfElse(hasNoValue, [fg, box]() {
         fg->buildMakeNoValue(box);
     }, [this, value, fg, box]() {
-        getPutValueIntoBox(box, fg->builder().CreateExtractValue(value, 1), fg);
+        getPutValueIntoBox(box, fg->buildGetOptionalValue(value, expr_->expressionType()), fg);
     });
     return fg->builder().CreateLoad(box);
 }

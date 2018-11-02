@@ -50,7 +50,7 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
         return fg->builder().CreateICmpNE(vf, llvm::Constant::getNullValue(vf->getType()));
     }
 
-    auto value = fg->builder().CreateExtractValue(optional, 1, "condValue");
+    auto value = fg->buildGetOptionalValue(optional, expr_->expressionType());
     fg->scoper().getVariable(varId_) = LocalVariable(false, value);
     return fg->buildOptionalHasValue(optional);
 }

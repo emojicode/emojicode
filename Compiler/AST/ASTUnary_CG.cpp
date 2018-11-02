@@ -43,7 +43,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     if (isBox) {
         return optional;
     }
-    return fg->builder().CreateExtractValue(optional, 1);
+    return fg->buildGetOptionalValue(optional, expr_->expressionType());
 }
 
 Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {

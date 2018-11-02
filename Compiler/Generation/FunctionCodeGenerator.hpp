@@ -90,6 +90,7 @@ public:
     llvm::Value* buildSimpleOptionalWithoutValue(const Type &type);
     llvm::Value* buildBoxOptionalWithoutValue();
     llvm::Value* buildSimpleOptionalWithValue(llvm::Value *value, const Type &type);
+    llvm::Value* buildGetOptionalValue(llvm::Value *value, const Type &type);
 
     /// Gets a pointer to the pointer to the class info of an object.
     /// @see getClassInfoFromObject

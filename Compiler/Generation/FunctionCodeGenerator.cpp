@@ -130,6 +130,10 @@ Value* FunctionCodeGenerator::buildSimpleOptionalWithValue(llvm::Value *value, c
     return builder().CreateInsertValue(simpleOptional, generator()->optionalValue(), 0);
 }
 
+Value* FunctionCodeGenerator::buildGetOptionalValue(llvm::Value *value, const Type &type) {
+    return builder().CreateExtractValue(value, 1);
+}
+
 Value* FunctionCodeGenerator::buildGetBoxValuePtr(Value *box, const Type &type) {
     auto llvmType = typeHelper().llvmTypeFor(type)->getPointerTo();
     return buildGetBoxValuePtr(box, llvmType);
@@ -345,7 +349,7 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
         }
         else {
             createIf(buildOptionalHasValue(value), [&] {
-                release(builder().CreateExtractValue(value, 1), type.optionalType());
+                release(buildGetOptionalValue(value, type), type.optionalType());
             });
         }
     }
@@ -399,7 +403,7 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
         }
         else {
             createIf(buildOptionalHasValue(value), [&] {
-                retain(builder().CreateExtractValue(value, 1), type.optionalType());
+                retain(buildGetOptionalValue(value, type), type.optionalType());
             });
         }
     }
