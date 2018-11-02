@@ -280,16 +280,22 @@
   ❗️ 🍡 ➡️ 🌳🐚🍬🔣🍆 🍇
     ↩️ 🆕🌳🐚🍬🔣🍆🆕 🐕❗️
   🍉
-🍉
 
-🐋 🔣 🍇
-  📗 Creates a 🔡 from this symbol. 📗
-  ❗️ 🔡 ➡️ 🔡 🍇
-    ☣️ 🍇
-      🆕🧠🆕 ⚖️🔣❗️ ➡️ data
-      🐷 data🐚🔣🍆 🐕 0❗️
-      ↩️ 🆕🔡🧠 data 1❗️
+  📗
+    Creates a string by joining all elements into a string separated
+    by *separator*.
+  📗
+  🆕 🍨 list 🍨🐚🔡🍆 separator 🔡 🍇
+    🆕🔠🆕❗️ ➡️ builder
+    🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
+      🐻 builder 🐽list i❗️ ❗️
+
+      ↪️ i ➕ 1 ◀️ 🐔list❗️ 🍇
+        🐻 builder separator❗️
+      🍉
     🍉
+    🧠builder❗️ ➡️ 🖍codePoints
+    🐔builder❗️ ➡️ 🖍count
   🍉
 🍉
 
@@ -371,21 +377,3 @@
   🍉
 🍉
 
-🐋 🔡 🍇
-  📗
-    Creates a string by joining all elements into a string separated
-    by *separator*.
-  📗
-  🆕 🍨 list 🍨🐚🔡🍆 separator 🔡 🍇
-    🆕🔠🆕❗️ ➡️ builder
-    🔂 i 🆕⏩⏩ 0 🐔list❗️ ❗️  🍇
-      🐻 builder 🐽list i❗️ ❗️
-
-      ↪️ i ➕ 1 ◀️ 🐔list❗️ 🍇
-        🐻 builder separator❗️
-      🍉
-    🍉
-    🧠builder❗️ ➡️ 🖍codePoints
-    🐔builder❗️ ➡️ 🖍count
-  🍉
-🍉

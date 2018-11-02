@@ -20,4 +20,13 @@
 
   📗 Returns the Unicode code point of this symbol. 📗
   ❗️ 🔢 ➡️ 🔢 📻 🔤sSymbolToInt🔤
+
+  📗 Creates a 🔡 from this symbol. 📗
+  ❗️ 🔡 ➡️ 🔡 🍇
+    ☣️ 🍇
+      🆕🧠🆕 ⚖️🔣❗️ ➡️ data
+      🐷 data🐚🔣🍆 🐕 0❗️
+      ↩️ 🆕🔡🧠 data 1❗️
+    🍉
+  🍉
 🍉
