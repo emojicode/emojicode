@@ -1,7 +1,7 @@
 📗
   Execution thread of the program.
 📗
-🌍 📻 🐇 💈 🍇
+🌍 📻 🐇 🧵 🍇
   📗
     Creates an new thread and calls the provided callback on the newly
     created thread.

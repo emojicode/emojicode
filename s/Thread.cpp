@@ -64,5 +64,5 @@ extern "C" void sMutexDestruct(Mutex *mutex) {
 
 }  // namespace s
 
-SET_INFO_FOR(s::Thread, s, 1f488)
+SET_INFO_FOR(s::Thread, s, 1f9f5)
 SET_INFO_FOR(s::Mutex, s, 1f510)
