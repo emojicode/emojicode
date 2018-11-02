@@ -308,6 +308,19 @@
     🍉
   🍉
 
+  📗
+    Creates a 🔠 with the contents of the provided string and a capacity of
+    the length of the string plus 16.
+  📗
+  🆕 🔡 string 🔡 🍇
+    0 ➡️ 🖍count
+    🐔string❗️➕ 16 ➡️ 🖍size
+    ☣️ 🍇
+      🆕🧠🆕 size✖️⚖️🔣❗️ ➡️ 🖍data
+      🦘🐕 string❗️
+    🍉
+  🍉
+
   📗 Creates an empty 🔠 with the provided *capacity*. 📗
   🆕 🐧 capacity 🔢 🍇
     0 ➡️ 🖍count
@@ -321,14 +334,23 @@
   ❗️ 🐻 string 🔡 🍇
     🐔string❗️ ➡️ stringSize
     ☣️ 🍇
-      ↪️ count ➕ stringSize ▶️ size 🍇
-        size ⬅️➕ stringSize
+      count ➕ stringSize ➡️ minimumSize
+      ↪️ minimumSize ▶️ size 🍇
+        size ⬅️✖️ 2
+        ↪️ minimumSize ▶️ size 🍇
+          minimumSize ➡️ size
+        🍉
         🏗 data size✖️⚖️🔣❗️
       🍉
 
-      🚜 data count✖️⚖️🔣 🧠 string❗️ 0 stringSize✖️⚖️🔣❗️
-      count ⬅️➕ stringSize
+      🦘🐕 string❗️
     🍉
+  🍉
+
+  ☣️🔒❗️ 🦘 string 🔡 🍇
+    🐔string❗️ ➡️ stringSize
+    🚜 data count✖️⚖️🔣 🧠 string❗️ 0 stringSize✖️⚖️🔣❗️
+    count ⬅️➕ stringSize
   🍉
 
   📗 Returns the memory area representing the data of this 🔠. 📗

@@ -153,8 +153,7 @@ void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
 }
 
 Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = analyser->function()->package()->getRawType(TypeIdentifier(std::u32string(1, 0x1F520), kDefaultNamespace,
-                                                                       position()));
+    type_ = analyser->function()->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
 
     auto stringType = Type(analyser->compiler()->sString);
     for (auto &stringNode : values_) {

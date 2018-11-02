@@ -130,6 +130,8 @@ private:
 class ASTArguments final : public ASTNode {
 public:
     explicit ASTArguments(const SourcePosition &p) : ASTNode(p) {}
+     ASTArguments(const SourcePosition &p, std::vector<std::shared_ptr<ASTExpr>> args)
+        : ASTNode(p), arguments_(std::move(args)) {}
 
     ASTArguments(const SourcePosition &p, bool imperative) : ASTNode(p), imperative_(imperative) {}
     void addGenericArgument(std::unique_ptr<ASTType> type) { genericArguments_.emplace_back(std::move(type)); }

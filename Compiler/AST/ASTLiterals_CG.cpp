@@ -75,8 +75,7 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
     auto init = type_.typeDefinition()->lookupInitializer({ 0x1F438 });
     auto list = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_);
     for (auto &value : values_) {
-        auto args = ASTArguments(position());
-        args.addArguments(value);
+        auto args = ASTArguments(position(), { value });
         auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, true);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method);
     }
@@ -84,18 +83,20 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
-    auto init = type_.typeDefinition()->lookupInitializer({ 0x1F195 });
-    auto strbuilder = ASTInitialization::initObject(fg, ASTArguments(position()), init, type_, true);
-    for (auto &stringNode : values_) {
-        auto args = ASTArguments(position());
-        args.addArguments(stringNode);
+    auto init = type_.typeDefinition()->lookupInitializer(U"🔡");
+
+    auto it = values_.begin();
+    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), { *it++ }), init, type_, true);
+
+    for (auto end = values_.end(); it != end; it++) {
+        auto args = ASTArguments(position(), { *it });
         auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, true);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_, args, method);
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_, args, method);
     }
     auto method = type_.typeDefinition()->lookupMethod({ 0x1F521 }, true);
-    auto str = CallCodeGenerator(fg, CallType::StaticDispatch).generate(strbuilder, type_,
+    auto str = CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_,
                                                                         ASTArguments(position()), method);
-    fg->release(strbuilder, type_);
+    fg->release(builder, type_);
     return handleResult(fg, str);
 }
 
