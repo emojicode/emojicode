@@ -16,6 +16,8 @@ class CodeGenerator;
 class Class;
 class Function;
 class Package;
+struct Parameter;
+class Type;
 
 /// The declarator is responsible for declaring functions etc. in an LLVM module.
 class Declarator {
@@ -77,7 +79,11 @@ private:
     llvm::Function *releaseCapture_ = nullptr;
 
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
+    llvm::Function* declareMemoryRunTimeFunction(const char *name);
     void declareRunTime();
+
+    void addParamAttrs(const Parameter &param, size_t index, llvm::Function *function) const;
+    void addParamDereferenceable(const Type &type, size_t index, llvm::Function *function, bool ret) const;
 };
 
 }  // namespace EmojicodeCompiler

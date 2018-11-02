@@ -19,6 +19,7 @@
 #include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/Attributes.h>
 
 namespace EmojicodeCompiler {
 
@@ -29,6 +30,8 @@ Declarator::Declarator(CodeGenerator *generator) : generator_(generator) {
 void EmojicodeCompiler::Declarator::declareRunTime() {
     alloc_ = declareRunTimeFunction("ejcAlloc", llvm::Type::getInt8PtrTy(generator_->context()),
                                          llvm::Type::getInt64Ty(generator_->context()));
+    alloc_->addAttribute(0, llvm::Attribute::NonNull);
+    alloc_->addFnAttr(llvm::Attribute::getWithAllocSizeArgs(generator_->context(), 0, llvm::Optional<unsigned>()));
 
     panic_ = declareRunTimeFunction("ejcPanic", llvm::Type::getVoidTy(generator_->context()),
                                     llvm::Type::getInt8PtrTy(generator_->context()));
@@ -38,21 +41,23 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     inheritsFrom_ = declareRunTimeFunction("ejcInheritsFrom", llvm::Type::getInt1Ty(generator_->context()), {
         generator_->typeHelper().classInfo()->getPointerTo(), generator_->typeHelper().classInfo()->getPointerTo()
     });
+    inheritsFrom_->addFnAttr(llvm::Attribute::ReadOnly);
+    inheritsFrom_->addParamAttr(0, llvm::Attribute::NonNull);
+    inheritsFrom_->addParamAttr(1, llvm::Attribute::NonNull);
+
     findProtocolConformance_ = declareRunTimeFunction("ejcFindProtocolConformance",
                                                       generator_->typeHelper().protocolConformance()->getPointerTo(), {
         generator_->typeHelper().protocolConformanceEntry()->getPointerTo(), llvm::Type::getInt1PtrTy(generator_->context())
     });
+    findProtocolConformance_->addFnAttr(llvm::Attribute::ReadOnly);
+    findProtocolConformance_->addParamAttr(0, llvm::Attribute::NonNull);
 
     boxInfoClassObjects_ = declareBoxInfo("class.boxInfo");
 
-    retain_ = declareRunTimeFunction("ejcRetain", llvm::Type::getVoidTy(generator_->context()),
-                                     llvm::Type::getInt8PtrTy(generator_->context()));
-    release_ = declareRunTimeFunction("ejcRelease", llvm::Type::getVoidTy(generator_->context()),
-                                      llvm::Type::getInt8PtrTy(generator_->context()));
-    releaseMemory_ = declareRunTimeFunction("ejcReleaseMemory", llvm::Type::getVoidTy(generator_->context()),
-                                            llvm::Type::getInt8PtrTy(generator_->context()));
-    releaseCapture_ = declareRunTimeFunction("ejcReleaseCapture", llvm::Type::getVoidTy(generator_->context()),
-                                            llvm::Type::getInt8PtrTy(generator_->context()));
+    retain_ = declareMemoryRunTimeFunction("ejcRetain");
+    release_ = declareMemoryRunTimeFunction("ejcRelease");
+    releaseMemory_ = declareMemoryRunTimeFunction("ejcReleaseMemory");
+    releaseCapture_ = declareMemoryRunTimeFunction("ejcReleaseCapture");
 
     ignoreBlock_ = new llvm::GlobalVariable(*generator_->module(), llvm::Type::getInt8Ty(generator_->context()), true,
                                             llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
@@ -65,6 +70,14 @@ llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type 
                                      name, generator_->module());
     fn->addFnAttr(llvm::Attribute::NoUnwind);
     fn->addFnAttr(llvm::Attribute::NoRecurse);
+    return fn;
+}
+
+llvm::Function* Declarator::declareMemoryRunTimeFunction(const char *name) {
+    auto fn = declareRunTimeFunction(name, llvm::Type::getVoidTy(generator_->context()),
+                                     llvm::Type::getInt8PtrTy(generator_->context()));
+    fn->addParamAttr(0, llvm::Attribute::NonNull);
+    fn->addParamAttr(0, llvm::Attribute::NoCapture);
     return fn;
 }
 
@@ -128,27 +141,54 @@ void Declarator::declareLlvmFunction(Function *function) const {
 
         size_t i = 0;
         if (hasThisArgument(function)) {
+            addParamDereferenceable(function->typeContext().calleeType(), i, reification.entity.function, false);
             if (function->functionType() == FunctionType::ObjectInitializer) {
                 if (!dynamic_cast<Initializer*>(function)->errorProne()) {
                     reification.entity.function->addParamAttr(i, llvm::Attribute::Returned);
+                    addParamDereferenceable(function->typeContext().calleeType(), 0, reification.entity.function, true);
                 }
             }
             else if (!function->memoryFlowTypeForThis().isEscaping()) {
                 reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
             }
+
+            if (function->typeContext().calleeType().type() == TypeType::ValueType && !function->mutating()) {
+                reification.entity.function->addParamAttr(0, llvm::Attribute::ReadOnly);
+            }
+
             i++;
+        }
+        else if (function->functionType() == FunctionType::ObjectInitializer
+            && !dynamic_cast<Initializer*>(function)->errorProne()) {  // foreign initializers
+            addParamDereferenceable(function->typeContext().calleeType(), 0, reification.entity.function, true);
         }
         for (auto &param : function->parameters()) {
-            if (!param.memoryFlowType.isEscaping() && param.type->type().type() == TypeType::Class) {
-                reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
-            }
+            addParamAttrs(param, i, reification.entity.function);
             i++;
         }
-
-        if (function->typeContext().calleeType().type() == TypeType::ValueType && !function->mutating()) {
-            reification.entity.function->addParamAttr(0, llvm::Attribute::ReadOnly);
-        }
+        addParamDereferenceable(function->returnType()->type(), 0, reification.entity.function, true);
     });
+}
+
+void Declarator::addParamAttrs(const Parameter &param, size_t index, llvm::Function *function) const {
+    if (!param.memoryFlowType.isEscaping() && param.type->type().type() == TypeType::Class) {
+        function->addParamAttr(index, llvm::Attribute::NoCapture);
+    }
+
+    addParamDereferenceable(param.type->type(), index, function, false);
+}
+
+void Declarator::addParamDereferenceable(const Type &type, size_t index, llvm::Function *function, bool ret) const {
+    if (generator_->typeHelper().isDereferenceable(type)) {
+        auto llvmType = generator_->typeHelper().llvmTypeFor(type);
+        auto elementType = llvm::dyn_cast<llvm::PointerType>(llvmType)->getElementType();
+        if (ret) {
+            function->addDereferenceableAttr(0, generator_->querySize(elementType));
+        }
+        else {
+            function->addParamAttrs(index, llvm::AttrBuilder().addDereferenceableAttr(generator_->querySize(elementType)));
+        }
+    }
 }
 
 llvm::GlobalVariable* Declarator::declareBoxInfo(const std::string &name) {
