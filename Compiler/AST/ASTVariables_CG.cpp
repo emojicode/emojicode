@@ -21,8 +21,7 @@ Value* AccessesAnyVariable::instanceVariablePointer(FunctionCodeGenerator *fg) c
 
 Value* AccessesAnyVariable::managementValue(FunctionCodeGenerator *fg) const {
     if (inInstanceScope()) {
-        llvm::Value *objectPointer;
-        objectPointer = instanceVariablePointer(fg);
+        llvm::Value *objectPointer = instanceVariablePointer(fg);
         if (!fg->isManagedByReference(variableType_)) {
             objectPointer = fg->builder().CreateLoad(objectPointer);
         }
@@ -31,12 +30,18 @@ Value* AccessesAnyVariable::managementValue(FunctionCodeGenerator *fg) const {
 
     auto &var = fg->scoper().getVariable(id());
     if (fg->isManagedByReference(variableType_)) {
-        if (var.isMutable) return var.value;
-        auto alloc = fg->createEntryAlloca(var.value->getType());
-        fg->builder().CreateStore(var.value, alloc);
-        return alloc;
+        return getReferenceWithPromotion(var, fg);
     }
     return var.isMutable ? fg->builder().CreateLoad(var.value) : var.value;
+}
+
+Value* AccessesAnyVariable::getReferenceWithPromotion(LocalVariable &variable, FunctionCodeGenerator *fg) const {
+    if (!variable.isMutable) {
+        auto alloca = fg->createEntryAlloca(variable.value->getType());
+        fg->builder().CreateStore(variable.value, alloca);
+        variable = LocalVariable(true, alloca);
+    }
+    return variable.value;
 }
 
 void AccessesAnyVariable::release(FunctionCodeGenerator *fg) const {
@@ -60,12 +65,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
 
     auto &localVariable = fg->scoper().getVariable(id());
     if (reference_) {
-        if (!localVariable.isMutable) {
-            auto alloca = fg->createEntryAlloca(localVariable.value->getType());
-            fg->builder().CreateStore(localVariable.value, alloca);
-            localVariable = LocalVariable(true, alloca);
-        }
-        return localVariable.value;
+        return getReferenceWithPromotion(localVariable, fg);
     }
 
     if (!returned_ && !isTemporary() && expressionType().isManaged()) {
@@ -73,11 +73,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
         fg->retain(retainValue, expressionType());
         handleResult(fg, retainValue);
     }
-
-    if (!localVariable.isMutable) {
-        return localVariable.value;
-    }
-    return fg->builder().CreateLoad(localVariable.value);
+    return localVariable.isMutable ? fg->builder().CreateLoad(localVariable.value) : localVariable.value;
 }
 
 void ASTVariableInit::generate(FunctionCodeGenerator *fg) const {

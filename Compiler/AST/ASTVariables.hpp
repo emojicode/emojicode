@@ -54,6 +54,12 @@ protected:
     void release(FunctionCodeGenerator *fg) const;
 
     Value* managementValue(FunctionCodeGenerator *fg) const;
+
+    /// If the variable is mutable, returns the pointer to the alloca’d memory. If this is a constant variable,
+    /// uses alloca, stores the variable’s content into the allocated memory and stores the allocated address in the
+    /// variable. The variable is then considered mutable.
+    Value* getReferenceWithPromotion(LocalVariable &variable, FunctionCodeGenerator *fg) const;
+
 private:
     bool inInstanceScope_ = false;
     VariableID id_;
