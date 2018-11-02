@@ -140,6 +140,8 @@ llvm::Type* LLVMTypeHelper::typeForOrdinaryType(const Type &type) {
             std::vector<llvm::Type *> types{ llvm::Type::getInt1Ty(context_), llvmTypeFor(type.optionalType()) };
             return llvm::StructType::get(context_, types);
         }
+        case StorageType::PointerOptional:
+            return llvmTypeFor(type.optionalType());
         case StorageType::SimpleError: {
             std::vector<llvm::Type *> types{ llvmTypeFor(type.errorEnum()), llvmTypeFor(type.errorType()) };
             return llvm::StructType::get(context_, types);

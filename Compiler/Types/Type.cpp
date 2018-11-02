@@ -489,6 +489,9 @@ StorageType Type::storageType() const {
         case TypeType::Box:
             return StorageType::Box;
         case TypeType::Optional:
+            if (optionalType().type() == TypeType::Class || optionalType().type() == TypeType::Someobject) {
+                return StorageType::PointerOptional;
+            }
             return StorageType::SimpleOptional;
         case TypeType::Error:
             return StorageType::SimpleError;

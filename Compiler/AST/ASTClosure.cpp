@@ -70,6 +70,7 @@ void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const Ty
             returnType.storageType() != expReturn.storageType()) {
         switch (expReturn.storageType()) {
             case StorageType::SimpleOptional:
+            case StorageType::PointerOptional:
                 assert(returnType.storageType() == StorageType::Simple);
                 closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.optionalized()));
                 break;
@@ -94,6 +95,7 @@ void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const Ty
                 param.type->type().storageType() != expParam.storageType()) {
             switch (expParam.storageType()) {
                 case StorageType::SimpleOptional:
+                case StorageType::PointerOptional:
                     assert(param.type->type().storageType() == StorageType::Simple);
                     closure_->setParameterType(i, std::make_unique<ASTLiteralType>(param.type->type().optionalized()));
                     break;

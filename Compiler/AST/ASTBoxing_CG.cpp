@@ -121,7 +121,7 @@ Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fg) const {
     auto value = expr_->generate(fg);
     auto box = fg->createEntryAlloca(fg->typeHelper().box());
 
-    auto hasNoValue = fg->buildHasNoValue(value);
+    auto hasNoValue = fg->buildOptionalHasNoValue(value, expr_->expressionType());
 
     fg->createIfElse(hasNoValue, [fg, box]() {
         fg->buildMakeNoValue(box);

@@ -8,9 +8,25 @@
   🍉
 🍉
 
+🕊 🌸 🍇
+  🖍🆕 name 🔡
+
+  🆕 🍼 name 🔡 🍇
+
+  🍉
+
+  ❗️ 🙋 🍇
+    😀 name ❗️
+  🍉
+🍉
+
 🐇 🥊 🍇
   🐇❗️ 💡 string 🔡 ➡️ 🍬🐟 🍇
     ↩️ 🆕🐟🆕 🍪 🔤Joe 🔤 string 🍪 ❗️
+  🍉
+
+  🐇❗️ 🔰 string 🔡 ➡️ 🍬🌸 🍇
+    ↩️ 🆕🌸🆕 🍪 🔤Joe 🔤 string 🍪 ❗️
   🍉
 🍉
 
@@ -18,16 +34,26 @@
   🖍🆕 a 🍬🔡
   🖍🆕 b 🍬🔡
   🖍🆕 c 🍬🔡
+  🖍🆕 d 🍬🌸
+  🖍🆕 e 🍬🌸
 
   🔤Did🔤 ➡️ 🖍a
   🤷‍♀️ ➡️ 🖍b
   🔤hear🔤 ➡️ 🖍c
 
+  🤷‍♀️ ➡️ 🖍d
+  🆕🌸🆕🔤shawn🔤❗️ ➡️ 🖍e
+
   😀 🍺a ❗️
   😀 🍺c ❗️
+  🙋 🍺e ❗️
 
   🙋 🍺💡🐇🥊 🔤Buck🔤❗️❗️
+  🙋 🍺🔰🐇🥊 🔤Aikman🔤❗️❗️
 
   🍺💡🐇🥊 🔤Cooper🔤❗️ ➡️ fish
   🙋fish❗️
+
+  🍺🔰🐇🥊 🔤Miller🔤❗️ ➡️ flower
+  🙋flower❗️
 🍉

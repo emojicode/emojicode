@@ -91,28 +91,46 @@ llvm::Value* FunctionCodeGenerator::buildHasNoValueBox(llvm::Value *box) {
     return builder().CreateICmpEQ(vf, llvm::Constant::getNullValue(vf->getType()));
 }
 
-Value* FunctionCodeGenerator::buildHasNoValue(llvm::Value *simpleOptional) {
+Value* FunctionCodeGenerator::buildOptionalHasNoValue(llvm::Value *simpleOptional, const Type &type) {
+    if (type.storageType() == StorageType::PointerOptional) {
+        auto null = llvm::Constant::getNullValue(typeHelper().llvmTypeFor(type.optionalType()));
+        return builder().CreateICmpEQ(simpleOptional, null);
+    }
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
     return builder().CreateICmpEQ(vf, generator()->optionalNoValue());
 }
 
-Value* FunctionCodeGenerator::buildOptionalHasValue(llvm::Value *simpleOptional) {
+Value* FunctionCodeGenerator::buildOptionalHasValue(llvm::Value *simpleOptional, const Type &type) {
+    if (type.storageType() == StorageType::PointerOptional) {
+        auto null = llvm::Constant::getNullValue(typeHelper().llvmTypeFor(type.optionalType()));
+        return builder().CreateICmpNE(simpleOptional, null);
+    }
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
     return builder().CreateICmpNE(vf, generator()->optionalNoValue());
 }
 
-Value* FunctionCodeGenerator::buildOptionalHasValuePtr(llvm::Value *simpleOptional) {
-    auto type = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
-    auto vf = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(type, simpleOptional, 0, 0));
+Value* FunctionCodeGenerator::buildOptionalHasValuePtr(llvm::Value *simpleOptional, const Type &type) {
+    if (type.storageType() == StorageType::PointerOptional) {
+        auto null = llvm::Constant::getNullValue(typeHelper().llvmTypeFor(type.optionalType()));
+        return builder().CreateICmpNE(builder().CreateLoad(simpleOptional), null);
+    }
+    auto ptype = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
+    auto vf = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(ptype, simpleOptional, 0, 0));
     return builder().CreateICmpNE(vf, generator()->optionalNoValue());
 }
 
-Value* FunctionCodeGenerator::buildGetOptionalValuePtr(llvm::Value *simpleOptional) {
-    auto type = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
-    return builder().CreateConstInBoundsGEP2_32(type, simpleOptional, 0, 1);
+Value* FunctionCodeGenerator::buildGetOptionalValuePtr(llvm::Value *simpleOptional, const Type &type) {
+    if (type.storageType() == StorageType::PointerOptional) {
+        return builder().CreateLoad(simpleOptional);
+    }
+    auto ptype = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
+    return builder().CreateConstInBoundsGEP2_32(ptype, simpleOptional, 0, 1);
 }
 
 Value* FunctionCodeGenerator::buildSimpleOptionalWithoutValue(const Type &type) {
+    if (type.storageType() == StorageType::PointerOptional) {
+        return llvm::Constant::getNullValue(typeHelper().llvmTypeFor(type.optionalType()));
+    }
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
     return builder().CreateInsertValue(undef, generator()->optionalNoValue(), 0);
@@ -124,6 +142,9 @@ Value* FunctionCodeGenerator::buildBoxOptionalWithoutValue() {
 }
 
 Value* FunctionCodeGenerator::buildSimpleOptionalWithValue(llvm::Value *value, const Type &type) {
+    if (type.storageType() == StorageType::PointerOptional) {
+        return value;
+    }
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
     auto simpleOptional = builder().CreateInsertValue(undef, value, 1);
@@ -131,6 +152,9 @@ Value* FunctionCodeGenerator::buildSimpleOptionalWithValue(llvm::Value *value, c
 }
 
 Value* FunctionCodeGenerator::buildGetOptionalValue(llvm::Value *value, const Type &type) {
+    if (type.storageType() == StorageType::PointerOptional) {
+        return value;
+    }
     return builder().CreateExtractValue(value, 1);
 }
 
@@ -343,12 +367,12 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
     }
     else if (type.type() == TypeType::Optional) {
         if (isManagedByReference(type)) {
-            createIf(buildOptionalHasValuePtr(value), [&] {
-                release(buildGetOptionalValuePtr(value), type.optionalType());
+            createIf(buildOptionalHasValuePtr(value, type), [&] {
+                release(buildGetOptionalValuePtr(value, type), type.optionalType());
             });
         }
         else {
-            createIf(buildOptionalHasValue(value), [&] {
+            createIf(buildOptionalHasValue(value, type), [&] {
                 release(buildGetOptionalValue(value, type), type.optionalType());
             });
         }
@@ -397,12 +421,12 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
     }
     else if (type.type() == TypeType::Optional) {
         if (isManagedByReference(type)) {
-            createIf(buildOptionalHasValuePtr(value), [&] {
-                retain(buildGetOptionalValuePtr(value), type.optionalType());
+            createIf(buildOptionalHasValuePtr(value, type), [&] {
+                retain(buildGetOptionalValuePtr(value, type), type.optionalType());
             });
         }
         else {
-            createIf(buildOptionalHasValue(value), [&] {
+            createIf(buildOptionalHasValue(value, type), [&] {
                 retain(buildGetOptionalValue(value, type), type.optionalType());
             });
         }

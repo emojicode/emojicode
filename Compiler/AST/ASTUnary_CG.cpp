@@ -29,7 +29,8 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
 
     auto optional = expr_->generate(fg);
     auto isBox = expr_->expressionType().storageType() == StorageType::Box;
-    auto hasNoValue = isBox ? fg->buildHasNoValueBox(optional) : fg->buildHasNoValue(optional);
+    auto hasNoValue = isBox ? fg->buildHasNoValueBox(optional)
+                            : fg->buildOptionalHasNoValue(optional, expr_->expressionType());
 
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
         std::stringstream str;

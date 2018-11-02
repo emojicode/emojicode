@@ -134,6 +134,24 @@ private:
     Type content_;
 };
 
+template <typename Type>
+class SimpleOptional<Type*> {
+public:
+    SimpleOptional(NoValue_t) : pointer_(nullptr) {}
+    SimpleOptional(Type* content) : pointer_(content) {}
+
+    bool operator==(NoValue_t) const {
+        return pointer_ == nullptr;
+    }
+
+    Type* operator*() const {
+        return pointer_;
+    }
+
+private:
+    Type *pointer_;
+};
+
 struct MakeError_t {};
 constexpr MakeError_t MakeError {};
 

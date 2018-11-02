@@ -52,7 +52,7 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
 
     auto value = fg->buildGetOptionalValue(optional, expr_->expressionType());
     fg->scoper().getVariable(varId_) = LocalVariable(false, value);
-    return fg->buildOptionalHasValue(optional);
+    return fg->buildOptionalHasValue(optional, expr_->expressionType());
 }
 
 Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {

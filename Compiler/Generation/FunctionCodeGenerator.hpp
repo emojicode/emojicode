@@ -80,16 +80,23 @@ public:
     /// Makes the box contain no value.
     /// @param box Pointer to a box.
     llvm::Value* buildMakeNoValue(llvm::Value *box);
-
-    llvm::Value* buildOptionalHasValue(llvm::Value *simpleOptional);
-    llvm::Value* buildOptionalHasValuePtr(llvm::Value *simpleOptional);
-    llvm::Value* buildGetOptionalValuePtr(llvm::Value *simpleOptional);
-    llvm::Value* buildHasNoValue(llvm::Value *simpleOptional);
     llvm::Value* buildHasNoValueBox(llvm::Value *box);
     llvm::Value* buildHasNoValueBoxPtr(llvm::Value *box);
-    llvm::Value* buildSimpleOptionalWithoutValue(const Type &type);
     llvm::Value* buildBoxOptionalWithoutValue();
+
+    llvm::Value* buildOptionalHasNoValue(llvm::Value *simpleOptional, const Type &type);
+    /// Determines whether the optional has a value.
+    /// @param type An optional type.
+    llvm::Value* buildOptionalHasValue(llvm::Value *simpleOptional, const Type &type);
+    llvm::Value* buildOptionalHasValuePtr(llvm::Value *simpleOptional, const Type &type);
+    llvm::Value* buildGetOptionalValuePtr(llvm::Value *simpleOptional, const Type &type);
+    /// Creates an optional value that represents no value for the provided type.
+    /// @param type An optional type.
+    llvm::Value* buildSimpleOptionalWithoutValue(const Type &type);
+    /// Creates an optional of the specified type that contains `value`.
+    /// @param type An optional type.
     llvm::Value* buildSimpleOptionalWithValue(llvm::Value *value, const Type &type);
+    /// Retrieves the value from an optional. If the optional does not have a value, the behavior is undefined.
     llvm::Value* buildGetOptionalValue(llvm::Value *value, const Type &type);
 
     /// Gets a pointer to the pointer to the class info of an object.

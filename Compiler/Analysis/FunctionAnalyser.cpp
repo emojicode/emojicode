@@ -300,6 +300,7 @@ void FunctionAnalyser::upcast(Type &exprType, const TypeExpectation &expectation
 Type FunctionAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     switch (expectation.simplifyType(exprType)) {
         case StorageType::SimpleOptional:
+        case StorageType::PointerOptional:
             makeIntoSimpleOptional(exprType, node);
             break;
         case StorageType::Box:
@@ -318,6 +319,7 @@ Type FunctionAnalyser::box(Type exprType, const TypeExpectation &expectation, st
 void FunctionAnalyser::makeIntoSimpleOptional(Type &exprType, std::shared_ptr<ASTExpr> *node) const {
     switch (exprType.storageType()) {
         case StorageType::SimpleOptional:
+            case StorageType::PointerOptional:
         case StorageType::SimpleError:
             break;
         case StorageType::Box:
@@ -335,6 +337,7 @@ void FunctionAnalyser::makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTEx
     switch (exprType.storageType()) {
         case StorageType::SimpleError:
         case StorageType::SimpleOptional:
+        case StorageType::PointerOptional:
             break;
         case StorageType::Simple:
             exprType = exprType.unboxed().errored(exp.errorEnum());
@@ -352,6 +355,7 @@ void FunctionAnalyser::makeIntoSimple(Type &exprType, std::shared_ptr<ASTExpr> *
         case StorageType::Simple:
         case StorageType::SimpleOptional:
         case StorageType::SimpleError:
+        case StorageType::PointerOptional:
             break;
         case StorageType::Box:
             exprType = exprType.unboxed();
@@ -372,6 +376,7 @@ void FunctionAnalyser::makeIntoBox(Type &exprType, const TypeExpectation &expect
             }
             break;
         case StorageType::SimpleOptional:
+        case StorageType::PointerOptional:
             exprType = exprType.boxedFor(expectation.boxFor());
             insertNode<ASTSimpleOptionalToBox>(node, exprType);
             break;
