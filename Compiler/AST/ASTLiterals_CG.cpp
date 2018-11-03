@@ -40,10 +40,6 @@ Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fg) const {
     }
 }
 
-Value* ASTSymbolLiteral::generate(FunctionCodeGenerator *fg) const {
-    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(fg->generator()->context()), value_);
-}
-
 Value* ASTThis::generate(FunctionCodeGenerator *fg) const {
     if (!isTemporary()) {
         fg->retain(fg->thisValue(), expressionType());

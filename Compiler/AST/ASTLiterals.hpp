@@ -74,19 +74,6 @@ private:
     NumberType type_;
 };
 
-class ASTSymbolLiteral final : public ASTExpr {
-public:
-    ASTSymbolLiteral(char32_t value, const SourcePosition &p) : ASTExpr(p), value_(value) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-
-    void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override {}
-
-private:
-    char32_t value_;
-};
-
 class ASTConcatenateLiteral final : public ASTExpr {
 public:
     explicit ASTConcatenateLiteral(const SourcePosition &p) : ASTExpr(p) {}

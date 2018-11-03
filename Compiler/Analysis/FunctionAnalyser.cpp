@@ -53,10 +53,6 @@ Type FunctionAnalyser::boolean() {
     return Type(compiler()->sBoolean);
 }
 
-Type FunctionAnalyser::symbol() {
-    return Type(compiler()->sSymbol);
-}
-
 Type FunctionAnalyser::byte() {
     return Type(compiler()->sByte);
 }

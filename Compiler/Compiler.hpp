@@ -106,7 +106,6 @@ public:
     Class *sDictionary = nullptr;
     Protocol *sEnumerable = nullptr;
     ValueType *sBoolean = nullptr;
-    ValueType *sSymbol = nullptr;
     ValueType *sInteger = nullptr;
     ValueType *sReal = nullptr;
     ValueType *sMemory = nullptr;

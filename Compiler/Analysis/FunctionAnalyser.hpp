@@ -44,7 +44,6 @@ public:
     Type integer();
     Type boolean();
     Type real();
-    Type symbol();
     Type byte();
 
     void setInUnsafeBlock(bool v) { inUnsafeBlock_ = v; }

@@ -64,7 +64,6 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
     types_.emplace(Type::someobject(), someobjectPtr_);
     types_.emplace(Type(compiler->sInteger), llvm::Type::getInt64Ty(context_));
-    types_.emplace(Type(compiler->sSymbol), llvm::Type::getInt32Ty(context_));
     types_.emplace(Type(compiler->sReal), llvm::Type::getDoubleTy(context_));
     types_.emplace(Type(compiler->sBoolean), llvm::Type::getInt1Ty(context_));
     types_.emplace(Type(compiler->sMemory), llvm::Type::getInt8PtrTy(context_));

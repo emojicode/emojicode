@@ -184,11 +184,9 @@ ValueType *getStandardValueType(const std::u32string &name, Package *_) {
 }
 
 void Compiler::assignSTypes(Package *s) {
-    // Order of the following calls is important as they will cause Box IDs to be assigned
     sBoolean = getStandardValueType(U"👌", s);
     sInteger = getStandardValueType(U"🔢", s);
     sReal = getStandardValueType(std::u32string(1, E_HUNDRED_POINTS_SYMBOL), s);
-    sSymbol = getStandardValueType(U"🔣", s);
     sMemory = getStandardValueType(U"🧠", s);
     sByte = getStandardValueType(U"💧", s);
 

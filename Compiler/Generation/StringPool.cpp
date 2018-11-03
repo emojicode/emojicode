@@ -23,7 +23,8 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
         return it->second;
     }
 
-    auto data = llvm::ArrayRef<uint32_t>(reinterpret_cast<const uint32_t *>(string.data()), string.size());
+    auto utf8str = utf8(string.data());
+    auto data = llvm::ArrayRef<uint8_t>(reinterpret_cast<const uint8_t*>(utf8str.data()), utf8str.size());
     auto constant = llvm::ConstantStruct::getAnon({
         codeGenerator_->declarator().ignoreBlockPtr(),
         llvm::ConstantDataArray::get(codeGenerator_->context(), data)
@@ -41,7 +42,7 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
             codeGenerator_->declarator().ignoreBlockPtr(),
             compiler->sString->classInfo(),
             var,
-            llvm::ConstantInt::get(llvm::Type::getInt64Ty(codeGenerator_->context()), string.size())
+            llvm::ConstantInt::get(llvm::Type::getInt64Ty(codeGenerator_->context()), utf8str.size())
     });
 
     auto stringVar = new llvm::GlobalVariable(*codeGenerator_->module(), stringLlvm, true,

@@ -5,7 +5,7 @@
 #include "../runtime/Runtime.h"
 #include "Data.h"
 #include "String.h"
-#include "utf8.h"
+#include "utf8proc.h"
 #include <algorithm>
 
 namespace s {
@@ -25,15 +25,13 @@ extern "C" runtime::SimpleOptional<runtime::Integer> sDataFindFromIndex(Data *da
 
 extern "C" runtime::SimpleOptional<String *> sDataAsString(Data *data) {
     auto chars = reinterpret_cast<char *>(data->data.get());
-    if (!u8_isvalid(chars, data->count)) {
-        return runtime::NoValue;
-    }
+
+    // TODO: validate
 
     auto *string = String::init();
-    string->count = u8_strlen_l(chars, data->count);
-
-    string->characters = runtime::allocate<String::Character>(string->count);
-    u8_toucs(string->characters.get(), string->count, chars, data->count);
+    string->count = data->count;
+    string->characters = data->data;
+    data->data.retain();
     return string;
 }
 

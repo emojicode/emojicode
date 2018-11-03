@@ -1,5 +1,7 @@
 file(GLOB S_SOURCES "*.cpp" "*.c" "*.hpp" "*.h")
 
+list(FILTER S_SOURCES EXCLUDE REGEX ".*utf8proc_data.c")
+
 get_filename_component(MAIN_FILE s.emojic ABSOLUTE)
 file(GLOB EMOJIC_DEPEND "*.emojic")
 

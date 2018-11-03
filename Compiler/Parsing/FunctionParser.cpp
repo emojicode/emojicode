@@ -230,7 +230,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             return std::make_shared<ASTNumberLiteral>(d, token.value(), token.position());
         }
         case TokenType::Symbol:
-            return std::make_shared<ASTSymbolLiteral>(token.value().front(), token.position());
+            throw CompilerError(token.position(), "🔣 has been removed.");
         case TokenType::Variable:
             return std::make_shared<ASTGetVariable>(token.value(), token.position());
         case TokenType::Identifier:

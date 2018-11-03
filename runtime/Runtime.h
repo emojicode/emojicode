@@ -29,9 +29,8 @@ extern "C" [[noreturn]] void ejcPanic(const char *message);
 namespace runtime {
 
 using Integer = int64_t;
-using Symbol = uint32_t;
 using Boolean = int8_t;
-using Byte = int8_t;
+using Byte = char;
 using Real = double;
 using Enum = int64_t;
 
@@ -71,6 +70,10 @@ public:
     T& operator[](size_t index) const {
         return get()[index];
     }
+
+    void retain();
+    void release();
+    
 private:
     explicit MemoryPointer(int8_t *pointer) : pointer_(pointer) {}
     int8_t* pointer_ = nullptr;
@@ -202,6 +205,16 @@ void Object<Subclass>::retain() {
 template <typename Subclass>
 void Object<Subclass>::release() {
     ejcRelease(reinterpret_cast<runtime::Object<void> *>(this));
+}
+
+template <typename Type>
+void MemoryPointer<Type>::retain() {
+    ejcRetain(reinterpret_cast<runtime::Object<void> *>(pointer_));
+}
+
+template <typename Type>
+void MemoryPointer<Type>::release() {
+    ejcReleaseMemory(reinterpret_cast<runtime::Object<void> *>(pointer_));
 }
 
 }  // namespace runtime

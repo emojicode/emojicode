@@ -9,7 +9,7 @@
 #include "../runtime/Runtime.h"
 #include "Data.h"
 #include "String.h"
-#include "utf8.h"
+#include "utf8proc.h"
 #include <algorithm>
 #include <cctype>
 #include <cinttypes>
@@ -20,10 +20,7 @@
 using s::String;
 
 std::string String::stdString() {
-    size_t ds = u8_codingsize(characters.get(), count);
-    std::string utf8str(ds, 0);
-    u8_toutf8(&utf8str[0], ds, characters.get(), count);
-    return utf8str;
+    return std::string(characters.get(), count);
 }
 
 String::String(const char *cstring) {
@@ -31,20 +28,17 @@ String::String(const char *cstring) {
 }
 
 void String::store(const char *cstring) {
-    count = u8_strlen(cstring);
-
-    if (count > 0) {
-        characters = runtime::allocate<String::Character>(count);
-        u8_toucs(characters.get(), count, cstring, strlen(cstring));
-    }
+    count = strlen(cstring);
+    characters = runtime::allocate<char>(count);
+    std::memcpy(characters.get(), cstring, count);
 }
 
 extern "C" void sStringPrint(String *string) {
-    std::cout << string->stdString().c_str() << std::endl;
+    std::cout.write(string->characters.get(), string->count) << '\n';
 }
 
-extern "C" void sStringPrintNoLn(String *print) {
-    std::cout << print->stdString().c_str();
+extern "C" void sStringPrintNoLn(String *string) {
+    std::cout.write(string->characters.get(), string->count);
 }
 
 extern "C" String* sStringReadLine(String *string) {
@@ -58,8 +52,7 @@ extern "C" char sStringBeginsWith(String *string, String *beginning) {
     if (string->count < beginning->count) {
         return false;
     }
-    return std::memcmp(string->characters.get(), beginning->characters.get(),
-                       beginning->count * sizeof(String::Character)) == 0;
+    return std::memcmp(string->characters.get(), beginning->characters.get(), beginning->count) == 0;
 }
 
 extern "C" char sStringEndsWith(String *string, String *ending) {
@@ -67,23 +60,46 @@ extern "C" char sStringEndsWith(String *string, String *ending) {
         return false;
     }
     return std::memcmp(string->characters.get() + (string->count - ending->count), ending->characters.get(),
-                       ending->count * sizeof(String::Character)) == 0;
+                       ending->count) == 0;
 }
 
 extern "C" runtime::Integer sStringUtf8ByteCount(String *string) {
-    return u8_codingsize(string->characters.get(), string->count);
+    return string->count;
 }
 
 extern "C" String* sStringToLowercase(String *string) {
     auto newString = String::init();
     newString->count = string->count;
-    newString->characters = runtime::allocate<String::Character>(string->count);
+    newString->characters = runtime::allocate<char>(string->count);
 
-    for (runtime::Integer i = 0; i < newString->count; i++) {
-        auto codePoint = string->characters[i];
-        newString->characters[i] = codePoint <= 'z' ? std::tolower(static_cast<unsigned char>(codePoint)) : codePoint;
+    size_t doff = 0;
+    for (size_t off = 0; off < string->count;) {
+        utf8proc_int32_t codepoint;
+        auto state = utf8proc_iterate(reinterpret_cast<utf8proc_uint8_t *>(string->characters.get()) + off,
+                                      string->count, &codepoint);
+        if (state < 0) break;
+        doff += utf8proc_encode_char(utf8proc_tolower(codepoint),
+                                     reinterpret_cast<utf8proc_uint8_t *>(newString->characters.get()) + doff);
+        off += state;
     }
+    return newString;
+}
 
+extern "C" String* sStringToUppercase(String *string) {
+    auto newString = String::init();
+    newString->count = string->count;
+    newString->characters = runtime::allocate<char>(string->count);
+
+    size_t doff = 0;
+    for (size_t off = 0; off < string->count;) {
+        utf8proc_int32_t codepoint;
+        auto state = utf8proc_iterate(reinterpret_cast<utf8proc_uint8_t *>(string->characters.get()) + off,
+                                      string->count, &codepoint);
+        if (state < 0) break;
+        doff += utf8proc_encode_char(utf8proc_toupper(codepoint),
+                                     reinterpret_cast<utf8proc_uint8_t *>(newString->characters.get()) + doff);
+        off += state;
+    }
     return newString;
 }
 
@@ -110,53 +126,91 @@ extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindFromIndex(String
     return runtime::NoValue;
 }
 
-extern "C" runtime::SimpleOptional<runtime::Integer> sStringFindSymbolFromIndex(String *string, runtime::Symbol search,
-                                                                                runtime::Integer offset) {
-    if (offset >= string->count) {
-        return runtime::NoValue;
-    }
-    auto end = string->characters.get() + string->count;
-    auto pos = std::find(string->characters.get() + offset, end, search);
-    if (pos != end) {
-        return pos - string->characters.get();
-    }
-    return runtime::NoValue;
-}
-
-extern "C" String* sStringToUppercase(String *string) {
-    auto newString = String::init();
-    newString->count = string->count;
-    newString->characters = runtime::allocate<String::Character>(string->count);
-
-    for (runtime::Integer i = 0; i < newString->count; i++) {
-        auto codePoint = string->characters[i];
-        newString->characters[i] = codePoint <= 'z' ? std::toupper(static_cast<unsigned char>(codePoint)) : codePoint;
-    }
-
-    return newString;
-}
-
-extern "C" String* sStringAppendSymbol(String *string, runtime::Symbol symbol) {
-    auto characters = runtime::allocate<String::Character>(string->count + 1);
-
-    std::memcpy(characters.get(), string->characters.get(), string->count * sizeof(String::Character));
-    characters[string->count] = symbol;
-
-    auto newString = String::init();
-    newString->count = string->count + 1;
-    newString->characters = characters;
-    return newString;
-}
-
 extern "C" s::Data* sStringToData(String *string) {
     auto data = s::Data::init();
-    data->count = u8_codingsize(string->characters.get(), string->count);
-    data->data = runtime::allocate<runtime::Byte>(data->count);
-    u8_toutf8(reinterpret_cast<char *>(data->data.get()), data->count, string->characters.get(), string->count);
+    data->count = string->count;
+    data->data = string->characters;
+    string->characters.retain();
     return data;
 }
 
-runtime::SimpleOptional<runtime::Integer> sStringToIntLength(const String::Character *characters,
+extern "C" void sStringCodepoints(String *string, runtime::Callable<void, runtime::Integer, runtime::Integer> cb) {
+    for (size_t off = 0; off < string->count;) {
+        utf8proc_int32_t codepoint;
+        auto state = utf8proc_iterate(reinterpret_cast<utf8proc_uint8_t *>(string->characters.get()) + off,
+                                      string->count, &codepoint);
+        if (state < 0) break;
+        cb(codepoint, off);
+        off += state;
+    }
+}
+
+extern "C" s::String* sStringTrim(String *string) {
+    size_t begin = 0;
+
+    for (; begin < string->count;) {
+        utf8proc_int32_t codepoint;
+        auto state = utf8proc_iterate(reinterpret_cast<utf8proc_uint8_t *>(string->characters.get()) + begin,
+                                      string->count, &codepoint);
+        if (state < 0) break;
+        if (utf8proc_get_property(codepoint)->bidi_class != UTF8PROC_BIDI_CLASS_WS) break;
+        begin += state;
+    }
+
+    size_t end = begin - 1;
+    for (size_t i = begin; i < string->count;) {
+        utf8proc_int32_t codepoint;
+        auto state = utf8proc_iterate(reinterpret_cast<utf8proc_uint8_t *>(string->characters.get()) + i,
+                                      string->count, &codepoint);
+        if (state < 0) break;
+        if (utf8proc_get_property(codepoint)->bidi_class != UTF8PROC_BIDI_CLASS_WS) {
+            end = i;
+        }
+        i += state;
+    }
+
+    auto newString = String::init();
+    newString->count = end - begin + 1;
+    newString->characters = runtime::allocate<char>(string->count);
+    std::memcpy(newString->characters.get(), string->characters.get() + begin, newString->count);
+    return newString;
+}
+
+extern "C" void sStringGraphemes(String *string, runtime::Callable<void, s::String*> cb) {
+    auto bytes = reinterpret_cast<utf8proc_uint8_t *>(string->characters.get());
+    utf8proc_int32_t state = 0;
+    utf8proc_int32_t prev;
+
+    size_t lastCut = 0;
+    size_t off = utf8proc_iterate(bytes, string->count, &prev);
+
+    while (off < string->count) {
+        utf8proc_int32_t cp;
+        auto c = utf8proc_iterate(bytes + off, string->count, &cp);
+        prev = cp;
+
+        if (utf8proc_grapheme_break_stateful(prev, cp, &state)) {
+            auto newString = String::init();
+            newString->count = off - lastCut;
+            newString->characters = runtime::allocate<char>(newString->count);
+            std::memcpy(newString->characters.get(), string->characters.get() + lastCut, newString->count);
+            lastCut = off;
+            cb(newString);
+            newString->release();
+        }
+        off += c;
+    }
+
+    auto newString = String::init();
+    newString->count = off - lastCut;
+    newString->characters = runtime::allocate<char>(newString->count);
+    std::memcpy(newString->characters.get(), string->characters.get() + lastCut, newString->count);
+    lastCut = off;
+    cb(newString);
+    newString->release();
+}
+
+runtime::SimpleOptional<runtime::Integer> sStringToIntLength(const char *characters,
                                                              runtime::Integer length, runtime::Integer base) {
     if (length == 0) {
         return runtime::NoValue;
@@ -261,7 +315,7 @@ extern "C" runtime::SimpleOptional<runtime::Real> sStringToReal(String *string) 
 }
 
 extern "C" runtime::Integer sStringHash(String *string) {
-    auto len = sizeof(String::Character) * string->count;
+    auto len = string->count;
     const unsigned int m = 0x5bd1e995;
     const int r = 24;
 

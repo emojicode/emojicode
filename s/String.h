@@ -17,8 +17,6 @@ namespace s {
 
 class String : public runtime::Object<String>  {
 public:
-    using Character = runtime::Symbol;
-
     String(const char *string);
     /// Creates a string without a value.
     /// @warning A string object created with this constructor is not ready for use!
@@ -28,7 +26,7 @@ public:
     /// @warning Do not use this method to modify an existing string, i.e. one that has a value already.
     void store(const char *cstring);
 
-    runtime::MemoryPointer<Character> characters;
+    runtime::MemoryPointer<char> characters;
     runtime::Integer count;
 
     std::string stdString();

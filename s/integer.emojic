@@ -87,12 +87,6 @@
   🍉
 
   📗
-    Converts this integer to a symbol. The value of this integer must be a valid
-    Unicode code point.
-  📗
-  ❗️ 🔣 ➡️ 🔣 📻 🔤sIntToSymbol🔤
-
-  📗
     Converts this integer to a byte. The value of this integer must be in
     [-127, 127].
   📗

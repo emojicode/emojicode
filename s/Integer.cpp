@@ -30,7 +30,7 @@ extern "C" s::String* sIntToString(runtime::Integer *nptr, runtime::Integer base
 
     auto string = String::init();
     string->count = d;
-    string->characters = runtime::allocate<String::Character>(d);
+    string->characters = runtime::allocate<char>(d);
 
     auto *characters = string->characters.get() + d;
     do {
@@ -63,7 +63,7 @@ extern "C" s::String* sRealToString(runtime::Real *real, runtime::Integer precis
 
     auto string = String::init();
     string->count = d;
-    string->characters = runtime::allocate<String::Character>(d);
+    string->characters = runtime::allocate<char>(d);
 
     auto *characters = string->characters.get() + d;
 
@@ -80,10 +80,6 @@ extern "C" s::String* sRealToString(runtime::Real *real, runtime::Integer precis
         characters[-1] = '-';
     }
     return string;
-}
-
-extern "C" runtime::Symbol sIntToSymbol(runtime::Integer *integer) {
-    return static_cast<runtime::Symbol>(*integer);
 }
 
 extern "C" runtime::Byte sIntToByte(runtime::Integer *integer) {

@@ -53,10 +53,6 @@ Type ASTNumberLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation
     return analyser->real();
 }
 
-Type ASTSymbolLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    return analyser->symbol();
-}
-
 Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     if (isSuperconstructorRequired(analyser->function()->functionType()) &&
         !analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
