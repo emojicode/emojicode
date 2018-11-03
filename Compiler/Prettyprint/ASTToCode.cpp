@@ -215,11 +215,6 @@ void ASTNumberLiteral::toCode(PrettyStream &pretty) const {
     pretty.offerSpace();
 }
 
-void ASTSymbolLiteral::toCode(PrettyStream &pretty) const {
-    pretty.printComments(position());
-    pretty << "🔟" << std::u32string(1, value_);
-}
-
 void ASTNoValue::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << "🤷‍♀️";
