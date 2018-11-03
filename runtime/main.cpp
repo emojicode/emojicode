@@ -130,6 +130,15 @@ extern "C" runtime::Integer ejcMemoryCompare(int8_t **self, int8_t *other, runti
                        other + sizeof(runtime::internal::ControlBlock*), bytes);
 }
 
+extern "C" bool ejcIsOnlyReference(runtime::Object<void> *object) {
+    runtime::internal::ControlBlock *controlBlock = object->controlBlock();
+    if (controlBlock == nullptr) {
+        return *reinterpret_cast<int64_t *>(reinterpret_cast<uint8_t *>(object) - 8) == 1;
+    }
+    if (controlBlock == &ejcIgnoreBlock) return false;  // Impossible to say as object is not reference counted
+    return controlBlock->strongCount == 1;
+}
+
 extern "C" [[noreturn]] void ejcPanic(const char *message) {
     std::cout << "🤯 Program panicked: " << message << std::endl;
     abort();

@@ -46,6 +46,8 @@ public:
     /// Used to find a protocol conformance in an array of ProtocolConformanceEntries. (ejcFindProtocolConformance)
     llvm::Function* findProtocolConformance() const { return findProtocolConformance_; }
 
+    llvm::Function* isOnlyReference() const { return isOnlyReference_; }
+
     llvm::GlobalVariable* ignoreBlockPtr() const { return ignoreBlock_; }
 
     /// Declares all symbols that are provided by an imported package.
@@ -77,6 +79,7 @@ private:
     llvm::Function *release_ = nullptr;
     llvm::Function *releaseMemory_ = nullptr;
     llvm::Function *releaseCapture_ = nullptr;
+    llvm::Function *isOnlyReference_ = nullptr;
 
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
     llvm::Function* declareMemoryRunTimeFunction(const char *name);

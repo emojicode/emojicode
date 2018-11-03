@@ -287,6 +287,9 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return parseListingLiteral<ASTListLiteral>(E_AUBERGINE, token);
         case E_HONEY_POT:
             return parseListingLiteral<ASTDictionaryLiteral>(E_AUBERGINE, token);
+        case E_IZAKAYA_LANTERN:
+            return std::make_shared<ASTIsOnlyReference>(stream_.consumeToken(TokenType::Variable).value(),
+                                                        token.position());
         default: {
             auto value = parseExpr(0);
             return std::make_shared<ASTMethod>(token.value(), value, parseArguments(token.position()),

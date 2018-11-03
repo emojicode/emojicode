@@ -44,6 +44,18 @@ void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
     }
 }
 
+Type ASTIsOnlyReference::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+    auto rvar = analyser->scoper().getVariable(name(), position());
+    if (rvar.variable.type().type() != TypeType::Someobject && rvar.variable.type().type() != TypeType::Class) {
+        analyser->compiler()->error(CompilerError(position(), "🏮 can only be used with objects."));
+    }
+    setVariableAccess(rvar, analyser);
+    return analyser->boolean();
+}
+
+void ASTIsOnlyReference::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+}
+
 void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
     auto &type = type_->analyseType(analyser->typeContext());
     auto &var = analyser->scoper().currentScope().declareVariable(varName_, type, false, position());

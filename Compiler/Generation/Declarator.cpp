@@ -59,6 +59,11 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     releaseMemory_ = declareMemoryRunTimeFunction("ejcReleaseMemory");
     releaseCapture_ = declareMemoryRunTimeFunction("ejcReleaseCapture");
 
+    isOnlyReference_ = declareRunTimeFunction("ejcIsOnlyReference", llvm::Type::getInt1Ty(generator_->context()),
+                                     llvm::Type::getInt8PtrTy(generator_->context()));
+    isOnlyReference_->addParamAttr(0, llvm::Attribute::NonNull);
+    isOnlyReference_->addParamAttr(0, llvm::Attribute::NoCapture);
+
     ignoreBlock_ = new llvm::GlobalVariable(*generator_->module(), llvm::Type::getInt8Ty(generator_->context()), true,
                                             llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
                                             "ejcIgnoreBlock");

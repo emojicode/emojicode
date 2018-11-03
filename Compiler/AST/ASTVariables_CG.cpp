@@ -10,6 +10,7 @@
 #include "ASTInitialization.hpp"
 #include "ASTMemory.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "Generation/Declarator.hpp"
 #include "Types/ValueType.hpp"
 
 namespace EmojicodeCompiler {
@@ -125,6 +126,19 @@ void ASTVariableAssignment::generateAssignment(FunctionCodeGenerator *fg) const 
 
 void ASTConstantVariable::generateAssignment(FunctionCodeGenerator *fg) const {
     fg->scoper().getVariable(id()) = LocalVariable(false, expr_->generate(fg));
+}
+
+Value* ASTIsOnlyReference::generate(FunctionCodeGenerator *fg) const {
+    Value *val;
+    if (inInstanceScope()) {
+        val = fg->builder().CreateLoad(instanceVariablePointer(fg));
+    }
+    else {
+        auto &localVariable = fg->scoper().getVariable(id());
+        val = localVariable.isMutable ? fg->builder().CreateLoad(localVariable.value) : localVariable.value;
+    }
+    auto ptr = fg->builder().CreateBitCast(val, llvm::Type::getInt8PtrTy(fg->generator()->context()));
+    return fg->builder().CreateCall(fg->generator()->declarator().isOnlyReference(), ptr);
 }
 
 }  // namespace EmojicodeCompiler

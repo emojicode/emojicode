@@ -105,6 +105,7 @@ enum Emojis {
     E_BAGGAGE_CLAIM = 0x1F6C4,
     E_LINK_SYMBOL = 0x1F517,
     E_RECYCLING_SYMBOL = 0x267B,
+    E_IZAKAYA_LANTERN = 0x1F3EE,
 };
 
 }  // namespace EmojicodeCompiler

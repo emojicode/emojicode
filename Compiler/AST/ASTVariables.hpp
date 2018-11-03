@@ -88,6 +88,18 @@ private:
     bool returned_ = false;
 };
 
+class ASTIsOnlyReference final : public ASTExpr, public AccessesAnyVariable {
+public:
+    ASTIsOnlyReference(std::u32string name, const SourcePosition &p)
+        : ASTExpr(p), AccessesAnyVariable(std::move(name)) {}
+
+    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Value* generate(FunctionCodeGenerator *fg) const override;
+
+    void toCode(PrettyStream &pretty) const override;
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
+};
+
 /// Every AST node that potentially initializes a variable, i.e. initializes a value type to its address, inherits
 /// from this class. The act of initializing a variable may occur repeatedly per variable.
 class ASTVariableInit : public ASTStatement, public AccessesAnyVariable {

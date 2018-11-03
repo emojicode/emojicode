@@ -139,6 +139,11 @@ void ASTGetVariable::toCode(PrettyStream &pretty) const {
     pretty << name();
 }
 
+void ASTIsOnlyReference::toCode(PrettyStream &pretty) const {
+    pretty.printComments(position());
+    pretty << "🏮 " << name();
+}
+
 void ASTSuper::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << "⤴️" << name_ << args_;
