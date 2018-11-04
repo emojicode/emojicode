@@ -32,7 +32,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
 
 llvm::Value* ASTClosure::createDeinit(CodeGenerator *cg, const Capture &capture) const {
     auto deinit = llvm::Function::Create(cg->typeHelper().captureDeinit(),
-                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, "captureDeinit",
+                                         llvm::GlobalValue::LinkageTypes::PrivateLinkage, "captureDeinit",
                                          cg->module());
 
     auto fg = FunctionCodeGenerator(deinit, cg);
