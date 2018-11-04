@@ -30,7 +30,7 @@ public:
     Variable& declareVariable(const std::u32string &variable, const Type &type, bool constant, const SourcePosition &p);
     /// Sets a variable with the given ID in this scope and returns it.
     /// @throws CompilerError if a variable with this name already exists.
-    Variable& declareVariableWithId(const std::u32string &variable, const Type &type, bool constant, VariableID id,
+    Variable& declareVariableWithId(const std::u32string &variable,  Type type, bool constant, VariableID id,
                                     const SourcePosition &p);
 
     /// Retrieves a variable form the scope. Use @c hasLocalVariable to determine whether the variable with this name

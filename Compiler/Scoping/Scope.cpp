@@ -41,12 +41,15 @@ Variable& Scope::declareVariable(const std::u32string &variable, const Type &typ
     return declareVariableWithId(variable, type, constant, VariableID(maxVariableId_++), p);
 }
 
-Variable& Scope::declareVariableWithId(const std::u32string &variable, const Type &type, bool constant, VariableID id,
+Variable& Scope::declareVariableWithId(const std::u32string &variable, Type type, bool constant, VariableID id,
                                        const SourcePosition &p) {
     if (hasLocalVariable(variable)) {
         throw CompilerError(p, "Cannot redeclare variable.");
     }
-    Variable &v = map_.emplace(variable, Variable(type, id, constant, variable, p)).first->second;
+    if (!constant) {
+        type.setMutable(true);
+    }
+    Variable &v = map_.emplace(variable, Variable(std::move(type), id, constant, variable, p)).first->second;
     return v;
 }
 
