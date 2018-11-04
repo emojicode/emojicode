@@ -37,6 +37,9 @@ TypeContext Function::typeContext() {
     auto type = owner_ == nullptr ? Type::noReturn() : owner_->type();
     if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
         type.setReference();
+        if (mutating()) {
+            type.setMutable(true);
+        }
     }
     if (functionType() == FunctionType::ClassMethod) {
         type = Type(MakeTypeAsValue, type);
