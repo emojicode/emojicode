@@ -181,13 +181,16 @@ extern "C" void sStringGraphemes(String *string, runtime::Callable<void, s::Stri
     utf8proc_int32_t state = 0;
     utf8proc_int32_t prev;
 
+    if (string->count == 0) {
+        return;
+    }
+
     size_t lastCut = 0;
     size_t off = utf8proc_iterate(bytes, string->count, &prev);
 
     while (off < string->count) {
         utf8proc_int32_t cp;
         auto c = utf8proc_iterate(bytes + off, string->count, &cp);
-        prev = cp;
 
         if (utf8proc_grapheme_break_stateful(prev, cp, &state)) {
             auto newString = String::init();
@@ -198,6 +201,7 @@ extern "C" void sStringGraphemes(String *string, runtime::Callable<void, s::Stri
             cb(newString);
             newString->release();
         }
+        prev = cp;
         off += c;
     }
 
@@ -208,6 +212,48 @@ extern "C" void sStringGraphemes(String *string, runtime::Callable<void, s::Stri
     lastCut = off;
     cb(newString);
     newString->release();
+}
+
+extern "C" s::String* sStringGraphemeSubstring(String *string, runtime::Integer from, runtime::Integer length) {
+    auto bytes = reinterpret_cast<utf8proc_uint8_t *>(string->characters.get());
+    utf8proc_int32_t state = 0;
+    utf8proc_int32_t prev, cp;
+    size_t beginCut = 0, off = utf8proc_iterate(bytes, string->count, &prev);
+
+    if (length == 0) {
+        auto newString = String::init();
+        newString->count = 0;
+        newString->characters = runtime::allocate<char>(0);
+        return newString;
+    }
+
+    while (off < string->count && from > 0) {
+        auto c = utf8proc_iterate(bytes + off, string->count, &cp);
+
+        if (utf8proc_grapheme_break_stateful(prev, cp, &state) && --from == 0) {
+            beginCut = off;
+            prev = cp;
+            off += c;
+            break;
+        }
+        prev = cp;
+        off += c;
+    }
+    while (off < string->count) {
+        auto c = utf8proc_iterate(bytes + off, string->count, &cp);
+
+        if (utf8proc_grapheme_break_stateful(prev, cp, &state) && --length == 0) {
+            break;
+        }
+        prev = cp;
+        off += c;
+    }
+
+    auto newString = String::init();
+    newString->count = off - beginCut;
+    newString->characters = runtime::allocate<char>(newString->count);
+    std::memcpy(newString->characters.get(), string->characters.get() + beginCut, newString->count);
+    return newString;
 }
 
 runtime::SimpleOptional<runtime::Integer> sStringToIntLength(const char *characters,

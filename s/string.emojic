@@ -1,8 +1,53 @@
 📗
   Strings.
 
-  [Read more in the language
-  reference.](../../reference/the-s-package.html#-strings)
+  In Emojicode strings are strictly used to represent textual data, i.e. strings
+  are not used to store binary data or the like. If you need to work with binary
+  data see [[📇]].
+
+  ### Characters, Graphemes and Random Access
+
+  Due to the complexity of working with text, 🔡 does not support random access.
+  For instance, consider this character `한`. To a human being, this is one
+  character. Yet, it actually consists of three Unicode code points, as this is
+  the characters ㅎ, ㅏ and ㄴ combined. An even better example is `✋🏾` (you should
+  see a raised hand with darker skin color). While this is one emoji, it is
+  composed by two Unicode code points and encoded with seven bytes in UTF-8.
+
+  Unicode defines ✋🏾 and 한 as graphemes. A grapheme is what humans would
+  recognize as one character.
+
+  Emojicode only allows you to access these graphemes. Finding graphemes is not
+  a constant-time operation, though. Random access is not possible, therefore.
+
+  If you need to deal with the graphemes of a string, you can use the [[🎶❗️]]
+  method, which returns an array of graphemes. Graphemes are always represented
+  as strings.
+
+  To determine the number of graphemes in a string, you can use 🐔 on that array.
+  To determine the number of UTF-8 bytes that make up a string, use 📐.
+
+  ### Comparing Strings
+
+  If you want to determine whether two strings represent the same value, you can
+  use the equality operator 🙌.
+
+  ```
+  🍪🔤Straw🔤 🔤berries🔤🍪 🙌 🔤Strawberries🔤
+  ```
+
+  You can learn more about the equality operator in [Operators](operators.html).
+
+  ### Mutability
+
+  Strings are immutable. This means that you can’t modify any string. You can,
+however, call methods on strings that return modified copies of the orginal
+string, but those themselves are then immutable again.
+
+  ### String Literals and Concatenate Literals
+
+  To learn more about 🔤🔤 String Literals and 🍪🍪 Concatenate Literals [see
+  the Language Reference.](../../reference/the-s-package.html#-strings)
 📗
 🌍 🐇 🔡 🍇
   🖍🆕 bytes 🧠
@@ -84,10 +129,19 @@
   🍉
 
   📗
-    Returns the characters in a string beginning at the specified location
-    through the specified number of characters.
+    Returns a new string consisting of *length* graphemes beginning from
+    the grapheme at index *from* in this string. Complexity: O(n).
+
+    For instance:
+
+    ```
+    🔪🔤🇦🇽👨‍👩‍👧‍👧🤚🏾🔤 1 1❗️ 💭 returns 🔤👨‍👩‍👧‍👧🔤
+    🔪🔤Apples🔤 2 4❗️ 💭 returns 🔤ples🔤
+    ```
   📗
-  ❗️ 🔪 from 🔢 length 🔢 ➡️ 🔡 🍇
+  ❗️ 🔪 from 🔢 length 🔢 ➡️ 🔡 📻 🔤sStringGraphemeSubstring🔤
+
+  🔒 ❗️ 🗡 from 🔢 length 🔢 ➡️ 🔡 🍇
     ↪️ from ▶️️🙌 count 🍇
       ↩️ 🔤🔤
     🍉
@@ -138,14 +192,14 @@
     👍 ➡️ 🖍🆕continue
     🔁 continue 🍇
       ↪️ 🕵️‍♀️🐕 separator lastIndex❗️ ➡️ newIndex 🍇
-        🐻 list 🔪🐕 lastIndex newIndex ➖ lastIndex❗️❗️
+        🐻 list 🗡🐕 lastIndex newIndex ➖ lastIndex❗️❗️
         newIndex ➕ 📐separator❗️ ➡️ 🖍lastIndex
       🍉
       🙅 🍇
         👎 ➡️ 🖍continue
       🍉
     🍉
-    🐻 list 🔪🐕 lastIndex  🤜📐🐕❗️🤛 ➖ lastIndex❗️❗️
+    🐻 list 🗡🐕 lastIndex  🤜📐🐕❗️🤛 ➖ lastIndex❗️❗️
 
     ↩️ list
   🍉
@@ -161,6 +215,14 @@
   📗
     Returns the number of bytes required to represent the string’s content in
     UTF8.
+
+    For example:
+
+    ```
+    📐🔤✋🏾🔤❗️  💭 returns 7
+    📐🔤한🔤❗️  💭 returns 3
+    📐🔤A🔤❗️  💭 returns 1
+    ```
 
     >!H The return value is not at all meaningful from a human perspective.
     >!H The character `ä` for instance, is encoded with two bytes but clearly
@@ -203,7 +265,7 @@
     ↩️ list
   🍉
 
-  ❗️ 🔣 cb 🍇🔡🍉 📻 🔤sStringGraphemes🔤
+  🔒❗️ 🔣 cb 🍇🔡🍉 📻 🔤sStringGraphemes🔤
 
   📗
     Returns a new string in which all characters have been converted to their

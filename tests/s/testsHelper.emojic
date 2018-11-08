@@ -7,16 +7,51 @@
     0 ➡️ 🖍failed
   🍉
 
-  ❗️ ⛔ a 👌 description 🔡 🍇
-    asserts ⬅️➕ 1
-    ↪️ ❎a❗️ 🍇
-      😀 🍪🔤❌❌ Failed 🔤 description🍪❗️
-      failed ⬅️➕ 1
+  ❗️ ⛔ value 👌 description 🔡 🍇
+    ↪️ value 🍇
+      ✅🐕 description❗️
     🍉
     🙅 🍇
-      😀description❗️
+      🙁🐕 description❗️
     🍉
+  🍉
 
+  ❗️ ❎ value 👌 description 🔡 🍇
+    ↪️ ❎value❗️ 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 🍪description 🔤 but expected 👎 🔤 🍪❗️
+    🍉
+  🍉
+
+  ❗️🔡 value 🔡 expectation 🔡 description 🔡 🍇
+    ↪️ value 🙌 expectation 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 🍪description 🔤 but it is 🔤 value 🍪❗️
+    🍉
+  🍉
+
+  ❗️🔢 value 🔢 expectation 🔢 description 🔡 🍇
+    ↪️ value 🙌 expectation 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 🍪description 🔤 but it is 🔤 🔡value 10❗️ 🍪❗️
+    🍉
+  🍉
+
+  ❗️🙁 description 🔡 🍇
+    asserts ⬅️➕ 1
+    😀 🍪🔤❌❌ Failed 🔤 description🍪❗️
+    failed ⬅️➕ 1
+  🍉
+
+  ❗️✅ description 🔡 🍇
+    asserts ⬅️➕ 1
+    💭😀description❗️
   🍉
 
   ❗️ 👔 ➡️ 🔢 🍇
