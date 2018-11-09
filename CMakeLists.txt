@@ -20,6 +20,7 @@ add_subdirectory(s)
 add_subdirectory(files)
 add_subdirectory(Compiler)
 add_subdirectory(sockets)
+add_subdirectory(testtube)
 
 add_custom_target(dist python3 ${PROJECT_SOURCE_DIR}/dist.py ${PROJECT_SOURCE_DIR})
 add_custom_target(tests python3 ${PROJECT_SOURCE_DIR}/tests.py ${PROJECT_SOURCE_DIR})

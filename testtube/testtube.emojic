@@ -1,0 +1,136 @@
+📗
+  This class is a test helper class for unit testing.
+
+  To create a test suite, subclass this class and override 🏁, for instance:
+
+  ```
+  🐇 🦔 🧪  🍇
+    ✒️❗️ 🏁 🍇
+      🔢🐕 20 20 🔤20 equal 20🔤❗️
+    🍉
+  🍉
+  ```
+
+  Than instantiate your class and call 👔. The return of 👔 is an exit code
+  that can be returned from the 🏁 function:
+
+  ```
+  🏁 ➡️ 🔢 🍇
+    ↩️ 👔🆕🦔🆕❗️❗️
+  🍉
+  ```
+📗
+🌍 🐇 🧪 🍇
+  🖍🆕 asserts 🔢
+  🖍🆕 failed 🔢
+
+  🆕 🍇
+    0 ➡️ 🖍asserts
+    0 ➡️ 🖍failed
+  🍉
+
+  📗
+    Asserts that *value* is 👍. *description* should describe
+    what this test asserts exactly.
+
+    >!H Prefer other assertion methods like [[🔡❗️]] if possible as they
+    >!H provide more information in the case of failure.
+  📗
+  🔐❗️ ⛔ value 👌 description 🔡 🍇
+    ↪️ value 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 description❗️
+    🍉
+  🍉
+
+  📗
+    Asserts that *value* is 👎. *description* should describe
+    what this test asserts exactly.
+  📗
+  🔐❗️ ❎ value 👌 description 🔡 🍇
+    ↪️ ❎value❗️ 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 🍪description 🔤 but expected 👎 🔤 🍪❗️
+    🍉
+  🍉
+
+  📗
+    Asserts that *value* equals expectation. *description* should describe
+    what this test asserts exactly.
+  📗
+  🔐❗️🔡 value 🔡 expectation 🔡 description 🔡 🍇
+    ↪️ value 🙌 expectation 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 🍪description 🔤 but it is 🔤 value 🍪❗️
+    🍉
+  🍉
+
+  📗
+    Asserts that *value* equals expectation. *description* should describe
+    what this test asserts exactly.
+  📗
+  🔐❗️🔢 value 🔢 expectation 🔢 description 🔡 🍇
+    ↪️ value 🙌 expectation 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 🍪description 🔤 but it is 🔤 🔡value 10❗️ 🍪❗️
+    🍉
+  🍉
+
+  📗
+    Asserts that *value* equals expectation. *description* should describe
+    what this test asserts exactly.
+  📗
+  🔐❗️💧 value 💧 expectation 💧 description 🔡 🍇
+    ↪️ value 🙌 expectation 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 🍪description 🔤 but it is 🔤 🔡🔢value❗️ 10❗️ 🍪❗️
+    🍉
+  🍉
+
+  📗
+    Asserts that *value* equals expectation. *description* should describe
+    what this test asserts exactly.
+  📗
+  🔐❗️💯 value 💯 expectation 💯 description 🔡 🍇
+    ↪️ value 🙌 expectation 🍇
+      ✅🐕 description❗️
+    🍉
+    🙅 🍇
+      🙁🐕 🍪description 🔤 but it is 🔤 🔡value 5❗️ 🍪❗️
+    🍉
+  🍉
+
+  🔐❗️🙁 description 🔡 🍇
+    asserts ⬅️➕ 1
+    😀 🍪🔤❌❌ Failed 🔤 description🍪❗️
+    failed ⬅️➕ 1
+  🍉
+
+  🔐❗️✅ description 🔡 🍇
+    asserts ⬅️➕ 1
+  🍉
+
+  ❗️ 👔 ➡️ 🔢 🍇
+    🏁🐕❗️
+    😀 🍪🔡asserts 10❗️ 🔤 assertions, 🔤 🔡failed 10❗️ 🔤 failures🔤🍪❗️
+    ↪️ failed ▶ 0  🍇
+      ↩️ 1
+    🍉
+    ↩️ 0
+  🍉
+
+  🔐❗️ 🏁 🍇
+    😀🔤You might want to implement the 🏁 method.🔤❗️
+  🍉
+🍉
+
