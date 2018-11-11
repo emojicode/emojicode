@@ -109,8 +109,9 @@ void Options::configureOutPath() {
     if (pack() && outPath_.empty()) {
         if (standalone()) {
             outPath_ = mainFile_;
-            if (mainFile_.size() > 7) {
-                outPath_.resize(mainFile_.size() - 7);
+            std::size_t indexOfExtension = mainFile_.find_last_of(".");
+            if (indexOfExtension > 0) {
+                outPath_.resize(indexOfExtension);
             }
         }
         else {
