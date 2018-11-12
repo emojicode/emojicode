@@ -24,7 +24,7 @@ namespace CLI {
 #endif
 
 Options::Options(int argc, char *argv[]) {
-    args::ArgumentParser parser("Emojicode Compiler 0.6.1. Visit https://www.emojicode.org for help.");
+    args::ArgumentParser parser("Emojicode Compiler 0.6.2. Visit https://www.emojicode.org for help.");
     args::Positional<std::string> file(parser, "file", "The main file of the package to be compiled", std::string(),
                                        args::Options::Required);
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
@@ -109,9 +109,13 @@ void Options::configureOutPath() {
     if (pack() && outPath_.empty()) {
         if (standalone()) {
             outPath_ = mainFile_;
-            std::size_t indexOfExtension = mainFile_.find_last_of(".");
-            if (indexOfExtension > 0) {
-                outPath_.resize(indexOfExtension);
+
+            // Remove extension if any
+            if (llvm::sys::path::has_stem(mainFile_)) {
+                 if (!parentPath.empty()) {
+                    parentPath.append("/");
+                }
+                outPath_ = parentPath + std::string(llvm::sys::path::stem(mainFile_));
             }
         }
         else {
