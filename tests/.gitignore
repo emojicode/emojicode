@@ -1,6 +1,7 @@
 # Ignore everything except tests
 *
 !*.emojic
+!*.🍇
 !*.txt
 
 !*/
