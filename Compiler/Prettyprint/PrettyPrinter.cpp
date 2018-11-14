@@ -307,6 +307,9 @@ void PrettyPrinter::printFunctionAccessLevel(Function *function) {
             prettyStream_ << "🔐";
             break;
         case AccessLevel::Public:
+            prettyStream_ << "🔓";
+            break;
+        case AccessLevel::Default:
             break;
     }
 }

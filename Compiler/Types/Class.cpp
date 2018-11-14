@@ -79,6 +79,11 @@ void Class::analyseSuperType() {
 void Class::inherit(SemanticAnalyser *analyser) {
     if (superType() == nullptr) {
         analyser->declareInstanceVariables(Type(this));
+        eachFunction([](auto *function) {
+            if (function->accessLevel() == AccessLevel::Default) {
+                function->setAccessLevel(AccessLevel::Public);
+            }
+        });
         return;
     }
 
@@ -115,20 +120,26 @@ void Class::inherit(SemanticAnalyser *analyser) {
 void Class::checkOverride(Function *function, SemanticAnalyser *analyser) {
     auto superFunction = findSuperFunction(function);
     if (function->overriding()) {
-        if (superFunction == nullptr || superFunction->accessLevel() == AccessLevel::Private) {
+        if (superFunction == nullptr) {
             throw CompilerError(function->position(), utf8(function->name()),
                                 " was declared ✒️ but does not override anything.");
         }
         auto layer = analyser->enforcePromises(function, superFunction, Type(superclass()),
                                                TypeContext(Type(this)), TypeContext());
+        if (function->accessLevel() == AccessLevel::Default) {
+            function->setAccessLevel(superFunction->accessLevel());
+        }
         if (layer != nullptr) {
             function->setVirtualTableThunk(layer.get());
             addMethod(std::move(layer));
         }
     }
-    else if (superFunction != nullptr && superFunction->accessLevel() != AccessLevel::Private) {
+    else if (superFunction != nullptr) {
         analyser->compiler()->error(CompilerError(function->position(), "If you want to override ",
                                                   utf8(function->name()), " add ✒️."));
+    }
+    else if (function->accessLevel() == AccessLevel::Default) {
+        function->setAccessLevel(AccessLevel::Public);
     }
 }
 

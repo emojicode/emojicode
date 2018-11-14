@@ -27,7 +27,11 @@ class ASTBlock;
 class ASTType;
 
 enum class AccessLevel {
-    Public, Private, Protected
+    /// If none is specified. Either resolves to the overridden method’s AccessLevel or defaults to Public.
+    Default,
+    Public,
+    Private,
+    Protected
 };
 
 struct Parameter {
@@ -119,6 +123,7 @@ public:
 
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
+    void setAccessLevel(AccessLevel level) { access_ = level; }
 
     const std::vector<Parameter>& parameters() const { return parameters_; }
 

@@ -56,17 +56,16 @@ void TypeBodyParser<TypeDef>::parseFunction(Function *function, bool inititalize
 
 template <typename TypeDef>
 AccessLevel TypeBodyParser<TypeDef>::readAccessLevel() {
-    auto access = AccessLevel::Public;
     if (stream_.consumeTokenIf(E_CLOSED_LOCK_WITH_KEY)) {
-        access = AccessLevel::Protected;
+        return AccessLevel::Protected;
     }
-    else if (stream_.consumeTokenIf(E_LOCK)) {
-        access = AccessLevel::Private;
+    if (stream_.consumeTokenIf(E_LOCK)) {
+        return AccessLevel::Private;
     }
-    else {
-        stream_.consumeTokenIf(E_OPEN_LOCK);
+    if (stream_.consumeTokenIf(E_OPEN_LOCK)) {
+        return AccessLevel::Public;
     }
-    return access;
+    return AccessLevel::Default;
 }
 
 template <typename TypeDef>
