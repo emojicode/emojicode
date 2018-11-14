@@ -20,6 +20,10 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 return fg->builder().CreateNot(v);
             case BuiltInType::IntegerToDouble:
                 return fg->builder().CreateSIToFP(v, llvm::Type::getDoubleTy(fg->generator()->context()));
+            case BuiltInType::IntegerInverse:
+                return fg->builder().CreateMul(v, llvm::ConstantInt::get(v->getType(), -1));
+            case BuiltInType::DoubleInverse:
+                return fg->builder().CreateFMul(v, llvm::ConstantFP::get(v->getType(), -1));
             case BuiltInType::BooleanNegate:
                 return fg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fg->generator()->context()), v);
             case BuiltInType::Store: {

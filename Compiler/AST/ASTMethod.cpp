@@ -150,10 +150,24 @@ bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const 
             builtIn_ = BuiltInType::IntegerNot;
             return true;
         }
+        if (name.front() == E_BATTERY) {
+            builtIn_ = BuiltInType::IntegerInverse;
+            return true;
+        }
     }
     else if (type.typeDefinition() == analyser->compiler()->sByte) {
         if (name.front() == E_NO_ENTRY_SIGN) {
             builtIn_ = BuiltInType::IntegerNot;
+            return true;
+        }
+        if (name.front() == E_BATTERY) {
+            builtIn_ = BuiltInType::IntegerInverse;
+            return true;
+        }
+    }
+    else if (type.typeDefinition() == analyser->compiler()->sReal) {
+        if (name.front() == E_BATTERY) {
+            builtIn_ = BuiltInType::DoubleInverse;
             return true;
         }
     }

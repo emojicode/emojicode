@@ -32,10 +32,10 @@ protected:
     enum class BuiltInType {
         None,
         DoubleMultiply, DoubleAdd, DoubleSubstract, DoubleDivide, DoubleGreater, DoubleGreaterOrEqual,
-        DoubleLess, DoubleLessOrEqual, DoubleRemainder, DoubleEqual,
+        DoubleLess, DoubleLessOrEqual, DoubleRemainder, DoubleEqual, DoubleInverse,
         IntegerMultiply, IntegerAdd, IntegerSubstract, IntegerDivide, IntegerGreater, IntegerGreaterOrEqual,
         IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
-        IntegerRemainder, IntegerToDouble, IntegerNot,
+        IntegerRemainder, IntegerToDouble, IntegerNot, IntegerInverse,
         BooleanAnd, BooleanOr, BooleanNegate,
         Equal, Store, Load, Release, MemoryMove, MemorySet, IsNoValueLeft, IsNoValueRight, Multiprotocol,
     };

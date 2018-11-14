@@ -125,6 +125,14 @@
   ❗️ 🏄 ➡️ 💯 📻 🔤sRealLn🔤
 
   📗
+    Returns the additive inverse of this 💯. If this 💯 is *x*,
+    the result equals *-x*.
+  📗
+  ❗️ 🔋 ➡️ 💯 🍇
+    ↩️ 🔋 🐕❗️
+  🍉
+
+  📗
     Creates a 🔡 representation of this 💯 and the given precision – the number
     of digits after the decimal separator “.”.
   📗

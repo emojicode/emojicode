@@ -106,6 +106,7 @@ enum Emojis {
     E_LINK_SYMBOL = 0x1F517,
     E_RECYCLING_SYMBOL = 0x267B,
     E_IZAKAYA_LANTERN = 0x1F3EE,
+    E_BATTERY = 0x1F50B,
 };
 
 }  // namespace EmojicodeCompiler

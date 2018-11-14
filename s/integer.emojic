@@ -87,6 +87,14 @@
   🍉
 
   📗
+    Returns the additive inverse of this integer. If this integer is *x*,
+    the result equals *-x*.
+  📗
+  ❗️ 🔋 ➡️ 🔢 🍇
+    ↩️ 🔋 🐕❗️
+  🍉
+
+  📗
     Converts this integer to a byte. The value of this integer must be in
     [-127, 127].
   📗
