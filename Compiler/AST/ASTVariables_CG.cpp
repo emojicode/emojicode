@@ -114,8 +114,7 @@ void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
     fg->scoper().getVariable(id_) = LocalVariable(true, alloca);
 
     if (type_->type().type() == TypeType::Optional) {
-        fg->builder().CreateStore(fg->generator()->optionalNoValue(),
-                                  fg->builder().CreateConstInBoundsGEP2_32(type, alloca, 0, 0));
+        fg->builder().CreateStore(fg->buildSimpleOptionalWithoutValue(type_->type()), alloca);
     }
 }
 

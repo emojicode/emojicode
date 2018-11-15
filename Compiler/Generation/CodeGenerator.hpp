@@ -61,9 +61,6 @@ public:
     /// code.
     uint64_t querySize(llvm::Type *type) const;
 
-    llvm::Value* optionalValue();
-    llvm::Value* optionalNoValue();
-
     /// Determines a box info value that is used to identify values of the provided type in a box.
     /// @returns An LLVM value representing the box info that must be stored in the box info field.
     llvm::Constant* boxInfoFor(const Type &type);

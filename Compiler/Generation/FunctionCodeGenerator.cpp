@@ -103,18 +103,18 @@ llvm::Value* FunctionCodeGenerator::buildHasNoValueBox(llvm::Value *box) {
 
 Value* FunctionCodeGenerator::buildHasNoValue(llvm::Value *simpleOptional) {
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
-    return builder().CreateICmpEQ(vf, generator()->optionalNoValue());
+    return builder().CreateICmpEQ(vf, llvm::ConstantInt::getFalse(generator()->context()));
 }
 
 Value* FunctionCodeGenerator::buildOptionalHasValue(llvm::Value *simpleOptional) {
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
-    return builder().CreateICmpNE(vf, generator()->optionalNoValue());
+    return builder().CreateICmpNE(vf, llvm::ConstantInt::getFalse(generator()->context()));
 }
 
 Value* FunctionCodeGenerator::buildOptionalHasValuePtr(llvm::Value *simpleOptional) {
     auto type = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
     auto vf = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(type, simpleOptional, 0, 0));
-    return builder().CreateICmpNE(vf, generator()->optionalNoValue());
+    return builder().CreateICmpNE(vf, llvm::ConstantInt::getFalse(generator()->context()));
 }
 
 Value* FunctionCodeGenerator::buildGetOptionalValuePtr(llvm::Value *simpleOptional) {
@@ -125,7 +125,7 @@ Value* FunctionCodeGenerator::buildGetOptionalValuePtr(llvm::Value *simpleOption
 Value* FunctionCodeGenerator::buildSimpleOptionalWithoutValue(const Type &type) {
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
-    return builder().CreateInsertValue(undef, generator()->optionalNoValue(), 0);
+    return builder().CreateInsertValue(undef, llvm::ConstantInt::getFalse(generator()->context()), 0);
 }
 
 Value* FunctionCodeGenerator::buildBoxOptionalWithoutValue() {
@@ -137,7 +137,7 @@ Value* FunctionCodeGenerator::buildSimpleOptionalWithValue(llvm::Value *value, c
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
     auto simpleOptional = builder().CreateInsertValue(undef, value, 1);
-    return builder().CreateInsertValue(simpleOptional, generator()->optionalValue(), 0);
+    return builder().CreateInsertValue(simpleOptional, llvm::ConstantInt::getTrue(generator()->context()), 0);
 }
 
 Value* FunctionCodeGenerator::buildGetBoxValuePtr(Value *box, const Type &type) {

@@ -47,14 +47,6 @@ CodeGenerator::CodeGenerator(Package *package, bool optimize)
 
 CodeGenerator::~CodeGenerator() = default;
 
-llvm::Value *CodeGenerator::optionalValue() {
-    return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 1);
-}
-
-llvm::Value *CodeGenerator::optionalNoValue() {
-    return llvm::ConstantInt::get(llvm::Type::getInt1Ty(context()), 0);
-}
-
 uint64_t CodeGenerator::querySize(llvm::Type *type) const {
     return module()->getDataLayout().getTypeAllocSize(type);
 }
