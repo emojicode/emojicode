@@ -117,9 +117,7 @@ public:
     Function* deinitializer();
 
     const std::pair<llvm::Function*, llvm::Function*>& boxRetainRelease() const { return boxRetainRelease_; }
-    void setBoxRetainRelease(llvm::Function *retain, llvm::Function *release) {
-        boxRetainRelease_ = std::make_pair(retain, release);
-    }
+    void setBoxRetainRelease(std::pair<llvm::Function*, llvm::Function*> pair) { boxRetainRelease_ = pair; }
 
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 

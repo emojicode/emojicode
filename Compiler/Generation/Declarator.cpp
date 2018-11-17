@@ -44,6 +44,7 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     });
 
     boxInfoClassObjects_ = declareBoxInfo("class.boxInfo");
+    boxInfoCallables_ = declareBoxInfo("callable.boxInfo");
 
     retain_ = declareRunTimeFunction("ejcRetain", llvm::Type::getVoidTy(generator_->context()),
                                      llvm::Type::getInt8PtrTy(generator_->context()));

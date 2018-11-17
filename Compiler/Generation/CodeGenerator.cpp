@@ -55,6 +55,9 @@ llvm::Constant *CodeGenerator::boxInfoFor(const Type &type) {
     if (type.type() == TypeType::Class) {
         return declarator_->boxInfoForObjects();
     }
+    if (type.type() == TypeType::Callable) {
+        return declarator_->boxInfoForCallables();
+    }
     if (type.type() == TypeType::TypeAsValue) {
         return package_->compiler()->sInteger->boxInfo();
     }
@@ -107,7 +110,8 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr) {
         declarator_->declareImportedPackageSymbols(package);
     }
 
-    buildObjectBoxRetainRelease();
+    buildClassObjectBoxInfo();
+    buildCallableBoxInfo();
 
     for (auto &protocol : package_->protocols()) {
         createProtocolFunctionTypes(protocol.get());
@@ -127,7 +131,7 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr) {
         }
 
         valueType->setBoxInfo(declarator().declareBoxInfo(mangleBoxInfoName(Type(valueType.get()))));
-        buildBoxRetainRelease(Type(valueType.get()));
+        valueType->setBoxRetainRelease(buildBoxRetainRelease(Type(valueType.get())));
         protocolsTableGenerator_->generate(Type(valueType.get()));
         valueType->boxInfo()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
             protocolsTableGenerator_->createProtocolTable(valueType.get()),
@@ -136,7 +140,7 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr) {
     }
     for (auto &klass : package_->classes()) {
         VTCreator(klass.get(), *declarator_).build();
-        klass->setBoxRetainRelease(objectRetain_, objectRelease_);
+        klass->setBoxRetainRelease(classObjectRetainRelease_);
         protocolsTableGenerator_->generate(Type(klass.get()));
         createClassInfo(klass.get());
     }
@@ -242,7 +246,7 @@ void CodeGenerator::createClassInfo(Class *klass) {
     klass->setClassInfo(info);
 }
 
-void CodeGenerator::buildBoxRetainRelease(const Type &type) {
+std::pair<llvm::Function*, llvm::Function*> CodeGenerator::buildBoxRetainRelease(const Type &type) {
     auto release = llvm::Function::Create(typeHelper().boxRetainRelease(),
                                           llvm::GlobalValue::LinkageTypes::ExternalLinkage, mangleBoxRelease(type),
                                           module_.get());
@@ -291,24 +295,38 @@ void CodeGenerator::buildBoxRetainRelease(const Type &type) {
 
     releaseFg.builder().CreateRetVoid();
     retainFg.builder().CreateRetVoid();
-
-    type.typeDefinition()->setBoxRetainRelease(retain, release);
+    return std::make_pair(retain, release);
 }
 
-void CodeGenerator::buildObjectBoxRetainRelease() {
+void CodeGenerator::buildClassObjectBoxInfo() {
     auto klass = package_->compiler()->sString;
-    buildBoxRetainRelease(Type(klass));
-    std::tie(objectRetain_, objectRelease_) = klass->boxRetainRelease();
-    objectRetain_->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
-    objectRelease_->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
-    objectRetain_->setName("class.boxRetain");
-    objectRelease_->setName("class.boxRelease");
+    llvm::Function *retain, *release;
+    std::tie(retain, release) = classObjectRetainRelease_ = buildBoxRetainRelease(Type(klass));
+    retain->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
+    release->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
+    retain->setName("class.boxRetain");
+    release->setName("class.boxRelease");
 
     declarator().boxInfoForObjects()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
         llvm::ConstantPointerNull::get(typeHelper().protocolConformanceEntry()->getPointerTo()),
-        objectRetain_, objectRelease_
+        retain, release
     }));
     declarator().boxInfoForObjects()->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
+}
+
+void CodeGenerator::buildCallableBoxInfo() {
+    llvm::Function *retain, *release;
+    std::tie(retain, release) = buildBoxRetainRelease(Type(Type::noReturn(), {}));
+    retain->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
+    release->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
+    retain->setName("callable.boxRetain");
+    release->setName("callable.boxRelease");
+
+    declarator().boxInfoForCallables()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
+        llvm::ConstantPointerNull::get(typeHelper().protocolConformanceEntry()->getPointerTo()),
+        retain, release
+    }));
+    declarator().boxInfoForCallables()->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
 }
 
 }  // namespace EmojicodeCompiler
