@@ -163,6 +163,7 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
         function_->setReturnType(std::make_unique<ASTLiteralType>(integer()));
         auto value = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(0), std::u32string(), root->position());
         root->appendNode(std::make_unique<ASTReturn>(value, root->position()));
+        root->setReturnedCertainly();
     }
     else if (function_->functionType() == FunctionType::ObjectInitializer &&
             !pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
@@ -173,9 +174,11 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
         auto ret = std::make_unique<ASTReturn>(thisNode, root->position());
         ret->setIsInitReturn();
         root->appendNode(std::move(ret));
+        root->setReturnedCertainly();
     }
     else if (function_->functionType() == FunctionType::ValueTypeInitializer) {
         root->appendNode(std::make_unique<ASTReturn>(nullptr, root->position()));
+        root->setReturnedCertainly();
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
         if (function_->returnType()->type().type() != TypeType::NoReturn) {
@@ -183,6 +186,7 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
         }
         else {
             root->appendNode(std::make_unique<ASTReturn>(nullptr, root->position()));
+            root->setReturnedCertainly();
         }
     }
 }
