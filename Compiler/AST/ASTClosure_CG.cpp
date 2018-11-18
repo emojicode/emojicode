@@ -25,8 +25,9 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     closureGenerator.generate();
 
     auto alloc = storeCapturedVariables(fg, capture);
-    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()),
-                                                    closure_->unspecificReification().function, 0);
+    auto i8ptr = fg->builder().CreateBitCast(closure_->unspecificReification().function,
+                                             llvm::Type::getInt8PtrTy(fg->generator()->context()));
+    auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()), i8ptr, 0);
     return fg->builder().CreateInsertValue(callable, alloc, 1);
 }
 
