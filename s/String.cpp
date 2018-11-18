@@ -7,6 +7,7 @@
 //
 
 #include "../runtime/Runtime.h"
+#include "../runtime/Internal.hpp"
 #include "Data.h"
 #include "String.h"
 #include "utf8.h"
@@ -265,7 +266,7 @@ extern "C" runtime::Integer sStringHash(String *string) {
     const unsigned int m = 0x5bd1e995;
     const int r = 24;
 
-    unsigned int h = 29190 ^ len;
+    unsigned int h = runtime::internal::seed ^ len;
 
     const unsigned char * data = reinterpret_cast<const unsigned char *>(string->characters.get());
 
