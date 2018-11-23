@@ -13,6 +13,7 @@
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Functions/FunctionType.hpp"
 #include "Compiler.hpp"
 
 namespace EmojicodeCompiler {
@@ -23,7 +24,16 @@ ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition
 Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
     closure_->setMutating(analyser->function()->mutating());
     closure_->setOwner(analyser->function()->owner());
-    closure_->setFunctionType(analyser->function()->functionType());
+    auto functionType = analyser->function()->functionType();
+    if (functionType == FunctionType::ObjectInitializer) {
+        closure_->setFunctionType(FunctionType::ObjectMethod);
+    }
+    else if (functionType == FunctionType::ValueTypeInitializer) {
+        closure_->setFunctionType(FunctionType::ValueTypeMethod);
+    }
+    else {
+        closure_->setFunctionType(analyser->function()->functionType());
+    }
     closure_->setClosure();
 
     analyser->semanticAnalyser()->analyseFunctionDeclaration(closure_.get());
@@ -35,6 +45,8 @@ Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     closureAnaly.analyse();
     capture_.captures = dynamic_cast<CapturingSemanticScoper &>(closureAnaly.scoper()).captures();
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
+        analyser->checkThisUse(position());
+
         if (analyser->typeContext().calleeType().type() == TypeType::ValueType ||
             analyser->typeContext().calleeType().type() == TypeType::Enum) {
             analyser->compiler()->error(CompilerError(position(),

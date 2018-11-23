@@ -50,6 +50,9 @@ public:
     void setInUnsafeBlock(bool v) { inUnsafeBlock_ = v; }
     bool isInUnsafeBlock() const { return inUnsafeBlock_; }
 
+    /// Ensures that the instance is fully initialized, which is required before using $this$ etc.
+    void checkThisUse(const SourcePosition &p) const;
+
     /// Parses an expression node, verifies it return type and boxes it according to the given expectation.
     /// Calls @c expect internally.
     Type expectType(const Type &type, std::shared_ptr<ASTExpr>*, std::vector<CommonTypeFinder> *ctargs = nullptr);

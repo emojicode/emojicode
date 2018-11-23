@@ -58,15 +58,7 @@ Type ASTSymbolLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation
 }
 
 Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (isSuperconstructorRequired(analyser->function()->functionType()) &&
-        !analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
-            analyser->typeContext().calleeType().klass()->superclass() != nullptr) {
-        analyser->compiler()->error(CompilerError(position(), "Attempt to use 🐕 before superinitializer call."));
-    }
-    if (isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-        analyser->scoper().instanceScope()->uninitializedVariablesCheck(position(), "Instance variable \"",
-                                                                        "\" must be initialized before using 🐕.");
-    }
+    analyser->checkThisUse(position());
 
     if (!isSelfAllowed(analyser->function()->functionType())) {
         throw CompilerError(position(), "Illegal use of 🐕.");
