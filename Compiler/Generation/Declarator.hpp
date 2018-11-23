@@ -60,6 +60,7 @@ public:
     llvm::GlobalVariable* declareBoxInfo(const std::string &name);
 
     llvm::GlobalVariable* boxInfoForObjects() { return boxInfoClassObjects_; }
+    llvm::GlobalVariable* boxInfoForCallables() { return boxInfoCallables_; }
 
 private:
     void declareImportedClassInfo(Class *klass);
@@ -73,6 +74,7 @@ private:
     llvm::Function *findProtocolConformance_ = nullptr;
 
     llvm::GlobalVariable *boxInfoClassObjects_ = nullptr;
+    llvm::GlobalVariable *boxInfoCallables_ = nullptr;
     llvm::GlobalVariable *ignoreBlock_ = nullptr;
 
     llvm::Function *retain_ = nullptr;

@@ -455,8 +455,9 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::ValueType:
                 return typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, tc, ctargs);
             case TypeType::Callable:
-                return to.genericArguments_.size() == this->genericArguments_.size()
-                       && identicalGenericArguments(to, tc, ctargs);
+                return std::equal(to.genericArguments().begin(), to.genericArguments().end(),
+                                  genericArguments().begin(), genericArguments().end(),
+                                  [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
             case TypeType::Optional:
             case TypeType::TypeAsValue:
                 return genericArguments_[0].identicalTo(to.genericArguments_[0], tc, ctargs);

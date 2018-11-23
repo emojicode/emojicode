@@ -48,6 +48,16 @@ void mangleTypeName(std::stringstream &stream, const Type &typeb) {
             break;
         case TypeType::TypeAsValue:
             stream << "tyval_";
+            break;
+        case TypeType::Callable:
+            stream << "callable_";
+            for (auto &type : type.genericArguments()) {
+                mangleTypeName(stream, type);
+            }
+            return;
+        case TypeType::NoReturn:
+            stream << "no_return";
+            return;
         default:
             stream << "ty_";
             break;

@@ -103,6 +103,9 @@ private:
     bool thisEscapes_ = false;
 
     void releaseVariables(ASTBlock *block);
+
+    /// Determines whether the contents of the variable should be released at the end of a block.
+    bool shouldReleaseVariable(MFLocalVariable &var) const;
 };
 
 }  // namespace EmojicodeCompiler

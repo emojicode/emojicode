@@ -84,6 +84,18 @@ void FunctionAnalyser::checkFunctionUse(Function *function, const SourcePosition
     checkFunctionSafety(function, p);
 }
 
+void FunctionAnalyser::checkThisUse(const SourcePosition &p) const {
+    if (isSuperconstructorRequired(function()->functionType()) &&
+        !pathAnalyser_.hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
+        typeContext().calleeType().klass()->superclass() != nullptr) {
+        compiler()->error(CompilerError(p, "Attempt to use 🐕 before superinitializer call."));
+    }
+    if (isFullyInitializedCheckRequired(function()->functionType())) {
+        scoper_->instanceScope()->uninitializedVariablesCheck(p, "Instance variable \"",
+                                                                  "\" must be initialized before using 🐕.");
+    }
+}
+
 void FunctionAnalyser::checkFunctionSafety(Function *function, const SourcePosition &p) const {
     if (function->unsafe() && !inUnsafeBlock_) {
         compiler()->error(CompilerError(p, "Use of unsafe function ", utf8(function->name()), " requires ☣️  block."));
@@ -116,15 +128,6 @@ void FunctionAnalyser::analyse() {
 
     if (isFullyInitializedCheckRequired(function_->functionType())) {
         auto initializer = dynamic_cast<Initializer *>(function_);
-        for (auto &var : initializer->owner()->instanceVariables()) {
-            if (var.type->type().type() == TypeType::Optional) {
-                auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var.name);
-                auto noValue = std::make_shared<ASTNoValue>(initializer->position());
-                auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
-                                                                                  noValue, initializer->position());
-                function()->ast()->appendNode(std::move(assign));
-            }
-        }
         for (auto &var : initializer->argumentsToVariables()) {
             if (!scoper_->instanceScope()->hasLocalVariable(var)) {
                 throw CompilerError(initializer->position(), "🍼 was applied to \"", utf8(var),
@@ -141,7 +144,18 @@ void FunctionAnalyser::analyse() {
             auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
             auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
                                                                               getVar, initializer->position());
-            function()->ast()->appendNode(std::move(assign));
+            function()->ast()->prependNode(std::move(assign));
+        }
+        // This comes after baby bottle initialization because we *prepend* nodes, which means they will end up
+        // before the baby bottle initialization code.
+        for (auto &var : initializer->owner()->instanceVariables()) {
+            if (var.type->type().type() == TypeType::Optional) {
+                auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var.name);
+                auto noValue = std::make_shared<ASTNoValue>(initializer->position());
+                auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
+                                                                                  noValue, initializer->position());
+                function()->ast()->prependNode(std::move(assign));
+            }
         }
     }
 
@@ -159,6 +173,7 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
         function_->setReturnType(std::make_unique<ASTLiteralType>(integer()));
         auto value = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(0), std::u32string(), root->position());
         root->appendNode(std::make_unique<ASTReturn>(value, root->position()));
+        root->setReturnedCertainly();
     }
     else if (function_->functionType() == FunctionType::ObjectInitializer &&
             !pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
@@ -169,9 +184,11 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
         auto ret = std::make_unique<ASTReturn>(thisNode, root->position());
         ret->setIsInitReturn();
         root->appendNode(std::move(ret));
+        root->setReturnedCertainly();
     }
     else if (function_->functionType() == FunctionType::ValueTypeInitializer) {
         root->appendNode(std::make_unique<ASTReturn>(nullptr, root->position()));
+        root->setReturnedCertainly();
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
         if (function_->returnType()->type().type() != TypeType::NoReturn) {
@@ -179,6 +196,7 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
         }
         else {
             root->appendNode(std::make_unique<ASTReturn>(nullptr, root->position()));
+            root->setReturnedCertainly();
         }
     }
 }
