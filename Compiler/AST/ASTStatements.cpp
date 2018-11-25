@@ -84,7 +84,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
 void ASTRaise::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
     if (isOnlyNothingnessReturnAllowed(analyser->function()->functionType())) {
-        auto *initializer = dynamic_cast<Initializer *>(analyser->function());
+        auto *initializer = dynamic_cast<const Initializer *>(analyser->function());
         if (!initializer->errorProne()) {
             throw CompilerError(position(), "Initializer is not declared error-prone.");
         }

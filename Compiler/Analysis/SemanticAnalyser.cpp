@@ -123,7 +123,7 @@ void SemanticAnalyser::enqueueFunction(Function *function) {
     }
 }
 
-void SemanticAnalyser::analyseFunctionDeclaration(Function *function) {
+void SemanticAnalyser::analyseFunctionDeclaration(Function *function) const {
     if (function->returnType() == nullptr) {
         function->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
     }

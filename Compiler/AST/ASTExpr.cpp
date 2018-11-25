@@ -103,7 +103,7 @@ void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory ty
 
 void ASTSuper::analyseSuperInitErrorProneness(FunctionAnalyser *analyser, const Initializer *initializer) {
     if (initializer->errorProne()) {
-        auto thisInitializer = dynamic_cast<Initializer*>(analyser->function());
+        auto thisInitializer = dynamic_cast<const Initializer*>(analyser->function());
         if (!thisInitializer->errorProne()) {
             throw CompilerError(position(), "Cannot call an error-prone super initializer in a non ",
                                 "error-prone initializer.");

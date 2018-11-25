@@ -41,19 +41,19 @@ Compiler* FunctionAnalyser::compiler() const {
     return function_->package()->compiler();
 }
 
-Type FunctionAnalyser::real() {
+Type FunctionAnalyser::real() const {
     return Type(compiler()->sReal);
 }
 
-Type FunctionAnalyser::integer() {
+Type FunctionAnalyser::integer() const {
     return Type(compiler()->sInteger);
 }
 
-Type FunctionAnalyser::boolean() {
+Type FunctionAnalyser::boolean() const {
     return Type(compiler()->sBoolean);
 }
 
-Type FunctionAnalyser::byte() {
+Type FunctionAnalyser::byte() const {
     return Type(compiler()->sByte);
 }
 
@@ -269,7 +269,7 @@ void FunctionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &ty
     }
 }
 
-Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const {
     (*node)->setExpressionType(exprType.resolveOnSuperArgumentsAndConstraints(typeContext()));
     if (exprType.type() == TypeType::ValueType && !exprType.isReference() && expectation.isMutable()) {
         exprType.setMutable(true);
@@ -302,7 +302,7 @@ Type FunctionAnalyser::comply(Type exprType, const TypeExpectation &expectation,
     return exprType;
 }
 
-void FunctionAnalyser::upcast(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+void FunctionAnalyser::upcast(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const {
     if ((exprType.type() == TypeType::Class && expectation.type() == TypeType::Class &&
          expectation.klass() != exprType.klass()) || (exprType.unoptionalized().type() == TypeType::Class &&
                                                       expectation.unoptionalized().type() == TypeType::Someobject)) {
@@ -311,7 +311,7 @@ void FunctionAnalyser::upcast(Type &exprType, const TypeExpectation &expectation
     }
 }
 
-Type FunctionAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+Type FunctionAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const {
     switch (expectation.simplifyType(exprType)) {
         case StorageType::SimpleOptional:
         case StorageType::PointerOptional:
@@ -347,7 +347,7 @@ void FunctionAnalyser::makeIntoSimpleOptional(Type &exprType, std::shared_ptr<AS
     }
 }
 
-void FunctionAnalyser::makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp) {
+void FunctionAnalyser::makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp) const {
     switch (exprType.storageType()) {
         case StorageType::SimpleError:
         case StorageType::SimpleOptional:
@@ -405,7 +405,7 @@ void FunctionAnalyser::makeIntoBox(Type &exprType, const TypeExpectation &expect
     }
 }
 
-bool FunctionAnalyser::callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) {
+bool FunctionAnalyser::callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) const {
     if (expectation.type() == TypeType::Callable && exprType.type() == TypeType::Callable &&
         expectation.genericArguments().size() == exprType.genericArguments().size()) {
         auto mismatch = std::mismatch(expectation.genericArguments().begin(), expectation.genericArguments().end(),
@@ -417,7 +417,7 @@ bool FunctionAnalyser::callableBoxingRequired(const TypeExpectation &expectation
     return false;
 }
 
-Type FunctionAnalyser::callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
+Type FunctionAnalyser::callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const {
     if (callableBoxingRequired(expectation, exprType)) {
         auto layer = buildCallableThunk(expectation, exprType, function()->package(), (*node)->position());
         analyser_->enqueueFunction(layer.get());

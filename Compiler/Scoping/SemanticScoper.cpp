@@ -15,12 +15,12 @@
 namespace EmojicodeCompiler {
 
 Scope& SemanticScoper::pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p) {
-    Scope &methodScope = pushScope();
+    pushScope();
     for (auto &variable : arguments) {
-        auto &var = methodScope.declareVariable(variable.name, variable.type->type(), true, p);
+        auto &var = currentScope().declareVariable(variable.name, variable.type->type(), true, p);
         var.initializeAbsolutely();
     }
-    return methodScope;
+    return currentScope();
 }
 
 SemanticScopeStats SemanticScoper::popScope(Compiler *app) {
@@ -49,7 +49,7 @@ SemanticScoper SemanticScoper::scoperForFunction(Function *function)  {
     return SemanticScoper();
 }
 
-Scope& SemanticScoper::pushScope() {
+void SemanticScoper::pushScope() {
     maxInitializationLevel_++;
     for (auto &scope : scopes_) {
         scope.pushInitializationLevel();
@@ -58,7 +58,6 @@ Scope& SemanticScoper::pushScope() {
         instanceScope()->pushInitializationLevel();
     }
     pushScopeInternal();
-    return scopes_.front();
 }
 
 ResolvedVariable SemanticScoper::getVariable(const std::u32string &name, const SourcePosition &errorPosition) {

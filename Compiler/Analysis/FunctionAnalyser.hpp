@@ -38,13 +38,13 @@ public:
     SemanticAnalyser* semanticAnalyser() const { return analyser_; }
     SemanticScoper& scoper() { return *scoper_; }
     const TypeContext& typeContext() const { return typeContext_; }
-    Function* function() const { return function_; }
+    const Function* function() const { return function_; }
     Compiler* compiler() const;
 
-    Type integer();
-    Type boolean();
-    Type real();
-    Type byte();
+    Type integer() const;
+    Type boolean() const;
+    Type real() const;
+    Type byte() const;
 
     void setInUnsafeBlock(bool v) { inUnsafeBlock_ = v; }
     bool isInUnsafeBlock() const { return inUnsafeBlock_; }
@@ -60,7 +60,7 @@ public:
     /// Makes the node comply with the expectation by dereferencing, temporarily storing or boxing it.
     /// @param node A pointer to the node pointer. The pointer to which this pointer points might be changed.
     /// @note Only use this if there is a good reason why expect() cannot be used.
-    Type comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
+    Type comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
 
     /// Analyses @c node and sets the expression type of the node to the type that will be returned.
     /// @returns The type denoted by the $type-expression$ resolved by Type::resolveOnSuperArgumentsAndConstraints.
@@ -97,11 +97,11 @@ private:
 
     /// Returns true if exprType and expectation are callables and there is a mismatch between the argument or return
     /// StorageTypes.
-    bool callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType);
+    bool callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) const;
     /// Boxes or unboxes the value to the StorageType specified by expectation.simplifyType()
-    Type box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
+    Type box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
     /// Callable boxes the value if callableBoxingRequired() returns true.
-    Type callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
+    Type callableBox(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
 
     void makeIntoBox(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
 
@@ -111,9 +111,9 @@ private:
 
     void checkFunctionSafety(Function *function, const SourcePosition &p) const;
 
-    void makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp);
+    void makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp) const;
 
-    void upcast(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node);
+    void upcast(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
 };
 
 }  // namespace EmojicodeCompiler

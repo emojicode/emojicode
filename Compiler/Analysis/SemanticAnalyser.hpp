@@ -39,7 +39,7 @@ public:
     std::unique_ptr<Function> enforcePromises(Function *sub, Function *super, const Type &superSource,
                                               const TypeContext &subContext, const TypeContext &superContext);
 
-    void analyseFunctionDeclaration(Function *function);
+    void analyseFunctionDeclaration(Function *function) const;
 
     void declareInstanceVariables(const Type &type);
 

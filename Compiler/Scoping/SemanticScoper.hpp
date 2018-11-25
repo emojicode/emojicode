@@ -41,8 +41,8 @@ public:
         return scopes_.front();
     }
 
-    /// Pushes a new subscope and returns a reference to it.
-    Scope& pushScope();
+    /// Pushes a new subscope.
+    void pushScope();
 
     /// Pushes a new subscope and sets the argument variables in it.
     virtual Scope& pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p);
