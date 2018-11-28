@@ -186,7 +186,9 @@ void TypeBodyParser<TypeDef>::parse() {
 
                 std::u32string name = std::u32string(1, E_NEW_SIGN);
                 if (stream_.nextTokenIs(TokenType::Identifier) && !stream_.nextTokenIs(E_RADIO)
-                    && !stream_.nextTokenIs(E_BABY_BOTTLE) && !stream_.nextTokenIs(E_LEFT_LUGGAGE)) {
+                    && !stream_.nextTokenIs(E_BABY_BOTTLE) && !stream_.nextTokenIs(E_LEFT_LUGGAGE)
+                    && !stream_.nextTokenIs(E_OPEN_LOCK)  && !stream_.nextTokenIs(E_CLOSED_LOCK_WITH_KEY)
+                    && !stream_.nextTokenIs(E_LOCK)) {
                     name = stream_.consumeToken(TokenType::Identifier).value();
                 }
                 parseInitializer(name, attributes, documentation, accessLevel, token.position());
