@@ -231,7 +231,7 @@ void PackageReporter::reportExportedType(const Type &type) {
         auto enumeration = type.enumeration();
         writer_.Key("enumerationValues");
         writer_.StartArray();
-        for (auto it : enumeration->values()) {
+        for (auto &it : enumeration->values()) {
             writer_.StartObject();
             reportDocumentation(it.second.second);
             writer_.Key("value");

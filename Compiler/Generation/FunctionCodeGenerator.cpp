@@ -6,15 +6,15 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Types/ValueType.hpp"
-#include "Types/Class.hpp"
-#include "Functions/Function.hpp"
-#include "AST/ASTStatements.hpp"
-#include "Declarator.hpp"
 #include "FunctionCodeGenerator.hpp"
-#include "Package/Package.hpp"
-#include "Generation/CallCodeGenerator.hpp"
+#include "AST/ASTStatements.hpp"
 #include "Compiler.hpp"
+#include "Declarator.hpp"
+#include "Functions/Function.hpp"
+#include "Generation/CallCodeGenerator.hpp"
+#include "Package/Package.hpp"
+#include "Types/Class.hpp"
+#include "Types/ValueType.hpp"
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>

@@ -3,16 +3,16 @@
 //
 
 #include "ProtocolsTableGenerator.hpp"
+#include "CodeGenerator.hpp"
 #include "Functions/Function.hpp"
-#include "Generation/Mangler.hpp"
 #include "Generation/Declarator.hpp"
+#include "Generation/Mangler.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Types/Class.hpp"
-#include "Types/ValueType.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeDefinition.hpp"
-#include "CodeGenerator.hpp"
+#include "Types/ValueType.hpp"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Module.h>
 

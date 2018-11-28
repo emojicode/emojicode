@@ -9,8 +9,8 @@
 #include "ASTBinaryOperator.hpp"
 #include "ASTLiterals.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
-#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Compiler.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Types/TypeExpectation.hpp"
 #include "Types/ValueType.hpp"
 

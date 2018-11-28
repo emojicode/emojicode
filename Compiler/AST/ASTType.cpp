@@ -2,12 +2,12 @@
 // Created by Theo Weidmann on 04.06.18.
 //
 
-#include "Compiler.hpp"
-#include "Parsing/AbstractParser.hpp"
-#include "Package/Package.hpp"
-#include "Lex/Token.hpp"
-#include "Functions/Function.hpp"
 #include "ASTType.hpp"
+#include "Compiler.hpp"
+#include "Functions/Function.hpp"
+#include "Lex/Token.hpp"
+#include "Package/Package.hpp"
+#include "Parsing/AbstractParser.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/TypeDefinition.hpp"

@@ -7,11 +7,10 @@
 //
 
 #include "Function.hpp"
+#include "AST/ASTStatements.hpp"
 #include "Compiler.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/TypeDefinition.hpp"
-#include "Types/TypeContext.hpp"
-#include "AST/ASTStatements.hpp"
 #include <llvm/IR/Function.h>
 
 namespace EmojicodeCompiler {

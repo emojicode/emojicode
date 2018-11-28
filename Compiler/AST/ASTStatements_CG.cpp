@@ -6,13 +6,13 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "AST/ASTMemory.hpp"
 #include "ASTStatements.hpp"
 #include "Generation/CallCodeGenerator.hpp"
+#include "Generation/Declarator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Scoping/IDScoper.hpp"
-#include "Generation/Declarator.hpp"
 #include "Types/Class.hpp"
-#include "AST/ASTMemory.hpp"
 
 namespace EmojicodeCompiler {
 

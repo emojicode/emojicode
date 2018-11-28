@@ -6,14 +6,14 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Utils/StringUtils.hpp"
-#include "Package/Package.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
 #include "Class.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Functions/Initializer.hpp"
+#include "Package/Package.hpp"
 #include "TypeContext.hpp"
+#include "Utils/StringUtils.hpp"
 #include <algorithm>
 #include <utility>
 

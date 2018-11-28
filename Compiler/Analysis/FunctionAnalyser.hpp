@@ -47,6 +47,9 @@ private:
 
     void analyseReturn(ASTBlock *root);
     void analyseInitializationRequirements();
+
+    void analyseBabyBottle();
+    void initOptionalInstanceVariables();
 };
 
 }  // namespace EmojicodeCompiler

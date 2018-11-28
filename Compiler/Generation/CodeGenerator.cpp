@@ -9,19 +9,20 @@
 #include "CodeGenerator.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
+#include "Declarator.hpp"
 #include "FunctionCodeGenerator.hpp"
 #include "Functions/Initializer.hpp"
 #include "Mangler.hpp"
-#include "Package/Package.hpp"
-#include "ReificationContext.hpp"
-#include "ProtocolsTableGenerator.hpp"
 #include "OptimizationManager.hpp"
-#include "Declarator.hpp"
+#include "Package/Package.hpp"
+#include "ProtocolsTableGenerator.hpp"
+#include "ReificationContext.hpp"
 #include "StringPool.hpp"
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include "VTCreator.hpp"
+#include <algorithm>
 #include <llvm/IR/IRPrintingPasses.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/FileSystem.h>
@@ -31,7 +32,6 @@
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
 #include <llvm/Transforms/IPO.h>
-#include <algorithm>
 #include <vector>
 
 namespace EmojicodeCompiler {

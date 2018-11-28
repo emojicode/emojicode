@@ -11,8 +11,8 @@
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
-#include "Types/Enum.hpp"
 #include "Types/Class.hpp"
+#include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include <type_traits>
 

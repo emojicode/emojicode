@@ -4,11 +4,11 @@
 
 #include "MFAnalyser.hpp"
 #include "MFFunctionAnalyser.hpp"
+#include "Package/Package.hpp"
 #include "Types/Class.hpp"
-#include "Types/ValueType.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
-#include "Package/Package.hpp"
+#include "Types/ValueType.hpp"
 
 namespace EmojicodeCompiler {
 

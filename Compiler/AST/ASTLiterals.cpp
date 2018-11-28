@@ -9,13 +9,13 @@
 #include "ASTLiterals.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Package/Package.hpp"
 #include "Parsing/AbstractParser.hpp"
+#include "Scoping/SemanticScoper.hpp"
 #include "Types/Class.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "Package/Package.hpp"
-#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
-#include "Scoping/SemanticScoper.hpp"
 
 namespace EmojicodeCompiler {
 

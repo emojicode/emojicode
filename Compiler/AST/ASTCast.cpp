@@ -7,9 +7,9 @@
 
 #include "ASTCast.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
+#include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "Compiler.hpp"
 
 namespace EmojicodeCompiler {
 

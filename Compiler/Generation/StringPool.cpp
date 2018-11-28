@@ -6,12 +6,12 @@
 //  Copyright © 2016 Theo Weidmann. All rights reserved.
 //
 
+#include "StringPool.hpp"
 #include "CodeGenerator.hpp"
 #include "Compiler.hpp"
+#include "Generation/Declarator.hpp"
 #include "Package/Package.hpp"
 #include "Types/Class.hpp"
-#include "StringPool.hpp"
-#include "Generation/Declarator.hpp"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/GlobalVariable.h>
 

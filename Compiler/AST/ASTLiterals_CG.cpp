@@ -6,12 +6,12 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "ASTLiterals.hpp"
 #include "ASTInitialization.hpp"
+#include "ASTLiterals.hpp"
 #include "Compiler.hpp"
 #include "Generation/CallCodeGenerator.hpp"
-#include "Generation/FunctionCodeGenerator.hpp"
 #include "Generation/Declarator.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
 #include "Generation/StringPool.hpp"
 #include "Types/Class.hpp"
 

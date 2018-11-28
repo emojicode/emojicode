@@ -9,11 +9,11 @@
 #include "ASTInitialization.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
+#include "Emojis.h"
 #include "Functions/Initializer.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Types/Enum.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "Emojis.h"
-#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 

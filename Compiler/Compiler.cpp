@@ -15,8 +15,8 @@
 #include "Prettyprint/PrettyPrinter.hpp"
 #include <llvm/Support/FileSystem.h>
 
-#include <utility>
 #include "MemoryFlowAnalysis/MFAnalyser.hpp"
+#include <utility>
 
 namespace EmojicodeCompiler {
 

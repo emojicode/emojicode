@@ -6,17 +6,17 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Types/Class.hpp"
-#include "AST/ASTNode.hpp"
 #include "ASTControlFlow.hpp"
+#include "AST/ASTNode.hpp"
 #include "ASTMethod.hpp"
 #include "ASTVariables.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
-#include "Types/Protocol.hpp"
 #include "Emojis.h"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
+#include "Types/Class.hpp"
+#include "Types/Protocol.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {

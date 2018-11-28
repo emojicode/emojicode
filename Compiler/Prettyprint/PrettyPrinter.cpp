@@ -7,6 +7,7 @@
 
 #include "PrettyPrinter.hpp"
 #include "AST/ASTStatements.hpp"
+#include "Emojis.h"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
@@ -16,7 +17,6 @@
 #include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
-#include "Emojis.h"
 #include <algorithm>
 
 namespace EmojicodeCompiler {

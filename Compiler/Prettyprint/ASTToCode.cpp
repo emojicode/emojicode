@@ -6,8 +6,8 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Parsing/OperatorHelper.hpp"
 #include "AST/ASTBinaryOperator.hpp"
+#include "AST/ASTCast.hpp"
 #include "AST/ASTClosure.hpp"
 #include "AST/ASTControlFlow.hpp"
 #include "AST/ASTExpr.hpp"
@@ -19,7 +19,7 @@
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTUnsafeBlock.hpp"
 #include "AST/ASTVariables.hpp"
-#include "AST/ASTCast.hpp"
+#include "Parsing/OperatorHelper.hpp"
 #include "PrettyStream.hpp"
 #include "Types/Type.hpp"
 #include <sstream>

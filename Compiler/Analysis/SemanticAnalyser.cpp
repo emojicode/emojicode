@@ -2,12 +2,12 @@
 // Created by Theo Weidmann on 26.02.18.
 //
 
-#include "DeinitializerBuilder.hpp"
-#include "ThunkBuilder.hpp"
-#include "Compiler.hpp"
-#include "Package/Package.hpp"
-#include "FunctionAnalyser.hpp"
 #include "SemanticAnalyser.hpp"
+#include "Compiler.hpp"
+#include "DeinitializerBuilder.hpp"
+#include "FunctionAnalyser.hpp"
+#include "Package/Package.hpp"
+#include "ThunkBuilder.hpp"
 #include "Types/Class.hpp"
 #include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"

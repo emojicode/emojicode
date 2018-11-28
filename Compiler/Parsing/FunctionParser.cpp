@@ -6,8 +6,9 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Lex/Token.hpp"
+#include "FunctionParser.hpp"
 #include "AST/ASTBinaryOperator.hpp"
+#include "AST/ASTCast.hpp"
 #include "AST/ASTClosure.hpp"
 #include "AST/ASTControlFlow.hpp"
 #include "AST/ASTInitialization.hpp"
@@ -18,9 +19,8 @@
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTUnsafeBlock.hpp"
 #include "AST/ASTVariables.hpp"
-#include "AST/ASTCast.hpp"
 #include "Compiler.hpp"
-#include "FunctionParser.hpp"
+#include "Lex/Token.hpp"
 #include "Package/Package.hpp"
 
 namespace EmojicodeCompiler {

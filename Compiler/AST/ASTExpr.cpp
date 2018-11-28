@@ -10,11 +10,11 @@
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "Functions/Initializer.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Scoping/SemanticScoper.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
-#include "Scoping/SemanticScoper.hpp"
 
 namespace EmojicodeCompiler {
 

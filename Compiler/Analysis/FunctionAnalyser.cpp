@@ -6,16 +6,16 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "FunctionAnalyser.hpp"
 #include "AST/ASTBoxing.hpp"
 #include "AST/ASTLiterals.hpp"
 #include "AST/ASTVariables.hpp"
 #include "Compiler.hpp"
-#include "FunctionAnalyser.hpp"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
+#include "Package/Package.hpp"
 #include "Scoping/SemanticScoper.hpp"
 #include "SemanticAnalyser.hpp"
-#include "Package/Package.hpp"
 #include "Types/Class.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
@@ -66,7 +66,7 @@ void FunctionAnalyser::checkThisUse(const SourcePosition &p) const {
 }
 
 void FunctionAnalyser::analyse() {
-    Scope &methodScope = scoper_->pushArgumentsScope(function_->parameters(), function_->position());
+   scoper_->pushArgumentsScope(function_->parameters(), function_->position());
 
     if (function_->functionType() == FunctionType::ObjectInitializer &&
         dynamic_cast<Class *>(function_->owner())->foreign()) {
@@ -78,36 +78,10 @@ void FunctionAnalyser::analyse() {
     }
 
     if (isFullyInitializedCheckRequired(function_->functionType())) {
-        auto initializer = dynamic_cast<Initializer *>(function_);
-        for (auto &var : initializer->argumentsToVariables()) {
-            if (!scoper_->instanceScope()->hasLocalVariable(var)) {
-                throw CompilerError(initializer->position(), "🍼 was applied to \"", utf8(var),
-                                    "\" but no matching instance variable was found.");
-            }
-            auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var);
-            auto &argumentVariable = methodScope.getLocalVariable(var);
-            if (!argumentVariable.type().compatibleTo(instanceVariable.type(), typeContext_)) {
-                throw CompilerError(initializer->position(), "🍼 was applied to \"",
-                                    utf8(var), "\" but instance variable has incompatible type.");
-            }
-            instanceVariable.initialize();
-
-            auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
-            auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
-                                                                              getVar, initializer->position());
-            function()->ast()->prependNode(std::move(assign));
-        }
+        analyseBabyBottle();
         // This comes after baby bottle initialization because we *prepend* nodes, which means they will end up
         // before the baby bottle initialization code.
-        for (auto &var : initializer->owner()->instanceVariables()) {
-            if (var.type->type().type() == TypeType::Optional) {
-                auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var.name);
-                auto noValue = std::make_shared<ASTNoValue>(initializer->position());
-                auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
-                                                                                  noValue, initializer->position());
-                function()->ast()->prependNode(std::move(assign));
-            }
-        }
+        initOptionalInstanceVariables();
     }
 
     function_->ast()->analyse(this);
@@ -117,6 +91,40 @@ void FunctionAnalyser::analyse() {
 
     function_->ast()->setScopeStats(scoper_->popScope(compiler()));
     function_->setVariableCount(scoper_->variableIdCount());
+}
+
+void FunctionAnalyser::analyseBabyBottle() {
+    auto initializer = dynamic_cast<Initializer *>(function_);
+    for (auto &var : initializer->argumentsToVariables()) {
+        if (!scoper_->instanceScope()->hasLocalVariable(var)) {
+            throw CompilerError(initializer->position(), "🍼 was applied to \"", utf8(var),
+                                "\" but no matching instance variable was found.");
+        }
+        auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var);
+        auto &argumentVariable = scoper_->currentScope().getLocalVariable(var);
+        if (!argumentVariable.type().compatibleTo(instanceVariable.type(), typeContext_)) {
+            throw CompilerError(initializer->position(), "🍼 was applied to \"",
+                                utf8(var), "\" but instance variable has incompatible type.");
+        }
+        instanceVariable.initialize();
+
+        auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
+        auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
+                                                                          getVar, initializer->position());
+        function()->ast()->prependNode(std::move(assign));
+    }
+}
+
+void FunctionAnalyser::initOptionalInstanceVariables() {
+    for (auto &var : function()->owner()->instanceVariables()) {
+        if (var.type->type().type() == TypeType::Optional) {
+            auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var.name);
+            auto noValue = std::make_shared<ASTNoValue>(function()->position());
+            auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
+                                                                              noValue, function()->position());
+            function()->ast()->prependNode(std::move(assign));
+        }
+    }
 }
 
 void FunctionAnalyser::analyseReturn(ASTBlock *root) {

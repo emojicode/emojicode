@@ -7,8 +7,8 @@
 //
 
 #include "ValueType.hpp"
-#include "Functions/Function.hpp"
 #include "Compiler.hpp"
+#include "Functions/Function.hpp"
 #include "Package/Package.hpp"
 #include <algorithm>
 

@@ -7,17 +7,17 @@
 //
 
 #include "ThunkBuilder.hpp"
+#include "AST/ASTClosure.hpp"
 #include "AST/ASTInitialization.hpp"
 #include "AST/ASTLiterals.hpp"
 #include "AST/ASTMethod.hpp"
 #include "AST/ASTStatements.hpp"
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTVariables.hpp"
-#include "AST/ASTClosure.hpp"
+#include "Emojis.h"
 #include "Functions/Initializer.hpp"
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
-#include "Emojis.h"
 #include "Types/TypeExpectation.hpp"
 #include <memory>
 

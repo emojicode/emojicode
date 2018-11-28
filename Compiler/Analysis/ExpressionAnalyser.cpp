@@ -5,17 +5,16 @@
 //  Created by Theo Weidmann on 28.11.18.
 //
 
+#include "ExpressionAnalyser.hpp"
+#include "AST/ASTClosure.hpp"
+#include "AST/ASTVariables.hpp"
 #include "Compiler.hpp"
 #include "Functions/Function.hpp"
+#include "SemanticAnalyser.hpp"
 #include "ThunkBuilder.hpp"
 #include "Types/Class.hpp"
-#include "AST/ASTClosure.hpp"
-#include "AST/ASTClosure.hpp"
-#include "ExpressionAnalyser.hpp"
-#include "Types/TypeExpectation.hpp"
-#include "AST/ASTVariables.hpp"
 #include "Types/CommonTypeFinder.hpp"
-#include "SemanticAnalyser.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 

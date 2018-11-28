@@ -7,9 +7,9 @@
 
 #include "DeinitializerBuilder.hpp"
 #include "AST/ASTMemory.hpp"
+#include "Functions/Function.hpp"
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
-#include "Functions/Function.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -53,4 +53,4 @@ void buildCopyRetain(ValueType *typeDef) {
     copyRetain->setMemoryFlowTypeForThis(MFFlowCategory::Borrowing);
 }
 
-}
+} // namespace EmojicodeCompiler

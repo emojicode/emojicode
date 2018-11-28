@@ -6,13 +6,13 @@
 //  Copyright © 2018 Theo Weidmann. All rights reserved.
 //
 
+#include "MFFunctionAnalyser.hpp"
 #include "AST/ASTExpr.hpp"
-#include "AST/ASTVariables.hpp"
-#include "AST/ASTStatements.hpp"
 #include "AST/ASTLiterals.hpp"
 #include "AST/ASTMemory.hpp"
+#include "AST/ASTStatements.hpp"
+#include "AST/ASTVariables.hpp"
 #include "Functions/Function.hpp"
-#include "MFFunctionAnalyser.hpp"
 #include "MFHeapAllocates.hpp"
 #include "Scoping/SemanticScopeStats.hpp"
 

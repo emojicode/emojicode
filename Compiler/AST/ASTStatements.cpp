@@ -11,10 +11,10 @@
 #include "Compiler.hpp"
 #include "Functions/FunctionType.hpp"
 #include "Functions/Initializer.hpp"
-#include "Scoping/VariableNotFoundError.hpp"
-#include "Types/Class.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
+#include "Scoping/VariableNotFoundError.hpp"
+#include "Types/Class.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {

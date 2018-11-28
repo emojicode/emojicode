@@ -7,9 +7,9 @@
 //
 
 #include "ASTUnary.hpp"
-#include "Lex/SourceManager.hpp"
 #include "Generation/Declarator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "Lex/SourceManager.hpp"
 #include <llvm/Support/raw_ostream.h>
 #include <sstream>
 

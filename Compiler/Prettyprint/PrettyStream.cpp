@@ -6,11 +6,11 @@
 //
 
 #include "PrettyStream.hpp"
-#include "Lex/SourceManager.hpp"
-#include "Utils/StringUtils.hpp"
-#include "Types/Type.hpp"
 #include "AST/ASTType.hpp"
+#include "Lex/SourceManager.hpp"
 #include "PrettyPrinter.hpp"
+#include "Types/Type.hpp"
+#include "Utils/StringUtils.hpp"
 
 namespace EmojicodeCompiler {
 

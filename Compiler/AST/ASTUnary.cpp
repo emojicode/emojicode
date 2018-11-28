@@ -9,8 +9,8 @@
 #include "ASTUnary.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "CompilerError.hpp"
-#include "Types/TypeExpectation.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 

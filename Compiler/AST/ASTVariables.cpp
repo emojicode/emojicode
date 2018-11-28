@@ -6,15 +6,15 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Generation/FunctionCodeGenerator.hpp"
+#include "ASTVariables.hpp"
 #include "ASTBinaryOperator.hpp"
 #include "ASTInitialization.hpp"
-#include "ASTVariables.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
-#include "Scoping/VariableNotFoundError.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
+#include "Scoping/VariableNotFoundError.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
