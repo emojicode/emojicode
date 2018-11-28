@@ -121,9 +121,10 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
             writer_.String("🔒");
             break;
         case AccessLevel::Protected:
-            writer_.String("🔒");
+            writer_.String("🔐");
             break;
         case AccessLevel::Public:
+        case AccessLevel::Default:
             writer_.String("🔓");
             break;
     }
