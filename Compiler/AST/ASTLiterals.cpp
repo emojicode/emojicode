@@ -19,21 +19,21 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTStringLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTStringLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = Type(analyser->compiler()->sString);
     type.setExact(true);
     return type;
 }
 
-Type ASTBooleanTrue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBooleanTrue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->boolean();
 }
 
-Type ASTBooleanFalse::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBooleanFalse::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->boolean();
 }
 
-Type ASTNumberLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNumberLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (type_ == NumberType::Integer) {
         if (expectation == analyser->real()) {
             type_ = NumberType::Double;
@@ -53,10 +53,10 @@ Type ASTNumberLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation
     return analyser->real();
 }
 
-Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTThis::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     analyser->checkThisUse(position());
 
-    if (!isSelfAllowed(analyser->function()->functionType())) {
+    if (!isSelfAllowed(analyser->functionType())) {
         throw CompilerError(position(), "Illegal use of 🐕.");
     }
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::UsedSelf);
@@ -67,7 +67,7 @@ void ASTThis::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory typ
     analyser->recordThis(type);
 }
 
-Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNoValue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.unboxedType() != TypeType::Optional && expectation.unboxedType() != TypeType::Something) {
         throw CompilerError(position(), "🤷‍ can only be used when an optional is expected.");
     }
@@ -75,7 +75,7 @@ Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     return type_;
 }
 
-Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTDictionaryLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(analyser->compiler()->sDictionary);
 
     CommonTypeFinder finder;
@@ -104,7 +104,7 @@ void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlo
     }
 }
 
-Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTListLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() == TypeType::Class && expectation.klass() == analyser->compiler()->sList) {
         auto type = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(expectation.copyType()));
         for (auto &valueNode : values_) {
@@ -140,8 +140,8 @@ void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
     }
 }
 
-Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = analyser->function()->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
+Type ASTConcatenateLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    type_ = analyser->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
 
     auto stringType = Type(analyser->compiler()->sString);
     for (auto &stringNode : values_) {

@@ -24,7 +24,7 @@ public:
     OperatorType operatorType() const { return operator_; }
     const std::shared_ptr<ASTExpr>& right() const { return right_; }
 
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
@@ -36,9 +36,9 @@ private:
         Type returnType;
     };
 
-    std::pair<bool, BuiltIn> builtInPrimitiveOperator(FunctionAnalyser *analyser, const Type &type);
+    std::pair<bool, BuiltIn> builtInPrimitiveOperator(ExpressionAnalyser *analyser, const Type &type);
     void printBinaryOperand(int precedence, const std::shared_ptr<ASTExpr> &expr, PrettyStream &pretty) const;
-    Type analyseIsNoValue(FunctionAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
+    Type analyseIsNoValue(ExpressionAnalyser *analyser, std::shared_ptr<ASTExpr> &expr,
                               BuiltInType builtInType);
 
     OperatorType operator_;

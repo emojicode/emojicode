@@ -21,21 +21,9 @@ namespace EmojicodeCompiler {
 ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p)
         : ASTExpr(p), closure_(std::move(closure)) {}
 
-Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    closure_->setMutating(analyser->function()->mutating());
-    closure_->setOwner(analyser->function()->owner());
-    auto functionType = analyser->function()->functionType();
-    if (functionType == FunctionType::ObjectInitializer) {
-        closure_->setFunctionType(FunctionType::ObjectMethod);
-    }
-    else if (functionType == FunctionType::ValueTypeInitializer) {
-        closure_->setFunctionType(FunctionType::ValueTypeMethod);
-    }
-    else {
-        closure_->setFunctionType(analyser->function()->functionType());
-    }
+Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     closure_->setClosure();
-
+    analyser->configureClosure(closure_.get());
     analyser->semanticAnalyser()->analyseFunctionDeclaration(closure_.get());
 
     applyBoxingFromExpectation(analyser, expectation);
@@ -70,7 +58,7 @@ void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory 
     MFFunctionAnalyser(closure_.get()).analyse();
 }
 
-void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() != TypeType::Callable ||
             expectation.genericArguments().size() - 1 != closure_->parameters().size()) {
         return;

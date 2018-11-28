@@ -19,7 +19,7 @@
 
 namespace EmojicodeCompiler {
 
-void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, FunctionAnalyser *analyser) {
+void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, ExpressionAnalyser *analyser) {
     id_ = var.variable.id();
     inInstanceScope_ = var.inInstanceScope;
     variableType_ = var.variable.type();
@@ -28,7 +28,7 @@ void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, Functio
     }
 }
 
-Type ASTGetVariable::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTGetVariable::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto var = analyser->scoper().getVariable(name(), position());
     setVariableAccess(var, analyser);
     var.variable.uninitalizedError(position());
@@ -44,7 +44,7 @@ void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
     }
 }
 
-Type ASTIsOnlyReference::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTIsOnlyReference::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto rvar = analyser->scoper().getVariable(name(), position());
     if (rvar.variable.type().type() != TypeType::Someobject && rvar.variable.type().type() != TypeType::Class) {
         analyser->compiler()->error(CompilerError(position(), "🏮 can only be used with objects."));

@@ -20,14 +20,14 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee) {
     Type otype = callee->analyse(analyser, TypeExpectation());
     return analyseMethodCall(analyser, name, callee, otype);
 
 }
 
-Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee, const Type &otype) {
     determineCalleeType(analyser, name, callee, otype);
 
@@ -51,7 +51,7 @@ Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32
     return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 
-void ASTMethodable::determineCalleeType(FunctionAnalyser *analyser, const std::u32string &name,
+void ASTMethodable::determineCalleeType(ExpressionAnalyser *analyser, const std::u32string &name,
                                         std::shared_ptr<ASTExpr> &callee, const Type &otype) {
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     if (builtIn(analyser, type, name)) {
@@ -62,7 +62,7 @@ void ASTMethodable::determineCalleeType(FunctionAnalyser *analyser, const std::u
     }
 }
 
-void ASTMethodable::determineCallType(const FunctionAnalyser *analyser) {
+void ASTMethodable::determineCallType(const ExpressionAnalyser *analyser) {
     if (calleeType_.type() == TypeType::ValueType) {
         callType_ = CallType::StaticDispatch;
     }
@@ -80,7 +80,7 @@ void ASTMethodable::determineCallType(const FunctionAnalyser *analyser) {
     }
 }
 
-void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee,
+void ASTMethodable::checkMutation(ExpressionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee,
                                   const Type &type) const {
     if (type.type() == TypeType::ValueType && method_->mutating()) {
         if (!type.isMutable()) {
@@ -93,7 +93,7 @@ void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_
     }
 }
 
-Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                                           std::shared_ptr<ASTExpr> &callee) {
     calleeType_ = calleeType_.typeOfTypeValue();
 
@@ -117,7 +117,7 @@ Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std:
     return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 
-Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name) {
+Type ASTMethodable::analyseMultiProtocolCall(ExpressionAnalyser *analyser, const std::u32string &name) {
     for (; multiprotocolN_ < calleeType_.protocols().size(); multiprotocolN_++) {
         auto &protocol = calleeType_.protocols()[multiprotocolN_];
         if ((method_ = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
@@ -130,7 +130,7 @@ Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const s
                         " provides a method ", utf8(name), ".");
 }
 
-bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name) {
+bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &type, const std::u32string &name) {
     if (type.type() != TypeType::ValueType) {
         return false;
     }
@@ -196,7 +196,7 @@ bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const 
     return false;
 }
 
-Type ASTMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTMethod::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyseMethodCall(analyser, name_, callee_);
 }
 

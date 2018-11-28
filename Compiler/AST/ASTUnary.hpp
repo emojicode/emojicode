@@ -17,7 +17,7 @@ namespace EmojicodeCompiler {
 class ASTIsError final : public ASTUnary {
     using ASTUnary::ASTUnary;
 public:
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
@@ -27,7 +27,7 @@ public:
 class ASTUnwrap final : public ASTUnaryMFForwarding {
     using ASTUnaryMFForwarding::ASTUnaryMFForwarding;
 public:
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

@@ -17,7 +17,7 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
     if (type.type() == TypeType::Enum) {
@@ -45,7 +45,7 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
     return init->constructedType(type);
 }
 
-Type ASTInitialization::analyseEnumInit(FunctionAnalyser *analyser, Type &type) {
+Type ASTInitialization::analyseEnumInit(ExpressionAnalyser *analyser, Type &type) {
     initType_ = InitType::Enum;
 
     auto v = type.enumeration()->getValueFor(name_);

@@ -22,18 +22,18 @@ void ASTUnaryMFForwarding::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlo
     expr_->analyseMemoryFlow(analyser, type);
 }
 
-Type ASTTypeAsValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTTypeAsValue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto &type = type_->analyseType(analyser->typeContext());
     ASTTypeValueType::checkTypeValue(tokenType_, type, analyser->typeContext(), position());
     return Type(MakeTypeAsValue, type);
 }
 
-Type ASTSizeOf::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTSizeOf::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     type_->analyseType(analyser->typeContext());
     return analyser->integer();
 }
 
-Type ASTConditionalAssignment::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTConditionalAssignment::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     if (t.unboxedType() != TypeType::Optional) {
         throw CompilerError(position(), "Condition assignment can only be used with optionals.");
@@ -53,12 +53,12 @@ void ASTConditionalAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser, M
     analyser->take(expr_.get());
 }
 
-Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (isSuperconstructorRequired(analyser->function()->functionType())) {
+Type ASTSuper::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    if (isSuperconstructorRequired(analyser->functionType())) {
         analyseSuperInit(analyser);
         return Type::noReturn();
     }
-    if (analyser->function()->functionType() != FunctionType::ObjectMethod) {
+    if (analyser->functionType() != FunctionType::ObjectMethod) {
         throw CompilerError(position(), "Not within an object-context.");
     }
 
@@ -74,7 +74,7 @@ Type ASTSuper::analyse(FunctionAnalyser *analyser, const TypeExpectation &expect
     return analyser->analyseFunctionCall(&args_, calleeType_, function_);
 }
 
-void ASTSuper::analyseSuperInit(FunctionAnalyser *analyser) {
+void ASTSuper::analyseSuperInit(ExpressionAnalyser *analyser) {
     if (analyser->typeContext().calleeType().klass()->superclass() == nullptr) {
         throw CompilerError(position(), "Class does not have a super class");
     }
@@ -101,7 +101,8 @@ void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory ty
     analyser->analyseFunctionCall(&args_, nullptr, function_);
 }
 
-void ASTSuper::analyseSuperInitErrorProneness(FunctionAnalyser *analyser, const Initializer *initializer) {
+void ASTSuper::analyseSuperInitErrorProneness(ExpressionAnalyser *eanalyser, const Initializer *initializer) {
+    auto analyser = dynamic_cast<FunctionAnalyser *>(eanalyser);
     if (initializer->errorProne()) {
         auto thisInitializer = dynamic_cast<const Initializer*>(analyser->function());
         if (!thisInitializer->errorProne()) {
@@ -117,7 +118,7 @@ void ASTSuper::analyseSuperInitErrorProneness(FunctionAnalyser *analyser, const 
     }
 }
 
-Type ASTCallableCall::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTCallableCall::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false), &callable_);
     if (type.type() != TypeType::Callable) {
         throw CompilerError(position(), "Given value is not callable.");

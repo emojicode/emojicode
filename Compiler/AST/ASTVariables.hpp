@@ -43,7 +43,7 @@ protected:
     explicit AccessesAnyVariable(std::u32string name) : name_(std::move(name)) {}
     AccessesAnyVariable(bool inInstanceScope, VariableID id, Type type)
         : inInstanceScope_(inInstanceScope), id_(id), variableType_(std::move(type)) {}
-    void setVariableAccess(const ResolvedVariable &var, FunctionAnalyser *analyser);
+    void setVariableAccess(const ResolvedVariable &var, ExpressionAnalyser *analyser);
 
     /// Generates code to retrieve a pointer to the instance variable, whose ID is stored in this instance.
     Value* instanceVariablePointer(FunctionCodeGenerator *fg) const;
@@ -75,7 +75,7 @@ public:
     /// Configures this node to generate code to retrieve the variable’s address instead of its value.
     void setReference() { reference_ = true; }
 
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
@@ -93,7 +93,7 @@ public:
     ASTIsOnlyReference(std::u32string name, const SourcePosition &p)
         : ASTExpr(p), AccessesAnyVariable(std::move(name)) {}
 
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

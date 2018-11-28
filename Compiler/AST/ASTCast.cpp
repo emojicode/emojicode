@@ -13,7 +13,7 @@
 
 namespace EmojicodeCompiler {
 
-Type ASTCast::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTCast::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
     Type originalType = analyser->expect(TypeExpectation(), &expr_);

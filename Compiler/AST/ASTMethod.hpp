@@ -22,11 +22,11 @@ protected:
     explicit ASTMethodable(const SourcePosition &p) : ASTExpr(p), args_(p) {}
     ASTMethodable(const SourcePosition &p, ASTArguments args) : ASTExpr(p), args_(std::move(args)) {}
 
-    Type analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+    Type analyseMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                            std::shared_ptr<ASTExpr> &callee);
     /// Analyses this node as method call.
     /// @param otype Result of analysing `callee` with TypeExpectation `TypeExpectation()`.
-    Type analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name, std::shared_ptr<ASTExpr> &callee,
+    Type analyseMethodCall(ExpressionAnalyser *analyser, const std::u32string &name, std::shared_ptr<ASTExpr> &callee,
                            const Type &otype);
 
     enum class BuiltInType {
@@ -47,15 +47,15 @@ protected:
     size_t multiprotocolN_ = 0;
     Function *method_ = nullptr;
 private:
-    bool builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name);
+    bool builtIn(ExpressionAnalyser *analyser, const Type &type, const std::u32string &name);
 
-    Type analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name);
+    Type analyseMultiProtocolCall(ExpressionAnalyser *analyser, const std::u32string &name);
 
-    void checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type) const;
-    void determineCallType(const FunctionAnalyser *analyser);
-    void determineCalleeType(FunctionAnalyser *analyser, const std::u32string &name,
+    void checkMutation(ExpressionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type) const;
+    void determineCallType(const ExpressionAnalyser *analyser);
+    void determineCalleeType(ExpressionAnalyser *analyser, const std::u32string &name,
                              std::shared_ptr<ASTExpr> &callee, const Type &otype);
-    Type analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+    Type analyseTypeMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                                std::shared_ptr<ASTExpr> &callee);
 };
 
@@ -63,7 +63,7 @@ class ASTMethod final : public ASTMethodable {
 public:
     ASTMethod(std::u32string name, std::shared_ptr<ASTExpr> callee, const ASTArguments &args, const SourcePosition &p)
     : ASTMethodable(p, args), name_(std::move(name)), callee_(std::move(callee)) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(PrettyStream &pretty) const override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;

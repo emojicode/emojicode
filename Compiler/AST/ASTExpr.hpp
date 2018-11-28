@@ -22,7 +22,7 @@ namespace EmojicodeCompiler {
 
 using llvm::Value;
 class ASTTypeExpr;
-class FunctionAnalyser;
+class ExpressionAnalyser;
 class TypeExpectation;
 class FunctionCodeGenerator;
 class Prettyprinter;
@@ -40,7 +40,7 @@ public:
     /// Subclasses must override this method to generate IR.
     /// If the expression potentially evaluates to an managed value, handleResult() must be called.
     virtual Value* generate(FunctionCodeGenerator *fg) const = 0;
-    virtual Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) = 0;
+    virtual Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) = 0;
     virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) = 0;
 
     /// Informs this expression that if it creates a temporary object the object must not be released after the
@@ -103,7 +103,7 @@ class ASTTypeAsValue final : public ASTExpr {
 public:
     ASTTypeAsValue(std::unique_ptr<ASTType> type, TokenType tokenType, const SourcePosition &p)
         : ASTExpr(p), type_(std::move(type)), tokenType_(tokenType) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
@@ -117,7 +117,7 @@ private:
 class ASTSizeOf final : public ASTExpr {
 public:
     ASTSizeOf(std::unique_ptr<ASTType> type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
@@ -158,7 +158,7 @@ class ASTCallableCall final : public ASTExpr {
 public:
     ASTCallableCall(std::shared_ptr<ASTExpr> value, ASTArguments args,
                     const SourcePosition &p) : ASTExpr(p), callable_(std::move(value)), args_(std::move(args)) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
@@ -173,14 +173,14 @@ class ASTSuper final : public ASTExpr, private ErrorSelfDestructing {
 public:
     ASTSuper(std::u32string name, ASTArguments args, const SourcePosition &p)
     : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
 private:
-    void analyseSuperInit(FunctionAnalyser *analyser);
+    void analyseSuperInit(ExpressionAnalyser *analyser);
     std::u32string name_;
     Function *function_ = nullptr;
     Type calleeType_ = Type::noReturn();
@@ -188,14 +188,14 @@ private:
     bool init_ = false;
     bool manageErrorProneness_ = false;
 
-    void analyseSuperInitErrorProneness(FunctionAnalyser *analyser, const Initializer *initializer);
+    void analyseSuperInitErrorProneness(ExpressionAnalyser *analyser, const Initializer *initializer);
 };
 
 class ASTConditionalAssignment final : public ASTExpr {
 public:
     ASTConditionalAssignment(std::u32string varName, std::shared_ptr<ASTExpr> expr,
                              const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;

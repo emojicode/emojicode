@@ -35,7 +35,7 @@ bool isOnlyNothingnessReturnAllowed(FunctionType type) {
 }
 
 bool hasThisArgument(Function *function) {
-    return (isSelfAllowed(function->functionType()) || function->functionType() == FunctionType::ClassMethod) &&
+    return isSelfAllowed(function->functionType()) &&
             !(function->functionType() == FunctionType::ObjectInitializer &&
               dynamic_cast<Class *>(function->owner())->foreign());
 }
