@@ -32,7 +32,11 @@ Type ASTGetVariable::analyse(ExpressionAnalyser *analyser, const TypeExpectation
     auto var = analyser->scoper().getVariable(name(), position());
     setVariableAccess(var, analyser);
     var.variable.uninitalizedError(position());
-    return var.variable.type();
+    auto type = var.variable.type();
+    if (var.inInstanceScope && !analyser->typeContext().calleeType().isMutable()) {
+        type.setMutable(false);
+    }
+    return type;
 }
 
 void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
