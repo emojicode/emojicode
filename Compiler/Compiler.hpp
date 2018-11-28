@@ -102,7 +102,7 @@ public:
     void assignSTypes(Package *s);
 
     Class *sString = nullptr;
-    Class *sList = nullptr;
+    ValueType *sList = nullptr;
     Class *sDictionary = nullptr;
     Protocol *sEnumerable = nullptr;
     ValueType *sBoolean = nullptr;

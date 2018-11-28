@@ -14,6 +14,7 @@
 #include "Parsing/AbstractParser.hpp"
 #include "Scoping/SemanticScoper.hpp"
 #include "Types/Class.hpp"
+#include "Types/ValueType.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
 
@@ -105,7 +106,11 @@ void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlo
 }
 
 Type ASTListLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeType::Class && expectation.klass() == analyser->compiler()->sList) {
+    type_ = Type(analyser->compiler()->sList);
+    type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
+    type_.typeDefinition()->lookupMethod(U"🐻", true)->createUnspecificReification();
+        
+    if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sList) {
         auto type = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(expectation.copyType()));
         for (auto &valueNode : values_) {
             analyser->expectType(type, &valueNode);
@@ -114,8 +119,6 @@ Type ASTListLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation
         type_.setExact(true);
         return type_;
     }
-
-    type_ = Type(analyser->compiler()->sList);
 
     CommonTypeFinder finder;
     for (auto &valueNode : values_) {

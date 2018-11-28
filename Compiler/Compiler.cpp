@@ -191,7 +191,7 @@ void Compiler::assignSTypes(Package *s) {
     sByte = getStandardValueType(U"💧", s);
 
     sString = getStandardClass(U"🔡", s);
-    sList = getStandardClass(U"🍨", s);
+    sList = getStandardValueType(U"🍨", s);
     sDictionary = getStandardClass(U"🍯", s);
 
     sEnumerable = getStandardProtocol(

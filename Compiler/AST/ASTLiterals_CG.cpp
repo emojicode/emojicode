@@ -71,13 +71,16 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
     auto init = type_.typeDefinition()->lookupInitializer(U"🐴");
     auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size()), U"", position());
-    auto list = ASTInitialization::initObject(fg, ASTArguments(position(), { capacity }), init, type_);
+
+    auto list = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
+    CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, ASTArguments(position(), { capacity }), init);
     for (auto &value : values_) {
         auto args = ASTArguments(position(), { value });
-        auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, true);
+        auto method = type_.typeDefinition()->lookupMethod(U"🐻", true);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method);
     }
-    return handleResult(fg, list);
+    handleResult(fg, list, true);
+    return fg->builder().CreateLoad(list);
 }
 
 Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {

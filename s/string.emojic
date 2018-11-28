@@ -186,7 +186,7 @@ string, but those themselves are then immutable again.
     *seperator* itself is removed from the string.
   📗
   ❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡🍆 🍇
-    🆕🍨🐚🔡🍆🐸❗️ ➡️ list
+    🆕🍨🐚🔡🍆🐸❗️ ➡️ 🖍🆕list
 
     0 ➡️ 🖍🆕lastIndex
     👍 ➡️ 🖍🆕continue
@@ -260,9 +260,9 @@ string, but those themselves are then immutable again.
 
   📗 Returns an array with the graphemes from this string. 📗
   ❗️ 🎶 ➡️ 🍨🐚🔡🍆 🍇
-    🆕🍨🐚🔡🍆🐸❗️ ➡️ list
+    🆕🍦🐚🔡🍆🆕❗️ ➡️ list
     🔣 🐕🍇 grapheme🔡 🐻list grapheme❗️🍉❗️
-    ↩️ list
+    ↩️ 🥄list❗️
   🍉
 
   🔒❗️ 🔣 cb 🍇🔡🍉 📻 🔤sStringGraphemes🔤
