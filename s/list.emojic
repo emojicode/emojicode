@@ -76,8 +76,21 @@
 📗
   List, an ordered mutable collection.
 
-  [Read more in the
-  language reference.](../../reference/the-s-package.html#-lists)
+  🍨 provides random access, appending and removing from the last element in
+  `O(1)`.
+
+  🍨 is a value type. This means that copies of 🍨 are independent:
+
+  ```
+  🍨 🔤red🔤 🔤green🔤 🔤blue🔤 🍆 ➡️ colors
+  colors ➡️ 🖍🆕otherColors
+  🐻 otherColors 🔤pink🔤❗️
+  ```
+
+  In the above example the dictionary in `colors` will still contain only three
+  strings as only `otherColors` was modified.
+
+  To learn more about list literals [see the Language Reference.](../../reference/the-s-package.html#-list)
 📗
 🌍 🕊 🍨🐚Element ⚪🍆️ 🍇
   🖍🆕 data 🍧🐚Element🍆

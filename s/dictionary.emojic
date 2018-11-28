@@ -108,8 +108,21 @@
 📗
   Dictionary, holding key value pairs.
 
-  [Read more in the
-  language reference.](../../reference/the-s-package.html#-dictionaries)
+  Dictionaries allow you to associate keys with values. 🍯 is implemented as a
+  hash table and is `O(1)` on average and `O(n)` in worth case.
+
+  🍯 is a value type. This means that copies of 🍯 are independent:
+
+  ```
+  🍯 🔤Jane🔤 45 🔤Sharon🔤 22 🔤Bob🔤 64 🍆 ➡️ ages
+  ages ➡️ 🖍🆕agesCopy
+  🐷 agesCopy 🔤Jane🔤 46❗️
+  ```
+
+  In the above example the dictionary in `ages` will still contain 45 for the
+  key `🔤Jane🔤` as only `agesCopy` was modified.
+
+  To learn more about dictionary literals [see the Language Reference.](../../reference/the-s-package.html#-dictionaries)
 📗
 🌍 🕊 🍯🐚Element ⚪🍆️ 🍇
   🖍🆕 data 🌸🐚Element🍆️

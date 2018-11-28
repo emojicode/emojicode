@@ -322,7 +322,7 @@ string, but those themselves are then immutable again.
     🍉
   🍉
 
-  📗 Adds the symbols of *string* to this 🔠. 📗
+  📗 Adds the contents of *string* to this 🔠. 📗
   ❗️ 🐻 string 🔡 🍇
     📐string❗️ ➡️ stringSize
     ☣️ 🍇
@@ -350,7 +350,10 @@ string, but those themselves are then immutable again.
     ↩️ data
   🍉
 
-  📗 Returns the number of symbols. 📗
+  📗
+    Returns the number of UTF-8 bytes required to represent the content of
+    the instance.
+  📗
   ❗️ 📐 ➡️ 🔢 🍇
     ↩️ count
   🍉

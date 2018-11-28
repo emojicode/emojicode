@@ -46,12 +46,12 @@
     ↩️ 0
   🍉
 
-  📗 Returns the number of numbers in this range. 📗
+  📗 Returns the number of integers in this range. 📗
   ❗️ 🐔 ➡️ 🔢 🍇
     ↩️ 🤜stop ➖ start🤛 ➗ step
   🍉
 
-  📗 Returns an iterator to iterate over the symbols of this string. 📗
+  📗 Returns an iterator to iterate over integers in this range. 📗
   ❗️ 🍡 ➡️ 🌳🐚🔢🍆 🍇
     ↩️ 🆕🌳🐚🔢🍆🆕  🐕❗️
   🍉
