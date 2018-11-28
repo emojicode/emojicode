@@ -192,7 +192,7 @@ void Compiler::assignSTypes(Package *s) {
 
     sString = getStandardClass(U"🔡", s);
     sList = getStandardValueType(U"🍨", s);
-    sDictionary = getStandardClass(U"🍯", s);
+    sDictionary = getStandardValueType(U"🍯", s);
 
     sEnumerable = getStandardProtocol(
             std::u32string(1, E_CLOCKWISE_RIGHTWARDS_AND_LEFTWARDS_OPEN_CIRCLE_ARROWS_WITH_CIRCLED_ONE_OVERLAY), s);

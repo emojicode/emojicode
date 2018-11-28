@@ -8,6 +8,16 @@
     🤷‍♀️➡️🖍next
   🍉
 
+  🆕👥 pair 🐝🐚Key Element🍆️ 🍇
+    🐽pair❗️ ➡️🖍element
+    🔑pair❗️ ➡️🖍key
+    ⚗️pair❗️ ➡️🖍hash
+
+    ↪️ next ➡️ nextu 🍇
+      🆕🐝🐚Key Element🍆👥 nextu❗️➡️🖍next
+    🍉
+  🍉
+
   ❗️ 🐽 ➡️ Element 🍇
     ↩️ element
   🍉
@@ -19,7 +29,6 @@
   ❗️ 🔑 ➡️ Key 🍇
     ↩️ key
   🍉
-
 
   ❗️ ⚗️ ➡️ 🔢 🍇
     ↩️ hash
@@ -44,16 +53,67 @@
   🍉
 🍉
 
+🐇 🌸🐚Element ⚪🍆️ 🍇
+  🖍🆕 capacity 🔢
+  🖍🆕 data 🧠
+
+  🆕 🍼capacity🔢 🍇
+    ☣️ 🍇
+      capacity✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ length
+      🆕🧠🆕 length❗️ ➡️ 🖍data
+      ✍️ data 0 0 length❗
+    🍉
+  🍉
+
+  🆕👥 storage 🌸🐚Element🍆 🍇
+    🐴storage❓ ➡️ 🖍capacity
+
+    ☣️ 🍇
+      🆕🧠🆕 capacity✖️⚖️Element❗️ ➡️ 🖍data
+      🔂 i 🆕⏩⏩ 0 capacity❗️ 🍇
+        ↪️🐽 🧠storage❗️🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗️ ➡️ v 🍇
+          🆕🐝🐚🔡Element🍆👥 v❗️➡️pair
+          🐷 data🐚🍬🐝🐚🔡Element🍆🍆 pair i✖️⚖️🍬🐝🐚🔡Element🍆❗️
+        🍉
+        🙅‍♀️🍇
+          🐷 data🐚🍬🐝🐚🔡Element🍆🍆 🤷‍♂️ i✖️⚖️🍬🐝🐚🔡Element🍆❗️
+        🍉
+      🍉
+    🍉
+  🍉
+
+  ❗️🧠 ➡️ 🧠 🍇
+    ↩️ data
+  🍉
+
+  📗 Returns the lists current capacity. 📗
+  ❓ 🐴 ➡️ 🔢 🍇
+    ↩️ capacity
+  🍉
+
+  📗 Releases everything inside the list. 📗
+  ☣️❗️♻️ 🍇
+    🔂 i 🆕⏩⏩ 0 capacity❗️ 🍇
+      ♻️ data🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗
+    🍉
+  🍉
+
+  ♻️ 🍇
+    ☣️ 🍇
+      ♻️ 🐕❗️
+    🍉
+  🍉
+🍉
+
 📗
   Dictionary, holding key value pairs.
 
   [Read more in the
   language reference.](../../reference/the-s-package.html#-dictionaries)
 📗
-🌍 🐇 🍯🐚Element ⚪🍆️ 🍇
-  🖍🆕 data 🧠
+🌍 🕊 🍯🐚Element ⚪🍆️ 🍇
+  🖍🆕 data 🌸🐚Element🍆️
   🖍🆕 count 🔢
-  🖍🆕 capacity 🔢
 
   🐇❗🛷 n 🔢 ➡️ 🔢 🍇
     ↪️ n ◀️ 7 🍇
@@ -93,26 +153,23 @@
     ↩️ n✖️2
   🍉
 
+  📗 Prepare this dictionary for mutation. 📗
+  🖍🔒❗️📝 🍇
+    ↪️ ❎🏮data❗️ 🍇
+      🆕🌸🐚Element🍆👥 data❗️ ➡️ 🖍data
+    🍉
+  🍉
+
   📗 Creates an empty 🍯. 📗
   🆕 🐸 🍇
-    7 ➡️ 🖍capacity
     0 ➡️ 🖍count
-    ☣️ 🍇
-      capacity✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ length
-      🆕🧠🆕 length❗️ ➡️ 🖍data
-      ✍️ data 0 0 length❗
-    🍉
+    🆕🌸🐚Element🍆️🆕 7❗️➡️ 🖍data
   🍉
 
   📗 Creates an empty 🍯 with a capacity of at least *minCapacity*. 📗
   🆕 🐴 minCapacity 🔢 🍇
-    🛷🐇🍯🐚Element🍆 minCapacity❗️ ➡️ 🖍capacity
     0 ➡️ 🖍count
-    ☣️ 🍇
-      capacity✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ length
-      🆕🧠🆕 length❗️ ➡️ 🖍data
-      ✍️ data 0 0 length❗
-    🍉
+    🆕🌸🐚Element🍆️🆕 🛷🕊🍯🐚Element🍆 minCapacity❗️❗️➡️ 🖍data
   🍉
 
   🔒❓ 🔑 entry 🐝🐚🔡Element🍆 key 🔡 hash 🔢 ➡️ 👌 🍇
@@ -124,10 +181,10 @@
 
   🔒❗ 🔍 key 🔡 ➡️ 🍬🐝🐚🔡Element🍆 🍇
     ⚗️key❗➡️ hash
-    hash🚮capacity️ ➡️ index
+    hash🚮🐴data❓ ➡️ index
 
     ☣️ 🍇
-      🐽 data🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
+      🐽 🧠data❗️🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
     🍉
 
     🔁 entry? ➡️ entry 🍇
@@ -155,20 +212,21 @@
     Removes *key* and its assigned value from the 🍯. No action is performed if
     *key* is not in the 🍯.
   📗
-  ❗️ 🐨 key 🔡 🍇
+  🖍❗️ 🐨 key 🔡 🍇
+    📝🐕❗️
     ⚗️key❗➡️ hash
-    hash🚮capacity️ ➡️ index
+    hash🚮🐴data❓ ➡️ index
 
     ☣️ 🍇
-      🐽 data🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
+      🐽 🧠data❗️🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
     🍉
 
     ↪️ entry? ➡️ entry 🍇
       ↪️ 🔑entry❗️️ 🙌 key 🍇
         ☣️ 🍇
           index✖️⚖️🍬🐝🐚🔡Element🍆  ➡️ offset
-          ♻️ data🐚🍬🐝🐚🔡Element🍆🍆 offset❗
-          🐷 data🐚🍬🐝🐚🔡Element🍆🍆 ⏭entry❗️️ offset❗
+          ♻️ 🧠data❗️🐚🍬🐝🐚🔡Element🍆🍆 offset❗
+          🐷 🧠data❗️🐚🍬🐝🐚🔡Element🍆🍆 ⏭entry❗️️ offset❗
         🍉
         count ⬅️➖ 1
         ↩️️↩️️
@@ -187,7 +245,8 @@
   🍉
 
   📗 Assings a value to the provided key. 📗
-  ❗️ 🐷 key 🔡 value Element 🍇
+  🖍❗️ 🐷 key 🔡 value Element 🍇
+    📝🐕❗️
     ↪️ 🔍🐕 key❗️➡️ entry 🍇
       🐷 entry value❗️
       ↩️↩️
@@ -197,11 +256,11 @@
     🦕🐕❗
 
     ⚗️key❗➡️ hash
-    hash🚮capacity️ ➡️ index
+    hash🚮🐴data❓ ➡️ index
     🆕🐝🐚🔡Element🍆🆕 key value hash❗️ ➡️ entry
 
     ☣️ 🍇
-      🐽 data🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ entry?
+      🐽 🧠data❗️🐚🍬🐝🐚🔡Element🍆🍆 index✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ entry?
     🍉
 
     ↪️ entry? ➡️ anEntry 🍇
@@ -211,36 +270,27 @@
 
     ☣️ 🍇
       index✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ offset
-      ♻️ data🐚🍬🐝🐚🔡Element🍆🍆 offset❗
-      🐷 data🐚🍬🐝🐚🔡Element🍆🍆 entry offset❗
+      ♻️ 🧠data❗️🐚🍬🐝🐚🔡Element🍆🍆 offset❗
+      🐷 🧠data❗️🐚🍬🐝🐚🔡Element🍆🍆 entry offset❗
     🍉
   🍉
 
-  🔒❗🦕️ 🍇
-    ↪️ 💯count❗️➗💯capacity❗▶️ 0.75 🍇️
+  🖍🔒❗🦕️ 🍇
+    ↪️ 💯count❗️➗💯🐴data❓❗▶️ 0.75 🍇️
       data ➡️ oldData
-      capacity ➡️ oldCapacity
+      🐴data❓ ➡️ oldCapacity
 
       0 ➡️ 🖍count
-      🛷🐇🍯🐚Element🍆 capacity❗️ ➡️ 🖍capacity
-
-      ☣️ 🍇
-        capacity✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ length
-        🆕🧠🆕 length❗️ ➡️ 🖍data
-        ✍️ data 0 0 length❗
-      🍉
+      🆕🌸🐚Element🍆️🆕 🛷🕊🍯🐚Element🍆 🐴data❓❗️❗️➡️ 🖍data
 
       🔂 i 🆕⏩⏩ 0 oldCapacity❗️ 🍇
         i✖️⚖️🍬🐝🐚🔡Element🍆 ➡️ offset
         ☣️ 🍇
-          🐽 oldData 🐚🍬🐝🐚🔡Element🍆🍆 offset❗ ➡️ 🖍🆕entry?
+          🐽 🧠oldData❗️ 🐚🍬🐝🐚🔡Element🍆🍆 offset❗ ➡️ 🖍🆕entry?
         🍉
         🔁 entry? ➡️ entry 🍇
           🐷🐕 🔑entry❗🐽entry❗❗
           ⏭entry❗ ➡️ 🖍entry?
-        🍉
-        ☣️ 🍇
-          ♻️ oldData🐚🍬🐝🐚🔡Element🍆🍆 offset❗
         🍉
       🍉
     🍉
@@ -254,9 +304,9 @@
   📗
   ❗️ 🐙 ➡️ 🍨🐚🔡🍆 🍇
     🆕🍨🐚🔡🍆🐴count❗➡️ 🖍🆕list
-    🔂 i 🆕⏩⏩ 0 capacity❗️ 🍇
+    🔂 i 🆕⏩⏩ 0 🐴data❓❗️ 🍇
       ☣️ 🍇
-        🐽 data🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
+        🐽 🧠data❗️🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗ ➡️ 🖍🆕entry?
       🍉
       🔁 entry? ➡️ entry 🍇
         🐻 list 🔑entry❗❗
@@ -270,29 +320,17 @@
     Removes all key-value pairs in this 🍯 and returns the number of deleted
     items.
   📗
-  ❗️ 🐗 ➡️ 🔢 🍇
+  🖍❗️ 🐗 ➡️ 🔢 🍇
+    📝🐕❗️
     ☣️ 🍇
-      ♻️ 🐕❗️
+      ♻️ data❗️
     🍉
     count ➡️ oldCount
     0 ➡️ 🖍count
     ☣️ 🍇
-      ✍️ data 0 0 capacity✖️⚖️🍬🐝🐚🔡Element🍆❗
+      ✍️ 🧠data❗ 0 0 🐴data❓✖️⚖️🍬🐝🐚🔡Element🍆❗
     🍉
     ↩️ oldCount
-  🍉
-
-  📗 Releases everything inside the list. 📗
-  ☣️🔒❗️♻️ 🍇
-    🔂 i 🆕⏩⏩ 0 capacity❗️ 🍇
-      ♻️ data🐚🍬🐝🐚🔡Element🍆🍆 i✖️⚖️🍬🐝🐚🔡Element🍆❗
-    🍉
-  🍉
-
-  ♻️ 🍇
-    ☣️ 🍇
-      ♻️ 🐕❗️
-    🍉
   🍉
 
   📗 Checks whether *key* is in this 🍯. 📗

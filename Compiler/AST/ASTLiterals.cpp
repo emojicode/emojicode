@@ -78,6 +78,8 @@ Type ASTNoValue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
 
 Type ASTDictionaryLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(analyser->compiler()->sDictionary);
+    type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
+    type_.typeDefinition()->lookupMethod(U"🐷", true)->createUnspecificReification();
 
     CommonTypeFinder finder;
     for (auto it = values_.begin(); it != values_.end(); it++) {

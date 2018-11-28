@@ -57,15 +57,18 @@ Value* ASTNoValue::generate(FunctionCodeGenerator *fg) const {
 Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
     auto init = type_.typeDefinition()->lookupInitializer(U"🐴");
     auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size() / 2), U"", position());
-    auto dict = ASTInitialization::initObject(fg, ASTArguments(position(), { capacity }), init, type_);
+
+    auto dict = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
+    CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, ASTArguments(position(), { capacity }), init);
     for (auto it = values_.begin(); it != values_.end(); it++) {
         auto args = ASTArguments(position());
         args.addArguments(*it);
         args.addArguments(*(++it));
-        auto method = type_.typeDefinition()->lookupMethod({ 0x1F437 }, true);
+        auto method = type_.typeDefinition()->lookupMethod(U"🐷", true);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method);
     }
-    return handleResult(fg, dict);
+    handleResult(fg, dict, true);
+    return fg->builder().CreateLoad(dict);
 }
 
 Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {

@@ -103,7 +103,7 @@ public:
 
     Class *sString = nullptr;
     ValueType *sList = nullptr;
-    Class *sDictionary = nullptr;
+    ValueType *sDictionary = nullptr;
     Protocol *sEnumerable = nullptr;
     ValueType *sBoolean = nullptr;
     ValueType *sInteger = nullptr;
