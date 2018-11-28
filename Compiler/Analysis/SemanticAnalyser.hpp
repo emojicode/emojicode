@@ -6,6 +6,7 @@
 #define EMOJICODE_SEMANTICANALYSER_HPP
 
 #include <queue>
+#include <memory>
 
 namespace EmojicodeCompiler {
 
