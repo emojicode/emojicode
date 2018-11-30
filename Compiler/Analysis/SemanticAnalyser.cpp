@@ -243,7 +243,7 @@ bool SemanticAnalyser::checkArgumentPromise(const Function *sub, const Function 
 
 void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol, const SourcePosition &p) {
     for (auto method : protocol.protocol()->methodList()) {
-        auto methodImplementation = type.typeDefinition()->lookupMethod(method->name(), method->isImperative());
+        auto methodImplementation = type.typeDefinition()->lookupMethod(method->name(), method->mood());
         if (methodImplementation == nullptr) {
             package_->compiler()->error(
                     CompilerError(p, type.toString(TypeContext()), " does not conform to protocol ",

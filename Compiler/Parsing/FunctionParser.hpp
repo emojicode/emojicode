@@ -81,7 +81,9 @@ private:
     std::unique_ptr<ASTStatement> parseVariableDeclaration(const Token &token);
 
     std::unique_ptr<ASTStatement> parseReturn(const Token &token);
-    std::unique_ptr<ASTStatement> parseAssignment(const std::shared_ptr<ASTExpr> &expr) const;
+    std::unique_ptr<ASTStatement> parseAssignment(std::shared_ptr<ASTExpr> expr);
+
+    std::unique_ptr<ASTStatement> parseMethodAssignment(std::shared_ptr<ASTExpr> expr);
 };
 
 }  // namespace EmojicodeCompiler

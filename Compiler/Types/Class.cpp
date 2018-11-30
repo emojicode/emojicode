@@ -178,18 +178,18 @@ Initializer* Class::lookupInitializer(const std::u32string &name) const {
     return nullptr;
 }
 
-Function * Class::lookupMethod(const std::u32string &name, bool imperative) const {
+Function * Class::lookupMethod(const std::u32string &name, Mood mood) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto method = klass->TypeDefinition::lookupMethod(name, imperative)) {
+        if (auto method = klass->TypeDefinition::lookupMethod(name, mood)) {
             return method;
         }
     }
     return nullptr;
 }
 
-Function * Class::lookupTypeMethod(const std::u32string &name, bool imperative) const {
+Function * Class::lookupTypeMethod(const std::u32string &name, Mood mood) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto method = klass->TypeDefinition::lookupTypeMethod(name, imperative)) {
+        if (auto method = klass->TypeDefinition::lookupTypeMethod(name, mood)) {
             return method;
         }
     }

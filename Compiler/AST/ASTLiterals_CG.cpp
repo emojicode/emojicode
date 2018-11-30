@@ -64,7 +64,7 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
         auto args = ASTArguments(position());
         args.addArguments(*it);
         args.addArguments(*(++it));
-        auto method = type_.typeDefinition()->lookupMethod(U"🐷", true);
+        auto method = type_.typeDefinition()->lookupMethod(U"🐷", Mood::Imperative);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method);
     }
     handleResult(fg, dict, true);
@@ -79,7 +79,7 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
     CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, ASTArguments(position(), { capacity }), init);
     for (auto &value : values_) {
         auto args = ASTArguments(position(), { value });
-        auto method = type_.typeDefinition()->lookupMethod(U"🐻", true);
+        auto method = type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method);
     }
     handleResult(fg, list, true);
@@ -94,10 +94,10 @@ Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
 
     for (auto end = values_.end(); it != end; it++) {
         auto args = ASTArguments(position(), { *it });
-        auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, true);
+        auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, Mood::Imperative);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_, args, method);
     }
-    auto method = type_.typeDefinition()->lookupMethod({ 0x1F521 }, true);
+    auto method = type_.typeDefinition()->lookupMethod({ 0x1F521 }, Mood::Imperative);
     auto str = CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_,
                                                                         ASTArguments(position()), method);
     fg->release(builder, type_);

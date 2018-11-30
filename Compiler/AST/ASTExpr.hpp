@@ -14,6 +14,7 @@
 #include "Types/Type.hpp"
 #include "ErrorSelfDestructing.hpp"
 #include "MemoryFlowAnalysis/MFFlowCategory.hpp"
+#include "Functions/Mood.hpp"
 #include "Scoping/Variable.hpp"
 #include <llvm/IR/Value.h>
 #include <utility>
@@ -133,7 +134,7 @@ public:
      ASTArguments(const SourcePosition &p, std::vector<std::shared_ptr<ASTExpr>> args)
         : ASTNode(p), arguments_(std::move(args)) {}
 
-    ASTArguments(const SourcePosition &p, bool imperative) : ASTNode(p), imperative_(imperative) {}
+    ASTArguments(const SourcePosition &p, Mood mood) : ASTNode(p), mood_(mood) {}
     void addGenericArgument(std::unique_ptr<ASTType> type) { genericArguments_.emplace_back(std::move(type)); }
     const std::vector<std::shared_ptr<ASTType>>& genericArguments() const { return genericArguments_; }
     std::vector<std::shared_ptr<ASTType>>& genericArguments() { return genericArguments_; }
@@ -141,14 +142,14 @@ public:
     std::vector<std::shared_ptr<ASTExpr>>& args() { return arguments_; }
     const std::vector<std::shared_ptr<ASTExpr>>& args() const { return arguments_; }
     void toCode(PrettyStream &pretty) const;
-    bool isImperative() const { return imperative_; }
-    void setImperative(bool imperative) { imperative_ = imperative; }
+    Mood mood() const { return mood_; }
+    void setMood(Mood mood) { mood_ = mood; }
 
     const std::vector<Type>& genericArgumentTypes() const { return genericArgumentsTypes_; }
     void setGenericArgumentTypes(std::vector<Type> types) { genericArgumentsTypes_ = std::move(types); }
 
 private:
-    bool imperative_ = true;
+    Mood mood_ = Mood::Imperative;
     std::vector<std::shared_ptr<ASTType>> genericArguments_;
     std::vector<std::shared_ptr<ASTExpr>> arguments_;
     std::vector<Type> genericArgumentsTypes_;

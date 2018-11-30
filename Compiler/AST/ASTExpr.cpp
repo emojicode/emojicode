@@ -69,7 +69,7 @@ Type ASTSuper::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expe
     }
 
     function_ = superclass->getMethod(name_, Type(superclass), analyser->typeContext(),
-                                             args_.isImperative(), position());
+                                             args_.mood(), position());
     calleeType_ = Type(superclass);
     return analyser->analyseFunctionCall(&args_, calleeType_, function_);
 }

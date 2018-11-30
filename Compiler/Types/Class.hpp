@@ -72,9 +72,9 @@ public:
 
     std::vector<llvm::Constant *>& virtualTable() { return virtualTable_; }
 
-    Function *lookupMethod(const std::u32string &name, bool imperative) const override;
+    Function *lookupMethod(const std::u32string &name, Mood mood) const override;
     Initializer* lookupInitializer(const std::u32string &name) const override;
-    Function *lookupTypeMethod(const std::u32string &name, bool imperative) const override;
+    Function *lookupTypeMethod(const std::u32string &name, Mood mood) const override;
 
     bool canResolve(TypeDefinition *resolutionConstraint) const override;
     void addInstanceVariable(const InstanceVariableDeclaration &declaration) override;
@@ -88,9 +88,9 @@ public:
         switch (function->functionType()) {
             case FunctionType::ObjectMethod:
             case FunctionType::Deinitializer:
-                return ifNotPrivate(superclass()->lookupMethod(function->name(), function->isImperative()));
+                return ifNotPrivate(superclass()->lookupMethod(function->name(), function->mood()));
             case FunctionType::ClassMethod:
-                return ifNotPrivate(superclass()->lookupTypeMethod(function->name(), function->isImperative()));
+                return ifNotPrivate(superclass()->lookupTypeMethod(function->name(), function->mood()));
             case FunctionType::ObjectInitializer:
                 return findSuperFunction(static_cast<Initializer *>(function));
             default:
