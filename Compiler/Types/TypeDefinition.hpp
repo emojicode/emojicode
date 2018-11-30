@@ -27,6 +27,8 @@ class GlobalVariable;
 
 namespace EmojicodeCompiler {
 
+class ASTExpr;
+
 struct InstanceVariableDeclaration {
     InstanceVariableDeclaration() = delete;
     InstanceVariableDeclaration(std::u32string name, std::unique_ptr<ASTType> type, SourcePosition pos)
@@ -34,6 +36,7 @@ struct InstanceVariableDeclaration {
     std::u32string name;
     std::shared_ptr<ASTType> type;
     SourcePosition position;
+    std::shared_ptr<ASTExpr> expr;
 };
 
 class Extension;

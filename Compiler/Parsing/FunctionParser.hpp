@@ -14,7 +14,6 @@
 #include "AbstractParser.hpp"
 #include "Lex/TokenStream.hpp"
 #include "Parsing/OperatorHelper.hpp"
-#include "Types/TypeContext.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -23,12 +22,12 @@ class ASTBinaryOperator;
 
 class FunctionParser : protected AbstractParser {
 public:
-    FunctionParser(Package *pkg, TokenStream &stream, TypeContext context)
-            : AbstractParser(pkg, stream), typeContext_(std::move(context)) {}
+    FunctionParser(Package *pkg, TokenStream &stream) : AbstractParser(pkg, stream) {}
     std::unique_ptr<ASTBlock> parse();
+    std::shared_ptr<ASTExpr> parseExpr(int precedence) {
+        return parseExprTokens(stream_.consumeToken(), precedence);
+    }
 private:
-    TypeContext typeContext_;
-
     std::unique_ptr<ASTStatement> parseStatement();
     ASTBlock parseBlock();
 
@@ -36,9 +35,6 @@ private:
     std::shared_ptr<ASTExpr> parseExprLeft(const Token &token, int precedence);
     std::shared_ptr<ASTExpr> parseRight(std::shared_ptr<ASTExpr> left, int precendence);
     std::shared_ptr<ASTExpr> parseClosure(const Token &token);
-    std::shared_ptr<ASTExpr> parseExpr(int precedence) {
-        return parseExprTokens(stream_.consumeToken(), precedence);
-    }
 
     std::unique_ptr<ASTStatement> parseIf(const SourcePosition &position);
     std::unique_ptr<ASTStatement> parseErrorHandler(const SourcePosition &position);

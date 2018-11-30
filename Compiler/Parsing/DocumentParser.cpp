@@ -116,7 +116,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
     parseReturnType(function);
     stream_.consumeToken(TokenType::BlockBegin);
 
-    function->setAst(FunctionParser(package_, stream_, function->typeContext()).parse());
+    function->setAst(FunctionParser(package_, stream_).parse());
     package_->setStartFlagFunction(function);
 }
 

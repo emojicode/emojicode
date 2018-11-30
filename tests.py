@@ -34,6 +34,7 @@ compilation_tests = [
     "identityOperator",
     "typesAsValues",
     "class",
+    "ivarAssign",
     "privateClassMethod",
     # "extension",
     "assignmentByCallInstanceVariable",

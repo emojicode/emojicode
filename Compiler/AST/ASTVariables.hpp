@@ -149,9 +149,14 @@ public:
 /// Inserted by the compiler to initialize an instance variable as specified by a baby bottle initializer.
 class ASTInstanceVariableInitialization final : public ASTVariableAssignment {
 public:
-    using ASTVariableAssignment::ASTVariableAssignment;
+    ASTInstanceVariableInitialization(std::u32string name, const std::shared_ptr<ASTExpr> &e,
+                                      const SourcePosition &p, bool analyseExpr)
+        : ASTVariableAssignment(name, e, p), analyseExpr_(analyseExpr) {}
     void analyse(FunctionAnalyser *analyser) override;
     void toCode(PrettyStream &pretty) const override {}
+
+private:
+    bool analyseExpr_;
 };
 
 class ASTConstantVariable final : public ASTVariableInit {

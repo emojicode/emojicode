@@ -110,18 +110,24 @@ void FunctionAnalyser::analyseBabyBottle() {
 
         auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
         auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
-                                                                          getVar, initializer->position());
+                                                                          getVar, initializer->position(), true);
         function()->ast()->prependNode(std::move(assign));
     }
 }
 
 void FunctionAnalyser::initOptionalInstanceVariables() {
     for (auto &var : function()->owner()->instanceVariables()) {
-        if (var.type->type().type() == TypeType::Optional) {
+        if (var.expr != nullptr) {
+            auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var.name);
+            auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
+                                                                              var.expr, function()->position(), false);
+            function()->ast()->prependNode(std::move(assign));
+        }
+        else if (var.type->type().type() == TypeType::Optional) {
             auto &instanceVariable = scoper_->instanceScope()->getLocalVariable(var.name);
             auto noValue = std::make_shared<ASTNoValue>(function()->position());
             auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
-                                                                              noValue, function()->position());
+                                                                              noValue, function()->position(), true);
             function()->ast()->prependNode(std::move(assign));
         }
     }

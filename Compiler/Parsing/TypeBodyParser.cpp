@@ -35,7 +35,7 @@ void TypeBodyParser<TypeDef>::parseFunctionBody(Function *function) {
     }
 
     stream_.consumeToken(TokenType::BlockBegin);
-    function->setAst(FunctionParser(package_, stream_, function->typeContext()).parse());
+    function->setAst(FunctionParser(package_, stream_).parse());
 }
 
 template <typename TypeDef>
@@ -82,6 +82,9 @@ template <typename TypeDef>
 void TypeBodyParser<TypeDef>::parseInstanceVariable(const SourcePosition &p) {
     auto variableName = stream_.consumeToken(TokenType::Variable);
     auto instanceVar = InstanceVariableDeclaration(variableName.value(), parseType(), variableName.position());
+    if (stream_.consumeTokenIf(TokenType::LeftProductionOperator)) {
+        instanceVar.expr = FunctionParser(package_, stream_).parseExpr(0);
+    }
     typeDef_->addInstanceVariable(instanceVar);
 }
 
@@ -308,7 +311,7 @@ void TypeBodyParser<Class>::parseDeinitializer(const SourcePosition &p) {
     if (typeDef_->deinitializer()->ast() != nullptr) {
         package_->compiler()->error(CompilerError(p, "Deinitializer was already specified."));
     }
-    auto parser = FunctionParser(package_, stream_, typeDef_->deinitializer()->typeContext());
+    auto parser = FunctionParser(package_, stream_);
     stream_.consumeToken(TokenType::BlockBegin);
     typeDef_->deinitializer()->setAst(parser.parse());
 }

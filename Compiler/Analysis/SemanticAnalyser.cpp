@@ -6,6 +6,9 @@
 #include "Compiler.hpp"
 #include "DeinitializerBuilder.hpp"
 #include "FunctionAnalyser.hpp"
+#include "AST/ASTExpr.hpp"
+#include "Scoping/SemanticScoper.hpp"
+#include "Types/TypeExpectation.hpp"
 #include "Package/Package.hpp"
 #include "ThunkBuilder.hpp"
 #include "Types/Class.hpp"
@@ -153,9 +156,17 @@ void SemanticAnalyser::analyseFunctionDeclaration(Function *function) const {
 
 void SemanticAnalyser::declareInstanceVariables(const Type &type) {
     TypeDefinition *typeDef = type.typeDefinition();
+
+    auto context = TypeContext(type);
+    ExpressionAnalyser analyser(this, context, package_, std::make_unique<SemanticScoper>());
+
     for (auto &var : typeDef->instanceVariables()) {
-        typeDef->instanceScope().declareVariable(var.name, var.type->analyseType(TypeContext(type)), false,
+        typeDef->instanceScope().declareVariable(var.name, var.type->analyseType(context), false,
                                                  var.position);
+
+        if (var.expr != nullptr) {
+            var.expr->analyse(&analyser, TypeExpectation(var.type->type()));
+        }
     }
 
     if (!typeDef->instanceVariables().empty() && typeDef->initializerList().empty()) {

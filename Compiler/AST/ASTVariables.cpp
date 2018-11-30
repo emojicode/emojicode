@@ -114,7 +114,9 @@ void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
     var.initialize();
     var.mutate(position());
     setVariableAccess(ResolvedVariable(var, true), analyser);
-    analyser->expectType(var.type(), &expr_);
+    if (analyseExpr_) {
+        analyser->expectType(var.type(), &expr_);
+    }
 }
 
 void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
