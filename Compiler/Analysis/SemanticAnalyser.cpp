@@ -158,7 +158,9 @@ void SemanticAnalyser::declareInstanceVariables(const Type &type) {
     TypeDefinition *typeDef = type.typeDefinition();
 
     auto context = TypeContext(type);
-    ExpressionAnalyser analyser(this, context, package_, std::make_unique<SemanticScoper>());
+    auto scoper = std::make_unique<SemanticScoper>();
+    scoper->pushScope();  // For closure analysis
+    ExpressionAnalyser analyser(this, context, package_, std::move(scoper));
 
     for (auto &var : typeDef->instanceVariables()) {
         typeDef->instanceScope().declareVariable(var.name, var.type->analyseType(context), false,

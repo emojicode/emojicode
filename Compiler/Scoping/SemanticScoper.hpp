@@ -38,6 +38,7 @@ public:
 
     /// Returns the current subscope.
     Scope& currentScope() {
+        assert(!scopes_.empty());
         return scopes_.front();
     }
 
