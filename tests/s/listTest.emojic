@@ -95,8 +95,8 @@
     ⛔🐕 🍨 -7  -6  -5  -4  10  11  12  🍆 🙌 g4🔤Array Sort🔤❗️
 
     🆕🍨🐚🔢🍆🦊 17 6❗️ ➡️ 🖍🆕getList
-    🐷getList 5 99❗️
-    🐷getList 3 77❗️
+    99➡️🐽getList 5❗️
+    77➡️🐽getList 3❗️
 
     ⛔🐕 🐔getList❗️ 🙌 6 🔤Count should be 6🔤❗️
     ⛔🐕 🐽getList 5❗️ 🙌 99 🔤Index 5 should be 99🔤❗️
@@ -117,7 +117,7 @@
     ⛔🐕 🐽getList 1❗️🙌 40 🔤Index 1 should be 40🔤❗️
     ⛔🐕 🐽getList 0❗️🙌 65 🔤Index 1 should be 65🔤❗️
 
-    🐷getList 1 214❗️
+    214➡️🐽getList 1❗️
     ⛔🐕 🐽getList 1❗️🙌 214 🔤Index 1 should be 214🔤❗️
     ⛔🐕 🐽getList 0❗️🙌 65 🔤Index 1 should be 65🔤❗️
   🍉

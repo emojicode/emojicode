@@ -162,7 +162,7 @@
     Sets *value* at *index*. *index* must be greater than or equal
     to 0 and less than [[🐔❗️]] or the program will panic.
   📗
-  🖍❗️ 🐷 index 🔢 value Element 🍇
+  🖍➡️ 🐽 value Element index 🔢 🍇
     📝🐕❗️
     ↪️ index ▶️🙌 🐔data❓ 👐 index ◀️ 0 🍇
       🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️

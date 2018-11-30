@@ -61,10 +61,9 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
     auto dict = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
     CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, ASTArguments(position(), { capacity }), init);
     for (auto it = values_.begin(); it != values_.end(); it++) {
-        auto args = ASTArguments(position());
-        args.addArguments(*it);
-        args.addArguments(*(++it));
-        auto method = type_.typeDefinition()->lookupMethod(U"🐷", Mood::Imperative);
+        auto key = *(it++);
+        auto args = ASTArguments(position(), { *it, key });
+        auto method = type_.typeDefinition()->lookupMethod(U"🐽", Mood::Assignment);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method);
     }
     handleResult(fg, dict, true);
