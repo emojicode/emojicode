@@ -28,7 +28,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     auto i8ptr = fg->builder().CreateBitCast(closure_->unspecificReification().function,
                                              llvm::Type::getInt8PtrTy(fg->generator()->context()));
     auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()), i8ptr, 0);
-    return fg->builder().CreateInsertValue(callable, alloc, 1);
+    return handleResult(fg, fg->builder().CreateInsertValue(callable, alloc, 1));
 }
 
 llvm::Value* ASTClosure::createDeinit(CodeGenerator *cg, const Capture &capture) const {
