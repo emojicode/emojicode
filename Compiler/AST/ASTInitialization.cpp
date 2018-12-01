@@ -35,7 +35,7 @@ Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectat
         if (!init->required()) {
             throw CompilerError(position(), "Type is not exact; can only use required initializer.");
         }
-        initializer_ = type.typeDefinition()->lookupTypeMethod(std::u32string({ E_KEY }) + name_, true);
+        initializer_ = type.typeDefinition()->lookupTypeMethod(std::u32string({ E_KEY }) + name_, Mood::Imperative);
     }
     else {
         initializer_ = init;

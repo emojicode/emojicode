@@ -79,7 +79,7 @@ Type ASTNoValue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
 Type ASTDictionaryLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(analyser->compiler()->sDictionary);
     type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
-    type_.typeDefinition()->lookupMethod(U"🐷", true)->createUnspecificReification();
+    type_.typeDefinition()->lookupMethod(U"🐽", Mood::Assignment)->createUnspecificReification();
 
     CommonTypeFinder finder;
     for (auto it = values_.begin(); it != values_.end(); it++) {
@@ -110,7 +110,7 @@ void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlo
 Type ASTListLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(analyser->compiler()->sList);
     type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
-    type_.typeDefinition()->lookupMethod(U"🐻", true)->createUnspecificReification();
+    type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative)->createUnspecificReification();
         
     if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sList) {
         auto type = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(expectation.copyType()));

@@ -105,8 +105,11 @@ std::string mangleFunction(Function *function, const std::map<size_t, Type> &gen
     }
 
     mangleIdentifier(stream, function->name());
-    if (!function->isImperative()) {
+    if (function->mood() == Mood::Interogative) {
         stream << "_intrg";
+    }
+    else if (function->mood() == Mood::Assignment) {
+        stream << "_assign";
     }
     mangleGenericArguments(stream, genericArgs);
     return stream.str();

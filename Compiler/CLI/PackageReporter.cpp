@@ -151,7 +151,7 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
             writer_.String("");
         }
         else {
-            writer_.String(function->isImperative() ? "❗️" : "❓");
+            writer_.String(moodEmoji(function->mood()));
         }
     }
 

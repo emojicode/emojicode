@@ -15,6 +15,7 @@
 namespace EmojicodeCompiler {
 
 enum class AccessLevel;
+enum class Mood;
 class Initializer;
 class CompilerError;
 
@@ -40,7 +41,7 @@ protected:
     void parseInstanceVariable(const SourcePosition &p);
     /// Called if a $method$ has been detected. All tokens up to and including the name.
     void parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                     const Documentation &documentation, AccessLevel access, bool imperative,
+                     const Documentation &documentation, AccessLevel access, Mood mood,
                      const SourcePosition &p);
     /// Called if an $initializer$ has been detected. The first token has already been parsed.
     Initializer* parseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
@@ -50,7 +51,7 @@ protected:
     void parseDeinitializer(const SourcePosition &p);
 
     void doParseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                       const Documentation &documentation, AccessLevel access, bool imperative,
+                       const Documentation &documentation, AccessLevel access, Mood mood,
                        const SourcePosition &p);
 
     Initializer* doParseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,

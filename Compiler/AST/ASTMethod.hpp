@@ -76,7 +76,7 @@ private:
                                     const Type &type) const;
     llvm::Value* buildAddOffsetAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset) const;
 };
-
+    
 }  // namespace EmojicodeCompiler
 
 #endif /* ASTMethod_hpp */

@@ -20,7 +20,7 @@ public:
                 SourcePosition p, bool overriding, std::u32string documentationToken, bool deprecated, bool r,
                 bool unsafe, FunctionType mode)
     : Function(std::move(name), level, final, typeDef, package, std::move(p), overriding,
-               std::move(documentationToken), deprecated, true, true, unsafe, mode), required_(r) {}
+               std::move(documentationToken), deprecated, true, Mood::Imperative, unsafe, mode), required_(r) {}
 
     /// Whether all subclassess are required to implement this initializer as well. Never true for non-class types.
     bool required() const { return required_; }

@@ -258,7 +258,7 @@
   🍉
 
   📗 Assings a value to the provided key. 📗
-  🖍❗️ 🐷 key 🔡 value Element 🍇
+  🖍➡️🐽 value Element key 🔡 🍇
     📝🐕❗️
     ↪️ 🔍🐕 key❗️➡️ entry 🍇
       🐷 entry value❗️
@@ -302,7 +302,7 @@
           🐽 🧠oldData❗️ 🐚🍬🐝🐚🔡Element🍆🍆 offset❗ ➡️ 🖍🆕entry?
         🍉
         🔁 entry? ➡️ entry 🍇
-          🐷🐕 🔑entry❗🐽entry❗❗
+          🐽entry❗ ➡️ 🐽🐕 🔑entry❗❗
           ⏭entry❗ ➡️ 🖍entry?
         🍉
       🍉

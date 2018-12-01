@@ -21,7 +21,7 @@ ValueType::ValueType(std::u32string name, Package *p, SourcePosition pos, const 
 Function* ValueType::copyRetain() {
     if (copyRetain_ == nullptr) {
         copyRetain_ = std::make_unique<Function>(U"copyretain", AccessLevel::Public, false, this, package(),
-                                                    this->position(), false, U"", false, false, true, false,
+                                                    this->position(), false, U"", false, false, Mood::Imperative, false,
                                                     FunctionType::CopyRetainer);
         copyRetain_->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
     }

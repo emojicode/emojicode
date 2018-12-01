@@ -128,7 +128,7 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
 
     auto hasNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
                                                std::make_shared<ASTGetVariable>(U"iterator", position()),
-                                               ASTArguments(position(), false), position());
+                                               ASTArguments(position(), Mood::Interogative), position());
     newBlock.appendNode(std::make_unique<ASTRepeatWhile>(hasNext, std::move(block_), position()));
     block_ = std::move(newBlock);
     block_.analyse(analyser);

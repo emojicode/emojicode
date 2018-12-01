@@ -41,7 +41,7 @@ Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u
     determineCallType(analyser);
 
     method_ = calleeType_.typeDefinition()->getMethod(name, calleeType_, analyser->typeContext(),
-                                                      args_.isImperative(), position());
+                                                      args_.mood(), position());
 
     if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
         callType_ = CallType::StaticDispatch;
@@ -108,7 +108,7 @@ Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const st
     }
 
     method_ = calleeType_.typeDefinition()->getTypeMethod(name, calleeType_, analyser->typeContext(),
-                                                              args_.isImperative(), position());
+                                                              args_.mood(), position());
 
     if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
         callType_ = CallType::StaticDispatch;
@@ -120,7 +120,7 @@ Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const st
 Type ASTMethodable::analyseMultiProtocolCall(ExpressionAnalyser *analyser, const std::u32string &name) {
     for (; multiprotocolN_ < calleeType_.protocols().size(); multiprotocolN_++) {
         auto &protocol = calleeType_.protocols()[multiprotocolN_];
-        if ((method_ = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
+        if ((method_ = protocol.protocol()->lookupMethod(name, args_.mood())) != nullptr) {
             builtIn_ = BuiltInType::Multiprotocol;
             callType_ = CallType::DynamicProtocolDispatch;
             return analyser->analyseFunctionCall(&args_, protocol, method_);
