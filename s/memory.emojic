@@ -79,7 +79,7 @@
     >!H `bytes ➕ sourceOffset` bytes, undefined behavior is caused!
 
     >!N Do not copy managed values using this method! Copy each value
-    >!N individually with 🐽 and 🐷!
+    >!N individually with 🐽 and ➡️ 🐽!
   📗
   ☣️️ ❗️ 🚜 destinationOffset 🔢 source 🧠 sourceOffset 🔢 bytes 🔢 📻 🔤ejcBuiltIn🔤
 
