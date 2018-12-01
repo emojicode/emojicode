@@ -417,19 +417,30 @@
   🍉
 🍉
 
+📗
+  Wrapper for 🍨.
+
+  This class wraps around [[🍨]] and allows it to be passed by reference.
+
+  It is mainly provided for backwards compatibility and may be removed in a
+  future version.
+📗
 🌍 🐇 🍦🐚Element ⚪🍆️ 🍇
   🐊 🔂🐚Element🍆
 
   🖍🆕 array 🍨🐚Element🍆️
 
+  📗 Creates an empty list. 📗
   🆕 🍇
     🆕🍨🐚Element🍆🐸❗️➡️ 🖍array
   🍉
 
+  📗 Appends an element to the list. 📗
   ❗️ 🐻 item Element 🍇
     🐻array item❗️
   🍉
 
+  📗 Returns a copy of the list. 📗
   ❗️ 🥄 ➡️ 🍨🐚Element🍆️ 🍇
     ↩️ array
   🍉
