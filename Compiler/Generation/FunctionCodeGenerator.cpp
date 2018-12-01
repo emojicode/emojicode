@@ -355,7 +355,7 @@ void FunctionCodeGenerator::releaseTemporaryObjects() {
 }
 
 void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
-    if (type.type() == TypeType::Class) {
+    if (type.type() == TypeType::Class || type.type() == TypeType::Someobject) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
         builder().CreateCall(generator()->declarator().release(), opc);
     }
@@ -408,7 +408,7 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
 }
 
 void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
-    if (type.type() == TypeType::Class ||
+    if (type.type() == TypeType::Class || type.type() == TypeType::Someobject ||
         (type.type() == TypeType::ValueType && type.valueType() == generator_->package()->compiler()->sMemory)) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
         builder().CreateCall(generator()->declarator().retain(), { opc });
