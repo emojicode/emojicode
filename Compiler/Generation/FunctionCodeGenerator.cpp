@@ -355,7 +355,7 @@ void FunctionCodeGenerator::releaseTemporaryObjects() {
 }
 
 void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
-    if (type.type() == TypeType::Class || type.type() == TypeType::Someobject) {
+    if (type.type() == TypeType::Class || type.type() == TypeType::Someobject) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
         builder().CreateCall(generator()->declarator().release(), opc);
     }
