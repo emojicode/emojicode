@@ -122,7 +122,11 @@
     will be added is known in advance.
   📗
   🆕 🐴 capacity 🔢 🍇
-    🆕🍧🐚Element🍆🆕0 capacity❗️ ➡️ 🖍data
+    capacity➡️🖍🆕theCapacity
+    ↪️ capacity ◀️🙌 0 🍇
+      10 ➡️ 🖍theCapacity
+    🍉
+    🆕🍧🐚Element🍆🆕0 theCapacity❗️ ➡️ 🖍data
   🍉
 
   📗 Creates an containing the specified number of a single, repeated value. 📗
