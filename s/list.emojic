@@ -17,7 +17,7 @@
     ☣️ 🍇
       🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
       🔂 i 🆕⏩⏩ 0 🐔storage❓❗️ 🍇
-        🐷 data🐚Element🍆 🐽 🧠storage❗️🐚Element🍆 i✖️⚖️Element❗️ i✖️⚖️Element❗️
+        🐽 🧠storage❗️🐚Element🍆 i✖️⚖️Element❗️ ➡️🐽data🐚Element🍆 i✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -134,7 +134,7 @@
     🆕🍧🐚Element🍆🆕count count❗️ ➡️ 🖍data
     ☣️ 🍇
       🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-        🐷 🧠data❗️🐚Element🍆 repeatedValue i✖️⚖️Element❗️
+        repeatedValue ➡️ 🐽🧠data❗️🐚Element🍆 i✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -144,7 +144,7 @@
     📝🐕❗️
     ↕️data❗️
     ☣️ 🍇
-      🐷 🧠data❗️🐚Element🍆 item 🐔data❓✖️⚖️Element❗️
+      item ➡️ 🐽🧠data❗️🐚Element🍆 🐔data❓✖️⚖️Element❗️
     🍉
     🐔data 1❗️
   🍉
@@ -173,7 +173,7 @@
     🍉
     ☣️ 🍇
       ♻️ 🧠data❗️🐚Element🍆 index✖️⚖️Element❗️
-      🐷 🧠data❗️🐚Element🍆 value index✖️⚖️Element❗️
+      value ➡️ 🐽🧠data❗️🐚Element🍆  index✖️⚖️Element❗️
     🍉
   🍉
 
@@ -208,7 +208,7 @@
     ↪️ index ◀️ 🐔data❓ 🍇
       ☣️ 🍇
         🚜 🧠data❗️ 🤜index ➕ 1🤛✖️⚖️Element 🧠data❗️ index✖️⚖️Element 🤜🐔data❓ ➖ index 🤛✖️⚖️Element❗️
-        🐷 🧠data❗️🐚Element🍆 item index✖️⚖️Element❗️
+        item ➡️ 🐽🧠data❗️🐚Element🍆  index✖️⚖️Element❗️
       🍉
       🐔data 1❗️
       ↩️ 👍
@@ -229,7 +229,7 @@
     🐴data 🐔data❓❗️
     ☣️ 🍇
       🔂 i 🆕⏩⏩ 0 🐔list❗️❗️ 🍇
-        🐷 🧠data❗️🐚Element🍆 🐽 🧠🍧list❗️❗️🐚Element🍆 i✖️⚖️Element❗️ 🤜i ➕ oldCount🤛✖️⚖️Element❗️
+        🐽 🧠🍧list❗️❗️🐚Element🍆 i✖️⚖️Element❗️ ➡️ 🐽🧠data❗️🐚Element🍆 🤜i ➕ oldCount🤛✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -335,8 +335,8 @@
 
   ☣️🔒❗🔄 a 🔢 b 🔢 🍇
     🐽 🧠data❗️🐚Element🍆 a✖️⚖️Element❗️ ➡️ temp
-    🐷 🧠data❗️🐚Element🍆 🐽 🧠data❗️🐚Element🍆 b✖️⚖️Element❗️ a✖️⚖️Element❗️
-    🐷 🧠data❗️🐚Element🍆 temp b✖️⚖️Element❗️
+    🐽 🧠data❗️🐚Element🍆 b✖️⚖️Element❗️ ➡️🐽🧠data❗️🐚Element🍆 a✖️⚖️Element❗️
+    temp ➡️🐽🧠data❗️🐚Element🍆 b✖️⚖️Element❗️
   🍉
 
   📗

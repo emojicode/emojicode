@@ -173,11 +173,7 @@ bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &type, cons
     }
     else if (type.typeDefinition() == analyser->compiler()->sMemory) {
         if (name.front() == 0x1F43D) {
-            builtIn_ = BuiltInType::Load;
-            return true;
-        }
-        if (name.front() == 0x1F437) {
-            builtIn_ = BuiltInType::Store;
+            builtIn_ = args_.mood() == Mood::Assignment ? BuiltInType::Store : BuiltInType::Load;
             return true;
         }
         if (name.front() == E_RECYCLING_SYMBOL) {
