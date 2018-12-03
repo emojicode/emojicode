@@ -1,7 +1,8 @@
-sudo: required
+language: cpp
 
-services:
-  - docker
+compiler: clang
+
+install: clang-6.0 libclang-6.0-dev llvm-6.0 llvm-6.0-dev ninja-build python3
 
 script:
-  - ninja tests
+  - cmake .. -GNinja && ninja && ninja tests
