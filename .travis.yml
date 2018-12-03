@@ -1,11 +1,16 @@
-dist: xenial
-
 language: cpp
 
 compiler: clang
 
 before_install:
+  - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+  - echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
+  - echo "deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list
+  - echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" >> /etc/apt/sources.list
+  - sudo apt-get update -qq
+
   - sudo apt-get install -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libclang-6.0-dev libllvm6.0 libncurses-dev libz-dev llvm-6.0 llvm-6.0-dev llvm-6.0-runtime ninja-build python3
+
   - CC=clang-6.0 && CXX=clang++-6.0
 
 script:
