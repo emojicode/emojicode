@@ -10,7 +10,7 @@ before_install:
   - echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
   - sudo apt-get update
 
-  - sudo apt-get install -y libllvm6.0 libncurses-dev libz-dev libstdc++ libstdc++-dev llvm-6.0 llvm-6.0-dev llvm-6.0-runtime ninja-build python3
+  - sudo apt-get install -y libllvm6.0 libncurses-dev libz-dev libstdc++6 libstdc++-5-dev llvm-6.0 llvm-6.0-dev llvm-6.0-runtime ninja-build python3
 
 script:
   - mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests
