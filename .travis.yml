@@ -5,6 +5,7 @@ deploy:
   api_key:
     secure: UnQy6Z+3MzkaD7BvIZBVH6omwNE8qaNBDIAzyPitzVmzCkpujSTlnJIz7JIIB4b7+qYQhFZNNXWUs9rdYsaCi9s4aH0Hk+yj2hQV/qCz/h2974WIC9/1ST59Xtsbmeu8JCuGfLvuok9YK6/p3IwcVu9W9mMAowcmem0VdZFWKXMjRRJMx5xapFomGtIcxlqAhGP6Toq/XXOVKwITXSWCXJPCwX27f5l+9iv+u74FPLlT2et2Gv+x9JH7C5bt+L3fRZzJB4Oxi+21Bec0cDsga2PXbyFGvKznUzW6u5wtSYw007a6R2Mbulodc777j2G4NlSV7qocOFsyO0eHPGkfrT2WM+aC0oek2zEUh27fuLLDukvN0lmFn4G8fk1q+mbE62wD/CnAQJz7LrileLkkL/uBR6F4+/FWBYRlhsDa1NegdV1jyxQRnK+w4aWjeBWtKVG+T6PBIZPfENY9nrhdKGItTN3W2xI7H5x5mXiRtsV+v5GFtzFdqCnpJrCzuNJZxeDsLz8CBr68UTJgySl0MSaybmuBDZ7tqTrjxV1Lm1LDrDn3uHhXXLGUzsJc1W2vBXzR34nI+sB1jADVdziXsnsAw7s2qF7/hPexPWcKXGYYcDzx4zsWciqoJsW2ItLJfcFQgig5sat81plbCPB689GwJMUZKUnULFKiBEC9ESY=
 
+  skip_cleanup: true
   file:
     - "README.md"
     - "build.ninja"
