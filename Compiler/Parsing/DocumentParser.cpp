@@ -12,8 +12,8 @@
 #include "Functions/Initializer.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
-#include "Types/Protocol.hpp"
 #include "Types/Extension.hpp"
+#include "Types/Protocol.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/ValueType.hpp"
 #include <cstring>
@@ -111,12 +111,12 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
 
     auto function = package_->add(std::make_unique<Function>(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public,
                                                              false, nullptr, package_, p, false,
-                                                             documentation.get(), false, false, true, false,
+                                                             documentation.get(), false, false, Mood::Imperative, false,
                                                              FunctionType::Function));
     parseReturnType(function);
     stream_.consumeToken(TokenType::BlockBegin);
 
-    function->setAst(FunctionParser(package_, stream_, function->typeContext()).parse());
+    function->setAst(FunctionParser(package_, stream_).parse());
     package_->setStartFlagFunction(function);
 }
 

@@ -137,6 +137,8 @@
     ❎🐕 ↔🔤abcdefg🔤 🔤abcdef🔤❗️ 🙌 0 🔤String Compare🔤❗️
     ❎🐕 ↔🔤abcdefg🔤 🔤abcdeff🔤❗️ 🙌 0 🔤String Compare🔤❗️
     ⛔🐕 ↔🔤abcdeff🔤 🔤abcdefg🔤❗️ ✖ ↔🔤abcdefg🔤 🔤abcdeff🔤❗️ ◀ 0 🔤String Compare Direction Different🔤❗️
+
+    ⛔🐕 ⚗️🔤Joystick🔤❗️ 🙌 ⚗️🔤Joystick🔤❗️ 🔤Hash🔤❗️
   🍉
 🍉
 

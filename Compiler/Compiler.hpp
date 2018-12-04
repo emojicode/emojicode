@@ -102,8 +102,8 @@ public:
     void assignSTypes(Package *s);
 
     Class *sString = nullptr;
-    Class *sList = nullptr;
-    Class *sDictionary = nullptr;
+    ValueType *sList = nullptr;
+    ValueType *sDictionary = nullptr;
     Protocol *sEnumerable = nullptr;
     ValueType *sBoolean = nullptr;
     ValueType *sInteger = nullptr;

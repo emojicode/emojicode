@@ -10,6 +10,7 @@
 #define Function_hpp
 
 #include "FunctionType.hpp"
+#include "Mood.hpp"
 #include "Types/Generic.hpp"
 #include "MemoryFlowAnalysis/MFFlowCategory.hpp"
 #include <memory>
@@ -65,7 +66,7 @@ public:
     Function() = delete;
     Function(std::u32string name, AccessLevel level, bool final, TypeDefinition *owner, Package *package,
              SourcePosition p,
-             bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
+             bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, Mood mood,
              bool unsafe, FunctionType type);
 
     /// The name of the function.
@@ -115,7 +116,7 @@ public:
 
     bool unsafe() const { return unsafe_; }
 
-    bool isImperative() const { return imperative_; }
+    Mood mood() const { return mood_; }
     /// Whether the function mutates the callee. Only relevant for value type instance methods.
     bool mutating() const { return mutating_; }
 
@@ -172,7 +173,7 @@ private:
     bool final_;
     bool overriding_;
     bool deprecated_;
-    bool imperative_;
+    Mood mood_;
     bool unsafe_;
 
     bool mutating_;

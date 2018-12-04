@@ -47,8 +47,6 @@ public:
     /// Emits a warning for each mutable variable that has not been mutated.
     void recommendFrozenVariables(Compiler *app) const;
 
-    const std::map<std::u32string, Variable>& map() const { return map_; }
-
     void markInherited() {
         for (auto &pair : map_) {
             pair.second.setInherited();

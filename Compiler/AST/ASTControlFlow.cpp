@@ -6,17 +6,17 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Types/Class.hpp"
-#include "AST/ASTNode.hpp"
 #include "ASTControlFlow.hpp"
+#include "AST/ASTNode.hpp"
 #include "ASTMethod.hpp"
 #include "ASTVariables.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
-#include "Types/Protocol.hpp"
 #include "Emojis.h"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
+#include "Types/Class.hpp"
+#include "Types/Protocol.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
@@ -128,7 +128,7 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
 
     auto hasNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
                                                std::make_shared<ASTGetVariable>(U"iterator", position()),
-                                               ASTArguments(position(), false), position());
+                                               ASTArguments(position(), Mood::Interogative), position());
     newBlock.appendNode(std::make_unique<ASTRepeatWhile>(hasNext, std::move(block_), position()));
     block_ = std::move(newBlock);
     block_.analyse(analyser);

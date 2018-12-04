@@ -13,6 +13,7 @@
 #include "Generic.hpp"
 #include "Lex/SourcePosition.hpp"
 #include "Scoping/Scope.hpp"
+#include "Functions/Mood.hpp"
 #include "Type.hpp"
 #include <functional>
 #include <map>
@@ -27,6 +28,8 @@ class GlobalVariable;
 
 namespace EmojicodeCompiler {
 
+class ASTExpr;
+
 struct InstanceVariableDeclaration {
     InstanceVariableDeclaration() = delete;
     InstanceVariableDeclaration(std::u32string name, std::unique_ptr<ASTType> type, SourcePosition pos)
@@ -34,6 +37,7 @@ struct InstanceVariableDeclaration {
     std::u32string name;
     std::shared_ptr<ASTType> type;
     SourcePosition position;
+    std::shared_ptr<ASTExpr> expr;
 };
 
 class Extension;
@@ -66,7 +70,7 @@ public:
 
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
-    Function *getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext, bool imperative,
+    Function *getMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext, Mood mood,
                             const SourcePosition &p) const;
     /// Returns an initializer by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
@@ -75,14 +79,14 @@ public:
     /// Returns a method by the given identifier token or throws an exception if the method does not exist.
     /// @throws CompilerError
     Function *getTypeMethod(const std::u32string &name, const Type &type, const TypeContext &typeContext,
-                            bool imperative, const SourcePosition &p) const;
+                            Mood mood, const SourcePosition &p) const;
 
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function *lookupMethod(const std::u32string &name, bool imperative) const;
+    virtual Function *lookupMethod(const std::u32string &name, Mood mood) const;
     /** Returns a initializer by the given identifier token or @c nullptr if the initializer does not exist. */
     virtual Initializer* lookupInitializer(const std::u32string &name) const;
     /** Returns a method by the given identifier token or @c nullptr if the method does not exist. */
-    virtual Function *lookupTypeMethod(const std::u32string &name, bool imperative) const;
+    virtual Function *lookupTypeMethod(const std::u32string &name, Mood mood) const;
 
     Function* addMethod(std::unique_ptr<Function> &&method);
     Initializer* addInitializer(std::unique_ptr<Initializer> &&initializer);
@@ -117,9 +121,7 @@ public:
     Function* deinitializer();
 
     const std::pair<llvm::Function*, llvm::Function*>& boxRetainRelease() const { return boxRetainRelease_; }
-    void setBoxRetainRelease(llvm::Function *retain, llvm::Function *release) {
-        boxRetainRelease_ = std::make_pair(retain, release);
-    }
+    void setBoxRetainRelease(std::pair<llvm::Function*, llvm::Function*> pair) { boxRetainRelease_ = pair; }
 
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 
@@ -140,7 +142,7 @@ protected:
 
     template <typename T>
     void duplicateDeclarationCheck(T *function, const std::map<std::u32string, std::unique_ptr<T>> &dict) {
-        if (dict.find(methodTableName(function->name(), function->isImperative())) != dict.end()) {
+        if (dict.find(methodTableName(function->name(), function->mood())) != dict.end()) {
             throw CompilerError(function->position(), utf8(function->name()), " is declared twice.");
         }
     }
@@ -172,7 +174,7 @@ private:
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 
-    std::u32string methodTableName(const std::u32string &name, bool imperative) const;
+    std::u32string methodTableName(const std::u32string &name, Mood mood) const;
 };
 
 }  // namespace EmojicodeCompiler

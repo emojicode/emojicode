@@ -11,8 +11,8 @@
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
-#include "Types/Enum.hpp"
 #include "Types/Class.hpp"
+#include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include <type_traits>
 
@@ -35,7 +35,7 @@ void TypeBodyParser<TypeDef>::parseFunctionBody(Function *function) {
     }
 
     stream_.consumeToken(TokenType::BlockBegin);
-    function->setAst(FunctionParser(package_, stream_, function->typeContext()).parse());
+    function->setAst(FunctionParser(package_, stream_).parse());
 }
 
 template <typename TypeDef>
@@ -82,12 +82,15 @@ template <typename TypeDef>
 void TypeBodyParser<TypeDef>::parseInstanceVariable(const SourcePosition &p) {
     auto variableName = stream_.consumeToken(TokenType::Variable);
     auto instanceVar = InstanceVariableDeclaration(variableName.value(), parseType(), variableName.position());
+    if (stream_.consumeTokenIf(TokenType::LeftProductionOperator)) {
+        instanceVar.expr = FunctionParser(package_, stream_).parseExpr(0);
+    }
     typeDef_->addInstanceVariable(instanceVar);
 }
 
 template <typename TypeDef>
 void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                 const Documentation &documentation, AccessLevel access, bool imperative,
+                                 const Documentation &documentation, AccessLevel access, Mood mood,
                                  const SourcePosition &p) {
     attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).allow(Attribute::Unsafe)
             .allow(Attribute::Escaping).check(p, package_->compiler());
@@ -96,7 +99,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
         auto typeMethod = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), typeDef_,
                                                      package_, p, attributes.has(Attribute::Override),
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
-                                                     true, imperative, attributes.has(Attribute::Unsafe),
+                                                     true, mood, attributes.has(Attribute::Unsafe),
                                                      std::is_same<TypeDef, Class>::value ?
                                                      FunctionType::ClassMethod : FunctionType::Function);
         parseFunction(typeMethod.get(), false, attributes.has(Attribute::Escaping));
@@ -106,7 +109,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
         auto mutating = !std::is_same<TypeDef, ValueType>::value || attributes.has(Attribute::Mutating);
         auto method = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), typeDef_,
                                                  package_, p, attributes.has(Attribute::Override), documentation.get(),
-                                                 attributes.has(Attribute::Deprecated), mutating, imperative,
+                                                 attributes.has(Attribute::Deprecated), mutating, mood,
                                                  attributes.has(Attribute::Unsafe),
                                                  std::is_same<TypeDef, Class>::value ? FunctionType::ObjectMethod :
                                                  FunctionType::ValueTypeMethod);
@@ -117,9 +120,9 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
 
 template <typename TypeDef>
 void TypeBodyParser<TypeDef>::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                          const Documentation &documentation, AccessLevel access, bool imperative,
+                                          const Documentation &documentation, AccessLevel access, Mood mood,
                                           const SourcePosition &p) {
-    doParseMethod(name, std::move(attributes), documentation, access, imperative, p);
+    doParseMethod(name, std::move(attributes), documentation, access, mood, p);
 }
 
 template <typename TypeDef>
@@ -170,11 +173,16 @@ void TypeBodyParser<TypeDef>::parse() {
             case TokenType::EndArgumentList: {
                 auto methodName = stream_.consumeToken(TokenType::Identifier);
                 parseMethod(methodName.value(), attributes, documentation, accessLevel,
-                            token.type() == TokenType::EndArgumentList, token.position());
+                            token.type() == TokenType::EndArgumentList ? Mood::Imperative : Mood::Interogative,
+                            token.position());
                 break;
             }
             case TokenType::Operator:
-                parseMethod(token.value(), attributes, documentation, accessLevel, true, token.position());
+                parseMethod(token.value(), attributes, documentation, accessLevel, Mood::Imperative, token.position());
+                break;
+            case TokenType::RightProductionOperator:
+                parseMethod(stream_.consumeToken(TokenType::Identifier).value(), attributes, documentation, accessLevel,
+                            Mood::Assignment, token.position());
                 break;
             case TokenType::New: {
                 if (attributes.has(Attribute::Mutating)) {
@@ -186,7 +194,9 @@ void TypeBodyParser<TypeDef>::parse() {
 
                 std::u32string name = std::u32string(1, E_NEW_SIGN);
                 if (stream_.nextTokenIs(TokenType::Identifier) && !stream_.nextTokenIs(E_RADIO)
-                    && !stream_.nextTokenIs(E_BABY_BOTTLE) && !stream_.nextTokenIs(E_LEFT_LUGGAGE)) {
+                    && !stream_.nextTokenIs(E_BABY_BOTTLE) && !stream_.nextTokenIs(E_LEFT_LUGGAGE)
+                    && !stream_.nextTokenIs(E_OPEN_LOCK)  && !stream_.nextTokenIs(E_CLOSED_LOCK_WITH_KEY)
+                    && !stream_.nextTokenIs(E_LOCK)) {
                     name = stream_.consumeToken(TokenType::Identifier).value();
                 }
                 parseInitializer(name, attributes, documentation, accessLevel, token.position());
@@ -237,20 +247,20 @@ Initializer* TypeBodyParser<Enum>::parseInitializer(const std::u32string &name, 
 
 template<>
 void TypeBodyParser<Class>::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                        const Documentation &documentation, AccessLevel access, bool imperative,
+                                        const Documentation &documentation, AccessLevel access, Mood mood,
                                         const SourcePosition &p) {
     doParseMethod(name, attributes.allow(Attribute::Final).allow(Attribute::Override), documentation,
-                  access, imperative, p);
+                  access, mood, p);
 }
 
 template<>
 void TypeBodyParser<ValueType>::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                            const Documentation &documentation, AccessLevel access, bool imperative,
+                                            const Documentation &documentation, AccessLevel access, Mood mood,
                                             const SourcePosition &p) {
     if (!attributes.has(Attribute::StaticOnType)) {
         attributes.allow(Attribute::Mutating);
     }
-    doParseMethod(name, attributes, documentation, access, imperative, p);
+    doParseMethod(name, attributes, documentation, access, mood, p);
 }
 
 template<>
@@ -262,11 +272,11 @@ Initializer* TypeBodyParser<Class>::parseInitializer(const std::u32string &name,
 
 template<>
 void TypeBodyParser<Protocol>::parseMethod(const std::u32string &name, TypeBodyAttributeParser attributes,
-                                           const Documentation &documentation, AccessLevel access, bool imperative,
+                                           const Documentation &documentation, AccessLevel access, Mood mood,
                                            const SourcePosition &p) {
     auto method = std::make_unique<Function>(name, AccessLevel::Public, false, typeDef_, package_,
                                              p, false, documentation.get(),
-                                             attributes.has(Attribute::Deprecated), false, imperative, false,
+                                             attributes.has(Attribute::Deprecated), false, mood, false,
                                              FunctionType::ObjectMethod);
     parseParameters(method.get(), false);
     parseReturnType(method.get());
@@ -306,7 +316,7 @@ void TypeBodyParser<Class>::parseDeinitializer(const SourcePosition &p) {
     if (typeDef_->deinitializer()->ast() != nullptr) {
         package_->compiler()->error(CompilerError(p, "Deinitializer was already specified."));
     }
-    auto parser = FunctionParser(package_, stream_, typeDef_->deinitializer()->typeContext());
+    auto parser = FunctionParser(package_, stream_);
     stream_.consumeToken(TokenType::BlockBegin);
     typeDef_->deinitializer()->setAst(parser.parse());
 }

@@ -14,6 +14,7 @@ namespace internal {
 
 extern int argc;
 extern char **argv;
+extern int seed;
 
 struct ControlBlock {
     std::atomic_int strongCount{1};

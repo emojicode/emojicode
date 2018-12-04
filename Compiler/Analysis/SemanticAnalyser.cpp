@@ -2,12 +2,15 @@
 // Created by Theo Weidmann on 26.02.18.
 //
 
-#include "DeinitializerBuilder.hpp"
-#include "ThunkBuilder.hpp"
-#include "Compiler.hpp"
-#include "Package/Package.hpp"
-#include "FunctionAnalyser.hpp"
 #include "SemanticAnalyser.hpp"
+#include "Compiler.hpp"
+#include "DeinitializerBuilder.hpp"
+#include "FunctionAnalyser.hpp"
+#include "AST/ASTExpr.hpp"
+#include "Scoping/SemanticScoper.hpp"
+#include "Types/TypeExpectation.hpp"
+#include "Package/Package.hpp"
+#include "ThunkBuilder.hpp"
 #include "Types/Class.hpp"
 #include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
@@ -123,7 +126,7 @@ void SemanticAnalyser::enqueueFunction(Function *function) {
     }
 }
 
-void SemanticAnalyser::analyseFunctionDeclaration(Function *function) {
+void SemanticAnalyser::analyseFunctionDeclaration(Function *function) const {
     if (function->returnType() == nullptr) {
         function->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
     }
@@ -153,9 +156,19 @@ void SemanticAnalyser::analyseFunctionDeclaration(Function *function) {
 
 void SemanticAnalyser::declareInstanceVariables(const Type &type) {
     TypeDefinition *typeDef = type.typeDefinition();
+
+    auto context = TypeContext(type);
+    auto scoper = std::make_unique<SemanticScoper>();
+    scoper->pushScope();  // For closure analysis
+    ExpressionAnalyser analyser(this, context, package_, std::move(scoper));
+
     for (auto &var : typeDef->instanceVariables()) {
-        typeDef->instanceScope().declareVariable(var.name, var.type->analyseType(TypeContext(type)), false,
+        typeDef->instanceScope().declareVariable(var.name, var.type->analyseType(context), false,
                                                  var.position);
+
+        if (var.expr != nullptr) {
+            var.expr->analyse(&analyser, TypeExpectation(var.type->type()));
+        }
     }
 
     if (!typeDef->instanceVariables().empty() && typeDef->initializerList().empty()) {
@@ -230,7 +243,7 @@ bool SemanticAnalyser::checkArgumentPromise(const Function *sub, const Function 
 
 void SemanticAnalyser::finalizeProtocol(const Type &type, const Type &protocol, const SourcePosition &p) {
     for (auto method : protocol.protocol()->methodList()) {
-        auto methodImplementation = type.typeDefinition()->lookupMethod(method->name(), method->isImperative());
+        auto methodImplementation = type.typeDefinition()->lookupMethod(method->name(), method->mood());
         if (methodImplementation == nullptr) {
             package_->compiler()->error(
                     CompilerError(p, type.toString(TypeContext()), " does not conform to protocol ",

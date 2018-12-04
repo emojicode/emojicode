@@ -31,7 +31,7 @@ public:
     ASTTypeFromExpr(std::shared_ptr<ASTExpr> value, const SourcePosition &p)
             : ASTTypeExpr(p), expr_(std::move(value)) {}
 
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) final;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) final;
     Value *generate(FunctionCodeGenerator *fg) const final;
     void toCode(PrettyStream &pretty) const override;
 private:
@@ -43,7 +43,7 @@ public:
     ASTStaticType(std::unique_ptr<ASTType> type, const SourcePosition &p)
             : ASTTypeExpr(p), type_(std::move(type)) {}
 
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value *generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override;
 protected:
@@ -54,7 +54,7 @@ class ASTInferType final : public ASTStaticType {
 public:
     explicit ASTInferType(const SourcePosition &p) : ASTStaticType(nullptr, p) {}
 
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     void toCode(PrettyStream &pretty) const override;
 };
 

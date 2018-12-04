@@ -9,12 +9,12 @@
 #include "ASTTypeExpr.hpp"
 #include "ASTLiterals.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
-#include "Types/TypeExpectation.hpp"
 #include "CompilerError.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTInferType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTInferType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::NoReturn) {
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
@@ -23,7 +23,7 @@ Type ASTInferType::analyse(FunctionAnalyser *analyser, const TypeExpectation &ex
     return type_->type();
 }
 
-Type ASTTypeFromExpr::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTTypeFromExpr::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto value = analyser->expect(expectation, &expr_);
     if (value.type() != TypeType::TypeAsValue) {
         throw CompilerError(position(), "Expected type value.");
@@ -31,7 +31,7 @@ Type ASTTypeFromExpr::analyse(FunctionAnalyser *analyser, const TypeExpectation 
     return value.typeOfTypeValue();
 }
 
-Type ASTStaticType::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTStaticType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     type_->analyseType(analyser->typeContext()).setExact(true);
     if (type_->type().type() == TypeType::GenericVariable || type_->type().type() == TypeType::LocalGenericVariable) {
         throw CompilerError(position(), "Generic Arguments are not available dynamically.");

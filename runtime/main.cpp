@@ -12,11 +12,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <random>
 
 runtime::internal::ControlBlock ejcIgnoreBlock;
 
 int runtime::internal::argc;
 char **runtime::internal::argv;
+int runtime::internal::seed;
 
 runtime::internal::ControlBlock* runtime::internal::newControlBlock() {
     return new runtime::internal::ControlBlock;
@@ -147,6 +149,7 @@ extern "C" [[noreturn]] void ejcPanic(const char *message) {
 int main(int largc, char **largv) {
     runtime::internal::argc = largc;
     runtime::internal::argv = largv;
+    runtime::internal::seed = std::random_device()();
 
     auto code = fn_1f3c1();
     return static_cast<int>(code);

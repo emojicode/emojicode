@@ -6,14 +6,14 @@
 //  Copyright (c) 2015 Theo Weidmann. All rights reserved.
 //
 
-#include "Utils/StringUtils.hpp"
-#include "Package/Package.hpp"
-#include "Analysis/SemanticAnalyser.hpp"
 #include "Class.hpp"
+#include "Analysis/SemanticAnalyser.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Functions/Initializer.hpp"
+#include "Package/Package.hpp"
 #include "TypeContext.hpp"
+#include "Utils/StringUtils.hpp"
 #include <algorithm>
 #include <utility>
 
@@ -178,18 +178,18 @@ Initializer* Class::lookupInitializer(const std::u32string &name) const {
     return nullptr;
 }
 
-Function * Class::lookupMethod(const std::u32string &name, bool imperative) const {
+Function * Class::lookupMethod(const std::u32string &name, Mood mood) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto method = klass->TypeDefinition::lookupMethod(name, imperative)) {
+        if (auto method = klass->TypeDefinition::lookupMethod(name, mood)) {
             return method;
         }
     }
     return nullptr;
 }
 
-Function * Class::lookupTypeMethod(const std::u32string &name, bool imperative) const {
+Function * Class::lookupTypeMethod(const std::u32string &name, Mood mood) const {
     for (auto klass = this; klass != nullptr; klass = klass->superclass()) {
-        if (auto method = klass->TypeDefinition::lookupTypeMethod(name, imperative)) {
+        if (auto method = klass->TypeDefinition::lookupTypeMethod(name, mood)) {
             return method;
         }
     }

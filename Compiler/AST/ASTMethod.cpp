@@ -10,24 +10,24 @@
 #include "ASTVariables.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
+#include "Emojis.h"
+#include "Functions/Function.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Scoping/SemanticScoper.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "Functions/Function.hpp"
-#include "Emojis.h"
-#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
-#include "Scoping/SemanticScoper.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee) {
     Type otype = callee->analyse(analyser, TypeExpectation());
     return analyseMethodCall(analyser, name, callee, otype);
 
 }
 
-Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                                       std::shared_ptr<ASTExpr> &callee, const Type &otype) {
     determineCalleeType(analyser, name, callee, otype);
 
@@ -41,7 +41,7 @@ Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32
     determineCallType(analyser);
 
     method_ = calleeType_.typeDefinition()->getMethod(name, calleeType_, analyser->typeContext(),
-                                                      args_.isImperative(), position());
+                                                      args_.mood(), position());
 
     if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
         callType_ = CallType::StaticDispatch;
@@ -51,7 +51,7 @@ Type ASTMethodable::analyseMethodCall(FunctionAnalyser *analyser, const std::u32
     return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 
-void ASTMethodable::determineCalleeType(FunctionAnalyser *analyser, const std::u32string &name,
+void ASTMethodable::determineCalleeType(ExpressionAnalyser *analyser, const std::u32string &name,
                                         std::shared_ptr<ASTExpr> &callee, const Type &otype) {
     Type type = otype.resolveOnSuperArgumentsAndConstraints(analyser->typeContext());
     if (builtIn(analyser, type, name)) {
@@ -62,7 +62,7 @@ void ASTMethodable::determineCalleeType(FunctionAnalyser *analyser, const std::u
     }
 }
 
-void ASTMethodable::determineCallType(const FunctionAnalyser *analyser) {
+void ASTMethodable::determineCallType(const ExpressionAnalyser *analyser) {
     if (calleeType_.type() == TypeType::ValueType) {
         callType_ = CallType::StaticDispatch;
     }
@@ -80,7 +80,7 @@ void ASTMethodable::determineCallType(const FunctionAnalyser *analyser) {
     }
 }
 
-void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee,
+void ASTMethodable::checkMutation(ExpressionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee,
                                   const Type &type) const {
     if (type.type() == TypeType::ValueType && method_->mutating()) {
         if (!type.isMutable()) {
@@ -93,7 +93,7 @@ void ASTMethodable::checkMutation(FunctionAnalyser *analyser, const std::shared_
     }
 }
 
-Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std::u32string &name,
+Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                                           std::shared_ptr<ASTExpr> &callee) {
     calleeType_ = calleeType_.typeOfTypeValue();
 
@@ -108,7 +108,7 @@ Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std:
     }
 
     method_ = calleeType_.typeDefinition()->getTypeMethod(name, calleeType_, analyser->typeContext(),
-                                                              args_.isImperative(), position());
+                                                              args_.mood(), position());
 
     if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
         callType_ = CallType::StaticDispatch;
@@ -117,10 +117,10 @@ Type ASTMethodable::analyseTypeMethodCall(FunctionAnalyser *analyser, const std:
     return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 
-Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const std::u32string &name) {
+Type ASTMethodable::analyseMultiProtocolCall(ExpressionAnalyser *analyser, const std::u32string &name) {
     for (; multiprotocolN_ < calleeType_.protocols().size(); multiprotocolN_++) {
         auto &protocol = calleeType_.protocols()[multiprotocolN_];
-        if ((method_ = protocol.protocol()->lookupMethod(name, args_.isImperative())) != nullptr) {
+        if ((method_ = protocol.protocol()->lookupMethod(name, args_.mood())) != nullptr) {
             builtIn_ = BuiltInType::Multiprotocol;
             callType_ = CallType::DynamicProtocolDispatch;
             return analyser->analyseFunctionCall(&args_, protocol, method_);
@@ -130,7 +130,7 @@ Type ASTMethodable::analyseMultiProtocolCall(FunctionAnalyser *analyser, const s
                         " provides a method ", utf8(name), ".");
 }
 
-bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const std::u32string &name) {
+bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &type, const std::u32string &name) {
     if (type.type() != TypeType::ValueType) {
         return false;
     }
@@ -173,11 +173,7 @@ bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const 
     }
     else if (type.typeDefinition() == analyser->compiler()->sMemory) {
         if (name.front() == 0x1F43D) {
-            builtIn_ = BuiltInType::Load;
-            return true;
-        }
-        if (name.front() == 0x1F437) {
-            builtIn_ = BuiltInType::Store;
+            builtIn_ = args_.mood() == Mood::Assignment ? BuiltInType::Store : BuiltInType::Load;
             return true;
         }
         if (name.front() == E_RECYCLING_SYMBOL) {
@@ -196,7 +192,7 @@ bool ASTMethodable::builtIn(FunctionAnalyser *analyser, const Type &type, const 
     return false;
 }
 
-Type ASTMethod::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTMethod::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyseMethodCall(analyser, name_, callee_);
 }
 

@@ -9,12 +9,12 @@
 #include "ASTUnary.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "CompilerError.hpp"
-#include "Types/TypeExpectation.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTIsError::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTIsError::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     Type type = analyser->expect(TypeExpectation(false, false), &expr_);
     if (type.unboxedType() != TypeType::Error) {
         throw CompilerError(position(), "🚥 can only be used with 🚨.");
@@ -26,7 +26,7 @@ void ASTIsError::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory 
     expr_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
 }
 
-Type ASTUnwrap::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTUnwrap::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
 
     if (t.unboxedType() == TypeType::Optional) {

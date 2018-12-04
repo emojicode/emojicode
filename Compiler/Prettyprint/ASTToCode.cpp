@@ -6,8 +6,8 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Parsing/OperatorHelper.hpp"
 #include "AST/ASTBinaryOperator.hpp"
+#include "AST/ASTCast.hpp"
 #include "AST/ASTClosure.hpp"
 #include "AST/ASTControlFlow.hpp"
 #include "AST/ASTExpr.hpp"
@@ -19,7 +19,7 @@
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTUnsafeBlock.hpp"
 #include "AST/ASTVariables.hpp"
-#include "AST/ASTCast.hpp"
+#include "Parsing/OperatorHelper.hpp"
 #include "PrettyStream.hpp"
 #include "Types/Type.hpp"
 #include <sstream>
@@ -33,7 +33,7 @@ void ASTArguments::toCode(PrettyStream &pretty) const {
             pretty << arg;
         }
     }
-    pretty.refuseOffer() << (imperative_ ? "❗️" : "❓️");
+    pretty.refuseOffer() << (mood_ == Mood::Imperative ? "❗️" : "❓️");
 }
 
 void ASTBlock::toCode(PrettyStream &pretty) const {
@@ -252,7 +252,17 @@ void ASTCast::toCode(PrettyStream &pretty) const {
 
 void ASTMethod::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << name_ << callee_ << args_;
+    if (args_.mood() == Mood::Assignment) {
+        pretty << args_.args().front() << " ➡️ " << name_ << callee_;
+        pretty.offerSpace();
+        for (size_t i = 1; i < args_.args().size(); i++) {
+            pretty << args_.args()[i];
+        }
+        pretty.refuseOffer() << "❗️";
+    }
+    else {
+        pretty << name_ << callee_ << args_;
+    }
 }
 
 void ASTConcatenateLiteral::toCode(PrettyStream &pretty) const {

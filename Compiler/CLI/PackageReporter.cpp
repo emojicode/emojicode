@@ -121,9 +121,10 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
             writer_.String("🔒");
             break;
         case AccessLevel::Protected:
-            writer_.String("🔒");
+            writer_.String("🔐");
             break;
         case AccessLevel::Public:
+        case AccessLevel::Default:
             writer_.String("🔓");
             break;
     }
@@ -150,7 +151,7 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
             writer_.String("");
         }
         else {
-            writer_.String(function->isImperative() ? "❗️" : "❓");
+            writer_.String(moodEmoji(function->mood()));
         }
     }
 
@@ -231,7 +232,7 @@ void PackageReporter::reportExportedType(const Type &type) {
         auto enumeration = type.enumeration();
         writer_.Key("enumerationValues");
         writer_.StartArray();
-        for (auto it : enumeration->values()) {
+        for (auto &it : enumeration->values()) {
             writer_.StartObject();
             reportDocumentation(it.second.second);
             writer_.Key("value");

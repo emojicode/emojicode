@@ -27,7 +27,7 @@
     >!H If the memory area represented is smaller than `⚖️T ➕ offset` bytes,
     >!H undefined behavior is caused!
   📗
-  ☣️️ ❗️ 🐷🐚☣️️T⚪️🍆 🛅 value T offset 🔢 📻 🔤ejcBuiltIn🔤
+  ☣️️ ➡️ 🐽🐚☣️️T⚪️🍆 🛅 value T offset 🔢 📻 🔤ejcBuiltIn🔤
 
   📗
     Reads a value of type T starting *bytes* bytes past the address
@@ -79,7 +79,7 @@
     >!H `bytes ➕ sourceOffset` bytes, undefined behavior is caused!
 
     >!N Do not copy managed values using this method! Copy each value
-    >!N individually with 🐽 and 🐷!
+    >!N individually with 🐽 and ➡️ 🐽!
   📗
   ☣️️ ❗️ 🚜 destinationOffset 🔢 source 🧠 sourceOffset 🔢 bytes 🔢 📻 🔤ejcBuiltIn🔤
 

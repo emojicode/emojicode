@@ -6,11 +6,12 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
+#include "AST/ASTMemory.hpp"
 #include "ASTStatements.hpp"
 #include "Generation/CallCodeGenerator.hpp"
+#include "Generation/Declarator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Scoping/IDScoper.hpp"
-#include "Generation/Declarator.hpp"
 #include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {
@@ -23,13 +24,27 @@ void ASTBlock::generate(FunctionCodeGenerator *fg) const {
     }
 }
 
+ASTReturn::ASTReturn(std::shared_ptr<ASTExpr> value, const SourcePosition &p)
+    : ASTStatement(p), value_(std::move(value)) {}
+ASTReturn::~ASTReturn() = default;
+void ASTReturn::addRelease(std::unique_ptr<ASTRelease> release) { releases_.emplace_back(std::move(release)); }
+
+void ASTReturn::release(FunctionCodeGenerator *fg) const {
+    fg->releaseTemporaryObjects();
+
+    for (auto &release : releases_) {
+        release->generate(fg);
+    }
+}
+
 void ASTReturn::generate(FunctionCodeGenerator *fg) const {
     if (value_) {
         auto val = value_->generate(fg);
-        fg->releaseTemporaryObjects();
+        release(fg);
         fg->builder().CreateRet(val);
     }
     else {
+        release(fg);
         fg->builder().CreateRetVoid();
     }
 }
@@ -41,12 +56,12 @@ void ASTRaise::generate(FunctionCodeGenerator *fg) const {
         auto ptr = fg->buildGetBoxValuePtr(box, value_->expressionType());
         fg->builder().CreateStore(value_->generate(fg), ptr);
         auto val = fg->builder().CreateLoad(box);
-        fg->releaseTemporaryObjects();
+        release(fg);
         fg->builder().CreateRet(val);
     }
     else {
         auto val = fg->buildSimpleErrorWithError(value_->generate(fg), fg->llvmReturnType());
-        fg->releaseTemporaryObjects();
+        release(fg);
         buildDestruct(fg);
         fg->builder().CreateRet(val);
     }

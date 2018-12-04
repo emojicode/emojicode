@@ -7,6 +7,7 @@
 
 #include "PrettyPrinter.hpp"
 #include "AST/ASTStatements.hpp"
+#include "Emojis.h"
 #include "Functions/Function.hpp"
 #include "Functions/Initializer.hpp"
 #include "Package/Package.hpp"
@@ -16,7 +17,6 @@
 #include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
-#include "Emojis.h"
 #include <algorithm>
 
 namespace EmojicodeCompiler {
@@ -166,7 +166,7 @@ void PrettyPrinter::printTypeDef(const Type &type) {
 
     if (auto protocol = type.protocol()) {
         for (auto method : protocol->methodList()) {
-            print(method->isImperative() ? "❗️" : "❓️", method, false, true);
+            print(moodEmoji(method->mood()), method, false, true);
         }
         prettyStream_ << "🍉\n\n";
         prettyStream_.decreaseIndent();
@@ -234,10 +234,10 @@ void PrettyPrinter::printMethodsAndInitializers(TypeDefinition *typeDef) {
         print("🆕", init, true, true);
     }
     for (auto method : typeDef->methodList()) {
-        print(method->isImperative() ? "❗️" : "❓️", method, true, false);
+        print(moodEmoji(method->mood()), method, true, false);
     }
     for (auto typeMethod : typeDef->typeMethodList()) {
-        print(typeMethod->isImperative() ? "❗️" : "❓", typeMethod, true, true);
+        print(moodEmoji(typeMethod->mood()), typeMethod, true, true);
     }
 }
 

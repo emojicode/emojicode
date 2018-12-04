@@ -7,9 +7,9 @@
 
 #include "ErrorSelfDestructing.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
-#include "Scoping/SemanticScoper.hpp"
-#include "Generation/FunctionCodeGenerator.hpp"
 #include "Generation/Declarator.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
+#include "Scoping/SemanticScoper.hpp"
 #include "Types/Class.hpp"
 
 namespace EmojicodeCompiler {

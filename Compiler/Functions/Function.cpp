@@ -7,21 +7,20 @@
 //
 
 #include "Function.hpp"
+#include "AST/ASTStatements.hpp"
 #include "Compiler.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/TypeDefinition.hpp"
-#include "Types/TypeContext.hpp"
-#include "AST/ASTStatements.hpp"
 #include <llvm/IR/Function.h>
 
 namespace EmojicodeCompiler {
 
 Function::Function(std::u32string name, AccessLevel level, bool final, TypeDefinition *owner, Package *package,
          SourcePosition p,
-         bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, bool imperative,
+         bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, Mood mood,
          bool unsafe, FunctionType type) :
 position_(p), name_(std::move(name)), final_(final), overriding_(overriding),
-deprecated_(deprecated), imperative_(imperative), unsafe_(unsafe), mutating_(mutating), access_(level),
+deprecated_(deprecated), mood_(mood), unsafe_(unsafe), mutating_(mutating), access_(level),
 owner_(owner), package_(package), documentation_(std::move(documentationToken)),
 functionType_(type) {}
 

@@ -6,20 +6,20 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Generation/FunctionCodeGenerator.hpp"
+#include "ASTVariables.hpp"
 #include "ASTBinaryOperator.hpp"
 #include "ASTInitialization.hpp"
-#include "ASTVariables.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
-#include "Scoping/VariableNotFoundError.hpp"
+#include "Generation/FunctionCodeGenerator.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
+#include "Scoping/VariableNotFoundError.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
 
-void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, FunctionAnalyser *analyser) {
+void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, ExpressionAnalyser *analyser) {
     id_ = var.variable.id();
     inInstanceScope_ = var.inInstanceScope;
     variableType_ = var.variable.type();
@@ -28,11 +28,15 @@ void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, Functio
     }
 }
 
-Type ASTGetVariable::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTGetVariable::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto var = analyser->scoper().getVariable(name(), position());
     setVariableAccess(var, analyser);
     var.variable.uninitalizedError(position());
-    return var.variable.type();
+    auto type = var.variable.type();
+    if (var.inInstanceScope && !analyser->typeContext().calleeType().isMutable()) {
+        type.setMutable(false);
+    }
+    return type;
 }
 
 void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
@@ -44,7 +48,7 @@ void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
     }
 }
 
-Type ASTIsOnlyReference::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTIsOnlyReference::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto rvar = analyser->scoper().getVariable(name(), position());
     if (rvar.variable.type().type() != TypeType::Someobject && rvar.variable.type().type() != TypeType::Class) {
         analyser->compiler()->error(CompilerError(position(), "🏮 can only be used with objects."));
@@ -110,7 +114,9 @@ void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
     var.initialize();
     var.mutate(position());
     setVariableAccess(ResolvedVariable(var, true), analyser);
-    analyser->expectType(var.type(), &expr_);
+    if (analyseExpr_) {
+        analyser->expectType(var.type(), &expr_);
+    }
 }
 
 void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {

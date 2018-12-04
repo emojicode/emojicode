@@ -48,6 +48,16 @@ void mangleTypeName(std::stringstream &stream, const Type &typeb) {
             break;
         case TypeType::TypeAsValue:
             stream << "tyval_";
+            break;
+        case TypeType::Callable:
+            stream << "callable_";
+            for (auto &type : type.genericArguments()) {
+                mangleTypeName(stream, type);
+            }
+            return;
+        case TypeType::NoReturn:
+            stream << "no_return";
+            return;
         default:
             stream << "ty_";
             break;
@@ -95,8 +105,11 @@ std::string mangleFunction(Function *function, const std::map<size_t, Type> &gen
     }
 
     mangleIdentifier(stream, function->name());
-    if (!function->isImperative()) {
+    if (function->mood() == Mood::Interogative) {
         stream << "_intrg";
+    }
+    else if (function->mood() == Mood::Assignment) {
+        stream << "_assign";
     }
     mangleGenericArguments(stream, genericArgs);
     return stream.str();

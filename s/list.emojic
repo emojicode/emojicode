@@ -1,193 +1,56 @@
-📗
-  List, an ordered mutable collection.
-
-  [Read more in the
-  language reference.](../../reference/the-s-package.html#-lists)
-📗
-🌍 🐇 🍨🐚Element ⚪🍆️ 🍇
+🐇 🍧🐚Element ⚪🍆️ 🍇
   🖍🆕 data 🧠
   🖍🆕 count 🔢
   🖍🆕 size 🔢
 
-  🐊 🔂🐚Element🍆
-  🐊 🐽🐚Element🍆
-
-  📗 Creates an empty list. 📗
-  🆕 🐸 🍇
-    0 ➡️ 🖍count
-    10 ➡️ 🖍size
-    ☣️ 🍇
-      🆕🧠🆕 10✖️⚖️Element❗️ ➡️ 🖍data
-    🍉
-  🍉
-
-  📗
-    Creates an empty list with the given initial capacity.
-
-    Note that this initializer does not place any values in the list. This
-    initializer can be used for better performance if the number of values that
-    will be added is known in advance.
-  📗
-  🆕 🐴 capacity 🔢 🍇
-    0 ➡️ 🖍count
-    capacity ➡️ 🖍size
-    ☣️ 🍇
-      🆕🧠🆕 capacity✖️⚖️Element❗️ ➡️ 🖍data
-    🍉
-  🍉
-
-  📗 Creates an containing the specified number of a single, repeated value. 📗
-  🆕 🦊 repeatedValue Element 🍼 count 🔢 🍇
-    count ➡️ 🖍size
+  🆕 🍼count🔢 🍼size🔢 🍇
     ☣️ 🍇
       🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
+    🍉
+  🍉
 
-      🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-        🐷 data🐚Element🍆 repeatedValue i✖️⚖️Element❗️
+  📗 Duplicate the storage area. 📗
+  🆕👥 storage 🍧🐚Element🍆 🍇
+    🐔storage❓ ➡️ 🖍count
+    🐴storage❓ ➡️ 🖍size
+
+    ☣️ 🍇
+      🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
+      🔂 i 🆕⏩⏩ 0 🐔storage❓❗️ 🍇
+        🐽 🧠storage❗️🐚Element🍆 i✖️⚖️Element❗️ ➡️🐽data🐚Element🍆 i✖️⚖️Element❗️
       🍉
     🍉
   🍉
 
-  🔒❗️🧠 ➡️ 🧠 🍇
-    ↩️ data
+  📗 Returns the number of items in the list. 📗
+  ❓ 🐔 ➡️ 🔢 🍇
+    ↩️ count
   🍉
 
-  🔒❗️ ↕️ 🍇
-    ↪️ size 🙌 count 🍇
-      size ⬅️✖️ 2
+  ❗️ 🐔 change 🔢 🍇
+    count ⬅️➕ change
+  🍉
+
+  📗 Returns the lists current capacity. 📗
+  ❓ 🐴 ➡️ 🔢 🍇
+    ↩️ size
+  🍉
+
+  ❗️ 🐴 capacity 🔢 🍇
+    ↪️ capacity ▶️ size 🍇
+      capacity ➡️ 🖍size
       ☣️ 🍇
         🏗 data size✖️⚖️Element❗️
       🍉
     🍉
   🍉
 
-  📗 Creates a shallow copy of the given list. 📗
-  🆕 🐮 list 🍨🐚Element🍆 🍇
-    0 ➡️ 🖍count
-    🐴list❓ ➡️ 🖍size
-    ☣️ 🍇
-      🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
-    🍉
-    🐥🐕list❗️
-  🍉
-
-  📗 Appends `item` to the end of the list in `O(1)`. 📗
-  ❗️ 🐻 item Element 🍇
-    ↕️🐕❗️
-    ☣️ 🍇
-      🐷 data🐚Element🍆 item count✖️⚖️Element❗️
-    🍉
-    count ⬅️➕ 1
-  🍉
-
-  📗
-    Gets the item at *index* in `O(1)`. *index* must be greater than or equal
-    to 0 and less than [[🐔❗️]] or the program will panic.
-  📗
-  ❗️ 🐽 index 🔢 ➡️ Element 🍇
-    ↪️ index ▶️🙌 count 👐 index ◀️ 0 🍇
-      🤯🐇💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
-    🍉
-    ☣️ 🍇
-      ↩️ 🐽 data🐚Element🍆 index✖️⚖️Element❗️
-    🍉
-  🍉
-
-  📗
-    Sets *value* at *index*. *index* must be greater than or equal
-    to 0 and less than [[🐔❗️]] or the program will panic.
-  📗
-  ❗️ 🐷 index 🔢 value Element 🍇
-    ↪️ index ▶️🙌 count 👐 index ◀️ 0 🍇
-      🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
-    🍉
-    ☣️ 🍇
-      ♻️ data🐚Element🍆 index✖️⚖️Element❗️
-      🐷 data🐚Element🍆 value index✖️⚖️Element❗️
-    🍉
-  🍉
-
- 📗
-    Removes the item at `index` and shifts all following items to the left in
-    `O(n)`.
-
-    Returns 👍 unless the index is out of range.
- 📗
- ❗️ 🐨 index 🔢 ➡️ 👌 🍇
-    ↪️ index ◀️ count 🍇
-      ☣️ 🍇
-        ♻️ data🐚Element🍆 index✖️⚖️Element❗️
-        🚜 data index✖️⚖️Element data 🤜index ➕ 1🤛✖️⚖️Element 🤜count ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
-      🍉
-      count ⬅️➖ 1
-      ↩️ 👍
-    🍉
-    ↩️ 👎
-  🍉
-
- 📗
-    Inserts the given values before the element with the given index.
-
-    All items beginning from `index` are shifted to the right and `item` is
-    then inserted at `index`. Complexity: `O(n)`.
- 📗
- ❗️ 🐵 index 🔢 item Element ➡️ 👌 🍇
-    ↕️🐕❗️
-    ↪️ index ◀️ count 🍇
-      ☣️ 🍇
-        🚜 data 🤜index ➕ 1🤛✖️⚖️Element data index✖️⚖️Element 🤜count ➖ index 🤛✖️⚖️Element❗️
-        🐷 data🐚Element🍆 item index✖️⚖️Element❗️
-      🍉
-      count ⬅️➕ 1
-      ↩️ 👍
-    🍉
-    ↩️ 👎
-  🍉
-
-  📗 Returns the number of items in the list. 📗
-  ❗️ 🐔 ➡️ 🔢 🍇
-    ↩️ count
-  🍉
-
-  📗 Appends the content of `list` to this list. Complexity: `O(n)`. 📗
-  ❗️ 🐥 list 🍨🐚Element🍆 🍇
-    count ➡️ oldCount
-    count ⬅️➕ 🐔list❗️
-    🐴🐕 count❗️
-    ☣️ 🍇
-      🔂 i 🆕⏩⏩ 0 🐔list❗️❗️ 🍇
-        🐷 data🐚Element🍆 🐽 🧠list❗️🐚Element🍆 i✖️⚖️Element❗️ 🤜i ➕ oldCount🤛✖️⚖️Element❗️
-      🍉
-    🍉
-  🍉
-
-  📗
-    Removes the last item from the list and returns it in `O(1)`.
-    If the list is empty ✨ is returned.
-  📗
-  ❗️ 🐼 ➡️ 🍬Element 🍇
-    count ⬅️➖ 1
-    ☣️ 🍇
-      🐽 data🐚Element🍆 count✖️⚖️Element❗️ ➡️ value
-      ♻️ data🐚Element🍆 count✖️⚖️Element❗️
-    🍉
-    ↩️ value
-  🍉
-
-  📗
-    Removes all elements from the list but keeps the list’s capacity.
-
-    This can be much more efficient than using a new list. Complexity: `O(n)`.
-  📗
-  ❗️ 🐗 🍇
-    ☣️ 🍇
-      ♻️ 🐕❗️
-    🍉
-    0 ➡️ 🖍count
+  ❗️🧠 ➡️ 🧠 🍇
+    ↩️ data
   🍉
 
   📗 Releases everything inside the list. 📗
-  ☣️🔒❗️♻️ 🍇
+  ☣️❗️♻️ 🍇
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
       ♻️ data🐚Element🍆 i✖️⚖️Element❗️
     🍉
@@ -199,6 +62,205 @@
     🍉
   🍉
 
+  📗 Expand the storage area if it is full. 📗
+  ❗️ ↕️ 🍇
+    ↪️ size 🙌 count 🍇
+      size ⬅️✖️ 2
+      ☣️ 🍇
+        🏗 data size✖️⚖️Element❗️
+      🍉
+    🍉
+  🍉
+🍉
+
+📗
+  List, an ordered mutable collection.
+
+  🍨 provides random access, appending and removing from the last element in
+  `O(1)`.
+
+  🍨 is a value type. This means that copies of 🍨 are independent:
+
+  ```
+  🍨 🔤red🔤 🔤green🔤 🔤blue🔤 🍆 ➡️ colors
+  colors ➡️ 🖍🆕otherColors
+  🐻 otherColors 🔤pink🔤❗️
+  ```
+
+  In the above example the dictionary in `colors` will still contain only three
+  strings as only `otherColors` was modified.
+
+  To learn more about list literals [see the Language Reference.](../../reference/the-s-package.html#-list)
+📗
+🌍 🕊 🍨🐚Element ⚪🍆️ 🍇
+  🖍🆕 data 🍧🐚Element🍆
+
+  🐊 🔂🐚Element🍆
+  🐊 🐽🐚Element🍆
+
+  🔒❗️🍧 ➡️ 🍧🐚Element🍆 🍇
+    ↩️ data
+  🍉
+
+  📗 Prepare this list for mutation. 📗
+  🖍🔒❗️📝 🍇
+    ↪️ ❎🏮data❗️ 🍇
+      🆕🍧🐚Element🍆👥 data❗️ ➡️ 🖍data
+    🍉
+  🍉
+
+  📗 Creates an empty list. 📗
+  🆕 🐸 🍇
+    🆕🍧🐚Element🍆🆕0 10❗️ ➡️ 🖍data
+  🍉
+
+  📗
+    Creates an empty list with the given initial capacity.
+
+    Note that this initializer does not place any values in the list. This
+    initializer can be used for better performance if the number of values that
+    will be added is known in advance.
+  📗
+  🆕 🐴 capacity 🔢 🍇
+    capacity➡️🖍🆕theCapacity
+    ↪️ capacity ◀️🙌 0 🍇
+      10 ➡️ 🖍theCapacity
+    🍉
+    🆕🍧🐚Element🍆🆕0 theCapacity❗️ ➡️ 🖍data
+  🍉
+
+  📗 Creates an containing the specified number of a single, repeated value. 📗
+  🆕 🦊 repeatedValue Element count 🔢 🍇
+    🆕🍧🐚Element🍆🆕count count❗️ ➡️ 🖍data
+    ☣️ 🍇
+      🔂 i 🆕⏩⏩ 0 count❗️ 🍇
+        repeatedValue ➡️ 🐽🧠data❗️🐚Element🍆 i✖️⚖️Element❗️
+      🍉
+    🍉
+  🍉
+
+  📗 Appends `item` to the end of the list in `O(1)`. 📗
+  🖍❗️ 🐻 item Element 🍇
+    📝🐕❗️
+    ↕️data❗️
+    ☣️ 🍇
+      item ➡️ 🐽🧠data❗️🐚Element🍆 🐔data❓✖️⚖️Element❗️
+    🍉
+    🐔data 1❗️
+  🍉
+
+  📗
+    Gets the item at *index* in `O(1)`. *index* must be greater than or equal
+    to 0 and less than [[🐔❗️]] or the program will panic.
+  📗
+  ❗️ 🐽 index 🔢 ➡️ Element 🍇
+    ↪️ index ▶️🙌 🐔data❓ 👐 index ◀️ 0 🍇
+      🤯🐇💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
+    🍉
+    ☣️ 🍇
+      ↩️ 🐽 🧠data❗️🐚Element🍆 index✖️⚖️Element❗️
+    🍉
+  🍉
+
+  📗
+    Sets *value* at *index*. *index* must be greater than or equal
+    to 0 and less than [[🐔❗️]] or the program will panic.
+  📗
+  🖍➡️ 🐽 value Element index 🔢 🍇
+    📝🐕❗️
+    ↪️ index ▶️🙌 🐔data❓ 👐 index ◀️ 0 🍇
+      🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
+    🍉
+    ☣️ 🍇
+      ♻️ 🧠data❗️🐚Element🍆 index✖️⚖️Element❗️
+      value ➡️ 🐽🧠data❗️🐚Element🍆  index✖️⚖️Element❗️
+    🍉
+  🍉
+
+ 📗
+    Removes the item at `index` and shifts all following items to the left in
+    `O(n)`.
+
+    Returns 👍 unless the index is out of range.
+ 📗
+ 🖍❗️ 🐨 index 🔢 ➡️ 👌 🍇
+    📝🐕❗️
+    ↪️ index ◀️ 🐔data❓ 🍇
+      ☣️ 🍇
+        ♻️ 🧠data❗️🐚Element🍆 index✖️⚖️Element❗️
+        🚜 🧠data❗️ index✖️⚖️Element 🧠data❗️ 🤜index ➕ 1🤛✖️⚖️Element 🤜🐔data❓ ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
+      🍉
+      🐔data -1❗️
+      ↩️ 👍
+    🍉
+    ↩️ 👎
+  🍉
+
+ 📗
+    Inserts the given values before the element with the given index.
+
+    All items beginning from `index` are shifted to the right and `item` is
+    then inserted at `index`. Complexity: `O(n)`.
+ 📗
+ 🖍❗️ 🐵 index 🔢 item Element ➡️ 👌 🍇
+    📝🐕❗️
+    ↕️data❗️
+    ↪️ index ◀️ 🐔data❓ 🍇
+      ☣️ 🍇
+        🚜 🧠data❗️ 🤜index ➕ 1🤛✖️⚖️Element 🧠data❗️ index✖️⚖️Element 🤜🐔data❓ ➖ index 🤛✖️⚖️Element❗️
+        item ➡️ 🐽🧠data❗️🐚Element🍆  index✖️⚖️Element❗️
+      🍉
+      🐔data 1❗️
+      ↩️ 👍
+    🍉
+    ↩️ 👎
+  🍉
+
+  📗 Returns the number of items in the list. 📗
+  ❗️ 🐔 ➡️ 🔢 🍇
+    ↩️ 🐔data❓
+  🍉
+
+  📗 Appends the content of `list` to this list. Complexity: `O(n)`. 📗
+  🖍❗️ 🐥 list 🍨🐚Element🍆 🍇
+    📝🐕❗️
+    🐔data❓ ➡️ oldCount
+    🐔data 🐔list❗️❗️
+    🐴data 🐔data❓❗️
+    ☣️ 🍇
+      🔂 i 🆕⏩⏩ 0 🐔list❗️❗️ 🍇
+        🐽 🧠🍧list❗️❗️🐚Element🍆 i✖️⚖️Element❗️ ➡️ 🐽🧠data❗️🐚Element🍆 🤜i ➕ oldCount🤛✖️⚖️Element❗️
+      🍉
+    🍉
+  🍉
+
+  📗
+    Removes the last item from the list and returns it in `O(1)`.
+    If the list is empty ✨ is returned.
+  📗
+  🖍❗️ 🐼 ➡️ 🍬Element 🍇
+    📝🐕❗️
+    🐔data -1❗️
+    ☣️ 🍇
+      🐽 🧠data❗️🐚Element🍆 🐔data❓✖️⚖️Element❗️ ➡️ value
+      ♻️ 🧠data❗️🐚Element🍆 🐔data❓✖️⚖️Element❗️
+    🍉
+    ↩️ value
+  🍉
+
+  📗
+    Removes all elements from the list but keeps the list’s capacity.
+
+    This can be much more efficient than using a new list. Complexity: `O(n)`.
+  📗
+  🖍❗️ 🐗 🍇
+    📝🐕❗️
+    ☣️ 🍇
+      ♻️data❗️
+    🍉
+    🐔data 🐔data❓ ✖️ -1❗️
+  🍉
+
   📗
     Ensures that the list is large enough to store at least `capacity` elements.
 
@@ -207,18 +269,14 @@
 
     Complexity: `O(n)`.
   📗
-  ❗️ 🐴 capacity 🔢 🍇
-    ↪️ capacity ▶️ size 🍇
-      capacity ➡️ 🖍size
-      ☣️ 🍇
-        🏗 data size✖️⚖️Element❗️
-      🍉
-    🍉
+  🖍❗️ 🐴 capacity 🔢 🍇
+    📝🐕❗️
+    🐴data capacity❗️
   🍉
 
   📗 Returns the lists current capacity. 📗
   ❓ 🐴 ➡️ 🔢 🍇
-    ↩️ size
+    ↩️ 🐴data❓
   🍉
 
   📗
@@ -228,13 +286,14 @@
     if the first argument is considered respectively less than, equal to, or
     greater than the second.
   📗
-  ❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 🍇
+  🖍❗️ 🦁 comparator 🍇Element Element➡️🔢🍉 🍇
+    📝🐕❗️
     🥃🐕 0 🐔🐕❗️ ➖ 1 comparator❗️
   🍉
 
   🔒❗️✂️ first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 ➡️ 🔢 🍇
     ☣️ 🍇
-      🐽 data🐚Element🍆 first✖️⚖️Element❗️  ➡️ pivot
+      🐽 🧠data❗️🐚Element🍆 first✖️⚖️Element❗️  ➡️ pivot
     🍉
 
     first ➖ 1 ➡️🖍🆕i
@@ -243,14 +302,14 @@
     🔁 👍 🍇
       i ⬅️➕ 1
       ☣️ 🍇
-        🔁 ⁉️comparator 🐽 data🐚Element🍆 i✖️⚖️Element❗️ pivot❗️ ◀️ 0 🍇
+        🔁 ⁉️comparator 🐽 🧠data❗️🐚Element🍆 i✖️⚖️Element❗️ pivot❗️ ◀️ 0 🍇
           i ⬅️➕ 1
         🍉
       🍉
 
       j ⬅️➖ 1
       ☣️ 🍇
-        🔁 ⁉️comparator 🐽 data🐚Element🍆 j✖️⚖️Element❗️ pivot❗️ ▶️ 0 🍇
+        🔁 ⁉️comparator 🐽 🧠data❗️🐚Element🍆 j✖️⚖️Element❗️ pivot❗️ ▶️ 0 🍇
           j ⬅️➖ 1
         🍉
       🍉
@@ -275,16 +334,18 @@
   🍉
 
   ☣️🔒❗🔄 a 🔢 b 🔢 🍇
-    🐽 data🐚Element🍆 a✖️⚖️Element❗️ ➡️ temp
-    🐷 data🐚Element🍆 🐽 data🐚Element🍆 b✖️⚖️Element❗️ a✖️⚖️Element❗️
-    🐷 data🐚Element🍆 temp b✖️⚖️Element❗️
+    🐽 🧠data❗️🐚Element🍆 a✖️⚖️Element❗️ ➡️ temp
+    🐽 🧠data❗️🐚Element🍆 b✖️⚖️Element❗️ ➡️🐽🧠data❗️🐚Element🍆 a✖️⚖️Element❗️
+    temp ➡️🐽🧠data❗️🐚Element🍆 b✖️⚖️Element❗️
   🍉
 
   📗
     Shuffles the list in place using a Fisher–Yates shuffle.
   📗
-  ❗️ 🐹 🍇
+  🖍❗️ 🐹 🍇
+    📝🐕❗️
     🆕🎰🆕❗️ ➡️ prng
+    🐔data❓ ➡️ count
 
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
       🔢 prng 0 count ➖ 1❗️ ➡️ x
@@ -300,7 +361,7 @@
     value to the end of a new list.
   📗
   ❗️ 🐰 🐚A⚪🍆️ callback 🍇Element➡️A🍉 ➡️ 🍨🐚A🍆 🍇
-    🆕🍨🐚A🍆🐴 🐔 🐕❗️❗️ ➡️ g
+    🆕🍨🐚A🍆🐴 🐔 🐕❗️❗️ ➡️ 🖍🆕g
     🔂 element 🐕 🍇
       🐻 g ⁉️callback element❗️❗️
     🍉
@@ -312,7 +373,7 @@
     `callback`.
   📗
   ❗️ 🐭 callback 🍇Element➡️👌🍉 ➡️ 🍨🐚Element🍆 🍇
-    🆕🍨🐚Element🍆🐸❗️ ➡️ g
+    🆕🍨🐚Element🍆🐸❗️ ➡️ 🖍🆕g
     🔂 element 🐕 🍇
       ↪️ ⁉️ callback element❗️ 🍇
         🐻 g element❗️
@@ -353,5 +414,38 @@
   📗 Returns an iterator to iterate over the elements of this list. 📗
   ❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
     ↩️ 🆕⚫️🆕 🐕❗️
+  🍉
+🍉
+
+📗
+  Wrapper for 🍨.
+
+  This class wraps around [[🍨]] and allows it to be passed by reference.
+
+  It is mainly provided for backwards compatibility and may be removed in a
+  future version.
+📗
+🌍 🐇 🍦🐚Element ⚪🍆️ 🍇
+  🐊 🔂🐚Element🍆
+
+  🖍🆕 array 🍨🐚Element🍆️
+
+  📗 Creates an empty list. 📗
+  🆕 🍇
+    🆕🍨🐚Element🍆🐸❗️➡️ 🖍array
+  🍉
+
+  📗 Appends an element to the list. 📗
+  ❗️ 🐻 item Element 🍇
+    🐻array item❗️
+  🍉
+
+  📗 Returns a copy of the list. 📗
+  ❗️ 🥄 ➡️ 🍨🐚Element🍆️ 🍇
+    ↩️ array
+  🍉
+
+  ❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
+    ↩️ 🍡array❗️
   🍉
 🍉

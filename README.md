@@ -11,7 +11,7 @@ We highly recommend to follow Emojicode’s Twitter account [@Real\_Emojicode][6
 
 ## 🔨 Building from source
 
-### Building locally
+### 🏡 Building locally
 
 Prerequisites (versions are recommendations):
 
@@ -69,6 +69,50 @@ Steps:
    To create a distribution archive you must call the dist script yourself
    (e.g. `python3 ../dist.py .. archive`).
 
+### 🐋 Building using Docker
+
+A `Dockerfile` is available for building in a Ubuntu `18.04` environment.
+
+Steps:
+
+1. Clone Emojicode (or download the source code and extract it) and navigate
+  into it:
+
+   ```sh
+   git clone https://github.com/emojicode/emojicode
+   cd emojicode
+   ```
+
+2. Build Docker image:
+
+   ```sh
+   docker build -t emojicode-build:latest .
+   ```
+
+3. Verify the installation was fine:
+
+   ```
+   ...
+   ✅  Emojicode was successfully installed.
+   ```
+
+4. Start image (and mount a directory to it):
+
+   ```sh
+   docker run -v $(pwd)/code:/workspace -it emojicode-build:latest
+   ```
+
+5. Start image (and mount a directory to it):
+
+   ```sh
+   docker run -v $(pwd)/code:/workspace -it emojicode-build:latest
+   ```
+
+6. Start coding !
+
+   ```sh
+   emojicodec /workspace/hello.🍇 && . /workspace/hello
+   ```
 
 ## 📃 License
 

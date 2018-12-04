@@ -7,17 +7,17 @@
 //
 
 #include "ThunkBuilder.hpp"
+#include "AST/ASTClosure.hpp"
 #include "AST/ASTInitialization.hpp"
 #include "AST/ASTLiterals.hpp"
 #include "AST/ASTMethod.hpp"
 #include "AST/ASTStatements.hpp"
 #include "AST/ASTTypeExpr.hpp"
 #include "AST/ASTVariables.hpp"
-#include "AST/ASTClosure.hpp"
+#include "Emojis.h"
 #include "Functions/Initializer.hpp"
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
-#include "Emojis.h"
 #include "Types/TypeExpectation.hpp"
 #include <memory>
 
@@ -53,7 +53,7 @@ std::unique_ptr<Function> makeBoxingThunk(std::u32string name, TypeDefinition *o
                                           SourcePosition p, std::vector<Parameter> &&params, const Type &returnType,
                                           FunctionType functionType) {
     auto function = std::make_unique<Function>(name, AccessLevel::Private, true, owner, package, p, false,
-                                               std::u32string(), false, false, true, false, functionType);
+                                               std::u32string(), false, false, Mood::Imperative, false, functionType);
     function->setParameters(std::move(params));
     function->setReturnType(std::make_unique<ASTLiteralType>(returnType));
     return function;
@@ -97,11 +97,12 @@ std::unique_ptr<Function> buildCallableThunk(const TypeExpectation &expectation,
 
 std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer *init) {
     auto name = std::u32string({ E_KEY }) + init->name();
-    auto overriding = klass->superclass() != nullptr && klass->superclass()->lookupTypeMethod(name, true) != nullptr;
+    auto overriding = klass->superclass() != nullptr &&
+                      klass->superclass()->lookupTypeMethod(name, Mood::Imperative) != nullptr;
     auto function = std::make_unique<Function>(name, AccessLevel::Public, false, init->owner(),
                                                init->package(), init->position(),
-                                               overriding, std::u32string(), false, false, true, init->unsafe(),
-                                               FunctionType::ClassMethod);
+                                               overriding, std::u32string(), false, false, Mood::Imperative,
+                                               init->unsafe(), FunctionType::ClassMethod);
 
     function->setReturnType(std::make_unique<ASTLiteralType>(init->constructedType(init->owner()->type())));
     function->setParameters(init->parameters());

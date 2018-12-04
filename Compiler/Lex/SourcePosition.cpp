@@ -22,4 +22,4 @@ std::u32string SourcePosition::wholeLine() const {
     return file->file().substr(begin, length);
 }
 
-}
+} // namespace EmojicodeCompiler

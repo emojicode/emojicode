@@ -9,15 +9,15 @@
 #include "ASTInitialization.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
+#include "Emojis.h"
 #include "Functions/Initializer.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Types/Enum.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "Emojis.h"
-#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
     if (type.type() == TypeType::Enum) {
@@ -35,7 +35,7 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
         if (!init->required()) {
             throw CompilerError(position(), "Type is not exact; can only use required initializer.");
         }
-        initializer_ = type.typeDefinition()->lookupTypeMethod(std::u32string({ E_KEY }) + name_, true);
+        initializer_ = type.typeDefinition()->lookupTypeMethod(std::u32string({ E_KEY }) + name_, Mood::Imperative);
     }
     else {
         initializer_ = init;
@@ -45,7 +45,7 @@ Type ASTInitialization::analyse(FunctionAnalyser *analyser, const TypeExpectatio
     return init->constructedType(type);
 }
 
-Type ASTInitialization::analyseEnumInit(FunctionAnalyser *analyser, Type &type) {
+Type ASTInitialization::analyseEnumInit(ExpressionAnalyser *analyser, Type &type) {
     initType_ = InitType::Enum;
 
     auto v = type.enumeration()->getValueFor(name_);

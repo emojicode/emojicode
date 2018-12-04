@@ -46,9 +46,7 @@ Variable& Scope::declareVariableWithId(const std::u32string &variable, Type type
     if (hasLocalVariable(variable)) {
         throw CompilerError(p, "Cannot redeclare variable.");
     }
-    if (!constant) {
-        type.setMutable(true);
-    }
+    type.setMutable(!constant);
     Variable &v = map_.emplace(variable, Variable(std::move(type), id, constant, variable, p)).first->second;
     return v;
 }

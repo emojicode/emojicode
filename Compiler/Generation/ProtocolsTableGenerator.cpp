@@ -3,16 +3,16 @@
 //
 
 #include "ProtocolsTableGenerator.hpp"
+#include "CodeGenerator.hpp"
 #include "Functions/Function.hpp"
-#include "Generation/Mangler.hpp"
 #include "Generation/Declarator.hpp"
+#include "Generation/Mangler.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Types/Class.hpp"
-#include "Types/ValueType.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
 #include "Types/TypeDefinition.hpp"
-#include "CodeGenerator.hpp"
+#include "Types/ValueType.hpp"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Module.h>
 
@@ -97,9 +97,9 @@ llvm::GlobalVariable* ProtocolsTableGenerator::createDispatchTable(const Type &t
     for (auto protocolMethod : protocol.protocol()->methodList()) {
         for (auto reification : protocolMethod->reificationMap()) {
             auto implFunction = typeDef->lookupMethod(protocolMethod->protocolBoxingThunk(protocol.protocol()->name()),
-                                                      protocolMethod->isImperative());
+                                                      protocolMethod->mood());
             if (implFunction == nullptr) {
-                implFunction = typeDef->lookupMethod(protocolMethod->name(), protocolMethod->isImperative());
+                implFunction = typeDef->lookupMethod(protocolMethod->name(), protocolMethod->mood());
             }
             auto implReif = implFunction->reificationFor(reification.first).function;
             assert(implReif != nullptr);

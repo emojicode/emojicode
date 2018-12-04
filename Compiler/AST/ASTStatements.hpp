@@ -19,6 +19,8 @@ namespace EmojicodeCompiler {
 
 class FunctionAnalyser;
 class FunctionCodeGenerator;
+class ASTReturn;
+class ASTRelease;
 
 class ASTStatement : public ASTNode {
 public:
@@ -37,36 +39,34 @@ class ASTBlock final : public ASTStatement {
 public:
     explicit ASTBlock(const SourcePosition &p) : ASTStatement(p) {}
 
+    /// Appends a statement to the block.
+    /// @warning If you append a return statement after semantic analysis call setReturnedCertainly().
     void appendNode(std::unique_ptr<ASTStatement> node) { stmts_.emplace_back(std::move(node)); }
-    /// Inserts a statement before the return statement in this block.
-    /// @pre Calling this method is only valid if the last statement that is compiled is a return statement.
-    ///      stopsAtReturn() returns true in this case.
-    /// @see stopsAtReturn()
-    void appendNodeBeforeReturn(std::unique_ptr<ASTStatement> node);
 
-    void prependNode(std::unique_ptr<ASTStatement> node) {
-        stmts_.emplace(stmts_.begin(), std::move(node));
-    }
+    void prependNode(std::unique_ptr<ASTStatement> node) { stmts_.emplace(stmts_.begin(), std::move(node)); }
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
-
-    void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser) override;
 
+    void toCode(PrettyStream &pretty) const override;
     /// Prints the code that goes between the block delimiters.
     void innerToCode(PrettyStream &pretty) const;
+
+    /// Returns true iff in this block (or a subblock) a return or raise statement will certainly be executed.
     bool returnedCertainly() const { return returnedCertainly_; }
+    /// Makes returnedCertainly() return true.
+    void setReturnedCertainly() { returnedCertainly_ = true; stop_ = stmts_.size(); }
 
     const SemanticScopeStats& scopeStats() { return scopeStats_; }
     void setScopeStats(SemanticScopeStats stats) { scopeStats_ = stats; }
 
     void popScope(FunctionAnalyser *analyser);
 
-    /// Determines whether the last statement of the block that is compiled (i.e. that is not dead code) is a return
+    /// Returns the last statement in the block that is compiled (i.e. that is not dead code) if it is a return
     /// or raise statement.
     /// @note This method can only be called before Memory Flow Analysis.
-    bool stopsAtReturn() const;
+    ASTReturn* getReturn() const;
     
 private:
     std::vector<std::unique_ptr<ASTStatement>> stmts_;
@@ -93,7 +93,7 @@ private:
 
 class ASTReturn : public ASTStatement {
 public:
-    ASTReturn(std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTStatement(p), value_(std::move(value)) {}
+    ASTReturn(std::shared_ptr<ASTExpr> value, const SourcePosition &p);
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
@@ -104,8 +104,19 @@ public:
     /// Informs the expression that it is used to return the initialized object from an object initializer.
     void setIsInitReturn() { initReturn_ = true; }
 
+    /// Adds a release statement to be executed before the method ultimately returns but after the return value itself
+    /// has been evaluated.
+    void addRelease(std::unique_ptr<ASTRelease> release);
+
+    ~ASTReturn();
+
 protected:
+    /// Release all temporary objects and all variables in this scope. To be called before the method ultimately returns
+    /// but after the return value has been evaluated.
+    void release(FunctionCodeGenerator *fg) const;
+
     std::shared_ptr<ASTExpr> value_;
+    std::vector<std::unique_ptr<ASTRelease>> releases_;
     bool initReturn_ = false;
 };
 

@@ -32,7 +32,7 @@ class ASTClosure : public ASTExpr, public MFHeapAutoAllocates {
 public:
     ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p);
 
-    Type analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const final;
 
     void toCode(PrettyStream &pretty) const override;
@@ -44,7 +44,7 @@ private:
 
     llvm::Value* storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const;
 
-    void applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation);
+    void applyBoxingFromExpectation(ExpressionAnalyser *analyser, const TypeExpectation &expectation);
     llvm::Value* createDeinit(CodeGenerator *cg, const Capture &capture) const;
 };
 
@@ -68,7 +68,7 @@ public:
     ASTCallableThunkDestination(const SourcePosition &p, const Type &destinationType)
         : ASTExpr(p) { setExpressionType(destinationType); }
 
-    Type analyse(FunctionAnalyser *, const TypeExpectation &) final { return expressionType(); }
+    Type analyse(ExpressionAnalyser *, const TypeExpectation &) final { return expressionType(); }
     void toCode(PrettyStream &pretty) const override {}
     llvm::Value* generate(FunctionCodeGenerator *fg) const override;
     virtual void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}

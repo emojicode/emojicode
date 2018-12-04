@@ -3,23 +3,23 @@
 //
 
 #include "Declarator.hpp"
+#include "CodeGenerator.hpp"
 #include "Functions/Initializer.hpp"
 #include "Generation/ReificationContext.hpp"
 #include "LLVMTypeHelper.hpp"
 #include "Mangler.hpp"
 #include "Package/Package.hpp"
 #include "ProtocolsTableGenerator.hpp"
-#include "CodeGenerator.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include "VTCreator.hpp"
+#include <llvm/IR/Attributes.h>
+#include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/GlobalValue.h>
 #include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/Type.h>
-#include <llvm/IR/Constants.h>
-#include <llvm/IR/Attributes.h>
 
 namespace EmojicodeCompiler {
 
@@ -53,6 +53,7 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     findProtocolConformance_->addParamAttr(0, llvm::Attribute::NonNull);
 
     boxInfoClassObjects_ = declareBoxInfo("class.boxInfo");
+    boxInfoCallables_ = declareBoxInfo("callable.boxInfo");
 
     retain_ = declareMemoryRunTimeFunction("ejcRetain");
     release_ = declareMemoryRunTimeFunction("ejcRelease");
@@ -138,9 +139,8 @@ void Declarator::declareLlvmFunction(Function *function) const {
         generator_->typeHelper().setReificationContext(nullptr);
         auto name = function->externalName().empty() ? mangleFunction(function, reification.arguments)
                                                      : function->externalName();
-        auto linkage = function->accessLevel() == AccessLevel::Private && !function->isExternal()
-                                                                       ? llvm::Function::PrivateLinkage
-                                                                       : llvm::Function::ExternalLinkage;
+        auto linkage = (function->accessLevel() == AccessLevel::Private && !function->isExternal())
+                        || function->isClosure() ? llvm::Function::PrivateLinkage : llvm::Function::ExternalLinkage;
         reification.entity.function = llvm::Function::Create(ft, linkage, name, generator_->module());
         reification.entity.function->addFnAttr(llvm::Attribute::NoUnwind);
 

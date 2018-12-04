@@ -10,22 +10,20 @@
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Analysis/SemanticAnalyser.hpp"
 #include "Analysis/ThunkBuilder.hpp"
+#include "Compiler.hpp"
+#include "Functions/FunctionType.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
-#include "Compiler.hpp"
 
 namespace EmojicodeCompiler {
 
 ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p)
         : ASTExpr(p), closure_(std::move(closure)) {}
 
-Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    closure_->setMutating(analyser->function()->mutating());
-    closure_->setOwner(analyser->function()->owner());
-    closure_->setFunctionType(analyser->function()->functionType());
+Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     closure_->setClosure();
-
+    analyser->configureClosure(closure_.get());
     analyser->semanticAnalyser()->analyseFunctionDeclaration(closure_.get());
 
     applyBoxingFromExpectation(analyser, expectation);
@@ -35,6 +33,8 @@ Type ASTClosure::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     closureAnaly.analyse();
     capture_.captures = dynamic_cast<CapturingSemanticScoper &>(closureAnaly.scoper()).captures();
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
+        analyser->checkThisUse(position());
+
         if (analyser->typeContext().calleeType().type() == TypeType::ValueType ||
             analyser->typeContext().calleeType().type() == TypeType::Enum) {
             analyser->compiler()->error(CompilerError(position(),
@@ -58,7 +58,7 @@ void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory 
     MFFunctionAnalyser(closure_.get()).analyse();
 }
 
-void ASTClosure::applyBoxingFromExpectation(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() != TypeType::Callable ||
             expectation.genericArguments().size() - 1 != closure_->parameters().size()) {
         return;

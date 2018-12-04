@@ -9,31 +9,32 @@
 #include "ASTLiterals.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
 #include "Compiler.hpp"
+#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
+#include "Package/Package.hpp"
 #include "Parsing/AbstractParser.hpp"
+#include "Scoping/SemanticScoper.hpp"
 #include "Types/Class.hpp"
+#include "Types/ValueType.hpp"
 #include "Types/CommonTypeFinder.hpp"
 #include "Types/TypeExpectation.hpp"
-#include "Package/Package.hpp"
-#include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
-#include "Scoping/SemanticScoper.hpp"
 
 namespace EmojicodeCompiler {
 
-Type ASTStringLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTStringLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto type = Type(analyser->compiler()->sString);
     type.setExact(true);
     return type;
 }
 
-Type ASTBooleanTrue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBooleanTrue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->boolean();
 }
 
-Type ASTBooleanFalse::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTBooleanFalse::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     return analyser->boolean();
 }
 
-Type ASTNumberLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNumberLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (type_ == NumberType::Integer) {
         if (expectation == analyser->real()) {
             type_ = NumberType::Double;
@@ -53,18 +54,10 @@ Type ASTNumberLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation
     return analyser->real();
 }
 
-Type ASTThis::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (isSuperconstructorRequired(analyser->function()->functionType()) &&
-        !analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::CalledSuperInitializer) &&
-            analyser->typeContext().calleeType().klass()->superclass() != nullptr) {
-        analyser->compiler()->error(CompilerError(position(), "Attempt to use 🐕 before superinitializer call."));
-    }
-    if (isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-        analyser->scoper().instanceScope()->uninitializedVariablesCheck(position(), "Instance variable \"",
-                                                                        "\" must be initialized before using 🐕.");
-    }
+Type ASTThis::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    analyser->checkThisUse(position());
 
-    if (!isSelfAllowed(analyser->function()->functionType())) {
+    if (!isSelfAllowed(analyser->functionType())) {
         throw CompilerError(position(), "Illegal use of 🐕.");
     }
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::UsedSelf);
@@ -75,7 +68,7 @@ void ASTThis::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory typ
     analyser->recordThis(type);
 }
 
-Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTNoValue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.unboxedType() != TypeType::Optional && expectation.unboxedType() != TypeType::Something) {
         throw CompilerError(position(), "🤷‍ can only be used when an optional is expected.");
     }
@@ -83,8 +76,10 @@ Type ASTNoValue::analyse(FunctionAnalyser *analyser, const TypeExpectation &expe
     return type_;
 }
 
-Type ASTDictionaryLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
+Type ASTDictionaryLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     type_ = Type(analyser->compiler()->sDictionary);
+    type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
+    type_.typeDefinition()->lookupMethod(U"🐽", Mood::Assignment)->createUnspecificReification();
 
     CommonTypeFinder finder;
     for (auto it = values_.begin(); it != values_.end(); it++) {
@@ -112,8 +107,12 @@ void ASTDictionaryLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlo
     }
 }
 
-Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() == TypeType::Class && expectation.klass() == analyser->compiler()->sList) {
+Type ASTListLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    type_ = Type(analyser->compiler()->sList);
+    type_.typeDefinition()->lookupInitializer(U"🐴")->createUnspecificReification();
+    type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative)->createUnspecificReification();
+        
+    if (expectation.type() == TypeType::ValueType && expectation.valueType() == analyser->compiler()->sList) {
         auto type = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(expectation.copyType()));
         for (auto &valueNode : values_) {
             analyser->expectType(type, &valueNode);
@@ -122,8 +121,6 @@ Type ASTListLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &
         type_.setExact(true);
         return type_;
     }
-
-    type_ = Type(analyser->compiler()->sList);
 
     CommonTypeFinder finder;
     for (auto &valueNode : values_) {
@@ -148,8 +145,8 @@ void ASTListLiteral::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
     }
 }
 
-Type ASTConcatenateLiteral::analyse(FunctionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_ = analyser->function()->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
+Type ASTConcatenateLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
+    type_ = analyser->package()->getRawType(TypeIdentifier(U"🔠", kDefaultNamespace, position()));
 
     auto stringType = Type(analyser->compiler()->sString);
     for (auto &stringNode : values_) {

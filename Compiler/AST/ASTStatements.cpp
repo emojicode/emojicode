@@ -11,10 +11,10 @@
 #include "Compiler.hpp"
 #include "Functions/FunctionType.hpp"
 #include "Functions/Initializer.hpp"
-#include "Scoping/VariableNotFoundError.hpp"
-#include "Types/Class.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
+#include "Scoping/VariableNotFoundError.hpp"
+#include "Types/Class.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
@@ -41,20 +41,11 @@ void ASTBlock::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     }
 }
 
-bool ASTBlock::stopsAtReturn() const {
-    if (returnedCertainly()) return dynamic_cast<ASTReturn*>(stmts_[stop_ - 1].get()) != nullptr;
-    return dynamic_cast<ASTReturn*>(stmts_.back().get()) != nullptr;
-}
-
-void ASTBlock::appendNodeBeforeReturn(std::unique_ptr<ASTStatement> node) {
-    assert(!returnedCertainly() || stopsAtReturn());
-    if (stop_ == stmts_.size()) {
-        stop_++;
+ASTReturn* ASTBlock::getReturn() const {
+    if (returnedCertainly()) {
+        return dynamic_cast<ASTReturn*>(stmts_[stop_ - 1].get());
     }
-    if (!stmts_.empty() && (dynamic_cast<ASTReturn*>(stmts_.back().get()) != nullptr)) {
-        std::swap(stmts_.back(), node);
-    }
-    stmts_.emplace_back(std::move(node));
+    return nullptr;
 }
 
 void ASTBlock::popScope(FunctionAnalyser *analyser) {
@@ -93,7 +84,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
 void ASTRaise::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
     if (isOnlyNothingnessReturnAllowed(analyser->function()->functionType())) {
-        auto *initializer = dynamic_cast<Initializer *>(analyser->function());
+        auto *initializer = dynamic_cast<const Initializer *>(analyser->function());
         if (!initializer->errorProne()) {
             throw CompilerError(position(), "Initializer is not declared error-prone.");
         }

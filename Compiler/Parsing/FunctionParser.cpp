@@ -6,8 +6,9 @@
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
 //
 
-#include "Lex/Token.hpp"
+#include "FunctionParser.hpp"
 #include "AST/ASTBinaryOperator.hpp"
+#include "AST/ASTCast.hpp"
 #include "AST/ASTClosure.hpp"
 #include "AST/ASTControlFlow.hpp"
 #include "AST/ASTInitialization.hpp"
@@ -18,9 +19,8 @@
 #include "AST/ASTUnary.hpp"
 #include "AST/ASTUnsafeBlock.hpp"
 #include "AST/ASTVariables.hpp"
-#include "AST/ASTCast.hpp"
 #include "Compiler.hpp"
-#include "FunctionParser.hpp"
+#include "Lex/Token.hpp"
 #include "Package/Package.hpp"
 
 namespace EmojicodeCompiler {
@@ -74,7 +74,8 @@ void FunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePos
            stream_.nextTokenIsEverythingBut(TokenType::EndInterrogativeArgumentList)) {
         arguments->addArguments(parseExpr(0));
     }
-    arguments->setImperative(stream_.consumeToken().type() == TokenType::EndArgumentList);
+    arguments->setMood(stream_.consumeToken().type() == TokenType::EndArgumentList ? Mood::Imperative :
+                                                                                     Mood::Interogative);
 }
 
 std::unique_ptr<ASTStatement> FunctionParser::parseStatement() {
@@ -145,26 +146,43 @@ std::unique_ptr<ASTStatement> FunctionParser::parseExprStatement(const Token &to
 
     auto expr = parseExprTokens(token, 0);
     if (stream_.nextTokenIs(TokenType::RightProductionOperator)) {
-        return parseAssignment(expr);
+        return parseAssignment(std::move(expr));
 
     }
     return std::make_unique<ASTExprStatement>(expr, token.position());
 }
 
-std::unique_ptr<ASTStatement> FunctionParser::parseAssignment(const std::shared_ptr<ASTExpr> &expr) const {
+std::unique_ptr<ASTStatement> FunctionParser::parseAssignment(std::shared_ptr<ASTExpr> expr) {
     auto rightToken = stream_.consumeToken();
     if (stream_.consumeTokenIf(TokenType::Mutable)) {
         if (stream_.consumeTokenIf(TokenType::New)) {
             auto varName = stream_.consumeToken(TokenType::Variable);
-            return std::make_unique<ASTVariableDeclareAndAssign>(varName.value(), expr, rightToken.position());
+            return std::make_unique<ASTVariableDeclareAndAssign>(varName.value(), std::move(expr),
+                                                                 rightToken.position());
         }
 
         auto varName = stream_.consumeToken(TokenType::Variable);
-        return std::make_unique<ASTVariableAssignment>(varName.value(), expr, rightToken.position());
+        return std::make_unique<ASTVariableAssignment>(varName.value(), std::move(expr), rightToken.position());
+    }
+    if (stream_.nextTokenIs(TokenType::Identifier)) {
+        return parseMethodAssignment(std::move(expr));
     }
 
     auto varName = stream_.consumeToken(TokenType::Variable);
     return std::make_unique<ASTConstantVariable>(varName.value(), expr, rightToken.position());
+}
+
+std::unique_ptr<ASTStatement> FunctionParser::parseMethodAssignment(std::shared_ptr<ASTExpr> expr) {
+    auto name = stream_.consumeToken();
+    auto callee = parseExpr(0);
+    auto args = parseArguments(name.position());
+    args.args().emplace(args.args().begin(), expr);
+    if (args.mood() != Mood::Imperative) {
+        package_->compiler()->error(CompilerError(args.position(), "Expected ❗️."));
+    }
+    args.setMood(Mood::Assignment);
+    auto method = std::make_unique<ASTMethod>(name.value(), callee, args, name.position());
+    return std::make_unique<ASTExprStatement>(std::move(method), name.position());
 }
 
 std::unique_ptr<ASTStatement> FunctionParser::parseErrorHandler(const SourcePosition &position) {
@@ -313,13 +331,13 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
     auto function = std::make_unique<Function>(std::u32string(1, E_GRAPES), AccessLevel::Public, true, nullptr,
-                                               package_, token.position(), false, std::u32string(), false, false, true,
-                                               false, FunctionType::Function);
+                                               package_, token.position(), false, std::u32string(), false, false,
+                                               Mood::Imperative, false, FunctionType::Function);
 
     parseParameters(function.get(), false);
     parseReturnType(function.get());
 
-    function->setAst(FunctionParser(package_, stream_, typeContext_).parse());
+    function->setAst(FunctionParser(package_, stream_).parse());
     return std::make_shared<ASTClosure>(std::move(function), token.position());
 }
 

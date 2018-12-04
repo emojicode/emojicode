@@ -61,9 +61,6 @@ public:
     /// code.
     uint64_t querySize(llvm::Type *type) const;
 
-    llvm::Value* optionalValue();
-    llvm::Value* optionalNoValue();
-
     /// Determines a box info value that is used to identify values of the provided type in a box.
     /// @returns An LLVM value representing the box info that must be stored in the box info field.
     llvm::Constant* boxInfoFor(const Type &type);
@@ -85,11 +82,11 @@ private:
 
     llvm::TargetMachine *targetMachine_ = nullptr;
 
-    llvm::Function *objectRetain_ = nullptr;
-    llvm::Function *objectRelease_ = nullptr;
+    std::pair<llvm::Function*, llvm::Function*> classObjectRetainRelease_ = { nullptr, nullptr };
 
-    void buildBoxRetainRelease(const Type &type);
-    void buildObjectBoxRetainRelease();
+    std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(const Type &type);
+    void buildClassObjectBoxInfo();
+    void buildCallableBoxInfo();
 
     void emit(const std::string &outPath, bool printIr);
     void generateFunctions();
