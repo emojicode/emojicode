@@ -4,8 +4,12 @@ deploy:
   provider: releases
   api_key:
     secure: UnQy6Z+3MzkaD7BvIZBVH6omwNE8qaNBDIAzyPitzVmzCkpujSTlnJIz7JIIB4b7+qYQhFZNNXWUs9rdYsaCi9s4aH0Hk+yj2hQV/qCz/h2974WIC9/1ST59Xtsbmeu8JCuGfLvuok9YK6/p3IwcVu9W9mMAowcmem0VdZFWKXMjRRJMx5xapFomGtIcxlqAhGP6Toq/XXOVKwITXSWCXJPCwX27f5l+9iv+u74FPLlT2et2Gv+x9JH7C5bt+L3fRZzJB4Oxi+21Bec0cDsga2PXbyFGvKznUzW6u5wtSYw007a6R2Mbulodc777j2G4NlSV7qocOFsyO0eHPGkfrT2WM+aC0oek2zEUh27fuLLDukvN0lmFn4G8fk1q+mbE62wD/CnAQJz7LrileLkkL/uBR6F4+/FWBYRlhsDa1NegdV1jyxQRnK+w4aWjeBWtKVG+T6PBIZPfENY9nrhdKGItTN3W2xI7H5x5mXiRtsV+v5GFtzFdqCnpJrCzuNJZxeDsLz8CBr68UTJgySl0MSaybmuBDZ7tqTrjxV1Lm1LDrDn3uHhXXLGUzsJc1W2vBXzR34nI+sB1jADVdziXsnsAw7s2qF7/hPexPWcKXGYYcDzx4zsWciqoJsW2ItLJfcFQgig5sat81plbCPB689GwJMUZKUnULFKiBEC9ESY=
-  file_glob: true
-  file: "$TRAVIS_BUILD_DIR/build/*.tar.gz"
+
+  file:
+    - "README.md"
+    - "build.ninja"
+    - "build/build.ninja"
+
   draft: true
 
 language: cpp
@@ -13,14 +17,14 @@ language: cpp
 compiler: clang
 
 before_install:
-- wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-- echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
-- echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
-- sudo apt-get update
-- sudo apt-get install -y clang-6.0 cmake libclang-common-6.0-dev libclang1-6.0 libclang-6.0-dev
-  libllvm6.0 libz-dev llvm-6.0 llvm-6.0-dev llvm-6.0-runtime ninja-build python3 rsync
-- CC=clang-6.0 && CXX=clang++-6.0
+  - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+  - echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
+  - echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
+  - sudo apt-get update
+  - sudo apt-get install -y clang-6.0 cmake libclang-common-6.0-dev libclang1-6.0 libclang-6.0-dev
+    libllvm6.0 libz-dev llvm-6.0 llvm-6.0-dev llvm-6.0-runtime ninja-build python3 rsync
+  - CC=clang-6.0 && CXX=clang++-6.0
 
 script:
-- mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests && python3 ../dist.py
+  - mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests && python3 ../dist.py
   .. archive
