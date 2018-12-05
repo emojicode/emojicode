@@ -7,9 +7,10 @@ deploy:
 
   skip_cleanup: true
   file:
-  - "README.md"
-  - "build.ninja"
-  - "build/build.ninja"
+  - $EMOJICODE_DIST_ARCHIVE
+  - build.ninja
+  - build$CC.ninja
+  - "build$CXX.ninja"
 
   draft: true
 
@@ -27,5 +28,5 @@ before_install:
 - CC=clang-6.0 && CXX=clang++-6.0
 
 script:
-- mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests && python3 ../dist.py
-  .. archive
+- mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests && EMOJICODE_DIST_ARCHIVE=$(python3 ../dist.py .. archive)
+
