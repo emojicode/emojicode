@@ -8,9 +8,6 @@ deploy:
   skip_cleanup: true
   file:
   - $EMOJICODE_DIST_ARCHIVE
-  - build.ninja
-  - build$CC.ninja
-  - "build$CXX.ninja"
 
   draft: true
 
