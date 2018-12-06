@@ -149,9 +149,6 @@ void ExpressionAnalyser::ensureGenericArguments(ASTArguments *node, const Type &
 
 Type ExpressionAnalyser::comply(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) {
     (*node)->setExpressionType(exprType.resolveOnSuperArgumentsAndConstraints(typeContext()));
-    if (exprType.type() == TypeType::ValueType && !exprType.isReference() && expectation.isMutable()) {
-        exprType.setMutable(true);
-    }
     if (!expectation.shouldPerformBoxing()) {
         return exprType;
     }
