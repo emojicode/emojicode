@@ -30,7 +30,7 @@ bool hasInstanceScope(FunctionType type) {
            type == FunctionType::Deinitializer;
 }
 
-bool isOnlyNothingnessReturnAllowed(FunctionType type) {
+bool isReturnForbidden(FunctionType type) {
     return type == FunctionType::ObjectInitializer || type == FunctionType::ValueTypeInitializer;
 }
 

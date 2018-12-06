@@ -74,7 +74,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
         throw CompilerError(position(), "↩️↩️ can only be used in functions without a return value.");
     }
 
-    if (isOnlyNothingnessReturnAllowed(analyser->function()->functionType())) {
+    if (isReturnForbidden(analyser->function()->functionType())) {
         throw CompilerError(position(), "↩️ cannot be used inside an initializer.");
     }
 
@@ -83,7 +83,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
 
 void ASTRaise::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
-    if (isOnlyNothingnessReturnAllowed(analyser->function()->functionType())) {
+    if (isReturnForbidden(analyser->function()->functionType())) {
         auto *initializer = dynamic_cast<const Initializer *>(analyser->function());
         if (!initializer->errorProne()) {
             throw CompilerError(position(), "Initializer is not declared error-prone.");

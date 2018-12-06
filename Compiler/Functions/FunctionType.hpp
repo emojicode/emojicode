@@ -31,7 +31,7 @@ bool isSuperconstructorRequired(FunctionType);
 bool isFullyInitializedCheckRequired(FunctionType);
 bool isSelfAllowed(FunctionType);
 bool hasInstanceScope(FunctionType);
-bool isOnlyNothingnessReturnAllowed(FunctionType);
+bool isReturnForbidden(FunctionType);
 bool hasThisArgument(Function *function);
 
 }  // namespace EmojicodeCompiler
