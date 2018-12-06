@@ -326,7 +326,7 @@ private:
     Function* localResolutionConstraint() const;
 
     bool isReference_ = false;
-    bool mutable_ = true;
+    bool mutable_ = false;
     bool forceExact_ = false;
 
     void typeName(Type type, const TypeContext &typeContext, std::string &string, Package *package) const;

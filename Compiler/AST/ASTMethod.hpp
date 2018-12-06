@@ -51,7 +51,7 @@ private:
 
     Type analyseMultiProtocolCall(ExpressionAnalyser *analyser, const std::u32string &name);
 
-    void checkMutation(ExpressionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee, const Type &type) const;
+    void checkMutation(ExpressionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee) const;
     void determineCallType(const ExpressionAnalyser *analyser);
     void determineCalleeType(ExpressionAnalyser *analyser, const std::u32string &name,
                              std::shared_ptr<ASTExpr> &callee, const Type &otype);

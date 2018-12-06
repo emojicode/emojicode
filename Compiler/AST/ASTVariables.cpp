@@ -33,7 +33,8 @@ Type ASTGetVariable::analyse(ExpressionAnalyser *analyser, const TypeExpectation
     setVariableAccess(var, analyser);
     var.variable.uninitalizedError(position());
     auto type = var.variable.type();
-    if (var.inInstanceScope && !analyser->typeContext().calleeType().isMutable()) {
+    if (var.inInstanceScope && analyser->typeContext().calleeType().type() == TypeType::ValueType &&
+        !analyser->typeContext().calleeType().isMutable()) {
         type.setMutable(false);
     }
     return type;

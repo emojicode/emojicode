@@ -47,7 +47,7 @@ Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u
         callType_ = CallType::StaticDispatch;
     }
 
-    checkMutation(analyser, callee, otype);
+    checkMutation(analyser, callee);
     return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 
@@ -80,10 +80,9 @@ void ASTMethodable::determineCallType(const ExpressionAnalyser *analyser) {
     }
 }
 
-void ASTMethodable::checkMutation(ExpressionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee,
-                                  const Type &type) const {
-    if (type.type() == TypeType::ValueType && method_->mutating()) {
-        if (!type.isMutable()) {
+void ASTMethodable::checkMutation(ExpressionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee) const {
+    if (calleeType_.type() == TypeType::ValueType && method_->mutating()) {
+        if (!calleeType_.isMutable()) {
             analyser->compiler()->error(CompilerError(position(), utf8(method_->name()),
                                                       " was marked 🖍 but callee is not mutable."));
         }
