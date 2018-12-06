@@ -63,6 +63,7 @@ void ASTIsOnlyReference::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowC
 
 void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
     auto &type = type_->analyseType(analyser->typeContext());
+    analyser->scoper().checkForShadowing(varName_, position(), analyser->compiler());
     auto &var = analyser->scoper().currentScope().declareVariable(varName_, type, false, position());
     if (type.type() == TypeType::Optional) {
         var.initialize();
@@ -100,6 +101,7 @@ void ASTVariableAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
 
 void ASTVariableDeclareAndAssign::analyse(FunctionAnalyser *analyser) {
     Type t = analyser->expect(TypeExpectation(false, true), &expr_).inexacted();
+    analyser->scoper().checkForShadowing(name(), position(), analyser->compiler());
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, false, position());
     var.initialize();
     setVariableAccess(ResolvedVariable(var, false), analyser);
@@ -122,6 +124,7 @@ void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
 
 void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
+    analyser->scoper().checkForShadowing(name(), position(), analyser->compiler());
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, true, position());
     var.initialize();
     setVariableAccess(ResolvedVariable(var, false), analyser);

@@ -10,6 +10,7 @@
 #include "Functions/Function.hpp"
 #include "Scoping/SemanticScoper.hpp"
 #include "Types/TypeDefinition.hpp"
+#include "Compiler.hpp"
 #include <map>
 
 namespace EmojicodeCompiler {
@@ -23,8 +24,8 @@ Scope& SemanticScoper::pushArgumentsScope(const std::vector<Parameter> &argument
     return currentScope();
 }
 
-SemanticScopeStats SemanticScoper::popScope(Compiler *app) {
-    currentScope().recommendFrozenVariables(app);
+SemanticScopeStats SemanticScoper::popScope(Compiler *compiler) {
+    currentScope().recommendFrozenVariables(compiler);
 
     auto count = scopes_.front().map().size();
     auto maxVariableId = scopes_.front().maxVariableId();
@@ -70,6 +71,17 @@ ResolvedVariable SemanticScoper::getVariable(const std::u32string &name, const S
         return ResolvedVariable(instanceScope_->getLocalVariable(name), true);
     }
     throw VariableNotFoundError(errorPosition, name);
+}
+
+void SemanticScoper::checkForShadowing(const std::u32string &name, const SourcePosition &p, Compiler *compiler) const {
+    for (const Scope &scope : scopes_) {
+        if (scope.hasLocalVariable(name)) {
+            compiler->warn(p, "Declaration of ", utf8(name), " shadows previous local variable.");
+        }
+    }
+    if (instanceScope_ != nullptr && instanceScope_->hasLocalVariable(name)) {
+        compiler->warn(p, "Declaration of ", utf8(name), " shadows instance variable.");
+    }
 }
 
 }  // namespace EmojicodeCompiler

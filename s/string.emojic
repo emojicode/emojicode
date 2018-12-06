@@ -330,7 +330,7 @@ string, but those themselves are then immutable again.
       ↪️ minimumSize ▶️ size 🍇
         size ⬅️✖️ 2
         ↪️ minimumSize ▶️ size 🍇
-          minimumSize ➡️ size
+          minimumSize ➡️ 🖍size
         🍉
         🏗 data size❗️
       🍉
