@@ -383,6 +383,18 @@
   🍉
 
   📗
+    Returns 👍 if at least one element in the list is equal to `value`.
+  📗
+  ❓ 🐦🐚A😛🐚Element🍆🍆 value A ➡️ 👌 🍇
+    🔂 element 🐕 🍇
+      ↪️ value 🙌 element 🍇
+        ↩️ 👍
+      🍉
+    🍉
+    ↩️👎
+  🍉
+
+  📗
     Tests whether all elements in the array pass the test implemented by
     `callback`.
 

@@ -120,6 +120,13 @@
     214➡️🐽getList 1❗️
     ⛔🐕 🐽getList 1❗️🙌 214 🔤Index 1 should be 214🔤❗️
     ⛔🐕 🐽getList 0❗️🙌 65 🔤Index 1 should be 65🔤❗️
+
+    🍨 🔤green🔤 🔤red🔤 🔤pink🔤 🔤green🔤 🍆 ➡️ containList
+    ⛔🐕 🐦 containList 🔤pink🔤❓ 🔤List contains pink🔤❗️
+    ⛔🐕 🐦 containList 🔤red🔤❓ 🔤List contains red🔤❗️
+    ⛔🐕 🐦 containList 🔤green🔤❓ 🔤List contains green🔤❗️
+    ❎🐕 🐦 containList 🔤yellow🔤❓ 🔤List does not contain yellow🔤❗️
+    ❎🐕 🐦 containList 🔤blue🔤❓ 🔤List does not contain blue🔤❗️
   🍉
 🍉
 
