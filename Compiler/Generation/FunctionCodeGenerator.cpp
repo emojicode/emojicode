@@ -53,9 +53,15 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
     }
     for (auto &arg : fn_->parameters()) {
         auto &llvmArg = *(it++);
-        scoper_.getVariable(i++) = LocalVariable(false, &llvmArg);
+        setVariable(i++, &llvmArg);
         llvmArg.setName(utf8(arg.name));
     }
+}
+
+void FunctionCodeGenerator::setVariable(size_t id, llvm::Value *value, const llvm::Twine &name) {
+    auto alloca = createEntryAlloca(value->getType(), name);
+    builder().CreateStore(value, alloca);
+    scoper_.getVariable(id) = alloca;
 }
 
 llvm::Value* FunctionCodeGenerator::sizeOfReferencedType(llvm::PointerType *ptrType) {

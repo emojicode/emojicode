@@ -45,13 +45,13 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
     auto optional = expr_->generate(fg);
 
     if (expr_->expressionType().type() == TypeType::Box) {
-        fg->scoper().getVariable(varId_) = LocalVariable(false, optional);
+        fg->setVariable(varId_, optional);
         auto vf = fg->builder().CreateExtractValue(optional, 0);
         return fg->builder().CreateICmpNE(vf, llvm::Constant::getNullValue(vf->getType()));
     }
 
     auto value = fg->buildGetOptionalValue(optional, expr_->expressionType());
-    fg->scoper().getVariable(varId_) = LocalVariable(false, value);
+    fg->setVariable(varId_, value);
     return fg->buildOptionalHasValue(optional, expr_->expressionType());
 }
 

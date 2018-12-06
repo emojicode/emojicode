@@ -92,7 +92,7 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     else {
         err = fg->builder().CreateExtractValue(error, 0);
     }
-    fg->scoper().getVariable(errorVar_) = LocalVariable(false, err);
+    fg->setVariable(errorVar_, err);
     errorBlock_.generate(fg);
     if (!errorBlock_.returnedCertainly()) {
         fg->builder().CreateBr(afterBlock);
@@ -100,7 +100,7 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
 
     fg->builder().SetInsertPoint(noError);
     auto value = valueIsBoxed_ ? error : fg->builder().CreateExtractValue(error, 1);
-    fg->scoper().getVariable(valueVar_) = LocalVariable(false, value);
+    fg->setVariable(valueVar_, value);
     valueBlock_.generate(fg);
     if (!valueBlock_.returnedCertainly()) {
         fg->builder().CreateBr(afterBlock);

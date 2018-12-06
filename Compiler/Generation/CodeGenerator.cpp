@@ -32,6 +32,7 @@
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
 #include <llvm/Transforms/IPO.h>
+#include <llvm/Transforms/Scalar.h>
 #include <vector>
 
 namespace EmojicodeCompiler {
@@ -165,6 +166,7 @@ void CodeGenerator::emit(const std::string &outPath, bool printIr) {
         puts("TargetMachine can't emit a file of this type");
     }
     pass.add(llvm::createVerifierPass(false));
+    pass.add(llvm::createPromoteMemoryToRegisterPass());
     if (printIr) {
         pass.add(llvm::createStripDeadPrototypesPass());
         pass.add(llvm::createPrintModulePass(llvm::outs()));

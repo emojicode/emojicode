@@ -18,19 +18,6 @@ class Value;
 
 namespace EmojicodeCompiler {
 
-/// LocalVariable instances represent variables in an CGScoper.
-struct LocalVariable {
-    LocalVariable() = default;
-    LocalVariable(bool isMutable, llvm::Value* value) : isMutable(isMutable), value(value) {}
-    /// If this field is true, ::value is a pointer to stack memory allocated by the `alloca` instruction. Otherwise
-    /// ::value can be the result of any instructions.
-    bool isMutable = true;
-    /// The value that is currently represented by this variable.
-    /// @see isMutable
-    llvm::Value* value = nullptr;
-};
-
-
 /// IDScoper is only a thin layer over a vector. It simply and strictly works like a table and relies on that
 /// SemanticScoper correctly issues VariableIDs, which are the indices by which the vector is accessed. Variables can
 /// therefore be retrieved in constant time. No real scoping mechanics are provided by this class, all scoping
@@ -52,7 +39,7 @@ private:
 
 /// CGScoper is used to keep track of the llvm::Value instances that are currently assigned to local variables during
 /// their generation with FunctionCodeGenerator.
-using CGScoper = IDScoper<LocalVariable>;
+using CGScoper = IDScoper<llvm::Value*>;
 
 }  // namespace EmojicodeCompiler
 

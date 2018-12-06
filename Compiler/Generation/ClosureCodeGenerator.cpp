@@ -18,7 +18,7 @@ void ClosureCodeGenerator::declareArguments(llvm::Function *llvmFunction) {
     (it++)->setName("captures");
     for (auto &arg : function()->parameters()) {
         auto &llvmArg = *(it++);
-        scoper().getVariable(i++) = LocalVariable(false, &llvmArg);
+        setVariable(i++, &llvmArg);
         llvmArg.setName(utf8(arg.name));
     }
 
@@ -39,7 +39,7 @@ void ClosureCodeGenerator::loadCapturedVariables(Value *value) {
     }
     for (auto &capture : capture_.captures) {
         auto *value = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(capture_.type, captures, 0, index++));
-        scoper().getVariable(capture.captureId) = LocalVariable(false, value);
+        setVariable(capture.captureId, value);
     }
 }
 

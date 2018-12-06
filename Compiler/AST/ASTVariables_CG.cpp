@@ -29,20 +29,8 @@ Value* AccessesAnyVariable::managementValue(FunctionCodeGenerator *fg) const {
         return objectPointer;
     }
 
-    auto &var = fg->scoper().getVariable(id());
-    if (fg->isManagedByReference(variableType_)) {
-        return getReferenceWithPromotion(var, fg);
-    }
-    return var.isMutable ? fg->builder().CreateLoad(var.value) : var.value;
-}
-
-Value* AccessesAnyVariable::getReferenceWithPromotion(LocalVariable &variable, FunctionCodeGenerator *fg) const {
-    if (!variable.isMutable) {
-        auto alloca = fg->createEntryAlloca(variable.value->getType());
-        fg->builder().CreateStore(variable.value, alloca);
-        variable = LocalVariable(true, alloca);
-    }
-    return variable.value;
+    auto var = fg->scoper().getVariable(id());
+    return fg->isManagedByReference(variableType_) ? var : fg->builder().CreateLoad(var);
 }
 
 void AccessesAnyVariable::release(FunctionCodeGenerator *fg) const {
@@ -66,7 +54,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
 
     auto &localVariable = fg->scoper().getVariable(id());
     if (reference_) {
-        return getReferenceWithPromotion(localVariable, fg);
+        return localVariable;
     }
 
     if (!returned_ && !isTemporary() && expressionType().isManaged()) {
@@ -74,7 +62,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
         fg->retain(retainValue, expressionType());
         handleResult(fg, retainValue);
     }
-    return localVariable.isMutable ? fg->builder().CreateLoad(localVariable.value) : localVariable.value;
+    return fg->builder().CreateLoad(localVariable);
 }
 
 void ASTVariableInit::generate(FunctionCodeGenerator *fg) const {
@@ -92,7 +80,7 @@ void ASTVariableInit::generate(FunctionCodeGenerator *fg) const {
 llvm::Value* ASTVariableInit::variablePointer(EmojicodeCompiler::FunctionCodeGenerator *fg) const {
     if (declare_) {
         auto varPtr = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), utf8(name()));
-        fg->scoper().getVariable(id()) = LocalVariable(true, varPtr);
+        fg->scoper().getVariable(id()) = varPtr;
         return varPtr;
     }
 
@@ -100,15 +88,13 @@ llvm::Value* ASTVariableInit::variablePointer(EmojicodeCompiler::FunctionCodeGen
         return instanceVariablePointer(fg);
     }
 
-    auto &var = fg->scoper().getVariable(id());
-    assert(var.isMutable);
-    return var.value;
+    return fg->scoper().getVariable(id());
 }
 
 void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
     auto type = fg->typeHelper().llvmTypeFor(type_->type());
     auto alloca = fg->createEntryAlloca(type, utf8(varName_));
-    fg->scoper().getVariable(id_) = LocalVariable(true, alloca);
+    fg->scoper().getVariable(id_) = alloca;
 
     if (type_->type().type() == TypeType::Optional) {
         fg->builder().CreateStore(fg->buildSimpleOptionalWithoutValue(type_->type()), alloca);
@@ -125,7 +111,7 @@ void ASTVariableAssignment::generateAssignment(FunctionCodeGenerator *fg) const 
 }
 
 void ASTConstantVariable::generateAssignment(FunctionCodeGenerator *fg) const {
-    fg->scoper().getVariable(id()) = LocalVariable(false, expr_->generate(fg));
+    fg->setVariable(id(), expr_->generate(fg), utf8(name()));
 }
 
 Value* ASTIsOnlyReference::generate(FunctionCodeGenerator *fg) const {
@@ -135,7 +121,7 @@ Value* ASTIsOnlyReference::generate(FunctionCodeGenerator *fg) const {
     }
     else {
         auto &localVariable = fg->scoper().getVariable(id());
-        val = localVariable.isMutable ? fg->builder().CreateLoad(localVariable.value) : localVariable.value;
+        val = fg->builder().CreateLoad(localVariable);
     }
     auto ptr = fg->builder().CreateBitCast(val, llvm::Type::getInt8PtrTy(fg->generator()->context()));
     return fg->builder().CreateCall(fg->generator()->declarator().isOnlyReference(), ptr);

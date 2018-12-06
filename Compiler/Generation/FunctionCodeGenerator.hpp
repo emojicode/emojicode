@@ -124,6 +124,8 @@ public:
 
     llvm::Value* boxInfoFor(const Type &type);
 
+    void setVariable(size_t id, llvm::Value *value, const llvm::Twine &name = "");
+
     /// Allocates heap memory using the runtime library’s ejcAlloc.
     ///
     /// Allocates enough bytes to hold the element type of the pointer type `type`.

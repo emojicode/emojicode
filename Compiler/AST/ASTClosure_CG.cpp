@@ -72,21 +72,12 @@ llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const
         Value *value;
         auto &variable = fg->scoper().getVariable(capturedVar.sourceId);
 
-        if (variable.isMutable) {
-            if (capturedVar.type.isManaged() && fg->isManagedByReference(capturedVar.type)) {
-                fg->retain(variable.value, capturedVar.type);
-            }
-            value = fg->builder().CreateLoad(variable.value);
-            if (capturedVar.type.isManaged() && !fg->isManagedByReference(capturedVar.type)) {
-                fg->retain(value, capturedVar.type);
-            }
+        if (capturedVar.type.isManaged() && fg->isManagedByReference(capturedVar.type)) {
+            fg->retain(variable, capturedVar.type);
         }
-        else {
-            value = variable.value;
-            if (capturedVar.type.isManaged()) {
-                assert(!fg->isManagedByReference(capturedVar.type));
-                fg->retain(value, capturedVar.type);
-            }
+        value = fg->builder().CreateLoad(variable);
+        if (capturedVar.type.isManaged() && !fg->isManagedByReference(capturedVar.type)) {
+            fg->retain(value, capturedVar.type);
         }
 
         fg->builder().CreateStore(value, fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++));
