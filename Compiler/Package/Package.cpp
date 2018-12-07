@@ -14,7 +14,6 @@
 #include "Package.hpp"
 #include "Parsing/DocumentParser.hpp"
 #include "Types/Class.hpp"
-#include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include <algorithm>
@@ -43,11 +42,6 @@ Protocol* Package::add(std::unique_ptr<Protocol> &&protocol) {
 Function* Package::add(std::unique_ptr<Function> &&function) {
     functions_.emplace_back(std::move(function));
     return functions_.back().get();
-}
-
-Extension* Package::add(std::unique_ptr<Extension> &&extension) {
-    extensions_.emplace_back(std::move(extension));
-    return extensions_.back().get();
 }
 
 Package::Package(std::string name, std::string path, Compiler *app)

@@ -86,9 +86,6 @@ public:
     /// Functions that technically belong to this package but are not members of a TypeDefinition instance that is
     /// registered with this package, must be registered with this function.
     Function* add(std::unique_ptr<Function> &&function);
-    /// An extension defined in this package that extends a type not defined in this package, must be registered
-    /// with this method.
-    virtual Extension* add(std::unique_ptr<Extension> &&extension);
 
     /// Make a type available in this package. A type may be provided under different names, so this method may be
     /// called with the same type multiple times with different names and namespaces.
@@ -108,7 +105,6 @@ public:
     const std::vector<std::unique_ptr<Function>>& functions() const { return functions_; }
     const std::vector<std::unique_ptr<ValueType>>& valueTypes() const { return valueTypes_; }
     const std::vector<std::unique_ptr<Protocol>>& protocols() const { return protocols_; }
-    const std::vector<std::unique_ptr<Extension>>& extensions() const { return extensions_; }
     const std::vector<ExportedType>& exportedTypes() const { return exportedTypes_; }
 
     const std::set<Package *>& dependencies() const { return importedPackages_; }
@@ -146,7 +142,6 @@ private:
     std::vector<std::unique_ptr<ValueType>> valueTypes_;
     std::vector<std::unique_ptr<Function>> functions_;
     std::vector<std::unique_ptr<Protocol>> protocols_;
-    std::vector<std::unique_ptr<Extension>> extensions_;
     std::set<Package *> importedPackages_;
     std::vector<std::string> linkHints_;
 

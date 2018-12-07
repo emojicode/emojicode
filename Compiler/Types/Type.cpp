@@ -11,7 +11,6 @@
 #include "CommonTypeFinder.hpp"
 #include "Emojis.h"
 #include "Enum.hpp"
-#include "Extension.hpp"
 #include "Functions/Function.hpp"
 #include "Package/Package.hpp"
 #include "Protocol.hpp"
@@ -35,9 +34,6 @@ Type::Type(std::vector<Type> protocols)
 
 Type::Type(Enum *enumeration)
     : typeContent_(TypeType::Enum), typeDefinition_(enumeration) {}
-
-Type::Type(Extension *extension)
-    : typeContent_(TypeType::Extension), typeDefinition_(extension) {}
 
 Type::Type(ValueType *valueType)
 : typeContent_(TypeType::ValueType), typeDefinition_(valueType), mutable_(false) {
@@ -90,7 +86,7 @@ TypeDefinition* Type::typeDefinition() const {
         return genericArguments_[0].typeDefinition();
     }
     assert(type() == TypeType::Class || type() == TypeType::Protocol || type() == TypeType::ValueType
-           || type() == TypeType::Enum || type() == TypeType::Extension);
+           || type() == TypeType::Enum);
     return typeDefinition_;
 }
 
@@ -477,7 +473,6 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
                 return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
                                   [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
             case TypeType::StorageExpectation:
-            case TypeType::Extension:
             case TypeType::Box:
                 return false;
         }
@@ -523,8 +518,7 @@ bool Type::isReferencable() const {
             // This should not be reachable as this method must be called on the wrapping Box instance.
             throw std::logic_error("isReferenceWorthy for Protocol/MultiProtocol/Something");
         case TypeType::StorageExpectation:
-        case TypeType::Extension:
-            throw std::logic_error("isReferenceWorthy for StorageExpectation/Extension");
+            throw std::logic_error("isReferenceWorthy for StorageExpectation");
     }
 }
 
@@ -536,8 +530,7 @@ std::string Type::typePackage() const {
         case TypeType::Enum:
             return typeDefinition()->package()->name();
         case TypeType::StorageExpectation:
-        case TypeType::Extension:
-            throw std::logic_error("typePackage for StorageExpectation/Extension");
+            throw std::logic_error("typePackage for StorageExpectation");
         default:
             return "";
     }
@@ -649,7 +642,6 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
             }
             return;
         case TypeType::StorageExpectation:
-        case TypeType::Extension:
             return;
     }
 

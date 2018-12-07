@@ -12,7 +12,6 @@
 #include "Package/Package.hpp"
 #include "ThunkBuilder.hpp"
 #include "Types/Class.hpp"
-#include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Types/ValueType.hpp"
@@ -24,10 +23,6 @@ Compiler* SemanticAnalyser::compiler() const {
 }
 
 void SemanticAnalyser::analyse(bool executable) {
-    for (auto &extension : package_->extensions()) {
-        extension->extend();
-    }
-
     for (auto &vt : package_->valueTypes()) {
         finalizeProtocols(Type(vt.get()));
         vt->analyseConstraints(TypeContext(Type(vt.get())));

@@ -81,9 +81,8 @@ void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
             break;
         }
         case TypeType::StorageExpectation:
-        case TypeType::Extension:
         case TypeType::Box:
-            throw std::domain_error("Generating report for type StorageExpectation/Extension");
+            throw std::domain_error("Generating report for type StorageExpectation");
     }
 
     writer_.EndObject();

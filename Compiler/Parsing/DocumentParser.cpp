@@ -12,7 +12,6 @@
 #include "Functions/Initializer.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
-#include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeContext.hpp"
 #include "Types/ValueType.hpp"
@@ -56,11 +55,6 @@ void DocumentParser::parse() {
                         attributes.check(theToken.position(), package_->compiler());
                         documentation.disallow();
                         parsePackageImport(theToken.position());
-                        continue;
-                    case E_WALE:
-                        attributes.check(theToken.position(), package_->compiler());
-                        documentation.disallow();
-                        parseExtension(documentation, theToken.position());
                         continue;
                     case E_SCROLL:
                         attributes.check(theToken.position(), package_->compiler());
@@ -144,23 +138,6 @@ void DocumentParser::parseLinkHints(const SourcePosition &p) {
     } while (stream_.nextTokenIsEverythingBut(E_LINK_SYMBOL));
     stream_.consumeToken();
     package_->setLinkHints(std::move(hints));
-}
-
-void DocumentParser::parseExtension(const Documentation &documentation, const SourcePosition &p) {
-    Type type = package_->getRawType(parseTypeIdentifier());
-
-    auto extension = package_->add(std::make_unique<Extension>(type, package_, p, documentation.get()));
-
-    switch (type.type()) {
-        case TypeType::Class:
-            TypeBodyParser<Class>(extension->extendedType().klass(), package_, stream_, interface_).parse();
-            break;
-        case TypeType::ValueType:
-            TypeBodyParser<ValueType>(extension->extendedType().valueType(), package_, stream_, interface_).parse();
-            break;
-        default:
-            throw CompilerError(p, "Only classes and value types are extendable.");
-    }
 }
 
 void DocumentParser::parseProtocol(const std::u32string &documentation, const Token &theToken, bool exported) {

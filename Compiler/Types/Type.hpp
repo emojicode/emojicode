@@ -33,7 +33,6 @@ class Function;
 class CommonTypeFinder;
 class AbstractParser;
 class Initializer;
-class Extension;
 
 enum class TypeType {
     Box,
@@ -55,7 +54,6 @@ enum class TypeType {
     TypeAsValue,
     Error,
     StorageExpectation,
-    Extension,
 };
 
 struct MakeTypeAsValueType {};
@@ -72,7 +70,6 @@ public:
     explicit Type(Protocol *protocol);
     explicit Type(Enum *enumeration);
     explicit Type(ValueType *valueType);
-    explicit Type(Extension *extension);
     /// Creates a TypeType::Callable type corresponding to the parameters and return type of the provided function.
     explicit Type(Function *function);
     /// Creates a MultiProtocol type.

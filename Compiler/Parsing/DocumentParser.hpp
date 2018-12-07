@@ -44,8 +44,6 @@ private:
     void parseValueType(const std::u32string &documentation, const Token &theToken, bool exported, bool primitive);
     /// Called if a $package-import$ has been detected. The first token has already been parsed.
     void parsePackageImport(const SourcePosition &p);
-    /// Called if an $extension$ has been detected. The first token has already been parsed.
-    void parseExtension(const Documentation &documentation, const SourcePosition &p);
     /// Called if an $include$ has been detected. The first token has already been parsed.
     void parseInclude(const SourcePosition &p);
     /// Called if a $start-flag$ has been detected. The first token has already been parsed.

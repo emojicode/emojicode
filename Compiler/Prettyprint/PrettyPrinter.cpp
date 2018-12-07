@@ -14,7 +14,6 @@
 #include "Parsing/OperatorHelper.hpp"
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
-#include "Types/Extension.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
 #include <algorithm>
@@ -176,8 +175,7 @@ void PrettyPrinter::printTypeDef(const Type &type) {
         printEnumValues(enumeration);
     }
 
-    auto context = type.type() == TypeType::Extension ? TypeContext(dynamic_cast<Extension*>(typeDef)->extendedType()) :
-    TypeContext(type);
+    auto context = TypeContext(type);
     printProtocolConformances(typeDef, context);
     printInstanceVariables(typeDef, context);
     printMethodsAndInitializers(typeDef);
@@ -211,9 +209,6 @@ void PrettyPrinter::printTypeDefName(const Type &type) {
         case TypeType::Protocol:
             prettyStream_ << "🐊 ";
             break;
-        case TypeType::Extension:
-            prettyStream_ << "🐋 ";
-            break;
         default:
             break;
     }
@@ -223,7 +218,7 @@ void PrettyPrinter::printTypeDefName(const Type &type) {
     printGenericParameters(typeDef);
 
     if (auto klass = type.klass()) {
-        if (klass->superType() != nullptr && type.type() != TypeType::Extension) {
+        if (klass->superType() != nullptr) {
             prettyStream_ << klass->superType() << " ";
         }
     }

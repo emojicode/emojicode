@@ -40,10 +40,8 @@ struct InstanceVariableDeclaration {
     std::shared_ptr<ASTExpr> expr;
 };
 
-class Extension;
 
 class TypeDefinition : public Generic<TypeDefinition, int> {
-    friend Extension;
 public:
     TypeDefinition(const TypeDefinition&) = delete;
 

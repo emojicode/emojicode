@@ -26,12 +26,6 @@ void RecordingPackage::offerType(Type t, const std::u32string &name, const std::
     Package::offerType(std::move(t), name, ns, exportFromPkg, p);
 }
 
-Extension* RecordingPackage::add(std::unique_ptr<Extension> &&ext) {
-    auto *extension = Package::add(std::move(ext));
-    files_[currentFile_].recordings_.emplace_back(std::make_unique<RecordedType>(Type(extension)));
-    return extension;
-}
-
 void RecordingPackage::includeDocument(const std::string &path, const std::string &relativePath) {
     auto temp = currentFile_;
     if (!files_.empty()) {
