@@ -132,6 +132,9 @@ void Declarator::declareImportedPackageSymbols(Package *package) {
 }
 
 void Declarator::declareLlvmFunction(Function *function) const {
+    if (function->externalName() == "ejcBuiltIn") {
+        return;
+    }
     function->eachReification([this, function](auto &reification) {
         auto context = ReificationContext(*function, reification);
         generator_->typeHelper().setReificationContext(&context);

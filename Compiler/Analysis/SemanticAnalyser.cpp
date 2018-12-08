@@ -146,7 +146,7 @@ void SemanticAnalyser::analyseFunctionDeclaration(Function *function) const {
         }
         return;
     }
-    function->returnType()->analyseType(context);
+    function->returnType()->analyseType(context, true);
 }
 
 void SemanticAnalyser::declareInstanceVariables(const Type &type) {
@@ -175,9 +175,10 @@ void SemanticAnalyser::declareInstanceVariables(const Type &type) {
 bool SemanticAnalyser::checkReturnPromise(const Function *sub, const TypeContext &subContext,
                                           const Function *super, const TypeContext &superContext,
                                           const Type &superSource) const {
-    auto superReturnType = super->returnType()->type().resolveOn(superContext);
-    if (!sub->returnType()->type().resolveOn(subContext).compatibleTo(superReturnType, subContext)) {
-        auto supername = superReturnType.toString(subContext);
+    auto superReturn = super->returnType()->type().resolveOn(superContext);
+    auto subReturn = sub->returnType()->type().resolveOn(subContext);
+    if (!subReturn.compatibleTo(superReturn, subContext)) {
+        auto supername = superReturn.toString(subContext);
         auto thisname = sub->returnType()->type().toString(subContext);
         package_->compiler()->error(CompilerError(sub->position(), "Return type ",
                                                   sub->returnType()->type().toString(subContext), " of ",
@@ -185,7 +186,7 @@ bool SemanticAnalyser::checkReturnPromise(const Function *sub, const TypeContext
                                                   " is not compatible to the return type defined in ",
                                                   superSource.toString(subContext)));
     }
-    return sub->returnType()->type().resolveOn(subContext).storageType() == superReturnType.storageType();
+    return subReturn.storageType() == superReturn.storageType() && subReturn.isReference() == superReturn.isReference();
 }
 
 std::unique_ptr<Function> SemanticAnalyser::enforcePromises(Function *sub, Function *super,

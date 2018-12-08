@@ -14,9 +14,23 @@
 
 namespace EmojicodeCompiler {
 
-Type& ASTType::analyseType(const TypeContext &typeContext) {
+Type& ASTType::analyseType(const TypeContext &typeContext, bool allowReference) {
     if (!wasAnalysed()) {
         type_ = getType(typeContext).applyMinimalBoxing().optionalized(optional_);
+        if (reference_) {
+            if (!allowReference) {
+                package()->compiler()->error(CompilerError(position(), "Reference not allowed here."));
+            }
+            if (!type_.isReferenceUseful() && type_.type() != TypeType::GenericVariable &&
+                type_.type() != TypeType::LocalGenericVariable) {
+                package()->compiler()->warn(position(), "Reference is not useful.");
+            }
+            type_.setReference();
+            type_.setMutable(true);
+        }
+        if (type_.type() == TypeType::Optional && type_.isReference()) {
+            package()->compiler()->error(CompilerError(position(), "Optional references are not supported."));
+        }
         package_ = nullptr;
     }
     return type_;

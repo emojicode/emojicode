@@ -41,7 +41,8 @@ Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTThis::generate(FunctionCodeGenerator *fg) const {
-    if (!isTemporary()) {
+    if (expressionType().type() == TypeType::Class && !isTemporary()) {
+        // Only for class objects. For value types, $this$ is a reference, which is retained when dereferenced.
         fg->retain(fg->thisValue(), expressionType());
     }
     return fg->thisValue();
@@ -66,7 +67,7 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
         auto method = type_.typeDefinition()->lookupMethod(U"🐽", Mood::Assignment);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method);
     }
-    handleResult(fg, dict, true);
+    handleResult(fg, nullptr, dict);
     return fg->builder().CreateLoad(dict);
 }
 
@@ -81,7 +82,7 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
         auto method = type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative);
         CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method);
     }
-    handleResult(fg, list, true);
+    handleResult(fg, nullptr, list);
     return fg->builder().CreateLoad(list);
 }
 

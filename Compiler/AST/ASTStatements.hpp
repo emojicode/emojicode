@@ -115,6 +115,8 @@ protected:
     /// but after the return value has been evaluated.
     void release(FunctionCodeGenerator *fg) const;
 
+    void returnReference(FunctionAnalyser *analyser, Type type);
+
     std::shared_ptr<ASTExpr> value_;
     std::vector<std::unique_ptr<ASTRelease>> releases_;
     bool initReturn_ = false;

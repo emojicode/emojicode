@@ -240,11 +240,19 @@ public:
     std::string namespaceAccessor(Package *package) const;
 
     /// Returns true if this represents a reference to (a) value(s) of the type represented by this instance.
-    /// Values to which references point are normally located on the stack.
+    /// @see isReferencable()
     bool isReference() const { return isReference_; }
+
     void setReference(bool v = true) { isReference_ = v; }
-    /// Returns true if it makes sense to pass this value with the given storage type per reference to avoid copying.
-    bool isReferencable() const;
+
+    /// Returns true iff a reference to a value of this type is useful. For instance, a reference to an object pointer
+    /// is not at all useful. On the other hand, references to value types are required for method calls. Moreover,
+    /// boxes can be referenced.
+    ///
+    /// If this function returns false, this indicates that the value should be dereferenced as soon as possible. This
+    /// does not indicate that references to this type will never occur or are forbidden.
+    bool isReferenceUseful() const;
+
     Type referenced() const {
         auto copy = *this;
         copy.setReference(true);

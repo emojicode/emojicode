@@ -49,9 +49,16 @@ public:
     void unsetIsTemporary() { isTemporary_ = false; unsetIsTemporaryPost(); }
 
 protected:
-    /// Whether the object to which this expression evaluates should be released.
-    llvm::Value* handleResult(FunctionCodeGenerator *fg, llvm::Value *result,
-                              bool valueTypeIsReferenced = false) const;
+    /// This method must be called for every value that is created by the expression and must potentially be released.
+    ///
+    /// If the expression is temporary and expressionType() is a managed type, adds the value to the
+    /// FunctionCodeGenerator::addTemporaryObject. References are never added.
+    ///
+    /// @param result The value produced by the expression. This can be `nullptr` if `vtReference` is provided.
+    /// @param vtReference If the value is managed by reference, optionally provide a pointer to the value, so no
+    ///                    temporary heap space must be allocated. If this value cannot be provided, provide `nullptr`.
+    /// @return Always `result`.
+    llvm::Value* handleResult(FunctionCodeGenerator *fg, llvm::Value *result, llvm::Value *vtReference = nullptr) const;
 
     /// This method is called at the end of unsetIsTemporary(). It can be overridden to perform additional tasks.
     virtual void unsetIsTemporaryPost() {}

@@ -28,7 +28,8 @@ TypeIdentifier AbstractParser::parseTypeIdentifier() {
 Token AbstractParser::parseTypeEmoji() const {
     if (stream_.nextTokenIs(E_CANDY) || stream_.nextTokenIs(E_MEDIUM_BLACK_CIRCLE) ||
         stream_.nextTokenIs(E_MEDIUM_WHITE_CIRCLE) || stream_.nextTokenIs(E_LARGE_BLUE_CIRCLE) ||
-        stream_.nextTokenIs(E_BENTO_BOX) || stream_.nextTokenIs(E_ORANGE_TRIANGLE)) {
+        stream_.nextTokenIs(E_BENTO_BOX) || stream_.nextTokenIs(E_ORANGE_TRIANGLE) ||
+        stream_.nextTokenIs(E_EIGHT_POINTED_STAR)) {
         auto token = stream_.consumeToken();
         throw CompilerError(token.position(), "Unexpected identifier ", utf8(token.value()), " with special meaning.");
     }
@@ -45,6 +46,7 @@ std::unique_ptr<ASTType> AbstractParser::parseType() {
     }
 
     bool optional = stream_.consumeTokenIf(E_CANDY);
+    bool reference = stream_.consumeTokenIf(E_EIGHT_POINTED_STAR);
 
     if (stream_.nextTokenIs(E_MEDIUM_WHITE_CIRCLE)) {
         auto token = stream_.consumeToken();
@@ -58,6 +60,9 @@ std::unique_ptr<ASTType> AbstractParser::parseType() {
     }
     auto type = parseTypeMain();
     type->setOptional(optional);
+    if (reference) {
+        type->setReference();
+    }
     return type;
 }
 

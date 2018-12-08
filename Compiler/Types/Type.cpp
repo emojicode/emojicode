@@ -207,6 +207,7 @@ Function* Type::localResolutionConstraint() const {
 
 Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext) const {
     Type t = *this;
+    bool ref = isReference();
     if (type() == TypeType::Optional) {
         t.genericArguments_[0] = genericArguments_[0].resolveOnSuperArgumentsAndConstraints(typeContext);
         return t;
@@ -240,11 +241,15 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
             t = c->constraintForIndex(t.genericVariableIndex());
         }
     }
+    if (ref) {
+        t.setReference();
+    }
     return t;
 }
 
 Type Type::resolveOn(const TypeContext &typeContext) const {
     Type t = *this;
+    bool ref = isReference();
     if (type() == TypeType::Optional) {
         t.genericArguments_[0] = genericArguments_[0].resolveOn(typeContext);
         return t;
@@ -276,6 +281,9 @@ Type Type::resolveOn(const TypeContext &typeContext) const {
         for (auto &arg : t.genericArguments_) {
             arg = arg.resolveOn(typeContext);
         }
+    }
+    if (ref) {
+        t.setReference();
     }
     return t;
 }
@@ -496,30 +504,10 @@ StorageType Type::storageType() const {
     }
 }
 
-bool Type::isReferencable() const {
-    switch (type()) {
-        case TypeType::Callable:
-        case TypeType::Class:
-        case TypeType::Someobject:
-        case TypeType::GenericVariable:
-        case TypeType::LocalGenericVariable:
-        case TypeType::TypeAsValue:
-        case TypeType::NoReturn:
-        case TypeType::Optional:  // only reached in case of error, CompilerError will be/was raised
-            return false;
-        case TypeType::ValueType:
-        case TypeType::Enum:
-        case TypeType::Error:
-        case TypeType::Box:
-            return true;
-        case TypeType::Something:
-        case TypeType::Protocol:
-        case TypeType::MultiProtocol:
-            // This should not be reachable as this method must be called on the wrapping Box instance.
-            throw std::logic_error("isReferenceWorthy for Protocol/MultiProtocol/Something");
-        case TypeType::StorageExpectation:
-            throw std::logic_error("isReferenceWorthy for StorageExpectation");
-    }
+bool Type::isReferenceUseful() const {
+    assert(type() != TypeType::StorageExpectation);
+    return type() == TypeType::ValueType || type() == TypeType::Enum || type() == TypeType::Error ||
+        type() == TypeType::Box;
 }
 
 std::string Type::typePackage() const {

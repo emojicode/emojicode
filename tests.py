@@ -87,6 +87,7 @@ compilation_tests = [
     "rcTempOrder",
     "rcInstanceVariable",
     "rcOnlyReference",
+    "references",
     "identifierTest",
 ]
 

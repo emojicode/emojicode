@@ -207,10 +207,6 @@ void ASTToBox::setBoxInfo(Value *box, FunctionCodeGenerator *fg) const {
     fg->builder().CreateStore(boxInfo, fg->buildGetBoxInfoPtr(box));
 }
 
-Value* ASTDereference::generate(FunctionCodeGenerator *fg) const {
-    return fg->builder().CreateLoad(expr_->generate(fg));
-}
-
 Value* ASTStoreTemporarily::generate(FunctionCodeGenerator *fg) const {
     auto store = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(expr_->expressionType()), "temp");
     if (isValueTypeInit()) {
@@ -220,6 +216,50 @@ Value* ASTStoreTemporarily::generate(FunctionCodeGenerator *fg) const {
         fg->builder().CreateStore(expr_->generate(fg), store);
     }
     return store;
+}
+
+Value* ASTBoxReferenceToReference::generate(FunctionCodeGenerator *fg) const {
+    auto containedType = expr_->expressionType().unboxed().unoptionalized();
+    auto type = fg->typeHelper().llvmTypeFor(containedType);
+    if (fg->typeHelper().isRemote(containedType)) {
+        auto ptrPtr = fg->buildGetBoxValuePtr(expr_->generate(fg), type->getPointerTo()->getPointerTo());
+        return fg->builder().CreateLoad(ptrPtr);
+    }
+    return fg->buildGetBoxValuePtr(expr_->generate(fg), type->getPointerTo());
+}
+
+Value* ASTDereference::generate(FunctionCodeGenerator *fg) const {
+    auto ptr = expr_->generate(fg);
+    auto val = fg->builder().CreateLoad(ptr);
+    if (expressionType().isManaged()) {
+        fg->retain(fg->isManagedByReference(expressionType()) ? ptr : val, expressionType());
+    }
+    return handleResult(fg, val, ptr);
+}
+
+void ASTDereference::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
+    analyser->take(expr_.get());
+}
+
+Value* ASTBoxReferenceToSimple::generate(FunctionCodeGenerator *fg) const {
+    auto box = expr_->generate(fg);
+    auto containedType = expr_->expressionType().unboxed().unoptionalized();
+    llvm::Value *valuePtr;
+
+    if (fg->typeHelper().isRemote(containedType)) {
+        auto type = fg->typeHelper().llvmTypeFor(containedType);
+        auto ptrPtr = fg->buildGetBoxValuePtr(box, type->getPointerTo()->getPointerTo());
+        valuePtr = fg->builder().CreateLoad(ptrPtr);
+    }
+    else {
+        valuePtr = getBoxValuePtr(box, fg);
+    }
+
+    auto val = fg->builder().CreateLoad(valuePtr);
+    if (expressionType().isManaged()) {
+        fg->retain(fg->isManagedByReference(expressionType()) ? valuePtr : val, expressionType());
+    }
+    return handleResult(fg, val, valuePtr);
 }
 
 }  // namespace EmojicodeCompiler

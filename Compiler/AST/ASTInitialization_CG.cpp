@@ -47,7 +47,7 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
         obj = CallCodeGenerator(fg, CallType::DynamicDispatchOnType)
             .generate(typeExpr_->generate(fg), typeExpr_->expressionType(), args_, initializer_);
     }
-    handleResult(fg, obj, false);
+    handleResult(fg, obj);
     return obj;
 }
 
@@ -58,7 +58,7 @@ Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const
     }
     CallCodeGenerator(fg, CallType::StaticDispatch)
             .generate(destination, typeExpr_->expressionType(), args_, initializer_);
-    handleResult(fg, destination, true);
+    handleResult(fg, nullptr, destination);
     return vtDestination_ == nullptr ? fg->builder().CreateLoad(destination) : nullptr;
 }
 

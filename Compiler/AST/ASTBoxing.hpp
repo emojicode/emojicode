@@ -129,15 +129,29 @@ class ASTBoxToSimple final : public ASTBoxing {
     void toCode(PrettyStream &pretty) const override {}
 };
 
-class ASTDereference final : public ASTBoxing {
+class ASTStoreTemporarily final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override {}
 };
 
-class ASTStoreTemporarily final : public ASTBoxing {
+class ASTBoxReferenceToReference final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(PrettyStream &pretty) const override {}
+};
+
+class ASTDereference : public ASTBoxing {
+    using ASTBoxing::ASTBoxing;
+    Value* generate(FunctionCodeGenerator *fg) const override;
+    void toCode(PrettyStream &pretty) const override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) final;
+};
+
+class ASTBoxReferenceToSimple final : public ASTDereference {
+    using ASTDereference::ASTDereference;
+    Value* generate(FunctionCodeGenerator *fg) const override;
+
     void toCode(PrettyStream &pretty) const override {}
 };
 

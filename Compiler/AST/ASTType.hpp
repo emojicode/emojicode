@@ -18,10 +18,11 @@ enum class TokenType;
 /// Abstract parent class of all abstract syntax tree nodes representing a $type$.
 class ASTType : public ASTNode {
 public:
-    Type& analyseType(const TypeContext &typeContext);
+    Type& analyseType(const TypeContext &typeContext, bool allowReference = false);
     Type& type() { assert(wasAnalysed()); return type_; }
     const Type& type() const { assert(wasAnalysed()); return type_; }
     void setOptional(bool optional) { optional_ = optional; type_ = type_.optionalized(optional); }
+    void setReference() { reference_ = true; type_.setReference(); }
     bool wasAnalysed() const { return package_ == nullptr; }
 
     void toCode(PrettyStream &pretty) const override;
@@ -36,6 +37,7 @@ protected:
 private:
     Type type_ = Type::noReturn();
     bool optional_ = false;
+    bool reference_ = false;
     Package *package_;
 };
 

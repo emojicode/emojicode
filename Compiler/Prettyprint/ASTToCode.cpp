@@ -316,6 +316,9 @@ void ASTType::toCode(PrettyStream &pretty) const {
     if (optional_) {
         pretty << "🍬";
     }
+    if (reference_) {
+        pretty << "✴️";
+    }
     toCodeType(pretty);
 }
 

@@ -38,12 +38,7 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             }
             case BuiltInType::Load: {
                 auto type = args_.genericArguments().front()->type();
-                auto ptr = buildMemoryAddress(fg, v, args_.args().front()->generate(fg), type);
-                auto val = fg->builder().CreateLoad(ptr);
-                if (type.isManaged()) {
-                    fg->retain(fg->isManagedByReference(type) ? ptr : val, type);
-                }
-                return val;
+                return buildMemoryAddress(fg, v, args_.args().front()->generate(fg), type);
             }
             case BuiltInType::Release: {
                 auto type = args_.genericArguments().front()->type();

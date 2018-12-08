@@ -122,7 +122,9 @@ private:
 
     void makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp) const;
 
-    void upcast(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
+    Type upcast(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
+
+    Type complyReference(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const;
 };
 
 }  // namespace EmojicodeCompiler

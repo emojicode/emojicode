@@ -40,7 +40,7 @@
     >!H in the case T is a class type, a subclass of T, the behavior is
     >!H undefined!
   📗
-  ☣️️ ❗️ 🐽🐚☣️️T⚪️🍆 offset 🔢 ➡️ T 📻 🔤ejcBuiltIn🔤
+  ☣️️ ❗️ 🐽🐚☣️️T⚪️🍆 offset 🔢 ➡️ ✴️T 📻 🔤ejcBuiltIn🔤
 
   📗
     Resizes this memory area.

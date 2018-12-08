@@ -45,9 +45,8 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
         }
         auto val = fg->builder().CreateLoad(ptr);
         if (expressionType().isManaged()) {
-            auto retainValue = fg->isManagedByReference(expressionType()) ? ptr : val;
-            fg->retain(retainValue, expressionType());
-            handleResult(fg, retainValue, true);
+            fg->retain(fg->isManagedByReference(expressionType()) ? ptr : val, expressionType());
+            handleResult(fg, val, ptr);
         }
         return val;
     }
@@ -57,12 +56,12 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
         return localVariable;
     }
 
+    auto val = fg->builder().CreateLoad(localVariable);
     if (!returned_ && !isTemporary() && expressionType().isManaged()) {
-        auto retainValue = managementValue(fg);
-        fg->retain(retainValue, expressionType());
-        handleResult(fg, retainValue);
+        fg->retain(fg->isManagedByReference(expressionType()) ? localVariable : val, expressionType());
+        handleResult(fg, val, localVariable);
     }
-    return fg->builder().CreateLoad(localVariable);
+    return val;
 }
 
 void ASTVariableInit::generate(FunctionCodeGenerator *fg) const {

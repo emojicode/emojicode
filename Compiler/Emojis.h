@@ -107,6 +107,7 @@ enum Emojis {
     E_RECYCLING_SYMBOL = 0x267B,
     E_IZAKAYA_LANTERN = 0x1F3EE,
     E_BATTERY = 0x1F50B,
+    E_EIGHT_POINTED_STAR = 0x2734,
 };
 
 }  // namespace EmojicodeCompiler

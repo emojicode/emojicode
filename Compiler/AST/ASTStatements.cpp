@@ -16,6 +16,7 @@
 #include "Scoping/VariableNotFoundError.hpp"
 #include "Types/Class.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "ASTVariables.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -78,7 +79,39 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
         throw CompilerError(position(), "↩️ cannot be used inside an initializer.");
     }
 
-    analyser->expectType(analyser->function()->returnType()->type(), &value_);
+    auto rtType = analyser->function()->returnType()->type();
+
+    auto type = value_->analyse(analyser, TypeExpectation(rtType));
+    if (!type.compatibleTo(rtType, analyser->typeContext())) {
+        analyser->compiler()->error(CompilerError(position(), "Declared return type is ",
+                                                  rtType.toString(analyser->typeContext())));
+    }
+    if (analyser->function()->returnType()->type().isReference()) {
+        returnReference(analyser, type);
+    }
+    else {
+        analyser->comply(type, TypeExpectation(analyser->function()->returnType()->type()), &value_);
+    }
+}
+
+void ASTReturn::returnReference(FunctionAnalyser *analyser, Type type) {
+    if (auto varNode = dynamic_cast<ASTGetVariable*>(value_.get())) {
+        if (!varNode->inInstanceScope()) {
+            analyser->compiler()->error(CompilerError(position(), "Only instance variables can be referenced."));
+        }
+
+        varNode->setReference();
+        type.setReference(true);
+        varNode->setExpressionType(type);
+        return;
+    }
+    if (type.isReference()) {
+        if (!analyser->isInUnsafeBlock()) {
+            analyser->compiler()->error(CompilerError(position(), "Forwarding reference is an unsafe operation."));
+        }
+        return;
+    }
+    analyser->compiler()->error(CompilerError(position(), "The provided expression cannot produce a reference."));
 }
 
 void ASTRaise::analyse(FunctionAnalyser *analyser) {

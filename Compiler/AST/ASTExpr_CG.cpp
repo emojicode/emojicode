@@ -16,14 +16,21 @@
 
 namespace EmojicodeCompiler {
 
-llvm::Value* ASTExpr::handleResult(FunctionCodeGenerator *fg, llvm::Value *result, bool valueTypeIsReferenced) const {
-    if (isTemporary_ && expressionType().isManaged()) {
-        if (!valueTypeIsReferenced && !expressionType().isReference() && fg->isManagedByReference(expressionType())) {
-            auto temp = fg->createEntryAlloca(result->getType());
-            fg->builder().CreateStore(result, temp);
-            fg->addTemporaryObject(temp, expressionType());
+llvm::Value* ASTExpr::handleResult(FunctionCodeGenerator *fg, llvm::Value *result, llvm::Value *vtReference) const {
+    if (isTemporary_ && expressionType().isManaged() && !expressionType().isReference()) {
+        if (fg->isManagedByReference(expressionType())) {
+            if (vtReference == nullptr) {
+                assert(result != nullptr);
+                auto temp = fg->createEntryAlloca(result->getType());
+                fg->builder().CreateStore(result, temp);
+                fg->addTemporaryObject(temp, expressionType());
+            }
+            else {
+                fg->addTemporaryObject(vtReference, expressionType());
+            }
         }
         else {
+            assert(result != nullptr);
             fg->addTemporaryObject(result, expressionType());
         }
     }

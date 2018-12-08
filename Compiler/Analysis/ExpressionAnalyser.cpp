@@ -153,18 +153,15 @@ Type ExpressionAnalyser::comply(Type exprType, const TypeExpectation &expectatio
         return exprType;
     }
 
-    upcast(exprType, expectation, node);
-
+    exprType = upcast(std::move(exprType), expectation, node);
     exprType = callableBox(std::move(exprType), expectation, node);
-
-    if (exprType.isReference() && !expectation.isReference()) {
-        exprType.setReference(false);
-        insertNode<ASTDereference>(node, exprType);
-    }
-
     exprType = box(std::move(exprType), expectation, node);
+    return complyReference(std::move(exprType), expectation, node);
+}
 
-    if (!exprType.isReference() && expectation.isReference() && exprType.isReferencable()) {
+Type ExpressionAnalyser::complyReference(Type exprType, const TypeExpectation &expectation,
+                                           std::shared_ptr<ASTExpr> *node) const {
+    if (!exprType.isReference() && expectation.isReference() && exprType.isReferenceUseful()) {
         exprType.setReference(true);
         if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(*node)) {
             varNode->setReference();
@@ -177,16 +174,34 @@ Type ExpressionAnalyser::comply(Type exprType, const TypeExpectation &expectatio
     return exprType;
 }
 
-void ExpressionAnalyser::upcast(Type &exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const {
+Type ExpressionAnalyser::upcast(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const {
     if ((exprType.type() == TypeType::Class && expectation.type() == TypeType::Class &&
          expectation.klass() != exprType.klass()) || (exprType.unoptionalized().type() == TypeType::Class &&
                                                       expectation.unoptionalized().type() == TypeType::Someobject)) {
         insertNode<ASTUpcast>(node, exprType, expectation.unoptionalized());
         exprType = expectation.unoptionalized();
     }
+    return exprType;
 }
 
 Type ExpressionAnalyser::box(Type exprType, const TypeExpectation &expectation, std::shared_ptr<ASTExpr> *node) const {
+    if (exprType.isReference()) {
+        if (exprType.storageType() == StorageType::Box && expectation.simplifyType(exprType) == StorageType::Simple) {
+            if (exprType.unboxed().isReferenceUseful() && expectation.isReference()) {
+                exprType = exprType.unboxed().referenced();
+                insertNode<ASTBoxReferenceToReference>(node, exprType);
+                return exprType;
+            }
+            exprType = exprType.unboxed();
+            insertNode<ASTBoxReferenceToSimple>(node, exprType);
+            return exprType;
+        }
+        if (!expectation.isReference()) {
+            exprType.setReference(false);
+            insertNode<ASTDereference>(node, exprType);
+        }
+    }
+
     switch (expectation.simplifyType(exprType)) {
         case StorageType::SimpleOptional:
         case StorageType::PointerOptional:
