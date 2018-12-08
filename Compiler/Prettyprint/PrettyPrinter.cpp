@@ -245,7 +245,11 @@ void PrettyPrinter::printProtocolConformances(TypeDefinition *typeDef, const Typ
 
 void PrettyPrinter::printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext) {
     for (auto &ivar : typeDef->instanceVariables()) {
-        prettyStream_.indent() << "🖍🆕 " << ivar.name << " " << ivar.type << "\n";
+        prettyStream_.indent() << "🖍🆕 " << ivar.name << " " << ivar.type;
+        if (ivar.expr != nullptr) {
+            prettyStream_ << " " << ivar.expr;
+        }
+        prettyStream_ << "\n";
     }
     prettyStream_.offerNewLineUnlessEmpty(typeDef->instanceVariables());
 }

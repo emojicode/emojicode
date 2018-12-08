@@ -162,7 +162,13 @@ void SemanticAnalyser::declareInstanceVariables(const Type &type) {
                                                  var.position);
 
         if (var.expr != nullptr) {
-            var.expr->analyse(&analyser, TypeExpectation(var.type->type()));
+            auto type = var.expr->analyse(&analyser, TypeExpectation(var.type->type()));
+            if (!type.compatibleTo(var.type->type(), context)) {
+                package_->compiler()->error(CompilerError(var.expr->position(),
+                                                          "Cannot initialize instance variable of type ",
+                                                          var.type->type().toString(context), " with value of type ",
+                                                          type.toString(context), "."));
+            }
         }
     }
 

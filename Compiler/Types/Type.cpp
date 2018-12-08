@@ -92,7 +92,9 @@ TypeDefinition* Type::typeDefinition() const {
 
 Type Type::unboxed() const {
     if (type() == TypeType::Box) {
-        return genericArguments_[0];
+        auto copy = genericArguments_[0];
+        copy.setMutable(mutable_);
+        return copy;
     }
     return *this;
 }
@@ -208,6 +210,7 @@ Function* Type::localResolutionConstraint() const {
 Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext) const {
     Type t = *this;
     bool ref = isReference();
+    bool mut = mutable_;
     if (type() == TypeType::Optional) {
         t.genericArguments_[0] = genericArguments_[0].resolveOnSuperArgumentsAndConstraints(typeContext);
         return t;
@@ -244,12 +247,16 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
     if (ref) {
         t.setReference();
     }
+    if (mut) {
+        t.setMutable(true);
+    }
     return t;
 }
 
 Type Type::resolveOn(const TypeContext &typeContext) const {
     Type t = *this;
     bool ref = isReference();
+    bool mut = mutable_;
     if (type() == TypeType::Optional) {
         t.genericArguments_[0] = genericArguments_[0].resolveOn(typeContext);
         return t;
@@ -284,6 +291,9 @@ Type Type::resolveOn(const TypeContext &typeContext) const {
     }
     if (ref) {
         t.setReference();
+    }
+    if (mut) {
+        t.setMutable(true);
     }
     return t;
 }
