@@ -118,16 +118,18 @@ void ASTForIn::analyse(FunctionAnalyser *analyser) {
 
     ASTBlock newBlock(position());
 
+    auto iteratorVar = U"iterator" + varName_;
+
     auto getIterator = std::make_shared<ASTMethod>(std::u32string(1, E_DANGO), std::move(iteratee_),
                                                    ASTArguments(position()), position());
-    newBlock.appendNode(std::make_unique<ASTConstantVariable>(U"iterator", getIterator, position()));
+    newBlock.appendNode(std::make_unique<ASTConstantVariable>(iteratorVar, getIterator, position()));
     auto getNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
-                                               std::make_shared<ASTGetVariable>(U"iterator", position()),
+                                               std::make_shared<ASTGetVariable>(iteratorVar, position()),
                                                ASTArguments(position()), position());
     block_.prependNode(std::make_unique<ASTConstantVariable>(varName_, getNext, position()));
 
     auto hasNext = std::make_shared<ASTMethod>(std::u32string(1, 0x1F53D),
-                                               std::make_shared<ASTGetVariable>(U"iterator", position()),
+                                               std::make_shared<ASTGetVariable>(iteratorVar, position()),
                                                ASTArguments(position(), Mood::Interogative), position());
     newBlock.appendNode(std::make_unique<ASTRepeatWhile>(hasNext, std::move(block_), position()));
     block_ = std::move(newBlock);
