@@ -90,7 +90,11 @@ Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &typ
     function->requestReification(genericArgs);
     checkFunctionUse(function, node->position());
     node->setGenericArgumentTypes(genericArgs);
-    return function->returnType()->type().resolveOn(typeContext);
+    auto rtType = function->returnType()->type().resolveOn(typeContext);
+    if (rtType.isReference()) {
+        rtType.setMutable(type.isMutable());
+    }
+    return rtType;
 }
 
 void ExpressionAnalyser::checkFunctionUse(Function *function, const SourcePosition &p) const {

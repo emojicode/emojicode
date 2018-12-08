@@ -259,7 +259,7 @@ public:
         return copy;
     }
     
-    bool isMutable() const { return mutable_; }
+    bool isMutable() const;
     void setMutable(bool b) { mutable_ = b; }
 
     /// Whether the value will be exactly of the type reprsented by this instance. If this instance represents a class

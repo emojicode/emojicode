@@ -109,6 +109,9 @@ void ASTReturn::returnReference(FunctionAnalyser *analyser, Type type) {
         if (!analyser->isInUnsafeBlock()) {
             analyser->compiler()->error(CompilerError(position(), "Forwarding reference is an unsafe operation."));
         }
+        if (!type.isMutable()) {
+            analyser->compiler()->error(CompilerError(position(), "Cannot forward immutable reference."));
+        }
         return;
     }
     analyser->compiler()->error(CompilerError(position(), "The provided expression cannot produce a reference."));

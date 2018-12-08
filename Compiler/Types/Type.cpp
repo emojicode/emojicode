@@ -532,6 +532,10 @@ bool Type::isManaged() const {
         (type() == TypeType::Error && errorType().isManaged());
 }
 
+bool Type::isMutable() const {
+    return mutable_ || (type() == TypeType::ValueType && valueType()->isPrimitive());
+}
+
 void Type::typeName(Type type, const TypeContext &typeContext, std::string &string, Package *package) const {
     if (package != nullptr) {
         string.append(type.namespaceAccessor(package));

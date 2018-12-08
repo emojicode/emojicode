@@ -26,7 +26,6 @@ Type& ASTType::analyseType(const TypeContext &typeContext, bool allowReference) 
                 package()->compiler()->warn(position(), "Reference is not useful.");
             }
             type_.setReference();
-            type_.setMutable(true);
         }
         if (type_.type() == TypeType::Optional && type_.isReference()) {
             package()->compiler()->error(CompilerError(position(), "Optional references are not supported."));
