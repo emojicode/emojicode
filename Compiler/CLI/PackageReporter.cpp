@@ -29,10 +29,19 @@ void PackageReporter::reportDocumentation(const std::u32string &documentation) {
 
 void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
     if (type.type() == TypeType::Box) {
-        reportType(type.unboxed(), tc);
+        auto bt = type.unboxed();
+        if (type.isReference()) {
+            bt.setReference();
+        }
+        reportType(bt, tc);
         return;
     }
     writer_.StartObject();
+
+    if (type.isReference()) {
+        writer_.Key("reference");
+        writer_.Bool(true);
+    }
 
     switch (type.type()) {
         case TypeType::Class:
