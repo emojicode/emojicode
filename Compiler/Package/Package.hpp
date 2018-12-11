@@ -38,7 +38,7 @@ public:
     /// Constructs a package. The package must be compiled with compile() before it can be loaded.
     /// @param name The name of the package. The package is registered with this name.
     /// @param path The path to the directory of the package.
-    Package(std::string name, std::string path, Compiler *app);
+    Package(std::string name, std::string path, Compiler *app, bool imported);
 
     /// Lexes and parses the package. The file interface.emojii in path() is used to begin compilation.
     /// If this package is the s package the s loading procedure is invoked.
@@ -65,6 +65,8 @@ public:
     /// @returns True iff compile() was called on this package and returned.
     /// If this method returns false and another method tries to load this package, this indicates a circular depedency.
     bool finishedLoading() const { return finishedLoading_; }
+
+    bool isImported() const { return imported_; }
 
     /// @returns The path to the directory of this package.
     const std::string& path() const { return path_; }
@@ -135,6 +137,7 @@ private:
     const std::string path_;
     bool finishedLoading_ = false;
     Function *startFlag_ = nullptr;
+    bool imported_;
 
     std::map<std::u32string, Type> types_;
     std::vector<ExportedType> exportedTypes_;

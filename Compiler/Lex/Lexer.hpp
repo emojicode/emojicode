@@ -40,6 +40,8 @@ public:
     /// @returns The position which would be the position of the next token returned by lex().
     const SourcePosition& position() const { return sourcePosition_; }
 
+    size_t index() const { return i_; };
+
 private:
     enum class TokenState {
         Continues, Ended, NextBegun

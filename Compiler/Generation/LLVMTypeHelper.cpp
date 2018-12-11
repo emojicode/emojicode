@@ -60,7 +60,7 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
     captureDeinit_ = llvm::FunctionType::get(llvm::Type::getVoidTy(context_),
                                              llvm::Type::getInt8PtrTy(context_), false);
 
-    auto compiler = codeGenerator_->package()->compiler();
+    auto compiler = codeGenerator_->compiler();
     types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
     types_.emplace(Type::someobject(), someobjectPtr_);
     types_.emplace(Type(compiler->sInteger), llvm::Type::getInt64Ty(context_));

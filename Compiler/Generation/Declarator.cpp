@@ -94,41 +94,59 @@ void Declarator::declareImportedClassInfo(Class *klass) {
     klass->setClassInfo(info);
 }
 
-void Declarator::declareImportedPackageSymbols(Package *package) {
-    auto ptg = ProtocolsTableGenerator(generator_);
-    for (auto &valueType : package->valueTypes()) {
-        valueType->eachFunction([this](auto *function) {
-            declareLlvmFunction(function);
-        });
-        if (valueType->isManaged()) {
-            valueType->deinitializer()->createUnspecificReification();
-            declareLlvmFunction(valueType->deinitializer());
-            valueType->copyRetain()->createUnspecificReification();
-            declareLlvmFunction(valueType->copyRetain());
+llvm::Function::LinkageTypes Declarator::linkageForFunction(Function *function) const {
+    if (function->isInline() && function->package()->isImported()) {
+        return llvm::Function::AvailableExternallyLinkage;
+    }
+    if ((function->accessLevel() == AccessLevel::Private && !function->isExternal() &&
+         (function->owner() == nullptr || !function->owner()->exported())) || function->isClosure()) {
+        return llvm::Function::PrivateLinkage;
+    }
+    return llvm::Function::ExternalLinkage;
+}
+
+llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationContext reificationContext) const {
+    generator_->typeHelper().setReificationContext(&reificationContext);
+    auto ft = generator_->typeHelper().functionTypeFor(function);
+    generator_->typeHelper().setReificationContext(nullptr);
+    auto name = function->externalName().empty() ? mangleFunction(function, reificationContext.arguments())
+    : function->externalName();
+
+    auto fn = llvm::Function::Create(ft, linkageForFunction(function), name, generator_->module());
+    fn->addFnAttr(llvm::Attribute::NoUnwind);
+    if (function->isInline()) {
+        fn->addFnAttr(llvm::Attribute::InlineHint);
+    }
+
+    size_t i = 0;
+    if (hasThisArgument(function)) {
+        addParamDereferenceable(function->typeContext().calleeType(), i, fn, false);
+        if (function->functionType() == FunctionType::ObjectInitializer) {
+            if (!dynamic_cast<Initializer*>(function)->errorProne()) {
+                fn->addParamAttr(i, llvm::Attribute::Returned);
+                addParamDereferenceable(function->typeContext().calleeType(), 0, fn, true);
+            }
         }
-        ptg.declareImported(Type(valueType.get()));
-    }
-    for (auto &protocol : package->protocols()) {
-        size_t tableIndex = 0;
-        for (auto function : protocol->methodList()) {
-            function->createUnspecificReification();
-            function->eachReification([this, function, &tableIndex](auto &reification) {
-                auto context = ReificationContext(*function, reification);
-                generator_->typeHelper().setReificationContext(&context);
-                reification.entity.setFunctionType(generator_->typeHelper().functionTypeFor(function));
-                reification.entity.setVti(tableIndex++);
-                generator_->typeHelper().setReificationContext(nullptr);
-            });
+        else if (!function->memoryFlowTypeForThis().isEscaping()) {
+            fn->addParamAttr(i, llvm::Attribute::NoCapture);
         }
+
+        if (function->typeContext().calleeType().type() == TypeType::ValueType && !function->mutating()) {
+            fn->addParamAttr(0, llvm::Attribute::ReadOnly);
+        }
+
+        i++;
     }
-    for (auto &klass : package->classes()) {
-        VTCreator(klass.get(), *this).build();
-        ptg.declareImported(Type(klass.get()));
-        declareImportedClassInfo(klass.get());
+    else if (function->functionType() == FunctionType::ObjectInitializer
+             && !dynamic_cast<Initializer*>(function)->errorProne()) {  // foreign initializers
+        addParamDereferenceable(function->typeContext().calleeType(), 0, fn, true);
     }
-    for (auto &function : package->functions()) {
-        declareLlvmFunction(function.get());
+    for (auto &param : function->parameters()) {
+        addParamAttrs(param, i, fn);
+        i++;
     }
+    addParamDereferenceable(function->returnType()->type(), 0, fn, true);
+    return fn;
 }
 
 void Declarator::declareLlvmFunction(Function *function) const {
@@ -136,45 +154,7 @@ void Declarator::declareLlvmFunction(Function *function) const {
         return;
     }
     function->eachReification([this, function](auto &reification) {
-        auto context = ReificationContext(*function, reification);
-        generator_->typeHelper().setReificationContext(&context);
-        auto ft = generator_->typeHelper().functionTypeFor(function);
-        generator_->typeHelper().setReificationContext(nullptr);
-        auto name = function->externalName().empty() ? mangleFunction(function, reification.arguments)
-                                                     : function->externalName();
-        auto linkage = (function->accessLevel() == AccessLevel::Private && !function->isExternal())
-                        || function->isClosure() ? llvm::Function::PrivateLinkage : llvm::Function::ExternalLinkage;
-        reification.entity.function = llvm::Function::Create(ft, linkage, name, generator_->module());
-        reification.entity.function->addFnAttr(llvm::Attribute::NoUnwind);
-
-        size_t i = 0;
-        if (hasThisArgument(function)) {
-            addParamDereferenceable(function->typeContext().calleeType(), i, reification.entity.function, false);
-            if (function->functionType() == FunctionType::ObjectInitializer) {
-                if (!dynamic_cast<Initializer*>(function)->errorProne()) {
-                    reification.entity.function->addParamAttr(i, llvm::Attribute::Returned);
-                    addParamDereferenceable(function->typeContext().calleeType(), 0, reification.entity.function, true);
-                }
-            }
-            else if (!function->memoryFlowTypeForThis().isEscaping()) {
-                reification.entity.function->addParamAttr(i, llvm::Attribute::NoCapture);
-            }
-
-            if (function->typeContext().calleeType().type() == TypeType::ValueType && !function->mutating()) {
-                reification.entity.function->addParamAttr(0, llvm::Attribute::ReadOnly);
-            }
-
-            i++;
-        }
-        else if (function->functionType() == FunctionType::ObjectInitializer
-            && !dynamic_cast<Initializer*>(function)->errorProne()) {  // foreign initializers
-            addParamDereferenceable(function->typeContext().calleeType(), 0, reification.entity.function, true);
-        }
-        for (auto &param : function->parameters()) {
-            addParamAttrs(param, i, reification.entity.function);
-            i++;
-        }
-        addParamDereferenceable(function->returnType()->type(), 0, reification.entity.function, true);
+        reification.entity.function = createLlvmFunction(function, ReificationContext(*function, reification));
     });
 }
 

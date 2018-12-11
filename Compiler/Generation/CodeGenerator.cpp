@@ -37,16 +37,17 @@
 
 namespace EmojicodeCompiler {
 
-CodeGenerator::CodeGenerator(Package *package, bool optimize)
-        : package_(package),
-          module_(std::make_unique<llvm::Module>(package->name(), context())),
+CodeGenerator::CodeGenerator(Compiler *compiler)
+        : compiler_(compiler),
           typeHelper_(context(), this),
           pool_(std::make_unique<StringPool>(this)),
-          declarator_(std::make_unique<Declarator>(this)),
-          protocolsTableGenerator_(std::make_unique<ProtocolsTableGenerator>(this)),
-          optimizationManager_(std::make_unique<OptimizationManager>(module_.get(), optimize)) {}
+          protocolsTableGenerator_(std::make_unique<ProtocolsTableGenerator>(this)) {}
 
 CodeGenerator::~CodeGenerator() = default;
+
+Compiler* CodeGenerator::compiler() const {
+    return compiler_;
+}
 
 uint64_t CodeGenerator::querySize(llvm::Type *type) const {
     return module()->getDataLayout().getTypeAllocSize(type);
@@ -60,7 +61,7 @@ llvm::Constant *CodeGenerator::boxInfoFor(const Type &type) {
         return declarator_->boxInfoForCallables();
     }
     if (type.type() == TypeType::TypeAsValue) {
-        return package_->compiler()->sInteger->boxInfo();
+        return compiler()->sInteger->boxInfo();
     }
     assert(type.type() == TypeType::ValueType || type.type() == TypeType::Enum);
     return type.valueType()->boxInfo();
@@ -82,7 +83,11 @@ llvm::Constant *CodeGenerator::protocolIdentifierFor(const Type &type) {
     return id;
 }
 
-void CodeGenerator::prepareModule() {
+void CodeGenerator::prepareModule(Package *package, bool optimize) {
+    module_ = std::make_unique<llvm::Module>(package->name(), context());
+    optimizationManager_ = std::make_unique<OptimizationManager>(module_.get(), optimize);
+    declarator_ = std::make_unique<Declarator>(this);
+
     llvm::InitializeAllTargetInfos();
     llvm::InitializeAllTargets();
     llvm::InitializeAllTargetMCs();
@@ -103,23 +108,34 @@ void CodeGenerator::prepareModule() {
     module()->setTargetTriple(targetTriple);
 }
 
-void CodeGenerator::generate(const std::string &outPath, bool printIr) {
-    prepareModule();
+void CodeGenerator::generate(Package *package, const std::string &outPath, bool printIr, bool optimize) {
+    prepareModule(package, optimize);
     optimizationManager_->initialize();
-
-    for (auto package : package_->dependencies()) {
-        declarator_->declareImportedPackageSymbols(package);
-    }
 
     buildClassObjectBoxInfo();
     buildCallableBoxInfo();
 
-    for (auto &protocol : package_->protocols()) {
+    for (auto package : package->dependencies()) {
+        declareAndCreate(package, true);
+    }
+    declareAndCreate(package, false);
+
+    for (auto package : package->dependencies()) {
+        generateFunctions(package, true);
+    }
+    generateFunctions(package, false);
+
+    optimizationManager_->optimize(module());
+    emitModule(outPath, printIr);
+}
+
+void CodeGenerator::declareAndCreate(Package *package, bool imported) {
+    for (auto &protocol : package->protocols()) {
         createProtocolFunctionTypes(protocol.get());
     }
-    for (auto &valueType : package_->valueTypes()) {
-        valueType->eachFunction([this](Function *function) {
-            if (!function->requiresCopyReification()) {
+    for (auto &valueType : package->valueTypes()) {
+        valueType->eachFunction([this, imported](Function *function) {
+            if (!imported && !function->requiresCopyReification()) {
                 function->createUnspecificReification();
             }
             declarator_->declareLlvmFunction(function);
@@ -131,32 +147,40 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr) {
             declarator_->declareLlvmFunction(valueType->copyRetain());
         }
 
-        valueType->setBoxInfo(declarator().declareBoxInfo(mangleBoxInfoName(Type(valueType.get()))));
-        valueType->setBoxRetainRelease(buildBoxRetainRelease(Type(valueType.get())));
-        protocolsTableGenerator_->generate(Type(valueType.get()));
-        valueType->boxInfo()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
-            protocolsTableGenerator_->createProtocolTable(valueType.get()),
-            valueType->boxRetainRelease().first, valueType->boxRetainRelease().second
-        }));
+        if (!imported) {
+            valueType->setBoxInfo(declarator().declareBoxInfo(mangleBoxInfoName(Type(valueType.get()))));
+            valueType->setBoxRetainRelease(buildBoxRetainRelease(Type(valueType.get())));
+            protocolsTableGenerator_->generate(Type(valueType.get()));
+            valueType->boxInfo()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
+                protocolsTableGenerator_->createProtocolTable(valueType.get()),
+                valueType->boxRetainRelease().first, valueType->boxRetainRelease().second
+            }));
+        }
+        else {
+            protocolsTableGenerator_->declareImported(Type(valueType.get()));
+        }
     }
-    for (auto &klass : package_->classes()) {
+    for (auto &klass : package->classes()) {
         VTCreator(klass.get(), *declarator_).build();
-        klass->setBoxRetainRelease(classObjectRetainRelease_);
-        protocolsTableGenerator_->generate(Type(klass.get()));
-        createClassInfo(klass.get());
+        if (!imported) {
+            klass->setBoxRetainRelease(classObjectRetainRelease_);
+            protocolsTableGenerator_->generate(Type(klass.get()));
+            createClassInfo(klass.get());
+        }
+        else {
+            protocolsTableGenerator_->declareImported(Type(klass.get()));
+            declarator().declareImportedClassInfo(klass.get());
+        }
     }
-    for (auto &function : package_->functions()) {
-        function->createUnspecificReification();
+    for (auto &function : package->functions()) {
+        if (!imported) {
+            function->createUnspecificReification();
+        }
         declarator_->declareLlvmFunction(function.get());
     }
-
-    generateFunctions();
-
-    optimizationManager_->optimize(module());
-    emit(outPath, printIr);
 }
 
-void CodeGenerator::emit(const std::string &outPath, bool printIr) {
+void CodeGenerator::emitModule(const std::string &outPath, bool printIr) {
     llvm::legacy::PassManager pass;
 
     auto fileType = llvm::TargetMachine::CGFT_ObjectFile;
@@ -175,23 +199,25 @@ void CodeGenerator::emit(const std::string &outPath, bool printIr) {
     dest.flush();
 }
 
-void CodeGenerator::generateFunctions() {
-    for (auto &valueType : package_->valueTypes()) {
+void CodeGenerator::generateFunctions(Package *package, bool imported) {
+    for (auto &valueType : package->valueTypes()) {
         valueType->eachFunction([this](auto *function) {
             generateFunction(function);
         });
-        if (valueType->isManaged()) {
+        if (!imported && valueType->isManaged()) {
             generateFunction(valueType->deinitializer());
             generateFunction(valueType->copyRetain());
         }
     }
-    for (auto &klass : package_->classes()) {
+    for (auto &klass : package->classes()) {
         klass->eachFunction([this](auto *function) {
             generateFunction(function);
         });
-        generateFunction(klass->deinitializer());
+        if (!imported) {
+            generateFunction(klass->deinitializer());
+        }
     }
-    for (auto &function : package_->functions()) {
+    for (auto &function : package->functions()) {
         generateFunction(function.get());
     }
 }
@@ -278,13 +304,13 @@ std::pair<llvm::Function*, llvm::Function*> CodeGenerator::buildBoxRetainRelease
             auto remotePtr = releaseFg.builder().CreateLoad(objPtr);
             releaseFg.release(releaseFg.managableGetValuePtr(remotePtr), type);
             releaseFg.release(releaseFg.builder().CreateBitCast(remotePtr, llvm::Type::getInt8PtrTy(context_)),
-                              Type(package()->compiler()->sMemory));
+                              Type(compiler()->sMemory));
 
             auto objPtrRetain = retainFg.buildGetBoxValuePtrAfter(retain->args().begin(), mngType->getPointerTo(),
                                                                   containedType->getPointerTo());
             auto remotePtrRetain = retainFg.builder().CreateLoad(objPtrRetain);
             retainFg.retain(retainFg.managableGetValuePtr(remotePtrRetain), type);
-            retainFg.retain(remotePtrRetain, Type(package()->compiler()->sMemory));
+            retainFg.retain(remotePtrRetain, Type(compiler()->sMemory));
         }
         else {
             auto objPtr = releaseFg.buildGetBoxValuePtr(release->args().begin(), type);
@@ -301,7 +327,7 @@ std::pair<llvm::Function*, llvm::Function*> CodeGenerator::buildBoxRetainRelease
 }
 
 void CodeGenerator::buildClassObjectBoxInfo() {
-    auto klass = package_->compiler()->sString;
+    auto klass = compiler()->sString;
     llvm::Function *retain, *release;
     std::tie(retain, release) = classObjectRetainRelease_ = buildBoxRetainRelease(Type(klass));
     retain->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);

@@ -36,9 +36,11 @@ ASTBlock FunctionParser::parseBlock() {
 
 ASTBlock FunctionParser::parseBlockToEnd(const SourcePosition &pos) {
     auto block = ASTBlock(pos);
+    block.setBeginIndex(stream_.index());
     while (stream_.nextTokenIsEverythingBut(TokenType::BlockEnd)) {
         block.appendNode(parseStatement());
     }
+    block.setEndIndex(stream_.index());
     stream_.consumeToken();
     return block;
 }
@@ -332,7 +334,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
     auto function = std::make_unique<Function>(std::u32string(1, E_GRAPES), AccessLevel::Public, true, nullptr,
                                                package_, token.position(), false, std::u32string(), false, false,
-                                               Mood::Imperative, false, FunctionType::Function);
+                                               Mood::Imperative, false, FunctionType::Function, false);
 
     parseParameters(function.get(), false);
     parseReturnType(function.get());

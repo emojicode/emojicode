@@ -67,11 +67,21 @@ public:
     /// or raise statement.
     /// @note This method can only be called before Memory Flow Analysis.
     ASTReturn* getReturn() const;
+
+    void setBeginIndex(size_t index) { beginIndex_ = index; }
+    void setEndIndex(size_t index) { endIndex_ = index; }
+
+    size_t beginIndex() const { return beginIndex_; }
+    size_t endIndex() const { return endIndex_; }
+
+    size_t stmtsSize() const { return stmts_.size(); }
     
 private:
     std::vector<std::unique_ptr<ASTStatement>> stmts_;
     bool returnedCertainly_ = false;
     size_t stop_ = 0;
+    size_t beginIndex_ = 0;
+    size_t endIndex_ = 0;
     SemanticScopeStats scopeStats_;
 };
 

@@ -42,7 +42,7 @@ void FunctionCodeGenerator::createEntry() {
 }
 
 Compiler* FunctionCodeGenerator::compiler() const {
-    return generator()->package()->compiler();
+    return generator()->compiler();
 }
 
 void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
@@ -365,7 +365,7 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
         builder().CreateCall(generator()->declarator().release(), opc);
     }
-    else if (type.type() == TypeType::ValueType && type.valueType() == generator_->package()->compiler()->sMemory) {
+    else if (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory) {
         builder().CreateCall(generator()->declarator().releaseMemory(), value);
     }
     else if (type.type() == TypeType::ValueType) {
@@ -415,7 +415,7 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
 
 void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
     if (type.type() == TypeType::Class || type.type() == TypeType::Someobject ||
-        (type.type() == TypeType::ValueType && type.valueType() == generator_->package()->compiler()->sMemory)) {
+        (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory)) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
         builder().CreateCall(generator()->declarator().retain(), { opc });
     }

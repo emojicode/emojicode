@@ -106,7 +106,7 @@ void DocumentParser::parseStartFlag(const Documentation &documentation, const So
     auto function = package_->add(std::make_unique<Function>(std::u32string(1, E_CHEQUERED_FLAG), AccessLevel::Public,
                                                              false, nullptr, package_, p, false,
                                                              documentation.get(), false, false, Mood::Imperative, false,
-                                                             FunctionType::Function));
+                                                             FunctionType::Function, false));
     parseReturnType(function);
     stream_.consumeToken(TokenType::BlockBegin);
 

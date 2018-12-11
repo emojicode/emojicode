@@ -108,6 +108,7 @@ enum Emojis {
     E_IZAKAYA_LANTERN = 0x1F3EE,
     E_BATTERY = 0x1F50B,
     E_EIGHT_POINTED_STAR = 0x2734,
+    E_BAGEL = 0x1F96F,
 };
 
 }  // namespace EmojicodeCompiler

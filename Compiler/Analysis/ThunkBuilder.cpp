@@ -53,9 +53,11 @@ std::unique_ptr<Function> makeBoxingThunk(std::u32string name, TypeDefinition *o
                                           SourcePosition p, std::vector<Parameter> &&params, const Type &returnType,
                                           FunctionType functionType) {
     auto function = std::make_unique<Function>(name, AccessLevel::Private, true, owner, package, p, false,
-                                               std::u32string(), false, false, Mood::Imperative, false, functionType);
+                                               std::u32string(), false, false, Mood::Imperative, false, functionType,
+                                               false);
     function->setParameters(std::move(params));
     function->setReturnType(std::make_unique<ASTLiteralType>(returnType));
+    function->setThunk();
     return function;
 }
 
@@ -102,7 +104,8 @@ std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer
     auto function = std::make_unique<Function>(name, AccessLevel::Public, false, init->owner(),
                                                init->package(), init->position(),
                                                overriding, std::u32string(), false, false, Mood::Imperative,
-                                               init->unsafe(), FunctionType::ClassMethod);
+                                               init->unsafe(), FunctionType::ClassMethod, false);
+    function->setThunk();
 
     function->setReturnType(std::make_unique<ASTLiteralType>(init->constructedType(init->owner()->type())));
     function->setParameters(init->parameters());

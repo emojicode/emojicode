@@ -33,16 +33,15 @@ class StringPool;
 class Declarator;
 class OptimizationManager;
 
-/// Manages the generation of IR for one package. Each package is compiled to one LLVM module.
+/// Manages the generation of IR for a package. Each package is compiled to one LLVM module.
 class CodeGenerator {
 public:
-    /// @param package The package for which to generate code.
-    /// @param optimize Whether optimizations should be run.
-    CodeGenerator(Package *package, bool optimize);
+    CodeGenerator(Compiler *compiler);
 
     /// Generates an object file for the package.
     /// @param outPath The path at which the object file will be placed.
-    void generate(const std::string &outPath, bool printIr);
+    /// @param optimize Whether optimizations should be run.
+    void generate(Package *package, const std::string &outPath, bool printIr, bool optimize);
 
     /// The LLVM module that represents the package.
     llvm::Module* module() const { return module_.get(); }
@@ -53,8 +52,7 @@ public:
     ProtocolsTableGenerator& protocolsTG() { return *protocolsTableGenerator_; }
     llvm::LLVMContext& context() { return context_; }
 
-    /// Returns the package for which this code generator was created.
-    Package* package() const { return package_; }
+    Compiler* compiler() const;
 
     /// Queries the DataLayout of the module for the size of this type in bytes.
     /// @note Use this method only when absolutely necessary. Prefer FunctionCodeGenerator::sizeOf in all function
@@ -70,7 +68,7 @@ public:
     ~CodeGenerator();
 
 private:
-    Package *const package_;
+    Compiler *const compiler_;
     llvm::LLVMContext context_;
     std::unique_ptr<llvm::Module> module_;
 
@@ -80,6 +78,8 @@ private:
     std::unique_ptr<ProtocolsTableGenerator> protocolsTableGenerator_;
     std::unique_ptr<OptimizationManager> optimizationManager_;
 
+    void declareAndCreate(Package *package, bool imported);
+
     llvm::TargetMachine *targetMachine_ = nullptr;
 
     std::pair<llvm::Function*, llvm::Function*> classObjectRetainRelease_ = { nullptr, nullptr };
@@ -88,15 +88,15 @@ private:
     void buildClassObjectBoxInfo();
     void buildCallableBoxInfo();
 
-    void emit(const std::string &outPath, bool printIr);
-    void generateFunctions();
+    void emitModule(const std::string &outPath, bool printIr);
+    void generateFunctions(Package *package, bool imported);
 
     void generateFunction(Function *function);
     void createClassInfo(Class *klass);
 
     void createProtocolFunctionTypes(Protocol *protocol);
 
-    void prepareModule();
+    void prepareModule(Package *package, bool optimize);
 
     std::map<Type, llvm::Constant*> protocolIds_;
 };

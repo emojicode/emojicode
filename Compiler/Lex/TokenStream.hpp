@@ -67,6 +67,8 @@ public:
     /// Whether a blank line is between the last consumed token and nextToken().
     bool skipsBlankLine() const { return skippedBlankLine_; }
 
+    size_t index() const { return index_; }
+
 private:
     Token advanceLexer();
 
@@ -74,6 +76,7 @@ private:
     bool skippedBlankLine_ = false;
     Lexer lexer_;
     Token nextToken_ = Token(SourcePosition());
+    size_t index_ = 0;
 };
 
 }  // namespace EmojicodeCompiler

@@ -67,7 +67,7 @@ public:
     Function(std::u32string name, AccessLevel level, bool final, TypeDefinition *owner, Package *package,
              SourcePosition p,
              bool overriding, std::u32string documentationToken, bool deprecated, bool mutating, Mood mood,
-             bool unsafe, FunctionType type);
+             bool unsafe, FunctionType type, bool forceInline);
 
     /// The name of the function.
     std::u32string name() const { return name_; }
@@ -122,6 +122,11 @@ public:
 
     void setMutating(bool v) { mutating_ = v; }
 
+    bool isInline() const;
+
+    void setThunk() { thunk_ = true; }
+    bool isThunk() const { return thunk_; }
+
     /** Returns the access level to this method. */
     AccessLevel accessLevel() const { return access_; }
     void setAccessLevel(AccessLevel level) { access_ = level; }
@@ -175,6 +180,8 @@ private:
     bool deprecated_;
     Mood mood_;
     bool unsafe_;
+    bool forceInline_ = false;
+    bool thunk_ = false;
 
     bool mutating_;
     bool external_ = false;

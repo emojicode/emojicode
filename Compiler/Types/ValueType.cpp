@@ -22,7 +22,7 @@ Function* ValueType::copyRetain() {
     if (copyRetain_ == nullptr) {
         copyRetain_ = std::make_unique<Function>(U"copyretain", AccessLevel::Public, false, this, package(),
                                                     this->position(), false, U"", false, false, Mood::Imperative, false,
-                                                    FunctionType::CopyRetainer);
+                                                    FunctionType::CopyRetainer, false);
         copyRetain_->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
     }
     return copyRetain_.get();

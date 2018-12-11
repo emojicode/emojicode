@@ -18,6 +18,7 @@ class Function;
 class Package;
 struct Parameter;
 class Type;
+class ReificationContext;
 
 /// The declarator is responsible for declaring functions etc. in an LLVM module.
 class Declarator {
@@ -50,11 +51,10 @@ public:
 
     llvm::GlobalVariable* ignoreBlockPtr() const { return ignoreBlock_; }
 
-    /// Declares all symbols that are provided by an imported package.
-    /// @param package The package whose symbols shall be declared.
-    void declareImportedPackageSymbols(Package *package);
     /// Declares an LLVM function for each reification of the provided function.
     void declareLlvmFunction(Function *function) const;
+
+    void declareImportedClassInfo(Class *klass);
 
     /// Declares the box info with the provided name. This is a global variable without initializer.
     llvm::GlobalVariable* declareBoxInfo(const std::string &name);
@@ -63,8 +63,6 @@ public:
     llvm::GlobalVariable* boxInfoForCallables() { return boxInfoCallables_; }
 
 private:
-    void declareImportedClassInfo(Class *klass);
-
     CodeGenerator *generator_;
 
     llvm::Function *alloc_ = nullptr;
@@ -89,6 +87,9 @@ private:
 
     void addParamAttrs(const Parameter &param, size_t index, llvm::Function *function) const;
     void addParamDereferenceable(const Type &type, size_t index, llvm::Function *function, bool ret) const;
+
+    llvm::Function::LinkageTypes linkageForFunction(Function *function) const;
+    llvm::Function* createLlvmFunction(Function *function, ReificationContext reificationContext) const;
 };
 
 }  // namespace EmojicodeCompiler

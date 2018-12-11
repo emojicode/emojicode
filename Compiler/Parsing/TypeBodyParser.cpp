@@ -30,8 +30,13 @@ void TypeBodyParser<TypeDef>::parseFunctionBody(Function *function) {
     }
 
     if (interface_) {
-        function->makeExternal();
-        return;
+        if (!stream_.nextTokenIs(TokenType::BlockBegin)) {
+            function->makeExternal();
+            return;
+        }
+        if (!function->isInline()) {
+            throw CompilerError(stream_.consumeToken().position(), "Interface can only define inline functions.");
+        }
     }
 
     stream_.consumeToken(TokenType::BlockBegin);
@@ -93,7 +98,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
                                  const Documentation &documentation, AccessLevel access, Mood mood,
                                  const SourcePosition &p) {
     attributes.allow(Attribute::Deprecated).allow(Attribute::StaticOnType).allow(Attribute::Unsafe)
-            .allow(Attribute::Escaping).check(p, package_->compiler());
+            .allow(Attribute::Escaping).allow(Attribute::Inline).check(p, package_->compiler());
 
     if (attributes.has(Attribute::StaticOnType)) {
         auto typeMethod = std::make_unique<Function>(name, access, attributes.has(Attribute::Final), typeDef_,
@@ -101,7 +106,8 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
                                                      documentation.get(), attributes.has(Attribute::Deprecated),
                                                      true, mood, attributes.has(Attribute::Unsafe),
                                                      std::is_same<TypeDef, Class>::value ?
-                                                     FunctionType::ClassMethod : FunctionType::Function);
+                                                     FunctionType::ClassMethod : FunctionType::Function,
+                                                     attributes.has(Attribute::Inline));
         parseFunction(typeMethod.get(), false, attributes.has(Attribute::Escaping));
         typeDef_->addTypeMethod(std::move(typeMethod));
     }
@@ -112,7 +118,7 @@ void TypeBodyParser<TypeDef>::doParseMethod(const std::u32string &name, TypeBody
                                                  attributes.has(Attribute::Deprecated), mutating, mood,
                                                  attributes.has(Attribute::Unsafe),
                                                  std::is_same<TypeDef, Class>::value ? FunctionType::ObjectMethod :
-                                                 FunctionType::ValueTypeMethod);
+                                                 FunctionType::ValueTypeMethod, attributes.has(Attribute::Inline));
         parseFunction(method.get(), false, attributes.has(Attribute::Escaping));
         typeDef_->addMethod(std::move(method));
     }
@@ -129,7 +135,8 @@ template <typename TypeDef>
 Initializer* TypeBodyParser<TypeDef>::doParseInitializer(const std::u32string &name, TypeBodyAttributeParser attributes,
                                               const Documentation &documentation, AccessLevel access,
                                               const SourcePosition &p) {
-    attributes.allow(Attribute::Unsafe).allow(Attribute::Escaping).check(p, package_->compiler());
+    attributes.allow(Attribute::Unsafe).allow(Attribute::Escaping).allow(Attribute::Inline)
+        .check(p, package_->compiler());
 
     auto initializer = std::make_unique<Initializer>(name, access, attributes.has(Attribute::Final), typeDef_,
                                                      package_, p, attributes.has(Attribute::Override),
@@ -138,7 +145,8 @@ Initializer* TypeBodyParser<TypeDef>::doParseInitializer(const std::u32string &n
                                                      attributes.has(Attribute::Unsafe),
                                                      std::is_same<TypeDef, Class>::value ?
                                                      FunctionType::ObjectInitializer :
-                                                     FunctionType::ValueTypeInitializer);
+                                                     FunctionType::ValueTypeInitializer,
+                                                     attributes.has(Attribute::Inline));
 
     if (stream_.nextTokenIs(TokenType::Error)) {
         auto token = stream_.consumeToken(TokenType::Error);
@@ -277,7 +285,7 @@ void TypeBodyParser<Protocol>::parseMethod(const std::u32string &name, TypeBodyA
     auto method = std::make_unique<Function>(name, AccessLevel::Public, false, typeDef_, package_,
                                              p, false, documentation.get(),
                                              attributes.has(Attribute::Deprecated), false, mood, false,
-                                             FunctionType::ObjectMethod);
+                                             FunctionType::ObjectMethod, false);
     parseParameters(method.get(), false);
     parseReturnType(method.get());
 

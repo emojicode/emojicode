@@ -16,7 +16,9 @@
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/Type.hpp"
+#include "Lex/SourceManager.hpp"
 #include <algorithm>
+#include <iostream>
 
 namespace EmojicodeCompiler {
 
@@ -267,6 +269,9 @@ void PrettyPrinter::printEnumValues(Enum *enumeration) {
 }
 
 void PrettyPrinter::printFunctionAttributes(Function *function, bool noMutate) {
+    if (function->isInline()) {
+        prettyStream_ << "🥯 ";
+    }
     if (function->deprecated()) {
         prettyStream_ << "⚠️ ";
     }
@@ -314,10 +319,9 @@ void PrettyPrinter::printFunctionAccessLevel(Function *function) {
 }
 
 void PrettyPrinter::print(const char *key, Function *function, bool body, bool noMutate) {
-    if (interface_ && function->accessLevel() == AccessLevel::Private) {
+    if (function->isThunk()) {
         return;
     }
-
     printDocumentation(function->documentation());
 
     prettyStream_.withTypeContext(function->typeContext(), [&]() {
@@ -345,17 +349,28 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
         printGenericParameters(function);
         printArguments(function);
         printReturnType(function);
-        if (body && !interface_) {
-            prettyStream_.setLastCommentQueryPlace(function->position());
-            function->ast()->toCode(prettyStream_);
-            prettyStream_.offerNewLine();
+        if (!function->externalName().empty()) {
+            prettyStream_ << " 📻 🔤" << function->externalName() << "🔤";
         }
-        else if (!function->externalName().empty()) {
-            prettyStream_ << " 📻 🔤" << function->externalName() << "🔤\n";
+        else if (body) {
+            if (interface_) {
+                if (function->isInline()) {
+                    auto str = function->position().file->file();
+                    auto code = str.substr(function->ast()->beginIndex(),
+                                           function->ast()->endIndex() - function->ast()->beginIndex() + 1);
+                    prettyStream_ << " 🍇\n";
+                    prettyStream_.increaseIndent();
+                    prettyStream_.indent() << code;
+                    prettyStream_.decreaseIndent();
+                }
+            }
+            else {
+                prettyStream_.setLastCommentQueryPlace(function->position());
+                function->ast()->toCode(prettyStream_);
+
+            }
         }
-        else {
-            prettyStream_ << "\n";
-        }
+        prettyStream_ << "\n";
     });
 }
 

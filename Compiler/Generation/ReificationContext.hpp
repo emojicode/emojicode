@@ -23,6 +23,8 @@ public:
         return copyReificationRequest_.find(index) != copyReificationRequest_.end();
     }
 
+    const std::map<size_t, Type>& arguments() const { return copyReificationRequest_; }
+
 private:
     const std::map<size_t, Type> &copyReificationRequest_;
 };

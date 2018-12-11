@@ -26,7 +26,7 @@ Function* TypeDefinition::deinitializer() {
     if (deinitializer_ == nullptr) {
         deinitializer_ = std::make_unique<Function>(U"deinit", AccessLevel::Public, false, this, package(),
                                                     this->position(), false, U"", false, false, Mood::Imperative, false,
-                                                    FunctionType::Deinitializer);
+                                                    FunctionType::Deinitializer, false);
         deinitializer_->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
     }
     return deinitializer_.get();

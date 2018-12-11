@@ -44,8 +44,8 @@ Function* Package::add(std::unique_ptr<Function> &&function) {
     return functions_.back().get();
 }
 
-Package::Package(std::string name, std::string path, Compiler *app)
-    : name_(std::move(name)), path_(std::move(path)), compiler_(app) {}
+Package::Package(std::string name, std::string path, Compiler *app, bool imported)
+    : name_(std::move(name)), path_(std::move(path)), imported_(imported), compiler_(app) {}
 Package::~Package() = default;
 
 void Package::importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {

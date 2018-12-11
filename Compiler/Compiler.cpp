@@ -29,7 +29,7 @@ Compiler::Compiler(std::string mainPackage, std::string mainFile, std::string in
           mainPackageName_(std::move(mainPackage)), packageSearchPaths_(std::move(pkgSearchPaths)),
           linker_(std::move(linker)), ar_(std::move(ar)), objectPath_(std::move(objectPath)),
           delegate_(std::move(delegate)),
-          mainPackage_(std::make_unique<RecordingPackage>(mainPackageName_, mainFile_, this)) {}
+          mainPackage_(std::make_unique<RecordingPackage>(mainPackageName_, mainFile_, this, false)) {}
 
 Compiler::~Compiler() = default;
 
@@ -78,7 +78,7 @@ void Compiler::analyse() {
 }
 
 void Compiler::generateCode(bool optimize, bool printIr) {
-    CodeGenerator(mainPackage_.get(), optimize).generate(objectPath_, printIr);
+    CodeGenerator(this).generate(mainPackage_.get(), objectPath_, printIr, optimize);
 }
 
 void Compiler::linkToExecutable() {
@@ -139,11 +139,14 @@ Package *Compiler::loadPackage(const std::string &name, const SourcePosition &p,
         return package;
     }
 
-    auto package = std::make_unique<Package>(name, searchPackage(name, p), this);
+    auto package = std::make_unique<Package>(name, searchPackage(name, p), this, true);
     auto rawPtr = package.get();
     packages_.emplace(name, std::move(package));
     rawPtr->parse();
     SemanticAnalyser(rawPtr, true).analyse(false);
+    if (!hasError_) {
+        MFAnalyser(rawPtr).analyse();
+    }
     return rawPtr;
 }
 

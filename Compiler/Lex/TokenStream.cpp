@@ -50,6 +50,7 @@ Token TokenStream::advanceLexer() {
     auto temp = std::move(nextToken_);
     while (true) {
         if (lexer_.continues()) {
+            index_ = lexer_.index();
             nextToken_ = lexer_.lex();
             if (nextToken_.type() == TokenType::BlankLine) {
                 skippedBlankLine_ = true;

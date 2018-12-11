@@ -33,7 +33,7 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
                                         llvm::GlobalValue::LinkageTypes::PrivateLinkage, constant);
 
 
-    auto compiler = codeGenerator_->package()->compiler();
+    auto compiler = codeGenerator_->compiler();
 
     auto stringType = Type(compiler->sString);
     auto stringLlvm = llvm::dyn_cast<llvm::StructType>(llvm::dyn_cast<llvm::PointerType>(codeGenerator_->typeHelper().llvmTypeFor(stringType))->getElementType());
