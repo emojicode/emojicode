@@ -76,6 +76,8 @@ public:
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 
+    void mutateReference(ExpressionAnalyser *analyser) override;
+
 private:
     bool reference_ = false;
     /// Set to true if the value created by the expression is returned. If it is returned, the value of the variable

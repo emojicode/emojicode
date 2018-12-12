@@ -46,6 +46,7 @@ protected:
     Type calleeType_ = Type::noReturn();
     size_t multiprotocolN_ = 0;
     Function *method_ = nullptr;
+
 private:
     bool builtIn(ExpressionAnalyser *analyser, const Type &type, const std::u32string &name);
 
@@ -67,6 +68,7 @@ public:
     void toCode(PrettyStream &pretty) const override;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
+    void mutateReference(ExpressionAnalyser *analyser) final;
 
 private:
     std::u32string name_;

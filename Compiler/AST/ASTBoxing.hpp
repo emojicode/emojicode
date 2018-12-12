@@ -139,6 +139,7 @@ class ASTBoxReferenceToReference final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override {}
+    void mutateReference(ExpressionAnalyser *analyser) override;
 };
 
 class ASTDereference : public ASTBoxing {

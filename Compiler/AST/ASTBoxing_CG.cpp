@@ -228,6 +228,10 @@ Value* ASTBoxReferenceToReference::generate(FunctionCodeGenerator *fg) const {
     return fg->buildGetBoxValuePtr(expr_->generate(fg), type->getPointerTo());
 }
 
+void ASTBoxReferenceToReference::mutateReference(ExpressionAnalyser *analyser) {
+    expr_->mutateReference(analyser);
+}
+
 Value* ASTDereference::generate(FunctionCodeGenerator *fg) const {
     auto ptr = expr_->generate(fg);
     auto val = fg->builder().CreateLoad(ptr);

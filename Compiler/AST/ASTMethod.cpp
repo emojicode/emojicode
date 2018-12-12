@@ -82,14 +82,21 @@ void ASTMethodable::determineCallType(const ExpressionAnalyser *analyser) {
 
 void ASTMethodable::checkMutation(ExpressionAnalyser *analyser, const std::shared_ptr<ASTExpr> &callee) const {
     if (calleeType_.type() == TypeType::ValueType && method_->mutating()) {
-        if (!calleeType_.isMutable()) {
-            analyser->compiler()->error(CompilerError(position(), utf8(method_->name()),
-                                                      " was marked 🖍 but callee is not mutable."));
+        try {
+            callee->mutateReference(analyser);
+            if (!calleeType_.isMutable()) {
+                analyser->compiler()->error(CompilerError(position(), utf8(method_->name()),
+                                                          " was marked 🖍 but callee is not mutable."));
+            }
         }
-        else if (auto varNode = std::dynamic_pointer_cast<ASTGetVariable>(callee)) {
-            analyser->scoper().getVariable(varNode->name(), position()).variable.mutate(position());
+        catch (CompilerError &err) {
+            analyser->compiler()->error(err);
         }
     }
+}
+
+void ASTMethod::mutateReference(ExpressionAnalyser *analyser) {
+    callee_->mutateReference(analyser);
 }
 
 Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,

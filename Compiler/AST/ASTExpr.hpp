@@ -48,6 +48,10 @@ public:
     /// statement is executed. This method is called by MFFunctionAnalyser.
     void unsetIsTemporary() { isTemporary_ = false; unsetIsTemporaryPost(); }
 
+    /// Informs this expresison that the reference it evaluates to is mutated.
+    /// ASTExpr’s implementation does nothing. Subclasses can override this method.
+    virtual void mutateReference(ExpressionAnalyser *analyser) {}
+
 protected:
     /// This method must be called for every value that is created by the expression and must potentially be released.
     ///

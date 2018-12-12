@@ -49,6 +49,10 @@ void ASTGetVariable::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCateg
     }
 }
 
+void ASTGetVariable::mutateReference(ExpressionAnalyser *analyser) {
+    analyser->scoper().getVariable(name(), position()).variable.mutate(position());
+}
+
 Type ASTIsOnlyReference::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto rvar = analyser->scoper().getVariable(name(), position());
     if (rvar.variable.type().type() != TypeType::Someobject && rvar.variable.type().type() != TypeType::Class) {
