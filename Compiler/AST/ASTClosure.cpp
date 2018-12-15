@@ -90,25 +90,31 @@ void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const 
 
     for (size_t i = 0; i < closure_->parameters().size(); i++) {
         auto &param = closure_->parameters()[i];
+        auto &paramType = param.type->type();
         auto expParam = expectation.genericArguments()[i + 1];
-        if (param.type->type().compatibleTo(expParam, analyser->typeContext()) &&
-                param.type->type().storageType() != expParam.storageType()) {
-            switch (expParam.storageType()) {
-                case StorageType::SimpleOptional:
-                case StorageType::PointerOptional:
-                    assert(param.type->type().storageType() == StorageType::Simple);
-                    closure_->setParameterType(i, std::make_unique<ASTLiteralType>(param.type->type().optionalized()));
-                    break;
-                case StorageType::SimpleError:
-                    assert(param.type->type().storageType() == StorageType::Simple);
-                    closure_->setParameterType(i, std::make_unique<ASTLiteralType>(param.type->type().errored(expParam.errorEnum())));
-                    break;
-                case StorageType::Simple:
-                    // We cannot deal with this, can we?
-                    break;
-                case StorageType::Box:
-                    closure_->setParameterType(i, std::make_unique<ASTLiteralType>(param.type->type().boxedFor(expParam)));
-                    break;
+        if (paramType.compatibleTo(expParam, analyser->typeContext())) {
+            if (paramType.storageType() != expParam.storageType()) {
+                switch (expParam.storageType()) {
+                    case StorageType::SimpleOptional:
+                    case StorageType::PointerOptional:
+                        assert(paramType.storageType() == StorageType::Simple);
+                        closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.optionalized()));
+                        break;
+                    case StorageType::SimpleError:
+                        assert(paramType.storageType() == StorageType::Simple);
+                        closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.errored(expParam.errorEnum())));
+                        break;
+                    case StorageType::Simple:
+                        // We cannot deal with this, can we?
+                        break;
+                    case StorageType::Box:
+                        closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.boxedFor(expParam)));
+                        break;
+                }
+            }
+            if (paramType.type() == TypeType::Box &&
+                !paramType.boxedFor().identicalTo(expParam.boxedFor(), analyser->typeContext(), nullptr)) {
+                closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.unboxed().boxedFor(expParam.boxedFor())));
             }
         }
     }
