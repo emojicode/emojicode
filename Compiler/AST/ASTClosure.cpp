@@ -66,25 +66,29 @@ void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const 
 
     auto expReturn = expectation.genericArguments().front();
     auto returnType = closure_->returnType()->type();
-    if (returnType.compatibleTo(expReturn, analyser->typeContext()) &&
-            returnType.storageType() != expReturn.storageType()) {
-        switch (expReturn.storageType()) {
-            case StorageType::SimpleOptional:
-            case StorageType::PointerOptional:
-                assert(returnType.storageType() == StorageType::Simple);
-                closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.optionalized()));
-                break;
-            case StorageType::SimpleError:
-                assert(returnType.storageType() == StorageType::Simple);
-                closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.errored(expReturn.errorEnum())));
-                break;
-            case StorageType::Simple:
-                // We cannot deal with this, can we?
-                break;
-            case StorageType::Box: {
-                closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.boxedFor(expReturn)));
-                break;
+    if (returnType.compatibleTo(expReturn, analyser->typeContext())) {
+        if (returnType.storageType() != expReturn.storageType()) {
+            switch (expReturn.storageType()) {
+                case StorageType::SimpleOptional:
+                case StorageType::PointerOptional:
+                    assert(returnType.storageType() == StorageType::Simple);
+                    closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.optionalized()));
+                    break;
+                case StorageType::SimpleError:
+                    assert(returnType.storageType() == StorageType::Simple);
+                    closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.errored(expReturn.errorEnum())));
+                    break;
+                case StorageType::Simple:
+                    // We cannot deal with this, can we?
+                    break;
+                case StorageType::Box: {
+                    closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.boxedFor(expReturn.boxedFor())));
+                    break;
+                }
             }
+        }
+        else if (returnType.type() == TypeType::Box && !returnType.areMatchingBoxes(expReturn, analyser->typeContext())) {
+            closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.unboxed().boxedFor(expReturn.boxedFor())));
         }
     }
 
@@ -108,12 +112,11 @@ void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const 
                         // We cannot deal with this, can we?
                         break;
                     case StorageType::Box:
-                        closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.boxedFor(expParam)));
+                        closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.boxedFor(expParam.boxedFor())));
                         break;
                 }
             }
-            if (paramType.type() == TypeType::Box &&
-                !paramType.boxedFor().identicalTo(expParam.boxedFor(), analyser->typeContext(), nullptr)) {
+            else if (paramType.type() == TypeType::Box && !paramType.areMatchingBoxes(expParam, analyser->typeContext())) {
                 closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.unboxed().boxedFor(expParam.boxedFor())));
             }
         }

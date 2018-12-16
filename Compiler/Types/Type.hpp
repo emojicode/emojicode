@@ -133,6 +133,9 @@ public:
         return genericArguments_[1];
     }
 
+    /// @returns True if both types are boxes and are boxed for identical types as determined by identicalTo().
+    bool areMatchingBoxes(const Type &type, const TypeContext &context) const;
+
     /// If this is a box, proxies to the Box and returns the type of the optional in an equal Box.
     /// @returns The type this optional contains. If this type is force boxed, so will be the returned type.
     Type optionalType() const {

@@ -103,6 +103,11 @@ Type Type::boxedFor(const Type &forType) const  {
     return Type(MakeBoxType(), *this, forType.type() == TypeType::Box ? forType.genericArguments_[0] : forType);
 }
 
+bool Type::areMatchingBoxes(const Type &type, const TypeContext &context) const {
+    return this->type() == TypeType::Box && type.type() == TypeType::Box &&
+        boxedFor().identicalTo(type.boxedFor(), context, nullptr);
+}
+
 TypeType Type::unboxedType() const {
     if (type() == TypeType::Box) {
         return genericArguments_[0].typeContent_;

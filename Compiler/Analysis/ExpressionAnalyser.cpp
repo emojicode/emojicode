@@ -297,8 +297,9 @@ bool ExpressionAnalyser::callableBoxingRequired(const TypeExpectation &expectati
     if (expectation.type() == TypeType::Callable && exprType.type() == TypeType::Callable &&
         expectation.genericArguments().size() == exprType.genericArguments().size()) {
         auto mismatch = std::mismatch(expectation.genericArguments().begin(), expectation.genericArguments().end(),
-                                      exprType.genericArguments().begin(), [](const Type &a, const Type &b) {
-                                          return a.storageType() == b.storageType();
+                                      exprType.genericArguments().begin(), [this](const Type &a, const Type &b) {
+                                          return a.storageType() == b.storageType() &&
+                                            (a.type() != TypeType::Box || a.areMatchingBoxes(b, typeContext()));
                                       });
         return mismatch.first != expectation.genericArguments().end();
     }
