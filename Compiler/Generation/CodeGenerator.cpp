@@ -134,6 +134,7 @@ void CodeGenerator::declareAndCreate(Package *package, bool imported) {
         createProtocolFunctionTypes(protocol.get());
     }
     for (auto &valueType : package->valueTypes()) {
+        valueType->createUnspecificReification();
         valueType->eachFunction([this, imported](Function *function) {
             if (!imported && !function->requiresCopyReification()) {
                 function->createUnspecificReification();
@@ -161,6 +162,7 @@ void CodeGenerator::declareAndCreate(Package *package, bool imported) {
         }
     }
     for (auto &klass : package->classes()) {
+        klass->createUnspecificReification();
         VTCreator(klass.get(), *declarator_).build();
         if (!imported) {
             klass->setBoxRetainRelease(classObjectRetainRelease_);
@@ -225,10 +227,9 @@ void CodeGenerator::generateFunctions(Package *package, bool imported) {
 void CodeGenerator::generateFunction(Function *function) {
     if (!function->isExternal()) {
         function->eachReification([this, function](auto &reification) {
-            auto context = ReificationContext(*function, reification);
-            typeHelper_.setReificationContext(&context);
-            FunctionCodeGenerator(function, reification.entity.function, this).generate();
-            typeHelper_.setReificationContext(nullptr);
+            typeHelper_.withReificationContext(ReificationContext(*function, reification), [&] {
+                FunctionCodeGenerator(function, reification.entity.function, this).generate();
+            });
             optimizationManager_->optimize(reification.entity.function);
         });
     }
@@ -239,11 +240,10 @@ void CodeGenerator::createProtocolFunctionTypes(Protocol *protocol) {
     for (auto function : protocol->methodList()) {
         function->createUnspecificReification();
         function->eachReification([this, function, &tableIndex](auto &reification) {
-            auto context = ReificationContext(*function, reification);
-            typeHelper().setReificationContext(&context);
-            reification.entity.setFunctionType(typeHelper().functionTypeFor(function));
-            reification.entity.setVti(tableIndex++);
-            typeHelper().setReificationContext(nullptr);
+            typeHelper_.withReificationContext(ReificationContext(*function, reification), [&] {
+                reification.entity.setFunctionType(typeHelper().functionTypeFor(function));
+                reification.entity.setVti(tableIndex++);
+            });
         });
     }
 }

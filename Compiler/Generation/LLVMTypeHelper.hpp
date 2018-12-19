@@ -12,6 +12,8 @@
 #include "Types/Type.hpp"
 #include <llvm/IR/LLVMContext.h>
 #include <map>
+#include <memory>
+#include <functional>
 
 namespace llvm {
 class Type;
@@ -76,7 +78,9 @@ public:
     /// have a control block pointer.
     llvm::StructType* managable(llvm::Type *type) const;
 
-    void setReificationContext(ReificationContext *context) { reifiContext_ = context; };
+    void withReificationContext(ReificationContext context, std::function<void()> function);
+
+    ~LLVMTypeHelper();
 
 private:
     llvm::StructType *classInfoType_;
@@ -94,13 +98,11 @@ private:
     llvm::LLVMContext &context_;
     CodeGenerator *codeGenerator_;
 
-    std::map<Type, llvm::Type*> types_;
-    ReificationContext *reifiContext_ = nullptr;
+    std::unique_ptr<ReificationContext> reifiContext_;
 
     llvm::Type *typeForOrdinaryType(const Type &type);
 
-    llvm::Type* createLlvmTypeForTypeDefinition(const Type &type);
-    llvm::Type *getComposedType(const Type &type);
+    llvm::Type* llvmTypeForTypeDefinition(const Type &type);
 };
 
 }  // namespace EmojicodeCompiler

@@ -49,7 +49,7 @@ private:
         }
         prettyStream_.refuseOffer() << "🐚";
         for (auto &param : generic->genericParameters()) {
-            if (param.rejectsBoxing) {
+            if (!param.useBox) {
                 prettyStream_ << "☣️";
             }
             prettyStream_ << utf8(param.name) << " " << param.constraint;

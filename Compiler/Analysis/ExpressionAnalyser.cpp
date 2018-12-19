@@ -82,12 +82,11 @@ Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &typ
     auto genericArgs = transformTypeAstVector(node->genericArguments(), typeContext());
 
     TypeContext typeContext = TypeContext(type, function, &genericArgs);
-    function->checkGenericArguments(typeContext, genericArgs, node->position());
+    function->requestReificationAndCheck(typeContext, genericArgs, node->position());
 
     for (size_t i = 0; i < function->parameters().size(); i++) {
         expectType(function->parameters()[i].type->type().resolveOn(typeContext), &node->args()[i]);
     }
-    function->requestReification(genericArgs);
     checkFunctionUse(function, node->position());
     node->setGenericArgumentTypes(genericArgs);
     auto rtType = function->returnType()->type().resolveOn(typeContext);

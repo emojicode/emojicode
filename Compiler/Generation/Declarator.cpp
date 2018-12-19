@@ -106,9 +106,10 @@ llvm::Function::LinkageTypes Declarator::linkageForFunction(Function *function) 
 }
 
 llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationContext reificationContext) const {
-    generator_->typeHelper().setReificationContext(&reificationContext);
-    auto ft = generator_->typeHelper().functionTypeFor(function);
-    generator_->typeHelper().setReificationContext(nullptr);
+    llvm::FunctionType *ft;
+    generator_->typeHelper().withReificationContext(reificationContext, [&] {
+        ft = generator_->typeHelper().functionTypeFor(function);
+    });
     auto name = function->externalName().empty() ? mangleFunction(function, reificationContext.arguments())
     : function->externalName();
 

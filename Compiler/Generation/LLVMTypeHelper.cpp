@@ -16,6 +16,7 @@
 #include "Package/Package.hpp"
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "Types/Class.hpp"
+#include "Types/ValueType.hpp"
 #include "Types/TypeDefinition.hpp"
 #include <llvm/IR/DerivedTypes.h>
 #include <AST/ASTClosure.hpp>
@@ -61,13 +62,20 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
                                              llvm::Type::getInt8PtrTy(context_), false);
 
     auto compiler = codeGenerator_->compiler();
-    types_.emplace(Type::noReturn(), llvm::Type::getVoidTy(context_));
-    types_.emplace(Type::someobject(), someobjectPtr_);
-    types_.emplace(Type(compiler->sInteger), llvm::Type::getInt64Ty(context_));
-    types_.emplace(Type(compiler->sReal), llvm::Type::getDoubleTy(context_));
-    types_.emplace(Type(compiler->sBoolean), llvm::Type::getInt1Ty(context_));
-    types_.emplace(Type(compiler->sMemory), llvm::Type::getInt8PtrTy(context_));
-    types_.emplace(Type(compiler->sByte), llvm::Type::getInt8Ty(context_));
+    compiler->sInteger->createUnspecificReification().type = llvm::Type::getInt64Ty(context_);
+    compiler->sReal->createUnspecificReification().type = llvm::Type::getDoubleTy(context_);
+    compiler->sBoolean->createUnspecificReification().type = llvm::Type::getInt1Ty(context_);
+    compiler->sMemory->createUnspecificReification().type = llvm::Type::getInt8PtrTy(context_);
+    compiler->sByte->createUnspecificReification().type = llvm::Type::getInt8Ty(context_);
+}
+
+LLVMTypeHelper::~LLVMTypeHelper() = default;
+
+void LLVMTypeHelper::withReificationContext(ReificationContext context, std::function<void ()> function) {
+    auto ptr = std::make_unique<ReificationContext>(std::move(context));
+    std::swap(ptr, reifiContext_);
+    function();
+    reifiContext_ = std::move(ptr);
 }
 
 llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType) {
@@ -151,46 +159,39 @@ llvm::Type* LLVMTypeHelper::typeForOrdinaryType(const Type &type) {
 }
 
 llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
-    if (type.type() == TypeType::Callable) {
-        return callable_;
+    switch (type.type()) {
+        case TypeType::Callable:
+            return callable_;
+        case TypeType::TypeAsValue:
+            if (type.typeOfTypeValue().type() == TypeType::Class) {
+                return classInfoType_->getPointerTo();
+            }
+            return llvm::StructType::get(context_);
+        case TypeType::Enum:
+            return llvm::Type::getInt64Ty(context_);
+        case TypeType::Someobject:
+            return someobjectPtr_;
+        case TypeType::NoReturn:
+            return llvm::Type::getVoidTy(context_);
+        case TypeType::ValueType:
+            return llvmTypeForTypeDefinition(type);
+        case TypeType::Class:
+            return llvmTypeForTypeDefinition(type)->getPointerTo();
+        default:
+            throw std::logic_error("No LLVM type could be established.");
     }
-    if (type.type() == TypeType::TypeAsValue) {
-        if (type.typeOfTypeValue().type() == TypeType::Class) {
-            return classInfoType_->getPointerTo();
-        }
-        return llvm::StructType::get(context_);
-    }
-    if (type.type() == TypeType::Enum) {
-        return llvm::Type::getInt64Ty(context_);
-    }
-    return getComposedType(type);
 }
 
-llvm::Type *LLVMTypeHelper::getComposedType(const Type &type) {
-    llvm::Type *llvmType = nullptr;
-    auto it = types_.find(type);
-    if (it != types_.end()) {
-        llvmType = it->second;
-    }
-    else if (type.type() == TypeType::ValueType || type.type() == TypeType::Class) {
-        llvmType = createLlvmTypeForTypeDefinition(type);
-    }
-    else {
-        throw std::logic_error("No llvm type could be established.");
+llvm::Type* LLVMTypeHelper::llvmTypeForTypeDefinition(const Type &type) {
+    auto &reification = type.typeDefinition()->reificationFor(type.genericArguments());
+    if (reification.type != nullptr) {
+        return reification.type;
     }
 
-    if (type.type() == TypeType::Class) {
-        llvmType = llvmType->getPointerTo();
-    }
-    return llvmType;
-}
-
-llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
-    auto llvmType = llvm::StructType::create(context_, mangleTypeName(type));
-    types_.emplace(type, llvmType);
-
+    auto structType = llvm::StructType::create(context_, mangleTypeName(type));
+    reification.type = structType;
+    
     std::vector<llvm::Type *> types;
-
     if (type.type() == TypeType::Class) {
         types.emplace_back(llvm::Type::getInt8PtrTy(context_));
         types.emplace_back(classInfoType_->getPointerTo());
@@ -200,8 +201,8 @@ llvm::Type* LLVMTypeHelper::createLlvmTypeForTypeDefinition(const Type &type) {
         types.emplace_back(llvmTypeFor(ivar.type->type()));
     }
 
-    llvmType->setBody(types);  // for self referencing types
-    return llvmType;
+    structType->setBody(types);  // for self referencing types
+    return structType;
 }
 
 llvm::StructType* LLVMTypeHelper::managable(llvm::Type *type) const {

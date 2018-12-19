@@ -44,7 +44,7 @@ Type ASTTypeId::getType(const TypeContext &typeContext) const {
     for (auto &arg : genericArgs_) {
         args.emplace_back(arg->analyseType(typeContext));
     }
-    typeDef->checkGenericArguments(typeContext, args, position());
+    typeDef->requestReificationAndCheck(typeContext, args, position());
     type.setGenericArguments(std::move(args));
     return type;
 }

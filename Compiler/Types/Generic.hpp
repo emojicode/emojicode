@@ -25,10 +25,10 @@ struct SourcePosition;
 
 struct GenericParameter {
     GenericParameter(std::u32string name, std::unique_ptr<ASTType> constraint, bool rejectsBoxing)
-            : name(std::move(name)), constraint(std::move(constraint)), rejectsBoxing(rejectsBoxing) {}
+            : name(std::move(name)), constraint(std::move(constraint)), useBox(!rejectsBoxing) {}
     std::u32string name;
     std::unique_ptr<ASTType> constraint;
-    bool rejectsBoxing;
+    bool useBox;
 };
 
 template <typename T, typename Entity>
@@ -55,7 +55,7 @@ public:
     Type typeForVariable(size_t n) {
         assert(offset_ <= n && n < offset_ + genericParameters_.size());
         Type type = Type(n, static_cast<T *>(this));
-        if (!genericParameters_[n - offset_].rejectsBoxing) {
+        if (genericParameters_[n - offset_].useBox) {
             type = type.boxedFor(constraintForIndex(n));
         }
         return type;
@@ -77,7 +77,8 @@ public:
         parameterVariables_.emplace(variableName, parameterVariables_.size());
     }
 
-    void checkGenericArguments(const TypeContext &typeContext, const std::vector<Type> &args, const SourcePosition &p) {
+    void requestReificationAndCheck(const TypeContext &typeContext, const std::vector<Type> &args,
+                                    const SourcePosition &p) {
         if (args.size() - offset_ != genericParameters().size()) {
             throw CompilerError(p, "Expected ", genericParameters().size(), " generic arguments, but ",
                                 args.size(), " are provided.");
@@ -90,19 +91,8 @@ public:
                                     constraintForIndex(offset_ + i).toString(typeContext), ".");
             }
         }
-    }
 
-    void requestReification(const std::vector<Type> &arguments) {
-        auto key = buildKey(arguments);
-        if (reifications_.find(key) != reifications_.end()) {
-            return;
-        }
-        auto &reification = reifications_[key] = Reification();
-        for (size_t i = 0; i < genericParameters_.size(); i++) {
-            if (genericParameters_[i].rejectsBoxing) {
-                reification.arguments.emplace(i + offset_, arguments[i]);
-            }
-        }
+        requestReification(args);
     }
 
     Entity& reificationFor(const std::vector<Type> &arguments) {
@@ -121,16 +111,17 @@ public:
     /// Creates an unspecific reification if no reification was requested yet.
     /// @note This method asserts that there is only one reification as this method
     /// should only be called in combination with unspecificReification()
-    void createUnspecificReification() {
+    Entity& createUnspecificReification() {
+        assert(!requiresCopyReification());
         if (reifications_.empty()) {
             reifications_.emplace();
         }
-        assert(reifications_.size() == 1);
+        return unspecificReification();
     }
 
     bool requiresCopyReification() const {
         return std::any_of(genericParameters_.begin(), genericParameters_.end(), [](auto &param) {
-            return param.rejectsBoxing;
+            return !param.useBox;
         });
     }
 
@@ -164,6 +155,7 @@ public:
     }
 
     const std::map<std::vector<Type>, Reification>& reificationMap() const { return reifications_; }
+
 protected:
     /// Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset.
     void offsetIndicesBy(size_t offset) {
@@ -172,6 +164,7 @@ protected:
             param.second += offset;
         }
     }
+
 private:
     /// The properties of the generic parameters. Their position in the vector matches their index minus
     /// the number of super type generic parameters if applicable (see TypeDefinition).
@@ -186,11 +179,24 @@ private:
     std::vector<Type> buildKey(const std::vector<Type> &arguments) {
         std::vector<Type> key;
         for (size_t i = 0; i < genericParameters_.size(); i++) {
-            if (genericParameters_[i].rejectsBoxing) {
-                key.emplace_back(arguments[i]);
+            if (!genericParameters_[i].useBox) {
+                key.emplace_back(arguments[i].type() == TypeType::Class ? Type::someobject() : arguments[i]);
             }
         }
         return key;
+    }
+
+    void requestReification(const std::vector<Type> &arguments) {
+        auto key = buildKey(arguments);
+        if (reifications_.find(key) != reifications_.end()) {
+            return;
+        }
+        auto &reification = reifications_[key] = Reification();
+        for (size_t i = 0; i < genericParameters_.size(); i++) {
+            if (!genericParameters_[i].useBox) {
+                reification.arguments.emplace(i + offset_, arguments[i]);
+            }
+        }
     }
 };
 

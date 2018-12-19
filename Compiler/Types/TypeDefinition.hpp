@@ -24,6 +24,7 @@ namespace llvm {
 class Constant;
 class Function;
 class GlobalVariable;
+class Type;
 }  // namespace llvm
 
 namespace EmojicodeCompiler {
@@ -40,8 +41,11 @@ struct InstanceVariableDeclaration {
     std::shared_ptr<ASTExpr> expr;
 };
 
+struct TypeDefinitionReification {
+    llvm::Type *type = nullptr;
+};
 
-class TypeDefinition : public Generic<TypeDefinition, int> {
+class TypeDefinition : public Generic<TypeDefinition, TypeDefinitionReification> {
 public:
     TypeDefinition(const TypeDefinition&) = delete;
 
