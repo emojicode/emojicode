@@ -15,10 +15,10 @@ language: cpp
 
 compiler:
 - clang
-- gcc
 
 before_install:
 - sh .travis/install.sh
+- test $CC = clang && CC=clang-6.0 && CXX=clang++-6.0
 
 script:
 - mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests && EMOJICODE_DIST_ARCHIVE=$(python3 ../dist.py .. archive)

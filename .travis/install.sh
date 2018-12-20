@@ -10,6 +10,4 @@ sudo apt-get install -y cmake libllvm6.0 libz-dev llvm-6.0 llvm-6.0-dev llvm-6.0
 if [ $CC = "clang" ]
 then
 	sudo apt-get install -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libclang-6.0-dev
-	export CC=clang-6.0
-	export CXX=clang++-6.0
 fi
