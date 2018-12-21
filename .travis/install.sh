@@ -12,7 +12,7 @@ then
 	sudo apt-get install -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libclang-6.0-dev
 else
 	# GCC 7
-	sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-	sudo apt update
-	sudo apt install -y gcc-7 g++-7
+	sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+	sudo apt-get update
+	sudo apt-get install -y gcc-7 g++-7
 fi
