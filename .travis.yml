@@ -21,9 +21,7 @@ compiler:
 - gcc
 
 before_install:
-- sh .travis/install.sh
-- test $CC = clang && CC=clang-6.0 && CXX=clang++-6.0
-- test $CC = gcc && CC=gcc-7 && CXX=g++-7
+- source .travis/install.sh
 
 script:
 - mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests && EMOJICODE_DIST_ARCHIVE=$(python3 ../dist.py .. archive)
