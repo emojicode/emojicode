@@ -6,8 +6,13 @@ echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /et
 sudo apt-get update
 sudo apt-get install -y cmake libllvm6.0 libz-dev llvm-6.0 llvm-6.0-dev llvm-6.0-runtime ninja-build python3 rsync
 
-# Clang specific dependencies
 if [ $CC = "clang" ]
 then
+	# Clang 6
 	sudo apt-get install -y clang-6.0 libclang-common-6.0-dev libclang1-6.0 libclang-6.0-dev
+else
+	# GCC 7
+	sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+	sudo apt update
+	sudo apt install -y gcc-7 g++-7
 fi
