@@ -13,6 +13,7 @@
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include "VTCreator.hpp"
+#include "Compiler.hpp"
 #include <llvm/IR/Attributes.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
@@ -68,6 +69,13 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     ignoreBlock_ = new llvm::GlobalVariable(*generator_->module(), llvm::Type::getInt8Ty(generator_->context()), true,
                                             llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
                                             "ejcIgnoreBlock");
+
+    auto compiler = generator_->compiler();
+    compiler->sInteger->createUnspecificReification().type = llvm::Type::getInt64Ty(generator_->context());
+    compiler->sReal->createUnspecificReification().type = llvm::Type::getDoubleTy(generator_->context());
+    compiler->sBoolean->createUnspecificReification().type = llvm::Type::getInt1Ty(generator_->context());
+    compiler->sMemory->createUnspecificReification().type = llvm::Type::getInt8PtrTy(generator_->context());
+    compiler->sByte->createUnspecificReification().type = llvm::Type::getInt8Ty(generator_->context());
 }
 
 llvm::Function* Declarator::declareRunTimeFunction(const char *name, llvm::Type *returnType,
@@ -105,13 +113,28 @@ llvm::Function::LinkageTypes Declarator::linkageForFunction(Function *function) 
     return llvm::Function::ExternalLinkage;
 }
 
+void Declarator::declareTypeDefinition(TypeDefinition *typeDef, bool isClass) {
+    typeDef->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+        if (reification.entity.type != nullptr) {
+            return;
+        }
+        else if (!isClass && dynamic_cast<ValueType*>(typeDef)->isPrimitive()) {
+            reification.entity.type = llvm::Type::getInt64Ty(generator_->context());
+            return;
+        }
+
+        auto structType = llvm::StructType::create(generator_->context(), mangleTypeDefinition(typeDef, &reification));
+        reification.entity.type = structType;
+    });
+}
+
 llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationContext reificationContext) const {
     llvm::FunctionType *ft;
     generator_->typeHelper().withReificationContext(reificationContext, [&] {
         ft = generator_->typeHelper().functionTypeFor(function);
     });
-    auto name = function->externalName().empty() ? mangleFunction(function, reificationContext.arguments())
-    : function->externalName();
+    auto name = function->externalName().empty() ? mangleFunction(function, reificationContext)
+                : function->externalName();
 
     auto fn = llvm::Function::Create(ft, linkageForFunction(function), name, generator_->module());
     fn->addFnAttr(llvm::Attribute::NoUnwind);
@@ -150,12 +173,12 @@ llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationCo
     return fn;
 }
 
-void Declarator::declareLlvmFunction(Function *function) const {
+void Declarator::declareLlvmFunction(Function *function, const Reification<TypeDefinitionReification> *reification) const {
     if (function->externalName() == "ejcBuiltIn") {
         return;
     }
-    function->eachReification([this, function](auto &reification) {
-        reification.entity.function = createLlvmFunction(function, ReificationContext(*function, reification));
+    function->eachReification([this, function, reification](Reification<FunctionReification> &funcReifi) {
+        funcReifi.entity.function = createLlvmFunction(function, ReificationContext(funcReifi.arguments, reification));
     });
 }
 

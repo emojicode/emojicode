@@ -24,21 +24,22 @@ namespace EmojicodeCompiler {
 struct SourcePosition;
 
 struct GenericParameter {
-    GenericParameter(std::u32string name, std::unique_ptr<ASTType> constraint, bool rejectsBoxing)
-            : name(std::move(name)), constraint(std::move(constraint)), useBox(!rejectsBoxing) {}
+    GenericParameter(std::u32string name, std::unique_ptr<ASTType> constraint, bool useBox)
+            : name(std::move(name)), constraint(std::move(constraint)), useBox(useBox) {}
     std::u32string name;
     std::unique_ptr<ASTType> constraint;
     bool useBox;
 };
 
+template <typename Entity>
+struct Reification {
+    Entity entity;
+    std::map<size_t, Type> arguments;
+};
+
 template <typename T, typename Entity>
 class Generic {
 public:
-    struct Reification {
-        Entity entity;
-        std::map<size_t, Type> arguments;
-    };
-
     /**
      * Tries to fetch the type reference type for the given generic variable name and stores it into @c type.
      * @returns Whether the variable could be found or not. @c type is untouched if @c false was returned.
@@ -69,7 +70,7 @@ public:
     ///                      StorageType::Simple or StorageType::SimpleOptional.
     void addGenericParameter(const std::u32string &variableName, std::unique_ptr<ASTType> constraint,
                              bool rejectsBoxing, const SourcePosition &p) {
-        genericParameters_.emplace_back(variableName, std::move(constraint), rejectsBoxing);
+        genericParameters_.emplace_back(variableName, std::move(constraint), !rejectsBoxing);
 
         if (parameterVariables_.find(variableName) != parameterVariables_.end()) {
             throw CompilerError(p, "A generic argument variable with the same name is already in use.");
@@ -99,6 +100,12 @@ public:
         auto ref = reifications_.find(buildKey(arguments));
         assert(ref != reifications_.end());
         return ref->second.entity;
+    }
+
+    Reification<Entity>& reificationWrapperFor(const std::vector<Type> &arguments) {
+        auto ref = reifications_.find(buildKey(arguments));
+        assert(ref != reifications_.end());
+        return ref->second;
     }
 
     /// @returns Any reification of this instance.
@@ -140,7 +147,10 @@ public:
 
     void analyseConstraints(const TypeContext &typeContext) {
         for (auto &param : genericParameters_) {
-            param.constraint->analyseType(typeContext);
+            auto &type = param.constraint->analyseType(typeContext);
+//            if (type.type() == TypeType::Someobject) {
+//                param.useBox = false;
+//            }
         }
     }
 
@@ -148,13 +158,13 @@ public:
     /// the type constraint.
     const std::vector<GenericParameter>& genericParameters() const { return genericParameters_; }
 
-    void eachReification(const std::function<void (Reification&)> &callback) {
+    void eachReification(const std::function<void (Reification<Entity>&)> &callback) {
         for (auto &reification : reifications_) {
             callback(reification.second);
         }
     }
 
-    const std::map<std::vector<Type>, Reification>& reificationMap() const { return reifications_; }
+    const std::map<std::vector<Type>, Reification<Entity>>& reificationMap() const { return reifications_; }
 
 protected:
     /// Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset.
@@ -172,7 +182,7 @@ private:
     /** Generic type arguments as variables */
     std::map<std::u32string, size_t> parameterVariables_;
 
-    std::map<std::vector<Type>, Reification> reifications_;
+    std::map<std::vector<Type>, Reification<Entity>> reifications_;
 
     size_t offset_ = 0;
 
@@ -191,7 +201,7 @@ private:
         if (reifications_.find(key) != reifications_.end()) {
             return;
         }
-        auto &reification = reifications_[key] = Reification();
+        auto &reification = reifications_[key] = Reification<Entity>();
         for (size_t i = 0; i < genericParameters_.size(); i++) {
             if (!genericParameters_[i].useBox) {
                 reification.arguments.emplace(i + offset_, arguments[i]);

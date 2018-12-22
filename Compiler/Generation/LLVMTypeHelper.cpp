@@ -17,6 +17,7 @@
 #include "Scoping/CapturingSemanticScoper.hpp"
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
+#include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
 #include <llvm/IR/DerivedTypes.h>
 #include <AST/ASTClosure.hpp>
@@ -60,13 +61,6 @@ LLVMTypeHelper::LLVMTypeHelper(llvm::LLVMContext &context, CodeGenerator *codeGe
     }, "someobject")->getPointerTo();
     captureDeinit_ = llvm::FunctionType::get(llvm::Type::getVoidTy(context_),
                                              llvm::Type::getInt8PtrTy(context_), false);
-
-    auto compiler = codeGenerator_->compiler();
-    compiler->sInteger->createUnspecificReification().type = llvm::Type::getInt64Ty(context_);
-    compiler->sReal->createUnspecificReification().type = llvm::Type::getDoubleTy(context_);
-    compiler->sBoolean->createUnspecificReification().type = llvm::Type::getInt1Ty(context_);
-    compiler->sMemory->createUnspecificReification().type = llvm::Type::getInt8PtrTy(context_);
-    compiler->sByte->createUnspecificReification().type = llvm::Type::getInt8Ty(context_);
 }
 
 LLVMTypeHelper::~LLVMTypeHelper() = default;
@@ -76,6 +70,13 @@ void LLVMTypeHelper::withReificationContext(ReificationContext context, std::fun
     std::swap(ptr, reifiContext_);
     function();
     reifiContext_ = std::move(ptr);
+}
+
+const Reification<TypeDefinitionReification>* LLVMTypeHelper::ownerReification() const {
+    if (reifiContext_ == nullptr) {
+        return nullptr;
+    }
+    return reifiContext_->ownerReification();
 }
 
 llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType) {
@@ -95,11 +96,16 @@ llvm::ArrayType* LLVMTypeHelper::multiprotocolConformance(const Type &type) {
 
 llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     std::vector<llvm::Type *> args;
-    if (function->isClosure()) {
+    if (function->isClosure() || dynamic_cast<Protocol*>(function->owner()) != nullptr) {
         args.emplace_back(llvm::Type::getInt8PtrTy(context_));
     }
     else if (hasThisArgument(function)) {
-        args.emplace_back(llvmTypeFor(function->typeContext().calleeType()));
+        if (function->functionType() == FunctionType::ClassMethod) {
+            args.emplace_back(classInfo()->getPointerTo());
+        }
+        else {
+            args.emplace_back(ownerReification()->entity.type->getPointerTo());
+        }
     }
     std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [this](auto &arg) {
         return llvmTypeFor(arg.type->type());
@@ -167,13 +173,12 @@ llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
                 return classInfoType_->getPointerTo();
             }
             return llvm::StructType::get(context_);
-        case TypeType::Enum:
-            return llvm::Type::getInt64Ty(context_);
         case TypeType::Someobject:
             return someobjectPtr_;
         case TypeType::NoReturn:
             return llvm::Type::getVoidTy(context_);
         case TypeType::ValueType:
+        case TypeType::Enum:
             return llvmTypeForTypeDefinition(type);
         case TypeType::Class:
             return llvmTypeForTypeDefinition(type)->getPointerTo();
@@ -183,26 +188,7 @@ llvm::Type* LLVMTypeHelper::getSimpleType(const Type &type) {
 }
 
 llvm::Type* LLVMTypeHelper::llvmTypeForTypeDefinition(const Type &type) {
-    auto &reification = type.typeDefinition()->reificationFor(type.genericArguments());
-    if (reification.type != nullptr) {
-        return reification.type;
-    }
-
-    auto structType = llvm::StructType::create(context_, mangleTypeName(type));
-    reification.type = structType;
-    
-    std::vector<llvm::Type *> types;
-    if (type.type() == TypeType::Class) {
-        types.emplace_back(llvm::Type::getInt8PtrTy(context_));
-        types.emplace_back(classInfoType_->getPointerTo());
-    }
-
-    for (auto &ivar : type.typeDefinition()->instanceVariables()) {
-        types.emplace_back(llvmTypeFor(ivar.type->type()));
-    }
-
-    structType->setBody(types);  // for self referencing types
-    return structType;
+    return type.typeDefinition()->reificationFor(type.genericArguments()).type;
 }
 
 llvm::StructType* LLVMTypeHelper::managable(llvm::Type *type) const {

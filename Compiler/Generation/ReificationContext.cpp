@@ -3,3 +3,7 @@
 //
 
 #include "ReificationContext.hpp"
+
+namespace EmojicodeCompiler {
+
+}  // namespace EmojicodeCompiler

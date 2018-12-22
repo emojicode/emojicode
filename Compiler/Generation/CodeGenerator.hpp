@@ -91,8 +91,10 @@ private:
     void emitModule(const std::string &outPath, bool printIr);
     void generateFunctions(Package *package, bool imported);
 
-    void generateFunction(Function *function);
+    void generateFunction(Function *function, const Reification<TypeDefinitionReification> *reification);
     void createClassInfo(Class *klass);
+
+    void generateTypeDefinition(TypeDefinition *typeDef, bool isClass);
 
     void createProtocolFunctionTypes(Protocol *protocol);
 

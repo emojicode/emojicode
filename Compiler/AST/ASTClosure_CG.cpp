@@ -15,7 +15,7 @@ namespace EmojicodeCompiler {
 
 Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     closure_->createUnspecificReification();
-    fg->generator()->declarator().declareLlvmFunction(closure_.get());
+    fg->generator()->declarator().declareLlvmFunction(closure_.get(), fg->typeHelper().ownerReification());
 
     auto thisValue = capture_.capturesSelf() ? fg->thisValue()->getType() : nullptr;
     auto capture = capture_;
@@ -87,7 +87,7 @@ llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const
 
 llvm::Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
     thunk_->createUnspecificReification();
-    fg->generator()->declarator().declareLlvmFunction(thunk_.get());
+    fg->generator()->declarator().declareLlvmFunction(thunk_.get(), fg->typeHelper().ownerReification());
 
     auto closureGenerator = ClosureCodeGenerator(thunk_.get(), fg->generator());
     closureGenerator.generate();

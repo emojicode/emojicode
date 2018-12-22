@@ -109,14 +109,8 @@ llvm::Value *CallCodeGenerator::dispatchFromVirtualTable(Function *function, llv
     auto dispatchedFunc = fg()->builder().CreateLoad(fg()->builder().CreateInBoundsGEP(virtualTable, id));
 
     std::vector<llvm::Type *> argTypes = reification.functionType()->params();
-    if (callType_ == CallType::DynamicProtocolDispatch) {
-        argTypes.front() = llvm::Type::getInt8PtrTy(fg()->generator()->context());
-    }
-    else if (callType_ == CallType::DynamicDispatch) {
+    if (callType_ == CallType::DynamicDispatch) {
         argTypes.front() = args.front()->getType();
-    }
-    else if (callType_ == CallType::DynamicDispatchOnType) {
-        assert(argTypes.front() == args.front()->getType());
     }
 
     auto funcType = llvm::FunctionType::get(reification.functionType()->getReturnType(), argTypes, false);

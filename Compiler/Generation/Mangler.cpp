@@ -13,9 +13,12 @@
 #include "Types/Class.hpp"
 #include "Types/Type.hpp"
 #include "Types/ValueType.hpp"
+#include "Generation/ReificationContext.hpp"
 #include <sstream>
 
 namespace EmojicodeCompiler {
+
+void mangleTypeName(std::stringstream &stream, const Type &typeb);
 
 void mangleIdentifier(std::stringstream &stream, const std::u32string &string) {
     bool first = true;
@@ -30,22 +33,30 @@ void mangleIdentifier(std::stringstream &stream, const std::u32string &string) {
     }
 }
 
-void mangleTypeName(std::stringstream &stream, const Type &typeb) {
-    auto type = typeb.unboxed();
+void mangleGenericArguments(std::stringstream &stream, const std::map<size_t, Type> &genericArgs) {
+    for (auto &pair : genericArgs) {
+        stream << '$' << pair.first << '_';
+        mangleTypeName(stream, pair.second);
+    }
+}
+
+std::string mangleTypeDefinition(std::stringstream &stream, TypeDefinition *typeDef,
+                                 const std::map<size_t, Type> &genericArgs) {
+    stream << typeDef->package()->name() << ".";
+    mangleIdentifier(stream, typeDef->name());
+    mangleGenericArguments(stream, genericArgs);
+    return stream.str();
+}
+
+void mangleTypeName(std::stringstream &stream, const Type &type) {
     stream << type.typePackage() << ".";
     switch (type.type()) {
         case TypeType::ValueType:
-            stream << "vt_";
-            break;
         case TypeType::Class:
-            stream << "class_";
-            break;
         case TypeType::Enum:
-            stream << "enum_";
-            break;
         case TypeType::Protocol:
-            stream << "protocol_";
-            break;
+            mangleTypeDefinition(stream, type.typeDefinition(),
+                                 type.typeDefinition()->reificationWrapperFor(type.genericArguments()).arguments);
         case TypeType::TypeAsValue:
             stream << "tyval_";
             break;
@@ -56,20 +67,21 @@ void mangleTypeName(std::stringstream &stream, const Type &typeb) {
             }
             return;
         case TypeType::NoReturn:
-            stream << "no_return";
+            stream << "no_return_";
+            return;
+        case TypeType::Box:
+            stream << "box_";
             return;
         default:
             stream << "ty_";
             break;
     }
-    mangleIdentifier(stream, type.typeDefinition()->name());
 }
 
-void mangleGenericArguments(std::stringstream &stream, const std::map<size_t, Type> &genericArgs) {
-    for (auto &pair : genericArgs) {
-        stream << '$' << pair.first << '_';
-        mangleTypeName(stream, pair.second);
-    }
+std::string mangleTypeDefinition(TypeDefinition *typeDef, const Reification<TypeDefinitionReification> *reification) {
+    std::stringstream stream;
+    mangleTypeDefinition(stream, typeDef, reification->arguments);
+    return stream.str();
 }
 
 std::string mangleClassInfoName(Class *klass) {
@@ -79,10 +91,10 @@ std::string mangleClassInfoName(Class *klass) {
     return stream.str();
 }
 
-std::string mangleFunction(Function *function, const std::map<size_t, Type> &genericArgs) {
+std::string mangleFunction(Function *function, const ReificationContext &reificationContext) {
     std::stringstream stream;
     if (function->owner() != nullptr) {
-        mangleTypeName(stream, function->owner()->type());
+        mangleTypeDefinition(stream, function->owner(), reificationContext.ownerReification()->arguments);
         if (function->functionType() == FunctionType::Deinitializer) {
             stream << ".deinit";
             return stream.str();
@@ -111,7 +123,13 @@ std::string mangleFunction(Function *function, const std::map<size_t, Type> &gen
     else if (function->mood() == Mood::Assignment) {
         stream << "_assign";
     }
-    mangleGenericArguments(stream, genericArgs);
+    mangleGenericArguments(stream, reificationContext.arguments());
+    return stream.str();
+}
+
+std::string mangleTypeName(const Type &type) {
+    std::stringstream stream;
+    mangleTypeName(stream, type);
     return stream.str();
 }
 
@@ -125,12 +143,6 @@ std::string mangleBoxRelease(const Type &type) {
 
 std::string mangleBoxInfoName(const Type &type) {
     return mangleTypeName(type) + ".boxInfo";
-}
-
-std::string mangleTypeName(const Type &type) {
-    std::stringstream stream;
-    mangleTypeName(stream, type);
-    return stream.str();
 }
 
 std::string mangleProtocolConformance(const Type &type, const Type &protocol) {

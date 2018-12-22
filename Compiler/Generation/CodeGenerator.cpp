@@ -112,9 +112,6 @@ void CodeGenerator::generate(Package *package, const std::string &outPath, bool 
     prepareModule(package, optimize);
     optimizationManager_->initialize();
 
-    buildClassObjectBoxInfo();
-    buildCallableBoxInfo();
-
     for (auto package : compiler()->importedPackages()) {
         declareAndCreate(package, true);
     }
@@ -130,55 +127,80 @@ void CodeGenerator::generate(Package *package, const std::string &outPath, bool 
 }
 
 void CodeGenerator::declareAndCreate(Package *package, bool imported) {
+    // First let‘s declare all structs for circular dependencies etc.
+    for (auto &valueType : package->valueTypes()) {
+        if (!valueType->requiresCopyReification()) {
+            valueType->createUnspecificReification();
+        }
+        declarator().declareTypeDefinition(valueType.get(), false);
+    }
+    for (auto &klass : package->classes()) {
+        klass->createUnspecificReification();
+        declarator().declareTypeDefinition(klass.get(), true);
+    }
+
+    // Now we populate the structs so they are ready for all function declaration stuff to come
+    for (auto &valueType : package->valueTypes()) {
+        generateTypeDefinition(valueType.get(), false);
+    }
+    for (auto &klass : package->classes()) {
+        generateTypeDefinition(klass.get(), true);
+    }
+
+    buildClassObjectBoxInfo();
+    buildCallableBoxInfo();
+
     for (auto &protocol : package->protocols()) {
         createProtocolFunctionTypes(protocol.get());
     }
     for (auto &valueType : package->valueTypes()) {
-        valueType->createUnspecificReification();
-        valueType->eachFunction([this, imported](Function *function) {
-            if (!imported && !function->requiresCopyReification()) {
-                function->createUnspecificReification();
+        valueType->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+            valueType->eachFunction([this, imported, &reification](Function *function) {
+                if (!imported && !function->requiresCopyReification()) {
+                    function->createUnspecificReification();
+                }
+                declarator_->declareLlvmFunction(function, &reification);
+            });
+            if (valueType->isManaged()) {
+                valueType->deinitializer()->createUnspecificReification();
+                declarator_->declareLlvmFunction(valueType->deinitializer(), &reification);
+                valueType->copyRetain()->createUnspecificReification();
+                declarator_->declareLlvmFunction(valueType->copyRetain(), &reification);
             }
-            declarator_->declareLlvmFunction(function);
-        });
-        if (valueType->isManaged()) {
-            valueType->deinitializer()->createUnspecificReification();
-            declarator_->declareLlvmFunction(valueType->deinitializer());
-            valueType->copyRetain()->createUnspecificReification();
-            declarator_->declareLlvmFunction(valueType->copyRetain());
-        }
 
-        if (!imported) {
-            valueType->setBoxInfo(declarator().declareBoxInfo(mangleBoxInfoName(Type(valueType.get()))));
-            valueType->setBoxRetainRelease(buildBoxRetainRelease(Type(valueType.get())));
-            protocolsTableGenerator_->generate(Type(valueType.get()));
-            valueType->boxInfo()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
-                protocolsTableGenerator_->createProtocolTable(valueType.get()),
-                valueType->boxRetainRelease().first, valueType->boxRetainRelease().second
-            }));
-        }
-        else {
-            protocolsTableGenerator_->declareImported(Type(valueType.get()));
-        }
+            if (!imported) {
+                valueType->setBoxInfo(declarator().declareBoxInfo(mangleBoxInfoName(Type(valueType.get()))));
+                valueType->setBoxRetainRelease(buildBoxRetainRelease(Type(valueType.get())));
+                protocolsTableGenerator_->generate(Type(valueType.get()));
+                valueType->boxInfo()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
+                    protocolsTableGenerator_->createProtocolTable(valueType.get()),
+                    valueType->boxRetainRelease().first, valueType->boxRetainRelease().second
+                }));
+            }
+            else {
+                protocolsTableGenerator_->declareImported(Type(valueType.get()));
+            }
+        });
     }
     for (auto &klass : package->classes()) {
-        klass->createUnspecificReification();
-        VTCreator(klass.get(), *declarator_).build();
-        if (!imported) {
-            klass->setBoxRetainRelease(classObjectRetainRelease_);
-            protocolsTableGenerator_->generate(Type(klass.get()));
-            createClassInfo(klass.get());
-        }
-        else {
-            protocolsTableGenerator_->declareImported(Type(klass.get()));
-            declarator().declareImportedClassInfo(klass.get());
-        }
+        klass->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+            VTCreator(klass.get(), *declarator_).build(&reification);
+            if (!imported) {
+                klass->setBoxRetainRelease(classObjectRetainRelease_);
+                protocolsTableGenerator_->generate(Type(klass.get()));
+                createClassInfo(klass.get());
+            }
+            else {
+                protocolsTableGenerator_->declareImported(Type(klass.get()));
+                declarator().declareImportedClassInfo(klass.get());
+            }
+        });
     }
     for (auto &function : package->functions()) {
         if (!imported) {
             function->createUnspecificReification();
         }
-        declarator_->declareLlvmFunction(function.get());
+        declarator_->declareLlvmFunction(function.get(), nullptr);
     }
 }
 
@@ -203,34 +225,38 @@ void CodeGenerator::emitModule(const std::string &outPath, bool printIr) {
 
 void CodeGenerator::generateFunctions(Package *package, bool imported) {
     for (auto &valueType : package->valueTypes()) {
-        valueType->eachFunction([this](auto *function) {
-            generateFunction(function);
+        valueType->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+            valueType->eachFunction([&](auto *function) {
+                generateFunction(function, &reification);
+            });
+            if (!imported && valueType->isManaged()) {
+                generateFunction(valueType->deinitializer(), &reification);
+                generateFunction(valueType->copyRetain(), &reification);
+            }
         });
-        if (!imported && valueType->isManaged()) {
-            generateFunction(valueType->deinitializer());
-            generateFunction(valueType->copyRetain());
-        }
     }
     for (auto &klass : package->classes()) {
-        klass->eachFunction([this](auto *function) {
-            generateFunction(function);
+        klass->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+            klass->eachFunction([&](auto *function) {
+                generateFunction(function, &reification);
+            });
+            if (!imported) {
+                generateFunction(klass->deinitializer(), &reification);
+            }
         });
-        if (!imported) {
-            generateFunction(klass->deinitializer());
-        }
     }
     for (auto &function : package->functions()) {
-        generateFunction(function.get());
+        generateFunction(function.get(), nullptr);
     }
 }
 
-void CodeGenerator::generateFunction(Function *function) {
+void CodeGenerator::generateFunction(Function *function, const Reification<TypeDefinitionReification> *reification) {
     if (!function->isExternal()) {
-        function->eachReification([this, function](auto &reification) {
-            typeHelper_.withReificationContext(ReificationContext(*function, reification), [&] {
-                FunctionCodeGenerator(function, reification.entity.function, this).generate();
+        function->eachReification([this, function, reification](auto &funcReifi) {
+            typeHelper_.withReificationContext(ReificationContext(funcReifi.arguments, reification), [&] {
+                FunctionCodeGenerator(function, funcReifi.entity.function, this).generate();
             });
-            optimizationManager_->optimize(reification.entity.function);
+            optimizationManager_->optimize(funcReifi.entity.function);
         });
     }
 }
@@ -240,12 +266,32 @@ void CodeGenerator::createProtocolFunctionTypes(Protocol *protocol) {
     for (auto function : protocol->methodList()) {
         function->createUnspecificReification();
         function->eachReification([this, function, &tableIndex](auto &reification) {
-            typeHelper_.withReificationContext(ReificationContext(*function, reification), [&] {
+            typeHelper_.withReificationContext(ReificationContext(reification.arguments, nullptr), [&] {
                 reification.entity.setFunctionType(typeHelper().functionTypeFor(function));
                 reification.entity.setVti(tableIndex++);
             });
         });
     }
+}
+
+void CodeGenerator::generateTypeDefinition(TypeDefinition *typeDef, bool isClass) {
+    typeDef->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+        if (!isClass && dynamic_cast<ValueType *>(typeDef)->isPrimitive()) {
+            return;
+        }
+
+        std::vector<llvm::Type *> types;
+        if (isClass) {
+            types.emplace_back(llvm::Type::getInt8PtrTy(context_));
+            types.emplace_back(typeHelper().classInfo()->getPointerTo());
+        }
+
+        for (auto &ivar : typeDef->instanceVariables()) {
+            types.emplace_back(typeHelper().llvmTypeFor(ivar.type->type()));
+        }
+
+        llvm::dyn_cast<llvm::StructType>(reification.entity.type)->setBody(types);
+    });
 }
 
 void CodeGenerator::createClassInfo(Class *klass) {
