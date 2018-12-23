@@ -7,12 +7,11 @@ deploy:
 
   skip_cleanup: true
   on:
+    tags: true
     condition: $CC = clang-6.0
 
   file:
   - $EMOJICODE_DIST_ARCHIVE
-
-  draft: true
 
 language: cpp
 
