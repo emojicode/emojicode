@@ -4,7 +4,7 @@ import os
 import sys
 import subprocess
 
-version = "0.8"
+version = "0.8.1"
 packages = ["s", "files", "sockets"]
 
 source = sys.argv[1]
