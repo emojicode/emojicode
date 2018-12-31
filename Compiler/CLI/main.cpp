@@ -32,7 +32,7 @@ bool start(const Options &options) {
     }
 
     if (options.shouldReport()) {
-        PackageReporter(application.mainPackage()).report();
+        PackageReporter(application.mainPackage(), options.reportPath()).report();
     }
     return success;
 }

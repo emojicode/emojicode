@@ -134,6 +134,14 @@ void Options::configureOutPath() {
         }
         interfaceFile_.append("interface.emojii");
     }
+
+    if (shouldReport()) {
+        if (!parentPath.empty()) {
+            reportPath_ = parentPath;
+            reportPath_.append("/");
+        }
+        reportPath_.append("documentation.json");
+    }
 }
 
 std::unique_ptr<CompilerDelegate> Options::compilerDelegate() const {

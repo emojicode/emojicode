@@ -47,6 +47,7 @@ public:
     const std::string& interfaceFile() const { return interfaceFile_; }
     const std::vector<std::string>& packageSearchPaths() const { return packageSearchPaths_; }
     const std::string& mainPackageName() const { return mainPackageName_; }
+    const std::string& reportPath() const { return reportPath_; }
     std::string linker() const;
     std::string ar() const;
 
@@ -59,6 +60,7 @@ private:
     std::string outPath_;
     std::string mainFile_;
     std::string interfaceFile_;
+    std::string reportPath_;
     std::vector<std::string> packageSearchPaths_;
     std::string mainPackageName_ = "_";
     bool format_ = false;

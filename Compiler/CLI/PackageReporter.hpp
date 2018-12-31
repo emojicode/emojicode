@@ -14,6 +14,7 @@
 #include "Types/Generic.hpp"
 #include "Utils/rapidjson/prettywriter.h"
 #include "Utils/rapidjson/ostreamwrapper.h"
+#include <fstream>
 
 namespace EmojicodeCompiler {
 
@@ -26,11 +27,12 @@ namespace CLI {
 
 class PackageReporter {
 public:
-    explicit PackageReporter(Package *package);
+    explicit PackageReporter(Package *package, const std::string &string);
 
     void report();
 
 private:
+    std::fstream file_;
     rapidjson::OStreamWrapper wrapper_;
     rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer_;
     Package *package_;
