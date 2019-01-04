@@ -1,4 +1,4 @@
-# Emojicode [ ![Codeship Status for emojicode/emojicode][image-1]][1] [![Join the chat at https://gitter.im/emojicode/emojicode][image-2]][2]
+# Emojicode [![Build Status](https://travis-ci.org/rozaxe/emojicode.svg?branch=master)][1] [![Join the chat at https://gitter.im/emojicode/emojicode][image-2]][2]
 
 Emojicode is an open source, high-level, multi-paradigm
 programming language consisting of emojis. It features Object-Orientation, Optionals, Generics and Closures.
@@ -124,7 +124,7 @@ If you don’t want to read the whole license, here’s a summary without legal 
 -  The license contains a grant of patent rights and does not allow you to use any trademark, service mark, tradename, or logo.
 - Emojicode comes with absolutely no warranty.
 
-[1]:	https://app.codeship.com/projects/209932
+[1]:	https://travis-ci.org/rozaxe/emojicode
 [2]:	https://gitter.im/emojicode/emojicode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [3]:	https://github.com/emojicode/emojicode/tree/emojicode-0.5
 [6]:	https://twitter.com/Real_Emojicode

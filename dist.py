@@ -49,7 +49,9 @@ if __name__ == "__main__":
                   os.path.join(source, "headers"))
 
     if len(sys.argv) > 2 and sys.argv[2] == "archive":
-        shutil.make_archive(dist_name, "gztar", os.getcwd(), dist_name)
+        archive_name = shutil.make_archive(dist_name, "gztar", os.getcwd(), dist_name)
+        print(archive_name, end='')
+
     if len(sys.argv) > 2 and sys.argv[2] == "install":
         bash = "cd " + path + " && yes | " + os.path.join(path, "install.sh")
         subprocess.run(["bash", "-c", bash])

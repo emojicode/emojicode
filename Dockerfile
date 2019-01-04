@@ -22,9 +22,7 @@ RUN apt-get update && apt-get install -y \
     libclang-common-6.0-dev \
     libclang1-6.0 \
     libclang-6.0-dev \
-    libfuzzer-6.0-dev \
     libllvm6.0 \
-    libncurses-dev \
     libz-dev \
     llvm-6.0 \
     llvm-6.0-dev \

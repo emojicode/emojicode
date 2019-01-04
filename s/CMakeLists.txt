@@ -1,6 +1,7 @@
 file(GLOB S_SOURCES "*.cpp" "*.c" "*.hpp" "*.h")
+file(GLOB S_EXCLUDED "utf8proc_data.c")
 
-list(FILTER S_SOURCES EXCLUDE REGEX ".*utf8proc_data.c")
+list(REMOVE_ITEM S_SOURCES ${S_EXCLUDED})
 
 get_filename_component(MAIN_FILE s.emojic ABSOLUTE)
 file(GLOB EMOJIC_DEPEND "*.emojic")
