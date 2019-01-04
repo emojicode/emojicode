@@ -20,6 +20,26 @@ namespace EmojicodeCompiler {
 
 namespace CLI {
 
+PackageReporter::PackageReporter(Package *package, const std::string &string)
+    : file_(string, std::ios_base::out), wrapper_(file_), writer_(wrapper_), package_(package) {}
+
+void PackageReporter::report() {
+    writer_.StartObject();
+
+    reportDocumentation(package_->documentation());
+
+    writer_.Key("types");
+    writer_.StartArray();
+    for (auto &exportedType : package_->exportedTypes()) {
+        reportExportedType(exportedType.type);
+    }
+    writer_.EndArray();
+
+    writer_.EndObject();
+
+    std::cout << std::endl;
+}
+
 void PackageReporter::reportDocumentation(const std::u32string &documentation) {
     if (!documentation.empty()) {
         writer_.Key("documentation");
@@ -250,26 +270,6 @@ void PackageReporter::reportExportedType(const Type &type) {
         writer_.EndArray();
     }
     writer_.EndObject();
-}
-
-PackageReporter::PackageReporter(Package *package)
-        : wrapper_(std::cout), writer_(wrapper_), package_(package) {}
-
-void PackageReporter::report() {
-    writer_.StartObject();
-
-    reportDocumentation(package_->documentation());
-
-    writer_.Key("types");
-    writer_.StartArray();
-    for (auto &exportedType : package_->exportedTypes()) {
-        reportExportedType(exportedType.type);
-    }
-    writer_.EndArray();
-
-    writer_.EndObject();
-
-    std::cout << std::endl;
 }
 
 }  // namespace CLI

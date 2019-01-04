@@ -101,10 +101,10 @@ void ASTVariableDeclaration::generate(FunctionCodeGenerator *fg) const {
 }
 
 void ASTVariableAssignment::generateAssignment(FunctionCodeGenerator *fg) const {
+    auto val = expr_->generate(fg);
     if (wasInitialized_ && variableType().isManaged()) {
         release(fg);
     }
-    auto val = expr_->generate(fg);
     auto variablePtr = variablePointer(fg);
     fg->builder().CreateStore(val, variablePtr);
 }

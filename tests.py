@@ -36,6 +36,7 @@ compilation_tests = [
     "typesAsValues",
     "class",
     "ivarAssign",
+    "useAndAssign",
     "privateClassMethod",
     "assignmentByCallInstanceVariable",
     "valueType",

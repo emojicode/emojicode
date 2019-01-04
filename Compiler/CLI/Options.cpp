@@ -24,7 +24,7 @@ namespace CLI {
 #endif
 
 Options::Options(int argc, char *argv[]) {
-    args::ArgumentParser parser("Emojicode Compiler 0.8. Visit https://www.emojicode.org for help.");
+    args::ArgumentParser parser("Emojicode Compiler 0.8.1. Visit https://www.emojicode.org for help.");
     args::Positional<std::string> file(parser, "file", "The main file of the package to be compiled", std::string(),
                                        args::Options::Required);
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
@@ -133,6 +133,14 @@ void Options::configureOutPath() {
             interfaceFile_.append("/");
         }
         interfaceFile_.append("interface.emojii");
+    }
+
+    if (shouldReport()) {
+        if (!parentPath.empty()) {
+            reportPath_ = parentPath;
+            reportPath_.append("/");
+        }
+        reportPath_.append("documentation.json");
     }
 }
 
