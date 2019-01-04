@@ -1,4 +1,16 @@
-dist: xenial
+language: cpp
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      compiler: clang
+    - os: linux
+      dist: xenial
+      compiler: gcc
+    - os: osx
+      osx_image: xcode10.1
+      compiler: clang
 
 deploy:
   provider: releases
@@ -7,17 +19,17 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: $CC = clang-6.0
+    condition: $CC = clang-6.0 || "$TRAVIS_OS_NAME" == "osx"
   draft: true
 
   file:
   - $EMOJICODE_DIST_ARCHIVE
 
-language: cpp
-
-compiler:
-- clang
-- gcc
+addons:
+  homebrew:
+    packages:
+    - llvm@6
+    - ninja
 
 before_install:
 - source .travis/install.sh
