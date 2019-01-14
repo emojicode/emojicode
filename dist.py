@@ -4,8 +4,8 @@ import os
 import sys
 import subprocess
 
-version = "0.8.1"
-packages = ["s", "files", "sockets"]
+version = "0.8.2"
+packages = ["s", "files", "sockets", "testtube"]
 
 source = sys.argv[1]
 dist_name = "Emojicode-{0}-{1}-{2}".format(version, platform.system(),
