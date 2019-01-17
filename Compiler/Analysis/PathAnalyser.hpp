@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cassert>
 #include <vector>
+#include <set>
 
 namespace EmojicodeCompiler {
 
@@ -26,8 +27,8 @@ class PathAnalyser {
         explicit Branch(Branch *parent) : parent(parent) {}
 
         Branch *parent;
-        std::vector<PathAnalyserIncident> certainIncidents;
-        std::vector<PathAnalyserIncident> potentialIncidents;
+        std::set<PathAnalyserIncident> certainIncidents;
+        std::set<PathAnalyserIncident> potentialIncidents;
         std::vector<Branch> branches;
     };
 
@@ -49,8 +50,8 @@ public:
     }
 
     void recordIncident(PathAnalyserIncident incident) {
-        currentBranch_->certainIncidents.emplace_back(incident);
-        currentBranch_->potentialIncidents.emplace_back(incident);
+        currentBranch_->certainIncidents.emplace(incident);
+        currentBranch_->potentialIncidents.emplace(incident);
     }
 
     void beginBranch() {
@@ -66,20 +67,17 @@ public:
     }
 
     bool hasCertainly(PathAnalyserIncident incident) const {
-        return std::find(currentBranch_->certainIncidents.begin(), currentBranch_->certainIncidents.end(),
-                         incident) != currentBranch_->certainIncidents.end();
+        return currentBranch_->certainIncidents.find(incident) != currentBranch_->certainIncidents.end();
     }
 
     bool hasPotentially(PathAnalyserIncident incident) const {
-        return std::find(currentBranch_->potentialIncidents.begin(), currentBranch_->potentialIncidents.end(),
-                         incident) != currentBranch_->potentialIncidents.end();
+        return currentBranch_->potentialIncidents.find(incident) != currentBranch_->potentialIncidents.end();
     }
 
 private:
     void copyPotentialIncidents() {
         for (auto branch : currentBranch_->branches) {
-            currentBranch_->potentialIncidents.insert(currentBranch_->potentialIncidents.begin(),
-                                                      branch.potentialIncidents.begin(),
+            currentBranch_->potentialIncidents.insert(branch.potentialIncidents.begin(),
                                                       branch.potentialIncidents.end());
         }
     }
@@ -88,12 +86,12 @@ private:
         auto incs = currentBranch_->branches[0].certainIncidents;
         for (auto it = currentBranch_->branches.begin() + 1; it < currentBranch_->branches.end(); it++) {
             auto branch = *it;
-            auto newIncidents = std::vector<PathAnalyserIncident>();
+            auto newIncidents = std::set<PathAnalyserIncident>();
             std::set_intersection(incs.begin(), incs.end(), branch.certainIncidents.begin(),
-                                  branch.certainIncidents.end(), std::back_inserter(newIncidents));
+                                  branch.certainIncidents.end(), std::inserter(newIncidents, newIncidents.begin()));
             incs = newIncidents;
         }
-        currentBranch_->certainIncidents.insert(currentBranch_->certainIncidents.begin(), incs.begin(), incs.end());
+        currentBranch_->certainIncidents.insert(incs.begin(), incs.end());
     }
 
     Branch mainBranch_ = Branch(nullptr);

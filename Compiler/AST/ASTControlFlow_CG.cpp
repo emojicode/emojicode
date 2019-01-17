@@ -16,7 +16,9 @@ namespace EmojicodeCompiler {
 void ASTIf::generate(FunctionCodeGenerator *fg) const {
     auto *function = fg->builder().GetInsertBlock()->getParent();
 
+    bool addAfter = false;
     auto afterIfBlock = llvm::BasicBlock::Create(fg->generator()->context(), "afterIf");
+
     for (size_t i = 0; i < conditions_.size(); i++) {
         auto thenBlock = llvm::BasicBlock::Create(fg->generator()->context(), "then", function);
         auto elseBlock = llvm::BasicBlock::Create(fg->generator()->context(), "else", function);
@@ -29,16 +31,25 @@ void ASTIf::generate(FunctionCodeGenerator *fg) const {
 
         if (!blocks_[i].returnedCertainly()) {
             fg->builder().CreateBr(afterIfBlock);
+            addAfter = true;
         }
         fg->builder().SetInsertPoint(elseBlock);
     }
 
     if (hasElse()) {
         blocks_.back().generate(fg);
+
+        if (!blocks_.back().returnedCertainly()) {
+            fg->builder().CreateBr(afterIfBlock);
+            addAfter = true;
+        }
+    }
+    else {
+        fg->builder().CreateBr(afterIfBlock);
+        addAfter = true;
     }
 
-    if (!blocks_.back().returnedCertainly()) {
-        fg->builder().CreateBr(afterIfBlock);
+    if (addAfter) {
         function->getBasicBlockList().push_back(afterIfBlock);
         fg->builder().SetInsertPoint(afterIfBlock);
     }
