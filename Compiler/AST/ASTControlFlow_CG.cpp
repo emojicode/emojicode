@@ -106,8 +106,10 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
         fg->builder().CreateBr(afterBlock);
     }
 
-    function->getBasicBlockList().push_back(afterBlock);
-    fg->builder().SetInsertPoint(afterBlock);
+    if (!errorBlock_.returnedCertainly() || !valueBlock_.returnedCertainly()) {
+        function->getBasicBlockList().push_back(afterBlock);
+        fg->builder().SetInsertPoint(afterBlock);
+    }
 }
 
 void ASTForIn::generate(FunctionCodeGenerator *fg) const {
