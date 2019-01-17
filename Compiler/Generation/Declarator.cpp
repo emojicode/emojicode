@@ -119,8 +119,8 @@ llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationCo
         fn->addFnAttr(llvm::Attribute::InlineHint);
     }
 
-    size_t i = 0;
-    if (hasThisArgument(function)) {
+    size_t i = function->isClosure() ? 1 : 0;
+    if (hasThisArgument(function) && !function->isClosure()) {
         addParamDereferenceable(function->typeContext().calleeType(), i, fn, false);
         if (function->functionType() == FunctionType::ObjectInitializer) {
             if (!dynamic_cast<Initializer*>(function)->errorProne()) {
