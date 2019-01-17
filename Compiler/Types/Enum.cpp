@@ -16,14 +16,14 @@ std::pair<bool, long> Enum::getValueFor(const std::u32string &c) const {
     if (it == map_.end()) {
         return std::pair<bool, long>(false, 0);
     }
-    return std::pair<bool, long>(true, it->second.first);
+    return std::pair<bool, long>(true, it->second.value);
 }
 
 void Enum::addValueFor(const std::u32string &c, const SourcePosition &position, std::u32string documentation) {
     if (map_.count(c) > 0) {
         throw CompilerError(position, "Duplicate enum value.");
     }
-    map_.emplace(c, std::pair<long, std::u32string>(nextValue_++, documentation));
+    map_.emplace(c, EnumValue{ nextValue_++, documentation });
 }
 
 }  // namespace EmojicodeCompiler

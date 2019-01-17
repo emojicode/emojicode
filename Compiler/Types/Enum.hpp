@@ -15,6 +15,11 @@
 
 namespace EmojicodeCompiler {
 
+struct EnumValue {
+    long value;
+    std::u32string documentation;
+};
+
 class Enum : public ValueType {
 public:
     Enum(std::u32string name, Package *package, SourcePosition position,
@@ -26,11 +31,11 @@ public:
     std::pair<bool, long> getValueFor(const std::u32string &c) const;
     void addValueFor(const std::u32string &c, const SourcePosition &position, std::u32string documentation);
 
-    const std::map<std::u32string, std::pair<long, std::u32string>>& values() const { return map_; }
+    const std::map<std::u32string, EnumValue>& values() const { return map_; }
 
     bool canResolve(TypeDefinition *resolutionConstraint) const override { return false; }
 private:
-    std::map<std::u32string, std::pair<long, std::u32string>> map_;
+    std::map<std::u32string, EnumValue> map_;
     long nextValue_ = 0;
 };
 

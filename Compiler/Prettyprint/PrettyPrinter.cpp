@@ -257,12 +257,12 @@ void PrettyPrinter::printInstanceVariables(TypeDefinition *typeDef, const TypeCo
 }
 
 void PrettyPrinter::printEnumValues(Enum *enumeration) {
-    auto values = std::vector<std::pair<std::u32string, std::u32string>>();
+    auto values = std::vector<std::pair<std::u32string, EnumValue>>();
     std::transform(enumeration->values().begin(), enumeration->values().end(), std::back_inserter(values),
-                   [](auto pair){ return std::make_pair(pair.first, pair.second.second); });
-    std::sort(values.begin(), values.end(), [](auto &a, auto &b) { return a.first < b.first; });
+                   [](auto pair){ return std::make_pair(pair.first, pair.second); });
+    std::sort(values.begin(), values.end(), [](auto &a, auto &b) { return a.second.value < b.second.value; });
     for (auto &value : values) {
-        printDocumentation(value.second);
+        printDocumentation(value.second.documentation);
         prettyStream_.indent() << "🔘" << value.first << "\n";
     }
     prettyStream_.offerNewLineUnlessEmpty(values);

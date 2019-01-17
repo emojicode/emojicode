@@ -262,7 +262,7 @@ void PackageReporter::reportExportedType(const Type &type) {
         writer_.StartArray();
         for (auto &it : enumeration->values()) {
             writer_.StartObject();
-            reportDocumentation(it.second.second);
+            reportDocumentation(it.second.documentation);
             writer_.Key("value");
             writer_.String(utf8(it.first));
             writer_.EndObject();
