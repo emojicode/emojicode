@@ -17,6 +17,12 @@ Type ASTCast::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expec
     auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
 
     Type originalType = analyser->expect(TypeExpectation(), &expr_);
+
+    if (originalType.type() == TypeType::Optional) {
+        analyser->compiler()->error(CompilerError(position(), "Cannot cast optional."));
+        return type.optionalized();
+    }
+
     if (originalType.compatibleTo(type, analyser->typeContext())) {
         analyser->compiler()->error(CompilerError(position(), "Unnecessary cast."));
     }
