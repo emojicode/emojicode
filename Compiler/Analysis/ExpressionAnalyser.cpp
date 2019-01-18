@@ -230,7 +230,7 @@ void ExpressionAnalyser::makeIntoSimpleOptional(Type &exprType, std::shared_ptr<
         case StorageType::SimpleError:
             break;
         case StorageType::Box:
-            exprType = exprType.unboxed().optionalized();
+            exprType = (*node)->expressionType().unboxed().optionalized();
             insertNode<ASTBoxToSimpleOptional>(node, exprType);
             break;
         case StorageType::Simple:
