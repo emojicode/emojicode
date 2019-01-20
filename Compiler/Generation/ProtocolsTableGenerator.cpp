@@ -18,10 +18,11 @@
 
 namespace EmojicodeCompiler {
 
-llvm::Constant* ProtocolsTableGenerator::createProtocolTable(TypeDefinition *typeDef) {
+llvm::Constant* ProtocolsTableGenerator::createProtocolTable(TypeDefinition *typeDef,
+                                                             const TypeDefinitionReification &reification) {
     std::vector<llvm::Constant *> entries;
-    entries.reserve(typeDef->protocolTables().size());
-    for (auto &entry : typeDef->protocolTables()) {
+    entries.reserve(reification.protocolTables.size());
+    for (auto &entry : reification.protocolTables) {
         entries.emplace_back(llvm::ConstantStruct::get(generator_->typeHelper().protocolConformanceEntry(), {
             generator_->protocolIdentifierFor(entry.first), entry.second
         }));
@@ -38,7 +39,7 @@ llvm::Constant* ProtocolsTableGenerator::createProtocolTable(TypeDefinition *typ
     });
 }
 
-void ProtocolsTableGenerator::generate(const Type &type) {
+void ProtocolsTableGenerator::generate(const Type &type, TypeDefinitionReification *reification) {
     std::map<Type, llvm::Constant *> tables;
     auto boxInfo = generator_->boxInfoFor(type);
 
@@ -47,20 +48,21 @@ void ProtocolsTableGenerator::generate(const Type &type) {
         tables.emplace(protocol->type().unboxed(), conformance);
     }
 
-    type.typeDefinition()->setProtocolTables(std::move(tables));
+    reification->protocolTables = std::move(tables);
 }
 
-void ProtocolsTableGenerator::declareImported(const Type &type) {
+void ProtocolsTableGenerator::declareImported(const Type &type, TypeDefinitionReification *reification) {
     std::map<Type, llvm::Constant *> tables;
     if (type.type() != TypeType::Class) {
-        type.unboxed().valueType()->setBoxInfo(generator_->declarator().declareBoxInfo(mangleBoxInfoName(type)));
+        auto boxInfo = generator_->declarator().declareBoxInfo(mangleBoxInfoName(type.typeDefinition(), reification));
+        type.unboxed().valueType()->setBoxInfo(boxInfo);
     }
 
     for (auto &protocol : type.typeDefinition()->protocols()) {
         tables.emplace(protocol->type().unboxed(), getConformanceVariable(type, protocol->type(), nullptr));
     }
 
-    type.typeDefinition()->setProtocolTables(std::move(tables));
+    reification->protocolTables = std::move(tables);
 }
 
 llvm::GlobalVariable* ProtocolsTableGenerator::multiprotocol(const Type &multiprotocol, const Type &conformer) {
@@ -72,7 +74,8 @@ llvm::GlobalVariable* ProtocolsTableGenerator::multiprotocol(const Type &multipr
 
     std::vector<llvm::Constant *> virtualTable;
     for (auto &protocol : multiprotocol.protocols()) {
-        virtualTable.emplace_back(conformer.typeDefinition()->protocolTableFor(protocol.unboxed()));
+        auto reifi = conformer.typeDefinition()->reificationFor(conformer.genericArguments());
+        virtualTable.emplace_back(reifi.protocolTableFor(protocol.unboxed()));
     }
 
     auto arrayType = llvm::ArrayType::get(generator_->typeHelper().protocolConformance()->getPointerTo(),
@@ -103,7 +106,7 @@ llvm::GlobalVariable* ProtocolsTableGenerator::createDispatchTable(const Type &t
             }
             auto implReif = implFunction->reificationFor(reification.first).function;
             assert(implReif != nullptr);
-            virtualTable[reification.second.entity.vti()] = implReif;
+            virtualTable[reification.second.vti()] = implReif;
         }
     }
 

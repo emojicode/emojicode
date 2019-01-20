@@ -39,7 +39,7 @@ llvm::Value* ASTExpr::handleResult(FunctionCodeGenerator *fg, llvm::Value *resul
 
 Value* ASTTypeAsValue::generate(FunctionCodeGenerator *fg) const {
     if (type_->type().type() == TypeType::Class) {
-        return type_->type().klass()->classInfo();
+        return type_->type().klass()->reificationFor(type_->type().genericArguments()).classInfo;
     }
     return llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(Type(MakeTypeAsValue, type_->type())));
 }

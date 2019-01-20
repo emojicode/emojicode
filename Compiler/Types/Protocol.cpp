@@ -13,6 +13,6 @@ namespace EmojicodeCompiler {
 
 Protocol::Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string,
                    bool exported)
-    : TypeDefinition(std::move(name), pkg, p, string, exported) {}
+    : Generic(std::move(name), pkg, p, string, exported) {}
 
 }  // namespace EmojicodeCompiler

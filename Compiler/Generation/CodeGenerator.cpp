@@ -154,7 +154,7 @@ void CodeGenerator::declareAndCreate(Package *package, bool imported) {
         createProtocolFunctionTypes(protocol.get());
     }
     for (auto &valueType : package->valueTypes()) {
-        valueType->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+        valueType->eachReification([&](ValueTypeReification &reification) {
             valueType->eachFunction([this, imported, &reification](Function *function) {
                 if (!imported && !function->requiresCopyReification()) {
                     function->createUnspecificReification();
@@ -169,30 +169,30 @@ void CodeGenerator::declareAndCreate(Package *package, bool imported) {
             }
 
             if (!imported) {
-                valueType->setBoxInfo(declarator().declareBoxInfo(mangleBoxInfoName(Type(valueType.get()))));
-                valueType->setBoxRetainRelease(buildBoxRetainRelease(Type(valueType.get())));
-                protocolsTableGenerator_->generate(Type(valueType.get()));
+                valueType->setBoxInfo(declarator().declareBoxInfo(mangleBoxInfoName(valueType.get(), &reification)));
+                valueType->setBoxRetainRelease(buildBoxRetainRelease(Type(valueType.get()), reification));
+                protocolsTableGenerator_->generate(Type(valueType.get()), &reification);
                 valueType->boxInfo()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
-                    protocolsTableGenerator_->createProtocolTable(valueType.get()),
+                    protocolsTableGenerator_->createProtocolTable(valueType.get(), reification),
                     valueType->boxRetainRelease().first, valueType->boxRetainRelease().second
                 }));
             }
             else {
-                protocolsTableGenerator_->declareImported(Type(valueType.get()));
+                protocolsTableGenerator_->declareImported(Type(valueType.get()), &reification);
             }
         });
     }
     for (auto &klass : package->classes()) {
-        klass->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+        klass->eachReification([&](ClassReification &reification) {
             VTCreator(klass.get(), *declarator_).build(&reification);
             if (!imported) {
                 klass->setBoxRetainRelease(classObjectRetainRelease_);
-                protocolsTableGenerator_->generate(Type(klass.get()));
-                createClassInfo(klass.get());
+                protocolsTableGenerator_->generate(Type(klass.get()), &reification);
+                createClassInfo(klass.get(), &reification);
             }
             else {
-                protocolsTableGenerator_->declareImported(Type(klass.get()));
-                declarator().declareImportedClassInfo(klass.get());
+                protocolsTableGenerator_->declareImported(Type(klass.get()), &reification);
+                declarator().declareImportedClassInfo(klass.get(), &reification);
             }
         });
     }
@@ -225,7 +225,7 @@ void CodeGenerator::emitModule(const std::string &outPath, bool printIr) {
 
 void CodeGenerator::generateFunctions(Package *package, bool imported) {
     for (auto &valueType : package->valueTypes()) {
-        valueType->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+        valueType->eachReification([&](TypeDefinitionReification &reification) {
             valueType->eachFunction([&](auto *function) {
                 generateFunction(function, &reification);
             });
@@ -236,7 +236,7 @@ void CodeGenerator::generateFunctions(Package *package, bool imported) {
         });
     }
     for (auto &klass : package->classes()) {
-        klass->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+        klass->eachReification([&](TypeDefinitionReification &reification) {
             klass->eachFunction([&](auto *function) {
                 generateFunction(function, &reification);
             });
@@ -250,13 +250,13 @@ void CodeGenerator::generateFunctions(Package *package, bool imported) {
     }
 }
 
-void CodeGenerator::generateFunction(Function *function, const Reification<TypeDefinitionReification> *reification) {
+void CodeGenerator::generateFunction(Function *function, const TypeDefinitionReification *reification) {
     if (!function->isExternal()) {
         function->eachReification([this, function, reification](auto &funcReifi) {
             typeHelper_.withReificationContext(ReificationContext(funcReifi.arguments, reification), [&] {
-                FunctionCodeGenerator(function, funcReifi.entity.function, this).generate();
+                FunctionCodeGenerator(function, funcReifi.function, this).generate();
             });
-            optimizationManager_->optimize(funcReifi.entity.function);
+            optimizationManager_->optimize(funcReifi.function);
         });
     }
 }
@@ -267,47 +267,49 @@ void CodeGenerator::createProtocolFunctionTypes(Protocol *protocol) {
         function->createUnspecificReification();
         function->eachReification([this, function, &tableIndex](auto &reification) {
             typeHelper_.withReificationContext(ReificationContext(reification.arguments, nullptr), [&] {
-                reification.entity.setFunctionType(typeHelper().functionTypeFor(function));
-                reification.entity.setVti(tableIndex++);
+                reification.setFunctionType(typeHelper().functionTypeFor(function));
+                reification.setVti(tableIndex++);
             });
         });
     }
 }
 
 void CodeGenerator::generateTypeDefinition(TypeDefinition *typeDef, bool isClass) {
-    typeDef->eachReification([&](Reification<TypeDefinitionReification> &reification) {
+    typeDef->eachReificationTDR([&](TypeDefinitionReification &reification) {
         if (!isClass && dynamic_cast<ValueType *>(typeDef)->isPrimitive()) {
             return;
         }
 
-        std::vector<llvm::Type *> types;
-        if (isClass) {
-            types.emplace_back(llvm::Type::getInt8PtrTy(context_));
-            types.emplace_back(typeHelper().classInfo()->getPointerTo());
-        }
+        typeHelper_.withReificationContext(ReificationContext({}, &reification), [&] {
+            std::vector<llvm::Type *> types;
+            if (isClass) {
+                types.emplace_back(llvm::Type::getInt8PtrTy(context_));
+                types.emplace_back(typeHelper().classInfo()->getPointerTo());
+            }
 
-        for (auto &ivar : typeDef->instanceVariables()) {
-            types.emplace_back(typeHelper().llvmTypeFor(ivar.type->type()));
-        }
+            for (auto &ivar : typeDef->instanceVariables()) {
+                types.emplace_back(typeHelper().llvmTypeFor(ivar.type->type()));
+            }
 
-        llvm::dyn_cast<llvm::StructType>(reification.entity.type)->setBody(types);
+            llvm::dyn_cast<llvm::StructType>(reification.type)->setBody(types);
+        });
     });
 }
 
-void CodeGenerator::createClassInfo(Class *klass) {
+void CodeGenerator::createClassInfo(Class *klass, ClassReification *reification) {
     auto type = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(context()), klass->virtualTable().size());
     auto virtualTable = new llvm::GlobalVariable(*module(), type, true,
                                                  llvm::GlobalValue::LinkageTypes::PrivateLinkage,
                                                  llvm::ConstantArray::get(type, klass->virtualTable()));
     llvm::Constant *superclass;
     if (klass->superclass() != nullptr) {
-        superclass = klass->superclass()->classInfo();
+        superclass = klass->superclass()->unspecificReification().classInfo;
     }
     else {
         superclass = llvm::ConstantPointerNull::get(typeHelper_.classInfo()->getPointerTo());
     }
 
-    auto protocolTable = protocolsTableGenerator_->createProtocolTable(klass);
+    auto protocolTable = protocolsTableGenerator_->createProtocolTable(klass, *reification);
     auto gep = llvm::ConstantExpr::getInBoundsGetElementPtr(virtualTable->getType()->getElementType(), virtualTable,
                                                  llvm::ArrayRef<llvm::Constant *>{
         llvm::ConstantInt::get(llvm::Type::getInt32Ty(context()), 0),
@@ -316,17 +318,22 @@ void CodeGenerator::createClassInfo(Class *klass) {
     auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), { superclass, gep, protocolTable });
     auto info = new llvm::GlobalVariable(*module(), typeHelper_.classInfo(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
-                                         mangleClassInfoName(klass));
-    klass->setClassInfo(info);
+                                         mangleClassInfoName(klass, reification));
+    reification->classInfo = info;
 }
 
-std::pair<llvm::Function*, llvm::Function*> CodeGenerator::buildBoxRetainRelease(const Type &type) {
+std::pair<llvm::Function*, llvm::Function*>
+CodeGenerator::buildBoxRetainRelease(const Type &type, const TypeDefinitionReification &reification) {
+    return buildBoxRetainRelease(type, mangleBoxRelease(type.typeDefinition(), &reification),
+                                 mangleBoxRetain(type.typeDefinition(), &reification));
+}
+
+std::pair<llvm::Function*, llvm::Function*>
+CodeGenerator::buildBoxRetainRelease(const Type &type, std::string retainName, std::string releaseName) {
     auto release = llvm::Function::Create(typeHelper().boxRetainRelease(),
-                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, mangleBoxRelease(type),
-                                          module_.get());
+                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, retainName, module_.get());
     auto retain = llvm::Function::Create(typeHelper().boxRetainRelease(),
-                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, mangleBoxRetain(type),
-                                         module_.get());
+                                         llvm::GlobalValue::LinkageTypes::ExternalLinkage, releaseName, module_.get());
 
     auto releaseFg = FunctionCodeGenerator(release, this);
     releaseFg.createEntry();
@@ -375,11 +382,10 @@ std::pair<llvm::Function*, llvm::Function*> CodeGenerator::buildBoxRetainRelease
 void CodeGenerator::buildClassObjectBoxInfo() {
     auto klass = compiler()->sString;
     llvm::Function *retain, *release;
-    std::tie(retain, release) = classObjectRetainRelease_ = buildBoxRetainRelease(Type(klass));
+    std::tie(retain, release) = classObjectRetainRelease_ = buildBoxRetainRelease(Type(klass), "class.boxRetain",
+                                                                                  "class.boxRelease");
     retain->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
     release->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
-    retain->setName("class.boxRetain");
-    release->setName("class.boxRelease");
 
     declarator().boxInfoForObjects()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
         llvm::ConstantPointerNull::get(typeHelper().protocolConformanceEntry()->getPointerTo()),
@@ -390,11 +396,10 @@ void CodeGenerator::buildClassObjectBoxInfo() {
 
 void CodeGenerator::buildCallableBoxInfo() {
     llvm::Function *retain, *release;
-    std::tie(retain, release) = buildBoxRetainRelease(Type(Type::noReturn(), {}));
+    std::tie(retain, release) = buildBoxRetainRelease(Type(Type::noReturn(), {}), "callable.boxRetain",
+                                                      "callable.boxRelease");
     retain->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
     release->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
-    retain->setName("callable.boxRetain");
-    release->setName("callable.boxRelease");
 
     declarator().boxInfoForCallables()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
         llvm::ConstantPointerNull::get(typeHelper().protocolConformanceEntry()->getPointerTo()),

@@ -32,12 +32,20 @@ FT* ifNotPrivate(FT *function) {
     return function->accessLevel() == AccessLevel::Private ? nullptr : function;
 }
 
-class Class : public TypeDefinition {
+struct ClassReification : public TypeDefinitionReification {
+    llvm::GlobalVariable *classInfo = nullptr;
+};
+
+class Class : public Generic<Class, ClassReification, TypeDefinition> {
 public:
     Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool exported,
           bool final, bool foreign);
 
     Type type() override { return Type(this); }
+
+    void eachReificationTDR(const std::function<void (TypeDefinitionReification&)> &callback) override {
+        return eachReification(callback);
+    }
 
     /// The class's superclass.
     /// @returns TypeDefinition::superType().eclass(). Guaranteed to be @c nullptr if the class has no superclass.
@@ -64,11 +72,6 @@ public:
     bool inheritsInitializers() const { return inheritsInitializers_; }
 
     bool foreign() const { return foreign_; }
-
-    /// @returns The variable containing the class info or nullptr if none has been set yet.
-    /// @see LLVMTypeHelper::classInfo
-    llvm::GlobalVariable* classInfo() { return classInfo_; }
-    void setClassInfo(llvm::GlobalVariable *classInfo) { classInfo_ = classInfo; }
 
     std::vector<llvm::Constant *>& virtualTable() { return virtualTable_; }
 
@@ -126,8 +129,6 @@ private:
     bool foreign_;
     bool inheritsInitializers_ = false;
     bool hasSubclass_ = false;
-
-    llvm::GlobalVariable *classInfo_ = nullptr;
 
     void handleRequiredInitializer(Initializer *init) override;
 };

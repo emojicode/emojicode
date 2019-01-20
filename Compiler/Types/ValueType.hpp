@@ -15,12 +15,20 @@
 
 namespace EmojicodeCompiler {
 
-class ValueType : public TypeDefinition {
+class ValueTypeReification : public TypeDefinitionReification {
+    llvm::GlobalVariable *classInfo_ = nullptr;
+};
+
+class ValueType : public Generic<ValueType, ValueTypeReification, TypeDefinition> {
 public:
     ValueType(std::u32string name, Package *p, SourcePosition pos, const std::u32string &documentation, bool exported,
               bool primitive);
 
     Type type() override { return Type(this); }
+
+    void eachReificationTDR(const std::function<void (TypeDefinitionReification&)> &callback) override {
+        return eachReification(callback);
+    }
 
     bool canResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;

@@ -31,7 +31,6 @@ public:
 
 private:
     std::vector<std::pair<size_t, Type>> release_;
-    Class *class_ = nullptr;
 };
 
 }  // namespace EmojicodeCompiler

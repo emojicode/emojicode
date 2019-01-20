@@ -41,8 +41,8 @@ private:
     void reportType(const Type &type, const TypeContext &tc);
     void reportFunction(Function *function, const TypeContext &tc);
 
-    template <typename T, typename E>
-    void reportGenericParameters(Generic<T, E> *generic, const TypeContext &tc)  {
+    template <typename T, typename E, typename G>
+    void reportGenericParameters(Generic<T, E, G> *generic, const TypeContext &tc)  {
         writer_.Key("genericParameters");
         writer_.StartArray();
         for (auto &param : generic->genericParameters()) {

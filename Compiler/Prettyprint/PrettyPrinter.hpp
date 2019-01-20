@@ -42,8 +42,8 @@ private:
     void printEnumValues(Enum *enumeration);
     void printProtocolConformances(TypeDefinition *typeDef, const TypeContext &typeContext);
     void printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext);
-    template<typename T, typename E>
-    void printGenericParameters(Generic<T, E> *generic) {
+    template<typename T>
+    void printGenericParameters(T *generic) {
         if (generic->genericParameters().empty()) {
             return;
         }

@@ -47,7 +47,7 @@ struct Parameter {
     MFFlowCategory memoryFlowType = MFFlowCategory::Borrowing;
 };
 
-class FunctionReification {
+class FunctionReification : public Reification {
 public:
     llvm::Function *function = nullptr;
     unsigned int vti() { return vti_; }

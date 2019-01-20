@@ -19,7 +19,7 @@ Value* ASTTypeFromExpr::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
     if (type_->type().type() == TypeType::Class) {
-        return type_->type().klass()->classInfo();
+        return type_->type().klass()->reificationFor(type_->type().genericArguments()).classInfo;
     }
     if (type_->type().unboxedType() == TypeType::Protocol) {
         return fg->generator()->protocolIdentifierFor(type_->type());

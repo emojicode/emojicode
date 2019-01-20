@@ -32,6 +32,8 @@ class ProtocolsTableGenerator;
 class StringPool;
 class Declarator;
 class OptimizationManager;
+struct TypeDefinitionReification;
+struct ClassReification;
 
 /// Manages the generation of IR for a package. Each package is compiled to one LLVM module.
 class CodeGenerator {
@@ -84,15 +86,18 @@ private:
 
     std::pair<llvm::Function*, llvm::Function*> classObjectRetainRelease_ = { nullptr, nullptr };
 
-    std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(const Type &type);
+    std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(const Type &type,
+                                                                      const TypeDefinitionReification &reification);
+
+    std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(const Type &type, std::string retain, std::string release);
     void buildClassObjectBoxInfo();
     void buildCallableBoxInfo();
 
     void emitModule(const std::string &outPath, bool printIr);
     void generateFunctions(Package *package, bool imported);
 
-    void generateFunction(Function *function, const Reification<TypeDefinitionReification> *reification);
-    void createClassInfo(Class *klass);
+    void generateFunction(Function *function, const TypeDefinitionReification *reification);
+    void createClassInfo(Class *klass, ClassReification *reification);
 
     void generateTypeDefinition(TypeDefinition *typeDef, bool isClass);
 

@@ -197,7 +197,8 @@ void ASTToBox::setBoxInfo(Value *box, FunctionCodeGenerator *fg) const {
         }
         else {
             type = fg->typeHelper().protocolConformance();
-            table = expr_->expressionType().typeDefinition()->protocolTableFor(boxedFor);
+            auto type = expr_->expressionType();
+            table = type.typeDefinition()->reificationFor(type.genericArguments()).protocolTableFor(boxedFor);
         }
         auto ptr = fg->builder().CreateBitCast(fg->buildGetBoxInfoPtr(box), type->getPointerTo()->getPointerTo());
         fg->builder().CreateStore(table, ptr);

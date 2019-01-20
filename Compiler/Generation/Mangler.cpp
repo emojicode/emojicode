@@ -56,7 +56,7 @@ void mangleTypeName(std::stringstream &stream, const Type &type) {
         case TypeType::Enum:
         case TypeType::Protocol:
             mangleTypeDefinition(stream, type.typeDefinition(),
-                                 type.typeDefinition()->reificationWrapperFor(type.genericArguments()).arguments);
+                                 type.typeDefinition()->reificationFor(type.genericArguments()).arguments);
         case TypeType::TypeAsValue:
             stream << "tyval_";
             break;
@@ -78,13 +78,13 @@ void mangleTypeName(std::stringstream &stream, const Type &type) {
     }
 }
 
-std::string mangleTypeDefinition(TypeDefinition *typeDef, const Reification<TypeDefinitionReification> *reification) {
+std::string mangleTypeDefinition(TypeDefinition *typeDef, const TypeDefinitionReification *reification) {
     std::stringstream stream;
     mangleTypeDefinition(stream, typeDef, reification->arguments);
     return stream.str();
 }
 
-std::string mangleClassInfoName(Class *klass) {
+std::string mangleClassInfoName(Class *klass, const TypeDefinitionReification *reification) {
     std::stringstream stream;
     stream << klass->package()->name() << "_class_info_";
     mangleIdentifier(stream, klass->name());
@@ -133,18 +133,27 @@ std::string mangleTypeName(const Type &type) {
     return stream.str();
 }
 
-std::string mangleBoxRetain(const Type &type) {
-    return mangleTypeName(type) + ".boxRetain";
+std::string mangleBoxRetain(TypeDefinition *typeDef, const TypeDefinitionReification *reification) {
+    std::stringstream stream;
+    mangleTypeDefinition(stream, typeDef, reification->arguments);
+    stream << ".boxRetain";
+    return stream.str();
 }
 
-std::string mangleBoxRelease(const Type &type) {
-    return mangleTypeName(type) + ".boxRelease";
+std::string mangleBoxRelease(TypeDefinition *typeDef, const TypeDefinitionReification *reification) {
+    std::stringstream stream;
+    mangleTypeDefinition(stream, typeDef, reification->arguments);
+    stream << ".boxRelease";
+    return stream.str();
 }
 
-std::string mangleBoxInfoName(const Type &type) {
-    return mangleTypeName(type) + ".boxInfo";
+std::string mangleBoxInfoName(TypeDefinition *typeDef, const TypeDefinitionReification *reification) {
+    std::stringstream stream;
+    mangleTypeDefinition(stream, typeDef, reification->arguments);
+    stream << ".boxInfo";
+    return stream.str();
 }
-
+    
 std::string mangleProtocolConformance(const Type &type, const Type &protocol) {
     std::stringstream stream;
     mangleTypeName(stream, type);

@@ -15,7 +15,9 @@ namespace EmojicodeCompiler {
 
 class Package;
 
-class Protocol : public TypeDefinition {
+struct ProtocolReification : TypeDefinitionReification {};
+
+class Protocol : public Generic<Protocol, ProtocolReification, TypeDefinition> {
 public:
     Protocol(std::u32string name, Package *pkg, const SourcePosition &p, const std::u32string &string, bool exported);
 
@@ -23,6 +25,10 @@ public:
 
     bool canResolve(TypeDefinition *resolutionConstraint) const override {
         return resolutionConstraint == this;
+    }
+
+    void eachReificationTDR(const std::function<void (TypeDefinitionReification&)> &callback) override {
+        return eachReification(callback);
     }
 };
 

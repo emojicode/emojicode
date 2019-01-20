@@ -74,8 +74,8 @@ protected:
     std::unique_ptr<ASTType> parseType();
 
     /// Parses $generic-parameters$
-    template<typename T, typename E>
-    void parseGenericParameters(Generic <T, E> *generic) {
+    template<typename T, typename E, typename S>
+    void parseGenericParameters(Generic <T, E, S> *generic) {
         if (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
             while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                 bool rejectBoxing = stream_.consumeTokenIf(TokenType::Unsafe);

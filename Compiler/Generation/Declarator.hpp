@@ -20,9 +20,8 @@ struct Parameter;
 class Type;
 class ReificationContext;
 struct TypeDefinitionReification;
-template <typename Entity>
-struct Reification;
 class TypeDefinition;
+struct ClassReification;
 
 /// The declarator is responsible for declaring functions etc. in an LLVM module.
 class Declarator {
@@ -56,11 +55,11 @@ public:
     llvm::GlobalVariable* ignoreBlockPtr() const { return ignoreBlock_; }
 
     /// Declares an LLVM function for each reification of the provided Function.
-    void declareLlvmFunction(Function *function, const Reification<TypeDefinitionReification> *reification) const;
+    void declareLlvmFunction(Function *function, const TypeDefinitionReification *reification) const;
     /// Declares an LLVM struct for each reification of the provided TypeDefinition.
     void declareTypeDefinition(TypeDefinition *typeDef, bool isClass);
 
-    void declareImportedClassInfo(Class *klass);
+    void declareImportedClassInfo(Class *klass, ClassReification *reification);
 
     /// Declares the box info with the provided name. This is a global variable without initializer.
     llvm::GlobalVariable* declareBoxInfo(const std::string &name);

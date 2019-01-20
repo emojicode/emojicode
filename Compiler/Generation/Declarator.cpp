@@ -95,11 +95,10 @@ llvm::Function* Declarator::declareMemoryRunTimeFunction(const char *name) {
     return fn;
 }
 
-void Declarator::declareImportedClassInfo(Class *klass) {
-    auto info = new llvm::GlobalVariable(*generator_->module(), generator_->typeHelper().classInfo(), true,
-                                         llvm::GlobalValue::ExternalLinkage, nullptr,
-                                         mangleClassInfoName(klass));
-    klass->setClassInfo(info);
+void Declarator::declareImportedClassInfo(Class *klass, ClassReification *reification) {
+    reification->classInfo = new llvm::GlobalVariable(*generator_->module(), generator_->typeHelper().classInfo(), true,
+                                                      llvm::GlobalValue::ExternalLinkage, nullptr,
+                                                      mangleClassInfoName(klass, reification));
 }
 
 llvm::Function::LinkageTypes Declarator::linkageForFunction(Function *function) const {
@@ -114,17 +113,17 @@ llvm::Function::LinkageTypes Declarator::linkageForFunction(Function *function) 
 }
 
 void Declarator::declareTypeDefinition(TypeDefinition *typeDef, bool isClass) {
-    typeDef->eachReification([&](Reification<TypeDefinitionReification> &reification) {
-        if (reification.entity.type != nullptr) {
+    typeDef->eachReificationTDR([&](TypeDefinitionReification &reification) {
+        if (reification.type != nullptr) {
             return;
         }
         else if (!isClass && dynamic_cast<ValueType*>(typeDef)->isPrimitive()) {
-            reification.entity.type = llvm::Type::getInt64Ty(generator_->context());
+            reification.type = llvm::Type::getInt64Ty(generator_->context());
             return;
         }
 
         auto structType = llvm::StructType::create(generator_->context(), mangleTypeDefinition(typeDef, &reification));
-        reification.entity.type = structType;
+        reification.type = structType;
     });
 }
 
@@ -173,12 +172,12 @@ llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationCo
     return fn;
 }
 
-void Declarator::declareLlvmFunction(Function *function, const Reification<TypeDefinitionReification> *reification) const {
+void Declarator::declareLlvmFunction(Function *function, const TypeDefinitionReification *reification) const {
     if (function->externalName() == "ejcBuiltIn") {
         return;
     }
-    function->eachReification([this, function, reification](Reification<FunctionReification> &funcReifi) {
-        funcReifi.entity.function = createLlvmFunction(function, ReificationContext(funcReifi.arguments, reification));
+    function->eachReification([this, function, reification](FunctionReification &funcReifi) {
+        funcReifi.function = createLlvmFunction(function, ReificationContext(funcReifi.arguments, reification));
     });
 }
 
@@ -192,7 +191,8 @@ void Declarator::addParamAttrs(const Parameter &param, size_t index, llvm::Funct
 
 void Declarator::addParamDereferenceable(const Type &type, size_t index, llvm::Function *function, bool ret) const {
     if (generator_->typeHelper().isDereferenceable(type)) {
-        auto llvmType = generator_->typeHelper().llvmTypeFor(type);
+        auto llvmType = ret ? function->getFunctionType()->getReturnType() :
+                              function->getFunctionType()->getParamType(index);
         auto elementType = llvm::dyn_cast<llvm::PointerType>(llvmType)->getElementType();
         if (ret) {
             function->addDereferenceableAttr(0, generator_->querySize(elementType));

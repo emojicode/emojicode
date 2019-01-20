@@ -20,7 +20,7 @@
 namespace EmojicodeCompiler {
 
 Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32string &documentation, bool exported,
-             bool final, bool foreign) : TypeDefinition(std::move(name), pkg, p, documentation, exported),
+             bool final, bool foreign) : Generic(std::move(name), pkg, p, documentation, exported),
                                          final_(final), foreign_(foreign) {
     instanceScope() = Scope(2);  // reassign a scoper with one offset for the pointer to the class meta
 }

@@ -41,11 +41,15 @@ struct InstanceVariableDeclaration {
     std::shared_ptr<ASTExpr> expr;
 };
 
-struct TypeDefinitionReification {
+struct TypeDefinitionReification : Reification {
     llvm::Type *type = nullptr;
+    std::map<Type, llvm::Constant*> protocolTables;
+    llvm::Constant* protocolTableFor(const Type &type) { return protocolTables.find(type)->second; }
+
+    virtual ~TypeDefinitionReification() = default;
 };
 
-class TypeDefinition : public Generic<TypeDefinition, TypeDefinitionReification> {
+class TypeDefinition {
 public:
     TypeDefinition(const TypeDefinition&) = delete;
 
@@ -127,9 +131,14 @@ public:
 
     const std::vector<InstanceVariableDeclaration>& instanceVariables() const { return instanceVariables_; }
 
-    void setProtocolTables(std::map<Type, llvm::Constant*> &&tables) { protocolTables_ = std::move(tables); }
-    llvm::Constant* protocolTableFor(const Type &type) { return protocolTables_.find(type)->second; }
-    const std::map<Type, llvm::Constant*>& protocolTables() { return protocolTables_; }
+    virtual TypeDefinitionReification& reificationFor(const std::vector<Type> &arguments) = 0;
+    virtual void requestReificationAndCheck(const TypeContext &typeContext, const std::vector<Type> &args,
+                                            const SourcePosition &p) = 0;
+    virtual bool fetchVariable(const std::u32string &name, Type *destType) = 0;
+    virtual void eachReificationTDR(const std::function<void (TypeDefinitionReification&)> &callback) = 0;
+    virtual const std::vector<GenericParameter>& genericParameters() const = 0;
+    virtual const std::u32string& findGenericName(size_t index) const = 0;
+    virtual const Type& constraintForIndex(size_t index) const = 0;
 
 protected:
     TypeDefinition(std::u32string name, Package *p, SourcePosition pos, std::u32string documentation, bool exported);
@@ -171,8 +180,6 @@ private:
     std::u32string documentation_;
     SourcePosition position_;
     bool exported_;
-
-    std::map<Type, llvm::Constant*> protocolTables_;
 
     std::vector<InstanceVariableDeclaration> instanceVariables_;
 

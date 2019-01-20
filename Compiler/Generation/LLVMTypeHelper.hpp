@@ -31,8 +31,6 @@ class ReificationContext;
 struct Capture;
 class CodeGenerator;
 struct TypeDefinitionReification;
-template <typename Entity>
-struct Reification;
 
 /// This class is responsible for providing llvm::Type instances for Emojicode Type instances.
 ///
@@ -83,7 +81,7 @@ public:
 
     void withReificationContext(ReificationContext context, std::function<void()> function);
 
-    const Reification<TypeDefinitionReification>* ownerReification() const;
+    const TypeDefinitionReification* ownerReification() const;
 
     ~LLVMTypeHelper();
 

@@ -8,7 +8,7 @@
 
 namespace EmojicodeCompiler {
 
-void VTCreator::assign(const Reification<TypeDefinitionReification> *reifi, Function *function) {
+void VTCreator::assign(const TypeDefinitionReification *reifi, Function *function) {
     decltype(vti_) designatedVti;
     if (auto sf = hasSuperClass_ ? klass_->findSuperFunction(function) : nullptr) {
         designatedVti = sf->unspecificReification().vti();
@@ -34,7 +34,7 @@ void VTCreator::assign(const Reification<TypeDefinitionReification> *reifi, Func
     }
 }
 
-void VTCreator::build(Reification<TypeDefinitionReification> *reifi) {
+void VTCreator::build(TypeDefinitionReification *reifi) {
     if (auto superclass = klass_->superclass()) {
         functions_.resize(superclass->virtualFunctionCount());
         std::copy(superclass->virtualTable().begin(), superclass->virtualTable().end(), functions_.begin());
@@ -45,7 +45,7 @@ void VTCreator::build(Reification<TypeDefinitionReification> *reifi) {
     klass_->virtualTable() = std::move(functions_);
 }
 
-void VTCreator::assign(const Reification<TypeDefinitionReification> *reifi) {
+void VTCreator::assign(const TypeDefinitionReification *reifi) {
     for (auto init : klass_->initializerList()) {
         init->createUnspecificReification();
         declarator_.declareLlvmFunction(init, reifi);

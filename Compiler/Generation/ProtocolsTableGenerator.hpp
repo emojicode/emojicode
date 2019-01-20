@@ -16,6 +16,7 @@ class GlobalVariable;
 
 namespace EmojicodeCompiler {
 
+struct TypeDefinitionReification;
 class TypeDefinition;
 class CodeGenerator;
 
@@ -31,13 +32,14 @@ public:
 
     /// Generates the protocol dispatch tables and the protocol table for the provided type.
     /// @pre If the type is a value type, the box info must have been set.
-    void generate(const Type &type);
+    void generate(const Type &type, TypeDefinitionReification *reification);
     /// Declares the protocol dispatch tables.
-    void declareImported(const Type &type);
+    void declareImported(const Type &type, TypeDefinitionReification *reification);
 
     /// Creates the protocol table for the provided TypeDefinition.
     /// @pre generate() must have been previously called for @c typeDef.
-    llvm::Constant* createProtocolTable(TypeDefinition *typeDef);
+    llvm::Constant* createProtocolTable(TypeDefinition *typeDef,
+                                        const TypeDefinitionReification &reification);
 
     llvm::GlobalVariable* multiprotocol(const Type &multiprotocol, const Type &conformer);
 

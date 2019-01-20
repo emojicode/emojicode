@@ -11,28 +11,22 @@
 namespace EmojicodeCompiler {
 
 struct TypeDefinitionReification;
-template <typename Entity>
-struct Reification;
 
 class ReificationContext {
 public:
-    explicit ReificationContext(const std::map<size_t, Type> &localGenericArgs,
-                                const Reification<TypeDefinitionReification> *ownerReification)
-            : localGenericArguments_(localGenericArgs), ownerReification_(ownerReification) {}
-    const Type& actualType(size_t index) const {
-        return localGenericArguments_.find(index)->second;
-    }
-    bool providesActualTypeFor(size_t index) const {
-        return localGenericArguments_.find(index) != localGenericArguments_.end();
-    }
+    explicit ReificationContext(std::map<size_t, Type> localGenericArgs,
+                                const TypeDefinitionReification *ownerReification)
+            : localGenericArguments_(std::move(localGenericArgs)), ownerReification_(ownerReification) {}
+
+    const Type* actualType(const Type &type) const;
 
     const std::map<size_t, Type>& arguments() const { return localGenericArguments_; }
 
-    const Reification<TypeDefinitionReification>* ownerReification() const { return ownerReification_; }
+    const TypeDefinitionReification* ownerReification() const { return ownerReification_; }
 
 private:
-    const std::map<size_t, Type> &localGenericArguments_;
-    const Reification<TypeDefinitionReification> *ownerReification_;
+    const std::map<size_t, Type> localGenericArguments_;
+    const TypeDefinitionReification *ownerReification_;
 };
 
 }  // namespace EmojicodeCompiler

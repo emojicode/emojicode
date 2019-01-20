@@ -40,7 +40,7 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
 
     auto stringStruct = llvm::ConstantStruct::get(stringLlvm, {
             codeGenerator_->declarator().ignoreBlockPtr(),
-            compiler->sString->classInfo(),
+            compiler->sString->unspecificReification().classInfo,
             var,
             llvm::ConstantInt::get(llvm::Type::getInt64Ty(codeGenerator_->context()), utf8str.size())
     });

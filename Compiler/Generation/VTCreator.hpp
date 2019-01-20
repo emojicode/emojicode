@@ -20,17 +20,17 @@ public:
               vti_(hasSuperClass_ ? klass->superclass()->virtualFunctionCount() : 1) {}
 
     /// Assings VTI’s to the methods of the class and assigns the generated table to Class::virtualTable.
-    void build(Reification<TypeDefinitionReification> *reifi);
+    void build(TypeDefinitionReification *reifi);
 
 private:
-    void assign(const Reification<TypeDefinitionReification> *reifi);
+    void assign(const TypeDefinitionReification *reifi);
     const Declarator &declarator_;
     Class *klass_;
     bool hasSuperClass_;
     size_t vti_;
     std::vector<llvm::Constant *> functions_;
 
-    void assign(const Reification<TypeDefinitionReification> *reifi, Function *reification);
+    void assign(const TypeDefinitionReification *reifi, Function *reification);
 };
 
 }  // namespace EmojicodeCompiler

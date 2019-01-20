@@ -21,17 +21,16 @@ void ErrorSelfDestructing::analyseInstanceVariables(FunctionAnalyser *analyser) 
             release_.emplace_back(cv.id(), cv.type());
         }
     }
-    class_ = dynamic_cast<Class*>(analyser->function()->owner());
-    assert(class_ != nullptr);
 }
 
 void ErrorSelfDestructing::buildDestruct(FunctionCodeGenerator *fg) const {
-    if (class_ != nullptr) {
+    if (!release_.empty()) {
         for (auto &release : release_) {
             fg->releaseByReference(fg->instanceVariablePointer(release.first), release.second);
         }
         auto clInf = fg->buildGetClassInfoFromObject(fg->thisValue());
-        fg->createIf(fg->builder().CreateICmpEQ(clInf, class_->classInfo()), [&] {
+        auto classInfo = dynamic_cast<const ClassReification*>(fg->typeHelper().ownerReification())->classInfo;
+        fg->createIf(fg->builder().CreateICmpEQ(clInf, classInfo), [&] {
             fg->builder().CreateCall(fg->generator()->declarator().releaseMemory(),
                                      fg->builder().CreateBitCast(fg->thisValue(),
                                                                  llvm::Type::getInt8PtrTy(fg->generator()->context())));

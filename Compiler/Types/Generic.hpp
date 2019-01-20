@@ -31,14 +31,14 @@ struct GenericParameter {
     bool useBox;
 };
 
-template <typename Entity>
 struct Reification {
-    Entity entity;
     std::map<size_t, Type> arguments;
 };
 
-template <typename T, typename Entity>
-class Generic {
+class GenericPseudoBase {};
+
+template <typename T, typename Reification, typename Base = GenericPseudoBase>
+class Generic : public Base {
 public:
     /**
      * Tries to fetch the type reference type for the given generic variable name and stores it into @c type.
@@ -78,8 +78,8 @@ public:
         parameterVariables_.emplace(variableName, parameterVariables_.size());
     }
 
-    void requestReificationAndCheck(const TypeContext &typeContext, const std::vector<Type> &args,
-                                    const SourcePosition &p) {
+    virtual void requestReificationAndCheck(const TypeContext &typeContext, const std::vector<Type> &args,
+                                            const SourcePosition &p) {
         if (args.size() - offset_ != genericParameters().size()) {
             throw CompilerError(p, "Expected ", genericParameters().size(), " generic arguments, but ",
                                 args.size(), " are provided.");
@@ -96,13 +96,7 @@ public:
         requestReification(args);
     }
 
-    Entity& reificationFor(const std::vector<Type> &arguments) {
-        auto ref = reifications_.find(buildKey(arguments));
-        assert(ref != reifications_.end());
-        return ref->second.entity;
-    }
-
-    Reification<Entity>& reificationWrapperFor(const std::vector<Type> &arguments) {
+    virtual Reification& reificationFor(const std::vector<Type> &arguments) {
         auto ref = reifications_.find(buildKey(arguments));
         assert(ref != reifications_.end());
         return ref->second;
@@ -110,15 +104,15 @@ public:
 
     /// @returns Any reification of this instance.
     /// @note This method is intended to be used when there is only ever one possible reification of an instance.
-    Entity& unspecificReification() {
+    Reification& unspecificReification() {
         assert(reifications_.size() == 1);
-        return reifications_.begin()->second.entity;
+        return reifications_.begin()->second;
     }
 
     /// Creates an unspecific reification if no reification was requested yet.
     /// @note This method asserts that there is only one reification as this method
     /// should only be called in combination with unspecificReification()
-    Entity& createUnspecificReification() {
+    Reification& createUnspecificReification() {
         assert(!requiresCopyReification());
         if (reifications_.empty()) {
             reifications_.emplace();
@@ -156,17 +150,20 @@ public:
 
     /// @returns A vector with pairs of std::u32string and Type. These represent the generic parameter name and the
     /// the type constraint.
-    const std::vector<GenericParameter>& genericParameters() const { return genericParameters_; }
+    virtual const std::vector<GenericParameter>& genericParameters() const { return genericParameters_; }
 
-    void eachReification(const std::function<void (Reification<Entity>&)> &callback) {
+    void eachReification(const std::function<void (Reification&)> &callback) {
         for (auto &reification : reifications_) {
             callback(reification.second);
         }
     }
 
-    const std::map<std::vector<Type>, Reification<Entity>>& reificationMap() const { return reifications_; }
+    const std::map<std::vector<Type>, Reification>& reificationMap() const { return reifications_; }
 
 protected:
+    template <typename ...Args>
+    Generic(Args&& ...args) : Base(std::forward<Args>(args)...) {}
+
     /// Offsets the genericVariableIndex() of the Type instances returned by fetchVariable() by offset.
     void offsetIndicesBy(size_t offset) {
         offset_ = offset;
@@ -182,7 +179,7 @@ private:
     /** Generic type arguments as variables */
     std::map<std::u32string, size_t> parameterVariables_;
 
-    std::map<std::vector<Type>, Reification<Entity>> reifications_;
+    std::map<std::vector<Type>, Reification> reifications_;
 
     size_t offset_ = 0;
 
@@ -201,7 +198,7 @@ private:
         if (reifications_.find(key) != reifications_.end()) {
             return;
         }
-        auto &reification = reifications_[key] = Reification<Entity>();
+        auto &reification = reifications_[key] = Reification();
         for (size_t i = 0; i < genericParameters_.size(); i++) {
             if (!genericParameters_[i].useBox) {
                 reification.arguments.emplace(i + offset_, arguments[i]);

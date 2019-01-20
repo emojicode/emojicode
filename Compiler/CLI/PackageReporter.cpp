@@ -233,7 +233,7 @@ void PackageReporter::reportExportedType(const Type &type) {
     }
     writer_.EndArray();
 
-    reportGenericParameters(typeDef, TypeContext(type));
+//    reportGenericParameters(typeDef, TypeContext(type));
     reportDocumentation(typeDef->documentation());
 
     writer_.Key("methods");

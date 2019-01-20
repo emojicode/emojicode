@@ -72,7 +72,7 @@ void LLVMTypeHelper::withReificationContext(ReificationContext context, std::fun
     reifiContext_ = std::move(ptr);
 }
 
-const Reification<TypeDefinitionReification>* LLVMTypeHelper::ownerReification() const {
+const TypeDefinitionReification* LLVMTypeHelper::ownerReification() const {
     if (reifiContext_ == nullptr) {
         return nullptr;
     }
@@ -104,7 +104,7 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
             args.emplace_back(classInfo()->getPointerTo());
         }
         else {
-            args.emplace_back(ownerReification()->entity.type->getPointerTo());
+            args.emplace_back(ownerReification()->type->getPointerTo());
         }
     }
     std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [this](auto &arg) {
@@ -135,9 +135,10 @@ bool LLVMTypeHelper::isRemote(const Type &type) {
 }
 
 llvm::Type* LLVMTypeHelper::llvmTypeFor(const Type &type) {
-    if (reifiContext_ != nullptr && type.type() == TypeType::LocalGenericVariable &&
-            reifiContext_->providesActualTypeFor(type.genericVariableIndex())) {
-        return llvmTypeFor(reifiContext_->actualType(type.genericVariableIndex()));
+    if (reifiContext_ != nullptr) {
+        if (auto aType = reifiContext_->actualType(type)) {
+            return llvmTypeFor(*aType);
+        }
     }
 
     auto llvmType = typeForOrdinaryType(type);
