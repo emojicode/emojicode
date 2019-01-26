@@ -78,7 +78,7 @@ void Compiler::analyse() {
 }
 
 void Compiler::generateCode(bool optimize, bool printIr) {
-    CodeGenerator(this).generate(mainPackage_.get(), objectPath_, printIr, optimize);
+    CodeGenerator(this).generate(objectPath_, printIr, optimize);
 }
 
 void Compiler::linkToExecutable() {

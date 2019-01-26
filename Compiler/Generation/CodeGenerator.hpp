@@ -35,15 +35,16 @@ class OptimizationManager;
 struct TypeDefinitionReification;
 struct ClassReification;
 
-/// Manages the generation of IR for a package. Each package is compiled to one LLVM module.
+/// Manages the generation of the IR, object file and/or executable for a Compiler’s main package.
 class CodeGenerator {
 public:
+    /// @param compiler The Compiler for whose main package code shall be generated.
     CodeGenerator(Compiler *compiler);
 
     /// Generates an object file for the package.
     /// @param outPath The path at which the object file will be placed.
     /// @param optimize Whether optimizations should be run.
-    void generate(Package *package, const std::string &outPath, bool printIr, bool optimize);
+    void generate(const std::string &outPath, bool printIr, bool optimize);
 
     /// The LLVM module that represents the package.
     llvm::Module* module() const { return module_.get(); }
@@ -54,6 +55,7 @@ public:
     ProtocolsTableGenerator& protocolsTG() { return *protocolsTableGenerator_; }
     llvm::LLVMContext& context() { return context_; }
 
+    /// The Compiler for whose main package code shall be generated.
     Compiler* compiler() const;
 
     /// Queries the DataLayout of the module for the size of this type in bytes.
@@ -103,7 +105,7 @@ private:
 
     void createProtocolFunctionTypes(Protocol *protocol);
 
-    void prepareModule(Package *package, bool optimize);
+    void prepareModule(bool optimize);
 
     std::map<Type, llvm::Constant*> protocolIds_;
 };

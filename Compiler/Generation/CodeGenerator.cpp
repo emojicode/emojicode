@@ -22,6 +22,7 @@
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
 #include "VTCreator.hpp"
+#include "Package/RecordingPackage.hpp"
 #include <algorithm>
 #include <llvm/IR/IRPrintingPasses.h>
 #include <llvm/IR/Verifier.h>
@@ -83,8 +84,8 @@ llvm::Constant *CodeGenerator::protocolIdentifierFor(const Type &type) {
     return id;
 }
 
-void CodeGenerator::prepareModule(Package *package, bool optimize) {
-    module_ = std::make_unique<llvm::Module>(package->name(), context());
+void CodeGenerator::prepareModule(bool optimize) {
+    module_ = std::make_unique<llvm::Module>(compiler_->mainPackage()->name(), context());
     optimizationManager_ = std::make_unique<OptimizationManager>(module_.get(), optimize);
     declarator_ = std::make_unique<Declarator>(this);
 
@@ -108,19 +109,19 @@ void CodeGenerator::prepareModule(Package *package, bool optimize) {
     module()->setTargetTriple(targetTriple);
 }
 
-void CodeGenerator::generate(Package *package, const std::string &outPath, bool printIr, bool optimize) {
-    prepareModule(package, optimize);
+void CodeGenerator::generate(const std::string &outPath, bool printIr, bool optimize) {
+    prepareModule(optimize);
     optimizationManager_->initialize();
 
     for (auto package : compiler()->importedPackages()) {
         declareAndCreate(package, true);
     }
-    declareAndCreate(package, false);
+    declareAndCreate(compiler_->mainPackage(), false);
 
     for (auto package : compiler()->importedPackages()) {
         generateFunctions(package, true);
     }
-    generateFunctions(package, false);
+    generateFunctions(compiler_->mainPackage(), false);
 
     optimizationManager_->optimize(module());
     emitModule(outPath, printIr);
