@@ -78,6 +78,8 @@ public:
 
     RecordingPackage *mainPackage() const { return mainPackage_.get(); }
 
+    std::vector<Package *> importedPackages() const { return packageImportOrder_; }
+
     SourceManager &sourceManager() { return sourceManager_; }
 
     /// Issues a compiler warning. The compilation is continued normally.
@@ -125,6 +127,7 @@ private:
     Package *findPackage(const std::string &name) const;
 
     std::map<std::string, std::unique_ptr<Package>> packages_;
+    std::vector<Package *> packageImportOrder_;
 
     bool hasError_ = false;
     bool pack_;

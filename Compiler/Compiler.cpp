@@ -141,6 +141,7 @@ Package *Compiler::loadPackage(const std::string &name, const SourcePosition &p,
 
     auto package = std::make_unique<Package>(name, searchPackage(name, p), this, true);
     auto rawPtr = package.get();
+    packageImportOrder_.emplace_back(rawPtr);
     packages_.emplace(name, std::move(package));
     rawPtr->parse();
     SemanticAnalyser(rawPtr, true).analyse(false);

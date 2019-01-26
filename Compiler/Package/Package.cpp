@@ -50,9 +50,6 @@ Package::~Package() = default;
 
 void Package::importPackage(const std::string &name, const std::u32string &ns, const SourcePosition &p) {
     auto import = compiler_->loadPackage(name, p, this);
-
-    importedPackages_.emplace(import);
-
     for (auto exported : import->exportedTypes_) {
         Type type = Type::noReturn();
         if (lookupRawType(TypeIdentifier(exported.name, ns, p), &type)) {

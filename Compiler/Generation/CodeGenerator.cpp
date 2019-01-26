@@ -115,12 +115,12 @@ void CodeGenerator::generate(Package *package, const std::string &outPath, bool 
     buildClassObjectBoxInfo();
     buildCallableBoxInfo();
 
-    for (auto package : package->dependencies()) {
+    for (auto package : compiler()->importedPackages()) {
         declareAndCreate(package, true);
     }
     declareAndCreate(package, false);
 
-    for (auto package : package->dependencies()) {
+    for (auto package : compiler()->importedPackages()) {
         generateFunctions(package, true);
     }
     generateFunctions(package, false);

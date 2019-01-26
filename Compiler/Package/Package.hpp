@@ -11,7 +11,6 @@
 
 #include "Types/Type.hpp"
 #include <map>
-#include <set>
 #include <utility>
 #include <vector>
 #include <memory>
@@ -109,8 +108,6 @@ public:
     const std::vector<std::unique_ptr<Protocol>>& protocols() const { return protocols_; }
     const std::vector<ExportedType>& exportedTypes() const { return exportedTypes_; }
 
-    const std::set<Package *>& dependencies() const { return importedPackages_; }
-
     /// Tries to fetch a type by its name and namespace from the namespace and types available in this package and
     /// stores it into @c type.
     /// @note This method returns a “raw” type, i.e. a type without generic arguments.
@@ -145,7 +142,6 @@ private:
     std::vector<std::unique_ptr<ValueType>> valueTypes_;
     std::vector<std::unique_ptr<Function>> functions_;
     std::vector<std::unique_ptr<Protocol>> protocols_;
-    std::set<Package *> importedPackages_;
     std::vector<std::string> linkHints_;
 
     std::u32string documentation_;
