@@ -8,6 +8,7 @@
 #include "ASTCast.hpp"
 #include "Generation/Declarator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
+#include "ASTTypeExpr.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -41,7 +42,7 @@ Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
 Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
     auto value = expr_->generate(fg);
     auto info = fg->buildGetClassInfoFromObject(value);
-    auto toType = typeExpr_->expressionType();
+    auto toType = typeExpr_->type();
     auto inheritsFrom = fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
                                                  { info, typeExpr_->generate(fg) });
     return fg->createIfElsePhi(inheritsFrom, [toType, fg, value]() {
@@ -66,11 +67,11 @@ Value* ASTCast::castToValueType(FunctionCodeGenerator *fg, Value *box) const {
 }
 
 Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box) const {
-    auto toType = typeExpr_->expressionType();
+    auto toType = typeExpr_->type();
     auto isExpBoxInfo = fg->builder().CreateICmpEQ(boxInfo(fg, box), fg->boxInfoFor(toType));
 
     return fg->createIfElsePhi(isExpBoxInfo, [&] {
-        auto obj = fg->builder().CreateLoad(fg->buildGetBoxValuePtr(box, typeExpr_->expressionType()));
+        auto obj = fg->builder().CreateLoad(fg->buildGetBoxValuePtr(box, toType));
         return fg->builder().CreateCall(fg->generator()->declarator().inheritsFrom(),
                                         { fg->buildGetClassInfoFromObject(obj), typeExpr_->generate(fg) });
     }, [fg] {

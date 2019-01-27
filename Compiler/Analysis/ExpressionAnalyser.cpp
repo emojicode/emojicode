@@ -53,12 +53,6 @@ void ExpressionAnalyser::configureClosure(Function *closure) const {
     closure->setFunctionType(functionType());
 }
 
-Type ExpressionAnalyser::analyseTypeExpr(const std::shared_ptr<ASTExpr> &node, const TypeExpectation &exp) {
-    auto type = node->analyse(this, exp).resolveOnSuperArgumentsAndConstraints(typeContext_);
-    node->setExpressionType(type);
-    return type;
-}
-
 Type ExpressionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *node, std::vector<CommonTypeFinder> *ctargs) {
     auto returnType = (*node)->analyse(this, ctargs != nullptr ? TypeExpectation() : TypeExpectation(type));
     if (!returnType.compatibleTo(type, typeContext_, ctargs)) {

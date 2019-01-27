@@ -14,11 +14,17 @@
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Types/Enum.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "ASTTypeExpr.hpp"
 
 namespace EmojicodeCompiler {
 
+ASTInitialization::ASTInitialization(std::u32string name, std::unique_ptr<ASTTypeExpr> type,
+                      ASTArguments args, const SourcePosition &p)
+    : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
+ASTInitialization::~ASTInitialization() = default;
+
 Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
+    auto type = typeExpr_->analyse(analyser, expectation);
 
     if (type.type() == TypeType::Enum) {
         return analyseEnumInit(analyser, type);
@@ -63,7 +69,7 @@ void ASTInitialization::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCa
     if (!type.isEscaping() && initType_ == InitType::Class) {
         initType_ = InitType::ClassStack;
     }
-    analyser->analyseFunctionCall(&args_, typeExpr_.get(), initializer_);
+    analyser->analyseFunctionCall(&args_, nullptr, initializer_);
 }
 
 void ASTInitialization::allocateOnStack() {

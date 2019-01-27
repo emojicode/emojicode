@@ -10,11 +10,17 @@
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Types/TypeExpectation.hpp"
+#include "ASTTypeExpr.hpp"
 
 namespace EmojicodeCompiler {
 
+ASTCast::ASTCast(std::shared_ptr<ASTExpr> value, std::unique_ptr<ASTTypeExpr> type,
+        const SourcePosition &p) : ASTUnaryMFForwarding(std::move(value), p), typeExpr_(std::move(type)) {}
+
+ASTCast::~ASTCast() = default;
+
 Type ASTCast::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    auto type = analyser->analyseTypeExpr(typeExpr_, expectation);
+    auto type = typeExpr_->analyse(analyser, expectation);
 
     Type originalType = analyser->expect(TypeExpectation(), &expr_);
 

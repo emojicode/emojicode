@@ -328,7 +328,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
     auto type = parseTypeExpr(position);
     auto name = stream_.nextTokenIs(TokenType::New) ? stream_.consumeToken().value() :
                                                       stream_.consumeToken(TokenType::Identifier).value();
-    return std::make_shared<ASTInitialization>(name, type, parseArguments(position), position);
+    return std::make_shared<ASTInitialization>(name, std::move(type), parseArguments(position), position);
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
@@ -343,17 +343,17 @@ std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
     return std::make_shared<ASTClosure>(std::move(function), token.position());
 }
 
-std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition &p) {
+std::unique_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition &p) {
     if (stream_.consumeTokenIf(E_BLACK_LARGE_SQUARE)) {
-        return std::make_shared<ASTTypeFromExpr>(parseExpr(kPrefixPrecedence), p);
+        return std::make_unique<ASTTypeFromExpr>(parseExpr(kPrefixPrecedence), p);
     }
     if (stream_.consumeTokenIf(E_MEDIUM_BLACK_CIRCLE)) {
-        return std::make_shared<ASTInferType>(p);
+        return std::make_unique<ASTInferType>(p);
     }
     if (stream_.consumeTokenIf(TokenType::This)) {
-        return std::make_shared<ASTThisType>(p);
+        return std::make_unique<ASTThisType>(p);
     }
-    return std::make_shared<ASTStaticType>(parseType(), p);
+    return std::make_unique<ASTStaticType>(parseType(), p);
 }
 
 }  // namespace EmojicodeCompiler

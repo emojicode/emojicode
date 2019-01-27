@@ -24,7 +24,7 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
             return generateClassInit(fg);
         case InitType::Enum:
             return llvm::ConstantInt::get(llvm::Type::getInt64Ty(fg->generator()->context()),
-                                          typeExpr_->expressionType().enumeration()->getValueFor(name_).second);
+                                          typeExpr_->type().enumeration()->getValueFor(name_).second);
         case InitType::ValueType:
             return generateInitValueType(fg);
         case InitType::MemoryAllocation:
@@ -34,18 +34,18 @@ Value* ASTInitialization::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     llvm::Value *obj;
-    if (typeExpr_->expressionType().isExact()) {
-        if (typeExpr_->expressionType().klass()->foreign()) {
+    if (typeExpr_->type().isExact()) {
+        if (typeExpr_->type().klass()->foreign()) {
             obj = CallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
-                .generate(nullptr, typeExpr_->expressionType(), args_, initializer_);
+                .generate(nullptr, typeExpr_->type(), args_, initializer_);
         }
         else {
-            obj = initObject(fg, args_, initializer_, typeExpr_->expressionType(), initType_ == InitType::ClassStack);
+            obj = initObject(fg, args_, initializer_, typeExpr_->type(), initType_ == InitType::ClassStack);
         }
     }
     else {
         obj = CallCodeGenerator(fg, CallType::DynamicDispatchOnType)
-            .generate(typeExpr_->generate(fg), typeExpr_->expressionType(), args_, initializer_);
+            .generate(typeExpr_->generate(fg), typeExpr_->type(), args_, initializer_);
     }
     handleResult(fg, obj);
     return obj;
@@ -54,10 +54,10 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
 Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const {
     auto destination = vtDestination_;
     if (vtDestination_ == nullptr) {
-        destination = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
+        destination = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(typeExpr_->type()));
     }
     CallCodeGenerator(fg, CallType::StaticDispatch)
-            .generate(destination, typeExpr_->expressionType(), args_, initializer_);
+            .generate(destination, typeExpr_->type(), args_, initializer_);
     handleResult(fg, nullptr, destination);
     return vtDestination_ == nullptr ? fg->builder().CreateLoad(destination) : nullptr;
 }

@@ -114,9 +114,9 @@ std::unique_ptr<Function> buildRequiredInitThunk(Class *klass, const Initializer
     for (auto &param : function->parameters()) {
         args.addArguments(std::make_shared<ASTGetVariable>(param.name, init->position()));
     }
-    auto type = std::make_shared<ASTStaticType>(std::make_unique<ASTLiteralType>(init->owner()->type()),
+    auto type = std::make_unique<ASTStaticType>(std::make_unique<ASTLiteralType>(init->owner()->type()),
                                                 init->position());
-    auto initCall = std::make_shared<ASTInitialization>(init->name(), type, args, init->position());
+    auto initCall = std::make_shared<ASTInitialization>(init->name(), std::move(type), args, init->position());
     auto block = std::make_unique<ASTBlock>(init->position());
     block->appendNode(std::make_unique<ASTReturn>(initCall, init->position()));
     function->setAst(std::move(block));
