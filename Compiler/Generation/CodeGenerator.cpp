@@ -114,9 +114,14 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr, bool opti
     optimizationManager_->initialize();
 
     for (auto package : compiler()->importedPackages()) {
-        declareAndCreate(package, true);
+        createTypeDefinitionStructs(package, true);
     }
-    declareAndCreate(compiler_->mainPackage(), false);
+    createTypeDefinitionStructs(compiler_->mainPackage(), false);
+
+    for (auto package : compiler()->importedPackages()) {
+        createFunctions(package, true);
+    }
+    createFunctions(compiler_->mainPackage(), false);
 
     for (auto package : compiler()->importedPackages()) {
         generateFunctions(package, true);
@@ -127,7 +132,7 @@ void CodeGenerator::generate(const std::string &outPath, bool printIr, bool opti
     emitModule(outPath, printIr);
 }
 
-void CodeGenerator::declareAndCreate(Package *package, bool imported) {
+void CodeGenerator::createTypeDefinitionStructs(Package *package, bool imported) {
     // First let‘s declare all structs for circular dependencies etc.
     for (auto &valueType : package->valueTypes()) {
         if (!valueType->requiresCopyReification()) {
@@ -150,7 +155,9 @@ void CodeGenerator::declareAndCreate(Package *package, bool imported) {
 
     buildClassObjectBoxInfo();
     buildCallableBoxInfo();
+}
 
+void CodeGenerator::createFunctions(Package *package, bool imported) {
     for (auto &protocol : package->protocols()) {
         createProtocolFunctionTypes(protocol.get());
     }

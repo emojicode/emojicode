@@ -82,7 +82,8 @@ private:
     std::unique_ptr<ProtocolsTableGenerator> protocolsTableGenerator_;
     std::unique_ptr<OptimizationManager> optimizationManager_;
 
-    void declareAndCreate(Package *package, bool imported);
+    void createTypeDefinitionStructs(Package *package, bool imported);
+    void createFunctions(Package *package, bool imported);
 
     llvm::TargetMachine *targetMachine_ = nullptr;
 
