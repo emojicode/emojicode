@@ -125,9 +125,6 @@ void SemanticAnalyser::analyseFunctionDeclaration(Function *function) const {
     if (function->returnType() == nullptr) {
         function->setReturnType(std::make_unique<ASTLiteralType>(Type::noReturn()));
     }
-    else if (function->returnType()->wasAnalysed()) {
-        return;
-    }
 
     auto context = function->typeContext();
 
