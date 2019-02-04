@@ -60,7 +60,7 @@
     ↩️ 3.14159265358979323846264338327950288
   🍉
   📗
-    Returns an approximation of ℇ (Euler’s number).
+    Returns an approximation of *e* (Euler’s number).
   📗
   🐇❗️ 🛎 ➡️ 💯 🍇
     ↩️ 2.71828182845904523536028747135266250
@@ -120,7 +120,7 @@
   ❗️ 🚣 ➡️ 💯 📻 🔤sRealLog2🔤
 
   📗
-    Returns the natural (base ℇ) logarithm of this 💯.
+    Returns the natural (base *e*) logarithm of this 💯.
   📗
   ❗️ 🏄 ➡️ 💯 📻 🔤sRealLn🔤
 
