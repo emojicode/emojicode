@@ -49,10 +49,10 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
                 return nullptr;
             }
             case BuiltInType::MemoryMove: {
-                fg->builder().CreateMemMove(buildAddOffsetAddress(fg, v, args_.args()[0]->generate(fg)),
+                fg->builder().CreateMemMove(buildAddOffsetAddress(fg, v, args_.args()[0]->generate(fg)), 0,
                                             buildAddOffsetAddress(fg, args_.args()[1]->generate(fg),
-                                                                  args_.args()[2]->generate(fg)),
-                                            args_.args()[3]->generate(fg), 0);
+                                                                  args_.args()[2]->generate(fg)), 0,
+                                            args_.args()[3]->generate(fg));
                 return nullptr;
             }
             case BuiltInType::MemorySet: {

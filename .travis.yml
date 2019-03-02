@@ -28,7 +28,7 @@ deploy:
 addons:
   homebrew:
     packages:
-    - llvm@6
+    - llvm@7
     - ninja
 
 before_install:

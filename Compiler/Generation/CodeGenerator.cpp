@@ -33,6 +33,7 @@
 #include <llvm/Target/TargetOptions.h>
 #include <llvm/Transforms/IPO.h>
 #include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/Utils.h>
 #include <vector>
 
 namespace EmojicodeCompiler {
@@ -188,7 +189,7 @@ void CodeGenerator::emitModule(const std::string &outPath, bool printIr) {
     auto fileType = llvm::TargetMachine::CGFT_ObjectFile;
     std::error_code errorCode;
     llvm::raw_fd_ostream dest(outPath, errorCode, llvm::sys::fs::F_None);
-    if (targetMachine_->addPassesToEmitFile(pass, dest, fileType)) {
+    if (targetMachine_->addPassesToEmitFile(pass, dest, nullptr, fileType)) {
         puts("TargetMachine can't emit a file of this type");
     }
     pass.add(llvm::createVerifierPass(false));
