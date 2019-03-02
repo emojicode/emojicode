@@ -9,8 +9,8 @@ if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
   then
   	# Clang 6
   	sudo apt-get install -y clang-7 libclang-common-7-dev libclang1-7 libclang-7-dev
-  	export CC=clang-6.0
-  	export CXX=clang++-6.0
+  	export CC=clang-7
+  	export CXX=clang++-7
   else
   	# GCC 7
   	sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
