@@ -20,7 +20,7 @@ if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
   	export CXX=g++-7
   fi
 else
-  export LLVM_DIR=/usr/local/opt/llvm@6/lib/cmake
+  export LLVM_DIR=/usr/local/opt/llvm@7/lib/cmake
   export CC=$CC_FOR_BUILD
   export CXX=$CXX_FOR_BUILD
 fi
