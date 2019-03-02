@@ -1,7 +1,7 @@
 if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
   wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-  echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
-  echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
+  echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main" >> /etc/apt/sources.list
+  echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main" >> /etc/apt/sources.list
   sudo apt-get update
   sudo apt-get install -y cmake libllvm7 libz-dev llvm-7 llvm-7-dev llvm-7-runtime ninja-build python3 rsync
 
