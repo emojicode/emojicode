@@ -5,6 +5,7 @@
 #include "../runtime/Runtime.h"
 #include "../s/Data.h"
 #include "../s/String.h"
+#include "../s/Error.h"
 #include <arpa/inet.h>
 #include <cerrno>
 #include <csignal>
@@ -28,42 +29,10 @@ public:
     int socket_;
 };
 
-runtime::Enum errorEnumFromErrno() {
-    switch (errno) {
-        case EACCES:
-            return 1;
-        case EEXIST:
-            return 2;
-        case ENOMEM:
-            return 3;
-        case ENOSYS:
-            return 4;
-        case EDOM:
-            return 5;
-        case EINVAL:
-            return 6;
-        case EILSEQ:
-            return 7;
-        case ERANGE:
-            return 8;
-        case EPERM:
-            return 9;
-        default:
-            return 0;
-    }
-}
-
-runtime::SimpleOptional<runtime::Enum> returnOptional(bool success) {
-    if (success) {
-        return runtime::NoValue;
-    }
-    return errorEnumFromErrno();
-}
-
-extern "C" runtime::SimpleError<Socket*> socketsSocketNewHost(String *host, runtime::Integer port) {
+extern "C" Socket* socketsSocketNewHost(String *host, runtime::Integer port, runtime::Raiser *raiser) {
     struct hostent *server = gethostbyname(host->stdString().c_str());
     if (server == nullptr) {
-        return runtime::SimpleError<Socket*>(runtime::MakeError, errorEnumFromErrno());
+        EJC_RAISE(raiser, s::IOError::init());
     }
 
     struct sockaddr_in address{};
@@ -73,8 +42,9 @@ extern "C" runtime::SimpleError<Socket*> socketsSocketNewHost(String *host, runt
     address.sin_port = htons(port);
 
     int socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
-    if (socketDescriptor == -1 || connect(socketDescriptor, reinterpret_cast<struct sockaddr *>(&address), sizeof(address)) == -1) {
-        return runtime::SimpleError<Socket*>(runtime::MakeError, errorEnumFromErrno());
+    if (socketDescriptor == -1 || connect(socketDescriptor, reinterpret_cast<struct sockaddr *>(&address),
+                                          sizeof(address)) == -1) {
+        EJC_RAISE(raiser, s::IOError::init());
     }
 
     auto socket = Socket::init();
@@ -86,16 +56,16 @@ extern "C" void socketsSocketClose(Socket *socket) {
     close(socket->socket_);
 }
 
-extern "C" runtime::SimpleOptional<runtime::Enum> socketsSocketSend(Socket *socket, Data *data) {
-    return returnOptional(send(socket->socket_, data->data.get(), data->count, 0) != -1);
+extern "C" void socketsSocketSend(Socket *socket, Data *data, runtime::Raiser *raiser) {
+    EJC_COND_RAISE_IO_VOID(send(socket->socket_, data->data.get(), data->count, 0) != -1, raiser);
 }
 
-extern "C" runtime::SimpleError<Data*> socketsSocketRead(Socket *socket, runtime::Integer count) {
+extern "C" Data* socketsSocketRead(Socket *socket, runtime::Integer count, runtime::Raiser *raiser) {
     auto bytes = runtime::allocate<runtime::Byte>(count);
 
     auto read = recv(socket->socket_, bytes.get(), count, 0);
     if (read == -1) {
-        return runtime::SimpleError<Data *>(runtime::MakeError, errorEnumFromErrno());
+        EJC_RAISE(raiser, s::IOError::init());
     }
 
     auto data = Data::init();
@@ -108,10 +78,10 @@ extern "C" void socketsServerClose(Server *server) {
     close(server->socket_);
 }
 
-extern "C" runtime::SimpleError<Server*> socketsServerNewPort(runtime::Integer port) {
+extern "C" Server* socketsServerNewPort(runtime::Integer port, runtime::Raiser *raiser) {
     int listenerDescriptor = socket(PF_INET, SOCK_STREAM, 0);
     if (listenerDescriptor == -1) {
-        return runtime::SimpleError<Server *>(runtime::MakeError, errorEnumFromErrno());
+        EJC_RAISE(raiser, s::IOError::init());
     }
 
     struct sockaddr_in name{};
@@ -123,7 +93,7 @@ extern "C" runtime::SimpleError<Server*> socketsServerNewPort(runtime::Integer p
     if (setsockopt(listenerDescriptor, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&reuse), sizeof(int)) == -1 ||
         bind(listenerDescriptor, reinterpret_cast<struct sockaddr *>(&name), sizeof(name)) == -1 ||
         listen(listenerDescriptor, 10) == -1) {
-        return runtime::SimpleError<Server *>(runtime::MakeError, errorEnumFromErrno());
+        EJC_RAISE(raiser, s::IOError::init());
     }
 
     auto server = Server::init();
@@ -131,7 +101,7 @@ extern "C" runtime::SimpleError<Server*> socketsServerNewPort(runtime::Integer p
     return server;
 }
 
-extern "C" runtime::SimpleError<Socket *> socketsServerAccept(Server *server) {
+extern "C" Socket* socketsServerAccept(Server *server, runtime::Raiser *raiser) {
     std::signal(SIGPIPE, SIG_IGN);
 
     struct sockaddr_storage clientAddress{};
@@ -139,7 +109,7 @@ extern "C" runtime::SimpleError<Socket *> socketsServerAccept(Server *server) {
     int connectionAddress = accept(server->socket_, reinterpret_cast<struct sockaddr *>(&clientAddress), &addressSize);
 
     if (connectionAddress == -1) {
-        return runtime::SimpleError<Socket *>(runtime::MakeError, errorEnumFromErrno());
+        EJC_RAISE(raiser, s::IOError::init());
     }
 
     auto socket = Socket::init();

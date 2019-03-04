@@ -87,31 +87,23 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     auto noError = llvm::BasicBlock::Create(fg->generator()->context(), "noError", function);
     auto errorBlock = llvm::BasicBlock::Create(fg->generator()->context(), "error", function);
 
-    auto error = value_->generate(fg);
+    auto errorDest = prepareErrorDestination(fg, value_.get());
+    auto value = value_->generate(fg);
     fg->releaseTemporaryObjects();
-    auto isError = valueIsBoxed_ ? fg->buildHasNoValueBox(error) : fg->buildGetIsError(error);
 
-    fg->builder().CreateCondBr(isError, errorBlock, noError);
+    fg->builder().CreateCondBr(isError(fg, errorDest), errorBlock, noError);
 
     fg->builder().SetInsertPoint(errorBlock);
-    llvm::Value *err;
-    if (valueIsBoxed_) {
-        auto alloca = fg->createEntryAlloca(fg->typeHelper().box());
-        fg->builder().CreateStore(error, alloca);
-        err = fg->buildErrorEnumValueBoxPtr(alloca, value_->expressionType().errorEnum());
-    }
-    else {
-        err = fg->builder().CreateExtractValue(error, 0);
-    }
-    fg->setVariable(errorVar_, err);
+    fg->setVariable(errorVar_, fg->builder().CreateLoad(errorDest));
     errorBlock_.generate(fg);
     if (!errorBlock_.returnedCertainly()) {
         fg->builder().CreateBr(afterBlock);
     }
 
     fg->builder().SetInsertPoint(noError);
-    auto value = valueIsBoxed_ ? error : fg->builder().CreateExtractValue(error, 1);
-    fg->setVariable(valueVar_, value);
+    if (!valueVarName_.empty()) {
+        fg->setVariable(valueVar_, value);
+    }
     valueBlock_.generate(fg);
     if (!valueBlock_.returnedCertainly()) {
         fg->builder().CreateBr(afterBlock);

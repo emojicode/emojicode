@@ -128,6 +128,14 @@ void SemanticAnalyser::analyseFunctionDeclaration(Function *function) const {
 
     auto context = function->typeContext();
 
+    if (function->errorType() == nullptr) {
+        function->setErrorType(std::make_unique<ASTLiteralType>(Type::noReturn()));
+    }
+    auto errType = function->errorType()->analyseType(context);
+    if (errType.type() != TypeType::NoReturn && !errType.compatibleTo(Type(compiler()->sError), context)) {
+        throw CompilerError(function->errorType()->position(), "Error type must be a subclass of 🚧.");
+    }
+
     function->analyseConstraints(context);
     for (auto &param : function->parameters()) {
         param.type->analyseType(context);
@@ -135,13 +143,6 @@ void SemanticAnalyser::analyseFunctionDeclaration(Function *function) const {
             !param.type->type().valueType()->isPrimitive()) {
             param.type->type().setReference();
         }
-    }
-
-    if (auto initializer = dynamic_cast<Initializer*>(function)) {
-        if (initializer->errorProne() && initializer->errorType()->analyseType(context).type() != TypeType::Enum) {
-            throw CompilerError(initializer->errorType()->position(), "Error type must be a non-optional 🦃.");
-        }
-        return;
     }
     function->returnType()->analyseType(context, true);
 }

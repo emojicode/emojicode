@@ -52,30 +52,6 @@
   connection.
 📘
 
-📗 Errors 📗
-🌍 🦃 ⛈ 🍇
-  📗 Indicates a generic error. 📗
-  🔘 🔴
-  📗 Permission denied 📗
-  🔘 🚧
-  📗 File exists 📗
-  🔘 🗿
-  📗 Not enough space. 📗
-  🔘 🐁
-  📗 Function not supported. 📗
-  🔘 ⛔️
-  📗 Mathematics argument out of domain of function. 📗
-  🔘 🚳
-  📗 Invalid argument. 📗
-  🔘 🚯
-  📗 Illegal byte sequence. 📗
-  🔘 🛃
-  📗 Result too large. 📗
-  🔘 🗻
-  📗 Operation not permitted. 📗
-  🔘 🚷
-🍉
-
 📗
   🏄 represents a socket that listens for clients on a given port.
 📗
@@ -84,13 +60,13 @@
     Creates a 🏄 instance that immediately starts listening on the given port.
     This initializer returns an error if an error occurs.
   📗
-  🆕🚨⛈ port 🔢 📻 🔤socketsServerNewPort🔤
+  🆕 port 🔢 🚧🚧🔸↕️ 📻 🔤socketsServerNewPort🔤
 
   📗
     Waits until a client wants to connect to this socket and returns a socket
     to communicate with it.
   📗
-  ❗️ 🙋 ➡️ 🚨⛈📞 📻 🔤socketsServerAccept🔤
+  ❗️ 🙋 ➡️ 📞 🚧🚧🔸↕️  📻 🔤socketsServerAccept🔤
 
   📗
     Closes this socket.
@@ -108,13 +84,13 @@
     Opens a socket to *address*. *address* can be a host name which will be
     resolved.
   📗
-  🆕🚨⛈ host 🔡 socket 🔢 📻 🔤socketsSocketNewHost🔤
+  🆕 host 🔡 socket 🔢 🚧🚧🔸↕️  📻 🔤socketsSocketNewHost🔤
 
   📗
     Sends the given data to the peer. Returns true if the data was successfully
     sent or false on error.
   📗
-  ❗️ 💬 message 📇 ➡️ 🍬⛈ 📻 🔤socketsSocketSend🔤
+  ❗️ 💬 message 📇 🚧🚧🔸↕️ 📻 🔤socketsSocketSend🔤
 
   📗
     Closes this socket.
@@ -125,7 +101,7 @@
     Tries to read up to *bytes* bytes from the socket. An error is returned
     on error or if the socket was closed by the peer.
   📗
-  ❗️ 👂 bytes 🔢 ➡️ 🚨⛈📇 📻 🔤socketsSocketRead🔤
+  ❗️ 👂 bytes 🔢 ➡️ 📇 🚧🚧🔸↕️ 📻 🔤socketsSocketRead🔤
 
   ♻️ 🍇
     🚪🐕❗️

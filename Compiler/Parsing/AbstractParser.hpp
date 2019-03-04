@@ -112,8 +112,6 @@ private:
 
     std::unique_ptr<ASTType> parseGenericVariable();
 
-    std::unique_ptr<ASTType> parseErrorType(bool optional);
-
     /// Parses a $type-main$
     std::unique_ptr<ASTType> parseTypeMain();
 

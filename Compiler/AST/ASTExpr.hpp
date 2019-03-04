@@ -28,6 +28,7 @@ class TypeExpectation;
 class FunctionCodeGenerator;
 class Prettyprinter;
 class MFFunctionAnalyser;
+class ASTCall;
 
 /// The superclass of all syntax tree nodes representing an expression.
 class ASTExpr : public ASTNode {
@@ -76,6 +77,31 @@ private:
     Type expressionType_ = Type::noReturn();
 };
 
+/// All expressions that represent a call (method, initializer, callable) that potentially raises an error inherit
+/// from this class.
+class ASTCall : public ASTExpr {
+public:
+    explicit ASTCall(const SourcePosition &p) : ASTExpr(p) {}
+
+    /// Returns the error type or no return if the call cannot result in an error.
+    virtual const Type& errorType() const = 0;
+
+    virtual bool isErrorProne() const = 0;
+
+    /// Informs the expression that a possible error return is dealt with.
+    void setHandledError() { handledError_ = true; }
+
+    void setErrorPointer(llvm::Value *errorDest) { errorDest_ = errorDest; }
+
+protected:
+    void ensureErrorIsHandled(ExpressionAnalyser *analyser) const;
+    llvm::Value* errorPointer() const { return errorDest_; }
+
+private:
+    bool handledError_ = false;
+    llvm::Value *errorDest_ = nullptr;
+};
+
 template<typename T, typename ...Args>
 std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, Args&&... args) {
     auto pos = (*node)->position();
@@ -99,7 +125,7 @@ protected:
 /// expression defined by subclass of this class is taken, ::expr_ is taken.
 ///
 /// @note Expressions inherting from this class must not pass their result to ::handleResult. This is because if the
-/// resulting value of this expression is temporary, it will be releaed by ::expr_ as this expression has not taken the
+/// resulting value of this expression is temporary, it will be released by ::expr_ as this expression has not taken the
 /// value then.
 /// @see MFFunctionAnalyser
 class ASTUnaryMFForwarding : public ASTUnary {
@@ -166,30 +192,36 @@ private:
     std::vector<Type> genericArgumentsTypes_;
 };
 
-class ASTCallableCall final : public ASTExpr {
+class ASTCallableCall final : public ASTCall {
 public:
     ASTCallableCall(std::shared_ptr<ASTExpr> value, ASTArguments args,
-                    const SourcePosition &p) : ASTExpr(p), callable_(std::move(value)), args_(std::move(args)) {}
+                    const SourcePosition &p) : ASTCall(p), callable_(std::move(value)), args_(std::move(args)) {}
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
+
+    const Type& errorType() const override { return callable_->expressionType(); }
+    bool isErrorProne() const override { return false; }
 
 private:
     std::shared_ptr<ASTExpr> callable_;
     ASTArguments args_;
 };
 
-class ASTSuper final : public ASTExpr, private ErrorSelfDestructing {
+class ASTSuper final : public ASTCall, private ErrorSelfDestructing, private ErrorHandling {
 public:
     ASTSuper(std::u32string name, ASTArguments args, const SourcePosition &p)
-    : ASTExpr(p), name_(std::move(name)), args_(std::move(args)) {}
+        : ASTCall(p), name_(std::move(name)), args_(std::move(args)) {}
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
+
+    const Type& errorType() const override;
+    bool isErrorProne() const override;
 
 private:
     void analyseSuperInit(ExpressionAnalyser *analyser);

@@ -104,6 +104,7 @@ public:
     void assignSTypes(Package *s);
 
     Class *sString = nullptr;
+    Class *sError = nullptr;
     ValueType *sList = nullptr;
     ValueType *sDictionary = nullptr;
     Protocol *sEnumerable = nullptr;

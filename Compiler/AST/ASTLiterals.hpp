@@ -4,7 +4,7 @@
 //
 //  Created by Theo Weidmann on 04/08/2017.
 //  Copyright © 2017 Theo Weidmann. All rights reserved.
-//
+//🍺
 
 #ifndef ASTLiterals_hpp
 #define ASTLiterals_hpp
@@ -27,7 +27,19 @@ public:
 
 private:
     std::u32string value_;
-    unsigned int varId_;
+};
+
+class ASTCGUTF8Literal final : public ASTExpr {
+public:
+    ASTCGUTF8Literal(std::string value, const SourcePosition &p) : ASTExpr(p), value_(std::move(value)) {}
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override { return Type::noReturn(); }
+    Value* generate(FunctionCodeGenerator *fg) const override;
+
+    void toCode(PrettyStream &pretty) const override {}
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
+
+private:
+    std::string value_;
 };
 
 class ASTBooleanFalse final : public ASTExpr {

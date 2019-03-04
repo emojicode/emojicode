@@ -5,6 +5,7 @@
 #include "../s/String.h"
 #include "../runtime/Runtime.h"
 #include "../s/Data.h"
+#include "../s/Error.h"
 #include <fstream>
 #include <ios>
 #include <iostream>
@@ -17,29 +18,23 @@ namespace files {
 
 runtime::Enum errorEnumFromErrno();
 
-template <typename T, typename F>
-runtime::SimpleError<T> returnErrorIfFailed(const T &value, const F &file) {
-    if (file.fail()) {
-        return { runtime::MakeError, errorEnumFromErrno() };
-    }
-    return value;
-}
-
 class File : public runtime::Object<File> {
 public:
     std::fstream file_;
 };
 
-extern "C" runtime::SimpleError<File*> filesFileNewWriting(String *path) {
+extern "C" File* filesFileNewWriting(String *path, runtime::Raiser *raiser) {
     auto file = File::init();
     file->file_ = std::fstream(path->stdString().c_str(), std::ios_base::out);
-    return returnErrorIfFailed(file, file->file_);
+    EJC_COND_RAISE_IO(!file->file_.fail(), raiser);
+    return file;
 }
 
-extern "C" runtime::SimpleError<File*> filesFileNewReading(String *path) {
+extern "C" File* filesFileNewReading(String *path, runtime::Raiser *raiser) {
     auto file = File::init();
     file->file_ = std::fstream(path->stdString().c_str(), std::ios_base::in);
-    return returnErrorIfFailed(file, file->file_);
+    EJC_COND_RAISE_IO(!file->file_.fail(), raiser);
+    return file;
 }
 
 extern "C" void filesFileWrite(File *file, Data *data) {
@@ -54,14 +49,15 @@ extern "C" void filesFileFlush(File *file) {
     file->file_.flush();
 }
 
-extern "C" runtime::SimpleError<Data*> filesFileReadBytes(File *file, runtime::Integer count) {
+extern "C" Data* filesFileReadBytes(File *file, runtime::Integer count, runtime::Raiser *raiser) {
     auto bytes = runtime::allocate<runtime::Byte>(count);
     file->file_.read(reinterpret_cast<char *>(bytes.get()), count);
 
     auto data = Data::init();
     data->data = bytes;
     data->count = file->file_.gcount();
-    return returnErrorIfFailed(data, file->file_);
+    EJC_COND_RAISE_IO(!file->file_.fail(), raiser);
+    return data;
 }
 
 extern "C" void filesFileSeekToEnd(File *file) {
@@ -72,7 +68,7 @@ extern "C" void filesFileSeekTo(File *file, runtime::Integer pos) {
     file->file_.seekp(pos, std::ios_base::beg);
 }
 
-extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassInfo*, String *path) {
+extern "C" Data* filesFileReadFile(runtime::ClassInfo*, String *path, runtime::Raiser *raiser) {
     auto file = std::ifstream(path->stdString().c_str(), std::ios_base::ate);
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
@@ -83,14 +79,14 @@ extern "C" runtime::SimpleError<Data*> filesFileReadFile(runtime::ClassInfo*, St
     auto data = Data::init();
     data->data = bytes;
     data->count = size;
-    return returnErrorIfFailed(data, file);
+    EJC_COND_RAISE_IO(!file.fail(), raiser);
+    return data;
 }
 
-extern "C" runtime::SimpleOptional<runtime::Enum> filesFileWriteToFile(runtime::ClassInfo*, String *path, Data *data) {
+extern "C" void filesFileWriteToFile(runtime::ClassInfo*, String *path, Data *data, runtime::Raiser *raiser) {
     auto file = std::ofstream(path->stdString().c_str(), std::ios_base::out);
     file.write(reinterpret_cast<char *>(data->data.get()), data->count);
-    if (file.fail()) return errorEnumFromErrno();
-    return runtime::NoValue;
+    EJC_COND_RAISE_IO_VOID(!file.fail(), raiser);
 }
 
 }  // namespace files

@@ -101,6 +101,14 @@ void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory ty
     analyser->analyseFunctionCall(&args_, nullptr, function_);
 }
 
+const Type& ASTSuper::errorType() const {
+    return function_->errorType()->type();
+}
+
+bool ASTSuper::isErrorProne() const {
+    return !init_ && function_->errorProne();
+}
+
 void ASTSuper::analyseSuperInitErrorProneness(ExpressionAnalyser *eanalyser, const Initializer *initializer) {
     auto analyser = dynamic_cast<FunctionAnalyser *>(eanalyser);
     if (initializer->errorProne()) {
@@ -109,9 +117,12 @@ void ASTSuper::analyseSuperInitErrorProneness(ExpressionAnalyser *eanalyser, con
             throw CompilerError(position(), "Cannot call an error-prone super initializer in a non ",
                                 "error-prone initializer.");
         }
-        if (!initializer->errorType()->type().identicalTo(thisInitializer->errorType()->type(), analyser->typeContext(),
-                                                          nullptr)) {
-            throw CompilerError(position(), "Super initializer must have same error enum type.");
+        if (!initializer->errorType()->type().compatibleTo(thisInitializer->errorType()->type(),
+                                                           analyser->typeContext())) {
+            throw CompilerError(position(), "Super initializer may raise ",
+                                initializer->errorType()->type().toString(analyser->typeContext()),
+                                " which cannot be reraised from this initializer as it is not compatible to ",
+                                thisInitializer->errorType()->type().toString(analyser->typeContext()), ".");
         }
         manageErrorProneness_ = true;
         analyseInstanceVariables(analyser);
@@ -130,6 +141,7 @@ Type ASTCallableCall::analyse(ExpressionAnalyser *analyser, const TypeExpectatio
     for (size_t i = 1; i < type.genericArguments().size(); i++) {
         analyser->expectType(type.genericArguments()[i], &args_.args()[i - 1]);
     }
+    ensureErrorIsHandled(analyser);
     return type.genericArguments()[0];
 }
 
@@ -138,6 +150,13 @@ void ASTCallableCall::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCate
     for (auto &arg : args_.args()) {
         analyser->take(arg.get());
         arg->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);  // We cannot at all say what the callable will do.
+    }
+}
+
+void ASTCall::ensureErrorIsHandled(ExpressionAnalyser *analyser) const {
+    if (isErrorProne() && !handledError_) {
+        throw CompilerError(position(), "Call can raise ", errorType().toString(analyser->typeContext()),
+                            " but error is not handled.");
     }
 }
 

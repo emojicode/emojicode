@@ -1,3 +1,9 @@
+🐇 🐫 🚧 🍇
+  🆕🍇
+    ⤴️🆕 🔤camel🔤❗️
+  🍉
+🍉
+
 🐇 💰 🍇
   🖍🆕 name 🔡
 
@@ -8,23 +14,18 @@
   🍉
 🍉
 
-🦃 🏜 🍇
-  🔘🔋
-  🔘🍟
-🍉
-
 🐇 🐟 🍇
   🖍🆕 resourceA 💰
   🖍🆕 resourceB 💰
 
-  🆕🚨🏜 🍇
+  🆕 🚧🐫 🍇
     🆕💰🆕 🔤1_A🔤❗️ ➡️ 🖍resourceA
     🆕💰🆕 🔤1_B🔤❗️ ➡️ 🖍resourceB
   🍉
 
-  🆕 🆒🚨🏜  🍇
+  🆕 🆒 🚧🐫 🍇
     🆕💰🆕 🔤2_A🔤❗️ ➡️ 🖍resourceA
-    🚨🆕🏜🍟❗️
+    🚨🆕🐫🆕❗️
     🆕💰🆕 🔤2_B🔤❗️ ➡️ 🖍resourceB
   🍉
 🍉
@@ -33,13 +34,13 @@
   🖍🆕 resourceC 💰
   🖍🆕 resourceD 💰
 
-  🆕🚨🏜 🍇
+  🆕 🚧🐫 🍇
     🆕💰🆕 🔤1_C🔤❗️ ➡️ 🖍resourceC
     🆕💰🆕 🔤1_D🔤❗️ ➡️ 🖍resourceD
     ⤴️🆕❗️
   🍉
 
-  🆕👅🚨🏜 🍇
+  🆕👅 🚧🐫 🍇
     🆕💰🆕 🔤2_C🔤❗️ ➡️ 🖍resourceC
     🆕💰🆕 🔤2_D🔤❗️ ➡️ 🖍resourceD
     ⤴️🆒❗️
@@ -51,33 +52,31 @@
 🍉
 
 🏁 🍇
-  🆕🐟🆕❗️ ➡️ a
-  🆕🐟🆒❗️ ➡️ b
-  🆕🐡🆕❗️ ➡️ c
-  🆕🐡👅❗️ ➡️ d
+  🥑 a 🆕🐟🆕❗️ 🍇
+    😀 🔤not error🔤 ❗️
+  🍉
+  🙅 error 🍇
+    😀 🔤error🔤 ❗️
+  🍉
 
-  ↪️ 🚥 a 🍇
-    😀 🔤error🔤 ❗️
-  🍉
-  🙅 🍇
+  🥑 b 🆕🐟🆒❗️ 🍇
     😀 🔤not error🔤 ❗️
   🍉
-  ↪️ 🚥 b 🍇
+  🙅 error 🍇
     😀 🔤error🔤 ❗️
   🍉
-  🙅 🍇
+
+  🥑 c 🆕🐡🆕❗️ 🍇
     😀 🔤not error🔤 ❗️
   🍉
-  ↪️ 🚥 c 🍇
+  🙅 error 🍇
     😀 🔤error🔤 ❗️
   🍉
-  🙅 🍇
+
+  🥑 d 🆕🐡👅❗️ 🍇
     😀 🔤not error🔤 ❗️
   🍉
-  ↪️ 🚥 d 🍇
+  🙅 error 🍇
     😀 🔤error🔤 ❗️
-  🍉
-  🙅 🍇
-    😀 🔤not error🔤 ❗️
   🍉
 🍉

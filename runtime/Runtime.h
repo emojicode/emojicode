@@ -156,18 +156,20 @@ private:
     Type *pointer_;
 };
 
-struct MakeError_t {};
-constexpr MakeError_t MakeError {};
-
-template <typename Type>
-class SimpleError {
+class Raiser {
 public:
-    SimpleError(MakeError_t, Enum errorEnumValue) : errorValue_(errorEnumValue) {}
-    SimpleError(Type content) : errorValue_(-1), content_(content) {}
+    template <typename T>
+    void raise(T *errorObj, const char *location) {
+        errorDestination_ = errorObj;
+    }
 private:
-    Enum errorValue_;
-    Type content_;
+    void *errorDestination_;
 };
+
+#define S1(x) #x
+#define S2(x) S1(x)
+#define EJC_RAISE(raiser, error) raiser->raise(error, __FILE__ ":" S2(__LINE__)); return {};
+#define EJC_RAISE_VOID(raiser, error) raiser->raise(error, __FILE__ ":" S2(__LINE__)); return;
 
 template <typename Return, typename ...Args>
 class Callable {

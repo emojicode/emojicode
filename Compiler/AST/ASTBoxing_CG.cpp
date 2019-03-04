@@ -54,12 +54,6 @@ Value* ASTBoxing::getSimpleOptional(Value *value, FunctionCodeGenerator *fg) con
     return fg->buildSimpleOptionalWithValue(value, expressionType());
 }
 
-Value* ASTBoxing::getSimpleError(llvm::Value *value, EmojicodeCompiler::FunctionCodeGenerator *fg) const {
-    auto undef = llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(expressionType()));
-    auto error = fg->builder().CreateInsertValue(undef, fg->buildGetErrorNoError(), 0);
-    return fg->builder().CreateInsertValue(error, value, 1);
-}
-
 Value* ASTBoxing::getSimpleOptionalWithoutValue(FunctionCodeGenerator *fg) const {
     return fg->buildSimpleOptionalWithoutValue(expressionType());
 }
@@ -129,37 +123,6 @@ Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fg) const {
         getPutValueIntoBox(box, fg->buildGetOptionalValue(value, expr_->expressionType()), fg);
     });
     return fg->builder().CreateLoad(box);
-}
-
-Value* ASTSimpleErrorToBox::generate(FunctionCodeGenerator *fg) const {
-    auto value = expr_->generate(fg);
-    auto box = fg->createEntryAlloca(fg->typeHelper().box());
-
-    auto hasNoValue = fg->buildGetIsError(value);
-
-    fg->createIfElse(hasNoValue, [this, fg, box, value]() {
-        fg->buildMakeNoValue(box);
-        auto ptr = fg->buildGetBoxValuePtr(box, expressionType().errorEnum());
-        fg->builder().CreateStore(fg->builder().CreateExtractValue(value, 0), ptr);
-    }, [this, value, fg, box]() {
-        getPutValueIntoBox(box, fg->builder().CreateExtractValue(value, 1), fg);
-    });
-    return fg->builder().CreateLoad(box);
-}
-
-Value* ASTSimpleToSimpleError::generate(FunctionCodeGenerator *fg) const {
-    return getSimpleError(expr_->generate(fg), fg);
-}
-
-Value* ASTBoxToSimpleError::generate(FunctionCodeGenerator *fg) const {
-    auto box = getAllocaTheBox(fg);
-    auto hasNoValue = fg->buildHasNoValueBoxPtr(box);
-    return fg->createIfElsePhi(hasNoValue, [this, box, fg]() {
-        auto errorEnumValue = fg->buildErrorEnumValueBoxPtr(box, expressionType().errorEnum());
-        return fg->buildSimpleErrorWithError(errorEnumValue, fg->typeHelper().llvmTypeFor(expressionType()));
-    }, [this, box, fg]() {
-        return getSimpleError(getGetValueFromBox(box, fg), fg);
-    });
 }
 
 Value* ASTToBox::buildStoreAddress(Value *box, FunctionCodeGenerator *fg) const {

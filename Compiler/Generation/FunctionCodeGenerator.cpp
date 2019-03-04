@@ -33,7 +33,11 @@ void FunctionCodeGenerator::generate() {
 
     fn_->ast()->generate(this);
 
-    if (llvm::verifyFunction(*function_, &llvm::outs())) {}
+    if (llvm::verifyFunction(*function_, &llvm::outs())) {
+        auto ows = function()->owner() != nullptr ? function()->owner()->type().toString(fn_->typeContext()) : "";
+        printf("\nDetected in: %s%s (%s)\n=============\n", ows.c_str(), utf8(fn_->name()).c_str(),
+               function_->getName().str().c_str());
+    }
 }
 
 void FunctionCodeGenerator::createEntry() {
@@ -56,12 +60,24 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
         setVariable(i++, &llvmArg);
         llvmArg.setName(utf8(arg.name));
     }
+    if (fn_->errorProne()) {
+        it->setName("error");
+    }
 }
 
 void FunctionCodeGenerator::setVariable(size_t id, llvm::Value *value, const llvm::Twine &name) {
     auto alloca = createEntryAlloca(value->getType(), name);
     builder().CreateStore(value, alloca);
     scoper_.getVariable(id) = alloca;
+}
+
+void FunctionCodeGenerator::buildErrorReturn() {
+    if (llvmReturnType()->isVoidTy()) {
+        builder().CreateRetVoid();
+    }
+    else {
+        builder().CreateRet(llvm::UndefValue::get(llvmReturnType()));
+    }
 }
 
 llvm::Value* FunctionCodeGenerator::sizeOfReferencedType(llvm::PointerType *ptrType) {
@@ -184,36 +200,6 @@ llvm::Value* FunctionCodeGenerator::buildGetBoxValuePtrAfter(llvm::Value *box, l
 Value* FunctionCodeGenerator::buildMakeNoValue(Value *box) {
     auto boxInfoNull = llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo());
     return builder().CreateStore(boxInfoNull, buildGetBoxInfoPtr(box));
-}
-
-llvm::Value* FunctionCodeGenerator::buildGetIsError(llvm::Value *simpleError) {
-    auto vf = builder().CreateExtractValue(simpleError, 0);
-    return builder().CreateICmpNE(vf, buildGetErrorNoError());
-}
-
-llvm::Value* FunctionCodeGenerator::buildGetIsNotError(llvm::Value *simpleError) {
-    auto vf = builder().CreateExtractValue(simpleError, 0);
-    return builder().CreateICmpEQ(vf, buildGetErrorNoError());
-}
-
-llvm::Value* FunctionCodeGenerator::buildSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type) {
-    auto undef = llvm::UndefValue::get(type);
-    return builder().CreateInsertValue(undef, errorEnumValue, 0);
-}
-
-llvm::Value* FunctionCodeGenerator::buildErrorEnumValueBoxPtr(llvm::Value *box, const Type &type) {
-    return builder().CreateLoad(buildGetBoxValuePtr(box, type));
-}
-
-Value* FunctionCodeGenerator::buildErrorIsNotErrorPtr(llvm::Value *simpleErrorPtr) {
-    auto type = llvm::cast<llvm::PointerType>(simpleErrorPtr->getType())->getElementType();
-    auto vf = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(type, simpleErrorPtr, 0, 0));
-    return builder().CreateICmpEQ(vf, buildGetErrorNoError());
-}
-
-Value* FunctionCodeGenerator::buildGetErrorValuePtr(llvm::Value *simpleErrorPtr) {
-    auto type = llvm::cast<llvm::PointerType>(simpleErrorPtr->getType())->getElementType();
-    return builder().CreateConstInBoundsGEP2_32(type, simpleErrorPtr, 0, 1);
 }
 
 void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std::function<bool()> &then,
@@ -383,22 +369,9 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
             });
         }
     }
-    else if (type.type() == TypeType::Error) {
-        if (isManagedByReference(type)) {
-            createIf(buildErrorIsNotErrorPtr(value), [&] {
-                release(buildGetErrorValuePtr(value), type.errorType());
-            });
-        }
-        else {
-            createIf(buildGetIsNotError(value), [&] {
-                release(builder().CreateExtractValue(value, 1), type.errorType());
-            });
-        }
-    }
     else if (type.type() == TypeType::Box) {
         auto boxInfo = builder().CreateLoad(buildGetBoxInfoPtr(value));
-        if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something
-             || type.unboxed().type() == TypeType::Error) {
+        if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something) {
             auto null = llvm::ConstantPointerNull::get(typeHelper().boxInfo()->getPointerTo());
             createIf(builder().CreateICmpNE(boxInfo, null), [&] {
                 manageBox(false, boxInfo, value, type);
@@ -437,22 +410,9 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
             });
         }
     }
-    else if (type.type() == TypeType::Error) {
-        if (isManagedByReference(type)) {
-            createIf(buildErrorIsNotErrorPtr(value), [&] {
-                retain(buildGetErrorValuePtr(value), type.errorType());
-            });
-        }
-        else {
-            createIf(buildGetIsNotError(value), [&] {
-                retain(builder().CreateExtractValue(value, 1), type.errorType());
-            });
-        }
-    }
     else if (type.type() == TypeType::Box) {
         auto boxInfo = builder().CreateLoad(buildGetBoxInfoPtr(value));
-        if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something
-             || type.unboxed().type() == TypeType::Error) {
+        if (type.unboxed().type() == TypeType::Optional || type.unboxed().type() == TypeType::Something) {
             auto null = llvm::ConstantPointerNull::get(typeHelper().boxInfo()->getPointerTo());
             createIf(builder().CreateICmpNE(boxInfo, null), [&] {
                 manageBox(true, boxInfo, value, type);

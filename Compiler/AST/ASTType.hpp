@@ -129,19 +129,6 @@ private:
     std::u32string name_;
 };
 
-class ASTErrorType : public ASTType {
-public:
-    ASTErrorType(std::unique_ptr<ASTType> enumeration, std::unique_ptr<ASTType> type, SourcePosition p,
-                 Package *package)
-            : ASTType(std::move(p), package), enum_(std::move(enumeration)), content_(std::move(type)) {}
-
-    void toCodeType(PrettyStream &pretty) const override;
-    Type getType(const TypeContext &typeContext) const override;
-private:
-    std::unique_ptr<ASTType> enum_;
-    std::unique_ptr<ASTType> content_;
-};
-
 }  // namespace EmojicodeCompiler
 
 #endif //EMOJICODE_ASTTYPE_HPP

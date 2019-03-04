@@ -29,6 +29,7 @@ public:
     /// the string is added to the end of the pool.
     /// @returns The index to access the string in the pool.
     llvm::Value* pool(const std::u32string &string);
+    llvm::Value* addToPool(const std::string &string);
 private:
     std::map<std::u32string, llvm::Value*> pool_;
     CodeGenerator *codeGenerator_;

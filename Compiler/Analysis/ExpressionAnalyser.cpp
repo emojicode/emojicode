@@ -216,9 +216,6 @@ Type ExpressionAnalyser::box(Type exprType, const TypeExpectation &expectation, 
         case StorageType::Simple:
             makeIntoSimple(exprType, node);
             break;
-        case StorageType::SimpleError:
-            makeIntoSimpleError(exprType, node, expectation);
-            break;
     }
     return exprType;
 }
@@ -227,7 +224,6 @@ void ExpressionAnalyser::makeIntoSimpleOptional(Type &exprType, std::shared_ptr<
     switch (exprType.storageType()) {
         case StorageType::SimpleOptional:
         case StorageType::PointerOptional:
-        case StorageType::SimpleError:
             break;
         case StorageType::Box:
             exprType = (*node)->expressionType().unboxed().optionalized();
@@ -236,23 +232,6 @@ void ExpressionAnalyser::makeIntoSimpleOptional(Type &exprType, std::shared_ptr<
         case StorageType::Simple:
             exprType = exprType.optionalized();
             insertNode<ASTSimpleToSimpleOptional>(node, exprType);
-            break;
-    }
-}
-
-void ExpressionAnalyser::makeIntoSimpleError(Type &exprType, std::shared_ptr<ASTExpr> *node, const TypeExpectation &exp) const {
-    switch (exprType.storageType()) {
-        case StorageType::SimpleError:
-        case StorageType::SimpleOptional:
-        case StorageType::PointerOptional:
-            break;
-        case StorageType::Simple:
-            exprType = exprType.unboxed().errored(exp.errorEnum());
-            insertNode<ASTSimpleToSimpleError>(node, exprType);
-            break;
-        case StorageType::Box:
-            exprType = exprType.unboxed().errored(exp.errorEnum());
-            insertNode<ASTBoxToSimpleError>(node, exprType);
             break;
     }
 }
@@ -284,10 +263,6 @@ void ExpressionAnalyser::makeIntoBox(Type &exprType, const TypeExpectation &expe
         case StorageType::Simple:
             exprType = exprType.boxedFor(expectation.boxFor());
             insertNode<ASTSimpleToBox>(node, exprType);
-            break;
-        case StorageType::SimpleError:
-            exprType = exprType.boxedFor(expectation.boxFor());
-            insertNode<ASTSimpleErrorToBox>(node, exprType);
             break;
     }
 }

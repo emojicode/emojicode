@@ -52,7 +52,6 @@ enum class TypeType {
     LocalGenericVariable,
     Callable,
     TypeAsValue,
-    Error,
     StorageExpectation,
 };
 
@@ -157,21 +156,6 @@ public:
     /// If this is a box, proxies to the Box and returns the type of the optional in an equal Box.
     /// @returns The type (the class, value type etc.) this Type Value Type represents.
     Type typeOfTypeValue() const;
-
-    /// If this is a box, proxies to the Box and returns the type of the optional in an equal Box.
-    Type errorType() const;
-
-    Type errored(const Type &errorEnum) const;
-
-    /// If this is a box, proxies to the Box and returns the type of the optional in an equal Box.
-    Type errorEnum() const {
-        if (type() == TypeType::Box) {
-            return genericArguments_[0].errorEnum().boxedFor(boxedFor());
-        }
-
-        assert(type() == TypeType::Error);
-        return genericArguments_[0];
-    }
 
     /// Returns true if this type is compatible to the given other type.
     bool compatibleTo(const Type &to, const TypeContext &tc, std::vector<CommonTypeFinder> *ctargs = nullptr) const;
@@ -308,12 +292,6 @@ private:
         assert(genericArguments_.front().type() != TypeType::Optional &&
                genericArguments_.front().type() != TypeType::Box);
     }
-
-    struct MakeErrorType {};
-    Type(MakeErrorType makeError, Type enumType, Type value)
-        : typeContent_(TypeType::Error), genericArguments_({ std::move(enumType), std::move(value) }) {
-            assert(genericArguments_[1].type() != TypeType::Box);
-        }
 
     struct MakeBoxType {};
     Type(MakeBoxType, Type type, Type forType)

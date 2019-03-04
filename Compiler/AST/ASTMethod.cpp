@@ -48,7 +48,16 @@ Type ASTMethodable::analyseMethodCall(ExpressionAnalyser *analyser, const std::u
     }
 
     checkMutation(analyser, callee);
+    ensureErrorIsHandled(analyser);
     return analyser->analyseFunctionCall(&args_, calleeType_, method_);
+}
+
+const Type& ASTMethodable::errorType() const {
+    return method_->errorType()->type();
+}
+
+bool ASTMethodable::isErrorProne() const {
+    return method_->errorProne();
 }
 
 void ASTMethodable::determineCalleeType(ExpressionAnalyser *analyser, const std::u32string &name,
@@ -119,7 +128,7 @@ Type ASTMethodable::analyseTypeMethodCall(ExpressionAnalyser *analyser, const st
     if (calleeType_.type() == TypeType::Class && (method_->accessLevel() == AccessLevel::Private || calleeType_.isExact())) {
         callType_ = CallType::StaticDispatch;
     }
-
+    ensureErrorIsHandled(analyser);
     return analyser->analyseFunctionCall(&args_, calleeType_, method_);
 }
 

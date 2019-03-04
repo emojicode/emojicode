@@ -22,9 +22,13 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
     if (it != pool_.end()) {
         return it->second;
     }
+    auto stringVar = addToPool(utf8(string.data()));
+    pool_.emplace(string, stringVar);
+    return stringVar;
+}
 
-    auto utf8str = utf8(string.data());
-    auto data = llvm::ArrayRef<uint8_t>(reinterpret_cast<const uint8_t*>(utf8str.data()), utf8str.size());
+llvm::Value* StringPool::addToPool(const std::string &string) {
+    auto data = llvm::ArrayRef<uint8_t>(reinterpret_cast<const uint8_t*>(string.data()), string.size());
     auto constant = llvm::ConstantStruct::getAnon({
         codeGenerator_->declarator().ignoreBlockPtr(),
         llvm::ConstantDataArray::get(codeGenerator_->context(), data)
@@ -39,16 +43,14 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
     auto stringLlvm = llvm::dyn_cast<llvm::StructType>(llvm::dyn_cast<llvm::PointerType>(codeGenerator_->typeHelper().llvmTypeFor(stringType))->getElementType());
 
     auto stringStruct = llvm::ConstantStruct::get(stringLlvm, {
-            codeGenerator_->declarator().ignoreBlockPtr(),
-            compiler->sString->classInfo(),
-            var,
-            llvm::ConstantInt::get(llvm::Type::getInt64Ty(codeGenerator_->context()), utf8str.size())
+        codeGenerator_->declarator().ignoreBlockPtr(),
+        compiler->sString->classInfo(),
+        var,
+        llvm::ConstantInt::get(llvm::Type::getInt64Ty(codeGenerator_->context()), string.size())
     });
 
     auto stringVar = new llvm::GlobalVariable(*codeGenerator_->module(), stringLlvm, true,
                                               llvm::GlobalValue::LinkageTypes::PrivateLinkage, stringStruct, "string");
-
-    pool_.emplace(string, stringVar);
     return stringVar;
 }
 

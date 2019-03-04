@@ -17,7 +17,7 @@ namespace EmojicodeCompiler {
 
 enum class CallType;
 
-class ASTInitialization final : public ASTExpr, public MFHeapAllocates {
+class ASTInitialization final : public ASTCall, public MFHeapAllocates {
 public:
     enum class InitType {
         Enum, ValueType, Class, ClassStack, MemoryAllocation
@@ -25,7 +25,7 @@ public:
 
     ASTInitialization(std::u32string name, std::shared_ptr<ASTExpr> type,
                       ASTArguments args, const SourcePosition &p)
-    : ASTExpr(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
+    : ASTCall(p), name_(std::move(name)), typeExpr_(std::move(type)), args_(std::move(args)) {}
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     /// @pre setDestination() must have been used to set a destination if initType() == InitType::ValueType
     Value* generate(FunctionCodeGenerator *fg) const override;
@@ -45,7 +45,10 @@ public:
     void allocateOnStack() override;
 
     static Value *initObject(FunctionCodeGenerator *fg, const ASTArguments &args, Function *function,
-                             const Type &type, bool stackInit = false);
+                             const Type &type, llvm::Value *errorPointer, bool stackInit = false);
+
+    bool isErrorProne() const override;
+    const Type& errorType() const override;
 
 private:
     InitType initType_ = InitType::Class;

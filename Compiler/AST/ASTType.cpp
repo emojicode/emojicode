@@ -124,14 +124,6 @@ Type ASTGenericVariable::getType(const TypeContext &typeContext) const {
     throw CompilerError(position(), "No such generic type variable \"", utf8(name_), "\".");
 }
 
-Type ASTErrorType::getType(const TypeContext &typeContext) const {
-    auto errorEnum = enum_->analyseType(typeContext);
-    if (errorEnum.type() != TypeType::Enum) {
-        throw CompilerError(position(), "Error type must be a non-optional 🦃.");
-    }
-    return content_->analyseType(typeContext).errored(errorEnum);
-}
-
 Type ASTCallableType::getType(const TypeContext &typeContext) const {
     auto returnType = return_ == nullptr ? Type::noReturn() : return_->analyseType(typeContext);
     return Type(returnType, transformTypeAstVector(params_, typeContext));

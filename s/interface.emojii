@@ -1,0 +1,1295 @@
+📘
+  Emojicode’s standard library.
+
+  See [The s package](https://www.emojicode.org/docs/reference/the-s-package.html)
+  for an introduction.
+📘
+
+📗
+  Boolean
+📗
+🌍 📻 🕊 👌 🍇
+  🐊 😛🐚👌🍆
+
+  📗 Whether this value and *other* are considered equal. 📗
+  🥯 🙌 other 👌 ➡️ 👌 🍇
+    ↩️ 🐕 🙌 other
+  🍉
+  📗 Logical and. Returns true if both, this instance and *other*, are true. 📗
+  🥯 🤝 other 👌 ➡️ 👌 🍇
+    ↩️ 🐕 🤝 other
+  🍉
+  📗 Logical or. Returns true if this instance or *other* or both are true. 📗
+  🥯 👐 other 👌 ➡️ 👌 🍇
+    ↩️ 🐕 👐 other
+  🍉
+  📗
+    Inverts the boolean. Returns true if this boolean is false, and false if
+    this boolean is true.
+  📗
+  🥯 ❗️ ❎ ➡️ 👌 🍇
+    ↩️ ❎🐕❗️
+  🍉
+🍉
+
+📗
+  Integer
+📗
+🌍 📻 🕊 🔢 🍇
+  🐊 😛🐚🔢🍆
+
+  📗 Whether this value and *other* are considered equal. 📗
+  🥯 🙌 other 🔢 ➡️ 👌 🍇
+    ↩️ 🐕 🙌 other
+  🍉
+  📗 Returns the receiver minus *other*. 📗
+  🥯 ➖ other 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 ➖ other
+  🍉
+  📗 Returns the receiver plus *other*. 📗
+  🥯 ➕ other 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 ➕ other
+  🍉
+  📗 Returns the receiver divided by *other*. 📗
+  🥯 ➗ other 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 ➗ other
+  🍉
+  📗 Returns the receiver multiplied by *other*. 📗
+  🥯 ✖ other 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 ✖️ other
+  🍉
+  📗 Returns the receiver modulus *other*. 📗
+  🥯 🚮 other 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 🚮 other
+  🍉
+  📗 Returns true if the receiver is smaller than *other*. 📗
+  🥯 ◀ other 🔢 ➡️ 👌 🍇
+    ↩️ 🐕 ◀️ other
+  🍉
+  📗 Returns true if the receiver is greater than *other*. 📗
+  🥯 ▶ other 🔢 ➡️ 👌 🍇
+    ↩️ 🐕 ▶️ other
+  🍉
+  📗 Returns true if the receiver is smaller than or equal to *other*. 📗
+  🥯 ◀🙌 other 🔢 ➡️ 👌 🍇
+    ↩️ 🐕 ◀️🙌 other
+  🍉
+  📗 Returns true if the receiver is greater than or equal to *other*. 📗
+  🥯 ▶🙌 other 🔢 ➡️ 👌 🍇
+    ↩️ 🐕 ▶️🙌 other
+  🍉
+  📗 Returns this integer AND *other*. 📗
+  🥯 ⭕ other 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 ⭕️ other
+  🍉
+  📗 Returns this integer OR *other*. 📗
+  🥯 💢 other 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 💢 other
+  🍉
+  📗 Returns this integer XOR *other*. 📗
+  🥯 ❌ other 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 ❌ other
+  🍉
+  📗 Returns NOT applied to this integer. 📗
+  🥯 ❗️ 🚫 ➡️ 🔢 🍇
+    ↩️ 🚫 🐕 ❗️
+  🍉
+  📗 Shifts this integer by *n* bits to the left. 📗
+  🥯 👈 n 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 👈 n
+  🍉
+  📗 Shifts this integer by *n* bits to the right. 📗
+  🥯 👉 n 🔢 ➡️ 🔢 🍇
+    ↩️ 🐕 👉 n
+  🍉
+  📗 Returns the absolute value of this 🔢. 📗
+  ❗️ 🏧 ➡️ 🔢 📻 🔤sIntAbsolute🔤
+  📗
+    Creates a string representation of this integer. *base* must be greater than
+    or equal to 2 and less than or equal to 35.
+
+    The digits used to represent the integer are
+    `0123456789abcdefghijklmnopqrstuvxyz`.
+  📗
+  ❗️ 🔡 base 🔢 ➡️ 🔡 📻 🔤sIntToString🔤
+  📗 Returns the double representation of this integer. 📗
+  🥯 ❗️ 💯 ➡️ 💯 🍇
+    ↩️ 💯 🐕❗️
+  🍉
+  📗
+    Returns the additive inverse of this integer. If this integer is *x*,
+    the result equals *-x*.
+  📗
+  🥯 ❗️ 🔋 ➡️ 🔢 🍇
+    ↩️ 🔋 🐕❗️
+  🍉
+  📗
+    Converts this integer to a byte. The value of this integer must be in
+    [-127, 127].
+  📗
+  ❗️ 💧 ➡️ 💧 📻 🔤sIntToByte🔤
+🍉
+
+📗
+  Represents a region in memory.
+
+  Working with 🧠 requires great care as this interface allows you to directly
+  manipulate memory.
+
+  >!N When working with this class make sure to take into account that it is
+  >!N up to you to make sure that object life-time is properly managed.
+  >!N Especially, pay attention to the notes for ♻️ and 🚜.
+
+  It’s important to understand that instances of 🧠 are basically memory
+  addresses. Always think of a 🧠 instance as pointing to a memory
+  region. Because 🧠 instance always are addresses it is recommmended that you
+  make no more copies than absolutely necessary to avoid unwanted side effects.
+
+  It is not possible to directly manipulate or access memory addresses as this
+  would interfer with the automatic memory management Emojicode provides.
+📗
+🌍 📻 🕊 🧠 🍇
+  📗 Creates an instance by allocating *size* bytes. 📗
+  🥯 ☣️ 🆕size 🔢  🍇
+    🍉
+  📗
+    Writes *value* starting *offset* bytes past the address represented by this
+    instance.
+
+    >!H If the memory area represented is smaller than `⚖️T ➕ offset` bytes,
+    >!H undefined behavior is caused!
+  📗
+  ☣️ ➡️ 🐽 🐚☣️T ⚪️ 🍆🛅 value T  offset 🔢  📻 🔤ejcBuiltIn🔤
+  📗
+    Reads a value of type T starting *bytes* bytes past the address
+    represented by this instance.
+
+    >!H If the memory area represented is smaller than `⚖️T ➕ offset` bytes,
+    >!H undefined behavior is caused!
+    >!H
+    >!H If the value at specified location is not *exactly* of type T or,
+    >!H in the case T is a class type, a subclass of T, the behavior is
+    >!H undefined!
+  📗
+  ☣️ ❗️ 🐽 🐚☣️T ⚪️ 🍆offset 🔢 ➡️ ✴️T  📻 🔤ejcBuiltIn🔤
+  📗
+    Resizes this memory area.
+
+    >!N Do not call this method if you have copies of this 🧠, i.e. if you have
+    >!N multiple pointers to this area. Calling this method updates the
+    >!N represented address and can invalidate all other 🧠 that pointed to this
+    >!N address. Only ever call this method if there is only one 🧠 representing
+    >!N the memory area.
+  📗
+  ☣️ ❗️ 🏗 newSize 🔢  📻 🔤ejcMemoryRealloc🔤
+  📗
+    Releases a value of type T that is located *offset* bytes past the
+    beginning of this memory area.
+
+    This method might not actually write to the memory, but it is crucial
+    that you call it on every value that was placed in the memory area that
+    you no longer need.
+
+    >!N Release every value placed in the memory area with this method before
+    >!N overwritting it or entirely abandoning this 🧠 instance!
+  📗
+  ☣️ ❗️ ♻ 🐚☣️T ⚪️ 🍆offset 🔢  📻 🔤ejcBuiltIn🔤
+  📗
+    Copies *bytes* bytes from *source* starting from *sourceOffset* to this
+    instane, writing the copied bytes *destinationOffset* bytes past the
+    beginning of this memory area.
+
+    *source* may be the same as the instance on which the method is called
+    and the memory area which is copied may overlap the destination area.
+
+    >!H If the memory area represented is smaller than
+    >!H `bytes ➕ destinationOffset` bytes or *source* is smaller than
+    >!H `bytes ➕ sourceOffset` bytes, undefined behavior is caused!
+
+    >!N Do not copy managed values using this method! Copy each value
+    >!N individually with 🐽 and ➡️ 🐽!
+  📗
+  ☣️ ❗️ 🚜 destinationOffset 🔢 source 🧠 sourceOffset 🔢 bytes 🔢  📻 🔤ejcBuiltIn🔤
+  📗
+    Sets the first *bytes* bytes starting from *offset* bytes past the address
+    represented by this instance to *byteValue*.
+
+    >!H If the memory area represented is smaller than `bytes ➕ offset` bytes,
+    >!H undefined behavior is caused!
+  📗
+  ☣️ ❗️ ✍ byteValue 💧 offset 🔢 bytes 🔢  📻 🔤ejcBuiltIn🔤
+  📗
+    Compares the first *bytes* of two memory areas.
+
+    >!H If either the memory area represented by this instance or the one
+    >!H represented by *other* or both are smaller than *bytes*, undefined
+    >!H behavior is caused!
+  📗
+  ☣️ ❗️ ↔ other 🧠 bytes 🔢 ➡️ 🔢 📻 🔤ejcMemoryCompare🔤
+🍉
+
+📗
+  Represents a real number.
+📗
+🌍 📻 🕊 💯 🍇
+  🐊 😛🐚💯🍆
+
+  📗 Whether this value and *other* are considered equal. 📗
+  🥯 🙌 other 💯 ➡️ 👌 🍇
+    ↩️ 🐕 🙌 other
+  🍉
+  📗 Returns the receiver minus *other*. 📗
+  🥯 ➖ other 💯 ➡️ 💯 🍇
+    ↩️ 🐕 ➖ other
+  🍉
+  📗 Returns the receiver plus *other*. 📗
+  🥯 ➕ other 💯 ➡️ 💯 🍇
+    ↩️ 🐕 ➕ other
+  🍉
+  📗 Returns the receiver divided by *other*. 📗
+  🥯 ➗ other 💯 ➡️ 💯 🍇
+    ↩️ 🐕 ➗ other
+  🍉
+  📗 Returns the receiver multiplied by *other*. 📗
+  🥯 ✖ other 💯 ➡️ 💯 🍇
+    ↩️ 🐕 ✖️ other
+  🍉
+  📗
+    Returns the floating-point remainder of the division operation
+    `receiver/other`. This will always be the value of `receiver - n*other` and
+    will always have the same sign as the receiver.
+  📗
+  🥯 🚮 other 💯 ➡️ 💯 🍇
+    ↩️ 🐕 🚮 other
+  🍉
+  📗 Returns true if the receiver is smaller than *other*. 📗
+  🥯 ◀ other 💯 ➡️ 👌 🍇
+    ↩️ 🐕 ◀️ other
+  🍉
+  📗 Returns true if the receiver is greater than *other*. 📗
+  🥯 ▶ other 💯 ➡️ 👌 🍇
+    ↩️ 🐕 ▶️ other
+  🍉
+  📗 Returns true if the receiver is smaller than or equal to *other*. 📗
+  🥯 ◀🙌 other 💯 ➡️ 👌 🍇
+    ↩️ 🐕 ◀️🙌 other
+  🍉
+  📗 Returns true if the receiver is greater than or equal to *other*. 📗
+  🥯 ▶🙌 other 💯 ➡️ 👌 🍇
+    ↩️ 🐕 ▶️🙌 other
+  🍉
+  📗 Returns the absolute value of this 💯. 📗
+  ❗️ 🏧 ➡️ 💯 📻 🔤sRealAbsolute🔤
+  📗
+    Returns the sine of this 💯.
+  📗
+  ❗️ 📓 ➡️ 💯 📻 🔤sRealSin🔤
+  📗
+    Returns the cosine of this 💯.
+  📗
+  ❗️ 📕 ➡️ 💯 📻 🔤sRealCos🔤
+  📗
+    Returns the tangent of this 💯.
+  📗
+  ❗️ 📐 ➡️ 💯 📻 🔤sRealTan🔤
+  📗
+    Returns the arcsine of this 💯.
+  📗
+  ❗️ 📔 ➡️ 💯 📻 🔤sRealASin🔤
+  📗
+    Returns the arccosine of this 💯.
+  📗
+  ❗️ 📙 ➡️ 💯 📻 🔤sRealACos🔤
+  📗
+    Returns the arctangent of this 💯.
+  📗
+  ❗️ 📒 ➡️ 💯 📻 🔤sRealATan🔤
+  📗
+    Returns this 💯 to the exponent power, that is, base<sup>exponent</sup>.
+  📗
+  ❗️ 🏂 exponent 💯 ➡️ 💯 📻 🔤sRealPower🔤
+  📗
+    Returns the positive square root of this 💯.
+  📗
+  ❗️ ⛷ ➡️ 💯 📻 🔤sRealSqrt🔤
+  📗
+    Returns the smallest integer greater than or equal to this 💯.
+  📗
+  ❗️ 🚴 ➡️ 🔢 📻 🔤sRealCeil🔤
+  📗
+    Returns the largest integer less than or equal to this 💯.
+  📗
+  ❗️ 🚵 ➡️ 🔢 📻 🔤sRealFloor🔤
+  📗
+    Returns the value of this 💯 rounded to the nearest integer.
+
+    If the fractional portion of this 💯 is 0.5 or greater, the argument is
+    rounded to the next higher integer. If the fractional portion of this 💯 is
+    less than 0.5, the argument is rounded to the next lower integer.
+  📗
+  ❗️ 🏇 ➡️ 🔢 📻 🔤sRealRound🔤
+  📗
+    Returns the base 2 logarithm of this 💯.
+  📗
+  ❗️ 🚣 ➡️ 💯 📻 🔤sRealLog2🔤
+  📗
+    Returns the natural (base ℇ) logarithm of this 💯.
+  📗
+  ❗️ 🏄 ➡️ 💯 📻 🔤sRealLn🔤
+  📗
+    Returns the additive inverse of this 💯. If this 💯 is *x*,
+    the result equals *-x*.
+  📗
+  🥯 ❗️ 🔋 ➡️ 💯 🍇
+    ↩️ 🔋 🐕❗️
+  🍉
+  📗
+    Creates a 🔡 representation of this 💯 and the given precision – the number
+    of digits after the decimal separator “.”.
+  📗
+  ❗️ 🔡 precision 🔢 ➡️ 🔡 📻 🔤sRealToString🔤
+  📗
+    Returns an approximation of 𝜋.
+  📗
+  🥯 🐇 ❗️ 🥧 ➡️ 💯 🍇
+    ↩️ 3.14159265358979323846264338327950288
+  🍉
+  📗
+    Returns an approximation of ℇ (Euler’s number).
+  📗
+  🥯 🐇 ❗️ 🛎 ➡️ 💯 🍇
+    ↩️ 2.71828182845904523536028747135266250
+  🍉
+🍉
+
+📗
+  Byte
+📗
+🌍 📻 🕊 💧 🍇
+  🐊 😛🐚💧🍆
+
+  📗 Whether this value and *other* are considered equal. 📗
+  🥯 🙌 other 💧 ➡️ 👌 🍇
+    ↩️ 🐕 🙌 other
+  🍉
+  📗 Returns the receiver minus *other*. 📗
+  🥯 ➖ other 💧 ➡️ 💧 🍇
+    ↩️ 🐕 ➖ other
+  🍉
+  📗 Returns the receiver plus *other*. 📗
+  🥯 ➕ other 💧 ➡️ 💧 🍇
+    ↩️ 🐕 ➕ other
+  🍉
+  📗 Returns the receiver divided by *other*. 📗
+  🥯 ➗ other 💧 ➡️ 💧 🍇
+    ↩️ 🐕 ➗ other
+  🍉
+  📗 Returns the receiver multiplied by *other*. 📗
+  🥯 ✖ other 💧 ➡️ 💧 🍇
+    ↩️ 🐕 ✖️ other
+  🍉
+  📗 Returns the receiver modulus *other*. 📗
+  🥯 🚮 other 💧 ➡️ 💧 🍇
+    ↩️ 🐕 🚮 other
+  🍉
+  📗 Returns true if the receiver is smaller than *other*. 📗
+  🥯 ◀ other 💧 ➡️ 👌 🍇
+    ↩️ 🐕 ◀️ other
+  🍉
+  📗 Returns true if the receiver is greater than *other*. 📗
+  🥯 ▶ other 💧 ➡️ 👌 🍇
+    ↩️ 🐕 ▶️ other
+  🍉
+  📗 Returns true if the receiver is smaller than or equal to *other*. 📗
+  🥯 ◀🙌 other 💧 ➡️ 👌 🍇
+    ↩️ 🐕 ◀️🙌 other
+  🍉
+  📗 Returns true if the receiver is greater than or equal to *other*. 📗
+  🥯 ▶🙌 other 💧 ➡️ 👌 🍇
+    ↩️ 🐕 ▶️🙌 other
+  🍉
+  📗 Returns this integer AND *other*. 📗
+  🥯 ⭕ other 💧 ➡️ 💧 🍇
+    ↩️ 🐕 ⭕️ other
+  🍉
+  📗 Returns this integer OR *other*. 📗
+  🥯 💢 other 💧 ➡️ 💧 🍇
+    ↩️ 🐕 💢 other
+  🍉
+  📗 Returns this integer XOR *other*. 📗
+  🥯 ❌ other 💧 ➡️ 💧 🍇
+    ↩️ 🐕 ❌ other
+  🍉
+  📗 Returns NOT applied to this integer. 📗
+  🥯 ❗️ 🚫 ➡️ 💧 🍇
+    ↩️ 🚫 🐕 ❗️
+  🍉
+  📗 Shifts this integer by *n* bits to the left. 📗
+  🥯 👈 n 💧 ➡️ 💧 🍇
+    ↩️ 🐕 👈 n
+  🍉
+  📗 Shifts this integer by *n* bits to the right. 📗
+  🥯 👉 n 💧 ➡️ 💧 🍇
+    ↩️ 🐕 👉 n
+  🍉
+  📗
+    Returns the additive inverse of this byte. If this byte is *x*,
+    the result equals *-x*.
+  📗
+  🥯 ❗️ 🔋 ➡️ 💧 🍇
+    ↩️ 🔋 🐕❗️
+  🍉
+  📗
+    Converts this byte to an integer.
+  📗
+  ❗️ 🔢 ➡️ 🔢 📻 🔤sByteToInt🔤
+🍉
+
+📗
+  Protocol defining an iterators interface.
+
+  Types conforming to 🍡 can iterate a collection.
+
+  To get the items from an iterator call the 🔽 method on it, until 🔽❓ returns
+  👎 which indicates that there are no more items.
+📗
+🌍 🐊 🍡🐚Element ⚪️ 🍆🍇
+  📗
+    Returns the next object. Call this method only if 🔽❓ previously
+    returned 👍.
+  📗
+  🛅 🔓❗️ 🔽 ➡️ Element 
+  📗
+    Whether the iterator has more elements to provide.
+  📗
+  🛅 🔓❓ 🔽 ➡️ 👌
+🍉
+
+📗
+  Protocol defining iterability.
+
+  Types whose instances shall be iterable using the 🔂 loop must
+  implement this protocol.
+📗
+🌍 🐊 🔂🐚Element ⚪️ 🍆🍇
+  📗
+    This method must return an instance of a class that conforms to
+    [[🍡]] which will be used to enumerate this instance.
+  📗
+  🛅 🔓❗️ 🍡 ➡️ 🍡🐚Element🍆
+🍉
+
+📗
+  Protocol defining equality.
+
+  A type conforming to this protocol provides a method 😛 to determine whether
+  one of its instance is equal to an instance of type T. T is normally the
+  type itself.
+📗
+🌍 🐊 😛🐚T ⚪️ 🍆🍇
+  📗 Whether this value and *other* are equal. 📗
+  🛅 🔓🙌 🛅 other T  ➡️ 👌
+🍉
+
+📗
+  Protocol defining random-access.
+
+  Types representing a collection whose elements can be accessed by 🐽 randomly
+  should conform to this protocol. The number of elements must be finite and
+  returned by 🐔.
+📗
+🌍 🐊 🐽🐚Element ⚪️ 🍆🍇
+  📗
+    Gets the item at *index*. If the index is invalid the behavior is up to
+    the conforming type.
+  📗
+  🛅 🔓❗️ 🐽 🛅 index 🔢 ➡️ Element 
+  📗 Returns the number of items in the collection. 📗
+  🛅 🔓❗️ 🐔 ➡️ 🔢
+🍉
+
+📗
+  Iterator over a 🐽.
+
+  This class is an iterator that can iterate over every type that conforms to
+  the 🐽 protocol.
+📗
+🌍 🐇 🌳🐚Element ⚪️ 🍆🍇
+  🐊 🍡🐚Element🍆
+  🐊 🔂🐚Element🍆
+
+  🖍🆕 iteratee 🐽🐚Element🍆
+  🖍🆕 index 🔢
+
+  🔓🆕🍼 🛅 iteratee 🐽🐚Element🍆 
+  🔓❗️ 🔽 ➡️ Element 
+  🥯 🔓❓ 🔽 ➡️ 👌 🍇
+    ↩️ index ◀️ 🐔 iteratee❗️
+  🍉
+  🥯 🔓❗️ 🍡 ➡️ 🍡🐚Element🍆 🍇
+    ↩️ 🐕
+  🍉
+🍉
+
+📗
+  Interaction with the operating system.
+
+  💻 provides several class methods that can be used to interact with the
+  operating system. It cannot be instantiated.
+📗
+🌍 🐇 💻 🍇
+  📗
+    Returns a list of the arguments passed to the programm. Calling this method
+    is rather expensive.
+  📗
+  🐇 🔓❗️ 🎞 ➡️ 🍨🐚🔡🍆
+  📗
+    Gets an environment variable by its name. If the variable cannot be found
+    ✨ is returned.
+  📗
+  🐇 🔓❗️ 🌳 variableName 🔡 ➡️ 🍬🔡 📻 🔤sSystemGetEnv🔤
+  📗
+    Immediately exits the program with the given status code. The code may
+    not be larger than 255 on most operating systems.
+  📗
+  🐇 🔓❗️ 🚪 status 🔢  📻 🔤sSystemExit🔤
+  📗
+    Returns the standard output of running `command` in a subshell.
+  📗
+  🐇 🔓❗️ 🕴 command 🔡  📻 🔤sSystemSystem🔤
+  📗
+    Returns the current time in seconds since the Epoch in Greenwich Mean Time.
+  📗
+  🐇 🔓❗️ 🕰 ➡️ 🔢 📻 🔤sSystemUnixTimestamp🔤
+  📗
+    Panic. Aborts the program with the provided message.
+
+    >!N Only use this function when the program hits upon an error so serious
+    >!N that recovery is impossible.
+  📗
+  🐇 🔓❗️ 🤯 message 🔡  📻 🔤sPanic🔤
+  🐇 🔒❗️ 🧔 i 🔢 ➡️ 🍬🔡 📻 🔤sSystemArg🔤
+🍉
+
+📗
+  Range, an immutable sequence of numbers. [Read more in the
+  language reference.](../../reference/the-s-package.html#-ranges)
+📗
+🌍 🕊 ⏩ 🍇
+  🐊 🔂🐚🔢🍆
+  🐊 🐽🐚🔢🍆
+
+  🖍🆕 start 🔢
+  🖍🆕 stop 🔢
+  🖍🆕 step 🔢
+
+  📗
+    Creates a range from *start* to *stop*.
+  📗
+  🆕 ⏩ 🍼 🛅 start 🔢 🍼 🛅 stop 🔢 
+  📗
+    Creates a range from *start* to *stop* with the provided *step*.
+  📗
+  🆕 ⏭ 🍼 🛅 start 🔢 🍼 🛅 stop 🔢 🍼 🛅 step 🔢 
+  📗
+    Returns the *n*th element of the range. *n* is only valid if
+    `start + step * n` is `>= start` and `< stop`. If *n* is invalid, the
+    program will panic.
+  📗
+  ❗️ 🐽 n 🔢 ➡️ 🔢
+  📗 Returns the number of integers in this range. 📗
+  🥯 ❗️ 🐔 ➡️ 🔢 🍇
+    ↩️ 🤜stop ➖ start🤛 ➗ step
+  🍉
+  📗 Returns an iterator to iterate over integers in this range. 📗
+  🥯 ❗️ 🍡 ➡️ 🌳🐚🔢🍆 🍇
+    ↩️ 🆕🌳🐚🔢🍆🆕  🐕❗️
+  🍉
+🍉
+
+📗
+  Iterator over a 🍨. This iterator does *not* unwrap any values retrieved from
+  the list and therefore returns optionals. You can use [[🌳]] to have
+  optionals automatically unwrapped.
+📗
+🌍 🐇 🌱🐚Element ⚪️ 🍆🍇
+  🐊 🍡🐚🍬Element🍆
+  🐊 🔂🐚🍬Element🍆
+
+  🖍🆕 iteratee 🍨🐚Element🍆
+  🖍🆕 index 🔢
+
+  🔓🆕🍼 🛅 iteratee 🍨🐚Element🍆 
+  🔓❗️ 🔽 ➡️ 🍬Element 
+  🥯 🔓❓ 🔽 ➡️ 👌 🍇
+    ↩️ index ◀️ 🐔 iteratee❗️
+  🍉
+  📗
+    Removes the element last returned by 🔽 from the list. Calling this method
+    before having called 🔽 results in undefined behavior.
+  📗
+  🔓❗️ 🚯 
+  🥯 🔓❗️ 🍡 ➡️ 🍡🐚🍬Element🍆 🍇
+    ↩️ 🐕
+  🍉
+🍉
+
+📗
+  Pseudo-random number generator. The default implementation relies on
+  the Mersenne Twister algorithm.
+📗
+🌍 📻 🐇 🎰 🍇
+  📗
+    Creates a new generator and seeds it with a random value, if possible using
+    hardware entropy.
+  📗
+  🔓🆕 📻 🔤sPrngNew🔤
+  📗
+    Generates an integer. Integers are uniformly distributed on the
+    closed interval `[a, b]`.
+  📗
+  🔓❗️ 🔢 a 🔢 b 🔢 ➡️ 🔢 📻 🔤sPrngGetInteger🔤
+  📗
+    Generates a real, where reals are uniformly distributed on the interval
+    `[0, 1)`.
+  📗
+  🔓❗️ 💯 ➡️ 💯 📻 🔤sPrngGetReal🔤
+  🔒❗️ ♻  📻 🔤sPrngDestruct🔤
+🍉
+
+📗
+  Strings.
+
+  In Emojicode strings are strictly used to represent textual data, i.e. strings
+  are not used to store binary data or the like. If you need to work with binary
+  data see [[📇]].
+
+  ### Characters, Graphemes and Random Access
+
+  Due to the complexity of working with text, 🔡 does not support random access.
+  For instance, consider this character `한`. To a human being, this is one
+  character. Yet, it actually consists of three Unicode code points, as this is
+  the characters ㅎ, ㅏ and ㄴ combined. An even better example is `✋🏾` (you should
+  see a raised hand with darker skin color). While this is one emoji, it is
+  composed by two Unicode code points and encoded with seven bytes in UTF-8.
+
+  Unicode defines ✋🏾 and 한 as graphemes. A grapheme is what humans would
+  recognize as one character.
+
+  Emojicode only allows you to access these graphemes. Finding graphemes is not
+  a constant-time operation, though. Random access is not possible, therefore.
+
+  If you need to deal with the graphemes of a string, you can use the [[🎶❗️]]
+  method, which returns an array of graphemes. Graphemes are always represented
+  as strings.
+
+  To determine the number of graphemes in a string, you can use 🐔 on that array.
+  To determine the number of UTF-8 bytes that make up a string, use 📐.
+
+  ### Comparing Strings
+
+  If you want to determine whether two strings represent the same value, you can
+  use the equality operator 🙌.
+
+  ```
+  🍪🔤Straw🔤 🔤berries🔤🍪 🙌 🔤Strawberries🔤
+  ```
+
+  You can learn more about the equality operator in [Operators](operators.html).
+
+  ### Mutability
+
+  Strings are immutable. This means that you can’t modify any string. You can,
+however, call methods on strings that return modified copies of the orginal
+string, but those themselves are then immutable again.
+
+  ### String Literals and Concatenate Literals
+
+  To learn more about 🔤🔤 String Literals and 🍪🍪 Concatenate Literals [see
+  the Language Reference.](../../reference/the-s-package.html#-strings)
+📗
+🌍 🐇 🔡 🍇
+  🐊 🔂🐚🔡🍆
+  🐊 😛🐚🔡🍆
+
+  🖍🆕 bytes 🧠
+  🖍🆕 count 🔢
+
+  📗 Creates a string by copying the memory from the *memory*. 📗
+  ☣️ 🔓🆕 🧠 memory 🧠 🍼 🛅 count 🔢 
+  📗
+    Waits for the user to input a text and confirm it with enter.
+    No new line character is included as part of the string.
+    (Via the standard input/output)
+  📗
+  🔓🆕 👂🏼  📻 🔤sStringReadLine🔤
+  📗
+    Creates a string by joining all elements into a string separated
+    by *separator*.
+  📗
+  🔓🆕 🍨 list 🍨🐚🔡🍆 separator 🔡 
+  📗 Returns the memory area representing the value of this string. 📗
+  🥯 🔓❗️ 🧠 ➡️ 🧠 🍇
+    ↩️ bytes
+  🍉
+  📗 Puts this 🔡 to the standard output. 📗
+  🔓❗️ 😀  📻 🔤sStringPrint🔤
+  📗 Puts this 🔡 to the standard output without adding a new line. 📗
+  🔓❗️ 👄  📻 🔤sStringPrintNoLn🔤
+  📗 Returns 👍 if this string is equal to *b*. 📗
+  🔓🙌 b 🔡 ➡️ 👌
+  📗
+    Compares this string to *b* and returns -1, 0, or 1 depending on whether
+    this string is less than, equal to, or greater than `b`.
+
+    >!N Note that this method compares the strings byte per byte
+    >!N and is only meant for use with non-localized sorting. The results of
+    >!N the sort will always be the same, but may not appear logical to human
+    >!N beings.
+  📗
+  🔓❗️ ↔ b 🔡 ➡️ 🔢
+  📗
+    Returns a new string consisting of *length* graphemes beginning from
+    the grapheme at index *from* in this string. Complexity: O(n).
+
+    For instance:
+
+    ```
+    🔪🔤🇦🇽👨‍👩‍👧‍👧🤚🏾🔤 1 1❗️ 💭 returns 🔤👨‍👩‍👧‍👧🔤
+    🔪🔤Apples🔤 2 4❗️ 💭 returns 🔤ples🔤
+    ```
+  📗
+  🔓❗️ 🔪 from 🔢 length 🔢 ➡️ 🔡 📻 🔤sStringGraphemeSubstring🔤
+  🔒❗️ 🗡 from 🔢 🛅 length 🔢 ➡️ 🔡
+  📗
+    Finds the first occurrences of *search* in this string. Search is
+    performed from left to right.
+
+    Returns the index of the first occurrence or no value if *search* does not
+    occur.
+  📗
+  🔓❗️ 🔍 search 🔡 ➡️ 🍬🔢 📻 🔤sStringFind🔤
+  📗
+    Finds the first occurrences of a string in this string after the
+    index *offset*. Search is performed from left to right.
+
+    Returns the index of the occurrence or no value if *search* does not
+    occur.
+  📗
+  🔓❗️ 🕵‍♀ search 🔡 offset 🔢 ➡️ 🍬🔢 📻 🔤sStringFindFromIndex🔤
+  📗 Whether this strings begins with another string. 📗
+  🔓❗️ 🎼 testString 🔡 ➡️ 👌 📻 🔤sStringBeginsWith🔤
+  📗 Whether this strings ends with another string. 📗
+  🔓❗️ ⛳ testString 🔡 ➡️ 👌 📻 🔤sStringEndsWith🔤
+  📗
+    This string is split up into substring at each place *seperator* is found.
+    *seperator* itself is removed from the string.
+  📗
+  🔓❗️ 🔫 separator 🔡 ➡️ 🍨🐚🔡🍆
+  📗
+    The 🔧 method returns a new string, on which whitespace has been removed
+    from both ends of a string.
+  📗
+  🔓❗️ 🔧 ➡️ 🔡 📻 🔤sStringTrim🔤
+  🔒❗️ 🥢 cb 🍇🔢🔢🍉  📻 🔤sStringCodepoints🔤
+  📗
+    Returns the number of bytes required to represent the string’s content in
+    UTF8.
+
+    For example:
+
+    ```
+    📐🔤✋🏾🔤❗️  💭 returns 7
+    📐🔤한🔤❗️  💭 returns 3
+    📐🔤A🔤❗️  💭 returns 1
+    ```
+
+    >!H The return value is not at all meaningful from a human perspective.
+    >!H The character `ä` for instance, is encoded with two bytes but clearly
+    >!H perceived as one character.
+  📗
+  🥯 🔓❗️ 📐 ➡️ 🔢 🍇
+    ↩️ count
+  🍉
+  📗
+    This methods tries to construct an integer from this string in the given
+    base. It returns the integer or no value if the string does not match the
+    regular expression `[+-]?[0-9a-zA-Z]+` or it does not represent a valid
+    value in the given base.
+  📗
+  🔓❗️ 🔢 base 🔢 ➡️ 🍬🔢 📻 🔤sStringToInt🔤
+  📗
+    This methods tries to construct a 💯 from this 🔡. It returns the 💯, or no
+    value if the 🔡 does not match the regular expression
+    `[+-]?([0-9]+(\.[0-9]*)?|[0-9]*\.[0-9]+)([eE][+-]?[0-9]+)?`
+    or if it does not represent a valid 💯.
+  📗
+  🔓❗️ 💯 ➡️ 🍬💯 📻 🔤sStringToReal🔤
+  📗 Converts the string to data encoded as UTF8. 📗
+  🔓❗️ 📇 ➡️ 📇 📻 🔤sStringToData🔤
+  📗
+    Hashes this string.
+    The results for strings whose values equal are guaranteed to be the same
+    within a process.
+  📗
+  🔓❗️ ⚗ ➡️ 🔢 📻 🔤sStringHash🔤
+  📗 Returns an array with the graphemes from this string. 📗
+  🔓❗️ 🎶 ➡️ 🍨🐚🔡🍆
+  🔒❗️ 🔣 cb 🍇🔡🍉  📻 🔤sStringGraphemes🔤
+  📗
+    Returns a new string in which all characters have been converted to their
+    respective uppercase equivalents.
+  📗
+  🔓❗️ 📫 ➡️ 🔡 📻 🔤sStringToUppercase🔤
+  📗
+    Returns a new string in which all characters have been converted to their
+    respective lowercase equivalents.
+  📗
+  🔓❗️ 📪 ➡️ 🔡 📻 🔤sStringToLowercase🔤
+  📗 Returns an iterator to iterate over the graphemes of this string. 📗
+  🥯 🔓❗️ 🍡 ➡️ 🍡🐚🔡🍆 🍇
+    ↩️ 🍡🎶🐕❗️❗️
+  🍉
+🍉
+
+📗 Mutable sequence of characters (“string builder”). 📗
+🌍 🐇 🔠 🍇
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
+  🖍🆕 size 🔢
+
+  📗 Creates an empty 🔠 with an initial capacity of 16. 📗
+  🔓🆕
+  📗
+    Creates a 🔠 with the contents of the provided string and a capacity of
+    the length of the string plus 16.
+  📗
+  🔓🆕 🔡 string 🔡 
+  📗 Creates an empty 🔠 with the provided *capacity*. 📗
+  🔓🆕 🐧 🛅 capacity 🔢 
+  📗 Adds the contents of *string* to this 🔠. 📗
+  🔓❗️ 🐻 string 🔡 
+  ☣️ 🔒❗️ 🦘 string 🔡 
+  📗 Returns the memory area representing the data of this 🔠. 📗
+  🥯 🔓❗️ 🧠 ➡️ 🧠 🍇
+    ↩️ data
+  🍉
+  📗
+    Returns the number of UTF-8 bytes required to represent the content of
+    the instance.
+  📗
+  🥯 🔓❗️ 📐 ➡️ 🔢 🍇
+    ↩️ count
+  🍉
+  📗 Returns the value of this this 🔠 as a 🔡. 📗
+  🥯 🔓❗️ 🔡 ➡️ 🔡 🍇
+    ☣️ 🍇
+      ↩️ 🆕🔡🧠 data count❗️
+    🍉
+  🍉
+🍉
+
+🐇 🍧🐚Element ⚪️ 🍆🍇
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
+  🖍🆕 size 🔢
+
+  🔓🆕🍼 🛅 count 🔢 🍼 🛅 size 🔢 
+  📗 Duplicate the storage area. 📗
+  🔓🆕 👥 storage 🍧🐚Element🍆 
+  📗 Returns the number of items in the list. 📗
+  🥯 🔓❓ 🐔 ➡️ 🔢 🍇
+    ↩️ count
+  🍉
+  🔓❗️ 🐔 change 🔢 
+  📗 Returns the lists current capacity. 📗
+  🥯 🔓❓ 🐴 ➡️ 🔢 🍇
+    ↩️ size
+  🍉
+  🔓❗️ 🐴 🛅 capacity 🔢 
+  🥯 🔓❗️ 🧠 ➡️ 🧠 🍇
+    ↩️ data
+  🍉
+  📗 Releases everything inside the list. 📗
+  ☣️ 🔓❗️ ♻ 
+  📗 Expand the storage area if it is full. 📗
+  🔓❗️ ↕ 
+🍉
+
+📗
+  List, an ordered mutable collection.
+
+  🍨 provides random access, appending and removing from the last element in
+  `O(1)`.
+
+  🍨 is a value type. This means that copies of 🍨 are independent:
+
+  ```
+  🍨 🔤red🔤 🔤green🔤 🔤blue🔤 🍆 ➡️ colors
+  colors ➡️ 🖍🆕otherColors
+  🐻 otherColors 🔤pink🔤❗️
+  ```
+
+  In the above example the dictionary in `colors` will still contain only three
+  strings as only `otherColors` was modified.
+
+  To learn more about list literals [see the Language Reference.](../../reference/the-s-package.html#-list)
+📗
+🌍 🕊 🍨🐚Element ⚪️ 🍆🍇
+  🐊 🔂🐚Element🍆
+  🐊 🐽🐚Element🍆
+
+  🖍🆕 data 🍧🐚Element🍆
+
+  📗 Creates an empty list. 📗
+  🆕 🐸 
+  📗
+    Creates an empty list with the given initial capacity.
+
+    Note that this initializer does not place any values in the list. This
+    initializer can be used for better performance if the number of values that
+    will be added is known in advance.
+  📗
+  🆕 🐴 🛅 capacity 🔢 
+  📗 Creates an containing the specified number of a single, repeated value. 📗
+  🆕 🦊 🛅 repeatedValue Element  🛅 count 🔢 
+  🔒❗️ 🍧 ➡️ 🍧🐚Element🍆
+  📗 Prepare this list for mutation. 📗
+  🖍 🔒❗️ 📝 
+  📗 Appends `item` to the end of the list in `O(1)`. 📗
+  🖍 ❗️ 🐻 🛅 item Element  
+  📗
+    Gets the item at *index* in `O(1)`. *index* must be greater than or equal
+    to 0 and less than [[🐔❗️]] or the program will panic.
+  📗
+  ❗️ 🐽 index 🔢 ➡️ ✴️Element 
+  📗
+    Sets *value* at *index*. *index* must be greater than or equal
+    to 0 and less than [[🐔❗️]] or the program will panic.
+  📗
+  🖍 ➡️ 🐽 🛅 value Element  index 🔢 
+  📗
+    Removes the item at `index` and shifts all following items to the left in
+    `O(n)`.
+
+    Returns 👍 unless the index is out of range.
+ 📗
+  🖍 ❗️ 🐨 index 🔢 ➡️ 👌
+  📗
+    Inserts the given values before the element with the given index.
+
+    All items beginning from `index` are shifted to the right and `item` is
+    then inserted at `index`. Complexity: `O(n)`.
+ 📗
+  🖍 ❗️ 🐵 index 🔢 🛅 item Element  ➡️ 👌
+  📗 Returns the number of items in the list. 📗
+  🥯 ❗️ 🐔 ➡️ 🔢 🍇
+    ↩️ 🐔data❓
+  🍉
+  📗 Appends the content of `list` to this list. Complexity: `O(n)`. 📗
+  🖍 ❗️ 🐥 list 🍨🐚Element🍆 
+  📗
+    Removes the last item from the list and returns it in `O(1)`.
+    If the list is empty ✨ is returned.
+  📗
+  🖍 ❗️ 🐼 ➡️ 🍬Element 
+  📗
+    Removes all elements from the list but keeps the list’s capacity.
+
+    This can be much more efficient than using a new list. Complexity: `O(n)`.
+  📗
+  🖍 ❗️ 🐗 
+  📗
+    Ensures that the list is large enough to store at least `capacity` elements.
+
+    You should use this method if you plan to heavily use 🐷 with large indices
+    in order to avoid automatic, useless allocations.
+
+    Complexity: `O(n)`.
+  📗
+  🖍 ❗️ 🐴 🛅 capacity 🔢 
+  📗 Returns the lists current capacity. 📗
+  🥯 ❓ 🐴 ➡️ 🔢 🍇
+    ↩️ 🐴data❓
+  🍉
+  📗
+    Sorts this array in place using the quick sort algorithm.
+
+    `comparator` must return an integer less than, equal to, or greater than 0,
+    if the first argument is considered respectively less than, equal to, or
+    greater than the second.
+  📗
+  🖍 🛅 ❗️ 🦁 comparator 🍇Element Element ➡️🔢🍉 
+  🔒❗️ ✂ first 🔢 last 🔢 comparator 🍇Element Element ➡️🔢🍉 ➡️ 🔢
+  🛅 🔒❗️ 🥃 first 🔢 last 🔢 comparator 🍇Element Element ➡️🔢🍉 
+  ☣️ 🔒❗️ 🔄 a 🔢 b 🔢 
+  📗
+    Shuffles the list in place using a Fisher–Yates shuffle.
+  📗
+  🖍 ❗️ 🐹 
+  📗
+    Calls callback with each element in the list and appends the returned
+    value to the end of a new list.
+  📗
+  ❗️ 🐰 🐚A ⚪️ 🍆callback 🍇Element ➡️A 🍉 ➡️ 🍨🐚A🍆
+  📗
+    Returns a new array with all elements that pass the test implemented by
+    `callback`.
+  📗
+  ❗️ 🐭 callback 🍇Element ➡️👌🍉 ➡️ 🍨🐚Element🍆
+  📗
+    Returns 👍 if at least one element in the list is equal to `value`.
+  📗
+  ❓ 🐦 🐚A 😛🐚Element🍆 🍆🛅 value A  ➡️ 👌
+  📗
+    Tests whether all elements in the array pass the test implemented by
+    `callback`.
+
+    The method immdiately returns 👎 if `callback` returned 👎 for one element.
+  📗
+  ❗️ 🐯 callback 🍇Element ➡️👌🍉 ➡️ 👌
+  📗 Tests whether this array and `other` are equal. 📗
+  🙌 🐚A 😛🐚Element🍆 🍆other 🍨🐚A🍆 ➡️ 👌
+  📗 Returns an iterator to iterate over the elements of this list. 📗
+  🥯 ❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
+    ↩️ 🆕⚫️🆕 🐕❗️
+  🍉
+🍉
+
+📗
+  Wrapper for 🍨.
+
+  This class wraps around [[🍨]] and allows it to be passed by reference.
+
+  It is mainly provided for backwards compatibility and may be removed in a
+  future version.
+📗
+🌍 🐇 🍦🐚Element ⚪️ 🍆🍇
+  🐊 🔂🐚Element🍆
+
+  🖍🆕 array 🍨🐚Element🍆
+
+  📗 Creates an empty list. 📗
+  🔓🆕
+  📗 Appends an element to the list. 📗
+  🔓❗️ 🐻 🛅 item Element  
+  📗 Returns a copy of the list. 📗
+  🥯 🔓❗️ 🥄 ➡️ 🍨🐚Element🍆 🍇
+    ↩️ array
+  🍉
+  🥯 🔓❗️ 🍡 ➡️ 🌳🐚Element🍆 🍇
+    ↩️ 🍡array❗️
+  🍉
+🍉
+
+📗 Binary data. 📗
+🌍 🐇 📇 🍇
+  🐊 🐽🐚💧🍆
+  🐊 🔂🐚💧🍆
+  🐊 😛🐚📇🍆
+
+  🖍🆕 data 🧠
+  🖍🆕 count 🔢
+
+  📗 Creates a 📇 instance by copying the memory from the provided memory. 📗
+  ☣️ 🔓🆕 🧠 memory 🧠 🍼 🛅 count 🔢 
+  🥯 🔓❗️ 🧠 ➡️ 🧠 🍇
+    ↩️ data
+  🍉
+  📗 Returns 👍 if this is equal to *b*. 📗
+  🔓🙌 b 📇 ➡️ 👌
+  📗 Returns the number of bytes represented by this instance. 📗
+  🥯 🔓❗️ 🐔 ➡️ 🔢 🍇
+    ↩️ count
+  🍉
+  📗
+    Returns the value of the byte at *index*. *index* must be greater than 0
+    and less than [[🐔❗️]] or the program will panic.
+  📗
+  🔓❗️ 🐽 index 🔢 ➡️ 💧
+  📗
+    If this object represents the bytes of a UTF8 encoded text this method
+    returns a string representing that text. No value is returned if this
+    object does not represent a valid UTF8 sequence.
+  📗
+  🔓❗️ 🔡 ➡️ 🍬🔡 📻 🔤sDataAsString🔤
+  📗
+    Returns a copy of the data within the given range. This method employes
+    various techniques to make this as efficient as possible.
+  📗
+  🔓❗️ 🔪 from 🔢 🛅 length 🔢 ➡️ 📇
+  📗
+    Finds the first occurrences of *search* in the bytes represented by this
+    instance. Search is done from left to right. No value is returned if
+    *search* cannot be found. 0 is returned if *search* is empty.
+  📗
+  🔓❗️ 🔍 search 📇 offset 🔢 ➡️ 🍬🔢 📻 🔤sDataFindFromIndex🔤
+  📗
+    Creates a new data object by with the bytes of this instance and *b*
+    concatenated.
+  📗
+  🔓➕ b 📇 ➡️ 📇
+  📗 Returns an iterator to iterate over the bytes of this data object. 📗
+  🥯 🛅 🔓❗️ 🍡 ➡️ 🌳🐚💧🍆 🍇
+    ↩️ 🆕🌳🐚💧🍆🆕 🐕❗️
+  🍉
+🍉
+
+🐇 🐝🐚Key ⚪️ Element ⚪️ 🍆🍇
+  🖍🆕 next 🍬🐝🐚Key Element🍆
+  🖍🆕 key Key 
+  🖍🆕 element Element 
+  🖍🆕 hash 🔢
+
+  🔓🆕🍼 🛅 key Key  🍼 🛅 element Element  🍼 🛅 hash 🔢 
+  🔓🆕 👥 pair 🐝🐚Key Element🍆 
+  🥯 🔓❗️ 🐽 ➡️ Element  🍇
+    ↩️ element
+  🍉
+  🔓❗️ 🐷 🛅 ele Element  
+  🥯 🔓❗️ 🔑 ➡️ Key  🍇
+    ↩️ key
+  🍉
+  🥯 🔓❗️ ⚗ ➡️ 🔢 🍇
+    ↩️ hash
+  🍉
+  🥯 🔓❗️ ⏭ ➡️ 🍬🐝🐚Key Element🍆 🍇
+    ↩️ next
+  🍉
+  🔓❗️ 🥌 🛅 newEntry 🍬🐝🐚Key Element🍆 
+  🛅 🔓❗️ 🐻 🛅 newEntry 🐝🐚Key Element🍆 
+🍉
+
+🐇 🌸🐚Element ⚪️ 🍆🍇
+  🖍🆕 capacity 🔢
+  🖍🆕 data 🧠
+
+  🔓🆕🍼 🛅 capacity 🔢 
+  🔓🆕 👥 storage 🌸🐚Element🍆 
+  🥯 🔓❗️ 🧠 ➡️ 🧠 🍇
+    ↩️ data
+  🍉
+  📗 Returns the lists current capacity. 📗
+  🥯 🔓❓ 🐴 ➡️ 🔢 🍇
+    ↩️ capacity
+  🍉
+  📗 Releases everything inside the list. 📗
+  ☣️ 🔓❗️ ♻ 
+🍉
+
+📗
+  Dictionary, holding key value pairs.
+
+  Dictionaries allow you to associate keys with values. 🍯 is implemented as a
+  hash table and is `O(1)` on average and `O(n)` in worth case.
+
+  🍯 is a value type. This means that copies of 🍯 are independent:
+
+  ```
+  🍯 🔤Jane🔤 45 🔤Sharon🔤 22 🔤Bob🔤 64 🍆 ➡️ ages
+  ages ➡️ 🖍🆕agesCopy
+  🐷 agesCopy 🔤Jane🔤 46❗️
+  ```
+
+  In the above example the dictionary in `ages` will still contain 45 for the
+  key `🔤Jane🔤` as only `agesCopy` was modified.
+
+  To learn more about dictionary literals [see the Language Reference.](../../reference/the-s-package.html#-dictionaries)
+📗
+🌍 🕊 🍯🐚Element ⚪️ 🍆🍇
+  🖍🆕 data 🌸🐚Element🍆
+  🖍🆕 count 🔢
+
+  📗 Creates an empty 🍯. 📗
+  🆕 🐸 
+  📗 Creates an empty 🍯 with a capacity of at least *minCapacity*. 📗
+  🆕 🐴 minCapacity 🔢 
+  📗 Prepare this dictionary for mutation. 📗
+  🖍 🔒❗️ 📝 
+  🔒❓ 🔑 entry 🐝🐚🔡Element🍆 key 🔡 hash 🔢 ➡️ 👌
+  🔒❗️ 🔍 key 🔡 ➡️ 🍬🐝🐚🔡Element🍆
+  📗
+    Returns the value assigned to *key*. If key is not in the 🍯 no value is
+    returned.
+  📗
+  ❗️ 🐽 key 🔡 ➡️ 🍬Element 
+  📗
+    Removes *key* and its assigned value from the 🍯. No action is performed if
+    *key* is not in the 🍯.
+  📗
+  🖍 ❗️ 🐨 key 🔡 
+  📗 Assings a value to the provided key. 📗
+  🖍 🛅 ➡️ 🐽 🛅 value Element  🛅 key 🔡 
+  🖍 🛅 🔒❗️ 🦕 
+  📗
+    Returns a list consisting of all keys in this 🍯.
+
+    >!N Note that the keys in the returned list are arbitrarily ordered.
+
+  📗
+  ❗️ 🐙 ➡️ 🍨🐚🔡🍆
+  📗
+    Removes all key-value pairs in this 🍯 and returns the number of deleted
+    items.
+  📗
+  🖍 ❗️ 🐗 ➡️ 🔢
+  📗 Checks whether *key* is in this 🍯. 📗
+  🥯 ❗️ 🐣 key 🔡 ➡️ 👌 🍇
+    ↩️ ❎🔍🐕 key❗ 🙌 🤷‍♀️❗️
+  🍉
+  📗 Returns the number of items. 📗
+  🥯 ❗️ 🐔 ➡️ 🔢 🍇
+    ↩️ count
+  🍉
+  🐇 ❗️ 🛷 n 🔢 ➡️ 🔢
+🍉
+
+📗
+  Execution thread of the program.
+📗
+🌍 📻 🐇 🧵 🍇
+  📗
+    Creates an new thread and calls the provided callback on the newly
+    created thread.
+  📗
+  🛅 🔓🆕🛅 callback 🍇🍉  📻 🔤sThreadNew🔤
+  📗
+    Blocks the calling thread until this thread has finished work.
+  📗
+  🔓❗️ 🛂  📻 🔤sThreadJoin🔤
+  🔒❗️ ♻  📻 🔤sThreadDestruct🔤
+  📗
+    Suspends the calling thread from execution for at least the number of
+    microseconds specified by the argument *microseconds*.
+  📗
+  🐇 🔓❗️ ⏲ microseconds 🔢  📻 🔤sThreadDelay🔤
+🍉
+
+📗
+  Mutex, simple semaphore for thread synchronisation.
+  A mutex is a simple semaphore that can be used to
+  coordinate access to shared data from multiple concurrent threads.
+📗
+🌍 📻 🐇 🔐 🍇
+  📗
+    Creates an new mutex.
+  📗
+  🔓🆕 📻 🔤sMutexNew🔤
+  📗
+    Attempts to lock the mutex and waits until it becomes available if it is
+    already locked.
+  📗
+  🔓❗️ 🔒  📻 🔤sMutexLock🔤
+  📗
+    Unlocks the mutex.
+  📗
+  🔓❗️ 🔓  📻 🔤sMutexUnlock🔤
+  📗
+    Attempts to lock the mutex and returns immediately. Returns 👍 if the mutex
+    could be locked.
+  📗
+  🔓❗️ 🔐 ➡️ 👌 📻 🔤sMutexTryLock🔤
+  🔒❗️ ♻  📻 🔤sMutexDestruct🔤
+🍉
+
+🔗 🔤m🔤 🔤pthread🔤 🔗

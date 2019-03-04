@@ -21,6 +21,10 @@ Value* ASTStringLiteral::generate(FunctionCodeGenerator *fg) const {
     return fg->generator()->stringPool().pool(value_);
 }
 
+Value* ASTCGUTF8Literal::generate(FunctionCodeGenerator *fg) const {
+    return fg->generator()->stringPool().addToPool(value_);
+}
+
 Value* ASTBooleanTrue::generate(FunctionCodeGenerator *fg) const {
     return llvm::ConstantInt::getTrue(fg->generator()->context());
 }
@@ -60,12 +64,13 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
     auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size() / 2), U"", position());
 
     auto dict = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
-    CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, ASTArguments(position(), { capacity }), init);
+    CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, ASTArguments(position(), { capacity }),
+                                                             init, nullptr);
     for (auto it = values_.begin(); it != values_.end(); it++) {
         auto key = *(it++);
         auto args = ASTArguments(position(), { *it, key });
         auto method = type_.typeDefinition()->lookupMethod(U"🐽", Mood::Assignment);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method);
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, args, method, nullptr);
     }
     handleResult(fg, nullptr, dict);
     return fg->builder().CreateLoad(dict);
@@ -76,11 +81,12 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
     auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size()), U"", position());
 
     auto list = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
-    CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, ASTArguments(position(), { capacity }), init);
+    CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, ASTArguments(position(), { capacity }), init,
+                                                             nullptr);
     for (auto &value : values_) {
         auto args = ASTArguments(position(), { value });
         auto method = type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method);
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, args, method, nullptr);
     }
     handleResult(fg, nullptr, list);
     return fg->builder().CreateLoad(list);
@@ -90,16 +96,16 @@ Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
     auto init = type_.typeDefinition()->lookupInitializer(U"🔡");
 
     auto it = values_.begin();
-    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), { *it++ }), init, type_, true);
+    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), { *it++ }), init, type_, nullptr, true);
 
     for (auto end = values_.end(); it != end; it++) {
         auto args = ASTArguments(position(), { *it });
         auto method = type_.typeDefinition()->lookupMethod({ 0x1F43B }, Mood::Imperative);
-        CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_, args, method);
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_, args, method, nullptr);
     }
     auto method = type_.typeDefinition()->lookupMethod({ 0x1F521 }, Mood::Imperative);
     auto str = CallCodeGenerator(fg, CallType::StaticDispatch).generate(builder, type_,
-                                                                        ASTArguments(position()), method);
+                                                                        ASTArguments(position()), method, nullptr);
     fg->release(builder, type_);
     return handleResult(fg, str);
 }

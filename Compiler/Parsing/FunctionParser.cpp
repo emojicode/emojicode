@@ -188,14 +188,14 @@ std::unique_ptr<ASTStatement> FunctionParser::parseMethodAssignment(std::shared_
 }
 
 std::unique_ptr<ASTStatement> FunctionParser::parseErrorHandler(const SourcePosition &position) {
-    auto variableToken = stream_.consumeToken(TokenType::Variable);
+    auto variable = stream_.nextTokenIs(TokenType::Variable) ? stream_.consumeToken().value() : U"";
     auto value = parseExpr(0);
     auto valueBlock = parseBlock();
 
     stream_.consumeToken(TokenType::Else);
     auto errorVariableToken = stream_.consumeToken(TokenType::Variable);
     auto errorBlock = parseBlock();
-    return std::make_unique<ASTErrorHandler>(value, variableToken.value(), errorVariableToken.value(),
+    return std::make_unique<ASTErrorHandler>(value, variable, errorVariableToken.value(),
                                              std::move(valueBlock), std::move(errorBlock), position);
 }
 
@@ -291,8 +291,6 @@ std::shared_ptr<ASTExpr> FunctionParser::parseTypeAsValue(const Token &token) {
 
 std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token) {
     switch (token.value()[0]) {
-        case E_TRAFFIC_LIGHT:
-            return parseUnaryPrefix<ASTIsError>(token);
         case E_BEER_MUG:
             return parseUnaryPrefix<ASTUnwrap>(token);
         case E_SCALES:
@@ -310,6 +308,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
         case E_IZAKAYA_LANTERN:
             return std::make_shared<ASTIsOnlyReference>(stream_.consumeToken(TokenType::Variable).value(),
                                                         token.position());
+        case E_RED_TRIANGLE_POINTED_UP:
+            return std::make_shared<ASTReraise>(parseExpr(0), token.position());
         default: {
             auto value = parseExpr(0);
             return std::make_shared<ASTMethod>(token.value(), value, parseArguments(token.position()),

@@ -37,15 +37,16 @@ Value* ASTInitialization::generateClassInit(FunctionCodeGenerator *fg) const {
     if (typeExpr_->expressionType().isExact()) {
         if (typeExpr_->expressionType().klass()->foreign()) {
             obj = CallCodeGenerator(fg, CallType::StaticContextfreeDispatch)
-                .generate(nullptr, typeExpr_->expressionType(), args_, initializer_);
+                .generate(nullptr, typeExpr_->expressionType(), args_, initializer_, errorPointer());
         }
         else {
-            obj = initObject(fg, args_, initializer_, typeExpr_->expressionType(), initType_ == InitType::ClassStack);
+            obj = initObject(fg, args_, initializer_, typeExpr_->expressionType(), errorPointer(),
+                             initType_ == InitType::ClassStack);
         }
     }
     else {
         obj = CallCodeGenerator(fg, CallType::DynamicDispatchOnType)
-            .generate(typeExpr_->generate(fg), typeExpr_->expressionType(), args_, initializer_);
+            .generate(typeExpr_->generate(fg), typeExpr_->expressionType(), args_, initializer_, errorPointer());
     }
     handleResult(fg, obj);
     return obj;
@@ -57,17 +58,17 @@ Value* ASTInitialization::generateInitValueType(FunctionCodeGenerator *fg) const
         destination = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(typeExpr_->expressionType()));
     }
     CallCodeGenerator(fg, CallType::StaticDispatch)
-            .generate(destination, typeExpr_->expressionType(), args_, initializer_);
+            .generate(destination, typeExpr_->expressionType(), args_, initializer_, errorPointer());
     handleResult(fg, nullptr, destination);
     return vtDestination_ == nullptr ? fg->builder().CreateLoad(destination) : nullptr;
 }
 
 Value* ASTInitialization::initObject(FunctionCodeGenerator *fg, const ASTArguments &args, Function *function,
-                                     const Type &type, bool stackInit) {
+                                     const Type &type, llvm::Value *errorPointer, bool stackInit) {
     auto llvmType = llvm::dyn_cast<llvm::PointerType>(fg->typeHelper().llvmTypeFor(type));
     auto obj = stackInit ? fg->stackAlloc(llvmType) : fg->alloc(llvmType);
     fg->builder().CreateStore(type.klass()->classInfo(), fg->buildGetClassInfoPtrFromObject(obj));
-    return CallCodeGenerator(fg, CallType::StaticDispatch).generate(obj, type, args, function);
+    return CallCodeGenerator(fg, CallType::StaticDispatch).generate(obj, type, args, function, errorPointer);
 }
 
 Value* ASTInitialization::generateMemoryAllocation(FunctionCodeGenerator *fg) const {

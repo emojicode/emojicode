@@ -348,7 +348,7 @@ Lexer::TokenState Lexer::continueIdentifierToken(Token *token, Lexer::TokenConst
         token->value_.push_back(codePoint());
         return TokenState::Continues;
     }
-    if (codePoint() == 0x200D) {
+    if (codePoint() == 0x200D || codePoint() == E_SMALL_ORANGE_DIAMOND) {
         token->value_.push_back(codePoint());
         constState->foundZWJ_ = true;
         return TokenState::Continues;

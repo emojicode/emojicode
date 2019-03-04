@@ -2,3 +2,11 @@ I see you coming and I don't wanna know your name
 An error occured: Too low on charge
 An error occured: Out for lunch
 I see you coming and I don't wanna know your name
+OK0
+An error occured: Closed due to ants
+An error occured: Out for lunch
+OK3
+An error occured: Closed due to ants
+OK5
+An error occured: Too low on charge
+I see you coming and I don't wanna know your name

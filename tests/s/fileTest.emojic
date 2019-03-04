@@ -18,21 +18,26 @@
 
     🍺🆕📄📝 🔤fileTest_writeTest.txt🔤❗️ ➡️ file
 
-    ✏️ file 📇🔤Hello Theo.🔤❗️❗️
+    🍺✏️ file 📇🔤Hello Theo.🔤❗️❗️
     💧 file❗️
 
     ⛔️🐕 🍺🔡 🍺📇🐇📄 🔤fileTest_writeTest.txt🔤❗️❗️ 🙌 🔤Hello Theo.🔤 🔤Write succeeded🔤❗️
 
     🔛 file 6❗️
 
-    ✏️ file 📇🔤Hubertus.🔤❗️❗️
+    🍺✏️ file 📇🔤Hubertus.🔤❗️❗️
     💧 file❗️
 
     ⛔️🐕 🍺🔡 🍺📇🐇📄 🔤fileTest_writeTest.txt🔤❗️❗️ 🙌 🔤Hello Hubertus.🔤 🔤Seek and write succeeded🔤❗️
 
     🚪file❗️
 
-    ⛔️🐕 🚥🆕📄📜 🔤does_not_exist.abc🔤❗ 🔤Non existant file is error🔤❗
+    🥑 🆕📄📜 🔤does_not_exist.abc🔤❗ 🍇
+      ⛔️🐕 👎 🔤Non existant file is error🔤❗
+    🍉
+    🙅‍♂️ error 🍇
+      ⛔️🐕 👍 🔤Non existant file is error🔤❗
+    🍉
   🍉
 🍉
 

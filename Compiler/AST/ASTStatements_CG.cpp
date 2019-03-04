@@ -50,21 +50,10 @@ void ASTReturn::generate(FunctionCodeGenerator *fg) const {
 }
 
 void ASTRaise::generate(FunctionCodeGenerator *fg) const {
-    if (boxed_) {
-        auto box = fg->createEntryAlloca(fg->typeHelper().box());
-        fg->buildMakeNoValue(box);
-        auto ptr = fg->buildGetBoxValuePtr(box, value_->expressionType());
-        fg->builder().CreateStore(value_->generate(fg), ptr);
-        auto val = fg->builder().CreateLoad(box);
-        release(fg);
-        fg->builder().CreateRet(val);
-    }
-    else {
-        auto val = fg->buildSimpleErrorWithError(value_->generate(fg), fg->llvmReturnType());
-        release(fg);
-        buildDestruct(fg);
-        fg->builder().CreateRet(val);
-    }
+    fg->builder().CreateStore(value_->generate(fg), fg->errorPointer());
+    release(fg);
+    buildDestruct(fg);
+    fg->buildErrorReturn();
 }
 
 }  // namespace EmojicodeCompiler

@@ -35,6 +35,9 @@ struct SourcePosition {
     /// @returns The line into which this SourcePosition points or an empty string if the line cannot be
     /// returned for whatever reason.
     std::u32string wholeLine() const;
+
+    /// @returns A string describing the location for use at runtime.
+    std::string toRuntimeString() const;
 };
 
 }  // namespace EmojicodeCompiler

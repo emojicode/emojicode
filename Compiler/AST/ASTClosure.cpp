@@ -74,10 +74,6 @@ void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const 
                     assert(returnType.storageType() == StorageType::Simple);
                     closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.optionalized()));
                     break;
-                case StorageType::SimpleError:
-                    assert(returnType.storageType() == StorageType::Simple);
-                    closure_->setReturnType(std::make_unique<ASTLiteralType>(returnType.errored(expReturn.errorEnum())));
-                    break;
                 case StorageType::Simple:
                     // We cannot deal with this, can we?
                     break;
@@ -103,10 +99,6 @@ void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const 
                     case StorageType::PointerOptional:
                         assert(paramType.storageType() == StorageType::Simple);
                         closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.optionalized()));
-                        break;
-                    case StorageType::SimpleError:
-                        assert(paramType.storageType() == StorageType::Simple);
-                        closure_->setParameterType(i, std::make_unique<ASTLiteralType>(paramType.errored(expParam.errorEnum())));
                         break;
                     case StorageType::Simple:
                         // We cannot deal with this, can we?

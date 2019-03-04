@@ -134,16 +134,6 @@ Type Type::optionalized() const {
     return Type(MakeOptionalType(), *this);
 }
 
-Type Type::errored(const Type &errorEnum) const {
-    assert(unboxedType() != TypeType::Error);
-    if (type() == TypeType::Box) {
-        auto t = *this;
-        t.genericArguments_[0] = t.genericArguments_[0].errored(errorEnum);
-        return t;
-    }
-    return Type(MakeErrorType(), errorEnum, *this);
-}
-
 Type Type::typeOfTypeValue() const {
     if (type() == TypeType::Box) {
         return genericArguments_[0].typeOfTypeValue().boxedFor(boxedFor());
@@ -151,15 +141,6 @@ Type Type::typeOfTypeValue() const {
 
     assert(type() == TypeType::TypeAsValue);
     return genericArguments_[0];
-}
-
-Type Type::errorType() const {
-    if (type() == TypeType::Box) {
-        return genericArguments_[0].errorType().boxedFor(boxedFor());
-    }
-
-    assert(type() == TypeType::Error);
-    return genericArguments_[1];
 }
 
 bool Type::isExact() const {
@@ -320,9 +301,6 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
         return compatibleTo(to.unboxed(), tc, ctargs);
     }
 
-    if (type() == TypeType::Error) {
-        return identicalTo(to, tc, ctargs);
-    }
     if (to.type() == TypeType::Something) {
         return true;
     }
@@ -372,8 +350,6 @@ bool Type::compatibleTo(const Type &to, const TypeContext &tc, std::vector<Commo
             return type() == TypeType::Enum && enumeration() == to.enumeration();
         case TypeType::Someobject:
             return type() == TypeType::Class || type() == TypeType::Someobject;
-        case TypeType::Error:
-            return compatibleTo(to.errorType(), tc);
         case TypeType::MultiProtocol:
             return isCompatibleToMultiProtocol(to, tc, ctargs);
         case TypeType::Protocol:
@@ -489,9 +465,6 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::Someobject:
             case TypeType::NoReturn:
                 return true;
-            case TypeType::Error:
-                return errorType().identicalTo(to.errorType(), tc, ctargs) &&
-                       errorEnum().identicalTo(to.errorEnum(), tc, ctargs);
             case TypeType::MultiProtocol:
                 return std::equal(protocols().begin(), protocols().end(), to.protocols().begin(), to.protocols().end(),
                                   [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
@@ -512,8 +485,6 @@ StorageType Type::storageType() const {
                 return StorageType::PointerOptional;
             }
             return StorageType::SimpleOptional;
-        case TypeType::Error:
-            return StorageType::SimpleError;
         default:
             return StorageType::Simple;
     }
@@ -521,7 +492,7 @@ StorageType Type::storageType() const {
 
 bool Type::isReferenceUseful() const {
     assert(type() != TypeType::StorageExpectation);
-    return type() == TypeType::ValueType || type() == TypeType::Enum || type() == TypeType::Error ||
+    return type() == TypeType::ValueType || type() == TypeType::Enum ||
         type() == TypeType::Box;
 }
 
@@ -543,8 +514,7 @@ bool Type::isManaged() const {
     return type() == TypeType::Class || type() == TypeType::Someobject || type() == TypeType::Box ||
         type() == TypeType::Callable ||
         (type() == TypeType::ValueType && valueType()->isManaged()) ||
-        (type() == TypeType::Optional && optionalType().isManaged()) ||
-        (type() == TypeType::Error && errorType().isManaged());
+        (type() == TypeType::Optional && optionalType().isManaged());
 }
 
 bool Type::isMutable() const {
@@ -620,11 +590,6 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
                 typeName(type.genericArguments().front(), typeContext, string, package);
             }
             string.append("🍉");
-            return;
-        case TypeType::Error:
-            string.append("🚨");
-            typeName(type.errorEnum(), typeContext, string, package);
-            typeName(type.errorType(), typeContext, string, package);
             return;
         case TypeType::GenericVariable:
             if (typeContext.calleeType().canHaveGenericArguments()) {

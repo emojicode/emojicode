@@ -62,14 +62,14 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             }
             case BuiltInType::Multiprotocol:
                 return MultiprotocolCallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_, args_,
-                                                                              method_, multiprotocolN_);
+                                                                              method_, errorPointer(), multiprotocolN_);
             default:
                 break;
         }
     }
 
     return handleResult(fg, CallCodeGenerator(fg, callType_).generate(callee_->generate(fg), calleeType_,
-                                                                      args_, method_));
+                                                                      args_, method_, errorPointer()));
 }
 
 Value* ASTMethod::buildAddOffsetAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset) const {

@@ -11,10 +11,15 @@
 #include "Types/Type.hpp"
 #include <vector>
 
+namespace llvm {
+class Value;
+}  // namespace llvm
+
 namespace EmojicodeCompiler {
 
 class FunctionAnalyser;
 class FunctionCodeGenerator;
+class ASTExpr;
 
 /// This class encapsulates the logic of deinitializing an object when initialization is aborted by raising an error.
 ///
@@ -22,7 +27,7 @@ class FunctionCodeGenerator;
 /// not be fully initialiized. Instead all instance variables that were indeed initialized must be released.
 /// This is what this class does.
 class ErrorSelfDestructing {
-public:
+protected:
     /// Must be called during semantic analysis to determine which variables were already initialized.
     void analyseInstanceVariables(FunctionAnalyser *analyser);
     /// Builds the IR to release all instance variables that were initialized when analyseInstanceVariables() was
@@ -32,6 +37,14 @@ public:
 private:
     std::vector<std::pair<size_t, Type>> release_;
     Class *class_ = nullptr;
+};
+
+class ErrorHandling {
+protected:
+    /// @pre This function must be called before generating `expr`.
+    llvm::Value* prepareErrorDestination(FunctionCodeGenerator *fg, ASTExpr *expr) const;
+
+    llvm::Value* isError(FunctionCodeGenerator *fg, llvm::Value *errorDestination) const;
 };
 
 }  // namespace EmojicodeCompiler

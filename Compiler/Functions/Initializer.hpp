@@ -25,19 +25,10 @@ public:
 
     /// Whether all subclassess are required to implement this initializer as well. Never true for non-class types.
     bool required() const { return required_; }
-    /// Whether this initializer might return an error.
-    bool errorProne() const { return errorType_ != nullptr; }
-    ASTType* errorType() const { return errorType_.get(); }
-
-    void setErrorType(std::unique_ptr<ASTType> type) { errorType_ = std::move(type); }
 
     /// Returns the actual type constructed with this initializer for the given initialized type @c type
     Type constructedType(Type type) const {
-        type = type.unboxed();
-        if (errorProne()) {
-            return type.errored(errorType_->type());
-        }
-        return type;
+        return type.unboxed();
     }
     void addArgumentToVariable(const std::u32string &string, const SourcePosition &p) {
         auto find = std::find(argumentsToVariables_.begin(), argumentsToVariables_.end(), string);
@@ -49,7 +40,6 @@ public:
     const std::vector<std::u32string>& argumentsToVariables() const { return argumentsToVariables_; }
 private:
     bool required_;
-    std::unique_ptr<ASTType> errorType_ = nullptr;
     std::vector<std::u32string> argumentsToVariables_;
 };
 

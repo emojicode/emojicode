@@ -50,6 +50,13 @@ void TypeBodyParser<TypeDef>::parseFunction(Function *function, bool inititalize
     if (!inititalizer) {
         parseReturnType(function);
     }
+    if (stream_.nextTokenIs(E_CONSTRUCTION_SIGN)) {
+        auto token = stream_.consumeToken(TokenType::Identifier);
+        if (inititalizer && !std::is_same<TypeDef, Class>::value) {
+            throw CompilerError(token.position(), "Only classes can have error-prone initializers.");
+        }
+        function->setErrorType(parseType());
+    }
     parseFunctionBody(function);
     if (escaping) {
         function->setMemoryFlowTypeForThis(MFFlowCategory::Escaping);
@@ -147,15 +154,6 @@ Initializer* TypeBodyParser<TypeDef>::doParseInitializer(const std::u32string &n
                                                      FunctionType::ObjectInitializer :
                                                      FunctionType::ValueTypeInitializer,
                                                      attributes.has(Attribute::Inline));
-
-    if (stream_.nextTokenIs(TokenType::Error)) {
-        auto token = stream_.consumeToken(TokenType::Error);
-        if (!std::is_same<TypeDef, Class>::value) {
-            throw CompilerError(token.position(), "Only classes can have error-prone initializers.");
-        }
-        initializer->setErrorType(parseType());
-    }
-
     parseFunction(initializer.get(), true, attributes.has(Attribute::Escaping));
     return typeDef_->addInitializer(std::move(initializer));
 }
@@ -204,7 +202,7 @@ void TypeBodyParser<TypeDef>::parse() {
                 if (stream_.nextTokenIs(TokenType::Identifier) && !stream_.nextTokenIs(E_RADIO)
                     && !stream_.nextTokenIs(E_BABY_BOTTLE) && !stream_.nextTokenIs(E_LEFT_LUGGAGE)
                     && !stream_.nextTokenIs(E_OPEN_LOCK)  && !stream_.nextTokenIs(E_CLOSED_LOCK_WITH_KEY)
-                    && !stream_.nextTokenIs(E_LOCK)) {
+                    && !stream_.nextTokenIs(E_LOCK) && !stream_.nextTokenIs(E_CONSTRUCTION_SIGN)) {
                     name = stream_.consumeToken(TokenType::Identifier).value();
                 }
                 parseInitializer(name, attributes, documentation, accessLevel, token.position());

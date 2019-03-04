@@ -73,27 +73,39 @@ void ASTRepeatWhile::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
 }
 
 void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
-    Type type = analyser->expect(TypeExpectation(false, false), &value_);
+    auto call = dynamic_cast<ASTCall *>(value_.get());
+    if (call == nullptr) {
+        throw CompilerError(position(), "Expression is not a call.");
+    }
+    call->setHandledError();
 
-    if (type.unboxedType() != TypeType::Error) {
-        throw CompilerError(position(), "🥑 can only be used with 🚨.");
+    valueType_ = analyser->expect(TypeExpectation(false, false), &value_);
+
+    if (!call->isErrorProne()) {
+        throw CompilerError(position(), "Provided call is not error-prone.");
+    }
+
+    if (valueType_.type() == TypeType::NoReturn && !valueVarName_.empty()) {
+        analyser->compiler()->error(CompilerError(position(),
+                                                  "Call does not return a value but variable was provided."));
     }
 
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
 
-    valueIsBoxed_ = type.storageType() == StorageType::Box;
-    valueType_ = type.errorType();
-    auto &var = analyser->scoper().currentScope().declareVariable(valueVarName_, valueType_, true, position());
-    var.initialize();
-    valueVar_ = var.id();
+    if (!valueVarName_.empty()) {
+        auto &var = analyser->scoper().currentScope().declareVariable(valueVarName_, valueType_, true, position());
+        var.initialize();
+        valueVar_ = var.id();
+    }
     valueBlock_.analyse(analyser);
     valueBlock_.popScope(analyser);
     analyser->pathAnalyser().endBranch();
 
     analyser->pathAnalyser().beginBranch();
     analyser->scoper().pushScope();
-    auto &errVar = analyser->scoper().currentScope().declareVariable(errorVarName_, type.errorEnum(), true, position());
+    errorType_ = call->errorType();
+    auto &errVar = analyser->scoper().currentScope().declareVariable(errorVarName_, call->errorType(), true, position());
     errVar.initialize();
     errorVar_ = errVar.id();
     errorBlock_.analyse(analyser);
@@ -105,10 +117,12 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 
 void ASTErrorHandler::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
     analyser->take(value_.get());
-    analyser->recordVariableSet(valueVar_, value_.get(), valueType_);
+    if (!valueVarName_.empty()) {
+        analyser->recordVariableSet(valueVar_, value_.get(), valueType_);
+    }
     valueBlock_.analyseMemoryFlow(analyser);
     analyser->popScope(&valueBlock_);
-    analyser->recordVariableSet(errorVar_, nullptr, value_->expressionType().errorEnum());
+    analyser->recordVariableSet(errorVar_, nullptr, errorType_);
     errorBlock_.analyseMemoryFlow(analyser);
     analyser->popScope(&errorBlock_);
 }

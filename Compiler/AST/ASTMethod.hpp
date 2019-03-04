@@ -17,10 +17,10 @@ namespace EmojicodeCompiler {
 
 class FunctionAnalyser;
 
-class ASTMethodable : public ASTExpr {
+class ASTMethodable : public ASTCall {
 protected:
-    explicit ASTMethodable(const SourcePosition &p) : ASTExpr(p), args_(p) {}
-    ASTMethodable(const SourcePosition &p, ASTArguments args) : ASTExpr(p), args_(std::move(args)) {}
+    explicit ASTMethodable(const SourcePosition &p) : ASTCall(p), args_(p) {}
+    ASTMethodable(const SourcePosition &p, ASTArguments args) : ASTCall(p), args_(std::move(args)) {}
 
     Type analyseMethodCall(ExpressionAnalyser *analyser, const std::u32string &name,
                            std::shared_ptr<ASTExpr> &callee);
@@ -46,6 +46,9 @@ protected:
     Type calleeType_ = Type::noReturn();
     size_t multiprotocolN_ = 0;
     Function *method_ = nullptr;
+
+    bool isErrorProne() const override;
+    const Type& errorType() const override;
 
 private:
     bool builtIn(ExpressionAnalyser *analyser, const Type &type, const std::u32string &name);

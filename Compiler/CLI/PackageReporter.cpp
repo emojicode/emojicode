@@ -86,9 +86,6 @@ void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
         case TypeType::Optional:
             reportTypeTypeAndGenericArgs("Optional", type, tc, { type.optionalType() });
             break;
-        case TypeType::Error:
-            reportTypeTypeAndGenericArgs("Error", type, tc, { type.errorEnum(), type.errorType() });
-            break;
         case TypeType::TypeAsValue:
             reportTypeTypeAndGenericArgs("TypeAsValue", type, tc, { type.typeOfTypeValue() });
             break;
@@ -164,13 +161,12 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
     writer_.Key("final");
     writer_.Bool(function->final());
 
-    if (auto initializer = dynamic_cast<Initializer *>(function)) {
-        if (initializer->errorProne()) {
-            writer_.Key("errorType");
-            reportType(initializer->errorType()->type(), tc);
-        }
+    if (function->errorProne()) {
+        writer_.Key("errorType");
+        reportType(function->errorType()->type(), tc);
     }
-    else {
+
+    if (!isFullyInitializedCheckRequired(function->functionType())) {
         writer_.Key("returnType");
         reportType(function->returnType()->type(), tc);
 

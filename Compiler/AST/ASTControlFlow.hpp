@@ -67,7 +67,7 @@ private:
     std::u32string varName_;
 };
 
-class ASTErrorHandler final : public ASTStatement {
+class ASTErrorHandler final : public ASTStatement, public ErrorHandling {
 public:
     ASTErrorHandler(std::shared_ptr<ASTExpr> value, std::u32string varNameValue,
                     std::u32string varNameError, ASTBlock valueBlock, ASTBlock errorBlock,
@@ -83,9 +83,9 @@ public:
     
 private:
     std::shared_ptr<ASTExpr> value_;
-    bool valueIsBoxed_ = false;
     ASTBlock valueBlock_;
     Type valueType_ = Type::noReturn();
+    Type errorType_ = Type::noReturn();
     ASTBlock errorBlock_;
     VariableID valueVar_;
     VariableID errorVar_;

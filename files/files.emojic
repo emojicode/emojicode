@@ -4,30 +4,6 @@
   methods to work with directories, create symbolic links etc.
 📘
 
-📗 Errors 📗
-🌍 🦃 🌧 🍇
-  📗 Indicates a generic error. 📗
-  🔘 🔴
-  📗 Permission denied 📗
-  🔘 🚧
-  📗 File exists 📗
-  🔘 🗿
-  📗 Not enough space. 📗
-  🔘 🐁
-  📗 Function not supported. 📗
-  🔘 ⛔️
-  📗 Mathematics argument out of domain of function. 📗
-  🔘 🚳
-  📗 Invalid argument. 📗
-  🔘 🚯
-  📗 Illegal byte sequence. 📗
-  🔘 🛃
-  📗 Result too large. 📗
-  🔘 🗻
-  📗 Operation not permitted. 📗
-  🔘 🚷
-🍉
-
 📗
     The 📑 class has many class methods which allow you to work with the file
     system.
@@ -39,25 +15,25 @@
     This method creates a directory at the given path.
     If the directory already exists an error is returned.
   📗
-  🐇❗️ 📁 path 🔡 ➡️ 🍬🌧 📻 🔤filesFsMakeDir🔤
+  🐇❗️ 📁 path 🔡 🚧🚧🔸↕️  📻 🔤filesFsMakeDir🔤
   📗
     This method deletes the file at the given path.
     >!N This method may not be used to delete directories.
   📗
-  🐇❗️ 🔫 path 🔡 ➡️ 🍬🌧 📻 🔤filesFsDelete🔤
+  🐇❗️ 🔫 path 🔡 🚧🚧🔸↕️  📻 🔤filesFsDelete🔤
   📗
     This method deletes an *empty* directory at the given path.
     If you need to delete a whole directory hierarchy use 💣.
   📗
-  🐇❗️ 🔥 path 🔡 ➡️ 🍬🌧 📻 🔤filesFsDeleteDir🔤
+  🐇❗️ 🔥 path 🔡 🚧🚧🔸↕️  📻 🔤filesFsDeleteDir🔤
   📗
     This method deletes an directory with its content. The method recursively
     descends the directory hierarchy and deletes every file or directory it
     finds. Once finished, it deletes the directory itself.
   📗
-  🐇❗️ 💣 path 🔡 ➡️ 🍬🌧 📻 🔤filesFsRecursiveDeleteDir🔤
+  🐇❗️ 💣 path 🔡 🚧🚧🔸↕️  📻 🔤filesFsRecursiveDeleteDir🔤
   📗 This method creates a symbolic link to another. 📗
-  🐇❗️ 🔗 originalFile 🔡 destination 🔡 ➡️ 🍬🌧 📻 🔤filesFsSymlink🔤
+  🐇❗️ 🔗 originalFile 🔡 destination 🔡 🚧🚧🔸↕️  📻 🔤filesFsSymlink🔤
   📗 Determines whether a file exists at the given path. 📗
   🐇❗️ 📃 path 🔡 ➡️ 👌 📻 🔤filesFsExists🔤
   📗
@@ -76,13 +52,13 @@
     Determines the size of a file at a given path. If the file cannot be found
     or any other error occurs the method returns -1.
   📗
-  🐇❗️ 📏 path 🔡 ➡️ 🚨🌧🔢 📻 🔤filesFsSize🔤
+  🐇❗️ 📏 path 🔡 ➡️ 🔢 🚧🚧🔸↕️  📻 🔤filesFsSize🔤
   📗
     Returns an absolute pathname derived from `path` that
     resolves to the same directory entry, whose resolution does not involve `.`,
     `..`, or symbolic links. On failure an error is returned.
   📗
-  🐇❗️ ⛓ path 🔡 ➡️ 🚨🌧🔡 📻 🔤filesFsAbsolute🔤
+  🐇❗️ ⛓ path 🔡 ➡️ 🔡 🚧🚧🔸↕️  📻 🔤filesFsAbsolute🔤
 🍉
 
 📗
@@ -103,24 +79,24 @@
 
     You cannot read from a file opened with this initializer.
   📗
-  🆕📝 🚨🌧 message 🔡 📻 🔤filesFileNewWriting🔤
+  🆕📝 message 🔡 🚧🚧🔸↕️  📻 🔤filesFileNewWriting🔤
   📗
     Opens the file at the given path for reading. The file pointer is set to the
     beginning of the file.
 
     You cannot write to a file opened with this initializer.
   📗
-  🆕📜 🚨🌧 message 🔡 📻 🔤filesFileNewReading🔤
+  🆕📜 message 🔡 🚧🚧🔸↕️  📻 🔤filesFileNewReading🔤
 
   📗 Write the data at the current file pointer position. 📗
-  ❗️ ✏️ data 📇 ➡️ 🍬🌧 📻 🔤filesFileWrite🔤
+  ❗️ ✏️ data 📇 🚧🚧🔸↕️  📻 🔤filesFileWrite🔤
 
   📗
     Reads as many bytes as specified from the file pointer position.
 
     Keep in mind that a byte is not equal to one character!
   📗
-  ❗️ 📓 bytesToRead 🔢 ➡️ 🚨🌧📇 📻 🔤filesFileReadBytes🔤
+  ❗️ 📓 bytesToRead 🔢 ➡️ 📇 🚧🚧🔸↕️  📻 🔤filesFileReadBytes🔤
 
   📗 Seeks the file pointer to the end of the file. 📗
   ❗️ 🔚 📻 🔤filesFileSeekToEnd🔤
@@ -131,14 +107,14 @@
     This class method tries to write the given 📇 to the given path. If the file
     already exists, it will be overwritten.
   📗
-  🐇❗️ 📻 path 🔡 data 📇 ➡️ 🍬🌧 📻 🔤filesFileWriteToFile🔤
+  🐇❗️ 📻 path 🔡 data 📇 🚧🚧🔸↕️  📻 🔤filesFileWriteToFile🔤
 
   📗
     This class method tries to read the file at given path `path` and returns
     a 📇 object representing its content on success. On failure an error
     is returned.
   📗
-  🐇❗️ 📇 path 🔡 ➡️ 🚨🌧📇 📻 🔤filesFileReadFile🔤
+  🐇❗️ 📇 path 🔡 ➡️ 📇 🚧🚧🔸↕️  📻 🔤filesFileReadFile🔤
 
 💭🔜
   📗 Returns a 📄 object representing the **standard output**. 📗

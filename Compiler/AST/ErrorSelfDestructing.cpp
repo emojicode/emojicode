@@ -11,6 +11,7 @@
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Scoping/SemanticScoper.hpp"
 #include "Types/Class.hpp"
+#include "AST/ASTExpr.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -37,6 +38,21 @@ void ErrorSelfDestructing::buildDestruct(FunctionCodeGenerator *fg) const {
                                                                  llvm::Type::getInt8PtrTy(fg->generator()->context())));
         });
     }
+}
+
+llvm::Value* ErrorHandling::prepareErrorDestination(FunctionCodeGenerator *fg, ASTExpr *expr) const {
+    auto call = dynamic_cast<ASTCall *>(expr);
+    auto type = fg->typeHelper().llvmTypeFor(call->errorType());
+    auto alloca = fg->createEntryAlloca(type, "error");
+    fg->builder().CreateStore(llvm::Constant::getNullValue(type), alloca);
+    call->setErrorPointer(alloca);
+    return alloca;
+}
+
+llvm::Value* ErrorHandling::isError(FunctionCodeGenerator *fg, llvm::Value *errorDestination) const {
+    auto type = llvm::dyn_cast<llvm::PointerType>(errorDestination->getType()->getPointerElementType());
+    auto null = llvm::ConstantPointerNull::get(type);
+    return fg->builder().CreateICmpNE(null, fg->builder().CreateLoad(errorDestination));
 }
 
 }  // namespace EmojicodeCompiler

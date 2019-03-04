@@ -12,8 +12,6 @@ namespace EmojicodeCompiler {
 
 bool TypeExpectation::requiresBox(const Type &type) const {
     switch (type.type()) {
-        case TypeType::Error:
-            return requiresBox(type.errorType().unboxed());
         case TypeType::Optional:
             return requiresBox(type.optionalType().unboxed());
         case TypeType::Something:

@@ -10,17 +10,14 @@
 #include "Generation/Declarator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Lex/SourceManager.hpp"
+#include "Generation/CallCodeGenerator.hpp"
+#include "Compiler.hpp"
+#include "ASTLiterals.hpp"
+#include "Types/Class.hpp"
 #include <llvm/Support/raw_ostream.h>
 #include <sstream>
 
 namespace EmojicodeCompiler {
-
-Value* ASTIsError::generate(FunctionCodeGenerator *fg) const {
-    if (expr_->expressionType().storageType() == StorageType::Box) {
-        return fg->buildHasNoValueBox(expr_->generate(fg));
-    }
-    return fg->buildGetIsError(expr_->generate(fg));
-}
 
 Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
     if (error_) {
@@ -34,8 +31,7 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
 
     fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
         std::stringstream str;
-        str << "Unwrapped an optional that contained no value.";
-        str << " (" << position().file->path() << ":" << position().line << ":" << position().character << ")";
+        str << "Unwrapped an optional that contained no value. (" << position().toRuntimeString() << ")";
         auto string = fg->builder().CreateGlobalStringPtr(str.str());
         fg->builder().CreateCall(fg->generator()->declarator().panic(), string);
         fg->builder().CreateUnreachable();
@@ -48,23 +44,29 @@ Value* ASTUnwrap::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
-    auto error = expr_->generate(fg);
-    auto isBox = expr_->expressionType().storageType() == StorageType::Box;
-    auto hasNoValue = isBox ? fg->buildHasNoValueBox(error) : fg->buildGetIsError(error);
-
-    fg->createIfElseBranchCond(hasNoValue, [this, fg]() {
-        std::stringstream str;
-        str << "Unwrapped an error that contained an error.";
-        str << " (" << position().file->path() << ":" << position().line << ":" << position().character << ")";
-        auto string = fg->builder().CreateGlobalStringPtr(str.str());
-        fg->builder().CreateCall(fg->generator()->declarator().panic(), string);
+    auto errorDest = prepareErrorDestination(fg, expr_.get());
+    auto value = expr_->generate(fg);
+    fg->createIfElseBranchCond(isError(fg, errorDest), [this, fg, errorDest]() {
+        auto error = fg->compiler()->sError;
+        auto string = std::make_shared<ASTCGUTF8Literal>(position().toRuntimeString(), position());
+        CallCodeGenerator(fg, CallType::StaticDispatch).generate(fg->builder().CreateLoad(errorDest),
+                                                                 Type(error), ASTArguments(position(), { string }),
+                                                                 error->lookupMethod(U"🤯", Mood::Imperative), nullptr);
         fg->builder().CreateUnreachable();
         return false;
     }, []() { return true; });
-    if (isBox) {
-        return error;
-    }
-    return fg->builder().CreateExtractValue(error, 1);
+    return value;
 }
-    
+
+Value* ASTReraise::generate(FunctionCodeGenerator *fg) const {
+    dynamic_cast<ASTCall *>(expr_.get())->setErrorPointer(fg->errorPointer());
+    auto value = expr_->generate(fg);
+    fg->createIfElseBranchCond(isError(fg, fg->errorPointer()), [fg]() {
+        // TODO: destroy
+        fg->buildErrorReturn();
+        return false;
+    }, []() { return true; });
+    return value;
+}
+
 }  // namespace EmojicodeCompiler

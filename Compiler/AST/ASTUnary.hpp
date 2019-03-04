@@ -11,20 +11,11 @@
 
 #include <utility>
 #include "ASTExpr.hpp"
+#include "ErrorSelfDestructing.hpp"
 
 namespace EmojicodeCompiler {
 
-class ASTIsError final : public ASTUnary {
-    using ASTUnary::ASTUnary;
-public:
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-
-    void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
-};
-
-class ASTUnwrap final : public ASTUnaryMFForwarding {
+class ASTUnwrap final : public ASTUnaryMFForwarding, public ErrorHandling {
     using ASTUnaryMFForwarding::ASTUnaryMFForwarding;
 public:
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
@@ -36,6 +27,17 @@ private:
     bool error_ = false;
 
     Value* generateErrorUnwrap(FunctionCodeGenerator *fg) const;
+};
+
+class ASTReraise final : public ASTUnary, public ErrorHandling {
+    using ASTUnary::ASTUnary;
+public:
+    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
+    Value* generate(FunctionCodeGenerator *fg) const override;
+
+    void toCode(PrettyStream &pretty) const override;
+
+    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
 };
 
 }  // namespace EmojicodeCompiler

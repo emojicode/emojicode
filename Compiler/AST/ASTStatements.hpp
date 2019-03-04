@@ -139,9 +139,6 @@ public:
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
     void toCode(PrettyStream &pretty) const override;
-
-private:
-    bool boxed_ = false;
 };
 
 } // namespace EmojicodeCompiler

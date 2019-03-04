@@ -123,7 +123,7 @@ llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationCo
     if (hasThisArgument(function) && !function->isClosure()) {
         addParamDereferenceable(function->typeContext().calleeType(), i, fn, false);
         if (function->functionType() == FunctionType::ObjectInitializer) {
-            if (!dynamic_cast<Initializer*>(function)->errorProne()) {
+            if (!function->errorProne()) {
                 fn->addParamAttr(i, llvm::Attribute::Returned);
                 addParamDereferenceable(function->typeContext().calleeType(), 0, fn, true);
             }
@@ -138,8 +138,7 @@ llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationCo
 
         i++;
     }
-    else if (function->functionType() == FunctionType::ObjectInitializer
-             && !dynamic_cast<Initializer*>(function)->errorProne()) {  // foreign initializers
+    else if (function->functionType() == FunctionType::ObjectInitializer && !function->errorProne()) {  // foreign initializers
         addParamDereferenceable(function->typeContext().calleeType(), 0, fn, true);
     }
     for (auto &param : function->parameters()) {

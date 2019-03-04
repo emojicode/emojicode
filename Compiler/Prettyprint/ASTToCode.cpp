@@ -203,15 +203,15 @@ void ASTThis::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << "🐕";
 }
-
-void ASTIsError::toCode(PrettyStream &pretty) const {
-    pretty.printComments(position());
-    pretty << "🚥" << expr_;
-}
-
+    
 void ASTUnwrap::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     pretty << " 🍺" << expr_;
+}
+
+void ASTReraise::toCode(PrettyStream &pretty) const {
+    pretty.printComments(position());
+    pretty << "🔺" << expr_;
 }
 
 void ASTNumberLiteral::toCode(PrettyStream &pretty) const {
@@ -334,10 +334,6 @@ void ASTTypeId::toCodeType(PrettyStream &pretty) const {
         }
         pretty.refuseOffer() << "🍆";
     }
-}
-
-void ASTErrorType::toCodeType(PrettyStream &pretty) const {
-    pretty << "🚨" << enum_ << content_;
 }
 
 void ASTCallableType::toCodeType(PrettyStream &pretty) const {

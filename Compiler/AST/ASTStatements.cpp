@@ -119,23 +119,15 @@ void ASTReturn::returnReference(FunctionAnalyser *analyser, Type type) {
 
 void ASTRaise::analyse(FunctionAnalyser *analyser) {
     analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
+    if (!analyser->function()->errorProne()) {
+        throw CompilerError(position(), "Function is not declared error-prone.");
+    }
+
+    analyser->expectType(analyser->function()->errorType()->type(), &value_);
+
     if (isReturnForbidden(analyser->function()->functionType())) {
-        auto *initializer = dynamic_cast<const Initializer *>(analyser->function());
-        if (!initializer->errorProne()) {
-            throw CompilerError(position(), "Initializer is not declared error-prone.");
-        }
-        analyser->expectType(initializer->errorType()->type(), &value_);
         analyseInstanceVariables(analyser);
-        return;
     }
-
-    if (analyser->function()->returnType()->type().unboxedType() != TypeType::Error) {
-        throw CompilerError(position(), "Function is not declared to return a 🚨.");
-    }
-
-    boxed_ = analyser->function()->returnType()->type().storageType() == StorageType::Box;
-
-    analyser->expectType(analyser->function()->returnType()->type().errorEnum(), &value_);
 }
 
 void ASTReturn::analyseMemoryFlow(MFFunctionAnalyser *analyser) {

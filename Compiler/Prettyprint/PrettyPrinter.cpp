@@ -247,9 +247,12 @@ void PrettyPrinter::printProtocolConformances(TypeDefinition *typeDef, const Typ
 
 void PrettyPrinter::printInstanceVariables(TypeDefinition *typeDef, const TypeContext &typeContext) {
     for (auto &ivar : typeDef->instanceVariables()) {
+        if (interface_ && typeDef->instanceScope().getLocalVariable(ivar.name).inherited()) {
+            continue;
+        }
         prettyStream_.indent() << "🖍🆕 " << ivar.name << " " << ivar.type;
         if (ivar.expr != nullptr) {
-            prettyStream_ << " " << ivar.expr;
+            prettyStream_ << " ⬅️ " << ivar.expr;
         }
         prettyStream_ << "\n";
     }
@@ -334,9 +337,6 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
             if (initializer->name().front() != E_NEW_SIGN) {
                 prettyStream_ << " " << function->name() << " ";
             }
-            if (initializer->errorProne()) {
-                prettyStream_ << "🚨" << initializer->errorType() << " ";
-            }
         }
         else {
             if (!hasInstanceScope(function->functionType()) || operatorType(function->name()) == OperatorType::Invalid) {
@@ -349,6 +349,12 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
         printGenericParameters(function);
         printArguments(function);
         printReturnType(function);
+
+        if (function->errorType() != nullptr && !(function->errorType()->wasAnalysed() &&
+            function->errorType()->type().type() == TypeType::NoReturn)) {
+            prettyStream_ << "🚧" << function->errorType() << " ";
+        }
+
         if (!function->externalName().empty()) {
             prettyStream_ << " 📻 🔤" << function->externalName() << "🔤";
         }

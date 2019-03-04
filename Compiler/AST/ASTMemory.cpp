@@ -21,7 +21,8 @@ void ASTRetain::generate(FunctionCodeGenerator *fg) const {
 
 void ASTSuperDeinitializer::generate(FunctionCodeGenerator *fg) const {
     CallCodeGenerator(fg, CallType::StaticDispatch).generate(fg->thisValue(), Type::noReturn(),
-                                                             ASTArguments(position(), Mood::Imperative), deinit_);
+                                                             ASTArguments(position(), Mood::Imperative), deinit_,
+                                                             nullptr);
 }
 
 } // namespace EmojicodeCompiler

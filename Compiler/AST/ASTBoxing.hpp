@@ -45,8 +45,6 @@ protected:
     /// @param destination Pointer to the location at which the value type shall be initialized.
     void valueTypeInit(FunctionCodeGenerator *fg, Value *destination) const;
 
-    Value *getSimpleError(Value *value, FunctionCodeGenerator *fg) const;
-
 private:
     bool init_ = false;
 };
@@ -74,21 +72,9 @@ class ASTBoxToSimpleOptional final : public ASTBoxing {
     void toCode(PrettyStream &pretty) const override {}
 };
 
-class ASTBoxToSimpleError final : public ASTBoxing {
-    using ASTBoxing::ASTBoxing;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(PrettyStream &pretty) const override {}
-};
-
 class ASTSimpleToSimpleOptional final : public ASTBoxing {
     using ASTBoxing::ASTBoxing;
     Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(PrettyStream &pretty) const override {}
-};
-
-class ASTSimpleToSimpleError final : public ASTBoxing {
-    using ASTBoxing::ASTBoxing;
-    Value *generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override {}
 };
 
@@ -106,12 +92,6 @@ protected:
 };
 
 class ASTSimpleOptionalToBox final : public ASTToBox {
-    using ASTToBox::ASTToBox;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-    void toCode(PrettyStream &pretty) const override {}
-};
-
-class ASTSimpleErrorToBox final : public ASTToBox {
     using ASTToBox::ASTToBox;
     Value* generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override {}

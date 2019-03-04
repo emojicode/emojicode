@@ -35,10 +35,11 @@ class CallCodeGenerator {
 public:
     CallCodeGenerator(FunctionCodeGenerator *fg, CallType callType) : fg_(fg), callType_(callType) {}
     llvm::Value* generate(llvm::Value *callee, const Type &type, const ASTArguments &astArgs,
-                          Function *function);
+                          Function *function, llvm::Value *errorPointer);
 
 protected:
-    std::vector<llvm::Value *> createArgsVector(llvm::Value *callee, const ASTArguments &args) const;
+    std::vector<llvm::Value *> createArgsVector(llvm::Value *callee, const ASTArguments &args,
+                                                llvm::Value *errorPointer) const;
     FunctionCodeGenerator* fg() const { return fg_; }
     llvm::Value *createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
                                                const std::vector<Type> &genericArgs,
@@ -60,7 +61,7 @@ class MultiprotocolCallCodeGenerator : protected CallCodeGenerator {
 public:
     using CallCodeGenerator::CallCodeGenerator;
     llvm::Value* generate(llvm::Value *callee, const Type &calleeType, const ASTArguments &args,
-                          Function *function, size_t multiprotocolN);
+                          Function *function, llvm::Value *errorPointer, size_t multiprotocolN);
 };
 
 }  // namespace EmojicodeCompiler

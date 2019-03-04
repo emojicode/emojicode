@@ -165,11 +165,17 @@ public:
     MFFlowCategory memoryFlowTypeForThis() const { return memoryFlowTypeThis_; }
     void setMemoryFlowTypeForThis(MFFlowCategory type) { memoryFlowTypeThis_ = type; }
 
+    /// Whether this initializer might return an error.
+    bool errorProne() const { return errorType_ != nullptr && errorType_->type().type() != TypeType::NoReturn; }
+    ASTType* errorType() const { return errorType_.get(); }
+    void setErrorType(std::unique_ptr<ASTType> type) { errorType_ = std::move(type); }
+
     virtual ~Function();
 
 private:
     std::vector<Parameter> parameters_;
     std::unique_ptr<ASTType> returnType_;
+    std::unique_ptr<ASTType> errorType_;
 
     std::unique_ptr<ASTBlock> ast_;
     SourcePosition position_;

@@ -55,9 +55,6 @@ std::unique_ptr<ASTType> AbstractParser::parseType() {
         }
         return std::make_unique<ASTLiteralType>(Type::something());
     }
-    if (stream_.nextTokenIs(TokenType::Error)) {
-        return parseErrorType(optional);
-    }
     auto type = parseTypeMain();
     type->setOptional(optional);
     if (reference) {
@@ -122,17 +119,6 @@ std::unique_ptr<ASTType> AbstractParser::parseCallableType() {
 std::unique_ptr<ASTType> AbstractParser::parseGenericVariable() {
     auto varToken = stream_.consumeToken(TokenType::Variable);
     return std::make_unique<ASTGenericVariable>(varToken.value(), varToken.position(), package_);
-}
-
-std::unique_ptr<ASTType> AbstractParser::parseErrorType(bool optional) {
-    auto token = stream_.consumeToken(TokenType::Error);
-    if (optional) {
-        throw CompilerError(token.position(), "The error type itself cannot be an optional. "
-                                              "Maybe you meant to make the contained type an optional?");
-    }
-
-    auto errorType = parseType();
-    return std::make_unique<ASTErrorType>(std::move(errorType), parseType(), token.position(), package_);
 }
 
 void AbstractParser::parseParameters(Function *function, bool initializer) {

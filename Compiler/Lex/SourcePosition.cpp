@@ -8,6 +8,7 @@
 
 #include "SourcePosition.hpp"
 #include "SourceManager.hpp"
+#include <sstream>
 
 namespace EmojicodeCompiler {
 
@@ -20,6 +21,15 @@ std::u32string SourcePosition::wholeLine() const {
     auto length = line < file->lines().size() ? file->lines()[line] - begin
                                               : file->file().find_first_of('\n', begin) + 1 - begin;
     return file->file().substr(begin, length);
+}
+
+std::string SourcePosition::toRuntimeString() const {
+    if (isUnknown()) {
+        return "(unknown location)";
+    }
+    std::stringstream str;
+    str << file->path() << ":" << line << ":" << character;
+    return str.str();
 }
 
 } // namespace EmojicodeCompiler

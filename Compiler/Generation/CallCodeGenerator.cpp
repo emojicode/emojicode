@@ -18,8 +18,8 @@
 namespace EmojicodeCompiler {
 
 llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, const ASTArguments &astArgs,
-                                         Function *function) {
-    auto args = createArgsVector(callee, astArgs);
+                                         Function *function, llvm::Value *errorPointer) {
+    auto args = createArgsVector(callee, astArgs, errorPointer);
 
     assert(function != nullptr);
     switch (callType_) {
@@ -67,7 +67,8 @@ llvm::Value* CallCodeGenerator::buildFindProtocolConformance(const std::vector<l
     return fg()->buildFindProtocolConformance(args.front(), boxInfo, id);
 }
 
-std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, const ASTArguments &args) const {
+std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, const ASTArguments &args,
+                                                         llvm::Value *errorPointer) const {
     std::vector<Value *> argsVector;
     if (callType_ != CallType::StaticContextfreeDispatch) {
         argsVector.emplace_back(callee);
@@ -75,16 +76,19 @@ std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, co
     for (auto &arg : args.args()) {
         argsVector.emplace_back(arg->generate(fg_));
     }
+    if (errorPointer != nullptr) {
+        argsVector.emplace_back(errorPointer);
+    }
     return argsVector;
 }
 
 llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const Type &calleeType,
                                                       const ASTArguments &args, Function* function,
-                                                      size_t multiprotocolN) {
+                                                      llvm::Value *errorPointer, size_t multiprotocolN) {
     assert(calleeType.type() == TypeType::Box);
     assert(function != nullptr);
 
-    auto argsv = createArgsVector(callee, args);
+    auto argsv = createArgsVector(callee, args, errorPointer);
 
     llvm::Value *conformance;
     if (calleeType.boxedFor().type() != TypeType::MultiProtocol) {

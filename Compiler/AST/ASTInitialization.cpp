@@ -42,7 +42,16 @@ Type ASTInitialization::analyse(ExpressionAnalyser *analyser, const TypeExpectat
     }
 
     analyser->analyseFunctionCall(&args_, type, init);
+    ensureErrorIsHandled(analyser);
     return init->constructedType(type);
+}
+
+const Type& ASTInitialization::errorType() const {
+    return initializer_->errorType()->type();
+}
+
+bool ASTInitialization::isErrorProne() const {
+    return initializer_->errorProne();
 }
 
 Type ASTInitialization::analyseEnumInit(ExpressionAnalyser *analyser, Type &type) {

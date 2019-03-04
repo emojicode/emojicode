@@ -54,9 +54,6 @@ public:
             if (type.unboxedType() == TypeType::Optional) {
                 return StorageType::SimpleOptional;
             }
-            if (type.unboxedType() == TypeType::Error) {
-                return StorageType::SimpleError;
-            }
             return StorageType::Simple;
         }
         return storageType();

@@ -51,6 +51,9 @@ public:
     LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }
     virtual llvm::Value* thisValue() const { return &*function_->args().begin(); }
     llvm::Type* llvmReturnType() const { return function_->getReturnType(); }
+    llvm::Value* errorPointer() const { return &*(function_->args().end() - 1); }
+
+    void buildErrorReturn();
 
     llvm::Value* instanceVariablePointer(size_t id);
 
@@ -106,14 +109,6 @@ public:
     /// @param object Pointer to the object from which the class info shall be obtained.
     /// @returns A llvm::Value* representing a pointer to a class info.
     llvm::Value* buildGetClassInfoFromObject(llvm::Value *object);
-
-    llvm::Value* buildGetErrorNoError() { return int64(-1); }
-    llvm::Value* buildGetIsError(llvm::Value *simpleError);
-    llvm::Value* buildGetIsNotError(llvm::Value *simpleError);
-    llvm::Value* buildErrorIsNotErrorPtr(llvm::Value *simpleErrorPtr);
-    llvm::Value* buildGetErrorValuePtr(llvm::Value *simpleErrorPtr);
-    llvm::Value* buildSimpleErrorWithError(llvm::Value *errorEnumValue, llvm::Type *type);
-    llvm::Value* buildErrorEnumValueBoxPtr(llvm::Value *box, const Type &type);
 
     llvm::Value* buildFindProtocolConformance(llvm::Value *box, llvm::Value *boxInfo, llvm::Value *protocolIdentifier);
 

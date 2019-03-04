@@ -64,13 +64,13 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {
     auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(calleeType_));
-    auto ret = CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, function_);
-
+    auto ret = CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, function_,
+                                                                        manageErrorProneness_ ? fg->errorPointer() :
+                                                                        errorPointer());
     if (manageErrorProneness_) {
-        fg->createIfElseBranchCond(fg->buildGetIsError(ret), [&]() {
-            auto enumValue = fg->builder().CreateExtractValue(ret, 0);
+        fg->createIfElseBranchCond(isError(fg, fg->errorPointer()), [&]() {  // TODO: finish
             buildDestruct(fg);
-            fg->builder().CreateRet(fg->buildSimpleErrorWithError(enumValue, fg->llvmReturnType()));
+            fg->builder().CreateRet(llvm::UndefValue::get(fg->llvmReturnType()));
             return false;
         }, [] { return true; });
     }

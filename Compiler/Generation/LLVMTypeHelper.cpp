@@ -104,6 +104,9 @@ llvm::FunctionType* LLVMTypeHelper::functionTypeFor(Function *function) {
     std::transform(function->parameters().begin(), function->parameters().end(), std::back_inserter(args), [this](auto &arg) {
         return llvmTypeFor(arg.type->type());
     });
+    if (function->errorProne()) {
+        args.emplace_back(llvmTypeFor(function->errorType()->type())->getPointerTo());
+    }
     llvm::Type *returnType;
     if (function->functionType() == FunctionType::ObjectInitializer) {
         auto init = dynamic_cast<Initializer *>(function);
@@ -149,10 +152,6 @@ llvm::Type* LLVMTypeHelper::typeForOrdinaryType(const Type &type) {
         }
         case StorageType::PointerOptional:
             return llvmTypeFor(type.optionalType());
-        case StorageType::SimpleError: {
-            std::vector<llvm::Type *> types{ llvmTypeFor(type.errorEnum()), llvmTypeFor(type.errorType()) };
-            return llvm::StructType::get(context_, types);
-        }
         case StorageType::Simple:
             return getSimpleType(type);
     }
