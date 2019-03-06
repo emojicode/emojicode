@@ -75,6 +75,8 @@ compilation_tests = [
     "errorUnwrap",
     "errorAvocado",
     "errorInitializer",
+    "errorReraiseMem",
+    "errorReraiseMem2",
     "valueTypeCopySelf",
     "valueTypeBoxCopySelf",
     "includer",
