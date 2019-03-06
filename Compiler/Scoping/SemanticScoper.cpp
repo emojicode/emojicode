@@ -24,11 +24,8 @@ Scope& SemanticScoper::pushArgumentsScope(const std::vector<Parameter> &argument
     return currentScope();
 }
 
-SemanticScopeStats SemanticScoper::popScope(Compiler *compiler) {
+void SemanticScoper::popScope(Compiler *compiler) {
     currentScope().recommendFrozenVariables(compiler);
-
-    auto count = scopes_.front().map().size();
-    auto maxVariableId = scopes_.front().maxVariableId();
 
     updateMaxVariableIdForPopping();
     scopes_.pop_front();
@@ -40,7 +37,13 @@ SemanticScopeStats SemanticScoper::popScope(Compiler *compiler) {
     if (instanceScope() != nullptr) {
         instanceScope()->popInitializationLevel();
     }
-    return { scopes_.empty() ? 0 : scopes_.front().maxVariableId(), count, maxVariableId };
+}
+
+SemanticScopeStats SemanticScoper::createStats() const {
+    assert(!scopes_.empty());
+    auto count = scopes_.front().map().size();
+    auto maxVariableId = scopes_.front().maxVariableId();
+    return { scopes_.size() > 1 ? (++scopes_.begin())->maxVariableId() : 0, count, maxVariableId };
 }
 
 SemanticScoper SemanticScoper::scoperForFunction(Function *function)  {

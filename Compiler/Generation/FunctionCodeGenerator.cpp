@@ -339,10 +339,14 @@ llvm::Value* FunctionCodeGenerator::boxInfoFor(const Type &type) {
     return generator()->boxInfoFor(type);
 }
 
-void FunctionCodeGenerator::releaseTemporaryObjects() {
-    while (!temporaryObjects_.empty()) {
-        release(temporaryObjects_.front().value, temporaryObjects_.front().type);
-        temporaryObjects_.pop();
+void TemporaryObjectsManager::releaseTemporaryObjects(FunctionCodeGenerator *fg, bool clearQueue, bool skipLast) {
+    if (temporaryObjects_.empty()) return;
+    auto end = skipLast ? temporaryObjects_.end() - 1 : temporaryObjects_.end();
+    for (auto it = temporaryObjects_.begin(); it < end; it++) {
+        fg->release(it->value, it->type);
+    }
+    if (clearQueue) {
+        temporaryObjects_.clear();
     }
 }
 

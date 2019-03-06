@@ -89,11 +89,12 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
 
     auto errorDest = prepareErrorDestination(fg, value_.get());
     auto value = value_->generate(fg);
-    fg->releaseTemporaryObjects();
+    auto tom = fg->takeTemporaryObjectsManager();
 
     fg->builder().CreateCondBr(isError(fg, errorDest), errorBlock, noError);
 
     fg->builder().SetInsertPoint(errorBlock);
+    tom.releaseTemporaryObjects(fg, false, value_->producesTemporaryObject());
     fg->setVariable(errorVar_, fg->builder().CreateLoad(errorDest));
     errorBlock_.generate(fg);
     if (!errorBlock_.returnedCertainly()) {
@@ -101,6 +102,7 @@ void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     }
 
     fg->builder().SetInsertPoint(noError);
+    tom.releaseTemporaryObjects(fg, true, false);
     if (!valueVarName_.empty()) {
         fg->setVariable(valueVar_, value);
     }

@@ -12,6 +12,7 @@
 #include "AST/ASTMemory.hpp"
 #include "AST/ASTStatements.hpp"
 #include "AST/ASTVariables.hpp"
+#include "AST/Releasing.hpp"
 #include "Functions/Function.hpp"
 #include "MFHeapAllocates.hpp"
 #include "Scoping/SemanticScopeStats.hpp"
@@ -71,12 +72,12 @@ void MFFunctionAnalyser::popScope(ASTBlock *block) {
     }
 }
 
-bool MFFunctionAnalyser::shouldReleaseVariable(MFLocalVariable &var) const {
+bool MFFunctionAnalyser::shouldReleaseVariable(const MFLocalVariable &var) const {
     return !var.isParam && !var.isReturned && var.type.isManaged();
 }
 
-void MFFunctionAnalyser::releaseVariables(ASTBlock *block) {
-    // If this block does not return certainly, we can simply release the variables at the end of the block.
+void MFFunctionAnalyser::releaseVariables(ASTBlock *block) const {
+    // If this block does not return certainly, we can simply release its local variables at the end of the block.
     if (!block->returnedCertainly()) {
         for (size_t i = 0; i < block->scopeStats().variables; i++) {
             VariableID variableId = i + block->scopeStats().from;
@@ -89,12 +90,17 @@ void MFFunctionAnalyser::releaseVariables(ASTBlock *block) {
     // Otherwise, determine whether the last statement of the block is a return statement.
     // If it is a return statement, add the release statements to the return statement.
     else if (auto returnStmt = block->getReturn()) {
-        for (size_t i = 0; i < block->scopeStats().allVariablesCount; i++) {
-            VariableID variableId = i;
-            auto &var = scope_.getVariable(variableId);
-            if (shouldReleaseVariable(var)) {
-                returnStmt->addRelease(std::make_unique<ASTRelease>(false, variableId, var.type, block->position()));
-            }
+        releaseAllVariables(returnStmt, block->scopeStats(), block->position());
+    }
+}
+
+void MFFunctionAnalyser::releaseAllVariables(Releasing *releasing, const SemanticScopeStats &stats,
+                                             const SourcePosition &p) const {
+    for (size_t i = 0; i < stats.allVariablesCount; i++) {
+        VariableID variableId = i;
+        auto &var = scope_.getVariable(variableId);
+        if (shouldReleaseVariable(var)) {
+            releasing->addRelease(std::make_unique<ASTRelease>(false, variableId, var.type, p));
         }
     }
 }

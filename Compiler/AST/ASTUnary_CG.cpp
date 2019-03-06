@@ -61,8 +61,9 @@ Value* ASTUnwrap::generateErrorUnwrap(FunctionCodeGenerator *fg) const {
 Value* ASTReraise::generate(FunctionCodeGenerator *fg) const {
     dynamic_cast<ASTCall *>(expr_.get())->setErrorPointer(fg->errorPointer());
     auto value = expr_->generate(fg);
-    fg->createIfElseBranchCond(isError(fg, fg->errorPointer()), [fg]() {
-        // TODO: destroy
+    fg->createIfElseBranchCond(isError(fg, fg->errorPointer()), [this, fg]() {
+        fg->releaseTemporaryObjects(false, expr_->producesTemporaryObject());
+        release(fg);
         fg->buildErrorReturn();
         return false;
     }, []() { return true; });

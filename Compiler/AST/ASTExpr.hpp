@@ -53,6 +53,11 @@ public:
     /// ASTExpr’s implementation does nothing. Subclasses can override this method.
     virtual void mutateReference(ExpressionAnalyser *analyser) {}
 
+    /// Whether this expression produces a temporary value that must be released.
+    /// If this returns true, the expression provides its result to FunctionCodeGenerator::addTemporaryObject at CG.
+    /// @pre Call only after Memory Flow Analysis.
+    bool producesTemporaryObject() const;
+
 protected:
     /// This method must be called for every value that is created by the expression and must potentially be released.
     ///

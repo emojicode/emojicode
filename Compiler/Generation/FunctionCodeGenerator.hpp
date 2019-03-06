@@ -17,8 +17,27 @@
 
 namespace EmojicodeCompiler {
 
+class FunctionCodeGenerator;
 class Compiler;
 class Function;
+
+class TemporaryObjectsManager {
+public:
+    void addTemporaryObject(llvm::Value *value, const Type &type) {
+        temporaryObjects_.emplace_back(value, type);
+    }
+
+    void releaseTemporaryObjects(FunctionCodeGenerator *fg, bool clearQueue, bool skipLast);
+
+private:
+    struct Temporary {
+        Temporary(llvm::Value *value, Type type) : value(value), type(type) {}
+        llvm::Value *value;
+        Type type;
+    };
+
+    std::vector<Temporary> temporaryObjects_;
+};
 
 /// A FunctionCodeGenerator instance is responsible for generating the LLVM IR for a single function.
 ///
@@ -170,24 +189,27 @@ public:
     /// @param value The value that must be destroyed.
     /// @param type The type of the value.
     void addTemporaryObject(llvm::Value *value, const Type &type) {
-        temporaryObjects_.emplace(value, type);
+        tom_.addTemporaryObject(value, type);
     }
     /// Releases all temporary values that were previously registered with addTemporaryObject() in the order
     /// they were added.
     /// @see addTemporaryObject
-    void releaseTemporaryObjects();
+    void releaseTemporaryObjects(bool clearQueue = true, bool skipLast = false) {
+        tom_.releaseTemporaryObjects(this, clearQueue, skipLast);
+    }
+
+    /// Returns the the TemporaryObjectsManager and resets the FunctionCodeGenerator’s internal one.
+    TemporaryObjectsManager takeTemporaryObjectsManager() {
+        TemporaryObjectsManager g;
+        std::swap(g, tom_);
+        return g;
+    }
 
 protected:
     virtual void declareArguments(llvm::Function *function);
     Function* function() const { return fn_; }
 
 private:
-    struct Temporary {
-        Temporary(llvm::Value *value, Type type) : value(value), type(type) {}
-        llvm::Value *value;
-        Type type;
-    };
-
     Function *const fn_;
     llvm::Function *const function_;
     CGScoper scoper_;
@@ -195,7 +217,7 @@ private:
     CodeGenerator *const generator_;
     llvm::IRBuilder<> builder_;
 
-    std::queue<Temporary> temporaryObjects_;
+    TemporaryObjectsManager tom_;
 
     /// @param retain True if the box should be released, false if it should be retained.
     void manageBox(bool retain, llvm::Value *boxInfo, llvm::Value *value, const Type &type);

@@ -17,7 +17,7 @@
 namespace EmojicodeCompiler {
 
 llvm::Value* ASTExpr::handleResult(FunctionCodeGenerator *fg, llvm::Value *result, llvm::Value *vtReference) const {
-    if (isTemporary_ && expressionType().isManaged() && !expressionType().isReference()) {
+    if (producesTemporaryObject()) {
         if (fg->isManagedByReference(expressionType())) {
             if (vtReference == nullptr) {
                 assert(result != nullptr);
@@ -35,6 +35,10 @@ llvm::Value* ASTExpr::handleResult(FunctionCodeGenerator *fg, llvm::Value *resul
         }
     }
     return result;
+}
+
+bool ASTExpr::producesTemporaryObject() const {
+    return isTemporary_ && expressionType().isManaged() && !expressionType().isReference();
 }
 
 Value* ASTTypeAsValue::generate(FunctionCodeGenerator *fg) const {

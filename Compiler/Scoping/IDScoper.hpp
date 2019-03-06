@@ -33,6 +33,10 @@ public:
     Element& getVariable(size_t id) {
         return variables_[id];
     }
+
+    const Element& getVariable(size_t id) const {
+        return variables_[id];
+    }
 private:
     std::vector<Element> variables_;
 };

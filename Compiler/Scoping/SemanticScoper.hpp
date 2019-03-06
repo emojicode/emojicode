@@ -53,8 +53,9 @@ public:
     void checkForShadowing(const std::u32string &name, const SourcePosition &p, Compiler *compiler) const;
 
     /// Pops the current scope and calls @c recommendFrozenVariables on it.
-    /// @returns The number of variables that were in this scope.
-    SemanticScopeStats popScope(Compiler *compiler);
+    void popScope(Compiler *compiler);
+
+    SemanticScopeStats createStats() const;
 
     /// Returns the instance scope or @c nullptr
     Scope* instanceScope() const { return instanceScope_; }

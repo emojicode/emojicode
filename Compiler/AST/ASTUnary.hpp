@@ -12,6 +12,8 @@
 #include <utility>
 #include "ASTExpr.hpp"
 #include "ErrorSelfDestructing.hpp"
+#include "Releasing.hpp"
+#include "Scoping/SemanticScopeStats.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -29,7 +31,7 @@ private:
     Value* generateErrorUnwrap(FunctionCodeGenerator *fg) const;
 };
 
-class ASTReraise final : public ASTUnary, public ErrorHandling {
+class ASTReraise final : public ASTUnary, public ErrorHandling, public Releasing {
     using ASTUnary::ASTUnary;
 public:
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
@@ -38,6 +40,9 @@ public:
     void toCode(PrettyStream &pretty) const override;
 
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
+
+private:
+    SemanticScopeStats stats_;
 };
 
 }  // namespace EmojicodeCompiler

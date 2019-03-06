@@ -89,7 +89,7 @@ void FunctionAnalyser::analyse() {
     analyseReturn(function()->ast());
     analyseInitializationRequirements();
 
-    function_->ast()->setScopeStats(scoper_->popScope(compiler()));
+    function_->ast()->popScope(this);
     function_->setVariableCount(scoper_->variableIdCount());
 }
 

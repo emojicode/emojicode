@@ -14,13 +14,14 @@
 #include "ASTExpr.hpp"
 #include "Scoping/IDScoper.hpp"
 #include "ErrorSelfDestructing.hpp"
+#include "Releasing.hpp"
+#include <optional>
 
 namespace EmojicodeCompiler {
 
 class FunctionAnalyser;
 class FunctionCodeGenerator;
 class ASTReturn;
-class ASTRelease;
 
 class ASTStatement : public ASTNode {
 public:
@@ -58,8 +59,7 @@ public:
     /// Makes returnedCertainly() return true.
     void setReturnedCertainly() { returnedCertainly_ = true; stop_ = stmts_.size(); }
 
-    const SemanticScopeStats& scopeStats() { return scopeStats_; }
-    void setScopeStats(SemanticScopeStats stats) { scopeStats_ = stats; }
+    const SemanticScopeStats& scopeStats() { return scopeStats_.value(); }
 
     void popScope(FunctionAnalyser *analyser);
 
@@ -82,7 +82,7 @@ private:
     size_t stop_ = 0;
     size_t beginIndex_ = 0;
     size_t endIndex_ = 0;
-    SemanticScopeStats scopeStats_;
+    std::optional<SemanticScopeStats> scopeStats_;
 };
 
 class ASTExprStatement final : public ASTStatement {
@@ -101,7 +101,7 @@ private:
     std::shared_ptr<ASTExpr> expr_;
 };
 
-class ASTReturn : public ASTStatement {
+class ASTReturn : public ASTStatement, public Releasing {
 public:
     ASTReturn(std::shared_ptr<ASTExpr> value, const SourcePosition &p);
 
@@ -114,21 +114,10 @@ public:
     /// Informs the expression that it is used to return the initialized object from an object initializer.
     void setIsInitReturn() { initReturn_ = true; }
 
-    /// Adds a release statement to be executed before the method ultimately returns but after the return value itself
-    /// has been evaluated.
-    void addRelease(std::unique_ptr<ASTRelease> release);
-
-    ~ASTReturn();
-
 protected:
-    /// Release all temporary objects and all variables in this scope. To be called before the method ultimately returns
-    /// but after the return value has been evaluated.
-    void release(FunctionCodeGenerator *fg) const;
-
     void returnReference(FunctionAnalyser *analyser, Type type);
 
     std::shared_ptr<ASTExpr> value_;
-    std::vector<std::unique_ptr<ASTRelease>> releases_;
     bool initReturn_ = false;
 };
 

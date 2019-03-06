@@ -21,8 +21,10 @@ class ASTExpr;
 class ASTArguments;
 class ASTBlock;
 class Function;
+class Releasing;
 class MFHeapAllocates;
 struct SemanticScopeStats;
+struct SourcePosition;
 
 /// This class is responsible for analysing the memory flow of a function.
 ///
@@ -88,6 +90,10 @@ public:
     /// stack allocations.
     void popScope(ASTBlock *block);
 
+    /// Adds release statments to `releasing` for all variables in the function’s scope (as described by the provided
+    /// scope stats) that must be released.
+    void releaseAllVariables(Releasing *releasing, const SemanticScopeStats &stats, const SourcePosition &p) const;
+
 private:
     struct MFLocalVariable {
         bool isParam = false;
@@ -102,10 +108,10 @@ private:
     Function *function_;
     bool thisEscapes_ = false;
 
-    void releaseVariables(ASTBlock *block);
+    void releaseVariables(ASTBlock *block) const;
 
     /// Determines whether the contents of the variable should be released at the end of a block.
-    bool shouldReleaseVariable(MFLocalVariable &var) const;
+    bool shouldReleaseVariable(const MFLocalVariable &var) const;
 };
 
 }  // namespace EmojicodeCompiler

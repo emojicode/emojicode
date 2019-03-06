@@ -54,6 +54,7 @@ public:
     }
 
     std::map<std::u32string, Variable>& map() { return map_; }
+    const std::map<std::u32string, Variable>& map() const { return map_; }
 
     unsigned int maxVariableId() const { return maxVariableId_; }
     unsigned int reserveIds(unsigned int count) {

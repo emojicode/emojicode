@@ -10,6 +10,8 @@
 
 #include "ASTExpr.hpp"
 #include "ASTVariables.hpp"
+#include <vector>
+#include <memory>
 
 namespace EmojicodeCompiler {
 

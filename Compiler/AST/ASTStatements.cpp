@@ -25,6 +25,7 @@ void ASTBlock::analyse(FunctionAnalyser *analyser) {
         if (!returnedCertainly_  && analyser->pathAnalyser().hasCertainly(PathAnalyserIncident::Returned)) {
             returnedCertainly_ = true;
             stop_ = i;
+            scopeStats_ = analyser->scoper().createStats();
             analyser->compiler()->warn(stmts_[i]->position(), "Code will never be executed.");
         }
         stmts_[i]->analyse(analyser);
@@ -37,8 +38,9 @@ void ASTBlock::analyse(FunctionAnalyser *analyser) {
 }
 
 void ASTBlock::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
-    for (auto &stmt : stmts_) {
-        stmt->analyseMemoryFlow(analyser);
+    auto stop = !returnedCertainly_ ? stmts_.size() : stop_;
+    for (size_t i = 0; i < stop; i++) {
+        stmts_[i]->analyseMemoryFlow(analyser);
     }
 }
 
@@ -50,7 +52,10 @@ ASTReturn* ASTBlock::getReturn() const {
 }
 
 void ASTBlock::popScope(FunctionAnalyser *analyser) {
-    scopeStats_ = analyser->scoper().popScope(analyser->compiler());
+    if (!scopeStats_.has_value()) {
+        scopeStats_ = analyser->scoper().createStats();
+    }
+    analyser->scoper().popScope(analyser->compiler());
 }
 
 void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {

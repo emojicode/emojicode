@@ -13,6 +13,7 @@
 #include "Types/TypeExpectation.hpp"
 #include "Functions/Function.hpp"
 #include "Compiler.hpp"
+#include "Scoping/SemanticScoper.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -53,11 +54,12 @@ Type ASTReraise::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
                                                   " which cannot be reraised as it is not compatible to ",
                                                   fta.toString(analyser->typeContext()), "."));
     }
+    stats_ = analyser->scoper().createStats();
     return t;
 }
 
 void ASTReraise::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
-
+    analyser->releaseAllVariables(this, stats_, position());
 }
 
 }  // namespace EmojicodeCompiler
