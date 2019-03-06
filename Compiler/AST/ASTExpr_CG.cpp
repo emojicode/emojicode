@@ -56,12 +56,17 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
     auto optional = expr_->generate(fg);
 
     if (expr_->expressionType().type() == TypeType::Box) {
+        // Special handling as expr_ is not taken and thus results in a temporary value.
+        // If expr_ evaluates to an empty optional, it doesn’t matter if we skip it, if it does have a value,
+        // we must skip it as it is assigned to a variable.
+        fg->releaseTemporaryObjects(true, true);
         fg->setVariable(varId_, optional);
         auto vf = fg->builder().CreateExtractValue(optional, 0);
         return fg->builder().CreateICmpNE(vf, llvm::Constant::getNullValue(vf->getType()));
     }
 
     auto value = fg->buildGetOptionalValue(optional, expr_->expressionType());
+    fg->releaseTemporaryObjects(true, true);  // Skip explanation: see above
     fg->setVariable(varId_, value);
     return fg->buildOptionalHasValue(optional, expr_->expressionType());
 }
@@ -72,7 +77,7 @@ Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {
                                                                         manageErrorProneness_ ? fg->errorPointer() :
                                                                         errorPointer());
     if (manageErrorProneness_) {
-        fg->createIfElseBranchCond(isError(fg, fg->errorPointer()), [&]() {  // TODO: finish
+        fg->createIfElseBranchCond(isError(fg, fg->errorPointer()), [&]() {
             buildDestruct(fg);
             fg->builder().CreateRet(llvm::UndefValue::get(fg->llvmReturnType()));
             return false;

@@ -50,7 +50,6 @@ Type ASTConditionalAssignment::analyse(ExpressionAnalyser *analyser, const TypeE
 
 void ASTConditionalAssignment::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyser->recordVariableSet(varId_, expr_.get(), expr_->expressionType().optionalType());
-    analyser->take(expr_.get());
 }
 
 Type ASTSuper::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
