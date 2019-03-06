@@ -26,6 +26,7 @@ void ASTBlock::analyse(FunctionAnalyser *analyser) {
             returnedCertainly_ = true;
             stop_ = i;
             scopeStats_ = analyser->scoper().createStats();
+            hasStats_ = true;
             analyser->compiler()->warn(stmts_[i]->position(), "Code will never be executed.");
         }
         stmts_[i]->analyse(analyser);
@@ -52,8 +53,9 @@ ASTReturn* ASTBlock::getReturn() const {
 }
 
 void ASTBlock::popScope(FunctionAnalyser *analyser) {
-    if (!scopeStats_.has_value()) {
+    if (!hasStats_) {
         scopeStats_ = analyser->scoper().createStats();
+        hasStats_ = true;
     }
     analyser->scoper().popScope(analyser->compiler());
 }

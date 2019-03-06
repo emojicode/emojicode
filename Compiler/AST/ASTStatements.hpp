@@ -15,7 +15,6 @@
 #include "Scoping/IDScoper.hpp"
 #include "ErrorSelfDestructing.hpp"
 #include "Releasing.hpp"
-#include <optional>
 
 namespace EmojicodeCompiler {
 
@@ -59,7 +58,7 @@ public:
     /// Makes returnedCertainly() return true.
     void setReturnedCertainly() { returnedCertainly_ = true; stop_ = stmts_.size(); }
 
-    const SemanticScopeStats& scopeStats() { return scopeStats_.value(); }
+    const SemanticScopeStats& scopeStats() { assert(hasStats_); return scopeStats_; }
 
     void popScope(FunctionAnalyser *analyser);
 
@@ -82,7 +81,8 @@ private:
     size_t stop_ = 0;
     size_t beginIndex_ = 0;
     size_t endIndex_ = 0;
-    std::optional<SemanticScopeStats> scopeStats_;
+    bool hasStats_ = false;
+    SemanticScopeStats scopeStats_;
 };
 
 class ASTExprStatement final : public ASTStatement {
