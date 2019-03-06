@@ -32,7 +32,8 @@ Value* ASTCast::generate(FunctionCodeGenerator *fg) const {
             throw std::logic_error("unreachable");
     }
 
-    fg->createIfElse(is, []() {}, [fg, box]() {
+    fg->createIfElse(is, []() {}, [fg, box, this]() {
+        fg->release(box, expr_->expressionType());
         fg->buildMakeNoValue(box);
     });
     return fg->builder().CreateLoad(box);
@@ -47,7 +48,8 @@ Value* ASTCast::downcast(FunctionCodeGenerator *fg) const {
     return fg->createIfElsePhi(inheritsFrom, [toType, fg, value]() {
         auto casted = fg->builder().CreateBitCast(value, fg->typeHelper().llvmTypeFor(toType));
         return fg->buildSimpleOptionalWithValue(casted, toType.optionalized());
-    }, [fg, toType]() {
+    }, [fg, toType, this, value]() {
+        fg->release(value, expr_->expressionType());
         return fg->buildSimpleOptionalWithoutValue(toType.optionalized());
     });
 }
