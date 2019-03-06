@@ -7,7 +7,7 @@ import subprocess
 version = "0.8.4"
 packages = ["s", "files", "sockets", "testtube"]
 
-source = sys.argv[1]
+source = os.path.dirname(os.path.realpath(__file__))
 dist_name = "Emojicode-{0}-{1}-{2}".format(version, platform.system(),
                                            platform.machine())
 path = os.path.abspath(dist_name)
@@ -48,10 +48,10 @@ if __name__ == "__main__":
     copy_packages(os.path.join(path, "packages"),
                   os.path.join(source, "headers"))
 
-    if len(sys.argv) > 2 and sys.argv[2] == "archive":
+    if len(sys.argv) > 1 and sys.argv[1] == "archive":
         archive_name = shutil.make_archive(dist_name, "gztar", os.getcwd(), dist_name)
         print(archive_name, end='')
 
-    if len(sys.argv) > 2 and sys.argv[2] == "install":
+    if len(sys.argv) > 1 and sys.argv[1] == "install":
         bash = "cd " + path + " && yes | " + os.path.join(path, "install.sh")
         subprocess.run(["bash", "-c", bash])

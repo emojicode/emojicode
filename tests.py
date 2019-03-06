@@ -5,7 +5,7 @@ import dist
 import sys
 import re
 
-quick = len(sys.argv) > 2 and sys.argv[2] == 'quick'
+quick = len(sys.argv) > 1 and sys.argv[1] == 'quick'
 
 compilation_tests = [
     "hello",
