@@ -27,9 +27,15 @@ inline bool endsWith(const std::string &value, const std::string &ending) {
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-template<typename... Args>
-void appendToStream(std::stringstream &stream, Args... args) {
-    (stream << ... << args);
+template<typename Head>
+void appendToStream(std::stringstream &stream, Head head) {
+    stream << head;
+}
+
+template<typename Head, typename... Args>
+void appendToStream(std::stringstream &stream, Head head, Args... args) {
+    stream << head;
+    appendToStream(stream, args...);
 }
 
 }  // namespace EmojicodeCompiler
