@@ -10,7 +10,6 @@
 #include "ASTBinaryOperator.hpp"
 #include "ASTInitialization.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
-#include "Compiler.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "Scoping/SemanticScoper.hpp"
@@ -56,7 +55,7 @@ void ASTGetVariable::mutateReference(ExpressionAnalyser *analyser) {
 Type ASTIsOnlyReference::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto rvar = analyser->scoper().getVariable(name(), position());
     if (rvar.variable.type().type() != TypeType::Someobject && rvar.variable.type().type() != TypeType::Class) {
-        analyser->compiler()->error(CompilerError(position(), "🏮 can only be used with objects."));
+        analyser->error(CompilerError(position(), "🏮 can only be used with objects."));
     }
     setVariableAccess(rvar, analyser);
     return analyser->boolean();
@@ -64,6 +63,10 @@ Type ASTIsOnlyReference::analyse(ExpressionAnalyser *analyser, const TypeExpecta
 
 void ASTIsOnlyReference::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
 }
+
+ASTVariableDeclaration::ASTVariableDeclaration(std::unique_ptr<ASTType> type,
+    std::u32string name,
+    const SourcePosition &p) : ASTStatement(p), varName_(std::move(name)), type_(std::move(type)) {}
 
 void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
     auto &type = type_->analyseType(analyser->typeContext());
@@ -75,12 +78,14 @@ void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
     id_ = var.id();
 }
 
+ASTVariableDeclaration::~ASTVariableDeclaration() = default;
+
 void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
     auto rvar = analyser->scoper().getVariable(name(), position());
 
     if (rvar.inInstanceScope && !analyser->function()->mutating() &&
         !isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-        analyser->compiler()->error(CompilerError(position(),
+        analyser->error(CompilerError(position(),
                                                   "Can’t mutate instance variable as method is not marked with 🖍."));
     }
 

@@ -11,8 +11,6 @@
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 #include "Types/Class.hpp"
-#include "Types/ValueType.hpp"
-#include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {
 
@@ -41,45 +39,8 @@ bool ASTExpr::producesTemporaryObject() const {
     return isTemporary_ && expressionType().isManaged() && !expressionType().isReference();
 }
 
-Value* ASTTypeAsValue::generate(FunctionCodeGenerator *fg) const {
-    if (type_->type().type() == TypeType::Class) {
-        return type_->type().klass()->classInfo();
-    }
-    return llvm::UndefValue::get(fg->typeHelper().llvmTypeFor(Type(MakeTypeAsValue, type_->type())));
-}
-
 Value* ASTSizeOf::generate(FunctionCodeGenerator *fg) const {
     return fg->sizeOf(fg->typeHelper().llvmTypeFor(type_->type()));
-}
-
-Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
-    auto optional = expr_->generate(fg);
-
-    if (expr_->expressionType().type() == TypeType::Box) {
-        fg->setVariable(varId_, optional);
-        auto vf = fg->builder().CreateExtractValue(optional, 0);
-        return fg->builder().CreateICmpNE(vf, llvm::Constant::getNullValue(vf->getType()));
-    }
-
-    auto value = fg->buildGetOptionalValue(optional, expr_->expressionType());
-    fg->setVariable(varId_, value);
-    return fg->buildOptionalHasValue(optional, expr_->expressionType());
-}
-
-Value* ASTSuper::generate(FunctionCodeGenerator *fg) const {
-    auto castedThis = fg->builder().CreateBitCast(fg->thisValue(), fg->typeHelper().llvmTypeFor(calleeType_));
-    auto ret = CallCodeGenerator(fg, CallType::StaticDispatch).generate(castedThis, calleeType_, args_, function_,
-                                                                        manageErrorProneness_ ? fg->errorPointer() :
-                                                                        errorPointer());
-    if (manageErrorProneness_) {
-        fg->createIfElseBranchCond(isError(fg, fg->errorPointer()), [&]() {  // TODO: finish
-            buildDestruct(fg);
-            fg->builder().CreateRet(llvm::UndefValue::get(fg->llvmReturnType()));
-            return false;
-        }, [] { return true; });
-    }
-
-    return init_ ? nullptr : ret;
 }
 
 Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {

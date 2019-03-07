@@ -10,7 +10,6 @@
 #define Type_hpp
 
 #include "StorageType.hpp"
-#include <stdexcept>
 #include <string>
 #include <vector>
 #include <tuple>

@@ -9,7 +9,7 @@
 #ifndef ASTBoxing_hpp
 #define ASTBoxing_hpp
 
-#include "ASTExpr.hpp"
+#include "ASTUnary.hpp"
 #include "MemoryFlowAnalysis/MFFunctionAnalyser.hpp"
 #include "MemoryFlowAnalysis/MFHeapAllocates.hpp"
 #include <utility>

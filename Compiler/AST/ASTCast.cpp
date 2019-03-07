@@ -6,7 +6,7 @@
 //
 
 #include "ASTCast.hpp"
-#include "Analysis/FunctionAnalyser.hpp"
+#include "Analysis/ExpressionAnalyser.hpp"
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Types/TypeExpectation.hpp"

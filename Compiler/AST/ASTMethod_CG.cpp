@@ -7,6 +7,7 @@
 //
 
 #include "ASTMethod.hpp"
+#include "ASTType.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
 

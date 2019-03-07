@@ -8,8 +8,6 @@
 #ifndef Mood_h
 #define Mood_h
 
-#include <string>
-
 namespace EmojicodeCompiler {
 
 enum class Mood {

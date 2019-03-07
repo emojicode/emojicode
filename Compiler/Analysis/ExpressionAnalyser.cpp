@@ -24,6 +24,10 @@ ExpressionAnalyser::ExpressionAnalyser(SemanticAnalyser *analyser, TypeContext t
 
 ExpressionAnalyser::~ExpressionAnalyser() = default;
 
+void ExpressionAnalyser::error(const CompilerError &ce) const {
+    compiler()->error(ce);
+}
+
 Compiler* ExpressionAnalyser::compiler() const {
     return analyser_->compiler();
 }

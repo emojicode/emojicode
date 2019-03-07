@@ -22,6 +22,7 @@ class TypeExpectation;
 class ASTExpr;
 struct SourcePosition;
 class ASTArguments;
+class CompilerError;
 
 /// This class provides all interfaces required for analysing an expression.
 ///
@@ -39,6 +40,8 @@ public:
     PathAnalyser& pathAnalyser() { return pathAnalyser_; }
     Package* package() const { return package_; }
     SemanticScoper& scoper() { return *scoper_; }
+
+    void error(const CompilerError &ce) const;
 
     virtual bool isInUnsafeBlock() const { return false; }
 

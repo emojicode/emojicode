@@ -8,7 +8,7 @@
 #ifndef ASTCast_hpp
 #define ASTCast_hpp
 
-#include "ASTExpr.hpp"
+#include "ASTUnary.hpp"
 
 namespace EmojicodeCompiler {
 

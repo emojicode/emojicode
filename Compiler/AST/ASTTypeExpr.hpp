@@ -40,12 +40,14 @@ private:
 
 class ASTStaticType : public ASTTypeExpr {
 public:
-    ASTStaticType(std::unique_ptr<ASTType> type, const SourcePosition &p)
-            : ASTTypeExpr(p), type_(std::move(type)) {}
+    ASTStaticType(std::unique_ptr<ASTType> type, const SourcePosition &p);
 
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value *generate(FunctionCodeGenerator *fg) const override;
     void toCode(PrettyStream &pretty) const override;
+
+    ~ASTStaticType();
+
 protected:
     std::unique_ptr<ASTType> type_;
 };

@@ -11,6 +11,7 @@
 
 #include "ASTStatements.hpp"
 #include <utility>
+#include "Scoping/Variable.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -19,14 +20,16 @@ struct ResolvedVariable;
 /// Represents the declaration of a variable.
 class ASTVariableDeclaration final : public ASTStatement {
 public:
-    ASTVariableDeclaration(std::unique_ptr<ASTType> type, std::u32string name, const SourcePosition &p)
-            : ASTStatement(p), varName_(std::move(name)), type_(std::move(type)) {}
+    ASTVariableDeclaration(std::unique_ptr<ASTType> type, std::u32string name, const SourcePosition &p);
 
     void analyse(FunctionAnalyser *analyser) override;
     void generate(FunctionCodeGenerator *) const override;
 
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *) override {}
+
+    ~ASTVariableDeclaration();
+
 private:
     std::u32string varName_;
     std::unique_ptr<ASTType> type_;

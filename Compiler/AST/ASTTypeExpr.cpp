@@ -7,12 +7,16 @@
 //
 
 #include "ASTTypeExpr.hpp"
+#include "ASTType.hpp"
 #include "ASTLiterals.hpp"
-#include "Analysis/FunctionAnalyser.hpp"
+#include "Analysis/ExpressionAnalyser.hpp"
 #include "CompilerError.hpp"
 #include "Types/TypeExpectation.hpp"
 
 namespace EmojicodeCompiler {
+
+ASTStaticType::ASTStaticType(std::unique_ptr<ASTType> type, const SourcePosition &p)
+    : ASTTypeExpr(p), type_(std::move(type)) {}
 
 Type ASTInferType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     if (expectation.type() == TypeType::StorageExpectation || expectation.type() == TypeType::NoReturn) {
@@ -40,5 +44,7 @@ Type ASTStaticType::analyse(ExpressionAnalyser *analyser, const TypeExpectation 
 }
 
 ASTThisType::ASTThisType(const SourcePosition &p) : ASTTypeFromExpr(std::make_shared<ASTThis>(p), p) {}
+
+ASTStaticType::~ASTStaticType() = default;
 
 }  // namespace EmojicodeCompiler

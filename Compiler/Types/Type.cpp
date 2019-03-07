@@ -19,7 +19,7 @@
 #include "ValueType.hpp"
 #include <algorithm>
 #include <cstring>
-#include <vector>
+#include <stdexcept>
 
 namespace EmojicodeCompiler {
 

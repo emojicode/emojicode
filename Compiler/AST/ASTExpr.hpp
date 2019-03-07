@@ -9,15 +9,15 @@
 #ifndef ASTExpr_hpp
 #define ASTExpr_hpp
 
-#include "ASTType.hpp"
 #include "ASTNode.hpp"
 #include "Types/Type.hpp"
-#include "ErrorSelfDestructing.hpp"
 #include "MemoryFlowAnalysis/MFFlowCategory.hpp"
 #include "Functions/Mood.hpp"
-#include "Scoping/Variable.hpp"
-#include <llvm/IR/Value.h>
 #include <utility>
+
+namespace llvm {
+class Value;
+}  // namespace llvm
 
 namespace EmojicodeCompiler {
 
@@ -29,6 +29,7 @@ class FunctionCodeGenerator;
 class Prettyprinter;
 class MFFunctionAnalyser;
 class ASTCall;
+class ASTType;
 
 /// The superclass of all syntax tree nodes representing an expression.
 class ASTExpr : public ASTNode {
@@ -114,57 +115,16 @@ std::shared_ptr<T> insertNode(std::shared_ptr<ASTExpr> *node, Args&&... args) {
     return std::static_pointer_cast<T>(*node);
 }
 
-/// Expressions that operate on the value produced by another expression inherit from this class.
-class ASTUnary : public ASTExpr {
-public:
-    ASTUnary(std::shared_ptr<ASTExpr> value, const SourcePosition &p) : ASTExpr(p), expr_(std::move(value)) {}
-
-protected:
-    std::shared_ptr<ASTExpr> expr_;
-};
-
-/// Unary expressions that do not themselves affect the flow category or value category of ::expr_ should inherit from
-/// this class.
-///
-/// When analysing the flow category, this class simply analyses ::expr_ with the same category. If the value of an
-/// expression defined by subclass of this class is taken, ::expr_ is taken.
-///
-/// @note Expressions inherting from this class must not pass their result to ::handleResult. This is because if the
-/// resulting value of this expression is temporary, it will be released by ::expr_ as this expression has not taken the
-/// value then.
-/// @see MFFunctionAnalyser
-class ASTUnaryMFForwarding : public ASTUnary {
-public:
-    using ASTUnary::ASTUnary;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
-
-protected:
-    void unsetIsTemporaryPost() final { expr_->unsetIsTemporary(); }
-};
-
-class ASTTypeAsValue final : public ASTExpr {
-public:
-    ASTTypeAsValue(std::unique_ptr<ASTType> type, TokenType tokenType, const SourcePosition &p)
-        : ASTExpr(p), type_(std::move(type)), tokenType_(tokenType) {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-
-    void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
-
-private:
-    std::unique_ptr<ASTType> type_;
-    TokenType tokenType_;
-};
-
 class ASTSizeOf final : public ASTExpr {
 public:
-    ASTSizeOf(std::unique_ptr<ASTType> type, const SourcePosition &p) : ASTExpr(p), type_(std::move(type)) {}
+    ASTSizeOf(std::unique_ptr<ASTType> type, const SourcePosition &p);
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const override;
 
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override {}
+
+    ~ASTSizeOf();
 
 private:
     std::unique_ptr<ASTType> type_;
@@ -172,12 +132,11 @@ private:
 
 class ASTArguments final : public ASTNode {
 public:
-    explicit ASTArguments(const SourcePosition &p) : ASTNode(p) {}
-     ASTArguments(const SourcePosition &p, std::vector<std::shared_ptr<ASTExpr>> args)
-        : ASTNode(p), arguments_(std::move(args)) {}
+    explicit ASTArguments(const SourcePosition &p);
+    ASTArguments(const SourcePosition &p, std::vector<std::shared_ptr<ASTExpr>> args);
+    ASTArguments(const SourcePosition &p, Mood mood);
 
-    ASTArguments(const SourcePosition &p, Mood mood) : ASTNode(p), mood_(mood) {}
-    void addGenericArgument(std::unique_ptr<ASTType> type) { genericArguments_.emplace_back(std::move(type)); }
+    void addGenericArgument(std::unique_ptr<ASTType> type);
     const std::vector<std::shared_ptr<ASTType>>& genericArguments() const { return genericArguments_; }
     std::vector<std::shared_ptr<ASTType>>& genericArguments() { return genericArguments_; }
     void addArguments(const std::shared_ptr<ASTExpr> &arg) { arguments_.emplace_back(arg); }
@@ -189,6 +148,8 @@ public:
 
     const std::vector<Type>& genericArgumentTypes() const { return genericArgumentsTypes_; }
     void setGenericArgumentTypes(std::vector<Type> types) { genericArgumentsTypes_ = std::move(types); }
+
+    ~ASTArguments();
 
 private:
     Mood mood_ = Mood::Imperative;
@@ -215,47 +176,6 @@ private:
     ASTArguments args_;
 };
 
-class ASTSuper final : public ASTCall, private ErrorSelfDestructing, private ErrorHandling {
-public:
-    ASTSuper(std::u32string name, ASTArguments args, const SourcePosition &p)
-        : ASTCall(p), name_(std::move(name)), args_(std::move(args)) {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-
-    void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
-
-    const Type& errorType() const override;
-    bool isErrorProne() const override;
-
-private:
-    void analyseSuperInit(ExpressionAnalyser *analyser);
-    std::u32string name_;
-    Function *function_ = nullptr;
-    Type calleeType_ = Type::noReturn();
-    ASTArguments args_;
-    bool init_ = false;
-    bool manageErrorProneness_ = false;
-
-    void analyseSuperInitErrorProneness(ExpressionAnalyser *analyser, const Initializer *initializer);
-};
-
-class ASTConditionalAssignment final : public ASTExpr {
-public:
-    ASTConditionalAssignment(std::u32string varName, std::shared_ptr<ASTExpr> expr,
-                             const SourcePosition &p) : ASTExpr(p), varName_(std::move(varName)), expr_(std::move(expr)) {}
-    Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
-    Value* generate(FunctionCodeGenerator *fg) const override;
-
-    void toCode(PrettyStream &pretty) const override;
-    void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
-
-private:
-    std::u32string varName_;
-    std::shared_ptr<ASTExpr> expr_;
-    VariableID varId_;
-};
-    
 } // namespace EmojicodeCompiler
 
 #endif /* ASTExpr_hpp */

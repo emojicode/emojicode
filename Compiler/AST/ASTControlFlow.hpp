@@ -10,8 +10,8 @@
 #define ASTControlFlow_hpp
 
 #include <utility>
-
 #include "ASTStatements.hpp"
+#include "Scoping/Variable.hpp"
 
 namespace EmojicodeCompiler {
 

@@ -90,7 +90,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
 
     auto type = value_->analyse(analyser, TypeExpectation(rtType));
     if (!type.compatibleTo(rtType, analyser->typeContext())) {
-        analyser->compiler()->error(CompilerError(position(), "Declared return type is ",
+        analyser->error(CompilerError(position(), "Declared return type is ",
                                                   rtType.toString(analyser->typeContext())));
     }
     if (analyser->function()->returnType()->type().isReference()) {
@@ -104,7 +104,7 @@ void ASTReturn::analyse(FunctionAnalyser *analyser) {
 void ASTReturn::returnReference(FunctionAnalyser *analyser, Type type) {
     if (auto varNode = dynamic_cast<ASTGetVariable*>(value_.get())) {
         if (!varNode->inInstanceScope()) {
-            analyser->compiler()->error(CompilerError(position(), "Only instance variables can be referenced."));
+            analyser->error(CompilerError(position(), "Only instance variables can be referenced."));
         }
 
         varNode->setReference();
@@ -114,14 +114,14 @@ void ASTReturn::returnReference(FunctionAnalyser *analyser, Type type) {
     }
     if (type.isReference()) {
         if (!analyser->isInUnsafeBlock()) {
-            analyser->compiler()->error(CompilerError(position(), "Forwarding reference is an unsafe operation."));
+            analyser->error(CompilerError(position(), "Forwarding reference is an unsafe operation."));
         }
         if (!type.isMutable()) {
-            analyser->compiler()->error(CompilerError(position(), "Cannot forward immutable reference."));
+            analyser->error(CompilerError(position(), "Cannot forward immutable reference."));
         }
         return;
     }
-    analyser->compiler()->error(CompilerError(position(), "The provided expression cannot produce a reference."));
+    analyser->error(CompilerError(position(), "The provided expression cannot produce a reference."));
 }
 
 void ASTRaise::analyse(FunctionAnalyser *analyser) {
