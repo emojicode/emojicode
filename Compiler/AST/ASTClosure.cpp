@@ -59,12 +59,11 @@ void ASTClosure::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory 
 }
 
 void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    if (expectation.type() != TypeType::Callable ||
-            expectation.genericArguments().size() - 1 != closure_->parameters().size()) {
+    if (expectation.type() != TypeType::Callable || expectation.parametersCount() != closure_->parameters().size()) {
         return;
     }
 
-    auto expReturn = expectation.genericArguments().front();
+    auto expReturn = expectation.returnType();
     auto returnType = closure_->returnType()->type();
     if (returnType.compatibleTo(expReturn, analyser->typeContext())) {
         if (returnType.storageType() != expReturn.storageType()) {
@@ -91,7 +90,7 @@ void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const 
     for (size_t i = 0; i < closure_->parameters().size(); i++) {
         auto &param = closure_->parameters()[i];
         auto &paramType = param.type->type();
-        auto expParam = expectation.genericArguments()[i + 1];
+        auto expParam = expectation.parameters()[i];
         if (paramType.compatibleTo(expParam, analyser->typeContext())) {
             if (paramType.storageType() != expParam.storageType()) {
                 switch (expParam.storageType()) {

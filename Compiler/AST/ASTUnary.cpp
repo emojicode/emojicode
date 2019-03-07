@@ -26,7 +26,7 @@ Type ASTUnwrap::analyse(ExpressionAnalyser *analyser, const TypeExpectation &exp
     if (t.unboxedType() == TypeType::Optional) {
         return t.optionalType();
     }
-    else if (call != nullptr && call->isErrorProne()) {
+    if (call != nullptr && call->isErrorProne()) {
         error_ = true;
         return t;
     }

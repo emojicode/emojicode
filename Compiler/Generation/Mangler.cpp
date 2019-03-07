@@ -51,9 +51,11 @@ void mangleTypeName(std::stringstream &stream, const Type &typeb) {
             break;
         case TypeType::Callable:
             stream << "callable_";
-            for (auto &type : type.genericArguments()) {
-                mangleTypeName(stream, type);
+            for (auto it = type.parameters(); it < type.parametersEnd(); it++) {
+                mangleTypeName(stream, *it);
             }
+            stream << "__";
+            mangleTypeName(stream, type.returnType());
             return;
         case TypeType::NoReturn:
             stream << "no_return";

@@ -267,15 +267,19 @@ void ExpressionAnalyser::makeIntoBox(Type &exprType, const TypeExpectation &expe
     }
 }
 
+bool doStorageTypesMatch(const Type &a, const Type &b, const TypeContext &tc) {
+    return a.storageType() == b.storageType() && (a.type() != TypeType::Box || a.areMatchingBoxes(b, tc));
+}
+
 bool ExpressionAnalyser::callableBoxingRequired(const TypeExpectation &expectation, const Type &exprType) const {
     if (expectation.type() == TypeType::Callable && exprType.type() == TypeType::Callable &&
-        expectation.genericArguments().size() == exprType.genericArguments().size()) {
-        auto mismatch = std::mismatch(expectation.genericArguments().begin(), expectation.genericArguments().end(),
-                                      exprType.genericArguments().begin(), [this](const Type &a, const Type &b) {
-                                          return a.storageType() == b.storageType() &&
-                                            (a.type() != TypeType::Box || a.areMatchingBoxes(b, typeContext()));
+        expectation.parametersCount() == exprType.parametersCount()) {
+        auto mismatch = std::mismatch(expectation.parameters(), expectation.parametersEnd(),
+                                      exprType.parameters(), [this](const Type &a, const Type &b) {
+                                          return doStorageTypesMatch(a, b, typeContext());
                                       });
-        return mismatch.first != expectation.genericArguments().end();
+        return mismatch.first != expectation.parametersEnd() ||
+            !doStorageTypesMatch(expectation.returnType(), exprType.returnType(), typeContext());
     }
     return false;
 }

@@ -78,7 +78,18 @@ void PackageReporter::reportType(const Type &type, const TypeContext &tc) {
             break;
         }
         case TypeType::Callable:
-            reportTypeTypeAndGenericArgs("Callable", type, tc, type.genericArguments());
+            writer_.Key("type");
+            writer_.String("Callable");
+
+            writer_.Key("parameters");
+            writer_.StartArray();
+            for (auto it = type.parameters(); it < type.parametersEnd(); it++) {
+                reportType(*it, tc);
+            }
+            writer_.EndArray();
+
+            writer_.Key("return");
+            reportType(type.returnType(), tc);
             break;
         case TypeType::MultiProtocol:
             reportTypeTypeAndGenericArgs("MultiProtocol", type, tc, type.protocols());

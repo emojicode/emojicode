@@ -137,14 +137,7 @@ public:
 
     /// If this is a box, proxies to the Box and returns the type of the optional in an equal Box.
     /// @returns The type this optional contains. If this type is force boxed, so will be the returned type.
-    Type optionalType() const {
-        if (type() == TypeType::Box) {
-            return genericArguments_[0].optionalType().boxedFor(boxedFor());
-        }
-
-        assert(type() == TypeType::Optional);
-        return genericArguments_[0];
-    }
+    Type optionalType() const;
     /// @returns The type itself if type() does not return TypeType::Optional or optionalType() if it does.
     Type unoptionalized() const { return type() == TypeType::Optional ? optionalType() : *this; }
     /// @returns The type in an optional. If this is a Box, returns an equal Box that contains an optional with the
@@ -166,26 +159,39 @@ public:
     /// Returns the generic variable index if the type is a Type::GenericVariable or TypeType::LocalGenericVariable.
     size_t genericVariableIndex() const;
 
+    /// Returns a pointer to the first parameter type of a callable type.
+    const Type* parameters() const {
+        assert(TypeType::Callable == type());
+        return genericArguments_.data() + 1;
+    }
+    /// Returns a pointer past the end of the callables parameters.
+    const Type* parametersEnd() const {
+        return parameters() + parametersCount();
+    }
+    /// Returns the number of parameter the callable takes.
+    size_t parametersCount() const {
+        assert(TypeType::Callable == type());
+        return genericArguments_.size() - 1;
+    }
+    /// Returns the return type of the callable.
+    const Type& returnType() const {
+        assert(TypeType::Callable == type());
+        return genericArguments_.front();
+    }
+
     /// Returns the generic arguments with which this type was specialized.
     const std::vector<Type>& genericArguments() const {
         if (type() == TypeType::Box) {
             return genericArguments_[0].genericArguments_;
         }
-        assert(canHaveGenericArguments() || TypeType::Callable == type());
+        assert(canHaveGenericArguments());
         return genericArguments_;
     }
     /// Allows to change a specific generic argument. @c index must be smaller than @c genericArguments().size()
     void setGenericArgument(size_t index, Type value) { genericArguments_[index] = std::move(value); }
+
     /// Replaces the generic arguments of this type.
-    void setGenericArguments(std::vector<Type> &&args) {
-        if (type() == TypeType::Box) {
-            genericArguments_[0].setGenericArguments(std::move(args));
-        }
-        else {
-            assert(args.empty() || canHaveGenericArguments() || TypeType::Callable == type());
-            genericArguments_ = args;
-        }
-    }
+    void setGenericArguments(std::vector<Type> &&args);
 
     /// True if this type could have generic arguments.
     bool canHaveGenericArguments() const;

@@ -134,6 +134,15 @@ Type Type::optionalized() const {
     return Type(MakeOptionalType(), *this);
 }
 
+Type Type::optionalType() const {
+    if (type() == TypeType::Box) {
+        return genericArguments_[0].optionalType().boxedFor(boxedFor());
+    }
+
+    assert(type() == TypeType::Optional);
+    return genericArguments_[0];
+}
+
 Type Type::typeOfTypeValue() const {
     if (type() == TypeType::Box) {
         return genericArguments_[0].typeOfTypeValue().boxedFor(boxedFor());
@@ -153,6 +162,16 @@ bool Type::canHaveGenericArguments() const {
     }
     return type() == TypeType::Class || type() == TypeType::Protocol || type() == TypeType::ValueType
             || type() == TypeType::Enum;
+}
+
+void Type::setGenericArguments(std::vector<Type> &&args) {
+    if (type() == TypeType::Box) {
+        genericArguments_[0].setGenericArguments(std::move(args));
+    }
+    else {
+        assert(canHaveGenericArguments());
+        genericArguments_ = args;
+    }
 }
 
 bool Type::canHaveProtocol() const {
@@ -417,10 +436,9 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::ve
 
 bool Type::isCompatibleToCallable(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const {
     if (type() == TypeType::Callable) {
-        if (genericArguments_[0].compatibleTo(to.genericArguments_[0], ct, ctargs)
-            && to.genericArguments_.size() == genericArguments_.size()) {
-            for (size_t i = 1; i < to.genericArguments_.size(); i++) {
-                if (!to.genericArguments_[i].compatibleTo(genericArguments_[i], ct, ctargs)) {
+        if (returnType().compatibleTo(to.returnType(), ct, ctargs) && to.parametersCount() == parametersCount()) {
+            for (size_t i = 0; i < to.parametersCount(); i++) {
+                if (!to.parameters()[i].compatibleTo(parameters()[i], ct, ctargs)) {
                     return false;
                 }
             }
@@ -450,8 +468,8 @@ bool Type::identicalTo(Type to, const TypeContext &tc, std::vector<CommonTypeFin
             case TypeType::ValueType:
                 return typeDefinition() == to.typeDefinition() && identicalGenericArguments(to, tc, ctargs);
             case TypeType::Callable:
-                return std::equal(to.genericArguments().begin(), to.genericArguments().end(),
-                                  genericArguments().begin(), genericArguments().end(),
+                return std::equal(to.genericArguments_.begin(), to.genericArguments_.end(),
+                                  genericArguments_.begin(), genericArguments_.end(),
                                   [&tc, ctargs](const Type &a, const Type &b) { return a.identicalTo(b, tc, ctargs); });
             case TypeType::Optional:
             case TypeType::TypeAsValue:
@@ -581,13 +599,13 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
         case TypeType::Callable:
             string.append("🍇");
 
-            for (size_t i = 1; i < type.genericArguments_.size(); i++) {
-                typeName(type.genericArguments_[i], typeContext, string, package);
+            for (auto it = type.parameters(); it < type.parametersEnd(); it++) {
+                typeName(*it, typeContext, string, package);
             }
 
-            if (type.genericArguments().front().type() != TypeType::NoReturn) {
+            if (type.returnType().type() != TypeType::NoReturn) {
                 string.append("➡️");
-                typeName(type.genericArguments().front(), typeContext, string, package);
+                typeName(type.returnType(), typeContext, string, package);
             }
             string.append("🍉");
             return;

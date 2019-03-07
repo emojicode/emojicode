@@ -83,15 +83,14 @@ std::unique_ptr<Function> buildBoxingThunk(const TypeContext &declarator, const 
 std::unique_ptr<Function> buildCallableThunk(const TypeExpectation &expectation, const Type &destCallable,
                                            Package *pkg, const SourcePosition &p) {
     auto params = std::vector<Parameter>();
-    params.reserve(expectation.genericArguments().size() - 1);
-    for (auto argumentType = expectation.genericArguments().begin() + 1;
-         argumentType != expectation.genericArguments().end(); argumentType++) {
-        params.emplace_back(std::u32string(1, expectation.genericArguments().end() - argumentType),
-                            std::make_unique<ASTLiteralType>(*argumentType), MFFlowCategory::Borrowing);
+    params.reserve(expectation.parametersCount());
+    for (auto paramType = expectation.parameters(); paramType != expectation.parametersEnd(); paramType++) {
+        params.emplace_back(std::u32string(1, 'A' + expectation.parameters() - paramType),
+                            std::make_unique<ASTLiteralType>(*paramType), MFFlowCategory::Borrowing);
     }
 
     auto function = makeBoxingThunk(std::u32string(), nullptr, pkg, p, std::move(params),
-                                    expectation.genericArguments().front(), FunctionType::Function);
+                                    expectation.returnType(), FunctionType::Function);
     function->setClosure();
     buildBoxingThunkAst(function.get(), nullptr, destCallable);
     return function;
