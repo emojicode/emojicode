@@ -14,6 +14,7 @@
 #include "MemoryFlowAnalysis/MFFlowCategory.hpp"
 #include "Functions/Mood.hpp"
 #include <utility>
+#include <memory>
 
 namespace llvm {
 class Value;

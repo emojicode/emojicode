@@ -15,6 +15,7 @@
 #include "Package/Package.hpp"
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
+#include "Types/TypeContext.hpp"
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>

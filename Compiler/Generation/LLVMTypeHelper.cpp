@@ -18,6 +18,7 @@
 #include "Types/Class.hpp"
 #include "Types/ValueType.hpp"
 #include "Types/TypeDefinition.hpp"
+#include "Types/TypeContext.hpp"
 #include <llvm/IR/DerivedTypes.h>
 #include <AST/ASTClosure.hpp>
 
@@ -189,7 +190,7 @@ llvm::Type* LLVMTypeHelper::llvmTypeForTypeDefinition(const Type &type) {
 
     auto structType = llvm::StructType::create(context_, mangleTypeName(type));
     reification.type = structType;
-    
+
     std::vector<llvm::Type *> types;
     if (type.type() == TypeType::Class) {
         types.emplace_back(llvm::Type::getInt8PtrTy(context_));

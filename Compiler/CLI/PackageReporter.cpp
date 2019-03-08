@@ -14,6 +14,7 @@
 #include "Types/Class.hpp"
 #include "Types/Enum.hpp"
 #include "Types/Protocol.hpp"
+#include "Types/TypeContext.hpp"
 #include <iostream>
 
 namespace EmojicodeCompiler {

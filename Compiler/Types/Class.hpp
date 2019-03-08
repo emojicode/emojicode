@@ -11,7 +11,6 @@
 
 #include "Functions/Initializer.hpp"
 #include "TypeDefinition.hpp"
-#include "Types/TypeContext.hpp"
 #include <set>
 
 namespace llvm {

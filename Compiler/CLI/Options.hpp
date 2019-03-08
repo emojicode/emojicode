@@ -9,13 +9,14 @@
 #ifndef Options_hpp
 #define Options_hpp
 
-#include "Compiler.hpp"
 #include <exception>
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace EmojicodeCompiler {
+
+class CompilerDelegate;
 
 /// This namespace contains all types and functions that define the command-line interface of the Emojicode Compiler.
 namespace CLI {

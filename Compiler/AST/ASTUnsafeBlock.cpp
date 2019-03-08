@@ -4,14 +4,13 @@
 
 #include "ASTUnsafeBlock.hpp"
 #include "Analysis/FunctionAnalyser.hpp"
-#include "Compiler.hpp"
 #include "CompilerError.hpp"
 
 namespace EmojicodeCompiler {
 
 void ASTUnsafeBlock::analyse(FunctionAnalyser *analyser) {
     if (analyser->isInUnsafeBlock()) {
-        analyser->compiler()->error(CompilerError(position(), "Already in a ☣️ block."));
+        analyser->error(CompilerError(position(), "Already in a ☣️ block."));
         block_.analyse(analyser);
         return;
     }
