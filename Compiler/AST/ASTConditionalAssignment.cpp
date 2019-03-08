@@ -39,7 +39,7 @@ Type ASTConditionalAssignment::analyse(ExpressionAnalyser *analyser, const TypeE
     t = t.optionalType();
 
     auto &variable = analyser->scoper().currentScope().declareVariable(varName_, t, true, position());
-    variable.initialize();
+    analyser->pathAnalyser().record(PathAnalyserIncident(false, variable.id()));
     varId_ = variable.id();
 
     return analyser->boolean();

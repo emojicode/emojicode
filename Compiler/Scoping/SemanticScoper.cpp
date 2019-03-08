@@ -11,32 +11,26 @@
 #include "Scoping/SemanticScoper.hpp"
 #include "Types/TypeDefinition.hpp"
 #include "Compiler.hpp"
+#include "Analysis/PathAnalyser.hpp"
 #include <map>
 
 namespace EmojicodeCompiler {
 
-Scope& SemanticScoper::pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p) {
+Scope& SemanticScoper::pushArgumentsScope(PathAnalyser *analyser, const std::vector<Parameter> &arguments,
+                                          const SourcePosition &p) {
     pushScope();
     for (auto &variable : arguments) {
         auto &var = currentScope().declareVariable(variable.name, variable.type->type(), true, p);
-        var.initializeAbsolutely();
+        analyser->record(PathAnalyserIncident(false, var.id()));
     }
     return currentScope();
 }
 
-void SemanticScoper::popScope(Compiler *compiler) {
-    currentScope().recommendFrozenVariables(compiler);
+void SemanticScoper::popScope(PathAnalyser *pathAnalyser, Compiler *compiler) {
+    currentScope().checkScope(pathAnalyser, compiler);
 
     updateMaxVariableIdForPopping();
     scopes_.pop_front();
-
-    maxInitializationLevel_--;
-    for (auto &scope : scopes_) {
-        scope.popInitializationLevel();
-    }
-    if (instanceScope() != nullptr) {
-        instanceScope()->popInitializationLevel();
-    }
 }
 
 SemanticScopeStats SemanticScoper::createStats() const {
@@ -54,14 +48,7 @@ SemanticScoper SemanticScoper::scoperForFunction(Function *function)  {
 }
 
 void SemanticScoper::pushScope() {
-    maxInitializationLevel_++;
-    for (auto &scope : scopes_) {
-        scope.pushInitializationLevel();
-    }
-    if (instanceScope() != nullptr) {
-        instanceScope()->pushInitializationLevel();
-    }
-    pushScopeInternal();
+    scopes_.emplace_front(Scope(scopes_.empty() ? maxVariableId_ : scopes_.front().maxVariableId()));
 }
 
 ResolvedVariable SemanticScoper::getVariable(const std::u32string &name, const SourcePosition &errorPosition) {

@@ -20,6 +20,7 @@ namespace EmojicodeCompiler {
 class FunctionAnalyser;
 class FunctionCodeGenerator;
 class ASTExpr;
+struct SourcePosition;
 
 /// This class encapsulates the logic of deinitializing an object when initialization is aborted by raising an error.
 ///
@@ -29,7 +30,7 @@ class ASTExpr;
 class ErrorSelfDestructing {
 protected:
     /// Must be called during semantic analysis to determine which variables were already initialized.
-    void analyseInstanceVariables(FunctionAnalyser *analyser);
+    void analyseInstanceVariables(FunctionAnalyser *analyser, const SourcePosition &p);
     /// Builds the IR to release all instance variables that were initialized when analyseInstanceVariables() was
     /// called.
     void buildDestruct(FunctionCodeGenerator *fg) const;

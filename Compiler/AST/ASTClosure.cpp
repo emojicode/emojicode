@@ -28,8 +28,10 @@ Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
 
     applyBoxingFromExpectation(analyser, expectation);
 
-    FunctionAnalyser closureAnaly(closure_.get(), std::make_unique<CapturingSemanticScoper>(analyser->scoper()),
-                                  analyser->semanticAnalyser());
+    auto scoper = std::make_unique<CapturingSemanticScoper>(analyser->scoper());
+    auto scoperPtr = scoper.get();
+    FunctionAnalyser closureAnaly(closure_.get(), std::move(scoper), analyser->semanticAnalyser());
+    scoperPtr->setPathAnalyser(&closureAnaly.pathAnalyser());
     closureAnaly.analyse();
     capture_.captures = dynamic_cast<CapturingSemanticScoper &>(closureAnaly.scoper()).captures();
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {

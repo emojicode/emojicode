@@ -15,15 +15,13 @@
 namespace EmojicodeCompiler {
 
 class Compiler;
+class PathAnalyser;
 struct SourcePosition;
 
 class Scope {
 public:
     Scope() = default;
     explicit Scope(unsigned int id) : maxVariableId_(id) {}
-    void setVariableInitialization(bool initd);
-    void pushInitializationLevel();
-    void popInitializationLevel();
 
     /// Sets a variable in this scope and returns it.
     /// @throws CompilerError if a variable with this name already exists.
@@ -39,13 +37,9 @@ public:
     /// Returns true if a variable with the name @c variable is set in this scope.
     bool hasLocalVariable(const std::u32string &variable) const;
 
-    /// Throws an error if an uninitialized variable is found in this scope.
-    /// The error message is created by concatenating errorMessageFront, the variable name, and errorMessageBack.
-    void uninitializedVariablesCheck(const SourcePosition &p, const std::string &errorMessageFront,
-                                     const std::string &errorMessageBack);
-
     /// Emits a warning for each mutable variable that has not been mutated.
-    void recommendFrozenVariables(Compiler *app) const;
+    /// Ensures that all non-optional variables are either initialized or are certainly not.
+    void checkScope(PathAnalyser *analyser, Compiler *compiler) const;
 
     void markInherited() {
         for (auto &pair : map_) {

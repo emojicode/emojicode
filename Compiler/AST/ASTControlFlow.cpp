@@ -38,10 +38,10 @@ void ASTIf::analyse(FunctionAnalyser *analyser) {
         blocks_.back().popScope(analyser);
         analyser->pathAnalyser().endBranch();
 
-        analyser->pathAnalyser().endMutualExclusiveBranches();
+        analyser->pathAnalyser().finishMutualExclusiveBranches();
     }
     else {
-        analyser->pathAnalyser().endUncertainBranches();
+        analyser->pathAnalyser().finishUncertainBranches();
     }
 }
 
@@ -63,7 +63,7 @@ void ASTRepeatWhile::analyse(FunctionAnalyser *analyser) {
     block_.analyse(analyser);
     block_.popScope(analyser);
     analyser->pathAnalyser().endBranch();
-    analyser->pathAnalyser().endUncertainBranches();
+    analyser->pathAnalyser().finishUncertainBranches();
 }
 
 void ASTRepeatWhile::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
@@ -95,7 +95,7 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
 
     if (!valueVarName_.empty()) {
         auto &var = analyser->scoper().currentScope().declareVariable(valueVarName_, valueType_, true, position());
-        var.initialize();
+        analyser->pathAnalyser().record(PathAnalyserIncident(false, var.id()));
         valueVar_ = var.id();
     }
     valueBlock_.analyse(analyser);
@@ -106,13 +106,13 @@ void ASTErrorHandler::analyse(FunctionAnalyser *analyser) {
     analyser->scoper().pushScope();
     errorType_ = call->errorType();
     auto &errVar = analyser->scoper().currentScope().declareVariable(errorVarName_, call->errorType(), true, position());
-    errVar.initialize();
+    analyser->pathAnalyser().record(PathAnalyserIncident(false, errVar.id()));
     errorVar_ = errVar.id();
     errorBlock_.analyse(analyser);
     errorBlock_.popScope(analyser);
     analyser->pathAnalyser().endBranch();
 
-    analyser->pathAnalyser().endMutualExclusiveBranches();
+    analyser->pathAnalyser().finishMutualExclusiveBranches();
 }
 
 void ASTErrorHandler::analyseMemoryFlow(MFFunctionAnalyser *analyser) {

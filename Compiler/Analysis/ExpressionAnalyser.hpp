@@ -38,8 +38,10 @@ public:
     Compiler* compiler() const;
     const TypeContext& typeContext() const { return typeContext_; }
     PathAnalyser& pathAnalyser() { return pathAnalyser_; }
+    const PathAnalyser& pathAnalyser() const { return pathAnalyser_; }
     Package* package() const { return package_; }
     SemanticScoper& scoper() { return *scoper_; }
+    const SemanticScoper& scoper() const { return *scoper_; }
 
     void error(const CompilerError &ce) const;
 

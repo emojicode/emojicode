@@ -34,10 +34,6 @@ public:
     /// The position at which this variable was defined
     const SourcePosition& position() const { return position_; }
 
-    /// Throws an error if the variable is not initalized.
-    /// @throws CompilerError
-    void uninitalizedError(const SourcePosition &p) const;
-
     /// Marks the variable as mutated or issues an error if the variable is constant.
     /// @throws CompilerError if the variable is constant.
     void mutate(const SourcePosition &p);
@@ -51,24 +47,6 @@ public:
     bool inherited() const { return inherited_; }
     void setInherited() { inherited_ = true; }
 
-    void initialize() {
-        if (!isInitialized()) {
-            initialized_ = 1;
-        }
-    }
-    void initializeAbsolutely() {
-        if (!isInitialized()) {
-            initialized_ = 1;
-        }
-    }
-    void uninitialize() { initialized_ = 0; }
-    void popInitializationLevel() { if (isInitialized()) { initialized_--; } }
-    void pushInitializationLevel() { if (isInitialized()) { initialized_++; } }
-
-    /// Whether the variable is initialized.
-    bool isInitialized() const { return initialized_ > 0; }
-    int initializationLevel() const { return initialized_; }
-
     VariableID id() const { return id_; }
 private:
     Type type_;
@@ -76,7 +54,6 @@ private:
     bool mutated_ = false;
     bool inherited_ = false;
     std::u32string string_;
-    int initialized_ = 0;
     VariableID id_;
 
     SourcePosition position_;

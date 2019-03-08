@@ -60,7 +60,7 @@ Type ASTThis::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expec
     if (!isSelfAllowed(analyser->functionType())) {
         throw CompilerError(position(), "Illegal use of 🐕.");
     }
-    analyser->pathAnalyser().recordIncident(PathAnalyserIncident::UsedSelf);
+    analyser->pathAnalyser().record(PathAnalyserIncident::UsedSelf);
     return analyser->typeContext().calleeType();
 }
 

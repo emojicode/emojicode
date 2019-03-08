@@ -65,6 +65,7 @@ compilation_tests = [
     "genericLocalAsArgToGeneric",
     "genericToConstraintOptional",
     "variableInitAndScoping",
+    "varInitPath",
     "valueTypeRemoteAdditional",
     "closureBasic",
     "closureCapture",

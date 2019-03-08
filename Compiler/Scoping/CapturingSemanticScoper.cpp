@@ -8,6 +8,7 @@
 
 #include "CapturingSemanticScoper.hpp"
 #include "VariableNotFoundError.hpp"
+#include "Analysis/PathAnalyser.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -21,7 +22,7 @@ ResolvedVariable CapturingSemanticScoper::getVariable(const std::u32string &name
         auto &variable = pair.variable;
         auto &captureVariable = topmostLocalScope().declareVariableWithId(variable.name(), variable.type(), true,
                                                                           VariableID(captureId_++), errorPosition);
-        captureVariable.initialized_ = maxInitializationLevel();
+        pathAnalyser_->recordForMainBranch(PathAnalyserIncident(false, captureVariable.id()));
         captures_.emplace_back(VariableCapture(variable.id(), variable.type(), captureVariable.id()));
         return ResolvedVariable(captureVariable, false);
     }

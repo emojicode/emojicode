@@ -57,7 +57,7 @@ void ASTBlock::popScope(FunctionAnalyser *analyser) {
         scopeStats_ = analyser->scoper().createStats();
         hasStats_ = true;
     }
-    analyser->scoper().popScope(analyser->compiler());
+    analyser->scoper().popScope(&analyser->pathAnalyser(), analyser->compiler());
 }
 
 void ASTExprStatement::analyse(FunctionAnalyser *analyser)  {
@@ -69,7 +69,7 @@ void ASTExprStatement::analyseMemoryFlow(MFFunctionAnalyser *analyser) {
 }
 
 void ASTReturn::analyse(FunctionAnalyser *analyser) {
-    analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
+    analyser->pathAnalyser().record(PathAnalyserIncident::Returned);
 
     if (analyser->function()->returnType()->type().type() == TypeType::NoReturn) {
         if (value_ != nullptr) {
@@ -125,7 +125,7 @@ void ASTReturn::returnReference(FunctionAnalyser *analyser, Type type) {
 }
 
 void ASTRaise::analyse(FunctionAnalyser *analyser) {
-    analyser->pathAnalyser().recordIncident(PathAnalyserIncident::Returned);
+    analyser->pathAnalyser().record(PathAnalyserIncident::Returned);
     if (!analyser->function()->errorProne()) {
         throw CompilerError(position(), "Function is not declared error-prone.");
     }
@@ -133,7 +133,7 @@ void ASTRaise::analyse(FunctionAnalyser *analyser) {
     analyser->expectType(analyser->function()->errorType()->type(), &value_);
 
     if (isReturnForbidden(analyser->function()->functionType())) {
-        analyseInstanceVariables(analyser);
+        analyseInstanceVariables(analyser, position());
     }
 }
 

@@ -23,14 +23,14 @@ void AccessesAnyVariable::setVariableAccess(const ResolvedVariable &var, Express
     inInstanceScope_ = var.inInstanceScope;
     variableType_ = var.variable.type();
     if (inInstanceScope_) {
-        analyser->pathAnalyser().recordIncident(PathAnalyserIncident::UsedSelf);
+        analyser->pathAnalyser().record(PathAnalyserIncident::UsedSelf);
     }
 }
 
 Type ASTGetVariable::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto var = analyser->scoper().getVariable(name(), position());
     setVariableAccess(var, analyser);
-    var.variable.uninitalizedError(position());
+    analyser->pathAnalyser().uninitalizedError(var, position());
     auto type = var.variable.type();
     if (var.inInstanceScope && analyser->typeContext().calleeType().type() == TypeType::ValueType &&
         !analyser->typeContext().calleeType().isMutable()) {
@@ -73,7 +73,7 @@ void ASTVariableDeclaration::analyse(FunctionAnalyser *analyser) {
     analyser->scoper().checkForShadowing(varName_, position(), analyser->compiler());
     auto &var = analyser->scoper().currentScope().declareVariable(varName_, type, false, position());
     if (type.type() == TypeType::Optional) {
-        var.initialize();
+        analyser->pathAnalyser().record(PathAnalyserIncident(false, var.id()));
     }
     id_ = var.id();
 }
@@ -92,9 +92,10 @@ void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
     setVariableAccess(rvar, analyser);
     analyser->expectType(rvar.variable.type(), &expr_);
 
-    wasInitialized_ = rvar.variable.isInitialized();
+    auto incident = PathAnalyserIncident(rvar.inInstanceScope, rvar.variable.id());
+    wasInitialized_ = analyser->pathAnalyser().hasCertainly(incident);
+    analyser->pathAnalyser().record(incident);
 
-    rvar.variable.initialize();
     rvar.variable.mutate(position());
 }
 
@@ -112,7 +113,7 @@ void ASTVariableDeclareAndAssign::analyse(FunctionAnalyser *analyser) {
     Type t = analyser->expect(TypeExpectation(false, true), &expr_).inexacted();
     analyser->scoper().checkForShadowing(name(), position(), analyser->compiler());
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, false, position());
-    var.initialize();
+    analyser->pathAnalyser().record(PathAnalyserIncident(false, var.id()));
     setVariableAccess(ResolvedVariable(var, false), analyser);
 }
 
@@ -123,7 +124,7 @@ void ASTVariableDeclareAndAssign::analyseMemoryFlow(EmojicodeCompiler::MFFunctio
 
 void ASTInstanceVariableInitialization::analyse(FunctionAnalyser *analyser) {
     auto &var = analyser->scoper().instanceScope()->getLocalVariable(name());
-    var.initialize();
+    analyser->pathAnalyser().record(PathAnalyserIncident(true, var.id()));
     var.mutate(position());
     setVariableAccess(ResolvedVariable(var, true), analyser);
     if (analyseExpr_) {
@@ -135,7 +136,7 @@ void ASTConstantVariable::analyse(FunctionAnalyser *analyser) {
     Type t = analyser->expect(TypeExpectation(false, false), &expr_);
     analyser->scoper().checkForShadowing(name(), position(), analyser->compiler());
     auto &var = analyser->scoper().currentScope().declareVariable(name(), t, true, position());
-    var.initialize();
+    analyser->pathAnalyser().record(PathAnalyserIncident(false, var.id()));
     setVariableAccess(ResolvedVariable(var, false), analyser);
 }
 

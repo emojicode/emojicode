@@ -24,6 +24,7 @@ struct ResolvedVariable {
 };
 
 struct FunctionObjectVariableInformation;
+class PathAnalyser;
 
 /// Scoper used during Semantic Analysis. Assigns ID's to variables that are used with IDScoper later.
 class SemanticScoper {
@@ -46,14 +47,15 @@ public:
     void pushScope();
 
     /// Pushes a new subscope and sets the argument variables in it.
-    virtual Scope& pushArgumentsScope(const std::vector<Parameter> &arguments, const SourcePosition &p);
+    virtual Scope& pushArgumentsScope(PathAnalyser *analyser, const std::vector<Parameter> &arguments,
+                                      const SourcePosition &p);
 
     /// Issues an error if the variable `name` is found.
     /// This method is called before declaring variables to warn against variable shadowing.
     void checkForShadowing(const std::u32string &name, const SourcePosition &p, Compiler *compiler) const;
 
     /// Pops the current scope and calls @c recommendFrozenVariables on it.
-    void popScope(Compiler *compiler);
+    void popScope(PathAnalyser *pathAnalyser, Compiler *compiler);
 
     SemanticScopeStats createStats() const;
 
@@ -66,8 +68,6 @@ public:
     virtual ~SemanticScoper() = default;
 
 protected:
-    int maxInitializationLevel() const { return maxInitializationLevel_; }
-
     /// Returns the topmost local scope, i.e. the one in which all other locals scopes are subscopes.
     Scope& topmostLocalScope() {
         return scopes_.back();
@@ -81,13 +81,8 @@ private:
         }
     }
 
-    void pushScopeInternal() {
-        scopes_.emplace_front(Scope(scopes_.empty() ? maxVariableId_ : scopes_.front().maxVariableId()));
-    }
-
     std::list<Scope> scopes_;
     Scope *instanceScope_ = nullptr;
-    int maxInitializationLevel_ = 1;
     size_t maxVariableId_ = 0;
 };
 

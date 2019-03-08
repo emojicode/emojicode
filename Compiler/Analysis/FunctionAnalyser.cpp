@@ -60,21 +60,22 @@ void FunctionAnalyser::checkThisUse(const SourcePosition &p) const {
         compiler()->error(CompilerError(p, "Attempt to use 🐕 before superinitializer call."));
     }
     if (isFullyInitializedCheckRequired(function()->functionType())) {
-        scoper_->instanceScope()->uninitializedVariablesCheck(p, "Instance variable \"",
-                                                              "\" must be initialized before using 🐕.");
+        uninitializedVariablesCheck(p, "Instance variable \"", "\" must be initialized before using 🐕.");
     }
 }
 
 void FunctionAnalyser::analyse() {
-   scoper_->pushArgumentsScope(function_->parameters(), function_->position());
+    scoper_->pushArgumentsScope(&pathAnalyser(), function_->parameters(), function_->position());
 
     if (function_->functionType() == FunctionType::ObjectInitializer &&
         dynamic_cast<Class *>(function_->owner())->foreign()) {
         compiler()->error(CompilerError(function_->position(), "Foreign classes cannot have native initializers."));
     }
 
-    if (hasInstanceScope(function_->functionType())) {
-        scoper_->instanceScope()->setVariableInitialization(!isFullyInitializedCheckRequired(function_->functionType()));
+    if (hasInstanceScope(function_->functionType()) && !isFullyInitializedCheckRequired(function_->functionType())) {
+        for (auto &it : scoper_->instanceScope()->map()) {
+            pathAnalyser().record(PathAnalyserIncident(true, it.second.id()));
+        }
     }
 
     if (isFullyInitializedCheckRequired(function_->functionType())) {
@@ -106,7 +107,8 @@ void FunctionAnalyser::analyseBabyBottle() {
             throw CompilerError(initializer->position(), "🍼 was applied to \"",
                                 utf8(var), "\" but instance variable has incompatible type.");
         }
-        instanceVariable.initialize();
+        pathAnalyser().record(PathAnalyserIncident(PathAnalyserIncident::InstanceVarInit,
+                                                           instanceVariable.id()));
 
         auto getVar = std::make_shared<ASTGetVariable>(argumentVariable.name(), initializer->position());
         auto assign = std::make_unique<ASTInstanceVariableInitialization>(instanceVariable.name(),
@@ -168,8 +170,7 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
 
 void FunctionAnalyser::analyseInitializationRequirements() {
     if (isFullyInitializedCheckRequired(function_->functionType())) {
-        scoper_->instanceScope()->uninitializedVariablesCheck(function_->position(), "Instance variable \"",
-                                                              "\" must be initialized.");
+        uninitializedVariablesCheck(function_->position(), "Instance variable \"", "\" must be initialized.");
     }
 
     if (isSuperconstructorRequired(function_->functionType())) {
@@ -181,6 +182,16 @@ void FunctionAnalyser::analyseInitializationRequirements() {
             else {
                 compiler()->error(CompilerError(function_->position(), "Superinitializer is not called."));
             }
+        }
+    }
+}
+
+void FunctionAnalyser::uninitializedVariablesCheck(const SourcePosition &p, const char *errorMessageFront,
+                                        const char *errorMessageBack) const {
+    for (auto &it : scoper().instanceScope()->map()) {
+        Variable &cv = it.second;
+        if (!cv.inherited() && !pathAnalyser().hasCertainly(PathAnalyserIncident(true, cv.id()))) {
+            throw CompilerError(p, errorMessageFront, utf8(cv.name()), errorMessageBack);
         }
     }
 }

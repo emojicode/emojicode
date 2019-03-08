@@ -15,11 +15,16 @@
 
 namespace EmojicodeCompiler {
 
-void ErrorSelfDestructing::analyseInstanceVariables(FunctionAnalyser *analyser) {
+void ErrorSelfDestructing::analyseInstanceVariables(FunctionAnalyser *analyser, const SourcePosition &p) {
     for (auto &var : analyser->scoper().instanceScope()->map()) {
         Variable &cv = var.second;
-        if (cv.isInitialized() && cv.type().isManaged()) {
+        auto incident = PathAnalyserIncident(true, cv.id());
+        if (cv.type().isManaged() && analyser->pathAnalyser().hasPotentially(incident)) {
             release_.emplace_back(cv.id(), cv.type());
+            if (!analyser->pathAnalyser().hasCertainly(incident)) {
+                throw CompilerError(p, "Initialization cannot be aborted: Variable ", utf8(cv.name()),
+                                    " must either be initialized on all paths or not at all.");
+            }
         }
     }
     class_ = dynamic_cast<Class*>(analyser->function()->owner());

@@ -10,31 +10,9 @@
 #include "Compiler.hpp"
 #include "CompilerError.hpp"
 #include "Types/TypeDefinition.hpp"
+#include "Analysis/PathAnalyser.hpp"
 
 namespace EmojicodeCompiler {
-
-void Scope::setVariableInitialization(bool initd) {
-    for (auto &it : map_) {
-        if (initd) {
-            it.second.initialize();
-        }
-        else {
-            it.second.uninitialize();
-        }
-    }
-}
-
-void Scope::pushInitializationLevel() {
-    for (auto &it : map_) {
-        it.second.pushInitializationLevel();
-    }
-}
-
-void Scope::popInitializationLevel() {
-    for (auto &it : map_) {
-        it.second.popInitializationLevel();
-    }
-}
 
 Variable& Scope::declareVariable(const std::u32string &variable, const Type &type, bool constant,
                                  const SourcePosition &p) {
@@ -59,22 +37,18 @@ bool Scope::hasLocalVariable(const std::u32string &variable) const {
     return map_.count(variable) > 0;
 }
 
-void Scope::uninitializedVariablesCheck(const SourcePosition &p, const std::string &errorMessageFront,
-                                        const std::string &errorMessageBack) {
-    for (auto &it : map_) {
-        Variable &cv = it.second;
-        if (!cv.isInitialized() && !cv.inherited()) {
-            throw CompilerError(p, errorMessageFront, utf8(cv.name()), errorMessageBack);
-        }
-    }
-}
-
-void Scope::recommendFrozenVariables(Compiler *app) const {
+void Scope::checkScope(PathAnalyser *analyser, Compiler *compiler) const {
     for (auto &it : map_) {
         const Variable &cv = it.second;
         if (!cv.constant() && !cv.mutated()) {
-            app->warn(cv.position(), "Variable \"", utf8(cv.name()),
-                      "\" was never mutated; consider making it a constant variable.");
+            compiler->warn(cv.position(), "Variable \"", utf8(cv.name()),
+                           "\" was never mutated; consider making it a constant variable.");
+        }
+        auto incident = PathAnalyserIncident(false, cv.id());
+        if (cv.type().type() != TypeType::Optional && analyser->hasPotentially(incident) &&
+            !analyser->hasCertainly(incident)) {
+            compiler->error(CompilerError(cv.position(), "Non-optional variable must be initialized on all paths. Move"
+                                          " variable into a subscope where this applies or make it optional."));
         }
     }
 }

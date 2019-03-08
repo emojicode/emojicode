@@ -38,6 +38,11 @@ public:
     void checkThisUse(const SourcePosition &p) const override;
     FunctionType functionType() const override;
 
+    /// Throws an error if an uninitialized variable is found in this scope.
+    /// The error message is created by concatenating errorMessageFront, the variable name, and errorMessageBack.
+    void uninitializedVariablesCheck(const SourcePosition &p, const char *errorMessageFront,
+                                     const char *errorMessageBack) const;
+
     ~FunctionAnalyser();
 
 private:

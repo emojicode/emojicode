@@ -45,7 +45,8 @@ void ASTSuper::analyseSuperInit(ExpressionAnalyser *analyser) {
         analyser->error(CompilerError(position(), "Superinitializer might have already been called."));
     }
 
-    analyser->scoper().instanceScope()->uninitializedVariablesCheck(position(), "Instance variable \"", "\" must be "
+    dynamic_cast<FunctionAnalyser*>(analyser)->uninitializedVariablesCheck(position(), "Instance variable \"",
+                                                                           "\" must be "
                                                                     "initialized before calling the superinitializer.");
 
     init_ = true;
@@ -56,7 +57,7 @@ void ASTSuper::analyseSuperInit(ExpressionAnalyser *analyser) {
     analyser->analyseFunctionCall(&args_, calleeType_, initializer);
     analyseSuperInitErrorProneness(analyser, initializer);
     function_ = initializer;
-    analyser->pathAnalyser().recordIncident(PathAnalyserIncident::CalledSuperInitializer);
+    analyser->pathAnalyser().record(PathAnalyserIncident::CalledSuperInitializer);
 }
 
 void ASTSuper::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
@@ -88,7 +89,7 @@ void ASTSuper::analyseSuperInitErrorProneness(ExpressionAnalyser *eanalyser, con
                                 thisInitializer->errorType()->type().toString(analyser->typeContext()), ".");
         }
         manageErrorProneness_ = true;
-        analyseInstanceVariables(analyser);
+        analyseInstanceVariables(analyser, position());
     }
 }
 
