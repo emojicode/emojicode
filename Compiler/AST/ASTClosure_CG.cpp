@@ -16,7 +16,9 @@ namespace EmojicodeCompiler {
 
 Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     if (!allocatesOnStack() && !isEscaping_) {
-        throw CompilerError(position(), "Using non-escaping closure as escaping value.");
+        auto ce = CompilerError(position(), "Using non-escaping closure as escaping value.");
+        ce.addNotes(position(), "Add 🛅 after 🍇 to make closure escaping.");
+        throw ce;
     }
     if (allocatesOnStack() && isEscaping_) {
         fg->compiler()->warn(position(), "Using escaping closure as non-escaping value.");

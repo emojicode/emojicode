@@ -24,7 +24,7 @@ public:
     JSONCompilerDelegate();
 
     void begin() override;
-    void error(Compiler *compiler, const std::string &message, const SourcePosition &p) override;
+    void error(Compiler *compiler, const CompilerError &ce) override;
     void warn(Compiler *compiler, const std::string &message, const SourcePosition &p) override;
     void finish() override;
 private:

@@ -85,8 +85,9 @@ void ASTVariableAssignment::analyse(FunctionAnalyser *analyser) {
 
     if (rvar.inInstanceScope && !analyser->function()->mutating() &&
         !isFullyInitializedCheckRequired(analyser->function()->functionType())) {
-        analyser->error(CompilerError(position(),
-                                                  "Can’t mutate instance variable as method is not marked with 🖍."));
+        auto ce = CompilerError(position(), "Can’t mutate instance variable as method is not marked with 🖍.");
+        ce.addNotes(analyser->function()->position(), "Add 🖍 to method attributes to allow mutation.");
+        analyser->error(ce);
     }
 
     setVariableAccess(rvar, analyser);

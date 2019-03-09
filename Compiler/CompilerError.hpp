@@ -13,8 +13,15 @@
 #include "Utils/StringUtils.hpp"
 #include <exception>
 #include <sstream>
+#include <vector>
 
 namespace EmojicodeCompiler {
+
+struct Note {
+    Note(SourcePosition p, std::string m) : position(p), message(std::move(m)) {}
+    SourcePosition position;
+    std::string message;
+};
 
 /// A CompilerError represents an error in an Emojicode source document.
 /// Although this class inherits from std::exception not all errors should be thrown. If an error does not fatally
@@ -37,9 +44,19 @@ public:
 
     const SourcePosition& position() const { return position_; }
     const std::string& message() const { return message_; }
+    const std::vector<Note>& notes() const { return notes_; }
+
+    template<typename... Args>
+    void addNotes(SourcePosition p, Args... args) {
+        std::stringstream stream;
+        appendToStream(stream, args...);
+        notes_.emplace_back(p, stream.str());
+    }
+
 private:
     SourcePosition position_;
     std::string message_;
+    std::vector<Note> notes_;
 };
 
 }  // namespace EmojicodeCompiler

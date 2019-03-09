@@ -13,7 +13,14 @@ namespace EmojicodeCompiler {
 
 void Variable::mutate(const SourcePosition &p) {
     if (constant()) {
-        throw CompilerError(p, "Cannot modify constant variable \"", utf8(name()), "\".");
+        auto ce = CompilerError(p, "Cannot modify constant variable \"", utf8(name()), "\".");
+        if (isCaptured()) {
+            ce.addNotes(position(), "Variable was captured for escaping closure here.");
+        }
+        else {
+            ce.addNotes(position(), "Variable was declared here.");
+        }
+        throw ce;
     }
     mutated_ = true;
 }

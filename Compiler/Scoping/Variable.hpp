@@ -47,12 +47,16 @@ public:
     bool inherited() const { return inherited_; }
     void setInherited() { inherited_ = true; }
 
+    bool isCaptured() const { return captured_; }
+    void setCaptured() { captured_ = true; }
+
     VariableID id() const { return id_; }
 private:
     Type type_;
     bool constant_;
     bool mutated_ = false;
     bool inherited_ = false;
+    bool captured_ = false;
     std::u32string string_;
     VariableID id_;
 

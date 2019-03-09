@@ -38,7 +38,7 @@ public:
     /// A compiler error occured.
     /// @param p The location at which the error occurred.
     /// @param message A string message describing the error.
-    virtual void error(Compiler *compiler, const std::string &message, const SourcePosition &p) = 0;
+    virtual void error(Compiler *compiler, const CompilerError &ce) = 0;
     /// A compiler warning has been issued.
     /// @param p The location at which the warning was issued.
     /// @param message A string message describing the warning.

@@ -118,7 +118,14 @@ std::string Compiler::searchPackage(const std::string &name, const SourcePositio
             return full;
         }
     }
-    throw CompilerError(p, "Could not find package ", name, ".");
+
+    auto ce = CompilerError(p, "Could not find package ", name, ".");
+    std::string str = "Searched in:";
+    for (auto &path : packageSearchPaths_) {
+        str.append("\n").append(path);
+    }
+    ce.addNotes(SourcePosition(), str);
+    throw ce;
 }
 
 std::string Compiler::findBinaryPathPackage(const std::string &packagePath, const std::string &packageName) {
@@ -153,7 +160,7 @@ Package *Compiler::loadPackage(const std::string &name, const SourcePosition &p,
 
 void Compiler::error(const CompilerError &ce) {
     hasError_ = true;
-    delegate_->error(this, ce.message(), ce.position());
+    delegate_->error(this, ce);
 }
 
 void Compiler::warn(const SourcePosition &p, const std::string &warning) {

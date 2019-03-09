@@ -23,7 +23,7 @@ ResolvedVariable CapturingSemanticScoper::getVariable(const std::u32string &name
         auto &captureVariable = topmostLocalScope().declareVariableWithId(variable.name(), variable.type(),
                                                                           constantCaptures_,
                                                                           VariableID(captureId_++), errorPosition);
-        captureVariable.setInherited();
+        captureVariable.setCaptured();
         pathAnalyser_->recordForMainBranch(PathAnalyserIncident(false, captureVariable.id()));
         captures_.emplace_back(VariableCapture(variable.id(), variable.type(), captureVariable.id()));
         return ResolvedVariable(captureVariable, false);

@@ -144,8 +144,11 @@ protected:
 
     template <typename T>
     void duplicateDeclarationCheck(T *function, const std::map<std::u32string, std::unique_ptr<T>> &dict) {
-        if (dict.find(methodTableName(function->name(), function->mood())) != dict.end()) {
-            throw CompilerError(function->position(), utf8(function->name()), " is declared twice.");
+        auto prev = dict.find(methodTableName(function->name(), function->mood()));
+        if (prev != dict.end()) {
+            auto ce = CompilerError(function->position(), utf8(function->name()), " is declared twice.");
+            ce.addNotes(prev->second->position(), "Previous declaration is here");
+            throw ce;
         }
     }
 

@@ -40,7 +40,7 @@ bool Scope::hasLocalVariable(const std::u32string &variable) const {
 void Scope::checkScope(PathAnalyser *analyser, Compiler *compiler) const {
     for (auto &it : map_) {
         const Variable &cv = it.second;
-        if (!cv.constant() && !cv.mutated() && !cv.inherited()) {
+        if (!cv.constant() && !cv.mutated() && !cv.isCaptured()) {
             compiler->warn(cv.position(), "Variable \"", utf8(cv.name()),
                            "\" was never mutated; consider making it a constant variable.");
         }

@@ -8,6 +8,7 @@
 
 #include "JSONCompilerDelegate.hpp"
 #include "Lex/SourcePosition.hpp"
+#include "CompilerError.hpp"
 #include <iostream>
 
 namespace EmojicodeCompiler {
@@ -39,8 +40,8 @@ void JSONCompilerDelegate::printJson(const char *type, const SourcePosition &p, 
     writer_.EndObject();
 }
 
-void JSONCompilerDelegate::error(Compiler *compiler, const std::string &message, const SourcePosition &p) {
-    printJson("error", p, message);
+void JSONCompilerDelegate::error(Compiler *compiler, const CompilerError &ce) {
+    printJson("error", ce.position(), ce.message());
 }
 
 void JSONCompilerDelegate::warn(Compiler *compiler, const std::string &message, const SourcePosition &p) {
