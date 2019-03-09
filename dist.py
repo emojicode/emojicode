@@ -4,7 +4,7 @@ import os
 import sys
 import subprocess
 
-version = "0.8.4"
+version = "0.9.0"
 packages = ["s", "files", "sockets", "testtube"]
 
 source = os.path.dirname(os.path.realpath(__file__))
