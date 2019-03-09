@@ -15,6 +15,8 @@
 
 namespace EmojicodeCompiler {
 
+class ExpressionAnalyser;
+
 struct VariableCapture {
     VariableCapture(VariableID id, Type type, VariableID captureId) : sourceId(id), type(std::move(type)), captureId(captureId) {}
     VariableID sourceId;
@@ -27,23 +29,17 @@ struct VariableCapture {
     scopes must share the same instance scope as capturing from instance scopes is not supported. */
 class CapturingSemanticScoper : public SemanticScoper {
 public:
-    CapturingSemanticScoper(SemanticScoper &captured, bool makeCapturesConstant)
-        : SemanticScoper(captured.instanceScope()), capturedScoper_(captured),
-            constantCaptures_(makeCapturesConstant) {}
+    CapturingSemanticScoper(ExpressionAnalyser *analyser, bool makeCapturesConstant);
 
     void setPathAnalyser(PathAnalyser *pa) { pathAnalyser_ = pa; }
 
     Scope& pushArgumentsScope(PathAnalyser *analyser, const std::vector<Parameter> &arguments,
-                              const SourcePosition &p) override {
-        auto &scope = SemanticScoper::pushArgumentsScope(analyser, arguments, p);
-        captureId_ = scope.reserveIds(capturedScoper_.currentScope().maxVariableId());
-        return scope;
-    }
+                              const SourcePosition &p) override;
 
     ResolvedVariable getVariable(const std::u32string &name, const SourcePosition &errorPosition) override;
     const std::vector<VariableCapture>& captures() const { return captures_; }
 private:
-    SemanticScoper &capturedScoper_;
+    ExpressionAnalyser *analyser_;
     std::vector<VariableCapture> captures_;
     size_t captureId_;
     PathAnalyser *pathAnalyser_ = nullptr;

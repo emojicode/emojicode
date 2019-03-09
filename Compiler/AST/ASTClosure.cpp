@@ -28,7 +28,7 @@ Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
 
     applyBoxingFromExpectation(analyser, expectation);
 
-    auto scoper = std::make_unique<CapturingSemanticScoper>(analyser->scoper(), isEscaping_);
+    auto scoper = std::make_unique<CapturingSemanticScoper>(analyser, isEscaping_);
     auto scoperPtr = scoper.get();
     FunctionAnalyser closureAnaly(closure_.get(), std::move(scoper), analyser->semanticAnalyser());
     scoperPtr->setPathAnalyser(&closureAnaly.pathAnalyser());
