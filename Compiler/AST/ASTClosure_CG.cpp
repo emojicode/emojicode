@@ -9,19 +9,27 @@
 #include "ASTClosure.hpp"
 #include "Generation/ClosureCodeGenerator.hpp"
 #include "Generation/Declarator.hpp"
+#include "Compiler.hpp"
 #include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {
 
 Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
+    if (!allocatesOnStack() && !isEscaping_) {
+        throw CompilerError(position(), "Using non-escaping closure as escaping value.");
+    }
+    if (allocatesOnStack() && isEscaping_) {
+        fg->compiler()->warn(position(), "Using escaping closure as non-escaping value.");
+    }
+
     closure_->createUnspecificReification();
     fg->generator()->declarator().declareLlvmFunction(closure_.get());
 
     auto thisValue = capture_.capturesSelf() ? fg->thisValue()->getType() : nullptr;
     auto capture = capture_;
-    capture.type = fg->generator()->typeHelper().llvmTypeForCapture(capture_, thisValue);
+    capture.type = fg->generator()->typeHelper().llvmTypeForCapture(capture_, thisValue, isEscaping_);
 
-    auto closureGenerator = ClosureCodeGenerator(capture, closure_.get(), fg->generator());
+    auto closureGenerator = ClosureCodeGenerator(capture, closure_.get(), fg->generator(), isEscaping_);
     closureGenerator.generate();
 
     auto alloc = storeCapturedVariables(fg, capture);
@@ -39,19 +47,22 @@ llvm::Value* ASTClosure::createDeinit(CodeGenerator *cg, const Capture &capture)
     auto fg = FunctionCodeGenerator(deinit, cg);
     fg.createEntry();
 
-    auto captures = fg.builder().CreateBitCast(deinit->args().begin(), capture.type->getPointerTo());
+    if (isEscaping_) {
+        auto captures = fg.builder().CreateBitCast(deinit->args().begin(), capture.type->getPointerTo());
 
-    auto i = 2;
-    if (capture.capturesSelf()) {
-        auto ep = fg.builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++);
-        fg.releaseByReference(ep, capture.self);
-    }
-    for (auto &capturedVar : capture.captures) {
-        auto ptr = fg.builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++);
-        if (capturedVar.type.isManaged()) {
-            fg.releaseByReference(ptr, capturedVar.type);
+        auto i = 2;
+        if (capture.capturesSelf()) {
+            auto ep = fg.builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++);
+            fg.releaseByReference(ep, capture.self);
+        }
+        for (auto &capturedVar : capture.captures) {
+            auto ptr = fg.builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++);
+            if (capturedVar.type.isManaged()) {
+                fg.releaseByReference(ptr, capturedVar.type);
+            }
         }
     }
+
     fg.builder().CreateRetVoid();
     return deinit;
 }
@@ -64,23 +75,32 @@ llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const
 
     auto i = 2;
     if (capture.capturesSelf()) {
-        fg->retain(fg->thisValue(), capture_.self);
+        if (isEscaping_) fg->retain(fg->thisValue(), capture_.self);
         auto ep = fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++);
         fg->builder().CreateStore(fg->thisValue(), ep);
     }
-    for (auto &capturedVar : capture.captures) {
-        Value *value;
-        auto &variable = fg->scoper().getVariable(capturedVar.sourceId);
 
-        if (capturedVar.type.isManaged() && fg->isManagedByReference(capturedVar.type)) {
-            fg->retain(variable, capturedVar.type);
-        }
-        value = fg->builder().CreateLoad(variable);
-        if (capturedVar.type.isManaged() && !fg->isManagedByReference(capturedVar.type)) {
-            fg->retain(value, capturedVar.type);
-        }
+    if (isEscaping_) {
+        for (auto &capturedVar : capture.captures) {
+            Value *value;
+            auto &variable = fg->scoper().getVariable(capturedVar.sourceId);
 
-        fg->builder().CreateStore(value, fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++));
+            if (capturedVar.type.isManaged() && fg->isManagedByReference(capturedVar.type)) {
+                fg->retain(variable, capturedVar.type);
+            }
+            value = fg->builder().CreateLoad(variable);
+            if (capturedVar.type.isManaged() && !fg->isManagedByReference(capturedVar.type)) {
+                fg->retain(value, capturedVar.type);
+            }
+
+            fg->builder().CreateStore(value, fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++));
+        }
+    }
+    else {
+        for (auto &capturedVar : capture.captures) {
+            auto &var = fg->scoper().getVariable(capturedVar.sourceId);
+            fg->builder().CreateStore(var, fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++));
+        }
     }
     return fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->generator()->context()));
 }

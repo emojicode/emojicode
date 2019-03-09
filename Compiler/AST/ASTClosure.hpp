@@ -29,7 +29,7 @@ struct Capture {
 
 class ASTClosure : public ASTExpr, public MFHeapAutoAllocates {
 public:
-    ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p);
+    ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p, bool isEscaping);
 
     Type analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) override;
     Value* generate(FunctionCodeGenerator *fg) const final;
@@ -40,6 +40,7 @@ public:
 private:
     std::unique_ptr<Function> closure_;
     Capture capture_;
+    bool isEscaping_;
 
     llvm::Value* storeCapturedVariables(FunctionCodeGenerator *fg, const Capture &capture) const;
 

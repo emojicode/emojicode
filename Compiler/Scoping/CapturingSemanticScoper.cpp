@@ -20,8 +20,10 @@ ResolvedVariable CapturingSemanticScoper::getVariable(const std::u32string &name
     catch (VariableNotFoundError &e) {
         auto pair = capturedScoper_.getVariable(name, errorPosition);
         auto &variable = pair.variable;
-        auto &captureVariable = topmostLocalScope().declareVariableWithId(variable.name(), variable.type(), true,
+        auto &captureVariable = topmostLocalScope().declareVariableWithId(variable.name(), variable.type(),
+                                                                          constantCaptures_,
                                                                           VariableID(captureId_++), errorPosition);
+        captureVariable.setInherited();
         pathAnalyser_->recordForMainBranch(PathAnalyserIncident(false, captureVariable.id()));
         captures_.emplace_back(VariableCapture(variable.id(), variable.type(), captureVariable.id()));
         return ResolvedVariable(captureVariable, false);

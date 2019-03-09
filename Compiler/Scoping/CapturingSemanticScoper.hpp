@@ -27,8 +27,9 @@ struct VariableCapture {
     scopes must share the same instance scope as capturing from instance scopes is not supported. */
 class CapturingSemanticScoper : public SemanticScoper {
 public:
-    CapturingSemanticScoper(SemanticScoper &captured)
-        : SemanticScoper(captured.instanceScope()), capturedScoper_(captured) {}
+    CapturingSemanticScoper(SemanticScoper &captured, bool makeCapturesConstant)
+        : SemanticScoper(captured.instanceScope()), capturedScoper_(captured),
+            constantCaptures_(makeCapturesConstant) {}
 
     void setPathAnalyser(PathAnalyser *pa) { pathAnalyser_ = pa; }
 
@@ -46,6 +47,7 @@ private:
     std::vector<VariableCapture> captures_;
     size_t captureId_;
     PathAnalyser *pathAnalyser_ = nullptr;
+    bool constantCaptures_;
 };
 
 }  // namespace EmojicodeCompiler

@@ -98,7 +98,7 @@ protected:
 
     /// Parses $parameters$ for a function if there are any specified.
     /// @param initializer If this is true, the method parses $init-parameters$ instead.
-    void parseParameters(Function *function, bool initializer);
+    void parseParameters(Function *function, bool initializer, bool allowEscaping = true);
 
     /// Parses a $return-type$ for a function one is specified.
     void parseReturnType(Function *function);

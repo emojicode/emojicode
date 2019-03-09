@@ -121,7 +121,7 @@ std::unique_ptr<ASTType> AbstractParser::parseGenericVariable() {
     return std::make_unique<ASTGenericVariable>(varToken.value(), varToken.position(), package_);
 }
 
-void AbstractParser::parseParameters(Function *function, bool initializer) {
+void AbstractParser::parseParameters(Function *function, bool initializer, bool allowEscaping) {
     std::vector<Parameter> params;
 
     while (true) {
@@ -133,7 +133,7 @@ void AbstractParser::parseParameters(Function *function, bool initializer) {
             }
         }
 
-        bool escaping = stream_.consumeTokenIf(E_LEFT_LUGGAGE);
+        bool escaping = allowEscaping && stream_.consumeTokenIf(E_LEFT_LUGGAGE);
         if (!argumentToVariable && !stream_.nextTokenIs(TokenType::Variable)) {
             break;
         }

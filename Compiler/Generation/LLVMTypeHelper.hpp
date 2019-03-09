@@ -66,7 +66,7 @@ public:
     llvm::FunctionType* captureDeinit() const { return captureDeinit_; }
     llvm::StructType* protocolConformanceEntry() const { return protocolConformanceEntry_; }
 
-    llvm::StructType* llvmTypeForCapture(const Capture &capture, llvm::Type *thisType);
+    llvm::StructType* llvmTypeForCapture(const Capture &capture, llvm::Type *thisType, bool escaping);
     llvm::ArrayType* multiprotocolConformance(const Type &type);
 
     llvm::StructType* callable() const { return callable_; }

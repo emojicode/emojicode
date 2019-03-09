@@ -79,13 +79,14 @@ void LLVMTypeHelper::withReificationContext(ReificationContext context, std::fun
     reifiContext_ = std::move(ptr);
 }
 
-llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType) {
+llvm::StructType* LLVMTypeHelper::llvmTypeForCapture(const Capture &capture, llvm::Type *thisType, bool escaping) {
     std::vector<llvm::Type *> types { llvm::Type::getInt8PtrTy(context_), captureDeinit_->getPointerTo() };
     if (capture.capturesSelf()) {
         types.emplace_back(thisType);
     }
-    std::transform(capture.captures.begin(), capture.captures.end(), std::back_inserter(types), [this](auto &capture) {
-        return llvmTypeFor(capture.type);
+    std::transform(capture.captures.begin(), capture.captures.end(), std::back_inserter(types),
+                   [this, escaping](auto &capture) {
+        return escaping ? llvmTypeFor(capture.type) : llvmTypeFor(capture.type)->getPointerTo();
     });
     return llvm::StructType::get(context_, types);
 }

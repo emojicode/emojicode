@@ -339,11 +339,13 @@ std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
                                                package_, token.position(), false, std::u32string(), false, false,
                                                Mood::Imperative, false, FunctionType::Function, false);
 
-    parseParameters(function.get(), false);
+    bool escaping = stream_.consumeTokenIf(E_LEFT_LUGGAGE);
+
+    parseParameters(function.get(), false, false);
     parseReturnType(function.get());
 
     function->setAst(FunctionParser(package_, stream_).parse());
-    return std::make_shared<ASTClosure>(std::move(function), token.position());
+    return std::make_shared<ASTClosure>(std::move(function), token.position(), escaping);
 }
 
 std::shared_ptr<ASTTypeExpr> FunctionParser::parseTypeExpr(const SourcePosition &p) {

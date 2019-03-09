@@ -37,9 +37,17 @@ void ClosureCodeGenerator::loadCapturedVariables(Value *value) {
     if (capture_.capturesSelf()) {
         thisValue_ = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(capture_.type, captures, 0, index++));
     }
-    for (auto &capture : capture_.captures) {
-        auto *value = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(capture_.type, captures, 0, index++));
-        setVariable(capture.captureId, value);
+    if (escaping_) {
+        for (auto &capture : capture_.captures) {
+            auto value = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(capture_.type, captures, 0, index++));
+            setVariable(capture.captureId, value);
+        }
+    }
+    else {
+        for (auto &capture : capture_.captures) {
+            auto ptr = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(capture_.type, captures, 0, index++));
+            scoper().getVariable(capture.captureId) = ptr;
+        }
     }
 }
 

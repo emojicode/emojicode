@@ -19,13 +19,16 @@ namespace EmojicodeCompiler {
 
 class FunctionCodeGenerator;
 
-/// An AST expression node that allocates memory should inherit from this subclass to be informed when allocation on
+/// An ASTExpr node that allocates memory should inherit from this subclass to be informed when allocation on
 /// stack is possible instead of heap allocation.
 ///
 /// @see MFFunctionAnalyser
 class MFHeapAllocates {
 public:
     /// Called if memory flow analysis determined that the value can be placed on the stack.
+    ///
+    /// This method may be called at any time during memory flow analysis. It is not necessarily called before or
+    /// immediately after ASTExpr::analyseMemoryFlow is called.
     virtual void allocateOnStack() = 0;
 };
 
@@ -44,6 +47,8 @@ public:
     /// @param type The type of the object that shall be allocated. Note that this does not have to be a pointer.
     ///             If this is a pointer, size appropriate for the pointer itself is reserved.
     llvm::Value* allocate(FunctionCodeGenerator *fg, llvm::Type *type) const;
+
+    bool allocatesOnStack() const { return stack_; }
 
 private:
     bool stack_ = false;

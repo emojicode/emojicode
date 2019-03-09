@@ -18,8 +18,8 @@
 
 namespace EmojicodeCompiler {
 
-ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p)
-        : ASTExpr(p), closure_(std::move(closure)) {}
+ASTClosure::ASTClosure(std::unique_ptr<Function> &&closure, const SourcePosition &p, bool isEscaping)
+        : ASTExpr(p), closure_(std::move(closure)), isEscaping_(isEscaping) {}
 
 Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     closure_->setClosure();
@@ -28,7 +28,7 @@ Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
 
     applyBoxingFromExpectation(analyser, expectation);
 
-    auto scoper = std::make_unique<CapturingSemanticScoper>(analyser->scoper());
+    auto scoper = std::make_unique<CapturingSemanticScoper>(analyser->scoper(), isEscaping_);
     auto scoperPtr = scoper.get();
     FunctionAnalyser closureAnaly(closure_.get(), std::move(scoper), analyser->semanticAnalyser());
     scoperPtr->setPathAnalyser(&closureAnaly.pathAnalyser());
@@ -37,11 +37,11 @@ Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
     if (closureAnaly.pathAnalyser().hasPotentially(PathAnalyserIncident::UsedSelf)) {
         analyser->checkThisUse(position());
 
-        if (analyser->typeContext().calleeType().type() == TypeType::ValueType ||
-            analyser->typeContext().calleeType().type() == TypeType::Enum) {
+        if (isEscaping_ && (analyser->typeContext().calleeType().type() == TypeType::ValueType ||
+                            analyser->typeContext().calleeType().type() == TypeType::Enum)) {
             analyser->compiler()->error(CompilerError(position(),
-                                                      "Cannot capture Value Type context in closure. Create an "
-                                                      "explicit variable to copy a value."));
+                                                      "Escaping closure annot capture Value Type context in closure. "
+                                                      "Create an explicit variable to copy a value."));
         }
 
         capture_.self = analyser->typeContext().calleeType();
@@ -119,6 +119,7 @@ void ASTClosure::applyBoxingFromExpectation(ExpressionAnalyser *analyser, const 
 void ASTCallableBox::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     analyseAllocation(type);
     expr_->analyseMemoryFlow(analyser, type);
+    
     MFFunctionAnalyser(thunk_.get()).analyse();
 }
 
