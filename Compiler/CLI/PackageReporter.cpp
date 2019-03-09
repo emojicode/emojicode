@@ -202,6 +202,8 @@ void PackageReporter::reportFunction(Function *function, const TypeContext &tc) 
         reportType(param.type->type(), tc);
         writer_.Key("name");
         writer_.String(utf8(param.name));
+        writer_.Key("escaping");
+        writer_.Bool(param.memoryFlowType.isEscaping());
         writer_.EndObject();
     }
     writer_.EndArray();
