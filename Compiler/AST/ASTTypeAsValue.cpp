@@ -15,7 +15,7 @@ namespace EmojicodeCompiler {
 
 Type ASTTypeAsValue::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
     auto &type = type_->analyseType(analyser->typeContext());
-    ASTTypeValueType::checkTypeValue(tokenType_, type, analyser->typeContext(), position());
+    ASTTypeValueType::checkTypeValue(tokenType_, type, analyser->typeContext(), position(), analyser->package());
     return Type(MakeTypeAsValue, type);
 }
 

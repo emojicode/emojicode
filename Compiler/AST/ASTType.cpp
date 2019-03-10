@@ -72,23 +72,30 @@ Type ASTMultiProtocol::getType(const TypeContext &typeContext) const {
 
 Type ASTTypeValueType::getType(const TypeContext &typeContext) const {
     auto type = type_->analyseType(typeContext);
-    checkTypeValue(tokenType_, type, typeContext, position());
+    checkTypeValue(tokenType_, type, typeContext, position(), package());
     return Type(MakeTypeAsValue, type);
 }
 
 void ASTTypeValueType::checkTypeValue(TokenType tokenType, const Type &type, const TypeContext &typeContext,
-                                      const SourcePosition &p) {
-    if (tokenType == TokenType::Class && type.type() != TypeType::Class) {
-        throw CompilerError(p, "Expected a class type but got ", type.toString(typeContext), ".");
+                                      const SourcePosition &p, Package *package) {
+    if (type.type() == TypeType::Class) {
+        if (tokenType != TokenType::Class)
+            throw CompilerError(p, "Class type must be prefixed with 🐇: 🐇", type.toString(typeContext, package));
     }
-    if (tokenType == TokenType::Protocol && type.type() != TypeType::Protocol) {
-        throw CompilerError(p, "Expected a protocol type but got ", type.toString(typeContext), ".");
+    else if (type.type() == TypeType::Protocol) {
+        if (tokenType != TokenType::Protocol)
+            throw CompilerError(p, "Protocol type must be prefixed with 🐊: 🐊", type.toString(typeContext, package));
     }
-    if (tokenType == TokenType::ValueType && type.type() != TypeType::ValueType) {
-        throw CompilerError(p, "Expected a value type but got ", type.toString(typeContext), ".");
+    else if (type.type() == TypeType::ValueType) {
+        if (tokenType != TokenType::ValueType)
+            throw CompilerError(p, "Value type must be prefixed with 🕊: 🕊", type.toString(typeContext, package));
     }
-    if (tokenType == TokenType::Enumeration && type.type() != TypeType::Enum) {
-        throw CompilerError(p, "Expected a class type but got ", type.toString(typeContext), ".");
+    else if (type.type() == TypeType::Enum) {
+        if (tokenType != TokenType::Enumeration)
+            throw CompilerError(p, "Enumeration type must be prefixed with 🦃: 🦃", type.toString(typeContext, package));
+    }
+    else {
+        throw CompilerError(p, "Unexpected type.");
     }
 }
 

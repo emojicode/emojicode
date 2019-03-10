@@ -114,7 +114,7 @@ public:
     Type getType(const TypeContext &typeContext) const override;
 
     static void checkTypeValue(TokenType tokenType, const Type &type, const TypeContext &typeContext,
-                               const SourcePosition &p);
+                               const SourcePosition &p, Package *package);
     static std::string toString(TokenType tokenType);
 private:
     std::unique_ptr<ASTType> type_;
