@@ -169,8 +169,8 @@ public:
     void toCode(PrettyStream &pretty) const override;
     void analyseMemoryFlow(MFFunctionAnalyser *, MFFlowCategory) override;
 
-    const Type& errorType() const override { return callable_->expressionType(); }
-    bool isErrorProne() const override { return false; }
+    const Type& errorType() const override { return callable_->expressionType().errorType(); }
+    bool isErrorProne() const override { return callable_->expressionType().errorType().type() != TypeType::NoReturn; }
 
 private:
     std::shared_ptr<ASTExpr> callable_;

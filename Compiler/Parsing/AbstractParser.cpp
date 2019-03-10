@@ -112,8 +112,10 @@ std::unique_ptr<ASTType> AbstractParser::parseCallableType() {
     }
     auto returnType = stream_.consumeTokenIf(TokenType::RightProductionOperator) ? parseType()
                                                                                  : nullptr;
+    auto errorType = stream_.consumeTokenIf(E_CONSTRUCTION_SIGN) ? parseType() : nullptr;
     auto pos = stream_.consumeToken(TokenType::BlockEnd).position();
-    return std::make_unique<ASTCallableType>(std::move(returnType), std::move(params), pos, package_);
+    return std::make_unique<ASTCallableType>(std::move(returnType), std::move(params), std::move(errorType),
+                                             pos, package_);
 }
 
 std::unique_ptr<ASTType> AbstractParser::parseGenericVariable() {
@@ -152,6 +154,15 @@ void AbstractParser::parseReturnType(Function *function) {
     if (stream_.consumeTokenIf(TokenType::RightProductionOperator)) {
         function->setReturnType(parseType());
     }
+}
+
+bool AbstractParser::parseErrorType(Function *function) {
+    if (stream_.nextTokenIs(E_CONSTRUCTION_SIGN)) {
+        auto token = stream_.consumeToken(TokenType::Identifier);
+        function->setErrorType(parseType());
+        return true;
+    }
+    return false;
 }
 
 }  // namespace EmojicodeCompiler

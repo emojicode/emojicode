@@ -71,14 +71,17 @@ private:
 class ASTCallableType : public ASTType {
 public:
     ASTCallableType(std::unique_ptr<ASTType> returnType, std::vector<std::unique_ptr<ASTType>> params,
+                    std::unique_ptr<ASTType> errorType,
                     SourcePosition p, Package *package)
-            : ASTType(std::move(p), package), return_(std::move(returnType)), params_(std::move(params)) {}
+            : ASTType(std::move(p), package), return_(std::move(returnType)), params_(std::move(params)),
+                errorType_(std::move(errorType)) {}
 
     void toCodeType(PrettyStream &pretty) const override;
     Type getType(const TypeContext &typeContext) const override;
 private:
     std::unique_ptr<ASTType> return_;
     std::vector<std::unique_ptr<ASTType>> params_;
+    std::unique_ptr<ASTType> errorType_;
 };
 
 class ASTLiteralType : public ASTType {

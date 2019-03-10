@@ -74,8 +74,8 @@ public:
     /// @param protocols Vector of protocols.
     explicit Type(std::vector<Type> protocols);
     /// Creates a callable type.
-    explicit Type(Type returnType, const std::vector<Type> &params)
-            : typeContent_(TypeType::Callable), genericArguments_({ std::move(returnType) }) {
+    explicit Type(Type returnType, const std::vector<Type> &params, Type errorType)
+            : typeContent_(TypeType::Callable), genericArguments_({ std::move(returnType), std::move(errorType) }) {
         genericArguments_.insert(genericArguments_.end(), params.begin(), params.end());
     }
 
@@ -161,7 +161,7 @@ public:
     /// Returns a pointer to the first parameter type of a callable type.
     const Type* parameters() const {
         assert(TypeType::Callable == type());
-        return genericArguments_.data() + 1;
+        return genericArguments_.data() + 2;
     }
     /// Returns a pointer past the end of the callables parameters.
     const Type* parametersEnd() const {
@@ -170,12 +170,17 @@ public:
     /// Returns the number of parameter the callable takes.
     size_t parametersCount() const {
         assert(TypeType::Callable == type());
-        return genericArguments_.size() - 1;
+        return genericArguments_.size() - 2;
     }
     /// Returns the return type of the callable.
     const Type& returnType() const {
         assert(TypeType::Callable == type());
         return genericArguments_.front();
+    }
+
+    const Type& errorType() const {
+        assert(TypeType::Callable == type());
+        return genericArguments_[1];
     }
 
     /// Returns the generic arguments with which this type was specialized.

@@ -50,12 +50,9 @@ void TypeBodyParser<TypeDef>::parseFunction(Function *function, bool inititalize
     if (!inititalizer) {
         parseReturnType(function);
     }
-    if (stream_.nextTokenIs(E_CONSTRUCTION_SIGN)) {
-        auto token = stream_.consumeToken(TokenType::Identifier);
-        if (inititalizer && !std::is_same<TypeDef, Class>::value) {
-            throw CompilerError(token.position(), "Only classes can have error-prone initializers.");
-        }
-        function->setErrorType(parseType());
+    bool errorProne = parseErrorType(function);
+    if (errorProne && inititalizer && !std::is_same<TypeDef, Class>::value) {
+        throw CompilerError(function->position(), "Only classes can have error-prone initializers.");
     }
     parseFunctionBody(function);
     if (escaping) {

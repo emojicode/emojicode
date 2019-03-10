@@ -345,7 +345,7 @@ void CodeGenerator::buildClassObjectBoxInfo() {
 
 void CodeGenerator::buildCallableBoxInfo() {
     llvm::Function *retain, *release;
-    std::tie(retain, release) = buildBoxRetainRelease(Type(Type::noReturn(), {}));
+    std::tie(retain, release) = buildBoxRetainRelease(Type(Type::noReturn(), {}, Type::noReturn()));
     retain->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
     release->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
     retain->setName("callable.boxRetain");

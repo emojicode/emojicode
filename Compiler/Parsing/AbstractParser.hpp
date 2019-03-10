@@ -103,6 +103,8 @@ protected:
     /// Parses a $return-type$ for a function one is specified.
     void parseReturnType(Function *function);
 
+    bool parseErrorType(Function *function);
+
 private:
     /// Parses a $multi-protocol$
     std::unique_ptr<ASTType> parseMultiProtocol();

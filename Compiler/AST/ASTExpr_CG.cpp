@@ -52,6 +52,9 @@ Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {
     std::transform(type.parameters(), type.parametersEnd(), std::back_inserter(argTypes), [fg](auto &arg) {
         return fg->typeHelper().llvmTypeFor(arg);
     });
+    if (isErrorProne()) {
+        argTypes.emplace_back(fg->typeHelper().llvmTypeFor(errorType())->getPointerTo());
+    }
     auto functionType = llvm::FunctionType::get(returnType, argTypes, false);
 
     auto function = fg->builder().CreateBitCast(fg->builder().CreateExtractValue(callable, 0),
@@ -59,6 +62,9 @@ Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {
     std::vector<llvm::Value *> args{ fg->builder().CreateExtractValue(callable, 1) };
     for (auto &arg : args_.args()) {
         args.emplace_back(arg->generate(fg));
+    }
+    if (isErrorProne()) {
+        args.emplace_back(errorPointer());
     }
     return handleResult(fg, fg->builder().CreateCall(functionType, function, args));
 }

@@ -73,6 +73,7 @@ compilation_tests = [
     "closureCaptureValueType",
     "closureCaptureThisClass",
     "closureCaptureNonEscaping",
+    "closureError",
     "callableBoxing",
     "errorUnwrap",
     "errorAvocado",

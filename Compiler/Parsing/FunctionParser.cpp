@@ -343,6 +343,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {
 
     parseParameters(function.get(), false, false);
     parseReturnType(function.get());
+    parseErrorType(function.get());
 
     function->setAst(FunctionParser(package_, stream_).parse());
     return std::make_shared<ASTClosure>(std::move(function), token.position(), escaping);

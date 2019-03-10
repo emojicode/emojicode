@@ -126,7 +126,8 @@ Type ASTGenericVariable::getType(const TypeContext &typeContext) const {
 
 Type ASTCallableType::getType(const TypeContext &typeContext) const {
     auto returnType = return_ == nullptr ? Type::noReturn() : return_->analyseType(typeContext);
-    return Type(returnType, transformTypeAstVector(params_, typeContext));
+    auto errorType = errorType_ == nullptr ? Type::noReturn() : errorType_->analyseType(typeContext);
+    return Type(returnType, transformTypeAstVector(params_, typeContext), errorType);
 }
 
 }  // namespace EmojicodeCompiler

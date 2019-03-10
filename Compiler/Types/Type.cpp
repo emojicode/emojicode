@@ -58,8 +58,9 @@ Type::Type(Class *klass) : typeContent_(TypeType::Class), typeDefinition_(klass)
 }
 
 Type::Type(Function *function) : typeContent_(TypeType::Callable) {
-    genericArguments_.reserve(function->parameters().size() + 1);
+    genericArguments_.reserve(function->parameters().size() + 2);
     genericArguments_.emplace_back(function->returnType()->type());
+    genericArguments_.emplace_back(function->errorType()->type());
     for (auto &argument : function->parameters()) {
         genericArguments_.emplace_back(argument.type->type());
     }
@@ -436,7 +437,8 @@ bool Type::isCompatibleToProtocol(const Type &to, const TypeContext &ct, std::ve
 
 bool Type::isCompatibleToCallable(const Type &to, const TypeContext &ct, std::vector<CommonTypeFinder> *ctargs) const {
     if (type() == TypeType::Callable) {
-        if (returnType().compatibleTo(to.returnType(), ct, ctargs) && to.parametersCount() == parametersCount()) {
+        if (returnType().compatibleTo(to.returnType(), ct, ctargs) &&
+            errorType().compatibleTo(to.errorType(), ct, ctargs) && to.parametersCount() == parametersCount()) {
             for (size_t i = 0; i < to.parametersCount(); i++) {
                 if (!to.parameters()[i].compatibleTo(parameters()[i], ct, ctargs)) {
                     return false;
@@ -607,6 +609,12 @@ void Type::typeName(Type type, const TypeContext &typeContext, std::string &stri
                 string.append("➡️");
                 typeName(type.returnType(), typeContext, string, package);
             }
+
+            if (type.errorType().type() != TypeType::NoReturn) {
+                string.append("🚧");
+                typeName(type.errorType(), typeContext, string, package);
+            }
+
             string.append("🍉");
             return;
         case TypeType::GenericVariable:
