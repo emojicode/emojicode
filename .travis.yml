@@ -35,4 +35,4 @@ before_install:
 - source .travis/install.sh
 
 script:
-- mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests && EMOJICODE_DIST_ARCHIVE=$(python3 ../dist.py .. archive)
+- mkdir build && cd build && cmake .. -GNinja && ninja && ninja tests && EMOJICODE_DIST_ARCHIVE=$(python3 ../dist.py archive)
