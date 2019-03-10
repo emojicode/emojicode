@@ -40,7 +40,7 @@ Type ASTClosure::analyse(ExpressionAnalyser *analyser, const TypeExpectation &ex
         if (isEscaping_ && (analyser->typeContext().calleeType().type() == TypeType::ValueType ||
                             analyser->typeContext().calleeType().type() == TypeType::Enum)) {
             analyser->compiler()->error(CompilerError(position(),
-                                                      "Escaping closure annot capture Value Type context in closure. "
+                                                      "Escaping closure cannot capture Value Type context in closure. "
                                                       "Create an explicit variable to copy a value."));
         }
 
