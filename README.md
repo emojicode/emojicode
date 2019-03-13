@@ -102,13 +102,7 @@ Steps:
    docker run -v $(pwd)/code:/workspace -it emojicode-build:latest
    ```
 
-5. Start image (and mount a directory to it):
-
-   ```sh
-   docker run -v $(pwd)/code:/workspace -it emojicode-build:latest
-   ```
-
-6. Start coding !
+5. Start coding !
 
    ```sh
    emojicodec /workspace/hello.🍇 && . /workspace/hello
