@@ -326,16 +326,22 @@ string, but those themselves are then immutable again.
   ❗️ 🐻 string 🔡 🍇
     📐string❗️ ➡️ stringSize
     ☣️ 🍇
-      count ➕ stringSize ➡️ minimumSize
-      ↪️ minimumSize ▶️ size 🍇
-        size ⬅️✖️ 2
-        ↪️ minimumSize ▶️ size 🍇
-          minimumSize ➡️ 🖍size
-        🍉
-        🏗 data size❗️
-      🍉
-
+      🍜🐕 stringSize❗️
       🦘🐕 string❗️
+    🍉
+  🍉
+
+  📗
+    Ensures their is enough space left to append a `stringSize` bytes.
+  📗
+  ☣️🔒❗️ 🍜 stringSize 🔢 🍇
+    count ➕ stringSize ➡️ minimumSize
+    ↪️ minimumSize ▶️ size 🍇
+      size ⬅️✖️ 2
+      ↪️ minimumSize ▶️ size 🍇
+        minimumSize ➡️ 🖍size
+      🍉
+      🏗 data size❗️
     🍉
   🍉
 
@@ -343,6 +349,27 @@ string, but those themselves are then immutable again.
     📐string❗️ ➡️ stringSize
     🚜 data count 🧠 string❗️ 0 stringSize❗️
     count ⬅️➕ stringSize
+  🍉
+
+  📗
+    Copies `bytes` bytes from `offset` of `strdata` to the end of the string.
+    The data must be valid UTF-8 data or the behavior is undefined.
+  📗
+  ☣️❗️🐺 strdata 🧠 offset 🔢 bytes 🔢 🍇
+    🍜🐕 bytes❗️
+    🚜 data count strdata offset bytes❗️
+    count ⬅️➕ bytes
+  🍉
+
+  📗
+    Appends a single byte to the end of the string. The caller is reponsible
+    for ensuring that the resulting string is still valid UTF-8 or undefined
+    behavior is called.
+  📗
+  ☣️❗️🐻🔸💧byte💧 🍇
+    🍜🐕 1❗️
+    byte ➡️ 🐽data🐚💧🍆count❗️
+    count ⬅️➕ 1
   🍉
 
   📗 Returns the memory area representing the data of this 🔠. 📗
