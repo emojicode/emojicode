@@ -159,7 +159,13 @@ void FunctionAnalyser::analyseReturn(ASTBlock *root) {
     }
     else if (!pathAnalyser_.hasCertainly(PathAnalyserIncident::Returned)) {
         if (function_->returnType()->type().type() != TypeType::NoReturn) {
-            compiler()->error(CompilerError(function_->position(), "An explicit return is missing."));
+            if (pathAnalyser_.hasPotentially(PathAnalyserIncident::Returned)) {
+                compiler()->error(CompilerError(function_->position(), "Function does not return on all paths."));
+            }
+            else {
+                compiler()->error(CompilerError(function_->position(),
+                                                "Function has a return type but does not return."));
+            }
         }
         else {
             root->appendNode(std::make_unique<ASTReturn>(nullptr, root->position()));

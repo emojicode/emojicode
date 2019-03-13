@@ -50,8 +50,8 @@ void ASTCallableCall::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCate
 
 void ASTCall::ensureErrorIsHandled(ExpressionAnalyser *analyser) const {
     if (isErrorProne() && !handledError_) {
-        throw CompilerError(position(), "Call can raise ", errorType().toString(analyser->typeContext()),
-                            " but error is not handled.");
+        analyser->error(CompilerError(position(), "Call can raise ", errorType().toString(analyser->typeContext()),
+                                      " but error is not handled."));
     }
 }
 
