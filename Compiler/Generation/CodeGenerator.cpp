@@ -21,6 +21,7 @@
 #include "Types/Class.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/ValueType.hpp"
+#include "Types/TypeContext.hpp"
 #include "VTCreator.hpp"
 #include <algorithm>
 #include <llvm/IR/IRPrintingPasses.h>
@@ -283,9 +284,9 @@ std::pair<llvm::Function*, llvm::Function*> CodeGenerator::buildBoxRetainRelease
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, mangleBoxRetain(type),
                                          module_.get());
 
-    auto releaseFg = FunctionCodeGenerator(release, this);
+    FunctionCodeGenerator releaseFg(release, this, std::make_unique<TypeContext>(type));
     releaseFg.createEntry();
-    auto retainFg = FunctionCodeGenerator(retain, this);
+    FunctionCodeGenerator retainFg(retain, this, std::make_unique<TypeContext>(type));
     retainFg.createEntry();
 
     if (type.isManaged()) {

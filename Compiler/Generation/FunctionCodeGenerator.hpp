@@ -20,6 +20,7 @@ namespace EmojicodeCompiler {
 class FunctionCodeGenerator;
 class Compiler;
 class Function;
+class TypeContext;
 
 class TemporaryObjectsManager {
 public:
@@ -53,8 +54,7 @@ public:
 
     /// Constructs a FunctionCodeGenerator for generating a function that does not have corresponding Function.
     /// @see createEntry()
-    FunctionCodeGenerator(llvm::Function *llvmFunc, CodeGenerator *generator)
-        : fn_(nullptr), function_(llvmFunc), scoper_(0), generator_(generator), builder_(generator->context()) {}
+    FunctionCodeGenerator(llvm::Function *llvmFunc, CodeGenerator *generator, std::unique_ptr<TypeContext> tc);
 
     /// Generates the code for the provided Function.
     /// @pre A Function must have been provided to the constructor.
@@ -205,6 +205,8 @@ public:
         return g;
     }
 
+   ~FunctionCodeGenerator();
+
 protected:
     virtual void declareArguments(llvm::Function *function);
     Function* function() const { return fn_; }
@@ -218,6 +220,8 @@ private:
     llvm::IRBuilder<> builder_;
 
     TemporaryObjectsManager tom_;
+
+    std::unique_ptr<TypeContext> typeContext_;
 
     /// @param retain True if the box should be released, false if it should be retained.
     void manageBox(bool retain, llvm::Value *boxInfo, llvm::Value *value, const Type &type);

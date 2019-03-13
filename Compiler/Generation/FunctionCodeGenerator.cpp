@@ -25,7 +25,12 @@ namespace EmojicodeCompiler {
 
 FunctionCodeGenerator::FunctionCodeGenerator(Function *function, llvm::Function *llvmFunc, CodeGenerator *generator)
     : fn_(function), function_(llvmFunc), scoper_(function->variableCount()),
-      generator_(generator), builder_(generator->context()) {}
+      generator_(generator), builder_(generator->context()), typeContext_(std::make_unique<TypeContext>(fn_->typeContext())) {}
+
+FunctionCodeGenerator::FunctionCodeGenerator(llvm::Function *llvmFunc, CodeGenerator *generator,
+                                             std::unique_ptr<TypeContext> tc)
+    : fn_(nullptr), function_(llvmFunc), scoper_(0), generator_(generator), builder_(generator->context()),
+      typeContext_(std::move(tc)) {}
 
 void FunctionCodeGenerator::generate() {
     createEntry();
@@ -351,7 +356,8 @@ void TemporaryObjectsManager::releaseTemporaryObjects(FunctionCodeGenerator *fg,
     }
 }
 
-void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
+void FunctionCodeGenerator::release(llvm::Value *value, const Type &otype) {
+    auto type = otype.resolveOnSuperArgumentsAndConstraints(*typeContext_);
     if (type.type() == TypeType::Class || type.type() == TypeType::Someobject) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
         builder().CreateCall(generator()->declarator().release(), opc);
@@ -391,7 +397,8 @@ void FunctionCodeGenerator::release(llvm::Value *value, const Type &type) {
     }
 }
 
-void FunctionCodeGenerator::retain(llvm::Value *value, const Type &type) {
+void FunctionCodeGenerator::retain(llvm::Value *value, const Type &otype) {
+    auto type = otype.resolveOnSuperArgumentsAndConstraints(*typeContext_);
     if (type.type() == TypeType::Class || type.type() == TypeType::Someobject ||
         (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory)) {
         auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
@@ -472,5 +479,7 @@ llvm::Value* FunctionCodeGenerator::instanceVariablePointer(size_t id) {
     auto type = llvm::cast<llvm::PointerType>(thisValue()->getType())->getElementType();
     return builder().CreateConstInBoundsGEP2_32(type, thisValue(), 0, id);
 }
+
+FunctionCodeGenerator::~FunctionCodeGenerator() = default;
 
 }  // namespace EmojicodeCompiler

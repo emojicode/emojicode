@@ -10,6 +10,7 @@
 #include "Generation/ClosureCodeGenerator.hpp"
 #include "Generation/Declarator.hpp"
 #include "Compiler.hpp"
+#include "Types/TypeContext.hpp"
 #include <llvm/Support/raw_ostream.h>
 
 namespace EmojicodeCompiler {
@@ -31,7 +32,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
     auto capture = capture_;
     capture.type = fg->generator()->typeHelper().llvmTypeForCapture(capture_, thisValue, isEscaping_);
 
-    auto closureGenerator = ClosureCodeGenerator(capture, closure_.get(), fg->generator(), isEscaping_);
+    ClosureCodeGenerator closureGenerator(capture, closure_.get(), fg->generator(), isEscaping_);
     closureGenerator.generate();
 
     auto alloc = storeCapturedVariables(fg, capture);
@@ -46,7 +47,7 @@ llvm::Value* ASTClosure::createDeinit(CodeGenerator *cg, const Capture &capture)
                                          llvm::GlobalValue::LinkageTypes::PrivateLinkage, "captureDeinit",
                                          cg->module());
 
-    auto fg = FunctionCodeGenerator(deinit, cg);
+    FunctionCodeGenerator fg(deinit, cg, std::make_unique<TypeContext>(closure_->typeContext()));
     fg.createEntry();
 
     if (isEscaping_) {
@@ -111,7 +112,7 @@ llvm::Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
     thunk_->createUnspecificReification();
     fg->generator()->declarator().declareLlvmFunction(thunk_.get());
 
-    auto closureGenerator = ClosureCodeGenerator(thunk_.get(), fg->generator());
+    ClosureCodeGenerator closureGenerator(thunk_.get(), fg->generator());
     closureGenerator.generate();
 
     auto captures = allocate(fg, fg->typeHelper().callable());
