@@ -25,54 +25,54 @@ Class::Class(std::u32string name, Package *pkg, SourcePosition p, const std::u32
     instanceScope() = Scope(2);  // reassign a scoper with one offset for the pointer to the class meta
 }
 
+std::vector<Type> Class::superGenericArguments() const {
+    if (superType_ != nullptr && superType_->wasAnalysed()) {
+        return superType_->type().genericArguments();
+    }
+    return std::vector<Type>();
+}
+
 void Class::analyseSuperType() {
     if (superType() == nullptr) {
         return;
     }
 
     auto classType = Type(this);
-    auto super = superType()->analyseType(TypeContext(classType));
-    if (super.type() != TypeType::Class) {
+    auto &type = superType()->analyseType(TypeContext(classType));
+
+    if (type.type() != TypeType::Class) {
         throw CompilerError(superType()->position(), "The superclass must be a class.");
     }
 
-    auto superclass = super.klass();
-    if (superclass->superType() != nullptr && !superclass->superType()->wasAnalysed()) {
-        superclass->analyseSuperType();
+    if (type.klass()->superType() != nullptr && !type.klass()->superType()->wasAnalysed()) {
+        type.klass()->analyseSuperType();
     }
 
-    if (superclass->isFinal()) {
-        package()->compiler()->error(CompilerError(superType()->position(), super.toString(TypeContext(classType)),
+    if (type.klass()->final()) {
+        package()->compiler()->error(CompilerError(superType()->position(), type.toString(TypeContext(classType)),
                                                   " can’t be used as superclass as it was marked with 🔏."));
     }
-    superclass->setHasSubclass();
+    type.klass()->setHasSubclass();
 
     std::vector<std::u32string> missing;
-    std::set_difference(superclass->requiredInitializers_.begin(), superclass->requiredInitializers_.end(),
+    std::set_difference(type.klass()->requiredInitializers_.begin(), type.klass()->requiredInitializers_.end(),
                         requiredInitializers_.begin(), requiredInitializers_.end(), std::back_inserter(missing));
     for (auto &name : missing) {
         package()->compiler()->error(CompilerError(position(), "Required initializer ",
                                                    utf8(name), " was not implemented."));
     }
 
-    offsetIndicesBy(super.genericArguments().size());
-    takeSuperGenericArgs();
-}
-
-void Class::takeSuperGenericArgs() {
-    assert(superGenericArgs_.empty());
-
-    auto &args = superType_->type().genericArguments();
-    superGenericArgs_.reserve(args.size());
-
-    for (Type arg : args) {
-        if (arg.type() == TypeType::GenericVariable) {
-            arg = Type(arg.genericVariableIndex() + args.size(), this);
+    offsetIndicesBy(type.genericArguments().size());
+    for (size_t i = type.typeDefinition()->superGenericArguments().size(); i < type.genericArguments().size(); i++) {
+        if (type.genericArguments()[i].type() == TypeType::GenericVariable) {
+            auto newIndex = type.genericArguments()[i].genericVariableIndex() + type.genericArguments().size();
+            type.setGenericArgument(i, Type(newIndex, this));
         }
-        else if (arg.type() == TypeType::Box && arg.unboxedType() == TypeType::GenericVariable) {
-            arg = Type(arg.genericVariableIndex() + args.size(), this).boxedFor(arg.boxedFor());
+        else if (type.genericArguments()[i].type() == TypeType::Box &&
+                 type.genericArguments()[i].unboxedType() == TypeType::GenericVariable) {
+            auto newIndex = type.genericArguments()[i].unboxed().genericVariableIndex() + type.genericArguments().size();
+            type.setGenericArgument(i, Type(newIndex, this).boxedFor(type.genericArguments()[i].boxedFor()));
         }
-        superGenericArgs_.emplace_back(arg);
     }
 }
 

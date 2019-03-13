@@ -14,7 +14,7 @@
 
 namespace EmojicodeCompiler {
 
-const Type& ASTType::analyseType(const TypeContext &typeContext, bool allowReference) {
+Type& ASTType::analyseType(const TypeContext &typeContext, bool allowReference) {
     if (!wasAnalysed()) {
         type_ = getType(typeContext).applyMinimalBoxing().optionalized(optional_);
         if (reference_) {
@@ -33,14 +33,6 @@ const Type& ASTType::analyseType(const TypeContext &typeContext, bool allowRefer
         package_ = nullptr;
     }
     return type_;
-}
-
-void ASTType::setExact() {
-    type_.setExact(true);
-}
-
-void ASTType::setType(Type type) {
-    type_ = std::move(type);
 }
 
 Type ASTTypeId::getType(const TypeContext &typeContext) const {

@@ -263,7 +263,7 @@ void PackageReporter::reportExportedType(const Type &type) {
         }
 
         writer_.Key("final");
-        writer_.Bool(klass->isFinal());
+        writer_.Bool(klass->final());
     }
 
     if (type.type() == TypeType::Enum) {
