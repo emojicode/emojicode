@@ -47,7 +47,7 @@ public:
         return superType()->type().klass();
     }
 
-    std::vector<Type> superGenericArguments() const override;
+    std::vector<Type> superGenericArguments() const override { return superGenericArgs_; }
 
     /// Sets the super type to the given Type.
     /// All generic arguments are offset by the number of generic arguments this type has.
@@ -58,7 +58,7 @@ public:
     /// @returns True iff this class inherits from @c from
     bool inheritsFrom(Class *from) const;
     /** Whether this class can be subclassed. */
-    bool final() const { return final_; }
+    bool isFinal() const { return final_; }
     /** Whether this class is eligible for initializer inheritance. */
     bool inheritsInitializers() const { return inheritsInitializers_; }
 
@@ -121,6 +121,8 @@ private:
     std::vector<llvm::Constant *> virtualTable_;
     size_t virtualFunctionCount_ = 0;
 
+    std::vector<Type> superGenericArgs_;
+
     bool final_;
     bool foreign_;
     bool inheritsInitializers_ = false;
@@ -129,6 +131,7 @@ private:
     llvm::GlobalVariable *classInfo_ = nullptr;
 
     void handleRequiredInitializer(Initializer *init) override;
+    void takeSuperGenericArgs();
 };
 
 inline Initializer* ifRequired(Initializer *init) {

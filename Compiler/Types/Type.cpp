@@ -154,7 +154,7 @@ Type Type::typeOfTypeValue() const {
 }
 
 bool Type::isExact() const {
-    return forceExact_ || (type() == TypeType::Class && klass()->final());
+    return forceExact_ || (type() == TypeType::Class && klass()->isFinal());
 }
 
 bool Type::canHaveGenericArguments() const {
@@ -171,7 +171,7 @@ void Type::setGenericArguments(std::vector<Type> &&args) {
     }
     else {
         assert(canHaveGenericArguments());
-        genericArguments_ = args;
+        genericArguments_ = std::move(args);
     }
 }
 

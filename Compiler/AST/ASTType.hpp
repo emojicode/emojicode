@@ -18,9 +18,10 @@ enum class TokenType;
 /// Abstract parent class of all abstract syntax tree nodes representing a $type$.
 class ASTType : public ASTNode {
 public:
-    Type& analyseType(const TypeContext &typeContext, bool allowReference = false);
-    Type& type() { assert(wasAnalysed()); return type_; }
+    const Type& analyseType(const TypeContext &typeContext, bool allowReference = false);
     const Type& type() const { assert(wasAnalysed()); return type_; }
+    void setType(Type type);
+    void setExact();
     void setOptional(bool optional) { optional_ = optional; type_ = type_.optionalized(optional); }
     void setReference() { reference_ = true; type_.setReference(); }
     bool wasAnalysed() const { return package_ == nullptr; }

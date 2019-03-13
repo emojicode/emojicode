@@ -191,8 +191,6 @@ public:
         assert(canHaveGenericArguments());
         return genericArguments_;
     }
-    /// Allows to change a specific generic argument. @c index must be smaller than @c genericArguments().size()
-    void setGenericArgument(size_t index, Type value) { genericArguments_[index] = std::move(value); }
 
     /// Replaces the generic arguments of this type.
     void setGenericArguments(std::vector<Type> &&args);

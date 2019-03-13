@@ -23,7 +23,7 @@ Type ASTInferType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &
         throw CompilerError(position(), "Cannot infer ⚫️.");
     }
     type_ = std::make_unique<ASTLiteralType>(expectation.copyType().unoptionalized());
-    type_->type().setExact(true);
+    type_->setExact();
     return type_->type();
 }
 
@@ -36,7 +36,8 @@ Type ASTTypeFromExpr::analyse(ExpressionAnalyser *analyser, const TypeExpectatio
 }
 
 Type ASTStaticType::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expectation) {
-    type_->analyseType(analyser->typeContext()).setExact(true);
+    type_->analyseType(analyser->typeContext());
+    type_->setExact();
     if (type_->type().type() == TypeType::GenericVariable || type_->type().type() == TypeType::LocalGenericVariable) {
         throw CompilerError(position(), "Generic Arguments are not available dynamically.");
     }

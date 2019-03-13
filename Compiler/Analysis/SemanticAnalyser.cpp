@@ -141,7 +141,7 @@ void SemanticAnalyser::analyseFunctionDeclaration(Function *function) const {
         param.type->analyseType(context);
         if (!function->externalName().empty() && param.type->type().type() == TypeType::ValueType &&
             !param.type->type().valueType()->isPrimitive()) {
-            param.type->type().setReference();
+            param.type->setType(param.type->type().referenced());
         }
     }
     function->returnType()->analyseType(context, true);

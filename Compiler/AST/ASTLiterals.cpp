@@ -90,7 +90,7 @@ Type ASTDictionaryLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpec
         finder.addType(analyser->expect(TypeExpectation(), &(*it)), analyser->typeContext());
     }
 
-    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
+    type_.setGenericArguments({ finder.getCommonType(position(), analyser->compiler()) });
     type_.setExact(true);
 
     auto elementType = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(type_));
@@ -128,7 +128,7 @@ Type ASTListLiteral::analyse(ExpressionAnalyser *analyser, const TypeExpectation
         finder.addType(type, analyser->typeContext());
     }
 
-    type_.setGenericArgument(0, finder.getCommonType(position(), analyser->compiler()));
+    type_.setGenericArguments({ finder.getCommonType(position(), analyser->compiler()) });
     type_.setExact(true);
 
     auto elementType = analyser->compiler()->sList->typeForVariable(0).resolveOn(TypeContext(type_));
