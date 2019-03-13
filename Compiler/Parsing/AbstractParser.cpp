@@ -45,6 +45,10 @@ std::unique_ptr<ASTType> AbstractParser::parseType() {
         return parseTypeAsValueType();
     }
 
+    if (stream_.consumeTokenIf(E_BLACK_MEDIUM_SQUARE)) {
+        return std::make_unique<ASTLiteralType>(Type::noReturn());
+    }
+
     bool optional = stream_.consumeTokenIf(E_CANDY);
     bool reference = stream_.consumeTokenIf(E_EIGHT_POINTED_STAR);
 
