@@ -5,7 +5,7 @@ import sys
 import subprocess
 
 version = "0.9.0"
-packages = ["s", "files", "sockets", "testtube"]
+packages = ["s", "files", "sockets", "testtube", "json"]
 
 source = os.path.dirname(os.path.realpath(__file__))
 dist_name = "Emojicode-{0}-{1}-{2}".format(version, platform.system(),

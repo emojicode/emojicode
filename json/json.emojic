@@ -1,0 +1,370 @@
+📘 This package allows you to parse JSON. 📘
+
+📗
+  🚧🔸🌸 an error that occured when parsing a JSON text.
+📗
+🌍 🐇 🚧🔸🌸 🚧 🍇
+  🆕 message 🔡 🍇
+    ⤴️🆕 message❗️
+  🍉
+🍉
+
+📗
+  🌸 represents a JSON parser. Its use is straightforward: It can either be used
+  with the shortcut type method ⚪️ that takes a string and returns the parsed
+  value, or you can instantiate it yourself and then call the method ⚪️ yourself.
+
+  On error, [🚧🔸🌸] is raised.
+📗
+🌍 🕊 🌸 🍇
+  🖍🆕 string 🧠
+  🖍🆕 count 🔢
+  🖍🆕 index 🔢 ⬅️ 0
+
+  📗
+    Creates a 🌸 from the provided 🔡.
+  📗
+  🆕 str 🔡 🍇
+    🧠str❗️➡️🖍string
+    📐str❗️➡️🖍count
+  🍉
+
+  📗
+    Creates a 🌸 from the provided 📇. The JSON text must be UTF-8 encoded.
+  📗
+  🆕📇 data 📇 🍇
+    🧠data❗️➡️🖍string
+    🐔data❗️➡️🖍count
+  🍉
+
+  📗
+    Parses the instances input and returns its value.
+  📗
+  🖍❗️⚪️➡️⚪️ 🚧🚧🔸🌸 🍇
+    🔺🔎🐕❗️➡️value
+
+    ☣️🍇
+      🔁 index ◀️ count 🍇
+        🐽string🐚💧🍆 index ❗️ ➡️ v
+        ↪️ ❎v 🙌 0x20 👐 v 🙌 0xA 👐 v 🙌 0x0D 👐 v 🙌 9❗️ 🍇
+          🚨🆕🚧🔸🌸🆕 🔤Unexpected input after end of value.🔤❗️
+        🍉
+        index ⬅️➕ 1
+      🍉
+    🍉
+
+    ↩️ value
+  🍉
+
+  📗
+    Parses `string` and returns its value.
+  📗
+  🐇❗️⚪️ string 🔡 ➡️⚪️ 🚧🚧🔸🌸 🍇
+    🆕🌸🆕 string❗️ ➡️ 🖍🆕g
+    ↩️🔺⚪️g❗️
+  🍉
+
+  📗
+    Returns the next byte that is not whitespace or raises an error if there
+    are no more bytes.
+  📗
+  ☣️🖍🔒❗️⏭➡️💧 🚧🚧🔸🌸 🍇
+    🔁 index ◀️ count 🍇
+      🐽string🐚💧🍆 index❗️ ➡️ v
+      index ⬅️➕ 1
+      ↪️ ❎v 🙌 0x20 👐 v 🙌 0xA 👐 v 🙌 0x0D 👐 v 🙌 9❗️ 🍇
+        ↩️ v
+      🍉
+    🍉
+    🚨🆕🚧🔸🌸🆕 🔤Unexpected end of input.🔤❗️
+  🍉
+
+  📗
+    Returns the next byte that is not whitespace without consuming it
+    or raises an error if there are no more bytes. Skipped whitespace is
+    consumed.
+  📗
+  ☣️🖍🔒❓⏭➡️💧 🚧🚧🔸🌸 🍇
+    🔁 index ◀️ count 🍇
+      🐽string🐚💧🍆 index ❗️ ➡️ v
+      ↪️ ❎v 🙌 0x20 👐 v 🙌 0xA 👐 v 🙌 0x0D 👐 v 🙌 9❗️ 🍇
+        ↩️ v
+      🍉
+      index ⬅️➕ 1
+    🍉
+    🚨🆕🚧🔸🌸🆕 🔤Unexpected end of input.🔤❗️
+  🍉
+
+  📗
+    Reads a string where the opening `"` has already been consumed.
+  📗
+  ☣️🖍🔒❗️🔠➡️🔡 🚧🚧🔸🌸 🍇
+    🆕🔠🆕❗️➡️builder
+    index➡️🖍🆕cut
+    👎➡️🖍🆕escape
+    🔁 👍 🍇
+      🔺⏭🐕❗️➡️v
+
+      ↪️ escape 🍇
+        ↪️v🙌0x22🍇
+          🐻🔸💧 builder 0x22❗️
+        🍉
+        🙅‍♀️↪️v🙌0x5C🍇
+          🐻🔸💧 builder 0x5C❗️
+        🍉
+        🙅‍♀️↪️v🙌0x2F🍇
+          🐻🔸💧 builder 0x2F❗️
+        🍉
+        🙅‍♀️↪️v🙌0x62🍇
+          🐻🔸💧 builder 0x8❗️
+        🍉
+        🙅‍♀️↪️v🙌0x66🍇
+          🐻🔸💧 builder 0xC❗️
+        🍉
+        🙅‍♀️↪️v🙌0x6E🍇
+          🐻🔸💧 builder 0xA❗️
+        🍉
+        🙅‍♀️↪️v🙌0x72🍇
+          🐻🔸💧 builder 0xD❗️
+        🍉
+        🙅‍♀️↪️v🙌0x74🍇
+          🐻🔸💧 builder 0x9❗️
+        🍉
+        🙅‍♀️↪️v🙌0x75🍇
+          🐻🔸🔣 builder 🔺🈲🐕❗️❗️
+        🍉
+        🙅🍇
+          🚨🆕🚧🔸🌸🆕 🔤Unrecognized escape sequence.🔤❗️
+        🍉
+        index➡️🖍cut
+        👎➡️🖍escape
+      🍉
+      🙅‍♀️↪️v🙌0x5C🍇
+        🐺builder string cut index➖cut➖1❗️
+        👍➡️🖍escape
+      🍉
+      🙅‍♀️↪️v🙌0x22🍇
+        🐺builder string cut index➖cut➖1❗️
+        ↩️ 🔡builder❗️
+      🍉
+    🍉
+    ↩️ 🔡builder❗️
+  🍉
+
+  📗 Parses the hexadecimal, four digit number after `\u`. 📗
+  ☣️🖍🔒❗️🈯️➡️🔢 🚧🚧🔸🌸 🍇
+    0➡️🖍🆕integer
+    🔂 i 🆕⏩⏩ 0 4❗️ 🍇
+      🔺⏭🐕❗️➡️ v
+      ↪️ v ▶️🙌 0x30 🤝 v ◀️🙌 0x39 🍇
+        integer ✖️ 16 ➕ 🔢v❗️ ➖ 0x30 ➡️🖍integer
+      🍉
+      🙅‍♀️↪️ v ▶️🙌 0x41 🤝 v ◀️🙌 0x5A  🍇
+        integer ✖️ 16 ➕ 🔢v❗️ ➖ 0x41 ➕ 10 ➡️🖍integer
+      🍉
+      🙅‍♀️↪️ v ▶️🙌 0x61 🤝 v ◀️🙌 0x7A 🍇
+        integer ✖️ 16 ➕ 🔢v❗️ ➖ 0x61 ➕ 10 ➡️🖍integer
+      🍉
+      🙅‍♀️🍇
+        🚨🆕🚧🔸🌸🆕 🔤\u must be followed by four characters in range 0-9, A-F, a-f🔤❗️
+      🍉
+    🍉
+    ↩️ integer
+  🍉
+
+  📗
+    Parses the escape sequence `\u` after `\u` itself has already been consumed.
+    Deals with surrogate pairs.
+  📗
+  ☣️🖍🔒❗️🈲➡️🔢 🚧🚧🔸🌸 🍇
+    🔺🈯️🐕❗️➡️high
+
+    ↪️ high ◀️ 0xD800 👐 high ▶️ 0xDBFF 🍇
+      ↩️ high
+    🍉
+
+    ↪️ ❎🤜🔺⏭🐕❗️🤛🙌 0x5C❗️ 👐 ❎🤜🔺⏭🐕❗️🤛🙌 0x75❗️🍇
+      🚨🆕🚧🔸🌸🆕 🔤\u sequence is begin of surrogate pair but not followed by another \u sequence🔤❗️
+    🍉
+
+    🔺🈯️🐕❗️➡️low
+    ↩️ 🤜high ➖ 0xD800🤛 ✖️ 0x400 ➕ low ➖ 0xDC00 ➕ 0x10000
+  🍉
+
+  📗
+    Reads an integer, i.e. all digits from 0-9 until the end of the string or
+    another character is encountered, which will not be consumed.
+
+    `int` is the first digit if non-null.
+  📗
+  ☣️🖍🔒❗️🔢 int 🔢➡️🔢 🍇
+    int➡️🖍🆕integer
+    🔁 index ◀️ count 🍇
+      🐽string🐚💧🍆 index❗️ ➡️ v
+      ↪️ v ◀️ 0x30 👐 v ▶️ 0x39 🍇
+        ↩️ integer
+      🍉
+      integer ✖️ 10 ➕ 🔢v❗️ ➖0x30 ➡️🖍integer
+      index ⬅️➕ 1
+    🍉
+    ↩️ integer
+  🍉
+
+  📗
+    Reads a number.
+  📗
+  ☣️🖍🔒❗️💜 initial 🔢 neg 👌 ➡️⚪️ 🚧🚧🔸🌸 🍇
+    0 ➡️ 🖍🆕integer
+    ↪️ neg 🍇
+      🔢🐕initial❗️➡️ 🖍integer
+      integer⬅️✖️-1
+    🍉
+    🙅‍♀️↪️ initial ▶️ 0 🍇  💭 "with no superfluous leading zero"
+      🔢🐕initial❗️➡️ 🖍integer
+    🍉
+
+    ↪️ index 🙌 count 🍇
+      ↩️ integer
+    🍉
+
+    🐽string🐚💧🍆 index❗️ ➡️v
+
+    💯integer❗️➡️ 🖍🆕real
+    ↪️ v 🙌 0x2E 🍇
+      index ⬅️➕ 1
+      💯🔢🐕0❗️❗️➡️ place
+      place➗🏂10.0 💯🚵🏄place❗️➗🏄10.0❗️❗️❗️➕1❗️ ➡️ fraction
+      ↪️ neg 🍇
+        real ⬅️➖ fraction
+      🍉
+      🙅‍♀️ 🍇
+        real ⬅️➕ fraction
+      🍉
+
+      ↪️ index 🙌 count 🍇
+        ↩️ real
+      🍉
+
+      🐽string🐚💧🍆 index❗️ ➡️ nv
+      ↪️ nv 🙌 0x65 👐 nv 🙌 0x45 🍇
+        index ⬅️➕ 1
+        ↩️🏂🐕real❗️
+      🍉
+      ↩️real
+    🍉
+    🙅‍♂️↪️ v 🙌 0x65 👐 v 🙌 0x45 🍇
+      index ⬅️➕ 1
+      ↩️🏂🐕real❗️
+    🍉
+
+    ↩️ integer
+  🍉
+
+  📗
+    Parses the exponent after `e` or `E`, which must have been consumed.
+  📗
+  ☣️🖍🔒❗️🏂 reali 💯 ➡️ 💯 🍇
+    reali ➡️ 🖍🆕real
+    👎➡️ 🖍🆕negexp
+
+    🐽string🐚💧🍆 index❗️ ➡️ nv
+    ↪️ nv 🙌 0x2D 🍇
+      👍➡️ 🖍negexp
+      index ⬅️➕ 1
+    🍉
+    🙅↪️ nv 🙌 0x2B 🍇
+      index ⬅️➕ 1
+    🍉
+
+    💯🔢🐕0❗️❗️➡️ 🖍🆕exponent
+    ↪️ negexp 🍇
+      exponent⬅️✖️-1
+    🍉
+
+    real⬅️✖️🏂10.0 exponent❗️
+    ↩️ real
+  🍉
+
+  ☣️🖍🔒❗️🦷 expectation💧 🚧🚧🔸🌸 🍇
+    🔺⏭🐕❗️➡️f
+    ↪️ ❎f🙌expectation❗️ 🍇
+      🚨🆕🚧🔸🌸🆕 🔤Invalid JSON.🔤❗️
+    🍉
+  🍉
+
+  ☣️🖍🔒❗️🌕 v 💧 ➡️⚪️ 🚧🚧🔸🌸 🍇
+    ↪️ v🙌 0x22 🍇
+      ↩️🔺🔠🐕❗️
+    🍉
+    🙅‍♀️↪️ v🙌 0x7B 🍇
+      🆕🍯🐚⚪️🍆🐸❗️➡️🖍🆕a
+      ↪️ 🤜🔺⏭🐕❓🤛🙌0x7D🍇
+        index ⬅️➕ 1
+        ↩️a
+      🍉
+      🔁👍🍇
+        🔺🦷🐕0x22❗️
+        🔺🔠🐕❗️ ➡️ key
+        🔺🦷🐕0x3A❗️
+        🔺🔎🐕❗️ ➡️ 🐽a key❗️
+        🔺⏭🐕❗️➡️nv
+        ↪️ ❎nv🙌 0x2C❗️ 🍇
+          ↪️ ❎nv🙌0x7D❗️ 🍇
+            🚨🆕🚧🔸🌸🆕 🔤Expected }.🔤❗️
+          🍉
+          ↩️a
+        🍉
+      🍉
+    🍉
+    🙅‍♀️↪️ v🙌 0x66 🍇
+      🔺🦷🐕0x61❗️
+      🔺🦷🐕0x6C❗️
+      🔺🦷🐕0x73❗️
+      🔺🦷🐕0x65❗️
+      ↩️👎
+    🍉
+    🙅‍♀️↪️ v🙌 0x6E 🍇
+      🔺🦷🐕0x75❗️
+      🔺🦷🐕0x6C❗️
+      🔺🦷🐕0x6C❗️
+      ↩️🤷‍♂️
+    🍉
+    🙅‍♀️↪️ v🙌 0x74 🍇
+      🔺🦷🐕0x72❗️
+      🔺🦷🐕0x75❗️
+      🔺🦷🐕0x65❗️
+      ↩️👍
+    🍉
+    🙅‍♀️↪️ v🙌 0x5B 🍇
+      🆕🍨🐚⚪️🍆🐸❗️➡️🖍🆕a
+      🔺⏭🐕❗️➡️gv
+      ↪️ gv🙌0x5D 🍇
+        ↩️a
+      🍉
+      🐻a 🔺🌕🐕gv❗️❗️
+      🔁👍🍇
+        🔺⏭🐕❗️➡️nv
+        ↪️ ❎nv🙌 0x2C❗️ 🍇
+          ↪️ ❎nv🙌0x5D❗️ 🍇
+            🚨🆕🚧🔸🌸🆕 🔤Expected ].🔤❗️
+          🍉
+          ↩️a
+        🍉
+        🐻a 🔺🔎🐕❗️❗️
+      🍉
+    🍉
+    🙅‍♀️↪️ v▶️🙌0x30 🤝 v ◀️🙌 0x39 🍇
+      ↩️🔺💜🐕🔢v ➖ 0x30❗️👎❗
+    🍉
+    🙅‍♀️↪️ v 🙌 0x2D 🍇
+      ↩️🔺💜🐕0👍❗
+    🍉
+    🚨🆕🚧🔸🌸🆕 🔤Invalid JSON.🔤❗️
+  🍉
+
+  🖍❗️🔎➡️⚪️ 🚧🚧🔸🌸 🍇
+    ☣️🍇
+      ↩️🔺🌕🐕🔺⏭🐕❗️❗️
+    🍉
+  🍉
+🍉

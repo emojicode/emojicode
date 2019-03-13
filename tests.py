@@ -114,7 +114,7 @@ library_tests = [
     "listTest",
     "enumerator",
     "dictionaryTest",
-    # "jsonTest",
+    "jsonTest",
     "fileTest"
 ]
 reject_tests = glob.glob(os.path.join(dist.source, "tests", "reject",
