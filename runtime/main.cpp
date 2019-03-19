@@ -59,7 +59,7 @@ extern "C" void ejcRelease(runtime::Object<void> *object) {
     }
     if (controlBlock == &ejcIgnoreBlock) return;
 
-    if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) != 0) return;
+    if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) - 1 != 0) return;
 
     object->classInfo()->dispatch<void>(0, object);
     delete controlBlock;
@@ -76,7 +76,7 @@ extern "C" void ejcReleaseCapture(runtime::internal::Capture *capture) {
     }
     if (controlBlock == &ejcIgnoreBlock) return;
 
-    if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) != 0) return;
+    if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) - 1 != 0) return;
 
     capture->deinit(capture);
     delete controlBlock;
@@ -91,7 +91,7 @@ extern "C" void ejcReleaseMemory(runtime::Object<void> *object) {
     }
     if (controlBlock == &ejcIgnoreBlock) return;
 
-    if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) != 0) return;
+    if (controlBlock->strongCount.fetch_sub(1, std::memory_order_acq_rel) - 1 != 0) return;
 
     delete controlBlock;
     free(object);
