@@ -98,5 +98,5 @@
     Converts this integer to a byte. The value of this integer must be in
     [-127, 127].
   📗
-  ❗️ 💧 ➡️ 💧 📻 🔤sIntToByte🔤
+  ❗️ 💧 ➡️ 💧 📻 🔤ejcBuiltIn🔤
 🍉

@@ -82,6 +82,3 @@ extern "C" s::String* sRealToString(runtime::Real *real, runtime::Integer precis
     return string;
 }
 
-extern "C" runtime::Byte sIntToByte(runtime::Integer *integer) {
-    return static_cast<runtime::Byte>(*integer);
-}

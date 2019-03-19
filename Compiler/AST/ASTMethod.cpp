@@ -169,6 +169,10 @@ bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &type, cons
             builtIn_ = BuiltInType::IntegerInverse;
             return true;
         }
+        if (name.front() == 0x1f4a7) {
+            builtIn_ = BuiltInType::IntegerToByte;
+            return true;
+        }
     }
     else if (type.typeDefinition() == analyser->compiler()->sByte) {
         if (name.front() == E_NO_ENTRY_SIGN) {
@@ -177,6 +181,10 @@ bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &type, cons
         }
         if (name.front() == E_BATTERY) {
             builtIn_ = BuiltInType::IntegerInverse;
+            return true;
+        }
+        if (name.front() == 0x1f522) {
+            builtIn_ = BuiltInType::ByteToInteger;
             return true;
         }
     }

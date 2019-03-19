@@ -35,7 +35,7 @@ protected:
         DoubleLess, DoubleLessOrEqual, DoubleRemainder, DoubleEqual, DoubleInverse,
         IntegerMultiply, IntegerAdd, IntegerSubstract, IntegerDivide, IntegerGreater, IntegerGreaterOrEqual,
         IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
-        IntegerRemainder, IntegerToDouble, IntegerNot, IntegerInverse,
+        IntegerRemainder, IntegerToDouble, IntegerNot, IntegerInverse, IntegerToByte, ByteToInteger,
         BooleanAnd, BooleanOr, BooleanNegate,
         Equal, Store, Load, Release, MemoryMove, MemorySet, IsNoValueLeft, IsNoValueRight, Multiprotocol,
     };
