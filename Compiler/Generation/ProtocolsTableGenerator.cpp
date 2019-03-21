@@ -110,11 +110,16 @@ llvm::GlobalVariable* ProtocolsTableGenerator::createDispatchTable(const Type &t
     auto array = llvm::ConstantArray::get(arrayType, virtualTable);
     auto arrayVar = new llvm::GlobalVariable(*generator_->module(), arrayType, true,
                                              llvm::GlobalValue::LinkageTypes::PrivateLinkage, array);
+    auto avGep = llvm::ConstantExpr::getInBoundsGetElementPtr(arrayType, arrayVar, llvm::ArrayRef<llvm::Constant *>{
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator_->context()), 0),
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator_->context()), 0)
+    });
+
     auto load = llvm::ConstantInt::get(llvm::Type::getInt1Ty(generator_->context()),
                                        (type.type() == TypeType::Class ||
                                         generator_->typeHelper().isRemote(type)) ? 1 : 0);
     auto conformance = llvm::ConstantStruct::get(generator_->typeHelper().protocolConformance(),
-                                                 {load, arrayVar, llvm::ConstantExpr::getBitCast(boxInfo, generator_->typeHelper().boxInfo()->getPointerTo()), typeDef->boxRetainRelease().first, typeDef->boxRetainRelease().second });
+                                                 {load, avGep, llvm::ConstantExpr::getBitCast(boxInfo, generator_->typeHelper().boxInfo()->getPointerTo()), typeDef->boxRetainRelease().first, typeDef->boxRetainRelease().second });
     return getConformanceVariable(type, protocol, conformance);
 }
 
