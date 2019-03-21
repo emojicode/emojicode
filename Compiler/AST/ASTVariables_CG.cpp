@@ -44,7 +44,7 @@ Value* ASTGetVariable::generate(FunctionCodeGenerator *fg) const {
             return ptr;
         }
         auto val = fg->builder().CreateLoad(ptr);
-        if (expressionType().isManaged()) {
+        if (expressionType().isManaged() && !isTemporary()) {
             fg->retain(fg->isManagedByReference(expressionType()) ? ptr : val, expressionType());
             handleResult(fg, val, ptr);
         }
