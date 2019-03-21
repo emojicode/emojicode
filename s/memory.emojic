@@ -51,7 +51,7 @@
     >!N address. Only ever call this method if there is only one 🧠 representing
     >!N the memory area.
   📗
-  ☣️️ ❗️ 🏗 newSize 🔢 📻 🔤ejcMemoryRealloc🔤
+  ☣️️🖍 ❗️ 🏗 newSize 🔢 📻 🔤ejcMemoryRealloc🔤
 
   📗
     Releases a value of type T that is located *offset* bytes past the
