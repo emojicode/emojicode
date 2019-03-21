@@ -13,6 +13,11 @@
 
 namespace EmojicodeCompiler {
 
+llvm::Value* callIntrinsic(FunctionCodeGenerator *fg, llvm::Intrinsic::ID id, llvm::ArrayRef<llvm::Value *> args) {
+    return fg->builder().CreateCall(llvm::Intrinsic::getDeclaration(fg->generator()->module(), id,
+                                                                    args.front()->getType()), args);
+}
+
 Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
     if (builtIn_ != BuiltInType::None) {
         auto v = callee_->generate(fg);
@@ -28,7 +33,25 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             case BuiltInType::ByteToInteger:
                 return fg->builder().CreateSExt(v, llvm::Type::getInt64Ty(fg->generator()->context()));
             case BuiltInType::DoubleInverse:
-                return fg->builder().CreateFMul(v, llvm::ConstantFP::get(v->getType(), -1));
+                return fg->builder().CreateFNeg(v);
+            case BuiltInType::Power:
+                return callIntrinsic(fg, llvm::Intrinsic::ID::pow, {v, args_.args()[0]->generate(fg)});
+            case BuiltInType::Log2:
+                return callIntrinsic(fg, llvm::Intrinsic::ID::log2, v);
+            case BuiltInType::Log10:
+                return callIntrinsic(fg, llvm::Intrinsic::ID::log10, v);
+            case BuiltInType::Ln:
+                return callIntrinsic(fg, llvm::Intrinsic::ID::log, v);
+            case BuiltInType::Ceil:
+                return callIntrinsic(fg, llvm::Intrinsic::ID::ceil, v);
+            case BuiltInType::Floor:
+                return callIntrinsic(fg, llvm::Intrinsic::ID::floor, v);
+            case BuiltInType::Round:
+                return callIntrinsic(fg, llvm::Intrinsic::ID::round, v);
+            case BuiltInType::DoubleAbs:
+                return callIntrinsic(fg, llvm::Intrinsic::ID::fabs, v);
+            case BuiltInType::DoubleToInteger:
+                return fg->builder().CreateFPToSI(v, llvm::Type::getInt64Ty(fg->generator()->context()));
             case BuiltInType::BooleanNegate:
                 return fg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fg->generator()->context()), v);
             case BuiltInType::Store: {

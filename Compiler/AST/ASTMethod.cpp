@@ -145,73 +145,54 @@ Type ASTMethodable::analyseMultiProtocolCall(ExpressionAnalyser *analyser, const
                         " provides a method ", utf8(name), ".");
 }
 
+std::map<std::pair<TypeDefinition*, char32_t>, ASTMethodable::BuiltInType> ASTMethodable::kBuiltIns = {};
+
+void ASTMethodable::prepareBuiltIns(Compiler *c) {
+    if (!kBuiltIns.empty()) return;
+    kBuiltIns = {
+        {{c->sBoolean, E_NEGATIVE_SQUARED_CROSS_MARK}, BuiltInType::BooleanNegate},
+        {{c->sInteger, E_HUNDRED_POINTS_SYMBOL}, BuiltInType::IntegerToDouble},
+        {{c->sInteger, E_NO_ENTRY_SIGN}, BuiltInType::IntegerNot},
+        {{c->sInteger, E_BATTERY}, BuiltInType::IntegerInverse},
+        {{c->sInteger, 0x1f4a7}, BuiltInType::IntegerToByte},
+        {{c->sByte, E_NO_ENTRY_SIGN}, BuiltInType::IntegerNot},
+        {{c->sByte, E_BATTERY}, BuiltInType::IntegerInverse},
+        {{c->sByte, 0x1f522}, BuiltInType::ByteToInteger},
+        {{c->sReal, E_BATTERY}, BuiltInType::DoubleInverse},
+        {{c->sReal, 0x1F3C2}, BuiltInType::Power},
+        {{c->sReal, 0x1f6a3}, BuiltInType::Log2},
+        {{c->sReal, 0x1f94f}, BuiltInType::Log10},
+        {{c->sReal, 0x1f3c4}, BuiltInType::Ln},
+        {{c->sReal, 0x1f6b5}, BuiltInType::Floor},
+        {{c->sReal, 0x1f6b4}, BuiltInType::Ceil},
+        {{c->sReal, 0x1f3c7}, BuiltInType::Round},
+        {{c->sReal, 0x1f3e7}, BuiltInType::DoubleAbs},
+        {{c->sReal, 0x1f522}, BuiltInType::DoubleToInteger},
+        {{c->sMemory, E_RECYCLING_SYMBOL}, BuiltInType::Release},
+        {{c->sMemory, 0x1F69C}, BuiltInType::MemoryMove},
+        {{c->sMemory, 0x270D}, BuiltInType::MemorySet},
+        {{c->sMemory, 0x1F43D}, BuiltInType::Load},
+    };
+}
+
 bool ASTMethodable::builtIn(ExpressionAnalyser *analyser, const Type &type, const std::u32string &name) {
     if (type.type() != TypeType::ValueType) {
         return false;
     }
 
-    if (type.typeDefinition() == analyser->compiler()->sBoolean) {
-        if (name.front() == E_NEGATIVE_SQUARED_CROSS_MARK) {
-            builtIn_ = BuiltInType::BooleanNegate;
-            return true;
-        }
+    if (args_.mood() == Mood::Assignment && type.typeDefinition() == analyser->compiler()->sMemory
+        && name.front() == 0x1F43D) {
+        builtIn_ = BuiltInType::Store;
+        return true;
     }
-    else if (type.typeDefinition() == analyser->compiler()->sInteger) {
-        if (name.front() == E_HUNDRED_POINTS_SYMBOL) {
-            builtIn_ = BuiltInType::IntegerToDouble;
-            return true;
-        }
-        if (name.front() == E_NO_ENTRY_SIGN) {
-            builtIn_ = BuiltInType::IntegerNot;
-            return true;
-        }
-        if (name.front() == E_BATTERY) {
-            builtIn_ = BuiltInType::IntegerInverse;
-            return true;
-        }
-        if (name.front() == 0x1f4a7) {
-            builtIn_ = BuiltInType::IntegerToByte;
-            return true;
-        }
+
+    prepareBuiltIns(analyser->compiler());
+    auto it = kBuiltIns.find(std::make_pair(type.valueType(), name.front()));
+    if (it != kBuiltIns.end()) {
+        builtIn_ = it->second;
+        return true;
     }
-    else if (type.typeDefinition() == analyser->compiler()->sByte) {
-        if (name.front() == E_NO_ENTRY_SIGN) {
-            builtIn_ = BuiltInType::IntegerNot;
-            return true;
-        }
-        if (name.front() == E_BATTERY) {
-            builtIn_ = BuiltInType::IntegerInverse;
-            return true;
-        }
-        if (name.front() == 0x1f522) {
-            builtIn_ = BuiltInType::ByteToInteger;
-            return true;
-        }
-    }
-    else if (type.typeDefinition() == analyser->compiler()->sReal) {
-        if (name.front() == E_BATTERY) {
-            builtIn_ = BuiltInType::DoubleInverse;
-            return true;
-        }
-    }
-    else if (type.typeDefinition() == analyser->compiler()->sMemory) {
-        if (name.front() == 0x1F43D) {
-            builtIn_ = args_.mood() == Mood::Assignment ? BuiltInType::Store : BuiltInType::Load;
-            return true;
-        }
-        if (name.front() == E_RECYCLING_SYMBOL) {
-            builtIn_ = BuiltInType::Release;
-            return true;
-        }
-        if (name.front() == 0x1F69C) {
-            builtIn_ = BuiltInType::MemoryMove;
-            return true;
-        }
-        if (name.front() == 0x270D) {
-            builtIn_ = BuiltInType::MemorySet;
-            return true;
-        }
-    }
+
     return false;
 }
 

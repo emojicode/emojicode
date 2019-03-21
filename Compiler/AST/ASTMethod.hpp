@@ -12,10 +12,12 @@
 #include "ASTExpr.hpp"
 #include "Functions/CallType.h"
 #include <utility>
+#include <map>
 
 namespace EmojicodeCompiler {
 
 class FunctionAnalyser;
+class Compiler;
 
 class ASTMethodable : public ASTCall {
 protected:
@@ -32,7 +34,8 @@ protected:
     enum class BuiltInType {
         None,
         DoubleMultiply, DoubleAdd, DoubleSubstract, DoubleDivide, DoubleGreater, DoubleGreaterOrEqual,
-        DoubleLess, DoubleLessOrEqual, DoubleRemainder, DoubleEqual, DoubleInverse,
+        DoubleLess, DoubleLessOrEqual, DoubleRemainder, DoubleEqual, DoubleInverse, Power, Log2, Log10, Ln, Ceil, Floor,
+        Round, DoubleAbs, DoubleToInteger,
         IntegerMultiply, IntegerAdd, IntegerSubstract, IntegerDivide, IntegerGreater, IntegerGreaterOrEqual,
         IntegerLess, IntegerLessOrEqual, IntegerLeftShift, IntegerRightShift, IntegerOr, IntegerAnd, IntegerXor,
         IntegerRemainder, IntegerToDouble, IntegerNot, IntegerInverse, IntegerToByte, ByteToInteger,
@@ -51,6 +54,9 @@ protected:
     const Type& errorType() const override;
 
 private:
+    static std::map<std::pair<TypeDefinition*, char32_t>, BuiltInType> kBuiltIns;
+    static void prepareBuiltIns(Compiler *c);
+
     bool builtIn(ExpressionAnalyser *analyser, const Type &type, const std::u32string &name);
 
     Type analyseMultiProtocolCall(ExpressionAnalyser *analyser, const std::u32string &name);

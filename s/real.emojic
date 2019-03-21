@@ -51,7 +51,7 @@
   🍉
 
   📗 Returns the absolute value of this 💯. 📗
-  ❗️ 🏧 ➡️ 💯 📻 🔤sRealAbsolute🔤
+  ❗️ 🏧 ➡️ 💯 📻 🔤ejcBuiltIn🔤
 
   📗
     Returns an approximation of 𝜋.
@@ -93,7 +93,7 @@
   📗
     Returns this 💯 to the exponent power, that is, base<sup>exponent</sup>.
   📗
-  ❗️ 🏂 exponent 💯 ➡️ 💯 📻 🔤sRealPower🔤
+  ❗️ 🏂 exponent 💯 ➡️ 💯 📻 🔤ejcBuiltIn🔤
   📗
     Returns the positive square root of this 💯.
   📗
@@ -101,11 +101,11 @@
   📗
     Returns the smallest integer greater than or equal to this 💯.
   📗
-  ❗️ 🚴 ➡️ 🔢 📻 🔤sRealCeil🔤
+  ❗️ 🚴 ➡️ 💯 📻 🔤ejcBuiltIn🔤
   📗
     Returns the largest integer less than or equal to this 💯.
   📗
-  ❗️ 🚵 ➡️ 🔢 📻 🔤sRealFloor🔤
+  ❗️ 🚵 ➡️ 💯 📻 🔤ejcBuiltIn🔤
   📗
     Returns the value of this 💯 rounded to the nearest integer.
 
@@ -113,16 +113,20 @@
     rounded to the next higher integer. If the fractional portion of this 💯 is
     less than 0.5, the argument is rounded to the next lower integer.
   📗
-  ❗️ 🏇 ➡️ 🔢 📻 🔤sRealRound🔤
+  ❗️ 🏇 ➡️ 💯 📻 🔤ejcBuiltIn🔤
   📗
     Returns the base 2 logarithm of this 💯.
   📗
-  ❗️ 🚣 ➡️ 💯 📻 🔤sRealLog2🔤
-
+  ❗️ 🚣 ➡️ 💯 📻 🔤ejcBuiltIn🔤
   📗
     Returns the natural (base ℇ) logarithm of this 💯.
   📗
-  ❗️ 🏄 ➡️ 💯 📻 🔤sRealLn🔤
+  ❗️ 🏄 ➡️ 💯 📻 🔤ejcBuiltIn🔤
+
+  📗
+    Returns the base 10 logarithm of this 💯.
+  📗
+  ❗️ 🥏 ➡️ 💯 📻 🔤ejcBuiltIn🔤
 
   📗
     Returns the additive inverse of this 💯. If this 💯 is *x*,
@@ -137,4 +141,8 @@
     of digits after the decimal separator “.”.
   📗
   ❗️ 🔡 precision 🔢 ➡️ 🔡 📻 🔤sRealToString🔤
+  📗
+    Returns the 🔢 representation of this 💯.
+  📗
+  ❗️ 🔢 ➡️ 🔢 📻 🔤ejcBuiltIn🔤
 🍉

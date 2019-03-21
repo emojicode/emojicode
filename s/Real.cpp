@@ -10,10 +10,6 @@
 #include <cstdint>
 #include <cstdlib>
 
-extern "C" double sRealAbsolute(double *real) {
-    return std::abs(*real);
-}
-
 extern "C" double sRealSin(double *real) {
     return std::sin(*real);
 }
@@ -38,30 +34,6 @@ extern "C" double sRealATan(double *real) {
     return std::tan(*real);
 }
 
-extern "C" double sRealPower(double *real, double exp) {
-    return std::pow(*real, exp);
-}
-
 extern "C" double sRealSqrt(double *real) {
     return std::sqrt(*real);
-}
-
-extern "C" int64_t sRealFloor(double *real) {
-    return std::floor(*real);
-}
-
-extern "C" int64_t sRealCeil(double *real) {
-    return std::ceil(*real);
-}
-
-extern "C" int64_t sRealRound(double *real) {
-    return std::round(*real);
-}
-
-extern "C" double sRealLog2(double *real) {
-    return std::log2(*real);
-}
-
-extern "C" double sRealLn(double *real) {
-    return std::log(*real);
 }
