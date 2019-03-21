@@ -59,6 +59,7 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
     retain_ = declareMemoryRunTimeFunction("ejcRetain");
     release_ = declareMemoryRunTimeFunction("ejcRelease");
     releaseMemory_ = declareMemoryRunTimeFunction("ejcReleaseMemory");
+    releaseWithoutDeinit_ = declareMemoryRunTimeFunction("ejcReleaseWithoutDeinit");
     releaseCapture_ = declareMemoryRunTimeFunction("ejcReleaseCapture");
 
     isOnlyReference_ = declareRunTimeFunction("ejcIsOnlyReference", llvm::Type::getInt1Ty(generator_->context()),

@@ -40,6 +40,9 @@ public:
     /// (ejcReleaseMemory)
     /// @see release
     llvm::Function* releaseMemory() const { return releaseMemory_; }
+    /// The function that is used to release object that whose initialization has been aborted.
+    /// @see release
+    llvm::Function* releaseWithoutDeinit() const { return releaseWithoutDeinit_; }
     /// The function that is to be used to release closure captures.
     /// (ejcReleaseCapture)
     /// @see release
@@ -79,6 +82,7 @@ private:
     llvm::Function *release_ = nullptr;
     llvm::Function *releaseMemory_ = nullptr;
     llvm::Function *releaseCapture_ = nullptr;
+    llvm::Function *releaseWithoutDeinit_ = nullptr;
     llvm::Function *isOnlyReference_ = nullptr;
 
     llvm::Function* declareRunTimeFunction(const char *name, llvm::Type *returnType, llvm::ArrayRef<llvm::Type *> args);
