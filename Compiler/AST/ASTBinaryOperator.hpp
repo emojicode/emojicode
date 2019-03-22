@@ -30,7 +30,8 @@ public:
     void analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) override;
     
 private:
-    
+    Value* generateLogical(FunctionCodeGenerator *fg) const;
+
     struct BuiltIn {
         explicit BuiltIn(Type type) : returnType(std::move(type)) {}
         Type returnType;

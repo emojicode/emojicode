@@ -13,6 +13,10 @@
 namespace EmojicodeCompiler {
 
 Value* ASTBinaryOperator::generate(FunctionCodeGenerator *fg) const {
+    if (BuiltInType::BooleanOr == builtIn_ || BuiltInType::BooleanAnd == builtIn_) {
+        return generateLogical(fg);
+    }
+
     if (builtIn_ != BuiltInType::None) {
         auto left = left_->generate(fg);
         auto right = right_->generate(fg);
@@ -65,10 +69,6 @@ Value* ASTBinaryOperator::generate(FunctionCodeGenerator *fg) const {
                 return fg->builder().CreateSRem(left, right);
             case BuiltInType::IntegerAnd:
                 return fg->builder().CreateAnd(left, right);
-            case BuiltInType::BooleanOr:
-                return fg->builder().CreateOr(left, right);
-            case BuiltInType::BooleanAnd:
-                return fg->builder().CreateAnd(left, right);
             case BuiltInType::Equal:
                 return fg->builder().CreateICmpEQ(left, right);
             case BuiltInType::IsNoValueLeft:
@@ -86,6 +86,32 @@ Value* ASTBinaryOperator::generate(FunctionCodeGenerator *fg) const {
 
     return handleResult(fg, CallCodeGenerator(fg, callType_).generate(left_->generate(fg), calleeType_,
                                                                       args_, method_, errorPointer()));
+}
+
+Value* ASTBinaryOperator::generateLogical(FunctionCodeGenerator *fg) const {
+    auto isAnd = builtIn_ == BuiltInType::BooleanAnd;
+    auto left = left_->generate(fg);
+    fg->releaseTemporaryObjects();
+
+    auto insertBlock = fg->builder().GetInsertBlock();
+    auto function = insertBlock->getParent();
+    auto &ctx = fg->generator()->context();
+
+    auto rightBlock = llvm::BasicBlock::Create(ctx, "right", function);
+    auto cont = llvm::BasicBlock::Create(ctx, "cont", function);
+
+    fg->builder().CreateCondBr(left, isAnd ? rightBlock : cont, isAnd ? cont : rightBlock);
+    fg->builder().SetInsertPoint(rightBlock);
+    auto right = right_->generate(fg);
+    fg->releaseTemporaryObjects();
+    auto rightPhiBlock = fg->builder().GetInsertBlock();  // releaseTemporaryObjects() might insert blocks
+    fg->builder().CreateBr(cont);
+
+    fg->builder().SetInsertPoint(cont);
+    auto phi = fg->builder().CreatePHI(llvm::Type::getInt1Ty(ctx), 2);
+    phi->addIncoming(isAnd ? llvm::ConstantInt::getFalse(ctx) : llvm::ConstantInt::getTrue(ctx), insertBlock);
+    phi->addIncoming(right, rightPhiBlock);
+    return phi;
 }
 
 }  // namespace EmojicodeCompiler

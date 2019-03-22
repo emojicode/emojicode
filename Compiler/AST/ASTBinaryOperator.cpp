@@ -140,23 +140,26 @@ std::pair<bool, ASTBinaryOperator::BuiltIn> ASTBinaryOperator::builtInPrimitiveO
                     break;
             }
         }
-        else if (type.valueType() == analyser->compiler()->sBoolean) {
-            switch (operator_) {
-                case OperatorType::LogicalAndOperator:
-                    builtIn_ = BuiltInType::BooleanAnd;
-                    return std::make_pair(true, BuiltIn(analyser->boolean()));
-                case OperatorType::LogicalOrOperator:
-                    builtIn_ = BuiltInType::BooleanOr;
-                    return std::make_pair(true, BuiltIn(analyser->boolean()));
-                default:
-                    break;
-            }
-        }
 
         if (operator_ == OperatorType::EqualOperator) {
             builtIn_ = BuiltInType::Equal;
             return std::make_pair(true, BuiltIn(analyser->boolean()));
         }
+    }
+
+    if (operator_ == OperatorType::LogicalAndOperator) {
+        if (type.valueType() != analyser->compiler()->sBoolean) {
+            throw CompilerError(position(), "🤝 can only be used with 👌.");
+        }
+        builtIn_ = BuiltInType::BooleanAnd;
+        return std::make_pair(true, BuiltIn(analyser->boolean()));
+    }
+    if (operator_ == OperatorType::LogicalOrOperator) {
+        if (type.valueType() != analyser->compiler()->sBoolean) {
+            throw CompilerError(position(), "👐 can only be used with 👌.");
+        }
+        builtIn_ = BuiltInType::BooleanOr;
+        return std::make_pair(true, BuiltIn(analyser->boolean()));
     }
 
     if (operator_ == OperatorType::IdentityOperator) {

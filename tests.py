@@ -94,6 +94,7 @@ compilation_tests = [
     "rcOnlyReference",
     "references",
     "identifierTest",
+    "shortCircuit",
 ]
 
 if not quick:
