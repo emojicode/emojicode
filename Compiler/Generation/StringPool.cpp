@@ -32,7 +32,6 @@ llvm::Value* StringPool::addToPool(const std::string &string) {
     auto constant = llvm::ConstantStruct::getAnon({
         codeGenerator_->declarator().ignoreBlockPtr(),
         llvm::ConstantDataArray::get(codeGenerator_->context(), data)
-        llvm::ConstantDataArray::getString(codeGenerator_->context(), string)
     });
     auto var = new llvm::GlobalVariable(*codeGenerator_->module(), constant->getType(), true,
                                         llvm::GlobalValue::LinkageTypes::PrivateLinkage, constant);
