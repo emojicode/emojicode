@@ -116,7 +116,7 @@
   ```
   🍯 🔤Jane🔤 45 🔤Sharon🔤 22 🔤Bob🔤 64 🍆 ➡️ ages
   ages ➡️ 🖍🆕agesCopy
-  🐷 agesCopy 🔤Jane🔤 46❗️
+  46 ➡️ 🐽agesCopy 🔤Jane🔤❗️
   ```
 
   In the above example the dictionary in `ages` will still contain 45 for the

@@ -1,20 +1,31 @@
 📗
   General error superclass.
 
-  All errors that are raised must inherit from this class.
+  All errors that are raised must inherit from this class. An error has always
+  an associated error message that should provide more precise information.
 📗
 🌍 🐇 🚧 🍇
   🖍🆕 message 🔡
   🖍🆕 location 🍬🔡
 
+  📗
+    Creates a 🚧 instance whose message is `message`.
+  📗
   🆕 🍼message 🔡 🍇🍉
 
+  📗
+    Returns the error message.
+  📗
   🔏❗️💬➡️🔡 🍇
     ↩️ message
   🍉
 
+  📗
+    Called at runtime when 🍺 detects an unhandled error. Causes the program
+    to panic. `location` is the location included in the error message.
+  📗
   🔏❗️🤯 location 🔡 🍇
-    🤯🐇💻 🍪🔤Unhandled exception at 🔤 location 🔤: 🔤 message 🍪 ❗️
+    🤯🐇💻 🍪🔤Unhandled error at 🔤 location 🔤: 🔤 message 🍪 ❗️
   🍉
 🍉
 
@@ -24,6 +35,9 @@
   An error raised when an input/output operation fails.
 📗
 🌍 🐇 🚧🔸↕️ 🚧 🍇
+  📗
+    Creates a 🚧🔸↕️ instance whose message is `message`.
+  📗
   🆕 message 🔡 🍇
     ⤴️🆕 message❗️
   🍉
