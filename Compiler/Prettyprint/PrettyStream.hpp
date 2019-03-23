@@ -49,7 +49,7 @@ public:
     PrettyStream& operator<<(const ASTNode &node);
     PrettyStream& operator<<(const Type &type);
 
-    void printClosure(Function *function);
+    void printClosure(Function *function, bool escaping);
 
     void setLastCommentQueryPlace(const SourcePosition &p);
     void printComments(const SourcePosition &p);

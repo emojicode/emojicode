@@ -118,10 +118,12 @@ void PrettyPrinter::printArguments(Function *function) {
     }
 }
 
-void PrettyPrinter::printClosure(Function *function) {
+void PrettyPrinter::printClosure(Function *function, bool escaping) {
     prettyStream_ << "🍇";
+    if (escaping) prettyStream_ << "🛅 ";
     printArguments(function);
     printReturnType(function);
+    printErrorType(function);
     prettyStream_ << "\n";
     function->ast()->innerToCode(prettyStream_);
     prettyStream_ << "🍉\n";
@@ -321,6 +323,13 @@ void PrettyPrinter::printFunctionAccessLevel(Function *function) {
     }
 }
 
+void PrettyPrinter::printErrorType(Function *function) {
+    if (function->errorType() != nullptr && !(function->errorType()->wasAnalysed() &&
+                                              function->errorType()->type().type() == TypeType::NoReturn)) {
+        prettyStream_ << "🚧" << function->errorType() << " ";
+    }
+}
+
 void PrettyPrinter::print(const char *key, Function *function, bool body, bool noMutate) {
     if (function->isThunk()) {
         return;
@@ -349,11 +358,7 @@ void PrettyPrinter::print(const char *key, Function *function, bool body, bool n
         printGenericParameters(function);
         printArguments(function);
         printReturnType(function);
-
-        if (function->errorType() != nullptr && !(function->errorType()->wasAnalysed() &&
-            function->errorType()->type().type() == TypeType::NoReturn)) {
-            prettyStream_ << "🚧" << function->errorType() << " ";
-        }
+        printErrorType(function);
 
         if (!function->externalName().empty()) {
             prettyStream_ << " 📻 🔤" << function->externalName() << "🔤";

@@ -34,7 +34,7 @@ private:
     bool interface_ = false;
     size_t interfaceFileIndex = 1;
 
-    void printClosure(Function *function);
+    void printClosure(Function *function, bool esacping);
 
     void printRecordings(const std::vector<std::unique_ptr<RecordingPackage::Recording>> &recordings);
     void print(const char *key, Function *function, bool body, bool noMutate);
@@ -66,6 +66,7 @@ private:
     void printTypeDef(const Type &type);
     void printDocumentation(const std::u32string &doc);
     void printLinkHints();
+    void printErrorType(Function *function);
     std::string filePath(const std::string &path);
 };
 

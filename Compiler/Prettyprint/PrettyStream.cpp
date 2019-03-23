@@ -41,8 +41,8 @@ void PrettyStream::setOutPath(const std::string &path) {
     stream_ = std::fstream(path, std::ios_base::out);
 }
 
-void PrettyStream::printClosure(Function *function) {
-    prettyPrinter_->printClosure(function);
+void PrettyStream::printClosure(Function *function, bool escaping) {
+    prettyPrinter_->printClosure(function, escaping);
 }
 
 PrettyStream& PrettyStream::operator<<(ASTNode *node) {

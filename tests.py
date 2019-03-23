@@ -187,7 +187,7 @@ def prettyprint_test(name):
     try:
         compilation_test(name)
     except CalledProcessError:
-        pass
+        fail_test(name)
     os.rename(source_path + '_original', source_path)
 
 

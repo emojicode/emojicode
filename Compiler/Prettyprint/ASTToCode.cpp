@@ -91,7 +91,7 @@ void ASTIf::toCode(PrettyStream &pretty) const {
 
 void ASTClosure::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty.printClosure(closure_.get());
+    pretty.printClosure(closure_.get(), isEscaping_);
 }
 
 void ASTErrorHandler::toCode(PrettyStream &pretty) const {
@@ -346,6 +346,9 @@ void ASTCallableType::toCodeType(PrettyStream &pretty) const {
     }
     if (return_ != nullptr) {
         pretty << "➡️" << return_;
+    }
+    if (errorType_ != nullptr) {
+        pretty << "🚧" << errorType_;
     }
     pretty << "🍉";
 }
