@@ -28,8 +28,10 @@ llvm::Value* StringPool::pool(const std::u32string &string) {
 }
 
 llvm::Value* StringPool::addToPool(const std::string &string) {
+    auto data = llvm::ArrayRef<uint8_t>(reinterpret_cast<const uint8_t*>(string.data()), string.size());
     auto constant = llvm::ConstantStruct::getAnon({
         codeGenerator_->declarator().ignoreBlockPtr(),
+        llvm::ConstantDataArray::get(codeGenerator_->context(), data)
         llvm::ConstantDataArray::getString(codeGenerator_->context(), string)
     });
     auto var = new llvm::GlobalVariable(*codeGenerator_->module(), constant->getType(), true,
