@@ -95,6 +95,7 @@ compilation_tests = [
     "references",
     "identifierTest",
     "shortCircuit",
+    "errorReraisePrefix",
 ]
 
 if not quick:

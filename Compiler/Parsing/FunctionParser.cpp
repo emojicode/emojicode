@@ -312,7 +312,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
             return std::make_shared<ASTIsOnlyReference>(stream_.consumeToken(TokenType::Variable).value(),
                                                         token.position());
         case E_RED_TRIANGLE_POINTED_UP:
-            return std::make_shared<ASTReraise>(parseExpr(0), token.position());
+            return parseUnaryPrefix<ASTReraise>(token);
         default: {
             auto value = parseExpr(0);
             return std::make_shared<ASTMethod>(token.value(), value, parseArguments(token.position()),
