@@ -77,7 +77,8 @@ Type ExpressionAnalyser::expectType(const Type &type, std::shared_ptr<ASTExpr> *
 
 Type ExpressionAnalyser::analyseFunctionCall(ASTArguments *node, const Type &type, Function *function) {
     if (node->args().size() != function->parameters().size()) {
-        throw CompilerError(node->position(), utf8(function->name()), " expects ", function->parameters().size(),
+        auto position = node->args().empty() ? node->position() : node->args().back()->position();
+        throw CompilerError(position, utf8(function->name()), " expects ", function->parameters().size(),
                             " arguments but ", node->args().size(), " were supplied.");
     }
 
