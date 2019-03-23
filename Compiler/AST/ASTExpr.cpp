@@ -43,7 +43,6 @@ Type ASTCallableCall::analyse(ExpressionAnalyser *analyser, const TypeExpectatio
 void ASTCallableCall::analyseMemoryFlow(MFFunctionAnalyser *analyser, MFFlowCategory type) {
     callable_->analyseMemoryFlow(analyser, MFFlowCategory::Borrowing);
     for (auto &arg : args_.args()) {
-        analyser->take(arg.get());
         arg->analyseMemoryFlow(analyser, MFFlowCategory::Escaping);  // We cannot at all say what the callable will do.
     }
 }
