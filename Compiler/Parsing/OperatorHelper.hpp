@@ -15,24 +15,24 @@ namespace EmojicodeCompiler {
 
 enum class OperatorType {
     Invalid,
-    MultiplicationOperator,
-    DivisionOperator,
-    RemainderOperator,
-    MinusOperator,
-    PlusOperator,
-    ShiftLeftOperator,
-    ShiftRightOperator,
-    GreaterOrEqualOperator,
-    GreaterOperator,
-    LessOrEqualOperator,
-    LessOperator,
-    BitwiseAndOperator,
-    BitwiseXorOperator,
-    BitwiseOrOperator,
-    LogicalAndOperator,
-    LogicalOrOperator,
-    EqualOperator,
-    IdentityOperator,
+    Multiplication,
+    Division,
+    Remainder,
+    Minus,
+    Plus,
+    ShiftLeft,
+    ShiftRight,
+    GreaterOrEqual,
+    Greater,
+    LessOrEqual,
+    Less,
+    BitwiseAnd,
+    BitwiseXor,
+    BitwiseOr,
+    LogicalAnd,
+    LogicalOr,
+    Equal,
+    Identity,
 };
 
 /// @returns The precedence of the given operator. Operators with higher values are evaluated first.
@@ -40,6 +40,9 @@ int operatorPrecedence(OperatorType);
 OperatorType operatorType(const std::u32string &);
 std::u32string operatorName(OperatorType);
 const int kPrefixPrecedence = 11;
+
+/// @returns True if a type can provide a custom definition of this operator.
+bool canOperatorBeDefined(const std::u32string &oper);
 
 } // namespace EmojicodeCompiler
 

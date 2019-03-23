@@ -162,6 +162,12 @@ Initializer* TypeBodyParser<TypeDef>::parseInitializer(const std::u32string &nam
     return doParseInitializer(name, std::move(attributes), documentation, access, p);
 }
 
+void checkOperatorDefinition(Compiler *compiler, const Token &token) {
+    if (!canOperatorBeDefined(token.value())) {
+        compiler->error(CompilerError(token.position(), "Operator ", utf8(token.value()), " cannot be defined."));
+    }
+}
+
 template <typename TypeDef>
 void TypeBodyParser<TypeDef>::parse() {
     stream_.consumeToken(TokenType::BlockBegin);
@@ -181,6 +187,7 @@ void TypeBodyParser<TypeDef>::parse() {
                 break;
             }
             case TokenType::Operator:
+                checkOperatorDefinition(package_->compiler(), token);
                 parseMethod(token.value(), attributes, documentation, accessLevel, Mood::Imperative, token.position());
                 break;
             case TokenType::RightProductionOperator:
