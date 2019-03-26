@@ -95,7 +95,7 @@ Value* ASTBinaryOperator::generateLogical(FunctionCodeGenerator *fg) const {
 
     auto insertBlock = fg->builder().GetInsertBlock();
     auto function = insertBlock->getParent();
-    auto &ctx = fg->generator()->context();
+    auto &ctx = fg->ctx();
 
     auto rightBlock = llvm::BasicBlock::Create(ctx, "right", function);
     auto cont = llvm::BasicBlock::Create(ctx, "cont", function);

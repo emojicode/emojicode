@@ -45,7 +45,8 @@ public:
     void allocateOnStack() override;
 
     static Value *initObject(FunctionCodeGenerator *fg, const ASTArguments &args, Function *function,
-                             const Type &type, llvm::Value *errorPointer, bool stackInit = false);
+                             const Type &type, llvm::Value *errorPointer, bool stackInit,
+                             llvm::Value *gArgsDescs);
 
     bool isErrorProne() const override;
     const Type& errorType() const override;
@@ -63,6 +64,7 @@ private:
     Value* generateInitValueType(FunctionCodeGenerator *fg) const;
 
     Type analyseEnumInit(ExpressionAnalyser *analyser, Type &type);
+    llvm::Value* genericArgs(FunctionCodeGenerator *fg) const;
 };
 
 }  // namespace EmojicodeCompiler

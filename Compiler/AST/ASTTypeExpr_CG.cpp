@@ -8,8 +8,8 @@
 
 #include "ASTTypeExpr.hpp"
 #include "Generation/FunctionCodeGenerator.hpp"
-#include "Types/Class.hpp"
-#include "Types/ValueType.hpp"
+#include "Generation/TypeDescriptionGenerator.hpp"
+#include "ASTType.hpp"
 
 namespace EmojicodeCompiler {
 
@@ -18,13 +18,7 @@ Value* ASTTypeFromExpr::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTStaticType::generate(FunctionCodeGenerator *fg) const {
-    if (type_->type().type() == TypeType::Class) {
-        return type_->type().klass()->classInfo();
-    }
-    if (type_->type().unboxedType() == TypeType::Protocol) {
-        return fg->generator()->protocolIdentifierFor(type_->type());
-    }
-    return fg->boxInfoFor(type_->type());
+    return TypeDescriptionGenerator(fg).generate(type_->type());
 }
 
 }  // namespace EmojicodeCompiler

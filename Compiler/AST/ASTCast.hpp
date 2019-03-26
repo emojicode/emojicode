@@ -10,7 +10,13 @@
 
 #include "ASTUnary.hpp"
 
+namespace llvm {
+class Function;
+}
+
 namespace EmojicodeCompiler {
+
+class CodeGenerator;
 
 class ASTCast final : public ASTUnaryMFForwarding {
 public:
@@ -21,16 +27,20 @@ public:
 
     void toCode(PrettyStream &pretty) const override;
 
+    static llvm::Function* getCastFunction(CodeGenerator *cg);
 private:
-    enum class CastType {
-        ClassDowncast, ToClass, ToProtocol, ToValueType,
-    };
-    CastType castType_;
+    /// If this is true, this is a class downcast. Otherwise a dynamic cast.
+    bool isDowncast_ = false;
     std::shared_ptr<ASTExpr> typeExpr_;
     Value* downcast(FunctionCodeGenerator *fg) const;
-    Value* castToClass(FunctionCodeGenerator *fg, Value *box) const;
-    Value* castToValueType(FunctionCodeGenerator *fg, Value *box) const;
-    Value* castToProtocol(FunctionCodeGenerator *fg, Value *box) const;
+
+    static llvm::Function *kFunction;
+
+    static Value* castToClass(FunctionCodeGenerator *fg, Value *box, Value *typeDescription, Value *boxInfo,
+                              llvm::Value *rtti);
+    static Value* castToValueType(FunctionCodeGenerator *fg, Value *box, Value *typeDescription, Value *flag,
+                                  Value *boxInfo, llvm::Value *rtti);
+    static Value* castToProtocol(FunctionCodeGenerator *fg, Value *box, Value *rtti, Value *boxInfo);
     /// Returns the box info representing the type of information in the box. This includes fetching the box info
     /// from the protocol conformance if the box is a protocol box.
     Value* boxInfo(FunctionCodeGenerator *fg, Value *box) const;

@@ -25,7 +25,8 @@ class Type;
 class Function;
 class ASTArguments;
 
-/// This class is responsible for generating IR to dispatch a method, initializer, type method or protocol method.
+/// This class is responsible for generating IR to dispatch a provided method, initializer, type method or
+/// protocol method.
 ///
 /// It does all the heavy lifting concerning dispatch, dispatch tables etc.
 ///
@@ -34,12 +35,27 @@ class ASTArguments;
 class CallCodeGenerator {
 public:
     CallCodeGenerator(FunctionCodeGenerator *fg, CallType callType) : fg_(fg), callType_(callType) {}
+
+    /// @param callee The callee on which the method shall be called. Becomes the (this) context of the function.
+    ///               If the method does not have a context, pass `nullptr`.
+    /// @param type The type of the callee. Important to determine whether dispatch can immediately take place or
+    ///             dynamic protocol conformance search has to be performed.
+    /// @param astArgs Arguments from the AST, generated and passed to the function in order of appearance.
+    ///                Additionaly arguments can be passed with supplArgs.
+    /// @param function A prototype of the Function that shall be called. Unless this is a static dispatch, this value
+    ///                 is only used to determine promises etc. but is not directly called.
+    /// @param errorPointer The error pointer that should be passed to the function as last argument. Pass `nullptr`
+    ///                     if no error pointer is required.
+    /// @param supplArgs Any values provided are passed to the function after the values from `astArgs` but before
+    ///                  `errorPointer`.
     llvm::Value* generate(llvm::Value *callee, const Type &type, const ASTArguments &astArgs,
-                          Function *function, llvm::Value *errorPointer);
+                          Function *function, llvm::Value *errorPointer,
+                          const std::vector<llvm::Value *> &supplArgs = {});
 
 protected:
     std::vector<llvm::Value *> createArgsVector(llvm::Value *callee, const ASTArguments &args,
-                                                llvm::Value *errorPointer) const;
+                                                llvm::Value *errorPointer,
+                                                const std::vector<llvm::Value *> &supplArgs) const;
     FunctionCodeGenerator* fg() const { return fg_; }
     llvm::Value *createDynamicProtocolDispatch(Function *function, std::vector<llvm::Value *> args,
                                                const std::vector<Type> &genericArgs,

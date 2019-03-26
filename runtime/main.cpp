@@ -128,6 +128,47 @@ extern "C" void* ejcFindProtocolConformance(ProtocolConformanceEntry *info, void
     return nullptr;
 }
 
+struct RunTimeTypeInfo {
+    int16_t paramCount;
+    int16_t paramOffset;
+};
+
+struct TypeDescription {
+    RunTimeTypeInfo *rtti;
+    bool optional;
+};
+
+bool checkGenericArgs(TypeDescription **argsl, TypeDescription **argsr, int16_t argsCount, int16_t argsOffset) {
+    *argsl += argsOffset, *argsr += argsOffset;
+    for (int16_t i = 0; i < argsCount; i++) {
+        auto l = *((*argsl)++), r = *((*argsr)++);
+        if (l.rtti != r.rtti || l.optional != r.optional) return false;
+        if (!checkGenericArgs(argsl, argsr, l.rtti->paramCount, l.rtti->paramOffset)) return false;
+    }
+    return true;
+}
+
+extern "C" bool ejcCheckGenericArgs(TypeDescription *argsl, TypeDescription *argsr, int16_t argsCount,
+                                    int16_t argsOffset) {
+    auto g = checkGenericArgs(&argsl, &argsr, argsCount, argsOffset);
+    return g;
+}
+
+extern "C" runtime::Integer ejcTypeDescriptionLength(TypeDescription *arg) {
+    runtime::Integer count = 1;
+    for (runtime::Integer i = 0; i < count; i++) {
+        count += (arg++)->rtti->paramCount;
+    }
+    return count;
+}
+
+extern "C" TypeDescription* ejcIndexTypeDescription(TypeDescription *arg, runtime::Integer index) {
+    for (runtime::Integer i = 0; i < index; i++) {
+        index += (arg++)->rtti->paramCount;
+    }
+    return arg;
+}
+
 extern "C" void ejcMemoryRealloc(int8_t **pointerPtr, runtime::Integer newSize) {
     *pointerPtr = static_cast<int8_t*>(realloc(*pointerPtr, newSize + sizeof(runtime::internal::ControlBlock*)));
 }

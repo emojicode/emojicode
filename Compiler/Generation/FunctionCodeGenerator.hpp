@@ -68,6 +68,7 @@ public:
     CodeGenerator* generator() const { return generator_; }
     llvm::IRBuilder<>& builder() { return builder_; }
     LLVMTypeHelper& typeHelper() { return generator()->typeHelper(); }
+    llvm::LLVMContext& ctx() { return generator()->context(); }
     virtual llvm::Value* thisValue() const { return &*function_->args().begin(); }
     llvm::Type* llvmReturnType() const { return function_->getReturnType(); }
     llvm::Value* errorPointer() const { return &*(function_->args().end() - 1); }
@@ -75,6 +76,8 @@ public:
     void buildErrorReturn();
 
     llvm::Value* instanceVariablePointer(size_t id);
+    llvm::Value* genericArgsPtr();
+    llvm::Value* functionGenericArgs() const { return functionGenericArgs_; };
 
     /// @returns The number of bytes an instance of @c type takes up in memory.
     /// @see sizeOfReferencedType
@@ -129,14 +132,14 @@ public:
     /// @returns A llvm::Value* representing a pointer to a class info.
     llvm::Value* buildGetClassInfoFromObject(llvm::Value *object);
 
-    llvm::Value* buildFindProtocolConformance(llvm::Value *box, llvm::Value *boxInfo, llvm::Value *protocolIdentifier);
+    llvm::Value* buildFindProtocolConformance(llvm::Value *box, llvm::Value *boxInfo, llvm::Value *protocolRTTI);
 
-    llvm::Value* int8(int8_t value);
-    llvm::Value* int16(int16_t value);
-    llvm::Value* int32(int32_t value);
-    llvm::Value* int64(int64_t value);
+    llvm::ConstantInt* int8(int8_t value);
+    llvm::ConstantInt* int16(int16_t value);
+    llvm::ConstantInt* int32(int32_t value);
+    llvm::ConstantInt* int64(int64_t value);
 
-    llvm::Value* boxInfoFor(const Type &type);
+    llvm::Constant* boxInfoFor(const Type &type);
 
     void setVariable(size_t id, llvm::Value *value, const llvm::Twine &name = "");
 
@@ -178,6 +181,8 @@ public:
     /// Creates an if block. The code produced by the @then function is only executed if the condition is true.
     void createIf(llvm::Value* cond, const std::function<void()> &then);
 
+    llvm::BasicBlock* createBlock(const llvm::Twine &name = "");
+
     llvm::Value* createIfElsePhi(llvm::Value* cond, const std::function<llvm::Value* ()> &then,
                                  const std::function<llvm::Value *()> &otherwise);
 
@@ -215,6 +220,7 @@ private:
     Function *const fn_;
     llvm::Function *const function_;
     CGScoper scoper_;
+    llvm::Value *functionGenericArgs_ = nullptr;
 
     CodeGenerator *const generator_;
     llvm::IRBuilder<> builder_;

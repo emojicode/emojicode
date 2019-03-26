@@ -25,13 +25,13 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             case BuiltInType::IntegerNot:
                 return fg->builder().CreateNot(v);
             case BuiltInType::IntegerToDouble:
-                return fg->builder().CreateSIToFP(v, llvm::Type::getDoubleTy(fg->generator()->context()));
+                return fg->builder().CreateSIToFP(v, llvm::Type::getDoubleTy(fg->ctx()));
             case BuiltInType::IntegerInverse:
                 return fg->builder().CreateMul(v, llvm::ConstantInt::get(v->getType(), -1));
             case BuiltInType::IntegerToByte:
-                return fg->builder().CreateTrunc(v, llvm::Type::getInt8Ty(fg->generator()->context()));
+                return fg->builder().CreateTrunc(v, llvm::Type::getInt8Ty(fg->ctx()));
             case BuiltInType::ByteToInteger:
-                return fg->builder().CreateSExt(v, llvm::Type::getInt64Ty(fg->generator()->context()));
+                return fg->builder().CreateSExt(v, llvm::Type::getInt64Ty(fg->ctx()));
             case BuiltInType::DoubleInverse:
                 return fg->builder().CreateFNeg(v);
             case BuiltInType::Power:
@@ -51,9 +51,9 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
             case BuiltInType::DoubleAbs:
                 return callIntrinsic(fg, llvm::Intrinsic::ID::fabs, v);
             case BuiltInType::DoubleToInteger:
-                return fg->builder().CreateFPToSI(v, llvm::Type::getInt64Ty(fg->generator()->context()));
+                return fg->builder().CreateFPToSI(v, llvm::Type::getInt64Ty(fg->ctx()));
             case BuiltInType::BooleanNegate:
-                return fg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fg->generator()->context()), v);
+                return fg->builder().CreateICmpEQ(llvm::ConstantInt::getFalse(fg->ctx()), v);
             case BuiltInType::Store: {
                 auto type = args_.genericArguments().front()->type();
                 auto ptr = buildMemoryAddress(fg, v, args_.args()[1]->generate(fg), type);
@@ -101,7 +101,7 @@ Value* ASTMethod::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTMethod::buildAddOffsetAddress(FunctionCodeGenerator *fg, llvm::Value *memory, llvm::Value *offset) const {
-    auto addOffset = fg->builder().CreateAdd(offset, fg->sizeOf(llvm::Type::getInt8PtrTy(fg->generator()->context())));
+    auto addOffset = fg->builder().CreateAdd(offset, fg->sizeOf(llvm::Type::getInt8PtrTy(fg->ctx())));
     return fg->builder().CreateGEP(memory, addOffset);
 }
 

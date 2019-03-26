@@ -47,7 +47,7 @@ void FunctionCodeGenerator::generate() {
 }
 
 void FunctionCodeGenerator::createEntry() {
-    auto basicBlock = llvm::BasicBlock::Create(generator()->context(), "entry", function_);
+    auto basicBlock = llvm::BasicBlock::Create(ctx(), "entry", function_);
     builder_.SetInsertPoint(basicBlock);
 }
 
@@ -66,6 +66,21 @@ void FunctionCodeGenerator::declareArguments(llvm::Function *function) {
         setVariable(i++, &llvmArg);
         llvmArg.setName(utf8(arg.name));
     }
+
+    if ((fn_->functionType() == FunctionType::ValueTypeInitializer ||
+         fn_->functionType() == FunctionType::ObjectInitializer) &&
+        typeHelper().storesGenericArgs(typeContext_->calleeType())) {
+        auto llvmArg = (it++);
+        llvmArg->setName("genericArgs");
+        builder().CreateStore(llvmArg, genericArgsPtr());
+    }
+
+    if (!fn_->genericParameters().empty()) {
+        auto llvmArg = (it++);
+        llvmArg->setName("fnGenericArgs");
+        functionGenericArgs_ = llvmArg;
+    }
+
     if (fn_->errorProne()) {
         it->setName("error");
     }
@@ -87,9 +102,9 @@ void FunctionCodeGenerator::buildErrorReturn() {
 }
 
 llvm::Value* FunctionCodeGenerator::sizeOfReferencedType(llvm::PointerType *ptrType) {
-    auto one = llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), 1);
+    auto one = llvm::ConstantInt::get(llvm::Type::getInt32Ty(ctx()), 1);
     auto sizeg = builder().CreateGEP(llvm::ConstantPointerNull::getNullValue(ptrType), one);
-    return builder().CreatePtrToInt(sizeg, llvm::Type::getInt64Ty(generator()->context()));
+    return builder().CreatePtrToInt(sizeg, llvm::Type::getInt64Ty(ctx()));
 }
 
 llvm::Value* FunctionCodeGenerator::sizeOf(llvm::Type *type) {
@@ -125,7 +140,7 @@ Value* FunctionCodeGenerator::buildOptionalHasNoValue(llvm::Value *simpleOptiona
         return builder().CreateICmpEQ(simpleOptional, null);
     }
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
-    return builder().CreateICmpEQ(vf, llvm::ConstantInt::getFalse(generator()->context()));
+    return builder().CreateICmpEQ(vf, llvm::ConstantInt::getFalse(ctx()));
 }
 
 Value* FunctionCodeGenerator::buildOptionalHasValue(llvm::Value *simpleOptional, const Type &type) {
@@ -134,7 +149,7 @@ Value* FunctionCodeGenerator::buildOptionalHasValue(llvm::Value *simpleOptional,
         return builder().CreateICmpNE(simpleOptional, null);
     }
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
-    return builder().CreateICmpNE(vf, llvm::ConstantInt::getFalse(generator()->context()));
+    return builder().CreateICmpNE(vf, llvm::ConstantInt::getFalse(ctx()));
 }
 
 Value* FunctionCodeGenerator::buildOptionalHasValuePtr(llvm::Value *simpleOptional, const Type &type) {
@@ -144,7 +159,7 @@ Value* FunctionCodeGenerator::buildOptionalHasValuePtr(llvm::Value *simpleOption
     }
     auto ptype = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
     auto vf = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(ptype, simpleOptional, 0, 0));
-    return builder().CreateICmpNE(vf, llvm::ConstantInt::getFalse(generator()->context()));
+    return builder().CreateICmpNE(vf, llvm::ConstantInt::getFalse(ctx()));
 }
 
 Value* FunctionCodeGenerator::buildGetOptionalValuePtr(llvm::Value *simpleOptional, const Type &type) {
@@ -161,7 +176,7 @@ Value* FunctionCodeGenerator::buildSimpleOptionalWithoutValue(const Type &type) 
     }
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
-    return builder().CreateInsertValue(undef, llvm::ConstantInt::getFalse(generator()->context()), 0);
+    return builder().CreateInsertValue(undef, llvm::ConstantInt::getFalse(ctx()), 0);
 }
 
 Value* FunctionCodeGenerator::buildBoxOptionalWithoutValue() {
@@ -176,7 +191,7 @@ Value* FunctionCodeGenerator::buildSimpleOptionalWithValue(llvm::Value *value, c
     auto structType = typeHelper().llvmTypeFor(type);
     auto undef = llvm::UndefValue::get(structType);
     auto simpleOptional = builder().CreateInsertValue(undef, value, 1);
-    return builder().CreateInsertValue(simpleOptional, llvm::ConstantInt::getTrue(generator()->context()), 0);
+    return builder().CreateInsertValue(simpleOptional, llvm::ConstantInt::getTrue(ctx()), 0);
 }
 
 Value* FunctionCodeGenerator::buildGetOptionalValue(llvm::Value *value, const Type &type) {
@@ -211,9 +226,9 @@ Value* FunctionCodeGenerator::buildMakeNoValue(Value *box) {
 void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std::function<bool()> &then,
                                    const std::function<bool()> &otherwise) {
     auto function = builder().GetInsertBlock()->getParent();
-    auto success = llvm::BasicBlock::Create(generator()->context(), "then", function);
-    auto fail = llvm::BasicBlock::Create(generator()->context(), "else", function);
-    auto mergeBlock = llvm::BasicBlock::Create(generator()->context(), "cont", function);
+    auto success = llvm::BasicBlock::Create(ctx(), "then", function);
+    auto fail = llvm::BasicBlock::Create(ctx(), "else", function);
+    auto mergeBlock = llvm::BasicBlock::Create(ctx(), "cont", function);
 
     builder().CreateCondBr(cond, success, fail);
 
@@ -231,14 +246,19 @@ void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std:
 
 void FunctionCodeGenerator::createIf(llvm::Value *cond, const std::function<void()> &then) {
     auto function = builder().GetInsertBlock()->getParent();
-    auto thenBlock = llvm::BasicBlock::Create(generator()->context(), "then", function);
-    auto cont = llvm::BasicBlock::Create(generator()->context(), "cont", function);
+    auto thenBlock = llvm::BasicBlock::Create(ctx(), "then", function);
+    auto cont = llvm::BasicBlock::Create(ctx(), "cont", function);
 
     builder().CreateCondBr(cond, thenBlock, cont);
     builder().SetInsertPoint(thenBlock);
     then();
     builder().CreateBr(cont);
     builder().SetInsertPoint(cont);
+}
+
+llvm::BasicBlock* FunctionCodeGenerator::createBlock(const llvm::Twine &name) {
+    auto function = builder().GetInsertBlock()->getParent();
+    return llvm::BasicBlock::Create(ctx(), name, function);
 }
 
 void FunctionCodeGenerator::createIfElse(llvm::Value *cond, const std::function<void()> &then,
@@ -249,24 +269,26 @@ void FunctionCodeGenerator::createIfElse(llvm::Value *cond, const std::function<
 llvm::Value* FunctionCodeGenerator::createIfElsePhi(llvm::Value* cond, const std::function<llvm::Value* ()> &then,
                                               const std::function<llvm::Value *()> &otherwise) {
     auto function = builder().GetInsertBlock()->getParent();
-    auto thenBlock = llvm::BasicBlock::Create(generator()->context(), "then", function);
-    auto otherwiseBlock = llvm::BasicBlock::Create(generator()->context(), "else", function);
-    auto mergeBlock = llvm::BasicBlock::Create(generator()->context(), "cont", function);
+    auto thenBlock = llvm::BasicBlock::Create(ctx(), "then", function);
+    auto otherwiseBlock = llvm::BasicBlock::Create(ctx(), "else", function);
+    auto mergeBlock = llvm::BasicBlock::Create(ctx(), "cont", function);
 
     builder().CreateCondBr(cond, thenBlock, otherwiseBlock);
 
     builder().SetInsertPoint(thenBlock);
     auto thenValue = then();
+    auto thenIncoming = builder().GetInsertBlock();
     builder().CreateBr(mergeBlock);
 
     builder().SetInsertPoint(otherwiseBlock);
     auto otherwiseValue = otherwise();
+    auto otherwiseIncoming = builder().GetInsertBlock();
     builder().CreateBr(mergeBlock);
 
     builder().SetInsertPoint(mergeBlock);
     auto phi = builder().CreatePHI(thenValue->getType(), 2);
-    phi->addIncoming(thenValue, thenBlock);
-    phi->addIncoming(otherwiseValue, otherwiseBlock);
+    phi->addIncoming(thenValue, thenIncoming);
+    phi->addIncoming(otherwiseValue, otherwiseIncoming);
     return phi;
 }
 
@@ -274,44 +296,46 @@ std::pair<llvm::Value*, llvm::Value*>
     FunctionCodeGenerator::createIfElsePhi(llvm::Value* cond, const FunctionCodeGenerator::PairIfElseCallback &then,
                                            const FunctionCodeGenerator::PairIfElseCallback &otherwise) {
     auto function = builder().GetInsertBlock()->getParent();
-    auto thenBlock = llvm::BasicBlock::Create(generator()->context(), "then", function);
-    auto otherwiseBlock = llvm::BasicBlock::Create(generator()->context(), "else", function);
-    auto mergeBlock = llvm::BasicBlock::Create(generator()->context(), "cont", function);
+    auto thenBlock = llvm::BasicBlock::Create(ctx(), "then", function);
+    auto otherwiseBlock = llvm::BasicBlock::Create(ctx(), "else", function);
+    auto mergeBlock = llvm::BasicBlock::Create(ctx(), "cont", function);
 
     builder().CreateCondBr(cond, thenBlock, otherwiseBlock);
 
     builder().SetInsertPoint(thenBlock);
     auto thenValue = then();
+    auto thenIncoming = builder().GetInsertBlock();
     builder().CreateBr(mergeBlock);
 
     builder().SetInsertPoint(otherwiseBlock);
     auto otherwiseValue = otherwise();
+    auto otherwiseIncoming = builder().GetInsertBlock();
     builder().CreateBr(mergeBlock);
 
     builder().SetInsertPoint(mergeBlock);
     auto phi1 = builder().CreatePHI(thenValue.first->getType(), 2);
-    phi1->addIncoming(thenValue.first, thenBlock);
-    phi1->addIncoming(otherwiseValue.first, otherwiseBlock);
+    phi1->addIncoming(thenValue.first, thenIncoming);
+    phi1->addIncoming(otherwiseValue.first, otherwiseIncoming);
     auto phi2 = builder().CreatePHI(thenValue.second->getType(), 2);
-    phi2->addIncoming(thenValue.second, thenBlock);
-    phi2->addIncoming(otherwiseValue.second, otherwiseBlock);
+    phi2->addIncoming(thenValue.second, thenIncoming);
+    phi2->addIncoming(otherwiseValue.second, otherwiseIncoming);
     return std::make_pair(phi1, phi2);
 }
 
-llvm::Value* FunctionCodeGenerator::int8(int8_t value) {
-    return llvm::ConstantInt::get(llvm::Type::getInt8Ty(generator()->context()), value);
+llvm::ConstantInt* FunctionCodeGenerator::int8(int8_t value) {
+    return llvm::ConstantInt::get(llvm::Type::getInt8Ty(ctx()), value);
 }
 
-llvm::Value* FunctionCodeGenerator::int16(int16_t value) {
-    return llvm::ConstantInt::get(llvm::Type::getInt16Ty(generator()->context()), value);
+llvm::ConstantInt* FunctionCodeGenerator::int16(int16_t value) {
+    return llvm::ConstantInt::get(llvm::Type::getInt16Ty(ctx()), value);
 }
 
-llvm::Value* FunctionCodeGenerator::int32(int32_t value) {
-    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(generator()->context()), value);
+llvm::ConstantInt* FunctionCodeGenerator::int32(int32_t value) {
+    return llvm::ConstantInt::get(llvm::Type::getInt32Ty(ctx()), value);
 }
 
-llvm::Value* FunctionCodeGenerator::int64(int64_t value) {
-    return llvm::ConstantInt::get(llvm::Type::getInt64Ty(generator()->context()), value);
+llvm::ConstantInt* FunctionCodeGenerator::int64(int64_t value) {
+    return llvm::ConstantInt::get(llvm::Type::getInt64Ty(ctx()), value);
 }
 
 llvm::Value* FunctionCodeGenerator::alloc(llvm::PointerType *type) {
@@ -320,13 +344,13 @@ llvm::Value* FunctionCodeGenerator::alloc(llvm::PointerType *type) {
 }
 
 llvm::Value* FunctionCodeGenerator::stackAlloc(llvm::PointerType *type) {
-    auto structType = llvm::StructType::get(llvm::Type::getInt64Ty(generator()->context()), type->getElementType());
+    auto structType = llvm::StructType::get(llvm::Type::getInt64Ty(ctx()), type->getElementType());
     auto ptr = createEntryAlloca(structType);
 
     builder().CreateStore(int64(1), builder().CreateConstInBoundsGEP2_32(structType, ptr, 0, 0));
     auto object = builder().CreateConstInBoundsGEP2_32(structType, ptr, 0, 1);
     auto controlBlockField = builder().CreateConstInBoundsGEP2_32(type->getElementType(), object, 0, 0);
-    builder().CreateStore(llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(generator()->context())),
+    builder().CreateStore(llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(ctx())),
                           controlBlockField);
     return object;
 }
@@ -341,7 +365,7 @@ llvm::Value* FunctionCodeGenerator::createEntryAlloca(llvm::Type *type, const ll
     return builder.CreateAlloca(type, nullptr, name);
 }
 
-llvm::Value* FunctionCodeGenerator::boxInfoFor(const Type &type) {
+llvm::Constant* FunctionCodeGenerator::boxInfoFor(const Type &type) {
     return generator()->boxInfoFor(type);
 }
 
@@ -359,7 +383,7 @@ void TemporaryObjectsManager::releaseTemporaryObjects(FunctionCodeGenerator *fg,
 void FunctionCodeGenerator::release(llvm::Value *value, const Type &otype) {
     auto type = otype.resolveOnSuperArgumentsAndConstraints(*typeContext_);
     if (type.type() == TypeType::Class || type.type() == TypeType::Someobject) {
-        auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
+        auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(ctx()));
         builder().CreateCall(generator()->declarator().release(), opc);
     }
     else if (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory) {
@@ -401,7 +425,7 @@ void FunctionCodeGenerator::retain(llvm::Value *value, const Type &otype) {
     auto type = otype.resolveOnSuperArgumentsAndConstraints(*typeContext_);
     if (type.type() == TypeType::Class || type.type() == TypeType::Someobject ||
         (type.type() == TypeType::ValueType && type.valueType() == compiler()->sMemory)) {
-        auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(generator()->context()));
+        auto opc = builder().CreateBitCast(value, llvm::Type::getInt8PtrTy(ctx()));
         builder().CreateCall(generator()->declarator().retain(), { opc });
     }
     else if (type.type() == TypeType::Callable) {
@@ -459,7 +483,7 @@ void FunctionCodeGenerator::releaseByReference(llvm::Value *ptr, const Type &typ
 }
 
 llvm::Value* FunctionCodeGenerator::buildFindProtocolConformance(llvm::Value *box, llvm::Value *boxInfo,
-                                                                 llvm::Value *protocolIdentifier) {
+                                                                 llvm::Value *protocolRTTI) {
     auto objBoxInfo = builder().CreateBitCast(generator()->declarator().boxInfoForObjects(),
                                               typeHelper().boxInfo()->getPointerTo());
     auto conformanceEntries = createIfElsePhi(builder().CreateICmpEQ(boxInfo, objBoxInfo), [&]() {
@@ -467,17 +491,27 @@ llvm::Value* FunctionCodeGenerator::buildFindProtocolConformance(llvm::Value *bo
         auto classInfo = buildGetClassInfoFromObject(obj);
         return builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(typeHelper().classInfo(), classInfo, 0, 2));
     }, [&] {
-        auto conformanceEntriesPtr = builder().CreateConstInBoundsGEP2_32(typeHelper().boxInfo(), boxInfo, 0, 0);
+        auto conformanceEntriesPtr = builder().CreateConstInBoundsGEP2_32(typeHelper().boxInfo(), boxInfo, 0, 3);
         return builder().CreateLoad(conformanceEntriesPtr);
     });
 
     return builder().CreateCall(generator()->declarator().findProtocolConformance(),
-                                { conformanceEntries, protocolIdentifier });
+                                    { conformanceEntries, protocolRTTI });
 }
 
 llvm::Value* FunctionCodeGenerator::instanceVariablePointer(size_t id) {
+    auto callee = typeContext_->calleeType();
+    auto offset = callee.type() != TypeType::NoReturn ? (callee.type() == TypeType::Class ? 2 : 0) +
+                    (typeHelper().storesGenericArgs(callee) ? 1 : 0) : 0;
     auto type = llvm::cast<llvm::PointerType>(thisValue()->getType())->getElementType();
-    return builder().CreateConstInBoundsGEP2_32(type, thisValue(), 0, id);
+    return builder().CreateConstInBoundsGEP2_32(type, thisValue(), 0, offset + id);
+}
+
+llvm::Value* FunctionCodeGenerator::genericArgsPtr() {
+    auto callee = typeContext_->calleeType();
+    assert(typeHelper().storesGenericArgs(callee));
+    auto type = llvm::cast<llvm::PointerType>(thisValue()->getType())->getElementType();
+    return builder().CreateConstInBoundsGEP2_32(type, thisValue(), 0, callee.type() == TypeType::Class ? 2 : 0);
 }
 
 FunctionCodeGenerator::~FunctionCodeGenerator() = default;

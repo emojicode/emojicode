@@ -23,6 +23,7 @@
 #include "Types/ValueType.hpp"
 #include "Types/TypeContext.hpp"
 #include "VTCreator.hpp"
+#include "RunTimeTypeInfoFlags.hpp"
 #include <algorithm>
 #include <llvm/IR/IRPrintingPasses.h>
 #include <llvm/IR/Verifier.h>
@@ -69,17 +70,34 @@ llvm::Constant *CodeGenerator::boxInfoFor(const Type &type) {
     return type.valueType()->boxInfo();
 }
 
-llvm::Constant *CodeGenerator::protocolIdentifierFor(const Type &type) {
+template <typename T, typename E>
+llvm::Constant* createGenericTypeInfo(CodeGenerator *cg, Generic<T, E> *generic, RunTimeTypeInfoFlags::Flags flag) {
+    return llvm::ConstantStruct::get(cg->typeHelper().runTimeTypeInfo(), {
+        llvm::ConstantInt::get(llvm::Type::getInt16Ty(cg->context()), generic->genericParameters().size()),
+        llvm::ConstantInt::get(llvm::Type::getInt16Ty(cg->context()), generic->offset()),
+        llvm::ConstantInt::get(llvm::Type::getInt8Ty(cg->context()), flag),
+    });
+}
+
+llvm::Constant* buildConstant00GEP(llvm::Type *type, llvm::Constant *value, llvm::LLVMContext &context) {
+    return llvm::ConstantExpr::getInBoundsGetElementPtr(type, value,
+                                                        llvm::ArrayRef<llvm::Constant *> {
+                                                            llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), 0),
+                                                            llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), 0)
+                                                        });
+}
+
+llvm::Constant *CodeGenerator::runTimeTypeInfoForProtocol(const Type &type) {
     auto unboxedType = type.unboxed();
     auto it = protocolIds_.find(unboxedType);
     if (it != protocolIds_.end()) {
         return it->second;
     }
 
-    auto id = new llvm::GlobalVariable(*module_, llvm::Type::getInt1Ty(context_), true,
+    auto id = new llvm::GlobalVariable(*module_, typeHelper().runTimeTypeInfo(), true,
                                        llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage,
-                                       llvm::Constant::getNullValue(llvm::Type::getInt1Ty(context_)),
-                                       mangleProtocolIdentifier(unboxedType));
+                                       createGenericTypeInfo(this, type.protocol(), RunTimeTypeInfoFlags::Protocol),
+                                       mangleProtocolRunTimeTypeInfo(unboxedType));
 
     protocolIds_.emplace(unboxedType, id);
     return id;
@@ -116,6 +134,7 @@ void CodeGenerator::generate(Package *package, const std::string &outPath, bool 
 
     buildClassObjectBoxInfo();
     buildCallableBoxInfo();
+    buildAbstractRTTI();
 
     for (auto package : compiler()->importedPackages()) {
         declareAndCreate(package, true);
@@ -155,8 +174,10 @@ void CodeGenerator::declareAndCreate(Package *package, bool imported) {
             valueType->setBoxRetainRelease(buildBoxRetainRelease(Type(valueType.get())));
             protocolsTableGenerator_->generate(Type(valueType.get()));
             valueType->boxInfo()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
-                protocolsTableGenerator_->createProtocolTable(valueType.get()),
-                valueType->boxRetainRelease().first, valueType->boxRetainRelease().second
+                createGenericTypeInfo(this, valueType.get(), typeHelper().isRemote(Type(valueType.get())) ?
+                                      RunTimeTypeInfoFlags::ValueTypeRemote : RunTimeTypeInfoFlags::ValueType),
+                valueType->boxRetainRelease().first, valueType->boxRetainRelease().second,
+                protocolsTableGenerator_->createProtocolTable(valueType.get())
             }));
         }
         else {
@@ -264,12 +285,9 @@ void CodeGenerator::createClassInfo(Class *klass) {
     }
 
     auto protocolTable = protocolsTableGenerator_->createProtocolTable(klass);
-    auto gep = llvm::ConstantExpr::getInBoundsGetElementPtr(virtualTable->getType()->getElementType(), virtualTable,
-                                                 llvm::ArrayRef<llvm::Constant *>{
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(context()), 0),
-        llvm::ConstantInt::get(llvm::Type::getInt32Ty(context()), 0)
-    });
-    auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), { superclass, gep, protocolTable });
+    auto gep = buildConstant00GEP(virtualTable->getType()->getElementType(), virtualTable, context());
+    auto initializer = llvm::ConstantStruct::get(typeHelper_.classInfo(), {
+        createGenericTypeInfo(this, klass, RunTimeTypeInfoFlags::Class), gep, protocolTable, superclass });
     auto info = new llvm::GlobalVariable(*module(), typeHelper_.classInfo(), true,
                                          llvm::GlobalValue::LinkageTypes::ExternalLinkage, initializer,
                                          mangleClassInfoName(klass));
@@ -305,14 +323,17 @@ std::pair<llvm::Function*, llvm::Function*> CodeGenerator::buildBoxRetainRelease
                                                              containedType->getPointerTo());
             auto remotePtr = releaseFg.builder().CreateLoad(objPtr);
             releaseFg.release(releaseFg.managableGetValuePtr(remotePtr), type);
-            releaseFg.release(releaseFg.builder().CreateBitCast(remotePtr, llvm::Type::getInt8PtrTy(context_)),
-                              Type(compiler()->sMemory));
+            releaseFg.builder().CreateCall(declarator().releaseWithoutDeinit(),
+                                           releaseFg.builder().CreateBitCast(remotePtr,
+                                                                             llvm::Type::getInt8PtrTy(context_)));
 
             auto objPtrRetain = retainFg.buildGetBoxValuePtrAfter(retain->args().begin(), mngType->getPointerTo(),
                                                                   containedType->getPointerTo());
             auto remotePtrRetain = retainFg.builder().CreateLoad(objPtrRetain);
             retainFg.retain(retainFg.managableGetValuePtr(remotePtrRetain), type);
-            retainFg.retain(remotePtrRetain, Type(compiler()->sMemory));
+            retainFg.builder().CreateCall(declarator().retain(),
+                                          retainFg.builder().CreateBitCast(remotePtrRetain,
+                                                                           llvm::Type::getInt8PtrTy(context_)));
         }
         else {
             auto objPtr = releaseFg.buildGetBoxValuePtr(release->args().begin(), type);
@@ -338,8 +359,9 @@ void CodeGenerator::buildClassObjectBoxInfo() {
     release->setName("class.boxRelease");
 
     declarator().boxInfoForObjects()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
-        llvm::ConstantPointerNull::get(typeHelper().protocolConformanceEntry()->getPointerTo()),
-        retain, release
+        llvm::ConstantAggregateZero::get(typeHelper().runTimeTypeInfo()),
+        retain, release,
+        llvm::ConstantPointerNull::get(typeHelper().protocolConformanceEntry()->getPointerTo())
     }));
     declarator().boxInfoForObjects()->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
 }
@@ -353,10 +375,29 @@ void CodeGenerator::buildCallableBoxInfo() {
     release->setName("callable.boxRelease");
 
     declarator().boxInfoForCallables()->setInitializer(llvm::ConstantStruct::get(typeHelper().boxInfo(), {
-        llvm::ConstantPointerNull::get(typeHelper().protocolConformanceEntry()->getPointerTo()),
-        retain, release
+        llvm::ConstantAggregateZero::get(typeHelper().runTimeTypeInfo()),
+        retain, release,
+        llvm::ConstantPointerNull::get(typeHelper().protocolConformanceEntry()->getPointerTo())
     }));
     declarator().boxInfoForCallables()->setLinkage(llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage);
 }
+
+llvm::GlobalVariable* createAbstractRTTI(CodeGenerator *cg, const llvm::Twine &name) {
+    auto init = llvm::ConstantStruct::get(cg->typeHelper().runTimeTypeInfo(),
+                                          llvm::ConstantInt::get(llvm::Type::getInt16Ty(cg->context()), 0),
+                                          llvm::ConstantInt::get(llvm::Type::getInt16Ty(cg->context()), 0),
+                                          llvm::ConstantInt::get(llvm::Type::getInt8Ty(cg->context()),
+                                                                 RunTimeTypeInfoFlags::Abstract));
+    return new llvm::GlobalVariable(*cg->module(), cg->typeHelper().runTimeTypeInfo(), true,
+                                    llvm::GlobalValue::LinkageTypes::LinkOnceAnyLinkage, init, name);
+}
+
+void CodeGenerator::buildAbstractRTTI() {
+    somethingRTTI_ = createAbstractRTTI(this, "something_rtti");
+    someobjectRTTI_ = createAbstractRTTI(this, "someobject_rtti");
+}
+
+llvm::GlobalVariable* CodeGenerator::somethingRTTI() const { return somethingRTTI_; }
+llvm::GlobalVariable* CodeGenerator::someobjectRTTI() const { return someobjectRTTI_; }
 
 }  // namespace EmojicodeCompiler

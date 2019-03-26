@@ -55,6 +55,8 @@ public:
     /// @returns True if this type cannot be directly stored in a box and memory must be allocated on the heap.
     bool isRemote(const Type &type);
 
+    bool storesGenericArgs(const Type &type) const;
+
     /// A pointer to a value of this type is stored in the first field of a box to identify its content.
     llvm::StructType* boxInfo() const { return boxInfoType_; }
     /// The class info stores the dispatch table as well as a pointer to the class info of the super class if this class
@@ -70,6 +72,13 @@ public:
     llvm::ArrayType* multiprotocolConformance(const Type &type);
 
     llvm::StructType* callable() const { return callable_; }
+
+    /// A type description describes the reification of a (generic) type using RTTI (see runTimeTypeInfo()).
+    /// It is used to store generic arguments inside an instantance and for operations involving types like casting.
+    llvm::StructType* typeDescription() const { return typeDescription_; }
+    /// Describes a type. First value counts own generic parameters, second offset of own generic parameters and
+    /// third is a flag describing the kind of type this is (see RunTimeTypeInfoFlag).
+    llvm::StructType* runTimeTypeInfo() const { return runTimeTypeInfo_; }
 
     /// Wraps the provided type into an anonymous struct where the first element is a control block pointer and the
     /// second the type.
@@ -88,6 +97,8 @@ private:
     llvm::StructType *box_;
     llvm::StructType *protocolsTable_;
     llvm::StructType *callable_;
+    llvm::StructType *typeDescription_;
+    llvm::StructType *runTimeTypeInfo_;
     llvm::PointerType *someobjectPtr_;
     llvm::FunctionType *boxRetainRelease_;
     llvm::FunctionType *captureDeinit_;

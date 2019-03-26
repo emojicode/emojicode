@@ -143,10 +143,10 @@ std::string mangleProtocolConformance(const Type &type, const Type &protocol) {
     return stream.str();
 }
 
-std::string mangleProtocolIdentifier(const Type &type) {
+std::string mangleProtocolRunTimeTypeInfo(const Type &type) {
     std::stringstream stream;
     mangleTypeName(stream, type);
-    stream << "_identifier";
+    stream << "_rtti";
     return stream.str();
 }
 

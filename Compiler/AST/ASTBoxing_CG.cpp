@@ -36,7 +36,7 @@ Value* ASTRebox::generate(FunctionCodeGenerator *fg) const {
     }
 
     auto box = getAllocaTheBox(fg);
-    auto protocolId = fg->generator()->protocolIdentifierFor(expressionType().boxedFor());
+    auto protocolId = fg->generator()->runTimeTypeInfoForProtocol(expressionType().boxedFor());
     auto conformance = fg->buildFindProtocolConformance(box, fg->builder().CreateLoad(fg->buildGetBoxInfoPtr(box)),
                                                         protocolId);
     auto confPtrTy = fg->typeHelper().protocolConformance()->getPointerTo();
@@ -132,7 +132,7 @@ Value* ASTToBox::buildStoreAddress(Value *box, FunctionCodeGenerator *fg) const 
         auto mngType = fg->typeHelper().managable(containedTypeLlvm);
         auto ctPtrPtr = containedTypeLlvm->getPointerTo()->getPointerTo();
         auto boxPtr1 = fg->buildGetBoxValuePtr(box, ctPtrPtr);
-        auto boxPtr2 = fg->buildGetBoxValuePtrAfter(box, mngType->getPointerTo(), mngType->getPointerTo());
+        auto boxPtr2 = fg->buildGetBoxValuePtrAfter(box, mngType->getPointerTo(), containedTypeLlvm->getPointerTo());
         auto alloc = allocate(fg, mngType);
         auto valuePtr = fg->managableGetValuePtr(alloc);
         // The first element in the value area is a direct pointer to the struct.

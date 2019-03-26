@@ -8,6 +8,7 @@
 
 #include "ASTInitialization.hpp"
 #include "ASTLiterals.hpp"
+#include "Generation/TypeDescriptionGenerator.hpp"
 #include "Compiler.hpp"
 #include "Generation/CallCodeGenerator.hpp"
 #include "Generation/Declarator.hpp"
@@ -26,11 +27,11 @@ Value* ASTCGUTF8Literal::generate(FunctionCodeGenerator *fg) const {
 }
 
 Value* ASTBooleanTrue::generate(FunctionCodeGenerator *fg) const {
-    return llvm::ConstantInt::getTrue(fg->generator()->context());
+    return llvm::ConstantInt::getTrue(fg->ctx());
 }
 
 Value* ASTBooleanFalse::generate(FunctionCodeGenerator *fg) const {
-    return llvm::ConstantInt::getFalse(fg->generator()->context());
+    return llvm::ConstantInt::getFalse(fg->ctx());
 }
 
 Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fg) const {
@@ -40,7 +41,7 @@ Value* ASTNumberLiteral::generate(FunctionCodeGenerator *fg) const {
         case NumberType::Integer:
             return fg->int64(integerValue_);
         case NumberType::Double:
-            return llvm::ConstantFP::get(llvm::Type::getDoubleTy(fg->generator()->context()), doubleValue_);
+            return llvm::ConstantFP::get(llvm::Type::getDoubleTy(fg->ctx()), doubleValue_);
     }
 }
 
@@ -64,8 +65,9 @@ Value* ASTDictionaryLiteral::generate(FunctionCodeGenerator *fg) const {
     auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size() / 2), U"", position());
 
     auto dict = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
+    auto td = TypeDescriptionGenerator(fg).generate(type_.genericArguments());
     CallCodeGenerator(fg, CallType::StaticDispatch).generate(dict, type_, ASTArguments(position(), { capacity }),
-                                                             init, nullptr);
+                                                             init, nullptr, { td });
     for (auto it = values_.begin(); it != values_.end(); it++) {
         auto key = *(it++);
         auto args = ASTArguments(position(), { *it, key });
@@ -81,8 +83,9 @@ Value* ASTListLiteral::generate(FunctionCodeGenerator *fg) const {
     auto capacity = std::make_shared<ASTNumberLiteral>(static_cast<int64_t>(values_.size()), U"", position());
 
     auto list = fg->createEntryAlloca(fg->typeHelper().llvmTypeFor(type_));
+    auto td = TypeDescriptionGenerator(fg).generate(type_.genericArguments());
     CallCodeGenerator(fg, CallType::StaticDispatch).generate(list, type_, ASTArguments(position(), { capacity }), init,
-                                                             nullptr);
+                                                             nullptr, { td });
     for (auto &value : values_) {
         auto args = ASTArguments(position(), { value });
         auto method = type_.typeDefinition()->lookupMethod(U"🐻", Mood::Imperative);
@@ -96,7 +99,8 @@ Value* ASTConcatenateLiteral::generate(FunctionCodeGenerator *fg) const {
     auto init = type_.typeDefinition()->lookupInitializer(U"🔡");
 
     auto it = values_.begin();
-    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), { *it++ }), init, type_, nullptr, true);
+    auto builder = ASTInitialization::initObject(fg, ASTArguments(position(), { *it++ }), init, type_, nullptr, true,
+                                                 nullptr);
 
     for (auto end = values_.end(); it != end; it++) {
         auto args = ASTArguments(position(), { *it });

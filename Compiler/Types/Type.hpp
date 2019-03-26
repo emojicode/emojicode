@@ -197,6 +197,16 @@ public:
     /// Replaces the generic arguments of this type.
     void setGenericArguments(std::vector<Type> &&args);
 
+    /// Resolves the generic arguments within itself and returns them.
+    ///
+    /// For instance, with the class hierachy A<T> and B<S> : A<S>, the generic arguments for an instantiation of B<int>
+    /// would look like [S, int]. This is not helpful, as S can actually be resolved on the generic arguments. The value
+    /// returned by this function would therefore be [int, int].
+    /// A more complex example: A<T> and B<S> : A<X<S>>, for which B<int> leads to [X[S], int] and is converted to
+    /// [X[int], int] by this function.
+    /// @pre type() must return TypeType::ValueType or TypeType:Class.
+    std::vector<Type> selfResolvedGenericArgs() const;
+
     /// True if this type could have generic arguments.
     bool canHaveGenericArguments() const;
     /// True if this type could conform to a protocol.

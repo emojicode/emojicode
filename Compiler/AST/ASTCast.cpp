@@ -28,39 +28,30 @@ Type ASTCast::analyse(ExpressionAnalyser *analyser, const TypeExpectation &expec
     else if (!type.compatibleTo(originalType, analyser->typeContext())
              && !(originalType.unboxedType() == TypeType::Protocol && type.unboxedType() == TypeType::Protocol)) {
         auto typeString = type.toString(analyser->typeContext());
-        analyser->error(CompilerError(position(), "Cast to unrelated type ", typeString,
-                                                  " will always fail."));
+        analyser->error(CompilerError(position(), "Cast to unrelated type ", typeString, " will always fail."));
     }
 
-    if (type.type() == TypeType::Class) {
-        if (!type.genericArguments().empty()) {
-            analyser->error(CompilerError(position(),
-                                                      "Class casts with generic arguments are not available."));
-        }
-
-        if (originalType.type() == TypeType::Someobject || originalType.type() == TypeType::Class) {
-            castType_ = CastType::ClassDowncast;
-            return type.optionalized();
-        }
-
-        castType_ = CastType::ToClass;
+    if (type.type() == TypeType::Class && (originalType.type() == TypeType::Someobject ||
+                                           originalType.type() == TypeType::Class)) {
+        isDowncast_ = true;
+        analyser->comply(originalType, TypeExpectation(false, false), &expr_);
+        return type.optionalized();
     }
-    else if (type.unboxedType() == TypeType::Protocol) {
+
+    analyser->comply(originalType, TypeExpectation(true, false), &expr_);
+
+    if (type.unboxedType() == TypeType::Protocol) {
         if (!type.genericArguments().empty()) {
             analyser->error(CompilerError(position(), "Cannot cast to generic protocols."));
         }
-        castType_ = CastType::ToProtocol;
         assert(type.storageType() == StorageType::Box);
         return type.unboxed().boxedFor(type).optionalized();
     }
-    else if (type.type() == TypeType::ValueType || type.type() == TypeType::Enum) {
-        castType_ = CastType::ToValueType;
-    }
-    else {
+
+    if (type.type() != TypeType::Class && type.type() != TypeType::ValueType && type.type() != TypeType::Enum){
         auto typeString = type.toString(analyser->typeContext());
         throw CompilerError(position(), "You cannot cast to ", typeString, ".");
     }
-
     return type.optionalized().boxedFor(originalType.boxedFor());
 }
 

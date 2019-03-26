@@ -37,7 +37,7 @@ Value* ASTClosure::generate(FunctionCodeGenerator *fg) const {
 
     auto alloc = storeCapturedVariables(fg, capture);
     auto i8ptr = fg->builder().CreateBitCast(closure_->unspecificReification().function,
-                                             llvm::Type::getInt8PtrTy(fg->generator()->context()));
+                                             llvm::Type::getInt8PtrTy(fg->ctx()));
     auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()), i8ptr, 0);
     return handleResult(fg, fg->builder().CreateInsertValue(callable, alloc, 1));
 }
@@ -105,7 +105,7 @@ llvm::Value* ASTClosure::storeCapturedVariables(FunctionCodeGenerator *fg, const
             fg->builder().CreateStore(var, fg->builder().CreateConstInBoundsGEP2_32(capture.type, captures, 0, i++));
         }
     }
-    return fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->generator()->context()));
+    return fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->ctx()));
 }
 
 llvm::Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
@@ -121,7 +121,7 @@ llvm::Value* ASTCallableBox::generate(FunctionCodeGenerator *fg) const {
     auto callable = fg->builder().CreateInsertValue(llvm::UndefValue::get(fg->typeHelper().callable()),
                                                     thunk_->unspecificReification().function, 0);
 
-    auto cp = fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->generator()->context()));
+    auto cp = fg->builder().CreateBitCast(captures, llvm::Type::getInt8PtrTy(fg->ctx()));
     return fg->builder().CreateInsertValue(callable, cp, 1);
 }
 

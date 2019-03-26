@@ -23,7 +23,7 @@ llvm::Constant* ProtocolsTableGenerator::createProtocolTable(TypeDefinition *typ
     entries.reserve(typeDef->protocolTables().size());
     for (auto &entry : typeDef->protocolTables()) {
         entries.emplace_back(llvm::ConstantStruct::get(generator_->typeHelper().protocolConformanceEntry(), {
-            generator_->protocolIdentifierFor(entry.first), entry.second
+            generator_->runTimeTypeInfoForProtocol(entry.first), entry.second
         }));
     }
 

@@ -12,14 +12,16 @@
 #include "Functions/Initializer.hpp"
 #include "Types/Protocol.hpp"
 #include "Types/TypeDefinition.hpp"
+#include "Generation/TypeDescriptionGenerator.hpp"
 #include <llvm/Support/raw_ostream.h>
 #include <stdexcept>
 
 namespace EmojicodeCompiler {
 
 llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, const ASTArguments &astArgs,
-                                         Function *function, llvm::Value *errorPointer) {
-    auto args = createArgsVector(callee, astArgs, errorPointer);
+                                         Function *function, llvm::Value *errorPointer,
+                                         const std::vector<llvm::Value *> &supplArgs) {
+    auto args = createArgsVector(callee, astArgs, errorPointer, supplArgs);
 
     assert(function != nullptr);
     switch (callType_) {
@@ -63,18 +65,23 @@ llvm::Value *CallCodeGenerator::generate(llvm::Value *callee, const Type &type, 
 llvm::Value* CallCodeGenerator::buildFindProtocolConformance(const std::vector<llvm::Value *> &args,
                                                              const Type &protocol) {
     auto boxInfo = fg()->builder().CreateLoad(fg()->buildGetBoxInfoPtr(args.front()));
-    auto id = fg()->generator()->protocolIdentifierFor(protocol);
+    auto id = fg()->generator()->runTimeTypeInfoForProtocol(protocol);
     return fg()->buildFindProtocolConformance(args.front(), boxInfo, id);
 }
 
 std::vector<Value *> CallCodeGenerator::createArgsVector(llvm::Value *callee, const ASTArguments &args,
-                                                         llvm::Value *errorPointer) const {
+                                                         llvm::Value *errorPointer,
+                                                         const std::vector<llvm::Value *> &supplArgs) const {
     std::vector<Value *> argsVector;
     if (callType_ != CallType::StaticContextfreeDispatch) {
         argsVector.emplace_back(callee);
     }
     for (auto &arg : args.args()) {
         argsVector.emplace_back(arg->generate(fg_));
+    }
+    argsVector.insert(argsVector.end(), supplArgs.begin(), supplArgs.end());
+    if (!args.genericArguments().empty()) {
+        argsVector.emplace_back(TypeDescriptionGenerator(fg_).generate(args.genericArguments()));
     }
     if (errorPointer != nullptr) {
         argsVector.emplace_back(errorPointer);
@@ -88,7 +95,7 @@ llvm::Value *MultiprotocolCallCodeGenerator::generate(llvm::Value *callee, const
     assert(calleeType.type() == TypeType::Box);
     assert(function != nullptr);
 
-    auto argsv = createArgsVector(callee, args, errorPointer);
+    auto argsv = createArgsVector(callee, args, errorPointer, {});
 
     llvm::Value *conformance;
     if (calleeType.boxedFor().type() != TypeType::MultiProtocol) {

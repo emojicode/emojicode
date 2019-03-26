@@ -17,11 +17,11 @@ void ASTIf::generate(FunctionCodeGenerator *fg) const {
     auto *function = fg->builder().GetInsertBlock()->getParent();
 
     bool addAfter = false;
-    auto afterIfBlock = llvm::BasicBlock::Create(fg->generator()->context(), "afterIf");
+    auto afterIfBlock = llvm::BasicBlock::Create(fg->ctx(), "afterIf");
 
     for (size_t i = 0; i < conditions_.size(); i++) {
-        auto thenBlock = llvm::BasicBlock::Create(fg->generator()->context(), "then", function);
-        auto elseBlock = llvm::BasicBlock::Create(fg->generator()->context(), "else", function);
+        auto thenBlock = llvm::BasicBlock::Create(fg->ctx(), "then", function);
+        auto elseBlock = llvm::BasicBlock::Create(fg->ctx(), "else", function);
 
         auto cond = conditions_[i]->generate(fg);
         fg->releaseTemporaryObjects();
@@ -58,9 +58,9 @@ void ASTIf::generate(FunctionCodeGenerator *fg) const {
 void ASTRepeatWhile::generate(FunctionCodeGenerator *fg) const {
     auto *function = fg->builder().GetInsertBlock()->getParent();
 
-    auto afterBlock = llvm::BasicBlock::Create(fg->generator()->context(), "afterRepeatWhile");
-    auto whileCondBlock = llvm::BasicBlock::Create(fg->generator()->context(), "whileCond", function);
-    auto repeatBlock = llvm::BasicBlock::Create(fg->generator()->context(), "repeat", function);
+    auto afterBlock = llvm::BasicBlock::Create(fg->ctx(), "afterRepeatWhile");
+    auto whileCondBlock = llvm::BasicBlock::Create(fg->ctx(), "whileCond", function);
+    auto repeatBlock = llvm::BasicBlock::Create(fg->ctx(), "repeat", function);
 
     fg->builder().CreateBr(whileCondBlock);
 
@@ -83,9 +83,9 @@ void ASTRepeatWhile::generate(FunctionCodeGenerator *fg) const {
 void ASTErrorHandler::generate(FunctionCodeGenerator *fg) const {
     auto *function = fg->builder().GetInsertBlock()->getParent();
 
-    auto afterBlock = llvm::BasicBlock::Create(fg->generator()->context(), "cont");
-    auto noError = llvm::BasicBlock::Create(fg->generator()->context(), "noError", function);
-    auto errorBlock = llvm::BasicBlock::Create(fg->generator()->context(), "error", function);
+    auto afterBlock = llvm::BasicBlock::Create(fg->ctx(), "cont");
+    auto noError = llvm::BasicBlock::Create(fg->ctx(), "noError", function);
+    auto errorBlock = llvm::BasicBlock::Create(fg->ctx(), "error", function);
 
     auto errorDest = prepareErrorDestination(fg, value_.get());
     auto value = value_->generate(fg);

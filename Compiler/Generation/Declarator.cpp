@@ -43,15 +43,46 @@ void EmojicodeCompiler::Declarator::declareRunTime() {
         generator_->typeHelper().classInfo()->getPointerTo(), generator_->typeHelper().classInfo()->getPointerTo()
     });
     inheritsFrom_->addFnAttr(llvm::Attribute::ReadOnly);
+    inheritsFrom_->addFnAttr(llvm::Attribute::Speculatable);
     inheritsFrom_->addParamAttr(0, llvm::Attribute::NonNull);
     inheritsFrom_->addParamAttr(1, llvm::Attribute::NonNull);
 
     findProtocolConformance_ = declareRunTimeFunction("ejcFindProtocolConformance",
                                                       generator_->typeHelper().protocolConformance()->getPointerTo(), {
-        generator_->typeHelper().protocolConformanceEntry()->getPointerTo(), llvm::Type::getInt1PtrTy(generator_->context())
+        generator_->typeHelper().protocolConformanceEntry()->getPointerTo(),
+        generator_->typeHelper().runTimeTypeInfo()->getPointerTo()
     });
     findProtocolConformance_->addFnAttr(llvm::Attribute::ReadOnly);
+    findProtocolConformance_->addFnAttr(llvm::Attribute::Speculatable);
     findProtocolConformance_->addParamAttr(0, llvm::Attribute::NonNull);
+    findProtocolConformance_->addParamAttr(1, llvm::Attribute::NonNull);
+
+    checkGenericArgs_ = declareRunTimeFunction("ejcCheckGenericArgs", llvm::Type::getInt1Ty(generator_->context()), {
+        generator_->typeHelper().typeDescription()->getPointerTo(),
+        generator_->typeHelper().typeDescription()->getPointerTo(),
+        llvm::Type::getInt16Ty(generator_->context()),
+        llvm::Type::getInt16Ty(generator_->context())
+    });
+    checkGenericArgs_->removeFnAttr(llvm::Attribute::NoRecurse);
+    checkGenericArgs_->addFnAttr(llvm::Attribute::ReadOnly);
+    checkGenericArgs_->addFnAttr(llvm::Attribute::Speculatable);
+    checkGenericArgs_->addParamAttr(0, llvm::Attribute::NonNull);
+    checkGenericArgs_->addParamAttr(1, llvm::Attribute::NonNull);
+
+    typeDescriptionLength_ = declareRunTimeFunction("ejcTypeDescriptionLength",
+                                                   llvm::Type::getInt64Ty(generator_->context()),
+                                                   generator_->typeHelper().typeDescription()->getPointerTo());
+    typeDescriptionLength_->addFnAttr(llvm::Attribute::ReadOnly);
+    typeDescriptionLength_->addFnAttr(llvm::Attribute::Speculatable);
+    typeDescriptionLength_->addParamAttr(0, llvm::Attribute::NonNull);
+
+    indexTypeDescription_ = declareRunTimeFunction("ejcIndexTypeDescription",
+                                                    generator_->typeHelper().typeDescription()->getPointerTo(),
+                                                    { generator_->typeHelper().typeDescription()->getPointerTo(),
+                                                      llvm::Type::getInt64Ty(generator_->context()) });
+    indexTypeDescription_->addFnAttr(llvm::Attribute::ReadOnly);
+    indexTypeDescription_->addFnAttr(llvm::Attribute::Speculatable);
+    indexTypeDescription_->addParamAttr(0, llvm::Attribute::NonNull);
 
     boxInfoClassObjects_ = declareBoxInfo("class.boxInfo");
     boxInfoCallables_ = declareBoxInfo("callable.boxInfo");
@@ -147,6 +178,28 @@ llvm::Function* Declarator::createLlvmFunction(Function *function, ReificationCo
         addParamAttrs(param, i, fn);
         i++;
     }
+
+    if (function->functionType() == FunctionType::ObjectInitializer ||
+        function->functionType() == FunctionType::ValueTypeInitializer) {
+        if (generator_->typeHelper().storesGenericArgs(function->typeContext().calleeType())) {
+            fn->addParamAttr(i, llvm::Attribute::NonNull);
+            fn->addParamAttr(i, llvm::Attribute::ReadOnly);
+            i++;
+        }
+    }
+    if (!function->genericParameters().empty()) {
+        fn->addParamAttr(i, llvm::Attribute::NonNull);
+        fn->addParamAttr(i, llvm::Attribute::NoCapture);
+        fn->addParamAttr(i, llvm::Attribute::ReadOnly);
+        i++;
+    }
+    if (function->errorProne()) {
+        fn->addParamAttr(i, llvm::Attribute::NonNull);
+        fn->addParamAttr(i, llvm::Attribute::NoCapture);
+        fn->addParamAttr(i, llvm::Attribute::NoAlias);
+        i++;
+    }
+
     addParamDereferenceable(function->returnType()->type(), 0, fn, true);
     return fn;
 }

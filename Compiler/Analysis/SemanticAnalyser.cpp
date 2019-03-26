@@ -58,7 +58,7 @@ void SemanticAnalyser::analyse(bool executable) {
             }
             klass->addTypeMethod(buildRequiredInitThunk(klass.get(), init));
         }
-        
+
         klass->inherit(this);
         checkProtocolConformance(Type(klass.get()));
 

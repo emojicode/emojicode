@@ -40,7 +40,7 @@ void ErrorSelfDestructing::buildDestruct(FunctionCodeGenerator *fg) const {
         fg->createIf(fg->builder().CreateICmpEQ(clInf, class_->classInfo()), [&] {
             fg->builder().CreateCall(fg->generator()->declarator().releaseWithoutDeinit(),
                                      fg->builder().CreateBitCast(fg->thisValue(),
-                                                                 llvm::Type::getInt8PtrTy(fg->generator()->context())));
+                                                                 llvm::Type::getInt8PtrTy(fg->ctx())));
         });
     }
 }

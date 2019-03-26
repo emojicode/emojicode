@@ -49,8 +49,10 @@ using is_complete = decltype(is_complete_impl(std::declval<T*>()));
 }  // namespace util
 
 struct ClassInfo {
-    ClassInfo *superclass;
+    void *rtti;
     void **dispatchTable;
+    void *protocolTable;
+    ClassInfo *superclass;
 
     template <typename Return, typename ObjectType, typename ...Args>
     Return dispatch(size_t virtualTableIndex, ObjectType *object, Args... args) const {

@@ -50,6 +50,10 @@ public:
     /// Used to find a protocol conformance in an array of ProtocolConformanceEntries. (ejcFindProtocolConformance)
     llvm::Function* findProtocolConformance() const { return findProtocolConformance_; }
 
+    llvm::Function* checkGenericArgs() const { return checkGenericArgs_; }
+    llvm::Function* typeDescriptionLength() const { return typeDescriptionLength_; }
+    llvm::Function* indexTypeDescription() const { return indexTypeDescription_; }
+
     llvm::Function* isOnlyReference() const { return isOnlyReference_; }
 
     llvm::GlobalVariable* ignoreBlockPtr() const { return ignoreBlock_; }
@@ -73,6 +77,9 @@ private:
 
     llvm::Function *inheritsFrom_ = nullptr;
     llvm::Function *findProtocolConformance_ = nullptr;
+    llvm::Function *checkGenericArgs_ = nullptr;
+    llvm::Function *typeDescriptionLength_ = nullptr;
+    llvm::Function *indexTypeDescription_ = nullptr;
 
     llvm::GlobalVariable *boxInfoClassObjects_ = nullptr;
     llvm::GlobalVariable *boxInfoCallables_ = nullptr;

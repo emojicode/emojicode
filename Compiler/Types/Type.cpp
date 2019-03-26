@@ -259,6 +259,15 @@ Type Type::resolveOnSuperArgumentsAndConstraints(const TypeContext &typeContext)
     return t;
 }
 
+std::vector<Type> Type::selfResolvedGenericArgs() const {
+    TypeContext typeContext(*this);
+    auto args = genericArguments_;
+    for (auto &g : args) {
+        g = g.resolveOn(typeContext);
+    }
+    return args;
+}
+
 Type Type::resolveOn(const TypeContext &typeContext) const {
     Type t = *this;
     bool ref = isReference();

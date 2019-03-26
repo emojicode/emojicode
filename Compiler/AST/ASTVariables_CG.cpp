@@ -122,7 +122,7 @@ Value* ASTIsOnlyReference::generate(FunctionCodeGenerator *fg) const {
         auto &localVariable = fg->scoper().getVariable(id());
         val = fg->builder().CreateLoad(localVariable);
     }
-    auto ptr = fg->builder().CreateBitCast(val, llvm::Type::getInt8PtrTy(fg->generator()->context()));
+    auto ptr = fg->builder().CreateBitCast(val, llvm::Type::getInt8PtrTy(fg->ctx()));
     return fg->builder().CreateCall(fg->generator()->declarator().isOnlyReference(), ptr);
 }
 

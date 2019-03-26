@@ -63,7 +63,10 @@ public:
     /// @returns An LLVM value representing the box info that must be stored in the box info field.
     llvm::Constant* boxInfoFor(const Type &type);
 
-    llvm::Constant* protocolIdentifierFor(const Type &type);
+    llvm::Constant* runTimeTypeInfoForProtocol(const Type &type);
+
+    llvm::GlobalVariable *somethingRTTI() const;
+    llvm::GlobalVariable *someobjectRTTI() const;
 
     ~CodeGenerator();
 
@@ -87,6 +90,10 @@ private:
     std::pair<llvm::Function*, llvm::Function*> buildBoxRetainRelease(const Type &type);
     void buildClassObjectBoxInfo();
     void buildCallableBoxInfo();
+    void buildAbstractRTTI();
+
+    llvm::GlobalVariable *somethingRTTI_;
+    llvm::GlobalVariable *someobjectRTTI_;
 
     void emitModule(const std::string &outPath, bool printIr);
     void generateFunctions(Package *package, bool imported);

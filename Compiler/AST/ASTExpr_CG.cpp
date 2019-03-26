@@ -48,7 +48,7 @@ Value* ASTCallableCall::generate(FunctionCodeGenerator *fg) const {
     auto type = callable_->expressionType();
 
     auto returnType = fg->typeHelper().llvmTypeFor(type.returnType());
-    std::vector<llvm::Type *> argTypes { llvm::Type::getInt8PtrTy(fg->generator()->context()) };
+    std::vector<llvm::Type *> argTypes { llvm::Type::getInt8PtrTy(fg->ctx()) };
     std::transform(type.parameters(), type.parametersEnd(), std::back_inserter(argTypes), [fg](auto &arg) {
         return fg->typeHelper().llvmTypeFor(arg);
     });
