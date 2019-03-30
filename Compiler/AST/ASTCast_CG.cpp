@@ -123,10 +123,10 @@ llvm::Value* checkGeneric(FunctionCodeGenerator *fg, llvm::Value *mainCheck, llv
                 fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(rttiType, rtti, 0, 1))
             });
             return fg->builder().CreateSelect(genericsOk, fg->builder().CreateLoad(box),
-                                              fg->buildBoxOptionalWithoutValue());
+                                              fg->buildBoxWithoutValue());
         }, [&] { return fg->builder().CreateLoad(box); });
     }, [&] {
-        return fg->buildBoxOptionalWithoutValue();
+        return fg->buildBoxWithoutValue();
     });
 }
 
@@ -164,7 +164,7 @@ Value* ASTCast::castToClass(FunctionCodeGenerator *fg, Value *box, Value *typeDe
         auto genericArgs = fg->builder().CreateLoad(fg->builder().CreateConstInBoundsGEP2_32(strct, obj, 0, 2));
         return checkGeneric(fg, inherits, genericArgs, 2, typeDescription, box, rtti);
     }, [fg] {
-        return fg->buildBoxOptionalWithoutValue();
+        return fg->buildBoxWithoutValue();
     });
 }
 
@@ -178,7 +178,7 @@ Value* ASTCast::castToProtocol(FunctionCodeGenerator *fg, Value *box, Value *rtt
         fg->builder().CreateStore(conformance, fg->builder().CreateBitCast(infoPtr, confPtrTy->getPointerTo()));
         return fg->builder().CreateLoad(boxCopy);
     }, [&] {
-        return fg->buildBoxOptionalWithoutValue();
+        return fg->buildBoxWithoutValue();
     });
 }
 

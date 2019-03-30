@@ -125,19 +125,16 @@ llvm::Value* FunctionCodeGenerator::buildGetClassInfoFromObject(llvm::Value *obj
 }
 
 llvm::Value* FunctionCodeGenerator::buildHasNoValueBoxPtr(llvm::Value *box) {
-    auto null = llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo());
-    return builder().CreateICmpEQ(builder().CreateLoad(buildGetBoxInfoPtr(box)), null);
+    return builder().CreateIsNull(builder().CreateLoad(buildGetBoxInfoPtr(box)));
 }
 
 llvm::Value* FunctionCodeGenerator::buildHasNoValueBox(llvm::Value *box) {
-    auto vf = builder().CreateExtractValue(box, 0);
-    return builder().CreateICmpEQ(vf, llvm::Constant::getNullValue(vf->getType()));
+    return builder().CreateIsNull(builder().CreateExtractValue(box, 0));
 }
 
 Value* FunctionCodeGenerator::buildOptionalHasNoValue(llvm::Value *simpleOptional, const Type &type) {
     if (type.storageType() == StorageType::PointerOptional) {
-        auto null = llvm::Constant::getNullValue(typeHelper().llvmTypeFor(type.optionalType()));
-        return builder().CreateICmpEQ(simpleOptional, null);
+        return builder().CreateIsNull(simpleOptional);
     }
     auto vf = builder().CreateExtractValue(simpleOptional, 0);
     return builder().CreateICmpEQ(vf, llvm::ConstantInt::getFalse(ctx()));
@@ -145,21 +142,17 @@ Value* FunctionCodeGenerator::buildOptionalHasNoValue(llvm::Value *simpleOptiona
 
 Value* FunctionCodeGenerator::buildOptionalHasValue(llvm::Value *simpleOptional, const Type &type) {
     if (type.storageType() == StorageType::PointerOptional) {
-        auto null = llvm::Constant::getNullValue(typeHelper().llvmTypeFor(type.optionalType()));
-        return builder().CreateICmpNE(simpleOptional, null);
+        return builder().CreateIsNotNull(simpleOptional);
     }
-    auto vf = builder().CreateExtractValue(simpleOptional, 0);
-    return builder().CreateICmpNE(vf, llvm::ConstantInt::getFalse(ctx()));
+    return builder().CreateExtractValue(simpleOptional, 0);
 }
 
 Value* FunctionCodeGenerator::buildOptionalHasValuePtr(llvm::Value *simpleOptional, const Type &type) {
     if (type.storageType() == StorageType::PointerOptional) {
-        auto null = llvm::Constant::getNullValue(typeHelper().llvmTypeFor(type.optionalType()));
-        return builder().CreateICmpNE(builder().CreateLoad(simpleOptional), null);
+        return builder().CreateIsNotNull(simpleOptional);
     }
     auto ptype = llvm::cast<llvm::PointerType>(simpleOptional->getType())->getElementType();
-    auto vf = builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(ptype, simpleOptional, 0, 0));
-    return builder().CreateICmpNE(vf, llvm::ConstantInt::getFalse(ctx()));
+    return builder().CreateLoad(builder().CreateConstInBoundsGEP2_32(ptype, simpleOptional, 0, 0));
 }
 
 Value* FunctionCodeGenerator::buildGetOptionalValuePtr(llvm::Value *simpleOptional, const Type &type) {
@@ -179,7 +172,7 @@ Value* FunctionCodeGenerator::buildSimpleOptionalWithoutValue(const Type &type) 
     return builder().CreateInsertValue(undef, llvm::ConstantInt::getFalse(ctx()), 0);
 }
 
-Value* FunctionCodeGenerator::buildBoxOptionalWithoutValue() {
+Value* FunctionCodeGenerator::buildBoxWithoutValue() {
     auto undef = llvm::UndefValue::get(typeHelper().box());
     return builder().CreateInsertValue(undef, llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo()), 0);
 }
@@ -216,11 +209,6 @@ llvm::Value* FunctionCodeGenerator::buildGetBoxValuePtrAfter(llvm::Value *box, l
     auto strType = llvm::StructType::get(after, llvmType);
     auto strPtr = builder().CreateBitCast(val, strType->getPointerTo());
     return builder().CreateConstInBoundsGEP2_32(strType, strPtr, 0, 1);
-}
-
-Value* FunctionCodeGenerator::buildMakeNoValue(Value *box) {
-    auto boxInfoNull = llvm::Constant::getNullValue(typeHelper().boxInfo()->getPointerTo());
-    return builder().CreateStore(boxInfoNull, buildGetBoxInfoPtr(box));
 }
 
 void FunctionCodeGenerator::createIfElseBranchCond(llvm::Value *cond, const std::function<bool()> &then,

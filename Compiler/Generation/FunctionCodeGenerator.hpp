@@ -102,12 +102,9 @@ public:
     /// @param box Pointer to a box.
     /// @param llvmType The type to which the pointer to the field is cast. Must be a pointer type.
     llvm::Value* buildGetBoxValuePtrAfter(llvm::Value *box, llvm::Type *llvmType, llvm::Type *after);
-    /// Makes the box contain no value.
-    /// @param box Pointer to a box.
-    llvm::Value* buildMakeNoValue(llvm::Value *box);
     llvm::Value* buildHasNoValueBox(llvm::Value *box);
     llvm::Value* buildHasNoValueBoxPtr(llvm::Value *box);
-    llvm::Value* buildBoxOptionalWithoutValue();
+    llvm::Value* buildBoxWithoutValue();
 
     llvm::Value* buildOptionalHasNoValue(llvm::Value *simpleOptional, const Type &type);
     /// Determines whether the optional has a value.

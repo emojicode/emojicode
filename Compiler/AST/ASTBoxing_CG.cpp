@@ -113,16 +113,17 @@ Value* ASTSimpleToBox::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTSimpleOptionalToBox::generate(FunctionCodeGenerator *fg) const {
     auto value = expr_->generate(fg);
-    auto box = fg->createEntryAlloca(fg->typeHelper().box());
+
 
     auto hasNoValue = fg->buildOptionalHasNoValue(value, expr_->expressionType());
 
-    fg->createIfElse(hasNoValue, [fg, box]() {
-        fg->buildMakeNoValue(box);
-    }, [this, value, fg, box]() {
+    return fg->createIfElsePhi(hasNoValue, [&] {
+        return fg->buildBoxWithoutValue();
+    }, [&] {
+        auto box = fg->createEntryAlloca(fg->typeHelper().box());
         getPutValueIntoBox(box, fg->buildGetOptionalValue(value, expr_->expressionType()), fg);
+        return fg->builder().CreateLoad(box);
     });
-    return fg->builder().CreateLoad(box);
 }
 
 Value* ASTToBox::buildStoreAddress(Value *box, FunctionCodeGenerator *fg) const {

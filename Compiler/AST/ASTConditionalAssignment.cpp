@@ -21,8 +21,7 @@ Value* ASTConditionalAssignment::generate(FunctionCodeGenerator *fg) const {
 
     if (expr_->expressionType().type() == TypeType::Box) {
         fg->setVariable(varId_, optional);
-        auto vf = fg->builder().CreateExtractValue(optional, 0);
-        return fg->builder().CreateICmpNE(vf, llvm::Constant::getNullValue(vf->getType()));
+        return fg->builder().CreateIsNotNull(fg->builder().CreateExtractValue(optional, 0));
     }
 
     auto value = fg->buildGetOptionalValue(optional, expr_->expressionType());

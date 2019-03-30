@@ -55,7 +55,7 @@ Value* ASTThis::generate(FunctionCodeGenerator *fg) const {
 
 Value* ASTNoValue::generate(FunctionCodeGenerator *fg) const {
     if (type_.storageType() == StorageType::Box) {
-        return fg->buildBoxOptionalWithoutValue();
+        return fg->buildBoxWithoutValue();
     }
     return fg->buildSimpleOptionalWithoutValue(type_);
 }
