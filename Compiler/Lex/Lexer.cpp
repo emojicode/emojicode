@@ -39,6 +39,7 @@ Lexer::Lexer(SourceFile *source) : sourcePosition_(1, 0, source), source_(source
     singleTokens_.emplace(E_RIGHTWARDS_ARROW, TokenType::RightProductionOperator);
     singleTokens_.emplace(E_LEFTWARDS_ARROW, TokenType::LeftProductionOperator);
     singleTokens_.emplace(E_CRAYON, TokenType::Mutable);
+    singleTokens_.emplace(E_SPIRAL_SHELL, TokenType::Generic);
 
     singleTokens_.emplace(E_CROCODILE, TokenType::Protocol);
     singleTokens_.emplace(E_DOVE_OF_PEACE, TokenType::ValueType);

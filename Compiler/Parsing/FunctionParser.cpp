@@ -67,11 +67,20 @@ std::shared_ptr<ASTExpr> FunctionParser::parseCondition() {
     return expr;
 }
 
-ASTArguments FunctionParser::parseArguments(const SourcePosition &position) {
+ASTArguments FunctionParser::parseArgumentsWithoutCallee(const SourcePosition &position) {
     auto args = ASTArguments(position);
     parseGenericArguments(&args);
     parseMainArguments(&args, position);
     return args;
+}
+
+std::pair<std::shared_ptr<ASTExpr>, ASTArguments>
+FunctionParser::parseCalleeAndArguments(const SourcePosition &position) {
+    auto args = ASTArguments(position);
+    parseGenericArguments(&args);
+    auto callee = parseExpr(0);
+    parseMainArguments(&args, position);
+    return {callee, args};
 }
 
 void FunctionParser::parseMainArguments(ASTArguments *arguments, const SourcePosition &position) {
@@ -179,14 +188,14 @@ std::unique_ptr<ASTStatement> FunctionParser::parseAssignment(std::shared_ptr<AS
 
 std::unique_ptr<ASTStatement> FunctionParser::parseMethodAssignment(std::shared_ptr<ASTExpr> expr) {
     auto name = stream_.consumeToken();
-    auto callee = parseExpr(0);
-    auto args = parseArguments(name.position());
+    auto pair = parseCalleeAndArguments(expr->position());
+    ASTArguments args = std::move(pair.second);
     args.args().emplace(args.args().begin(), expr);
     if (args.mood() != Mood::Imperative) {
         package_->compiler()->error(CompilerError(args.position(), "Expected ❗️."));
     }
     args.setMood(Mood::Assignment);
-    auto method = std::make_unique<ASTMethod>(name.value(), callee, args, name.position());
+    auto method = std::make_unique<ASTMethod>(name.value(), std::move(pair.first), args, name.position());
     return std::make_unique<ASTExprStatement>(std::move(method), name.position());
 }
 
@@ -270,13 +279,14 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprLeft(const EmojicodeCompiler::
             return std::make_shared<ASTThis>(token.position());
         case TokenType::Super: {
             auto initializerToken = stream_.consumeToken();
-            auto arguments = parseArguments(token.position());
+            auto arguments = parseArgumentsWithoutCallee(token.position());
             return std::make_shared<ASTSuper>(initializerToken.value(), arguments, token.position());
         }
         case TokenType::Call: {
             auto expr = parseExpr(kPrefixPrecedence);
-            return std::make_shared<ASTCallableCall>(expr, parseArguments(token.position()),
-                                                     token.position());
+            auto args = ASTArguments(token.position());
+            parseMainArguments(&args, token.position());
+            return std::make_shared<ASTCallableCall>(expr, args, token.position());
         }
         case TokenType::Class:
         case TokenType::Enumeration:
@@ -314,8 +324,8 @@ std::shared_ptr<ASTExpr> FunctionParser::parseExprIdentifier(const Token &token)
         case E_RED_TRIANGLE_POINTED_UP:
             return parseUnaryPrefix<ASTReraise>(token);
         default: {
-            auto value = parseExpr(0);
-            return std::make_shared<ASTMethod>(token.value(), value, parseArguments(token.position()),
+            auto pair = parseCalleeAndArguments(token.position());
+            return std::make_shared<ASTMethod>(token.value(), std::move(pair.first), std::move(pair.second),
                                                token.position());
         }
     }
@@ -331,7 +341,7 @@ std::shared_ptr<ASTExpr> FunctionParser::parseInitialization(const SourcePositio
     auto type = parseTypeExpr(position);
     auto name = stream_.nextTokenIs(TokenType::New) ? stream_.consumeToken().value() :
                                                       stream_.consumeToken(TokenType::Identifier).value();
-    return std::make_shared<ASTInitialization>(name, type, parseArguments(position), position);
+    return std::make_shared<ASTInitialization>(name, type, parseArgumentsWithoutCallee(position), position);
 }
 
 std::shared_ptr<ASTExpr> FunctionParser::parseClosure(const Token &token) {

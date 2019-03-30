@@ -29,6 +29,16 @@
 
 namespace EmojicodeCompiler {
 
+void ASTArguments::genericArgsToCode(PrettyStream &pretty) const {
+    if (!genericArguments_.empty()) {
+        pretty << "🐚";
+        for (auto &arg : genericArguments_) {
+            pretty << arg;
+        }
+        pretty << "🍆";
+    }
+}
+
 void ASTArguments::toCode(PrettyStream &pretty) const {
     if (!arguments_.empty()) {
         pretty << " ";
@@ -149,12 +159,16 @@ void ASTIsOnlyReference::toCode(PrettyStream &pretty) const {
 
 void ASTSuper::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "⤴️" << name_ << args_;
+    pretty << "⤴️" << name_;
+    args_.genericArgsToCode(pretty);
+    pretty << args_;
 }
 
 void ASTInitialization::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
-    pretty << "🆕" << typeExpr_ << name_ << args_;
+    pretty << "🆕" << typeExpr_ << name_;
+    args_.genericArgsToCode(pretty);
+    pretty << args_;
 }
 
 void ASTThisType::toCode(PrettyStream &pretty) const {
@@ -256,7 +270,9 @@ void ASTCast::toCode(PrettyStream &pretty) const {
 void ASTMethod::toCode(PrettyStream &pretty) const {
     pretty.printComments(position());
     if (args_.mood() == Mood::Assignment) {
-        pretty << args_.args().front() << " ➡️ " << name_ << callee_;
+        pretty << args_.args().front() << " ➡️ " << name_;
+        args_.genericArgsToCode(pretty);
+        pretty << callee_;
         pretty.offerSpace();
         for (size_t i = 1; i < args_.args().size(); i++) {
             pretty << args_.args()[i];
@@ -264,7 +280,9 @@ void ASTMethod::toCode(PrettyStream &pretty) const {
         pretty.refuseOffer() << "❗️";
     }
     else {
-        pretty << name_ << callee_ << args_;
+        pretty << name_;
+        args_.genericArgsToCode(pretty);
+        pretty << callee_ << args_;
     }
 }
 

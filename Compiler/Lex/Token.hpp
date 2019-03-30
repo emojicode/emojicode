@@ -58,6 +58,7 @@ enum class TokenType {
     Super,
     Mutable,
     Call,
+    Generic,
 
     Class,
     Enumeration,

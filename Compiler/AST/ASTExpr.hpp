@@ -144,6 +144,7 @@ public:
     std::vector<std::shared_ptr<ASTExpr>>& args() { return arguments_; }
     const std::vector<std::shared_ptr<ASTExpr>>& args() const { return arguments_; }
     void toCode(PrettyStream &pretty) const;
+    void genericArgsToCode(PrettyStream &pretty) const;
     Mood mood() const { return mood_; }
     void setMood(Mood mood) { mood_ = mood; }
 

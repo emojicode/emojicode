@@ -368,7 +368,7 @@ string, but those themselves are then immutable again.
   📗
   ☣️❗️🐻🔸💧byte💧 🍇
     🍜🐕 1❗️
-    byte ➡️ 🐽data🐚💧🍆count❗️
+    byte ➡️ 🐽🐚💧🍆 data count❗️
     count ⬅️➕ 1
   🍉
 
@@ -383,37 +383,37 @@ string, but those themselves are then immutable again.
     🍉
     ↪️ codepoint ◀️ 0x80 🍇
       🍜🐕 1❗️
-      💧codepoint❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧codepoint❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
       ↩️👍
     🍉
     ↪️ codepoint ◀️ 0x800 🍇
       🍜🐕 2❗️
-      💧0xC0 ➕ 🤜codepoint 👉 6 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0xC0 ➕ 🤜codepoint 👉 6 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
-      💧0x80 ➕ 🤜codepoint ⭕ 0x3F 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0x80 ➕ 🤜codepoint ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
       ↩️👍
     🍉
     ↪️ codepoint ◀️ 0x10000 🍇
       🍜🐕 3❗️
-      💧0xE0 ➕ 🤜codepoint 👉 12 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0xE0 ➕ 🤜codepoint 👉 12 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
-      💧0x80 ➕ 🤜🤜codepoint 👉 6 🤛 ⭕ 0x3F 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0x80 ➕ 🤜🤜codepoint 👉 6 🤛 ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
-      💧0x80 ➕ 🤜codepoint ⭕ 0x3F 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0x80 ➕ 🤜codepoint ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
       ↩️👍
     🍉
     ↪️ codepoint ◀️ 0x110000 🍇
       🍜🐕 4❗️
-      💧0xF0 ➕ 🤜codepoint 👉 18 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0xF0 ➕ 🤜codepoint 👉 18 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
-      💧0x80 ➕ 🤜🤜codepoint 👉 12 🤛 ⭕ 0x3F 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0x80 ➕ 🤜🤜codepoint 👉 12 🤛 ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
-      💧0x80 ➕ 🤜🤜codepoint 👉 6 🤛 ⭕ 0x3F 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0x80 ➕ 🤜🤜codepoint 👉 6 🤛 ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
-      💧0x80 ➕ 🤜codepoint ⭕ 0x3F 🤛❗️ ➡️ 🐽data🐚💧🍆count❗️
+      💧0x80 ➕ 🤜codepoint ⭕ 0x3F 🤛❗️ ➡️ 🐽🐚💧🍆data count❗️
       count ⬅️➕ 1
       ↩️👍
     🍉

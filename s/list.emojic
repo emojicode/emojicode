@@ -17,7 +17,7 @@
     ☣️ 🍇
       🆕🧠🆕 size✖️⚖️Element❗️ ➡️ 🖍data
       🔂 i 🆕⏩⏩ 0 🐔storage❓❗️ 🍇
-        🐽 🧠storage❗️🐚Element🍆 i✖️⚖️Element❗️ ➡️🐽data🐚Element🍆 i✖️⚖️Element❗️
+        🐽🐚Element🍆 🧠storage❗️i✖️⚖️Element❗️ ➡️🐽🐚Element🍆data i✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -52,7 +52,7 @@
   📗 Releases everything inside the list. 📗
   ☣️❗️♻️ 🍇
     🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-      ♻️ data🐚Element🍆 i✖️⚖️Element❗️
+      ♻️🐚Element🍆 data i✖️⚖️Element❗️
     🍉
   🍉
 
@@ -134,7 +134,7 @@
     🆕🍧🐚Element🍆🆕count count❗️ ➡️ 🖍data
     ☣️ 🍇
       🔂 i 🆕⏩⏩ 0 count❗️ 🍇
-        repeatedValue ➡️ 🐽🧠data❗️🐚Element🍆 i✖️⚖️Element❗️
+        repeatedValue ➡️ 🐽🐚Element🍆🧠data❗️ i✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -144,7 +144,7 @@
     📝🐕❗️
     ↕️data❗️
     ☣️ 🍇
-      item ➡️ 🐽🧠data❗️🐚Element🍆 🐔data❓✖️⚖️Element❗️
+      item ➡️ 🐽🐚Element🍆🧠data❗️ 🐔data❓✖️⚖️Element❗️
     🍉
     🐔data 1❗️
   🍉
@@ -158,7 +158,7 @@
       🤯🐇💻 🔤Index out of bounds in 🍨🐽🔤 ❗️
     🍉
     ☣️ 🍇
-      ↩️ 🐽 🧠data❗️🐚Element🍆 index✖️⚖️Element❗️
+      ↩️ 🐽🐚Element🍆 🧠data❗️ index✖️⚖️Element❗️
     🍉
   🍉
 
@@ -172,8 +172,8 @@
       🤯🐇💻 🔤Index out of bounds in 🍨🐷❗️🔤 ❗️
     🍉
     ☣️ 🍇
-      ♻️ 🧠data❗️🐚Element🍆 index✖️⚖️Element❗️
-      value ➡️ 🐽🧠data❗️🐚Element🍆  index✖️⚖️Element❗️
+      ♻️🐚Element🍆 🧠data❗️ index✖️⚖️Element❗️
+      value ➡️ 🐽🐚Element🍆🧠data❗️  index✖️⚖️Element❗️
     🍉
   🍉
 
@@ -187,7 +187,7 @@
     📝🐕❗️
     ↪️ index ◀️ 🐔data❓ 🍇
       ☣️ 🍇
-        ♻️ 🧠data❗️🐚Element🍆 index✖️⚖️Element❗️
+        ♻️🐚Element🍆 🧠data❗️ index✖️⚖️Element❗️
         🚜 🧠data❗️ index✖️⚖️Element 🧠data❗️ 🤜index ➕ 1🤛✖️⚖️Element 🤜🐔data❓ ➖ 🤜index ➕ 1🤛🤛✖️⚖️Element❗️
       🍉
       🐔data -1❗️
@@ -208,7 +208,7 @@
     ↪️ index ◀️ 🐔data❓ 🍇
       ☣️ 🍇
         🚜 🧠data❗️ 🤜index ➕ 1🤛✖️⚖️Element 🧠data❗️ index✖️⚖️Element 🤜🐔data❓ ➖ index 🤛✖️⚖️Element❗️
-        item ➡️ 🐽🧠data❗️🐚Element🍆  index✖️⚖️Element❗️
+        item ➡️ 🐽🐚Element🍆🧠data❗️  index✖️⚖️Element❗️
       🍉
       🐔data 1❗️
       ↩️ 👍
@@ -229,7 +229,7 @@
     🐴data 🐔data❓❗️
     ☣️ 🍇
       🔂 i 🆕⏩⏩ 0 🐔list❗️❗️ 🍇
-        🐽 🧠🍧list❗️❗️🐚Element🍆 i✖️⚖️Element❗️ ➡️ 🐽🧠data❗️🐚Element🍆 🤜i ➕ oldCount🤛✖️⚖️Element❗️
+        🐽🐚Element🍆 🧠🍧list❗️❗ i✖️⚖️Element❗️ ➡️ 🐽🐚Element🍆🧠data❗️ 🤜i ➕ oldCount🤛✖️⚖️Element❗️
       🍉
     🍉
   🍉
@@ -242,8 +242,8 @@
     📝🐕❗️
     🐔data -1❗️
     ☣️ 🍇
-      🐽 🧠data❗️🐚Element🍆 🐔data❓✖️⚖️Element❗️ ➡️ value
-      ♻️ 🧠data❗️🐚Element🍆 🐔data❓✖️⚖️Element❗️
+      🐽🐚Element🍆 🧠data❗️🐔data❓✖️⚖️Element❗️ ➡️ value
+      ♻️🐚Element🍆 🧠data❗️🐔data❓✖️⚖️Element❗️
     🍉
     ↩️ value
   🍉
@@ -293,7 +293,7 @@
 
   🔒❗️✂️ first 🔢 last 🔢 comparator 🍇Element Element➡️🔢🍉 ➡️ 🔢 🍇
     ☣️ 🍇
-      🐽 🧠data❗️🐚Element🍆 first✖️⚖️Element❗️  ➡️ pivot
+      🐽🐚Element🍆 🧠data❗️ first✖️⚖️Element❗️  ➡️ pivot
     🍉
 
     first ➖ 1 ➡️🖍🆕i
@@ -302,14 +302,14 @@
     🔁 👍 🍇
       i ⬅️➕ 1
       ☣️ 🍇
-        🔁 ⁉️comparator 🐽 🧠data❗️🐚Element🍆 i✖️⚖️Element❗️ pivot❗️ ◀️ 0 🍇
+        🔁 ⁉️comparator 🐽🐚Element🍆 🧠data❗️ i✖️⚖️Element❗️ pivot❗️ ◀️ 0 🍇
           i ⬅️➕ 1
         🍉
       🍉
 
       j ⬅️➖ 1
       ☣️ 🍇
-        🔁 ⁉️comparator 🐽 🧠data❗️🐚Element🍆 j✖️⚖️Element❗️ pivot❗️ ▶️ 0 🍇
+        🔁 ⁉️comparator 🐽🐚Element🍆 🧠data❗️ j✖️⚖️Element❗️ pivot❗️ ▶️ 0 🍇
           j ⬅️➖ 1
         🍉
       🍉
@@ -334,9 +334,9 @@
   🍉
 
   ☣️🔒❗🔄 a 🔢 b 🔢 🍇
-    🐽 🧠data❗️🐚Element🍆 a✖️⚖️Element❗️ ➡️ temp
-    🐽 🧠data❗️🐚Element🍆 b✖️⚖️Element❗️ ➡️🐽🧠data❗️🐚Element🍆 a✖️⚖️Element❗️
-    temp ➡️🐽🧠data❗️🐚Element🍆 b✖️⚖️Element❗️
+    🐽🐚Element🍆 🧠data❗️ a✖️⚖️Element❗️ ➡️ temp
+    🐽🐚Element🍆 🧠data❗️ b✖️⚖️Element❗️ ➡️🐽🐚Element🍆🧠data❗️ a✖️⚖️Element❗️
+    temp ➡️🐽🐚Element🍆🧠data❗️ b✖️⚖️Element❗️
   🍉
 
   📗

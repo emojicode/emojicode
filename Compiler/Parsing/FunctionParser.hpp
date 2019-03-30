@@ -48,7 +48,9 @@ private:
 
     std::shared_ptr<ASTExpr> parseTypeAsValue(const Token &token);
 
-    ASTArguments parseArguments(const SourcePosition &position);
+    std::pair<std::shared_ptr<ASTExpr>, ASTArguments> parseCalleeAndArguments(const SourcePosition &position);
+
+    ASTArguments parseArgumentsWithoutCallee(const SourcePosition &position);
     std::shared_ptr<ASTTypeExpr> parseTypeExpr(const SourcePosition &p);
 
     template <typename T>

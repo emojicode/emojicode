@@ -76,7 +76,7 @@ protected:
     /// Parses $generic-parameters$
     template<typename T, typename E>
     void parseGenericParameters(Generic <T, E> *generic) {
-        if (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
+        if (stream_.consumeTokenIf(TokenType::Generic)) {
             while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                 bool rejectBoxing = stream_.consumeTokenIf(TokenType::Unsafe);
                 auto variable = stream_.consumeToken(TokenType::Variable);
@@ -88,7 +88,7 @@ protected:
 
     template <typename T>
     void parseGenericArguments(T *t) {
-        if (stream_.consumeTokenIf(E_SPIRAL_SHELL)) {
+        if (stream_.consumeTokenIf(TokenType::Generic)) {
             while (stream_.nextTokenIsEverythingBut(E_AUBERGINE)) {
                 t->addGenericArgument(parseType());
             }
